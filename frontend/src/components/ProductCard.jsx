@@ -333,24 +333,35 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
   // Fallback placeholder image
   const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop';
   
-  // Get valid image - with breed illustration support for breed-specific products
+  // Get valid image - PRIORITIZE original Shopify image for marketplace products
+  // Only use breed illustrations for soul_made tier products
   const getValidImage = () => {
-    const productName = (product.name || product.title || '').toLowerCase();
-    
-    // For ANY breed-specific product (cakes, accessories, keychains, hats, etc.)
-    // Use breed illustration when a breed name is detected
-    const breedMatch = findBreedIllustration(productName);
-    if (breedMatch) {
-      return breedMatch.imageUrl;
+    // CRITICAL: For regular Shopify marketplace products, ALWAYS use the original image
+    // The `image` field contains the correct Shopify CDN URL
+    if (product.image && product.image.startsWith('http') && product.image.includes('shopify.com')) {
+      return product.image;
     }
     
-    // Use original product image if valid
+    // For soul_made products only, check for breed illustration
+    if (product.soul_tier === 'soul_made') {
+      const productName = (product.name || product.title || '').toLowerCase();
+      const breedMatch = findBreedIllustration(productName);
+      if (breedMatch) {
+        return breedMatch.imageUrl;
+      }
+    }
+    
+    // Fallback: use original product image if valid
     if (product.image && product.image.startsWith('http')) {
       return product.image;
     }
-    if (product.images?.[0] && product.images[0].startsWith('http')) {
+    
+    // AVOID using images array for marketplace products - it may contain AI-generated images
+    // Only use images array as last resort
+    if (product.images?.[0] && product.images[0].startsWith('http') && product.images[0].includes('shopify.com')) {
       return product.images[0];
     }
+    
     return PLACEHOLDER_IMAGE;
   };
   
@@ -532,23 +543,34 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   // miraContext is now always passed (effectiveMiraContext from parent)
   // onAddToPicks - callback for Mira picks panel (instead of cart)
   
-  // Get valid product image - with breed illustration support
+  // Get valid product image - PRIORITIZE original Shopify image for marketplace products
   const PLACEHOLDER_IMAGE = 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579';
   const getValidProductImage = () => {
-    const productName = (product.name || product.title || '').toLowerCase();
-    
-    // For ANY breed-specific product, use breed illustration
-    const breedMatch = findBreedIllustration(productName);
-    if (breedMatch) {
-      return breedMatch.imageUrl;
+    // CRITICAL: For regular Shopify marketplace products, ALWAYS use the original image
+    // The `image` field contains the correct Shopify CDN URL
+    if (product.image && product.image.startsWith('http') && product.image.includes('shopify.com')) {
+      return product.image;
     }
     
+    // For soul_made products only, check for breed illustration
+    if (product.soul_tier === 'soul_made') {
+      const productName = (product.name || product.title || '').toLowerCase();
+      const breedMatch = findBreedIllustration(productName);
+      if (breedMatch) {
+        return breedMatch.imageUrl;
+      }
+    }
+    
+    // Fallback: use original product image if valid
     if (product.image && product.image.startsWith('http')) {
       return product.image;
     }
-    if (product.images?.[0] && product.images[0].startsWith('http')) {
+    
+    // AVOID using images array for marketplace products - it may contain AI-generated images
+    if (product.images?.[0] && product.images[0].startsWith('http') && product.images[0].includes('shopify.com')) {
       return product.images[0];
     }
+    
     return PLACEHOLDER_IMAGE;
   };
   const productImage = getValidProductImage();

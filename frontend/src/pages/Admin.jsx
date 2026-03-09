@@ -196,6 +196,7 @@ const Admin = () => {
   const [seedingAll, setSeedingAll] = useState(false);
   const [seedingProduction, setSeedingProduction] = useState(false);
   const [syncingShopify, setSyncingShopify] = useState(false);
+  const [fixingImages, setFixingImages] = useState(false);
   
   // Refresh counter for forcing data re-fetch
   const [refreshCounter, setRefreshCounter] = useState(0);
@@ -570,6 +571,39 @@ const Admin = () => {
       });
     } finally {
       setSyncingShopify(false);
+    }
+  };
+
+  // 🖼️ FIX PRODUCT IMAGES - Re-sync images from Shopify
+  const fixProductImages = async () => {
+    setFixingImages(true);
+    try {
+      toast({ title: '🖼️ Fixing Product Images...', description: 'Re-syncing images from Shopify CDN' });
+      
+      const response = await fetch(`${API_URL}/api/admin/fix-product-images`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          title: '✅ Product Images Fixed!',
+          description: `Fixed ${data.fixed_count} products with correct Shopify images`,
+          duration: 8000
+        });
+      } else {
+        throw new Error('Failed to fix images');
+      }
+    } catch (error) {
+      console.error('[Fix Images] Error:', error);
+      toast({ 
+        title: 'Error Fixing Images', 
+        description: error.message, 
+        variant: 'destructive'
+      });
+    } finally {
+      setFixingImages(false);
     }
   };
 
@@ -2844,6 +2878,19 @@ const Admin = () => {
               >
                 {verifyingData ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
                 {verifyingData ? 'Verifying...' : '🔍 VERIFY DATA'}
+              </Button>
+              
+              {/* 🖼️ FIX IMAGES Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gradient-to-r from-orange-600 via-amber-600 to-yellow-600 text-white border-0 text-sm font-bold shadow-lg px-4 ml-2"
+                onClick={fixProductImages}
+                disabled={fixingImages}
+                data-testid="fix-images-btn"
+              >
+                {fixingImages ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <Image className="w-4 h-4 mr-2" />}
+                {fixingImages ? 'Fixing...' : '🖼️ FIX IMAGES'}
               </Button>
             </div>
             
