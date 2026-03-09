@@ -90,7 +90,7 @@ class CartItem(BaseModel):
 
 class CustomerDetails(BaseModel):
     name: str
-    email: EmailStr
+    email: str  # Changed from EmailStr to allow more flexibility
     phone: str
     whatsapp: Optional[str] = None
 
