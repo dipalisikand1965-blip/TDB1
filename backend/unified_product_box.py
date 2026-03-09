@@ -627,9 +627,11 @@ async def get_all_products(
     shipping: Optional[str] = None,
     breed: Optional[str] = None,
     size: Optional[str] = None,
-    has_mira_hint: Optional[str] = None
+    has_mira_hint: Optional[str] = None,
+    source: Optional[str] = None,  # NEW: Filter by source (shopify, soul_made, manual)
+    include_soul_made: bool = True  # NEW: Include Soul Made products from breed_products
 ):
-    """Get all products with filtering"""
+    """Get all products with filtering - includes Soul Made products"""
     if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
@@ -655,12 +657,25 @@ async def get_all_products(
         elif shipping == "local":
             query["is_pan_india_shippable"] = {"$ne": True}
     
+    # Source filter (shopify, soul_made, manual)
+    if source:
+        if source == "soul_made":
+            query["soul_tier"] = "soul_made"
+        elif source == "shopify":
+            query["shopify_id"] = {"$exists": True}
+        elif source == "manual":
+            query["$and"] = query.get("$and", []) + [
+                {"shopify_id": {"$exists": False}},
+                {"soul_tier": {"$ne": "soul_made"}}
+            ]
+    
     # Breed Intelligence Filters
     if breed:
         query["$or"] = [
             {"breed_metadata.breeds": breed},
             {"breed_metadata.breeds": {"$size": 0}},  # Universal products
-            {"breed_tags": {"$regex": breed, "$options": "i"}}
+            {"breed_tags": {"$regex": breed, "$options": "i"}},
+            {"breed": {"$regex": breed, "$options": "i"}}  # For soul_made products
         ]
     if size:
         size_query = {
@@ -689,7 +704,9 @@ async def get_all_products(
                 {"sku": {"$regex": search, "$options": "i"}},
                 {"tags": {"$regex": search, "$options": "i"}},
                 {"category": {"$regex": search, "$options": "i"}},
-                {"description": {"$regex": search, "$options": "i"}}
+                {"description": {"$regex": search, "$options": "i"}},
+                {"breed": {"$regex": search, "$options": "i"}},
+                {"breed_name": {"$regex": search, "$options": "i"}}
             ]
         }
         # Merge search query with existing query
@@ -698,15 +715,75 @@ async def get_all_products(
         else:
             query.update(search_query)
     
-    # Execute query from products_master (single source of truth)
-    products = await db.products_master.find(
-        query, {"_id": 0}
-    ).skip(skip).limit(limit).to_list(limit)
+    all_products = []
+    total = 0
     
-    total = await db.products_master.count_documents(query)
+    # If source is specifically soul_made, only query breed_products
+    if source == "soul_made":
+        breed_query = dict(query)
+        breed_query.pop("soul_tier", None)  # Remove this as breed_products are all soul_made
+        
+        soul_products = await db.breed_products.find(
+            breed_query, {"_id": 0}
+        ).skip(skip).limit(limit).to_list(limit)
+        
+        # Normalize soul_made products to match unified schema
+        for p in soul_products:
+            p["source"] = "soul_made"
+            p["soul_tier"] = "soul_made"
+            p["image"] = p.get("mockup_url") or p.get("image", "")
+        
+        all_products = soul_products
+        total = await db.breed_products.count_documents(breed_query)
+    else:
+        # Query products_master (main collection)
+        products = await db.products_master.find(
+            query, {"_id": 0}
+        ).skip(skip).limit(limit).to_list(limit)
+        
+        products_master_total = await db.products_master.count_documents(query)
+        
+        # Mark source
+        for p in products:
+            if p.get("shopify_id"):
+                p["source"] = "shopify"
+            elif p.get("soul_tier") == "soul_made":
+                p["source"] = "soul_made"
+            else:
+                p["source"] = "manual"
+        
+        all_products = products
+        total = products_master_total
+        
+        # Optionally include Soul Made products from breed_products if not filtered out
+        if include_soul_made and not source and len(all_products) < limit:
+            remaining = limit - len(all_products)
+            breed_query = {}
+            if search:
+                breed_query["$or"] = [
+                    {"name": {"$regex": search, "$options": "i"}},
+                    {"breed": {"$regex": search, "$options": "i"}},
+                    {"breed_name": {"$regex": search, "$options": "i"}}
+                ]
+            
+            # Get soul_made products that are NOT in products_master
+            soul_products = await db.breed_products.find(
+                breed_query, {"_id": 0}
+            ).limit(remaining).to_list(remaining)
+            
+            for p in soul_products:
+                p["source"] = "soul_made"
+                p["soul_tier"] = "soul_made"
+                p["image"] = p.get("mockup_url") or p.get("image", "")
+                # Only add if not already in products_master
+                if not any(mp.get("id") == p.get("id") for mp in all_products):
+                    all_products.append(p)
+            
+            breed_total = await db.breed_products.count_documents(breed_query)
+            total += breed_total
     
     return {
-        "products": products,
+        "products": all_products,
         "total": total,
         "skip": skip,
         "limit": limit
@@ -765,12 +842,39 @@ async def create_product(product: UnifiedProduct, admin_user: str = "system"):
 
 @product_box_router.put("/products/{product_id}")
 async def update_product(product_id: str, updates: Dict[str, Any], admin_user: str = "system"):
-    """Update a product"""
+    """Update a product - supports both regular and Soul Made products"""
     if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     try:
-        # Check exists
+        # Check if it's a Soul Made product (stored in breed_products)
+        if product_id.startswith("breed-"):
+            existing = await db.breed_products.find_one({"id": product_id})
+            if not existing:
+                raise HTTPException(status_code=404, detail="Soul Made product not found")
+            
+            # Don't allow changing ID
+            updates.pop("id", None)
+            updates.pop("_id", None)
+            
+            # Set audit fields
+            updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+            updates["updated_by"] = admin_user
+            
+            await db.breed_products.update_one(
+                {"id": product_id},
+                {"$set": updates}
+            )
+            
+            # Get updated product
+            updated = await db.breed_products.find_one({"id": product_id}, {"_id": 0})
+            updated["source"] = "soul_made"
+            updated["image"] = updated.get("mockup_url") or updated.get("image", "")
+            
+            logger.info(f"Updated Soul Made product: {product_id}")
+            return {"message": "Soul Made product updated", "product": updated}
+        
+        # Regular product update (products_master)
         existing = await db.products_master.find_one({"id": product_id})
         if not existing:
             raise HTTPException(status_code=404, detail="Product not found")
@@ -820,6 +924,19 @@ async def delete_product(product_id: str):
     if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
+    # Check if it's a Soul Made product (breed_products)
+    if product_id.startswith("breed-"):
+        result = await db.breed_products.update_one(
+            {"id": product_id},
+            {"$set": {
+                "archived": True,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Soul Made product not found")
+        return {"message": "Soul Made product archived", "product_id": product_id}
+    
     result = await db.products_master.update_one(
         {"id": product_id},
         {"$set": {
@@ -832,6 +949,52 @@ async def delete_product(product_id: str):
         raise HTTPException(status_code=404, detail="Product not found")
     
     return {"message": "Product archived", "product_id": product_id}
+
+
+@product_box_router.put("/soul-made/{product_id}")
+async def update_soul_made_product(product_id: str, updates: Dict[str, Any], admin_user: str = "system"):
+    """Update a Soul Made (breed) product - supports price, name, description editing"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    
+    try:
+        # Check if product exists in breed_products
+        existing = await db.breed_products.find_one({"id": product_id})
+        if not existing:
+            raise HTTPException(status_code=404, detail="Soul Made product not found")
+        
+        # Don't allow changing ID
+        updates.pop("id", None)
+        updates.pop("_id", None)
+        
+        # Allowed fields for Soul Made products
+        allowed_fields = [
+            "name", "price", "description", "tags", "category", "product_type",
+            "in_stock", "pillar", "mockup_url", "image", "breed_name"
+        ]
+        
+        # Filter to only allowed fields
+        filtered_updates = {k: v for k, v in updates.items() if k in allowed_fields}
+        
+        # Set audit fields
+        filtered_updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+        filtered_updates["updated_by"] = admin_user
+        
+        await db.breed_products.update_one(
+            {"id": product_id},
+            {"$set": filtered_updates}
+        )
+        
+        # Get updated product
+        updated = await db.breed_products.find_one({"id": product_id}, {"_id": 0})
+        
+        logger.info(f"Updated Soul Made product: {product_id} with fields: {list(filtered_updates.keys())}")
+        return {"message": "Soul Made product updated", "product": updated}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating Soul Made product {product_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update: {str(e)}")
 
 
 @product_box_router.post("/products/{product_id}/clone")
