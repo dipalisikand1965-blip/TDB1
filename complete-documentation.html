@@ -56,13 +56,89 @@
     <div class="header">
         <h1>The Doggy Company</h1>
         <p>Mira-OS: The Pet Life Operating System</p>
-        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: March 9, 2026 | Version 5.5.0</p>
+        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: March 9, 2026 11:15 IST | Version 6.0.0</p>
     </div>
 
     <div class="container">
+        <!-- Session 6 Updates -->
+        <div class="section" style="background: linear-gradient(135deg, #fce7f3, #fbcfe8); border: 2px solid #ec4899;">
+            <h2 style="color: #be185d; border-color: #ec4899;">🆕 Session 6 Updates (March 9, 2026 - Latest)</h2>
+            <div class="success-box">
+                <strong>Soul Made Products now in Product Box with full CRUD! iOS mobile fixes applied!</strong>
+            </div>
+            
+            <h3>New Features:</h3>
+            <table>
+                <tr>
+                    <th>Feature</th>
+                    <th>Description</th>
+                    <th>Files</th>
+                </tr>
+                <tr>
+                    <td>Soul Made in Product Box</td>
+                    <td>523 AI products now appear in unified Product Box with source filter</td>
+                    <td><code>unified_product_box.py</code>, <code>UnifiedProductBox.jsx</code></td>
+                </tr>
+                <tr>
+                    <td>Price Editing for Soul Made</td>
+                    <td>Edit prices directly: click price → edit → save</td>
+                    <td><code>PUT /api/product-box/products/{id}</code></td>
+                </tr>
+                <tr>
+                    <td>iOS Pet Switcher</td>
+                    <td>Pet switching in hamburger menu sidebar</td>
+                    <td><code>MemberMobileNav.jsx</code></td>
+                </tr>
+                <tr>
+                    <td>iOS Touch Fixes</td>
+                    <td>All navbar buttons work on iOS Safari</td>
+                    <td><code>Navbar.jsx</code></td>
+                </tr>
+                <tr>
+                    <td>Product Image Fix</td>
+                    <td>380 Shopify products fixed to show correct CDN images</td>
+                    <td><code>shopify_sync_routes.py</code></td>
+                </tr>
+            </table>
+
+            <h3>Product Storage Architecture:</h3>
+            <table>
+                <tr>
+                    <th>Source</th>
+                    <th>Collection</th>
+                    <th>API Filter</th>
+                    <th>Editable?</th>
+                </tr>
+                <tr>
+                    <td>🛒 Shopify</td>
+                    <td><code>products_master</code></td>
+                    <td><code>source=shopify</code></td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td>🎨 Soul Made (AI)</td>
+                    <td><code>breed_products</code></td>
+                    <td><code>source=soul_made</code></td>
+                    <td><strong>Yes ✅</strong></td>
+                </tr>
+                <tr>
+                    <td>✍️ Manual</td>
+                    <td><code>products_master</code></td>
+                    <td><code>source=manual</code></td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+
+            <h3>Admin Panel New Buttons:</h3>
+            <ul>
+                <li><strong>🖼️ FIX IMAGES</strong> - Re-syncs Shopify product images from CDN</li>
+                <li><strong>Source Filter</strong> - Filter Product Box by Shopify/Soul Made/Manual</li>
+            </ul>
+        </div>
+
         <!-- Session 5 Updates -->
         <div class="section" style="background: linear-gradient(135deg, #dcfce7, #d1fae5); border: 2px solid #10b981;">
-            <h2 style="color: #166534; border-color: #10b981;">🆕 Session 5 Updates (March 9, 2026)</h2>
+            <h2 style="color: #166534; border-color: #10b981;">📦 Session 5 Updates (March 9, 2026)</h2>
             <div class="success-box">
                 <strong>All pillar pages now match between Preview and Production!</strong>
             </div>

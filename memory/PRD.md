@@ -1,7 +1,7 @@
 # The Doggy Company - PRD
 
-**Last Updated:** March 9, 2026 01:30 IST  
-**Status:** Production Ready - Soul Made Products LIVE!
+**Last Updated:** March 9, 2026 11:15 IST  
+**Status:** Production Ready - Soul Made Products LIVE in Product Box!
 
 ---
 
@@ -16,6 +16,62 @@ A bug in `seed_all_breed_products` used `$set` which **WIPED ALL MOCKUP IMAGES**
 **FILE:** `/app/backend/scripts/generate_all_mockups.py`
 
 **NEVER CHANGE THIS. EVER.**
+
+---
+
+## SESSION 6 ACCOMPLISHMENTS (March 9, 2026 - Latest)
+
+### 🟢 NEW FEATURES:
+
+1. **Soul Made Products in Product Box** - AI-generated breed products now appear in unified Product Box
+   - **Files:** `/app/backend/unified_product_box.py`, `/app/frontend/src/components/admin/UnifiedProductBox.jsx`
+   - **API:** `GET /api/product-box/products?source=soul_made` - Filters to Soul Made products only
+   - **Edit:** `PUT /api/product-box/products/{product_id}` - Now works for both regular AND breed products
+   - **Total:** 523 Soul Made products now in Product Box
+
+2. **Source Filter in Product Box** - New dropdown to filter by product source:
+   - `📦 All Sources` - Shows everything
+   - `🛒 Shopify` - Products synced from thedoggybakery.com
+   - `🎨 Soul Made (AI)` - AI-generated breed products from `breed_products` collection
+   - `✍️ Manual` - Products created manually
+
+3. **Price Editing for Soul Made** - Can now edit prices directly in Product Box
+   - Click on price → Quick edit → Save
+   - Changes saved to `breed_products` collection
+
+4. **iOS Mobile Pet Switcher** - Added pet switching to Quick Nav sidebar
+   - **File:** `/app/frontend/src/components/MemberMobileNav.jsx`
+   - Hamburger menu → "SWITCH PET" section → Tap any pet
+   - Works on ALL pages including pillar pages
+
+5. **iOS Touch Fixes** - All navbar buttons now work on iOS Safari
+   - Hamburger menu (≡)
+   - User icon (👤) - Goes to Dashboard
+   - Cart icon (🛒) - Opens cart
+   - **File:** `/app/frontend/src/components/Navbar.jsx`
+
+6. **Product Image Fix** - Fixed 380 products with wrong AI images
+   - **Endpoint:** `POST /api/admin/fix-product-images`
+   - Button: "🖼️ FIX IMAGES" in Admin Panel
+   - All Shopify products now show correct CDN images
+
+### 📦 Product Storage Architecture:
+
+| Source | Collection | API | Editable |
+|--------|-----------|-----|----------|
+| Shopify | `products_master` | `/api/product-box/products` | Yes |
+| Soul Made | `breed_products` | `/api/product-box/products?source=soul_made` | **Yes ✅** |
+| Manual | `products_master` | `/api/product-box/products` | Yes |
+
+### Key Files Modified This Session:
+| File | Change |
+|------|--------|
+| `/app/backend/unified_product_box.py` | Added source filter, Soul Made CRUD support |
+| `/app/frontend/src/components/admin/UnifiedProductBox.jsx` | Source filter dropdown, Soul Made badges |
+| `/app/frontend/src/components/MemberMobileNav.jsx` | Pet switcher in Quick Nav |
+| `/app/frontend/src/components/Navbar.jsx` | iOS touch fixes for all buttons |
+| `/app/frontend/src/pages/PetHomePage.jsx` | iOS touch fixes for pet selector |
+| `/app/backend/shopify_sync_routes.py` | Fix product images endpoint |
 
 ---
 
