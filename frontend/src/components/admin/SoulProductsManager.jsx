@@ -187,6 +187,8 @@ const SoulProductsManager = () => {
     fetchProducts();
     fetchArchetypes();
     fetchCategories();
+    fetchMockupStats(); // Fetch mockup stats on mount
+    fetchCloudStatus(); // Fetch cloud status
   }, []);
 
   const fetchProducts = async () => {
@@ -378,6 +380,13 @@ const SoulProductsManager = () => {
       fetchMockupStats();
       fetchBreedProducts(true); // Fetch products with mockups
       fetchCloudStatus(); // Check cloud storage status
+      
+      // Auto-refresh stats every 30 seconds when on mockups tab
+      const refreshInterval = setInterval(() => {
+        fetchMockupStats();
+      }, 30000);
+      
+      return () => clearInterval(refreshInterval);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSubTab]); // Only trigger on tab change
@@ -559,7 +568,7 @@ const SoulProductsManager = () => {
             {tab.label}
             {tab.id === 'mockups' && mockupStats && (
               <Badge className="ml-2 bg-green-100 text-green-700 text-xs">
-                {mockupStats.with_mockups}/{mockupStats.total_products}
+                {mockupStats.products_with_mockups || 0}/{mockupStats.total_products}
               </Badge>
             )}
           </Button>
@@ -987,7 +996,7 @@ const SoulProductsManager = () => {
       {activeSubTab === 'mockups' && (
         <div className="space-y-6">
           {/* Stats Overview */}
-          {mockupStats && (
+          {mockupStats ? (
             <div className="grid grid-cols-4 gap-4">
               <Card className="p-4 bg-gradient-to-br from-purple-50 to-pink-50">
                 <div className="text-3xl font-bold text-purple-700">{mockupStats.total_products}</div>
@@ -1002,9 +1011,18 @@ const SoulProductsManager = () => {
                 <div className="text-sm text-gray-600">Pending</div>
               </Card>
               <Card className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
-                <div className="text-3xl font-bold text-blue-700">{mockupStats.completion_percentage}%</div>
+                <div className="text-3xl font-bold text-blue-700">{mockupStats.completion_percentage?.toFixed(1) || 0}%</div>
                 <div className="text-sm text-gray-600">Complete</div>
               </Card>
+            </div>
+          ) : (
+            <div className="grid grid-cols-4 gap-4">
+              {[1,2,3,4].map(i => (
+                <Card key={i} className="p-4 bg-gray-50 animate-pulse">
+                  <div className="h-9 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-24"></div>
+                </Card>
+              ))}
             </div>
           )}
 
