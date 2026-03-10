@@ -103,13 +103,16 @@
 
 1. ✅ **Soul Score (89%)** - Now displaying correctly for Mojo
 2. ✅ **Pet Emergency File** - Correctly pulls allergies from doggy_soul_answers
-3. ✅ **3 Emergency Bundles** - Side by side with AI images
-4. ✅ **15 Emergency Products** - Categorized with filters
+3. ✅ **3 Emergency Bundles** - Displayed on top with AI images
+4. ✅ **Emergency Products with Images** - 15 AI-generated images
 5. ✅ **Location Search** - Works for any city worldwide
-6. ✅ **Products in Admin** - Synced to products_master
-7. ✅ **Soul Questions** - Pet Emergency File prompts for missing data
-8. ✅ **"Talk to Concierge" CTAs** - On all service cards
-9. ✅ **Emergency-specific Copy** - No archetype playful language
+6. ✅ **Products in Admin** - Synced to products_master (247 emergency products)
+7. ✅ **Emergency Tab in Shop** - `/shop?pillar=emergency` working!
+8. ✅ **Product Modal** - Products open with detail view and personalized recommendations
+9. ✅ **Soul Questions** - Pet Emergency File prompts for missing data
+10. ✅ **"Talk to Concierge" CTAs** - On all service cards
+11. ✅ **Emergency-specific Copy** - No archetype playful language
+12. ✅ **Emergency Guides** - 10 situation cards (poisoning, bleeding, breathing, etc.)
 
 ---
 
