@@ -144,6 +144,30 @@ const PILLAR_CONFIG = {
       `${name}'s celebration picks 🎂`,
       `Party time for ${name}! 🎉`,
     ]
+  },
+  farewell: {
+    emoji: '🌈',
+    gradient: 'from-purple-50 to-indigo-50',
+    border: 'border-purple-200',
+    accent: 'text-purple-700',
+    accentBg: 'bg-purple-500',
+    messages: (name) => [
+      `Memorial keepsakes for ${name} 💜`,
+      `Honoring ${name}'s memory 🌈`,
+      `Forever in our hearts 💕`,
+    ]
+  },
+  adopt: {
+    emoji: '🏠',
+    gradient: 'from-green-50 to-emerald-50',
+    border: 'border-green-200',
+    accent: 'text-green-700',
+    accentBg: 'bg-green-500',
+    messages: (name) => [
+      `Welcome home essentials! 🏠`,
+      `Starting your journey together 💚`,
+      `Perfect for new beginnings! ✨`,
+    ]
   }
 };
 
@@ -283,15 +307,26 @@ const PersonalizedPicks = ({
             setRecommendations(data.products || []);
           }
         } catch (e) {
-          // Final fallback - get any products
-          try {
-            const finalRes = await fetch(`${API_URL}/api/product-box/products?limit=${maxProducts}`);
-            if (finalRes.ok) {
-              const finalData = await finalRes.json();
-              setRecommendations(finalData.products || []);
+          // ═══════════════════════════════════════════════════════════════════
+          // SENSITIVE PILLAR HANDLING - Farewell/Adopt should NOT show generic products
+          // These are sensitive pages where showing "play toys" would be inappropriate
+          // ═══════════════════════════════════════════════════════════════════
+          if (pillar === 'farewell' || pillar === 'adopt') {
+            // For sensitive pillars, use pillar-specific fallback products only
+            // Do NOT fall back to generic products
+            console.debug(`[PersonalizedPicks] ${pillar} pillar - skipping generic fallback`);
+            setRecommendations([]); // Show empty rather than inappropriate products
+          } else {
+            // Final fallback for non-sensitive pillars - get any products
+            try {
+              const finalRes = await fetch(`${API_URL}/api/product-box/products?limit=${maxProducts}`);
+              if (finalRes.ok) {
+                const finalData = await finalRes.json();
+                setRecommendations(finalData.products || []);
+              }
+            } catch (finalErr) {
+              console.debug('All fallbacks failed:', finalErr);
             }
-          } catch (finalErr) {
-            console.debug('All fallbacks failed:', finalErr);
           }
         }
       } finally {

@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://decision-support-8.preview.emergentagent.com
+https://feature-parity-push.preview.emergentagent.com
 ```
 
 ---
