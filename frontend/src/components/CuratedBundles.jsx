@@ -129,6 +129,72 @@ const PILLAR_BUNDLES = {
       icon: '🌈',
       popular: true
     }
+  ],
+  advisory: [
+    {
+      id: 'advisory-puppy-starter',
+      name: 'Puppy Starter Bundle',
+      description: 'Everything for your new puppy - bed, bowls, collar, leash, and training essentials',
+      items: ['Puppy Bed', 'Bowl Set', 'Collar & Leash', 'Training Treats', 'Chew Toys', 'Pee Pads'],
+      original_price: 3299,
+      bundle_price: 2499,
+      discount: 24,
+      icon: '🐶',
+      popular: true
+    },
+    {
+      id: 'advisory-senior-comfort',
+      name: 'Senior Comfort Bundle',
+      description: 'Support your aging companion with orthopedic comfort and joint care essentials',
+      items: ['Orthopedic Bed', 'Joint Supplement', 'Non-Slip Mat', 'Raised Bowl Stand', 'Fleece Blanket'],
+      original_price: 4599,
+      bundle_price: 3499,
+      discount: 24,
+      icon: '❤️'
+    },
+    {
+      id: 'advisory-grooming-pro',
+      name: 'Complete Grooming Bundle',
+      description: 'Professional-grade grooming tools for at-home coat care',
+      items: ['Slicker Brush', 'De-shedding Comb', 'Pet Shampoo', 'Nail Clipper', 'Ear Cleaner', 'Grooming Towel'],
+      original_price: 2399,
+      bundle_price: 1799,
+      discount: 25,
+      icon: '✂️'
+    }
+  ],
+  emergency: [
+    {
+      id: 'emergency-first-aid-bundle',
+      name: 'Pet First Aid Bundle',
+      description: 'Be prepared for pet emergencies with essential first aid supplies',
+      items: ['First Aid Kit', 'Digital Thermometer', 'Gauze & Bandages', 'Tick Remover', 'Emergency Blanket'],
+      original_price: 2199,
+      bundle_price: 1599,
+      discount: 27,
+      icon: '🚨',
+      popular: true
+    },
+    {
+      id: 'emergency-travel-kit',
+      name: 'Travel Emergency Kit',
+      description: 'Essential emergency supplies for travel with your pet',
+      items: ['Portable First Aid', 'Water Bottle', 'Collapsible Bowl', 'ID Tag', 'Slip Leash'],
+      original_price: 3499,
+      bundle_price: 2799,
+      discount: 20,
+      icon: '✈️'
+    },
+    {
+      id: 'emergency-recovery-bundle',
+      name: 'Post-Surgery Recovery Bundle',
+      description: 'Everything needed for comfortable recovery after surgery',
+      items: ['E-Collar', 'Recovery Suit', 'Orthopedic Mat', 'Cooling Pad', 'Gentle Treats'],
+      original_price: 4299,
+      bundle_price: 3499,
+      discount: 19,
+      icon: '🏥'
+    }
   ]
 };
 

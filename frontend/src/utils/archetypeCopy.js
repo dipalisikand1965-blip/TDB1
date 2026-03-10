@@ -386,12 +386,41 @@ const EMERGENCY_COPY = {
 };
 
 /**
+ * ADVISORY-SPECIFIC COPY
+ * Decision-support focused, guidance-oriented language
+ */
+const ADVISORY_COPY = {
+  greeting: [
+    "Guidance for {pet}'s wellbeing",
+    "Smart picks for {pet}",
+    "Recommended for {pet}",
+    "Products suited to {pet}'s needs"
+  ],
+  productIntro: [
+    "Carefully selected items based on {pet}'s profile",
+    "Products that match {pet}'s lifestyle",
+    "Thoughtful recommendations for your {breed}",
+    "Items chosen with {pet} in mind"
+  ],
+  bundleIntro: [
+    "Curated bundles for {pet}'s needs",
+    "Complete solutions for your {breed}",
+    "Everything {pet} needs in one place"
+  ]
+};
+
+/**
  * Get pillar-aware greeting
  * For emergency pillar, uses calming/supportive language
+ * For advisory pillar, uses guidance-focused language
  */
 export function getPillarAwareGreeting(archetype, petName, breed, pillar) {
   if (pillar === 'emergency') {
     const template = getRandomItem(EMERGENCY_COPY.greeting);
+    return replacePlaceholders(template, petName, breed);
+  }
+  if (pillar === 'advisory') {
+    const template = getRandomItem(ADVISORY_COPY.greeting);
     return replacePlaceholders(template, petName, breed);
   }
   return getPersonalizedGreeting(archetype, petName, breed);
@@ -405,6 +434,10 @@ export function getPillarAwareProductIntro(archetype, petName, breed, pillar) {
     const template = getRandomItem(EMERGENCY_COPY.productIntro);
     return replacePlaceholders(template, petName, breed);
   }
+  if (pillar === 'advisory') {
+    const template = getRandomItem(ADVISORY_COPY.productIntro);
+    return replacePlaceholders(template, petName, breed);
+  }
   return getProductIntro(archetype, petName, breed);
 }
 
@@ -414,6 +447,10 @@ export function getPillarAwareProductIntro(archetype, petName, breed, pillar) {
 export function getPillarAwareBundleIntro(archetype, petName, breed, pillar) {
   if (pillar === 'emergency') {
     const template = getRandomItem(EMERGENCY_COPY.bundleIntro);
+    return replacePlaceholders(template, petName, breed);
+  }
+  if (pillar === 'advisory') {
+    const template = getRandomItem(ADVISORY_COPY.bundleIntro);
     return replacePlaceholders(template, petName, breed);
   }
   return getBundleIntro(archetype, petName, breed);
