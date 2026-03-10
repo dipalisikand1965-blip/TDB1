@@ -1,17 +1,20 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 11, 2026 17:30 IST  
+**Last Updated:** March 11, 2026 18:45 IST  
 **Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅
 
 ---
 
-## ✅ CRITICAL ARCHITECTURAL ISSUES - RESOLVED
+## ✅ CRITICAL ARCHITECTURAL ISSUES - ALL RESOLVED
 
-### 1. ~~Hardcoded Content in Frontend~~ - FIXED ✅
-All guided paths and journey guides are now stored in the database and fetched via API:
+### 1. ~~Hardcoded Content in Frontend~~ - FULLY FIXED ✅
+All guided paths and journey guides across ALL 4 pillars are now stored in the database and fetched via API:
 - Created `/app/backend/guided_paths_routes.py` with full CRUD API
 - Seeded 20 paths: 8 emergency, 4 advisory, 4 farewell, 4 adopt
 - Integrated into Master Sync for automatic seeding on deployment
-- FarewellPage.jsx and AdoptPage.jsx now fetch from `/api/guided-paths/{pillar}`
+- **FarewellPage.jsx** - Fetches from `/api/guided-paths/farewell` ✅
+- **AdoptPage.jsx** - Fetches from `/api/guided-paths/adopt` ✅
+- **EmergencyPage.jsx** - Fetches from `/api/guided-paths/emergency` ✅ (NEW)
+- **AdvisoryPage.jsx** - Fetches from `/api/guided-paths/advisory` ✅ (NEW)
 
 ### 2. ~~Farewell Page Product Recommendations~~ - FIXED ✅
 - PersonalizedPicks now has pillar-specific fallback for sensitive pillars
@@ -23,7 +26,32 @@ All guided paths and journey guides are now stored in the database and fetched v
 
 ---
 
-## COMPLETED THIS SESSION (March 11, 2026 - Session 8.1)
+## COMPLETED THIS SESSION (March 11, 2026 - Session 8.3)
+
+### P0 COMPLETE: Hardcoded Content Migration - ALL PILLARS ✅
+Completed the migration of hardcoded guided paths/guides from frontend constants to database-backed API for the remaining 2 pillars:
+
+1. **EmergencyPage.jsx → EmergencySituationGuides.jsx**
+   - Refactored `EmergencySituationGuides.jsx` to fetch from `/api/guided-paths/emergency`
+   - Added `transformApiPath()` function to convert API data to component format
+   - Added `FALLBACK_GUIDES` for graceful degradation when API unavailable
+   - Added `ICON_MAP` for mapping API icon names to emoji display
+   - Removed 370+ lines of hardcoded `EMERGENCY_GUIDES` constant
+   - Now displays 8 emergency guides dynamically from database
+
+2. **AdvisoryPage.jsx**
+   - Added `fetchGuidedPaths()` to fetch from `/api/guided-paths/advisory`
+   - Added `guidedPaths` and `pathsLoading` state
+   - Added `FALLBACK_GUIDED_PATHS` for graceful degradation
+   - Added `ICON_MAP` for mapping API icon names to Lucide React components
+   - Removed 140+ lines of hardcoded `GUIDED_PATHS` constant
+   - Now displays 4 advisory paths dynamically from database
+
+**Testing Results:** 100% pass rate (backend + frontend)
+
+---
+
+## COMPLETED PREVIOUS SESSION (March 11, 2026 - Session 8.1/8.2)
 
 ### 1. Documentation Update ✅
 - Updated `/app/complete-documentation.html` version to 8.1.0
@@ -383,7 +411,21 @@ All guided paths and journey guides are now stored in the database and fetched v
 
 ---
 
-## KEY FILES MODIFIED (This Session - Fork #3)
+## KEY FILES MODIFIED (This Session - Fork #4)
+
+### Frontend
+- `/app/frontend/src/components/emergency/EmergencySituationGuides.jsx` - Refactored to fetch from API
+- `/app/frontend/src/pages/AdvisoryPage.jsx` - Refactored to fetch from API
+
+### Backend (No changes - API already existed)
+- `/app/backend/guided_paths_routes.py` - Existing CRUD API (used by all 4 pillars now)
+
+### Tests
+- `/app/test_reports/iteration_84.json` - Migration verification test results
+
+---
+
+## KEY FILES MODIFIED (Previous Session - Fork #3)
 
 ### Documentation
 - `/app/complete-documentation.html` - Updated to v7.0.0 with Session 7 changes
