@@ -1,6 +1,6 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 10, 2026 20:00 IST  
-**Status:** Emergency COMPLETE | Shop Filters COMPLETE | Advisory AUDIT DONE
+**Last Updated:** March 10, 2026 21:00 IST  
+**Status:** Emergency COMPLETE | Shop Filters COMPLETE | Advisory FIXES COMPLETE ✅
 
 ---
 
@@ -72,9 +72,68 @@
 
 ---
 
-## COMPLETED THIS SESSION (March 10, 2026)
+## COMPLETED THIS SESSION (March 10, 2026 - Fork #2)
 
-### 1. Soul Score Bug Fix - CRITICAL ✅
+### 1. Advisory Page AI Fixed ✅
+- **Issue:** AI was giving irrelevant/generic answers (e.g., bed advice when asked about travel)
+- **Root Cause:** System prompt was too generic, not enforcing topic-specific responses
+- **Fix:** Enhanced AI prompt in `advisory_routes.py` to:
+  - Explicitly instruct: "Answer ONLY about what the user asked"
+  - Include pet context (breed, age, health) in responses
+  - Focus on specific topic keywords (travel, food, grooming, etc.)
+- **Verified:** "Travel prep checklist for Shih Tzu" now returns travel-specific checklist
+
+### 2. Concierge Modal Implemented ✅
+- **Issue:** "Talk to Concierge®" buttons linked directly to WhatsApp
+- **Fix:** Created proper ConciergeModal component with 3 options:
+  - WhatsApp Chat
+  - Send Email
+  - Call Us
+- **Location:** All "Talk to Concierge®" buttons now trigger the modal
+- **Verified:** Modal opens with context-aware message
+
+### 3. Near Me Internal Navigation ✅
+- **Issue:** Service cards opened external Google Maps links
+- **Fix:** Changed to internal routes:
+  - Pet Trainers → `/services?category=training`
+  - Groomers → `/services?category=grooming`
+  - Veterinarians → `/services?category=vet`
+  - Pet Stores → `/shop`
+- **Verified:** All buttons navigate within the app
+
+### 4. Shop Breed Filter - All 35 Breeds ✅
+- **Issue:** Breed filter only showed breeds from existing products (~5)
+- **Fix:** Added complete ALL_BREEDS array with 35 breeds:
+  - Labrador Retriever, Golden Retriever, German Shepherd, Shih Tzu, Pug
+  - Beagle, Poodle, Indie, Indian Pariah, Cocker Spaniel, Dachshund
+  - Boxer, Great Dane, Siberian Husky, Doberman, Rottweiler
+  - French Bulldog, English Bulldog, Yorkshire Terrier, Maltese
+  - Pomeranian, Chihuahua, Border Collie, Australian Shepherd
+  - Cavalier King Charles, Miniature Schnauzer, Boston Terrier
+  - Dalmatian, Lhasa Apso, Bichon Frise, Akita, Samoyed
+  - Bernese Mountain Dog, St. Bernard, Mixed Breed
+- **Verified:** All 35 breeds showing in filter
+
+### 5. Advisory Products Seeded ✅
+- **Issue:** 0 advisory products in database
+- **Fix:** Seeded 12 advisory products with pillar='advisory':
+  - New Puppy Starter Kit - ₹1,999
+  - Senior Pet Comfort Package - ₹4,999
+  - Anxiety Relief Kit - ₹2,499
+  - Home Training Essentials Kit - ₹1,299
+  - Pet Nutrition Guide Book - ₹699
+  - At-Home Grooming Set - ₹1,799
+  - Travel Readiness Kit - ₹2,299
+  - New Adoption Welcome Kit - ₹1,599
+  - Pet Health Monitor - ₹3,999
+  - Mental Enrichment Toy Set - ₹1,499
+  - Breed-Specific Care Guide - ₹899
+  - Home Setup Essentials - ₹3,499
+- **Verified:** Products available in database
+
+---
+
+## PREVIOUS SESSION COMPLETIONS (March 10, 2026 - Fork #1)
 - **Issue:** Mojo's soul score showed 79% instead of the actual 89%
 - **Root Cause:** Database had stale `soul_score` and `overall_score` fields that weren't being recalculated
 - **Fix:** 
@@ -208,15 +267,18 @@
 |-------|----------|--------|
 | Razorpay checkout "body error" | P1 | Debug logging added, needs testing |
 | Mobile dashboard scrambled | P2 | Not started |
-| Celebrate page loading | P2 | User verification pending |
 | AI Mockup Generation | P0 | Was ~67.6%, needs restart |
 
 ---
 
-## KEY FILES MODIFIED (This Session)
+## KEY FILES MODIFIED (This Session - Fork #2)
 
 ### Backend
-- `/app/backend/checkout_routes.py` - Added detailed logging for Razorpay debugging
+- `/app/backend/advisory_routes.py` - Enhanced AI prompt for contextual responses (lines 1258-1295)
+
+### Frontend
+- `/app/frontend/src/pages/AdvisoryPage.jsx` - Added ConciergeModal, fixed Near Me internal navigation
+- `/app/frontend/src/pages/ShopPage.jsx` - Added all 35 breeds to breed filter
 
 ### Frontend
 - `/app/frontend/src/components/emergency/PetEmergencyFile.jsx` - Fixed to pull from doggy_soul_answers
