@@ -1,6 +1,6 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 10, 2026 22:30 IST  
-**Status:** Soul Made Products - 41.0% Mockups Generated (1053/2569) | Production: 84.3% (862/1022)
+**Last Updated:** March 10, 2026 23:30 IST  
+**Status:** Soul Made Products - 46.9% Mockups Generated (1204/2569) | Auto-Generator Running ✅
 
 ---
 
@@ -87,7 +87,14 @@ All 13 pillar pages now have:
 - [x] Archetype-aware bundle descriptions
 - [x] Accent colors per archetype
 
-### Phase 8: Curated Bundles System ✅ COMPLETE (March 10, 2026)
+### Phase 9: Admin UI Fixes ✅ COMPLETE (March 10, 2026)
+- [x] Fixed Soul Products stats showing 0/2569 - now shows real numbers
+- [x] Added `fetchMockupStats()` to initial useEffect
+- [x] Added auto-refresh every 30 seconds on AI Mockups tab
+- [x] Added loading skeletons while stats fetch
+- [x] Fixed tab badge to show current progress (e.g., "1204/2569")
+- [x] Created auto_mockup_generator.py for continuous background generation
+- [x] Auto-restarts batches when completed
 - [x] Backend API: `/api/bundles` (CRUD operations)
 - [x] MongoDB storage for bundles across all pillars
 - [x] Admin UI: `BundlesManager.jsx` with full CRUD
@@ -124,7 +131,7 @@ All 13 pillar pages now have:
 
 | Task | Progress | Notes |
 |------|----------|-------|
-| **Mockup Generation** | 41.0% | 1053/2569 - Running in background |
+| **Mockup Generation** | 46.9% | 1204/2569 - Auto-generator running |
 | **Production Sync** | 84.3% | 862/1022 - Sync as new mockups complete |
 
 ---

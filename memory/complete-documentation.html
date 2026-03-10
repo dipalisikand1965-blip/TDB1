@@ -216,7 +216,7 @@
         <div class="header">
             <h1>🐕 The Doggy Company</h1>
             <p class="tagline">Complete Technical Documentation & Setup Guide</p>
-            <p class="date">Last Updated: March 10, 2026 21:30 IST - All 13 Pillars Unified ✅ | Mockup Generation: 974/2569 (37.9%)</p>
+            <p class="date">Last Updated: March 10, 2026 23:30 IST - Mockup Generation: 1204/2569 (46.9%) | Auto-Generator Running ✅</p>
         </div>
 
         <!-- Cloudinary Setup Section -->
@@ -394,7 +394,7 @@
             </div>
 
             <div class="card">
-                <div class="card-title">Current Bundles (10 Total)</div>
+                <div class="card-title">Current Bundles (19 Total - All Pillars)</div>
                 <table style="width: 100%; margin-top: 10px; font-size: 0.9em;">
                     <tr style="background: #e0e0e0;"><th>Pillar</th><th>Bundles</th></tr>
                     <tr><td>Celebrate</td><td>Birthday Pawty, Gotcha Day</td></tr>
@@ -404,6 +404,12 @@
                     <tr><td>Stay</td><td>Home Comfort</td></tr>
                     <tr><td>Fit</td><td>Daily Walker</td></tr>
                     <tr><td>Farewell</td><td>Forever Loved</td></tr>
+                    <tr><td>Enjoy</td><td>Play Day, Indoor Fun</td></tr>
+                    <tr><td>Learn</td><td>Training Starter, Puppy School</td></tr>
+                    <tr><td>Emergency</td><td>Pet First Aid</td></tr>
+                    <tr><td>Adopt</td><td>New Pet Welcome, Rescue Ready</td></tr>
+                    <tr><td>Advisory</td><td>Pet Parent Starter</td></tr>
+                    <tr><td>Paperwork</td><td>Pet Documents</td></tr>
                 </table>
             </div>
 
@@ -434,6 +440,70 @@
                     <li>AI creates composite image showing all bundle items</li>
                     <li>Pillar-specific styling (festive for Celebrate, adventure for Travel, etc.)</li>
                     <li>Images stored in Cloudinary: <code>doggy-company/bundles/{pillar}</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Soul Products / AI Mockups Section -->
+        <div class="section">
+            <h2 class="section-title"><span class="emoji">✨</span> Soul Products & AI Mockups</h2>
+            
+            <div class="success-box">
+                <strong>✅ AUTO-GENERATOR RUNNING:</strong> Mockups generating continuously in background.<br>
+                Current Progress: <strong>1204/2569 (46.9%)</strong> - Auto-restarts batches when complete.
+            </div>
+
+            <div class="card">
+                <div class="card-title">Mockup Generation Stats</div>
+                <table style="width: 100%; margin-top: 10px;">
+                    <tr style="background: #e0e0e0;"><th>Metric</th><th>Value</th></tr>
+                    <tr><td>Total Breed Products</td><td>2,569</td></tr>
+                    <tr><td>With Mockups</td><td>1,204 (46.9%)</td></tr>
+                    <tr><td>Pending</td><td>1,365</td></tr>
+                    <tr><td>Breeds</td><td>33</td></tr>
+                    <tr><td>Product Types</td><td>65+</td></tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Admin Soul Products Manager</div>
+                <ul style="margin-left: 20px;">
+                    <li><strong>Stats Display:</strong> Shows real-time progress (fixed from 0/2569)</li>
+                    <li><strong>Auto-Refresh:</strong> Stats update every 30 seconds</li>
+                    <li><strong>Generate Button:</strong> Start batch of 10-50 mockups</li>
+                    <li><strong>Filter Options:</strong> By breed, by product type</li>
+                    <li><strong>Seed Products:</strong> Create base breed_products entries</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Mockup API Endpoints</div>
+                <div class="api-endpoint">
+                    <span class="method method-get">GET</span> /api/mockups/stats<br>
+                    <small>Get overall mockup statistics</small>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method method-get">GET</span> /api/mockups/status<br>
+                    <small>Get current generation status (running, progress, current product)</small>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method method-post">POST</span> /api/mockups/generate-batch<br>
+                    <small>Start generating a batch of mockups (limit: 10-50)</small>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method method-post">POST</span> /api/mockups/sync-to-production<br>
+                    <small>Sync mockups with Cloudinary URLs to production</small>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Auto Generator Script</div>
+                <p>Background Python script that monitors and auto-restarts mockup generation.</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li><strong>File:</strong> <code>/app/backend/auto_mockup_generator.py</code></li>
+                    <li><strong>Log:</strong> <code>/tmp/auto_mockup_generator.log</code></li>
+                    <li><strong>Check Interval:</strong> 60 seconds</li>
+                    <li><strong>Batch Size:</strong> 50 products per batch</li>
                 </ul>
             </div>
         </div>
@@ -784,12 +854,13 @@ curl -s "$API_URL/api/mockups/stats" | python3 -m json.tool
                 <ul>
                     <li><strong>Soul Profile:</strong> 51 questions, 26 canonical scoring fields</li>
                     <li><strong>7 Archetypes:</strong> Gentle Aristocrat, Wild Explorer, Velcro Baby, Snack Negotiator, Quiet Watcher, Social Butterfly, Brave Worrier</li>
-                    <li><strong>Soul Made Products:</strong> 974/2569 breed-specific AI mockups (37.9%)</li>
+                    <li><strong>Soul Made Products:</strong> 1204/2569 breed-specific AI mockups (46.9%) - Auto-generating</li>
                     <li><strong>Mira Memory:</strong> Remembers orders, preferences, celebration dates</li>
                     <li><strong>Breed Matrix CSV:</strong> Detailed recommendations for 33 breeds × 12 pillars</li>
                     <li><strong>Archetype Tone:</strong> Dynamic UI copy based on pet personality</li>
-                    <li><strong>Curated Bundles:</strong> 10 bundles across 6 pillars with Admin UI & AI image generation</li>
+                    <li><strong>Curated Bundles:</strong> 19 bundles across 12 pillars with AI images & Admin CRUD</li>
                     <li><strong>Multi-Factor Filtering:</strong> Products filtered by breed + archetype + life stage</li>
+                    <li><strong>Auto Mockup Generator:</strong> Background script auto-restarts batches</li>
                 </ul>
             </div>
 
@@ -798,7 +869,9 @@ curl -s "$API_URL/api/mockups/stats" | python3 -m json.tool
                 <table style="width: 100%; margin-top: 10px;">
                     <tr style="background: #f8d7da;"><th>Gap</th><th>Priority</th><th>Status</th></tr>
                     <tr style="background: #d4edda;"><td>Multi-factor filtering (life_stage, health, energy)</td><td><strong>P1</strong></td><td>✅ DONE</td></tr>
-                    <tr style="background: #d4edda;"><td>Moment bundles (Birthday Set, Senior Care Set)</td><td>P3</td><td>✅ DONE</td></tr>
+                    <tr style="background: #d4edda;"><td>Moment bundles (Birthday Set, Senior Care Set)</td><td>P3</td><td>✅ DONE - 19 bundles</td></tr>
+                    <tr style="background: #d4edda;"><td>Admin mockup stats display</td><td>P2</td><td>✅ FIXED</td></tr>
+                    <tr style="background: #d4edda;"><td>Auto mockup generation</td><td>P2</td><td>✅ RUNNING</td></tr>
                     <tr><td>Razorpay checkout "body error"</td><td><strong>P1</strong></td><td>❌ Not Started</td></tr>
                     <tr><td>Mobile dashboard scrambled</td><td><strong>P2</strong></td><td>🟡 User Verification</td></tr>
                     <tr><td>"Why this product" contextual copy</td><td>P2</td><td>❌ Not Started</td></tr>
