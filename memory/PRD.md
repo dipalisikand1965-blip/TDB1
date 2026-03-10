@@ -19,12 +19,13 @@
 | Metric | Preview | Production |
 |--------|---------|------------|
 | **Total Products** | 2,569 | 1,022 |
-| **With Mockups** | 865 (33.7%) | 862 (84.3%) |
+| **With Mockups** | 960 (37.4%) | 862 (84.3%) |
 | **Breeds** | 33 | 33 |
 | **Product Types** | 65 | 65 |
 
 ### Mockup Generation
-- **Status:** RUNNING in background
+- **Status:** RUNNING in background (new batch started)
+- **Progress:** 960/2569 (37.4%)
 - **Check:** `curl $API_URL/api/mockups/stats`
 - **Start batch:** `curl -X POST $API_URL/api/mockups/generate-batch -d '{"limit":50}'`
 - **Sync to prod:** `curl -X POST $API_URL/api/mockups/sync-to-production`
@@ -101,7 +102,7 @@ All 13 pillar pages now have:
 
 | Task | Progress | Notes |
 |------|----------|-------|
-| **Mockup Generation** | 33.7% | 865/2569 - Running in background |
+| **Mockup Generation** | 37.4% | 960/2569 - Running in background |
 | **Production Sync** | 84.3% | 862/1022 - Sync as new mockups complete |
 
 ---
