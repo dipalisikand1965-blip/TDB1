@@ -19306,6 +19306,102 @@ async def bulk_import_guided_paths(data: BulkGuidedPathImport, password: str = Q
         "total_paths": await db.guided_paths.count_documents({})
     }
 
+@api_router.post("/admin/cleanup-duplicate-services")
+async def cleanup_duplicate_services(password: str = Query(...)):
+    """Remove duplicate services, keeping the ones with images"""
+    if password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=403, detail="Invalid admin password")
+    
+    results = {
+        "duplicates_found": 0,
+        "duplicates_removed": 0,
+        "services_updated": 0,
+        "errors": []
+    }
+    
+    # Find services by name and pillar
+    pipeline = [
+        {"$group": {
+            "_id": {"name": "$name", "pillar": "$pillar"},
+            "count": {"$sum": 1},
+            "ids": {"$push": "$_id"},
+            "service_ids": {"$push": "$service_id"},
+            "images": {"$push": "$image"}
+        }},
+        {"$match": {"count": {"$gt": 1}}}
+    ]
+    
+    duplicates = await db.services_master.aggregate(pipeline).to_list(1000)
+    results["duplicates_found"] = len(duplicates)
+    
+    for dup in duplicates:
+        try:
+            # Find the best version (one with image)
+            best_idx = None
+            for i, img in enumerate(dup["images"]):
+                if img and ("emergentagent" in str(img) or "cloudinary" in str(img) or (img.startswith("http") and img != "")):
+                    best_idx = i
+                    break
+            
+            if best_idx is None:
+                best_idx = 0  # Keep first if none have images
+            
+            # Delete all except the best one
+            ids_to_delete = [dup["ids"][i] for i in range(len(dup["ids"])) if i != best_idx]
+            
+            if ids_to_delete:
+                result = await db.services_master.delete_many({"_id": {"$in": ids_to_delete}})
+                results["duplicates_removed"] += result.deleted_count
+                
+        except Exception as e:
+            results["errors"].append(str(e))
+    
+    results["remaining_services"] = await db.services_master.count_documents({})
+    logger.info(f"[CLEANUP] Duplicates removed: {results}")
+    return results
+
+@api_router.post("/admin/fix-service-images")
+async def fix_service_images(password: str = Query(...)):
+    """Update services missing images with AI-generated ones"""
+    if password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=403, detail="Invalid admin password")
+    
+    # Map of pillar service images 
+    PILLAR_SERVICE_IMAGES = {
+        "farewell": {
+            "End-of-Life Planning": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_end_of_life_planning.png",
+            "Euthanasia Coordination": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_euthanasia.png",
+            "Cremation & Burial": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_cremation.png",
+            "Memorial & Remembrance": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_memorial.png",
+            "Grief Support Resources": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_grief_support.png",
+            "Dignified Cremation": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_dignified_cremation.png",
+            "Memorial Service": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_memorial_service.png",
+            "Pet Loss Support": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_pet_loss.png",
+        },
+        "adopt": {
+            "Ethical Adoption Discovery": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/adopt_ethical_discovery.png",
+            "Breed Suitability Advisory": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/adopt_breed_advisory.png",
+            "Adoption Readiness Planning": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/adopt_readiness.png",
+            "Home Preparation Guidance": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/adopt_home_prep.png",
+            "First 30 Days Support": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/adopt_first_30.png",
+        }
+    }
+    
+    updated = 0
+    for pillar, services in PILLAR_SERVICE_IMAGES.items():
+        for name, image_url in services.items():
+            result = await db.services_master.update_many(
+                {"name": name, "pillar": pillar, "$or": [{"image": None}, {"image": ""}, {"image": {"$exists": False}}]},
+                {"$set": {"image": image_url}}
+            )
+            updated += result.modified_count
+    
+    return {
+        "success": True,
+        "services_updated": updated,
+        "message": f"Updated {updated} services with missing images"
+    }
+
 @api_router.get("/admin/export-all-data")
 async def export_all_data(password: str = Query(...)):
     """Export all critical data as JSON for backup or transfer"""
