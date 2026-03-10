@@ -347,10 +347,10 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
                 </div>
                 )}
                 
-                {/* CTA - Simplified on mobile */}
+                {/* CTA - Simplified on mobile, Concierge CTA for emergency */}
                 <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t flex items-center justify-between">
                   <span className="text-[10px] sm:text-xs text-gray-400">
-                    {service.is_bookable ? 'Tap to book' : 'Learn more'}
+                    {pillar === 'emergency' ? 'Talk to Concierge' : service.is_bookable ? 'Tap to book' : 'Learn more'}
                   </span>
                   <ChevronRight className="w-4 h-4 text-rose-500 group-hover:translate-x-1 transition-transform" />
                 </div>
