@@ -479,3 +479,147 @@ async def import_bundles(data: dict):
         logger.error(f"[BUNDLE IMPORT] Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@router.post("/{bundle_id}/generate-image")
+async def generate_bundle_image(bundle_id: str):
+    """
+    Generate AI composite image for a bundle showing all items together.
+    Uses the same AI mockup system as products.
+    """
+    import os
+    import httpx
+    import cloudinary
+    import cloudinary.uploader
+    
+    db = get_db()
+    
+    try:
+        # Get the bundle
+        bundle = await db.bundles.find_one({"id": bundle_id}, {"_id": 0})
+        if not bundle:
+            raise HTTPException(status_code=404, detail="Bundle not found")
+        
+        # Build AI prompt based on bundle items and pillar
+        items_text = ", ".join(bundle.get("items", []))
+        pillar = bundle.get("pillar", "general")
+        bundle_name = bundle.get("name", "Bundle")
+        
+        # Pillar-specific styling
+        pillar_styles = {
+            "celebrate": "festive party setup with balloons and decorations",
+            "travel": "adventure travel kit layout on map background",
+            "dine": "elegant dining table arrangement",
+            "care": "spa and grooming setup with soft towels",
+            "stay": "cozy home interior setting",
+            "fit": "outdoor adventure gear layout",
+            "farewell": "peaceful memorial setting with soft lighting",
+            "enjoy": "playful activity setup",
+            "learn": "educational training setup"
+        }
+        
+        style = pillar_styles.get(pillar, "professional product photography")
+        
+        prompt = f"""Professional product photography of a pet product bundle: {bundle_name}.
+Items included: {items_text}.
+Style: {style}, clean white/neutral background, items arranged in an aesthetically pleasing composition.
+High-quality e-commerce product image, soft lighting, no text or labels."""
+        
+        # Generate image using OpenAI (same as mockup generation)
+        from emergentintegrations.llm.openai import OpenAIConfig, OpenAIImageGenerator
+        
+        EMERGENT_API_KEY = os.environ.get("EMERGENT_API_KEY")
+        if not EMERGENT_API_KEY:
+            return {"success": False, "message": "AI key not configured"}
+        
+        config = OpenAIConfig(api_key=EMERGENT_API_KEY)
+        generator = OpenAIImageGenerator(config)
+        
+        logger.info(f"[BUNDLE IMAGE] Generating image for: {bundle_name}")
+        
+        result = await generator.generate_image(
+            prompt=prompt,
+            size="1024x1024",
+            quality="standard"
+        )
+        
+        if not result or not result.url:
+            return {"success": False, "message": "Image generation failed"}
+        
+        # Upload to Cloudinary
+        cloudinary.config(
+            cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+            api_key=os.environ.get("CLOUDINARY_API_KEY"),
+            api_secret=os.environ.get("CLOUDINARY_API_SECRET")
+        )
+        
+        upload_result = cloudinary.uploader.upload(
+            result.url,
+            folder=f"doggy-company/bundles/{pillar}",
+            public_id=bundle_id,
+            overwrite=True
+        )
+        
+        cloudinary_url = upload_result.get("secure_url")
+        
+        # Update bundle with image URL
+        await db.bundles.update_one(
+            {"id": bundle_id},
+            {"$set": {
+                "image_url": cloudinary_url,
+                "image_generated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        logger.info(f"[BUNDLE IMAGE] Generated and uploaded: {cloudinary_url}")
+        
+        return {
+            "success": True,
+            "bundle_id": bundle_id,
+            "image_url": cloudinary_url,
+            "message": f"Image generated for {bundle_name}"
+        }
+        
+    except Exception as e:
+        logger.error(f"[BUNDLE IMAGE] Error: {e}")
+        return {"success": False, "message": str(e)}
+
+
+@router.post("/generate-all-images")
+async def generate_all_bundle_images():
+    """
+    Generate AI images for all bundles that don't have images yet.
+    """
+    db = get_db()
+    
+    try:
+        # Get bundles without images
+        cursor = db.bundles.find(
+            {"$or": [{"image_url": {"$exists": False}}, {"image_url": None}, {"image_url": ""}]},
+            {"_id": 0, "id": 1, "name": 1}
+        )
+        bundles = await cursor.to_list(length=100)
+        
+        if not bundles:
+            return {"message": "All bundles already have images", "generated": 0}
+        
+        results = {"generated": 0, "failed": 0, "bundles": []}
+        
+        for bundle in bundles:
+            try:
+                # Call the individual generate endpoint
+                result = await generate_bundle_image(bundle["id"])
+                if result.get("success"):
+                    results["generated"] += 1
+                    results["bundles"].append(bundle["name"])
+                else:
+                    results["failed"] += 1
+            except Exception as e:
+                logger.error(f"Failed to generate image for {bundle['id']}: {e}")
+                results["failed"] += 1
+        
+        return results
+        
+    except Exception as e:
+        logger.error(f"[BUNDLE IMAGES] Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
