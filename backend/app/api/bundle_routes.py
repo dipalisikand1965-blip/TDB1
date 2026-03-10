@@ -525,25 +525,29 @@ Style: {style}, clean white/neutral background, items arranged in an aesthetical
 High-quality e-commerce product image, soft lighting, no text or labels."""
         
         # Generate image using OpenAI (same as mockup generation)
-        from emergentintegrations.llm.openai import OpenAIConfig, OpenAIImageGenerator
+        from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
         
-        EMERGENT_API_KEY = os.environ.get("EMERGENT_API_KEY")
+        EMERGENT_API_KEY = os.environ.get("EMERGENT_LLM_KEY") or os.environ.get("EMERGENT_API_KEY")
         if not EMERGENT_API_KEY:
             return {"success": False, "message": "AI key not configured"}
         
-        config = OpenAIConfig(api_key=EMERGENT_API_KEY)
-        generator = OpenAIImageGenerator(config)
+        image_gen = OpenAIImageGeneration(api_key=EMERGENT_API_KEY)
         
         logger.info(f"[BUNDLE IMAGE] Generating image for: {bundle_name}")
         
-        result = await generator.generate_image(
+        images = await image_gen.generate_images(
             prompt=prompt,
-            size="1024x1024",
-            quality="standard"
+            model="gpt-image-1",
+            number_of_images=1
         )
         
-        if not result or not result.url:
+        if not images or len(images) == 0:
             return {"success": False, "message": "Image generation failed"}
+        
+        # Convert to base64 for Cloudinary upload
+        import base64
+        image_base64 = base64.b64encode(images[0]).decode('utf-8')
+        base64_url = f"data:image/png;base64,{image_base64}"
         
         # Upload to Cloudinary
         cloudinary.config(
@@ -553,7 +557,7 @@ High-quality e-commerce product image, soft lighting, no text or labels."""
         )
         
         upload_result = cloudinary.uploader.upload(
-            result.url,
+            base64_url,
             folder=f"doggy-company/bundles/{pillar}",
             public_id=bundle_id,
             overwrite=True
