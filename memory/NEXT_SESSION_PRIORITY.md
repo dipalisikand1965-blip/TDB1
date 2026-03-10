@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://personalized-paws.preview.emergentagent.com
+**Preview URL:** https://soul-made-platform.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
