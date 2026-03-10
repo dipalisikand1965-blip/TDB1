@@ -246,6 +246,63 @@ const GUIDED_PATHS = [
       { title: 'Destructive chewing', items: ['Appropriate chews', 'Redirect', 'Exercise'] },
       { title: 'Guest behaviour', items: ['Controlled introductions', 'Training', 'Safe space'] }
     ]
+  },
+  // Additional Guided Paths
+  {
+    id: 'first_time_owner',
+    title: 'First-time Owner Path',
+    description: 'Everything new dog parents need',
+    icon: Heart,
+    color: 'from-emerald-500 to-teal-600',
+    steps: [
+      { title: 'Before bringing home', items: ['Safe space', 'Food & bowls', 'Bed', 'Crate'] },
+      { title: 'First week essentials', items: ['Routine', 'Patience', 'Bonding time', 'Vet visit'] },
+      { title: 'Basic training', items: ['Name recognition', 'Sit', 'Stay', 'House rules'] },
+      { title: 'Socialization', items: ['New sounds', 'New people', 'Other dogs', 'Car rides'] },
+      { title: 'Health basics', items: ['Vaccination schedule', 'Deworming', 'Flea/tick prevention'] }
+    ]
+  },
+  {
+    id: 'multi_dog',
+    title: 'Multi-dog Household',
+    description: 'Managing multiple dogs',
+    icon: Dog,
+    color: 'from-indigo-500 to-purple-600',
+    steps: [
+      { title: 'Introduction protocol', items: ['Neutral territory', 'Leashed meeting', 'Short sessions'] },
+      { title: 'Resource management', items: ['Separate feeding', 'Multiple water bowls', 'Individual toys'] },
+      { title: 'Space planning', items: ['Rest zones', 'Safe spots', 'Crate areas'] },
+      { title: 'Training consistency', items: ['Same commands', 'Individual attention', 'Group walks'] },
+      { title: 'Conflict prevention', items: ['Reading body language', 'Intervention signs', 'Calm environment'] }
+    ]
+  },
+  {
+    id: 'brachycephalic',
+    title: 'Flat-faced Dog Care',
+    description: 'Special care for Pugs, Bulldogs, etc.',
+    icon: Heart,
+    color: 'from-pink-500 to-rose-600',
+    steps: [
+      { title: 'Breathing awareness', items: ['Temperature limits', 'Avoid heat', 'Rest during exercise'] },
+      { title: 'Weight management', items: ['Portion control', 'Light exercise', 'Regular weigh-ins'] },
+      { title: 'Wrinkle care', items: ['Daily cleaning', 'Dry thoroughly', 'Anti-fungal if needed'] },
+      { title: 'Eye protection', items: ['Avoid sharp objects', 'Regular cleaning', 'Watch for ulcers'] },
+      { title: 'Sleep quality', items: ['Elevated head', 'Cool room', 'Monitor snoring'] }
+    ]
+  },
+  {
+    id: 'allergy_management',
+    title: 'Allergy Management Path',
+    description: 'Control and manage pet allergies',
+    icon: ThermometerSun,
+    color: 'from-amber-500 to-yellow-600',
+    steps: [
+      { title: 'Identify triggers', items: ['Food diary', 'Environment check', 'Vet allergy test'] },
+      { title: 'Diet management', items: ['Elimination diet', 'Novel proteins', 'Limited ingredients'] },
+      { title: 'Skin care routine', items: ['Medicated baths', 'Omega supplements', 'Topical treatments'] },
+      { title: 'Environment control', items: ['Air purifiers', 'Hypoallergenic bedding', 'Regular cleaning'] },
+      { title: 'Long-term management', items: ['Immunotherapy', 'Seasonal adjustments', 'Regular vet checks'] }
+    ]
   }
 ];
 
