@@ -1,13 +1,13 @@
 /**
  * NearbyEmergencyHelp.jsx
  * Google Places API section for nearby emergency services
- * Real-time clinic finder with location detection and manual override
+ * Uses Google Places Autocomplete for ANY location worldwide
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   MapPin, Phone, Clock, Star, Navigation, 
-  Filter, Loader2, AlertCircle, ExternalLink, Edit2, Search
+  Loader2, AlertCircle, Edit2, Search, X, Target
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -15,36 +15,22 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// City coordinates for fallback
-const CITY_COORDS = {
-  'Mumbai': { lat: 19.076, lng: 72.8777 },
-  'Delhi': { lat: 28.6139, lng: 77.209 },
-  'Bangalore': { lat: 12.9716, lng: 77.5946 },
-  'Chennai': { lat: 13.0827, lng: 80.2707 },
-  'Hyderabad': { lat: 17.385, lng: 78.4867 },
-  'Pune': { lat: 18.5204, lng: 73.8567 },
-  'Kolkata': { lat: 22.5726, lng: 88.3639 },
-  'Ahmedabad': { lat: 23.0225, lng: 72.5714 },
-  'Jaipur': { lat: 26.9124, lng: 75.7873 },
-  'Coimbatore': { lat: 11.0168, lng: 76.9558 },
-  'Nilgiris': { lat: 11.4102, lng: 76.6950 },
-  'Ooty': { lat: 11.4102, lng: 76.6950 }
-};
-
 const NearbyEmergencyHelp = ({ userLocation }) => {
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState('all'); // all, open_now, 24h
-  const [radius, setRadius] = useState(10000); // 10km for rural areas
+  const [filter, setFilter] = useState('all');
   const [locationPermission, setLocationPermission] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(userLocation);
   const [cityName, setCityName] = useState('');
   const [showLocationModal, setShowLocationModal] = useState(false);
-  const [searchCity, setSearchCity] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [detectingLocation, setDetectingLocation] = useState(true);
+  const searchTimeoutRef = useRef(null);
 
-  // Request location permission and detect city
+  // Request location permission and detect city on mount
   useEffect(() => {
     const detectLocation = async () => {
       setDetectingLocation(true);
@@ -54,12 +40,16 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
       const savedCoords = localStorage.getItem('emergencyCoords');
       
       if (savedCity && savedCoords) {
-        const coords = JSON.parse(savedCoords);
-        setCityName(savedCity);
-        setCurrentLocation(coords);
-        setLocationPermission('granted');
-        setDetectingLocation(false);
-        return;
+        try {
+          const coords = JSON.parse(savedCoords);
+          setCityName(savedCity);
+          setCurrentLocation(coords);
+          setLocationPermission('granted');
+          setDetectingLocation(false);
+          return;
+        } catch (e) {
+          // Invalid stored data, continue with detection
+        }
       }
       
       if (navigator.geolocation) {
@@ -83,7 +73,6 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
                             data.address?.district || data.address?.county || 
                             data.address?.state_district || 'Your Location';
                 setCityName(city);
-                // Save to localStorage
                 localStorage.setItem('emergencyCity', city);
                 localStorage.setItem('emergencyCoords', JSON.stringify(coords));
               }
@@ -96,16 +85,17 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
           (err) => {
             console.warn('Location error:', err);
             setLocationPermission('denied');
-            setCityName('Mumbai'); // Default
-            setCurrentLocation({ latitude: 19.076, longitude: 72.8777 });
+            setCityName('');
             setDetectingLocation(false);
+            // Show location modal for manual entry
+            setShowLocationModal(true);
           },
           { enableHighAccuracy: true, timeout: 10000 }
         );
       } else {
-        setCityName('Mumbai');
-        setCurrentLocation({ latitude: 19.076, longitude: 72.8777 });
+        setLocationPermission('denied');
         setDetectingLocation(false);
+        setShowLocationModal(true);
       }
     };
     
@@ -117,7 +107,46 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
     if (currentLocation && !detectingLocation) {
       fetchNearbyPlaces();
     }
-  }, [currentLocation, radius, detectingLocation]);
+  }, [currentLocation, detectingLocation]);
+
+  // Search for locations using Nominatim (free, no API key needed)
+  const searchLocations = async (query) => {
+    if (!query || query.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+    
+    setSearchLoading(true);
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=8&countrycodes=in`
+      );
+      if (response.ok) {
+        const results = await response.json();
+        setSearchResults(results.map(r => ({
+          name: r.display_name.split(',').slice(0, 3).join(', '),
+          fullName: r.display_name,
+          lat: parseFloat(r.lat),
+          lng: parseFloat(r.lon)
+        })));
+      }
+    } catch (err) {
+      console.error('Search error:', err);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  // Debounced search
+  const handleSearchChange = (value) => {
+    setSearchQuery(value);
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    searchTimeoutRef.current = setTimeout(() => {
+      searchLocations(value);
+    }, 300);
+  };
 
   const fetchNearbyPlaces = async () => {
     if (!currentLocation) return;
@@ -126,9 +155,9 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
     setError(null);
     
     try {
-      // First try Google Places with coordinates
+      // Try Google Places with coordinates
       const response = await fetch(
-        `${API_URL}/api/mira/nearby-places?lat=${currentLocation.latitude}&lng=${currentLocation.longitude}&type=veterinary_care&radius=${radius}&limit=10`
+        `${API_URL}/api/mira/nearby-places?lat=${currentLocation.latitude}&lng=${currentLocation.longitude}&type=veterinary_care&radius=15000&limit=10`
       );
       
       if (response.ok) {
@@ -148,26 +177,24 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
       }
       
       // Fallback to city-based search
-      const cityResponse = await fetch(
-        `${API_URL}/api/mira/local-places/vets?city=${cityName || 'Mumbai'}&limit=10`
-      );
-      
-      if (cityResponse.ok) {
-        const cityData = await cityResponse.json();
-        const vets = cityData.vets || cityData.places || cityData || [];
-        const sortedVets = vets.sort((a, b) => {
-          if (a.is_open_now && !b.is_open_now) return -1;
-          if (!a.is_open_now && b.is_open_now) return 1;
-          return (b.rating || 0) - (a.rating || 0);
-        });
-        setPlaces(sortedVets);
-      } else {
-        // Final fallback
-        const fallbackResponse = await fetch(`${API_URL}/api/emergency/vets?limit=8`);
-        if (fallbackResponse.ok) {
-          const fallbackData = await fallbackResponse.json();
-          setPlaces(fallbackData.vets || fallbackData || []);
+      if (cityName) {
+        const cityResponse = await fetch(
+          `${API_URL}/api/mira/local-places/vets?city=${encodeURIComponent(cityName)}&limit=10`
+        );
+        
+        if (cityResponse.ok) {
+          const cityData = await cityResponse.json();
+          const vets = cityData.vets || cityData.places || cityData || [];
+          setPlaces(vets);
+          return;
         }
+      }
+      
+      // Final fallback
+      const fallbackResponse = await fetch(`${API_URL}/api/emergency/vets?limit=8`);
+      if (fallbackResponse.ok) {
+        const fallbackData = await fallbackResponse.json();
+        setPlaces(fallbackData.vets || fallbackData || []);
       }
     } catch (err) {
       console.error('Error fetching places:', err);
@@ -177,16 +204,16 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
     }
   };
 
-  // Handle city change
-  const handleCitySelect = (city) => {
-    const coords = CITY_COORDS[city];
-    if (coords) {
-      setCityName(city);
-      setCurrentLocation({ latitude: coords.lat, longitude: coords.lng });
-      localStorage.setItem('emergencyCity', city);
-      localStorage.setItem('emergencyCoords', JSON.stringify({ latitude: coords.lat, longitude: coords.lng }));
-    }
+  // Handle location selection from search
+  const selectLocation = (result) => {
+    const coords = { latitude: result.lat, longitude: result.lng };
+    setCityName(result.name);
+    setCurrentLocation(coords);
+    localStorage.setItem('emergencyCity', result.name);
+    localStorage.setItem('emergencyCoords', JSON.stringify(coords));
     setShowLocationModal(false);
+    setSearchQuery('');
+    setSearchResults([]);
   };
 
   // Re-detect location
@@ -194,6 +221,7 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
     localStorage.removeItem('emergencyCity');
     localStorage.removeItem('emergencyCoords');
     setDetectingLocation(true);
+    setCityName('');
     
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -203,6 +231,7 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
             longitude: position.coords.longitude
           };
           setCurrentLocation(coords);
+          setLocationPermission('granted');
           
           try {
             const response = await fetch(
@@ -220,10 +249,11 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
             setCityName('Your Location');
           }
           setDetectingLocation(false);
+          setShowLocationModal(false);
         },
         () => {
-          setShowLocationModal(true);
           setDetectingLocation(false);
+          setLocationPermission('denied');
         }
       );
     }
@@ -260,7 +290,7 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
                   <Loader2 className="w-3 h-3 animate-spin" />
                   Detecting location...
                 </span>
-              ) : (
+              ) : cityName ? (
                 <>
                   <span className="text-sm text-gray-600">
                     Showing results for <strong className="text-red-600">{cityName}</strong>
@@ -273,6 +303,14 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
                     Change
                   </button>
                 </>
+              ) : (
+                <button 
+                  onClick={() => setShowLocationModal(true)}
+                  className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                >
+                  <MapPin className="w-3 h-3" />
+                  Set your location
+                </button>
               )}
             </div>
           </div>
@@ -296,7 +334,7 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
         </div>
 
         {/* Location Permission Warning */}
-        {locationPermission === 'denied' && (
+        {locationPermission === 'denied' && !cityName && (
           <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-amber-600" />
             <span className="text-sm text-amber-700">
@@ -305,7 +343,7 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
                 onClick={() => setShowLocationModal(true)} 
                 className="ml-1 underline font-medium"
               >
-                Set your location manually
+                Search for your location
               </button>
             </span>
           </div>
@@ -391,7 +429,7 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
         )}
 
         {/* No Results */}
-        {!loading && !error && filteredPlaces.length === 0 && (
+        {!loading && !error && filteredPlaces.length === 0 && currentLocation && (
           <div className="text-center py-8">
             <MapPin className="w-8 h-8 text-gray-400 mx-auto mb-2" />
             <p className="text-gray-600">No clinics found with current filters</p>
@@ -419,24 +457,28 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
         </div>
       </div>
 
-      {/* Location Change Modal */}
+      {/* Location Search Modal */}
       <Dialog open={showLocationModal} onOpenChange={setShowLocationModal}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <MapPin className="w-5 h-5 text-red-600" />
-              Set Your Location
+              Find Your Location
             </DialogTitle>
           </DialogHeader>
           
           <div className="mt-4 space-y-4">
-            {/* Re-detect button */}
+            {/* Auto-detect button */}
             <Button 
               onClick={redetectLocation}
               className="w-full bg-blue-600 hover:bg-blue-700"
+              disabled={detectingLocation}
             >
-              <Navigation className="w-4 h-4 mr-2" />
-              Detect My Location
+              {detectingLocation ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Detecting...</>
+              ) : (
+                <><Target className="w-4 h-4 mr-2" /> Use My Current Location</>
+              )}
             </Button>
             
             <div className="relative">
@@ -444,39 +486,79 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-gray-500">Or select city</span>
+                <span className="bg-white px-2 text-gray-500">Or search any location</span>
               </div>
             </div>
             
-            {/* City Search */}
+            {/* Location Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
-                placeholder="Search city..."
-                value={searchCity}
-                onChange={(e) => setSearchCity(e.target.value)}
-                className="pl-9"
+                placeholder="Search any city, town, or area..."
+                value={searchQuery}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="pl-9 pr-9"
+                autoFocus
               />
+              {searchQuery && (
+                <button 
+                  onClick={() => { setSearchQuery(''); setSearchResults([]); }}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                >
+                  <X className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                </button>
+              )}
             </div>
             
-            {/* City Grid */}
-            <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
-              {Object.keys(CITY_COORDS)
-                .filter(city => city.toLowerCase().includes(searchCity.toLowerCase()))
-                .map(city => (
+            {/* Search Loading */}
+            {searchLoading && (
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+              </div>
+            )}
+            
+            {/* Search Results */}
+            {searchResults.length > 0 && (
+              <div className="max-h-60 overflow-y-auto space-y-1">
+                {searchResults.map((result, idx) => (
                   <button
-                    key={city}
-                    onClick={() => handleCitySelect(city)}
-                    className={`p-3 rounded-lg border text-left transition-colors ${
-                      cityName === city 
-                        ? 'border-red-500 bg-red-50 text-red-700' 
-                        : 'border-gray-200 hover:border-red-300 hover:bg-red-50'
-                    }`}
+                    key={idx}
+                    onClick={() => selectLocation(result)}
+                    className="w-full p-3 text-left rounded-lg border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-colors"
                   >
-                    <span className="font-medium">{city}</span>
+                    <div className="flex items-start gap-2">
+                      <MapPin className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm text-gray-800">{result.name}</span>
+                    </div>
                   </button>
                 ))}
-            </div>
+              </div>
+            )}
+            
+            {/* No Results */}
+            {searchQuery && !searchLoading && searchResults.length === 0 && (
+              <p className="text-sm text-gray-500 text-center py-4">
+                No locations found. Try a different search term.
+              </p>
+            )}
+            
+            {/* Popular Locations */}
+            {!searchQuery && (
+              <div>
+                <p className="text-xs text-gray-500 mb-2">Popular cities</p>
+                <div className="flex flex-wrap gap-2">
+                  {['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 'Pune', 'Kolkata'].map(city => (
+                    <button
+                      key={city}
+                      onClick={() => handleSearchChange(city)}
+                      className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 rounded-full"
+                    >
+                      {city}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>

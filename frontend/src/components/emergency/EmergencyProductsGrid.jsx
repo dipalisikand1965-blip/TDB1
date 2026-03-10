@@ -36,6 +36,7 @@ const EmergencyProductsGrid = ({ maxProducts = 12, showPersonalized = true }) =>
   const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   useEffect(() => {
@@ -43,8 +44,17 @@ const EmergencyProductsGrid = ({ maxProducts = 12, showPersonalized = true }) =>
   }, []);
 
   const fetchProducts = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const response = await fetch(`${API_URL}/api/emergency/products?limit=50`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      
+      const response = await fetch(`${API_URL}/api/emergency/products?limit=50`, {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      
       if (response.ok) {
         const data = await response.json();
         // Filter out services (price = 0 or no price)
@@ -52,9 +62,16 @@ const EmergencyProductsGrid = ({ maxProducts = 12, showPersonalized = true }) =>
           p.price && p.price > 0 && p.category !== 'service'
         );
         setProducts(realProducts);
+      } else {
+        setError('Failed to load products');
       }
     } catch (err) {
-      console.error('Error fetching products:', err);
+      if (err.name === 'AbortError') {
+        setError('Request timed out. Please try again.');
+      } else {
+        console.error('Error fetching products:', err);
+        setError('Failed to load products');
+      }
     } finally {
       setLoading(false);
     }
@@ -96,6 +113,17 @@ const EmergencyProductsGrid = ({ maxProducts = 12, showPersonalized = true }) =>
       <div className="py-8 text-center">
         <Loader2 className="w-6 h-6 animate-spin mx-auto text-red-500" />
         <p className="text-sm text-gray-500 mt-2">Loading emergency supplies...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="py-8 text-center">
+        <p className="text-sm text-red-500 mb-2">{error}</p>
+        <Button size="sm" variant="outline" onClick={fetchProducts}>
+          Try Again
+        </Button>
       </div>
     );
   }
