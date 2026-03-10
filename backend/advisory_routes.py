@@ -1122,3 +1122,211 @@ async def seed_advisory_data():
         "bundles_seeded": len(default_bundles)
     }
 
+
+
+
+# =============================================================================
+# ASK ADVISORY - AI-Powered Decision Support (Like Learn's Ask Mira)
+# =============================================================================
+
+from pydantic import BaseModel
+from fastapi import Header
+import os
+
+class AskAdvisoryRequest(BaseModel):
+    question: str
+    pet_id: Optional[str] = None
+    pet_name: Optional[str] = None
+    pet_breed: Optional[str] = None
+    pet_age: Optional[int] = None
+    context: Optional[str] = "advisory"
+    intent: Optional[str] = None
+
+
+@router.post("/ask-advisory")
+async def ask_advisory_ai(
+    request: AskAdvisoryRequest,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Ask Advisory - AI-powered decision support for pet parents.
+    
+    Uses AI to provide helpful, personalized guidance based on:
+    - User's question
+    - Selected pet's profile (if provided)
+    - Advisory context (food, grooming, training, travel, etc.)
+    
+    Returns AI response + recommended products/services.
+    """
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database unavailable")
+    
+    # Get user info if authenticated
+    user_id = None
+    try:
+        if authorization and authorization.startswith("Bearer "):
+            from server import decode_token
+            user_data = decode_token(authorization.replace("Bearer ", ""))
+            if user_data:
+                user_id = user_data.get("user_id")
+    except Exception:
+        pass
+    
+    # Build pet context
+    pet_context = ""
+    if request.pet_id and user_id:
+        try:
+            pet = await db.pets.find_one({"id": request.pet_id})
+            if pet:
+                soul_answers = pet.get("doggy_soul_answers", {})
+                pet_context = f"""
+Pet Profile:
+- Name: {pet.get('name', request.pet_name or 'Your Pet')}
+- Breed: {pet.get('breed', request.pet_breed or 'Unknown')}
+- Age: {pet.get('age_years', request.pet_age) or 'Unknown'} years
+- Life Stage: {soul_answers.get('life_stage', 'adult')}
+- Weight: {pet.get('weight') or soul_answers.get('weight', 'Unknown')}
+- Food Allergies: {soul_answers.get('food_allergies', 'None reported')}
+- Health Conditions: {soul_answers.get('health_conditions', 'None reported')}
+- Temperament: {soul_answers.get('temperament', 'N/A')}
+- Activity Level: {soul_answers.get('activity_level', 'N/A')}
+"""
+        except Exception as e:
+            logger.warning(f"[ASK-ADVISORY] Failed to fetch pet: {e}")
+    elif request.pet_name or request.pet_breed:
+        pet_context = f"""
+Pet Profile:
+- Name: {request.pet_name or 'Your Pet'}
+- Breed: {request.pet_breed or 'Unknown'}
+- Age: {request.pet_age or 'Unknown'} years
+"""
+    
+    # Search for related products
+    related_products = []
+    related_services = []
+    try:
+        # Detect intent from question
+        question_lower = request.question.lower()
+        product_tags = []
+        
+        if any(w in question_lower for w in ['food', 'feed', 'diet', 'nutrition', 'eat']):
+            product_tags.extend(['food', 'nutrition', 'bowl', 'feeder'])
+        if any(w in question_lower for w in ['groom', 'brush', 'bath', 'coat', 'shed']):
+            product_tags.extend(['grooming', 'brush', 'shampoo', 'coat'])
+        if any(w in question_lower for w in ['bed', 'sleep', 'comfort', 'crate', 'home']):
+            product_tags.extend(['bed', 'comfort', 'crate', 'home'])
+        if any(w in question_lower for w in ['travel', 'car', 'trip', 'fly', 'carrier']):
+            product_tags.extend(['travel', 'carrier', 'harness'])
+        if any(w in question_lower for w in ['train', 'behavior', 'behave', 'bark', 'pull']):
+            product_tags.extend(['training', 'leash', 'treat'])
+        if any(w in question_lower for w in ['senior', 'old', 'joint', 'mobility', 'arthritis']):
+            product_tags.extend(['senior', 'orthopedic', 'joint', 'mobility'])
+        if any(w in question_lower for w in ['puppy', 'new', 'first', 'starter']):
+            product_tags.extend(['puppy', 'starter', 'basic'])
+        
+        if product_tags:
+            # Find related products
+            product_filter = {
+                "$or": [
+                    {"tags": {"$in": product_tags}},
+                    {"category": {"$in": product_tags}},
+                    {"name": {"$regex": "|".join(product_tags[:3]), "$options": "i"}}
+                ],
+                "price": {"$gt": 0}
+            }
+            products = await db.products_master.find(product_filter, {"_id": 0, "id": 1, "name": 1, "price": 1, "image": 1}).limit(4).to_list(4)
+            related_products = [{"id": p.get("id"), "name": p.get("name"), "price": p.get("price"), "image": p.get("image")} for p in products]
+        
+    except Exception as e:
+        logger.warning(f"[ASK-ADVISORY] Failed to search products: {e}")
+    
+    # Generate AI response
+    try:
+        from emergentintegrations.llm.openai import LlmChat, UserMessage
+        
+        product_context = ""
+        if related_products:
+            product_items = [f"- {p['name']} (₹{p['price']})" for p in related_products[:3]]
+            product_context = f"""
+
+Related products in our catalog that might help:
+{chr(10).join(product_items)}
+(You can mention these naturally if relevant to the question)
+"""
+        
+        system_prompt = f"""You are Mira, the friendly pet guidance expert at The Doggy Company.
+
+Your role for ADVISORY:
+- Help pet parents DECIDE what's right for their dog
+- Provide practical, actionable guidance
+- Keep answers concise (150-250 words) - focus on what they should DO
+- Use emojis naturally 🐾 🐕 💜
+- Reference the user's pet by name if provided
+- End with a clear next step or recommendation
+
+{pet_context}
+{product_context}
+
+ADVISORY FOCUS AREAS:
+- Food & Nutrition: diet, feeding, allergies, weight
+- Grooming & Coat: brushing, bathing, coat type care
+- Behaviour & Training: common issues, positive methods
+- Travel: prep, gear, anxiety management
+- Senior Care: comfort, mobility, diet adjustments
+- Puppy/Adoption: first essentials, settling in
+- Home Setup: beds, crates, safe spaces
+
+SAFETY RULES:
+- Never diagnose medical conditions
+- Always recommend vet consultation for health concerns
+- No certainty on health-adjacent topics
+- Be helpful and warm, not alarming
+
+Format your answer with:
+1. Direct answer to their question
+2. Practical tip or recommendation
+3. (Optional) Product suggestion if relevant
+4. Follow-up question or "Talk to our Concierge for personalized help"
+"""
+
+        chat = LlmChat(
+            api_key=os.environ.get("EMERGENT_LLM_KEY"),
+            session_id=f"advisory-{user_id or 'anon'}-{uuid.uuid4().hex[:8]}",
+            system_message=system_prompt
+        ).with_model("openai", "gpt-4o-mini")
+        
+        response = await chat.send_message(UserMessage(text=request.question))
+        
+        if response:
+            answer = response.content if hasattr(response, 'content') else str(response)
+            
+            # Log for analytics
+            logger.info(f"[ASK-ADVISORY] Question: {request.question[:50]}... | Pet: {request.pet_name or 'N/A'}")
+            
+            return {
+                "success": True,
+                "answer": answer,
+                "related_products": related_products,
+                "related_services": related_services,
+                "pet_name": request.pet_name,
+                "context": request.context
+            }
+        else:
+            return {
+                "success": True,
+                "answer": f"I'd love to help you decide! For personalized guidance about {request.question[:50]}..., I recommend chatting with our Concierge® team. They can give you tailored advice based on your specific situation. 🐾",
+                "related_products": related_products,
+                "related_services": [],
+                "fallback": True
+            }
+            
+    except Exception as e:
+        logger.error(f"[ASK-ADVISORY] AI error: {e}")
+        return {
+            "success": True,
+            "answer": f"Great question! For the best personalized advice about {request.pet_name or 'your pet'}, I recommend connecting with our Concierge® team. They can help you make the right decision based on your pet's specific needs. 💜",
+            "related_products": related_products,
+            "related_services": [],
+            "fallback": True
+        }
