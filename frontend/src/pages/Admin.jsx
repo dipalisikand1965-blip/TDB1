@@ -2385,32 +2385,21 @@ const Admin = () => {
                     btn.innerHTML = '☁️ Syncing to Production...';
                     btn.disabled = true;
                     
-                    // Step 1: Get export data from preview
-                    const exportRes = await fetch(`${API_URL}/api/mockups/export-mockup-urls`);
-                    const exportData = await exportRes.json();
-                    
-                    if (exportData.total_exported === 0) {
-                      alert('No Cloudinary mockups to sync');
-                      return;
-                    }
-                    
-                    // Step 2: Push to production
-                    const prodUrl = 'https://thedoggycompany.com';
-                    const importRes = await fetch(`${prodUrl}/api/mockups/import-mockup-urls`, {
+                    // Use server-side sync to bypass CORS
+                    const syncRes = await fetch(`${API_URL}/api/mockups/sync-to-production`, {
                       method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ products: exportData.products })
+                      headers: { 'Content-Type': 'application/json' }
                     });
+                    const result = await syncRes.json();
                     
-                    if (importRes.ok) {
-                      const result = await importRes.json();
-                      alert(`✅ Synced ${result.imported} Soul Made mockups to production!`);
+                    if (result.success) {
+                      alert(`✅ ${result.message}\n\nImported: ${result.imported}\nUpdated: ${result.updated}\nTotal: ${result.total}`);
                     } else {
-                      throw new Error(`Production sync failed: ${importRes.status}`);
+                      alert(`❌ ${result.message}`);
                     }
                   } catch (e) {
                     console.error('Production sync error:', e);
-                    alert(`❌ Sync failed: ${e.message}. Make sure production has the import endpoint.`);
+                    alert(`❌ Sync failed: ${e.message}`);
                   } finally {
                     btn.innerHTML = originalText;
                     btn.disabled = false;
@@ -2985,30 +2974,21 @@ const Admin = () => {
                     btn.innerHTML = '☁️ Syncing...';
                     btn.disabled = true;
                     
-                    const exportRes = await fetch(`${API_URL}/api/mockups/export-mockup-urls`);
-                    const exportData = await exportRes.json();
-                    
-                    if (exportData.total_exported === 0) {
-                      alert('No Cloudinary mockups to sync');
-                      return;
-                    }
-                    
-                    const prodUrl = 'https://thedoggycompany.com';
-                    const importRes = await fetch(`${prodUrl}/api/mockups/import-mockup-urls`, {
+                    // Use server-side sync to bypass CORS
+                    const syncRes = await fetch(`${API_URL}/api/mockups/sync-to-production`, {
                       method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ products: exportData.products })
+                      headers: { 'Content-Type': 'application/json' }
                     });
+                    const result = await syncRes.json();
                     
-                    if (importRes.ok) {
-                      const result = await importRes.json();
-                      alert(`✅ Synced ${result.imported} Soul Made mockups to production!`);
+                    if (result.success) {
+                      alert(`✅ ${result.message}\n\nImported: ${result.imported}\nUpdated: ${result.updated}\nTotal: ${result.total}`);
                     } else {
-                      throw new Error(`Production sync failed: ${importRes.status}`);
+                      alert(`❌ ${result.message}`);
                     }
                   } catch (e) {
                     console.error('Production sync error:', e);
-                    alert(`❌ Sync failed: ${e.message}. Deploy first then sync.`);
+                    alert(`❌ Sync failed: ${e.message}`);
                   } finally {
                     btn.innerHTML = originalText;
                     btn.disabled = false;
