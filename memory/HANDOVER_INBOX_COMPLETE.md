@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://paw-rescue-3.preview.emergentagent.com
+https://advisory-debug.preview.emergentagent.com
 ```
 
 ---

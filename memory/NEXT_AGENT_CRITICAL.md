@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://paw-rescue-3.preview.emergentagent.com
+https://advisory-debug.preview.emergentagent.com
 
 ---
 
