@@ -58,7 +58,7 @@ Be patient. Be thorough. Honor the Sikand legacy.
 - Admin: `aditya` / `lola4304`
 
 ## 🌐 PREVIEW URL
-https://decision-support-8.preview.emergentagent.com
+https://feature-parity-push.preview.emergentagent.com
 
 ---
 

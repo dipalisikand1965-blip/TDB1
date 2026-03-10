@@ -1127,7 +1127,15 @@ const FarewellPage = () => {
                 <span className="text-2xl font-bold text-purple-600">
                   ₹{selectedProduct.price.toLocaleString()}
                 </span>
-                <Button className="bg-purple-600 hover:bg-purple-700">
+                <Button 
+                  className="bg-purple-600 hover:bg-purple-700"
+                  onClick={() => {
+                    handleAddToCart(selectedProduct);
+                    setShowProductModal(false);
+                  }}
+                  data-testid="modal-add-to-cart-btn"
+                >
+                  <ShoppingCart className="w-4 h-4 mr-2" />
                   Add to Cart
                 </Button>
               </div>
