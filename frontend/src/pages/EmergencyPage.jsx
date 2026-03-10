@@ -19,8 +19,6 @@ import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import SoulMadeCollection from '../components/SoulMadeCollection';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
-import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
-import PersonalizedPicks from '../components/PersonalizedPicks';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
 import {
@@ -840,23 +838,6 @@ const EmergencyPage = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* MIRA CURATED LAYER - Unified Concierge Recommendations */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <MiraCuratedLayer
-        pillar="emergency"
-        activePet={activePet}
-        token={token}
-        userEmail={user?.email}
-        isLoading={!userPets?.length && !!token}
-      />
-      
-      {/* Personalized Emergency Products */}
-      <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <PersonalizedPicks pillar="emergency" maxProducts={6} />
-        </div>
-      </section>
-      
       {/* Concierge® Button - Blue C® for Service Desk chat */}
       <ConciergeButton 
         pillar="emergency" 
