@@ -19173,6 +19173,168 @@ async def force_full_sync_endpoint(password: str = Query(...)):
         return results
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# BULK IMPORT ENDPOINTS - For syncing data from preview to production
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class BulkProductImport(BaseModel):
+    products: List[dict]
+
+class BulkServiceImport(BaseModel):
+    services: List[dict]
+
+class BulkGuidedPathImport(BaseModel):
+    paths: List[dict]
+
+@api_router.post("/admin/bulk-import-products")
+async def bulk_import_products(data: BulkProductImport, password: str = Query(...)):
+    """Bulk import products from preview to production"""
+    if password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=403, detail="Invalid admin password")
+    
+    imported = 0
+    updated = 0
+    errors = []
+    
+    for product in data.products:
+        try:
+            product_id = product.get("id")
+            if not product_id:
+                continue
+            
+            # Upsert - insert if not exists, update if exists
+            result = await db.products_master.update_one(
+                {"id": product_id},
+                {"$set": product},
+                upsert=True
+            )
+            
+            if result.upserted_id:
+                imported += 1
+            else:
+                updated += 1
+                
+        except Exception as e:
+            errors.append(f"Product {product.get('id', 'unknown')}: {str(e)}")
+    
+    logger.info(f"[BULK IMPORT] Products: {imported} imported, {updated} updated, {len(errors)} errors")
+    return {
+        "success": True,
+        "imported": imported,
+        "updated": updated,
+        "errors": errors[:10],  # Return first 10 errors only
+        "total_products": await db.products_master.count_documents({})
+    }
+
+@api_router.post("/admin/bulk-import-services")
+async def bulk_import_services(data: BulkServiceImport, password: str = Query(...)):
+    """Bulk import services from preview to production"""
+    if password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=403, detail="Invalid admin password")
+    
+    imported = 0
+    updated = 0
+    errors = []
+    
+    for service in data.services:
+        try:
+            service_id = service.get("service_id") or service.get("id")
+            if not service_id:
+                continue
+            
+            # Upsert
+            result = await db.services_master.update_one(
+                {"$or": [{"service_id": service_id}, {"id": service_id}]},
+                {"$set": service},
+                upsert=True
+            )
+            
+            if result.upserted_id:
+                imported += 1
+            else:
+                updated += 1
+                
+        except Exception as e:
+            errors.append(f"Service {service.get('service_id', 'unknown')}: {str(e)}")
+    
+    logger.info(f"[BULK IMPORT] Services: {imported} imported, {updated} updated")
+    return {
+        "success": True,
+        "imported": imported,
+        "updated": updated,
+        "errors": errors[:10],
+        "total_services": await db.services_master.count_documents({})
+    }
+
+@api_router.post("/admin/bulk-import-guided-paths")
+async def bulk_import_guided_paths(data: BulkGuidedPathImport, password: str = Query(...)):
+    """Bulk import guided paths from preview to production"""
+    if password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=403, detail="Invalid admin password")
+    
+    imported = 0
+    updated = 0
+    errors = []
+    
+    for path in data.paths:
+        try:
+            path_id = path.get("id")
+            if not path_id:
+                continue
+            
+            # Upsert
+            result = await db.guided_paths.update_one(
+                {"id": path_id},
+                {"$set": path},
+                upsert=True
+            )
+            
+            if result.upserted_id:
+                imported += 1
+            else:
+                updated += 1
+                
+        except Exception as e:
+            errors.append(f"Path {path.get('id', 'unknown')}: {str(e)}")
+    
+    logger.info(f"[BULK IMPORT] Guided Paths: {imported} imported, {updated} updated")
+    return {
+        "success": True,
+        "imported": imported,
+        "updated": updated,
+        "errors": errors[:10],
+        "total_paths": await db.guided_paths.count_documents({})
+    }
+
+@api_router.get("/admin/export-all-data")
+async def export_all_data(password: str = Query(...)):
+    """Export all critical data as JSON for backup or transfer"""
+    if password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=403, detail="Invalid admin password")
+    
+    # Get counts
+    products = await db.products_master.find({}, {"_id": 0}).to_list(10000)
+    services = await db.services_master.find({}, {"_id": 0}).to_list(2000)
+    guided_paths = await db.guided_paths.find({}, {"_id": 0}).to_list(100)
+    bundles = await db.bundles_master.find({}, {"_id": 0}).to_list(500)
+    
+    return {
+        "exported_at": datetime.now(timezone.utc).isoformat(),
+        "counts": {
+            "products": len(products),
+            "services": len(services),
+            "guided_paths": len(guided_paths),
+            "bundles": len(bundles)
+        },
+        "data": {
+            "products": products,
+            "services": services,
+            "guided_paths": guided_paths,
+            "bundles": bundles
+        }
+    }
+
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
