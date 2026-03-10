@@ -1,0 +1,246 @@
+/**
+ * ArchetypeProducts.jsx
+ * Displays products filtered by multi-factor personalization:
+ * - Breed match
+ * - Archetype personality affinity
+ * - Life stage relevance
+ * - Health considerations
+ */
+
+import React, { useState, useEffect } from 'react';
+import { Card } from './ui/card';
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { Sparkles, Heart, Star, Loader2, ShoppingCart } from 'lucide-react';
+import { API_URL } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
+import { usePillarContext } from '../context/PillarContext';
+import { useCart } from '../context/CartContext';
+
+// Archetype color schemes
+const ARCHETYPE_COLORS = {
+  wild_explorer: { bg: 'from-amber-50 to-orange-50', accent: 'text-amber-600', border: 'border-amber-200' },
+  velcro_baby: { bg: 'from-pink-50 to-rose-50', accent: 'text-pink-600', border: 'border-pink-200' },
+  social_butterfly: { bg: 'from-purple-50 to-violet-50', accent: 'text-purple-600', border: 'border-purple-200' },
+  zen_master: { bg: 'from-teal-50 to-cyan-50', accent: 'text-teal-600', border: 'border-teal-200' },
+  royal_dignity: { bg: 'from-indigo-50 to-blue-50', accent: 'text-indigo-600', border: 'border-indigo-200' },
+  playful_clown: { bg: 'from-yellow-50 to-lime-50', accent: 'text-yellow-600', border: 'border-yellow-200' },
+  guardian_heart: { bg: 'from-red-50 to-rose-50', accent: 'text-red-600', border: 'border-red-200' },
+  default: { bg: 'from-gray-50 to-slate-50', accent: 'text-gray-600', border: 'border-gray-200' }
+};
+
+// Archetype display names
+const ARCHETYPE_NAMES = {
+  wild_explorer: 'Wild Explorer',
+  velcro_baby: 'Velcro Baby',
+  social_butterfly: 'Social Butterfly',
+  zen_master: 'Zen Master',
+  royal_dignity: 'Royal Dignity',
+  playful_clown: 'Playful Clown',
+  guardian_heart: 'Guardian Heart'
+};
+
+const ArchetypeProducts = ({ 
+  pillar, 
+  maxProducts = 6,
+  showTitle = true,
+  className = ''
+}) => {
+  const { token } = useAuth();
+  const { currentPet } = usePillarContext();
+  const { addToCart } = useCart();
+  
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [petData, setPetData] = useState(null);
+  
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (!currentPet?.id) {
+        setLoading(false);
+        return;
+      }
+      
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const response = await fetch(`${API_URL}/api/mockups/multi-factor-products`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` })
+          },
+          body: JSON.stringify({
+            pet_id: currentPet.id,
+            pillar: pillar,
+            limit: maxProducts
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch personalized products');
+        }
+        
+        const data = await response.json();
+        setProducts(data.products || []);
+        setPetData({
+          name: data.pet_name,
+          breed: data.pet_breed,
+          archetype: data.archetype,
+          life_stage: data.life_stage
+        });
+        
+      } catch (err) {
+        console.error('Error fetching archetype products:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProducts();
+  }, [currentPet?.id, pillar, token, maxProducts]);
+  
+  const handleAddToCart = (product) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.mockup_url,
+      quantity: 1,
+      soul_tier: 'soul_made',
+      archetype_match: product.archetype_match
+    });
+  };
+  
+  // Don't render if no pet selected
+  if (!currentPet?.id) {
+    return null;
+  }
+  
+  // Loading state
+  if (loading) {
+    return (
+      <div className="py-8 text-center">
+        <Loader2 className="w-8 h-8 animate-spin mx-auto text-purple-500" />
+        <p className="mt-2 text-gray-500">Finding perfect matches for {currentPet?.name}...</p>
+      </div>
+    );
+  }
+  
+  // No products found
+  if (!products.length) {
+    return null;
+  }
+  
+  const colors = ARCHETYPE_COLORS[petData?.archetype] || ARCHETYPE_COLORS.default;
+  const archetypeName = ARCHETYPE_NAMES[petData?.archetype] || 'Unique Soul';
+  
+  return (
+    <div className={`py-8 ${className}`} data-testid="archetype-products-section">
+      {showTitle && (
+        <div className={`text-center mb-8 p-6 rounded-2xl bg-gradient-to-r ${colors.bg} ${colors.border} border`}>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Sparkles className={`w-5 h-5 ${colors.accent}`} />
+            <h3 className="text-lg font-semibold text-gray-800">
+              Perfectly Matched for {petData?.name}
+            </h3>
+            <Sparkles className={`w-5 h-5 ${colors.accent}`} />
+          </div>
+          
+          <p className="text-sm text-gray-600 mb-3">
+            Curated for a <span className={`font-semibold ${colors.accent}`}>{archetypeName}</span> personality
+          </p>
+          
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            <Badge variant="outline" className={`${colors.border} ${colors.accent}`}>
+              {petData?.breed?.replace('_', ' ')}
+            </Badge>
+            <Badge variant="outline" className="border-gray-300 text-gray-600">
+              {petData?.life_stage}
+            </Badge>
+            <Badge variant="outline" className={`${colors.border} ${colors.accent}`}>
+              {archetypeName}
+            </Badge>
+          </div>
+        </div>
+      )}
+      
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {products.map((product) => (
+          <Card 
+            key={product.id}
+            className={`overflow-hidden hover:shadow-lg transition-all duration-300 ${colors.border} border`}
+          >
+            {/* Product Image */}
+            <div className="relative aspect-square bg-gray-100">
+              {product.mockup_url ? (
+                <img
+                  src={product.mockup_url}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                  <Sparkles className="w-8 h-8 text-gray-400" />
+                </div>
+              )}
+              
+              {/* Personalization Score Badge */}
+              {product.personalization_score > 100 && (
+                <div className="absolute top-2 right-2">
+                  <Badge className={`bg-gradient-to-r ${colors.bg} ${colors.accent} border ${colors.border}`}>
+                    <Star className="w-3 h-3 mr-1 fill-current" />
+                    {Math.round((product.personalization_score - 100) / 10)}+ Match
+                  </Badge>
+                </div>
+              )}
+              
+              {/* Soul Made Badge */}
+              <div className="absolute top-2 left-2">
+                <Badge className="bg-purple-600 text-white text-xs">
+                  Soul Made
+                </Badge>
+              </div>
+            </div>
+            
+            {/* Product Info */}
+            <div className="p-3">
+              <h4 className="font-medium text-sm text-gray-800 line-clamp-2 mb-1">
+                {product.name}
+              </h4>
+              
+              {/* Personalization Reasons */}
+              {product.personalization_reasons?.length > 0 && (
+                <p className={`text-xs ${colors.accent} mb-2 flex items-center gap-1`}>
+                  <Heart className="w-3 h-3" />
+                  {product.personalization_reasons[0]}
+                </p>
+              )}
+              
+              <div className="flex items-center justify-between mt-2">
+                <span className="font-bold text-gray-900">
+                  ₹{product.price?.toLocaleString()}
+                </span>
+                
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className={`${colors.border} ${colors.accent} hover:bg-purple-50`}
+                  onClick={() => handleAddToCart(product)}
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ArchetypeProducts;
