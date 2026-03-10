@@ -25,6 +25,7 @@ import PersonalizedPicks from '../components/PersonalizedPicks';
 import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import SoulMadeCollection from '../components/SoulMadeCollection'; // ADDED: Soul Made Products
+import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
@@ -482,6 +483,15 @@ const EnjoyPage = () => {
               maxItems={8}
               showTitle={true}
             />
+          </div>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {userPets && userPets[0] && (
+          <div className="max-w-6xl mx-auto px-4 mb-8">
+            <BreedSmartRecommendations pillar="enjoy" />
           </div>
         )}
         

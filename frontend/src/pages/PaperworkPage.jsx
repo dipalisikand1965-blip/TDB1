@@ -21,6 +21,8 @@ import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import { getSoulBasedReason } from '../utils/petSoulInference';
+import SoulMadeCollection from '../components/SoulMadeCollection';
+import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import {
   Shield, Heart, Plane, FileText, Sparkles, Scale, Upload, Download,
   Folder, FolderOpen, File, Eye, Trash2, Bell, Calendar, Clock,
@@ -933,6 +935,28 @@ const PaperworkPage = () => {
         subtitle="Documentation services with transparent pricing"
         maxServices={8}
       />
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SOUL MADE PRODUCTS - Document organizers and folders with breed artwork */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-12 px-4" data-testid="paperwork-soul-made-section">
+        <div className="max-w-6xl mx-auto">
+          <SoulMadeCollection
+            pillar="paperwork"
+            maxItems={8}
+            showTitle={true}
+          />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4" data-testid="paperwork-breed-smart-section">
+        <div className="max-w-6xl mx-auto">
+          <BreedSmartRecommendations pillar="paperwork" />
+        </div>
+      </section>
       
       {/* ═══════════════════════════════════════════════════════════════════
           MIRA'S CURATED LAYER - Gold Standard Unified Component

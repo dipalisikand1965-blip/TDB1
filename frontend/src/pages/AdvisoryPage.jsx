@@ -20,6 +20,8 @@ import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import { getSoulBasedReason } from '../utils/petSoulInference';
+import SoulMadeCollection from '../components/SoulMadeCollection';
+import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import {
   Brain, Heart, Apple, Home, Stethoscope, GraduationCap,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
@@ -695,6 +697,28 @@ const AdvisoryPage = () => {
         subtitle="Expert consultation services with transparent pricing"
         maxServices={8}
       />
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SOUL MADE PRODUCTS - Breed care guides and advisory products */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-12 px-4" data-testid="advisory-soul-made-section">
+        <div className="max-w-6xl mx-auto">
+          <SoulMadeCollection
+            pillar="advisory"
+            maxItems={8}
+            showTitle={true}
+          />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4" data-testid="advisory-breed-smart-section">
+        <div className="max-w-6xl mx-auto">
+          <BreedSmartRecommendations pillar="advisory" />
+        </div>
+      </section>
       
       {/* ═══════════════════════════════════════════════════════════════════
           MIRA'S CURATED LAYER - Gold Standard Unified Component

@@ -45,6 +45,7 @@ import ShareCelebrationModal from '../components/celebrate/ShareCelebrationModal
 import CakeRevealSection from '../components/celebrate/CakeRevealSection';
 import CelebrationAlbum from '../components/celebrate/CelebrationAlbum';
 import SoulMadeCollection from '../components/SoulMadeCollection';
+import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 
 // Lazy load Soul Explainer for footer link
 const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
@@ -614,6 +615,15 @@ const CelebratePage = () => {
               showTitle={true}
             />
           </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {activePet && token && (
+        <div className="max-w-6xl mx-auto px-4 py-4" data-testid="celebrate-breed-smart-section">
+          <BreedSmartRecommendations pillar="celebrate" />
         </div>
       )}
 
