@@ -28,7 +28,7 @@
 | 7. Near Me | Nearby trainers, groomers, vets | Google Places API |
 | 8. Concierge Escalation | Human help for complex needs | Talk to Concierge |
 
-### 12 Intent Tiles
+### 11 Intent Tiles (Concierge is Overlay)
 1. Food & Nutrition
 2. Puppy Guidance
 3. Breed Guidance
@@ -40,7 +40,19 @@
 9. New Adoption Guidance
 10. Product Advice
 11. Recovery & Ongoing Care
-12. Speak to Concierge
+
+**Note:** Concierge® is NOT a tile - it's an overlaying level throughout the page (like Emergency), always accessible via "Talk to Concierge®" cards.
+
+### Page Structure (Following Emergency Pattern)
+1. **Hero** - Ask Advisory AI
+2. **Intent Tiles** - 11 categories
+3. **My Dog Advisory** - Personalized for logged-in pet
+4. **Guided Paths** - Decision journeys
+5. **Concierge Cards** - "Talk to Concierge®" (overlay, not made-up expert names)
+6. **Curated Bundles** - Advisory bundles
+7. **Soul-Created Products** - Personalized product grid
+8. **Near Me** - Google Places services
+9. **Follow-up Support** - Recovery & ongoing care
 
 ### Guided Paths to Build
 - **New Puppy**: what to buy → what to feed → first grooming → vaccine tracker → toilet training
