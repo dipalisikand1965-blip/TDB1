@@ -20,11 +20,14 @@ import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
+import { Label } from '../components/ui/label';
+import { Textarea } from '../components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
+import { useNavigate } from 'react-router-dom';
 import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
@@ -263,6 +266,7 @@ const AdvisoryPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   const { currentPet } = usePillarContext();
+  const navigate = useNavigate();
   
   // Refs for scrolling
   const askAdvisoryRef = useRef(null);
@@ -282,7 +286,22 @@ const AdvisoryPage = () => {
   const [aiResponse, setAiResponse] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   
-  const activePet = currentPet;
+  // User pets state - same as Learn page
+  const [userPets, setUserPets] = useState([]);
+  const [selectedPet, setSelectedPet] = useState(null);
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  
+  // Advisory request form - similar to Learn page
+  const [requestForm, setRequestForm] = useState({
+    advisory_type: 'general',
+    topics_of_interest: [],
+    specific_concerns: '',
+    notes: ''
+  });
+  
+  // Active pet from context or selection
+  const activePet = currentPet || selectedPet;
   const petName = activePet?.name || 'Your Pet';
   const petBreed = activePet?.breed || '';
   const petAge = activePet?.age_years || activePet?.age || 0;
@@ -290,7 +309,28 @@ const AdvisoryPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchData();
-  }, []);
+    if (user && token) {
+      fetchUserPets();
+    }
+  }, [user, token]);
+
+  // Fetch user pets - SAME PATTERN AS LEARN PAGE
+  const fetchUserPets = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/pets/my-pets`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUserPets(data.pets || []);
+        if (data.pets?.length > 0 && !selectedPet) {
+          setSelectedPet(data.pets[0]);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch pets:', error);
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -445,23 +485,81 @@ const AdvisoryPage = () => {
 
   const personalizedAdvice = getPersonalizedAdvice();
 
-  // Concierge Modal Component
+  // Concierge Modal Component - MATCHES LEARN PAGE PATTERN
   const ConciergeModal = () => (
     <Dialog open={showConciergeModal} onOpenChange={setShowConciergeModal}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <MessageCircle className="w-5 h-5 text-violet-600" />
-            Talk to Concierge®
+            <MessageCircle className="w-6 h-6 text-violet-600" />
+            Talk to Concierge® for Advisory Help
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 py-4">
-          <p className="text-sm text-gray-600">
-            {conciergeContext 
-              ? `Get personalized help with ${conciergeContext}${activePet ? ` for ${activePet.name}` : ''}.`
-              : `Our expert team is ready to help you${activePet ? ` with ${activePet.name}` : ''}.`}
-          </p>
+        
+        <div className="space-y-6 py-4">
+          {/* Pet Selection - SAME PATTERN AS LEARN PAGE */}
+          <div>
+            <Label className="text-sm font-medium mb-2 block">Which pet needs help?</Label>
+            {userPets.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3 mt-2">
+                {userPets.map(pet => (
+                  <Card 
+                    key={pet.id}
+                    className={`p-3 cursor-pointer ${selectedPet?.id === pet.id ? 'ring-2 ring-violet-500 bg-violet-50' : ''}`}
+                    onClick={() => setSelectedPet(pet)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full overflow-hidden bg-violet-100 flex items-center justify-center">
+                        <img 
+                          src={getPetPhotoUrl(pet)} 
+                          alt={pet.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.target.src = 'https://via.placeholder.com/40'; }}
+                        />
+                      </div>
+                      <div>
+                        <p className="font-medium">{pet.name}</p>
+                        <p className="text-xs text-gray-500">{pet.breed}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <Input
+                  placeholder="Pet name *"
+                  value={requestForm.guest_pet_name || ''}
+                  onChange={(e) => setRequestForm({...requestForm, guest_pet_name: e.target.value})}
+                />
+                {!user && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input
+                      placeholder="Your name *"
+                      value={requestForm.guest_name || ''}
+                      onChange={(e) => setRequestForm({...requestForm, guest_name: e.target.value})}
+                    />
+                    <Input
+                      placeholder="Phone *"
+                      value={requestForm.guest_phone || ''}
+                      onChange={(e) => setRequestForm({...requestForm, guest_phone: e.target.value})}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           
+          {/* Context Message */}
+          <div className="p-3 bg-violet-50 rounded-lg">
+            <p className="text-sm text-gray-600">
+              {conciergeContext 
+                ? `Requesting help with: "${conciergeContext}"`
+                : `Our expert team is ready to help you${selectedPet ? ` with ${selectedPet.name}` : ''}.`}
+            </p>
+          </div>
+          
+          {/* Contact Options */}
           <div className="space-y-3">
             <Button
               onClick={() => {
@@ -476,7 +574,8 @@ const AdvisoryPage = () => {
             
             <Button
               onClick={() => {
-                window.location.href = `mailto:hello@thedoggycompany.com?subject=Advisory Help${conciergeContext ? `: ${conciergeContext}` : ''}&body=Hi, I need help${activePet ? ` for my ${activePet.breed || 'pet'} ${activePet.name}` : ''}.`;
+                const pet = selectedPet || activePet;
+                window.location.href = `mailto:hello@thedoggycompany.com?subject=Advisory Help${conciergeContext ? `: ${conciergeContext}` : ''}&body=Hi, I need help${pet ? ` for my ${pet.breed || 'pet'} ${pet.name}` : ''}.`;
                 setShowConciergeModal(false);
               }}
               variant="outline"
@@ -518,6 +617,42 @@ const AdvisoryPage = () => {
           ═══════════════════════════════════════════════════════════════════════════ */}
       <section ref={askAdvisoryRef} className="py-8 px-4 bg-gradient-to-b from-violet-100 to-white" data-testid="ask-advisory-section">
         <div className="max-w-4xl mx-auto text-center">
+          
+          {/* Pet Selector - SAME PATTERN AS LEARN PAGE */}
+          {userPets.length > 0 && (
+            <div className="mb-6" data-testid="pet-selector">
+              <p className="text-sm text-gray-500 mb-3">Asking for:</p>
+              <div className="flex justify-center gap-3 flex-wrap">
+                {userPets.map(pet => (
+                  <Card 
+                    key={pet.id}
+                    className={`p-2 px-4 cursor-pointer transition-all ${
+                      (selectedPet?.id === pet.id || (!selectedPet && currentPet?.id === pet.id))
+                        ? 'ring-2 ring-violet-500 bg-violet-50' 
+                        : 'hover:bg-violet-50'
+                    }`}
+                    onClick={() => setSelectedPet(pet)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full overflow-hidden bg-violet-100 flex items-center justify-center">
+                        <img 
+                          src={getPetPhotoUrl(pet)} 
+                          alt={pet.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/32'; }}
+                        />
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium text-sm">{pet.name}</p>
+                        <p className="text-xs text-gray-500">{pet.breed}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+          
           <div className="mb-6">
             <Badge className="bg-violet-600 text-white mb-3">
               <Lightbulb className="w-3 h-3 mr-1" /> Ask Advisory
@@ -526,7 +661,7 @@ const AdvisoryPage = () => {
               What would you like help deciding for {petName}?
             </h1>
             <p className="text-gray-600">
-              Get personalized guidance based on your pet's actual needs
+              Get personalized guidance based on {petName}'s actual needs
             </p>
           </div>
           
