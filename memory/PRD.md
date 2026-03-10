@@ -113,6 +113,8 @@
 10. ✅ **"Talk to Concierge" CTAs** - On all service cards
 11. ✅ **Emergency-specific Copy** - No archetype playful language
 12. ✅ **Emergency Guides** - 10 situation cards (poisoning, bleeding, breathing, etc.)
+13. ✅ **Subcategory Filters** - All pillars now have subcategory pills (First Aid, Recovery, etc.)
+14. ✅ **Breed Filters** - Filter by 12+ breeds across entire shop
 
 ---
 
