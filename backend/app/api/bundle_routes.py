@@ -361,17 +361,43 @@ def get_all_default_bundles() -> List[dict]:
             "popular": True,
             "active": True
         },
-        # Farewell
+        # Farewell - Memorial Bundles
         {
             "id": "farewell-memorial-bundle",
-            "name": "Forever Loved Bundle",
-            "description": "Honor their memory beautifully",
+            "name": "Forever in Heart Bundle",
+            "description": "Cherish their memory forever",
             "pillar": "farewell",
-            "items": ["Memory Frame", "Keepsake Box", "Memorial Candle"],
-            "original_price": 2497,
-            "bundle_price": 1999,
-            "discount": 20,
+            "items": ["Memorial Ornament", "Paw Print Frame", "Memory Mug"],
+            "original_price": 1897,
+            "bundle_price": 1499,
+            "discount": 21,
             "icon": "🌈",
+            "popular": True,
+            "active": True
+        },
+        {
+            "id": "farewell-keepsake-bundle",
+            "name": "Precious Memories Bundle",
+            "description": "Beautiful keepsakes to honor their legacy",
+            "pillar": "farewell",
+            "items": ["Photo Engraved Frame", "Memorial Garden Stone", "Pawprint Keychain", "Memory Box"],
+            "original_price": 2499,
+            "bundle_price": 1899,
+            "discount": 24,
+            "icon": "💜",
+            "popular": False,
+            "active": True
+        },
+        {
+            "id": "farewell-tribute-bundle",
+            "name": "Loving Tribute Bundle",
+            "description": "A complete memorial collection",
+            "pillar": "farewell",
+            "items": ["Angel Wing Ornament", "Rainbow Bridge Frame", "Heart Pendant", "Memorial Candle"],
+            "original_price": 2199,
+            "bundle_price": 1699,
+            "discount": 23,
+            "icon": "🕊️",
             "popular": False,
             "active": True
         }
