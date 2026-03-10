@@ -86,6 +86,29 @@ const FALLBACK_PICKS_BY_PILLAR = {
   shop: [
     { id: 'shop-1', name: 'Personal Shopper', description: 'Curated product selection', why_it_fits: 'Perfect picks, every time', icon: '🛍️', concierge: true },
     { id: 'shop-2', name: 'Custom Merchandise', description: 'Personalized with your pet', why_it_fits: 'One-of-a-kind items', icon: '🎁', concierge: true }
+  ],
+  // FAREWELL - Sensitive memorial products & grief support
+  farewell: [
+    { id: 'farewell-1', name: 'Memory Keepsake Box', description: 'Handcrafted wooden box for treasured memories', why_it_fits: 'Preserve precious moments forever', icon: '💜', concierge: true, price: 2499 },
+    { id: 'farewell-2', name: 'Paw Print Memorial Kit', description: 'Create a lasting impression with clay mold kit', why_it_fits: 'A tangible memory to hold', icon: '🐾', concierge: true, price: 999 },
+    { id: 'farewell-3', name: 'Memorial Photo Frame', description: 'Elegant frame with "Forever in my heart" engraving', why_it_fits: 'Display their beautiful face', icon: '🖼️', concierge: true, price: 1499 },
+    { id: 'farewell-4', name: 'Rainbow Bridge Book', description: 'Illustrated comfort book about pet loss', why_it_fits: 'Gentle words for healing hearts', icon: '🌈', concierge: true, price: 699 },
+    { id: 'farewell-5', name: 'Memorial Garden Stone', description: 'Personalized stone for garden memorial', why_it_fits: 'A peaceful resting tribute', icon: '🪨', concierge: true, price: 1999 },
+    { id: 'farewell-6', name: 'Grief Support Session', description: 'One-on-one with pet loss counselor', why_it_fits: 'You don\'t have to grieve alone', icon: '💙', concierge: true, price: 1500 }
+  ],
+  // ADOPT - New pet parent essentials & rescue support
+  adopt: [
+    { id: 'adopt-1', name: 'New Pet Welcome Kit', description: 'Everything for the first week with your rescue', why_it_fits: 'Set up for success from day one', icon: '🏠', concierge: true, price: 2999 },
+    { id: 'adopt-2', name: 'Decompression Guide', description: '3-3-3 rule guide for rescue dogs', why_it_fits: 'Help them feel safe', icon: '📖', concierge: true, price: 499 },
+    { id: 'adopt-3', name: 'Calming Essentials Bundle', description: 'Anxiety wrap, calming spray, comfort toys', why_it_fits: 'Ease the transition stress', icon: '🧸', concierge: true, price: 1999 },
+    { id: 'adopt-4', name: 'First Vet Visit Package', description: 'Health check + vaccination + deworming', why_it_fits: 'Start with a clean bill of health', icon: '🏥', concierge: true, price: 2500 },
+    { id: 'adopt-5', name: 'Training Starter Kit', description: 'Clicker, treats, training guide for rescues', why_it_fits: 'Build trust through positive training', icon: '🎓', concierge: true, price: 1299 },
+    { id: 'adopt-6', name: 'Adoption Counseling', description: 'Support for adjusting to rescue pet', why_it_fits: 'Expert guidance through challenges', icon: '💚', concierge: true, price: 1200 }
+  ],
+  // EMERGENCY - Quick access emergency products
+  emergency: [
+    { id: 'emergency-1', name: 'Pet First Aid Kit', description: 'Complete emergency medical supplies', why_it_fits: 'Be prepared for any situation', icon: '🚑', concierge: true, price: 1999 },
+    { id: 'emergency-2', name: 'Emergency Vet Hotline', description: '24/7 vet consultation access', why_it_fits: 'Expert help anytime', icon: '📞', concierge: true, price: 999 }
   ]
 };
 
