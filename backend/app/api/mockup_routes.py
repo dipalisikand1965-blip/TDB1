@@ -690,3 +690,99 @@ async def import_mockup_urls(data: dict):
         "total": imported + updated,
         "import_timestamp": datetime.now().isoformat()
     }
+
+
+
+# ==========================================
+# BREED MATRIX ENDPOINTS (Breed-Smart Recommendations)
+# ==========================================
+
+@router.get("/breed-recommendations/{breed}")
+async def get_breed_recommendations(breed: str, pillar: Optional[str] = None):
+    """
+    Get breed-specific product recommendations from the breed matrix.
+    
+    Args:
+        breed: Breed name (e.g., "labrador", "shih_tzu", "Shih Tzu")
+        pillar: Optional pillar to filter (e.g., "travel", "care", "dine")
+    
+    Returns:
+        Breed traits and recommendations for the specified pillar(s)
+    """
+    db = get_db()
+    
+    # Normalize breed key
+    breed_key = breed.lower().replace(' ', '_').replace('-', '_')
+    
+    # Find breed in matrix
+    breed_doc = await db.breed_matrix.find_one({
+        "$or": [
+            {"breed_key": breed_key},
+            {"breed": {"$regex": f"^{breed}$", "$options": "i"}}
+        ]
+    })
+    
+    if not breed_doc:
+        # Try partial match
+        breed_doc = await db.breed_matrix.find_one({
+            "breed": {"$regex": breed, "$options": "i"}
+        })
+    
+    if not breed_doc:
+        return {
+            "found": False,
+            "breed": breed,
+            "message": f"No recommendations found for breed: {breed}",
+            "available_breeds": await db.breed_matrix.distinct("breed")
+        }
+    
+    # Filter by pillar if specified
+    recommendations = breed_doc.get('recommendations', {})
+    if pillar:
+        pillar_lower = pillar.lower()
+        if pillar_lower in recommendations:
+            recommendations = {pillar_lower: recommendations[pillar_lower]}
+        else:
+            recommendations = {}
+    
+    return {
+        "found": True,
+        "breed": breed_doc.get('breed'),
+        "breed_key": breed_doc.get('breed_key'),
+        "traits": breed_doc.get('traits', []),
+        "trait_summary": breed_doc.get('trait_text', ''),
+        "recommendations": recommendations,
+        "pillar_count": len(recommendations)
+    }
+
+
+@router.get("/breed-matrix/all")
+async def get_all_breed_recommendations():
+    """Get the complete breed matrix for all breeds."""
+    db = get_db()
+    
+    breeds = await db.breed_matrix.find({}, {"_id": 0}).to_list(length=100)
+    
+    return {
+        "total_breeds": len(breeds),
+        "breeds": breeds
+    }
+
+
+@router.get("/breed-matrix/pillars")
+async def get_pillar_recommendations(pillar: str):
+    """Get recommendations for a specific pillar across all breeds."""
+    db = get_db()
+    
+    pillar_lower = pillar.lower()
+    
+    breeds = await db.breed_matrix.find(
+        {f"recommendations.{pillar_lower}": {"$exists": True}},
+        {"_id": 0, "breed": 1, "breed_key": 1, "traits": 1, f"recommendations.{pillar_lower}": 1}
+    ).to_list(length=100)
+    
+    return {
+        "pillar": pillar_lower,
+        "breeds_with_recommendations": len(breeds),
+        "breeds": breeds
+    }

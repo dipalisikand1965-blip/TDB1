@@ -30,6 +30,7 @@ import { Crown, Sparkles, Heart, Plane, GraduationCap, Gamepad2, Dumbbell, FileT
 import { Badge } from '../ui/badge';
 import CuratedConciergeSection from './CuratedConciergeSection';
 import PersonalizedPillarSection from '../PersonalizedPillarSection';
+import BreedSmartRecommendations from '../BreedSmartRecommendations';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // PILLAR THEME CONFIGURATIONS
@@ -338,6 +339,27 @@ const MiraCuratedLayer = ({
             pet={activePet}
             token={token}
             userEmail={userEmail}
+          />
+        </motion.div>
+      )}
+      
+      {/* ═══════════════════════════════════════════════════════════════════════
+          BREED-SMART RECOMMENDATIONS - From breed_matrix
+          Shows breed-specific product recommendations
+          "Mira Recommends for {Breed}" - Concierge® assisted
+          ═══════════════════════════════════════════════════════════════════════ */}
+      {activePet && activePet.breed && (
+        <motion.div 
+          className="mt-6 sm:mt-8" 
+          data-testid={`breed-smart-${pillar}-wrapper`}
+          variants={itemVariants}
+        >
+          <BreedSmartRecommendations
+            pillar={pillar}
+            pet={activePet}
+            token={token}
+            userEmail={userEmail}
+            maxItems={6}
           />
         </motion.div>
       )}
