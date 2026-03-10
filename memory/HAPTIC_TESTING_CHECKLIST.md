@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://advisory-debug.preview.emergentagent.com/mira-demo**
+**https://decision-support-8.preview.emergentagent.com/mira-demo**
 
 ---
 
