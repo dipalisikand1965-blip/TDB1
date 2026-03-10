@@ -963,7 +963,7 @@ const UnifiedProductBox = () => {
           {/* Source Filter - Shopify, Soul Made, Manual */}
           <select 
             value={filterSource} 
-            onChange={(e) => setFilterSource(e.target.value)}
+            onChange={(e) => { setFilterSource(e.target.value); setPage(0); }}
             className="h-10 px-3 rounded-md border border-pink-200 text-sm bg-pink-50 font-medium"
             data-testid="filter-source-select"
           >
