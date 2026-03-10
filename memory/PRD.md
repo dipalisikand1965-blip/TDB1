@@ -54,6 +54,14 @@ All guided paths and journey guides are now stored in the database and fetched v
 - Integrated guided paths seeding into Master Sync
 - All tests passed (100% backend, 100% frontend)
 
+### 6. Farewell Page UI/UX Overhaul ✅
+- **Fixed inappropriate headings**: Removed "Fun gear", "Party-ready", "Social butterfly" text
+- **Added pillar-aware copy**: archetypeCopy.js now has FAREWELL_COPY with memorial language
+- **Simplified page**: Removed duplicate product sections (kept SoulMadeCollection + CuratedBundles)
+- **Services → Concierge® style**: hidePrice=true, no pricing shown
+- **Memorial Bundles**: Seeded 3 bundles (Forever in Heart, Precious Memories, Loving Tribute)
+- **Soul Made heading**: Shows "Forever in our hearts" for farewell pillar
+
 ---
 
 ## API ENDPOINTS - NEW
