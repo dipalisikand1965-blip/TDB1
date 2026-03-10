@@ -491,21 +491,6 @@ const EmergencyPage = () => {
                 </div>
               </div>
             )}
-            
-            {/* Products - Using ProductCard for clickable modals */}
-            {products.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                  <ShoppingBag className="w-5 h-5 text-red-500" />
-                  Emergency Products
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                  {products.slice(0, 10).map((product) => (
-                    <ProductCard key={product.id} product={product} pillar="emergency" />
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}
