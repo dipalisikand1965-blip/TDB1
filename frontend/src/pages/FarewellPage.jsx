@@ -74,58 +74,6 @@ const SERVICE_CATEGORIES = {
   }
 };
 
-// Memorial Products
-const MEMORIAL_PRODUCTS = [
-  {
-    id: 'urn_classic',
-    name: 'Classic Wooden Urn',
-    description: 'Handcrafted wooden urn with engraved nameplate',
-    price: 2499,
-    image: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&q=80',
-    category: 'urns'
-  },
-  {
-    id: 'urn_ceramic',
-    name: 'Ceramic Paw Print Urn',
-    description: 'Beautiful ceramic urn with paw print design',
-    price: 3499,
-    image: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&q=80',
-    category: 'urns'
-  },
-  {
-    id: 'paw_print_kit',
-    name: 'Forever Paw Print Kit',
-    description: 'Create a lasting impression of your pet\'s paw',
-    price: 999,
-    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80',
-    category: 'keepsakes'
-  },
-  {
-    id: 'photo_frame',
-    name: 'Memorial Photo Frame',
-    description: 'Elegant frame with space for photo and fur clipping',
-    price: 1499,
-    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80',
-    category: 'keepsakes'
-  },
-  {
-    id: 'memorial_stone',
-    name: 'Garden Memorial Stone',
-    description: 'Personalised stone for garden remembrance',
-    price: 1999,
-    image: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&q=80',
-    category: 'outdoor'
-  },
-  {
-    id: 'memory_book',
-    name: 'Pet Memory Book',
-    description: 'Beautiful book to preserve precious memories',
-    price: 799,
-    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80',
-    category: 'keepsakes'
-  }
-];
-
 // Service Packages
 const SERVICE_PACKAGES = [
   {
@@ -745,62 +693,6 @@ const FarewellPage = () => {
         </div>
       </section>
 
-      {/* Memorial Products */}
-      <section className="py-16 px-4 bg-gradient-to-b from-white to-purple-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              <Star className="w-8 h-8 inline mr-2 text-amber-500" />
-              Memorial Keepsakes
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Beautiful ways to preserve the memory of your beloved companion.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
-            {MEMORIAL_PRODUCTS.map((product) => (
-              <Card 
-                key={product.id}
-                className="overflow-hidden hover:shadow-lg transition-all group"
-              >
-                <div 
-                  className="relative h-40 overflow-hidden bg-gray-100 cursor-pointer"
-                  onClick={() => {
-                    setSelectedProduct(product);
-                    setShowProductModal(true);
-                  }}
-                >
-                  <img 
-                    src={product.image} 
-                    alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 mb-1">{product.name}</h3>
-                  <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-purple-600">₹{product.price.toLocaleString()}</span>
-                    <Button 
-                      size="sm" 
-                      className="bg-purple-600 hover:bg-purple-700 text-white"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleAddToCart(product);
-                      }}
-                      data-testid={`add-to-cart-${product.id}`}
-                    >
-                      <ShoppingCart className="w-4 h-4 mr-1" /> Add
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Grief Support Resources */}
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
@@ -873,15 +765,19 @@ const FarewellPage = () => {
         hidePrice={true}
       />
 
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* SOUL MADE PRODUCTS - AI-generated memorial products with breed artwork */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-12 px-4" data-testid="farewell-soul-made-section">
+      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* SOUL MADE PRODUCTS - Full AI-generated memorial collection */}
+      {/* ═══════════════════════════════════════════════════════════ */}
+      <section className="py-12 px-4 bg-gradient-to-b from-white to-purple-50" data-testid="farewell-soul-made-section">
         <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Memorial Keepsakes</h2>
+            <p className="text-gray-600">Beautiful ways to preserve the memory of your beloved companion</p>
+          </div>
           <SoulMadeCollection
             pillar="farewell"
-            maxItems={6}
-            showTitle={true}
+            maxItems={12}
+            showTitle={false}
           />
         </div>
       </section>

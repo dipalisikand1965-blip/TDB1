@@ -606,7 +606,7 @@ const SoulMadeCollection = ({
       {/* Product Grid */}
       {!loading && displayProducts.length > 0 && (
         <>
-          {usingFallback && (
+          {usingFallback && pillar !== 'farewell' && (
             <div className="mb-4 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-100">
               <p className="text-sm text-purple-700 flex items-center gap-2">
                 <Sparkles className="w-4 h-4" />
