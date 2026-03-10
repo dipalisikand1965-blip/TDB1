@@ -296,57 +296,43 @@ const FarewellPage = () => {
     }
   };
 
-  // Farewell Journey Guided Paths
-  const FAREWELL_PATHS = [
-    {
-      id: 'preparing',
-      title: 'Preparing to Say Goodbye',
-      description: 'When you know the time is coming',
-      icon: Heart,
-      color: 'from-rose-500 to-pink-600',
-      steps: [
-        { title: 'Quality time together', items: ['Favorite activities', 'Extra cuddles', 'Special treats', 'Photo memories'] },
-        { title: 'Comfort measures', items: ['Pain management', 'Soft bedding', 'Peaceful space', 'Familiar scents'] },
-        { title: 'Practical planning', items: ['Vet consultation', 'Home euthanasia option', 'Memorial choices', 'Family involvement'] }
-      ]
-    },
-    {
-      id: 'day_of',
-      title: 'The Day Of',
-      description: 'Being present in the moment',
-      icon: Star,
-      color: 'from-purple-500 to-indigo-600',
-      steps: [
-        { title: 'Create peace', items: ['Quiet environment', 'Loved ones present', 'Soft music', 'Comfort items'] },
-        { title: 'Say goodbye', items: ['Words of love', 'Gentle touch', 'No rush', 'Honor the moment'] },
-        { title: 'After care', items: ['Take your time', 'Memorial keepsakes', 'Transportation arranged', 'Self-compassion'] }
-      ]
-    },
-    {
-      id: 'grief_journey',
-      title: 'The Grief Journey',
-      description: 'Navigating life after loss',
-      icon: Rainbow,
-      color: 'from-blue-500 to-cyan-600',
-      steps: [
-        { title: 'First days', items: ['Allow all feelings', 'Rest when needed', 'Reach out for support', 'No pressure'] },
-        { title: 'Honoring memory', items: ['Create memorial', 'Share stories', 'Plant something', 'Donate in their name'] },
-        { title: 'Finding peace', items: ['Grief counseling', 'Support groups', 'When ready, open heart again'] }
-      ]
-    },
-    {
-      id: 'memorial',
-      title: 'Creating a Memorial',
-      description: 'Celebrating their life',
-      icon: Flower2,
-      color: 'from-amber-500 to-orange-600',
-      steps: [
-        { title: 'Physical memorials', items: ['Paw print casting', 'Photo display', 'Garden stone', 'Jewelry'] },
-        { title: 'Digital memories', items: ['Photo album', 'Video montage', 'Social tribute', 'Rainbow Bridge wall'] },
-        { title: 'Living tributes', items: ['Charity donation', 'Volunteer work', 'Sponsor a rescue', 'Memorial tree'] }
-      ]
-    }
-  ];
+  // Farewell Journey Guided Paths - Now fetched from database
+  const [farewellPaths, setFarewellPaths] = useState([]);
+  const [pathsLoading, setPathsLoading] = useState(true);
+
+  // Icon mapping for dynamic paths
+  const ICON_MAP = {
+    'Heart': Heart,
+    'Star': Star,
+    'Rainbow': Rainbow,
+    'Flower2': Flower2,
+    'Home': Home,
+    'Users': Users,
+    'CheckCircle': CheckCircle
+  };
+
+  // Fetch guided paths from database
+  useEffect(() => {
+    const fetchPaths = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/guided-paths/farewell`);
+        if (response.ok) {
+          const data = await response.json();
+          // Map icon strings to actual components
+          const pathsWithIcons = data.paths.map(path => ({
+            ...path,
+            icon: ICON_MAP[path.icon] || Heart
+          }));
+          setFarewellPaths(pathsWithIcons);
+        }
+      } catch (err) {
+        console.error('Failed to fetch farewell paths:', err);
+      } finally {
+        setPathsLoading(false);
+      }
+    };
+    fetchPaths();
+  }, []);
 
   // Fetch user's pets
   useEffect(() => {
@@ -578,88 +564,122 @@ const FarewellPage = () => {
             <p className="text-purple-200 mt-2">Gentle guidance for wherever you are in this process</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {FAREWELL_PATHS.map((path) => {
-              const Icon = path.icon;
-              const isExpanded = selectedPath === path.id;
-              return (
-                <Card 
-                  key={path.id}
-                  className={`p-4 cursor-pointer transition-all bg-white/5 backdrop-blur-sm border-purple-400/20 hover:border-purple-400/50 ${
-                    isExpanded ? 'ring-2 ring-purple-400' : ''
-                  }`}
-                  onClick={() => setSelectedPath(isExpanded ? null : path.id)}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className={`p-2 rounded-lg bg-gradient-to-br ${path.color}`}>
-                      <Icon className="w-5 h-5 text-white" />
+          {pathsLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="w-8 h-8 text-purple-400 animate-spin" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {farewellPaths.map((path) => {
+                const Icon = path.icon;
+                const isExpanded = selectedPath === path.id;
+                return (
+                  <Card 
+                    key={path.id}
+                    className={`p-4 cursor-pointer transition-all bg-white/5 backdrop-blur-sm border-purple-400/20 hover:border-purple-400/50 ${
+                      isExpanded ? 'ring-2 ring-purple-400' : ''
+                    }`}
+                    onClick={() => setSelectedPath(isExpanded ? null : path.id)}
+                    data-testid={`farewell-path-${path.id}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`p-2 rounded-lg bg-gradient-to-br ${path.color}`}>
+                        <Icon className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-white">{path.title}</h3>
+                        <p className="text-purple-200 text-sm">{path.description}</p>
+                      </div>
+                      <ChevronRight className={`w-5 h-5 text-purple-300 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-white">{path.title}</h3>
-                      <p className="text-purple-200 text-sm">{path.description}</p>
-                    </div>
-                    <ChevronRight className={`w-5 h-5 text-purple-300 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                  </div>
-                  
-                  {isExpanded && (
-                    <div className="mt-4 pt-4 border-t border-purple-400/20">
-                      <div className="space-y-3">
-                        {path.steps.map((step, idx) => (
-                          <div key={idx} className="flex items-start gap-3">
-                            <div className="w-6 h-6 rounded-full bg-purple-600/30 text-purple-300 flex items-center justify-center text-xs font-bold flex-shrink-0">
-                              {idx + 1}
-                            </div>
-                            <div>
-                              <h4 className="font-medium text-sm text-white">{step.title}</h4>
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {step.items.map((item, i) => (
-                                  <Badge key={i} variant="outline" className="text-xs bg-purple-600/10 border-purple-400/30 text-purple-200">
-                                    {item}
-                                  </Badge>
-                                ))}
+                    
+                    {isExpanded && (
+                      <div className="mt-4 pt-4 border-t border-purple-400/20">
+                        <div className="space-y-3">
+                          {path.steps.map((step, idx) => (
+                            <div key={idx} className="flex items-start gap-3">
+                              <div className="w-6 h-6 rounded-full bg-purple-600/30 text-purple-300 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                {idx + 1}
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-sm text-white">{step.title}</h4>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {step.items.map((item, i) => (
+                                    <Badge key={i} variant="outline" className="text-xs bg-purple-600/10 border-purple-400/30 text-purple-200">
+                                      {item}
+                                    </Badge>
+                                  ))}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowServiceModal(true);
+                          }}
+                          className="w-full mt-4 bg-purple-600 hover:bg-purple-700"
+                        >
+                          <MessageCircle className="w-4 h-4 mr-2" />
+                          Get Support for This Step
+                        </Button>
                       </div>
-                      <Button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowServiceModal(true);
-                        }}
-                        className="w-full mt-4 bg-purple-600 hover:bg-purple-700"
-                      >
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        Get Support for This Step
-                      </Button>
-                    </div>
-                  )}
-                </Card>
-              );
-            })}
-          </div>
+                    )}
+                  </Card>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
       {/* Service Categories - 2x2 on mobile, 4 cols on desktop */}
       <section className="py-12 px-4 relative z-10">
         <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">How Can We Help?</h2>
+            <p className="text-gray-600 mt-2">Click any service to connect with our compassionate team</p>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {Object.values(SERVICE_CATEGORIES).map((cat) => {
               const Icon = cat.icon;
               return (
                 <Card 
                   key={cat.id}
-                  className={`p-6 cursor-pointer transition-all hover:shadow-lg ${
+                  className={`p-6 cursor-pointer transition-all hover:shadow-lg hover:ring-2 hover:ring-purple-400 ${
                     selectedCategory === cat.id ? 'ring-2 ring-purple-500 shadow-lg' : ''
                   }`}
-                  onClick={() => setSelectedCategory(cat.id === selectedCategory ? 'all' : cat.id)}
+                  onClick={() => {
+                    setSelectedCategory(cat.id);
+                    setServiceForm(prev => ({
+                      ...prev,
+                      service_type: cat.id
+                    }));
+                    setShowServiceModal(true);
+                  }}
+                  data-testid={`service-category-${cat.id}`}
                 >
                   <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${cat.color} flex items-center justify-center mb-4`}>
                     <Icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="font-bold text-gray-900 mb-1">{cat.name}</h3>
-                  <p className="text-sm text-gray-600">{cat.description}</p>
+                  <p className="text-sm text-gray-600 mb-3">{cat.description}</p>
+                  <Button 
+                    size="sm" 
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setServiceForm(prev => ({
+                        ...prev,
+                        service_type: cat.id
+                      }));
+                      setShowServiceModal(true);
+                    }}
+                  >
+                    <MessageCircle className="w-4 h-4 mr-1" />
+                    Talk to Concierge
+                  </Button>
                 </Card>
               );
             })}
@@ -928,14 +948,37 @@ const FarewellPage = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Heart className="w-5 h-5 text-purple-500" />
-              {selectedPackage ? `Request ${selectedPackage.name}` : 'Request Support'}
+              {selectedPackage ? `Request ${selectedPackage.name}` : 
+               serviceForm.service_type && SERVICE_CATEGORIES[serviceForm.service_type] 
+                 ? `${SERVICE_CATEGORIES[serviceForm.service_type].name}` 
+                 : 'Request Support'}
             </DialogTitle>
             <DialogDescription>
-              We&apos;ll handle everything with care and compassion.
+              {serviceForm.service_type && SERVICE_CATEGORIES[serviceForm.service_type]
+                ? SERVICE_CATEGORIES[serviceForm.service_type].description
+                : 'We\'ll handle everything with care and compassion.'}
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
+            {/* Service Type Display (if selected from category cards) */}
+            {serviceForm.service_type && SERVICE_CATEGORIES[serviceForm.service_type] && !selectedPackage && (
+              <div className={`p-3 rounded-lg ${SERVICE_CATEGORIES[serviceForm.service_type].bgColor} border`}>
+                <div className="flex items-center gap-3">
+                  {(() => {
+                    const Icon = SERVICE_CATEGORIES[serviceForm.service_type].icon;
+                    return <Icon className={`w-5 h-5 ${SERVICE_CATEGORIES[serviceForm.service_type].textColor}`} />;
+                  })()}
+                  <div>
+                    <p className={`font-medium ${SERVICE_CATEGORIES[serviceForm.service_type].textColor}`}>
+                      {SERVICE_CATEGORIES[serviceForm.service_type].name}
+                    </p>
+                    <p className="text-xs text-gray-600">Our team will guide you through the process</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Urgency Selection */}
             <div>
               <Label>How urgent is this?</Label>

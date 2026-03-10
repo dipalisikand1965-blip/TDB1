@@ -345,57 +345,41 @@ Keep response friendly and informative, under 200 words.`
     }
   };
 
-  // Adoption Journey Guided Paths
-  const ADOPTION_PATHS = [
-    {
-      id: 'before_adopting',
-      title: 'Before You Adopt',
-      description: 'Is adoption right for you?',
-      icon: Heart,
-      color: 'from-green-500 to-emerald-600',
-      steps: [
-        { title: 'Self-assessment', items: ['Time commitment', 'Financial readiness', 'Living situation', 'Family agreement'] },
-        { title: 'Research', items: ['Breed characteristics', 'Energy levels', 'Space needs', 'Special needs dogs'] },
-        { title: 'Home preparation', items: ['Safe spaces', 'Pet-proofing', 'Supplies ready', 'Vet identified'] }
-      ]
-    },
-    {
-      id: 'first_7_days',
-      title: 'First 7 Days',
-      description: 'The 3-3-3 rule begins',
-      icon: Home,
-      color: 'from-blue-500 to-cyan-600',
-      steps: [
-        { title: 'Day 1-3: Decompression', items: ['Quiet environment', 'Limited interaction', 'Safe space', 'Routine starts'] },
-        { title: 'Day 3-5: Building trust', items: ['Gentle introductions', 'Short walks', 'Consistent feeding', 'Patience'] },
-        { title: 'Day 5-7: Settling in', items: ['House rules intro', 'Family bonding', 'Vet visit', 'Training begins'] }
-      ]
-    },
-    {
-      id: 'first_3_weeks',
-      title: 'First 3 Weeks',
-      description: 'True personality emerges',
-      icon: Users,
-      color: 'from-purple-500 to-violet-600',
-      steps: [
-        { title: 'Behavior observation', items: ['Real personality shows', 'Triggers identified', 'Comfort zones', 'Social preferences'] },
-        { title: 'Training foundation', items: ['Basic commands', 'House training', 'Leash manners', 'Name recognition'] },
-        { title: 'Socialization', items: ['Controlled introductions', 'New environments', 'Car rides', 'Vet comfort'] }
-      ]
-    },
-    {
-      id: 'first_3_months',
-      title: 'First 3 Months',
-      description: 'Feeling at home',
-      icon: Heart,
-      color: 'from-rose-500 to-pink-600',
-      steps: [
-        { title: 'Full bonding', items: ['Trust established', 'Routine solid', 'Behavioral baseline', 'Family integration'] },
-        { title: 'Address challenges', items: ['Separation anxiety', 'Resource guarding', 'Fear responses', 'Professional help'] },
-        { title: 'Long-term success', items: ['Ongoing training', 'Health maintenance', 'Exercise routine', 'Forever family'] }
-      ]
-    }
-  ];
+  // Adoption Journey Guided Paths - Now fetched from database
+  const [adoptionPaths, setAdoptionPaths] = useState([]);
+  const [pathsLoading, setPathsLoading] = useState(true);
+
+  // Icon mapping for dynamic paths
+  const ICON_MAP = {
+    'Heart': Heart,
+    'Home': Home,
+    'Users': Users,
+    'Star': Star,
+    'CheckCircle': CheckCircle
+  };
+
+  // Fetch guided paths from database
+  useEffect(() => {
+    const fetchPaths = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/guided-paths/adopt`);
+        if (response.ok) {
+          const data = await response.json();
+          // Map icon strings to actual components
+          const pathsWithIcons = data.paths.map(path => ({
+            ...path,
+            icon: ICON_MAP[path.icon] || Heart
+          }));
+          setAdoptionPaths(pathsWithIcons);
+        }
+      } catch (err) {
+        console.error('Failed to fetch adoption paths:', err);
+      } finally {
+        setPathsLoading(false);
+      }
+    };
+    fetchPaths();
+  }, []);
 
   // Filter pets
   const fetchFilteredPets = async () => {
@@ -659,79 +643,86 @@ Keep response friendly and informative, under 200 words.`
             <p className="text-gray-600 mt-2">The 3-3-3 Rule: 3 days, 3 weeks, 3 months to feel at home</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {ADOPTION_PATHS.map((path) => {
-              const Icon = path.icon;
-              const isExpanded = selectedPath === path.id;
-              return (
-                <Card 
-                  key={path.id}
-                  className={`p-4 cursor-pointer transition-all hover:shadow-lg ${
-                    isExpanded ? 'ring-2 ring-green-500' : ''
-                  }`}
-                  onClick={() => setSelectedPath(isExpanded ? null : path.id)}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className={`p-2 rounded-lg bg-gradient-to-br ${path.color}`}>
-                      <Icon className="w-5 h-5 text-white" />
+          {pathsLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="w-8 h-8 text-green-500 animate-spin" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {adoptionPaths.map((path) => {
+                const Icon = path.icon;
+                const isExpanded = selectedPath === path.id;
+                return (
+                  <Card 
+                    key={path.id}
+                    className={`p-4 cursor-pointer transition-all hover:shadow-lg ${
+                      isExpanded ? 'ring-2 ring-green-500' : ''
+                    }`}
+                    onClick={() => setSelectedPath(isExpanded ? null : path.id)}
+                    data-testid={`adoption-path-${path.id}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`p-2 rounded-lg bg-gradient-to-br ${path.color}`}>
+                        <Icon className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900">{path.title}</h3>
+                        <p className="text-gray-600 text-sm">{path.description}</p>
+                      </div>
+                      <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">{path.title}</h3>
-                      <p className="text-gray-600 text-sm">{path.description}</p>
-                    </div>
-                    <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                  </div>
-                  
-                  {isExpanded && (
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      <div className="space-y-3">
-                        {path.steps.map((step, idx) => (
-                          <div key={idx} className="flex items-start gap-3">
-                            <div className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold flex-shrink-0">
-                              {idx + 1}
-                            </div>
-                            <div>
-                              <h4 className="font-medium text-sm text-gray-900">{step.title}</h4>
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {step.items.map((item, i) => (
-                                  <Badge key={i} variant="outline" className="text-xs">
-                                    {item}
-                                  </Badge>
-                                ))}
+                    
+                    {isExpanded && (
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <div className="space-y-3">
+                          {path.steps.map((step, idx) => (
+                            <div key={idx} className="flex items-start gap-3">
+                              <div className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                {idx + 1}
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-sm text-gray-900">{step.title}</h4>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {step.items.map((item, i) => (
+                                    <Badge key={i} variant="outline" className="text-xs">
+                                      {item}
+                                    </Badge>
+                                  ))}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
+                        <div className="flex gap-2 mt-4">
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate('/shop?search=adoption');
+                            }}
+                            variant="outline"
+                            className="flex-1 border-green-300 text-green-600"
+                          >
+                            <ShoppingBag className="w-4 h-4 mr-2" />
+                            Shop Essentials
+                          </Button>
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowApplicationModal(true);
+                            }}
+                            className="flex-1 bg-green-600 hover:bg-green-700"
+                          >
+                            <Heart className="w-4 h-4 mr-2" />
+                            Start Adoption
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex gap-2 mt-4">
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate('/shop?search=adoption');
-                          }}
-                          variant="outline"
-                          className="flex-1 border-green-300 text-green-600"
-                        >
-                          <ShoppingBag className="w-4 h-4 mr-2" />
-                          Shop Essentials
-                        </Button>
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setShowApplicationModal(true);
-                          }}
-                          className="flex-1 bg-green-600 hover:bg-green-700"
-                        >
-                          <Heart className="w-4 h-4 mr-2" />
-                          Start Adoption
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </Card>
-              );
-            })}
-          </div>
+                    )}
+                  </Card>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
