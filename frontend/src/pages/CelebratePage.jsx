@@ -48,6 +48,8 @@ import SoulMadeCollection from '../components/SoulMadeCollection';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import PillarPicksSection from '../components/PillarPicksSection';
+import ArchetypeProducts from '../components/ArchetypeProducts';
+import CuratedBundles from '../components/CuratedBundles';
 
 // Lazy load Soul Explainer for footer link
 const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
@@ -628,6 +630,20 @@ const CelebratePage = () => {
           <BreedSmartRecommendations pillar="celebrate" />
         </div>
       )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 mb-8">
+        <ArchetypeProducts pillar="celebrate" maxProducts={8} showTitle={true} />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* CURATED BUNDLES - Save with handpicked combinations */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 mb-8">
+        <CuratedBundles pillar="celebrate" showTitle={true} />
+      </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* MIRA CURATED LAYER - Unified Concierge Recommendations */}

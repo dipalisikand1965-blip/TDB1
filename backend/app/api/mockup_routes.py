@@ -1046,3 +1046,123 @@ async def get_archetype_products(archetype_key: str, pillar: str, limit: int = 1
         "product_affinity": product_affinity,
         "products": products
     }
+
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SOUL MADE PRODUCT MANAGEMENT - Admin CRUD
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class SoulMadeProductUpdate(BaseModel):
+    stock: Optional[int] = None
+    variants: Optional[list] = None
+    sale_price: Optional[int] = None
+    description: Optional[str] = None
+    soul_tier: Optional[str] = None
+    price: Optional[int] = None
+
+
+@router.put("/soul-made/products/{product_id}")
+async def update_soul_made_product(product_id: str, update: SoulMadeProductUpdate):
+    """
+    Update Soul Made product details:
+    - stock: inventory count (0 = unlimited/made to order)
+    - variants: list of {name, price_modifier}
+    - sale_price: discounted price
+    - description: product description
+    - soul_tier: standard/soul_made/soul_selected/soul_gifted
+    - price: base price
+    """
+    db = get_db()
+    
+    # Build update dict with only non-None values
+    update_dict = {}
+    if update.stock is not None:
+        update_dict["stock"] = update.stock
+    if update.variants is not None:
+        update_dict["variants"] = update.variants
+    if update.sale_price is not None:
+        update_dict["sale_price"] = update.sale_price
+    if update.description is not None:
+        update_dict["description"] = update.description
+    if update.soul_tier is not None:
+        update_dict["soul_tier"] = update.soul_tier
+    if update.price is not None:
+        update_dict["price"] = update.price
+    
+    if not update_dict:
+        return {"message": "No updates provided", "product_id": product_id}
+    
+    update_dict["updated_at"] = datetime.utcnow().isoformat()
+    
+    # Try to find and update in breed_products collection
+    result = await db.breed_products.update_one(
+        {"id": product_id},
+        {"$set": update_dict}
+    )
+    
+    if result.modified_count == 0:
+        # Try products_master collection as fallback
+        result = await db.products_master.update_one(
+            {"id": product_id},
+            {"$set": update_dict}
+        )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    logger.info(f"[SOUL-MADE] Updated product {product_id}: {update_dict}")
+    
+    return {
+        "success": True,
+        "message": "Product updated successfully",
+        "product_id": product_id,
+        "updates": update_dict
+    }
+
+
+@router.get("/soul-made/products")
+async def list_soul_made_products(
+    breed: str = None,
+    pillar: str = None,
+    soul_tier: str = None,
+    has_mockup: bool = None,
+    limit: int = 50,
+    skip: int = 0
+):
+    """
+    List Soul Made products with filtering options.
+    """
+    db = get_db()
+    
+    query = {}
+    
+    if breed:
+        query["breed"] = {"$regex": breed, "$options": "i"}
+    if pillar:
+        query["$or"] = [{"pillars": pillar}, {"pillar": pillar}]
+    if soul_tier:
+        query["soul_tier"] = soul_tier
+    if has_mockup is not None:
+        if has_mockup:
+            query["mockup_url"] = {"$exists": True, "$ne": None, "$ne": ""}
+        else:
+            query["$or"] = [
+                {"mockup_url": {"$exists": False}},
+                {"mockup_url": None},
+                {"mockup_url": ""}
+            ]
+    
+    products = await db.breed_products.find(
+        query,
+        {"_id": 0}
+    ).skip(skip).limit(limit).to_list(length=limit)
+    
+    total = await db.breed_products.count_documents(query)
+    
+    return {
+        "products": products,
+        "total": total,
+        "limit": limit,
+        "skip": skip
+    }

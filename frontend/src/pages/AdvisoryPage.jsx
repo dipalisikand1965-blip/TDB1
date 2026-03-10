@@ -23,6 +23,8 @@ import PersonalizedPicks from '../components/PersonalizedPicks';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import SoulMadeCollection from '../components/SoulMadeCollection';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
+import ArchetypeProducts from '../components/ArchetypeProducts';
+import CuratedBundles from '../components/CuratedBundles';
 import {
   Brain, Heart, Apple, Home, Stethoscope, GraduationCap,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
@@ -722,6 +724,24 @@ const AdvisoryPage = () => {
       <section className="py-8 px-4" data-testid="advisory-breed-smart-section">
         <div className="max-w-6xl mx-auto">
           <BreedSmartRecommendations pillar="advisory" />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4">
+        <div className="max-w-6xl mx-auto">
+          <ArchetypeProducts pillar="advisory" maxProducts={8} showTitle={true} />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* CURATED BUNDLES - Save with handpicked combinations */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4">
+        <div className="max-w-6xl mx-auto">
+          <CuratedBundles pillar="advisory" showTitle={true} />
         </div>
       </section>
       
