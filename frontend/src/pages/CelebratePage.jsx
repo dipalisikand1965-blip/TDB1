@@ -116,40 +116,51 @@ const CelebratePage = () => {
   // Dynamic picks for the Concierge Card preview
   const [dynamicPicks, setDynamicPicks] = useState([]);
   
-  // Shape definitions for auto-detection
+  // Shape definitions for auto-detection - covers all celebrate products
   const CAKE_SHAPES = [
-    { id: 'paw', emoji: '🐾', label: 'Paw Shape', keywords: ['paw', 'paw-shaped', 'paw print'] },
-    { id: 'bone', emoji: '🦴', label: 'Bone Shape', keywords: ['bone', 'bone-shaped', 'biscuit bone'] },
-    { id: 'heart', emoji: '💜', label: 'Heart Shape', keywords: ['heart', 'heart-shaped', 'love'] },
-    { id: 'round', emoji: '⭕', label: 'Round/Circle', keywords: ['round', 'circle', 'circular'] },
-    { id: 'square', emoji: '⬜', label: 'Square', keywords: ['square', 'rectangular', 'box'] },
-    { id: 'star', emoji: '⭐', label: 'Star Shape', keywords: ['star', 'star-shaped'] },
-    { id: 'number', emoji: '🔢', label: 'Number Cake', keywords: ['number', 'age', 'digit'] },
-    { id: 'donut', emoji: '🍩', label: 'Donut Shape', keywords: ['donut', 'doughnut', 'ring'] },
+    { id: 'all', emoji: '✨', label: 'All Products', keywords: [] },
+    { id: 'cakes', emoji: '🎂', label: 'Cakes', keywords: ['cake', 'pupcake', 'cupcake', 'birthday cake'] },
+    { id: 'treats', emoji: '🦴', label: 'Treats', keywords: ['treat', 'biscuit', 'cookie', 'snack', 'chew'] },
+    { id: 'hampers', emoji: '🎁', label: 'Gift Hampers', keywords: ['hamper', 'gift box', 'gift set', 'bundle'] },
+    { id: 'accessories', emoji: '🎉', label: 'Party Items', keywords: ['accessory', 'party', 'decoration', 'bandana', 'hat', 'bow'] },
+    { id: 'breed', emoji: '🐕', label: 'Breed Specials', keywords: ['welcome', 'kit', 'labrador', 'pug', 'beagle', 'german shepherd', 'husky', 'indie', 'golden retriever'] },
+    { id: 'premium', emoji: '👑', label: 'Premium', keywords: ['premium', 'luxury', 'gourmet', 'artisan'] },
   ];
   
-  // Auto-detect shape from product name/description
+  // Auto-detect category from product name/description
   const detectProductShape = (product) => {
     const text = `${product.name || ''} ${product.description || ''} ${(product.tags || []).join(' ')}`.toLowerCase();
     const category = (product.category || '').toLowerCase();
+    const productId = (product.id || '').toLowerCase();
     
-    // Check for explicit shapes first
-    for (const shape of CAKE_SHAPES) {
-      if (shape.id === 'round') continue; // Handle round separately
-      if (shape.keywords.some(keyword => text.includes(keyword))) {
-        return shape.id;
-      }
+    // Check if it's a breed product
+    if (productId.startsWith('breed-') || text.includes('welcome') || text.includes('kit')) {
+      return 'breed';
     }
     
-    // If it's a cake/bakery item and no other shape detected, it's likely round
-    const isCakeItem = category.includes('cake') || 
-                       category.includes('bakery') ||
-                       text.includes('cake') ||
-                       text.includes('pupcake') ||
-                       text.includes('cupcake');
+    // Check for premium items
+    if (text.includes('premium') || text.includes('luxury') || text.includes('gourmet')) {
+      return 'premium';
+    }
     
-    if (isCakeItem) {
-      return 'round'; // Default shape for cakes
+    // Check for hampers/gift sets
+    if (text.includes('hamper') || text.includes('gift box') || text.includes('gift set') || text.includes('bundle')) {
+      return 'hampers';
+    }
+    
+    // Check for party accessories
+    if (text.includes('accessory') || text.includes('party') || text.includes('decoration') || text.includes('bandana') || text.includes('hat') || text.includes('bow')) {
+      return 'accessories';
+    }
+    
+    // Check for treats
+    if (text.includes('treat') || text.includes('biscuit') || text.includes('cookie') || text.includes('snack') || text.includes('chew')) {
+      return 'treats';
+    }
+    
+    // Check for cakes
+    if (category.includes('cake') || text.includes('cake') || text.includes('pupcake') || text.includes('cupcake')) {
+      return 'cakes';
     }
     
     return null;
@@ -488,23 +499,19 @@ const CelebratePage = () => {
     
     try {
       const skip = (page - 1) * PRODUCTS_PER_PAGE;
-      // Build API URL with category filter, pagination, and shape filter
-      let url = `${API_URL}/api/products?pillar=celebrate&limit=${PRODUCTS_PER_PAGE}&skip=${skip}`;
+      // Build API URL with category filter, pagination
+      let url = `${API_URL}/api/products?pillar=celebrate&limit=100&skip=0`; // Fetch more for client-side filtering
       if (category && CATEGORY_API_MAP[category]) {
         url += `&category=${CATEGORY_API_MAP[category]}`;
-      }
-      // Add shape filter to API call (backend handles it now)
-      if (shapeFilter) {
-        url += `&shape=${shapeFilter}`;
       }
       
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
         let products = data.products || data || [];
-        const total = data.total || products.length;
+        let total = data.total || products.length;
         
-        // Additional client-side filtering for more precision
+        // Additional client-side filtering for category
         if (category && CATEGORY_API_MAP[category]) {
           const apiCategory = CATEGORY_API_MAP[category].toLowerCase();
           products = products.filter(p => {
@@ -519,19 +526,35 @@ const CelebratePage = () => {
           });
         }
         
-        // Shape filtering is now done by the backend API
+        // Client-side shape/category filtering
+        if (shapeFilter && shapeFilter !== 'all') {
+          const shape = CAKE_SHAPES.find(s => s.id === shapeFilter);
+          if (shape && shape.keywords.length > 0) {
+            products = products.filter(p => {
+              const text = `${p.name || ''} ${p.description || ''} ${(p.tags || []).join(' ')} ${p.id || ''}`.toLowerCase();
+              const productCategory = (p.category || '').toLowerCase();
+              return shape.keywords.some(keyword => text.includes(keyword) || productCategory.includes(keyword));
+            });
+          }
+        }
+        
+        // Update total after filtering
+        total = products.length;
+        
+        // Apply pagination after filtering
+        const paginatedProducts = products.slice(skip, skip + PRODUCTS_PER_PAGE);
         
         if (append && page > 1) {
-          setFeaturedProducts(prev => [...prev, ...products]);
+          setFeaturedProducts(prev => [...prev, ...paginatedProducts]);
         } else {
-          setFeaturedProducts(products);
+          setFeaturedProducts(paginatedProducts);
         }
         
         setTotalProducts(total);
-        setHasMore(skip + products.length < total);
+        setHasMore(skip + paginatedProducts.length < total);
         setCurrentPage(page);
         
-        console.log(`[CelebratePage] Loaded ${products.length} products (page ${page}, total: ${total})${category ? ` for ${category}` : ''}${shapeFilter ? ` shape: ${shapeFilter}` : ''}`);
+        console.log(`[CelebratePage] Loaded ${paginatedProducts.length} products (page ${page}, total: ${total})${category ? ` for ${category}` : ''}${shapeFilter ? ` filter: ${shapeFilter}` : ''}`);
       }
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -548,14 +571,15 @@ const CelebratePage = () => {
     }
   };
   
-  // Handle shape filter click
+  // Handle shape filter click - now does client-side filtering
   const handleShapeFilter = (shapeId) => {
-    if (selectedShape === shapeId) {
-      // Toggle off - show all products
+    if (selectedShape === shapeId || shapeId === 'all') {
+      // Toggle off or "All" selected - show all products
       setSelectedShape(null);
       fetchFeaturedProducts(selectedSubcat, 1, null);
     } else {
       setSelectedShape(shapeId);
+      // Client-side filtering based on shape keywords
       fetchFeaturedProducts(selectedSubcat, 1, shapeId);
     }
   };
@@ -1076,11 +1100,11 @@ const CelebratePage = () => {
         </div>
         
         {/* ═══════════════════════════════════════════════════════════════════════ */}
-        {/* SHAPE FILTER PILLS - Auto-detected cake shapes */}
+        {/* PRODUCT CATEGORY FILTER PILLS */}
         {/* ═══════════════════════════════════════════════════════════════════════ */}
         <div className="mb-6" data-testid="shape-filters">
           <p className="ios-caption text-gray-500 mb-2 flex items-center gap-1">
-            <span>🎂</span> Filter by cake shape:
+            <span>🎉</span> Filter by category:
           </p>
           <div className="flex flex-wrap gap-2">
             {CAKE_SHAPES.map((shape) => (
@@ -1088,7 +1112,7 @@ const CelebratePage = () => {
                 key={shape.id}
                 onClick={() => handleShapeFilter(shape.id)}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${
-                  selectedShape === shape.id
+                  (selectedShape === shape.id) || (shape.id === 'all' && !selectedShape)
                     ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md'
                     : 'bg-white border border-gray-200 text-gray-700 hover:border-pink-300 hover:bg-pink-50'
                 }`}
@@ -1171,20 +1195,17 @@ const CelebratePage = () => {
               ) : (
                 <span className="flex items-center gap-2">
                   Load More Products
-                  <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">
-                    {totalProducts - featuredProducts.length} more
-                  </span>
                 </span>
               )}
             </Button>
           </div>
         )}
         
-        {/* Total count summary when all loaded */}
+        {/* All products loaded indicator */}
         {!hasMore && featuredProducts.length > 0 && totalProducts > PRODUCTS_PER_PAGE && (
           <div className="text-center mt-6">
             <p className="ios-caption text-gray-500">
-              ✓ Showing all {featuredProducts.length} products
+              ✓ All products loaded
             </p>
           </div>
         )}
