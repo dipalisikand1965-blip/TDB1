@@ -324,27 +324,32 @@ const AdvisoryPage = () => {
     setShowAiResponse(true);
     
     try {
-      const response = await fetch(`${API_URL}/api/mira/advisory-ask`, {
+      const response = await fetch(`${API_URL}/api/advisory/ask-advisory`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token && { 'Authorization': `Bearer ${token}` })
         },
         body: JSON.stringify({
-          query: advisoryQuery,
+          question: advisoryQuery,
+          pet_id: activePet?.id,
           pet_name: activePet?.name,
           pet_breed: activePet?.breed,
           pet_age: activePet?.age_years,
-          pet_size: activePet?.size,
           context: 'advisory'
         })
       });
       
       if (response.ok) {
         const data = await response.json();
-        setAiResponse(data.response || 'I can help you with that! Let me connect you with our Concierge for personalized advice.');
+        setAiResponse(data.answer || 'Let me connect you with our Concierge for personalized advice.');
+        
+        // Store related products for display
+        if (data.related_products?.length > 0) {
+          setProducts(prev => [...data.related_products, ...prev.filter(p => !data.related_products.find(rp => rp.id === p.id))]);
+        }
       } else {
-        setAiResponse('Let me connect you with our Concierge® team who can provide personalized guidance for your question.');
+        setAiResponse('Our Concierge® team is ready to help you with this. Tap below to chat!');
       }
     } catch (error) {
       setAiResponse('Our Concierge® team is ready to help you with this. Tap below to chat!');
