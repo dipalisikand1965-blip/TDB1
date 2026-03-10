@@ -22,7 +22,6 @@ import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
 import { useNavigate } from 'react-router-dom';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
-import PillarPicksSection from '../components/PillarPicksSection';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import {
   Heart, Rainbow, Flower2, Star, Calendar, Phone, Mail, MapPin,
@@ -32,10 +31,6 @@ import {
 import RainbowBridgeMemorial from '../components/RainbowBridgeMemorial';
 import RainbowBridgeWall from '../components/RainbowBridgeWall';
 import SoulMadeCollection from '../components/SoulMadeCollection';
-import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
-import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
-import PersonalizedPicks from '../components/PersonalizedPicks';
-import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
 import { usePillarContext } from '../context/PillarContext';
 
@@ -869,12 +864,13 @@ const FarewellPage = () => {
         </div>
       </section>
 
-      {/* === SERVICE CATALOG WITH PRICING === */}
+      {/* === CONCIERGE® SERVICES - No pricing, just contact concierge === */}
       <ServiceCatalogSection 
         pillar="farewell"
-        title="Farewell, Personalised"
-        subtitle="Compassionate services with transparent pricing"
-        maxServices={8}
+        title="Compassionate Support"
+        subtitle="Our concierge team is here to guide you through this difficult time"
+        maxServices={4}
+        hidePrice={true}
       />
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
@@ -884,63 +880,20 @@ const FarewellPage = () => {
         <div className="max-w-6xl mx-auto">
           <SoulMadeCollection
             pillar="farewell"
-            maxItems={8}
+            maxItems={6}
             showTitle={true}
           />
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4" data-testid="farewell-breed-smart-section">
-        <div className="max-w-6xl mx-auto">
-          <BreedSmartRecommendations pillar="farewell" />
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <ArchetypeProducts pillar="farewell" maxProducts={8} showTitle={true} />
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* CURATED BUNDLES - Save with handpicked combinations */}
+      {/* CURATED BUNDLES - Memorial bundles with savings */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <section className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
           <CuratedBundles pillar="farewell" showTitle={true} />
         </div>
       </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* MIRA CURATED LAYER - Unified Concierge Recommendations */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <MiraCuratedLayer
-        pillar="farewell"
-        activePet={activePet}
-        token={token}
-        userEmail={user?.email}
-        isLoading={!userPets?.length && !!token}
-      />
-      
-      {/* Personalized Memorial Products */}
-      <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <PersonalizedPicks pillar="farewell" maxProducts={6} />
-        </div>
-      </section>
-      
-      {/* Mira's Pillar Picks for Pet */}
-      {activePet && (
-        <div className="max-w-6xl mx-auto px-4 mt-6">
-          <PillarPicksSection pillar="farewell" pet={activePet} />
-        </div>
-      )}
 
       {/* Service Request Modal */}
       <Dialog open={showServiceModal} onOpenChange={setShowServiceModal}>
@@ -1205,13 +1158,6 @@ const FarewellPage = () => {
             soulReason={getSoulBasedReason(pets[0], 'farewell')}
             responseTime="1 hour"
           />
-        </div>
-      )}
-      
-      {/* Mira's Picks for Pet */}
-      {pets && pets[0] && (
-        <div className="max-w-6xl mx-auto px-4">
-          <PillarPicksSection pillar="farewell" pet={pets[0]} />
         </div>
       )}
       
