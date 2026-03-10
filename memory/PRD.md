@@ -1,6 +1,6 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 10, 2026 12:25 IST  
-**Status:** Emergency Page Redesign COMPLETE | Bundle Modal Fixed | Mockups ~62%
+**Last Updated:** March 10, 2026 15:35 IST  
+**Status:** Emergency Page Gap Analysis COMPLETE | All Issues Fixed
 
 ---
 
@@ -9,95 +9,76 @@ Hyper-personalized pet platform using "memory-led personalization" - products, c
 
 ---
 
-## COMPLETED: EMERGENCY PAGE 9-LAYER ARCHITECTURE
+## COMPLETED: EMERGENCY PAGE GAP ANALYSIS FIXES (March 10, 2026)
 
-### Implementation Complete (March 10, 2026)
-The Emergency page has been fully redesigned with 9 distinct functional layers:
+### Issues Identified & Resolved
+
+| Issue | Root Cause | Fix Applied | Status |
+|-------|------------|-------------|--------|
+| **Wrong archetype heading** ("Social favorites for popular pup") | Archetype copy not pillar-aware | Added `getPillarAwareGreeting/ProductIntro/BundleIntro` functions | ✅ FIXED |
+| **Location stuck on Mumbai** | API hardcoded `city=Mumbai` | Added browser geolocation + manual city selector modal | ✅ FIXED |
+| **Service CTAs generic** | "Tap to book" not appropriate for emergency | Changed to "Talk to Concierge" for emergency pillar | ✅ FIXED |
+| **Bundle titles wrong** | CuratedBundles used archetype names | Added pillar awareness - shows "Emergency Bundles" | ✅ FIXED |
+
+### Files Modified
+- `/app/frontend/src/components/emergency/NearbyEmergencyHelp.jsx` - Complete rewrite with:
+  - Browser geolocation detection
+  - Reverse geocoding for city name
+  - Manual city selector modal
+  - localStorage caching
+  - 12 cities supported (Mumbai, Delhi, Bangalore, Chennai, etc.)
+- `/app/frontend/src/utils/archetypeCopy.js` - Added:
+  - `EMERGENCY_COPY` object with calming language
+  - `getPillarAwareGreeting()`
+  - `getPillarAwareProductIntro()`
+  - `getPillarAwareBundleIntro()`
+- `/app/frontend/src/components/ArchetypeProducts.jsx` - Uses pillar-aware copy
+- `/app/frontend/src/components/CuratedBundles.jsx` - Uses pillar-aware titles
+- `/app/frontend/src/components/ServiceCatalogSection.jsx` - Shows "Talk to Concierge" CTA
+
+---
+
+## EMERGENCY PAGE 9-LAYER ARCHITECTURE (Complete)
 
 | Layer | Component | Status |
 |-------|-----------|--------|
-| 1 | **Urgent Help Buttons** - Call Vet, Find Clinic, Poison Help, Ambulance, Pet File | ✅ COMPLETE |
-| 2 | **Near Me Now** - Google Places API for real-time clinic finder | ✅ COMPLETE |
-| 3 | **Concierge Will Assist** - Human support layer via WhatsApp | ✅ COMPLETE |
-| 4 | **Pet Emergency File** - Auto-loaded pet medical info | ✅ COMPLETE |
-| 5 | **Emergency Guides** - 10 actionable guides with Do/Don't | ✅ COMPLETE |
-| 6 | **Emergency Products** - Curated bundles & first-aid kits | ✅ COMPLETE |
-| 7 | **Smart Picks** - Breed/archetype personalized products | ✅ COMPLETE |
-| 8 | **Special Paths** - Lost Pet, Travel, Puppy, Senior | ✅ COMPLETE |
-| 9 | **Follow-up & Recovery** - Discharge checklist, reminders | ✅ COMPLETE |
-
-### Key Files Modified
-- `/app/frontend/src/pages/EmergencyPage.jsx` - Complete 9-layer redesign
-- `/app/frontend/src/components/emergency/NearbyEmergencyHelp.jsx` - Fixed API endpoint
-- `/app/frontend/src/components/CuratedBundles.jsx` - Added modal detail view
+| 1 | **Urgent Help Buttons** - Call Vet, Find Clinic, Poison Help, Ambulance, Pet File | ✅ |
+| 2 | **Near Me Now** - Location-aware clinic finder with city selector | ✅ |
+| 3 | **Concierge Will Assist** - WhatsApp-based human support | ✅ |
+| 4 | **Pet Emergency File** - Auto-loaded pet medical info | ✅ |
+| 5 | **Emergency Guides** - 10 actionable guides with Do/Don't | ✅ |
+| 6 | **Emergency Products** - Bundles with contextual titles | ✅ |
+| 7 | **Smart Picks** - Personalized products with emergency copy | ✅ |
+| 8 | **Special Paths** - Lost Pet, Travel, Puppy, Senior | ✅ |
+| 9 | **Follow-up & Recovery** - Post-emergency support | ✅ |
 
 ---
 
-## COMPLETED: BUNDLE MODAL FIX (P1)
+## KEY FEATURES
 
-**Issue:** Clicking bundle cards navigated away instead of opening modal
-**Fix:** Updated CuratedBundles.jsx to include:
-- Click-to-open modal functionality
-- Full bundle detail view with all items
-- AI-generated image display
-- Pricing with savings calculation
-- Add to Cart from modal
+### Location System
+- **Auto-detect**: Uses browser geolocation
+- **Reverse geocoding**: Gets city name from coordinates (via Nominatim)
+- **Manual override**: Modal with 12 pre-configured cities
+- **Persistence**: Saves to localStorage for return visits
+- **Fallback**: Defaults to Mumbai if detection fails
 
----
-
-## COMPLETED FEATURES
-
-### Phase 1: Core Infrastructure
-- [x] FastAPI backend with MongoDB
-- [x] React frontend with Tailwind CSS
-- [x] User authentication (JWT)
-- [x] Pet profile management (9 test pets)
-- [x] Shopify product sync (2199 products)
-
-### Phase 2: Soul Profile System
-- [x] 51-question soul questionnaire
-- [x] 26 canonical scoring fields
-- [x] 7 Archetypes: Gentle Aristocrat, Wild Explorer, Velcro Baby, Snack Negotiator, Quiet Watcher, Social Butterfly, Brave Worrier
-
-### Phase 3: Golden Standard Layout (All 13 Pillars)
-- [x] Hero section with pet personalization
-- [x] Mira's Quick Help (AI concierge)
-- [x] Soul Made Products section
-- [x] Breed-Smart Recommendations
-- [x] Curated Bundles with AI-generated images
-- [x] Archetype Products
-
-### Phase 4: AI Mockup Generation
-- [x] OpenAI GPT Image 1 integration
-- [x] Cloudinary upload and storage
-- [x] 33 breeds x 65+ product types = 2569 products
-- [x] Auto-generator script available
-- [x] Progress: ~62% (~1600/2569)
-
-### Phase 5-9: Admin Systems
-- [x] Multi-Factor Filtering API
-- [x] Soul Tier Admin UI
-- [x] Archetype Tone System
-- [x] Curated Bundles System (19 bundles)
-- [x] Admin UI Fixes
-
-### Phase 10: Emergency Page Redesign (March 10, 2026)
-- [x] 9-layer architecture implementation
-- [x] UrgentHelpButtons component
-- [x] NearbyEmergencyHelp with location API
-- [x] EmergencySituationGuides (10 guides)
-- [x] Special Emergency Paths (4 types)
-- [x] Follow-up & Recovery section
-- [x] Bundle Modal fix
+### Pillar-Aware Copy System
+- Emergency pillar uses calming, supportive language:
+  - "Essential care for {pet}"
+  - "Safety first for {pet}"
+  - "Emergency preparedness kits for your pet"
+- Other pillars use fun archetype-specific copy
 
 ---
 
-## IN PROGRESS
+## COMPLETED WORK THIS SESSION
 
-| Task | Progress | Notes |
-|------|----------|-------|
-| **Mockup Generation** | ~62% | ~1600/2569 - Run auto_mockup_generator.py to continue |
-| **Production Sync** | Pending | Run after mockups hit 80%+ |
+1. ✅ **Emergency Page 9-Layer Redesign**
+2. ✅ **Bundle Modal Fix** - Clicking bundles opens detail modal
+3. ✅ **Location Detection** - Auto-detect + manual city selector
+4. ✅ **Emergency-Specific Copy** - No more "Social favorites" on emergency page
+5. ✅ **Concierge CTAs** - Services show "Talk to Concierge"
 
 ---
 
@@ -107,46 +88,16 @@ The Emergency page has been fully redesigned with 9 distinct functional layers:
 |-------|----------|--------|
 | Razorpay checkout "body error" | P1 | NOT STARTED (User deferred) |
 | Mobile dashboard scrambled | P2 | User verification needed |
+| AI Mockup Generation | P0 | ~62% complete |
 
 ---
 
-## KEY FILES
+## NEXT STEPS
 
-### Frontend - Emergency
-- `/app/frontend/src/pages/EmergencyPage.jsx` - Main 9-layer page
-- `/app/frontend/src/components/emergency/UrgentHelpButtons.jsx`
-- `/app/frontend/src/components/emergency/NearbyEmergencyHelp.jsx`
-- `/app/frontend/src/components/emergency/PetEmergencyFile.jsx`
-- `/app/frontend/src/components/emergency/EmergencySituationGuides.jsx`
-- `/app/frontend/src/components/CuratedBundles.jsx` - With modal
-
-### Backend - Google Places
-- `/app/backend/services/google_places_service.py`
-- `/app/backend/mira_routes.py` - `/api/mira/local-places/*` endpoints
-
----
-
-## KEY API ENDPOINTS
-
-### Emergency
-- `GET /api/mira/local-places/vets` - Nearby vets via Google Places
-- `GET /api/emergency/vets` - Emergency partners
-- `GET /api/emergency/products` - Emergency products
-- `POST /api/emergency/request` - Submit emergency request
-
-### Bundles
-- `GET /api/bundles?pillar=emergency` - Get bundles by pillar
-- `POST /api/bundles/{id}/generate-image` - Generate AI image
-
----
-
-## DATABASE COLLECTIONS
-
-- `products_master` - 3443 products (Shopify + Soul Made)
-- `breed_products` - 2569 breed-specific products
-- `unified_products` - 3338 unified catalog
-- `bundles` - 19 curated bundles (all with images)
-- `pets` - Pet profiles with archetypes
+1. **Continue mockup generation** - Run `cd /app/backend && python3 auto_mockup_generator.py`
+2. **Fix Razorpay checkout** - P1 blocker (when user prioritizes)
+3. **Mobile verification** - Need user screenshot
+4. **Production sync** - After 80%+ mockups complete
 
 ---
 
@@ -157,37 +108,14 @@ The Emergency page has been fully redesigned with 9 distinct functional layers:
 
 ---
 
-## NEXT STEPS
+## KEY API ENDPOINTS
 
-1. **Continue mockup generation** - Run `cd /app/backend && python3 auto_mockup_generator.py`
-2. **Fix Razorpay checkout** - P1 blocker (deferred by user)
-3. **Verify mobile dashboard** - Need user screenshot
-4. **Run production sync** - After 80%+ mockups complete
+### Emergency & Location
+- `GET /api/mira/nearby-places?lat=X&lng=Y` - Nearby places by coords
+- `GET /api/mira/local-places/vets?city=X` - Vets by city name
+- `GET /api/emergency/vets` - Emergency partners (fallback)
+- `POST /api/emergency/request` - Submit emergency request
 
----
-
-## AUTO-GENERATOR
-
-Running at: `/app/backend/auto_mockup_generator.py`
-Log file: `/tmp/auto_mockup_generator.log`
-Check status: `tail -20 /tmp/auto_mockup_generator.log`
-
-To start: `cd /app/backend && python3 auto_mockup_generator.py &`
-
----
-
-## VERIFIED WORKING (March 10, 2026)
-
-1. **Emergency Page 9-Layer Architecture** - COMPLETE
-   - All 9 layers functional
-   - Nearby clinics showing from Google Places API
-   - Emergency guides expandable with Do/Don't sections
-   - Special paths for Lost Pet, Travel, Puppy, Senior
-
-2. **Bundle Modal** - FIXED
-   - Clicking bundle card opens detail modal
-   - Shows all items, pricing, and AI image
-   - Add to Cart works from modal
-
-3. **Bundle Images on Pillar Pages** - CONFIRMED working
-   - All 19 bundles have AI-generated images
+### Bundles
+- `GET /api/bundles?pillar=emergency` - Get bundles by pillar
+- `POST /api/bundles/{id}/generate-image` - Generate AI image
