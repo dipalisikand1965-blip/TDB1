@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://soul-made-admin.preview.emergentagent.com` |
+| **Preview** | `https://doggy-ai-mockups.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |

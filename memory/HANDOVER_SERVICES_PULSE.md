@@ -151,8 +151,8 @@ await db.concierge_threads.insert_one(concierge_thread)
 
 ## TEST URLS
 
-- **Main Demo**: https://soul-made-admin.preview.emergentagent.com/mira-demo
-- **Pure OS Test**: https://soul-made-admin.preview.emergentagent.com/mira-pure-os
+- **Main Demo**: https://doggy-ai-mockups.preview.emergentagent.com/mira-demo
+- **Pure OS Test**: https://doggy-ai-mockups.preview.emergentagent.com/mira-pure-os
 - **Login**: `dipali@clubconcierge.in` / `test123`
 
 ## TEST SCENARIOS

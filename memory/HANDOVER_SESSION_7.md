@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://soul-made-admin.preview.emergentagent.com
+https://doggy-ai-mockups.preview.emergentagent.com
 
 ---
 
