@@ -5,7 +5,7 @@ Update Dine products with generated images via API
 import requests
 import json
 
-API_URL = "https://decision-support-8.preview.emergentagent.com"
+API_URL = "https://feature-parity-push.preview.emergentagent.com"
 AUTH = ("aditya", "lola4304")
 
 # Generated images
