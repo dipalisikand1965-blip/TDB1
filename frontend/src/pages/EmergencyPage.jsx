@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -18,6 +18,13 @@ import { ConciergeButton } from '../components/mira-os';
 import ProductCard from '../components/ProductCard';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
+// New Emergency Components
+import { 
+  UrgentHelpButtons, 
+  PetEmergencyFile, 
+  NearbyEmergencyHelp,
+  EmergencySituationGuides 
+} from '../components/emergency';
 import {
   AlertTriangle, Search, Heart, Phone, MapPin, Clock, Ambulance,
   ChevronRight, Sparkles, Star, Loader2, Send, ArrowRight, Play,
@@ -257,12 +264,88 @@ const EmergencyPage = () => {
 
   const featuredPartners = partners.filter(p => p.is_featured);
 
+  // Refs for scrolling
+  const nearbyHelpRef = useRef(null);
+  const petFileRef = useRef(null);
+
+  const scrollToNearbyHelp = () => {
+    nearbyHelpRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const scrollToPetFile = () => {
+    petFileRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const openWhatsAppConcierge = () => {
+    window.open('https://wa.me/918971702582?text=Hi, I need emergency assistance for my pet', '_blank');
+  };
+
   return (
     <PillarPageLayout
       pillar="emergency"
       title="Emergency - 24/7 Pet Support | The Doggy Company"
       description="Immediate help for lost pets, medical emergencies, accidents, and more. Our team and partner network are ready to respond 24/7."
     >
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 1: URGENT HELP BUTTONS - Top of page, panic mode */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <UrgentHelpButtons 
+        onFindClinic={scrollToNearbyHelp}
+        onOpenPetFile={scrollToPetFile}
+        petName={activePet?.name}
+      />
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 2: NEARBY EMERGENCY HELP - Google Places API */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div ref={nearbyHelpRef}>
+        <NearbyEmergencyHelp />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 3: CONCIERGE HELP - Human support layer */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <ServiceCatalogSection 
+        pillar="emergency"
+        title="Concierge® Will Assist"
+        subtitle="We can help coordinate things for you right now"
+        maxServices={8}
+        hidePrice={true}
+      />
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 4: MY PET EMERGENCY FILE - Auto-loaded for logged-in user */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div ref={petFileRef}>
+        <PetEmergencyFile 
+          pet={activePet}
+          onEdit={() => toast({ title: 'Edit Pet', description: 'Navigate to My Pets to update info' })}
+        />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 5: EMERGENCY SITUATION GUIDES - Actionable content */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <EmergencySituationGuides 
+        onFindClinic={scrollToNearbyHelp}
+        onContactConcierge={openWhatsAppConcierge}
+      />
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 6 & 7: BREED-SMART & ARCHETYPE PRODUCTS - Personalized picks */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4" data-testid="emergency-breed-smart-section">
+        <div className="max-w-6xl mx-auto">
+          <BreedSmartRecommendations pillar="emergency" />
+        </div>
+      </section>
+
+      <section className="py-8 px-4">
+        <div className="max-w-6xl mx-auto">
+          <ArchetypeProducts pillar="emergency" maxProducts={8} showTitle={true} />
+        </div>
+      </section>
+
       {/* Emergency Hotline Banner - Below Hero */}
       <div className="bg-gradient-to-r from-red-600 to-rose-700 text-white py-4">
         <div className="max-w-7xl mx-auto px-4">
