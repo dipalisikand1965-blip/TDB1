@@ -38,7 +38,6 @@ import TasteTestFeature from '../components/dine/TasteTestFeature';
 import SoulMadeCollection from '../components/SoulMadeCollection';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
-import PillarPicksSection from '../components/PillarPicksSection';
 
 // Get user from AuthContext or localStorage
 const getUser = () => {
