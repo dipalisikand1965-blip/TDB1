@@ -128,6 +128,26 @@ const PILLAR_BUNDLES = {
       discount: 21,
       icon: '🌈',
       popular: true
+    },
+    {
+      id: 'farewell-keepsake-bundle',
+      name: 'Precious Memories Bundle',
+      description: 'Beautiful keepsakes to honor their legacy',
+      items: ['Photo Engraved Frame', 'Memorial Garden Stone', 'Pawprint Keychain', 'Memory Box'],
+      original_price: 2499,
+      bundle_price: 1899,
+      discount: 24,
+      icon: '💜'
+    },
+    {
+      id: 'farewell-tribute-bundle',
+      name: 'Loving Tribute Bundle',
+      description: 'A complete memorial collection',
+      items: ['Angel Wing Ornament', 'Rainbow Bridge Frame', 'Heart Pendant', 'Memorial Candle'],
+      original_price: 2199,
+      bundle_price: 1699,
+      discount: 23,
+      icon: '🕊️'
     }
   ],
   advisory: [
@@ -277,11 +297,18 @@ const CuratedBundles = ({ pillar, showTitle = true, className = '', maxBundles }
   // Use pillar-aware copy for emergency context
   const bundleIntro = getPillarAwareBundleIntro(archetype, currentPet?.name, currentPet?.breed, pillar);
   
-  // Emergency-specific display
+  // Pillar-specific display
   const isEmergency = pillar === 'emergency';
-  const sectionEmoji = isEmergency ? '🚨' : archetypeInfo.emoji;
+  const isFarewell = pillar === 'farewell';
+  const isAdopt = pillar === 'adopt';
+  
+  const sectionEmoji = isEmergency ? '🚨' : isFarewell ? '💜' : isAdopt ? '🏠' : archetypeInfo.emoji;
   const sectionTitle = isEmergency 
     ? 'Emergency Bundles' 
+    : isFarewell
+    ? 'Memorial Bundles'
+    : isAdopt
+    ? 'New Home Bundles'
     : (archetype ? `${archetypeInfo.name.replace('The ', '')} Bundles` : 'Curated Bundles');
 
   // Apply maxBundles limit if provided
@@ -294,7 +321,7 @@ const CuratedBundles = ({ pillar, showTitle = true, className = '', maxBundles }
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-2 mb-2">
               <span className="text-xl">{sectionEmoji}</span>
-              <Gift className={`w-5 h-5 ${isEmergency ? 'text-red-600' : 'text-purple-600'}`} />
+              <Gift className={`w-5 h-5 ${isEmergency ? 'text-red-600' : isFarewell ? 'text-purple-600' : 'text-purple-600'}`} />
               <h3 className="text-xl font-bold text-gray-800">
                 {sectionTitle}
               </h3>
