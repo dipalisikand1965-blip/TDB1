@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { usePillarContext } from '../context/PillarContext';
 import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
@@ -77,6 +78,10 @@ const AdvisoryPage = () => {
   const [selectedPet, setSelectedPet] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [heroIndex, setHeroIndex] = useState(0);
+  
+  // Use global pet context
+  const { currentPet } = usePillarContext();
+  const activePet = currentPet || selectedPet;
   
   const [requestForm, setRequestForm] = useState({
     advisory_type: 'behaviour',
@@ -730,16 +735,16 @@ const AdvisoryPage = () => {
         
         <MiraCuratedLayer
           pillar="advisory"
-          activePet={userPets?.[0]}
+          activePet={activePet || userPets?.[0]}
           token={token}
           userEmail={user?.email}
           isLoading={!userPets && !!token}
         />
         
         {/* Mira's Picks for Pet */}
-        {userPets && userPets[0] && (
+        {(activePet || userPets?.[0]) && (
           <div className="max-w-6xl mx-auto px-4 mt-6">
-            <PillarPicksSection pillar="advisory" pet={userPets[0]} />
+            <PillarPicksSection pillar="advisory" pet={activePet || userPets[0]} />
           </div>
         )}
       </div>
