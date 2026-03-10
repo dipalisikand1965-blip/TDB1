@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://feature-parity-push.preview.emergentagent.com
+https://golden-pillar-hub.preview.emergentagent.com
 
 ---
 

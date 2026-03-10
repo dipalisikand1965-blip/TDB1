@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://feature-parity-push.preview.emergentagent.com/mira-demo**
+**https://golden-pillar-hub.preview.emergentagent.com/mira-demo**
 
 ---
 
