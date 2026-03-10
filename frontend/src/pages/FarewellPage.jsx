@@ -33,6 +33,9 @@ import RainbowBridgeMemorial from '../components/RainbowBridgeMemorial';
 import RainbowBridgeWall from '../components/RainbowBridgeWall';
 import SoulMadeCollection from '../components/SoulMadeCollection';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
+import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
+import PersonalizedPicks from '../components/PersonalizedPicks';
+import { usePillarContext } from '../context/PillarContext';
 
 // Service Categories
 const SERVICE_CATEGORIES = {
@@ -180,6 +183,7 @@ const FarewellPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const { currentPet } = usePillarContext();
   
   // Scroll to top when page loads
   useEffect(() => {
@@ -188,11 +192,35 @@ const FarewellPage = () => {
   
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [pets, setPets] = useState([]);
+  const [userPets, setUserPets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [showProductModal, setShowProductModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  
+  // Use global pet context
+  const activePet = currentPet || userPets?.[0];
+  
+  // Fetch user's pets
+  useEffect(() => {
+    const fetchPets = async () => {
+      if (token) {
+        try {
+          const res = await fetch(`${API_URL}/api/pets`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setUserPets(data.pets || []);
+          }
+        } catch (error) {
+          console.error('Failed to fetch pets:', error);
+        }
+      }
+    };
+    fetchPets();
+  }, [token]);
   
   // Add to cart handler
   const handleAddToCart = (product) => {
@@ -610,6 +638,31 @@ const FarewellPage = () => {
           <BreedSmartRecommendations pillar="farewell" />
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* MIRA CURATED LAYER - Unified Concierge Recommendations */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <MiraCuratedLayer
+        pillar="farewell"
+        activePet={activePet}
+        token={token}
+        userEmail={user?.email}
+        isLoading={!userPets?.length && !!token}
+      />
+      
+      {/* Personalized Memorial Products */}
+      <section className="py-8 px-4">
+        <div className="max-w-6xl mx-auto">
+          <PersonalizedPicks pillar="farewell" maxProducts={6} />
+        </div>
+      </section>
+      
+      {/* Mira's Pillar Picks for Pet */}
+      {activePet && (
+        <div className="max-w-6xl mx-auto px-4 mt-6">
+          <PillarPicksSection pillar="farewell" pet={activePet} />
+        </div>
+      )}
 
       {/* Service Request Modal */}
       <Dialog open={showServiceModal} onOpenChange={setShowServiceModal}>

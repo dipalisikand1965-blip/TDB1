@@ -46,6 +46,8 @@ import CakeRevealSection from '../components/celebrate/CakeRevealSection';
 import CelebrationAlbum from '../components/celebrate/CelebrationAlbum';
 import SoulMadeCollection from '../components/SoulMadeCollection';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
+import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
+import PillarPicksSection from '../components/PillarPicksSection';
 
 // Lazy load Soul Explainer for footer link
 const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
@@ -624,6 +626,24 @@ const CelebratePage = () => {
       {activePet && token && (
         <div className="max-w-6xl mx-auto px-4 py-4" data-testid="celebrate-breed-smart-section">
           <BreedSmartRecommendations pillar="celebrate" />
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* MIRA CURATED LAYER - Unified Concierge Recommendations */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <MiraCuratedLayer
+        pillar="celebrate"
+        activePet={activePet || userPets?.[0]}
+        token={token}
+        userEmail={user?.email}
+        isLoading={!userPets && !!token}
+      />
+      
+      {/* Mira's Pillar Picks for Pet */}
+      {(activePet || userPets?.[0]) && (
+        <div className="max-w-6xl mx-auto px-4 mt-6">
+          <PillarPicksSection pillar="celebrate" pet={activePet || userPets?.[0]} />
         </div>
       )}
 

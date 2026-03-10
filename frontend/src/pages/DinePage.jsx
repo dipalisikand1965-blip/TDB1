@@ -37,6 +37,8 @@ import SafeForPetBadge from '../components/dine/SafeForPetBadge';
 import TasteTestFeature from '../components/dine/TasteTestFeature';
 import SoulMadeCollection from '../components/SoulMadeCollection';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
+import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
+import PillarPicksSection from '../components/PillarPicksSection';
 
 // Get user from AuthContext or localStorage
 const getUser = () => {
@@ -487,6 +489,24 @@ const DinePage = () => {
           {/* ═══════════════════════════════════════════════════════════════════════ */}
           <div className="mt-8" data-testid="dine-breed-smart-section">
             <BreedSmartRecommendations pillar="dine" />
+          </div>
+          
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* MIRA CURATED LAYER - Unified Concierge Recommendations */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          <div className="mt-8">
+            <MiraCuratedLayer
+              pillar="dine"
+              activePet={activePet}
+              token={token}
+              userEmail={authUser?.email || user?.email}
+              isLoading={!activePet && !!token}
+            />
+          </div>
+          
+          {/* Mira's Pillar Picks for Pet */}
+          <div className="mt-6">
+            <PillarPicksSection pillar="dine" pet={activePet} />
           </div>
         </div>
       ) : token && !activePet ? (
