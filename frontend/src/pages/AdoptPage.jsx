@@ -22,11 +22,14 @@ import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
+import { usePillarContext } from '../context/PillarContext';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Mail, Users,
   ChevronRight, Sparkles, Search, Filter, Clock, CheckCircle,
-  Building2, Gift, Star, ArrowRight, X, Send, Info, Loader2
+  Building2, Gift, Star, ArrowRight, X, Send, Info, Loader2,
+  MessageCircle, ShoppingBag
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 // Adopt Categories Configuration
 const ADOPT_CATEGORIES = {
@@ -195,6 +198,9 @@ const EventCard = ({ event, onRegister }) => {
 // Main Adopt Page Component
 const AdoptPage = () => {
   const { user, token } = useAuth();
+  const navigate = useNavigate();
+  const { currentPet } = usePillarContext();
+  const activePet = currentPet;
   
   // Scroll to top when page loads
   useEffect(() => {
@@ -208,6 +214,14 @@ const AdoptPage = () => {
   const [shelters, setShelters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
+  const [userPets, setUserPets] = useState([]);
+  
+  // AI Adoption Advisor State
+  const [adoptQuery, setAdoptQuery] = useState('');
+  const [adoptResponse, setAdoptResponse] = useState('');
+  const [adoptLoading, setAdoptLoading] = useState(false);
+  const [showAdoptResponse, setShowAdoptResponse] = useState(false);
+  const [selectedPath, setSelectedPath] = useState(null);
   
   // Filter state
   const [filters, setFilters] = useState({
@@ -294,6 +308,95 @@ const AdoptPage = () => {
     }
   };
   
+  // AI Adoption Advisor Handler
+  const handleAdoptionAdvice = async () => {
+    if (!adoptQuery.trim()) return;
+    
+    setAdoptLoading(true);
+    setShowAdoptResponse(true);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/mira/ask`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question: adoptQuery,
+          context: `ADOPTION ADVISOR: This person is considering adopting a rescue dog. Be encouraging, helpful, and practical. Answer questions about:
+- Is adoption right for them
+- What to expect from rescue dogs
+- How to prepare home and family
+- The 3-3-3 rule (3 days, 3 weeks, 3 months)
+- Behavioral challenges and solutions
+- Resources and support available
+Keep response friendly and informative, under 200 words.`
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setAdoptResponse(data.response || data.answer || 'Adopting a rescue dog is one of the most rewarding decisions you can make! Every dog deserves a second chance at a loving home.');
+      } else {
+        setAdoptResponse('Adoption is a beautiful journey! Our team is here to help you every step of the way. Would you like to speak with an adoption counselor?');
+      }
+    } catch (error) {
+      setAdoptResponse('We\'re here to help you find your perfect match. Reach out to our adoption team for personalized guidance!');
+    } finally {
+      setAdoptLoading(false);
+    }
+  };
+
+  // Adoption Journey Guided Paths
+  const ADOPTION_PATHS = [
+    {
+      id: 'before_adopting',
+      title: 'Before You Adopt',
+      description: 'Is adoption right for you?',
+      icon: Heart,
+      color: 'from-green-500 to-emerald-600',
+      steps: [
+        { title: 'Self-assessment', items: ['Time commitment', 'Financial readiness', 'Living situation', 'Family agreement'] },
+        { title: 'Research', items: ['Breed characteristics', 'Energy levels', 'Space needs', 'Special needs dogs'] },
+        { title: 'Home preparation', items: ['Safe spaces', 'Pet-proofing', 'Supplies ready', 'Vet identified'] }
+      ]
+    },
+    {
+      id: 'first_7_days',
+      title: 'First 7 Days',
+      description: 'The 3-3-3 rule begins',
+      icon: Home,
+      color: 'from-blue-500 to-cyan-600',
+      steps: [
+        { title: 'Day 1-3: Decompression', items: ['Quiet environment', 'Limited interaction', 'Safe space', 'Routine starts'] },
+        { title: 'Day 3-5: Building trust', items: ['Gentle introductions', 'Short walks', 'Consistent feeding', 'Patience'] },
+        { title: 'Day 5-7: Settling in', items: ['House rules intro', 'Family bonding', 'Vet visit', 'Training begins'] }
+      ]
+    },
+    {
+      id: 'first_3_weeks',
+      title: 'First 3 Weeks',
+      description: 'True personality emerges',
+      icon: Users,
+      color: 'from-purple-500 to-violet-600',
+      steps: [
+        { title: 'Behavior observation', items: ['Real personality shows', 'Triggers identified', 'Comfort zones', 'Social preferences'] },
+        { title: 'Training foundation', items: ['Basic commands', 'House training', 'Leash manners', 'Name recognition'] },
+        { title: 'Socialization', items: ['Controlled introductions', 'New environments', 'Car rides', 'Vet comfort'] }
+      ]
+    },
+    {
+      id: 'first_3_months',
+      title: 'First 3 Months',
+      description: 'Feeling at home',
+      icon: Heart,
+      color: 'from-rose-500 to-pink-600',
+      steps: [
+        { title: 'Full bonding', items: ['Trust established', 'Routine solid', 'Behavioral baseline', 'Family integration'] },
+        { title: 'Address challenges', items: ['Separation anxiety', 'Resource guarding', 'Fear responses', 'Professional help'] },
+        { title: 'Long-term success', items: ['Ongoing training', 'Health maintenance', 'Exercise routine', 'Forever family'] }
+      ]
+    }
+  ];
+
   // Filter pets
   const fetchFilteredPets = async () => {
     setLoading(true);
@@ -474,6 +577,164 @@ const AdoptPage = () => {
         </div>
       )}
       
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          AI ADOPTION ADVISOR - Get personalized guidance
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4 bg-gradient-to-b from-purple-50 to-white" data-testid="adopt-advisor-section">
+        <div className="max-w-4xl mx-auto">
+          <Card className="p-6 border-2 border-purple-200 bg-white shadow-lg">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-purple-100 rounded-full">
+                <MessageCircle className="w-6 h-6 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 text-lg">Adoption Advisor</h3>
+                <p className="text-gray-600 text-sm">Ask anything about adopting a rescue dog</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
+              <Input
+                placeholder="e.g., How do I help a fearful rescue dog adjust?"
+                value={adoptQuery}
+                onChange={(e) => setAdoptQuery(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleAdoptionAdvice()}
+                className="flex-1"
+                data-testid="adopt-advisor-input"
+              />
+              <Button 
+                onClick={handleAdoptionAdvice}
+                disabled={adoptLoading || !adoptQuery.trim()}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                {adoptLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Ask'}
+              </Button>
+            </div>
+            
+            {showAdoptResponse && (
+              <div className="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                {adoptLoading ? (
+                  <div className="flex items-center gap-2 text-purple-600">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Finding the best advice for you...
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-gray-700 leading-relaxed">{adoptResponse}</p>
+                    <div className="flex gap-2 mt-4">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => {
+                          setAdoptQuery('');
+                          setShowAdoptResponse(false);
+                        }}
+                        className="border-purple-300 text-purple-600"
+                      >
+                        Ask Another
+                      </Button>
+                      <Button 
+                        size="sm"
+                        className="bg-purple-600 hover:bg-purple-700"
+                        onClick={() => setShowApplicationModal(true)}
+                      >
+                        Start Application
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </Card>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          ADOPTION JOURNEY PATHS - The 3-3-3 Rule
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-10 px-4 bg-gradient-to-b from-white to-green-50" data-testid="adoption-paths-section">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">Your Adoption Journey</h2>
+            <p className="text-gray-600 mt-2">The 3-3-3 Rule: 3 days, 3 weeks, 3 months to feel at home</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {ADOPTION_PATHS.map((path) => {
+              const Icon = path.icon;
+              const isExpanded = selectedPath === path.id;
+              return (
+                <Card 
+                  key={path.id}
+                  className={`p-4 cursor-pointer transition-all hover:shadow-lg ${
+                    isExpanded ? 'ring-2 ring-green-500' : ''
+                  }`}
+                  onClick={() => setSelectedPath(isExpanded ? null : path.id)}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={`p-2 rounded-lg bg-gradient-to-br ${path.color}`}>
+                      <Icon className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900">{path.title}</h3>
+                      <p className="text-gray-600 text-sm">{path.description}</p>
+                    </div>
+                    <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                  </div>
+                  
+                  {isExpanded && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <div className="space-y-3">
+                        {path.steps.map((step, idx) => (
+                          <div key={idx} className="flex items-start gap-3">
+                            <div className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                              {idx + 1}
+                            </div>
+                            <div>
+                              <h4 className="font-medium text-sm text-gray-900">{step.title}</h4>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {step.items.map((item, i) => (
+                                  <Badge key={i} variant="outline" className="text-xs">
+                                    {item}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex gap-2 mt-4">
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate('/shop?search=adoption');
+                          }}
+                          variant="outline"
+                          className="flex-1 border-green-300 text-green-600"
+                        >
+                          <ShoppingBag className="w-4 h-4 mr-2" />
+                          Shop Essentials
+                        </Button>
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowApplicationModal(true);
+                          }}
+                          className="flex-1 bg-green-600 hover:bg-green-700"
+                        >
+                          <Heart className="w-4 h-4 mr-2" />
+                          Start Adoption
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Categories */}
       <section className="py-12 px-4">
         <div className="max-w-7xl mx-auto">
