@@ -140,24 +140,27 @@ const CuratedBundles = ({ pillar, showTitle = true, className = '' }) => {
     const fetchBundles = async () => {
       setLoading(true);
       try {
-        // Try to fetch from API
+        // Try to fetch from API - this has image_url from database
         const response = await fetch(`${API_URL}/api/bundles?pillar=${pillar?.toLowerCase()}&active_only=true`);
         if (response.ok) {
           const data = await response.json();
+          console.log('[CuratedBundles] API response:', data);
           if (data.bundles && data.bundles.length > 0) {
+            console.log('[CuratedBundles] Using API bundles with images');
             setBundles(data.bundles);
+            setLoading(false);
             return;
           }
         }
       } catch (error) {
-        console.log('Using static bundles (API not available)');
-      } finally {
-        setLoading(false);
+        console.log('[CuratedBundles] API error, using static fallback:', error);
       }
       
-      // Fallback to static data if API fails or returns empty
+      // Fallback to static data only if API fails or returns empty
+      console.log('[CuratedBundles] Using static fallback bundles (no images)');
       const pillarBundles = PILLAR_BUNDLES[pillar?.toLowerCase()] || [];
       setBundles(pillarBundles);
+      setLoading(false);
     };
     
     if (pillar) {
