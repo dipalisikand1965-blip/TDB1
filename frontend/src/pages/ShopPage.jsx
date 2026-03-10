@@ -653,6 +653,7 @@ const ShopPage = () => {
   const pillarFromUrl = searchParams.get('pillar');
   const [selectedPillar, setSelectedPillar] = useState(pillarFromUrl || 'recommended');
   const [selectedSubcat, setSelectedSubcat] = useState(null);
+  const [selectedBreed, setSelectedBreed] = useState(null);
   const [displayCount, setDisplayCount] = useState(24);
   const [selectedPet, setSelectedPet] = useState(null);
   const [petSoulData, setPetSoulData] = useState(null);
@@ -841,6 +842,17 @@ const ShopPage = () => {
       );
     }
     
+    // Breed filter
+    if (selectedBreed) {
+      const breedLower = selectedBreed.toLowerCase();
+      result = result.filter(p =>
+        p.breed?.toLowerCase().includes(breedLower) ||
+        p.target_breed?.toLowerCase().includes(breedLower) ||
+        p.name?.toLowerCase().includes(breedLower) ||
+        p.tags?.some(t => t?.toLowerCase().includes(breedLower))
+      );
+    }
+    
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(p =>
@@ -851,7 +863,7 @@ const ShopPage = () => {
     }
     
     return result;
-  }, [allProducts, selectedPillar, selectedSubcat, searchQuery, selectedPet]);
+  }, [allProducts, selectedPillar, selectedSubcat, selectedBreed, searchQuery, selectedPet]);
   
   const displayedProducts = useMemo(() => filteredProducts.slice(0, displayCount), [filteredProducts, displayCount]);
   const hasMore = displayCount < filteredProducts.length;
@@ -906,6 +918,85 @@ const ShopPage = () => {
             {filteredProducts.length > 0 && (
               <span className="text-xs sm:text-sm text-gray-400">Curated for you</span>
             )}
+          </div>
+          
+          {/* Subcategory & Breed Filters */}
+          <div className="mb-6 space-y-3">
+            {/* Subcategory Pills */}
+            {(() => {
+              const currentPillar = PILLARS.find(p => p.id === selectedPillar);
+              const subcats = currentPillar?.subcategories || [];
+              if (subcats.length === 0) return null;
+              
+              return (
+                <div className="flex flex-wrap gap-2" data-testid="subcategory-filters">
+                  <button
+                    onClick={() => setSelectedSubcat(null)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                      !selectedSubcat
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    All {currentPillar.label}
+                  </button>
+                  {subcats.map(subcat => (
+                    <button
+                      key={subcat}
+                      onClick={() => setSelectedSubcat(subcat === selectedSubcat ? null : subcat)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                        selectedSubcat === subcat
+                          ? 'bg-gray-900 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {subcat}
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
+            
+            {/* Breed Filter - Shows when relevant breeds exist */}
+            {(() => {
+              // Get unique breeds from products
+              const breeds = [...new Set(allProducts
+                .filter(p => p.breed || p.target_breed)
+                .map(p => p.breed || p.target_breed)
+                .filter(Boolean)
+              )].slice(0, 12);
+              
+              if (breeds.length < 3) return null;
+              
+              return (
+                <div className="flex flex-wrap items-center gap-2" data-testid="breed-filters">
+                  <span className="text-xs text-gray-500 mr-1">By Breed:</span>
+                  <button
+                    onClick={() => setSelectedBreed(null)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      !selectedBreed
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                    }`}
+                  >
+                    All Breeds
+                  </button>
+                  {breeds.map(breed => (
+                    <button
+                      key={breed}
+                      onClick={() => setSelectedBreed(breed === selectedBreed ? null : breed)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                        selectedBreed === breed
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                      }`}
+                    >
+                      {breed}
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
           
           {/* Custom Cake Designer Banner - Shows in Celebrate pillar */}
