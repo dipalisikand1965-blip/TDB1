@@ -17,9 +17,6 @@ import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
 import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
-import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
-import PillarPicksSection from '../components/PillarPicksSection';
-import { getSoulBasedReason } from '../utils/petSoulInference';
 import SoulMadeCollection from '../components/SoulMadeCollection';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
@@ -859,34 +856,6 @@ const EmergencyPage = () => {
           <PersonalizedPicks pillar="emergency" maxProducts={6} />
         </div>
       </section>
-      
-      {/* Concierge Pick Card - 24/7 Emergency Support */}
-      {(activePet || userPets?.[0]) && (
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <ConciergePickCard
-            pet={{
-              name: (activePet || userPets[0]).name,
-              breed: (activePet || userPets[0]).breed,
-              photo: (activePet || userPets[0]).photo_url,
-              soulTraits: (activePet || userPets[0]).personality_traits || [],
-                id: (activePet || userPets[0]).id
-            }}
-            pillar="emergency"
-            title={CONCIERGE_PRESETS.emergency.title}
-            icon={CONCIERGE_PRESETS.emergency.icon}
-            description={CONCIERGE_PRESETS.emergency.description}
-            soulReason={getSoulBasedReason(activePet || userPets[0], 'emergency')}
-            responseTime="Immediate"
-          />
-        </div>
-      )}
-      
-      {/* Mira's Picks for Pet */}
-      {(activePet || userPets?.[0]) && (
-        <div className="max-w-6xl mx-auto px-4">
-          <PillarPicksSection pillar="emergency" pet={activePet || userPets[0]} />
-        </div>
-      )}
       
       {/* Concierge® Button - Blue C® for Service Desk chat */}
       <ConciergeButton 
