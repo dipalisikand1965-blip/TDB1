@@ -150,6 +150,39 @@ const PILLAR_BUNDLES = {
       icon: '🕊️'
     }
   ],
+  adopt: [
+    {
+      id: 'adopt-day1-essentials',
+      name: 'Day 1 Essentials Bundle',
+      description: 'Everything you need before bringing your new dog home',
+      items: ['Starter Bowl Set', 'First Collar', 'Leash', 'ID Tag', 'Pee Pads', 'Bed', 'Blanket'],
+      original_price: 3999,
+      bundle_price: 2999,
+      discount: 25,
+      icon: '📦',
+      popular: true
+    },
+    {
+      id: 'adopt-comfort-bundle',
+      name: 'Comfort & Settling Bundle',
+      description: 'Help your rescue feel safe and secure in their new home',
+      items: ['Calming Blanket', 'Snuggle Toy', 'Crate Cover', 'Lick Mat', 'Calming Mat'],
+      original_price: 3499,
+      bundle_price: 2699,
+      discount: 23,
+      icon: '💆'
+    },
+    {
+      id: 'adopt-puppy-starter',
+      name: 'New Puppy Starter Kit',
+      description: 'Complete essentials for your new puppy\'s first month',
+      items: ['Puppy Food Bowl', 'Training Treats', 'Clicker', 'Pee Pads', 'Chew Toys', 'Crate Mat', 'Brush'],
+      original_price: 2999,
+      bundle_price: 2299,
+      discount: 23,
+      icon: '🐶'
+    }
+  ],
   advisory: [
     {
       id: 'advisory-puppy-starter',
