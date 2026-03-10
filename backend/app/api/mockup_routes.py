@@ -927,6 +927,60 @@ async def get_multi_factor_products(request: MultiFactorFilterRequest):
         "mockup_url": {"$exists": True, "$ne": None, "$ne": ""}
     }
     
+    # Archetype display names mapping
+    ARCHETYPE_DISPLAY_NAMES = {
+        "wild_explorer": "Wild Explorer",
+        "velcro_baby": "Velcro Baby", 
+        "social_butterfly": "Social Butterfly",
+        "zen_master": "Zen Master",
+        "royal_dignity": "Royal Dignity",
+        "playful_clown": "Playful Clown",
+        "guardian_heart": "Guardian Heart",
+        "gentle_aristocrat": "Gentle Aristocrat",
+        "snack_negotiator": "Snack Negotiator",
+        "quiet_watcher": "Quiet Watcher",
+        "brave_worrier": "Brave Worrier"
+    }
+    
+    # Personalized whisper texts based on archetype + product type
+    ARCHETYPE_WHISPERS = {
+        "wild_explorer": [
+            "Adventure gear for explorers",
+            "Built for outdoor fun",
+            "Perfect for adventures"
+        ],
+        "velcro_baby": [
+            "Extra love included",
+            "Cuddle-approved",
+            "Made for snuggle time"
+        ],
+        "social_butterfly": [
+            "Party-ready pick",
+            "Stand out in style", 
+            "Social pup approved"
+        ],
+        "gentle_aristocrat": [
+            "Refined elegance",
+            "Sophisticated choice",
+            "Premium quality pick"
+        ],
+        "snack_negotiator": [
+            "Treat-lover tested",
+            "Foodie approved",
+            "Worth the wag"
+        ],
+        "quiet_watcher": [
+            "Calm companion choice",
+            "Thoughtfully selected",
+            "Peaceful pup pick"
+        ],
+        "brave_worrier": [
+            "Comfort & confidence",
+            "Security blanket pick",
+            "Safe & soothing"
+        ]
+    }
+    
     # Get all matching products first
     products = await db.breed_products.find(
         query,
@@ -945,8 +999,17 @@ async def get_multi_factor_products(request: MultiFactorFilterRequest):
             for affinity in product_affinity:
                 if affinity.lower() in product_type or product_type in affinity.lower():
                     score += 50
-                    reasons.append(f"Matches {archetype_key} personality")
+                    # Get personalized whisper text
+                    whispers = ARCHETYPE_WHISPERS.get(archetype_key, ["Perfectly matched"])
+                    import random
+                    whisper = random.choice(whispers)
+                    reasons.append(whisper)
                     break
+        
+        # If no archetype reason added, add a formatted one
+        if not reasons and archetype_key:
+            display_name = ARCHETYPE_DISPLAY_NAMES.get(archetype_key, archetype_key.replace("_", " ").title())
+            reasons.append(f"For {display_name}s")
         
         # Life stage relevance
         product_name = product.get("name", "").lower()
