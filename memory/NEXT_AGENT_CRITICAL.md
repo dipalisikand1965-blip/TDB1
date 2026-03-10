@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://urgent-pet-care-2.preview.emergentagent.com
+https://paw-rescue-3.preview.emergentagent.com
 
 ---
 

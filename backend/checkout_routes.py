@@ -374,7 +374,10 @@ async def calculate_order_total(request: CreateOrderRequest):
 async def create_checkout_order(request: CreateOrderRequest):
     """Create order and initiate Razorpay payment"""
     
+    logger.info(f"[create-order] Starting order creation for customer: {request.customer.email}")
+    
     if not razorpay_client:
+        logger.info("[create-order] Razorpay not configured, falling back to WhatsApp")
         # Fallback to WhatsApp flow if Razorpay not configured
         return await create_whatsapp_order(request)
     
@@ -384,6 +387,8 @@ async def create_checkout_order(request: CreateOrderRequest):
         discount = request.discount_amount + request.loyalty_discount
         shipping = request.shipping_fee
         
+        logger.info(f"[create-order] Subtotal: {subtotal}, Discount: {discount}, Shipping: {shipping}")
+        
         # Taxable amount includes shipping (GST applies to shipping too)
         taxable_amount = max(0, subtotal - discount + shipping)
         gst_details = calculate_gst(taxable_amount, request.delivery.state or "Karnataka")
@@ -391,11 +396,15 @@ async def create_checkout_order(request: CreateOrderRequest):
         # Grand total = taxable_amount + GST
         grand_total = round(taxable_amount + gst_details["total_tax"], 2)
         
+        logger.info(f"[create-order] Taxable: {taxable_amount}, GST: {gst_details['total_tax']}, Grand Total: {grand_total}")
+        
         # Generate order ID
         order_id = f"TDC-{datetime.now().strftime('%y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
         
         # Create Razorpay order
         razorpay_amount = int(grand_total * 100)  # Convert to paise
+        
+        logger.info(f"[create-order] Creating Razorpay order for amount: {razorpay_amount} paise")
         
         razorpay_order = razorpay_client.order.create({
             "amount": razorpay_amount,
@@ -407,6 +416,8 @@ async def create_checkout_order(request: CreateOrderRequest):
                 "customer_phone": request.customer.phone
             }
         })
+        
+        logger.info(f"[create-order] Razorpay order created: {razorpay_order['id']}")
         
         # Save order to database (pending payment)
         order_doc = {

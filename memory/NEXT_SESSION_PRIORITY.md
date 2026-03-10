@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://urgent-pet-care-2.preview.emergentagent.com
+**Preview URL:** https://paw-rescue-3.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

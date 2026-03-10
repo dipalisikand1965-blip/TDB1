@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://urgent-pet-care-2.preview.emergentagent.com/mira-demo**
+**https://paw-rescue-3.preview.emergentagent.com/mira-demo**
 
 ---
 

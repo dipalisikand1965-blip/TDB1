@@ -152,7 +152,7 @@ tip_card = {
 # 🔑 CREDENTIALS
 
 - **Emergent LLM Key**: `sk-emergent-cEb0eF956Fa6741A31`
-- **Preview URL**: `https://urgent-pet-care-2.preview.emergentagent.com`
+- **Preview URL**: `https://paw-rescue-3.preview.emergentagent.com`
 
 ---
 
