@@ -357,6 +357,7 @@ const EmergencyPage = () => {
 
       {/* ═══════════════════════════════════════════════════════════════════════════
           LAYER 6: EMERGENCY PRODUCTS & BUNDLES - First-aid kits, recovery items
+          Stacked Layout: Bundles on TOP, Products BELOW
           ═══════════════════════════════════════════════════════════════════════════ */}
       <div ref={productsRef}>
         <section className="py-8 px-4 bg-gradient-to-b from-red-50 to-white" data-testid="emergency-products-section">
@@ -366,17 +367,14 @@ const EmergencyPage = () => {
               <h2 className="text-xl font-bold text-gray-900">Emergency Preparedness</h2>
             </div>
             
-            {/* Bundles and Products Side by Side */}
-            <div className="grid lg:grid-cols-2 gap-6">
-              {/* Left: Curated Bundles */}
-              <div>
-                <CuratedBundles pillar="emergency" maxBundles={3} showTitle={false} />
-              </div>
-              
-              {/* Right: Emergency Products Grid */}
-              <div>
-                <EmergencyProductsGrid maxProducts={8} showPersonalized={true} />
-              </div>
+            {/* BUNDLES ON TOP - Full width row */}
+            <div className="mb-8">
+              <CuratedBundles pillar="emergency" maxBundles={3} showTitle={true} />
+            </div>
+            
+            {/* PRODUCTS BELOW - Full width grid */}
+            <div>
+              <EmergencyProductsGrid maxProducts={12} showPersonalized={true} />
             </div>
           </div>
         </section>

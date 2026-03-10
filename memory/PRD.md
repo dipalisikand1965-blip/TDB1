@@ -1,6 +1,6 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 10, 2026 18:30 IST  
-**Status:** Emergency Page COMPLETE | Soul Score Fix COMPLETE | Pet Emergency File FIXED
+**Last Updated:** March 10, 2026 19:00 IST  
+**Status:** Emergency Page COMPLETE | Soul Score FIXED | Product Images ADDED
 
 ---
 
@@ -13,7 +13,7 @@
   - Recalculated Mojo's score using `calculate_pet_soul_score()` from `pet_score_logic.py`
   - Updated database to store correct calculated score (89%)
   - Score now displays correctly in all frontend components
-- **Verified:** Screenshot shows "Mojo's soul is 89% discovered" in the header
+- **Verified:** Pet Dashboard shows "89% Pet Soul™" and "Soul Master" tier
 
 ### 2. Pet Emergency File Data Fix ✅
 - **Issue:** Pet Emergency File wasn't pulling data from `doggy_soul_answers`
@@ -24,7 +24,32 @@
   - Handle allergies as string or array
 - **Verified:** Screenshot shows "Allergies: chicken" correctly pulled from soul answers
 
-### 3. Razorpay Checkout Logging (Debug Prep)
+### 3. Emergency Page Layout Fix ✅
+- **Issue:** Bundles were side-by-side with products (cramped layout)
+- **Fix:** Changed to stacked layout - **Bundles ON TOP, Products BELOW**
+- **Verified:** Screenshot shows 3 bundles in row, then product grid below
+
+### 4. Product Images Generated ✅
+- **Issue:** All emergency products showed placeholder icons
+- **Fix:** Generated 15 AI product images using Gemini Imagen 4.0:
+  - Pet First Aid Kit
+  - Gauze & Bandage Wrap Set  
+  - Digital Pet Thermometer
+  - Tick Remover Tool
+  - Soft Safety Muzzle
+  - Portable Pet Water Bottle
+  - Collapsible Food & Water Bowl
+  - Emergency Slip Leash
+  - Absorbent Pee Pads (20 Pack)
+  - QR Code Pet ID Tag
+  - Pet Transport Carrier
+  - Protective E-Collar / Cone
+  - Post-Surgery Recovery Suit
+  - Cooling Mat for Heatstroke
+  - GPS Pet Tracker Tag
+- **Verified:** Products now display with proper images
+
+### 5. Razorpay Checkout Logging (Debug Prep)
 - Added comprehensive logging to `/api/checkout/create-order` endpoint
 - Logs subtotal, discount, shipping, GST, and Razorpay order creation
 - Ready for debugging the "body error" issue
@@ -34,7 +59,7 @@
 ## PREVIOUS SESSION COMPLETIONS
 
 ### Emergency Page Layout Overhaul
-- **Bundles & Products Side-by-Side Layout** - Left: 3 bundles, Right: Products grid
+- **Stacked Layout** - Bundles ON TOP, Products BELOW (full width)
 - **3 Emergency Bundles** (all with AI images):
   - Pet First Aid Bundle - ₹1,599
   - Travel Emergency Kit - ₹2,799
