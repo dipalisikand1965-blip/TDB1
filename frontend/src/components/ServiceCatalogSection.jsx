@@ -38,7 +38,7 @@ const CITIES = [
   { id: 'other', label: 'Other' }
 ];
 
-const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices = 8 }) => {
+const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices = 8, hidePrice = false }) => {
   const { user, pets } = useAuth();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -316,7 +316,8 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
                   {service.description}
                 </p>
                 
-                {/* Price & Duration */}
+                {/* Price & Duration - conditionally hidden */}
+                {!hidePrice && (
                 <div className="flex items-center justify-between">
                   <div>
                     {service.is_free ? (
@@ -337,6 +338,7 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
                     </div>
                   )}
                 </div>
+                )}
                 
                 {/* CTA - Simplified on mobile */}
                 <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t flex items-center justify-between">
