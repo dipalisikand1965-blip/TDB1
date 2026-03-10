@@ -154,26 +154,34 @@ const SoulProductsManager = () => {
   const fetchBreedProducts = useCallback(async (hasMockup = null) => {
     setLoadingMockups(true);
     try {
-      let url = `${API_URL}/api/mockups/breed-products?limit=100`;
+      let url = `${API_URL}/api/mockups/breed-products?limit=50`; // Reduced for faster loading
       if (selectedBreed) url += `&breed=${selectedBreed}`;
       if (selectedProductType) url += `&product_type=${selectedProductType}`;
       if (hasMockup !== null) url += `&has_mockup=${hasMockup}`;
       
       console.log('[SoulProducts] Fetching breed products:', url);
-      const res = await fetch(url);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+      
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      
       if (res.ok) {
         const data = await res.json();
         console.log('[SoulProducts] Got breed products:', data.products?.length || 0);
         setBreedProducts(data.products || []);
-        setLoadingMockups(false);
       } else {
         console.error('[SoulProducts] API error:', res.status);
         setBreedProducts([]);
-        setLoadingMockups(false);
       }
     } catch (error) {
-      console.error('[SoulProducts] Failed to fetch breed products:', error);
+      if (error.name === 'AbortError') {
+        console.error('[SoulProducts] Request timed out');
+      } else {
+        console.error('[SoulProducts] Failed to fetch breed products:', error);
+      }
       setBreedProducts([]);
+    } finally {
       setLoadingMockups(false);
     }
   }, [selectedBreed, selectedProductType]);
@@ -279,7 +287,8 @@ const SoulProductsManager = () => {
       fetchBreedProducts(true); // Fetch products with mockups
       fetchCloudStatus(); // Check cloud storage status
     }
-  }, [activeSubTab, fetchMockupStats, fetchBreedProducts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSubTab]); // Only trigger on tab change
 
   // Fetch cloud storage status
   const fetchCloudStatus = async () => {
