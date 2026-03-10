@@ -20,6 +20,7 @@ import ProductCard from '../components/ProductCard';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
+import SoulMadeCollection from '../components/SoulMadeCollection'; // ADDED: Soul Made Products
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
