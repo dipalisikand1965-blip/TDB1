@@ -1,6 +1,62 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 10, 2026 19:00 IST  
-**Status:** Emergency Page COMPLETE | Soul Score FIXED | Product Images ADDED
+**Last Updated:** March 10, 2026 20:00 IST  
+**Status:** Emergency COMPLETE | Shop Filters COMPLETE | Advisory AUDIT DONE
+
+---
+
+## ADVISORY PILLAR VISION (P0 - Next Major Feature)
+
+### Core Purpose
+> **Advisory is the place where a pet parent comes when they don't just want to buy something, they want to make the right decision for their dog.**
+
+### What Advisory Should Be (NOT a content dump)
+- **Decision-support layer** between guidance, concierge help, expert access, profile-based recommendations
+- **Help me decide** - not random tips or SEO blog content
+- **Connect me** to the right service, product, or expert
+- **Recommend based on my pet's actual life** - breed, age, size, health, climate, season
+
+### Advisory 8-Zone Architecture
+
+| Zone | Purpose | Powered By |
+|------|---------|------------|
+| 1. Ask Advisory | AI decision-support hero section | Mira AI |
+| 2. My Dog Advisory | Personalized recommendations | Soul Profile + breed + age |
+| 3. Intent Tiles | 12 real-life need categories | Static + Dynamic |
+| 4. Guided Paths | Step-by-step decision journeys | Content + Logic |
+| 5. Products by Context | Relevant items only | Shopify + Soul Logic |
+| 6. Services & Expert | Consultations, bookings | Concierge + Services |
+| 7. Near Me | Nearby trainers, groomers, vets | Google Places API |
+| 8. Concierge Escalation | Human help for complex needs | Talk to Concierge |
+
+### 12 Intent Tiles
+1. Food & Nutrition
+2. Puppy Guidance
+3. Breed Guidance
+4. Grooming & Coat Care
+5. Behaviour & Training
+6. Travel Readiness
+7. Senior Dog Care
+8. Home Setup
+9. New Adoption Guidance
+10. Product Advice
+11. Recovery & Ongoing Care
+12. Speak to Concierge
+
+### Guided Paths to Build
+- **New Puppy**: what to buy → what to feed → first grooming → vaccine tracker → toilet training
+- **New Adoption**: first 7 days → decompression → safe home → feeding routine → health checks
+- **Senior Dog**: mobility → comfort → diet → sleep → recovery → support products
+- **Travel Ready**: is my dog fit? → documents → harness/crate → food/hydration → local vet
+- **Coat & Grooming**: by coat type → shedding → mats → tear stains → ear care
+- **Behaviour**: pulling → barking → separation anxiety → chewing → settling guests
+
+### Personalization Factors
+- Breed, Age, Size, Coat type
+- Energy level, Temperament
+- Travel comfort, Health flags
+- City/Climate (summer/monsoon)
+- Life stage (puppy, adult, senior)
+- Past orders, Upcoming events
 
 ---
 
