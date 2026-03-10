@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://soul-made-platform.preview.emergentagent.com/mira-demo**
+**https://urgent-pet-care-2.preview.emergentagent.com/mira-demo**
 
 ---
 

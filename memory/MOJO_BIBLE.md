@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://soul-made-platform.preview.emergentagent.com
+https://urgent-pet-care-2.preview.emergentagent.com
 ```
 
 ---
