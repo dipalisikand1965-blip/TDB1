@@ -12,7 +12,7 @@
 | **Mira OS** | `/mira-demo` (THE MAIN OS - NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` or `/my-pets` |
-| **Preview** | `https://urgent-pet-care-2.preview.emergentagent.com` |
+| **Preview** | `https://paw-rescue-3.preview.emergentagent.com` |
 
 ## Test Credentials
 | Role | Email/Username | Password |
