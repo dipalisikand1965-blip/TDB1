@@ -35,6 +35,8 @@ import PersonalizedDineSection from '../components/dine/PersonalizedDineSection'
 import TummyProfileDashboard from '../components/dine/TummyProfileDashboard';
 import SafeForPetBadge from '../components/dine/SafeForPetBadge';
 import TasteTestFeature from '../components/dine/TasteTestFeature';
+import SoulMadeCollection from '../components/SoulMadeCollection';
+import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 
 // Get user from AuthContext or localStorage
 const getUser = () => {
@@ -466,6 +468,25 @@ const DinePage = () => {
                 console.log('[DinePage] Saved to favorites:', item);
               }}
             />
+          </div>
+          
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* SOUL MADE PRODUCTS - AI-generated breed products with artwork */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          <div className="mt-8" data-testid="dine-soul-made-section">
+            <SoulMadeCollection
+              key={`dine-soul-made-${activePet?.id}`}
+              pillar="dine"
+              maxItems={8}
+              showTitle={true}
+            />
+          </div>
+          
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          <div className="mt-8" data-testid="dine-breed-smart-section">
+            <BreedSmartRecommendations pillar="dine" />
           </div>
         </div>
       ) : token && !activePet ? (

@@ -19,6 +19,8 @@ import { getPetPhotoUrl } from '../utils/petAvatar';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import PillarPicksSection from '../components/PillarPicksSection';
 import { getSoulBasedReason } from '../utils/petSoulInference';
+import SoulMadeCollection from '../components/SoulMadeCollection';
+import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import {
   AlertTriangle, Search, Heart, Phone, MapPin, Clock, Ambulance,
   ChevronRight, Sparkles, Star, Loader2, Send, ArrowRight, Play,
@@ -790,6 +792,28 @@ const EmergencyPage = () => {
         subtitle="24x7 emergency services with transparent pricing"
         maxServices={8}
       />
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SOUL MADE PRODUCTS - Emergency gear with breed artwork */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-12 px-4" data-testid="emergency-soul-made-section">
+        <div className="max-w-6xl mx-auto">
+          <SoulMadeCollection
+            pillar="emergency"
+            maxItems={8}
+            showTitle={true}
+          />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4" data-testid="emergency-breed-smart-section">
+        <div className="max-w-6xl mx-auto">
+          <BreedSmartRecommendations pillar="emergency" />
+        </div>
+      </section>
       
       {/* Concierge Pick Card - 24/7 Emergency Support */}
       {userPets && userPets[0] && (

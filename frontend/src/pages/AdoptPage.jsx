@@ -16,6 +16,8 @@ import { ConciergeButton } from '../components/mira-os';
 import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
 import PillarPicksSection from '../components/PillarPicksSection';
 import { getSoulBasedReason } from '../utils/petSoulInference';
+import SoulMadeCollection from '../components/SoulMadeCollection';
+import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Mail, Users,
   ChevronRight, Sparkles, Search, Filter, Clock, CheckCircle,
@@ -627,6 +629,28 @@ const AdoptPage = () => {
         subtitle="See your personalised price based on your city, pet size, and requirements"
         maxServices={8}
       />
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SOUL MADE PRODUCTS - Welcome home products with breed artwork */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-12 px-4" data-testid="adopt-soul-made-section">
+        <div className="max-w-6xl mx-auto">
+          <SoulMadeCollection
+            pillar="adopt"
+            maxItems={8}
+            showTitle={true}
+          />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4" data-testid="adopt-breed-smart-section">
+        <div className="max-w-6xl mx-auto">
+          <BreedSmartRecommendations pillar="adopt" />
+        </div>
+      </section>
       
       {/* Adoption Application Modal */}
       <Dialog open={showApplicationModal} onOpenChange={setShowApplicationModal}>

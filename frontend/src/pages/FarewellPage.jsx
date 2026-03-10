@@ -31,6 +31,8 @@ import {
 } from 'lucide-react';
 import RainbowBridgeMemorial from '../components/RainbowBridgeMemorial';
 import RainbowBridgeWall from '../components/RainbowBridgeWall';
+import SoulMadeCollection from '../components/SoulMadeCollection';
+import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 
 // Service Categories
 const SERVICE_CATEGORIES = {
@@ -586,6 +588,28 @@ const FarewellPage = () => {
         subtitle="Compassionate services with transparent pricing"
         maxServices={8}
       />
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SOUL MADE PRODUCTS - AI-generated memorial products with breed artwork */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-12 px-4" data-testid="farewell-soul-made-section">
+        <div className="max-w-6xl mx-auto">
+          <SoulMadeCollection
+            pillar="farewell"
+            maxItems={8}
+            showTitle={true}
+          />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4" data-testid="farewell-breed-smart-section">
+        <div className="max-w-6xl mx-auto">
+          <BreedSmartRecommendations pillar="farewell" />
+        </div>
+      </section>
 
       {/* Service Request Modal */}
       <Dialog open={showServiceModal} onOpenChange={setShowServiceModal}>
