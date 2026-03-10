@@ -334,12 +334,29 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
   const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop';
   
   // Get valid image - PRIORITIZE original Shopify image for marketplace products
-  // Only use breed illustrations for soul_made tier products
+  // Use breed illustrations for breed-specific products (IDs starting with "breed-")
   const getValidImage = () => {
     // CRITICAL: For regular Shopify marketplace products, ALWAYS use the original image
     // The `image` field contains the correct Shopify CDN URL
     if (product.image && product.image.startsWith('http') && product.image.includes('shopify.com')) {
       return product.image;
+    }
+    
+    // For breed-specific products (IDs like "breed-cavalier-welcome_kit"), use breed illustration
+    const productId = product.id || '';
+    if (productId.startsWith('breed-')) {
+      // Extract breed key from product ID (e.g., "breed-cavalier-welcome_kit" -> "cavalier")
+      const breedKey = productId.replace('breed-', '').split('-')[0];
+      const breedIllustration = getBreedIllustrationByName(breedKey);
+      if (breedIllustration) {
+        return breedIllustration;
+      }
+      // Also try to find from product name
+      const productName = (product.name || product.title || '').toLowerCase();
+      const breedMatch = findBreedIllustration(productName);
+      if (breedMatch) {
+        return breedMatch.imageUrl;
+      }
     }
     
     // For soul_made products only, check for breed illustration
@@ -550,6 +567,23 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
     // The `image` field contains the correct Shopify CDN URL
     if (product.image && product.image.startsWith('http') && product.image.includes('shopify.com')) {
       return product.image;
+    }
+    
+    // For breed-specific products (IDs like "breed-cavalier-welcome_kit"), use breed illustration
+    const productId = product.id || '';
+    if (productId.startsWith('breed-')) {
+      // Extract breed key from product ID (e.g., "breed-cavalier-welcome_kit" -> "cavalier")
+      const breedKey = productId.replace('breed-', '').split('-')[0];
+      const breedIllustration = getBreedIllustrationByName(breedKey);
+      if (breedIllustration) {
+        return breedIllustration;
+      }
+      // Also try to find from product name
+      const productName = (product.name || product.title || '').toLowerCase();
+      const breedMatch = findBreedIllustration(productName);
+      if (breedMatch) {
+        return breedMatch.imageUrl;
+      }
     }
     
     // For soul_made products only, check for breed illustration
