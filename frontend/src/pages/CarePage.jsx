@@ -23,6 +23,7 @@ import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
+import SoulMadeCollection from '../components/SoulMadeCollection'; // ADDED: Soul Made Products
 import TransformationStories from '../components/TransformationStories';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
@@ -623,6 +624,21 @@ const CarePage = () => {
           "Gold Standard" - These are the intelligent picks Mira creates
           ═══════════════════════════════════════════════════════════════════════════════ */}
       <div className="py-10 bg-gradient-to-b from-white to-teal-50/30">
+        {/* ═══════════════════════════════════════════════════════════════════════
+            SOUL MADE COLLECTION - Breed-specific personalized products
+            Shows care products with breed artwork (Towel, Robe, Grooming Apron, etc.)
+            ADDED: March 10, 2026
+            ═══════════════════════════════════════════════════════════════════════ */}
+        {selectedPet && (
+          <div className="max-w-6xl mx-auto px-4 mb-8">
+            <SoulMadeCollection
+              pillar="care"
+              maxItems={8}
+              showTitle={true}
+            />
+          </div>
+        )}
+        
         {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
         <MiraCuratedLayer
           pillar="care"

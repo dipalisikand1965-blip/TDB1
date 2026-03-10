@@ -31,6 +31,7 @@ import MiraPicksCarousel from '../components/MiraPicksCarousel';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
+import SoulMadeCollection from '../components/SoulMadeCollection'; // ADDED: Soul Made Products
 import { getSoulBasedReason } from '../utils/petSoulInference';
 // New engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
@@ -623,6 +624,21 @@ const FitPage = () => {
           maxProducts={6} 
         />
       </div>
+      
+      {/* ═══════════════════════════════════════════════════════════════════════
+          SOUL MADE COLLECTION - Breed-specific personalized products
+          Shows fit products with breed artwork (Training Pouch, Walking Set, etc.)
+          ADDED: March 10, 2026
+          ═══════════════════════════════════════════════════════════════════════ */}
+      {(activePet || userPets?.[0]) && (
+        <div className="max-w-6xl mx-auto px-4 mb-8">
+          <SoulMadeCollection
+            pillar="fit"
+            maxItems={8}
+            showTitle={true}
+          />
+        </div>
+      )}
       
       {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
       <MiraCuratedLayer
