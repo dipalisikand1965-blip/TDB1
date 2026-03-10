@@ -986,7 +986,7 @@ const SoulProductsManager = () => {
               <br />
               Mockup generation takes ~30-60 seconds per image. Click Generate to start batch processing.
               <br />
-              <strong>33 breeds × 11 product types = 363 total mockups (no cakes - use TheDoggyBakery)</strong>
+              <strong>33 breeds × 20+ product types = 1000+ total mockups</strong>
             </div>
             
             {/* Cloud Storage Status */}
