@@ -34,7 +34,6 @@ import { getPetPhotoUrl } from '../utils/petAvatar';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
-import NearbyEmergencyHelp from '../components/emergency/NearbyEmergencyHelp';
 import {
   Brain, Heart, Apple, Home, Stethoscope, GraduationCap,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
@@ -774,7 +773,39 @@ const AdvisoryPage = () => {
             <p className="text-sm text-gray-600">Trainers, groomers, vets, and more in your area</p>
           </div>
           
-          <NearbyEmergencyHelp />
+          {/* Service Categories */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { name: 'Pet Trainers', icon: GraduationCap, color: 'bg-blue-50 text-blue-600', search: 'dog+trainer' },
+              { name: 'Groomers', icon: Scissors, color: 'bg-purple-50 text-purple-600', search: 'pet+groomer' },
+              { name: 'Veterinarians', icon: Stethoscope, color: 'bg-red-50 text-red-600', search: 'veterinary+clinic' },
+              { name: 'Pet Stores', icon: ShoppingBag, color: 'bg-green-50 text-green-600', search: 'pet+store' }
+            ].map((service) => {
+              const Icon = service.icon;
+              return (
+                <Card 
+                  key={service.name}
+                  className={`p-4 ${service.color} cursor-pointer hover:shadow-lg transition-all text-center`}
+                  onClick={() => window.open(`https://www.google.com/maps/search/${service.search}+near+me`, '_blank')}
+                >
+                  <Icon className="w-8 h-8 mx-auto mb-2" />
+                  <h4 className="font-medium text-sm">{service.name}</h4>
+                  <p className="text-xs opacity-70 mt-1">Find nearby</p>
+                </Card>
+              );
+            })}
+          </div>
+          
+          <div className="text-center mt-6">
+            <Button
+              onClick={() => openWhatsAppConcierge('finding a service near me')}
+              variant="outline"
+              className="border-violet-300 text-violet-600"
+            >
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Ask Concierge® for Recommendations
+            </Button>
+          </div>
         </div>
       </section>
 
