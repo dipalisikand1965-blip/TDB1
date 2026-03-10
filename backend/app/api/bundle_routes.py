@@ -376,3 +376,106 @@ def get_all_default_bundles() -> List[dict]:
             "active": True
         }
     ]
+
+
+@router.post("/sync-to-production")
+async def sync_bundles_to_production():
+    """
+    Server-side sync of all bundles to production.
+    """
+    import httpx
+    
+    db = get_db()
+    PRODUCTION_URL = "https://thedoggycompany.com"
+    
+    try:
+        # Get all active bundles
+        cursor = db.bundles.find({"active": True}, {"_id": 0})
+        bundles = await cursor.to_list(length=100)
+        
+        if not bundles:
+            return {
+                "success": False,
+                "message": "No bundles found to sync",
+                "synced": 0
+            }
+        
+        logger.info(f"[BUNDLE SYNC] Found {len(bundles)} bundles to sync")
+        
+        # Send to production
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post(
+                f"{PRODUCTION_URL}/api/bundles/import",
+                json={"bundles": bundles},
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                logger.info(f"[BUNDLE SYNC] Production sync successful: {result}")
+                return {
+                    "success": True,
+                    "message": f"Synced {result.get('imported', len(bundles))} bundles to production",
+                    "synced": result.get("imported", len(bundles))
+                }
+            else:
+                logger.error(f"[BUNDLE SYNC] Failed: {response.status_code}")
+                return {
+                    "success": False,
+                    "message": f"Sync failed: {response.status_code}",
+                    "error": response.text[:200]
+                }
+                
+    except Exception as e:
+        logger.error(f"[BUNDLE SYNC] Error: {e}")
+        return {
+            "success": False,
+            "message": f"Sync error: {str(e)}",
+            "synced": 0
+        }
+
+@router.post("/import")
+async def import_bundles(data: dict):
+    """
+    Import bundles from another environment (preview -> production).
+    """
+    try:
+        db = get_db()
+        bundles = data.get("bundles", [])
+        
+        if not bundles:
+            return {"imported": 0, "message": "No bundles provided"}
+        
+        imported = 0
+        updated = 0
+        
+        for bundle in bundles:
+            bundle_id = bundle.get("id")
+            if not bundle_id:
+                continue
+            
+            # Check if exists
+            existing = await db.bundles.find_one({"id": bundle_id})
+            
+            if existing:
+                # Update existing
+                await db.bundles.update_one(
+                    {"id": bundle_id},
+                    {"$set": bundle}
+                )
+                updated += 1
+            else:
+                # Insert new
+                await db.bundles.insert_one(bundle)
+                imported += 1
+        
+        logger.info(f"[BUNDLE IMPORT] Imported {imported}, Updated {updated}")
+        return {
+            "imported": imported,
+            "updated": updated,
+            "total": imported + updated
+        }
+    except Exception as e:
+        logger.error(f"[BUNDLE IMPORT] Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+

@@ -122,6 +122,36 @@ const BundlesManager = () => {
     }
   };
   
+  const syncToProduction = async () => {
+    try {
+      toast({
+        title: "Syncing...",
+        description: "Syncing bundles to production"
+      });
+      
+      const response = await fetch(`${API_URL}/api/bundles/sync-to-production`, {
+        method: 'POST'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          title: data.success ? "Sync Complete" : "Sync Issue",
+          description: data.message,
+          variant: data.success ? "default" : "destructive"
+        });
+      } else {
+        throw new Error('Sync failed');
+      }
+    } catch (error) {
+      toast({
+        title: "Sync Failed",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+  
   const openCreateModal = () => {
     setEditingBundle(null);
     setFormData({
@@ -270,6 +300,10 @@ const BundlesManager = () => {
           <Button variant="outline" onClick={seedDefaults}>
             <RefreshCw className="w-4 h-4 mr-2" />
             Seed Defaults
+          </Button>
+          <Button variant="outline" onClick={syncToProduction} className="bg-green-50 hover:bg-green-100 border-green-300">
+            <CheckCircle2 className="w-4 h-4 mr-2 text-green-600" />
+            Sync → Prod
           </Button>
           <Button onClick={openCreateModal}>
             <Plus className="w-4 h-4 mr-2" />
