@@ -1,12 +1,26 @@
-import React, { useState, useEffect } from 'react';
+/**
+ * AdvisoryPage.jsx
+ * 
+ * Decision-support layer for pet parents.
+ * "Help me decide what's right for my dog"
+ * 
+ * Structure follows Emergency page pattern:
+ * - 11 Intent Tiles (Concierge is overlay, not tile)
+ * - Ask Advisory AI hero
+ * - My Dog Advisory personalized section
+ * - Guided Paths
+ * - Curated Bundles
+ * - Soul-Created Products
+ * - Near Me Services
+ * - Concierge overlay throughout
+ */
+
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
 import { Badge } from '../components/ui/badge';
-import { Textarea } from '../components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -17,119 +31,276 @@ import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
 import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
-import PillarPicksSection from '../components/PillarPicksSection';
-import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
-import PersonalizedPicks from '../components/PersonalizedPicks';
-import { getSoulBasedReason } from '../utils/petSoulInference';
-import SoulMadeCollection from '../components/SoulMadeCollection';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
+import NearbyEmergencyHelp from '../components/emergency/NearbyEmergencyHelp';
 import {
   Brain, Heart, Apple, Home, Stethoscope, GraduationCap,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
   ArrowRight, Play, ChevronDown, Users, Calendar, MapPin, Award,
-  Phone, Video, MessageCircle, Mail, Clock, PawPrint, Shield, ShoppingBag, AlertCircle
+  Phone, MessageCircle, Clock, PawPrint, Shield, ShoppingBag, 
+  AlertCircle, Plane, Baby, Scissors, Dumbbell, Sun, Leaf, Dog,
+  Search, HelpCircle, Lightbulb, Target, Package, ThermometerSun
 } from 'lucide-react';
 
-// Advisory Type Configuration - Violet/Purple theme
-const ADVISORY_TYPES = {
-  behaviour: { name: 'Behaviour Consultations', icon: Brain, color: 'from-violet-500 to-purple-600', bgColor: 'bg-violet-50', textColor: 'text-violet-600' },
-  nutrition: { name: 'Nutrition Planning', icon: Apple, color: 'from-emerald-500 to-green-600', bgColor: 'bg-emerald-50', textColor: 'text-emerald-600' },
-  senior_care: { name: 'Senior Pet Planning', icon: Heart, color: 'from-amber-500 to-orange-600', bgColor: 'bg-amber-50', textColor: 'text-amber-600' },
-  new_pet: { name: 'New Pet Guidance', icon: Home, color: 'from-blue-500 to-cyan-600', bgColor: 'bg-blue-50', textColor: 'text-blue-600' },
-  health: { name: 'Health Advisory', icon: Stethoscope, color: 'from-rose-500 to-pink-600', bgColor: 'bg-rose-50', textColor: 'text-rose-600' },
-  training: { name: 'Training Consultations', icon: GraduationCap, color: 'from-indigo-500 to-blue-600', bgColor: 'bg-indigo-50', textColor: 'text-indigo-600' }
-};
-
-const SEVERITY_OPTIONS = [
-  { value: 'mild', label: 'Mild - Just seeking advice' },
-  { value: 'moderate', label: 'Moderate - Ongoing concern' },
-  { value: 'severe', label: 'Severe - Significant issue' },
-  { value: 'urgent', label: 'Urgent - Need immediate help' }
+// 11 Intent Tiles Configuration (Concierge is overlay, not tile)
+const ADVISORY_INTENTS = [
+  {
+    id: 'food_nutrition',
+    title: 'Food & Nutrition',
+    description: 'What to feed, how much, dietary needs',
+    icon: Apple,
+    color: 'from-green-500 to-emerald-600',
+    bgColor: 'bg-green-50',
+    questions: ['Best food for my breed?', 'How much should I feed?', 'Allergies & diet?']
+  },
+  {
+    id: 'puppy_guidance',
+    title: 'Puppy Guidance',
+    description: 'First year essentials & milestones',
+    icon: Baby,
+    color: 'from-pink-500 to-rose-600',
+    bgColor: 'bg-pink-50',
+    questions: ['What to buy first?', 'Vaccination schedule?', 'Toilet training?']
+  },
+  {
+    id: 'breed_guidance',
+    title: 'Breed Guidance',
+    description: 'Breed-specific care & traits',
+    icon: Dog,
+    color: 'from-amber-500 to-orange-600',
+    bgColor: 'bg-amber-50',
+    questions: ['Care for my breed?', 'Common health issues?', 'Exercise needs?']
+  },
+  {
+    id: 'grooming_coat',
+    title: 'Grooming & Coat',
+    description: 'Coat care, brushing, bathing',
+    icon: Scissors,
+    color: 'from-purple-500 to-violet-600',
+    bgColor: 'bg-purple-50',
+    questions: ['How often to groom?', 'Best brush for coat?', 'Shedding control?']
+  },
+  {
+    id: 'behaviour_training',
+    title: 'Behaviour & Training',
+    description: 'Training tips, behavior issues',
+    icon: Brain,
+    color: 'from-blue-500 to-indigo-600',
+    bgColor: 'bg-blue-50',
+    questions: ['Stop pulling on leash?', 'Reduce barking?', 'Separation anxiety?']
+  },
+  {
+    id: 'travel_readiness',
+    title: 'Travel Readiness',
+    description: 'Travel prep, gear, documents',
+    icon: Plane,
+    color: 'from-sky-500 to-cyan-600',
+    bgColor: 'bg-sky-50',
+    questions: ['Is my dog travel ready?', 'What documents needed?', 'Car anxiety help?']
+  },
+  {
+    id: 'senior_care',
+    title: 'Senior Dog Care',
+    description: 'Comfort, mobility, health for seniors',
+    icon: Heart,
+    color: 'from-rose-500 to-pink-600',
+    bgColor: 'bg-rose-50',
+    questions: ['Senior diet changes?', 'Joint support?', 'Comfort products?']
+  },
+  {
+    id: 'home_setup',
+    title: 'Home Setup',
+    description: 'Beds, crates, safe spaces',
+    icon: Home,
+    color: 'from-teal-500 to-emerald-600',
+    bgColor: 'bg-teal-50',
+    questions: ['Best bed for my dog?', 'Crate training?', 'Safe home setup?']
+  },
+  {
+    id: 'new_adoption',
+    title: 'New Adoption',
+    description: 'First days, settling, bonding',
+    icon: PawPrint,
+    color: 'from-orange-500 to-amber-600',
+    bgColor: 'bg-orange-50',
+    questions: ['First 7 days guide?', 'Rescue settling tips?', 'Building trust?']
+  },
+  {
+    id: 'product_advice',
+    title: 'Product Advice',
+    description: 'What to buy for your situation',
+    icon: ShoppingBag,
+    color: 'from-indigo-500 to-purple-600',
+    bgColor: 'bg-indigo-50',
+    questions: ['Best products for puppies?', 'Summer essentials?', 'Travel kit?']
+  },
+  {
+    id: 'recovery_care',
+    title: 'Recovery & Care',
+    description: 'Post-surgery, illness recovery',
+    icon: Stethoscope,
+    color: 'from-red-500 to-rose-600',
+    bgColor: 'bg-red-50',
+    questions: ['Post-surgery care?', 'Recovery products?', 'Feeding during illness?']
+  }
 ];
 
-const FORMAT_OPTIONS = [
-  { value: 'video_call', label: 'Video Call', icon: Video },
-  { value: 'phone_call', label: 'Phone Call', icon: Phone },
-  { value: 'chat', label: 'Chat/Messaging', icon: MessageCircle },
-  { value: 'email', label: 'Email Consultation', icon: Mail }
+// Guided Paths Configuration
+const GUIDED_PATHS = [
+  {
+    id: 'new_puppy',
+    title: 'New Puppy Path',
+    description: 'Complete guide for your first year',
+    icon: Baby,
+    color: 'from-pink-500 to-rose-600',
+    steps: [
+      { title: 'What to buy first', items: ['Bed', 'Bowls', 'Collar', 'Tag', 'Leash'] },
+      { title: 'What to feed', items: ['Puppy food', 'Treats', 'Feeding schedule'] },
+      { title: 'First grooming', items: ['Gentle brush', 'Puppy shampoo', 'Nail trimmer'] },
+      { title: 'Vaccine tracker', items: ['DHPP', 'Rabies', 'Bordetella', 'Deworming'] },
+      { title: 'Toilet training', items: ['Pee pads', 'Enzymatic cleaner', 'Routine tips'] }
+    ]
+  },
+  {
+    id: 'new_adoption',
+    title: 'New Adoption Path',
+    description: 'Help your rescue settle in',
+    icon: Heart,
+    color: 'from-orange-500 to-amber-600',
+    steps: [
+      { title: 'First 7 days', items: ['Decompression space', 'Quiet time', 'Patience'] },
+      { title: 'Safe home setup', items: ['Remove hazards', 'Create den', 'Baby gates'] },
+      { title: 'Feeding & routine', items: ['Set schedule', 'Consistent meals', 'Water access'] },
+      { title: 'Emotional settling', items: ['No overwhelming', 'Calm introductions', 'Trust building'] },
+      { title: 'Basic health checks', items: ['Vet visit', 'Vaccinations', 'Deworming'] }
+    ]
+  },
+  {
+    id: 'senior_dog',
+    title: 'Senior Dog Path',
+    description: 'Comfort & care for aging pets',
+    icon: Heart,
+    color: 'from-rose-500 to-pink-600',
+    steps: [
+      { title: 'Mobility support', items: ['Ramps', 'Non-slip mats', 'Support harness'] },
+      { title: 'Comfort essentials', items: ['Orthopedic bed', 'Soft blankets', 'Heating pad'] },
+      { title: 'Diet adjustments', items: ['Senior food', 'Joint supplements', 'Easy-digest'] },
+      { title: 'Sleep quality', items: ['Quiet space', 'Temperature control', 'Night light'] },
+      { title: 'Recovery support', items: ['Gentle exercise', 'Massage', 'Regular vet checks'] }
+    ]
+  },
+  {
+    id: 'travel_ready',
+    title: 'Travel Ready Path',
+    description: 'Prepare for trips with your pet',
+    icon: Plane,
+    color: 'from-sky-500 to-blue-600',
+    steps: [
+      { title: 'Is my dog fit?', items: ['Health check', 'Age appropriate', 'Anxiety level'] },
+      { title: 'Documents needed', items: ['Health certificate', 'Vaccination records', 'ID tags'] },
+      { title: 'Travel gear', items: ['Carrier', 'Harness', 'Calming aids'] },
+      { title: 'Food & hydration', items: ['Travel bowls', 'Sealed food', 'Water bottle'] },
+      { title: 'Vet support', items: ['Destination vet contacts', 'Emergency numbers'] }
+    ]
+  },
+  {
+    id: 'coat_grooming',
+    title: 'Coat & Grooming Path',
+    description: 'Care by coat type',
+    icon: Scissors,
+    color: 'from-purple-500 to-violet-600',
+    steps: [
+      { title: 'Know your coat', items: ['Short', 'Long', 'Double', 'Curly', 'Wire'] },
+      { title: 'Shedding control', items: ['De-shedding brush', 'Regular brushing', 'Diet'] },
+      { title: 'Mat prevention', items: ['Detangling spray', 'Slicker brush', 'Regular combing'] },
+      { title: 'Special care', items: ['Tear stains', 'Ear cleaning', 'Wrinkle care'] },
+      { title: 'Bathing routine', items: ['Frequency', 'Right shampoo', 'Drying tips'] }
+    ]
+  },
+  {
+    id: 'behaviour_path',
+    title: 'Behaviour Path',
+    description: 'Address common issues',
+    icon: Brain,
+    color: 'from-blue-500 to-indigo-600',
+    steps: [
+      { title: 'Leash pulling', items: ['Front-clip harness', 'Training treats', 'Patience'] },
+      { title: 'Excessive barking', items: ['Identify trigger', 'Redirect', 'Training'] },
+      { title: 'Separation anxiety', items: ['Gradual departures', 'Calming aids', 'Safe space'] },
+      { title: 'Destructive chewing', items: ['Appropriate chews', 'Redirect', 'Exercise'] },
+      { title: 'Guest behaviour', items: ['Controlled introductions', 'Training', 'Safe space'] }
+    ]
+  }
 ];
 
-const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80',
-  'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80'
+// Seasonal/Climate Advice
+const SEASONAL_ADVICE = [
+  { 
+    id: 'summer', 
+    title: 'Summer Care', 
+    icon: Sun, 
+    color: 'bg-amber-100 text-amber-700',
+    tips: ['Hydration', 'Avoid hot pavement', 'Cooling mats', 'Early/late walks']
+  },
+  { 
+    id: 'monsoon', 
+    title: 'Monsoon Care', 
+    icon: ThermometerSun, 
+    color: 'bg-blue-100 text-blue-700',
+    tips: ['Paw drying', 'Raincoat', 'Tick prevention', 'Indoor activities']
+  },
+  { 
+    id: 'winter', 
+    title: 'Winter Care', 
+    icon: ThermometerSun, 
+    color: 'bg-cyan-100 text-cyan-700',
+    tips: ['Warm bedding', 'Shorter baths', 'Paw protection', 'Extra calories']
+  }
 ];
 
 const AdvisoryPage = () => {
   const { user, token } = useAuth();
+  const { addToCart } = useCart();
+  const { currentPet } = usePillarContext();
   
-  // Scroll to top when page loads
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  // Refs for scrolling
+  const askAdvisoryRef = useRef(null);
+  const myDogRef = useRef(null);
+  const guidedPathsRef = useRef(null);
+  const productsRef = useRef(null);
+  const nearMeRef = useRef(null);
   
-  const [advisors, setAdvisors] = useState([]);
-  const [featuredAdvisors, setFeaturedAdvisors] = useState([]);
+  // State
+  const [loading, setLoading] = useState(true);
+  const [advisoryQuery, setAdvisoryQuery] = useState('');
+  const [selectedIntent, setSelectedIntent] = useState(null);
+  const [selectedPath, setSelectedPath] = useState(null);
   const [products, setProducts] = useState([]);
   const [bundles, setBundles] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedType, setSelectedType] = useState(null);
-  const [showRequestModal, setShowRequestModal] = useState(false);
-  const [userPets, setUserPets] = useState([]);
-  const [selectedPet, setSelectedPet] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [heroIndex, setHeroIndex] = useState(0);
+  const [showAiResponse, setShowAiResponse] = useState(false);
+  const [aiResponse, setAiResponse] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
   
-  // Use global pet context
-  const { currentPet } = usePillarContext();
-  const activePet = currentPet || selectedPet;
+  const activePet = currentPet;
+  const petName = activePet?.name || 'Your Pet';
+  const petBreed = activePet?.breed || '';
+  const petAge = activePet?.age_years || activePet?.age || 0;
   
-  const [requestForm, setRequestForm] = useState({
-    advisory_type: 'behaviour',
-    concern: '',
-    concern_duration: '',
-    severity: 'moderate',
-    previous_consultations: false,
-    current_treatments: '',
-    preferred_format: 'video_call',
-    preferred_time: '',
-    notes: ''
-  });
-
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchData();
-    if (user && token) {
-      fetchUserPets();
-    }
-  }, [user, token]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-    }, 5000);
-    return () => clearInterval(interval);
   }, []);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [advisorsRes, featuredRes, productsRes, bundlesRes] = await Promise.all([
-        fetch(`${API_URL}/api/advisory/advisors`),
-        fetch(`${API_URL}/api/advisory/advisors?is_featured=true`),
+      const [productsRes, bundlesRes] = await Promise.all([
         fetch(`${API_URL}/api/advisory/products`),
         fetch(`${API_URL}/api/advisory/bundles`)
       ]);
       
-      if (advisorsRes.ok) {
-        const data = await advisorsRes.json();
-        setAdvisors(data.advisors || []);
-      }
-      if (featuredRes.ok) {
-        const data = await featuredRes.json();
-        setFeaturedAdvisors(data.advisors || []);
-      }
       if (productsRes.ok) {
         const data = await productsRes.json();
         setProducts(data.products || []);
@@ -145,636 +316,529 @@ const AdvisoryPage = () => {
     }
   };
 
-  const fetchUserPets = async () => {
-    try {
-      const response = await fetch(`${API_URL}/api/pets/my-pets`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setUserPets(data.pets || []);
-      }
-    } catch (error) {
-      console.error('Error fetching pets:', error);
-    }
-  };
-
-  const handleConsultationRequest = (type = null) => {
-    if (!user) {
-      window.location.href = '/login?redirect=/advisory';
-      return;
-    }
-    if (type) {
-      setRequestForm(prev => ({ ...prev, advisory_type: type }));
-    }
-    setSelectedPet(null);
-    setShowRequestModal(true);
-  };
-
-  const submitRequest = async () => {
-    if (!selectedPet) {
-      toast({
-        title: "Select a Pet",
-        description: "Please select which pet needs advisory",
-        variant: "destructive"
-      });
-      return;
-    }
+  // Ask Advisory AI
+  const handleAskAdvisory = async () => {
+    if (!advisoryQuery.trim()) return;
     
-    if (!requestForm.concern.trim()) {
-      toast({
-        title: "Describe Your Concern",
-        description: "Please describe what you need help with",
-        variant: "destructive"
-      });
-      return;
-    }
+    setAiLoading(true);
+    setShowAiResponse(true);
     
-    setSubmitting(true);
     try {
-      const response = await fetch(`${API_URL}/api/advisory/request`, {
+      const response = await fetch(`${API_URL}/api/mira/advisory-ask`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          ...(token && { 'Authorization': `Bearer ${token}` })
         },
         body: JSON.stringify({
-          ...requestForm,
-          pet_id: selectedPet.id,
-          pet_name: selectedPet.name,
-          pet_breed: selectedPet.breed,
-          pet_age: selectedPet.age,
-          pet_species: selectedPet.species || 'dog',
-          user_id: user?.id,
-          user_name: user?.name,
-          user_email: user?.email,
-          user_phone: user?.phone
+          query: advisoryQuery,
+          pet_name: activePet?.name,
+          pet_breed: activePet?.breed,
+          pet_age: activePet?.age_years,
+          pet_size: activePet?.size,
+          context: 'advisory'
         })
       });
-
+      
       if (response.ok) {
-        const result = await response.json();
-        
-        // Write to Pet Soul - Record advisory consultation
-        try {
-          await fetch(`${API_URL}/api/pet-vault/${selectedPet.id}/record-advisory-consult`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              advisor_id: 'tdc-advisory',
-              advisor_name: 'The Doggy Company Advisory',
-              service_type: requestForm.advisory_type,
-              consultation_type: requestForm.preferred_format,
-              date: new Date().toISOString().split('T')[0],
-              duration_minutes: null,
-              summary: requestForm.concern.substring(0, 200),
-              recommendations: [],
-              follow_up_date: null,
-              booking_id: result.request_id
-            })
-          });
-        } catch (soulError) {
-          console.warn('Pet Soul update failed (non-blocking):', soulError);
-        }
-        
-        toast({
-          title: "Request Submitted! 🧠",
-          description: result.message
-        });
-        setShowRequestModal(false);
-        setRequestForm({
-          advisory_type: 'behaviour',
-          concern: '',
-          concern_duration: '',
-          severity: 'moderate',
-          previous_consultations: false,
-          current_treatments: '',
-          preferred_format: 'video_call',
-          preferred_time: '',
-          notes: ''
-        });
+        const data = await response.json();
+        setAiResponse(data.response || 'I can help you with that! Let me connect you with our Concierge for personalized advice.');
       } else {
-        const error = await response.json();
-        toast({
-          title: "Error",
-          description: error.detail || "Failed to submit request",
-          variant: "destructive"
-        });
+        setAiResponse('Let me connect you with our Concierge® team who can provide personalized guidance for your question.');
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to submit request",
-        variant: "destructive"
-      });
+      setAiResponse('Our Concierge® team is ready to help you with this. Tap below to chat!');
     } finally {
-      setSubmitting(false);
+      setAiLoading(false);
     }
   };
 
-  const filteredAdvisors = selectedType 
-    ? advisors.filter(a => a.specialties?.includes(selectedType))
-    : advisors;
+  const openWhatsAppConcierge = (context = '') => {
+    const baseMessage = 'Hi, I need advisory help';
+    const contextMessage = context ? ` about ${context}` : '';
+    const petMessage = activePet ? ` for my ${activePet.breed || 'pet'} ${activePet.name}` : '';
+    window.open(`https://wa.me/918971702582?text=${encodeURIComponent(baseMessage + contextMessage + petMessage)}`, '_blank');
+  };
+
+  // Get personalized advice based on pet profile
+  const getPersonalizedAdvice = () => {
+    const advice = [];
+    
+    if (!activePet) {
+      return [
+        { title: 'Sign in for personalized advice', description: 'Get recommendations tailored to your pet' }
+      ];
+    }
+    
+    // Age-based advice
+    if (petAge < 1) {
+      advice.push({ 
+        title: 'Puppy Development Tips', 
+        description: `${petName} is in a critical growth phase`,
+        icon: Baby,
+        color: 'text-pink-600 bg-pink-50'
+      });
+    } else if (petAge > 7) {
+      advice.push({ 
+        title: 'Senior Comfort Guide', 
+        description: `Support ${petName}'s golden years`,
+        icon: Heart,
+        color: 'text-rose-600 bg-rose-50'
+      });
+    }
+    
+    // Breed-specific advice
+    if (petBreed) {
+      const breedLower = petBreed.toLowerCase();
+      
+      if (breedLower.includes('pug') || breedLower.includes('bulldog') || breedLower.includes('shih')) {
+        advice.push({
+          title: 'Flat-Face Care Tips',
+          description: `Special care for ${petBreed}s in heat`,
+          icon: ThermometerSun,
+          color: 'text-amber-600 bg-amber-50'
+        });
+      }
+      
+      if (breedLower.includes('labrador') || breedLower.includes('golden') || breedLower.includes('husky')) {
+        advice.push({
+          title: 'Double Coat Care',
+          description: `Shedding management for ${petBreed}s`,
+          icon: Scissors,
+          color: 'text-purple-600 bg-purple-50'
+        });
+      }
+      
+      if (breedLower.includes('indie') || breedLower.includes('desi')) {
+        advice.push({
+          title: 'Indian Breed Care',
+          description: `Hardy but special needs for ${petName}`,
+          icon: Star,
+          color: 'text-orange-600 bg-orange-50'
+        });
+      }
+    }
+    
+    // Season-based advice (assuming summer for India)
+    advice.push({
+      title: 'Summer Heat Advisory',
+      description: 'Keep cool with these tips',
+      icon: Sun,
+      color: 'text-yellow-600 bg-yellow-50'
+    });
+    
+    return advice.slice(0, 4);
+  };
+
+  const personalizedAdvice = getPersonalizedAdvice();
 
   return (
     <PillarPageLayout
       pillar="advisory"
-      title="Guidance for Your Pet"
-      description="When clarity helps before deciding"
+      title="Advisory - Pet Guidance | The Doggy Company"
+      description="Help deciding what's right for your dog. Food, grooming, training, travel, senior care - personalized guidance based on your pet's needs."
     >
-      {/* Advisory Types Grid */}
-      <section id="advisory-services" className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">How Can We Help?</h2>
-            <p className="text-gray-600">Choose a service area to get started</p>
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 1: ASK ADVISORY - AI Decision Support Hero
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section ref={askAdvisoryRef} className="py-8 px-4 bg-gradient-to-b from-violet-100 to-white" data-testid="ask-advisory-section">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="mb-6">
+            <Badge className="bg-violet-600 text-white mb-3">
+              <Lightbulb className="w-3 h-3 mr-1" /> Ask Advisory
+            </Badge>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+              What would you like help deciding for {petName}?
+            </h1>
+            <p className="text-gray-600">
+              Get personalized guidance based on your pet's actual needs
+            </p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {Object.entries(ADVISORY_TYPES).map(([key, type]) => {
-              const Icon = type.icon;
-              const isSelected = selectedType === key;
+          {/* Search Box */}
+          <div className="relative max-w-2xl mx-auto mb-6">
+            <Input
+              value={advisoryQuery}
+              onChange={(e) => setAdvisoryQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAskAdvisory()}
+              placeholder={`e.g., "Best food for my ${petBreed || 'dog'}" or "What bed should I buy?"`}
+              className="w-full py-6 pl-4 pr-12 text-lg rounded-xl border-2 border-violet-200 focus:border-violet-500"
+            />
+            <Button
+              onClick={handleAskAdvisory}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-violet-600 hover:bg-violet-700"
+              disabled={aiLoading}
+            >
+              {aiLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+            </Button>
+          </div>
+          
+          {/* AI Response */}
+          {showAiResponse && (
+            <Card className="max-w-2xl mx-auto p-4 mb-6 bg-violet-50 border-violet-200">
+              {aiLoading ? (
+                <div className="flex items-center justify-center gap-2 py-4">
+                  <Loader2 className="w-5 h-5 animate-spin text-violet-600" />
+                  <span className="text-violet-700">Thinking...</span>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-gray-700 mb-3">{aiResponse}</p>
+                  <Button
+                    onClick={() => openWhatsAppConcierge(advisoryQuery)}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Talk to Concierge®
+                  </Button>
+                </div>
+              )}
+            </Card>
+          )}
+          
+          {/* Example Questions */}
+          <div className="flex flex-wrap justify-center gap-2">
+            {[
+              `Best food for ${petBreed || 'puppies'}`,
+              'What bed for senior dogs?',
+              'Travel prep checklist',
+              'Grooming routine help'
+            ].map((example, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  setAdvisoryQuery(example);
+                  handleAskAdvisory();
+                }}
+                className="px-3 py-1.5 bg-white border border-violet-200 rounded-full text-sm text-violet-700 hover:bg-violet-50 transition-colors"
+              >
+                {example}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 2: 11 INTENT TILES - What kind of help do you need?
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4 bg-white" data-testid="intent-tiles-section">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-6">
+            <h2 className="text-xl font-bold text-gray-900">What Would You Like Help With?</h2>
+            <p className="text-sm text-gray-600">Choose a topic to get started</p>
+          </div>
+          
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+            {ADVISORY_INTENTS.map((intent) => {
+              const Icon = intent.icon;
+              const isSelected = selectedIntent === intent.id;
+              
               return (
                 <button
-                  key={key}
-                  onClick={() => setSelectedType(isSelected ? null : key)}
-                  className={`p-4 rounded-xl text-center transition-all ${
+                  key={intent.id}
+                  onClick={() => setSelectedIntent(isSelected ? null : intent.id)}
+                  className={`p-3 rounded-xl text-center transition-all ${
                     isSelected 
-                      ? `bg-gradient-to-br ${type.color} text-white shadow-lg scale-105` 
-                      : `${type.bgColor} hover:shadow-md hover:scale-102`
+                      ? `bg-gradient-to-br ${intent.color} text-white shadow-lg scale-105` 
+                      : `${intent.bgColor} hover:shadow-md border-2 border-transparent hover:border-gray-200`
                   }`}
-                  data-testid={`advisory-type-${key}`}
+                  data-testid={`intent-${intent.id}`}
                 >
-                  <div className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-2 ${
-                    isSelected ? 'bg-white/20' : 'bg-white'
-                  }`}>
-                    <Icon className={`w-6 h-6 ${isSelected ? 'text-white' : type.textColor}`} />
-                  </div>
-                  <p className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-700'}`}>
-                    {type.name.split(' ')[0]}
-                  </p>
+                  <Icon className={`w-6 h-6 mx-auto mb-2 ${isSelected ? 'text-white' : ''}`} />
+                  <span className={`text-xs font-medium ${isSelected ? 'text-white' : 'text-gray-700'}`}>
+                    {intent.title}
+                  </span>
                 </button>
               );
             })}
           </div>
           
-          {selectedType && (
-            <div className="mt-6 text-center">
-              <Button 
-                className={`bg-gradient-to-r ${ADVISORY_TYPES[selectedType].color}`}
-                onClick={() => handleConsultationRequest(selectedType)}
-              >
-                Request {ADVISORY_TYPES[selectedType].name} <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Featured Advisors */}
-      {featuredAdvisors.length > 0 && (
-        <section className="py-12 bg-gradient-to-b from-white to-violet-50">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                  <Star className="w-6 h-6 text-violet-600" /> Featured Experts
-                </h2>
-                <p className="text-gray-600">Top-rated advisors ready to help</p>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-              {featuredAdvisors.map((advisor) => (
-                <Card key={advisor.id} className="overflow-hidden hover:shadow-xl transition-all group" data-testid={`advisor-${advisor.id}`}>
-                  <div className="relative h-32 bg-gradient-to-br from-violet-500 to-purple-600">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center">
-                        <Users className="w-10 h-10 text-white" />
+          {/* Selected Intent Details */}
+          {selectedIntent && (
+            <Card className="mt-6 p-4 border-2 border-violet-200 bg-violet-50/50">
+              {(() => {
+                const intent = ADVISORY_INTENTS.find(i => i.id === selectedIntent);
+                const Icon = intent.icon;
+                return (
+                  <div>
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`p-2 rounded-lg bg-gradient-to-br ${intent.color}`}>
+                        <Icon className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{intent.title}</h3>
+                        <p className="text-sm text-gray-600">{intent.description}</p>
                       </div>
                     </div>
-                    {advisor.is_featured && (
-                      <Badge className="absolute top-2 right-2 bg-amber-500">
-                        <Star className="w-3 h-3 mr-1" /> Featured
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 line-clamp-1">{advisor.name}</h3>
-                    <p className="text-sm text-gray-500 line-clamp-2 mt-1">{advisor.description}</p>
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {advisor.specialties?.slice(0, 2).map((spec) => (
-                        <Badge key={spec} variant="outline" className="text-xs capitalize">
-                          {spec.replace('_', ' ')}
-                        </Badge>
+                    
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {intent.questions.map((q, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            setAdvisoryQuery(q);
+                            askAdvisoryRef.current?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                          className="px-3 py-1.5 bg-white border border-violet-200 rounded-full text-sm text-violet-700 hover:bg-violet-100"
+                        >
+                          {q}
+                        </button>
                       ))}
                     </div>
-                    <div className="flex items-center justify-between mt-3">
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                        <span className="text-sm font-medium">{advisor.rating || 4.8}</span>
-                        <span className="text-xs text-gray-400">({advisor.reviews_count || 0})</span>
-                      </div>
-                      <span className="text-violet-600 font-semibold">₹{advisor.consultation_fee || 1500}</span>
-                    </div>
-                    <Button 
-                      className="w-full mt-3 bg-violet-600 hover:bg-violet-700"
-                      onClick={() => handleConsultationRequest(advisor.specialties?.[0])}
+                    
+                    <Button
+                      onClick={() => openWhatsAppConcierge(intent.title)}
+                      className="bg-violet-600 hover:bg-violet-700"
                     >
-                      Book Consultation
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Talk to Concierge® about {intent.title}
                     </Button>
                   </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* All Advisors */}
-      <section className="py-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <Users className="w-5 h-5 text-violet-600" /> 
-            {selectedType ? `${ADVISORY_TYPES[selectedType]?.name} Experts` : 'All Advisory Experts'}
-            <Badge variant="outline" className="ml-2">{filteredAdvisors.length} available</Badge>
-          </h2>
-          
-          {loading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-violet-600" />
-            </div>
-          ) : filteredAdvisors.length > 0 ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-              {filteredAdvisors.map((advisor) => (
-                <Card key={advisor.id} className="p-2.5 sm:p-4 hover:shadow-lg transition-all cursor-pointer">
-                  <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-4">
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-violet-100 to-purple-100 flex items-center justify-center flex-shrink-0">
-                      <Users className="w-6 h-6 sm:w-8 sm:h-8 text-violet-600" />
-                    </div>
-                    <div className="flex-1 min-w-0 text-center sm:text-left">
-                      <h3 className="font-semibold text-gray-900 text-xs sm:text-base line-clamp-1">{advisor.name}</h3>
-                      <p className="text-[10px] sm:text-sm text-gray-500 line-clamp-2 hidden sm:block">{advisor.description}</p>
-                      <div className="hidden sm:flex flex-wrap gap-1 mt-2">
-                        {advisor.specialties?.slice(0, 2).map((spec) => (
-                          <Badge key={spec} variant="outline" className="text-xs capitalize">
-                            {spec.replace('_', ' ')}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between mt-2 sm:mt-4 pt-2 sm:pt-4 border-t">
-                    <div>
-                      <span className="text-sm sm:text-lg font-bold text-violet-600">₹{advisor.consultation_fee || 1500}</span>
-                    </div>
-                    <Button 
-                      size="sm"
-                      className="bg-violet-600 hover:bg-violet-700 text-[10px] sm:text-sm px-2 sm:px-3 h-6 sm:h-8"
-                      onClick={() => handleConsultationRequest(advisor.specialties?.[0])}
-                    >
-                      Book
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Card className="p-8 text-center">
-              <Brain className="w-12 h-12 mx-auto text-violet-300 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No advisors found</h3>
-              <p className="text-gray-500">Try selecting a different service area</p>
+                );
+              })()}
             </Card>
           )}
         </div>
       </section>
 
-      {/* Products & Bundles Section */}
-      {(products.length > 0 || bundles.length > 0) && (
-        <div id="advisory-products" className="py-12 bg-gradient-to-b from-violet-50 to-white">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center gap-2 mb-6">
-              <Sparkles className="w-6 h-6 text-violet-600" />
-              <h2 className="text-2xl font-bold text-gray-900">Advisory Essentials & Bundles</h2>
-            </div>
-            
-            {/* Bundles */}
-            {bundles.length > 0 && (
-              <div className="mb-8">
-                <h3 className="text-sm sm:text-lg font-semibold text-gray-700 mb-3 sm:mb-4">🎁 Consultation Bundles</h3>
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                  {bundles.map((bundle) => (
-                    <Card key={bundle.id} className="p-2.5 sm:p-4 border-2 border-violet-200 bg-violet-50/50" data-testid={`bundle-${bundle.id}`}>
-                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-1 sm:mb-2">
-                        <h4 className="font-semibold text-gray-900 text-xs sm:text-base line-clamp-1">{bundle.name}</h4>
-                        {bundle.is_recommended && (
-                          <Badge className="bg-violet-500 text-[10px] sm:text-xs mt-1 sm:mt-0 w-fit">Top Pick</Badge>
-                        )}
-                      </div>
-                      <p className="text-[10px] sm:text-sm text-gray-600 mb-2 sm:mb-3 line-clamp-2 hidden sm:block">{bundle.description}</p>
-                      {bundle.includes_consultation && (
-                        <Badge variant="outline" className="text-violet-600 mb-1 sm:mb-2 text-[10px] sm:text-xs hidden sm:inline-flex">
-                          <Video className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" /> Includes Call
-                        </Badge>
-                      )}
-                      <div className="flex items-center gap-1 sm:gap-2 mb-2 sm:mb-3">
-                        <span className="text-sm sm:text-xl font-bold text-violet-600">₹{bundle.price}</span>
-                        <span className="text-[10px] sm:text-sm text-gray-400 line-through">₹{bundle.original_price}</span>
-                      </div>
-                      <Button className="w-full bg-violet-500 hover:bg-violet-600 text-[10px] sm:text-sm h-7 sm:h-9">Add</Button>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Products - Using ProductCard for clickable product modals */}
-            {products.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                  <ShoppingBag className="w-5 h-5 text-violet-500" />
-                  Advisory Products
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                  {products.slice(0, 10).map((product) => (
-                    <ProductCard key={product.id} product={product} pillar="advisory" />
-                  ))}
-                </div>
-              </div>
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 3: MY DOG ADVISORY - Personalized Recommendations
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section ref={myDogRef} className="py-8 px-4 bg-gradient-to-b from-purple-50 to-white" data-testid="my-dog-advisory-section">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-2 mb-6">
+            <Sparkles className="w-6 h-6 text-purple-600" />
+            <h2 className="text-xl font-bold text-gray-900">
+              {activePet ? `Advice for ${petName} Today` : 'Personalized Advice'}
+            </h2>
+            {activePet && (
+              <Badge className="bg-purple-100 text-purple-700">
+                {petBreed} • {petAge > 0 ? `${petAge} years` : 'Puppy'}
+              </Badge>
             )}
           </div>
-        </div>
-      )}
-
-      {/* CTA Section */}
-      <section className="py-12 bg-gradient-to-r from-violet-600 to-purple-700 text-white">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">Not Sure Where to Start?</h2>
-          <p className="text-lg opacity-90 mb-8">
-            Book a general consultation and our expert team will guide you to the right specialist.
-          </p>
-          <Button 
-            size="lg" 
-            className="bg-white text-violet-600 hover:bg-violet-50"
-            onClick={() => handleConsultationRequest()}
-          >
-            Get Free Guidance <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
+          
+          {activePet ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {personalizedAdvice.map((advice, idx) => {
+                const Icon = advice.icon || Lightbulb;
+                return (
+                  <Card 
+                    key={idx} 
+                    className={`p-4 cursor-pointer hover:shadow-lg transition-all ${advice.color || 'bg-gray-50'}`}
+                    onClick={() => openWhatsAppConcierge(advice.title)}
+                  >
+                    <Icon className="w-6 h-6 mb-2" />
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">{advice.title}</h3>
+                    <p className="text-xs text-gray-600">{advice.description}</p>
+                    <div className="mt-2 flex items-center text-xs text-violet-600 font-medium">
+                      Get advice <ChevronRight className="w-3 h-3 ml-1" />
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          ) : (
+            <Card className="p-6 text-center bg-purple-50">
+              <PawPrint className="w-12 h-12 mx-auto text-purple-300 mb-3" />
+              <h3 className="font-semibold text-gray-900 mb-2">Sign in for Personalized Advice</h3>
+              <p className="text-sm text-gray-600 mb-4">Get recommendations tailored to your pet's breed, age, and needs</p>
+              <Button className="bg-purple-600 hover:bg-purple-700">
+                Sign In
+              </Button>
+            </Card>
+          )}
         </div>
       </section>
 
-      {/* Request Modal */}
-      <Dialog open={showRequestModal} onOpenChange={setShowRequestModal}>
-        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Brain className="w-5 h-5 text-violet-600" />
-              Request Advisory Consultation
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            {/* Advisory Type */}
-            <div>
-              <Label>Type of Advisory</Label>
-              <Select 
-                value={requestForm.advisory_type} 
-                onValueChange={(v) => setRequestForm({...requestForm, advisory_type: v})}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(ADVISORY_TYPES).map(([key, type]) => (
-                    <SelectItem key={key} value={key}>{type.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Pet Selection */}
-            <div>
-              <Label className="mb-2 block">Select Pet</Label>
-              {userPets.length === 0 ? (
-                <Card className="p-4 text-center bg-violet-50 border-violet-200">
-                  <p className="text-violet-700">Please add a pet profile first</p>
-                  <Button size="sm" className="mt-2" onClick={() => window.location.href = '/pet-profile'}>
-                    Add Pet
-                  </Button>
-                </Card>
-              ) : (
-                <div className="space-y-2">
-                  {userPets.map((pet) => (
-                    <button
-                      key={pet.id}
-                      onClick={() => setSelectedPet(pet)}
-                      className={`w-full p-3 rounded-lg border-2 text-left flex items-center gap-3 transition-all ${
-                        selectedPet?.id === pet.id ? 'border-violet-500 bg-violet-50' : 'border-gray-200 hover:border-violet-200'
-                      }`}
-                    >
-                      <div className="w-10 h-10 rounded-full overflow-hidden bg-violet-100 flex items-center justify-center">
-                        <img 
-                          src={getPetPhotoUrl(pet)} 
-                          alt={pet.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.nextSibling.style.display = 'flex';
-                          }}
-                        />
-                        <PawPrint className="w-5 h-5 text-violet-600 hidden" />
-                      </div>
-                      <div>
-                        <p className="font-medium">{pet.name}</p>
-                        <p className="text-sm text-gray-500">{pet.breed}</p>
-                      </div>
-                      {selectedPet?.id === pet.id && (
-                        <CheckCircle className="w-5 h-5 text-violet-600 ml-auto" />
-                      )}
-                    </button>
-                  ))}
-                  {selectedPet && (
-                    <p className="text-xs text-violet-600 mt-2 flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" />
-                      Consultation will be saved to {selectedPet.name}'s Pet Soul
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Concern */}
-            <div>
-              <Label>Describe Your Concern *</Label>
-              <Textarea
-                value={requestForm.concern}
-                onChange={(e) => setRequestForm({...requestForm, concern: e.target.value})}
-                placeholder="What would you like help with? Please describe in detail..."
-                rows={3}
-              />
-            </div>
-
-            {/* Severity */}
-            <div>
-              <Label>How urgent is this?</Label>
-              <Select 
-                value={requestForm.severity} 
-                onValueChange={(v) => setRequestForm({...requestForm, severity: v})}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {SEVERITY_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Preferred Format */}
-            <div>
-              <Label>Preferred Consultation Format</Label>
-              <div className="grid grid-cols-2 gap-2 mt-2">
-                {FORMAT_OPTIONS.map((opt) => {
-                  const Icon = opt.icon;
-                  return (
-                    <button
-                      key={opt.value}
-                      onClick={() => setRequestForm({...requestForm, preferred_format: opt.value})}
-                      className={`p-3 rounded-lg border-2 flex items-center gap-2 transition-all ${
-                        requestForm.preferred_format === opt.value 
-                          ? 'border-violet-500 bg-violet-50' 
-                          : 'border-gray-200 hover:border-violet-200'
-                      }`}
-                    >
-                      <Icon className={`w-4 h-4 ${requestForm.preferred_format === opt.value ? 'text-violet-600' : 'text-gray-400'}`} />
-                      <span className="text-sm">{opt.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Additional Notes */}
-            <div>
-              <Label>Additional Notes (Optional)</Label>
-              <Textarea
-                value={requestForm.notes}
-                onChange={(e) => setRequestForm({...requestForm, notes: e.target.value})}
-                placeholder="Any other information that might help..."
-                rows={2}
-              />
-            </div>
-
-            {/* Submit */}
-            <div className="space-y-2 pt-2">
-              {/* Validation message */}
-              {(!selectedPet || !requestForm.concern.trim()) && (
-                <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" />
-                  {!selectedPet ? 'Please select a pet above' : 'Please describe your concern above'}
-                </p>
-              )}
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={() => setShowRequestModal(false)} className="flex-1">
-                  Cancel
-                </Button>
-                <Button
-                  onClick={submitRequest}
-                  disabled={!selectedPet || !requestForm.concern.trim() || submitting}
-                  className="flex-1 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700"
-                >
-                  {submitting ? (
-                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
-                  ) : (
-                    <><Send className="w-4 h-4 mr-2" /> Submit Request</>
-                  )}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-      
-      {/* === SERVICE CATALOG WITH PRICING === */}
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 4: CONCIERGE ASSISTANCE - Overlay throughout (like Emergency)
+          ═══════════════════════════════════════════════════════════════════════════ */}
       <ServiceCatalogSection 
         pillar="advisory"
-        title="Advisory, Personalised"
-        subtitle="Expert consultation services with transparent pricing"
-        maxServices={8}
+        title="Concierge® Will Guide You"
+        subtitle="We can help you decide what's right for your pet"
+        maxServices={6}
+        hidePrice={true}
       />
 
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* SOUL MADE PRODUCTS - Breed care guides and advisory products */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-12 px-4" data-testid="advisory-soul-made-section">
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 5: GUIDED PATHS - Step-by-step decision journeys
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section ref={guidedPathsRef} className="py-8 px-4 bg-white" data-testid="guided-paths-section">
         <div className="max-w-6xl mx-auto">
-          <SoulMadeCollection
-            pillar="advisory"
-            maxItems={8}
-            showTitle={true}
-          />
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4" data-testid="advisory-breed-smart-section">
-        <div className="max-w-6xl mx-auto">
-          <BreedSmartRecommendations pillar="advisory" />
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <ArchetypeProducts pillar="advisory" maxProducts={8} showTitle={true} />
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* CURATED BUNDLES - Save with handpicked combinations */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <CuratedBundles pillar="advisory" showTitle={true} />
-        </div>
-      </section>
-      
-      {/* ═══════════════════════════════════════════════════════════════════
-          MIRA'S CURATED LAYER - Gold Standard Unified Component
-          Includes: Header + CuratedConciergeSection + PersonalizedPillarSection
-          ═══════════════════════════════════════════════════════════════════ */}
-      <div className="py-8 bg-gradient-to-b from-white to-indigo-50/30">
-        {/* Personalized Product Picks - Same as Celebrate/Dine gold standard */}
-        <PersonalizedPicks pillar="advisory" maxProducts={6} />
-        
-        <MiraCuratedLayer
-          pillar="advisory"
-          activePet={activePet || userPets?.[0]}
-          token={token}
-          userEmail={user?.email}
-          isLoading={!userPets && !!token}
-        />
-        
-        {/* Mira's Picks for Pet */}
-        {(activePet || userPets?.[0]) && (
-          <div className="max-w-6xl mx-auto px-4 mt-6">
-            <PillarPicksSection pillar="advisory" pet={activePet || userPets[0]} />
+          <div className="text-center mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Guided Decision Paths</h2>
+            <p className="text-sm text-gray-600">Step-by-step guidance for common situations</p>
           </div>
-        )}
-      </div>
-      
-      {/* Concierge® Button - Blue C® for Service Desk chat */}
-      <ConciergeButton 
-        pillar="advisory" 
-        position="bottom-right"
-        showLabel
-      />
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {GUIDED_PATHS.map((path) => {
+              const Icon = path.icon;
+              const isExpanded = selectedPath === path.id;
+              
+              return (
+                <div key={path.id}>
+                  <button
+                    onClick={() => setSelectedPath(isExpanded ? null : path.id)}
+                    className={`w-full p-4 rounded-xl text-left transition-all ${
+                      isExpanded 
+                        ? `bg-gradient-to-br ${path.color} text-white shadow-lg` 
+                        : 'bg-gray-50 hover:shadow-md border border-gray-200'
+                    }`}
+                  >
+                    <Icon className={`w-6 h-6 mb-2 ${isExpanded ? 'text-white' : 'text-violet-600'}`} />
+                    <h3 className={`font-semibold text-sm ${isExpanded ? 'text-white' : 'text-gray-900'}`}>
+                      {path.title}
+                    </h3>
+                    <p className={`text-xs mt-1 ${isExpanded ? 'text-white/80' : 'text-gray-500'}`}>
+                      {path.description}
+                    </p>
+                  </button>
+                  
+                  {isExpanded && (
+                    <Card className="mt-2 p-4 bg-white border-2 border-violet-200">
+                      <div className="space-y-3">
+                        {path.steps.map((step, idx) => (
+                          <div key={idx} className="flex items-start gap-3">
+                            <div className="w-6 h-6 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                              {idx + 1}
+                            </div>
+                            <div>
+                              <h4 className="font-medium text-sm text-gray-900">{step.title}</h4>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {step.items.map((item, i) => (
+                                  <Badge key={i} variant="outline" className="text-xs">
+                                    {item}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <Button
+                        onClick={() => openWhatsAppConcierge(path.title)}
+                        className="w-full mt-4 bg-violet-600 hover:bg-violet-700"
+                      >
+                        <MessageCircle className="w-4 h-4 mr-2" />
+                        Get Help with {path.title}
+                      </Button>
+                    </Card>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 6: ADVISORY PRODUCTS & BUNDLES - Soul-created structure
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section ref={productsRef} className="py-8 px-4 bg-gradient-to-b from-violet-50 to-white" data-testid="advisory-products-section">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-2 mb-6">
+            <ShoppingBag className="w-6 h-6 text-violet-600" />
+            <h2 className="text-xl font-bold text-gray-900">Products for {petName}'s Needs</h2>
+          </div>
+          
+          {/* BUNDLES ON TOP */}
+          <div className="mb-8">
+            <CuratedBundles pillar="advisory" maxBundles={3} showTitle={true} />
+          </div>
+          
+          {/* SMART PICKS */}
+          <BreedSmartRecommendations pillar="advisory" />
+          
+          {/* ARCHETYPE PRODUCTS */}
+          <div className="mt-8">
+            <ArchetypeProducts pillar="advisory" maxProducts={8} showTitle={true} />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 7: NEAR ME - Nearby services (trainers, groomers, vets)
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section ref={nearMeRef} className="py-8 px-4 bg-white" data-testid="near-me-section">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Find Services Near You</h2>
+            <p className="text-sm text-gray-600">Trainers, groomers, vets, and more in your area</p>
+          </div>
+          
+          <NearbyEmergencyHelp />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 8: SEASONAL ADVICE - Climate/moment-based tips
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4 bg-gradient-to-b from-amber-50 to-white" data-testid="seasonal-advice-section">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Seasonal Care Tips</h2>
+            <p className="text-sm text-gray-600">Climate-based advice for {petName}</p>
+          </div>
+          
+          <div className="grid grid-cols-3 gap-4">
+            {SEASONAL_ADVICE.map((season) => {
+              const Icon = season.icon;
+              return (
+                <Card 
+                  key={season.id} 
+                  className={`p-4 ${season.color} cursor-pointer hover:shadow-lg transition-all`}
+                  onClick={() => openWhatsAppConcierge(season.title)}
+                >
+                  <Icon className="w-6 h-6 mb-2" />
+                  <h3 className="font-semibold text-sm mb-2">{season.title}</h3>
+                  <ul className="text-xs space-y-1">
+                    {season.tips.map((tip, idx) => (
+                      <li key={idx} className="flex items-center gap-1">
+                        <CheckCircle className="w-3 h-3" /> {tip}
+                      </li>
+                    ))}
+                  </ul>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 9: CONCIERGE ESCALATION - Always available help
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4 bg-violet-600" data-testid="concierge-cta-section">
+        <div className="max-w-4xl mx-auto text-center text-white">
+          <h2 className="text-2xl font-bold mb-2">Still Need Help Deciding?</h2>
+          <p className="text-violet-100 mb-6">
+            Our Concierge® team can help you choose the right products, services, or experts for {petName}
+          </p>
+          
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button
+              onClick={() => openWhatsAppConcierge()}
+              className="bg-white text-violet-600 hover:bg-violet-50"
+              size="lg"
+            >
+              <MessageCircle className="w-5 h-5 mr-2" />
+              Talk to Concierge®
+            </Button>
+            <Button
+              onClick={() => window.location.href = '/services'}
+              variant="outline"
+              className="border-white text-white hover:bg-violet-700"
+              size="lg"
+            >
+              <Users className="w-5 h-5 mr-2" />
+              Browse All Services
+            </Button>
+          </div>
+        </div>
+      </section>
     </PillarPageLayout>
   );
 };
