@@ -1,0 +1,378 @@
+"""
+Bundle Routes - CRUD API for Curated Bundles
+Allows admin to create, edit, and manage product bundles
+"""
+
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+from typing import List, Optional
+from datetime import datetime, timezone
+import logging
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter(prefix="/api/bundles", tags=["bundles"])
+
+# Module-level database reference
+_db = None
+
+def set_bundle_db(database):
+    """Initialize bundle routes with database reference"""
+    global _db
+    _db = database
+    logger.info("Bundle routes initialized with database")
+
+def get_db():
+    """Get database reference"""
+    if _db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    return _db
+
+# Pydantic Models
+class BundleItem(BaseModel):
+    product_id: Optional[str] = None
+    product_name: str
+    product_type: Optional[str] = None
+
+class BundleCreate(BaseModel):
+    name: str
+    description: str
+    pillar: str  # celebrate, dine, travel, care, etc.
+    items: List[str]  # List of product names/types
+    original_price: float
+    bundle_price: float
+    icon: str = "📦"
+    popular: bool = False
+    active: bool = True
+
+class BundleUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    pillar: Optional[str] = None
+    items: Optional[List[str]] = None
+    original_price: Optional[float] = None
+    bundle_price: Optional[float] = None
+    icon: Optional[str] = None
+    popular: Optional[bool] = None
+    active: Optional[bool] = None
+
+@router.get("")
+async def get_bundles(
+    pillar: Optional[str] = None,
+    active_only: bool = True
+):
+    """Get all bundles, optionally filtered by pillar"""
+    try:
+        db = get_db()
+        query = {}
+        if pillar:
+            query["pillar"] = pillar
+        if active_only:
+            query["active"] = True
+        
+        cursor = db.bundles.find(query, {"_id": 0})
+        bundles = await cursor.to_list(length=100)
+        
+        # If no bundles in DB, return default bundles
+        if not bundles:
+            bundles = get_default_bundles(pillar)
+        
+        return {
+            "bundles": bundles,
+            "total": len(bundles),
+            "pillar": pillar
+        }
+    except Exception as e:
+        logger.error(f"Error fetching bundles: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/{bundle_id}")
+async def get_bundle(bundle_id: str):
+    """Get a specific bundle by ID"""
+    try:
+        db = get_db()
+        bundle = await db.bundles.find_one({"id": bundle_id}, {"_id": 0})
+        if not bundle:
+            raise HTTPException(status_code=404, detail="Bundle not found")
+        return bundle
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching bundle: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("")
+async def create_bundle(bundle: BundleCreate):
+    """Create a new bundle"""
+    try:
+        db = get_db()
+        # Generate unique ID
+        bundle_id = f"{bundle.pillar}-{bundle.name.lower().replace(' ', '-')}-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+        
+        # Calculate discount percentage
+        discount = round((1 - bundle.bundle_price / bundle.original_price) * 100) if bundle.original_price > 0 else 0
+        
+        bundle_doc = {
+            "id": bundle_id,
+            "name": bundle.name,
+            "description": bundle.description,
+            "pillar": bundle.pillar,
+            "items": bundle.items,
+            "original_price": bundle.original_price,
+            "bundle_price": bundle.bundle_price,
+            "discount": discount,
+            "icon": bundle.icon,
+            "popular": bundle.popular,
+            "active": bundle.active,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.bundles.insert_one(bundle_doc)
+        
+        # Remove _id before returning
+        bundle_doc.pop("_id", None)
+        
+        logger.info(f"Created bundle: {bundle_id}")
+        return {"message": "Bundle created", "bundle": bundle_doc}
+    except Exception as e:
+        logger.error(f"Error creating bundle: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/{bundle_id}")
+async def update_bundle(bundle_id: str, updates: BundleUpdate):
+    """Update an existing bundle"""
+    try:
+        db = get_db()
+        # Build update document
+        update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
+        
+        for field, value in updates.dict(exclude_unset=True).items():
+            if value is not None:
+                update_doc[field] = value
+        
+        # Recalculate discount if prices changed
+        if "original_price" in update_doc or "bundle_price" in update_doc:
+            bundle = await db.bundles.find_one({"id": bundle_id})
+            if bundle:
+                original = update_doc.get("original_price", bundle.get("original_price", 0))
+                bundle_price = update_doc.get("bundle_price", bundle.get("bundle_price", 0))
+                if original > 0:
+                    update_doc["discount"] = round((1 - bundle_price / original) * 100)
+        
+        result = await db.bundles.update_one(
+            {"id": bundle_id},
+            {"$set": update_doc}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Bundle not found")
+        
+        # Get updated bundle
+        updated_bundle = await db.bundles.find_one({"id": bundle_id}, {"_id": 0})
+        
+        logger.info(f"Updated bundle: {bundle_id}")
+        return {"message": "Bundle updated", "bundle": updated_bundle}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating bundle: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/{bundle_id}")
+async def delete_bundle(bundle_id: str):
+    """Delete a bundle (soft delete - sets active=False)"""
+    try:
+        db = get_db()
+        result = await db.bundles.update_one(
+            {"id": bundle_id},
+            {"$set": {"active": False, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Bundle not found")
+        
+        logger.info(f"Deleted (deactivated) bundle: {bundle_id}")
+        return {"message": "Bundle deleted", "bundle_id": bundle_id}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting bundle: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/seed-defaults")
+async def seed_default_bundles():
+    """Seed the database with default bundles"""
+    try:
+        db = get_db()
+        default_bundles = get_all_default_bundles()
+        
+        inserted = 0
+        for bundle in default_bundles:
+            # Check if bundle already exists
+            existing = await db.bundles.find_one({"id": bundle["id"]})
+            if not existing:
+                bundle["created_at"] = datetime.now(timezone.utc).isoformat()
+                bundle["updated_at"] = datetime.now(timezone.utc).isoformat()
+                await db.bundles.insert_one(bundle)
+                inserted += 1
+        
+        total = await db.bundles.count_documents({})
+        
+        logger.info(f"Seeded {inserted} default bundles")
+        return {
+            "message": f"Seeded {inserted} new bundles",
+            "total_bundles": total
+        }
+    except Exception as e:
+        logger.error(f"Error seeding bundles: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+def get_default_bundles(pillar: Optional[str] = None) -> List[dict]:
+    """Get default bundles, optionally filtered by pillar"""
+    all_bundles = get_all_default_bundles()
+    if pillar:
+        return [b for b in all_bundles if b["pillar"] == pillar]
+    return all_bundles
+
+def get_all_default_bundles() -> List[dict]:
+    """Return all default bundle configurations"""
+    return [
+        # Celebrate
+        {
+            "id": "celebrate-birthday-bundle",
+            "name": "Birthday Pawty Bundle",
+            "description": "Everything for the perfect birthday celebration",
+            "pillar": "celebrate",
+            "items": ["Party Hat", "Birthday Bandana", "Celebration Mug", "Treat Jar"],
+            "original_price": 2196,
+            "bundle_price": 1799,
+            "discount": 18,
+            "icon": "🎂",
+            "popular": True,
+            "active": True
+        },
+        {
+            "id": "celebrate-gotcha-bundle",
+            "name": "Gotcha Day Bundle",
+            "description": "Celebrate the day they joined your family",
+            "pillar": "celebrate",
+            "items": ["Welcome Mat", "Photo Frame", "Celebration Bandana"],
+            "original_price": 1697,
+            "bundle_price": 1399,
+            "discount": 17,
+            "icon": "🏠",
+            "popular": False,
+            "active": True
+        },
+        # Travel
+        {
+            "id": "travel-adventure-bundle",
+            "name": "Adventure Ready Bundle",
+            "description": "Everything for trips with your furry friend",
+            "pillar": "travel",
+            "items": ["Passport Holder", "Carrier Tag", "Travel Bowl", "Luggage Tag"],
+            "original_price": 1896,
+            "bundle_price": 1499,
+            "discount": 21,
+            "icon": "✈️",
+            "popular": True,
+            "active": True
+        },
+        {
+            "id": "travel-road-trip-bundle",
+            "name": "Road Trip Essentials",
+            "description": "Perfect for car adventures",
+            "pillar": "travel",
+            "items": ["Travel Bowl", "Pet Towel", "Car Bandana"],
+            "original_price": 1347,
+            "bundle_price": 1099,
+            "discount": 18,
+            "icon": "🚗",
+            "popular": False,
+            "active": True
+        },
+        # Dine
+        {
+            "id": "dine-mealtime-bundle",
+            "name": "Premium Mealtime Bundle",
+            "description": "Elevate every meal with personalized gear",
+            "pillar": "dine",
+            "items": ["Food Bowl", "Treat Jar", "Feeding Mat", "Food Scoop"],
+            "original_price": 2296,
+            "bundle_price": 1799,
+            "discount": 22,
+            "icon": "🍽️",
+            "popular": True,
+            "active": True
+        },
+        {
+            "id": "dine-treats-bundle",
+            "name": "Treat Lover Bundle",
+            "description": "For the treat-motivated pup",
+            "pillar": "dine",
+            "items": ["Treat Jar", "Treat Pouch", "Training Treats Bag"],
+            "original_price": 1497,
+            "bundle_price": 1199,
+            "discount": 20,
+            "icon": "🦴",
+            "popular": False,
+            "active": True
+        },
+        # Care
+        {
+            "id": "care-grooming-bundle",
+            "name": "Spa Day Bundle",
+            "description": "Complete grooming essentials",
+            "pillar": "care",
+            "items": ["Pet Robe", "Grooming Apron", "Pet Towel"],
+            "original_price": 1847,
+            "bundle_price": 1449,
+            "discount": 21,
+            "icon": "🛁",
+            "popular": True,
+            "active": True
+        },
+        # Stay
+        {
+            "id": "stay-comfort-bundle",
+            "name": "Home Comfort Bundle",
+            "description": "Make home the coziest place",
+            "pillar": "stay",
+            "items": ["Cozy Blanket", "Cushion Cover", "Room Sign"],
+            "original_price": 1797,
+            "bundle_price": 1399,
+            "discount": 22,
+            "icon": "🏠",
+            "popular": True,
+            "active": True
+        },
+        # Fit
+        {
+            "id": "fit-walker-bundle",
+            "name": "Daily Walker Bundle",
+            "description": "Everything for daily walks",
+            "pillar": "fit",
+            "items": ["Walking Leash", "Training Pouch", "Poop Bag Holder"],
+            "original_price": 1497,
+            "bundle_price": 1199,
+            "discount": 20,
+            "icon": "🚶",
+            "popular": True,
+            "active": True
+        },
+        # Farewell
+        {
+            "id": "farewell-memorial-bundle",
+            "name": "Forever Loved Bundle",
+            "description": "Honor their memory beautifully",
+            "pillar": "farewell",
+            "items": ["Memory Frame", "Keepsake Box", "Memorial Candle"],
+            "original_price": 2497,
+            "bundle_price": 1999,
+            "discount": 20,
+            "icon": "🌈",
+            "popular": False,
+            "active": True
+        }
+    ]
