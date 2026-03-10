@@ -410,9 +410,62 @@ const ADVISORY_COPY = {
 };
 
 /**
+ * FAREWELL-SPECIFIC COPY
+ * Compassionate, gentle, memorial-focused language
+ * NEVER use fun/party/social language on farewell pillar
+ */
+const FAREWELL_COPY = {
+  greeting: [
+    "Forever in our hearts",
+    "Honoring {pet}'s memory",
+    "A tribute to {pet}",
+    "Cherishing {pet}'s legacy"
+  ],
+  productIntro: [
+    "Memorial keepsakes for {pet}",
+    "Treasured remembrances for your beloved {breed}",
+    "Honoring the love you shared",
+    "Beautiful tributes to cherish forever"
+  ],
+  bundleIntro: [
+    "Memorial collections for {pet}",
+    "Complete remembrance packages",
+    "Everything to honor {pet}'s memory"
+  ],
+  sectionTitle: "Forever in our hearts",
+  sectionSubtitle: "Beautiful keepsakes to honor {pet}'s memory"
+};
+
+/**
+ * ADOPT-SPECIFIC COPY
+ * Welcoming, hopeful, new beginnings language
+ */
+const ADOPT_COPY = {
+  greeting: [
+    "Welcome home essentials",
+    "Starting fresh with {pet}",
+    "New beginnings for {pet}",
+    "Building a new life together"
+  ],
+  productIntro: [
+    "First-day essentials for {pet}",
+    "Everything for {pet}'s new home",
+    "Starting your journey together",
+    "Setting up for success with {pet}"
+  ],
+  bundleIntro: [
+    "New home starter kits for {pet}",
+    "Complete adoption bundles",
+    "Everything {pet} needs to settle in"
+  ]
+};
+
+/**
  * Get pillar-aware greeting
  * For emergency pillar, uses calming/supportive language
  * For advisory pillar, uses guidance-focused language
+ * For farewell pillar, uses memorial/compassionate language
+ * For adopt pillar, uses welcoming/hopeful language
  */
 export function getPillarAwareGreeting(archetype, petName, breed, pillar) {
   if (pillar === 'emergency') {
@@ -421,6 +474,14 @@ export function getPillarAwareGreeting(archetype, petName, breed, pillar) {
   }
   if (pillar === 'advisory') {
     const template = getRandomItem(ADVISORY_COPY.greeting);
+    return replacePlaceholders(template, petName, breed);
+  }
+  if (pillar === 'farewell') {
+    const template = getRandomItem(FAREWELL_COPY.greeting);
+    return replacePlaceholders(template, petName, breed);
+  }
+  if (pillar === 'adopt') {
+    const template = getRandomItem(ADOPT_COPY.greeting);
     return replacePlaceholders(template, petName, breed);
   }
   return getPersonalizedGreeting(archetype, petName, breed);
@@ -438,6 +499,14 @@ export function getPillarAwareProductIntro(archetype, petName, breed, pillar) {
     const template = getRandomItem(ADVISORY_COPY.productIntro);
     return replacePlaceholders(template, petName, breed);
   }
+  if (pillar === 'farewell') {
+    const template = getRandomItem(FAREWELL_COPY.productIntro);
+    return replacePlaceholders(template, petName, breed);
+  }
+  if (pillar === 'adopt') {
+    const template = getRandomItem(ADOPT_COPY.productIntro);
+    return replacePlaceholders(template, petName, breed);
+  }
   return getProductIntro(archetype, petName, breed);
 }
 
@@ -451,6 +520,14 @@ export function getPillarAwareBundleIntro(archetype, petName, breed, pillar) {
   }
   if (pillar === 'advisory') {
     const template = getRandomItem(ADVISORY_COPY.bundleIntro);
+    return replacePlaceholders(template, petName, breed);
+  }
+  if (pillar === 'farewell') {
+    const template = getRandomItem(FAREWELL_COPY.bundleIntro);
+    return replacePlaceholders(template, petName, breed);
+  }
+  if (pillar === 'adopt') {
+    const template = getRandomItem(ADOPT_COPY.bundleIntro);
     return replacePlaceholders(template, petName, breed);
   }
   return getBundleIntro(archetype, petName, breed);

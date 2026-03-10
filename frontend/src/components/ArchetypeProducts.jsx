@@ -149,11 +149,15 @@ const ArchetypeProducts = ({
   const greeting = getPillarAwareGreeting(petData?.archetype, petData?.name, petData?.breed, pillar);
   const productIntro = getPillarAwareProductIntro(petData?.archetype, petData?.name, petData?.breed, pillar);
   
-  // Override colors for emergency and advisory pillars
+  // Override colors for emergency, advisory, and farewell pillars
   const displayColors = pillar === 'emergency' 
     ? { bg: 'from-red-50 to-rose-50', accent: 'text-red-600', border: 'border-red-200' }
     : pillar === 'advisory'
     ? { bg: 'from-violet-50 to-purple-50', accent: 'text-violet-600', border: 'border-violet-200' }
+    : pillar === 'farewell'
+    ? { bg: 'from-purple-50 to-indigo-50', accent: 'text-purple-600', border: 'border-purple-200' }
+    : pillar === 'adopt'
+    ? { bg: 'from-green-50 to-emerald-50', accent: 'text-green-600', border: 'border-green-200' }
     : colors;
   
   return (
@@ -161,7 +165,7 @@ const ArchetypeProducts = ({
       {showTitle && (
         <div className={`text-center mb-8 p-6 rounded-2xl bg-gradient-to-r ${displayColors.bg} ${displayColors.border} border`}>
           <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-2xl">{pillar === 'emergency' ? '🚨' : pillar === 'advisory' ? '💡' : archetypeInfo.emoji}</span>
+            <span className="text-2xl">{pillar === 'emergency' ? '🚨' : pillar === 'advisory' ? '💡' : pillar === 'farewell' ? '💜' : pillar === 'adopt' ? '🏠' : archetypeInfo.emoji}</span>
             <h3 className="text-lg font-semibold text-gray-800">
               {greeting}
             </h3>
@@ -179,7 +183,7 @@ const ArchetypeProducts = ({
             <Badge variant="outline" className="border-gray-300 text-gray-600">
               {petData?.life_stage}
             </Badge>
-            {pillar !== 'emergency' && (
+            {pillar !== 'emergency' && pillar !== 'farewell' && (
               <Badge variant="outline" className={`${displayColors.border} ${displayColors.accent}`}>
                 {archetypeInfo.name}
               </Badge>

@@ -33,7 +33,7 @@ import { useAuth } from '../context/AuthContext';
 import SoulMadeProductModal from './SoulMadeProductModal';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../hooks/use-toast';
-import { getArchetypeDisplayInfo, getProductIntro } from '../utils/archetypeCopy';
+import { getArchetypeDisplayInfo, getProductIntro, getPillarAwareProductIntro } from '../utils/archetypeCopy';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // EMOTIONAL COLLECTIONS - Organize by life moment, NOT just product type
@@ -547,13 +547,19 @@ const SoulMadeCollection = ({
               {(() => {
                 const archetypeKey = archetype || currentPet?.soul_archetype?.primary_archetype;
                 const archetypeInfo = getArchetypeDisplayInfo(archetypeKey);
-                const personalizedIntro = getProductIntro(archetypeKey, petName, petBreedKey);
+                // Use pillar-aware copy to avoid inappropriate "fun/party" text on farewell page
+                const personalizedIntro = getPillarAwareProductIntro(archetypeKey, petName, petBreedKey, pillar);
+                
+                // Special heading for farewell pillar
+                const isMemorial = pillar === 'farewell';
+                const headingText = isMemorial ? `Forever in our hearts` : `Made for ${petName}`;
+                
                 return (
                   <>
                     <h2 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
-                      <span className="text-xl">{archetypeInfo.emoji}</span>
+                      <span className="text-xl">{isMemorial ? '💜' : archetypeInfo.emoji}</span>
                       <Sparkles className="w-6 h-6 text-purple-600" />
-                      Made for {petName}
+                      {headingText}
                     </h2>
                     <p className="text-sm text-gray-500 mt-1">
                       {personalizedIntro} • {pillarConfig.emoji} {pillarConfig.name}
