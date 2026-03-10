@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://doggy-ai-mockups.preview.emergentagent.com
+https://soul-made-catalog.preview.emergentagent.com
 ```
 
 ---
