@@ -18,6 +18,8 @@ import PillarPicksSection from '../components/PillarPicksSection';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import SoulMadeCollection from '../components/SoulMadeCollection';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
+import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
+import PersonalizedPicks from '../components/PersonalizedPicks';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Mail, Users,
   ChevronRight, Sparkles, Search, Filter, Clock, CheckCircle,
@@ -651,6 +653,31 @@ const AdoptPage = () => {
           <BreedSmartRecommendations pillar="adopt" />
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* MIRA CURATED LAYER - Unified Concierge Recommendations */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <MiraCuratedLayer
+        pillar="adopt"
+        activePet={activePet}
+        token={token}
+        userEmail={user?.email}
+        isLoading={!userPets?.length && !!token}
+      />
+      
+      {/* Personalized Adoption Products */}
+      <section className="py-8 px-4">
+        <div className="max-w-6xl mx-auto">
+          <PersonalizedPicks pillar="adopt" maxProducts={6} />
+        </div>
+      </section>
+      
+      {/* Mira's Pillar Picks for Pet */}
+      {(activePet || userPets?.[0]) && (
+        <div className="max-w-6xl mx-auto px-4 mt-6">
+          <PillarPicksSection pillar="adopt" pet={activePet || userPets?.[0]} />
+        </div>
+      )}
       
       {/* Adoption Application Modal */}
       <Dialog open={showApplicationModal} onOpenChange={setShowApplicationModal}>

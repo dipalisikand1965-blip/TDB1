@@ -850,3 +850,199 @@ async def get_pillar_recommendations(pillar: str):
         "breeds_with_recommendations": len(breeds),
         "breeds": breeds
     }
+
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# MULTI-FACTOR PRODUCT FILTERING
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class MultiFactorFilterRequest(BaseModel):
+    pet_id: str
+    pillar: str
+    limit: int = 12
+
+@router.post("/multi-factor-products")
+async def get_multi_factor_products(request: MultiFactorFilterRequest):
+    """
+    Get products filtered by multiple factors:
+    1. Breed (exact match)
+    2. Archetype (product_affinity matching)
+    3. Life Stage (puppy/adult/senior)
+    4. Health Considerations (allergies, sensitivities)
+    
+    This is the "Golden Standard" personalization - not just breed-based,
+    but truly personalized based on who the pet really is.
+    """
+    db = get_db()
+    
+    # Get pet data
+    pet = await db.pets.find_one({"id": request.pet_id}, {"_id": 0})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    breed = pet.get("breed", "").lower().replace(" ", "_")
+    pillar = request.pillar.lower()
+    
+    # Get archetype data
+    archetype_key = None
+    product_affinity = []
+    
+    if pet.get("soul_archetype"):
+        archetype_key = pet["soul_archetype"].get("primary_archetype")
+        product_affinity = pet["soul_archetype"].get("product_affinity", [])
+    elif pet.get("doggy_soul_answers"):
+        # Derive archetype on-the-fly
+        try:
+            from soul_archetype_engine import derive_archetype
+            soul_data = pet.get("doggy_soul_answers", {})
+            archetype_key, archetype_details = derive_archetype(soul_data)
+            product_affinity = archetype_details.get("product_affinity", [])
+        except Exception as e:
+            logger.warning(f"Could not derive archetype: {e}")
+    
+    # Determine life stage from age
+    age = pet.get("age", "")
+    life_stage = "adult"  # default
+    if age:
+        age_lower = age.lower()
+        if "puppy" in age_lower or "month" in age_lower or ("year" in age_lower and any(c.isdigit() and int(c) < 2 for c in age_lower)):
+            life_stage = "puppy"
+        elif "senior" in age_lower or ("year" in age_lower and any(c.isdigit() and int(c) > 7 for c in age_lower)):
+            life_stage = "senior"
+    
+    # Get health considerations
+    health_issues = pet.get("health_conditions", []) or []
+    allergies = pet.get("allergies", []) or []
+    
+    logger.info(f"[MULTI-FACTOR] Pet: {pet.get('name')}, Breed: {breed}, Archetype: {archetype_key}, Life Stage: {life_stage}")
+    
+    # Build query - start with breed and pillar
+    query = {
+        "breed": {"$regex": f"^{breed}$", "$options": "i"},  # Case-insensitive breed match
+        "$or": [
+            {"pillars": pillar},
+            {"pillar": pillar}  # Some products use singular "pillar"
+        ],
+        "mockup_url": {"$exists": True, "$ne": None, "$ne": ""}
+    }
+    
+    # Get all matching products first
+    products = await db.breed_products.find(
+        query,
+        {"_id": 0}
+    ).to_list(length=100)
+    
+    # Score each product based on multi-factor matching
+    scored_products = []
+    for product in products:
+        score = 100  # Base score
+        reasons = []
+        
+        # Archetype affinity boost
+        product_type = product.get("product_type_name", "").lower()
+        if product_affinity:
+            for affinity in product_affinity:
+                if affinity.lower() in product_type or product_type in affinity.lower():
+                    score += 50
+                    reasons.append(f"Matches {archetype_key} personality")
+                    break
+        
+        # Life stage relevance
+        product_name = product.get("name", "").lower()
+        if life_stage == "puppy":
+            if any(term in product_name for term in ["puppy", "training", "starter", "small"]):
+                score += 30
+                reasons.append("Perfect for puppies")
+        elif life_stage == "senior":
+            if any(term in product_name for term in ["senior", "comfort", "gentle", "easy"]):
+                score += 30
+                reasons.append("Ideal for senior pets")
+        
+        # Health-aware filtering (negative scoring for incompatible items)
+        if allergies:
+            for allergy in allergies:
+                if allergy.lower() in product_name:
+                    score -= 100  # Heavily penalize
+                    reasons.append(f"May contain {allergy}")
+        
+        scored_products.append({
+            **product,
+            "personalization_score": score,
+            "personalization_reasons": reasons,
+            "archetype_match": archetype_key,
+            "life_stage_match": life_stage
+        })
+    
+    # Sort by score and limit
+    scored_products.sort(key=lambda x: x["personalization_score"], reverse=True)
+    top_products = scored_products[:request.limit]
+    
+    return {
+        "pet_name": pet.get("name"),
+        "pet_breed": breed,
+        "archetype": archetype_key,
+        "life_stage": life_stage,
+        "pillar": pillar,
+        "filters_applied": {
+            "breed": breed,
+            "archetype": archetype_key,
+            "life_stage": life_stage,
+            "health_aware": len(allergies) > 0
+        },
+        "total_matches": len(products),
+        "products": top_products
+    }
+
+
+@router.get("/archetype-products/{archetype_key}/{pillar}")
+async def get_archetype_products(archetype_key: str, pillar: str, limit: int = 12):
+    """
+    Get products that match a specific archetype's product affinity.
+    Used for "Recommended for [Archetype Name] personalities" sections.
+    """
+    db = get_db()
+    
+    # Get archetype details
+    try:
+        from soul_archetype_engine import ARCHETYPES
+        archetype = ARCHETYPES.get(archetype_key)
+        if not archetype:
+            raise HTTPException(status_code=404, detail=f"Archetype '{archetype_key}' not found")
+        
+        product_affinity = archetype.get("product_affinity", [])
+        copy_tone = archetype.get("copy_tone", {})
+        
+    except ImportError:
+        raise HTTPException(status_code=500, detail="Archetype engine not available")
+    
+    # Query products matching any of the affinity keywords
+    pillar_lower = pillar.lower()
+    
+    # Build regex for product type matching
+    affinity_regex = "|".join([a.lower().replace(" ", ".*") for a in product_affinity])
+    
+    products = await db.breed_products.find(
+        {
+            "pillars": pillar_lower,
+            "mockup_url": {"$exists": True, "$ne": None},
+            "$or": [
+                {"product_type_name": {"$regex": affinity_regex, "$options": "i"}},
+                {"name": {"$regex": affinity_regex, "$options": "i"}}
+            ]
+        },
+        {"_id": 0}
+    ).limit(limit).to_list(length=limit)
+    
+    return {
+        "archetype": {
+            "key": archetype_key,
+            "name": archetype["name"],
+            "emoji": archetype["emoji"],
+            "description": archetype["description"][:100] + "..."
+        },
+        "copy_tone": copy_tone,
+        "pillar": pillar_lower,
+        "product_affinity": product_affinity,
+        "products": products
+    }

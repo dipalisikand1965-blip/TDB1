@@ -22,6 +22,8 @@ import PillarPicksSection from '../components/PillarPicksSection';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import SoulMadeCollection from '../components/SoulMadeCollection';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
+import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
+import PersonalizedPicks from '../components/PersonalizedPicks';
 import {
   AlertTriangle, Search, Heart, Phone, MapPin, Clock, Ambulance,
   ChevronRight, Sparkles, Star, Loader2, Send, ArrowRight, Play,
@@ -819,23 +821,41 @@ const EmergencyPage = () => {
           <BreedSmartRecommendations pillar="emergency" />
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* MIRA CURATED LAYER - Unified Concierge Recommendations */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <MiraCuratedLayer
+        pillar="emergency"
+        activePet={activePet}
+        token={token}
+        userEmail={user?.email}
+        isLoading={!userPets?.length && !!token}
+      />
+      
+      {/* Personalized Emergency Products */}
+      <section className="py-8 px-4">
+        <div className="max-w-6xl mx-auto">
+          <PersonalizedPicks pillar="emergency" maxProducts={6} />
+        </div>
+      </section>
       
       {/* Concierge Pick Card - 24/7 Emergency Support */}
-      {userPets && userPets[0] && (
+      {(activePet || userPets?.[0]) && (
         <div className="max-w-6xl mx-auto px-4 py-8">
           <ConciergePickCard
             pet={{
-              name: userPets[0].name,
-              breed: userPets[0].breed,
-              photo: userPets[0].photo_url,
-              soulTraits: userPets[0].personality_traits || [],
-                id: userPets[0].id
+              name: (activePet || userPets[0]).name,
+              breed: (activePet || userPets[0]).breed,
+              photo: (activePet || userPets[0]).photo_url,
+              soulTraits: (activePet || userPets[0]).personality_traits || [],
+                id: (activePet || userPets[0]).id
             }}
             pillar="emergency"
             title={CONCIERGE_PRESETS.emergency.title}
             icon={CONCIERGE_PRESETS.emergency.icon}
             description={CONCIERGE_PRESETS.emergency.description}
-            soulReason={getSoulBasedReason(userPets[0], 'emergency')}
+            soulReason={getSoulBasedReason(activePet || userPets[0], 'emergency')}
             responseTime="Immediate"
           />
         </div>
