@@ -149,9 +149,11 @@ const ArchetypeProducts = ({
   const greeting = getPillarAwareGreeting(petData?.archetype, petData?.name, petData?.breed, pillar);
   const productIntro = getPillarAwareProductIntro(petData?.archetype, petData?.name, petData?.breed, pillar);
   
-  // Override colors for emergency pillar
+  // Override colors for emergency and advisory pillars
   const displayColors = pillar === 'emergency' 
     ? { bg: 'from-red-50 to-rose-50', accent: 'text-red-600', border: 'border-red-200' }
+    : pillar === 'advisory'
+    ? { bg: 'from-violet-50 to-purple-50', accent: 'text-violet-600', border: 'border-violet-200' }
     : colors;
   
   return (
@@ -159,7 +161,7 @@ const ArchetypeProducts = ({
       {showTitle && (
         <div className={`text-center mb-8 p-6 rounded-2xl bg-gradient-to-r ${displayColors.bg} ${displayColors.border} border`}>
           <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-2xl">{pillar === 'emergency' ? '🚨' : archetypeInfo.emoji}</span>
+            <span className="text-2xl">{pillar === 'emergency' ? '🚨' : pillar === 'advisory' ? '💡' : archetypeInfo.emoji}</span>
             <h3 className="text-lg font-semibold text-gray-800">
               {greeting}
             </h3>
