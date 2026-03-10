@@ -5,906 +5,292 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Doggy Company - Complete Documentation</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 40px;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-bottom: 30px;
-            border-bottom: 3px solid #667eea;
-        }
-        .header h1 {
-            font-size: 2.5rem;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        .header .tagline {
-            font-size: 1.1rem;
-            color: #666;
-        }
-        .header .date {
-            font-size: 0.9rem;
-            color: #888;
-            margin-top: 10px;
-        }
-        .section {
-            margin-bottom: 40px;
-        }
-        .section-title {
-            font-size: 1.5rem;
-            color: #667eea;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #eee;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .section-title .emoji {
-            font-size: 1.8rem;
-        }
-        .card {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-left: 4px solid #667eea;
-        }
-        .card-title {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        .card-content {
-            color: #555;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-        .status-complete {
-            background: #d4edda;
-            color: #155724;
-        }
-        .status-progress {
-            background: #fff3cd;
-            color: #856404;
-        }
-        .status-pending {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        .code-block {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 20px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.9rem;
-            margin: 15px 0;
-        }
-        .code-block .comment {
-            color: #6a9955;
-        }
-        .code-block .key {
-            color: #9cdcfe;
-        }
-        .code-block .value {
-            color: #ce9178;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background: #667eea;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background: #f8f9fa;
-        }
-        .step-list {
-            counter-reset: step-counter;
-            list-style: none;
-            padding: 0;
-        }
-        .step-list li {
-            position: relative;
-            padding: 15px 0 15px 60px;
-            border-left: 2px solid #667eea;
-            margin-left: 20px;
-        }
-        .step-list li:before {
-            counter-increment: step-counter;
-            content: counter(step-counter);
-            position: absolute;
-            left: -21px;
-            width: 40px;
-            height: 40px;
-            background: #667eea;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-        .warning-box {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            border-radius: 8px;
-            padding: 15px 20px;
-            margin: 15px 0;
-        }
-        .success-box {
-            background: #d4edda;
-            border: 1px solid #28a745;
-            border-radius: 8px;
-            padding: 15px 20px;
-            margin: 15px 0;
-        }
-        .credentials-box {
-            background: #e9ecef;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 15px 0;
-            font-family: monospace;
-        }
-        .api-endpoint {
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 10px 15px;
-            margin: 10px 0;
-            font-family: monospace;
-        }
-        .method {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        .method-get {
-            background: #61affe;
-            color: white;
-        }
-        .method-post {
-            background: #49cc90;
-            color: white;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 2px solid #eee;
-            color: #666;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 16px; margin-bottom: 30px; text-align: center; }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header .tagline { font-size: 1.2em; opacity: 0.9; }
+        .header .date { font-size: 0.9em; margin-top: 15px; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; display: inline-block; }
+        .section { background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .section-title { font-size: 1.5em; color: #667eea; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #eee; }
+        .emoji { margin-right: 10px; }
+        .card { background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 15px; border-left: 4px solid #667eea; }
+        .card-title { font-weight: 600; color: #333; margin-bottom: 10px; }
+        .success-box { background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 15px; margin-bottom: 20px; color: #155724; }
+        .warning-box { background: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px; padding: 15px; margin-bottom: 20px; color: #856404; }
+        .error-box { background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 15px; margin-bottom: 20px; color: #721c24; }
+        .api-endpoint { background: #2d3748; color: #e2e8f0; padding: 12px 16px; border-radius: 6px; margin: 10px 0; font-family: monospace; font-size: 0.9em; }
+        .method { display: inline-block; padding: 2px 8px; border-radius: 4px; font-weight: 600; margin-right: 10px; }
+        .method-get { background: #48bb78; color: white; }
+        .method-post { background: #4299e1; color: white; }
+        .method-put { background: #ed8936; color: white; }
+        .method-delete { background: #f56565; color: white; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; font-weight: 600; }
+        code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+        ul { margin-left: 20px; }
+        li { margin: 8px 0; }
+        .progress-bar { background: #e2e8f0; border-radius: 10px; height: 20px; overflow: hidden; margin: 10px 0; }
+        .progress-fill { background: linear-gradient(90deg, #48bb78, #38a169); height: 100%; transition: width 0.3s; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🐕 The Doggy Company</h1>
-            <p class="tagline">Complete Technical Documentation & Setup Guide</p>
-            <p class="date">Last Updated: March 10, 2026 23:30 IST - Mockup Generation: 1204/2569 (46.9%) | Auto-Generator Running ✅</p>
+            <h1>The Doggy Company</h1>
+            <p class="tagline">Complete Technical Documentation & Handover Guide</p>
+            <p class="date">Last Updated: March 10, 2026 23:45 IST | Mockups: 1250/2569 (48.7%) | Auto-Generator Running</p>
         </div>
 
-        <!-- Cloudinary Setup Section -->
+        <!-- Status Overview -->
         <div class="section">
-            <h2 class="section-title"><span class="emoji">☁️</span> Cloudinary Setup</h2>
+            <h2 class="section-title"><span class="emoji">📊</span> Current Status</h2>
             
             <div class="success-box">
-                <strong>✅ STATUS: CONFIGURED AND WORKING</strong><br>
-                Cloudinary integration is live! 765 mockups generated (29.8% complete).<br>
-                <strong>NEW mockups automatically upload to Cloudinary!</strong><br>
-                <strong>Generation is PAUSED - 1,804 products pending. Script needs restart.</strong>
+                <strong>AUTO-GENERATOR RUNNING:</strong> Mockup generation is running continuously in background.
+                Check progress: <code>curl $API_URL/api/mockups/stats</code>
             </div>
 
-            <div class="card">
-                <div class="card-title">Production Sync</div>
-                <p>To sync Soul Made mockups from preview to production:</p>
-                <ol style="margin-left: 20px; margin-top: 10px;">
-                    <li>In Admin Panel, click <strong>☁️ SYNC → PROD</strong> button</li>
-                    <li>This exports all Cloudinary URLs from preview</li>
-                    <li>Then imports them into production database</li>
-                </ol>
-                <p style="margin-top: 10px;"><strong>Note:</strong> Deploy code first so production has the import endpoint!</p>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Your Cloudinary Credentials</div>
-                <div class="credentials-box">
-                    <strong>Cloud Name:</strong> duoapcx1p<br>
-                    <strong>API Key:</strong> 396757862875471<br>
-                    <strong>API Secret:</strong> uwvyt1zf8vPF62SMeHGFn3k3O_A
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">Mockup Generation Progress</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 48.7%;"></div>
+                    </div>
+                    <p><strong>1250 / 2569</strong> products have AI mockups (48.7%)</p>
+                    <p>33 breeds × 65+ product types</p>
                 </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Backend .env Configuration</div>
-                <div class="code-block">
-<span class="comment"># Cloudinary Configuration</span>
-<span class="key">CLOUDINARY_CLOUD_NAME</span>=<span class="value">duoapcx1p</span>
-<span class="key">CLOUDINARY_API_KEY</span>=<span class="value">396757862875471</span>
-<span class="key">CLOUDINARY_API_SECRET</span>=<span class="value">uwvyt1zf8vPF62SMeHGFn3k3O_A</span>
+                <div class="card">
+                    <div class="card-title">Curated Bundles</div>
+                    <p><strong>19 bundles</strong> across 12 pillars</p>
+                    <p>All bundles have AI-generated images</p>
+                    <p>Full CRUD in Admin panel</p>
                 </div>
-                <p>Location: <code>/app/backend/.env</code></p>
-            </div>
-
-            <div class="card">
-                <div class="card-title">How to Convert Mockups to Cloud</div>
-                <ol class="step-list">
-                    <li>Go to Admin Panel → Soul Products → AI Mockups tab</li>
-                    <li>Look for the "Cloud Storage (Cloudinary)" section</li>
-                    <li>Click "Convert to Cloud (10)" button to convert 10 base64 images</li>
-                    <li>Repeat until all images are converted (65 total pending)</li>
-                </ol>
-            </div>
-
-            <div class="card">
-                <div class="card-title">API Endpoints</div>
-                <div class="api-endpoint">
-                    <span class="method method-get">GET</span> /api/mockups/cloud-status<br>
-                    <small>Check Cloudinary configuration and image stats</small>
-                </div>
-                <div class="api-endpoint">
-                    <span class="method method-post">POST</span> /api/mockups/batch-convert-to-cloud?limit=10<br>
-                    <small>Convert batch of base64 images to Cloudinary URLs</small>
-                </div>
-                <div class="api-endpoint">
-                    <span class="method method-post">POST</span> /api/mockups/convert-to-cloud/{product_id}<br>
-                    <small>Convert a single product's mockup to cloud</small>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Benefits of Cloud Storage</div>
-                <ul style="margin-left: 20px;">
-                    <li><strong>Performance:</strong> Reduces API response size from ~2MB to ~100 bytes per product</li>
-                    <li><strong>Speed:</strong> Images load from Cloudinary CDN (global edge network)</li>
-                    <li><strong>Optimization:</strong> Auto-converted to WebP format with smart compression</li>
-                    <li><strong>Reliability:</strong> Persistent storage across deployments</li>
-                </ul>
             </div>
         </div>
 
-        <!-- Soul Made Products Section -->
+        <!-- What's Complete -->
         <div class="section">
-            <h2 class="section-title"><span class="emoji">✨</span> Soul Made Products</h2>
+            <h2 class="section-title"><span class="emoji">✅</span> What's Complete</h2>
             
             <div class="card">
-                <div class="card-title">Product Sources</div>
-                <table>
-                    <tr>
-                        <th>Source</th>
-                        <th>Collection</th>
-                        <th>Count</th>
-                        <th>Editable</th>
-                    </tr>
-                    <tr>
-                        <td>🛒 Shopify</td>
-                        <td>products_master</td>
-                        <td>~390</td>
-                        <td>Yes</td>
-                    </tr>
-                    <tr>
-                        <td>🎨 Soul Made (AI)</td>
-                        <td>breed_products</td>
-                        <td>523</td>
-                        <td>Yes ✅</td>
-                    </tr>
-                    <tr>
-                        <td>✍️ Manual</td>
-                        <td>products_master</td>
-                        <td>Variable</td>
-                        <td>Yes</td>
-                    </tr>
-                </table>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Soul Made Product Actions</div>
-                <table>
-                    <tr>
-                        <th>Endpoint</th>
-                        <th>Description</th>
-                    </tr>
-                    <tr>
-                        <td>POST /api/product-box/soul-made/{id}/duplicate-to-production</td>
-                        <td>Copy to products_master for checkout</td>
-                    </tr>
-                    <tr>
-                        <td>PUT /api/product-box/soul-made/{id}/pillars</td>
-                        <td>Assign to pillars</td>
-                    </tr>
-                    <tr>
-                        <td>PUT /api/product-box/soul-made/{id}/sale</td>
-                        <td>Set sale price</td>
-                    </tr>
-                    <tr>
-                        <td>PUT /api/product-box/soul-made/{id}/stock</td>
-                        <td>Manage stock</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-
-        <!-- Admin Access Section -->
-        <div class="section">
-            <h2 class="section-title"><span class="emoji">🔐</span> Admin Access</h2>
-            
-            <div class="card">
-                <div class="card-title">Credentials</div>
-                <div class="credentials-box">
-                    <strong>Admin URL:</strong> /admin<br>
-                    <strong>Username:</strong> aditya<br>
-                    <strong>Password:</strong> lola4304
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Key Admin Tabs</div>
-                <ul style="margin-left: 20px;">
-                    <li><strong>Product Box:</strong> Manage all products (Shopify + Soul Made)</li>
-                    <li><strong>Soul Products:</strong> AI Mockups, Archetypes, Cloud Storage</li>
-                    <li><strong>Bundles:</strong> Curated product bundles with AI image generation</li>
-                    <li><strong>Service Desk:</strong> Customer tickets and concierge</li>
-                    <li><strong>Members:</strong> User and pet management</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Curated Bundles Section -->
-        <div class="section">
-            <h2 class="section-title"><span class="emoji">🎁</span> Curated Bundles System</h2>
-            
-            <div class="success-box">
-                <strong>✅ NEW FEATURE:</strong> Full CRUD system for product bundles with AI image generation.<br>
-                Admin can create, edit, and sync bundles to production.
-            </div>
-
-            <div class="card">
-                <div class="card-title">Current Bundles (19 Total - All Pillars)</div>
-                <table style="width: 100%; margin-top: 10px; font-size: 0.9em;">
-                    <tr style="background: #e0e0e0;"><th>Pillar</th><th>Bundles</th></tr>
-                    <tr><td>Celebrate</td><td>Birthday Pawty, Gotcha Day</td></tr>
-                    <tr><td>Travel</td><td>Adventure Ready, Road Trip Essentials</td></tr>
-                    <tr><td>Dine</td><td>Premium Mealtime, Treat Lover</td></tr>
-                    <tr><td>Care</td><td>Spa Day</td></tr>
-                    <tr><td>Stay</td><td>Home Comfort</td></tr>
-                    <tr><td>Fit</td><td>Daily Walker</td></tr>
-                    <tr><td>Farewell</td><td>Forever Loved</td></tr>
-                    <tr><td>Enjoy</td><td>Play Day, Indoor Fun</td></tr>
-                    <tr><td>Learn</td><td>Training Starter, Puppy School</td></tr>
-                    <tr><td>Emergency</td><td>Pet First Aid</td></tr>
-                    <tr><td>Adopt</td><td>New Pet Welcome, Rescue Ready</td></tr>
-                    <tr><td>Advisory</td><td>Pet Parent Starter</td></tr>
-                    <tr><td>Paperwork</td><td>Pet Documents</td></tr>
-                </table>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Bundle API Endpoints</div>
-                <div class="api-endpoint">
-                    <span class="method method-get">GET</span> /api/bundles?pillar=celebrate<br>
-                    <small>List all bundles, optionally filter by pillar</small>
-                </div>
-                <div class="api-endpoint">
-                    <span class="method method-post">POST</span> /api/bundles<br>
-                    <small>Create a new bundle</small>
-                </div>
-                <div class="api-endpoint">
-                    <span class="method method-post">POST</span> /api/bundles/{id}/generate-image<br>
-                    <small>Generate AI image for a bundle</small>
-                </div>
-                <div class="api-endpoint">
-                    <span class="method method-post">POST</span> /api/bundles/sync-to-production<br>
-                    <small>Sync all bundles to production database</small>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Bundle Image Generation</div>
-                <p>Bundle images are generated using OpenAI's image generation, same as Soul Made mockups.</p>
-                <ul style="margin-left: 20px; margin-top: 10px;">
-                    <li>AI creates composite image showing all bundle items</li>
-                    <li>Pillar-specific styling (festive for Celebrate, adventure for Travel, etc.)</li>
-                    <li>Images stored in Cloudinary: <code>doggy-company/bundles/{pillar}</code></li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Soul Products / AI Mockups Section -->
-        <div class="section">
-            <h2 class="section-title"><span class="emoji">✨</span> Soul Products & AI Mockups</h2>
-            
-            <div class="success-box">
-                <strong>✅ AUTO-GENERATOR RUNNING:</strong> Mockups generating continuously in background.<br>
-                Current Progress: <strong>1204/2569 (46.9%)</strong> - Auto-restarts batches when complete.
-            </div>
-
-            <div class="card">
-                <div class="card-title">Mockup Generation Stats</div>
-                <table style="width: 100%; margin-top: 10px;">
-                    <tr style="background: #e0e0e0;"><th>Metric</th><th>Value</th></tr>
-                    <tr><td>Total Breed Products</td><td>2,569</td></tr>
-                    <tr><td>With Mockups</td><td>1,204 (46.9%)</td></tr>
-                    <tr><td>Pending</td><td>1,365</td></tr>
-                    <tr><td>Breeds</td><td>33</td></tr>
-                    <tr><td>Product Types</td><td>65+</td></tr>
-                </table>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Admin Soul Products Manager</div>
-                <ul style="margin-left: 20px;">
-                    <li><strong>Stats Display:</strong> Shows real-time progress (fixed from 0/2569)</li>
-                    <li><strong>Auto-Refresh:</strong> Stats update every 30 seconds</li>
-                    <li><strong>Generate Button:</strong> Start batch of 10-50 mockups</li>
-                    <li><strong>Filter Options:</strong> By breed, by product type</li>
-                    <li><strong>Seed Products:</strong> Create base breed_products entries</li>
+                <div class="card-title">Soul Products System</div>
+                <ul>
+                    <li><strong>AI Mockup Generation:</strong> OpenAI GPT Image 1 + Cloudinary</li>
+                    <li><strong>Admin Stats Display:</strong> Fixed - now shows real-time progress</li>
+                    <li><strong>Auto-Generator:</strong> Background script auto-restarts batches</li>
+                    <li><strong>Generate Button:</strong> Working in Soul Products Manager</li>
                 </ul>
             </div>
 
             <div class="card">
-                <div class="card-title">Mockup API Endpoints</div>
-                <div class="api-endpoint">
-                    <span class="method method-get">GET</span> /api/mockups/stats<br>
-                    <small>Get overall mockup statistics</small>
-                </div>
-                <div class="api-endpoint">
-                    <span class="method method-get">GET</span> /api/mockups/status<br>
-                    <small>Get current generation status (running, progress, current product)</small>
-                </div>
-                <div class="api-endpoint">
-                    <span class="method method-post">POST</span> /api/mockups/generate-batch<br>
-                    <small>Start generating a batch of mockups (limit: 10-50)</small>
-                </div>
-                <div class="api-endpoint">
-                    <span class="method method-post">POST</span> /api/mockups/sync-to-production<br>
-                    <small>Sync mockups with Cloudinary URLs to production</small>
-                </div>
+                <div class="card-title">Curated Bundles</div>
+                <ul>
+                    <li><strong>19 Bundles:</strong> Celebrate, Travel, Dine, Care, Stay, Fit, Farewell, Enjoy, Learn, Emergency, Adopt, Advisory, Paperwork</li>
+                    <li><strong>AI Images:</strong> All bundles have generated images</li>
+                    <li><strong>Admin CRUD:</strong> Create, Edit, Delete modals working</li>
+                    <li><strong>Production Sync:</strong> Endpoint ready</li>
+                </ul>
             </div>
 
             <div class="card">
-                <div class="card-title">Auto Generator Script</div>
-                <p>Background Python script that monitors and auto-restarts mockup generation.</p>
-                <ul style="margin-left: 20px; margin-top: 10px;">
-                    <li><strong>File:</strong> <code>/app/backend/auto_mockup_generator.py</code></li>
-                    <li><strong>Log:</strong> <code>/tmp/auto_mockup_generator.log</code></li>
-                    <li><strong>Check Interval:</strong> 60 seconds</li>
-                    <li><strong>Batch Size:</strong> 50 products per batch</li>
+                <div class="card-title">Golden Standard Layout (All 13 Pillars)</div>
+                <ul>
+                    <li>Hero Section with pet personalization</li>
+                    <li>Mira's Quick Help (AI concierge)</li>
+                    <li>Soul Made Products</li>
+                    <li>Breed-Smart Recommendations</li>
+                    <li>Archetype Products</li>
+                    <li>Curated Bundles</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Archetype Tone System</div>
+                <ul>
+                    <li>7 Archetypes with unique copy</li>
+                    <li>Dynamic greetings per pet personality</li>
+                    <li>Personalized product intros</li>
+                    <li>Accent colors per archetype</li>
                 </ul>
             </div>
         </div>
 
-        <!-- Test User Section -->
+        <!-- Pending Issues -->
         <div class="section">
-            <h2 class="section-title"><span class="emoji">👤</span> Test Accounts</h2>
+            <h2 class="section-title"><span class="emoji">⚠️</span> Pending Issues</h2>
+            
+            <div class="error-box">
+                <strong>P1 - Razorpay Checkout:</strong> "body error" when completing payment. Not started - user requested to fix LAST.
+            </div>
+
+            <div class="warning-box">
+                <strong>P2 - Mobile Dashboard:</strong> Scrambled layout on mobile. Needs user verification with screenshot.
+            </div>
+        </div>
+
+        <!-- API Endpoints -->
+        <div class="section">
+            <h2 class="section-title"><span class="emoji">🔗</span> Key API Endpoints</h2>
             
             <div class="card">
-                <div class="credentials-box">
-                    <strong>Email:</strong> dipali@clubconcierge.in<br>
-                    <strong>Password:</strong> test123<br>
-                    <strong>Pets:</strong> Mojo (Indie), Mystique (Shih Tzu), Bruno (Labrador), Lola (Maltese), Luna/Buddy (Golden Retriever)
+                <div class="card-title">Mockups</div>
+                <div class="api-endpoint">
+                    <span class="method method-get">GET</span> /api/mockups/stats - Overall statistics
+                </div>
+                <div class="api-endpoint">
+                    <span class="method method-get">GET</span> /api/mockups/status - Current generation status
+                </div>
+                <div class="api-endpoint">
+                    <span class="method method-post">POST</span> /api/mockups/generate-batch - Start batch (limit: 10-50)
+                </div>
+                <div class="api-endpoint">
+                    <span class="method method-post">POST</span> /api/mockups/sync-to-production - Sync to prod
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Bundles</div>
+                <div class="api-endpoint">
+                    <span class="method method-get">GET</span> /api/bundles?pillar=celebrate - List bundles
+                </div>
+                <div class="api-endpoint">
+                    <span class="method method-post">POST</span> /api/bundles - Create bundle
+                </div>
+                <div class="api-endpoint">
+                    <span class="method method-put">PUT</span> /api/bundles/{id} - Update bundle
+                </div>
+                <div class="api-endpoint">
+                    <span class="method method-post">POST</span> /api/bundles/{id}/generate-image - Generate AI image
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Products</div>
+                <div class="api-endpoint">
+                    <span class="method method-get">GET</span> /api/products/multi-factor-filter - Personalized filtering
+                </div>
+                <div class="api-endpoint">
+                    <span class="method method-get">GET</span> /api/breed-products?breed=indie - Breed products
                 </div>
             </div>
         </div>
 
-        <!-- Known Issues Section -->
+        <!-- Database -->
         <div class="section">
-            <h2 class="section-title"><span class="emoji">⚠️</span> Known Issues</h2>
-            
-            <div class="card">
-                <div class="card-title">Razorpay Checkout <span class="status-badge status-pending">P1 - Open</span></div>
-                <p>Checkout flow reports "body error". Needs investigation with network tab debugging.</p>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Admin Login Flaky <span class="status-badge status-complete">FIXED ✅</span></div>
-                <p>Fixed! Admin.jsx now checks sessionStorage auth from AdminProtectedRoute, preventing login form conflicts.</p>
-            </div>
-        </div>
-
-        <!-- Pillar Page Unification Status -->
-        <div class="section">
-            <h2 class="section-title"><span class="emoji">📄</span> Pillar Page Unification (Golden Standard)</h2>
-            
-            <div class="warning-box" style="background: #d4edda; border: 1px solid #28a745;">
-                <strong>✅ COMPLETE:</strong> All 13 pillar pages unified to Golden Standard layout.<br>
-                <strong>SoulMadeCollection:</strong> 13/13 pages done | <strong>BreedSmartRecommendations:</strong> 13/13 pages done
-            </div>
-
-            <div class="card">
-                <div class="card-title">SoulMadeCollection Status</div>
-                <table style="width: 100%; margin-top: 10px;">
-                    <tr><th>Page</th><th>Status</th></tr>
-                    <tr style="background: #d4edda;"><td>CelebratePage.jsx</td><td>✅ Done</td></tr>
-                    <tr style="background: #d4edda;"><td>TravelPage.jsx</td><td>✅ Done</td></tr>
-                    <tr style="background: #d4edda;"><td>StayPage.jsx</td><td>✅ Done</td></tr>
-                    <tr style="background: #d4edda;"><td>CarePage.jsx</td><td>✅ Done</td></tr>
-                    <tr style="background: #d4edda;"><td>DinePage.jsx</td><td>✅ Done</td></tr>
-                    <tr style="background: #d4edda;"><td>FitPage.jsx</td><td>✅ Done</td></tr>
-                    <tr style="background: #d4edda;"><td>EnjoyPage.jsx</td><td>✅ Done</td></tr>
-                    <tr style="background: #d4edda;"><td>LearnPage.jsx</td><td>✅ Done</td></tr>
-                    <tr style="background: #d4edda;"><td>FarewellPage.jsx</td><td>✅ Done</td></tr>
-                    <tr style="background: #d4edda;"><td>EmergencyPage.jsx</td><td>✅ Done</td></tr>
-                    <tr style="background: #d4edda;"><td>AdoptPage.jsx</td><td>✅ Done</td></tr>
-                    <tr style="background: #d4edda;"><td>AdvisoryPage.jsx</td><td>✅ Done</td></tr>
-                    <tr style="background: #d4edda;"><td>PaperworkPage.jsx</td><td>✅ Done</td></tr>
-                </table>
-            </div>
-
-            <div class="card">
-                <div class="card-title">BreedSmartRecommendations Status</div>
-                <p style="color: #28a745; font-weight: bold;">✅ Component added to ALL 13 pillar pages!</p>
-                <p style="margin-top: 10px;">Component file: <code>/app/frontend/src/components/BreedSmartRecommendations.jsx</code></p>
-                <p>API endpoint: <code>GET /api/breed-matrix/:breed</code></p>
-            </div>
-        </div>
-
-        <!-- Soul Made Products Section -->
-        <div class="section">
-            <h2 class="section-title"><span class="emoji">✨</span> Soul Made Products - Complete Plan</h2>
-            
-            <div class="success-box">
-                <strong>Phase 2 Complete:</strong> 2,569 products now seeded (65 types × 33 breeds + extras)!<br>
-                <strong>Generation Status:</strong> PAUSED - 765/2569 (29.8% complete) - Script needs restart<br>
-                <strong>65 product types × 33 breeds = 2,569 total products</strong>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Product Strategy</div>
-                <p>Generate ALL products per BREED, then assign to relevant pillars. Each breed gets 55 products (11 existing + 44 new).</p>
-                <p style="margin-top: 10px;"><strong>Total Vision:</strong> 55 product types × 33 breeds = 1,815 personalized products</p>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Existing Products (11 types) - Pillar Assignments</div>
-                <table style="width: 100%; margin-top: 10px;">
-                    <tr><th>Product</th><th>Pillars</th></tr>
-                    <tr><td>Bandana</td><td>celebrate, fit, enjoy</td></tr>
-                    <tr><td>Mug</td><td>celebrate, dine</td></tr>
-                    <tr><td>Party Hat</td><td>celebrate</td></tr>
-                    <tr><td>Frame</td><td>celebrate, farewell</td></tr>
-                    <tr><td>Tote Bag</td><td>celebrate, fit, travel</td></tr>
-                    <tr><td>Welcome Mat</td><td>stay, adopt</td></tr>
-                    <tr><td>Blanket</td><td>stay, care, travel</td></tr>
-                    <tr><td>Bowl</td><td>dine</td></tr>
-                    <tr><td>Treat Jar</td><td>dine, learn</td></tr>
-                    <tr><td>Collar Tag</td><td>fit, emergency</td></tr>
-                    <tr><td>Keychain</td><td>celebrate, fit</td></tr>
-                </table>
-            </div>
-
-            <div class="card">
-                <div class="card-title">NEW Products to Create (15 types) - CREATED March 9, 2026</div>
-                <table style="width: 100%; margin-top: 10px;">
-                    <tr><th>Pillar</th><th>New Products</th><th>Status</th></tr>
-                    <tr><td style="color: #2196f3;"><strong>TRAVEL</strong></td><td>passport_holder, carrier_tag, travel_bowl, luggage_tag</td><td>✅ Created, ⏳ Need Mockups</td></tr>
-                    <tr><td style="color: #4caf50;"><strong>CARE</strong></td><td>pet_towel, pet_robe, grooming_apron</td><td>✅ Created, ⏳ Need Mockups</td></tr>
-                    <tr><td style="color: #3f51b5;"><strong>LEARN</strong></td><td>treat_pouch, training_log</td><td>✅ Created, ⏳ Need Mockups</td></tr>
-                    <tr><td style="color: #9e9e9e;"><strong>FAREWELL</strong></td><td>memorial_ornament, paw_print_frame</td><td>✅ Created, ⏳ Need Mockups</td></tr>
-                    <tr><td style="color: #f44336;"><strong>EMERGENCY</strong></td><td>emergency_card, medical_alert_tag</td><td>✅ Created, ⏳ Need Mockups</td></tr>
-                    <tr><td style="color: #00bcd4;"><strong>ENJOY</strong></td><td>play_bandana, playdate_card</td><td>✅ Created, ⏳ Need Mockups</td></tr>
-                </table>
-                <p style="margin-top: 15px; font-weight: bold; color: #e91e63;">
-                    ⚠️ 495 NEW products created in database. Need to generate mockups!
-                </p>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Current Stats (March 10, 2026)</div>
-                <table style="width: 100%; margin-top: 10px;">
-                    <tr><th>Metric</th><th>Count</th></tr>
-                    <tr><td>Total Products</td><td><strong>1,018</strong></td></tr>
-                    <tr><td>Original Products (11 types)</td><td>523</td></tr>
-                    <tr><td>NEW Products (15 types)</td><td>495</td></tr>
-                    <tr><td style="background: #d4edda; font-weight: bold;">With Mockups</td><td style="background: #d4edda; font-weight: bold;">514+ (50%+) ⬆️</td></tr>
-                    <tr><td style="background: #fff3cd;">Need Mockups</td><td style="background: #fff3cd;">~504</td></tr>
-                    <tr><td>Breeds</td><td>33</td></tr>
-                    <tr><td>Product Types</td><td>26 (11 original + 15 new)</td></tr>
-                </table>
-                <p style="margin-top: 10px; color: #28a745; font-weight: bold;">
-                    🔄 Generation is ACTIVELY RUNNING - progress increasing every minute!
-                </p>
-            </div>
-
-            <div class="card">
-                <div class="card-title">The 33 Breeds</div>
-                <p style="font-size: 0.9rem; line-height: 1.8;">
-                    Labrador • Golden Retriever • German Shepherd • Cocker Spaniel • Irish Setter • 
-                    Shih Tzu • Pug • Beagle • Rottweiler • Doberman • Boxer • Husky • Pomeranian • 
-                    Great Dane • St Bernard • American Bully • Bulldog • French Bulldog • Chihuahua • 
-                    Maltese • Yorkshire • Dachshund • Dalmatian • Jack Russell • Scottish Terrier • 
-                    Chow Chow • Border Collie • Italian Greyhound • Lhasa Apso • Cavalier • Poodle • 
-                    Schnoodle • Indie
-                </p>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Implementation Phases</div>
-                <div class="step-list">
-                    <ol style="margin-left: 20px;">
-                        <li><strong>Phase 1 (DONE):</strong> Assign pillars to existing 363 products ✅</li>
-                        <li><strong>Phase 1b (IN PROGRESS):</strong> Generate mockups for all existing products 🔄</li>
-                        <li><strong>Phase 2:</strong> Create TRAVEL products (passport_holder, carrier_tag, etc.)</li>
-                        <li><strong>Phase 3:</strong> Create CARE products (pet_towel, pet_robe, grooming_apron)</li>
-                        <li><strong>Phase 4:</strong> Create FAREWELL products (memorial_ornament, paw_print_frame)</li>
-                        <li><strong>Phase 5:</strong> Create remaining products (LEARN, EMERGENCY, PAPERWORK, etc.)</li>
-                    </ol>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">How to Generate Mockups for NEW Products</div>
-                <p style="margin-bottom: 15px;">The 495 NEW products need mockups generated. Run these commands:</p>
-                <div class="code-block">
-# Option 1: Generate by product type (recommended)
-API_URL="https://personalized-paws.preview.emergentagent.com"
-
-# Generate all 33 breeds for each new product type:
-for type in passport_holder carrier_tag travel_bowl luggage_tag \
-            pet_towel pet_robe grooming_apron treat_pouch training_log \
-            memorial_ornament paw_print_frame emergency_card \
-            medical_alert_tag play_bandana playdate_card; do
-  echo "Generating $type..."
-  curl -X POST "$API_URL/api/mockups/generate-batch" \
-    -H "Content-Type: application/json" \
-    -d "{\"limit\": 33, \"product_type_filter\": \"$type\"}"
-  # Wait for completion before next type
-  while curl -s "$API_URL/api/mockups/status" | grep -q '"running": true'; do
-    sleep 30
-  done
-done
-                </div>
-                <div class="code-block">
-# Option 2: Check progress
-curl "$API_URL/api/mockups/stats" | python3 -m json.tool
-curl "$API_URL/api/mockups/status" | python3 -m json.tool
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Check Generation Progress</div>
-                <div class="code-block">
-# Check overall stats
-curl -s "$API_URL/api/mockups/stats" | python3 -m json.tool
-
-# Check current generation status
-curl -s "$API_URL/api/mockups/status" | python3 -m json.tool
-
-# View generation log
-tail -20 /tmp/mockup_generation.log
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Sync to Production</div>
-                <p>After generating mockups in preview, sync to production:</p>
-                <ol style="margin-left: 20px; margin-top: 10px;">
-                    <li>Go to Admin Panel</li>
-                    <li>Click <strong>☁️ SYNC → PROD</strong> button (next to MASTER SYNC)</li>
-                    <li>This pushes all Cloudinary mockup URLs to thedoggycompany.com</li>
-                </ol>
-            </div>
-        </div>
-
-        <!-- iOS Fixes Section -->
-        <div class="section">
-            <h2 class="section-title"><span class="emoji">📱</span> iOS Mobile Fixes</h2>
-            
-            <div class="success-box">
-                The following iOS-specific bugs have been fixed:
-            </div>
-
-            <div class="card">
-                <ul style="margin-left: 20px;">
-                    <li>✅ Hamburger menu now responds to touch</li>
-                    <li>✅ User profile icon works on mobile</li>
-                    <li>✅ Cart icon opens drawer properly</li>
-                    <li>✅ Pet selector is now swipable</li>
-                    <li>✅ Pet Switcher added to mobile sidebar</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Quick Commands Section -->
-        <div class="section">
-            <h2 class="section-title"><span class="emoji">⚡</span> Quick Commands</h2>
-            
-            <div class="card">
-                <div class="card-title">Check Cloudinary Status</div>
-                <div class="code-block">
-curl -s "$API_URL/api/mockups/cloud-status" | python3 -m json.tool
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Convert 10 Mockups to Cloud</div>
-                <div class="code-block">
-curl -X POST "$API_URL/api/mockups/batch-convert-to-cloud?limit=10"
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Check Mockup Generation Stats</div>
-                <div class="code-block">
-curl -s "$API_URL/api/mockups/stats" | python3 -m json.tool
-                </div>
-            </div>
-        </div>
-
-        <!-- File References Section -->
-        <div class="section">
-            <h2 class="section-title"><span class="emoji">📁</span> Key File References</h2>
+            <h2 class="section-title"><span class="emoji">🗄️</span> Database Collections</h2>
             
             <table>
-                <tr>
-                    <th>Feature</th>
-                    <th>File Path</th>
-                </tr>
-                <tr>
-                    <td>Cloudinary Integration</td>
-                    <td>/app/backend/mockup_cloud_storage.py</td>
-                </tr>
-                <tr>
-                    <td>Soul Products Manager</td>
-                    <td>/app/frontend/src/components/admin/SoulProductsManager.jsx</td>
-                </tr>
-                <tr>
-                    <td>Product Box (Unified)</td>
-                    <td>/app/frontend/src/components/admin/UnifiedProductBox.jsx</td>
-                </tr>
-                <tr>
-                    <td>iOS Touch Fixes</td>
-                    <td>/app/frontend/src/components/Navbar.jsx</td>
-                </tr>
-                <tr>
-                    <td>Mobile Pet Switcher</td>
-                    <td>/app/frontend/src/components/MemberMobileNav.jsx</td>
-                </tr>
-                <tr>
-                    <td>Backend .env</td>
-                    <td>/app/backend/.env</td>
-                </tr>
-                <tr>
-                    <td>PRD</td>
-                    <td>/app/memory/PRD.md</td>
-                </tr>
-                <tr>
-                    <td>Soul Made Product Plan</td>
-                    <td>/app/memory/SOUL_MADE_PRODUCT_PLAN.md</td>
-                </tr>
-                <tr>
-                    <td><strong>Soul Made Implementation Guide</strong></td>
-                    <td><strong>/app/memory/SOUL_MADE_IMPLEMENTATION_GUIDE.md</strong></td>
-                </tr>
-                <tr>
-                    <td>SoulMadeCollection Component</td>
-                    <td>/app/frontend/src/components/SoulMadeCollection.jsx</td>
-                </tr>
-                <tr>
-                    <td>Mockup Generator Script</td>
-                    <td>/app/backend/scripts/generate_all_mockups.py</td>
-                </tr>
-                <tr>
-                    <td>Mockup API Routes</td>
-                    <td>/app/backend/app/api/mockup_routes.py</td>
-                </tr>
-                <tr>
-                    <td><strong>Gap Analysis Document</strong></td>
-                    <td><strong>/app/memory/GAP_ANALYSIS_PERSONALIZATION.md</strong></td>
-                </tr>
+                <tr><th>Collection</th><th>Count</th><th>Description</th></tr>
+                <tr><td>products_master</td><td>3,443</td><td>Unified products (Shopify + Soul Made)</td></tr>
+                <tr><td>breed_products</td><td>2,569</td><td>Breed-specific AI mockup products</td></tr>
+                <tr><td>unified_products</td><td>3,338</td><td>Unified product catalog</td></tr>
+                <tr><td>bundles</td><td>19</td><td>Curated product bundles</td></tr>
+                <tr><td>pets</td><td>9+</td><td>Pet profiles with archetypes</td></tr>
             </table>
         </div>
 
-        <!-- ═══════════════════════════════════════════════════════════════════════ -->
-        <!-- CRITICAL: PERSONALIZATION VISION - ALL AGENTS MUST READ -->
-        <!-- ═══════════════════════════════════════════════════════════════════════ -->
+        <!-- Bundles Coverage -->
         <div class="section">
-            <h2>🎯 PERSONALIZATION VISION (CRITICAL FOR ALL AGENTS)</h2>
+            <h2 class="section-title"><span class="emoji">🎁</span> Bundle Coverage (19 Total)</h2>
             
-            <div class="warning-box" style="background: #fff3cd; border: 2px solid #ffc107; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                <strong>⚠️ DO NOT IMPLEMENT GENERIC PERSONALIZATION!</strong><br>
-                The Doggy Company is NOT just "add pet name to product".<br>
-                Read <code>/app/memory/GAP_ANALYSIS_PERSONALIZATION.md</code> before making changes.
-            </div>
+            <table>
+                <tr><th>Pillar</th><th>Bundles</th></tr>
+                <tr><td>Celebrate</td><td>Birthday Pawty, Gotcha Day</td></tr>
+                <tr><td>Travel</td><td>Adventure Ready, Road Trip Essentials</td></tr>
+                <tr><td>Dine</td><td>Premium Mealtime, Treat Lover</td></tr>
+                <tr><td>Care</td><td>Spa Day</td></tr>
+                <tr><td>Stay</td><td>Home Comfort</td></tr>
+                <tr><td>Fit</td><td>Daily Walker</td></tr>
+                <tr><td>Farewell</td><td>Forever Loved</td></tr>
+                <tr><td>Enjoy</td><td>Play Day, Indoor Fun</td></tr>
+                <tr><td>Learn</td><td>Training Starter, Puppy School</td></tr>
+                <tr><td>Emergency</td><td>Pet First Aid</td></tr>
+                <tr><td>Adopt</td><td>New Pet Welcome, Rescue Ready</td></tr>
+                <tr><td>Advisory</td><td>Pet Parent Starter</td></tr>
+                <tr><td>Paperwork</td><td>Pet Documents</td></tr>
+            </table>
+        </div>
 
-            <div class="card">
-                <div class="card-title">The Formula (MEMORIZE THIS)</div>
-                <p style="font-size: 1.2em; font-weight: bold; color: #8B5CF6; margin: 15px 0;">
-                    Breed + Soul + Life Stage + Routine + Current Moment + Memory
-                </p>
-                <p>A Labrador puppy, a senior Labrador, and an anxious Labrador should NOT see the same products.</p>
+        <!-- Key Files -->
+        <div class="section">
+            <h2 class="section-title"><span class="emoji">📁</span> Key Files</h2>
+            
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">Frontend</div>
+                    <ul>
+                        <li><code>components/admin/SoulProductsManager.jsx</code></li>
+                        <li><code>components/admin/BundlesManager.jsx</code></li>
+                        <li><code>components/ArchetypeProducts.jsx</code></li>
+                        <li><code>components/CuratedBundles.jsx</code></li>
+                        <li><code>utils/archetypeCopy.js</code></li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title">Backend</div>
+                    <ul>
+                        <li><code>app/api/mockup_routes.py</code></li>
+                        <li><code>app/api/bundle_routes.py</code></li>
+                        <li><code>auto_mockup_generator.py</code></li>
+                        <li><code>soul_archetype_engine.py</code></li>
+                    </ul>
+                </div>
             </div>
+        </div>
 
+        <!-- Credentials -->
+        <div class="section">
+            <h2 class="section-title"><span class="emoji">🔐</span> Test Credentials</h2>
+            
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">User Account</div>
+                    <p><strong>Email:</strong> dipali@clubconcierge.in</p>
+                    <p><strong>Password:</strong> test123</p>
+                    <p><em>Has 9 pets for testing personalization</em></p>
+                </div>
+                <div class="card">
+                    <div class="card-title">Admin Account</div>
+                    <p><strong>Username:</strong> aditya</p>
+                    <p><strong>Password:</strong> lola4304</p>
+                    <p><em>Full admin access</em></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="section">
+            <h2 class="section-title"><span class="emoji">🎯</span> Next Steps</h2>
+            
+            <ol>
+                <li><strong>Monitor mockup generation</strong> - Auto-running, check: <code>curl $API_URL/api/mockups/stats</code></li>
+                <li><strong>Fix Razorpay checkout</strong> - P1 blocker for revenue</li>
+                <li><strong>Verify mobile dashboard</strong> - Need user screenshot</li>
+                <li><strong>Run production sync</strong> - After mockups hit 80%+</li>
+            </ol>
+        </div>
+
+        <!-- Auto Generator -->
+        <div class="section">
+            <h2 class="section-title"><span class="emoji">🤖</span> Auto-Generator Script</h2>
+            
             <div class="card">
-                <div class="card-title">What We Have ✅</div>
+                <div class="card-title">Location & Logs</div>
                 <ul>
-                    <li><strong>Soul Profile:</strong> 51 questions, 26 canonical scoring fields</li>
-                    <li><strong>7 Archetypes:</strong> Gentle Aristocrat, Wild Explorer, Velcro Baby, Snack Negotiator, Quiet Watcher, Social Butterfly, Brave Worrier</li>
-                    <li><strong>Soul Made Products:</strong> 1204/2569 breed-specific AI mockups (46.9%) - Auto-generating</li>
-                    <li><strong>Mira Memory:</strong> Remembers orders, preferences, celebration dates</li>
-                    <li><strong>Breed Matrix CSV:</strong> Detailed recommendations for 33 breeds × 12 pillars</li>
-                    <li><strong>Archetype Tone:</strong> Dynamic UI copy based on pet personality</li>
-                    <li><strong>Curated Bundles:</strong> 19 bundles across 12 pillars with AI images & Admin CRUD</li>
-                    <li><strong>Multi-Factor Filtering:</strong> Products filtered by breed + archetype + life stage</li>
-                    <li><strong>Auto Mockup Generator:</strong> Background script auto-restarts batches</li>
+                    <li><strong>Script:</strong> <code>/app/backend/auto_mockup_generator.py</code></li>
+                    <li><strong>Log:</strong> <code>/tmp/auto_mockup_generator.log</code></li>
+                    <li><strong>Check:</strong> <code>tail -20 /tmp/auto_mockup_generator.log</code></li>
+                    <li><strong>Batch Size:</strong> 50 products per batch</li>
+                    <li><strong>Check Interval:</strong> 60 seconds</li>
                 </ul>
             </div>
-
-            <div class="card">
-                <div class="card-title">What's MISSING ❌ (Gaps to Fix)</div>
-                <table style="width: 100%; margin-top: 10px;">
-                    <tr style="background: #f8d7da;"><th>Gap</th><th>Priority</th><th>Status</th></tr>
-                    <tr style="background: #d4edda;"><td>Multi-factor filtering (life_stage, health, energy)</td><td><strong>P1</strong></td><td>✅ DONE</td></tr>
-                    <tr style="background: #d4edda;"><td>Moment bundles (Birthday Set, Senior Care Set)</td><td>P3</td><td>✅ DONE - 19 bundles</td></tr>
-                    <tr style="background: #d4edda;"><td>Admin mockup stats display</td><td>P2</td><td>✅ FIXED</td></tr>
-                    <tr style="background: #d4edda;"><td>Auto mockup generation</td><td>P2</td><td>✅ RUNNING</td></tr>
-                    <tr><td>Razorpay checkout "body error"</td><td><strong>P1</strong></td><td>❌ Not Started</td></tr>
-                    <tr><td>Mobile dashboard scrambled</td><td><strong>P2</strong></td><td>🟡 User Verification</td></tr>
-                    <tr><td>"Why this product" contextual copy</td><td>P2</td><td>❌ Not Started</td></tr>
-                    <tr><td>Services section of Golden Standard</td><td>P3</td><td>❌ Not Started</td></tr>
-                </table>
-            </div>
-
-            <div class="card">
-                <div class="card-title">The Test Every Agent Must Apply</div>
-                <p style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin-top: 10px;">
-                    <strong>Before adding ANY product feature, ask:</strong><br><br>
-                    "Is this just customized (name on product), or does it feel CHOSEN for this specific pet?"<br><br>
-                    <em>Adding a name = customized ❌</em><br>
-                    <em>Choosing it because the dog is anxious, senior, thick-coated, travel-loving = personalized ✅</em>
-                </p>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Brand Principle</div>
-                <p style="font-size: 1.1em; text-align: center; padding: 20px;">
-                    <strong>Huft/Supertails = catalog-led</strong><br>
-                    <strong style="color: #8B5CF6;">The Doggy Company = soul-led</strong><br><br>
-                    <em>"Not breed-first. Pet-first.<br>
-                    Not product-first. Life-moment-first.<br>
-                    Not name-personalized. Memory-personalized."</em>
-                </p>
-            </div>
         </div>
 
-        <div class="footer">
-            <p>🐕 The Doggy Company - Built with ❤️ for Pet Parents</p>
-            <p><small>"No one knows your pet better than Mira."</small></p>
-        </div>
     </div>
 </body>
 </html>
