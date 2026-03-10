@@ -23,7 +23,8 @@ import {
   UrgentHelpButtons, 
   PetEmergencyFile, 
   NearbyEmergencyHelp,
-  EmergencySituationGuides 
+  EmergencySituationGuides,
+  EmergencyProductsGrid
 } from '../components/emergency';
 import {
   AlertTriangle, Search, Heart, Phone, MapPin, Clock, Ambulance,
@@ -367,6 +368,11 @@ const EmergencyPage = () => {
             
             {/* Curated Bundles */}
             <CuratedBundles pillar="emergency" maxBundles={3} />
+            
+            {/* Emergency Products Grid */}
+            <div className="mt-8">
+              <EmergencyProductsGrid maxProducts={16} showPersonalized={true} />
+            </div>
           </div>
         </section>
       </div>
