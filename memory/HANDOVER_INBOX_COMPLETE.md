@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://doggy-ai-mockups.preview.emergentagent.com
+https://soul-made-catalog.preview.emergentagent.com
 ```
 
 ---
