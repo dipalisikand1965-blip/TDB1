@@ -279,7 +279,7 @@ const SoulMadeProductCard = ({ product, petName, archetype, onViewDetails }) => 
           </Badge>
         </div>
         
-        {/* Quick Add to Cart Button */}
+        {/* Quick Add Button */}
         <button
           onClick={(e) => {
             e.stopPropagation(); // Prevent card click
@@ -289,7 +289,7 @@ const SoulMadeProductCard = ({ product, petName, archetype, onViewDetails }) => 
           data-testid={`add-to-cart-${product.id}`}
         >
           <ShoppingCart className="w-4 h-4" />
-          Personalize & Add
+          Add
         </button>
       </div>
     </Card>
