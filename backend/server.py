@@ -229,6 +229,9 @@ from app.api.top_picks_routes import router as top_picks_router, set_top_picks_d
 # User Tickets Routes
 from user_tickets_routes import router as user_tickets_router, set_db as set_user_tickets_db
 
+# Guided Paths Routes (Pillar-specific journey guides)
+from guided_paths_routes import router as guided_paths_router, set_guided_paths_db
+
 # Conversation Routes (Unified Communication Backbone)
 from conversation_routes import router as conversation_router, set_db as set_conversation_db
 
@@ -1604,6 +1607,30 @@ async def lifespan(app: FastAPI):
                         
             except Exception as e:
                 logger.warning(f"[PET LINKING] Pet check skipped: {e}")
+            
+            # Step 8: Seed Guided Paths (Pillar Journey Guides)
+            logger.info("[MASTER SYNC 8/8] Seeding Guided Paths...")
+            try:
+                from guided_paths_routes import SEED_GUIDED_PATHS
+                inserted = 0
+                updated = 0
+                for path in SEED_GUIDED_PATHS:
+                    path_copy = {**path}
+                    path_copy["created_at"] = datetime.now(timezone.utc).isoformat()
+                    path_copy["updated_at"] = datetime.now(timezone.utc).isoformat()
+                    result = await db.guided_paths.update_one(
+                        {"id": path["id"]},
+                        {"$set": path_copy},
+                        upsert=True
+                    )
+                    if result.upserted_id:
+                        inserted += 1
+                    elif result.modified_count > 0:
+                        updated += 1
+                total = await db.guided_paths.count_documents({})
+                logger.info(f"[MASTER SYNC 8/8] ✅ Guided Paths: {total} total ({inserted} inserted, {updated} updated)")
+            except Exception as e:
+                logger.warning(f"[MASTER SYNC 8/8] Guided Paths seed skipped: {e}")
             
             logger.info("=" * 60)
             logger.info("🎉 MASTER SYNC COMPLETE - ALL DATA READY")
@@ -19283,6 +19310,10 @@ set_mira_service_desk_db(db)  # Initialize Mira Service Desk with database
 # User Tickets (user-facing ticket view)
 app.include_router(user_tickets_router)  # User tickets at /api/user/*
 set_user_tickets_db(db)  # Initialize User Tickets with database
+
+# Guided Paths (Pillar-specific journey guides)
+app.include_router(guided_paths_router)  # Guided paths at /api/guided-paths/*
+set_guided_paths_db(db)  # Initialize Guided Paths with database
 
 # Conversation Routes (Unified Communication Backbone)
 app.include_router(conversation_router)  # Conversations at /api/conversations/*
