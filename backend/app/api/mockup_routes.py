@@ -586,3 +586,89 @@ async def seed_new_product_types():
         "breeds": len(BREEDS),
         "total_created": products_created
     }
+
+
+
+# ==========================================
+# PRODUCTION SYNC ENDPOINTS
+# ==========================================
+
+@router.get("/export-mockup-urls")
+async def export_mockup_urls():
+    """
+    Export all Soul Made products with Cloudinary URLs for production sync.
+    Returns products with mockup_url that starts with cloudinary URL.
+    """
+    db = get_db()
+    
+    # Get all products with Cloudinary mockup URLs
+    query = {
+        "mockup_url": {"$regex": "^https://res.cloudinary.com"}
+    }
+    
+    products = await db.breed_products.find(
+        query, 
+        {"_id": 0}  # Exclude MongoDB _id
+    ).to_list(length=5000)
+    
+    logger.info(f"[EXPORT] Found {len(products)} products with Cloudinary URLs")
+    
+    return {
+        "total_exported": len(products),
+        "products": products,
+        "export_timestamp": datetime.now().isoformat()
+    }
+
+
+@router.post("/import-mockup-urls")
+async def import_mockup_urls(data: dict):
+    """
+    Import Soul Made products from another environment.
+    Used for syncing preview to production.
+    """
+    db = get_db()
+    
+    products = data.get("products", [])
+    if not products:
+        raise HTTPException(status_code=400, detail="No products provided")
+    
+    imported = 0
+    updated = 0
+    
+    for product in products:
+        # Use breed + product_type as unique identifier
+        breed = product.get("breed")
+        product_type = product.get("product_type")
+        
+        if not breed or not product_type:
+            continue
+        
+        # Check if product exists
+        existing = await db.breed_products.find_one({
+            "breed": breed,
+            "product_type": product_type
+        })
+        
+        # Remove any _id if present (shouldn't be, but safety check)
+        product.pop("_id", None)
+        
+        if existing:
+            # Update existing product
+            await db.breed_products.update_one(
+                {"breed": breed, "product_type": product_type},
+                {"$set": product}
+            )
+            updated += 1
+        else:
+            # Insert new product
+            await db.breed_products.insert_one(product)
+            imported += 1
+    
+    logger.info(f"[IMPORT] Imported {imported} new, updated {updated} existing products")
+    
+    return {
+        "imported": imported,
+        "updated": updated,
+        "total": imported + updated,
+        "import_timestamp": datetime.now().isoformat()
+    }
