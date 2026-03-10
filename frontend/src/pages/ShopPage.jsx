@@ -46,12 +46,12 @@ const PILLARS = [
   { id: 'stay', label: 'Stay', icon: Home, color: 'bg-gradient-to-r from-blue-400 to-cyan-500', subcategories: ['Beds', 'Mats', 'Kennels', 'Cat Beds', 'Senior Beds'] },
   { id: 'travel', label: 'Travel', icon: Plane, color: 'bg-gradient-to-r from-sky-400 to-blue-500', subcategories: ['Carriers', 'Car Accessories', 'Cat Carriers'] },
   { id: 'care', label: 'Care', icon: Stethoscope, color: 'bg-gradient-to-r from-rose-400 to-pink-500', subcategories: ['Grooming', 'Health', 'Supplements', 'Senior Care', 'Cat Grooming'] },
+  { id: 'emergency', label: 'Emergency', icon: AlertTriangle, color: 'bg-gradient-to-r from-red-500 to-rose-600', subcategories: ['First Aid', 'Recovery', 'Transport', 'Tracking', 'Restraint'] },
   { id: 'enjoy', label: 'Enjoy', icon: Heart, color: 'bg-gradient-to-r from-yellow-400 to-orange-500', subcategories: ['Toys', 'Chews', 'Games', 'Cat Toys', 'Eco Toys'] },
   { id: 'fit', label: 'Fit', icon: Dumbbell, color: 'bg-gradient-to-r from-green-400 to-emerald-500', subcategories: ['Leashes', 'Harnesses', 'Collars', 'Senior Mobility'] },
   { id: 'learn', label: 'Learn', icon: GraduationCap, color: 'bg-gradient-to-r from-indigo-400 to-purple-500', subcategories: ['Training Aids', 'Puzzles'] },
   { id: 'advisory', label: 'Advisory', icon: Brain, color: 'bg-gradient-to-r from-purple-400 to-violet-500', subcategories: [] },
   { id: 'paperwork', label: 'Paperwork', icon: FileText, color: 'bg-gradient-to-r from-slate-400 to-gray-500', subcategories: [] },
-  { id: 'emergency', label: 'Emergency', icon: AlertTriangle, color: 'bg-gradient-to-r from-red-400 to-rose-500', subcategories: [] },
   { id: 'farewell', label: 'Farewell', icon: Flower2, color: 'bg-gradient-to-r from-violet-400 to-purple-500', subcategories: [] },
   { id: 'adopt', label: 'Adopt', icon: PawPrint, color: 'bg-gradient-to-r from-rose-400 to-pink-500', subcategories: [] },
   { id: 'eco', label: 'Eco-Friendly', icon: Flower2, color: 'bg-gradient-to-r from-green-400 to-lime-500', subcategories: ['Sustainable', 'Organic', 'Biodegradable'] },
@@ -649,13 +649,22 @@ const ShopPage = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPillar, setSelectedPillar] = useState('recommended');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pillarFromUrl = searchParams.get('pillar');
+  const [selectedPillar, setSelectedPillar] = useState(pillarFromUrl || 'recommended');
   const [selectedSubcat, setSelectedSubcat] = useState(null);
   const [displayCount, setDisplayCount] = useState(24);
   const [selectedPet, setSelectedPet] = useState(null);
   const [petSoulData, setPetSoulData] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [miraChatOpen, setMiraChatOpen] = useState(false);
+  
+  // Update pillar when URL changes
+  useEffect(() => {
+    if (pillarFromUrl && PILLARS.find(p => p.id === pillarFromUrl)) {
+      setSelectedPillar(pillarFromUrl);
+    }
+  }, [pillarFromUrl]);
   
   // Fetch products
   useEffect(() => {
