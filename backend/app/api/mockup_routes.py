@@ -638,6 +638,70 @@ async def export_mockup_urls():
     }
 
 
+@router.post("/sync-to-production")
+async def sync_to_production():
+    """
+    Server-side sync of all mockups to production.
+    This bypasses browser CORS issues by making the request server-side.
+    """
+    import httpx
+    
+    db = get_db()
+    PRODUCTION_URL = "https://thedoggycompany.com"
+    
+    try:
+        # Get all products with mockup_url (Cloudinary URLs)
+        products = await db.breed_products.find(
+            {"mockup_url": {"$regex": "cloudinary.com|res.cloudinary"}},
+            {"_id": 0}
+        ).to_list(length=None)
+        
+        if not products:
+            return {
+                "success": False,
+                "message": "No Cloudinary mockups found to sync",
+                "synced": 0
+            }
+        
+        logger.info(f"[SYNC] Found {len(products)} products with Cloudinary mockups")
+        
+        # Send to production
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            response = await client.post(
+                f"{PRODUCTION_URL}/api/mockups/import-mockup-urls",
+                json={"products": products},
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                logger.info(f"[SYNC] Production sync successful: {result}")
+                return {
+                    "success": True,
+                    "message": f"Synced {result['total']} products to production",
+                    "imported": result.get("imported", 0),
+                    "updated": result.get("updated", 0),
+                    "total": result.get("total", 0)
+                }
+            else:
+                logger.error(f"[SYNC] Production sync failed: {response.status_code} - {response.text}")
+                return {
+                    "success": False,
+                    "message": f"Production sync failed: {response.status_code}",
+                    "error": response.text[:200]
+                }
+                
+    except Exception as e:
+        logger.error(f"[SYNC] Error syncing to production: {e}")
+        return {
+            "success": False,
+            "message": f"Sync error: {str(e)}",
+            "synced": 0
+        }
+
+
+
+
 @router.post("/import-mockup-urls")
 async def import_mockup_urls(data: dict):
     """

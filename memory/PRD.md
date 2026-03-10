@@ -1,7 +1,7 @@
 # The Doggy Company - PRD
 
-**Last Updated:** March 10, 2026 18:00 IST  
-**Status:** Soul Made Products - 29.8% Mockups Generated (765/2569) | Generation PAUSED - Script needs restart
+**Last Updated:** March 10, 2026 19:00 IST  
+**Status:** Soul Made Products - 31.5% Mockups Generated (809/2569) | Production Sync: 810 products (83.5%)
 
 ---
 
@@ -80,9 +80,10 @@ This file contains EVERYTHING about Soul Made products:
 
 **NEW 47 (Phase 2 - March 10):** 47 additional product types added for full Golden Standard catalog
 
-### Mockup Generation Status (PAUSED - needs restart)
-Background script stopped. Restart with: `nohup python3 -u /app/backend/scripts/gen_remaining.py > /tmp/gen_mockups.log 2>&1 &`
+### Mockup Generation Status (ACTIVE)
+Preview: 809/2569 (31.5%) | Production: 810/970 (83.5%)
 Check status: `curl $API_URL/api/mockups/stats`
+Sync to production: `curl -X POST $API_URL/api/mockups/sync-to-production`
 
 ---
 
