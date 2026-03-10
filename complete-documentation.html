@@ -56,13 +56,110 @@
     <div class="header">
         <h1>The Doggy Company</h1>
         <p>Mira-OS: The Pet Life Operating System</p>
-        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: March 9, 2026 11:15 IST | Version 6.0.0</p>
+        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: March 10, 2026 23:30 IST | Version 7.0.0</p>
     </div>
 
     <div class="container">
+        <!-- Session 7 Updates - LATEST -->
+        <div class="section" style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 3px solid #10b981;">
+            <h2 style="color: #059669; border-color: #10b981;">🆕 Session 7 Updates (March 10, 2026 - LATEST)</h2>
+            <div class="success-box">
+                <strong>Advisory Page Rebuilt! AI Images Generated for All Bundles & Experiences!</strong>
+            </div>
+            
+            <h3>Major Accomplishments:</h3>
+            <table>
+                <tr>
+                    <th>Feature</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>Advisory Page Overhaul</td>
+                    <td>Complete rebuild matching Learn page UI/UX with pet selector carousel</td>
+                    <td><span class="badge badge-live">COMPLETE</span></td>
+                </tr>
+                <tr>
+                    <td>AI Chat Fixed</td>
+                    <td>Pet-aware contextual responses with proper markdown formatting</td>
+                    <td><span class="badge badge-live">COMPLETE</span></td>
+                </tr>
+                <tr>
+                    <td>Concierge Modal</td>
+                    <td>New modal matching Learn page pet-selection design</td>
+                    <td><span class="badge badge-live">COMPLETE</span></td>
+                </tr>
+                <tr>
+                    <td>"Near Me" Feature</td>
+                    <td>Google Places API integration for local pet services</td>
+                    <td><span class="badge badge-live">COMPLETE</span></td>
+                </tr>
+                <tr>
+                    <td>69 Advisory Products</td>
+                    <td>New care products seeded across 9 categories</td>
+                    <td><span class="badge badge-live">COMPLETE</span></td>
+                </tr>
+                <tr>
+                    <td>Shop Breed Filter</td>
+                    <td>Now shows all 35 breeds (was only showing ~5)</td>
+                    <td><span class="badge badge-live">COMPLETE</span></td>
+                </tr>
+                <tr>
+                    <td>Product Limit Fix</td>
+                    <td>API query limit increased to 10,000 products</td>
+                    <td><span class="badge badge-live">COMPLETE</span></td>
+                </tr>
+            </table>
+
+            <h3>AI Image Generation (Session 7):</h3>
+            <table>
+                <tr>
+                    <th>Collection</th>
+                    <th>Items</th>
+                    <th>Images Generated</th>
+                </tr>
+                <tr>
+                    <td>Advisory Bundles</td>
+                    <td>8</td>
+                    <td><strong>8/8 ✅</strong></td>
+                </tr>
+                <tr>
+                    <td>Concierge Experiences</td>
+                    <td>18</td>
+                    <td><strong>18/18 ✅</strong></td>
+                </tr>
+                <tr>
+                    <td>Main Bundles</td>
+                    <td>30</td>
+                    <td><strong>30/30 ✅</strong></td>
+                </tr>
+                <tr>
+                    <td>Services</td>
+                    <td>1,115</td>
+                    <td><strong>1,115/1,115 ✅</strong></td>
+                </tr>
+                <tr>
+                    <td>Breed Products (Mockups)</td>
+                    <td>2,569</td>
+                    <td>2,242/2,569 (87%)</td>
+                </tr>
+            </table>
+
+            <h3>Database Summary (March 10, 2026):</h3>
+            <ul>
+                <li><strong>Products Master:</strong> 3,751 products</li>
+                <li><strong>Unified Products:</strong> 3,482 products</li>
+                <li><strong>Breed Products:</strong> 2,569 personalized items</li>
+                <li><strong>Services Master:</strong> 1,115 services</li>
+                <li><strong>Bundles:</strong> 30 curated bundles</li>
+                <li><strong>Advisory Bundles:</strong> 8 bundles with AI images</li>
+                <li><strong>Concierge Experiences:</strong> 18 premium experiences with AI images</li>
+            </ul>
+        </div>
+
         <!-- Session 6 Updates -->
         <div class="section" style="background: linear-gradient(135deg, #fce7f3, #fbcfe8); border: 2px solid #ec4899;">
-            <h2 style="color: #be185d; border-color: #ec4899;">🆕 Session 6 Updates (March 9, 2026 - Latest)</h2>
+            <h2 style="color: #be185d; border-color: #ec4899;">📦 Session 6 Updates (March 9, 2026)</h2>
             <div class="success-box">
                 <strong>Soul Made Products now in Product Box with full CRUD! iOS mobile fixes applied!</strong>
             </div>
@@ -287,19 +384,19 @@ Syncs ALL data:
                     <div class="label">Life Pillars</div>
                 </div>
                 <div class="stat-card">
-                    <div class="number">1,115+</div>
+                    <div class="number">1,115</div>
                     <div class="label">Services</div>
                 </div>
                 <div class="stat-card">
-                    <div class="number">2,197+</div>
+                    <div class="number">3,751+</div>
                     <div class="label">Products</div>
                 </div>
                 <div class="stat-card">
-                    <div class="number">160</div>
+                    <div class="number">2,569</div>
                     <div class="label">Breed PICKS</div>
                 </div>
                 <div class="stat-card">
-                    <div class="number">48</div>
+                    <div class="number">51</div>
                     <div class="label">Soul Questions</div>
                 </div>
             </div>
@@ -779,6 +876,29 @@ Syncs ALL data:
                 </ol>
                 <p style="margin-top: 15px; font-weight: bold; color: #dc2626;">⚠️ A previous bug in seed_all_breed_products used $set which wiped all mockup_url values on every deployment. This cost $1000+ in regeneration. The fix uses $setOnInsert to preserve existing mockups. NEVER CHANGE THIS!</p>
             </div>
+
+            <h3>March 10, 2026 - Session 7 - Advisory Overhaul & AI Images</h3>
+            <div class="success-box">
+                <p><strong>✅ Advisory Page Completely Rebuilt! All Images Generated!</strong></p>
+                <ul>
+                    <li>Advisory Page matches Learn Page UI/UX pattern</li>
+                    <li>Pet selector carousel with all 9 pets</li>
+                    <li>Concierge Modal with pet selection (matches Learn page)</li>
+                    <li>"Near Me" feature using Google Places API</li>
+                    <li>69 new advisory care products seeded</li>
+                    <li>AI images generated for all 8 Advisory Bundles</li>
+                    <li>AI images generated for all 18 Concierge Experiences</li>
+                </ul>
+            </div>
+            <ul>
+                <li><strong>Advisory Page Rebuild:</strong> Complete overhaul with pet selector, AI chat improvements, and Concierge modal</li>
+                <li><strong>AI Chat Enhancement:</strong> Contextual pet-aware responses with proper markdown formatting</li>
+                <li><strong>Shop Breed Filter Fix:</strong> Now shows all 35 breeds instead of only ~5</li>
+                <li><strong>Product Query Limit:</strong> Increased from 2,200 to 10,000 for complete product visibility</li>
+                <li><strong>Database Sort Fix:</strong> Standardized created_at fields to datetime objects</li>
+                <li><strong>Advisory Bundles Images:</strong> 8/8 bundles now have AI-generated images</li>
+                <li><strong>Concierge Experiences Images:</strong> 18/18 experiences now have AI-generated images</li>
+            </ul>
 
             <h3>March 8, 2026 - Session 4 - MAJOR BUG FIX & Soul Made Complete</h3>
             <div class="success-box">

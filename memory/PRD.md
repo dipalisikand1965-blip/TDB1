@@ -1,78 +1,52 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 10, 2026 23:00 IST  
-**Status:** Emergency COMPLETE | Shop Filters COMPLETE | Advisory Care Products COMPLETE ✅
+**Last Updated:** March 10, 2026 23:30 IST  
+**Status:** Advisory Page COMPLETE | AI Images COMPLETE | Documentation COMPLETE ✅
 
 ---
 
-## ADVISORY PILLAR VISION (P0 - Next Major Feature)
+## COMPLETED THIS SESSION (March 10, 2026 - Fork #3)
 
-### Core Purpose
-> **Advisory is the place where a pet parent comes when they don't just want to buy something, they want to make the right decision for their dog.**
+### 1. Complete Documentation Update ✅
+- **Updated:** `/app/complete-documentation.html` with Session 7 changes
+- **Updated:** Version to 7.0.0, last updated timestamp
+- **Added:** Session 7 summary section with all features
+- **Updated:** Hero stats (3,751+ products, 2,569 breed PICKS)
+- **Added:** Changelog entry for Session 7
 
-### What Advisory Should Be (NOT a content dump)
-- **Decision-support layer** between guidance, concierge help, expert access, profile-based recommendations
-- **Help me decide** - not random tips or SEO blog content
-- **Connect me** to the right service, product, or expert
-- **Recommend based on my pet's actual life** - breed, age, size, health, climate, season
-
-### Advisory 8-Zone Architecture
-
-| Zone | Purpose | Powered By |
-|------|---------|------------|
-| 1. Ask Advisory | AI decision-support hero section | Mira AI |
-| 2. My Dog Advisory | Personalized recommendations | Soul Profile + breed + age |
-| 3. Intent Tiles | 12 real-life need categories | Static + Dynamic |
-| 4. Guided Paths | Step-by-step decision journeys | Content + Logic |
-| 5. Products by Context | Relevant items only | Shopify + Soul Logic |
-| 6. Services & Expert | Consultations, bookings | Concierge + Services |
-| 7. Near Me | Nearby trainers, groomers, vets | Google Places API |
-| 8. Concierge Escalation | Human help for complex needs | Talk to Concierge |
-
-### 11 Intent Tiles (Concierge is Overlay)
-1. Food & Nutrition
-2. Puppy Guidance
-3. Breed Guidance
-4. Grooming & Coat Care
-5. Behaviour & Training
-6. Travel Readiness
-7. Senior Dog Care
-8. Home Setup
-9. New Adoption Guidance
-10. Product Advice
-11. Recovery & Ongoing Care
-
-**Note:** Concierge® is NOT a tile - it's an overlaying level throughout the page (like Emergency), always accessible via "Talk to Concierge®" cards.
-
-### Page Structure (Following Emergency Pattern)
-1. **Hero** - Ask Advisory AI
-2. **Intent Tiles** - 11 categories
-3. **My Dog Advisory** - Personalized for logged-in pet
-4. **Guided Paths** - Decision journeys
-5. **Concierge Cards** - "Talk to Concierge®" (overlay, not made-up expert names)
-6. **Curated Bundles** - Advisory bundles
-7. **Soul-Created Products** - Personalized product grid
-8. **Near Me** - Google Places services
-9. **Follow-up Support** - Recovery & ongoing care
-
-### Guided Paths to Build
-- **New Puppy**: what to buy → what to feed → first grooming → vaccine tracker → toilet training
-- **New Adoption**: first 7 days → decompression → safe home → feeding routine → health checks
-- **Senior Dog**: mobility → comfort → diet → sleep → recovery → support products
-- **Travel Ready**: is my dog fit? → documents → harness/crate → food/hydration → local vet
-- **Coat & Grooming**: by coat type → shedding → mats → tear stains → ear care
-- **Behaviour**: pulling → barking → separation anxiety → chewing → settling guests
-
-### Personalization Factors
-- Breed, Age, Size, Coat type
-- Energy level, Temperament
-- Travel comfort, Health flags
-- City/Climate (summer/monsoon)
-- Life stage (puppy, adult, senior)
-- Past orders, Upcoming events
+### 2. AI Image Generation - All Missing Images Fixed ✅
+- **Advisory Bundles:** 8/8 now have AI-generated images
+  - Complete Behaviour Support Bundle ✅
+  - Nutrition & Weight Management Bundle ✅
+  - Senior Pet Care Bundle ✅
+  - New Pet Parent Bundle ✅
+  - Proactive Health Bundle ✅
+  - Puppy Starter Bundle ✅
+  - Senior Comfort Bundle ✅
+  - Complete Grooming Bundle ✅
+  
+- **Concierge Experiences:** 18/18 now have AI-generated images
+  - Luxe Air Concierge® ✅
+  - Road Trip Architect® ✅
+  - Boutique Stay Curator® ✅
+  - Home Away Finder® ✅
+  - Wellness Navigator® ✅
+  - Grooming Maestro® ✅
+  - Private Chef Experience® ✅
+  - Restaurant VIP Access® ✅
+  - Birthday Dining Package® ✅
+  - Ultimate Birthday Bash® ✅
+  - Gotcha Day Special® ✅
+  - Pawty Planning Pro® ✅
+  - Adventure Curator® ✅
+  - Playdate Matchmaker® ✅
+  - Training Maestro® ✅
+  - Puppy School Advisor® ✅
+  - Fitness Coach® ✅
+  - Swim & Hydro Therapy® ✅
 
 ---
 
-## COMPLETED THIS SESSION (March 10, 2026 - Fork #2)
+## PREVIOUS SESSION COMPLETIONS (March 10, 2026 - Fork #2)
 
 ### 1. Advisory Page - Pet Selector Like Learn Page ✅
 - **Requirement:** User wanted Advisory to match Learn page pattern with pet selector
@@ -287,11 +261,36 @@
 |-------|----------|--------|
 | Razorpay checkout "body error" | P1 | Debug logging added, needs testing |
 | Mobile dashboard scrambled | P2 | Not started |
-| AI Mockup Generation | P0 | Was ~67.6%, needs restart |
+| Breed products mockup_url | P2 | 2,242/2,569 (87% complete) |
 
 ---
 
-## KEY FILES MODIFIED (This Session - Fork #2)
+## IMAGE STATUS SUMMARY (March 10, 2026)
+
+| Collection | Total | Has Images | Status |
+|------------|-------|------------|--------|
+| Advisory Bundles | 8 | 8 | ✅ 100% |
+| Concierge Experiences | 18 | 18 | ✅ 100% |
+| Services Master | 1,115 | 1,115 | ✅ 100% |
+| Main Bundles | 30 | 3 | ⚠️ 10% (needs attention) |
+| Breed Products | 2,569 | 2,242 | 87% |
+| Unified Products | 3,482 | ~1,368 | ⚠️ Needs migration |
+
+---
+
+## KEY FILES MODIFIED (This Session - Fork #3)
+
+### Documentation
+- `/app/complete-documentation.html` - Updated to v7.0.0 with Session 7 changes
+- `/app/memory/PRD.md` - Updated with AI image generation status
+
+### Database Updates
+- `advisory_bundles` - Added AI images for 5 missing bundles
+- `concierge_experiences` - Added AI images for all 18 experiences
+
+---
+
+## KEY FILES MODIFIED (Previous Session - Fork #2)
 
 ### Backend
 - `/app/backend/advisory_routes.py` - Enhanced AI prompt for contextual responses (lines 1258-1295)
@@ -324,20 +323,20 @@
 
 ## UPCOMING TASKS
 
-1. **Start Mockup Generator** - Resume AI image generation (73.3% → 100%)
-2. **Debug Razorpay Checkout** - Use added logs to trace "body error"
-3. **Mobile Dashboard Fix** - CSS layout issues on pet dashboard
-4. **Celebrate Page Verification** - Test loading and functionality
-5. **Breed First Aid Kit Images** - Either generate manually or wait for background job
+1. **Debug Razorpay Checkout** - Use added logs to trace "body error"
+2. **Mobile Dashboard Fix** - CSS layout issues on pet dashboard
+3. **Migrate unified_products images** - Move image URLs to cloudinary_image_url field
+4. **Complete Breed Product Mockups** - Generate remaining 327 missing mockups
 
 ---
 
 ## FUTURE/BACKLOG
 
-- Breed-wise filtering for SHOP and Services tabs
-- Refactor monolithic `Admin.jsx`
+- Sync `thedoggybakery.com` cakes via admin panel
+- Refactor monolithic `Admin.jsx` and `ShopPage.jsx`
 - Secure Admin authentication (currently hardcoded)
 - Admin Features user testing (Soul Tier UI, Bundles Manager)
+- Background mockup generator persistence solution
 
 ---
 

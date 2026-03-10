@@ -177,7 +177,7 @@ Mira Memories: 121 stored
 
 ### To Test API:
 ```bash
-API_URL="https://advisory-debug.preview.emergentagent.com"
+API_URL="https://decision-support-8.preview.emergentagent.com"
 TOKEN=$(curl -s -X POST "$API_URL/api/auth/login" -H "Content-Type: application/json" -d '{"email":"dipali@clubconcierge.in","password":"test123"}' | python3 -c "import sys,json;print(json.load(sys.stdin).get('token',''))")
 
 # Test /api/mira/chat

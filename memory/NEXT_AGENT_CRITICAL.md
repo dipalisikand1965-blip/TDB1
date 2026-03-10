@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://advisory-debug.preview.emergentagent.com
+https://decision-support-8.preview.emergentagent.com
 
 ---
 
