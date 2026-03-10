@@ -262,6 +262,9 @@ from app.api.soul_products_routes import router as soul_products_router, set_sou
 # Product Mockup Routes (AI-generated personalized mockups)
 from app.api.mockup_routes import router as mockup_router, set_mockup_db
 
+# Bundle Routes (Curated product bundles)
+from app.api.bundle_routes import router as bundle_router, set_bundle_db
+
 # Mockup Cloud Storage (Cloudinary integration)
 from mockup_cloud_storage import mockup_cloud_router, set_db as set_mockup_cloud_db
 
@@ -19181,6 +19184,7 @@ app.include_router(celebrate_router)  # Celebrate Pillar
 app.include_router(adopt_router)  # Adopt Pillar
 app.include_router(farewell_router)  # Farewell Pillar
 app.include_router(shop_router)  # Shop Pillar
+app.include_router(bundle_router)  # Curated Bundles API
 app.include_router(pet_soul_router, prefix="/api")
 app.include_router(pet_soul_admin_router, prefix="/api/admin")
 app.include_router(pet_score_router, prefix="/api")  # Pet Score Logic API
@@ -19229,6 +19233,9 @@ set_archetype_db(db)  # Initialize Archetype with database
 # Initialize Soul Products Manager
 app.include_router(soul_products_router)  # Soul Products at /api/products/*
 set_soul_products_db(db)  # Initialize Soul Products with database
+
+# Initialize Bundle Routes
+set_bundle_db(db)  # Initialize Bundles with database
 
 # Initialize Product Mockup Generator
 app.include_router(mockup_router)  # Mockups at /api/mockups/*
