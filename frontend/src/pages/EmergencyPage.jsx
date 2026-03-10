@@ -15,10 +15,10 @@ import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
-import ProductCard from '../components/ProductCard';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
-// New Emergency Components
+import CuratedBundles from '../components/CuratedBundles';
+// Emergency Components
 import { 
   UrgentHelpButtons, 
   PetEmergencyFile, 
@@ -27,12 +27,12 @@ import {
 } from '../components/emergency';
 import {
   AlertTriangle, Search, Heart, Phone, MapPin, Clock, Ambulance,
-  ChevronRight, Sparkles, Star, Loader2, Send, ArrowRight, Play,
-  ChevronDown, Users, Shield, Wind, Skull, CloudLightning, ShieldAlert,
-  CheckCircle, PawPrint, PhoneCall, Siren, Radio, AlertCircle, ShoppingBag
+  ChevronRight, Star, Loader2, ArrowRight, Shield, Wind, Skull, 
+  CloudLightning, ShieldAlert, CheckCircle, PhoneCall, Siren, 
+  Plane, Baby, Calendar, Navigation
 } from 'lucide-react';
 
-// Emergency Type Configuration - Red/Urgent theme
+// Emergency Type Configuration
 const EMERGENCY_TYPES = {
   lost_pet: { name: 'Lost Pet Alert', icon: Search, color: 'from-red-600 to-rose-700', bgColor: 'bg-red-50', textColor: 'text-red-600' },
   medical_emergency: { name: 'Medical Emergency', icon: AlertTriangle, color: 'from-red-500 to-orange-600', bgColor: 'bg-red-50', textColor: 'text-red-600' },
@@ -51,19 +51,50 @@ const SEVERITY_OPTIONS = [
   { value: 'moderate', label: 'Moderate - Need Guidance', color: 'bg-yellow-500' }
 ];
 
-const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80',
-  'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80'
+// Special Emergency Paths Configuration
+const SPECIAL_PATHS = [
+  {
+    id: 'lost_pet',
+    icon: Search,
+    title: 'Lost Pet',
+    description: 'Step-by-step guide to find your missing pet',
+    color: 'from-red-500 to-rose-600',
+    bgColor: 'bg-red-50',
+    steps: ['Create alert poster', 'Notify neighbors', 'Check shelters', 'Social media blast']
+  },
+  {
+    id: 'travel_emergency',
+    icon: Plane,
+    title: 'Travel Emergency',
+    description: 'Help when away from home with your pet',
+    color: 'from-blue-500 to-indigo-600',
+    bgColor: 'bg-blue-50',
+    steps: ['Find nearest vet', 'Language support', 'Insurance assistance', 'Emergency transport']
+  },
+  {
+    id: 'puppy_emergency',
+    icon: Baby,
+    title: 'Puppy Emergency',
+    description: 'Special care for young pets in distress',
+    color: 'from-pink-500 to-rose-500',
+    bgColor: 'bg-pink-50',
+    steps: ['Age-specific first aid', 'Dehydration check', 'Temperature monitoring', 'Vet guidance']
+  },
+  {
+    id: 'senior_emergency',
+    icon: Calendar,
+    title: 'Senior Pet',
+    description: 'Gentle care for elderly pets in crisis',
+    color: 'from-amber-500 to-orange-500',
+    bgColor: 'bg-amber-50',
+    steps: ['Mobility assistance', 'Pain management', 'Comfort measures', 'End-of-life support']
+  }
 ];
 
 const EmergencyPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
-  
-  // Scroll to top when page loads
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  const { currentPet } = usePillarContext();
   
   const [partners, setPartners] = useState([]);
   const [products, setProducts] = useState([]);
@@ -74,11 +105,9 @@ const EmergencyPage = () => {
   const [userPets, setUserPets] = useState([]);
   const [selectedPet, setSelectedPet] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [heroIndex, setHeroIndex] = useState(0);
   const [config, setConfig] = useState({});
+  const [showSpecialPath, setShowSpecialPath] = useState(null);
   
-  // Use global pet context
-  const { currentPet } = usePillarContext();
   const activePet = currentPet || selectedPet;
   
   const [requestForm, setRequestForm] = useState({
@@ -93,12 +122,17 @@ const EmergencyPage = () => {
     last_seen_time: '',
     distinctive_features: '',
     notes: '',
-    // Guest fields (for non-logged-in users)
     guest_name: '',
     guest_phone: '',
     guest_email: '',
     pet_description: ''
   });
+
+  // Refs for scrolling
+  const nearbyHelpRef = useRef(null);
+  const petFileRef = useRef(null);
+  const guidesRef = useRef(null);
+  const productsRef = useRef(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -107,13 +141,6 @@ const EmergencyPage = () => {
       fetchUserPets();
     }
   }, [user, token]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
 
   const fetchData = async () => {
     setLoading(true);
@@ -163,7 +190,6 @@ const EmergencyPage = () => {
   };
 
   const handleEmergencyRequest = (type = null) => {
-    // For emergencies, allow guests to report - show guest form if not logged in
     if (type) {
       setRequestForm(prev => ({ ...prev, emergency_type: type }));
     }
@@ -172,7 +198,6 @@ const EmergencyPage = () => {
   };
 
   const submitRequest = async () => {
-    // For guests, require contact info
     if (!user && (!requestForm.guest_phone || !requestForm.guest_name)) {
       toast({
         title: "Contact Details Required",
@@ -226,7 +251,7 @@ const EmergencyPage = () => {
       if (response.ok) {
         const result = await response.json();
         toast({
-          title: "🚨 Emergency Request Submitted!",
+          title: "Emergency Request Submitted!",
           description: result.message
         });
         setShowRequestModal(false);
@@ -262,12 +287,6 @@ const EmergencyPage = () => {
     }
   };
 
-  const featuredPartners = partners.filter(p => p.is_featured);
-
-  // Refs for scrolling
-  const nearbyHelpRef = useRef(null);
-  const petFileRef = useRef(null);
-
   const scrollToNearbyHelp = () => {
     nearbyHelpRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -280,42 +299,44 @@ const EmergencyPage = () => {
     window.open('https://wa.me/918971702582?text=Hi, I need emergency assistance for my pet', '_blank');
   };
 
+  const featuredPartners = partners.filter(p => p.is_featured);
+
   return (
     <PillarPageLayout
       pillar="emergency"
       title="Emergency - 24/7 Pet Support | The Doggy Company"
       description="Immediate help for lost pets, medical emergencies, accidents, and more. Our team and partner network are ready to respond 24/7."
     >
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 1: URGENT HELP BUTTONS - Top of page, panic mode */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 1: URGENT HELP BUTTONS - Top of page, panic mode, no scrolling needed
+          ═══════════════════════════════════════════════════════════════════════════ */}
       <UrgentHelpButtons 
         onFindClinic={scrollToNearbyHelp}
         onOpenPetFile={scrollToPetFile}
         petName={activePet?.name}
       />
 
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 2: NEARBY EMERGENCY HELP - Google Places API */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 2: NEARBY EMERGENCY HELP - Google Places API for real-time clinic finder
+          ═══════════════════════════════════════════════════════════════════════════ */}
       <div ref={nearbyHelpRef}>
         <NearbyEmergencyHelp />
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 3: CONCIERGE HELP - Human support layer */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 3: CONCIERGE HELP - Human support layer via WhatsApp
+          ═══════════════════════════════════════════════════════════════════════════ */}
       <ServiceCatalogSection 
         pillar="emergency"
-        title="Concierge® Will Assist"
+        title="Concierge Will Assist"
         subtitle="We can help coordinate things for you right now"
-        maxServices={8}
+        maxServices={6}
         hidePrice={true}
       />
 
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 4: MY PET EMERGENCY FILE - Auto-loaded for logged-in user */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 4: MY PET EMERGENCY FILE - Auto-loaded pet medical info
+          ═══════════════════════════════════════════════════════════════════════════ */}
       <div ref={petFileRef}>
         <PetEmergencyFile 
           pet={activePet}
@@ -323,30 +344,168 @@ const EmergencyPage = () => {
         />
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 5: EMERGENCY SITUATION GUIDES - Actionable content */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <EmergencySituationGuides 
-        onFindClinic={scrollToNearbyHelp}
-        onContactConcierge={openWhatsAppConcierge}
-      />
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 5: EMERGENCY SITUATION GUIDES - 10+ actionable guides
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <div ref={guidesRef}>
+        <EmergencySituationGuides 
+          onFindClinic={scrollToNearbyHelp}
+          onContactConcierge={openWhatsAppConcierge}
+        />
+      </div>
 
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 6 & 7: BREED-SMART & ARCHETYPE PRODUCTS - Personalized picks */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4" data-testid="emergency-breed-smart-section">
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 6: EMERGENCY PRODUCTS & BUNDLES - First-aid kits, recovery items
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <div ref={productsRef}>
+        <section className="py-8 px-4 bg-gradient-to-b from-red-50 to-white" data-testid="emergency-products-section">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-2 mb-6">
+              <Shield className="w-6 h-6 text-red-600" />
+              <h2 className="text-xl font-bold text-gray-900">Emergency Preparedness</h2>
+            </div>
+            
+            {/* Curated Bundles */}
+            <CuratedBundles pillar="emergency" maxBundles={3} />
+          </div>
+        </section>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 7: SMART PICKS - Breed/age/size personalized products
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4 bg-white" data-testid="emergency-smart-picks-section">
         <div className="max-w-6xl mx-auto">
           <BreedSmartRecommendations pillar="emergency" />
         </div>
       </section>
 
-      <section className="py-8 px-4">
+      <section className="py-8 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <ArchetypeProducts pillar="emergency" maxProducts={8} showTitle={true} />
+          <ArchetypeProducts pillar="emergency" maxProducts={6} showTitle={true} />
         </div>
       </section>
 
-      {/* Emergency Hotline Banner - Below Hero */}
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 8: SPECIAL EMERGENCY PATHS - Lost Pet, Travel, Puppy, Senior
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4 bg-white" data-testid="special-paths-section">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Special Emergency Paths</h2>
+            <p className="text-sm text-gray-600">Tailored help for specific situations</p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {SPECIAL_PATHS.map((path) => {
+              const Icon = path.icon;
+              const isExpanded = showSpecialPath === path.id;
+              
+              return (
+                <div key={path.id} className="flex flex-col">
+                  <button
+                    onClick={() => setShowSpecialPath(isExpanded ? null : path.id)}
+                    className={`p-4 rounded-xl text-center transition-all ${
+                      isExpanded 
+                        ? `bg-gradient-to-br ${path.color} text-white shadow-lg` 
+                        : `${path.bgColor} hover:shadow-md border-2 border-transparent hover:border-gray-200`
+                    }`}
+                    data-testid={`special-path-${path.id}`}
+                  >
+                    <div className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-2 ${
+                      isExpanded ? 'bg-white/20' : 'bg-white shadow-sm'
+                    }`}>
+                      <Icon className={`w-6 h-6 ${isExpanded ? 'text-white' : 'text-gray-700'}`} />
+                    </div>
+                    <p className={`text-sm font-semibold ${isExpanded ? 'text-white' : 'text-gray-800'}`}>
+                      {path.title}
+                    </p>
+                    <p className={`text-xs mt-1 ${isExpanded ? 'text-white/80' : 'text-gray-500'}`}>
+                      {path.description}
+                    </p>
+                  </button>
+                  
+                  {isExpanded && (
+                    <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <p className="text-xs font-semibold text-gray-700 mb-2">Quick Steps:</p>
+                      <ul className="space-y-1">
+                        {path.steps.map((step, idx) => (
+                          <li key={idx} className="text-xs text-gray-600 flex items-center gap-2">
+                            <span className="w-4 h-4 bg-gray-200 rounded-full flex items-center justify-center text-[10px] font-bold">
+                              {idx + 1}
+                            </span>
+                            {step}
+                          </li>
+                        ))}
+                      </ul>
+                      <Button 
+                        size="sm" 
+                        className="w-full mt-3 text-xs"
+                        onClick={openWhatsAppConcierge}
+                      >
+                        Get Concierge Help
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 9: FOLLOW-UP & RECOVERY - Post-emergency support
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4 bg-gradient-to-b from-emerald-50 to-white" data-testid="recovery-section">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Follow-up & Recovery</h2>
+            <p className="text-sm text-gray-600">After the emergency, we're still here</p>
+          </div>
+          
+          <div className="grid sm:grid-cols-3 gap-4">
+            <Card className="p-4 border-l-4 border-emerald-500">
+              <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-600" />
+                Discharge Checklist
+              </h3>
+              <p className="text-sm text-gray-600">
+                Ensure you have all prescriptions, follow-up appointments, and care instructions before leaving the clinic.
+              </p>
+            </Card>
+            
+            <Card className="p-4 border-l-4 border-blue-500">
+              <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                <Clock className="w-4 h-4 text-blue-600" />
+                Medication Reminders
+              </h3>
+              <p className="text-sm text-gray-600">
+                Set up medication schedules and reminders through your pet profile to stay on track with recovery.
+              </p>
+            </Card>
+            
+            <Card className="p-4 border-l-4 border-purple-500">
+              <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                <Phone className="w-4 h-4 text-purple-600" />
+                Concierge Follow-up
+              </h3>
+              <p className="text-sm text-gray-600">
+                Our team will check in on your pet's recovery and help with any post-emergency needs.
+              </p>
+            </Card>
+          </div>
+          
+          <div className="text-center mt-6">
+            <Button onClick={openWhatsAppConcierge} className="bg-emerald-600 hover:bg-emerald-700">
+              <Phone className="w-4 h-4 mr-2" />
+              Schedule Follow-up with Concierge
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* 24/7 Emergency Hotline Banner */}
       <div className="bg-gradient-to-r from-red-600 to-rose-700 text-white py-4">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -378,242 +537,7 @@ const EmergencyPage = () => {
         </div>
       </div>
 
-      {/* Emergency Types Grid */}
-      <section id="emergency-services" className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">What's Your Emergency?</h2>
-            <p className="text-gray-600">Select the type to get started quickly</p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {Object.entries(EMERGENCY_TYPES).map(([key, type]) => {
-              const Icon = type.icon;
-              const isSelected = selectedType === key;
-              return (
-                <button
-                  key={key}
-                  onClick={() => {
-                    setSelectedType(isSelected ? null : key);
-                    handleEmergencyRequest(key);
-                  }}
-                  className={`p-4 rounded-xl text-center transition-all ${
-                    isSelected 
-                      ? `bg-gradient-to-br ${type.color} text-white shadow-lg scale-105` 
-                      : `${type.bgColor} hover:shadow-md hover:scale-102 border-2 border-transparent hover:border-red-200`
-                  }`}
-                  data-testid={`emergency-type-${key}`}
-                >
-                  <div className={`w-14 h-14 mx-auto rounded-full flex items-center justify-center mb-2 ${
-                    isSelected ? 'bg-white/20' : 'bg-white shadow-sm'
-                  }`}>
-                    <Icon className={`w-7 h-7 ${isSelected ? 'text-white' : type.textColor}`} />
-                  </div>
-                  <p className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-700'}`}>
-                    {type.name}
-                  </p>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Emergency Vets & Partners */}
-      {featuredPartners.length > 0 && (
-        <section className="py-12 bg-gradient-to-b from-white to-red-50">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                  <Ambulance className="w-6 h-6 text-red-600" /> Emergency Partners
-                </h2>
-                <p className="text-gray-600">24/7 vets, ambulances & rescue services</p>
-              </div>
-            </div>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredPartners.map((partner) => (
-                <Card key={partner.id} className="overflow-hidden hover:shadow-xl transition-all group border-2 border-red-100" data-testid={`partner-${partner.id}`}>
-                  <div className="relative h-24 bg-gradient-to-br from-red-500 to-rose-600">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center">
-                        {partner.partner_type === 'ambulance' ? (
-                          <Ambulance className="w-8 h-8 text-white" />
-                        ) : partner.partner_type === 'helpline' ? (
-                          <Phone className="w-8 h-8 text-white" />
-                        ) : (
-                          <Shield className="w-8 h-8 text-white" />
-                        )}
-                      </div>
-                    </div>
-                    {partner.is_24hr && (
-                      <Badge className="absolute top-2 right-2 bg-yellow-400 text-red-800">
-                        <Clock className="w-3 h-3 mr-1" /> 24/7
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 line-clamp-1">{partner.name}</h3>
-                    <p className="text-sm text-gray-500 line-clamp-2 mt-1">{partner.description}</p>
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {partner.services?.slice(0, 3).map((service) => (
-                        <Badge key={service} variant="outline" className="text-xs capitalize">
-                          {service.replace('_', ' ')}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="flex items-center justify-between mt-3">
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                        <span className="text-sm font-medium">{partner.rating || 4.8}</span>
-                      </div>
-                      {partner.response_time_minutes && (
-                        <span className="text-red-600 font-semibold text-sm">
-                          ~{partner.response_time_minutes} min
-                        </span>
-                      )}
-                    </div>
-                    <a href={`tel:${partner.emergency_phone || partner.phone}`}>
-                      <Button 
-                        className="w-full mt-3 bg-red-600 hover:bg-red-700"
-                      >
-                        <Phone className="w-4 h-4 mr-2" /> Call Now
-                      </Button>
-                    </a>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Products & Bundles Section */}
-      {(products.length > 0 || bundles.length > 0) && (
-        <div id="emergency-products" className="py-12 bg-gradient-to-b from-red-50 to-white">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center gap-2 mb-6">
-              <Shield className="w-6 h-6 text-red-600" />
-              <h2 className="text-2xl font-bold text-gray-900">Emergency Preparedness</h2>
-            </div>
-            
-            {/* Bundles */}
-            {bundles.length > 0 && (
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4">🛡️ Safety Bundles</h3>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {bundles.map((bundle) => (
-                    <Card key={bundle.id} className="p-4 border-2 border-red-200 bg-red-50/50" data-testid={`bundle-${bundle.id}`}>
-                      <div className="flex items-start justify-between mb-2">
-                        <h4 className="font-semibold text-gray-900">{bundle.name}</h4>
-                        {bundle.is_recommended && (
-                          <Badge className="bg-red-500">Recommended</Badge>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-600 mb-3">{bundle.description}</p>
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-xl font-bold text-red-600">₹{bundle.price}</span>
-                        <span className="text-sm text-gray-400 line-through">₹{bundle.original_price}</span>
-                        <Badge variant="outline" className="text-red-600">
-                          Save ₹{bundle.original_price - bundle.price}
-                        </Badge>
-                      </div>
-                      {bundle.paw_reward_points > 0 && (
-                        <p className="text-xs text-red-600 mb-3">🐾 Earn {bundle.paw_reward_points} Paw Points</p>
-                      )}
-                      
-                      {/* Pet Selection for Bundle */}
-                      {userPets.length > 0 && (
-                        <div className="mb-3">
-                          <Label className="text-xs text-gray-600">For which pet?</Label>
-                          <select 
-                            className="w-full mt-1 px-2 py-1.5 text-sm border rounded-md bg-white"
-                            value={selectedPet?.id || ''}
-                            onChange={(e) => {
-                              const pet = userPets.find(p => p.id === e.target.value);
-                              if (pet) setSelectedPet(pet);
-                            }}
-                          >
-                            <option value="">Select pet</option>
-                            {userPets.map(pet => (
-                              <option key={pet.id} value={pet.id}>
-                                🐾 {pet.name} ({pet.breed})
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      
-                      <Button 
-                        className="w-full bg-red-500 hover:bg-red-600"
-                        onClick={() => {
-                          addToCart({
-                            id: bundle.id,
-                            name: bundle.name,
-                            price: bundle.price,
-                            image: bundle.image || 'https://via.placeholder.com/200?text=Emergency+Kit',
-                            quantity: 1,
-                            pet_name: selectedPet?.name,
-                            pet_id: selectedPet?.id
-                          });
-                          toast({
-                            title: "Added to Cart! 🛒",
-                            description: `${bundle.name} added for ${selectedPet?.name || 'your pet'}`
-                          });
-                        }}
-                        data-testid={`add-bundle-${bundle.id}`}
-                      >
-                        Add to Cart
-                      </Button>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Emergency Tips Section */}
-      <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Emergency First Aid Tips</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
-            <Card className="p-6 border-l-4 border-red-500">
-              <h3 className="font-semibold text-gray-900 mb-2">🩹 Bleeding</h3>
-              <p className="text-sm text-gray-600">Apply firm pressure with clean cloth. Keep pet calm. Seek vet immediately for deep wounds.</p>
-            </Card>
-            <Card className="p-6 border-l-4 border-purple-500">
-              <h3 className="font-semibold text-gray-900 mb-2">☠️ Poisoning</h3>
-              <p className="text-sm text-gray-600">Don't induce vomiting unless advised. Note what was ingested. Call poison helpline immediately.</p>
-            </Card>
-            <Card className="p-6 border-l-4 border-blue-500">
-              <h3 className="font-semibold text-gray-900 mb-2">💨 Breathing Issues</h3>
-              <p className="text-sm text-gray-600">Keep airways clear. Don't restrict movement. Rush to nearest emergency vet.</p>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-12 bg-gradient-to-r from-red-600 to-rose-700 text-white">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">Be Prepared, Not Scared</h2>
-          <p className="text-lg opacity-90 mb-8">
-            Set up emergency contacts, get safety products, and have peace of mind knowing help is always available.
-          </p>
-          <Button 
-            size="lg" 
-            className="bg-white text-red-600 hover:bg-red-50"
-            onClick={() => handleEmergencyRequest()}
-          >
-            Get Started <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
-        </div>
-      </section>
-
-      {/* Request Modal */}
+      {/* Emergency Request Modal */}
       <Dialog open={showRequestModal} onOpenChange={setShowRequestModal}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -660,12 +584,12 @@ const EmergencyPage = () => {
               </Select>
             </div>
 
-            {/* Guest Contact Info - Show when not logged in */}
+            {/* Guest Contact Info */}
             {!user && (
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-3">
                 <p className="text-sm font-medium text-amber-800 flex items-center gap-2">
                   <Phone className="w-4 h-4" />
-                  Your Contact Details (so we can reach you)
+                  Your Contact Details
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
@@ -688,15 +612,6 @@ const EmergencyPage = () => {
                   </div>
                 </div>
                 <div>
-                  <Label className="text-amber-700">Email (optional)</Label>
-                  <Input
-                    value={requestForm.guest_email}
-                    onChange={(e) => setRequestForm({...requestForm, guest_email: e.target.value})}
-                    placeholder="your@email.com"
-                    className="border-amber-300"
-                  />
-                </div>
-                <div>
                   <Label className="text-amber-700">Describe your pet</Label>
                   <Input
                     value={requestForm.pet_description}
@@ -708,7 +623,7 @@ const EmergencyPage = () => {
               </div>
             )}
 
-            {/* Pet Selection - Only for logged-in users, Not for Found Pet */}
+            {/* Pet Selection for logged-in users */}
             {user && requestForm.emergency_type !== 'found_pet' && (
               <div>
                 <Label className="mb-2 block">Select Your Pet *</Label>
@@ -729,12 +644,8 @@ const EmergencyPage = () => {
                           selectedPet?.id === pet.id ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-red-200'
                         }`}
                       >
-                        <div className="w-10 h-10 rounded-full overflow-hidden bg-red-100 flex items-center justify-center">
-                          <img 
-                            src={getPetPhotoUrl(pet)} 
-                            alt={pet.name}
-                            className="w-full h-full object-cover"
-                          />
+                        <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                          <span className="text-lg">🐕</span>
                         </div>
                         <div>
                           <p className="font-medium">{pet.name}</p>
@@ -781,16 +692,6 @@ const EmergencyPage = () => {
               </div>
             </div>
 
-            <div>
-              <Label>Full Address/Location</Label>
-              <Textarea
-                value={requestForm.location}
-                onChange={(e) => setRequestForm({...requestForm, location: e.target.value})}
-                placeholder="Complete address for emergency response..."
-                rows={2}
-              />
-            </div>
-
             {/* Lost Pet Specific Fields */}
             {requestForm.emergency_type === 'lost_pet' && (
               <>
@@ -810,28 +711,8 @@ const EmergencyPage = () => {
                     onChange={(e) => setRequestForm({...requestForm, last_seen_time: e.target.value})}
                   />
                 </div>
-                <div>
-                  <Label>Distinctive Features</Label>
-                  <Textarea
-                    value={requestForm.distinctive_features}
-                    onChange={(e) => setRequestForm({...requestForm, distinctive_features: e.target.value})}
-                    placeholder="Collar colour, unique markings, tags..."
-                    rows={2}
-                  />
-                </div>
               </>
             )}
-
-            {/* Additional Notes */}
-            <div>
-              <Label>Additional Notes</Label>
-              <Textarea
-                value={requestForm.notes}
-                onChange={(e) => setRequestForm({...requestForm, notes: e.target.value})}
-                placeholder="Any other important information..."
-                rows={2}
-              />
-            </div>
 
             {/* Submit */}
             <div className="flex gap-3 pt-2">
@@ -840,7 +721,7 @@ const EmergencyPage = () => {
               </Button>
               <Button
                 onClick={submitRequest}
-                disabled={(requestForm.emergency_type !== 'found_pet' && !selectedPet) || !requestForm.description.trim() || submitting}
+                disabled={(!user && (!requestForm.guest_phone || !requestForm.guest_name)) || !requestForm.description.trim() || submitting}
                 className="flex-1 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700"
               >
                 {submitting ? (
@@ -853,36 +734,8 @@ const EmergencyPage = () => {
           </div>
         </DialogContent>
       </Dialog>
-      
-      {/* === SERVICE CATALOG WITH PRICING === */}
-      <ServiceCatalogSection 
-        pillar="emergency"
-        title="Concierge® Will Assist"
-        subtitle="24x7 emergency support for you and your pet"
-        maxServices={8}
-        hidePrice={true}
-      />
 
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4" data-testid="emergency-breed-smart-section">
-        <div className="max-w-6xl mx-auto">
-          <BreedSmartRecommendations pillar="emergency" />
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <ArchetypeProducts pillar="emergency" maxProducts={8} showTitle={true} />
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* Concierge® Button - Blue C® for Service Desk chat */}
+      {/* Concierge Button */}
       <ConciergeButton 
         pillar="emergency" 
         position="bottom-right"

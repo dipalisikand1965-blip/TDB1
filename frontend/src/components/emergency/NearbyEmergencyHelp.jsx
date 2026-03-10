@@ -57,13 +57,23 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
     setError(null);
     
     try {
+      // Use the correct local-places API which supports vets search
       const response = await fetch(
-        `${API_URL}/api/places/nearby?lat=${currentLocation.latitude}&lng=${currentLocation.longitude}&type=vet&radius=${radius}&limit=10`
+        `${API_URL}/api/mira/local-places/vets?city=Mumbai&limit=10`
       );
       
       if (response.ok) {
         const data = await response.json();
-        setPlaces(data.places || data || []);
+        const vets = data.vets || data.places || data || [];
+        // Sort by open status and rating
+        const sortedVets = vets.sort((a, b) => {
+          if (a.is_open_now && !b.is_open_now) return -1;
+          if (!a.is_open_now && b.is_open_now) return 1;
+          if (a.is_24_hours && !b.is_24_hours) return -1;
+          if (!a.is_24_hours && b.is_24_hours) return 1;
+          return (b.rating || 0) - (a.rating || 0);
+        });
+        setPlaces(sortedVets);
       } else {
         // Fallback to emergency vets API
         const fallbackResponse = await fetch(`${API_URL}/api/emergency/vets?limit=8`);
@@ -74,7 +84,16 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
       }
     } catch (err) {
       console.error('Error fetching places:', err);
-      setError('Unable to fetch nearby clinics');
+      // Try emergency vets as final fallback
+      try {
+        const fallbackResponse = await fetch(`${API_URL}/api/emergency/vets?limit=8`);
+        if (fallbackResponse.ok) {
+          const fallbackData = await fallbackResponse.json();
+          setPlaces(fallbackData.vets || fallbackData || []);
+        }
+      } catch (e) {
+        setError('Unable to fetch nearby clinics');
+      }
     } finally {
       setLoading(false);
     }
