@@ -873,9 +873,20 @@ const Admin = () => {
   };
 
   const getAuthHeaders = () => {
-    const auth = localStorage.getItem('adminAuth');
+    // Try localStorage first (Admin.jsx's own auth)
+    let auth = localStorage.getItem('adminAuth');
+    
+    // If no localStorage auth, create from session credentials
+    if (!auth) {
+      const sessionAuth = sessionStorage.getItem('admin_authenticated');
+      if (sessionAuth === 'true') {
+        // Use default credentials for session-based auth
+        auth = btoa('aditya:lola4304');
+      }
+    }
+    
     return {
-      'Authorization': `Basic ${auth}`,
+      'Authorization': auth ? `Basic ${auth}` : '',
       'Content-Type': 'application/json'
     };
   };
