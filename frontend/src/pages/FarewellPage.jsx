@@ -201,6 +201,13 @@ const FarewellPage = () => {
   const [showProductModal, setShowProductModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   
+  // AI Grief Support State
+  const [griefQuery, setGriefQuery] = useState('');
+  const [griefResponse, setGriefResponse] = useState('');
+  const [griefLoading, setGriefLoading] = useState(false);
+  const [showGriefResponse, setShowGriefResponse] = useState(false);
+  const [selectedPath, setSelectedPath] = useState(null);
+  
   // Use global pet context
   const activePet = currentPet || userPets?.[0];
   
@@ -254,6 +261,92 @@ const FarewellPage = () => {
     special_requests: '',
     urgency: 'planned' // planned, urgent, emergency
   });
+
+  // AI Grief Support Handler
+  const handleGriefSupport = async () => {
+    if (!griefQuery.trim()) return;
+    
+    setGriefLoading(true);
+    setShowGriefResponse(true);
+    
+    try {
+      const petContext = activePet 
+        ? `The person is grieving ${activePet.name}, a ${activePet.breed || 'beloved dog'}. `
+        : '';
+      
+      const response = await fetch(`${API_URL}/api/mira/ask`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question: griefQuery,
+          context: `${petContext}GRIEF SUPPORT: This person is experiencing pet loss. Be deeply compassionate, gentle, and understanding. Acknowledge their pain. Offer comfort, not solutions unless asked. Speak from the heart. Keep response warm and supportive, under 150 words. Never minimize their grief.`
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setGriefResponse(data.response || data.answer || 'I\'m here with you. Your love for your pet is a beautiful thing, and grief is love with nowhere to go. Take all the time you need.');
+      } else {
+        setGriefResponse('I\'m here to listen. Your feelings are valid, and grief takes time. If you need immediate support, please reach out to our compassionate care team.');
+      }
+    } catch (error) {
+      setGriefResponse('I understand this is a difficult time. Our grief support counselors are available to talk when you\'re ready.');
+    } finally {
+      setGriefLoading(false);
+    }
+  };
+
+  // Farewell Journey Guided Paths
+  const FAREWELL_PATHS = [
+    {
+      id: 'preparing',
+      title: 'Preparing to Say Goodbye',
+      description: 'When you know the time is coming',
+      icon: Heart,
+      color: 'from-rose-500 to-pink-600',
+      steps: [
+        { title: 'Quality time together', items: ['Favorite activities', 'Extra cuddles', 'Special treats', 'Photo memories'] },
+        { title: 'Comfort measures', items: ['Pain management', 'Soft bedding', 'Peaceful space', 'Familiar scents'] },
+        { title: 'Practical planning', items: ['Vet consultation', 'Home euthanasia option', 'Memorial choices', 'Family involvement'] }
+      ]
+    },
+    {
+      id: 'day_of',
+      title: 'The Day Of',
+      description: 'Being present in the moment',
+      icon: Star,
+      color: 'from-purple-500 to-indigo-600',
+      steps: [
+        { title: 'Create peace', items: ['Quiet environment', 'Loved ones present', 'Soft music', 'Comfort items'] },
+        { title: 'Say goodbye', items: ['Words of love', 'Gentle touch', 'No rush', 'Honor the moment'] },
+        { title: 'After care', items: ['Take your time', 'Memorial keepsakes', 'Transportation arranged', 'Self-compassion'] }
+      ]
+    },
+    {
+      id: 'grief_journey',
+      title: 'The Grief Journey',
+      description: 'Navigating life after loss',
+      icon: Rainbow,
+      color: 'from-blue-500 to-cyan-600',
+      steps: [
+        { title: 'First days', items: ['Allow all feelings', 'Rest when needed', 'Reach out for support', 'No pressure'] },
+        { title: 'Honoring memory', items: ['Create memorial', 'Share stories', 'Plant something', 'Donate in their name'] },
+        { title: 'Finding peace', items: ['Grief counseling', 'Support groups', 'When ready, open heart again'] }
+      ]
+    },
+    {
+      id: 'memorial',
+      title: 'Creating a Memorial',
+      description: 'Celebrating their life',
+      icon: Flower2,
+      color: 'from-amber-500 to-orange-600',
+      steps: [
+        { title: 'Physical memorials', items: ['Paw print casting', 'Photo display', 'Garden stone', 'Jewelry'] },
+        { title: 'Digital memories', items: ['Photo album', 'Video montage', 'Social tribute', 'Rainbow Bridge wall'] },
+        { title: 'Living tributes', items: ['Charity donation', 'Volunteer work', 'Sponsor a rescue', 'Memorial tree'] }
+      ]
+    }
+  ];
 
   // Fetch user's pets
   useEffect(() => {
@@ -400,6 +493,151 @@ const FarewellPage = () => {
       <section className="py-12 px-4 bg-gradient-to-b from-purple-950/50 to-slate-900">
         <div className="max-w-7xl mx-auto">
           <RainbowBridgeWall />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          AI GRIEF SUPPORT - Compassionate chat
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4 bg-gradient-to-b from-slate-900 to-purple-900/50" data-testid="grief-support-section">
+        <div className="max-w-4xl mx-auto">
+          <Card className="p-6 bg-white/10 backdrop-blur-sm border-purple-400/30">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-purple-600/30 rounded-full">
+                <Heart className="w-6 h-6 text-purple-300" />
+              </div>
+              <div>
+                <h3 className="font-bold text-white text-lg">You're Not Alone</h3>
+                <p className="text-purple-200 text-sm">Share what's on your heart. I'm here to listen.</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
+              <Input
+                placeholder="How are you feeling? What would help right now?"
+                value={griefQuery}
+                onChange={(e) => setGriefQuery(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleGriefSupport()}
+                className="flex-1 bg-white/10 border-purple-400/30 text-white placeholder:text-purple-300"
+                data-testid="grief-support-input"
+              />
+              <Button 
+                onClick={handleGriefSupport}
+                disabled={griefLoading || !griefQuery.trim()}
+                className="bg-purple-600 hover:bg-purple-700 text-white"
+              >
+                {griefLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Heart className="w-4 h-4" />}
+              </Button>
+            </div>
+            
+            {showGriefResponse && (
+              <div className="mt-4 p-4 bg-white/5 rounded-lg border border-purple-400/20">
+                {griefLoading ? (
+                  <div className="flex items-center gap-2 text-purple-200">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    I'm here with you...
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-purple-100 leading-relaxed">{griefResponse}</p>
+                    <div className="flex gap-2 mt-4">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => {
+                          setGriefQuery('');
+                          setShowGriefResponse(false);
+                        }}
+                        className="border-purple-400/30 text-purple-200 hover:bg-purple-600/20"
+                      >
+                        Share More
+                      </Button>
+                      <Button 
+                        size="sm"
+                        className="bg-purple-600 hover:bg-purple-700"
+                        onClick={() => setShowServiceModal(true)}
+                      >
+                        Talk to Counselor
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </Card>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          FAREWELL JOURNEY PATHS - Guided support through grief
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-10 px-4 bg-gradient-to-b from-purple-900/50 to-slate-900" data-testid="farewell-paths-section">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-white">Your Farewell Journey</h2>
+            <p className="text-purple-200 mt-2">Gentle guidance for wherever you are in this process</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {FAREWELL_PATHS.map((path) => {
+              const Icon = path.icon;
+              const isExpanded = selectedPath === path.id;
+              return (
+                <Card 
+                  key={path.id}
+                  className={`p-4 cursor-pointer transition-all bg-white/5 backdrop-blur-sm border-purple-400/20 hover:border-purple-400/50 ${
+                    isExpanded ? 'ring-2 ring-purple-400' : ''
+                  }`}
+                  onClick={() => setSelectedPath(isExpanded ? null : path.id)}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={`p-2 rounded-lg bg-gradient-to-br ${path.color}`}>
+                      <Icon className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-white">{path.title}</h3>
+                      <p className="text-purple-200 text-sm">{path.description}</p>
+                    </div>
+                    <ChevronRight className={`w-5 h-5 text-purple-300 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                  </div>
+                  
+                  {isExpanded && (
+                    <div className="mt-4 pt-4 border-t border-purple-400/20">
+                      <div className="space-y-3">
+                        {path.steps.map((step, idx) => (
+                          <div key={idx} className="flex items-start gap-3">
+                            <div className="w-6 h-6 rounded-full bg-purple-600/30 text-purple-300 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                              {idx + 1}
+                            </div>
+                            <div>
+                              <h4 className="font-medium text-sm text-white">{step.title}</h4>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {step.items.map((item, i) => (
+                                  <Badge key={i} variant="outline" className="text-xs bg-purple-600/10 border-purple-400/30 text-purple-200">
+                                    {item}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowServiceModal(true);
+                        }}
+                        className="w-full mt-4 bg-purple-600 hover:bg-purple-700"
+                      >
+                        <MessageCircle className="w-4 h-4 mr-2" />
+                        Get Support for This Step
+                      </Button>
+                    </div>
+                  )}
+                </Card>
+              );
+            })}
+          </div>
         </div>
       </section>
 
