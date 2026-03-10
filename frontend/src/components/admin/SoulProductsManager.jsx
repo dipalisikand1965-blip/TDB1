@@ -165,13 +165,17 @@ const SoulProductsManager = () => {
         const data = await res.json();
         console.log('[SoulProducts] Got breed products:', data.products?.length || 0);
         setBreedProducts(data.products || []);
+        setLoadingMockups(false);
       } else {
         console.error('[SoulProducts] API error:', res.status);
+        setBreedProducts([]);
+        setLoadingMockups(false);
       }
     } catch (error) {
       console.error('[SoulProducts] Failed to fetch breed products:', error);
+      setBreedProducts([]);
+      setLoadingMockups(false);
     }
-    setLoadingMockups(false);
   }, [selectedBreed, selectedProductType]);
 
   const seedBreedProducts = async () => {
