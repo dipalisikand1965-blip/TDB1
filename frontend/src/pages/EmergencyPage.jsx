@@ -792,9 +792,10 @@ const EmergencyPage = () => {
       {/* === SERVICE CATALOG WITH PRICING === */}
       <ServiceCatalogSection 
         pillar="emergency"
-        title="Emergency, Personalised"
-        subtitle="24x7 emergency services with transparent pricing"
+        title="Concierge® Will Assist"
+        subtitle="24x7 emergency support for you and your pet"
         maxServices={8}
+        hidePrice={true}
       />
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
