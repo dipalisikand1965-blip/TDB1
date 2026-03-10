@@ -304,7 +304,7 @@ Test Pets:
 ## Services
 - Backend: Running on port 8001
 - Frontend: Running on port 3000
-- Preview URL: https://urgent-pet-care-2.preview.emergentagent.com
+- Preview URL: https://paw-rescue-3.preview.emergentagent.com
 
 ---
 

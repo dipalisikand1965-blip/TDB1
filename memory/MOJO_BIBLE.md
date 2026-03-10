@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://urgent-pet-care-2.preview.emergentagent.com
+https://paw-rescue-3.preview.emergentagent.com
 ```
 
 ---

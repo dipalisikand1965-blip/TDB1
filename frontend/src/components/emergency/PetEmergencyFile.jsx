@@ -73,17 +73,92 @@ const PetEmergencyFile = ({ pet, onEdit }) => {
     );
   }
 
-  const petAge = pet.age || pet.date_of_birth 
-    ? `${pet.age || Math.floor((Date.now() - new Date(pet.date_of_birth)) / (365.25 * 24 * 60 * 60 * 1000))} years`
-    : null;
+  // Helper to extract data from pet or doggy_soul_answers
+  const soulAnswers = pet.doggy_soul_answers || {};
+  
+  // Calculate age from dob, birth_date, date_of_birth, or life_stage
+  const calculateAge = () => {
+    if (pet.age) return `${pet.age} years`;
+    const birthDate = pet.dob || pet.birth_date || pet.date_of_birth;
+    if (birthDate) {
+      const years = Math.floor((Date.now() - new Date(birthDate)) / (365.25 * 24 * 60 * 60 * 1000));
+      return `${years} years`;
+    }
+    // Try life_stage from soul answers
+    const lifeStage = soulAnswers.life_stage;
+    if (lifeStage) {
+      if (lifeStage.toLowerCase().includes('puppy')) return 'Puppy (<1 year)';
+      if (lifeStage.toLowerCase().includes('young')) return 'Young (1-3 years)';
+      if (lifeStage.toLowerCase().includes('adult')) return 'Adult (3-7 years)';
+      if (lifeStage.toLowerCase().includes('senior')) return 'Senior (7+ years)';
+      return lifeStage;
+    }
+    return null;
+  };
+  
+  const petAge = calculateAge();
+  
+  // Get weight from pet or soul answers
+  const petWeight = pet.weight || soulAnswers.weight || null;
+  
+  // Get allergies - check both pet.allergies and soulAnswers.food_allergies
+  const getAllergies = () => {
+    const topLevelAllergies = pet.allergies || [];
+    const soulAllergies = soulAnswers.food_allergies;
+    
+    if (Array.isArray(topLevelAllergies) && topLevelAllergies.length > 0) {
+      return topLevelAllergies;
+    }
+    if (soulAllergies) {
+      if (Array.isArray(soulAllergies)) return soulAllergies;
+      if (typeof soulAllergies === 'string' && soulAllergies.toLowerCase() !== 'none') {
+        return soulAllergies.split(',').map(a => a.trim());
+      }
+    }
+    return [];
+  };
+  
+  // Get medications from pet or soul answers
+  const getMedications = () => {
+    const topLevelMeds = pet.medications;
+    const soulMeds = soulAnswers.medications;
+    
+    if (Array.isArray(topLevelMeds) && topLevelMeds.length > 0) {
+      return topLevelMeds;
+    }
+    if (soulMeds && soulMeds.toLowerCase() !== 'none' && soulMeds.toLowerCase() !== 'no') {
+      if (Array.isArray(soulMeds)) return soulMeds;
+      return soulMeds.split(',').map(m => m.trim());
+    }
+    return [];
+  };
+  
+  // Get health conditions from pet or soul answers
+  const getHealthConditions = () => {
+    const topLevelConditions = pet.health_conditions;
+    const soulConditions = soulAnswers.health_conditions;
+    
+    if (Array.isArray(topLevelConditions) && topLevelConditions.length > 0) {
+      return topLevelConditions;
+    }
+    if (soulConditions && soulConditions.toLowerCase() !== 'none' && soulConditions.toLowerCase() !== 'no') {
+      if (Array.isArray(soulConditions)) return soulConditions;
+      return soulConditions.split(',').map(c => c.trim());
+    }
+    return [];
+  };
+  
+  const allergies = getAllergies();
+  const medications = getMedications();
+  const healthConditions = getHealthConditions();
 
   // Check for incomplete fields
   const missingFields = [];
-  if (!petAge || petAge === 'Unknown') missingFields.push('age');
-  if (!pet.weight) missingFields.push('weight');
-  if (!pet.allergies || pet.allergies.length === 0) missingFields.push('allergies');
-  if (!pet.medications || pet.medications.length === 0) missingFields.push('medications');
-  if (!pet.health_conditions || pet.health_conditions.length === 0) missingFields.push('health_conditions');
+  if (!petAge) missingFields.push('age');
+  if (!petWeight) missingFields.push('weight');
+  if (allergies.length === 0) missingFields.push('allergies');
+  if (medications.length === 0) missingFields.push('medications');
+  if (healthConditions.length === 0) missingFields.push('health_conditions');
 
   const pendingQuestions = SOUL_REMINDER_QUESTIONS.filter(q => missingFields.includes(q.field));
   const completionPercent = Math.round(((5 - missingFields.length) / 5) * 100);
@@ -91,16 +166,24 @@ const PetEmergencyFile = ({ pet, onEdit }) => {
   const emergencyInfo = [
     { icon: Dog, label: 'Breed', value: pet.breed || 'Unknown' },
     { icon: Calendar, label: 'Age', value: petAge || 'Unknown', missing: !petAge },
-    { icon: Scale, label: 'Weight', value: pet.weight ? `${pet.weight} kg` : 'Not recorded', missing: !pet.weight },
-    { icon: AlertTriangle, label: 'Allergies', value: pet.allergies?.join(', ') || 'None known', highlight: pet.allergies?.length > 0 },
-    { icon: Pill, label: 'Medications', value: pet.medications?.join(', ') || 'None' },
-    { icon: Heart, label: 'Conditions', value: pet.health_conditions?.join(', ') || 'None' },
+    { icon: Scale, label: 'Weight', value: petWeight ? `${petWeight} kg` : 'Not recorded', missing: !petWeight },
+    { icon: AlertTriangle, label: 'Allergies', value: allergies.length > 0 ? allergies.join(', ') : 'None known', highlight: allergies.length > 0 },
+    { icon: Pill, label: 'Medications', value: medications.length > 0 ? medications.join(', ') : 'None' },
+    { icon: Heart, label: 'Conditions', value: healthConditions.length > 0 ? healthConditions.join(', ') : 'None' },
   ];
 
+  // Get extended info from soul answers
+  const getVetInfo = () => soulAnswers.vet_name || pet.regular_vet || 'Not set';
+  const getVaccinations = () => {
+    const vaccs = pet.vaccinations || soulAnswers.vaccination_status;
+    if (Array.isArray(vaccs)) return vaccs.join(', ');
+    return vaccs || 'Check records';
+  };
+
   const extendedInfo = [
-    { icon: Syringe, label: 'Vaccinations', value: pet.vaccinations?.join(', ') || 'Check records' },
+    { icon: Syringe, label: 'Vaccinations', value: getVaccinations() },
     { icon: Heart, label: 'Surgeries', value: pet.surgeries?.join(', ') || 'None' },
-    { icon: Phone, label: 'Regular Vet', value: pet.regular_vet || 'Not set' },
+    { icon: Phone, label: 'Regular Vet', value: getVetInfo() },
     { icon: Phone, label: 'Emergency Contact', value: pet.emergency_contact || 'Not set' },
     { icon: Shield, label: 'Insurance', value: pet.insurance || 'None' },
   ];
@@ -110,11 +193,11 @@ const PetEmergencyFile = ({ pet, onEdit }) => {
     
 Breed: ${pet.breed || 'Unknown'}
 Age: ${petAge || 'Unknown'}
-Weight: ${pet.weight ? `${pet.weight} kg` : 'Not recorded'}
-Allergies: ${pet.allergies?.join(', ') || 'None known'}
-Medications: ${pet.medications?.join(', ') || 'None'}
-Conditions: ${pet.health_conditions?.join(', ') || 'None'}
-Vaccinations: ${pet.vaccinations?.join(', ') || 'Check records'}
+Weight: ${petWeight ? `${petWeight} kg` : 'Not recorded'}
+Allergies: ${allergies.length > 0 ? allergies.join(', ') : 'None known'}
+Medications: ${medications.length > 0 ? medications.join(', ') : 'None'}
+Conditions: ${healthConditions.length > 0 ? healthConditions.join(', ') : 'None'}
+Vaccinations: ${getVaccinations()}
 
 Shared via The Doggy Company`;
     
