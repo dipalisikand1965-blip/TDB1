@@ -1,11 +1,44 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 10, 2026 08:15 IST  
-**Status:** Soul Made Products - 50.7% Mockups Generated (1303/2569) | Auto-Generator Available
+**Last Updated:** March 10, 2026 10:10 IST  
+**Status:** Soul Made Products - 56%+ Mockups | Emergency Page Redesign IN PROGRESS
 
 ---
 
 ## PRODUCT VISION
 Hyper-personalized pet platform using "memory-led personalization" - products, content, and experiences tailored to each pet's breed, archetype, and life stage.
+
+---
+
+## CURRENT FOCUS: EMERGENCY PAGE REDESIGN
+
+### 5-Layer Architecture
+1. **Immediate Action** - Urgent help buttons (panic mode)
+2. **Google Nearby Help** - Real-time clinic finder
+3. **Concierge Support** - Human coordination layer
+4. **Pet-Specific Records** - Emergency file + personalized picks
+5. **Emergency Products** - Commerce + recovery
+
+### 9 Sections
+1. Urgent Help (top) - Call vet, Find clinic, Poison help, Ambulance, Open pet file
+2. Nearby Help - Google Places API for 24/7 vets, hospitals, pharmacies
+3. Concierge Help - WhatsApp coordination, callback, file sharing
+4. My Pet Emergency File - Auto-loaded pet medical info
+5. Situation Guides - 10 actionable emergency guides
+6. Emergency Products - First-aid kits, cones, recovery items
+7. Smart Picks - Breed/age/size personalized products
+8. Special Paths - Lost Pet, Travel, Puppy, Senior emergencies
+9. Recovery - Discharge checklist, medication reminders
+
+### Technical Assets Available
+- ✅ Google Places API configured
+- ✅ `google_places_service.py` - Nearby places search
+- ✅ `NearbyPlacesCarousel.jsx` - Frontend component
+- ✅ `ServiceCatalogSection.jsx` - Concierge services
+- ✅ `BreedSmartRecommendations.jsx` - Personalized picks
+- ✅ Pet profile API - Emergency file data
+- ✅ WhatsApp integration (918971702582)
+
+### Full Spec: `/app/memory/EMERGENCY_PAGE_SPEC.md`
 
 ---
 
