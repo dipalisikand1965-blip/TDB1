@@ -179,7 +179,7 @@ const ProductTagsManager = ({ credentials }) => {
         fetch(`${API_URL}/api/admin/products/all-pillars?limit=3000`, {
           headers: { 'Authorization': getAuthHeader() }
         }),
-        fetch(`${API_URL}/api/service-box/services?limit=2000`, {
+        fetch(`${API_URL}/api/service-box/services?limit=10000`, {
           headers: { 'Authorization': getAuthHeader() }
         })
       ]);

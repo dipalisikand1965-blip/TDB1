@@ -27,7 +27,7 @@ const PillarServicesTab = ({ pillar, pillarName, pillarIcon, pillarColor = 'bg-p
     setLoading(true);
     try {
       // Fetch all services
-      const response = await fetch(`${API_URL}/api/service-box/services?limit=2000`);
+      const response = await fetch(`${API_URL}/api/service-box/services?limit=10000`);
       if (response.ok) {
         const data = await response.json();
         const allSvcs = data.services || [];

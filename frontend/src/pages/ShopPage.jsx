@@ -583,7 +583,7 @@ const ShopPage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/product-box/products?limit=2200`);
+        const res = await fetch(`${API_URL}/api/product-box/products?limit=10000`);
         if (res.ok) {
           const data = await res.json();
           setAllProducts(data.products || []);
