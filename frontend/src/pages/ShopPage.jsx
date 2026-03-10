@@ -27,6 +27,7 @@ import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import { getSoulBasedReason } from '../utils/petSoulInference';
+import ProductCard from '../components/ProductCard';
 import {
   Search, Heart, ArrowRight, X, Package, Mic,
   PawPrint, Briefcase, Sparkles, Cake, Stethoscope, 
@@ -545,95 +546,6 @@ const getBreedWhisper = (product, petName, breed) => {
 };
 
 // =============================================================================
-// PRODUCT CARD - With "Why for [PetName]" Breed Whisper
-// =============================================================================
-const ProductCard = ({ product, petName, breed, isPetPick, index }) => {
-  const [isWishlisted, setIsWishlisted] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const navigate = useNavigate();
-  
-  const price = product.price || 0;
-  const comparePrice = product.compare_at_price || null;
-  const title = product.title || product.name || 'Product';
-  const image = product.image || product.image_url || product.images?.[0];
-  const discount = comparePrice ? Math.round((1 - price / comparePrice) * 100) : 0;
-  
-  // Breed-specific "Why for [PetName]" whisper
-  const breedWhisper = getBreedWhisper(product, petName, breed);
-
-  return (
-    <div 
-      className="group relative bg-white rounded-2xl lg:rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1 border border-gray-100"
-      onClick={() => navigate(`/product/${product.handle || product.id}`)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      data-testid={`product-card-${product.id}`}
-    >
-      {/* Image - Mobile: taller (4/5), Desktop: square */}
-      <div className="relative aspect-[4/5] sm:aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-        <img
-          src={image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400'}
-          alt={title}
-          className={`w-full h-full object-cover transition-transform duration-500 ${isHovered ? 'scale-110' : 'scale-100'}`}
-        />
-        
-        {/* Pet Pick Badge */}
-        {isPetPick && petName && (
-          <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
-            <span className="flex items-center gap-1 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xs sm:text-sm font-semibold px-2 sm:px-3 py-1 sm:py-1.5 rounded-full shadow-lg">
-              <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="currentColor" />
-              {petName}&apos;s Pick
-            </span>
-          </div>
-        )}
-        
-        {/* Discount Badge */}
-        {discount > 0 && (
-          <div className="absolute top-2 sm:top-3 right-2 sm:right-3">
-            <span className="bg-red-500 text-white text-xs sm:text-sm font-bold px-2 py-1 rounded-full shadow-md">
-              -{discount}%
-            </span>
-          </div>
-        )}
-        
-        {/* Wishlist */}
-        <button
-          onClick={(e) => { e.stopPropagation(); setIsWishlisted(!isWishlisted); }}
-          className={`absolute top-2 sm:top-3 right-2 sm:right-3 p-2 bg-white rounded-full shadow-lg transition-all hover:scale-110 ${
-            isWishlisted ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-          } ${discount > 0 ? 'top-10 sm:top-12' : ''}`}
-        >
-          <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-        </button>
-      </div>
-      
-      {/* Content */}
-      <div className="p-3 sm:p-4 lg:p-5">
-        <h3 className="font-semibold text-gray-900 text-sm sm:text-base lg:text-lg mb-1.5 sm:mb-2 line-clamp-2 leading-snug group-hover:text-orange-600 transition-colors">
-          {title}
-        </h3>
-        
-        {/* "Why for [PetName]" - Breed-specific whisper */}
-        <div className="mb-2 sm:mb-3 p-2 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-100">
-          <p className="text-xs sm:text-sm text-purple-700 flex items-start gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-500 flex-shrink-0 mt-0.5" />
-            <span className="line-clamp-2 font-medium">{breedWhisper}</span>
-          </p>
-        </div>
-        
-        {/* Price */}
-        <div className="flex items-center gap-2">
-          <span className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">₹{price.toLocaleString()}</span>
-          {comparePrice && (
-            <span className="text-xs sm:text-sm text-gray-400 line-through">₹{comparePrice.toLocaleString()}</span>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// =============================================================================
 // MAIN SHOP PAGE
 // =============================================================================
 const ShopPage = () => {
@@ -755,14 +667,15 @@ const ShopPage = () => {
   
   // Filter products
   const filteredProducts = useMemo(() => {
-    let result = allProducts;
+    // First, filter out products with no price or zero price (services, placeholders)
+    let result = allProducts.filter(p => p.price && p.price > 0);
     
     // "For You" / "recommended" - Personalize based on pet OR show ALL products when no pet
     if (selectedPillar === 'recommended') {
       if (!selectedPet) {
         // No pet selected - show ALL products sorted by category diversity
         // Prioritize celebrate/dine categories at the top, but include everything
-        result = [...allProducts].sort((a, b) => {
+        result = [...result].sort((a, b) => {
           const catA = (a.category || '').toLowerCase();
           const catB = (b.category || '').toLowerCase();
           // Boost cakes, treats, toys to the top
@@ -1059,10 +972,8 @@ const ShopPage = () => {
                   <ProductCard 
                     key={product.id} 
                     product={product} 
-                    petName={petName}
-                    breed={petBreed}
-                    isPetPick={idx < 4 && selectedPillar === 'recommended'}
-                    index={idx} 
+                    pillar={selectedPillar}
+                    selectedPet={selectedPet}
                   />
                 ))}
               </div>
