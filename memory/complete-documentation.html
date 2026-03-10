@@ -216,7 +216,7 @@
         <div class="header">
             <h1>🐕 The Doggy Company</h1>
             <p class="tagline">Complete Technical Documentation & Setup Guide</p>
-            <p class="date">Last Updated: March 10, 2026 18:35 IST - Pillar Pages 13/13 Unified ✅ | Generation Running (30.7%)</p>
+            <p class="date">Last Updated: March 10, 2026 21:30 IST - All 13 Pillars Unified ✅ | Mockup Generation: 974/2569 (37.9%)</p>
         </div>
 
         <!-- Cloudinary Setup Section -->
@@ -377,8 +377,63 @@
                 <ul style="margin-left: 20px;">
                     <li><strong>Product Box:</strong> Manage all products (Shopify + Soul Made)</li>
                     <li><strong>Soul Products:</strong> AI Mockups, Archetypes, Cloud Storage</li>
+                    <li><strong>Bundles:</strong> Curated product bundles with AI image generation</li>
                     <li><strong>Service Desk:</strong> Customer tickets and concierge</li>
                     <li><strong>Members:</strong> User and pet management</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Curated Bundles Section -->
+        <div class="section">
+            <h2 class="section-title"><span class="emoji">🎁</span> Curated Bundles System</h2>
+            
+            <div class="success-box">
+                <strong>✅ NEW FEATURE:</strong> Full CRUD system for product bundles with AI image generation.<br>
+                Admin can create, edit, and sync bundles to production.
+            </div>
+
+            <div class="card">
+                <div class="card-title">Current Bundles (10 Total)</div>
+                <table style="width: 100%; margin-top: 10px; font-size: 0.9em;">
+                    <tr style="background: #e0e0e0;"><th>Pillar</th><th>Bundles</th></tr>
+                    <tr><td>Celebrate</td><td>Birthday Pawty, Gotcha Day</td></tr>
+                    <tr><td>Travel</td><td>Adventure Ready, Road Trip Essentials</td></tr>
+                    <tr><td>Dine</td><td>Premium Mealtime, Treat Lover</td></tr>
+                    <tr><td>Care</td><td>Spa Day</td></tr>
+                    <tr><td>Stay</td><td>Home Comfort</td></tr>
+                    <tr><td>Fit</td><td>Daily Walker</td></tr>
+                    <tr><td>Farewell</td><td>Forever Loved</td></tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Bundle API Endpoints</div>
+                <div class="api-endpoint">
+                    <span class="method method-get">GET</span> /api/bundles?pillar=celebrate<br>
+                    <small>List all bundles, optionally filter by pillar</small>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method method-post">POST</span> /api/bundles<br>
+                    <small>Create a new bundle</small>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method method-post">POST</span> /api/bundles/{id}/generate-image<br>
+                    <small>Generate AI image for a bundle</small>
+                </div>
+                <div class="api-endpoint">
+                    <span class="method method-post">POST</span> /api/bundles/sync-to-production<br>
+                    <small>Sync all bundles to production database</small>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Bundle Image Generation</div>
+                <p>Bundle images are generated using OpenAI's image generation, same as Soul Made mockups.</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>AI creates composite image showing all bundle items</li>
+                    <li>Pillar-specific styling (festive for Celebrate, adventure for Travel, etc.)</li>
+                    <li>Images stored in Cloudinary: <code>doggy-company/bundles/{pillar}</code></li>
                 </ul>
             </div>
         </div>
@@ -729,9 +784,12 @@ curl -s "$API_URL/api/mockups/stats" | python3 -m json.tool
                 <ul>
                     <li><strong>Soul Profile:</strong> 51 questions, 26 canonical scoring fields</li>
                     <li><strong>7 Archetypes:</strong> Gentle Aristocrat, Wild Explorer, Velcro Baby, Snack Negotiator, Quiet Watcher, Social Butterfly, Brave Worrier</li>
-                    <li><strong>Soul Made Products:</strong> 1018 breed-specific AI mockups</li>
+                    <li><strong>Soul Made Products:</strong> 974/2569 breed-specific AI mockups (37.9%)</li>
                     <li><strong>Mira Memory:</strong> Remembers orders, preferences, celebration dates</li>
                     <li><strong>Breed Matrix CSV:</strong> Detailed recommendations for 33 breeds × 12 pillars</li>
+                    <li><strong>Archetype Tone:</strong> Dynamic UI copy based on pet personality</li>
+                    <li><strong>Curated Bundles:</strong> 10 bundles across 6 pillars with Admin UI & AI image generation</li>
+                    <li><strong>Multi-Factor Filtering:</strong> Products filtered by breed + archetype + life stage</li>
                 </ul>
             </div>
 
@@ -739,10 +797,12 @@ curl -s "$API_URL/api/mockups/stats" | python3 -m json.tool
                 <div class="card-title">What's MISSING ❌ (Gaps to Fix)</div>
                 <table style="width: 100%; margin-top: 10px;">
                     <tr style="background: #f8d7da;"><th>Gap</th><th>Priority</th><th>Status</th></tr>
-                    <tr><td>Breed Matrix not integrated into product logic</td><td><strong>P0</strong></td><td>❌ Not Started</td></tr>
-                    <tr><td>Multi-factor filtering (life_stage, health, energy)</td><td><strong>P1</strong></td><td>❌ Not Started</td></tr>
+                    <tr style="background: #d4edda;"><td>Multi-factor filtering (life_stage, health, energy)</td><td><strong>P1</strong></td><td>✅ DONE</td></tr>
+                    <tr style="background: #d4edda;"><td>Moment bundles (Birthday Set, Senior Care Set)</td><td>P3</td><td>✅ DONE</td></tr>
+                    <tr><td>Razorpay checkout "body error"</td><td><strong>P1</strong></td><td>❌ Not Started</td></tr>
+                    <tr><td>Mobile dashboard scrambled</td><td><strong>P2</strong></td><td>🟡 User Verification</td></tr>
                     <tr><td>"Why this product" contextual copy</td><td>P2</td><td>❌ Not Started</td></tr>
-                    <tr><td>Moment bundles (Birthday Set, Senior Care Set)</td><td>P3</td><td>❌ Not Started</td></tr>
+                    <tr><td>Services section of Golden Standard</td><td>P3</td><td>❌ Not Started</td></tr>
                 </table>
             </div>
 

@@ -27,7 +27,7 @@ import {
 } from '../ui/select';
 import { 
   Package, Plus, Edit2, Trash2, Save, X, Loader2, 
-  Gift, Star, AlertCircle, CheckCircle2, RefreshCw
+  Gift, Star, AlertCircle, CheckCircle2, RefreshCw, Sparkles, Image
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
@@ -146,6 +146,68 @@ const BundlesManager = () => {
     } catch (error) {
       toast({
         title: "Sync Failed",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+  
+  const generateBundleImage = async (bundleId) => {
+    try {
+      toast({
+        title: "Generating...",
+        description: "Creating AI image for bundle"
+      });
+      
+      const response = await fetch(`${API_URL}/api/bundles/${bundleId}/generate-image`, {
+        method: 'POST'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          toast({
+            title: "Image Generated!",
+            description: data.message
+          });
+          fetchBundles(); // Refresh to show new image
+        } else {
+          throw new Error(data.message);
+        }
+      } else {
+        throw new Error('Generation failed');
+      }
+    } catch (error) {
+      toast({
+        title: "Generation Failed",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+  
+  const generateAllImages = async () => {
+    try {
+      toast({
+        title: "Generating All Images...",
+        description: "This may take a few minutes"
+      });
+      
+      const response = await fetch(`${API_URL}/api/bundles/generate-all-images`, {
+        method: 'POST'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          title: "Complete!",
+          description: `Generated ${data.generated} images`
+        });
+        fetchBundles();
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
         description: error.message,
         variant: "destructive"
       });
@@ -301,6 +363,10 @@ const BundlesManager = () => {
             <RefreshCw className="w-4 h-4 mr-2" />
             Seed Defaults
           </Button>
+          <Button variant="outline" onClick={generateAllImages} className="bg-purple-50 hover:bg-purple-100 border-purple-300">
+            <Sparkles className="w-4 h-4 mr-2 text-purple-600" />
+            Generate All Images
+          </Button>
           <Button variant="outline" onClick={syncToProduction} className="bg-green-50 hover:bg-green-100 border-green-300">
             <CheckCircle2 className="w-4 h-4 mr-2 text-green-600" />
             Sync → Prod
@@ -388,6 +454,29 @@ const BundlesManager = () => {
               </div>
               
               <p className="text-sm text-gray-600 mb-3">{bundle.description}</p>
+              
+              {/* Bundle Image */}
+              <div className="mb-3">
+                {bundle.image_url ? (
+                  <img 
+                    src={bundle.image_url} 
+                    alt={bundle.name}
+                    className="w-full h-32 object-cover rounded-lg"
+                  />
+                ) : (
+                  <div className="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => generateBundleImage(bundle.id)}
+                      className="text-purple-600"
+                    >
+                      <Sparkles className="w-4 h-4 mr-1" />
+                      Generate AI Image
+                    </Button>
+                  </div>
+                )}
+              </div>
               
               {/* Items */}
               <div className="bg-gray-50 rounded-lg p-3 mb-3">
