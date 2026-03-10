@@ -537,7 +537,7 @@ const Admin = () => {
       }
       
       // Step 11: Seed all pillar-specific data
-      toast({ title: '📦 Step 11/11: Seeding Pillar Data...', description: 'Fit, Care, Stay, Travel, Enjoy products' });
+      toast({ title: '📦 Step 11/12: Seeding Pillar Data...', description: 'Fit, Care, Stay, Travel, Enjoy products' });
       
       try {
         // Seed Fit
@@ -554,6 +554,19 @@ const Admin = () => {
         console.log('[Master Sync] All pillars seeded');
       } catch (e) {
         console.log('[Master Sync] Pillar seed error:', e);
+      }
+      
+      // Step 12: Seed Curated Bundles
+      toast({ title: '🎁 Step 12/12: Seeding Bundles...', description: 'Creating curated product bundles for all pillars' });
+      
+      try {
+        const bundleRes = await fetch(`${API_URL}/api/bundles/seed-defaults`, { method: 'POST' });
+        if (bundleRes.ok) {
+          const data = await bundleRes.json();
+          console.log('[Master Sync] Bundles seeded:', data);
+        }
+      } catch (e) {
+        console.log('[Master Sync] Bundle seed error:', e);
       }
       
       // Final toast
