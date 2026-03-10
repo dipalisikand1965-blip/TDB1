@@ -1,7 +1,48 @@
 # The Doggy Company - PRD
 
-**Last Updated:** March 10, 2026 01:40 IST  
-**Status:** Soul Made Products - 50%+ Mockups Generated! 🎉
+**Last Updated:** March 10, 2026 02:20 IST  
+**Status:** Soul Made Products - 58%+ Mockups Generated! Generation RUNNING 🚀
+
+---
+
+## 🎯 PERSONALIZATION VISION (CRITICAL - ALL AGENTS MUST READ)
+
+### The Formula
+```
+Breed + Soul + Life Stage + Routine + Current Moment + Memory
+```
+
+**NOT:** "Choose breed → add name → print product" (That's Huft/Supertails)
+
+**YES:** A senior Labrador with joint issues should see DIFFERENT products than a Labrador puppy.
+
+### Read These Files:
+1. `/app/memory/GAP_ANALYSIS_PERSONALIZATION.md` - Full gap analysis
+2. `/app/memory/SOUL_MADE_IMPLEMENTATION_GUIDE.md` - Technical guide
+
+### Brand Principle (MEMORIZE)
+```
+Huft/Supertails = catalog-led
+The Doggy Company = soul-led
+
+"Not breed-first. Pet-first.
+Not product-first. Life-moment-first.
+Not name-personalized. Memory-personalized."
+```
+
+### What We Have ✅
+- **Soul Profile:** 51 questions, 26 canonical scoring fields
+- **7 Archetypes:** Gentle Aristocrat, Wild Explorer, Velcro Baby, Snack Negotiator, Quiet Watcher, Social Butterfly, Brave Worrier
+- **Soul Made Products:** 1018 breed-specific AI mockups
+- **Breed Matrix CSV:** 33 breeds × 12 pillars with specific recommendations
+
+### What's MISSING ❌ (Priority Fixes)
+| Gap | Priority | Status |
+|-----|----------|--------|
+| Breed Matrix not integrated into product logic | **P0** | ❌ Not Started |
+| Multi-factor filtering (life_stage, health, energy) | **P1** | ❌ Not Started |
+| "Why this product" contextual copy | P2 | ❌ Not Started |
+| Moment bundles (Birthday Set, Senior Care Set) | P3 | ❌ Not Started |
 
 ---
 
@@ -27,8 +68,8 @@ This file contains EVERYTHING about Soul Made products:
 | **Total Products** | 1,018 |
 | **Original Products (11 types)** | 523 |
 | **NEW Products (15 types)** | 495 |
-| **With Mockups** | **518 (50.9%)** ⬆️ |
-| **Need Mockups** | 500 |
+| **With Mockups** | **595 (58.4%)** ⬆️ |
+| **Need Mockups** | 423 |
 | **Breeds** | 33 |
 | **Product Types** | 26 |
 
@@ -38,15 +79,7 @@ This file contains EVERYTHING about Soul Made products:
 **NEW 15 (Created March 9):** passport_holder, carrier_tag, travel_bowl, luggage_tag, pet_towel, pet_robe, grooming_apron, treat_pouch, training_log, memorial_ornament, paw_print_frame, emergency_card, medical_alert_tag, play_bandana, playdate_card
 
 ### Mockup Generation Status (RUNNING)
-Generation is actively running. Types still needing mockups:
-- memorial_ornament: 0/33
-- training_log: 0/33
-- paw_print_frame: 0/33
-- treat_pouch: 0/33
-- play_bandana: 0/33
-- playdate_card: 0/33
-- medical_alert_tag: 0/33
-- pet_robe: 1/33
+Generation is actively running. Check status: `curl $API_URL/api/mockups/stats`
 
 ---
 
