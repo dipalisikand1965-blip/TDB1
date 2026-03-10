@@ -64,6 +64,7 @@ import AdminGuideDashboard from '../components/admin/AdminGuideDashboard';
 import AdminRainbowBridge from '../components/admin/AdminRainbowBridge';
 import PetWrappedAdmin from '../components/admin/PetWrappedAdmin';
 import SoulProductsManager from '../components/admin/SoulProductsManager';
+import BundlesManager from '../components/admin/BundlesManager';
 import { testimonials as mockTestimonials, faqs as mockFaqs } from '../mockData';
 import { API_URL } from '../utils/api';
 import { getPetPhotoUrl } from '../utils/petAvatar';
@@ -2635,6 +2636,7 @@ const Admin = () => {
                         { id: 'pricing', label: 'Pricing', icon: DollarSign },
                         { id: 'experiences', label: 'Experiences', icon: Calendar },
                         { id: 'soul-products', label: 'Soul Products', icon: Sparkles },
+                        { id: 'bundles', label: 'Bundles', icon: Package },
                       ].map(tab => (
                         <button
                           key={tab.id}
@@ -2738,6 +2740,7 @@ const Admin = () => {
               { id: 'product-box', label: 'Product Box', icon: Package },
               { id: 'service-box', label: 'Service Box', icon: Briefcase },
               { id: 'soul-products', label: 'Soul Products', icon: Sparkles },
+              { id: 'bundles', label: 'Bundles', icon: Gift },
               { id: 'collections', label: 'Collections', icon: Layers },
               { id: 'pricing', label: 'Pricing', icon: Tag },
               { id: 'autoship', label: 'Autoship', icon: RefreshCw },
@@ -3240,6 +3243,11 @@ const Admin = () => {
         {/* Soul Products Manager Tab */}
         {activeTab === 'soul-products' && (
           <SoulProductsManager />
+        )}
+
+        {/* Bundles Manager Tab */}
+        {activeTab === 'bundles' && (
+          <BundlesManager />
         )}
 
         {/* Service Box Tab */}

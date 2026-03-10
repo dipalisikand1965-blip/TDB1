@@ -137,8 +137,32 @@ const CuratedBundles = ({ pillar, showTitle = true, className = '' }) => {
   const [loading, setLoading] = useState(false);
   
   useEffect(() => {
-    const pillarBundles = PILLAR_BUNDLES[pillar?.toLowerCase()] || [];
-    setBundles(pillarBundles);
+    const fetchBundles = async () => {
+      setLoading(true);
+      try {
+        // Try to fetch from API
+        const response = await fetch(`${API_URL}/api/bundles?pillar=${pillar?.toLowerCase()}&active_only=true`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.bundles && data.bundles.length > 0) {
+            setBundles(data.bundles);
+            return;
+          }
+        }
+      } catch (error) {
+        console.log('Using static bundles (API not available)');
+      } finally {
+        setLoading(false);
+      }
+      
+      // Fallback to static data if API fails or returns empty
+      const pillarBundles = PILLAR_BUNDLES[pillar?.toLowerCase()] || [];
+      setBundles(pillarBundles);
+    };
+    
+    if (pillar) {
+      fetchBundles();
+    }
   }, [pillar]);
   
   const handleAddBundle = (bundle) => {
