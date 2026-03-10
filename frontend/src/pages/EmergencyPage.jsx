@@ -16,6 +16,8 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
 import ProductCard from '../components/ProductCard';
+import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
+import ArchetypeProducts from '../components/ArchetypeProducts';
 import {
   AlertTriangle, Search, Heart, Phone, MapPin, Clock, Ambulance,
   ChevronRight, Sparkles, Star, Loader2, Send, ArrowRight, Play,
@@ -777,6 +779,24 @@ const EmergencyPage = () => {
         maxServices={8}
         hidePrice={true}
       />
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4" data-testid="emergency-breed-smart-section">
+        <div className="max-w-6xl mx-auto">
+          <BreedSmartRecommendations pillar="emergency" />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4">
+        <div className="max-w-6xl mx-auto">
+          <ArchetypeProducts pillar="emergency" maxProducts={8} showTitle={true} />
+        </div>
+      </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* Concierge® Button - Blue C® for Service Desk chat */}
