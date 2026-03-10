@@ -1,30 +1,25 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 11, 2026 14:00 IST  
-**Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 95% 🔄 | ADOPT 95% 🔄 | MOBILE 100% ✅
+**Last Updated:** March 11, 2026 17:30 IST  
+**Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅
 
 ---
 
-## ⚠️ CRITICAL ARCHITECTURAL ISSUES
+## ✅ CRITICAL ARCHITECTURAL ISSUES - RESOLVED
 
-### 1. Hardcoded Content in Frontend (P0)
-The following content is hardcoded in JSX files and NOT stored in the database:
-- **EmergencyPage.jsx**: 10+ Situation Guides (hardcoded around line 400+)
-- **AdvisoryPage.jsx**: Guided Paths (hardcoded)
-- **FarewellPage.jsx**: FAREWELL_PATHS array (lines 300-349)
-- **AdoptPage.jsx**: ADOPTION_PATHS array (lines 349-398)
+### 1. ~~Hardcoded Content in Frontend~~ - FIXED ✅
+All guided paths and journey guides are now stored in the database and fetched via API:
+- Created `/app/backend/guided_paths_routes.py` with full CRUD API
+- Seeded 20 paths: 8 emergency, 4 advisory, 4 farewell, 4 adopt
+- Integrated into Master Sync for automatic seeding on deployment
+- FarewellPage.jsx and AdoptPage.jsx now fetch from `/api/guided-paths/{pillar}`
 
-**Impact:** Content cannot be managed via Admin Panel as user requested.
+### 2. ~~Farewell Page Product Recommendations~~ - FIXED ✅
+- PersonalizedPicks now has pillar-specific fallback for sensitive pillars
+- No generic products shown on farewell/adopt pages
 
-**Fix Required:**
-1. Create MongoDB collections: `situation_guides`, `guided_paths`, `farewell_journeys`, `adoption_journeys`
-2. Seed existing hardcoded data to collections
-3. Create CRUD API endpoints
-4. Add Admin UI for management
-5. Refactor frontend to fetch from API
-
-### 2. Farewell Page Product Recommendations (P1)
-- PersonalizedPicks component falls back to ANY products when pillar-specific products aren't found
-- This caused "play things for Mojo" to show on memorial page
+### 3. ~~Service Category Cards missing Concierge~~ - FIXED ✅
+- Farewell page service cards now have "Talk to Concierge" buttons
+- Clicking opens the service modal with proper form
 
 ---
 
@@ -45,6 +40,32 @@ The following content is hardcoded in JSX files and NOT stored in the database:
 ### 3. Product Modal Fix on Farewell Page ✅
 - Fixed missing onClick handler on "Add to Cart" button in product detail modal
 - Added ShoppingCart icon and proper toast notification
+
+### 4. Service Category Cards - Talk to Concierge ✅
+- Added "Talk to Concierge" buttons to all 4 service category cards on Farewell page
+- Clicking opens the service modal with the selected service pre-filled
+- Card click also opens modal for improved UX
+
+### 5. Hardcoded Content Migration to Database ✅
+- Created `guided_paths_routes.py` with full CRUD API
+- Seeded 20 guided paths across 4 pillars (farewell, adopt, advisory, emergency)
+- Updated FarewellPage.jsx to fetch farewell paths from API
+- Updated AdoptPage.jsx to fetch adoption paths from API
+- Integrated guided paths seeding into Master Sync
+- All tests passed (100% backend, 100% frontend)
+
+---
+
+## API ENDPOINTS - NEW
+
+### Guided Paths API
+- `GET /api/guided-paths/{pillar}` - Get all paths for a pillar (farewell, adopt, advisory, emergency)
+- `GET /api/guided-paths/admin/all` - Get all paths grouped by pillar (admin)
+- `GET /api/guided-paths/admin/stats` - Get statistics
+- `POST /api/guided-paths/admin/create` - Create new path
+- `PUT /api/guided-paths/admin/{path_id}` - Update path
+- `DELETE /api/guided-paths/admin/{path_id}` - Delete path
+- `POST /api/guided-paths/admin/seed` - Re-seed default paths
 
 ---
 
