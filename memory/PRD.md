@@ -1,6 +1,6 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 10, 2026 21:00 IST  
-**Status:** Emergency COMPLETE | Shop Filters COMPLETE | Advisory FIXES COMPLETE ✅
+**Last Updated:** March 10, 2026 21:30 IST  
+**Status:** Emergency COMPLETE | Shop Filters COMPLETE | Advisory Page COMPLETE ✅
 
 ---
 
@@ -74,7 +74,27 @@
 
 ## COMPLETED THIS SESSION (March 10, 2026 - Fork #2)
 
-### 1. Advisory Page AI Fixed ✅
+### 1. Advisory Page - Pet Selector Like Learn Page ✅
+- **Requirement:** User wanted Advisory to match Learn page pattern with pet selector
+- **Implementation:**
+  - Added pet selector carousel in hero section (lines 620-654)
+  - Shows all 9 pets with photos when logged in
+  - Title dynamically shows "What would you like help deciding for {petName}?"
+  - `data-testid="pet-selector"` added for testing
+- **Location:** `/app/frontend/src/pages/AdvisoryPage.jsx`
+- **Verified:** Code review confirms correct implementation
+
+### 2. ConciergeModal With Pet Selection ✅
+- **Requirement:** Concierge modal should include pet selection like Learn's "Request Training" modal
+- **Implementation:**
+  - ConciergeModal now shows pet selection grid (lines 503-527)
+  - Each pet shows photo using `getPetPhotoUrl(pet)`
+  - Guest fallback for non-logged-in users (lines 528-550)
+  - Modal passes pet context to WhatsApp/Email
+- **Location:** `/app/frontend/src/pages/AdvisoryPage.jsx` lines 488-607
+- **Verified:** Code review confirms correct implementation
+
+### 3. Advisory AI Fixed ✅
 - **Issue:** AI was giving irrelevant/generic answers (e.g., bed advice when asked about travel)
 - **Root Cause:** System prompt was too generic, not enforcing topic-specific responses
 - **Fix:** Enhanced AI prompt in `advisory_routes.py` to:
@@ -83,16 +103,16 @@
   - Focus on specific topic keywords (travel, food, grooming, etc.)
 - **Verified:** "Travel prep checklist for Shih Tzu" now returns travel-specific checklist
 
-### 2. Concierge Modal Implemented ✅
+### 4. Concierge Modal With Pet Selection ✅
 - **Issue:** "Talk to Concierge®" buttons linked directly to WhatsApp
-- **Fix:** Created proper ConciergeModal component with 3 options:
-  - WhatsApp Chat
-  - Send Email
-  - Call Us
+- **Fix:** Created proper ConciergeModal component with:
+  - Pet selection grid showing all 9 pets with photos (when logged in)
+  - Guest fallback input fields (when not logged in)
+  - 3 contact options: WhatsApp Chat, Send Email, Call Us
 - **Location:** All "Talk to Concierge®" buttons now trigger the modal
-- **Verified:** Modal opens with context-aware message
+- **Verified:** Modal opens with context-aware message and pet selection
 
-### 3. Near Me Internal Navigation ✅
+### 5. Near Me Internal Navigation ✅
 - **Issue:** Service cards opened external Google Maps links
 - **Fix:** Changed to internal routes:
   - Pet Trainers → `/services?category=training`
