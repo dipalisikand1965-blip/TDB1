@@ -39,6 +39,7 @@ import { getPetPhotoUrl } from '../utils/petAvatar';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
+import NearbyAdvisoryServices from '../components/advisory/NearbyAdvisoryServices';
 import {
   Brain, Heart, Apple, Home, Stethoscope, GraduationCap,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
@@ -1030,51 +1031,9 @@ const AdvisoryPage = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════════
-          LAYER 7: NEAR ME - Nearby services (trainers, groomers, vets)
-          Internal navigation using Services pillar
+          LAYER 7: NEAR ME - Nearby services using Google Places API
           ═══════════════════════════════════════════════════════════════════════════ */}
-      <section ref={nearMeRef} className="py-8 px-4 bg-white" data-testid="near-me-section">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Find Services Near You</h2>
-            <p className="text-sm text-gray-600">Trainers, groomers, vets, and more in your area</p>
-          </div>
-          
-          {/* Service Categories - Internal navigation */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { name: 'Pet Trainers', icon: GraduationCap, color: 'bg-blue-50 text-blue-600', route: '/services?category=training' },
-              { name: 'Groomers', icon: Scissors, color: 'bg-purple-50 text-purple-600', route: '/services?category=grooming' },
-              { name: 'Veterinarians', icon: Stethoscope, color: 'bg-red-50 text-red-600', route: '/services?category=vet' },
-              { name: 'Pet Stores', icon: ShoppingBag, color: 'bg-green-50 text-green-600', route: '/shop' }
-            ].map((service) => {
-              const Icon = service.icon;
-              return (
-                <Card 
-                  key={service.name}
-                  className={`p-4 ${service.color} cursor-pointer hover:shadow-lg transition-all text-center`}
-                  onClick={() => window.location.href = service.route}
-                >
-                  <Icon className="w-8 h-8 mx-auto mb-2" />
-                  <h4 className="font-medium text-sm">{service.name}</h4>
-                  <p className="text-xs opacity-70 mt-1">Find nearby</p>
-                </Card>
-              );
-            })}
-          </div>
-          
-          <div className="text-center mt-6">
-            <Button
-              onClick={() => openConciergeModal('finding a service near me')}
-              variant="outline"
-              className="border-violet-300 text-violet-600"
-            >
-              <MessageCircle className="w-4 h-4 mr-2" />
-              Ask Concierge® for Recommendations
-            </Button>
-          </div>
-        </div>
-      </section>
+      <NearbyAdvisoryServices />
 
       {/* ═══════════════════════════════════════════════════════════════════════════
           LAYER 8: SEASONAL ADVICE - Climate/moment-based tips
