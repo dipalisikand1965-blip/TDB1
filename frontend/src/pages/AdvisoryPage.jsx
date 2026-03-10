@@ -59,7 +59,8 @@ const ADVISORY_INTENTS = [
     icon: Apple,
     color: 'from-green-500 to-emerald-600',
     bgColor: 'bg-green-50',
-    questions: ['Best food for my breed?', 'How much should I feed?', 'Allergies & diet?']
+    questions: ['Best food for my breed?', 'How much should I feed?', 'Allergies & diet?'],
+    searchTerms: ['food', 'feeding', 'nutrition', 'diet']
   },
   {
     id: 'puppy_guidance',
@@ -68,7 +69,8 @@ const ADVISORY_INTENTS = [
     icon: Baby,
     color: 'from-pink-500 to-rose-600',
     bgColor: 'bg-pink-50',
-    questions: ['What to buy first?', 'Vaccination schedule?', 'Toilet training?']
+    questions: ['What to buy first?', 'Vaccination schedule?', 'Toilet training?'],
+    searchTerms: ['puppy', 'starter', 'training']
   },
   {
     id: 'breed_guidance',
@@ -77,7 +79,8 @@ const ADVISORY_INTENTS = [
     icon: Dog,
     color: 'from-amber-500 to-orange-600',
     bgColor: 'bg-amber-50',
-    questions: ['Care for my breed?', 'Common health issues?', 'Exercise needs?']
+    questions: ['Care for my breed?', 'Common health issues?', 'Exercise needs?'],
+    searchTerms: ['breed', 'specific']
   },
   {
     id: 'grooming_coat',
@@ -86,7 +89,8 @@ const ADVISORY_INTENTS = [
     icon: Scissors,
     color: 'from-purple-500 to-violet-600',
     bgColor: 'bg-purple-50',
-    questions: ['How often to groom?', 'Best brush for coat?', 'Shedding control?']
+    questions: ['How often to groom?', 'Best brush for coat?', 'Shedding control?'],
+    searchTerms: ['grooming', 'brush', 'shampoo', 'coat']
   },
   {
     id: 'behaviour_training',
@@ -95,7 +99,8 @@ const ADVISORY_INTENTS = [
     icon: Brain,
     color: 'from-blue-500 to-indigo-600',
     bgColor: 'bg-blue-50',
-    questions: ['Stop pulling on leash?', 'Reduce barking?', 'Separation anxiety?']
+    questions: ['Stop pulling on leash?', 'Reduce barking?', 'Separation anxiety?'],
+    searchTerms: ['training', 'behaviour', 'anxiety', 'calm']
   },
   {
     id: 'travel_readiness',
@@ -104,7 +109,8 @@ const ADVISORY_INTENTS = [
     icon: Plane,
     color: 'from-sky-500 to-cyan-600',
     bgColor: 'bg-sky-50',
-    questions: ['Is my dog travel ready?', 'What documents needed?', 'Car anxiety help?']
+    questions: ['Is my dog travel ready?', 'What documents needed?', 'Car anxiety help?'],
+    searchTerms: ['travel', 'carrier', 'car']
   },
   {
     id: 'senior_care',
@@ -113,7 +119,8 @@ const ADVISORY_INTENTS = [
     icon: Heart,
     color: 'from-rose-500 to-pink-600',
     bgColor: 'bg-rose-50',
-    questions: ['Senior diet changes?', 'Joint support?', 'Comfort products?']
+    questions: ['Senior diet changes?', 'Joint support?', 'Comfort products?'],
+    searchTerms: ['senior', 'joint', 'mobility', 'comfort']
   },
   {
     id: 'home_setup',
@@ -122,7 +129,8 @@ const ADVISORY_INTENTS = [
     icon: Home,
     color: 'from-teal-500 to-emerald-600',
     bgColor: 'bg-teal-50',
-    questions: ['Best bed for my dog?', 'Crate training?', 'Safe home setup?']
+    questions: ['Best bed for my dog?', 'Crate training?', 'Safe home setup?'],
+    searchTerms: ['bed', 'crate', 'home']
   },
   {
     id: 'new_adoption',
@@ -1104,6 +1112,35 @@ const AdvisoryPage = () => {
           <div className="flex items-center gap-2 mb-6">
             <ShoppingBag className="w-6 h-6 text-violet-600" />
             <h2 className="text-xl font-bold text-gray-900">Products for {petName}'s Needs</h2>
+            {selectedIntent && (
+              <Badge className="bg-violet-100 text-violet-700">
+                Filtered: {ADVISORY_INTENTS.find(i => i.id === selectedIntent)?.title}
+              </Badge>
+            )}
+          </div>
+          
+          {/* Intent Filter Tabs */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            <button
+              onClick={() => setSelectedIntent(null)}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                !selectedIntent ? 'bg-violet-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              All Products
+            </button>
+            {ADVISORY_INTENTS.slice(0, 6).map(intent => (
+              <button
+                key={intent.id}
+                onClick={() => setSelectedIntent(intent.id === selectedIntent ? null : intent.id)}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-1 ${
+                  selectedIntent === intent.id ? 'bg-violet-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {React.createElement(intent.icon, { className: 'w-3 h-3' })}
+                {intent.title.split(' ')[0]}
+              </button>
+            ))}
           </div>
           
           {/* BUNDLES ON TOP */}
@@ -1113,8 +1150,17 @@ const AdvisoryPage = () => {
           
           {/* ADVISORY CARE PRODUCTS BY CATEGORY */}
           <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Care Products</h3>
-            <AdvisoryProductsGrid maxProducts={24} showCategories={true} />
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              {selectedIntent 
+                ? `${ADVISORY_INTENTS.find(i => i.id === selectedIntent)?.title} Products` 
+                : 'Care Products'
+              }
+            </h3>
+            <AdvisoryProductsGrid 
+              maxProducts={24} 
+              showCategories={true} 
+              categoryFilter={selectedIntent ? ADVISORY_INTENTS.find(i => i.id === selectedIntent)?.searchTerms?.[0] : null}
+            />
           </div>
           
           {/* SMART PICKS */}

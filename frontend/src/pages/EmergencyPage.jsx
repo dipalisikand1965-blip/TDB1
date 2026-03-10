@@ -109,6 +109,12 @@ const EmergencyPage = () => {
   const [config, setConfig] = useState({});
   const [showSpecialPath, setShowSpecialPath] = useState(null);
   
+  // AI Triage State
+  const [triageQuery, setTriageQuery] = useState('');
+  const [triageResponse, setTriageResponse] = useState('');
+  const [triageLoading, setTriageLoading] = useState(false);
+  const [showTriageResponse, setShowTriageResponse] = useState(false);
+  
   const activePet = currentPet || selectedPet;
   
   const [requestForm, setRequestForm] = useState({
@@ -300,6 +306,46 @@ const EmergencyPage = () => {
     window.open('https://wa.me/918971702582?text=Hi, I need emergency assistance for my pet', '_blank');
   };
 
+  // AI Emergency Triage
+  const handleEmergencyTriage = async () => {
+    if (!triageQuery.trim()) return;
+    
+    setTriageLoading(true);
+    setShowTriageResponse(true);
+    
+    try {
+      const petContext = activePet 
+        ? `Pet: ${activePet.name}, ${activePet.breed || 'Unknown breed'}, ${activePet.age || 'age unknown'}. `
+        : '';
+      
+      const response = await fetch(`${API_URL}/api/mira/ask`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question: triageQuery,
+          context: `${petContext}EMERGENCY TRIAGE: This is an urgent pet emergency assessment. Be concise, direct, and helpful. Provide:
+1. SEVERITY (Critical/Urgent/Moderate/Low)
+2. IMMEDIATE ACTIONS (what to do right now)
+3. WHEN TO SEEK VET (clinic vs wait)
+4. WARNING SIGNS to watch for
+
+Keep response under 200 words. Be reassuring but factual.`
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setTriageResponse(data.response || data.answer || 'Unable to assess. Please call emergency hotline.');
+      } else {
+        setTriageResponse('Unable to connect. Please call the emergency hotline immediately for urgent situations.');
+      }
+    } catch (error) {
+      setTriageResponse('Connection error. For urgent emergencies, please call the 24/7 hotline directly.');
+    } finally {
+      setTriageLoading(false);
+    }
+  };
+
   const featuredPartners = partners.filter(p => p.is_featured);
 
   return (
@@ -316,6 +362,83 @@ const EmergencyPage = () => {
         onOpenPetFile={scrollToPetFile}
         petName={activePet?.name}
       />
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 1.5: AI EMERGENCY TRIAGE - Quick AI assessment
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-6 px-4 bg-gradient-to-b from-red-50 to-white" data-testid="emergency-triage-section">
+        <div className="max-w-4xl mx-auto">
+          <Card className="p-4 border-2 border-red-200 bg-white shadow-lg">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-2 bg-red-100 rounded-full">
+                <AlertTriangle className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900">Quick Emergency Assessment</h3>
+                <p className="text-xs text-gray-600">Describe the situation for immediate guidance</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
+              <Input
+                placeholder="e.g., My dog ate chocolate, he's vomiting..."
+                value={triageQuery}
+                onChange={(e) => setTriageQuery(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleEmergencyTriage()}
+                className="flex-1"
+                data-testid="emergency-triage-input"
+              />
+              <Button 
+                onClick={handleEmergencyTriage}
+                disabled={triageLoading || !triageQuery.trim()}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {triageLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Assess'}
+              </Button>
+            </div>
+            
+            {showTriageResponse && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
+                {triageLoading ? (
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Assessing emergency situation...
+                  </div>
+                ) : (
+                  <div>
+                    <div className="prose prose-sm max-w-none">
+                      {triageResponse.split('\n').map((line, idx) => (
+                        <p key={idx} className={`text-sm ${line.includes('CRITICAL') || line.includes('URGENT') ? 'text-red-600 font-bold' : 'text-gray-700'}`}>
+                          {line}
+                        </p>
+                      ))}
+                    </div>
+                    <div className="flex gap-2 mt-3">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => {
+                          setTriageQuery('');
+                          setShowTriageResponse(false);
+                        }}
+                      >
+                        Ask Another
+                      </Button>
+                      <Button 
+                        size="sm"
+                        className="bg-red-600 hover:bg-red-700"
+                        onClick={() => handleEmergencyRequest()}
+                      >
+                        Report Full Emergency
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </Card>
+        </div>
+      </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════════
           LAYER 2: NEARBY EMERGENCY HELP - Google Places API for real-time clinic finder
