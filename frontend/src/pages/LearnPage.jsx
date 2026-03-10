@@ -21,6 +21,7 @@ import PersonalizedPicks from '../components/PersonalizedPicks';
 import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import SoulMadeCollection from '../components/SoulMadeCollection'; // ADDED: Soul Made Products
+import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
@@ -698,6 +699,28 @@ const LearnPage = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <PersonalizedPicks pillar="learn" maxProducts={6} />
       </div>
+      
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SOUL MADE PRODUCTS - Training/Learn products with breed artwork */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {userPets && userPets[0] && (
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <SoulMadeCollection
+            pillar="learn"
+            maxItems={8}
+            showTitle={true}
+          />
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {userPets && userPets[0] && (
+        <div className="max-w-6xl mx-auto px-4 mb-8">
+          <BreedSmartRecommendations pillar="learn" />
+        </div>
+      )}
       
       {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
       <MiraCuratedLayer
