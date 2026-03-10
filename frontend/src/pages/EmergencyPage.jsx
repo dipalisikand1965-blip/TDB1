@@ -16,11 +16,6 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
 import ProductCard from '../components/ProductCard';
-import { getPetPhotoUrl } from '../utils/petAvatar';
-import SoulMadeCollection from '../components/SoulMadeCollection';
-import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
-import ArchetypeProducts from '../components/ArchetypeProducts';
-import CuratedBundles from '../components/CuratedBundles';
 import {
   AlertTriangle, Search, Heart, Phone, MapPin, Clock, Ambulance,
   ChevronRight, Sparkles, Star, Loader2, Send, ArrowRight, Play,
@@ -782,46 +777,6 @@ const EmergencyPage = () => {
         maxServices={8}
         hidePrice={true}
       />
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* SOUL MADE PRODUCTS - Emergency gear with breed artwork */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-12 px-4" data-testid="emergency-soul-made-section">
-        <div className="max-w-6xl mx-auto">
-          <SoulMadeCollection
-            pillar="emergency"
-            maxItems={8}
-            showTitle={true}
-          />
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4" data-testid="emergency-breed-smart-section">
-        <div className="max-w-6xl mx-auto">
-          <BreedSmartRecommendations pillar="emergency" />
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <ArchetypeProducts pillar="emergency" maxProducts={8} showTitle={true} />
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* CURATED BUNDLES - Save with handpicked combinations */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <CuratedBundles pillar="emergency" showTitle={true} />
-        </div>
-      </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* Concierge® Button - Blue C® for Service Desk chat */}

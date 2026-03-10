@@ -614,14 +614,7 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
               <div className="bg-gray-900 text-white p-4 rounded-xl space-y-3">
                 <p className="text-sm font-medium text-gray-300">Reach out to us:</p>
                 <a 
-                  href="tel:+919876543210" 
-                  className="flex items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white py-3 px-4 rounded-lg font-medium transition-colors"
-                >
-                  <Phone className="w-4 h-4" />
-                  Call Now: +91 98765 43210
-                </a>
-                <a 
-                  href="https://wa.me/919876543210" 
+                  href="https://wa.me/918971702582" 
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white py-3 px-4 rounded-lg font-medium transition-colors"
