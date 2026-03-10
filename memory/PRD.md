@@ -1,6 +1,6 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 10, 2026 20:30 IST  
-**Status:** Soul Made Products - 33.7% Mockups Generated (865/2569) | Production: 84.3% (862/1022)
+**Last Updated:** March 10, 2026 21:30 IST  
+**Status:** Soul Made Products - 37.9% Mockups Generated (974/2569) | Production: 84.3% (862/1022)
 
 ---
 
@@ -87,6 +87,25 @@ All 13 pillar pages now have:
 - [x] Archetype-aware bundle descriptions
 - [x] Accent colors per archetype
 
+### Phase 8: Curated Bundles System ✅ IMPLEMENTED (March 10, 2026)
+- [x] Backend API: `/api/bundles` (CRUD operations)
+- [x] MongoDB storage for bundles across all pillars
+- [x] Admin UI: `BundlesManager.jsx` with full CRUD
+- [x] Default bundles seeded (10 bundles for 6 pillars)
+- [x] Master Sync integration (Step 12/12)
+- [x] Production sync endpoint: `POST /api/bundles/sync-to-production`
+- [x] AI Image Generation for bundles: `POST /api/bundles/{id}/generate-image`
+- [x] Bulk image generation: `POST /api/bundles/generate-all-images`
+
+**Bundle Pillars Covered:**
+- Celebrate: Birthday Pawty, Gotcha Day
+- Travel: Adventure Ready, Road Trip
+- Dine: Premium Mealtime, Treat Lover
+- Care: Spa Day
+- Stay: Home Comfort
+- Fit: Daily Walker
+- Farewell: Forever Loved
+
 ---
 
 ## 🔴 PENDING ISSUES
@@ -102,7 +121,7 @@ All 13 pillar pages now have:
 
 | Task | Progress | Notes |
 |------|----------|-------|
-| **Mockup Generation** | 37.4% | 960/2569 - Running in background |
+| **Mockup Generation** | 37.9% | 974/2569 - Running in background |
 | **Production Sync** | 84.3% | 862/1022 - Sync as new mockups complete |
 
 ---
@@ -121,14 +140,16 @@ All 13 pillar pages now have:
 
 ### Frontend Components
 - `/app/frontend/src/components/ArchetypeProducts.jsx` - Multi-factor filtered products
-- `/app/frontend/src/components/CuratedBundles.jsx` - Bundle deals per pillar
+- `/app/frontend/src/components/CuratedBundles.jsx` - Bundle deals per pillar (API-backed)
 - `/app/frontend/src/components/SoulMadeCollection.jsx` - AI mockup products
 - `/app/frontend/src/components/BreedSmartRecommendations.jsx` - Breed-specific tips
 - `/app/frontend/src/components/admin/SoulProductsManager.jsx` - Admin product management
-- `/app/frontend/src/utils/archetypeCopy.js` - **NEW:** Archetype-based copy utility
+- `/app/frontend/src/components/admin/BundlesManager.jsx` - **NEW:** Bundle CRUD admin UI
+- `/app/frontend/src/utils/archetypeCopy.js` - Archetype-based copy utility
 
 ### Backend APIs
 - `/app/backend/app/api/mockup_routes.py` - All mockup & soul-made APIs
+- `/app/backend/app/api/bundle_routes.py` - **NEW:** Bundle CRUD & AI image generation
 - `/app/backend/app/api/breed_routes.py` - Breed matrix recommendations
 - `/app/backend/soul_archetype_engine.py` - 7 archetypes definitions
 
