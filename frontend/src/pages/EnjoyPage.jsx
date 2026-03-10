@@ -24,6 +24,7 @@ import MiraPicksCarousel from '../components/MiraPicksCarousel';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
+import SoulMadeCollection from '../components/SoulMadeCollection'; // ADDED: Soul Made Products
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
@@ -468,6 +469,21 @@ const EnjoyPage = () => {
         <div className="max-w-6xl mx-auto px-4 mb-6">
           <PersonalizedPicks pillar="enjoy" />
         </div>
+        
+        {/* ═══════════════════════════════════════════════════════════════════════
+            SOUL MADE COLLECTION - Breed-specific personalized products
+            Shows enjoy products with breed artwork (Toys, Plush, Enrichment, etc.)
+            ADDED: March 10, 2026
+            ═══════════════════════════════════════════════════════════════════════ */}
+        {userPets && userPets[0] && (
+          <div className="max-w-6xl mx-auto px-4 mb-8">
+            <SoulMadeCollection
+              pillar="enjoy"
+              maxItems={8}
+              showTitle={true}
+            />
+          </div>
+        )}
         
         {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
         <MiraCuratedLayer

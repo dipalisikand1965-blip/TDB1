@@ -20,6 +20,7 @@ import PetJourneyRecommendations from '../components/PetJourneyRecommendations';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
+import SoulMadeCollection from '../components/SoulMadeCollection'; // ADDED: Soul Made Products
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import PillarPageLayout from '../components/PillarPageLayout';
@@ -605,6 +606,21 @@ ${stayRequestForm.special_requests || 'None'}
         <div className="max-w-7xl mx-auto px-4 mb-6">
           <PersonalizedPicks pillar="stay" maxProducts={6} />
         </div>
+        
+        {/* ═══════════════════════════════════════════════════════════════════════
+            SOUL MADE COLLECTION - Breed-specific personalized products
+            Shows stay products with breed artwork (Blanket, Welcome Mat, etc.)
+            ADDED: March 10, 2026
+            ═══════════════════════════════════════════════════════════════════════ */}
+        {userPets && userPets[0] && (
+          <div className="max-w-6xl mx-auto px-4 mb-8">
+            <SoulMadeCollection
+              pillar="stay"
+              maxItems={8}
+              showTitle={true}
+            />
+          </div>
+        )}
         
         {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
         <MiraCuratedLayer

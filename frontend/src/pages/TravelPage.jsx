@@ -24,6 +24,7 @@ import MiraPicksCarousel from '../components/MiraPicksCarousel';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
+import SoulMadeCollection from '../components/SoulMadeCollection'; // ADDED: Soul Made Products
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
 import {
@@ -427,6 +428,21 @@ const TravelPage = () => {
         <div className="max-w-6xl mx-auto px-4 mb-6">
           <PersonalizedPicks pillar="travel" />
         </div>
+        
+        {/* ═══════════════════════════════════════════════════════════════════════
+            SOUL MADE COLLECTION - Breed-specific personalized products
+            Shows travel products with breed artwork (Travel Bowl, Carrier Tag, etc.)
+            ADDED: March 10, 2026
+            ═══════════════════════════════════════════════════════════════════════ */}
+        {userPets && userPets[0] && (
+          <div className="max-w-6xl mx-auto px-4 mb-8">
+            <SoulMadeCollection
+              pillar="travel"
+              maxItems={8}
+              showTitle={true}
+            />
+          </div>
+        )}
         
         {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
         <MiraCuratedLayer
