@@ -362,6 +362,64 @@ export function getArchetypeDisplayInfo(archetype) {
 }
 
 /**
+ * EMERGENCY-SPECIFIC COPY
+ * These override the playful archetype messaging for emergency contexts
+ */
+const EMERGENCY_COPY = {
+  greeting: [
+    "Essential care for {pet}",
+    "Safety first for {pet}",
+    "Emergency essentials for {pet}",
+    "Protection & care for {pet}"
+  ],
+  productIntro: [
+    "Items to keep {pet} safe in any situation",
+    "Be prepared for unexpected moments with {pet}",
+    "Emergency preparedness for your {breed}",
+    "Safety supplies for {pet}'s wellbeing"
+  ],
+  bundleIntro: [
+    "Emergency preparedness kits for {pet}",
+    "Safety bundles to protect {pet}",
+    "Be ready for anything with these essential packs"
+  ]
+};
+
+/**
+ * Get pillar-aware greeting
+ * For emergency pillar, uses calming/supportive language
+ */
+export function getPillarAwareGreeting(archetype, petName, breed, pillar) {
+  if (pillar === 'emergency') {
+    const template = getRandomItem(EMERGENCY_COPY.greeting);
+    return replacePlaceholders(template, petName, breed);
+  }
+  return getPersonalizedGreeting(archetype, petName, breed);
+}
+
+/**
+ * Get pillar-aware product intro
+ */
+export function getPillarAwareProductIntro(archetype, petName, breed, pillar) {
+  if (pillar === 'emergency') {
+    const template = getRandomItem(EMERGENCY_COPY.productIntro);
+    return replacePlaceholders(template, petName, breed);
+  }
+  return getProductIntro(archetype, petName, breed);
+}
+
+/**
+ * Get pillar-aware bundle intro
+ */
+export function getPillarAwareBundleIntro(archetype, petName, breed, pillar) {
+  if (pillar === 'emergency') {
+    const template = getRandomItem(EMERGENCY_COPY.bundleIntro);
+    return replacePlaceholders(template, petName, breed);
+  }
+  return getBundleIntro(archetype, petName, breed);
+}
+
+/**
  * Generate section title based on archetype and context
  */
 export function getSectionTitle(archetype, sectionType, petName, breed) {
@@ -412,5 +470,8 @@ export default {
   getActionVerb,
   getAccentColor,
   getArchetypeDisplayInfo,
-  getSectionTitle
+  getSectionTitle,
+  getPillarAwareGreeting,
+  getPillarAwareProductIntro,
+  getPillarAwareBundleIntro
 };

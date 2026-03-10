@@ -20,7 +20,9 @@ import {
   getPersonalizedGreeting, 
   getProductIntro,
   getArchetypeDisplayInfo,
-  getAccentColor 
+  getAccentColor,
+  getPillarAwareGreeting,
+  getPillarAwareProductIntro
 } from '../utils/archetypeCopy';
 
 // Archetype color schemes
@@ -143,19 +145,25 @@ const ArchetypeProducts = ({
   
   const colors = ARCHETYPE_COLORS[petData?.archetype] || ARCHETYPE_COLORS.default;
   const archetypeInfo = getArchetypeDisplayInfo(petData?.archetype);
-  const greeting = getPersonalizedGreeting(petData?.archetype, petData?.name, petData?.breed);
-  const productIntro = getProductIntro(petData?.archetype, petData?.name, petData?.breed);
+  // Use pillar-aware copy for emergency context
+  const greeting = getPillarAwareGreeting(petData?.archetype, petData?.name, petData?.breed, pillar);
+  const productIntro = getPillarAwareProductIntro(petData?.archetype, petData?.name, petData?.breed, pillar);
+  
+  // Override colors for emergency pillar
+  const displayColors = pillar === 'emergency' 
+    ? { bg: 'from-red-50 to-rose-50', accent: 'text-red-600', border: 'border-red-200' }
+    : colors;
   
   return (
     <div className={`py-8 ${className}`} data-testid="archetype-products-section">
       {showTitle && (
-        <div className={`text-center mb-8 p-6 rounded-2xl bg-gradient-to-r ${colors.bg} ${colors.border} border`}>
+        <div className={`text-center mb-8 p-6 rounded-2xl bg-gradient-to-r ${displayColors.bg} ${displayColors.border} border`}>
           <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-2xl">{archetypeInfo.emoji}</span>
+            <span className="text-2xl">{pillar === 'emergency' ? '🚨' : archetypeInfo.emoji}</span>
             <h3 className="text-lg font-semibold text-gray-800">
               {greeting}
             </h3>
-            <Sparkles className={`w-5 h-5 ${colors.accent}`} />
+            <Sparkles className={`w-5 h-5 ${displayColors.accent}`} />
           </div>
           
           <p className="text-sm text-gray-600 mb-3">
@@ -163,15 +171,17 @@ const ArchetypeProducts = ({
           </p>
           
           <div className="flex items-center justify-center gap-2 flex-wrap">
-            <Badge variant="outline" className={`${colors.border} ${colors.accent}`}>
+            <Badge variant="outline" className={`${displayColors.border} ${displayColors.accent}`}>
               {petData?.breed?.replace('_', ' ')}
             </Badge>
             <Badge variant="outline" className="border-gray-300 text-gray-600">
               {petData?.life_stage}
             </Badge>
-            <Badge variant="outline" className={`${colors.border} ${colors.accent}`}>
-              {archetypeInfo.name}
-            </Badge>
+            {pillar !== 'emergency' && (
+              <Badge variant="outline" className={`${displayColors.border} ${displayColors.accent}`}>
+                {archetypeInfo.name}
+              </Badge>
+            )}
           </div>
         </div>
       )}

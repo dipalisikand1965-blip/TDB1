@@ -18,7 +18,7 @@ import { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
 import { toast } from '../hooks/use-toast';
-import { getBundleIntro, getArchetypeDisplayInfo } from '../utils/archetypeCopy';
+import { getBundleIntro, getArchetypeDisplayInfo, getPillarAwareBundleIntro } from '../utils/archetypeCopy';
 
 // Bundle configurations per pillar
 const PILLAR_BUNDLES = {
@@ -207,7 +207,16 @@ const CuratedBundles = ({ pillar, showTitle = true, className = '', maxBundles }
   // Get archetype-based copy
   const archetype = currentPet?.soul_archetype?.primary_archetype || currentPet?.archetype;
   const archetypeInfo = getArchetypeDisplayInfo(archetype);
-  const bundleIntro = getBundleIntro(archetype, currentPet?.name, currentPet?.breed);
+  
+  // Use pillar-aware copy for emergency context
+  const bundleIntro = getPillarAwareBundleIntro(archetype, currentPet?.name, currentPet?.breed, pillar);
+  
+  // Emergency-specific display
+  const isEmergency = pillar === 'emergency';
+  const sectionEmoji = isEmergency ? '🚨' : archetypeInfo.emoji;
+  const sectionTitle = isEmergency 
+    ? 'Emergency Bundles' 
+    : (archetype ? `${archetypeInfo.name.replace('The ', '')} Bundles` : 'Curated Bundles');
 
   // Apply maxBundles limit if provided
   const displayBundles = maxBundles ? bundles.slice(0, maxBundles) : bundles;
@@ -218,10 +227,10 @@ const CuratedBundles = ({ pillar, showTitle = true, className = '', maxBundles }
         {showTitle && (
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-xl">{archetypeInfo.emoji}</span>
-              <Gift className="w-5 h-5 text-purple-600" />
+              <span className="text-xl">{sectionEmoji}</span>
+              <Gift className={`w-5 h-5 ${isEmergency ? 'text-red-600' : 'text-purple-600'}`} />
               <h3 className="text-xl font-bold text-gray-800">
-                {archetype ? `${archetypeInfo.name.replace('The ', '')} Bundles` : 'Curated Bundles'}
+                {sectionTitle}
               </h3>
             </div>
             <p className="text-sm text-gray-600">
