@@ -33,6 +33,7 @@ import { useAuth } from '../context/AuthContext';
 import SoulMadeProductModal from './SoulMadeProductModal';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../hooks/use-toast';
+import { getArchetypeDisplayInfo, getProductIntro } from '../utils/archetypeCopy';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // EMOTIONAL COLLECTIONS - Organize by life moment, NOT just product type
@@ -542,13 +543,24 @@ const SoulMadeCollection = ({
         <div className="mb-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Sparkles className="w-6 h-6 text-purple-600" />
-                Made for {petName}
-              </h2>
-              <p className="text-sm text-gray-500 mt-1">
-                {pillarConfig.copy(petName)} • {pillarConfig.emoji} {pillarConfig.name}
-              </p>
+              {/* Get archetype info for personalized copy */}
+              {(() => {
+                const archetypeKey = archetype || currentPet?.soul_archetype?.primary_archetype;
+                const archetypeInfo = getArchetypeDisplayInfo(archetypeKey);
+                const personalizedIntro = getProductIntro(archetypeKey, petName, petBreedKey);
+                return (
+                  <>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
+                      <span className="text-xl">{archetypeInfo.emoji}</span>
+                      <Sparkles className="w-6 h-6 text-purple-600" />
+                      Made for {petName}
+                    </h2>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {personalizedIntro} • {pillarConfig.emoji} {pillarConfig.name}
+                    </p>
+                  </>
+                );
+              })()}
             </div>
             {products.length > 0 && (
               <Button 

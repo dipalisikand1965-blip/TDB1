@@ -79,6 +79,13 @@ All 13 pillar pages now have:
 - [x] Soul tier assignment (standard/soul_made/soul_selected/soul_gifted)
 - [x] API: `PUT /api/mockups/soul-made/products/{id}`
 
+### Phase 7: Archetype Tone System ✅ IMPLEMENTED (March 10, 2026)
+- [x] Created `archetypeCopy.js` utility with 7 archetype copy definitions
+- [x] Personalized greetings based on pet archetype
+- [x] Dynamic product intro copy per archetype
+- [x] Archetype-aware bundle descriptions
+- [x] Accent colors per archetype
+
 ---
 
 ## 🔴 PENDING ISSUES
@@ -117,6 +124,7 @@ All 13 pillar pages now have:
 - `/app/frontend/src/components/SoulMadeCollection.jsx` - AI mockup products
 - `/app/frontend/src/components/BreedSmartRecommendations.jsx` - Breed-specific tips
 - `/app/frontend/src/components/admin/SoulProductsManager.jsx` - Admin product management
+- `/app/frontend/src/utils/archetypeCopy.js` - **NEW:** Archetype-based copy utility
 
 ### Backend APIs
 - `/app/backend/app/api/mockup_routes.py` - All mockup & soul-made APIs
@@ -247,12 +255,17 @@ For the next agent:
 5. ✅ Fixed pet context consistency (selected pet shows correctly everywhere)
 6. ✅ Fixed production sync endpoint (server-side to bypass CORS)
 7. ✅ Synced 862 products to production
+8. ✅ **NEW: Archetype Tone System** - Dynamic UI copy based on pet personality
+   - Created `/frontend/src/utils/archetypeCopy.js` utility
+   - Updated ArchetypeProducts.jsx with personalized greetings
+   - Updated CuratedBundles.jsx with archetype-based bundle intro
+   - Updated SoulMadeCollection.jsx with archetype-aware product intro
 
 ### What's Running:
-- Mockup generation: 33.7% complete (865/2569)
+- Mockup generation: ~36% complete (925/2569) - progressing
 - Background batch processing continues automatically
 
 ### What Needs Attention:
-- Razorpay P1 bug (checkout fails)
+- Razorpay P1 bug (checkout fails) - User requested to fix LAST
 - Mobile dashboard visual bug (needs user verification)
-- ~1,700 more mockups to generate
+- ~1,644 more mockups to generate
