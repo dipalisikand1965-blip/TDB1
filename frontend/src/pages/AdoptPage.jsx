@@ -20,6 +20,8 @@ import SoulMadeCollection from '../components/SoulMadeCollection';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import PersonalizedPicks from '../components/PersonalizedPicks';
+import ArchetypeProducts from '../components/ArchetypeProducts';
+import CuratedBundles from '../components/CuratedBundles';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Mail, Users,
   ChevronRight, Sparkles, Search, Filter, Clock, CheckCircle,
@@ -651,6 +653,24 @@ const AdoptPage = () => {
       <section className="py-8 px-4" data-testid="adopt-breed-smart-section">
         <div className="max-w-6xl mx-auto">
           <BreedSmartRecommendations pillar="adopt" />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4">
+        <div className="max-w-6xl mx-auto">
+          <ArchetypeProducts pillar="adopt" maxProducts={8} showTitle={true} />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* CURATED BUNDLES - Save with handpicked combinations */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4">
+        <div className="max-w-6xl mx-auto">
+          <CuratedBundles pillar="adopt" showTitle={true} />
         </div>
       </section>
 

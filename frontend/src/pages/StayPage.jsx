@@ -22,6 +22,8 @@ import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import SoulMadeCollection from '../components/SoulMadeCollection'; // ADDED: Soul Made Products
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
+import ArchetypeProducts from '../components/ArchetypeProducts';
+import CuratedBundles from '../components/CuratedBundles';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import PillarPageLayout from '../components/PillarPageLayout';
@@ -631,6 +633,20 @@ ${stayRequestForm.special_requests || 'None'}
             <BreedSmartRecommendations pillar="stay" />
           </div>
         )}
+
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        <div className="max-w-6xl mx-auto px-4 mb-8">
+          <ArchetypeProducts pillar="stay" maxProducts={8} showTitle={true} />
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {/* CURATED BUNDLES - Save with handpicked combinations */}
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        <div className="max-w-6xl mx-auto px-4 mb-8">
+          <CuratedBundles pillar="stay" showTitle={true} />
+        </div>
         
         {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
         <MiraCuratedLayer

@@ -3,6 +3,10 @@ import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { toast } from '../../hooks/use-toast';
 import { API_URL } from '../../utils/api';
 import { 
@@ -25,7 +29,11 @@ import {
   Square,
   Loader2,
   Cloud,
-  Upload
+  Upload,
+  Edit,
+  DollarSign,
+  Boxes,
+  Tag
 } from 'lucide-react';
 
 /**
@@ -89,6 +97,90 @@ const SoulProductsManager = () => {
   // Cloud storage state
   const [cloudStatus, setCloudStatus] = useState(null);
   const [convertingToCloud, setConvertingToCloud] = useState(false);
+
+  // Edit modal state
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [savingProduct, setSavingProduct] = useState(false);
+
+  // Open edit modal for a product
+  const openEditModal = (product) => {
+    setEditingProduct({
+      ...product,
+      stock: product.stock || 0,
+      variants: product.variants || [],
+      sale_price: product.sale_price || null,
+      description: product.description || '',
+      soul_tier: product.soul_tier || 'standard'
+    });
+    setEditModalOpen(true);
+  };
+
+  // Save product changes
+  const saveProductChanges = async () => {
+    if (!editingProduct) return;
+    
+    setSavingProduct(true);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/soul-made/products/${editingProduct.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${btoa('aditya:lola4304')}`
+        },
+        body: JSON.stringify({
+          stock: editingProduct.stock,
+          variants: editingProduct.variants,
+          sale_price: editingProduct.sale_price,
+          description: editingProduct.description,
+          soul_tier: editingProduct.soul_tier,
+          price: editingProduct.price
+        })
+      });
+      
+      if (res.ok) {
+        toast({ title: 'Success', description: 'Product updated successfully!' });
+        setEditModalOpen(false);
+        // Refresh products list
+        if (activeSubTab === 'products') {
+          fetchProducts();
+        } else {
+          fetchBreedProducts(true);
+        }
+      } else {
+        throw new Error('Failed to update');
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+      toast({ title: 'Error', description: 'Failed to save changes', variant: 'destructive' });
+    }
+    setSavingProduct(false);
+  };
+
+  // Add variant
+  const addVariant = () => {
+    if (!editingProduct) return;
+    setEditingProduct({
+      ...editingProduct,
+      variants: [...(editingProduct.variants || []), { name: '', price_modifier: 0 }]
+    });
+  };
+
+  // Remove variant
+  const removeVariant = (index) => {
+    if (!editingProduct) return;
+    const newVariants = [...editingProduct.variants];
+    newVariants.splice(index, 1);
+    setEditingProduct({ ...editingProduct, variants: newVariants });
+  };
+
+  // Update variant
+  const updateVariant = (index, field, value) => {
+    if (!editingProduct) return;
+    const newVariants = [...editingProduct.variants];
+    newVariants[index] = { ...newVariants[index], [field]: value };
+    setEditingProduct({ ...editingProduct, variants: newVariants });
+  };
 
   // Fetch products
   useEffect(() => {
@@ -624,6 +716,17 @@ const SoulProductsManager = () => {
                           ))}
                         </select>
                       </td>
+                      <td className="px-4 py-3">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => openEditModal(product)}
+                          className="gap-1"
+                        >
+                          <Edit className="w-3 h-3" />
+                          Edit
+                        </Button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -1097,6 +1200,205 @@ const SoulProductsManager = () => {
           </Card>
         </div>
       )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SOUL TIER EDIT MODAL - Stock, Variants, Sale Price */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              Edit Soul Made Product
+            </DialogTitle>
+          </DialogHeader>
+          
+          {editingProduct && (
+            <div className="space-y-6">
+              {/* Product Preview */}
+              <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                {editingProduct.mockup_url && (
+                  <img 
+                    src={editingProduct.mockup_url} 
+                    alt={editingProduct.name}
+                    className="w-20 h-20 object-cover rounded-lg"
+                  />
+                )}
+                <div>
+                  <h3 className="font-semibold">{editingProduct.name}</h3>
+                  <p className="text-sm text-gray-500">{editingProduct.breed_name} • {editingProduct.product_type_name}</p>
+                  <Badge className="mt-1">{editingProduct.soul_tier || 'standard'}</Badge>
+                </div>
+              </div>
+
+              {/* Basic Info */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="price" className="flex items-center gap-1">
+                    <DollarSign className="w-4 h-4" />
+                    Base Price (₹)
+                  </Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    value={editingProduct.price || 0}
+                    onChange={(e) => setEditingProduct({
+                      ...editingProduct, 
+                      price: parseInt(e.target.value) || 0
+                    })}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="sale_price" className="flex items-center gap-1">
+                    <Tag className="w-4 h-4" />
+                    Sale Price (₹)
+                  </Label>
+                  <Input
+                    id="sale_price"
+                    type="number"
+                    placeholder="Leave empty for no sale"
+                    value={editingProduct.sale_price || ''}
+                    onChange={(e) => setEditingProduct({
+                      ...editingProduct, 
+                      sale_price: e.target.value ? parseInt(e.target.value) : null
+                    })}
+                  />
+                </div>
+              </div>
+
+              {/* Stock */}
+              <div className="space-y-2">
+                <Label htmlFor="stock" className="flex items-center gap-1">
+                  <Boxes className="w-4 h-4" />
+                  Stock Quantity
+                </Label>
+                <Input
+                  id="stock"
+                  type="number"
+                  value={editingProduct.stock || 0}
+                  onChange={(e) => setEditingProduct({
+                    ...editingProduct, 
+                    stock: parseInt(e.target.value) || 0
+                  })}
+                />
+                <p className="text-xs text-gray-500">0 = unlimited/made to order</p>
+              </div>
+
+              {/* Soul Tier */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-1">
+                  <Crown className="w-4 h-4" />
+                  Soul Tier
+                </Label>
+                <Select
+                  value={editingProduct.soul_tier || 'standard'}
+                  onValueChange={(value) => setEditingProduct({
+                    ...editingProduct,
+                    soul_tier: value
+                  })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="standard">📦 Standard</SelectItem>
+                    <SelectItem value="soul_made">✨ Soul Made</SelectItem>
+                    <SelectItem value="soul_selected">💜 Soul Selected</SelectItem>
+                    <SelectItem value="soul_gifted">🎁 Soul Gifted</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  rows={3}
+                  placeholder="Product description..."
+                  value={editingProduct.description || ''}
+                  onChange={(e) => setEditingProduct({
+                    ...editingProduct,
+                    description: e.target.value
+                  })}
+                />
+              </div>
+
+              {/* Variants */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="flex items-center gap-1">
+                    <Package className="w-4 h-4" />
+                    Variants (Size, Color, etc.)
+                  </Label>
+                  <Button size="sm" variant="outline" onClick={addVariant}>
+                    + Add Variant
+                  </Button>
+                </div>
+                
+                {editingProduct.variants?.length > 0 ? (
+                  <div className="space-y-2">
+                    {editingProduct.variants.map((variant, index) => (
+                      <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                        <Input
+                          placeholder="Variant name (e.g., Small, Blue)"
+                          value={variant.name || ''}
+                          onChange={(e) => updateVariant(index, 'name', e.target.value)}
+                          className="flex-1"
+                        />
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm text-gray-500">+₹</span>
+                          <Input
+                            type="number"
+                            placeholder="0"
+                            value={variant.price_modifier || 0}
+                            onChange={(e) => updateVariant(index, 'price_modifier', parseInt(e.target.value) || 0)}
+                            className="w-20"
+                          />
+                        </div>
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          onClick={() => removeVariant(index)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">No variants added</p>
+                )}
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter className="mt-6">
+            <Button variant="outline" onClick={() => setEditModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={saveProductChanges}
+              disabled={savingProduct}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              {savingProduct ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Check className="w-4 h-4 mr-2" />
+                  Save Changes
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
