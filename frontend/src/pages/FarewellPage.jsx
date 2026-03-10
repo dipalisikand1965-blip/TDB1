@@ -21,8 +21,6 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
 import { useNavigate } from 'react-router-dom';
-import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
-import { getSoulBasedReason } from '../utils/petSoulInference';
 import {
   Heart, Rainbow, Flower2, Star, Calendar, Phone, Mail, MapPin,
   Clock, ChevronRight, ChevronLeft, Sparkles, Home, CheckCircle, Users,
@@ -1035,27 +1033,6 @@ const FarewellPage = () => {
           )}
         </DialogContent>
       </Dialog>
-      
-      {/* Concierge Pick Card - Compassionate farewell planning */}
-      {pets && pets[0] && (
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <ConciergePickCard
-            pet={{
-              name: pets[0].name,
-              breed: pets[0].breed,
-              photo: pets[0].photo_url,
-              soulTraits: pets[0].personality_traits || [],
-                id: pets[0].id
-            }}
-            pillar="farewell"
-            title={CONCIERGE_PRESETS.farewell.title}
-            icon={CONCIERGE_PRESETS.farewell.icon}
-            description={CONCIERGE_PRESETS.farewell.description}
-            soulReason={getSoulBasedReason(pets[0], 'farewell')}
-            responseTime="1 hour"
-          />
-        </div>
-      )}
       
       {/* Concierge® Button - Blue C® for Service Desk chat */}
       <ConciergeButton 
