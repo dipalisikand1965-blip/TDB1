@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://personalized-paws.preview.emergentagent.com
+https://soul-made-platform.preview.emergentagent.com
 ```
 
 ---

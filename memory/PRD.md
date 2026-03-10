@@ -1,6 +1,6 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 10, 2026 23:45 IST  
-**Status:** Soul Made Products - 48.7% Mockups Generated (1250/2569) | Auto-Generator Running
+**Last Updated:** March 10, 2026 07:55 IST  
+**Status:** Soul Made Products - 50.7% Mockups Generated (1303/2569) | Auto-Generator Available
 
 ---
 
@@ -28,15 +28,15 @@ Hyper-personalized pet platform using "memory-led personalization" - products, c
 - [x] Mira's Quick Help (AI concierge)
 - [x] Soul Made Products section
 - [x] Breed-Smart Recommendations
-- [x] Curated Bundles
+- [x] Curated Bundles with AI-generated images
 - [x] Archetype Products
 
 ### Phase 4: AI Mockup Generation
 - [x] OpenAI GPT Image 1 integration
 - [x] Cloudinary upload and storage
 - [x] 33 breeds x 65+ product types = 2569 products
-- [x] Auto-generator script running in background
-- [x] Progress: 1250/2569 (48.7%)
+- [x] Auto-generator script available
+- [x] Progress: 1303/2569 (50.7%)
 
 ### Phase 5: Multi-Factor Filtering API
 - [x] GET /api/products/multi-factor-filter
@@ -56,10 +56,11 @@ Hyper-personalized pet platform using "memory-led personalization" - products, c
 
 ### Phase 8: Curated Bundles System
 - [x] 19 bundles across 12 pillars
-- [x] All bundles have AI-generated images
+- [x] All bundles have AI-generated images (VERIFIED WORKING)
 - [x] Full CRUD API (/api/bundles)
 - [x] Admin BundlesManager.jsx
 - [x] Production sync endpoint
+- [x] Bundle images displaying correctly on pillar pages
 
 ### Phase 9: Admin UI Fixes
 - [x] Fixed stats showing 0/2569 -> now shows real numbers
@@ -74,7 +75,7 @@ Hyper-personalized pet platform using "memory-led personalization" - products, c
 
 | Task | Progress | Notes |
 |------|----------|-------|
-| **Mockup Generation** | 48.7% | 1250/2569 - Auto-generator running |
+| **Mockup Generation** | 50.7% | 1303/2569 - Run auto_mockup_generator.py to continue |
 | **Production Sync** | Pending | Run after mockups hit 80%+ |
 
 ---
@@ -83,7 +84,7 @@ Hyper-personalized pet platform using "memory-led personalization" - products, c
 
 | Issue | Priority | Status |
 |-------|----------|--------|
-| Razorpay checkout "body error" | P1 | NOT STARTED |
+| Razorpay checkout "body error" | P1 | NOT STARTED (User deferred) |
 | Mobile dashboard scrambled | P2 | User verification needed |
 
 ---
@@ -91,10 +92,10 @@ Hyper-personalized pet platform using "memory-led personalization" - products, c
 ## KEY FILES
 
 ### Frontend
-- `/app/frontend/src/components/admin/SoulProductsManager.jsx` - AI Mockups admin
-- `/app/frontend/src/components/admin/BundlesManager.jsx` - Bundles admin
+- `/app/frontend/src/pages/Admin/SoulProductsManager.jsx` - AI Mockups admin
+- `/app/frontend/src/pages/Admin/BundlesManager.jsx` - Bundles admin
 - `/app/frontend/src/components/ArchetypeProducts.jsx` - Archetype filtering
-- `/app/frontend/src/components/CuratedBundles.jsx` - Bundle display
+- `/app/frontend/src/components/CuratedBundles.jsx` - Bundle display (WORKING)
 - `/app/frontend/src/utils/archetypeCopy.js` - Archetype copy utility
 
 ### Backend
@@ -131,7 +132,7 @@ Hyper-personalized pet platform using "memory-led personalization" - products, c
 - `products_master` - 3443 products (Shopify + Soul Made)
 - `breed_products` - 2569 breed-specific products
 - `unified_products` - 3338 unified catalog
-- `bundles` - 19 curated bundles
+- `bundles` - 19 curated bundles (all with images)
 - `pets` - Pet profiles with archetypes
 
 ---
@@ -145,8 +146,8 @@ Hyper-personalized pet platform using "memory-led personalization" - products, c
 
 ## NEXT STEPS
 
-1. **Monitor mockup generation** - Auto-running, check with `/api/mockups/stats`
-2. **Fix Razorpay checkout** - P1 blocker
+1. **Continue mockup generation** - Run `cd /app/backend && python3 auto_mockup_generator.py`
+2. **Fix Razorpay checkout** - P1 blocker (deferred by user)
 3. **Verify mobile dashboard** - Need user screenshot
 4. **Run production sync** - After 80%+ mockups complete
 
@@ -157,3 +158,21 @@ Hyper-personalized pet platform using "memory-led personalization" - products, c
 Running at: `/app/backend/auto_mockup_generator.py`
 Log file: `/tmp/auto_mockup_generator.log`
 Check status: `tail -20 /tmp/auto_mockup_generator.log`
+
+To start: `cd /app/backend && python3 auto_mockup_generator.py &`
+
+---
+
+## VERIFIED WORKING (March 10, 2026)
+
+1. **Bundle Images on Pillar Pages** - CONFIRMED displaying correctly
+   - Birthday Pawty Bundle shows AI-generated party image
+   - Gotcha Day Bundle shows AI-generated GOTCHA image
+   - All 19 bundles have image_url in database
+
+2. **Bundles Admin CRUD** - 100% test pass rate
+   - GET, POST, PUT, DELETE all working
+   - Seed defaults working
+   - Image generation working
+
+3. **AI Mockup Stats** - Real-time display working in admin panel

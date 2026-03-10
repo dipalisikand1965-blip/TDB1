@@ -27,7 +27,7 @@ import os
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # API Configuration
-BASE_URL = os.environ.get("TEST_API_URL", "https://personalized-paws.preview.emergentagent.com")
+BASE_URL = os.environ.get("TEST_API_URL", "https://soul-made-platform.preview.emergentagent.com")
 TEST_EMAIL = "dipali@clubconcierge.in"
 TEST_PASSWORD = "test123"
 TEST_PET_ID = "mystique-001"

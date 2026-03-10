@@ -36,6 +36,7 @@
         .progress-fill { background: linear-gradient(90deg, #48bb78, #38a169); height: 100%; transition: width 0.3s; }
         .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+        .verified { color: #38a169; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -43,7 +44,7 @@
         <div class="header">
             <h1>The Doggy Company</h1>
             <p class="tagline">Complete Technical Documentation & Handover Guide</p>
-            <p class="date">Last Updated: March 10, 2026 23:45 IST | Mockups: 1250/2569 (48.7%) | Auto-Generator Running</p>
+            <p class="date">Last Updated: March 10, 2026 07:55 IST | Mockups: 1303/2569 (50.7%)</p>
         </div>
 
         <!-- Status Overview -->
@@ -51,24 +52,25 @@
             <h2 class="section-title"><span class="emoji">📊</span> Current Status</h2>
             
             <div class="success-box">
-                <strong>AUTO-GENERATOR RUNNING:</strong> Mockup generation is running continuously in background.
-                Check progress: <code>curl $API_URL/api/mockups/stats</code>
+                <strong>BUNDLE IMAGES VERIFIED WORKING:</strong> All 19 bundles have AI-generated images and are displaying correctly on pillar pages.
             </div>
 
             <div class="grid-2">
                 <div class="card">
                     <div class="card-title">Mockup Generation Progress</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 48.7%;"></div>
+                        <div class="progress-fill" style="width: 50.7%;"></div>
                     </div>
-                    <p><strong>1250 / 2569</strong> products have AI mockups (48.7%)</p>
+                    <p><strong>1303 / 2569</strong> products have AI mockups (50.7%)</p>
                     <p>33 breeds × 65+ product types</p>
+                    <p>To continue: <code>cd /app/backend && python3 auto_mockup_generator.py &</code></p>
                 </div>
                 <div class="card">
-                    <div class="card-title">Curated Bundles</div>
+                    <div class="card-title">Curated Bundles <span class="verified">✓ VERIFIED</span></div>
                     <p><strong>19 bundles</strong> across 12 pillars</p>
                     <p>All bundles have AI-generated images</p>
-                    <p>Full CRUD in Admin panel</p>
+                    <p>Images displaying on pillar pages</p>
+                    <p>Full CRUD working in Admin panel</p>
                 </div>
             </div>
         </div>
@@ -82,17 +84,17 @@
                 <ul>
                     <li><strong>AI Mockup Generation:</strong> OpenAI GPT Image 1 + Cloudinary</li>
                     <li><strong>Admin Stats Display:</strong> Fixed - now shows real-time progress</li>
-                    <li><strong>Auto-Generator:</strong> Background script auto-restarts batches</li>
+                    <li><strong>Auto-Generator:</strong> Script available at /app/backend/auto_mockup_generator.py</li>
                     <li><strong>Generate Button:</strong> Working in Soul Products Manager</li>
                 </ul>
             </div>
 
             <div class="card">
-                <div class="card-title">Curated Bundles</div>
+                <div class="card-title">Curated Bundles <span class="verified">✓ VERIFIED MARCH 10</span></div>
                 <ul>
                     <li><strong>19 Bundles:</strong> Celebrate, Travel, Dine, Care, Stay, Fit, Farewell, Enjoy, Learn, Emergency, Adopt, Advisory, Paperwork</li>
-                    <li><strong>AI Images:</strong> All bundles have generated images</li>
-                    <li><strong>Admin CRUD:</strong> Create, Edit, Delete modals working</li>
+                    <li><strong>AI Images:</strong> All bundles have generated images - <span class="verified">DISPLAYING CORRECTLY</span></li>
+                    <li><strong>Admin CRUD:</strong> Create, Edit, Delete modals working - 100% test pass rate</li>
                     <li><strong>Production Sync:</strong> Endpoint ready</li>
                 </ul>
             </div>
@@ -105,7 +107,7 @@
                     <li>Soul Made Products</li>
                     <li>Breed-Smart Recommendations</li>
                     <li>Archetype Products</li>
-                    <li>Curated Bundles</li>
+                    <li>Curated Bundles with AI images</li>
                 </ul>
             </div>
 
@@ -154,7 +156,7 @@
             </div>
 
             <div class="card">
-                <div class="card-title">Bundles</div>
+                <div class="card-title">Bundles <span class="verified">✓ 100% TEST PASS</span></div>
                 <div class="api-endpoint">
                     <span class="method method-get">GET</span> /api/bundles?pillar=celebrate - List bundles
                 </div>
@@ -189,14 +191,14 @@
                 <tr><td>products_master</td><td>3,443</td><td>Unified products (Shopify + Soul Made)</td></tr>
                 <tr><td>breed_products</td><td>2,569</td><td>Breed-specific AI mockup products</td></tr>
                 <tr><td>unified_products</td><td>3,338</td><td>Unified product catalog</td></tr>
-                <tr><td>bundles</td><td>19</td><td>Curated product bundles</td></tr>
+                <tr><td>bundles</td><td>19</td><td>Curated product bundles (all with images)</td></tr>
                 <tr><td>pets</td><td>9+</td><td>Pet profiles with archetypes</td></tr>
             </table>
         </div>
 
         <!-- Bundles Coverage -->
         <div class="section">
-            <h2 class="section-title"><span class="emoji">🎁</span> Bundle Coverage (19 Total)</h2>
+            <h2 class="section-title"><span class="emoji">🎁</span> Bundle Coverage (19 Total - All with AI Images)</h2>
             
             <table>
                 <tr><th>Pillar</th><th>Bundles</th></tr>
@@ -224,10 +226,10 @@
                 <div class="card">
                     <div class="card-title">Frontend</div>
                     <ul>
-                        <li><code>components/admin/SoulProductsManager.jsx</code></li>
-                        <li><code>components/admin/BundlesManager.jsx</code></li>
+                        <li><code>pages/Admin/SoulProductsManager.jsx</code></li>
+                        <li><code>pages/Admin/BundlesManager.jsx</code></li>
                         <li><code>components/ArchetypeProducts.jsx</code></li>
-                        <li><code>components/CuratedBundles.jsx</code></li>
+                        <li><code>components/CuratedBundles.jsx</code> - Displays bundle images</li>
                         <li><code>utils/archetypeCopy.js</code></li>
                     </ul>
                 </div>
@@ -268,8 +270,8 @@
             <h2 class="section-title"><span class="emoji">🎯</span> Next Steps</h2>
             
             <ol>
-                <li><strong>Monitor mockup generation</strong> - Auto-running, check: <code>curl $API_URL/api/mockups/stats</code></li>
-                <li><strong>Fix Razorpay checkout</strong> - P1 blocker for revenue</li>
+                <li><strong>Continue mockup generation</strong> - Run: <code>cd /app/backend && python3 auto_mockup_generator.py &</code></li>
+                <li><strong>Fix Razorpay checkout</strong> - P1 blocker for revenue (deferred by user)</li>
                 <li><strong>Verify mobile dashboard</strong> - Need user screenshot</li>
                 <li><strong>Run production sync</strong> - After mockups hit 80%+</li>
             </ol>
@@ -280,14 +282,38 @@
             <h2 class="section-title"><span class="emoji">🤖</span> Auto-Generator Script</h2>
             
             <div class="card">
-                <div class="card-title">Location & Logs</div>
+                <div class="card-title">Location & Commands</div>
                 <ul>
                     <li><strong>Script:</strong> <code>/app/backend/auto_mockup_generator.py</code></li>
                     <li><strong>Log:</strong> <code>/tmp/auto_mockup_generator.log</code></li>
-                    <li><strong>Check:</strong> <code>tail -20 /tmp/auto_mockup_generator.log</code></li>
+                    <li><strong>Start:</strong> <code>cd /app/backend && python3 auto_mockup_generator.py &</code></li>
+                    <li><strong>Check Log:</strong> <code>tail -20 /tmp/auto_mockup_generator.log</code></li>
                     <li><strong>Batch Size:</strong> 50 products per batch</li>
                     <li><strong>Check Interval:</strong> 60 seconds</li>
                 </ul>
+            </div>
+        </div>
+
+        <!-- Verification Section -->
+        <div class="section">
+            <h2 class="section-title"><span class="emoji">✓</span> Verified Working - March 10, 2026</h2>
+            
+            <div class="success-box">
+                <strong>Bundle Images on Pillar Pages:</strong><br>
+                - Birthday Pawty Bundle displays AI-generated party image<br>
+                - Gotcha Day Bundle displays AI-generated GOTCHA image<br>
+                - All 19 bundles have image_url in database<br>
+                - CuratedBundles.jsx correctly fetches and renders images
+            </div>
+            
+            <div class="success-box">
+                <strong>Bundles Admin CRUD - 100% Test Pass Rate:</strong><br>
+                - GET /api/bundles - Working<br>
+                - POST /api/bundles - Working with discount calculation<br>
+                - PUT /api/bundles/{id} - Working with discount recalculation<br>
+                - DELETE /api/bundles/{id} - Working (soft delete)<br>
+                - POST /api/bundles/seed-defaults - Working<br>
+                - POST /api/bundles/{id}/generate-image - Working
             </div>
         </div>
 

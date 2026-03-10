@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://personalized-paws.preview.emergentagent.com
+https://soul-made-platform.preview.emergentagent.com
 
 ---
 
