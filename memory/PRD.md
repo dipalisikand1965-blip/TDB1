@@ -1,6 +1,6 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 10, 2026 10:10 IST  
-**Status:** Soul Made Products - 56%+ Mockups | Emergency Page Redesign IN PROGRESS
+**Last Updated:** March 10, 2026 12:25 IST  
+**Status:** Emergency Page Redesign COMPLETE | Bundle Modal Fixed | Mockups ~62%
 
 ---
 
@@ -9,36 +9,39 @@ Hyper-personalized pet platform using "memory-led personalization" - products, c
 
 ---
 
-## CURRENT FOCUS: EMERGENCY PAGE REDESIGN
+## COMPLETED: EMERGENCY PAGE 9-LAYER ARCHITECTURE
 
-### 5-Layer Architecture
-1. **Immediate Action** - Urgent help buttons (panic mode)
-2. **Google Nearby Help** - Real-time clinic finder
-3. **Concierge Support** - Human coordination layer
-4. **Pet-Specific Records** - Emergency file + personalized picks
-5. **Emergency Products** - Commerce + recovery
+### Implementation Complete (March 10, 2026)
+The Emergency page has been fully redesigned with 9 distinct functional layers:
 
-### 9 Sections
-1. Urgent Help (top) - Call vet, Find clinic, Poison help, Ambulance, Open pet file
-2. Nearby Help - Google Places API for 24/7 vets, hospitals, pharmacies
-3. Concierge Help - WhatsApp coordination, callback, file sharing
-4. My Pet Emergency File - Auto-loaded pet medical info
-5. Situation Guides - 10 actionable emergency guides
-6. Emergency Products - First-aid kits, cones, recovery items
-7. Smart Picks - Breed/age/size personalized products
-8. Special Paths - Lost Pet, Travel, Puppy, Senior emergencies
-9. Recovery - Discharge checklist, medication reminders
+| Layer | Component | Status |
+|-------|-----------|--------|
+| 1 | **Urgent Help Buttons** - Call Vet, Find Clinic, Poison Help, Ambulance, Pet File | ✅ COMPLETE |
+| 2 | **Near Me Now** - Google Places API for real-time clinic finder | ✅ COMPLETE |
+| 3 | **Concierge Will Assist** - Human support layer via WhatsApp | ✅ COMPLETE |
+| 4 | **Pet Emergency File** - Auto-loaded pet medical info | ✅ COMPLETE |
+| 5 | **Emergency Guides** - 10 actionable guides with Do/Don't | ✅ COMPLETE |
+| 6 | **Emergency Products** - Curated bundles & first-aid kits | ✅ COMPLETE |
+| 7 | **Smart Picks** - Breed/archetype personalized products | ✅ COMPLETE |
+| 8 | **Special Paths** - Lost Pet, Travel, Puppy, Senior | ✅ COMPLETE |
+| 9 | **Follow-up & Recovery** - Discharge checklist, reminders | ✅ COMPLETE |
 
-### Technical Assets Available
-- ✅ Google Places API configured
-- ✅ `google_places_service.py` - Nearby places search
-- ✅ `NearbyPlacesCarousel.jsx` - Frontend component
-- ✅ `ServiceCatalogSection.jsx` - Concierge services
-- ✅ `BreedSmartRecommendations.jsx` - Personalized picks
-- ✅ Pet profile API - Emergency file data
-- ✅ WhatsApp integration (918971702582)
+### Key Files Modified
+- `/app/frontend/src/pages/EmergencyPage.jsx` - Complete 9-layer redesign
+- `/app/frontend/src/components/emergency/NearbyEmergencyHelp.jsx` - Fixed API endpoint
+- `/app/frontend/src/components/CuratedBundles.jsx` - Added modal detail view
 
-### Full Spec: `/app/memory/EMERGENCY_PAGE_SPEC.md`
+---
+
+## COMPLETED: BUNDLE MODAL FIX (P1)
+
+**Issue:** Clicking bundle cards navigated away instead of opening modal
+**Fix:** Updated CuratedBundles.jsx to include:
+- Click-to-open modal functionality
+- Full bundle detail view with all items
+- AI-generated image display
+- Pricing with savings calculation
+- Add to Cart from modal
 
 ---
 
@@ -69,46 +72,23 @@ Hyper-personalized pet platform using "memory-led personalization" - products, c
 - [x] Cloudinary upload and storage
 - [x] 33 breeds x 65+ product types = 2569 products
 - [x] Auto-generator script available
-- [x] Progress: 1303/2569 (50.7%)
+- [x] Progress: ~62% (~1600/2569)
 
-### Phase 5: Multi-Factor Filtering API
-- [x] GET /api/products/multi-factor-filter
-- [x] Filters by breed, archetype, life_stage
-- [x] Personalization score calculation
+### Phase 5-9: Admin Systems
+- [x] Multi-Factor Filtering API
+- [x] Soul Tier Admin UI
+- [x] Archetype Tone System
+- [x] Curated Bundles System (19 bundles)
+- [x] Admin UI Fixes
 
-### Phase 6: Soul Tier Admin UI
-- [x] SoulProductsManager.jsx with edit modals
-- [x] Stock, variants, sale price management
-- [x] Real-time stats display (FIXED)
-- [x] Auto-refresh every 30 seconds
-
-### Phase 7: Archetype Tone System
-- [x] archetypeCopy.js utility
-- [x] Dynamic UI copy per archetype
-- [x] Personalized greetings and product intros
-
-### Phase 8: Curated Bundles System
-- [x] 19 bundles across 12 pillars
-- [x] All bundles have AI-generated images (VERIFIED WORKING)
-- [x] Full CRUD API (/api/bundles)
-- [x] Admin BundlesManager.jsx
-- [x] Production sync endpoint
-- [x] Bundle images displaying correctly on pillar pages
-
-### Phase 9: Admin UI Fixes
-- [x] Fixed stats showing 0/2569 -> now shows real numbers
-- [x] Added fetchMockupStats() to initial load
-- [x] Auto-refresh on Mockups tab
-- [x] Loading skeletons while fetching
-- [x] Synced breed_products to products_master (1244 products)
-
-### Phase 10: Celebrate Page Filters & Breed Images (NEW - March 10, 2026)
-- [x] Updated category filters: All Products, Cakes, Treats, Gift Hampers, Party Items, Breed Specials, Premium
-- [x] Fixed breed-specific product images using breed illustrations
-- [x] Products with IDs starting with "breed-" now show correct breed watercolor illustrations
-- [x] Removed numbers from "Load More" button
-- [x] Client-side filtering working correctly
-- [x] Modal shows correct breed illustration
+### Phase 10: Emergency Page Redesign (March 10, 2026)
+- [x] 9-layer architecture implementation
+- [x] UrgentHelpButtons component
+- [x] NearbyEmergencyHelp with location API
+- [x] EmergencySituationGuides (10 guides)
+- [x] Special Emergency Paths (4 types)
+- [x] Follow-up & Recovery section
+- [x] Bundle Modal fix
 
 ---
 
@@ -116,7 +96,7 @@ Hyper-personalized pet platform using "memory-led personalization" - products, c
 
 | Task | Progress | Notes |
 |------|----------|-------|
-| **Mockup Generation** | 50.7% | 1303/2569 - Run auto_mockup_generator.py to continue |
+| **Mockup Generation** | ~62% | ~1600/2569 - Run auto_mockup_generator.py to continue |
 | **Production Sync** | Pending | Run after mockups hit 80%+ |
 
 ---
@@ -132,39 +112,31 @@ Hyper-personalized pet platform using "memory-led personalization" - products, c
 
 ## KEY FILES
 
-### Frontend
-- `/app/frontend/src/pages/Admin/SoulProductsManager.jsx` - AI Mockups admin
-- `/app/frontend/src/pages/Admin/BundlesManager.jsx` - Bundles admin
-- `/app/frontend/src/components/ArchetypeProducts.jsx` - Archetype filtering
-- `/app/frontend/src/components/CuratedBundles.jsx` - Bundle display (WORKING)
-- `/app/frontend/src/utils/archetypeCopy.js` - Archetype copy utility
+### Frontend - Emergency
+- `/app/frontend/src/pages/EmergencyPage.jsx` - Main 9-layer page
+- `/app/frontend/src/components/emergency/UrgentHelpButtons.jsx`
+- `/app/frontend/src/components/emergency/NearbyEmergencyHelp.jsx`
+- `/app/frontend/src/components/emergency/PetEmergencyFile.jsx`
+- `/app/frontend/src/components/emergency/EmergencySituationGuides.jsx`
+- `/app/frontend/src/components/CuratedBundles.jsx` - With modal
 
-### Backend
-- `/app/backend/app/api/mockup_routes.py` - Mockup generation APIs
-- `/app/backend/app/api/bundle_routes.py` - Bundle CRUD APIs
-- `/app/backend/auto_mockup_generator.py` - Auto-restart script
-- `/app/backend/soul_archetype_engine.py` - Archetype definitions
+### Backend - Google Places
+- `/app/backend/services/google_places_service.py`
+- `/app/backend/mira_routes.py` - `/api/mira/local-places/*` endpoints
 
 ---
 
 ## KEY API ENDPOINTS
 
-### Mockups
-- `GET /api/mockups/stats` - Overall statistics
-- `GET /api/mockups/status` - Current generation status
-- `POST /api/mockups/generate-batch` - Start batch generation
-- `POST /api/mockups/sync-to-production` - Sync to prod
+### Emergency
+- `GET /api/mira/local-places/vets` - Nearby vets via Google Places
+- `GET /api/emergency/vets` - Emergency partners
+- `GET /api/emergency/products` - Emergency products
+- `POST /api/emergency/request` - Submit emergency request
 
 ### Bundles
-- `GET /api/bundles` - List bundles (filter by pillar)
-- `POST /api/bundles` - Create bundle
-- `PUT /api/bundles/{id}` - Update bundle
+- `GET /api/bundles?pillar=emergency` - Get bundles by pillar
 - `POST /api/bundles/{id}/generate-image` - Generate AI image
-- `POST /api/bundles/sync-to-production` - Sync to prod
-
-### Products
-- `GET /api/products/multi-factor-filter` - Personalized filtering
-- `GET /api/breed-products` - Breed-specific products
 
 ---
 
@@ -206,14 +178,16 @@ To start: `cd /app/backend && python3 auto_mockup_generator.py &`
 
 ## VERIFIED WORKING (March 10, 2026)
 
-1. **Bundle Images on Pillar Pages** - CONFIRMED displaying correctly
-   - Birthday Pawty Bundle shows AI-generated party image
-   - Gotcha Day Bundle shows AI-generated GOTCHA image
-   - All 19 bundles have image_url in database
+1. **Emergency Page 9-Layer Architecture** - COMPLETE
+   - All 9 layers functional
+   - Nearby clinics showing from Google Places API
+   - Emergency guides expandable with Do/Don't sections
+   - Special paths for Lost Pet, Travel, Puppy, Senior
 
-2. **Bundles Admin CRUD** - 100% test pass rate
-   - GET, POST, PUT, DELETE all working
-   - Seed defaults working
-   - Image generation working
+2. **Bundle Modal** - FIXED
+   - Clicking bundle card opens detail modal
+   - Shows all items, pricing, and AI image
+   - Add to Cart works from modal
 
-3. **AI Mockup Stats** - Real-time display working in admin panel
+3. **Bundle Images on Pillar Pages** - CONFIRMED working
+   - All 19 bundles have AI-generated images

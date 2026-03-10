@@ -2,15 +2,17 @@
  * CuratedBundles.jsx
  * Displays pre-made product bundles for each pillar
  * Part of the "Golden Standard" page layout
+ * Now with modal detail view
  */
 
 import React, { useState, useEffect } from 'react';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { 
   Package, Sparkles, Star, ChevronRight, ShoppingCart, 
-  Gift, Check, Loader2 
+  Gift, Check, Loader2, X, Heart
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
@@ -130,11 +132,13 @@ const PILLAR_BUNDLES = {
   ]
 };
 
-const CuratedBundles = ({ pillar, showTitle = true, className = '' }) => {
+const CuratedBundles = ({ pillar, showTitle = true, className = '', maxBundles }) => {
   const { addToCart } = useCart();
   const { currentPet } = usePillarContext();
   const [bundles, setBundles] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedBundle, setSelectedBundle] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   
   useEffect(() => {
     const fetchBundles = async () => {
@@ -186,6 +190,14 @@ const CuratedBundles = ({ pillar, showTitle = true, className = '' }) => {
       title: `${bundle.name} added! 🎁`,
       description: `Save ₹${bundle.original_price - bundle.bundle_price} with this bundle`,
     });
+    
+    // Close modal if open
+    setShowModal(false);
+  };
+
+  const openBundleModal = (bundle) => {
+    setSelectedBundle(bundle);
+    setShowModal(true);
   };
   
   if (!bundles.length) {
@@ -196,110 +208,221 @@ const CuratedBundles = ({ pillar, showTitle = true, className = '' }) => {
   const archetype = currentPet?.soul_archetype?.primary_archetype || currentPet?.archetype;
   const archetypeInfo = getArchetypeDisplayInfo(archetype);
   const bundleIntro = getBundleIntro(archetype, currentPet?.name, currentPet?.breed);
+
+  // Apply maxBundles limit if provided
+  const displayBundles = maxBundles ? bundles.slice(0, maxBundles) : bundles;
   
   return (
-    <div className={`py-8 ${className}`} data-testid="curated-bundles-section">
-      {showTitle && (
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-xl">{archetypeInfo.emoji}</span>
-            <Gift className="w-5 h-5 text-purple-600" />
-            <h3 className="text-xl font-bold text-gray-800">
-              {archetype ? `${archetypeInfo.name.replace('The ', '')} Bundles` : 'Curated Bundles'}
-            </h3>
+    <>
+      <div className={`py-8 ${className}`} data-testid="curated-bundles-section">
+        {showTitle && (
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <span className="text-xl">{archetypeInfo.emoji}</span>
+              <Gift className="w-5 h-5 text-purple-600" />
+              <h3 className="text-xl font-bold text-gray-800">
+                {archetype ? `${archetypeInfo.name.replace('The ', '')} Bundles` : 'Curated Bundles'}
+              </h3>
+            </div>
+            <p className="text-sm text-gray-600">
+              {bundleIntro}
+            </p>
           </div>
-          <p className="text-sm text-gray-600">
-            {bundleIntro}
-          </p>
-        </div>
-      )}
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {bundles.map((bundle) => (
-          <Card 
-            key={bundle.id}
-            className={`overflow-hidden border-2 transition-all duration-300 hover:shadow-xl ${
-              bundle.popular ? 'border-purple-300 bg-gradient-to-br from-purple-50 to-white' : 'border-gray-200'
-            }`}
-          >
-            <div className="p-6">
-              {/* Bundle Image (if available) */}
-              {bundle.image_url && (
-                <div className="mb-4 -mx-6 -mt-6">
-                  <img 
-                    src={bundle.image_url} 
-                    alt={bundle.name}
-                    className="w-full h-40 object-cover"
-                  />
+        )}
+        
+        <div className={`grid grid-cols-1 ${displayBundles.length >= 2 ? 'md:grid-cols-2' : ''} ${displayBundles.length >= 3 ? 'lg:grid-cols-3' : ''} gap-6`}>
+          {displayBundles.map((bundle) => (
+            <Card 
+              key={bundle.id}
+              className={`overflow-hidden border-2 transition-all duration-300 hover:shadow-xl cursor-pointer ${
+                bundle.popular ? 'border-purple-300 bg-gradient-to-br from-purple-50 to-white' : 'border-gray-200'
+              }`}
+              onClick={() => openBundleModal(bundle)}
+              data-testid={`bundle-card-${bundle.id}`}
+            >
+              <div className="p-6">
+                {/* Bundle Image (if available) */}
+                {bundle.image_url && (
+                  <div className="mb-4 -mx-6 -mt-6">
+                    <img 
+                      src={bundle.image_url} 
+                      alt={bundle.name}
+                      className="w-full h-40 object-cover"
+                    />
+                  </div>
+                )}
+                
+                {/* Header */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{bundle.icon}</span>
+                    <div>
+                      <h4 className="font-bold text-gray-800 text-lg">
+                        {bundle.name}
+                      </h4>
+                      <p className="text-sm text-gray-600 line-clamp-2">
+                        {bundle.description}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {bundle.popular && (
+                    <Badge className="bg-purple-600 text-white flex-shrink-0">
+                      <Star className="w-3 h-3 mr-1 fill-white" />
+                      Popular
+                    </Badge>
+                  )}
                 </div>
-              )}
-              
-              {/* Header */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">{bundle.icon}</span>
-                  <div>
-                    <h4 className="font-bold text-gray-800 text-lg">
-                      {bundle.name}
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      {bundle.description}
-                    </p>
+                
+                {/* Bundle Items Preview */}
+                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                  <p className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
+                    What's Included
+                  </p>
+                  <div className="space-y-1">
+                    {bundle.items.slice(0, 3).map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-sm text-gray-700">
+                        <Check className="w-4 h-4 text-green-500" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                    {bundle.items.length > 3 && (
+                      <p className="text-xs text-purple-600 font-medium">
+                        +{bundle.items.length - 3} more items
+                      </p>
+                    )}
                   </div>
                 </div>
                 
-                {bundle.popular && (
-                  <Badge className="bg-purple-600 text-white">
+                {/* Pricing */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl font-bold text-gray-900">
+                        ₹{bundle.bundle_price?.toLocaleString()}
+                      </span>
+                      <span className="text-sm text-gray-400 line-through">
+                        ₹{bundle.original_price?.toLocaleString()}
+                      </span>
+                    </div>
+                    <Badge variant="outline" className="text-green-600 border-green-300 mt-1">
+                      Save {bundle.discount}%
+                    </Badge>
+                  </div>
+                  
+                  <Button
+                    onClick={(e) => { e.stopPropagation(); handleAddBundle(bundle); }}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                    data-testid={`add-bundle-${bundle.id}`}
+                  >
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    Add
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Bundle Detail Modal */}
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          {selectedBundle && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <span className="text-2xl">{selectedBundle.icon}</span>
+                  {selectedBundle.name}
+                </DialogTitle>
+              </DialogHeader>
+              
+              <div className="mt-4">
+                {/* Bundle Image */}
+                {selectedBundle.image_url && (
+                  <div className="-mx-6 mb-4">
+                    <img 
+                      src={selectedBundle.image_url} 
+                      alt={selectedBundle.name}
+                      className="w-full h-48 object-cover"
+                    />
+                  </div>
+                )}
+                
+                {/* Description */}
+                <p className="text-gray-600 mb-4">{selectedBundle.description}</p>
+                
+                {/* Popular Badge */}
+                {selectedBundle.popular && (
+                  <Badge className="bg-purple-600 text-white mb-4">
                     <Star className="w-3 h-3 mr-1 fill-white" />
-                    Popular
+                    Popular Choice
                   </Badge>
                 )}
-              </div>
-              
-              {/* Bundle Items */}
-              <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                <p className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
-                  What's Included
-                </p>
-                <div className="space-y-1">
-                  {bundle.items.map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-2 text-sm text-gray-700">
-                      <Check className="w-4 h-4 text-green-500" />
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Pricing */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl font-bold text-gray-900">
-                      ₹{bundle.bundle_price.toLocaleString()}
-                    </span>
-                    <span className="text-sm text-gray-400 line-through">
-                      ₹{bundle.original_price.toLocaleString()}
-                    </span>
+                
+                {/* All Items */}
+                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                  <p className="text-sm font-semibold text-gray-700 mb-3">
+                    {selectedBundle.items.length} Items Included:
+                  </p>
+                  <div className="grid grid-cols-1 gap-2">
+                    {selectedBundle.items.map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-3 p-2 bg-white rounded-lg">
+                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                          <Check className="w-4 h-4 text-purple-600" />
+                        </div>
+                        <span className="text-sm text-gray-800">{item}</span>
+                      </div>
+                    ))}
                   </div>
-                  <Badge variant="outline" className="text-green-600 border-green-300 mt-1">
-                    Save {bundle.discount}%
-                  </Badge>
                 </div>
                 
-                <Button
-                  onClick={() => handleAddBundle(bundle)}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-                >
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  Add Bundle
-                </Button>
+                {/* Pricing Details */}
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 mb-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-gray-500">Bundle Price</p>
+                      <div className="flex items-center gap-2">
+                        <span className="text-3xl font-bold text-gray-900">
+                          ₹{selectedBundle.bundle_price?.toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-gray-500 line-through">
+                        Regular: ₹{selectedBundle.original_price?.toLocaleString()}
+                      </p>
+                      <Badge className="bg-green-500 text-white mt-1">
+                        Save ₹{(selectedBundle.original_price - selectedBundle.bundle_price)?.toLocaleString()}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setShowModal(false)}
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                    onClick={() => handleAddBundle(selectedBundle)}
+                    data-testid="modal-add-bundle-btn"
+                  >
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    Add to Cart
+                  </Button>
+                </div>
               </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-    </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
