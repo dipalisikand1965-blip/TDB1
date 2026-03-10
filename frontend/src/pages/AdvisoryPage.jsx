@@ -16,6 +16,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -23,6 +24,7 @@ import { Badge } from '../components/ui/badge';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -485,41 +487,60 @@ const AdvisoryPage = () => {
 
   const personalizedAdvice = getPersonalizedAdvice();
 
-  // Concierge Modal Component - MATCHES LEARN PAGE PATTERN
+  // Advisory Types for modal dropdown
+  const ADVISORY_TYPES = {
+    food_nutrition: { name: 'Food & Nutrition', icon: Apple },
+    puppy_guidance: { name: 'Puppy Guidance', icon: Baby },
+    breed_guidance: { name: 'Breed Guidance', icon: Dog },
+    grooming_coat: { name: 'Grooming & Coat', icon: Scissors },
+    behaviour_training: { name: 'Behaviour & Training', icon: Brain },
+    travel_readiness: { name: 'Travel Readiness', icon: Plane },
+    senior_care: { name: 'Senior Dog Care', icon: Heart },
+    home_setup: { name: 'Home Setup', icon: Home },
+    new_adoption: { name: 'New Adoption', icon: PawPrint },
+    product_advice: { name: 'Product Advice', icon: Package },
+    recovery_care: { name: 'Recovery & Care', icon: Shield }
+  };
+
+  // Concierge Modal Component - EXACTLY LIKE LEARN PAGE "Request Training" Modal
   const ConciergeModal = () => (
     <Dialog open={showConciergeModal} onOpenChange={setShowConciergeModal}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MessageCircle className="w-6 h-6 text-violet-600" />
-            Talk to Concierge® for Advisory Help
+            Request Advisory Help
           </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-6 py-4">
-          {/* Pet Selection - SAME PATTERN AS LEARN PAGE */}
+          {/* Pet Selection - EXACTLY LIKE LEARN PAGE */}
           <div>
-            <Label className="text-sm font-medium mb-2 block">Which pet needs help?</Label>
+            <Label className="text-sm font-medium mb-2 block">Your Pet's Details</Label>
             {userPets.length > 0 ? (
               <div className="grid grid-cols-2 gap-3 mt-2">
                 {userPets.map(pet => (
                   <Card 
                     key={pet.id}
-                    className={`p-3 cursor-pointer ${selectedPet?.id === pet.id ? 'ring-2 ring-violet-500 bg-violet-50' : ''}`}
+                    className={`p-4 cursor-pointer transition-all ${
+                      selectedPet?.id === pet.id 
+                        ? 'ring-2 ring-blue-500 bg-blue-50' 
+                        : 'hover:bg-gray-50'
+                    }`}
                     onClick={() => setSelectedPet(pet)}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full overflow-hidden bg-violet-100 flex items-center justify-center">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center flex-shrink-0">
                         <img 
                           src={getPetPhotoUrl(pet)} 
                           alt={pet.name}
                           className="w-full h-full object-cover"
-                          onError={(e) => { e.target.src = 'https://via.placeholder.com/40'; }}
+                          onError={(e) => { e.target.onerror = null; e.target.style.display = 'none'; }}
                         />
                       </div>
                       <div>
-                        <p className="font-medium">{pet.name}</p>
-                        <p className="text-xs text-gray-500">{pet.breed}</p>
+                        <p className="font-semibold text-gray-900">{pet.name}</p>
+                        <p className="text-sm text-gray-500">{pet.breed}</p>
                       </div>
                     </div>
                   </Card>
@@ -527,84 +548,108 @@ const AdvisoryPage = () => {
               </div>
             ) : (
               <div className="space-y-3">
-                <Input
-                  placeholder="Pet name *"
-                  value={requestForm.guest_pet_name || ''}
-                  onChange={(e) => setRequestForm({...requestForm, guest_pet_name: e.target.value})}
-                />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">Pet Name *</Label>
+                    <Input
+                      placeholder="e.g., Mojo"
+                      value={requestForm.guest_pet_name || ''}
+                      onChange={(e) => setRequestForm({...requestForm, guest_pet_name: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Breed</Label>
+                    <Input
+                      placeholder="e.g., Labrador"
+                      value={requestForm.guest_pet_breed || ''}
+                      onChange={(e) => setRequestForm({...requestForm, guest_pet_breed: e.target.value})}
+                    />
+                  </div>
+                </div>
                 {!user && (
-                  <div className="grid grid-cols-2 gap-3">
-                    <Input
-                      placeholder="Your name *"
-                      value={requestForm.guest_name || ''}
-                      onChange={(e) => setRequestForm({...requestForm, guest_name: e.target.value})}
-                    />
-                    <Input
-                      placeholder="Phone *"
-                      value={requestForm.guest_phone || ''}
-                      onChange={(e) => setRequestForm({...requestForm, guest_phone: e.target.value})}
-                    />
+                  <div className="space-y-3 pt-3 border-t">
+                    <Label className="text-sm font-medium">Your Contact Details</Label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label className="text-xs">Your Name *</Label>
+                        <Input
+                          placeholder="Full name"
+                          value={requestForm.guest_name || ''}
+                          onChange={(e) => setRequestForm({...requestForm, guest_name: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Phone *</Label>
+                        <Input
+                          placeholder="Mobile number"
+                          value={requestForm.guest_phone || ''}
+                          onChange={(e) => setRequestForm({...requestForm, guest_phone: e.target.value})}
+                        />
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
             )}
           </div>
           
-          {/* Context Message */}
-          <div className="p-3 bg-violet-50 rounded-lg">
-            <p className="text-sm text-gray-600">
-              {conciergeContext 
-                ? `Requesting help with: "${conciergeContext}"`
-                : `Our expert team is ready to help you${selectedPet ? ` with ${selectedPet.name}` : ''}.`}
-            </p>
+          {/* Advisory Type - Like Learn's Training Type */}
+          <div>
+            <Label className="text-sm font-medium">Advisory Type</Label>
+            <Select 
+              value={requestForm.advisory_type} 
+              onValueChange={(v) => setRequestForm(prev => ({ ...prev, advisory_type: v }))}
+            >
+              <SelectTrigger className="mt-2">
+                <SelectValue placeholder="Select advisory type" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(ADVISORY_TYPES).map(([key, config]) => (
+                  <SelectItem key={key} value={key}>{config.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           
-          {/* Contact Options */}
-          <div className="space-y-3">
-            <Button
-              onClick={() => {
-                openWhatsAppConcierge(conciergeContext);
-                setShowConciergeModal(false);
-              }}
-              className="w-full bg-green-600 hover:bg-green-700"
-            >
-              <MessageCircle className="w-4 h-4 mr-2" />
-              Chat on WhatsApp
-            </Button>
-            
-            <Button
-              onClick={() => {
-                const pet = selectedPet || activePet;
-                window.location.href = `mailto:hello@thedoggycompany.com?subject=Advisory Help${conciergeContext ? `: ${conciergeContext}` : ''}&body=Hi, I need help${pet ? ` for my ${pet.breed || 'pet'} ${pet.name}` : ''}.`;
-                setShowConciergeModal(false);
-              }}
-              variant="outline"
-              className="w-full"
-            >
-              <Send className="w-4 h-4 mr-2" />
-              Send Email
-            </Button>
-            
-            <Button
-              onClick={() => {
-                window.location.href = 'tel:+918971702582';
-                setShowConciergeModal(false);
-              }}
-              variant="outline"
-              className="w-full"
-            >
-              <Phone className="w-4 h-4 mr-2" />
-              Call Us
-            </Button>
-          </div>
+          {/* Context from clicked intent */}
+          {conciergeContext && (
+            <div className="p-3 bg-violet-50 rounded-lg border border-violet-200">
+              <p className="text-sm text-violet-700">
+                <strong>Topic:</strong> {conciergeContext}
+              </p>
+            </div>
+          )}
           
-          <p className="text-xs text-gray-500 text-center">
-            Available Mon-Sat, 10am-7pm IST
-          </p>
+          {/* Additional Notes */}
+          <div>
+            <Label className="text-sm font-medium">Additional Notes</Label>
+            <Textarea 
+              className="mt-2"
+              placeholder="Anything specific you'd like help with..."
+              value={requestForm.notes}
+              onChange={(e) => setRequestForm(prev => ({ ...prev, notes: e.target.value }))}
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3 pt-4 border-t">
+          <Button variant="outline" onClick={() => setShowConciergeModal(false)}>Cancel</Button>
+          <Button 
+            onClick={() => {
+              openWhatsAppConcierge(conciergeContext);
+              setShowConciergeModal(false);
+            }} 
+            disabled={!selectedPet && !requestForm.guest_pet_name}
+            className="bg-violet-600 hover:bg-violet-700"
+          >
+            <Send className="w-4 h-4 mr-2" />
+            Submit Request
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
   );
+
 
   return (
     <PillarPageLayout
@@ -692,15 +737,30 @@ const AdvisoryPage = () => {
                   <span className="text-violet-700">Thinking...</span>
                 </div>
               ) : (
-                <div>
-                  <p className="text-gray-700 mb-3">{aiResponse}</p>
-                  <Button
-                    onClick={() => openConciergeModal(advisoryQuery)}
-                    className="bg-violet-600 hover:bg-violet-700"
-                  >
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    Talk to Concierge®
-                  </Button>
+                <div className="text-left">
+                  <div className="prose prose-sm max-w-none text-gray-700 mb-4">
+                    <ReactMarkdown>{aiResponse}</ReactMarkdown>
+                  </div>
+                  <div className="flex flex-wrap gap-3 justify-center">
+                    <Button
+                      onClick={() => {
+                        setShowAiResponse(false);
+                        setAiResponse('');
+                        setAdvisoryQuery('');
+                      }}
+                      variant="outline"
+                      className="border-violet-300 text-violet-600"
+                    >
+                      Ask another question
+                    </Button>
+                    <Button
+                      onClick={() => openConciergeModal(advisoryQuery)}
+                      className="bg-violet-600 hover:bg-violet-700"
+                    >
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Talk to Concierge®
+                    </Button>
+                  </div>
                 </div>
               )}
             </Card>
