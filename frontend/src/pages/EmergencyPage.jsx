@@ -16,15 +16,6 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
 import ProductCard from '../components/ProductCard';
-import { getPetPhotoUrl } from '../utils/petAvatar';
-import ConciergePickCard, { CONCIERGE_PRESETS } from '../components/ConciergePickCard';
-import PillarPicksSection from '../components/PillarPicksSection';
-import { getSoulBasedReason } from '../utils/petSoulInference';
-import SoulMadeCollection from '../components/SoulMadeCollection';
-import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
-import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
-import PersonalizedPicks from '../components/PersonalizedPicks';
-import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
 import {
   AlertTriangle, Search, Heart, Phone, MapPin, Clock, Ambulance,
@@ -794,44 +785,13 @@ const EmergencyPage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* === SERVICE CATALOG WITH PRICING === */}
+      {/* === SERVICE CATALOG === */}
       <ServiceCatalogSection 
         pillar="emergency"
         title="Emergency, Personalised"
-        subtitle="24x7 emergency services with transparent pricing"
+        subtitle="24x7 emergency services"
         maxServices={8}
       />
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* SOUL MADE PRODUCTS - Emergency gear with breed artwork */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-12 px-4" data-testid="emergency-soul-made-section">
-        <div className="max-w-6xl mx-auto">
-          <SoulMadeCollection
-            pillar="emergency"
-            maxItems={8}
-            showTitle={true}
-          />
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4" data-testid="emergency-breed-smart-section">
-        <div className="max-w-6xl mx-auto">
-          <BreedSmartRecommendations pillar="emergency" />
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <ArchetypeProducts pillar="emergency" maxProducts={8} showTitle={true} />
-        </div>
-      </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* CURATED BUNDLES - Save with handpicked combinations */}
@@ -842,52 +802,6 @@ const EmergencyPage = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* MIRA CURATED LAYER - Unified Concierge Recommendations */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <MiraCuratedLayer
-        pillar="emergency"
-        activePet={activePet}
-        token={token}
-        userEmail={user?.email}
-        isLoading={!userPets?.length && !!token}
-      />
-      
-      {/* Personalized Emergency Products */}
-      <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <PersonalizedPicks pillar="emergency" maxProducts={6} />
-        </div>
-      </section>
-      
-      {/* Concierge Pick Card - 24/7 Emergency Support */}
-      {(activePet || userPets?.[0]) && (
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <ConciergePickCard
-            pet={{
-              name: (activePet || userPets[0]).name,
-              breed: (activePet || userPets[0]).breed,
-              photo: (activePet || userPets[0]).photo_url,
-              soulTraits: (activePet || userPets[0]).personality_traits || [],
-                id: (activePet || userPets[0]).id
-            }}
-            pillar="emergency"
-            title={CONCIERGE_PRESETS.emergency.title}
-            icon={CONCIERGE_PRESETS.emergency.icon}
-            description={CONCIERGE_PRESETS.emergency.description}
-            soulReason={getSoulBasedReason(activePet || userPets[0], 'emergency')}
-            responseTime="Immediate"
-          />
-        </div>
-      )}
-      
-      {/* Mira's Picks for Pet */}
-      {(activePet || userPets?.[0]) && (
-        <div className="max-w-6xl mx-auto px-4">
-          <PillarPicksSection pillar="emergency" pet={activePet || userPets[0]} />
-        </div>
-      )}
-      
       {/* Concierge® Button - Blue C® for Service Desk chat */}
       <ConciergeButton 
         pillar="emergency" 
