@@ -695,41 +695,82 @@ MASTER_SERVICES = {
         "icon": "🌈",
         "services": [
             {
-                "id": "SVC-FARE-PLANNING",
+                "id": "SVC-FARE-EOL-PLANNING",
                 "name": "End-of-Life Planning",
-                "description": "Compassionate planning support",
-                "is_bookable": False,
-                "requires_consultation": True
+                "description": "Compassionate guidance to help you prepare for your pet's final journey",
+                "image": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd33000154/images/898419cc1ff09f1c489ffa371a99f90aeedff568ea9f13a51bf3897875bb723f.png",
+                "is_bookable": True,
+                "requires_consultation": True,
+                "base_price": 0,
+                "is_free": True,
+                "includes": ["Counselor consultation", "Options guidance", "Timeline planning", "Family support"]
             },
             {
                 "id": "SVC-FARE-EUTHANASIA",
                 "name": "Euthanasia Coordination",
-                "description": "Vet-guided peaceful passing",
-                "is_bookable": False,
-                "requires_consultation": True
+                "description": "Arrange peaceful, dignified in-home or clinic euthanasia",
+                "image": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd33000154/images/552c3bd3b05f178cb545fd9bf41fbfdc48bf1e789431f268520aea4c10ae398d.png",
+                "is_bookable": True,
+                "requires_consultation": True,
+                "base_price": 2500,
+                "includes": ["Vet coordination", "Home visit option", "Sedation if needed", "Post-care guidance"]
             },
             {
                 "id": "SVC-FARE-CREMATION",
                 "name": "Cremation & Burial",
-                "description": "Dignified final arrangements",
+                "description": "Dignified cremation services with various memorial options",
+                "image": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd33000154/images/52d9f350f3cc349eaa44856bedfc05d04dedd7fea51e00a17ee293a5afc8fb76.png",
                 "is_bookable": True,
-                "base_price": 3000,
-                "city_pricing": {"mumbai": 1.2, "delhi": 1.1, "bangalore": 1.0}
+                "base_price": 3500,
+                "city_pricing": {"mumbai": 1.2, "delhi": 1.1, "bangalore": 1.0},
+                "includes": ["Transport pickup", "Cremation service", "Certificate", "Basic urn"]
             },
             {
                 "id": "SVC-FARE-MEMORIAL",
                 "name": "Memorial & Remembrance",
-                "description": "Memorial planning and keepsakes",
+                "description": "Beautiful keepsakes and memorial products to honor your pet's memory",
+                "image": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd33000154/images/def6c38cccfa25db89987eeac44ceb850b3076b921ea8db51736b9bcac9e11b3.png",
                 "is_bookable": True,
-                "base_price": 2000
+                "base_price": 999,
+                "includes": ["Paw print casting", "Photo frame", "Memory box", "Rainbow Bridge card"]
             },
             {
-                "id": "SVC-FARE-GRIEF",
+                "id": "SVC-FARE-GRIEF-SUPPORT",
                 "name": "Grief Support Resources",
-                "description": "Support during difficult times",
+                "description": "Professional grief counseling and support resources",
+                "image": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd33000154/images/41233dc79f796ea26596c08ac80f0ac840def8761a595e88b58704e625ca45fa.png",
                 "is_bookable": True,
                 "base_price": 0,
-                "is_free": True
+                "is_free": True,
+                "includes": ["Counselor session", "Support group access", "Resources guide", "Follow-up check-in"]
+            },
+            {
+                "id": "SVC-FARE-DIGNIFIED-CREMATION",
+                "name": "Dignified Cremation",
+                "description": "Premium private cremation with witnessing option",
+                "image": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd33000154/images/98439e6c3d17bd249cc00f8731bb084f7949183d85a288a11bf4f7d2c2c04bec.png",
+                "is_bookable": True,
+                "base_price": 5000,
+                "includes": ["Private cremation", "Witnessing option", "Premium urn", "Certificate", "Home delivery"]
+            },
+            {
+                "id": "SVC-FARE-MEMORIAL-SERVICE",
+                "name": "Memorial Service",
+                "description": "Organize a beautiful memorial ceremony to celebrate your pet's life",
+                "image": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd33000154/images/9fb52c19934bc5cc250a7aeee23dc46ada1edeaf1b6ddea737f6400c76299ae1.png",
+                "is_bookable": True,
+                "requires_consultation": True,
+                "base_price": 7500,
+                "includes": ["Event planning", "Venue coordination", "Photo tribute", "Ceremony officiant"]
+            },
+            {
+                "id": "SVC-FARE-PET-LOSS-SUPPORT",
+                "name": "Pet Loss Support",
+                "description": "Join our supportive community of pet parents who understand your loss",
+                "image": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd33000154/images/9f401377cc996dfeb20233ac7c493fa6e63b4ba26537e1e7e6618afde38c0779.png",
+                "is_bookable": True,
+                "base_price": 1500,
+                "includes": ["Group session access", "Private counseling", "Healing workshop", "Ongoing support"]
             }
         ]
     },
@@ -739,45 +780,85 @@ MASTER_SERVICES = {
         "icon": "🐾",
         "services": [
             {
-                "id": "SVC-ADOPT-DISCOVER",
-                "name": "Ethical Adoption Discovery",
-                "description": "Find verified shelters and rescues",
+                "id": "SVC-ADOPT-VET-REG",
+                "name": "Vet Registration Help",
+                "description": "Find and register with a trusted veterinarian near you",
+                "image": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd33000154/images/0a5e63eb6c4c1196d09e6512fe20bc214e8e3a847838cea53c906c863a6dbb90.png",
                 "is_bookable": True,
                 "base_price": 0,
-                "is_free": True
+                "is_free": True,
+                "includes": ["Vet finder", "First appointment booking", "Vaccination schedule", "Health records setup"]
             },
             {
-                "id": "SVC-ADOPT-SUITABILITY",
-                "name": "Breed Suitability Advisory",
-                "description": "Find the right breed for your lifestyle",
+                "id": "SVC-ADOPT-TRAINING",
+                "name": "Training Session Booking",
+                "description": "Connect with certified positive-reinforcement trainers",
+                "image": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd33000154/images/b62be8266b3f89ca6a21585767d53ff76338e9b578764c5227201dd2c8a4b634.png",
                 "is_bookable": True,
-                "base_price": 500,
-                "duration_minutes": 45
+                "base_price": 1500,
+                "duration_minutes": 60,
+                "includes": ["Trainer matching", "Assessment session", "Training plan", "Follow-up support"]
             },
             {
-                "id": "SVC-ADOPT-READINESS",
-                "name": "Adoption Readiness Planning",
-                "description": "Are you ready for a pet?",
+                "id": "SVC-ADOPT-GROOMING",
+                "name": "First Grooming Session",
+                "description": "Book your new dog's first professional grooming",
+                "image": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd33000154/images/fbf703adce5fedee0267fb0792687ae257f00d18da29b7d44cecc14a2d44cbba.png",
                 "is_bookable": True,
-                "base_price": 300,
-                "duration_minutes": 30
+                "base_price": 800,
+                "duration_minutes": 90,
+                "includes": ["Bath & dry", "Nail trim", "Ear cleaning", "Brush out"]
             },
             {
-                "id": "SVC-ADOPT-HOME",
-                "name": "Home Preparation Guidance",
-                "description": "Prepare your home for a new pet",
+                "id": "SVC-ADOPT-SUPPLIES",
+                "name": "Supplies Shopping Help",
+                "description": "Choose the right supplies based on your dog's needs",
+                "image": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd33000154/images/76293a75091ad8a3357cf32a837e8dd710746b80b7fafe8c369d5cf39f5ea21a.png",
                 "is_bookable": True,
-                "base_price": 500,
-                "duration_minutes": 45
+                "base_price": 0,
+                "is_free": True,
+                "requires_consultation": True,
+                "includes": ["Personalized list", "Size recommendations", "Brand suggestions"]
             },
             {
-                "id": "SVC-ADOPT-TRANSITION",
-                "name": "First 30 Days Support",
-                "description": "Transition support for new adoptions",
+                "id": "SVC-ADOPT-NUTRITION",
+                "name": "Nutrition & Food Advice",
+                "description": "Personalized food and nutrition recommendations",
+                "image": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd33000154/images/e57f4942ca8fff2756dea22584750c8aab27133f4f60a8de68a0c20edc8366a9.png",
                 "is_bookable": True,
-                "base_price": 2000,
+                "base_price": 0,
+                "is_free": True,
+                "includes": ["Diet assessment", "Food recommendations", "Portion guidelines"]
+            },
+            {
+                "id": "SVC-ADOPT-SETTLING",
+                "name": "Settling-in Support",
+                "description": "Customized 3-3-3 settling plan with daily check-ins",
+                "image": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd33000154/images/acf943568f9b630541cfc845f745737fdcf262ae9d0e3ccb18b4a5f60b0726a6.png",
+                "is_bookable": True,
+                "base_price": 999,
                 "duration_minutes": None,
-                "program_days": 30
+                "program_days": 30,
+                "includes": ["3-3-3 plan", "Daily check-ins", "Behavior guidance", "Issue troubleshooting"]
+            },
+            {
+                "id": "SVC-ADOPT-TRAVEL",
+                "name": "Travel Assistance",
+                "description": "Safe transport if your pet is coming from another city",
+                "image": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd33000154/images/7eab4452f144512e2e04b6e3e0ebc43b3c2c7ae8d1242fa59b6a0f825e3354bd.png",
+                "is_bookable": True,
+                "base_price": 3000,
+                "requires_consultation": True,
+                "includes": ["Route planning", "Pet carrier", "Trained handler", "Updates during journey"]
+            },
+            {
+                "id": "SVC-ADOPT-STARTER-KIT",
+                "name": "Starter Kit Assembly",
+                "description": "Complete starter kit tailored to your dog's size and needs",
+                "image": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd33000154/images/0913153ad8ab688faf50c56758c0b50c84e473704aaa79bcd975b27fe42075fd.png",
+                "is_bookable": True,
+                "base_price": 2999,
+                "includes": ["Bowls & feeding", "Bed & blanket", "Collar & leash", "Toys & treats"]
             }
         ]
     },
