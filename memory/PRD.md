@@ -59,8 +59,29 @@ All guided paths and journey guides are now stored in the database and fetched v
 - **Added pillar-aware copy**: archetypeCopy.js now has FAREWELL_COPY with memorial language
 - **Simplified page**: Removed duplicate product sections (kept SoulMadeCollection + CuratedBundles)
 - **Services → Concierge® style**: hidePrice=true, no pricing shown
-- **Memorial Bundles**: Seeded 3 bundles (Forever in Heart, Precious Memories, Loving Tribute)
+- **Memorial Bundles**: Added 3 bundles (Forever in Heart, Precious Memories, Loving Tribute)
 - **Soul Made heading**: Shows "Forever in our hearts" for farewell pillar
+
+### 7. AI-Generated Contextual Service Images ✅
+- Generated 8 unique AI images for Farewell services:
+  - End-of-Life Planning (compassionate consultation scene)
+  - Euthanasia Coordination (gentle home visit scene)
+  - Cremation & Burial (memorial urn with flowers)
+  - Memorial & Remembrance (keepsakes collection)
+  - Grief Support Resources (counseling session)
+  - Dignified Cremation (ceremony room)
+  - Memorial Service (outdoor ceremony)
+  - Pet Loss Support (support group)
+- All services seeded to `services_master` collection with Admin CRUD via `/api/service-box/services`
+
+### 8. Adopt Page Complete Redesign ✅
+- **Removed** Pets Available section and Partner Shelter stats (fake data)
+- **Added** Intent Tiles: "I'm adopting a puppy/adult/senior/indie", First-time parent, Rescue, Help choose essentials, Talk to Concierge
+- **Added** "What Do I Need First?" section with Essentials Buckets (Day 1, Week 1, Home, Feeding, Sleep, Walking, Grooming, Documents)
+- **Added** Product Categories (Day 1 Essentials, Comfort & Settling, Home Setup, Grooming, Walking, Training, Paperwork)
+- **Added** AI Adoption Advisor chat
+- **Added** Concierge Help Options (8 types of help available)
+- **Added** 3 Adoption Bundles (Day 1 Essentials, Comfort & Settling, New Puppy Starter)
 
 ---
 
