@@ -366,12 +366,17 @@ const EmergencyPage = () => {
               <h2 className="text-xl font-bold text-gray-900">Emergency Preparedness</h2>
             </div>
             
-            {/* Curated Bundles */}
-            <CuratedBundles pillar="emergency" maxBundles={3} />
-            
-            {/* Emergency Products Grid */}
-            <div className="mt-8">
-              <EmergencyProductsGrid maxProducts={16} showPersonalized={true} />
+            {/* Bundles and Products Side by Side */}
+            <div className="grid lg:grid-cols-2 gap-6">
+              {/* Left: Curated Bundles */}
+              <div>
+                <CuratedBundles pillar="emergency" maxBundles={3} showTitle={false} />
+              </div>
+              
+              {/* Right: Emergency Products Grid */}
+              <div>
+                <EmergencyProductsGrid maxProducts={8} showPersonalized={true} />
+              </div>
             </div>
           </div>
         </section>

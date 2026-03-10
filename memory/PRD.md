@@ -1,21 +1,20 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 10, 2026 17:10 IST  
-**Status:** Emergency Page COMPLETE | Products Added | Mockups ~67.6%
+**Last Updated:** March 10, 2026 17:50 IST  
+**Status:** Emergency Page COMPLETE | All Features Working
 
 ---
 
 ## COMPLETED THIS SESSION
 
-### 1. Emergency Page Gap Analysis & Fixes
-| Issue | Fix Applied | Status |
-|-------|-------------|--------|
-| Wrong archetype heading | Added pillar-aware copy functions | ✅ FIXED |
-| Location stuck on Mumbai | Added geolocation + manual city selector | ✅ FIXED |
-| Service CTAs generic | Changed to "Talk to Concierge" | ✅ FIXED |
-| Bundle titles wrong | Emergency-specific titles | ✅ FIXED |
+### 1. Emergency Page Layout Overhaul
+- **Bundles & Products Side-by-Side Layout** - Left: 3 bundles, Right: Products grid
+- **3 Emergency Bundles** (all with AI images):
+  - Pet First Aid Bundle - ₹1,599
+  - Travel Emergency Kit - ₹2,799
+  - Post-Surgery Recovery Bundle - ₹3,499
 
-### 2. Emergency Products Catalog (15 NEW Products)
-**General Products (Universal):**
+### 2. 15 Emergency Products Added
+**General (Universal):**
 - Pet First Aid Kit - ₹1,299
 - Gauze & Bandage Wrap Set - ₹349
 - Digital Pet Thermometer - ₹499
@@ -26,7 +25,7 @@
 - Collapsible Food & Water Bowl - ₹249
 - QR Code Pet ID Tag - ₹499
 
-**Personalized Products (By Size & Breed):**
+**Personalized (By Size/Breed):**
 - Soft Safety Muzzle - ₹599 (sizes: XS-XL)
 - Pet Transport Carrier - ₹1,499 (weight-based)
 - Protective E-Collar / Cone - ₹449 (neck sizes)
@@ -34,15 +33,29 @@
 - Cooling Mat for Heatstroke - ₹999 (S/M/L)
 - GPS Pet Tracker Tag - ₹2,499
 
-### 3. Pet Emergency File with Soul Questions
-- Shows completion percentage
-- Prompts for missing data (age, weight, allergies, medications, conditions)
-- Quick option buttons for fast data entry
+### 3. Location Search - Any City Worldwide
+- Uses Nominatim (OpenStreetMap) for free geocoding
+- Search ANY location (city, town, district)
+- Auto-detect with browser geolocation
+- Popular cities quick-select
+- Location saved to localStorage
 
-### 4. Emergency Products Grid Component
-- Category filters (All, First Aid, Restraint, Transport, Recovery, Hygiene, Essentials, Temperature)
-- Separates "Universal" vs "Custom Fit" products
-- Add to cart functionality
+### 4. Product Admin Integration
+- Products synced to `products_master` for admin CRUD
+- Uses unified order flow (order → notification → service desk inbox)
+- Products have modals when clicked on pillar pages
+
+---
+
+## VERIFIED WORKING
+
+1. ✅ **3 Emergency Bundles** - Side by side with AI images
+2. ✅ **15 Emergency Products** - Categorized with filters
+3. ✅ **Location Search** - Works for any city worldwide
+4. ✅ **Products in Admin** - Synced to products_master
+5. ✅ **Soul Questions** - Pet Emergency File prompts for missing data
+6. ✅ **"Talk to Concierge" CTAs** - On all service cards
+7. ✅ **Emergency-specific Copy** - No archetype playful language
 
 ---
 
@@ -50,31 +63,15 @@
 
 | Layer | Component | Status |
 |-------|-----------|--------|
-| 1 | **Urgent Help Buttons** | ✅ |
-| 2 | **Near Me Now** - Location-aware | ✅ |
-| 3 | **Concierge Will Assist** | ✅ |
-| 4 | **Pet Emergency File** - With Soul questions | ✅ |
-| 5 | **Emergency Guides** - 10 situations | ✅ |
-| 6 | **Emergency Products** - 15 products + bundles | ✅ |
-| 7 | **Smart Picks** - Personalized | ✅ |
-| 8 | **Special Paths** - Lost Pet, Travel, Puppy, Senior | ✅ |
-| 9 | **Follow-up & Recovery** | ✅ |
-
----
-
-## FILES MODIFIED
-
-### Backend
-- `/app/backend/emergency_routes.py` - Fixed products API to prioritize curated products
-
-### Frontend
-- `/app/frontend/src/components/emergency/NearbyEmergencyHelp.jsx` - Location detection + city selector
-- `/app/frontend/src/components/emergency/PetEmergencyFile.jsx` - Soul reminder questions
-- `/app/frontend/src/components/emergency/EmergencyProductsGrid.jsx` - NEW product grid
-- `/app/frontend/src/utils/archetypeCopy.js` - Pillar-aware copy functions
-- `/app/frontend/src/components/ArchetypeProducts.jsx` - Uses pillar-aware copy
-- `/app/frontend/src/components/CuratedBundles.jsx` - Emergency-specific titles
-- `/app/frontend/src/components/ServiceCatalogSection.jsx` - "Talk to Concierge" CTA
+| 1 | Urgent Help Buttons | ✅ |
+| 2 | Near Me Now (Any Location) | ✅ |
+| 3 | Concierge Will Assist | ✅ |
+| 4 | Pet Emergency File + Soul Questions | ✅ |
+| 5 | Emergency Guides (10 situations) | ✅ |
+| 6 | Bundles + Products (Side by Side) | ✅ |
+| 7 | Smart Picks (Personalized) | ✅ |
+| 8 | Special Paths (Lost, Travel, Puppy, Senior) | ✅ |
+| 9 | Follow-up & Recovery | ✅ |
 
 ---
 
@@ -82,7 +79,7 @@
 
 | Task | Progress |
 |------|----------|
-| **Mockup Generation** | 67.6% (1736/2569) |
+| **Mockup Generation** | ~67.6% (running) |
 
 ---
 
@@ -91,7 +88,20 @@
 | Issue | Priority |
 |-------|----------|
 | Razorpay checkout | P1 (User deferred) |
-| Mobile dashboard | P2 (Needs screenshot) |
+| Mobile dashboard | P2 |
+
+---
+
+## KEY FILES MODIFIED
+
+### Backend
+- `/app/backend/emergency_routes.py` - Fixed products API with priority sorting
+
+### Frontend
+- `/app/frontend/src/pages/EmergencyPage.jsx` - Side-by-side layout
+- `/app/frontend/src/components/emergency/NearbyEmergencyHelp.jsx` - Any location search
+- `/app/frontend/src/components/emergency/EmergencyProductsGrid.jsx` - Product grid with categories
+- `/app/frontend/src/components/emergency/PetEmergencyFile.jsx` - Soul reminder questions
 
 ---
 
@@ -99,30 +109,3 @@
 
 - **User:** dipali@clubconcierge.in / test123
 - **Admin:** aditya / lola4304
-
----
-
-## KEY API ENDPOINTS
-
-- `GET /api/emergency/products` - Returns curated products first (priority-sorted)
-- `GET /api/mira/local-places/vets?city=X` - Nearby vets by city
-- `GET /api/emergency/vets` - Emergency partners
-
----
-
-## NEXT STEPS
-
-1. **Monitor mockup generation** - Currently at 67.6%
-2. **Fix Razorpay** - When user prioritizes
-3. **Mobile testing** - Need user screenshot
-
----
-
-## VERIFIED WORKING
-
-1. ✅ Emergency Products Grid showing 15 curated products
-2. ✅ Category filters working (All, First Aid, Transport, etc.)
-3. ✅ Bundles showing with "Emergency Bundles" title
-4. ✅ Location selector with 12 cities + auto-detect
-5. ✅ Soul reminder questions on Pet Emergency File
-6. ✅ "Talk to Concierge" CTAs on services
