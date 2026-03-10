@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://soul-made-catalog.preview.emergentagent.com
+https://personalized-paws.preview.emergentagent.com
 
 ---
 

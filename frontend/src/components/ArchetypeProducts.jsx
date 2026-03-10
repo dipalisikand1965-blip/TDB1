@@ -16,6 +16,12 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { usePillarContext } from '../context/PillarContext';
 import { useCart } from '../context/CartContext';
+import { 
+  getPersonalizedGreeting, 
+  getProductIntro,
+  getArchetypeDisplayInfo,
+  getAccentColor 
+} from '../utils/archetypeCopy';
 
 // Archetype color schemes
 const ARCHETYPE_COLORS = {
@@ -136,22 +142,24 @@ const ArchetypeProducts = ({
   }
   
   const colors = ARCHETYPE_COLORS[petData?.archetype] || ARCHETYPE_COLORS.default;
-  const archetypeName = ARCHETYPE_NAMES[petData?.archetype] || 'Unique Soul';
+  const archetypeInfo = getArchetypeDisplayInfo(petData?.archetype);
+  const greeting = getPersonalizedGreeting(petData?.archetype, petData?.name, petData?.breed);
+  const productIntro = getProductIntro(petData?.archetype, petData?.name, petData?.breed);
   
   return (
     <div className={`py-8 ${className}`} data-testid="archetype-products-section">
       {showTitle && (
         <div className={`text-center mb-8 p-6 rounded-2xl bg-gradient-to-r ${colors.bg} ${colors.border} border`}>
           <div className="flex items-center justify-center gap-2 mb-2">
-            <Sparkles className={`w-5 h-5 ${colors.accent}`} />
+            <span className="text-2xl">{archetypeInfo.emoji}</span>
             <h3 className="text-lg font-semibold text-gray-800">
-              Perfectly Matched for {petData?.name}
+              {greeting}
             </h3>
             <Sparkles className={`w-5 h-5 ${colors.accent}`} />
           </div>
           
           <p className="text-sm text-gray-600 mb-3">
-            Curated for a <span className={`font-semibold ${colors.accent}`}>{archetypeName}</span> personality
+            {productIntro}
           </p>
           
           <div className="flex items-center justify-center gap-2 flex-wrap">
@@ -162,7 +170,7 @@ const ArchetypeProducts = ({
               {petData?.life_stage}
             </Badge>
             <Badge variant="outline" className={`${colors.border} ${colors.accent}`}>
-              {archetypeName}
+              {archetypeInfo.name}
             </Badge>
           </div>
         </div>

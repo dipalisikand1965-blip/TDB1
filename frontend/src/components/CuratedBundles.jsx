@@ -16,6 +16,7 @@ import { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
 import { toast } from '../hooks/use-toast';
+import { getBundleIntro, getArchetypeDisplayInfo } from '../utils/archetypeCopy';
 
 // Bundle configurations per pillar
 const PILLAR_BUNDLES = {
@@ -164,19 +165,24 @@ const CuratedBundles = ({ pillar, showTitle = true, className = '' }) => {
     return null;
   }
   
+  // Get archetype-based copy
+  const archetype = currentPet?.soul_archetype?.primary_archetype || currentPet?.archetype;
+  const archetypeInfo = getArchetypeDisplayInfo(archetype);
+  const bundleIntro = getBundleIntro(archetype, currentPet?.name, currentPet?.breed);
+  
   return (
     <div className={`py-8 ${className}`} data-testid="curated-bundles-section">
       {showTitle && (
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="text-xl">{archetypeInfo.emoji}</span>
             <Gift className="w-5 h-5 text-purple-600" />
             <h3 className="text-xl font-bold text-gray-800">
-              Curated Bundles
+              {archetype ? `${archetypeInfo.name.replace('The ', '')} Bundles` : 'Curated Bundles'}
             </h3>
           </div>
           <p className="text-sm text-gray-600">
-            Save more with our handpicked combinations
-            {currentPet?.name && ` for ${currentPet.name}`}
+            {bundleIntro}
           </p>
         </div>
       )}

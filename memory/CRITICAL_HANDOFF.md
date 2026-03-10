@@ -257,7 +257,7 @@ CLOUDINARY_API_SECRET=uwvyt1zf8vPF62SMeHGFn3k3O_A
 | Admin | aditya | lola4304 |
 
 **URLs:**
-- Preview: https://soul-made-catalog.preview.emergentagent.com
+- Preview: https://personalized-paws.preview.emergentagent.com
 - Production: https://thedoggycompany.com
 - Database: pet-os-live-test_database
 
