@@ -806,13 +806,16 @@ async def fix_product_images(username: str = Depends(verify_admin)):
                 needs_fix = True
             
             if needs_fix:
-                # Update image to correct Shopify image and clear bad images array
+                # Get all correct images from Shopify
+                all_shopify_images = [img.get("src") for img in images if img.get("src")]
+                
+                # Update image to correct Shopify image
                 await db.products_master.update_one(
                     {"shopify_id": shopify_id},
                     {
                         "$set": {
                             "image": correct_image_url,
-                            "images": []  # Clear the incorrect images array
+                            "images": all_shopify_images  # Use Shopify's full image array
                         }
                     }
                 )
