@@ -58,28 +58,189 @@ const SOUL_REMINDER_QUESTIONS = [
 const PetEmergencyFile = ({ pet, onEdit }) => {
   const [expanded, setExpanded] = useState(false);
   const [showSoulQuestions, setShowSoulQuestions] = useState(false);
+  const [showGuestForm, setShowGuestForm] = useState(false);
+  const [guestPetInfo, setGuestPetInfo] = useState({
+    name: '',
+    breed: '',
+    age: '',
+    weight: '',
+    allergies: '',
+    medications: '',
+    health_conditions: ''
+  });
   
-  if (!pet) {
+  // If no pet but guest has filled info, use that
+  const effectivePet = pet || (guestPetInfo.name ? {
+    name: guestPetInfo.name,
+    breed: guestPetInfo.breed,
+    age: guestPetInfo.age,
+    weight: guestPetInfo.weight,
+    allergies: guestPetInfo.allergies ? guestPetInfo.allergies.split(',').map(a => a.trim()) : [],
+    medications: guestPetInfo.medications ? guestPetInfo.medications.split(',').map(m => m.trim()) : [],
+    health_conditions: guestPetInfo.health_conditions ? guestPetInfo.health_conditions.split(',').map(h => h.trim()) : [],
+    isGuestProfile: true
+  } : null);
+  
+  if (!effectivePet) {
     return (
       <section className="py-6 px-4" data-testid="pet-file-section">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-gray-100 rounded-xl p-6 text-center">
-            <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-            <h3 className="font-semibold text-gray-700">No Pet Selected</h3>
-            <p className="text-sm text-gray-500">Sign in and select a pet to see their emergency file</p>
-          </div>
+          {!showGuestForm ? (
+            <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-xl p-6 border border-red-200">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-red-100 rounded-full">
+                  <FileText className="w-8 h-8 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-gray-900 text-lg">Emergency Pet Profile</h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Having your pet's info ready helps vets respond faster in emergencies
+                  </p>
+                  
+                  <div className="flex flex-wrap gap-3 mt-4">
+                    <Button 
+                      onClick={() => setShowGuestForm(true)}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Create Quick Profile
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => window.location.href = '/login?redirect=/emergency'}
+                      className="border-red-300 text-red-600"
+                    >
+                      Sign In for Full Profile
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl p-6 border-2 border-red-200 shadow-lg">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-red-600" />
+                  Quick Emergency Profile
+                </h3>
+                <button 
+                  onClick={() => setShowGuestForm(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  ✕
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-medium text-gray-700">Pet Name *</label>
+                  <input
+                    type="text"
+                    value={guestPetInfo.name}
+                    onChange={(e) => setGuestPetInfo({...guestPetInfo, name: e.target.value})}
+                    placeholder="e.g., Max"
+                    className="w-full mt-1 px-3 py-2 border rounded-lg text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-700">Breed</label>
+                  <input
+                    type="text"
+                    value={guestPetInfo.breed}
+                    onChange={(e) => setGuestPetInfo({...guestPetInfo, breed: e.target.value})}
+                    placeholder="e.g., Labrador"
+                    className="w-full mt-1 px-3 py-2 border rounded-lg text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-700">Age</label>
+                  <select
+                    value={guestPetInfo.age}
+                    onChange={(e) => setGuestPetInfo({...guestPetInfo, age: e.target.value})}
+                    className="w-full mt-1 px-3 py-2 border rounded-lg text-sm"
+                  >
+                    <option value="">Select age</option>
+                    <option value="Puppy (<1 year)">Puppy (&lt;1 year)</option>
+                    <option value="Young (1-3 years)">Young (1-3 years)</option>
+                    <option value="Adult (3-7 years)">Adult (3-7 years)</option>
+                    <option value="Senior (7+ years)">Senior (7+ years)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-700">Weight</label>
+                  <select
+                    value={guestPetInfo.weight}
+                    onChange={(e) => setGuestPetInfo({...guestPetInfo, weight: e.target.value})}
+                    className="w-full mt-1 px-3 py-2 border rounded-lg text-sm"
+                  >
+                    <option value="">Select weight</option>
+                    <option value="Under 5kg">Under 5kg</option>
+                    <option value="5-10kg">5-10kg</option>
+                    <option value="10-20kg">10-20kg</option>
+                    <option value="20-35kg">20-35kg</option>
+                    <option value="Over 35kg">Over 35kg</option>
+                  </select>
+                </div>
+                <div className="col-span-2">
+                  <label className="text-xs font-medium text-gray-700">Known Allergies</label>
+                  <input
+                    type="text"
+                    value={guestPetInfo.allergies}
+                    onChange={(e) => setGuestPetInfo({...guestPetInfo, allergies: e.target.value})}
+                    placeholder="e.g., Chicken, Penicillin (or 'None')"
+                    className="w-full mt-1 px-3 py-2 border rounded-lg text-sm"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-xs font-medium text-gray-700">Current Medications</label>
+                  <input
+                    type="text"
+                    value={guestPetInfo.medications}
+                    onChange={(e) => setGuestPetInfo({...guestPetInfo, medications: e.target.value})}
+                    placeholder="e.g., Insulin, Joint supplements (or 'None')"
+                    className="w-full mt-1 px-3 py-2 border rounded-lg text-sm"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-xs font-medium text-gray-700">Health Conditions</label>
+                  <input
+                    type="text"
+                    value={guestPetInfo.health_conditions}
+                    onChange={(e) => setGuestPetInfo({...guestPetInfo, health_conditions: e.target.value})}
+                    placeholder="e.g., Heart condition, Diabetes (or 'None')"
+                    className="w-full mt-1 px-3 py-2 border rounded-lg text-sm"
+                  />
+                </div>
+              </div>
+              
+              <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                <p className="text-xs text-amber-700">
+                  <AlertTriangle className="w-3 h-3 inline mr-1" />
+                  This info is stored locally in your browser. For permanent storage, please sign in.
+                </p>
+              </div>
+              
+              <Button 
+                onClick={() => setShowGuestForm(false)}
+                disabled={!guestPetInfo.name}
+                className="w-full mt-4 bg-red-600 hover:bg-red-700"
+              >
+                Save Emergency Profile
+              </Button>
+            </div>
+          )}
         </div>
       </section>
     );
   }
 
   // Helper to extract data from pet or doggy_soul_answers
-  const soulAnswers = pet.doggy_soul_answers || {};
+  const soulAnswers = effectivePet.doggy_soul_answers || {};
   
   // Calculate age from dob, birth_date, date_of_birth, or life_stage
   const calculateAge = () => {
-    if (pet.age) return `${pet.age} years`;
-    const birthDate = pet.dob || pet.birth_date || pet.date_of_birth;
+    if (effectivePet.age) return typeof effectivePet.age === 'string' ? effectivePet.age : `${effectivePet.age} years`;
+    const birthDate = effectivePet.dob || effectivePet.birth_date || effectivePet.date_of_birth;
     if (birthDate) {
       const years = Math.floor((Date.now() - new Date(birthDate)) / (365.25 * 24 * 60 * 60 * 1000));
       return `${years} years`;
@@ -99,11 +260,11 @@ const PetEmergencyFile = ({ pet, onEdit }) => {
   const petAge = calculateAge();
   
   // Get weight from pet or soul answers
-  const petWeight = pet.weight || soulAnswers.weight || null;
+  const petWeight = effectivePet.weight || soulAnswers.weight || null;
   
-  // Get allergies - check both pet.allergies and soulAnswers.food_allergies
+  // Get allergies - check both effectivePet.allergies and soulAnswers.food_allergies
   const getAllergies = () => {
-    const topLevelAllergies = pet.allergies || [];
+    const topLevelAllergies = effectivePet.allergies || [];
     const soulAllergies = soulAnswers.food_allergies;
     
     if (Array.isArray(topLevelAllergies) && topLevelAllergies.length > 0) {
@@ -120,7 +281,7 @@ const PetEmergencyFile = ({ pet, onEdit }) => {
   
   // Get medications from pet or soul answers
   const getMedications = () => {
-    const topLevelMeds = pet.medications;
+    const topLevelMeds = effectivePet.medications;
     const soulMeds = soulAnswers.medications;
     
     if (Array.isArray(topLevelMeds) && topLevelMeds.length > 0) {
@@ -135,7 +296,7 @@ const PetEmergencyFile = ({ pet, onEdit }) => {
   
   // Get health conditions from pet or soul answers
   const getHealthConditions = () => {
-    const topLevelConditions = pet.health_conditions;
+    const topLevelConditions = effectivePet.health_conditions;
     const soulConditions = soulAnswers.health_conditions;
     
     if (Array.isArray(topLevelConditions) && topLevelConditions.length > 0) {
@@ -211,10 +372,10 @@ Shared via The Doggy Company`;
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              {pet.photo_url ? (
+              {effectivePet.photo_url ? (
                 <img 
-                  src={pet.photo_url} 
-                  alt={pet.name} 
+                  src={effectivePet.photo_url} 
+                  alt={effectivePet.name} 
                   className="w-14 h-14 rounded-full object-cover border-2 border-emerald-300"
                 />
               ) : (
@@ -223,8 +384,13 @@ Shared via The Doggy Company`;
                 </div>
               )}
               <div>
-                <h3 className="text-lg font-bold text-gray-900">{pet.name}'s Emergency File</h3>
-                <p className="text-sm text-emerald-700">{pet.breed} • {petAge || 'Age unknown'}</p>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-gray-900">{effectivePet.name}'s Emergency File</h3>
+                  {effectivePet.isGuestProfile && (
+                    <Badge className="bg-amber-100 text-amber-700 text-xs">Guest Profile</Badge>
+                  )}
+                </div>
+                <p className="text-sm text-emerald-700">{effectivePet.breed || 'Breed unknown'} • {petAge || 'Age unknown'}</p>
               </div>
             </div>
             <Button 
@@ -238,7 +404,7 @@ Shared via The Doggy Company`;
           </div>
 
           {/* Completion Status - Show if incomplete */}
-          {pendingQuestions.length > 0 && (
+          {pendingQuestions.length > 0 && !effectivePet.isGuestProfile && (
             <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
