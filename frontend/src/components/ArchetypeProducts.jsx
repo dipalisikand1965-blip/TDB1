@@ -221,11 +221,11 @@ const ArchetypeProducts = ({
                 {product.name}
               </h4>
               
-              {/* Personalization Reasons */}
+              {/* Personalization Reasons - Whisper text */}
               {product.personalization_reasons?.length > 0 && (
-                <p className={`text-xs ${colors.accent} mb-2 flex items-center gap-1`}>
-                  <Heart className="w-3 h-3" />
-                  {product.personalization_reasons[0]}
+                <p className={`text-xs ${colors.accent} mb-2 flex items-center gap-1 italic`}>
+                  <Heart className="w-3 h-3 fill-current" />
+                  <span>{product.personalization_reasons[0]}</span>
                 </p>
               )}
               
