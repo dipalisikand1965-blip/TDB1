@@ -142,7 +142,7 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
 };
 
 // Main component
-const AdvisoryProductsGrid = ({ maxProducts = 24, showCategories = true }) => {
+const AdvisoryProductsGrid = ({ maxProducts = 24, showCategories = true, categoryFilter = null }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('all');
@@ -153,6 +153,24 @@ const AdvisoryProductsGrid = ({ maxProducts = 24, showCategories = true }) => {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  // When categoryFilter changes, apply it
+  useEffect(() => {
+    if (categoryFilter) {
+      // Find matching category key
+      const matchingCat = Object.keys(CATEGORIES).find(key => 
+        key.toLowerCase().includes(categoryFilter.toLowerCase()) ||
+        CATEGORIES[key].name.toLowerCase().includes(categoryFilter.toLowerCase())
+      );
+      if (matchingCat) {
+        setActiveCategory(matchingCat);
+      } else {
+        setActiveCategory('all');
+      }
+    } else {
+      setActiveCategory('all');
+    }
+  }, [categoryFilter]);
 
   const fetchProducts = async () => {
     setLoading(true);
