@@ -16362,6 +16362,29 @@ async def test_weather_endpoint(
     }
 
 
+@api_router.get("/weather")
+async def get_weather(
+    lat: float = 12.9716,  # Bangalore default
+    lon: float = 77.5946
+):
+    """Get current weather for advisory seasonal tips"""
+    from services.api_integration_hub import WeatherService
+    
+    try:
+        weather = await WeatherService.get_current_weather(lat, lon)
+        if "error" in weather:
+            return {"temp": None, "description": "Unknown"}
+        return {
+            "temp": weather.get("temperature"),
+            "feels_like": weather.get("feels_like"),
+            "description": weather.get("description"),
+            "humidity": weather.get("humidity"),
+            "city": weather.get("city", "")
+        }
+    except Exception as e:
+        return {"temp": None, "description": "Unknown"}
+
+
 @api_router.get("/test/youtube")
 async def test_youtube_endpoint(
     query: str = "dog training basics",

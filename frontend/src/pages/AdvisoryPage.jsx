@@ -241,13 +241,15 @@ const GUIDED_PATHS = [
   }
 ];
 
-// Seasonal/Climate Advice
+// Seasonal/Climate Advice with temperature ranges
 const SEASONAL_ADVICE = [
   { 
     id: 'summer', 
     title: 'Summer Care', 
     icon: Sun, 
     color: 'bg-amber-100 text-amber-700',
+    borderColor: 'border-amber-400',
+    tempRange: [25, 50],
     tips: ['Hydration', 'Avoid hot pavement', 'Cooling mats', 'Early/late walks']
   },
   { 
@@ -255,6 +257,8 @@ const SEASONAL_ADVICE = [
     title: 'Monsoon Care', 
     icon: ThermometerSun, 
     color: 'bg-blue-100 text-blue-700',
+    borderColor: 'border-blue-400',
+    months: [6, 7, 8, 9],
     tips: ['Paw drying', 'Raincoat', 'Tick prevention', 'Indoor activities']
   },
   { 
@@ -262,9 +266,24 @@ const SEASONAL_ADVICE = [
     title: 'Winter Care', 
     icon: ThermometerSun, 
     color: 'bg-cyan-100 text-cyan-700',
+    borderColor: 'border-cyan-400',
+    tempRange: [0, 18],
     tips: ['Warm bedding', 'Shorter baths', 'Paw protection', 'Extra calories']
   }
 ];
+
+// Helper to determine relevant season based on weather/location
+const getRelevantSeason = (weather, currentMonth) => {
+  if (weather?.temp) {
+    const temp = weather.temp;
+    if (temp >= 28) return 'summer';
+    if (temp <= 15) return 'winter';
+  }
+  // Fallback to month-based for India
+  if ([6, 7, 8, 9].includes(currentMonth)) return 'monsoon';
+  if ([11, 12, 1, 2].includes(currentMonth)) return 'winter';
+  return 'summer';
+};
 
 const AdvisoryPage = () => {
   const { user, token } = useAuth();
@@ -290,6 +309,12 @@ const AdvisoryPage = () => {
   const [aiResponse, setAiResponse] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   
+  // Weather & Location state
+  const [weather, setWeather] = useState(null);
+  const [userCity, setUserCity] = useState('');
+  const currentMonth = new Date().getMonth() + 1; // 1-12
+  const relevantSeason = getRelevantSeason(weather, currentMonth);
+  
   // User pets state - same as Learn page
   const [userPets, setUserPets] = useState([]);
   const [selectedPet, setSelectedPet] = useState(null);
@@ -313,10 +338,51 @@ const AdvisoryPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchData();
+    fetchWeather();
     if (user && token) {
       fetchUserPets();
     }
   }, [user, token]);
+
+  // Fetch weather based on user location
+  const fetchWeather = async () => {
+    try {
+      // Get user's location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            // Use reverse geocoding to get city
+            try {
+              const geoRes = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+              );
+              if (geoRes.ok) {
+                const geoData = await geoRes.json();
+                const city = geoData.address?.city || geoData.address?.town || geoData.address?.state || '';
+                setUserCity(city);
+                
+                // Fetch weather from backend
+                const weatherRes = await fetch(`${API_URL}/api/weather?lat=${latitude}&lon=${longitude}`);
+                if (weatherRes.ok) {
+                  const weatherData = await weatherRes.json();
+                  setWeather(weatherData);
+                }
+              }
+            } catch (e) {
+              console.log('Weather fetch failed, using defaults');
+            }
+          },
+          () => {
+            // Location denied - use default (India timezone detection)
+            console.log('Location access denied, using seasonal defaults');
+          }
+        );
+      }
+    } catch (error) {
+      console.log('Weather fetch error:', error);
+    }
+  };
 
   // Fetch user pets - SAME PATTERN AS LEARN PAGE
   const fetchUserPets = async () => {
@@ -981,7 +1047,15 @@ const AdvisoryPage = () => {
                               <h4 className="font-medium text-sm text-gray-900">{step.title}</h4>
                               <div className="flex flex-wrap gap-1 mt-1">
                                 {step.items.map((item, i) => (
-                                  <Badge key={i} variant="outline" className="text-xs">
+                                  <Badge 
+                                    key={i} 
+                                    variant="outline" 
+                                    className="text-xs cursor-pointer hover:bg-violet-100"
+                                    onClick={() => {
+                                      // Search for this item in shop
+                                      navigate(`/shop?search=${encodeURIComponent(item)}`);
+                                    }}
+                                  >
                                     {item}
                                   </Badge>
                                 ))}
@@ -990,13 +1064,29 @@ const AdvisoryPage = () => {
                           </div>
                         ))}
                       </div>
-                      <Button
-                        onClick={() => openConciergeModal(path.title)}
-                        className="w-full mt-4 bg-violet-600 hover:bg-violet-700"
-                      >
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        Get Help with {path.title}
-                      </Button>
+                      
+                      {/* Action Buttons - Shop & Concierge */}
+                      <div className="flex gap-2 mt-4">
+                        <Button
+                          onClick={() => {
+                            // Navigate to shop with path-related search
+                            const searchTerms = path.steps.flatMap(s => s.items).slice(0, 3).join(' ');
+                            navigate(`/shop?search=${encodeURIComponent(searchTerms)}`);
+                          }}
+                          variant="outline"
+                          className="flex-1 border-violet-300 text-violet-600 hover:bg-violet-50"
+                        >
+                          <ShoppingBag className="w-4 h-4 mr-2" />
+                          Shop This Path
+                        </Button>
+                        <Button
+                          onClick={() => openConciergeModal(path.title)}
+                          className="flex-1 bg-violet-600 hover:bg-violet-700"
+                        >
+                          <MessageCircle className="w-4 h-4 mr-2" />
+                          Get Expert Help
+                        </Button>
+                      </div>
                     </Card>
                   )}
                 </div>
@@ -1043,25 +1133,42 @@ const AdvisoryPage = () => {
       <NearbyAdvisoryServices />
 
       {/* ═══════════════════════════════════════════════════════════════════════════
-          LAYER 8: SEASONAL ADVICE - Climate/moment-based tips
+          LAYER 8: SEASONAL ADVICE - Climate/moment-based tips (Location-Aware)
           ═══════════════════════════════════════════════════════════════════════════ */}
       <section className="py-8 px-4 bg-gradient-to-b from-amber-50 to-white" data-testid="seasonal-advice-section">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-6">
             <h2 className="text-xl font-bold text-gray-900">Seasonal Care Tips</h2>
-            <p className="text-sm text-gray-600">Climate-based advice for {petName}</p>
+            <p className="text-sm text-gray-600">
+              {weather?.temp 
+                ? `Current: ${Math.round(weather.temp)}°C ${userCity ? `in ${userCity}` : ''} • Advice for ${petName}`
+                : `Climate-based advice for ${petName}`
+              }
+            </p>
           </div>
           
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {SEASONAL_ADVICE.map((season) => {
               const Icon = season.icon;
+              const isRelevant = season.id === relevantSeason;
               return (
                 <Card 
                   key={season.id} 
-                  className={`p-4 ${season.color} cursor-pointer hover:shadow-lg transition-all`}
+                  className={`p-4 ${season.color} cursor-pointer transition-all ${
+                    isRelevant 
+                      ? `ring-2 ${season.borderColor} shadow-lg scale-105` 
+                      : 'hover:shadow-md opacity-70 hover:opacity-100'
+                  }`}
                   onClick={() => openConciergeModal(season.title)}
                 >
-                  <Icon className="w-6 h-6 mb-2" />
+                  <div className="flex items-center justify-between mb-2">
+                    <Icon className="w-6 h-6" />
+                    {isRelevant && (
+                      <Badge className="bg-white/80 text-gray-700 text-xs">
+                        Current Season
+                      </Badge>
+                    )}
+                  </div>
                   <h3 className="font-semibold text-sm mb-2">{season.title}</h3>
                   <ul className="text-xs space-y-1">
                     {season.tips.map((tip, idx) => (
@@ -1070,9 +1177,48 @@ const AdvisoryPage = () => {
                       </li>
                     ))}
                   </ul>
+                  {isRelevant && (
+                    <Button 
+                      size="sm" 
+                      className="w-full mt-3 bg-white/90 text-gray-800 hover:bg-white"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setAdvisoryQuery(`${season.title} tips for ${petBreed || 'my dog'}`);
+                        askAdvisoryRef.current?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                    >
+                      Get {season.title} Tips
+                    </Button>
+                  )}
                 </Card>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          LAYER 8.5: EMERGENCY ESCALATION - Quick path to Emergency page
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-6 px-4 bg-gradient-to-r from-red-50 to-orange-50 border-y border-red-200" data-testid="emergency-escalation">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-red-100 rounded-full">
+                <AlertCircle className="w-6 h-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Is this urgent?</h3>
+                <p className="text-sm text-gray-600">If your pet needs immediate help, go to Emergency</p>
+              </div>
+            </div>
+            <Button 
+              onClick={() => navigate('/emergency')}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              <AlertCircle className="w-4 h-4 mr-2" />
+              Go to Emergency
+            </Button>
           </div>
         </div>
       </section>
