@@ -357,6 +357,15 @@ const AdvisoryPage = () => {
     }
   };
 
+  // State for concierge modal
+  const [showConciergeModal, setShowConciergeModal] = useState(false);
+  const [conciergeContext, setConciergeContext] = useState('');
+
+  const openConciergeModal = (context = '') => {
+    setConciergeContext(context);
+    setShowConciergeModal(true);
+  };
+
   const openWhatsAppConcierge = (context = '') => {
     const baseMessage = 'Hi, I need advisory help';
     const contextMessage = context ? ` about ${context}` : '';
@@ -436,6 +445,68 @@ const AdvisoryPage = () => {
 
   const personalizedAdvice = getPersonalizedAdvice();
 
+  // Concierge Modal Component
+  const ConciergeModal = () => (
+    <Dialog open={showConciergeModal} onOpenChange={setShowConciergeModal}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <MessageCircle className="w-5 h-5 text-violet-600" />
+            Talk to Concierge®
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <p className="text-sm text-gray-600">
+            {conciergeContext 
+              ? `Get personalized help with ${conciergeContext}${activePet ? ` for ${activePet.name}` : ''}.`
+              : `Our expert team is ready to help you${activePet ? ` with ${activePet.name}` : ''}.`}
+          </p>
+          
+          <div className="space-y-3">
+            <Button
+              onClick={() => {
+                openWhatsAppConcierge(conciergeContext);
+                setShowConciergeModal(false);
+              }}
+              className="w-full bg-green-600 hover:bg-green-700"
+            >
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Chat on WhatsApp
+            </Button>
+            
+            <Button
+              onClick={() => {
+                window.location.href = `mailto:hello@thedoggycompany.com?subject=Advisory Help${conciergeContext ? `: ${conciergeContext}` : ''}&body=Hi, I need help${activePet ? ` for my ${activePet.breed || 'pet'} ${activePet.name}` : ''}.`;
+                setShowConciergeModal(false);
+              }}
+              variant="outline"
+              className="w-full"
+            >
+              <Send className="w-4 h-4 mr-2" />
+              Send Email
+            </Button>
+            
+            <Button
+              onClick={() => {
+                window.location.href = 'tel:+918971702582';
+                setShowConciergeModal(false);
+              }}
+              variant="outline"
+              className="w-full"
+            >
+              <Phone className="w-4 h-4 mr-2" />
+              Call Us
+            </Button>
+          </div>
+          
+          <p className="text-xs text-gray-500 text-center">
+            Available Mon-Sat, 10am-7pm IST
+          </p>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
   return (
     <PillarPageLayout
       pillar="advisory"
@@ -489,8 +560,8 @@ const AdvisoryPage = () => {
                 <div>
                   <p className="text-gray-700 mb-3">{aiResponse}</p>
                   <Button
-                    onClick={() => openWhatsAppConcierge(advisoryQuery)}
-                    className="bg-green-600 hover:bg-green-700"
+                    onClick={() => openConciergeModal(advisoryQuery)}
+                    className="bg-violet-600 hover:bg-violet-700"
                   >
                     <MessageCircle className="w-4 h-4 mr-2" />
                     Talk to Concierge®
@@ -592,7 +663,7 @@ const AdvisoryPage = () => {
                     </div>
                     
                     <Button
-                      onClick={() => openWhatsAppConcierge(intent.title)}
+                      onClick={() => openConciergeModal(intent.title)}
                       className="bg-violet-600 hover:bg-violet-700"
                     >
                       <MessageCircle className="w-4 h-4 mr-2" />
@@ -631,7 +702,7 @@ const AdvisoryPage = () => {
                   <Card 
                     key={idx} 
                     className={`p-4 cursor-pointer hover:shadow-lg transition-all ${advice.color || 'bg-gray-50'}`}
-                    onClick={() => openWhatsAppConcierge(advice.title)}
+                    onClick={() => openConciergeModal(advice.title)}
                   >
                     <Icon className="w-6 h-6 mb-2" />
                     <h3 className="font-semibold text-gray-900 text-sm mb-1">{advice.title}</h3>
@@ -723,7 +794,7 @@ const AdvisoryPage = () => {
                         ))}
                       </div>
                       <Button
-                        onClick={() => openWhatsAppConcierge(path.title)}
+                        onClick={() => openConciergeModal(path.title)}
                         className="w-full mt-4 bg-violet-600 hover:bg-violet-700"
                       >
                         <MessageCircle className="w-4 h-4 mr-2" />
@@ -765,6 +836,7 @@ const AdvisoryPage = () => {
 
       {/* ═══════════════════════════════════════════════════════════════════════════
           LAYER 7: NEAR ME - Nearby services (trainers, groomers, vets)
+          Internal navigation using Services pillar
           ═══════════════════════════════════════════════════════════════════════════ */}
       <section ref={nearMeRef} className="py-8 px-4 bg-white" data-testid="near-me-section">
         <div className="max-w-6xl mx-auto">
@@ -773,20 +845,20 @@ const AdvisoryPage = () => {
             <p className="text-sm text-gray-600">Trainers, groomers, vets, and more in your area</p>
           </div>
           
-          {/* Service Categories */}
+          {/* Service Categories - Internal navigation */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { name: 'Pet Trainers', icon: GraduationCap, color: 'bg-blue-50 text-blue-600', search: 'dog+trainer' },
-              { name: 'Groomers', icon: Scissors, color: 'bg-purple-50 text-purple-600', search: 'pet+groomer' },
-              { name: 'Veterinarians', icon: Stethoscope, color: 'bg-red-50 text-red-600', search: 'veterinary+clinic' },
-              { name: 'Pet Stores', icon: ShoppingBag, color: 'bg-green-50 text-green-600', search: 'pet+store' }
+              { name: 'Pet Trainers', icon: GraduationCap, color: 'bg-blue-50 text-blue-600', route: '/services?category=training' },
+              { name: 'Groomers', icon: Scissors, color: 'bg-purple-50 text-purple-600', route: '/services?category=grooming' },
+              { name: 'Veterinarians', icon: Stethoscope, color: 'bg-red-50 text-red-600', route: '/services?category=vet' },
+              { name: 'Pet Stores', icon: ShoppingBag, color: 'bg-green-50 text-green-600', route: '/shop' }
             ].map((service) => {
               const Icon = service.icon;
               return (
                 <Card 
                   key={service.name}
                   className={`p-4 ${service.color} cursor-pointer hover:shadow-lg transition-all text-center`}
-                  onClick={() => window.open(`https://www.google.com/maps/search/${service.search}+near+me`, '_blank')}
+                  onClick={() => window.location.href = service.route}
                 >
                   <Icon className="w-8 h-8 mx-auto mb-2" />
                   <h4 className="font-medium text-sm">{service.name}</h4>
@@ -798,7 +870,7 @@ const AdvisoryPage = () => {
           
           <div className="text-center mt-6">
             <Button
-              onClick={() => openWhatsAppConcierge('finding a service near me')}
+              onClick={() => openConciergeModal('finding a service near me')}
               variant="outline"
               className="border-violet-300 text-violet-600"
             >
@@ -826,7 +898,7 @@ const AdvisoryPage = () => {
                 <Card 
                   key={season.id} 
                   className={`p-4 ${season.color} cursor-pointer hover:shadow-lg transition-all`}
-                  onClick={() => openWhatsAppConcierge(season.title)}
+                  onClick={() => openConciergeModal(season.title)}
                 >
                   <Icon className="w-6 h-6 mb-2" />
                   <h3 className="font-semibold text-sm mb-2">{season.title}</h3>
@@ -856,7 +928,7 @@ const AdvisoryPage = () => {
           
           <div className="flex flex-wrap justify-center gap-4">
             <Button
-              onClick={() => openWhatsAppConcierge()}
+              onClick={() => openConciergeModal('Advisory Help')}
               className="bg-white text-violet-600 hover:bg-violet-50"
               size="lg"
             >
@@ -875,6 +947,9 @@ const AdvisoryPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Concierge Modal */}
+      <ConciergeModal />
     </PillarPageLayout>
   );
 };

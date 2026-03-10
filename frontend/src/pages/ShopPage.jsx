@@ -870,38 +870,40 @@ const ShopPage = () => {
               );
             })()}
             
-            {/* Breed Filter - Shows when relevant breeds exist */}
+            {/* Breed Filter - Shows ALL breeds from database */}
             {(() => {
-              // Get unique breeds from products
-              const breeds = [...new Set(allProducts
-                .filter(p => p.breed || p.target_breed)
-                .map(p => p.breed || p.target_breed)
-                .filter(Boolean)
-              )].slice(0, 12);
-              
-              if (breeds.length < 3) return null;
+              // Use ALL breeds from the master breed list
+              const ALL_BREEDS = [
+                'Labrador Retriever', 'Golden Retriever', 'German Shepherd', 'Shih Tzu', 'Pug',
+                'Beagle', 'Poodle', 'Indie', 'Indian Pariah', 'Cocker Spaniel', 'Dachshund',
+                'Boxer', 'Great Dane', 'Siberian Husky', 'Doberman', 'Rottweiler', 'French Bulldog',
+                'English Bulldog', 'Yorkshire Terrier', 'Maltese', 'Pomeranian', 'Chihuahua',
+                'Border Collie', 'Australian Shepherd', 'Cavalier King Charles', 'Miniature Schnauzer',
+                'Boston Terrier', 'Dalmatian', 'Lhasa Apso', 'Bichon Frise', 'Akita', 'Samoyed',
+                'Bernese Mountain Dog', 'St. Bernard', 'Mixed Breed'
+              ];
               
               return (
-                <div className="flex flex-wrap items-center gap-2" data-testid="breed-filters">
-                  <span className="text-xs text-gray-500 mr-1">By Breed:</span>
+                <div className="flex flex-wrap gap-2" data-testid="breed-filters">
+                  <span className="text-xs text-gray-500 self-center mr-2">Filter by breed:</span>
                   <button
                     onClick={() => setSelectedBreed(null)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                       !selectedBreed
-                        ? 'bg-purple-600 text-white'
-                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                        ? 'bg-violet-600 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
                     All Breeds
                   </button>
-                  {breeds.map(breed => (
+                  {ALL_BREEDS.map(breed => (
                     <button
                       key={breed}
                       onClick={() => setSelectedBreed(breed === selectedBreed ? null : breed)}
                       className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                         selectedBreed === breed
-                          ? 'bg-purple-600 text-white'
-                          : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                          ? 'bg-violet-600 text-white'
+                          : 'bg-violet-50 text-violet-700 hover:bg-violet-100'
                       }`}
                     >
                       {breed}
