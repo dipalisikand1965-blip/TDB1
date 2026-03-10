@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { usePillarContext } from '../context/PillarContext';
 import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
@@ -72,6 +73,10 @@ const EmergencyPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [heroIndex, setHeroIndex] = useState(0);
   const [config, setConfig] = useState({});
+  
+  // Use global pet context
+  const { currentPet } = usePillarContext();
+  const activePet = currentPet || selectedPet;
   
   const [requestForm, setRequestForm] = useState({
     emergency_type: 'medical_emergency',
@@ -837,9 +842,9 @@ const EmergencyPage = () => {
       )}
       
       {/* Mira's Picks for Pet */}
-      {userPets && userPets[0] && (
+      {(activePet || userPets?.[0]) && (
         <div className="max-w-6xl mx-auto px-4">
-          <PillarPicksSection pillar="emergency" pet={userPets[0]} />
+          <PillarPicksSection pillar="emergency" pet={activePet || userPets[0]} />
         </div>
       )}
       

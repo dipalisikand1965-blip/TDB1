@@ -12,6 +12,7 @@ import { Progress } from '../components/ui/progress';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { usePillarContext } from '../context/PillarContext';
 import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
@@ -57,6 +58,10 @@ const PaperworkPage = () => {
   const [bundles, setBundles] = useState([]);
   const [categories, setCategories] = useState({});
   const [reminders, setReminders] = useState([]);
+  
+  // Use global pet context
+  const { currentPet } = usePillarContext();
+  const activePet = currentPet || selectedPet;
   
   const [activeCategory, setActiveCategory] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -968,16 +973,16 @@ const PaperworkPage = () => {
         
         <MiraCuratedLayer
           pillar="paperwork"
-          activePet={userPets?.[0]}
+          activePet={activePet || userPets?.[0]}
           token={token}
           userEmail={user?.email}
           isLoading={!userPets && !!token}
         />
         
         {/* Mira's Picks for Pet */}
-        {userPets && userPets[0] && (
+        {(activePet || userPets?.[0]) && (
           <div className="max-w-6xl mx-auto px-4 mt-6">
-            <PillarPicksSection pillar="paperwork" pet={userPets[0]} />
+            <PillarPicksSection pillar="paperwork" pet={activePet || userPets[0]} />
           </div>
         )}
       </div>

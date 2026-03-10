@@ -498,16 +498,16 @@ const EnjoyPage = () => {
         {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
         <MiraCuratedLayer
           pillar="enjoy"
-          activePet={userPets?.[0]}
+          activePet={activePet || userPets?.[0]}
           token={token}
           userEmail={user?.email}
           isLoading={!userPets && !!token}
         />
         
         {/* Mira's Picks for Pet */}
-        {userPets && userPets[0] && (
+        {(activePet || userPets?.[0]) && (
           <div className="max-w-6xl mx-auto px-4 mt-6">
-            <PillarPicksSection pillar="enjoy" pet={userPets[0]} />
+            <PillarPicksSection pillar="enjoy" pet={activePet || userPets[0]} />
           </div>
         )}
       </div>

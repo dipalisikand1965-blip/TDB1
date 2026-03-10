@@ -661,9 +661,9 @@ const FitPage = () => {
       />
       
       {/* Mira's Picks for Pet */}
-      {userPets && userPets[0] && (
+      {(activePet || userPets?.[0]) && (
         <div className="max-w-6xl mx-auto px-4 mt-6">
-          <PillarPicksSection pillar="fit" pet={userPets[0]} />
+          <PillarPicksSection pillar="fit" pet={activePet || userPets[0]} />
         </div>
       )}
 
