@@ -736,10 +736,11 @@ async def get_all_products(
         all_products = soul_products
         total = await db.breed_products.count_documents(breed_query)
     else:
-        # Query products_master (main collection)
+        # Query products_master (main collection) - sorted to show newer products first
+        # Products with created_at are sorted desc, others come after
         products = await db.products_master.find(
             query, {"_id": 0}
-        ).skip(skip).limit(limit).to_list(limit)
+        ).sort([("created_at", -1), ("_id", -1)]).skip(skip).limit(limit).to_list(limit)
         
         products_master_total = await db.products_master.count_documents(query)
         
