@@ -933,12 +933,58 @@ const ServiceBox = () => {
                   
                   <div className="col-span-2">
                     <Label>Image URL</Label>
-                    <Input
-                      value={selectedService.image_url || ''}
-                      onChange={(e) => handleInputChange('image_url', e.target.value)}
-                      placeholder="https://..."
-                      data-testid="service-image-input"
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        value={selectedService.image_url || ''}
+                        onChange={(e) => handleInputChange('image_url', e.target.value)}
+                        placeholder="https://..."
+                        data-testid="service-image-input"
+                        className="flex-1"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={async () => {
+                          if (!selectedService.id || selectedService.id.startsWith('NEW-')) {
+                            toast({ title: 'Save First', description: 'Please save the service before generating an image', variant: 'destructive' });
+                            return;
+                          }
+                          try {
+                            setSaving(true);
+                            const res = await fetch(`${API_URL}/api/service-box/services/${selectedService.id}/generate-image`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' }
+                            });
+                            const data = await res.json();
+                            if (data.success && data.image_url) {
+                              handleInputChange('image_url', data.image_url);
+                              toast({ title: 'Image Generated', description: `AI image created for ${selectedService.name}` });
+                            } else {
+                              throw new Error(data.detail || 'Failed to generate');
+                            }
+                          } catch (err) {
+                            toast({ title: 'Error', description: err.message, variant: 'destructive' });
+                          } finally {
+                            setSaving(false);
+                          }
+                        }}
+                        disabled={saving || !selectedService.id || selectedService.id.startsWith('NEW-')}
+                        className="whitespace-nowrap"
+                        data-testid="generate-service-image-btn"
+                      >
+                        <Sparkles className="w-4 h-4 mr-1" />
+                        Generate
+                      </Button>
+                    </div>
+                    {selectedService.image_url && (
+                      <div className="mt-2">
+                        <img 
+                          src={selectedService.image_url} 
+                          alt={selectedService.name} 
+                          className="w-32 h-32 object-cover rounded-lg border"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
                 

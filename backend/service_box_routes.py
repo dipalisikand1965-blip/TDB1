@@ -705,3 +705,219 @@ async def get_service_bookings(
         "skip": skip,
         "limit": limit
     }
+
+
+
+# ==================== AI IMAGE GENERATION ====================
+
+# Service-specific image prompts for contextual AI generation
+SERVICE_IMAGE_PROMPTS = {
+    # Advisory
+    "Pet Life Planning": "Professional pet consultant with tablet reviewing pet care plan with dog owner in modern office, warm lighting, premium service, clean minimal style",
+    "Housing & Society Advisory": "Pet-friendly apartment building consultation, real estate advisor with happy dog family, modern living space, welcoming atmosphere",
+    "Multi-Pet Household Planning": "Multiple pets (dog and cat) peacefully coexisting in organized home, pet behavior specialist consulting family, harmonious setup",
+    "Behavior Escalation Pathways": "Professional dog behaviorist working with anxious dog, calm training environment, behavioral therapy session, supportive atmosphere",
+    "End-of-Life Preparation": "Compassionate veterinarian with elderly dog, peaceful setting, gentle care moment, soft pastel colors, dignified and loving",
+    
+    # Care
+    "Veterinary Consultation": "Modern veterinary clinic with friendly vet examining happy dog, clean medical environment, professional pet healthcare",
+    "Pet Grooming": "Professional dog groomer styling fluffy dog in modern salon, grooming tools, spa-like atmosphere, pampered pet",
+    "Health Checkup": "Veterinarian performing routine checkup on dog with stethoscope, clean clinic, preventive care, healthy pet",
+    "Vaccination": "Veterinarian giving gentle vaccination to puppy, caring environment, pet protection, medical care",
+    "Dental Care": "Pet dental specialist cleaning dog's teeth, specialized equipment, oral health care for pets",
+    
+    # Celebrate
+    "Pet Birthday Party": "Colorful dog birthday party setup with cake, balloons, party hats, celebration decorations, joyful atmosphere",
+    "Gotcha Day Celebration": "Happy adopted dog anniversary celebration, special treats, family gathering, heartwarming moment",
+    "Pet Photography": "Professional pet photographer with studio setup capturing beautiful dog portrait, artistic lighting",
+    
+    # Travel
+    "Pet Taxi": "Premium pet-friendly vehicle service, comfortable car interior with happy dog, professional driver, safe transport",
+    "Pet Relocation": "Professional pet relocation service with travel crate, airline-approved carrier, international pet travel",
+    "Pet-Friendly Hotels": "Luxury pet-friendly hotel room with dog on bed, amenities, premium accommodations, travel comfort",
+    
+    # Emergency
+    "24/7 Emergency Vet": "Emergency veterinary clinic at night, urgent care for pets, medical equipment, life-saving care",
+    "Pet Ambulance": "Pet ambulance vehicle with medical equipment, emergency response, professional service",
+    
+    # Farewell
+    "Pet Memorial": "Beautiful pet memorial garden with flowers, peaceful tribute, loving remembrance, soft natural lighting",
+    "Cremation Services": "Dignified pet cremation facility, respectful farewell service, compassionate care, serene atmosphere",
+    
+    # Learn
+    "Puppy Training": "Professional dog trainer with playful puppy in training class, positive reinforcement, learning environment",
+    "Obedience Training": "Well-trained dog performing commands with trainer, professional training facility, disciplined session",
+    "Agility Training": "Dog running through agility course obstacles, active training, athletic performance, exciting action",
+    
+    # Fit
+    "Dog Walking": "Professional dog walker with happy dogs in beautiful park, exercise outdoors, healthy activity",
+    "Pet Swimming": "Dog swimming in pool with trainer, hydrotherapy session, fitness activity, water exercise",
+    "Pet Yoga": "Calm yoga session with dog, doga class, wellness activity, relaxation and bonding",
+    
+    # Stay
+    "Pet Boarding": "Luxury pet boarding facility with comfortable sleeping areas, professional care, home away from home",
+    "Doggy Daycare": "Happy dogs playing in daycare facility, supervised playtime, social interaction, fun environment",
+    "Pet Sitting": "Professional pet sitter at home with relaxed dog, in-home care, trusted companion care",
+    
+    # Adopt
+    "Pet Adoption": "Happy family adopting dog from shelter, heartwarming moment, new beginnings, loving home",
+    "Foster Care": "Foster family caring for rescue dog, temporary home, nurturing environment, second chance",
+}
+
+# Default prompt for services without specific mapping
+DEFAULT_SERVICE_PROMPT = "Professional pet service in modern setting, happy dog with caring staff, premium quality service, warm atmosphere, clean design"
+
+
+@router.post("/services/{service_id}/generate-image")
+async def generate_service_image(service_id: str, x_admin_user: Optional[str] = Header(None)):
+    """Generate AI image for a specific service"""
+    import os
+    import cloudinary
+    import cloudinary.uploader
+    
+    db = get_db()
+    
+    # Find the service
+    service = await db.services_master.find_one({"id": service_id})
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    service_name = service.get("name", "Pet Service")
+    pillar = service.get("pillar", "care")
+    
+    # Get contextual prompt
+    prompt = SERVICE_IMAGE_PROMPTS.get(service_name, DEFAULT_SERVICE_PROMPT)
+    
+    # Add pillar context to prompt
+    pillar_context = {
+        "celebrate": "festive, joyful celebration",
+        "care": "healthcare, medical care, wellness",
+        "travel": "travel, transport, journey",
+        "stay": "accommodation, comfort, home",
+        "fit": "fitness, exercise, activity",
+        "learn": "training, education, learning",
+        "emergency": "urgent care, emergency response",
+        "farewell": "memorial, peaceful, compassionate",
+        "advisory": "consultation, professional advice",
+        "adopt": "adoption, new family, rescue",
+        "dine": "food, nutrition, mealtime",
+        "enjoy": "fun, play, entertainment",
+        "paperwork": "documents, legal, administration"
+    }
+    
+    enhanced_prompt = f"{prompt}. Context: {pillar_context.get(pillar, 'premium pet service')}. Style: professional photography, warm lighting, high quality, no text overlay."
+    
+    logger.info(f"Generating image for service: {service_name} with prompt: {enhanced_prompt[:100]}...")
+    
+    try:
+        # Generate image using OpenAI
+        from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+        
+        emergent_api_key = os.environ.get("EMERGENT_LLM_KEY") or os.environ.get("EMERGENT_API_KEY") or os.environ.get("EMERGENT_MODEL_API_KEY")
+        if not emergent_api_key:
+            raise HTTPException(status_code=500, detail="EMERGENT_API_KEY not configured")
+        
+        # Generate image
+        image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
+        images = await image_gen.generate_images(
+            prompt=enhanced_prompt,
+            number_of_images=1,
+            model="gpt-image-1"
+        )
+        
+        if not images or len(images) == 0:
+            raise HTTPException(status_code=500, detail="Failed to generate image")
+        
+        # The images are returned as bytes, need to convert to base64 for Cloudinary
+        import base64
+        image_base64 = base64.b64encode(images[0]).decode('utf-8')
+        image_data_url = f"data:image/png;base64,{image_base64}"
+        
+        # Upload to Cloudinary
+        cloudinary.config(
+            cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", "duoapcx1p"),
+            api_key=os.environ.get("CLOUDINARY_API_KEY"),
+            api_secret=os.environ.get("CLOUDINARY_API_SECRET")
+        )
+        
+        # Create a clean folder path
+        folder = f"doggy/services/{pillar}"
+        public_id = f"{folder}/{service_id.lower().replace(' ', '-')}"
+        
+        upload_result = cloudinary.uploader.upload(
+            image_data_url,
+            public_id=public_id,
+            overwrite=True,
+            resource_type="image"
+        )
+        
+        cloudinary_url = upload_result.get("secure_url")
+        
+        # Update service with new image
+        await db.services_master.update_one(
+            {"id": service_id},
+            {
+                "$set": {
+                    "image_url": cloudinary_url,
+                    "image": cloudinary_url,
+                    "image_generated_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        logger.info(f"Successfully generated image for service {service_id}: {cloudinary_url}")
+        
+        return {
+            "success": True,
+            "service_id": service_id,
+            "service_name": service_name,
+            "image_url": cloudinary_url,
+            "message": f"Image generated for {service_name}"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error generating image for service {service_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate image: {str(e)}")
+
+
+@router.post("/generate-all-images")
+async def generate_all_service_images(
+    pillar: Optional[str] = Query(None, description="Filter by pillar"),
+    limit: int = Query(10, description="Max images to generate"),
+    x_admin_user: Optional[str] = Header(None)
+):
+    """Generate AI images for multiple services (batch operation)"""
+    db = get_db()
+    
+    # Find services without proper images or with default images
+    query = {
+        "$or": [
+            {"image_url": {"$exists": False}},
+            {"image_url": None},
+            {"image_url": ""},
+            {"image_url": {"$regex": "static.prod-images.emergentagent.com"}}  # Default placeholder
+        ]
+    }
+    
+    if pillar:
+        query["pillar"] = pillar
+    
+    services = await db.services_master.find(query, {"_id": 0, "id": 1, "name": 1, "pillar": 1}).to_list(length=limit)
+    
+    results = []
+    for service in services:
+        try:
+            result = await generate_service_image(service["id"])
+            results.append({"service_id": service["id"], "success": True, "image_url": result.get("image_url")})
+        except Exception as e:
+            results.append({"service_id": service["id"], "success": False, "error": str(e)})
+    
+    successful = sum(1 for r in results if r["success"])
+    
+    return {
+        "total_processed": len(results),
+        "successful": successful,
+        "failed": len(results) - successful,
+        "results": results
+    }
