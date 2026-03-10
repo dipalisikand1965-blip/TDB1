@@ -246,6 +246,127 @@ const EMERGENCY_GUIDES = [
       'Any unresponsiveness'
     ],
     products: ['Emergency contact card']
+  },
+  // Additional Emergency Guides
+  {
+    id: 'eye_injury',
+    title: 'Eye injury or irritation',
+    icon: '👁️',
+    urgency: 'high',
+    doNow: [
+      'Prevent pet from rubbing eyes',
+      'Flush gently with saline or clean water',
+      'Use e-collar if available',
+      'Keep pet in dim light'
+    ],
+    dontDo: [
+      'Do NOT try to remove embedded objects',
+      'Do NOT use human eye drops',
+      'Do NOT apply pressure to the eye'
+    ],
+    leaveIf: [
+      'Visible wound or object in eye',
+      'Eye is bulging or sunken',
+      'Bleeding from eye',
+      'Sudden blindness'
+    ],
+    products: ['Saline solution', 'E-collar', 'Eye wash']
+  },
+  {
+    id: 'bee_sting',
+    title: 'Bee or insect sting',
+    icon: '🐝',
+    urgency: 'medium',
+    doNow: [
+      'Remove stinger by scraping (not squeezing)',
+      'Apply cold compress to reduce swelling',
+      'Monitor for allergic reaction',
+      'Give antihistamine if vet-approved'
+    ],
+    dontDo: [
+      'Do NOT squeeze stinger out',
+      'Do NOT apply human medications without vet advice',
+      'Do NOT ignore swelling near throat'
+    ],
+    leaveIf: [
+      'Swelling near face/throat',
+      'Difficulty breathing',
+      'Vomiting or diarrhea',
+      'Multiple stings'
+    ],
+    products: ['Ice pack', 'Pet antihistamine', 'First-aid kit']
+  },
+  {
+    id: 'bloat',
+    title: 'Bloat / Twisted stomach',
+    icon: '🎈',
+    urgency: 'critical',
+    doNow: [
+      'This is a LIFE-THREATENING emergency',
+      'Go to emergency vet IMMEDIATELY',
+      'Do not wait - minutes matter',
+      'Call ahead so they prepare'
+    ],
+    dontDo: [
+      'Do NOT try home remedies',
+      'Do NOT wait to see if it improves',
+      'Do NOT give food or water'
+    ],
+    leaveIf: [
+      'Distended/hard abdomen',
+      'Trying to vomit but nothing comes up',
+      'Restlessness and pacing',
+      'Excessive drooling'
+    ],
+    products: ['Emergency vet contacts saved']
+  },
+  {
+    id: 'allergic_reaction',
+    title: 'Allergic reaction',
+    icon: '🤧',
+    urgency: 'high',
+    doNow: [
+      'Identify and remove allergen if possible',
+      'Check for swelling, especially face/throat',
+      'Give vet-approved antihistamine',
+      'Monitor breathing closely'
+    ],
+    dontDo: [
+      'Do NOT ignore facial swelling',
+      'Do NOT wait if breathing changes',
+      'Do NOT give medications without vet guidance'
+    ],
+    leaveIf: [
+      'Facial/throat swelling',
+      'Difficulty breathing',
+      'Collapse',
+      'Hives spreading rapidly'
+    ],
+    products: ['Pet antihistamine', 'Emergency contact card']
+  },
+  {
+    id: 'fight_injuries',
+    title: 'Fight injuries',
+    icon: '🐕',
+    urgency: 'high',
+    doNow: [
+      'Assess wounds carefully',
+      'Clean superficial wounds with saline',
+      'Apply pressure to any bleeding',
+      'Check for bite wounds (can be deeper than they look)'
+    ],
+    dontDo: [
+      'Do NOT ignore small punctures - they can abscess',
+      'Do NOT use hydrogen peroxide on wounds',
+      'Do NOT let pet lick wounds excessively'
+    ],
+    leaveIf: [
+      'Deep or gaping wounds',
+      'Wounds near eyes/throat/chest',
+      'Signs of shock',
+      'Multiple bite wounds'
+    ],
+    products: ['Saline solution', 'Sterile gauze', 'E-collar']
   }
 ];
 
