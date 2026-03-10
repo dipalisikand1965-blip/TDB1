@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://feature-parity-push.preview.emergentagent.com
+https://golden-pillar-hub.preview.emergentagent.com
 
 ---
 

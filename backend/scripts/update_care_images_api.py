@@ -4,7 +4,7 @@ Update Care products with generated images via API
 """
 import requests
 
-API_URL = "https://feature-parity-push.preview.emergentagent.com"
+API_URL = "https://golden-pillar-hub.preview.emergentagent.com"
 AUTH = ("aditya", "lola4304")
 
 # Generated Care images
