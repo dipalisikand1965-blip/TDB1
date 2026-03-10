@@ -38,6 +38,21 @@ _generation_status = {
     "completed_at": None
 }
 
+# Production sync state
+_sync_status = {
+    "running": False,
+    "progress": 0,
+    "total_batches": 0,
+    "current_batch": 0,
+    "total_products": 0,
+    "imported": 0,
+    "updated": 0,
+    "failed_batches": 0,
+    "started_at": None,
+    "completed_at": None,
+    "message": ""
+}
+
 def set_mockup_db(db):
     global _db
     _db = db
@@ -638,6 +653,12 @@ async def export_mockup_urls():
     }
 
 
+@router.get("/sync-status")
+async def get_sync_status():
+    """Get current production sync status"""
+    return _sync_status
+
+
 @router.post("/sync-to-production")
 async def sync_to_production(batch_size: int = 100):
     """
@@ -645,7 +666,16 @@ async def sync_to_production(batch_size: int = 100):
     This bypasses browser CORS issues by making the request server-side.
     Batches products to avoid timeout issues with large datasets.
     """
+    global _sync_status
     import httpx
+    
+    # Check if already running
+    if _sync_status["running"]:
+        return {
+            "success": False,
+            "message": "Sync already in progress",
+            "status": _sync_status
+        }
     
     db = get_db()
     PRODUCTION_URL = "https://thedoggycompany.com"
@@ -665,6 +695,23 @@ async def sync_to_production(batch_size: int = 100):
             }
         
         total_products = len(products)
+        total_batches = (total_products + batch_size - 1) // batch_size
+        
+        # Initialize sync status
+        _sync_status = {
+            "running": True,
+            "progress": 0,
+            "total_batches": total_batches,
+            "current_batch": 0,
+            "total_products": total_products,
+            "imported": 0,
+            "updated": 0,
+            "failed_batches": 0,
+            "started_at": datetime.now().isoformat(),
+            "completed_at": None,
+            "message": f"Starting sync of {total_products} products in {total_batches} batches..."
+        }
+        
         logger.info(f"[SYNC] Found {total_products} products with Cloudinary mockups, syncing in batches of {batch_size}")
         
         # Batch sync to avoid timeouts
@@ -676,7 +723,11 @@ async def sync_to_production(batch_size: int = 100):
             for i in range(0, total_products, batch_size):
                 batch = products[i:i + batch_size]
                 batch_num = (i // batch_size) + 1
-                total_batches = (total_products + batch_size - 1) // batch_size
+                
+                # Update status
+                _sync_status["current_batch"] = batch_num
+                _sync_status["progress"] = int((batch_num / total_batches) * 100)
+                _sync_status["message"] = f"Syncing batch {batch_num}/{total_batches} ({len(batch)} products)..."
                 
                 try:
                     logger.info(f"[SYNC] Sending batch {batch_num}/{total_batches} ({len(batch)} products)")
@@ -691,16 +742,26 @@ async def sync_to_production(batch_size: int = 100):
                         result = response.json()
                         total_imported += result.get("imported", 0)
                         total_updated += result.get("updated", 0)
+                        _sync_status["imported"] = total_imported
+                        _sync_status["updated"] = total_updated
                         logger.info(f"[SYNC] Batch {batch_num} successful: {result.get('total', 0)} products")
                     else:
                         failed_batches += 1
+                        _sync_status["failed_batches"] = failed_batches
                         logger.error(f"[SYNC] Batch {batch_num} failed: {response.status_code}")
                         
                 except Exception as batch_error:
                     failed_batches += 1
+                    _sync_status["failed_batches"] = failed_batches
                     logger.error(f"[SYNC] Batch {batch_num} error: {batch_error}")
         
+        # Finalize status
+        _sync_status["running"] = False
+        _sync_status["progress"] = 100
+        _sync_status["completed_at"] = datetime.now().isoformat()
+        
         if failed_batches == 0:
+            _sync_status["message"] = f"✅ Synced {total_products} products successfully!"
             logger.info(f"[SYNC] Production sync complete: {total_imported} imported, {total_updated} updated")
             return {
                 "success": True,
@@ -710,6 +771,7 @@ async def sync_to_production(batch_size: int = 100):
                 "total": total_products
             }
         else:
+            _sync_status["message"] = f"⚠️ Sync complete with {failed_batches} failed batches"
             return {
                 "success": False,
                 "message": f"Sync partially complete. {failed_batches} batches failed.",
@@ -720,6 +782,9 @@ async def sync_to_production(batch_size: int = 100):
             }
                 
     except Exception as e:
+        _sync_status["running"] = False
+        _sync_status["message"] = f"❌ Error: {str(e)}"
+        _sync_status["completed_at"] = datetime.now().isoformat()
         logger.error(f"[SYNC] Error syncing to production: {e}")
         return {
             "success": False,

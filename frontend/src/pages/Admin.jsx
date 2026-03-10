@@ -2390,33 +2390,65 @@ const Admin = () => {
                 Products + Services + All Pillars + Mira Whispers
               </p>
               
-              {/* ☁️ SYNC SOUL MADE TO PRODUCTION */}
+              {/* ☁️ SYNC SOUL MADE TO PRODUCTION WITH PROGRESS */}
               <button
+                id="sync-production-btn"
                 onClick={async () => {
-                  const btn = document.activeElement;
-                  const originalText = btn.innerHTML;
+                  const btn = document.getElementById('sync-production-btn');
+                  const progressContainer = document.getElementById('sync-progress-container');
+                  const progressBar = document.getElementById('sync-progress-bar');
+                  const progressText = document.getElementById('sync-progress-text');
+                  
                   try {
-                    btn.innerHTML = '☁️ Syncing to Production...';
                     btn.disabled = true;
+                    btn.innerHTML = '☁️ Starting Sync...';
+                    progressContainer.classList.remove('hidden');
+                    progressBar.style.width = '0%';
+                    progressText.textContent = 'Initializing...';
                     
-                    // Use server-side sync to bypass CORS
-                    const syncRes = await fetch(`${API_URL}/api/mockups/sync-to-production`, {
+                    // Start the sync (non-blocking)
+                    fetch(`${API_URL}/api/mockups/sync-to-production`, {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' }
                     });
-                    const result = await syncRes.json();
                     
-                    if (result.success) {
-                      alert(`✅ ${result.message}\n\nImported: ${result.imported}\nUpdated: ${result.updated}\nTotal: ${result.total}`);
-                    } else {
-                      alert(`❌ ${result.message}`);
+                    // Poll for progress
+                    let completed = false;
+                    while (!completed) {
+                      await new Promise(r => setTimeout(r, 1000)); // Poll every second
+                      
+                      const statusRes = await fetch(`${API_URL}/api/mockups/sync-status`);
+                      const status = await statusRes.json();
+                      
+                      progressBar.style.width = `${status.progress}%`;
+                      progressText.textContent = status.message;
+                      btn.innerHTML = `☁️ ${status.progress}% - Batch ${status.current_batch}/${status.total_batches}`;
+                      
+                      if (!status.running && status.progress > 0) {
+                        completed = true;
+                        if (status.failed_batches === 0) {
+                          progressBar.classList.remove('bg-blue-600');
+                          progressBar.classList.add('bg-green-500');
+                          alert(`✅ Sync Complete!\n\nImported: ${status.imported}\nUpdated: ${status.updated}\nTotal: ${status.total_products}`);
+                        } else {
+                          progressBar.classList.remove('bg-blue-600');
+                          progressBar.classList.add('bg-yellow-500');
+                          alert(`⚠️ Sync completed with ${status.failed_batches} failed batches\n\nImported: ${status.imported}\nUpdated: ${status.updated}`);
+                        }
+                      }
                     }
                   } catch (e) {
                     console.error('Production sync error:', e);
                     alert(`❌ Sync failed: ${e.message}`);
                   } finally {
-                    btn.innerHTML = originalText;
+                    btn.innerHTML = '☁️ SYNC SOUL MADE → PRODUCTION';
                     btn.disabled = false;
+                    // Reset progress bar after 3 seconds
+                    setTimeout(() => {
+                      const pb = document.getElementById('sync-progress-bar');
+                      pb.classList.remove('bg-green-500', 'bg-yellow-500');
+                      pb.classList.add('bg-blue-600');
+                    }, 3000);
                   }
                 }}
                 className="w-full p-3 mt-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-bold flex items-center justify-center gap-2 hover:from-blue-700 hover:to-purple-700"
@@ -2425,8 +2457,23 @@ const Admin = () => {
                 <CloudDownload className="w-4 h-4" />
                 ☁️ SYNC SOUL MADE → PRODUCTION
               </button>
+              
+              {/* Progress Bar Container */}
+              <div id="sync-progress-container" className="hidden mt-2">
+                <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                  <div 
+                    id="sync-progress-bar" 
+                    className="bg-blue-600 h-4 rounded-full transition-all duration-300"
+                    style={{ width: '0%' }}
+                  ></div>
+                </div>
+                <p id="sync-progress-text" className="text-xs text-gray-600 text-center mt-1">
+                  Initializing...
+                </p>
+              </div>
+              
               <p className="text-xs text-gray-500 text-center mt-1">
-                Push Cloudinary mockups to thedoggycompany.com
+                Push Cloudinary mockups to thedoggycompany.com (~2-4 min for 2000+ products)
               </p>
               
               {/* 📚 DOCUMENTATION BUTTONS */}
