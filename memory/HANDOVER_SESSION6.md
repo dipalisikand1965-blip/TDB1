@@ -17,7 +17,7 @@ New Test User: audit_test_1771750532@test.com / test123
 
 ### URLs
 ```
-Preview: https://feature-parity-push.preview.emergentagent.com
+Preview: https://golden-pillar-hub.preview.emergentagent.com
 Production: https://thedoggycompany.com
 Admin: /admin (login required)
 ```

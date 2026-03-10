@@ -161,147 +161,68 @@ const ADVISORY_INTENTS = [
   }
 ];
 
-// Guided Paths Configuration
-const GUIDED_PATHS = [
+// Icon mapping for API paths
+const ICON_MAP = {
+  'Heart': Heart,
+  'Users': Users,
+  'Shield': Shield,
+  'Baby': Baby,
+  'Dog': Dog,
+  'Plane': Plane,
+  'Scissors': Scissors,
+  'Brain': Brain,
+  'Home': Home,
+  'default': Heart
+};
+
+// Fallback Guided Paths (used when API unavailable)
+const FALLBACK_GUIDED_PATHS = [
   {
-    id: 'new_puppy',
-    title: 'New Puppy Path',
-    description: 'Complete guide for your first year',
-    icon: Baby,
-    color: 'from-pink-500 to-rose-600',
-    steps: [
-      { title: 'What to buy first', items: ['Bed', 'Bowls', 'Collar', 'Tag', 'Leash'] },
-      { title: 'What to feed', items: ['Puppy food', 'Treats', 'Feeding schedule'] },
-      { title: 'First grooming', items: ['Gentle brush', 'Puppy shampoo', 'Nail trimmer'] },
-      { title: 'Vaccine tracker', items: ['DHPP', 'Rabies', 'Bordetella', 'Deworming'] },
-      { title: 'Toilet training', items: ['Pee pads', 'Enzymatic cleaner', 'Routine tips'] }
-    ]
-  },
-  {
-    id: 'new_adoption',
-    title: 'New Adoption Path',
-    description: 'Help your rescue settle in',
-    icon: Heart,
-    color: 'from-orange-500 to-amber-600',
-    steps: [
-      { title: 'First 7 days', items: ['Decompression space', 'Quiet time', 'Patience'] },
-      { title: 'Safe home setup', items: ['Remove hazards', 'Create den', 'Baby gates'] },
-      { title: 'Feeding & routine', items: ['Set schedule', 'Consistent meals', 'Water access'] },
-      { title: 'Emotional settling', items: ['No overwhelming', 'Calm introductions', 'Trust building'] },
-      { title: 'Basic health checks', items: ['Vet visit', 'Vaccinations', 'Deworming'] }
-    ]
-  },
-  {
-    id: 'senior_dog',
-    title: 'Senior Dog Path',
-    description: 'Comfort & care for aging pets',
-    icon: Heart,
-    color: 'from-rose-500 to-pink-600',
-    steps: [
-      { title: 'Mobility support', items: ['Ramps', 'Non-slip mats', 'Support harness'] },
-      { title: 'Comfort essentials', items: ['Orthopedic bed', 'Soft blankets', 'Heating pad'] },
-      { title: 'Diet adjustments', items: ['Senior food', 'Joint supplements', 'Easy-digest'] },
-      { title: 'Sleep quality', items: ['Quiet space', 'Temperature control', 'Night light'] },
-      { title: 'Recovery support', items: ['Gentle exercise', 'Massage', 'Regular vet checks'] }
-    ]
-  },
-  {
-    id: 'travel_ready',
-    title: 'Travel Ready Path',
-    description: 'Prepare for trips with your pet',
-    icon: Plane,
-    color: 'from-sky-500 to-blue-600',
-    steps: [
-      { title: 'Is my dog fit?', items: ['Health check', 'Age appropriate', 'Anxiety level'] },
-      { title: 'Documents needed', items: ['Health certificate', 'Vaccination records', 'ID tags'] },
-      { title: 'Travel gear', items: ['Carrier', 'Harness', 'Calming aids'] },
-      { title: 'Food & hydration', items: ['Travel bowls', 'Sealed food', 'Water bottle'] },
-      { title: 'Vet support', items: ['Destination vet contacts', 'Emergency numbers'] }
-    ]
-  },
-  {
-    id: 'coat_grooming',
-    title: 'Coat & Grooming Path',
-    description: 'Care by coat type',
-    icon: Scissors,
-    color: 'from-purple-500 to-violet-600',
-    steps: [
-      { title: 'Know your coat', items: ['Short', 'Long', 'Double', 'Curly', 'Wire'] },
-      { title: 'Shedding control', items: ['De-shedding brush', 'Regular brushing', 'Diet'] },
-      { title: 'Mat prevention', items: ['Detangling spray', 'Slicker brush', 'Regular combing'] },
-      { title: 'Special care', items: ['Tear stains', 'Ear cleaning', 'Wrinkle care'] },
-      { title: 'Bathing routine', items: ['Frequency', 'Right shampoo', 'Drying tips'] }
-    ]
-  },
-  {
-    id: 'behaviour_path',
-    title: 'Behaviour Path',
-    description: 'Address common issues',
-    icon: Brain,
-    color: 'from-blue-500 to-indigo-600',
-    steps: [
-      { title: 'Leash pulling', items: ['Front-clip harness', 'Training treats', 'Patience'] },
-      { title: 'Excessive barking', items: ['Identify trigger', 'Redirect', 'Training'] },
-      { title: 'Separation anxiety', items: ['Gradual departures', 'Calming aids', 'Safe space'] },
-      { title: 'Destructive chewing', items: ['Appropriate chews', 'Redirect', 'Exercise'] },
-      { title: 'Guest behaviour', items: ['Controlled introductions', 'Training', 'Safe space'] }
-    ]
-  },
-  // Additional Guided Paths
-  {
-    id: 'first_time_owner',
+    id: 'advisory-first-time-owner',
     title: 'First-time Owner Path',
     description: 'Everything new dog parents need',
     icon: Heart,
-    color: 'from-emerald-500 to-teal-600',
+    color: 'from-blue-500 to-cyan-600',
     steps: [
-      { title: 'Before bringing home', items: ['Safe space', 'Food & bowls', 'Bed', 'Crate'] },
-      { title: 'First week essentials', items: ['Routine', 'Patience', 'Bonding time', 'Vet visit'] },
-      { title: 'Basic training', items: ['Name recognition', 'Sit', 'Stay', 'House rules'] },
-      { title: 'Socialization', items: ['New sounds', 'New people', 'Other dogs', 'Car rides'] },
-      { title: 'Health basics', items: ['Vaccination schedule', 'Deworming', 'Flea/tick prevention'] }
+      { title: 'Getting started', items: ['Essential supplies', 'Vet registration', 'Basic training', 'Feeding schedule'] },
+      { title: 'Building routine', items: ['Exercise needs', 'Grooming basics', 'Socialization', 'House rules'] },
+      { title: 'Growing together', items: ['Health checkups', 'Advanced training', 'Diet optimization', 'Bonding activities'] }
     ]
   },
   {
-    id: 'multi_dog',
+    id: 'advisory-multi-dog',
     title: 'Multi-dog Household',
     description: 'Managing multiple dogs',
-    icon: Dog,
-    color: 'from-indigo-500 to-purple-600',
+    icon: Users,
+    color: 'from-purple-500 to-violet-600',
     steps: [
-      { title: 'Introduction protocol', items: ['Neutral territory', 'Leashed meeting', 'Short sessions'] },
-      { title: 'Resource management', items: ['Separate feeding', 'Multiple water bowls', 'Individual toys'] },
-      { title: 'Space planning', items: ['Rest zones', 'Safe spots', 'Crate areas'] },
-      { title: 'Training consistency', items: ['Same commands', 'Individual attention', 'Group walks'] },
-      { title: 'Conflict prevention', items: ['Reading body language', 'Intervention signs', 'Calm environment'] }
+      { title: 'Introduction protocol', items: ['Neutral territory meet', 'Supervised interactions', 'Separate feeding', 'Individual attention'] },
+      { title: 'Harmony at home', items: ['Resource management', 'Pack dynamics', 'Conflict prevention', 'Equal love'] },
+      { title: 'Group activities', items: ['Pack walks', 'Play sessions', 'Training together', 'Shared adventures'] }
     ]
   },
   {
-    id: 'brachycephalic',
+    id: 'advisory-flat-faced',
     title: 'Flat-faced Dog Care',
     description: 'Special care for Pugs, Bulldogs, etc.',
     icon: Heart,
-    color: 'from-pink-500 to-rose-600',
+    color: 'from-amber-500 to-orange-600',
     steps: [
-      { title: 'Breathing awareness', items: ['Temperature limits', 'Avoid heat', 'Rest during exercise'] },
-      { title: 'Weight management', items: ['Portion control', 'Light exercise', 'Regular weigh-ins'] },
-      { title: 'Wrinkle care', items: ['Daily cleaning', 'Dry thoroughly', 'Anti-fungal if needed'] },
-      { title: 'Eye protection', items: ['Avoid sharp objects', 'Regular cleaning', 'Watch for ulcers'] },
-      { title: 'Sleep quality', items: ['Elevated head', 'Cool room', 'Monitor snoring'] }
+      { title: 'Breathing care', items: ['Temperature monitoring', 'Exercise limits', 'Air quality', 'Weight management'] },
+      { title: 'Skin & wrinkle care', items: ['Daily cleaning', 'Moisture control', 'Yeast prevention', 'Gentle products'] },
+      { title: 'Health monitoring', items: ['Regular vet visits', 'BOAS awareness', 'Eye care', 'Dental health'] }
     ]
   },
   {
-    id: 'allergy_management',
+    id: 'advisory-allergy',
     title: 'Allergy Management Path',
     description: 'Control and manage pet allergies',
-    icon: ThermometerSun,
-    color: 'from-amber-500 to-yellow-600',
+    icon: Shield,
+    color: 'from-green-500 to-emerald-600',
     steps: [
-      { title: 'Identify triggers', items: ['Food diary', 'Environment check', 'Vet allergy test'] },
-      { title: 'Diet management', items: ['Elimination diet', 'Novel proteins', 'Limited ingredients'] },
-      { title: 'Skin care routine', items: ['Medicated baths', 'Omega supplements', 'Topical treatments'] },
-      { title: 'Environment control', items: ['Air purifiers', 'Hypoallergenic bedding', 'Regular cleaning'] },
-      { title: 'Long-term management', items: ['Immunotherapy', 'Seasonal adjustments', 'Regular vet checks'] }
+      { title: 'Identification', items: ['Allergy testing', 'Elimination diet', 'Environmental triggers', 'Symptom tracking'] },
+      { title: 'Management', items: ['Hypoallergenic food', 'Air purifiers', 'Frequent bathing', 'Medication if needed'] },
+      { title: 'Prevention', items: ['Regular cleaning', 'Flea control', 'Seasonal adjustments', 'Immune support'] }
     ]
   }
 ];
@@ -374,6 +295,10 @@ const AdvisoryPage = () => {
   const [aiResponse, setAiResponse] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   
+  // Guided Paths from API
+  const [guidedPaths, setGuidedPaths] = useState(FALLBACK_GUIDED_PATHS);
+  const [pathsLoading, setPathsLoading] = useState(true);
+  
   // Weather & Location state
   const [weather, setWeather] = useState(null);
   const [userCity, setUserCity] = useState('');
@@ -404,10 +329,39 @@ const AdvisoryPage = () => {
     window.scrollTo(0, 0);
     fetchData();
     fetchWeather();
+    fetchGuidedPaths();
     if (user && token) {
       fetchUserPets();
     }
   }, [user, token]);
+
+  // Fetch guided paths from API
+  const fetchGuidedPaths = async () => {
+    setPathsLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/guided-paths/advisory`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.paths && data.paths.length > 0) {
+          // Transform API paths to component format
+          const transformedPaths = data.paths.map(path => ({
+            id: path.id,
+            title: path.title,
+            description: path.description,
+            icon: ICON_MAP[path.icon] || ICON_MAP['default'],
+            color: path.color || 'from-purple-500 to-violet-600',
+            steps: path.steps || []
+          }));
+          setGuidedPaths(transformedPaths);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch guided paths:', error);
+      // Keep fallback paths
+    } finally {
+      setPathsLoading(false);
+    }
+  };
 
   // Fetch weather based on user location
   const fetchWeather = async () => {
@@ -1076,8 +1030,14 @@ const AdvisoryPage = () => {
             <p className="text-sm text-gray-600">Step-by-step guidance for common situations</p>
           </div>
           
+          {pathsLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-violet-600 mr-2" />
+              <span className="text-gray-600">Loading guided paths...</span>
+            </div>
+          ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {GUIDED_PATHS.map((path) => {
+            {guidedPaths.map((path) => {
               const Icon = path.icon;
               const isExpanded = selectedPath === path.id;
               
@@ -1090,6 +1050,7 @@ const AdvisoryPage = () => {
                         ? `bg-gradient-to-br ${path.color} text-white shadow-lg` 
                         : 'bg-gray-50 hover:shadow-md border border-gray-200'
                     }`}
+                    data-testid={`path-${path.id}`}
                   >
                     <Icon className={`w-6 h-6 mb-2 ${isExpanded ? 'text-white' : 'text-violet-600'}`} />
                     <h3 className={`font-semibold text-sm ${isExpanded ? 'text-white' : 'text-gray-900'}`}>
@@ -1158,6 +1119,7 @@ const AdvisoryPage = () => {
               );
             })}
           </div>
+          )}
         </div>
       </section>
 

@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://feature-parity-push.preview.emergentagent.com
+https://golden-pillar-hub.preview.emergentagent.com
 ```
 
 ---

@@ -296,4 +296,4 @@ Password: test123
 
 **Audit Status:** COMPLETE
 **Generated:** February 9, 2026
-**Preview URL:** https://feature-parity-push.preview.emergentagent.com
+**Preview URL:** https://golden-pillar-hub.preview.emergentagent.com
