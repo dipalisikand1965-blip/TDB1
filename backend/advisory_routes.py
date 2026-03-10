@@ -350,22 +350,41 @@ async def delete_advisory_partner(partner_id: str):
 async def get_advisory_products(
     advisory_type: Optional[str] = None,
     in_stock: bool = True,
-    limit: int = 50
+    limit: int = 50,
+    care_products_only: bool = True
 ):
     """Get advisory products from unified_products collection"""
     db = get_db()
     
-    # Query unified_products with pillar="advisory"
+    # Base query for advisory pillar
     query = {"pillar": "advisory"}
-    if advisory_type:
+    
+    # Filter to care products (have price and are actual products, not services)
+    if care_products_only:
+        care_categories = [
+            "food_feeding", "grooming_coat", "home_comfort", "behaviour_training",
+            "travel_outings", "puppy_adoption", "senior_care", "seasonal_climate"
+        ]
+        query["category"] = {"$in": care_categories}
+        query["price"] = {"$gt": 0}
+    elif advisory_type:
         query["category"] = advisory_type
-    if in_stock:
-        query["$or"] = [{"in_stock": True}, {"in_stock": {"$exists": False}}]
     
-    products = await db.unified_products.find(query, {"_id": 0}).to_list(limit)
-    total = await db.unified_products.count_documents(query)
-    
-    return {"products": products, "total": total}
+    try:
+        products = await db.unified_products.find(query, {"_id": 0}).to_list(limit)
+        total = await db.unified_products.count_documents(query)
+        logger.info(f"Advisory products query: {query}, found: {total}")
+        return {"products": products, "total": total}
+    except Exception as e:
+        logger.error(f"Error fetching advisory products: {e}")
+        # Try sync fallback
+        from pymongo import MongoClient
+        import os
+        client = MongoClient(os.environ.get('MONGO_URL'))
+        sync_db = client[os.environ.get('DB_NAME', 'doggy_company')]
+        products = list(sync_db.unified_products.find(query, {"_id": 0}).limit(limit))
+        total = sync_db.unified_products.count_documents(query)
+        return {"products": products, "total": total}
 
 
 @router.post("/admin/products")

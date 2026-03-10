@@ -40,6 +40,7 @@ import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
 import NearbyAdvisoryServices from '../components/advisory/NearbyAdvisoryServices';
+import AdvisoryProductsGrid from '../components/advisory/AdvisoryProductsGrid';
 import {
   Brain, Heart, Apple, Home, Stethoscope, GraduationCap,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
@@ -1018,6 +1019,12 @@ const AdvisoryPage = () => {
           {/* BUNDLES ON TOP */}
           <div className="mb-8">
             <CuratedBundles pillar="advisory" maxBundles={3} showTitle={true} />
+          </div>
+          
+          {/* ADVISORY CARE PRODUCTS BY CATEGORY */}
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Care Products</h3>
+            <AdvisoryProductsGrid maxProducts={24} showCategories={true} />
           </div>
           
           {/* SMART PICKS */}
