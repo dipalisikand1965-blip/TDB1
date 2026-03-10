@@ -172,7 +172,7 @@ const CuratedBundles = ({ pillar, showTitle = true, className = '' }) => {
       name: bundle.name,
       price: bundle.bundle_price,
       original_price: bundle.original_price,
-      image: null, // Bundles don't have images yet
+      image: bundle.image_url || null,
       quantity: 1,
       is_bundle: true,
       bundle_items: bundle.items,
@@ -220,6 +220,17 @@ const CuratedBundles = ({ pillar, showTitle = true, className = '' }) => {
             }`}
           >
             <div className="p-6">
+              {/* Bundle Image (if available) */}
+              {bundle.image_url && (
+                <div className="mb-4 -mx-6 -mt-6">
+                  <img 
+                    src={bundle.image_url} 
+                    alt={bundle.name}
+                    className="w-full h-40 object-cover"
+                  />
+                </div>
+              )}
+              
               {/* Header */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
