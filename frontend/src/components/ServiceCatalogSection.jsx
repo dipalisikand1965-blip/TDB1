@@ -11,7 +11,7 @@ import { Label } from './ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 import { 
   Clock, MapPin, DollarSign, Check, ChevronRight, Loader2,
-  Calendar, Phone, Star, Sparkles, PawPrint, Info, X
+  Calendar, Phone, Star, Sparkles, PawPrint, Info, X, MessageCircle
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { toast } from '../hooks/use-toast';
@@ -44,6 +44,7 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
   const [loading, setLoading] = useState(true);
   const [selectedService, setSelectedService] = useState(null);
   const [showPriceModal, setShowPriceModal] = useState(false);
+  const [showConciergeModal, setShowConciergeModal] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [displayCount, setDisplayCount] = useState(maxServices);
   const [totalServices, setTotalServices] = useState(0);
@@ -139,6 +140,12 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
         petCount: pets.length
       }));
       setBookingData(prev => ({ ...prev, petId: firstPet.id || firstPet._id }));
+    }
+    
+    // If hidePrice mode, show concierge contact modal instead of price calculator
+    if (hidePrice) {
+      setShowConciergeModal(true);
+      return;
     }
     
     if (service.is_bookable && !service.is_free) {
@@ -561,6 +568,78 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
             >
               Book Now
               <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Concierge Contact Modal - Simple contact card for hidePrice mode */}
+      <Dialog open={showConciergeModal} onOpenChange={setShowConciergeModal}>
+        <DialogContent className="max-w-md p-6">
+          <DialogHeader className="mb-4">
+            <DialogTitle className="flex items-center gap-2 text-lg">
+              <Phone className="w-5 h-5 text-rose-500" />
+              Contact Concierge®
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedService && (
+            <div className="space-y-4">
+              {/* Service Info */}
+              <div className="bg-gradient-to-r from-rose-50 to-pink-50 p-4 rounded-xl">
+                <h3 className="font-bold text-gray-900">{selectedService.name}</h3>
+                <p className="text-sm text-gray-600 mt-1">{selectedService.description}</p>
+              </div>
+              
+              {/* How Concierge Helps */}
+              <div className="space-y-3">
+                <p className="text-sm text-gray-700 font-medium">Our Concierge® will help you with:</p>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                    <span>Finding the right service provider near you</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                    <span>Coordinating appointments and logistics</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                    <span>24/7 support for your pet's needs</span>
+                  </li>
+                </ul>
+              </div>
+              
+              {/* Contact Options */}
+              <div className="bg-gray-900 text-white p-4 rounded-xl space-y-3">
+                <p className="text-sm font-medium text-gray-300">Reach out to us:</p>
+                <a 
+                  href="tel:+919876543210" 
+                  className="flex items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+                >
+                  <Phone className="w-4 h-4" />
+                  Call Now: +91 98765 43210
+                </a>
+                <a 
+                  href="https://wa.me/919876543210" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  WhatsApp Us
+                </a>
+              </div>
+              
+              <p className="text-xs text-gray-500 text-center">
+                Available 24/7 for emergencies
+              </p>
+            </div>
+          )}
+          
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={() => setShowConciergeModal(false)} className="w-full">
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>
