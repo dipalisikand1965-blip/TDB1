@@ -288,7 +288,7 @@ const ProductManager = ({ credentials }) => {
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/admin/products?limit=2000`, {
+      const response = await fetch(`${API_URL}/api/admin/products?limit=10000`, {
         headers: {
           'Authorization': getAuthHeader()
         }

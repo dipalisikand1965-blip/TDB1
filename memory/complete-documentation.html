@@ -24,8 +24,6 @@
         .method { display: inline-block; padding: 2px 8px; border-radius: 4px; font-weight: 600; margin-right: 10px; }
         .method-get { background: #48bb78; color: white; }
         .method-post { background: #4299e1; color: white; }
-        .method-put { background: #ed8936; color: white; }
-        .method-delete { background: #f56565; color: white; }
         table { width: 100%; border-collapse: collapse; margin: 15px 0; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
         th { background: #f8f9fa; font-weight: 600; }
@@ -33,342 +31,389 @@
         ul { margin-left: 20px; }
         li { margin: 8px 0; }
         .progress-bar { background: #e2e8f0; border-radius: 10px; height: 20px; overflow: hidden; margin: 10px 0; }
-        .progress-fill { background: linear-gradient(90deg, #48bb78, #38a169); height: 100%; transition: width 0.3s; }
+        .progress-fill { background: linear-gradient(90deg, #48bb78, #38a169); height: 100%; }
         .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
         .verified { color: #38a169; font-weight: 600; }
+        .pill { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.85em; margin: 2px; }
+        .pill-green { background: #d4edda; color: #155724; }
+        .pill-blue { background: #cce5ff; color: #004085; }
+        .pill-purple { background: #e2d5f1; color: #5a3d8a; }
+        .pill-orange { background: #fff3cd; color: #856404; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>The Doggy Company</h1>
-            <p class="tagline">Complete Technical Documentation & Handover Guide</p>
-            <p class="date">Last Updated: March 10, 2026 10:10 IST | Mockups: 56%+ | Emergency Page Redesign</p>
+            <p class="tagline">Complete Technical Documentation & Platform Bible</p>
+            <p class="date">Last Updated: March 10, 2026 23:45 IST | All Systems Operational</p>
         </div>
 
-        <!-- EMERGENCY PAGE REDESIGN - CURRENT FOCUS -->
+        <!-- PLATFORM OVERVIEW -->
         <div class="section">
-            <h2 class="section-title"><span class="emoji">🚨</span> Emergency Page Redesign (IN PROGRESS)</h2>
+            <h2 class="section-title"><span class="emoji">🐕</span> Platform Overview</h2>
             
-            <div class="warning-box">
-                <strong>CURRENT FOCUS:</strong> Complete redesign of Emergency page with 5-layer architecture and 9 sections.
+            <div class="success-box">
+                <strong>MIRA OS:</strong> A hyper-personalized pet care platform with AI-powered recommendations, Soul Score profiling, and 14 lifestyle pillars.
             </div>
 
             <div class="card">
-                <div class="card-title">5-Layer Architecture</div>
-                <ol>
-                    <li><strong>Immediate Action</strong> - Urgent help buttons (panic mode, no scrolling)</li>
-                    <li><strong>Google Nearby Help</strong> - Real-time clinic finder with filters</li>
-                    <li><strong>Concierge Support</strong> - Human coordination via WhatsApp</li>
-                    <li><strong>Pet-Specific Records</strong> - Emergency file + personalized recommendations</li>
-                    <li><strong>Emergency Products</strong> - Commerce layer + recovery items</li>
-                </ol>
+                <div class="card-title">Core Philosophy</div>
+                <ul>
+                    <li><strong>Soul Score:</strong> Every pet has a unique profile built from 100+ data points</li>
+                    <li><strong>Breed Intelligence:</strong> AI recommendations based on breed-specific needs</li>
+                    <li><strong>Lifestyle Pillars:</strong> 14 pillars covering every aspect of pet care</li>
+                    <li><strong>Concierge:</strong> Human-in-the-loop support via WhatsApp/Email/Call</li>
+                </ul>
             </div>
 
             <div class="card">
-                <div class="card-title">9 Sections</div>
+                <div class="card-title">Tech Stack</div>
+                <div class="grid-2">
+                    <div>
+                        <strong>Frontend:</strong>
+                        <ul>
+                            <li>React 18 with Vite</li>
+                            <li>TailwindCSS + Shadcn/UI</li>
+                            <li>React Router v6</li>
+                            <li>Context API for state</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <strong>Backend:</strong>
+                        <ul>
+                            <li>FastAPI (Python 3.11)</li>
+                            <li>MongoDB Atlas (Motor async)</li>
+                            <li>Cloudinary (image storage)</li>
+                            <li>OpenAI GPT-4o (AI features)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 14 LIFESTYLE PILLARS -->
+        <div class="section">
+            <h2 class="section-title"><span class="emoji">🏛️</span> 14 Lifestyle Pillars</h2>
+            
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-title">🚨 Emergency</div>
+                    <p>Urgent help, nearby vets, first-aid products, pet emergency file</p>
+                    <span class="pill pill-green">COMPLETE</span>
+                </div>
+                <div class="card">
+                    <div class="card-title">📋 Advisory</div>
+                    <p>AI decision support, care products (69), concierge guidance</p>
+                    <span class="pill pill-green">COMPLETE</span>
+                </div>
+                <div class="card">
+                    <div class="card-title">📚 Learn</div>
+                    <p>Training courses, behavior guides, breed education</p>
+                    <span class="pill pill-green">COMPLETE</span>
+                </div>
+                <div class="card">
+                    <div class="card-title">🎂 Celebrate</div>
+                    <p>Birthday cakes, party supplies, custom celebrations</p>
+                    <span class="pill pill-green">COMPLETE</span>
+                </div>
+                <div class="card">
+                    <div class="card-title">🏨 Stay</div>
+                    <p>Pet-friendly hotels, boarding, daycare</p>
+                    <span class="pill pill-blue">ACTIVE</span>
+                </div>
+                <div class="card">
+                    <div class="card-title">🍽️ Dine</div>
+                    <p>Pet-friendly restaurants, cafes</p>
+                    <span class="pill pill-blue">ACTIVE</span>
+                </div>
+                <div class="card">
+                    <div class="card-title">✈️ Travel</div>
+                    <p>Travel gear, pet carriers, documentation</p>
+                    <span class="pill pill-blue">ACTIVE</span>
+                </div>
+                <div class="card">
+                    <div class="card-title">💅 Grooming</div>
+                    <p>Grooming services, coat care products</p>
+                    <span class="pill pill-blue">ACTIVE</span>
+                </div>
+                <div class="card">
+                    <div class="card-title">🏥 Health</div>
+                    <p>Vet consultations, health monitoring</p>
+                    <span class="pill pill-blue">ACTIVE</span>
+                </div>
+                <div class="card">
+                    <div class="card-title">🎮 Play</div>
+                    <p>Toys, enrichment, activities</p>
+                    <span class="pill pill-blue">ACTIVE</span>
+                </div>
+                <div class="card">
+                    <div class="card-title">🛍️ Shop</div>
+                    <p>All products, breed-specific recommendations</p>
+                    <span class="pill pill-green">COMPLETE</span>
+                </div>
+                <div class="card">
+                    <div class="card-title">🏠 Home</div>
+                    <p>Pet furniture, home setup</p>
+                    <span class="pill pill-blue">ACTIVE</span>
+                </div>
+                <div class="card">
+                    <div class="card-title">👥 Social</div>
+                    <p>Playdates, community events</p>
+                    <span class="pill pill-blue">ACTIVE</span>
+                </div>
+                <div class="card">
+                    <div class="card-title">🐾 Soul</div>
+                    <p>Pet personality assessment, Soul Score</p>
+                    <span class="pill pill-green">COMPLETE</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADVISORY PAGE - DETAILED -->
+        <div class="section">
+            <h2 class="section-title"><span class="emoji">📋</span> Advisory Page (COMPLETE)</h2>
+            
+            <div class="success-box">
+                <strong>STATUS:</strong> Fully implemented with 69 care products, AI advisory, pet selector, and concierge modal.
+            </div>
+
+            <div class="card">
+                <div class="card-title">9-Layer Architecture</div>
                 <table>
-                    <tr><th>#</th><th>Section</th><th>Purpose</th></tr>
-                    <tr><td>1</td><td>Urgent Help</td><td>Call vet, Find clinic, Poison help, Ambulance, Open pet file</td></tr>
-                    <tr><td>2</td><td>Nearby Help</td><td>Google Places API - 24/7 vets, hospitals, pharmacies</td></tr>
-                    <tr><td>3</td><td>Concierge Help</td><td>WhatsApp coordination, callback, file sharing</td></tr>
-                    <tr><td>4</td><td>My Pet Emergency File</td><td>Auto-loaded pet medical info</td></tr>
-                    <tr><td>5</td><td>Situation Guides</td><td>10 actionable emergency guides</td></tr>
-                    <tr><td>6</td><td>Emergency Products</td><td>First-aid kits, cones, recovery items</td></tr>
-                    <tr><td>7</td><td>Smart Picks</td><td>Breed/age/size personalized products</td></tr>
-                    <tr><td>8</td><td>Special Paths</td><td>Lost Pet, Travel, Puppy, Senior emergencies</td></tr>
-                    <tr><td>9</td><td>Recovery</td><td>Discharge checklist, medication reminders</td></tr>
+                    <tr><th>#</th><th>Layer</th><th>Description</th></tr>
+                    <tr><td>1</td><td>Ask Advisory</td><td>AI-powered Q&A with pet context (breed, age, health)</td></tr>
+                    <tr><td>2</td><td>Intent Tiles</td><td>11 quick-select topics (Food, Grooming, Training, etc.)</td></tr>
+                    <tr><td>3</td><td>My Dog Advisory</td><td>Personalized advice cards based on Soul profile</td></tr>
+                    <tr><td>4</td><td>Guided Paths</td><td>Step-by-step journeys (New Puppy, Senior Care, etc.)</td></tr>
+                    <tr><td>5</td><td>Products & Bundles</td><td>Curated bundles + 69 care products by category</td></tr>
+                    <tr><td>6</td><td>Smart Picks</td><td>Breed-specific recommendations</td></tr>
+                    <tr><td>7</td><td>Near Me</td><td>Google Places API - trainers, groomers, vets, pet stores</td></tr>
+                    <tr><td>8</td><td>Seasonal Tips</td><td>Climate-based care advice</td></tr>
+                    <tr><td>9</td><td>Concierge CTA</td><td>Always-available human help</td></tr>
                 </table>
             </div>
 
             <div class="card">
-                <div class="card-title">Technical Assets Available</div>
+                <div class="card-title">69 Advisory Care Products (8 Categories)</div>
+                <table>
+                    <tr><th>Category</th><th>Products</th><th>Examples</th></tr>
+                    <tr><td>Food & Feeding</td><td>8</td><td>Slow Feeder Bowl, Raised Feeder, Lick Mat, Storage Container</td></tr>
+                    <tr><td>Grooming & Coat</td><td>10</td><td>Slicker Brush, De-shedding Tool, Ear Wipes, Shampoo</td></tr>
+                    <tr><td>Home & Comfort</td><td>8</td><td>Orthopedic Bed, Calming Donut Bed, Cooling Mat, Crate Mat</td></tr>
+                    <tr><td>Behaviour & Training</td><td>8</td><td>Puzzle Feeder, Snuffle Mat, Training Clicker, Tug Rope</td></tr>
+                    <tr><td>Travel & Outings</td><td>8</td><td>Travel Carrier, Car Seat Protector, Portable Water Bottle</td></tr>
+                    <tr><td>Puppy & Adoption</td><td>8</td><td>Puppy Starter Kit, Teething Toys, Pee Pads, Document Folder</td></tr>
+                    <tr><td>Senior Care</td><td>8</td><td>Joint Support Mat, Mobility Harness, Non-Slip Mats</td></tr>
+                    <tr><td>Seasonal & Climate</td><td>8</td><td>Cooling Bandana, Paw Balm, Raincoat, Winter Jacket</td></tr>
+                </table>
+                <p><strong>All 69 products have AI-generated Cloudinary images.</strong></p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Key Components</div>
                 <ul>
-                    <li><span class="verified">✓</span> Google Places API configured</li>
-                    <li><span class="verified">✓</span> <code>google_places_service.py</code> - Nearby places search</li>
-                    <li><span class="verified">✓</span> <code>NearbyPlacesCarousel.jsx</code> - Frontend component</li>
-                    <li><span class="verified">✓</span> <code>ServiceCatalogSection.jsx</code> - Concierge services</li>
-                    <li><span class="verified">✓</span> <code>BreedSmartRecommendations.jsx</code> - Personalized picks</li>
-                    <li><span class="verified">✓</span> Pet profile API - Emergency file data</li>
-                    <li><span class="verified">✓</span> WhatsApp: 918971702582</li>
+                    <li><code>AdvisoryPage.jsx</code> - Main page with 9 layers</li>
+                    <li><code>AdvisoryProductsGrid.jsx</code> - Product grid with category tabs</li>
+                    <li><code>NearbyAdvisoryServices.jsx</code> - Google Places integration</li>
+                    <li><code>ConciergeModal</code> - Pet selector + contact options (like Learn page)</li>
                 </ul>
             </div>
 
             <div class="card">
-                <div class="card-title">Sub-Navigation Menu (Planned)</div>
-                <p>Urgent Help | Near Me Now | Ask Concierge | My Pet File | Emergency Guides | Emergency Essentials | Picked for My Dog | Lost Pet | Travel Emergency | Recovery</p>
-            </div>
-        </div>
-
-        <!-- Status Overview -->
-        <div class="section">
-            <h2 class="section-title"><span class="emoji">📊</span> Current Status</h2>
-            
-            <div class="success-box">
-                <strong>BUNDLE IMAGES VERIFIED WORKING:</strong> All 19 bundles have AI-generated images and are displaying correctly on pillar pages.
-            </div>
-
-            <div class="grid-2">
-                <div class="card">
-                    <div class="card-title">Mockup Generation Progress</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 50.7%;"></div>
-                    </div>
-                    <p><strong>1303 / 2569</strong> products have AI mockups (50.7%)</p>
-                    <p>33 breeds × 65+ product types</p>
-                    <p>To continue: <code>cd /app/backend && python3 auto_mockup_generator.py &</code></p>
+                <div class="card-title">API Endpoints</div>
+                <div class="api-endpoint">
+                    <span class="method method-get">GET</span> /api/advisory/products?limit=100
                 </div>
-                <div class="card">
-                    <div class="card-title">Curated Bundles <span class="verified">✓ VERIFIED</span></div>
-                    <p><strong>19 bundles</strong> across 12 pillars</p>
-                    <p>All bundles have AI-generated images</p>
-                    <p>Images displaying on pillar pages</p>
-                    <p>Full CRUD working in Admin panel</p>
+                <div class="api-endpoint">
+                    <span class="method method-post">POST</span> /api/advisory/ask-advisory
+                </div>
+                <div class="api-endpoint">
+                    <span class="method method-get">GET</span> /api/mira/local-places/vets?city=Bangalore
                 </div>
             </div>
         </div>
 
-        <!-- What's Complete -->
+        <!-- SHOP PAGE -->
         <div class="section">
-            <h2 class="section-title"><span class="emoji">✅</span> What's Complete</h2>
+            <h2 class="section-title"><span class="emoji">🛍️</span> Shop Page</h2>
             
             <div class="card">
-                <div class="card-title">Soul Products System</div>
+                <div class="card-title">Features</div>
                 <ul>
-                    <li><strong>AI Mockup Generation:</strong> OpenAI GPT Image 1 + Cloudinary</li>
-                    <li><strong>Admin Stats Display:</strong> Fixed - now shows real-time progress</li>
-                    <li><strong>Auto-Generator:</strong> Script available at /app/backend/auto_mockup_generator.py</li>
-                    <li><strong>Generate Button:</strong> Working in Soul Products Manager</li>
+                    <li><strong>Pillar Tabs:</strong> Emergency, Advisory, Celebrate, Stay, Dine, Travel, etc.</li>
+                    <li><strong>Breed Filters:</strong> All 35 breeds available for filtering</li>
+                    <li><strong>Sub-Category Filters:</strong> Per-pillar category filtering</li>
+                    <li><strong>Product Modals:</strong> Click to view details, add to cart</li>
+                    <li><strong>Product Limit:</strong> 10,000 products supported</li>
                 </ul>
             </div>
 
             <div class="card">
-                <div class="card-title">Curated Bundles <span class="verified">✓ VERIFIED MARCH 10</span></div>
-                <ul>
-                    <li><strong>19 Bundles:</strong> Celebrate, Travel, Dine, Care, Stay, Fit, Farewell, Enjoy, Learn, Emergency, Adopt, Advisory, Paperwork</li>
-                    <li><strong>AI Images:</strong> All bundles have generated images - <span class="verified">DISPLAYING CORRECTLY</span></li>
-                    <li><strong>Admin CRUD:</strong> Create, Edit, Delete modals working - 100% test pass rate</li>
-                    <li><strong>Production Sync:</strong> Endpoint ready</li>
-                </ul>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Golden Standard Layout (All 13 Pillars)</div>
-                <ul>
-                    <li>Hero Section with pet personalization</li>
-                    <li>Mira's Quick Help (AI concierge)</li>
-                    <li>Soul Made Products</li>
-                    <li>Breed-Smart Recommendations</li>
-                    <li>Archetype Products</li>
-                    <li>Curated Bundles with AI images</li>
-                </ul>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Archetype Tone System</div>
-                <ul>
-                    <li>7 Archetypes with unique copy</li>
-                    <li>Dynamic greetings per pet personality</li>
-                    <li>Personalized product intros</li>
-                    <li>Accent colors per archetype</li>
-                </ul>
+                <div class="card-title">35 Breed Filters</div>
+                <p>
+                    <span class="pill pill-purple">Labrador Retriever</span>
+                    <span class="pill pill-purple">Golden Retriever</span>
+                    <span class="pill pill-purple">German Shepherd</span>
+                    <span class="pill pill-purple">Shih Tzu</span>
+                    <span class="pill pill-purple">Pug</span>
+                    <span class="pill pill-purple">Beagle</span>
+                    <span class="pill pill-purple">Poodle</span>
+                    <span class="pill pill-purple">Indie</span>
+                    <span class="pill pill-purple">Indian Pariah</span>
+                    <span class="pill pill-purple">Cocker Spaniel</span>
+                    <span class="pill pill-purple">Dachshund</span>
+                    <span class="pill pill-purple">Boxer</span>
+                    <span class="pill pill-purple">Great Dane</span>
+                    <span class="pill pill-purple">Siberian Husky</span>
+                    <span class="pill pill-purple">Doberman</span>
+                    <span class="pill pill-purple">Rottweiler</span>
+                    <span class="pill pill-purple">French Bulldog</span>
+                    <span class="pill pill-purple">English Bulldog</span>
+                    <span class="pill pill-purple">Yorkshire Terrier</span>
+                    <span class="pill pill-purple">Maltese</span>
+                    <span class="pill pill-purple">Pomeranian</span>
+                    <span class="pill pill-purple">Chihuahua</span>
+                    <span class="pill pill-purple">Border Collie</span>
+                    <span class="pill pill-purple">Australian Shepherd</span>
+                    <span class="pill pill-purple">Cavalier King Charles</span>
+                    <span class="pill pill-purple">Miniature Schnauzer</span>
+                    <span class="pill pill-purple">Boston Terrier</span>
+                    <span class="pill pill-purple">Dalmatian</span>
+                    <span class="pill pill-purple">Lhasa Apso</span>
+                    <span class="pill pill-purple">Bichon Frise</span>
+                    <span class="pill pill-purple">Akita</span>
+                    <span class="pill pill-purple">Samoyed</span>
+                    <span class="pill pill-purple">Bernese Mountain Dog</span>
+                    <span class="pill pill-purple">St. Bernard</span>
+                    <span class="pill pill-purple">Mixed Breed</span>
+                </p>
             </div>
         </div>
 
-        <!-- Pending Issues -->
-        <div class="section">
-            <h2 class="section-title"><span class="emoji">⚠️</span> Pending Issues</h2>
-            
-            <div class="error-box">
-                <strong>P1 - Razorpay Checkout:</strong> "body error" when completing payment. Not started - user requested to fix LAST.
-            </div>
-
-            <div class="warning-box">
-                <strong>P2 - Mobile Dashboard:</strong> Scrambled layout on mobile. Needs user verification with screenshot.
-            </div>
-        </div>
-
-        <!-- API Endpoints -->
-        <div class="section">
-            <h2 class="section-title"><span class="emoji">🔗</span> Key API Endpoints</h2>
-            
-            <div class="card">
-                <div class="card-title">Mockups</div>
-                <div class="api-endpoint">
-                    <span class="method method-get">GET</span> /api/mockups/stats - Overall statistics
-                </div>
-                <div class="api-endpoint">
-                    <span class="method method-get">GET</span> /api/mockups/status - Current generation status
-                </div>
-                <div class="api-endpoint">
-                    <span class="method method-post">POST</span> /api/mockups/generate-batch - Start batch (limit: 10-50)
-                </div>
-                <div class="api-endpoint">
-                    <span class="method method-post">POST</span> /api/mockups/sync-to-production - Sync to prod
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Bundles <span class="verified">✓ 100% TEST PASS</span></div>
-                <div class="api-endpoint">
-                    <span class="method method-get">GET</span> /api/bundles?pillar=celebrate - List bundles
-                </div>
-                <div class="api-endpoint">
-                    <span class="method method-post">POST</span> /api/bundles - Create bundle
-                </div>
-                <div class="api-endpoint">
-                    <span class="method method-put">PUT</span> /api/bundles/{id} - Update bundle
-                </div>
-                <div class="api-endpoint">
-                    <span class="method method-post">POST</span> /api/bundles/{id}/generate-image - Generate AI image
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Products</div>
-                <div class="api-endpoint">
-                    <span class="method method-get">GET</span> /api/products/multi-factor-filter - Personalized filtering
-                </div>
-                <div class="api-endpoint">
-                    <span class="method method-get">GET</span> /api/breed-products?breed=indie - Breed products
-                </div>
-            </div>
-        </div>
-
-        <!-- Database -->
+        <!-- DATABASE COLLECTIONS -->
         <div class="section">
             <h2 class="section-title"><span class="emoji">🗄️</span> Database Collections</h2>
             
             <table>
-                <tr><th>Collection</th><th>Count</th><th>Description</th></tr>
-                <tr><td>products_master</td><td>3,443</td><td>Unified products (Shopify + Soul Made)</td></tr>
-                <tr><td>breed_products</td><td>2,569</td><td>Breed-specific AI mockup products</td></tr>
-                <tr><td>unified_products</td><td>3,338</td><td>Unified product catalog</td></tr>
-                <tr><td>bundles</td><td>19</td><td>Curated product bundles (all with images)</td></tr>
-                <tr><td>pets</td><td>9+</td><td>Pet profiles with archetypes</td></tr>
+                <tr><th>Collection</th><th>Purpose</th><th>Key Fields</th></tr>
+                <tr><td>unified_products</td><td>All products</td><td>id, name, pillar, category, price, image_url</td></tr>
+                <tr><td>products_master</td><td>Admin CRUD source</td><td>Same as unified_products</td></tr>
+                <tr><td>unified_inbox</td><td>Admin inbox view</td><td>Same as unified_products</td></tr>
+                <tr><td>pets</td><td>Pet profiles</td><td>id, name, breed, owner_email, doggy_soul_answers</td></tr>
+                <tr><td>users</td><td>User accounts</td><td>email, name, pets (embedded)</td></tr>
+                <tr><td>bundles</td><td>Product bundles</td><td>id, name, pillar, products, price</td></tr>
+                <tr><td>orders</td><td>Customer orders</td><td>id, user_email, items, total, status</td></tr>
             </table>
         </div>
 
-        <!-- Bundles Coverage -->
+        <!-- INTEGRATIONS -->
         <div class="section">
-            <h2 class="section-title"><span class="emoji">🎁</span> Bundle Coverage (19 Total - All with AI Images)</h2>
+            <h2 class="section-title"><span class="emoji">🔌</span> Third-Party Integrations</h2>
             
-            <table>
-                <tr><th>Pillar</th><th>Bundles</th></tr>
-                <tr><td>Celebrate</td><td>Birthday Pawty, Gotcha Day</td></tr>
-                <tr><td>Travel</td><td>Adventure Ready, Road Trip Essentials</td></tr>
-                <tr><td>Dine</td><td>Premium Mealtime, Treat Lover</td></tr>
-                <tr><td>Care</td><td>Spa Day</td></tr>
-                <tr><td>Stay</td><td>Home Comfort</td></tr>
-                <tr><td>Fit</td><td>Daily Walker</td></tr>
-                <tr><td>Farewell</td><td>Forever Loved</td></tr>
-                <tr><td>Enjoy</td><td>Play Day, Indoor Fun</td></tr>
-                <tr><td>Learn</td><td>Training Starter, Puppy School</td></tr>
-                <tr><td>Emergency</td><td>Pet First Aid</td></tr>
-                <tr><td>Adopt</td><td>New Pet Welcome, Rescue Ready</td></tr>
-                <tr><td>Advisory</td><td>Pet Parent Starter</td></tr>
-                <tr><td>Paperwork</td><td>Pet Documents</td></tr>
-            </table>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">AI & LLM</div>
+                    <ul>
+                        <li><span class="verified">✓</span> OpenAI GPT-4o (Ask Mira, Ask Advisory)</li>
+                        <li><span class="verified">✓</span> GPT Image 1 (AI product images)</li>
+                        <li><span class="verified">✓</span> Emergent LLM Key integration</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title">Location & Maps</div>
+                    <ul>
+                        <li><span class="verified">✓</span> Google Places API (nearby services)</li>
+                        <li><span class="verified">✓</span> Nominatim (city search, reverse geocoding)</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title">Storage & Media</div>
+                    <ul>
+                        <li><span class="verified">✓</span> Cloudinary (all product images)</li>
+                        <li><span class="verified">✓</span> MongoDB Atlas (database)</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title">Payments & Commerce</div>
+                    <ul>
+                        <li><span class="warning-box" style="padding:5px;margin:0">⚠️</span> Razorpay (needs debugging)</li>
+                        <li><span class="verified">✓</span> Shopify sync (product import)</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
-        <!-- Key Files -->
+        <!-- KNOWN ISSUES -->
+        <div class="section">
+            <h2 class="section-title"><span class="emoji">⚠️</span> Known Issues & Pending</h2>
+            
+            <div class="error-box">
+                <strong>P1 - Razorpay Checkout:</strong> "body error" when creating orders. Needs investigation of request payload vs Pydantic model.
+            </div>
+            
+            <div class="warning-box">
+                <strong>P2 - Mobile Dashboard:</strong> Pet dashboard layout scrambled on mobile viewport. Needs responsive CSS fixes.
+            </div>
+        </div>
+
+        <!-- CREDENTIALS -->
+        <div class="section">
+            <h2 class="section-title"><span class="emoji">🔑</span> Test Credentials</h2>
+            
+            <div class="card">
+                <div class="card-title">User Account</div>
+                <p>Email: <code>dipali@clubconcierge.in</code> | Password: <code>test123</code></p>
+                <p>Pets: Mojo (Shih Tzu), Mystique, Bruno, Buddy, Lola, Meister, Luna, TestScoring, TestScoringWeight</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">Admin Account</div>
+                <p>Username: <code>aditya</code> | Password: <code>lola4304</code></p>
+            </div>
+        </div>
+
+        <!-- FILE STRUCTURE -->
         <div class="section">
             <h2 class="section-title"><span class="emoji">📁</span> Key Files</h2>
             
-            <div class="grid-2">
-                <div class="card">
-                    <div class="card-title">Frontend</div>
-                    <ul>
-                        <li><code>pages/Admin/SoulProductsManager.jsx</code></li>
-                        <li><code>pages/Admin/BundlesManager.jsx</code></li>
-                        <li><code>components/ArchetypeProducts.jsx</code></li>
-                        <li><code>components/CuratedBundles.jsx</code> - Displays bundle images</li>
-                        <li><code>utils/archetypeCopy.js</code></li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <div class="card-title">Backend</div>
-                    <ul>
-                        <li><code>app/api/mockup_routes.py</code></li>
-                        <li><code>app/api/bundle_routes.py</code></li>
-                        <li><code>auto_mockup_generator.py</code></li>
-                        <li><code>soul_archetype_engine.py</code></li>
-                    </ul>
-                </div>
+            <div class="card">
+                <div class="card-title">Frontend Pages</div>
+                <ul>
+                    <li><code>/app/frontend/src/pages/AdvisoryPage.jsx</code> - Advisory with 9 layers</li>
+                    <li><code>/app/frontend/src/pages/ShopPage.jsx</code> - Shop with pillar tabs</li>
+                    <li><code>/app/frontend/src/pages/EmergencyPage.jsx</code> - Emergency services</li>
+                    <li><code>/app/frontend/src/pages/LearnPage.jsx</code> - Training & education</li>
+                    <li><code>/app/frontend/src/pages/Admin.jsx</code> - Admin dashboard</li>
+                </ul>
             </div>
-        </div>
-
-        <!-- Credentials -->
-        <div class="section">
-            <h2 class="section-title"><span class="emoji">🔐</span> Test Credentials</h2>
-            
-            <div class="grid-2">
-                <div class="card">
-                    <div class="card-title">User Account</div>
-                    <p><strong>Email:</strong> dipali@clubconcierge.in</p>
-                    <p><strong>Password:</strong> test123</p>
-                    <p><em>Has 9 pets for testing personalization</em></p>
-                </div>
-                <div class="card">
-                    <div class="card-title">Admin Account</div>
-                    <p><strong>Username:</strong> aditya</p>
-                    <p><strong>Password:</strong> lola4304</p>
-                    <p><em>Full admin access</em></p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Next Steps -->
-        <div class="section">
-            <h2 class="section-title"><span class="emoji">🎯</span> Next Steps</h2>
-            
-            <ol>
-                <li><strong>Continue mockup generation</strong> - Run: <code>cd /app/backend && python3 auto_mockup_generator.py &</code></li>
-                <li><strong>Fix Razorpay checkout</strong> - P1 blocker for revenue (deferred by user)</li>
-                <li><strong>Verify mobile dashboard</strong> - Need user screenshot</li>
-                <li><strong>Run production sync</strong> - After mockups hit 80%+</li>
-            </ol>
-        </div>
-
-        <!-- Auto Generator -->
-        <div class="section">
-            <h2 class="section-title"><span class="emoji">🤖</span> Auto-Generator Script</h2>
             
             <div class="card">
-                <div class="card-title">Location & Commands</div>
+                <div class="card-title">Backend Routes</div>
                 <ul>
-                    <li><strong>Script:</strong> <code>/app/backend/auto_mockup_generator.py</code></li>
-                    <li><strong>Log:</strong> <code>/tmp/auto_mockup_generator.log</code></li>
-                    <li><strong>Start:</strong> <code>cd /app/backend && python3 auto_mockup_generator.py &</code></li>
-                    <li><strong>Check Log:</strong> <code>tail -20 /tmp/auto_mockup_generator.log</code></li>
-                    <li><strong>Batch Size:</strong> 50 products per batch</li>
-                    <li><strong>Check Interval:</strong> 60 seconds</li>
+                    <li><code>/app/backend/advisory_routes.py</code> - Advisory API + AI</li>
+                    <li><code>/app/backend/unified_product_box.py</code> - Product API</li>
+                    <li><code>/app/backend/services/google_places_service.py</code> - Google Places</li>
+                    <li><code>/app/backend/scripts/generate_advisory_images.py</code> - AI image generator</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Advisory Components</div>
+                <ul>
+                    <li><code>/app/frontend/src/components/advisory/AdvisoryProductsGrid.jsx</code></li>
+                    <li><code>/app/frontend/src/components/advisory/NearbyAdvisoryServices.jsx</code></li>
                 </ul>
             </div>
         </div>
 
-        <!-- Verification Section -->
-        <div class="section">
-            <h2 class="section-title"><span class="emoji">✓</span> Verified Working - March 10, 2026</h2>
-            
-            <div class="success-box">
-                <strong>Bundle Images on Pillar Pages:</strong><br>
-                - Birthday Pawty Bundle displays AI-generated party image<br>
-                - Gotcha Day Bundle displays AI-generated GOTCHA image<br>
-                - All 19 bundles have image_url in database<br>
-                - CuratedBundles.jsx correctly fetches and renders images
-            </div>
-            
-            <div class="success-box">
-                <strong>Bundles Admin CRUD - 100% Test Pass Rate:</strong><br>
-                - GET /api/bundles - Working<br>
-                - POST /api/bundles - Working with discount calculation<br>
-                - PUT /api/bundles/{id} - Working with discount recalculation<br>
-                - DELETE /api/bundles/{id} - Working (soft delete)<br>
-                - POST /api/bundles/seed-defaults - Working<br>
-                - POST /api/bundles/{id}/generate-image - Working
-            </div>
+        <!-- FOOTER -->
+        <div class="section" style="text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <h3>The Doggy Company - MIRA OS</h3>
+            <p>Building the future of personalized pet care</p>
+            <p style="margin-top: 15px; opacity: 0.8;">WhatsApp: +91 8971702582 | Email: hello@thedoggycompany.com</p>
         </div>
 
     </div>
