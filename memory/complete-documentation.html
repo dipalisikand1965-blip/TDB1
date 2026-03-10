@@ -660,7 +660,75 @@ curl -s "$API_URL/api/mockups/stats" | python3 -m json.tool
                     <td>Mockup API Routes</td>
                     <td>/app/backend/app/api/mockup_routes.py</td>
                 </tr>
+                <tr>
+                    <td><strong>Gap Analysis Document</strong></td>
+                    <td><strong>/app/memory/GAP_ANALYSIS_PERSONALIZATION.md</strong></td>
+                </tr>
             </table>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════════ -->
+        <!-- CRITICAL: PERSONALIZATION VISION - ALL AGENTS MUST READ -->
+        <!-- ═══════════════════════════════════════════════════════════════════════ -->
+        <div class="section">
+            <h2>🎯 PERSONALIZATION VISION (CRITICAL FOR ALL AGENTS)</h2>
+            
+            <div class="warning-box" style="background: #fff3cd; border: 2px solid #ffc107; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                <strong>⚠️ DO NOT IMPLEMENT GENERIC PERSONALIZATION!</strong><br>
+                The Doggy Company is NOT just "add pet name to product".<br>
+                Read <code>/app/memory/GAP_ANALYSIS_PERSONALIZATION.md</code> before making changes.
+            </div>
+
+            <div class="card">
+                <div class="card-title">The Formula (MEMORIZE THIS)</div>
+                <p style="font-size: 1.2em; font-weight: bold; color: #8B5CF6; margin: 15px 0;">
+                    Breed + Soul + Life Stage + Routine + Current Moment + Memory
+                </p>
+                <p>A Labrador puppy, a senior Labrador, and an anxious Labrador should NOT see the same products.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">What We Have ✅</div>
+                <ul>
+                    <li><strong>Soul Profile:</strong> 51 questions, 26 canonical scoring fields</li>
+                    <li><strong>7 Archetypes:</strong> Gentle Aristocrat, Wild Explorer, Velcro Baby, Snack Negotiator, Quiet Watcher, Social Butterfly, Brave Worrier</li>
+                    <li><strong>Soul Made Products:</strong> 1018 breed-specific AI mockups</li>
+                    <li><strong>Mira Memory:</strong> Remembers orders, preferences, celebration dates</li>
+                    <li><strong>Breed Matrix CSV:</strong> Detailed recommendations for 33 breeds × 12 pillars</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">What's MISSING ❌ (Gaps to Fix)</div>
+                <table style="width: 100%; margin-top: 10px;">
+                    <tr style="background: #f8d7da;"><th>Gap</th><th>Priority</th><th>Status</th></tr>
+                    <tr><td>Breed Matrix not integrated into product logic</td><td><strong>P0</strong></td><td>❌ Not Started</td></tr>
+                    <tr><td>Multi-factor filtering (life_stage, health, energy)</td><td><strong>P1</strong></td><td>❌ Not Started</td></tr>
+                    <tr><td>"Why this product" contextual copy</td><td>P2</td><td>❌ Not Started</td></tr>
+                    <tr><td>Moment bundles (Birthday Set, Senior Care Set)</td><td>P3</td><td>❌ Not Started</td></tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-title">The Test Every Agent Must Apply</div>
+                <p style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                    <strong>Before adding ANY product feature, ask:</strong><br><br>
+                    "Is this just customized (name on product), or does it feel CHOSEN for this specific pet?"<br><br>
+                    <em>Adding a name = customized ❌</em><br>
+                    <em>Choosing it because the dog is anxious, senior, thick-coated, travel-loving = personalized ✅</em>
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Brand Principle</div>
+                <p style="font-size: 1.1em; text-align: center; padding: 20px;">
+                    <strong>Huft/Supertails = catalog-led</strong><br>
+                    <strong style="color: #8B5CF6;">The Doggy Company = soul-led</strong><br><br>
+                    <em>"Not breed-first. Pet-first.<br>
+                    Not product-first. Life-moment-first.<br>
+                    Not name-personalized. Memory-personalized."</em>
+                </p>
+            </div>
         </div>
 
         <div class="footer">

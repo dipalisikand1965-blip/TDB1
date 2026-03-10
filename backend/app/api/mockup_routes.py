@@ -312,12 +312,21 @@ async def _batch_generate_mockups(db, limit: Optional[int] = None, breed_filter:
     _generation_status["completed_at"] = None
     
     try:
-        # Build query
-        query = {"mockup_url": None}
+        # Build query - ONLY products with prompts but no mockup
+        query = {
+            "$and": [
+                {"mockup_prompt": {"$exists": True, "$ne": None, "$ne": ""}},
+                {"$or": [
+                    {"mockup_url": {"$exists": False}},
+                    {"mockup_url": None},
+                    {"mockup_url": ""}
+                ]}
+            ]
+        }
         if breed_filter:
-            query["breed"] = breed_filter
+            query["$and"].append({"breed": breed_filter})
         if product_type_filter:
-            query["product_type"] = product_type_filter
+            query["$and"].append({"product_type": product_type_filter})
         
         cursor = db.breed_products.find(query)
         if limit:
@@ -330,14 +339,14 @@ async def _batch_generate_mockups(db, limit: Optional[int] = None, breed_filter:
         _generation_status["generated"] = 0
         _generation_status["failed"] = 0
         
-        logger.info(f"Starting batch generation for {len(products)} products")
+        logger.info(f"Starting batch generation for {len(products)} products with prompts")
         
         for i, product in enumerate(products):
             _generation_status["progress"] = i + 1
-            _generation_status["current_product"] = product.get("name", product["id"])
+            _generation_status["current_product"] = product.get("name", product.get("id", "unknown"))
             
             try:
-                slug = product["id"]
+                slug = product.get("id", f"bp-{product.get('breed')}-{product.get('product_type')}")
                 prompt = product.get("mockup_prompt", "")
                 
                 if not prompt:
@@ -349,7 +358,7 @@ async def _batch_generate_mockups(db, limit: Optional[int] = None, breed_filter:
                 
                 if mockup_url:
                     await db.breed_products.update_one(
-                        {"id": product["id"]},
+                        {"_id": product["_id"]},
                         {"$set": {
                             "mockup_url": mockup_url,
                             "mockup_generated_at": datetime.utcnow().isoformat()
@@ -365,7 +374,7 @@ async def _batch_generate_mockups(db, limit: Optional[int] = None, breed_filter:
                 await asyncio.sleep(2)
                 
             except Exception as e:
-                logger.error(f"Error processing {product['id']}: {e}")
+                logger.error(f"Error processing {product.get('id', 'unknown')}: {e}")
                 _generation_status["failed"] += 1
         
         _generation_status["completed_at"] = datetime.utcnow().isoformat()
@@ -394,17 +403,26 @@ async def start_batch_generation(request: BatchGenerationRequest, background_tas
     
     db = get_db()
     
-    # Check how many products need mockups
-    query = {"mockup_url": None}
+    # Only get products that HAVE a mockup_prompt but don't have a mockup_url
+    query = {
+        "$and": [
+            {"mockup_prompt": {"$exists": True, "$ne": None, "$ne": ""}},
+            {"$or": [
+                {"mockup_url": {"$exists": False}},
+                {"mockup_url": None},
+                {"mockup_url": ""}
+            ]}
+        ]
+    }
     if request.breed_filter:
-        query["breed"] = request.breed_filter
+        query["$and"].append({"breed": request.breed_filter})
     if request.product_type_filter:
-        query["product_type"] = request.product_type_filter
+        query["$and"].append({"product_type": request.product_type_filter})
     
     pending_count = await db.breed_products.count_documents(query)
     
     if pending_count == 0:
-        return {"message": "All products already have mockups", "pending": 0}
+        return {"message": "All products with prompts already have mockups", "pending": 0}
     
     # Start background task
     background_tasks.add_task(
