@@ -1,7 +1,7 @@
 # The Doggy Company - PRD
 
-**Last Updated:** March 10, 2026 02:20 IST  
-**Status:** Soul Made Products - 58%+ Mockups Generated! Generation RUNNING 🚀
+**Last Updated:** March 10, 2026 18:00 IST  
+**Status:** Soul Made Products - 29.8% Mockups Generated (765/2569) | Generation PAUSED - Script needs restart
 
 ---
 
@@ -65,21 +65,24 @@ This file contains EVERYTHING about Soul Made products:
 
 | Metric | Count |
 |--------|-------|
-| **Total Products** | 1,018 |
+| **Total Products** | 2,569 |
 | **Original Products (11 types)** | 523 |
-| **NEW Products (15 types)** | 495 |
-| **With Mockups** | **595 (58.4%)** ⬆️ |
-| **Need Mockups** | 423 |
+| **NEW Products (47+15 types)** | 2,046 |
+| **With Mockups** | **765 (29.8%)** |
+| **Need Mockups** | 1,804 |
 | **Breeds** | 33 |
-| **Product Types** | 26 |
+| **Product Types** | 65 |
 
 ### Product Types
 **ORIGINAL 11:** bandana, mug, keychain, frame, tote_bag, party_hat, welcome_mat, blanket, collar_tag, treat_jar, bowl
 
 **NEW 15 (Created March 9):** passport_holder, carrier_tag, travel_bowl, luggage_tag, pet_towel, pet_robe, grooming_apron, treat_pouch, training_log, memorial_ornament, paw_print_frame, emergency_card, medical_alert_tag, play_bandana, playdate_card
 
-### Mockup Generation Status (RUNNING)
-Generation is actively running. Check status: `curl $API_URL/api/mockups/stats`
+**NEW 47 (Phase 2 - March 10):** 47 additional product types added for full Golden Standard catalog
+
+### Mockup Generation Status (PAUSED - needs restart)
+Background script stopped. Restart with: `nohup python3 -u /app/backend/scripts/gen_remaining.py > /tmp/gen_mockups.log 2>&1 &`
+Check status: `curl $API_URL/api/mockups/stats`
 
 ---
 
@@ -511,6 +514,30 @@ This is the existing **PICKS feature** - already partially built.
 - [x] Name overlay shows in modal when pet is selected
 - [ ] Integrate preview into main product flow
 - [ ] Generate Line Art illustrations (34 breeds)
+
+### Phase 3b: Pillar Page Unification (Golden Standard) - IN PROGRESS
+**SoulMadeCollection Status:**
+- [x] CelebratePage.jsx ✅
+- [x] TravelPage.jsx ✅
+- [x] StayPage.jsx ✅
+- [x] CarePage.jsx ✅
+- [ ] DinePage.jsx ❌ MISSING
+- [x] FitPage.jsx ✅
+- [x] EnjoyPage.jsx ✅
+- [x] LearnPage.jsx ✅
+- [ ] FarewellPage.jsx ❌ MISSING
+- [ ] EmergencyPage.jsx ❌ MISSING
+- [ ] AdoptPage.jsx ❌ MISSING
+- [ ] AdvisoryPage.jsx ❌ MISSING
+- [ ] PaperworkPage.jsx ❌ MISSING
+
+**BreedSmartRecommendations Status:** ❌ NOT ADDED TO ANY PAGE YET
+
+### Phase 3c: Breed-Smart Recommendations - CREATED BUT NOT INTEGRATED
+- [x] breed_matrix collection created in MongoDB
+- [x] /api/breed-matrix/:breed endpoint created
+- [x] BreedSmartRecommendations.jsx component created
+- [ ] Component NOT added to any pillar pages yet
 
 ### Phase 4: Emotional Collections
 - [ ] Create collection pages organized by life moment
