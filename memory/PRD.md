@@ -271,10 +271,12 @@
 |------------|-------|------------|--------|
 | Advisory Bundles | 8 | 8 | ✅ 100% |
 | Concierge Experiences | 18 | 18 | ✅ 100% |
+| Main Bundles | 24 | 24 | ✅ 100% |
 | Services Master | 1,115 | 1,115 | ✅ 100% |
-| Main Bundles | 30 | 3 | ⚠️ 10% (needs attention) |
-| Breed Products | 2,569 | 2,242 | 87% |
+| Breed Products | 2,569 | 2,246+ | ~87% |
 | Unified Products | 3,482 | ~1,368 | ⚠️ Needs migration |
+
+**Note:** 6 TEST bundles in database are excluded from API responses
 
 ---
 
