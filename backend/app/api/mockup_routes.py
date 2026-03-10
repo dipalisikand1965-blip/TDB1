@@ -639,10 +639,11 @@ async def export_mockup_urls():
 
 
 @router.post("/sync-to-production")
-async def sync_to_production():
+async def sync_to_production(batch_size: int = 100):
     """
-    Server-side sync of all mockups to production.
+    Server-side sync of all mockups to production in batches.
     This bypasses browser CORS issues by making the request server-side.
+    Batches products to avoid timeout issues with large datasets.
     """
     import httpx
     
@@ -663,33 +664,60 @@ async def sync_to_production():
                 "synced": 0
             }
         
-        logger.info(f"[SYNC] Found {len(products)} products with Cloudinary mockups")
+        total_products = len(products)
+        logger.info(f"[SYNC] Found {total_products} products with Cloudinary mockups, syncing in batches of {batch_size}")
         
-        # Send to production
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            response = await client.post(
-                f"{PRODUCTION_URL}/api/mockups/import-mockup-urls",
-                json={"products": products},
-                headers={"Content-Type": "application/json"}
-            )
-            
-            if response.status_code == 200:
-                result = response.json()
-                logger.info(f"[SYNC] Production sync successful: {result}")
-                return {
-                    "success": True,
-                    "message": f"Synced {result['total']} products to production",
-                    "imported": result.get("imported", 0),
-                    "updated": result.get("updated", 0),
-                    "total": result.get("total", 0)
-                }
-            else:
-                logger.error(f"[SYNC] Production sync failed: {response.status_code} - {response.text}")
-                return {
-                    "success": False,
-                    "message": f"Production sync failed: {response.status_code}",
-                    "error": response.text[:200]
-                }
+        # Batch sync to avoid timeouts
+        total_imported = 0
+        total_updated = 0
+        failed_batches = 0
+        
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            for i in range(0, total_products, batch_size):
+                batch = products[i:i + batch_size]
+                batch_num = (i // batch_size) + 1
+                total_batches = (total_products + batch_size - 1) // batch_size
+                
+                try:
+                    logger.info(f"[SYNC] Sending batch {batch_num}/{total_batches} ({len(batch)} products)")
+                    
+                    response = await client.post(
+                        f"{PRODUCTION_URL}/api/mockups/import-mockup-urls",
+                        json={"products": batch},
+                        headers={"Content-Type": "application/json"}
+                    )
+                    
+                    if response.status_code == 200:
+                        result = response.json()
+                        total_imported += result.get("imported", 0)
+                        total_updated += result.get("updated", 0)
+                        logger.info(f"[SYNC] Batch {batch_num} successful: {result.get('total', 0)} products")
+                    else:
+                        failed_batches += 1
+                        logger.error(f"[SYNC] Batch {batch_num} failed: {response.status_code}")
+                        
+                except Exception as batch_error:
+                    failed_batches += 1
+                    logger.error(f"[SYNC] Batch {batch_num} error: {batch_error}")
+        
+        if failed_batches == 0:
+            logger.info(f"[SYNC] Production sync complete: {total_imported} imported, {total_updated} updated")
+            return {
+                "success": True,
+                "message": f"Synced {total_products} products to production in {total_batches} batches",
+                "imported": total_imported,
+                "updated": total_updated,
+                "total": total_products
+            }
+        else:
+            return {
+                "success": False,
+                "message": f"Sync partially complete. {failed_batches} batches failed.",
+                "imported": total_imported,
+                "updated": total_updated,
+                "total": total_products,
+                "failed_batches": failed_batches
+            }
                 
     except Exception as e:
         logger.error(f"[SYNC] Error syncing to production: {e}")
