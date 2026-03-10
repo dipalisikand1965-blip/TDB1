@@ -552,16 +552,35 @@ async def get_emergency_products(
     """Get emergency products from unified_products collection"""
     db = get_db()
     
+    # Simple query for emergency pillar products
     query = {"pillar": "emergency"}
     if product_type:
         query["category"] = product_type
-    if in_stock:
-        query["$or"] = [{"in_stock": True}, {"in_stock": {"$exists": False}}]
     
-    products = await db.unified_products.find(query, {"_id": 0}).to_list(limit)
-    total = await db.unified_products.count_documents(query)
+    # First get products WITH priority (these are our curated products)
+    query_with_priority = {**query, "priority": {"$exists": True, "$ne": None}}
+    cursor1 = db.unified_products.find(query_with_priority, {"_id": 0})
+    cursor1 = cursor1.sort([("priority", 1)])
+    priority_products = await cursor1.to_list(limit)
     
-    return {"products": products, "total": total}
+    # Filter out services (price = 0 or None)
+    priority_products = [p for p in priority_products if p.get("price", 0) and p.get("price", 0) > 0]
+    
+    remaining = limit - len(priority_products)
+    
+    # Then get products WITHOUT priority
+    other_products = []
+    if remaining > 0:
+        query_no_priority = {**query, "$or": [{"priority": {"$exists": False}}, {"priority": None}]}
+        cursor2 = db.unified_products.find(query_no_priority, {"_id": 0})
+        cursor2 = cursor2.sort([("price", 1)])
+        other_products = await cursor2.to_list(remaining * 2)  # Get extra to filter
+        other_products = [p for p in other_products if p.get("price", 0) and p.get("price", 0) > 0][:remaining]
+    
+    products = priority_products + other_products
+    total = len(products)
+    
+    return {"products": products[:limit], "total": total}
 
 
 @router.post("/admin/products")
