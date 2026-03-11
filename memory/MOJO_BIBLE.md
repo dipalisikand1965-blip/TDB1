@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://learn-hub-popup.preview.emergentagent.com
+https://ai-watercolor.preview.emergentagent.com
 ```
 
 ---
