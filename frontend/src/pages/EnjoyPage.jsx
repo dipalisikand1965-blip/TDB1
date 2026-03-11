@@ -473,6 +473,13 @@ const EnjoyPage = () => {
         <div className="max-w-6xl mx-auto px-4 mb-6">
           <PersonalizedPicks pillar="enjoy" />
         </div>
+
+        {/* ═══════════════════════════════════════════════════════════════════════
+            MIRA ADVISOR - Activity Buddy AI Assistant
+            ═══════════════════════════════════════════════════════════════════════ */}
+        <div className="max-w-2xl mx-auto px-4 mb-8">
+          <MiraAdvisorCard pillar="enjoy" activePet={activePet} />
+        </div>
         
         {/* ═══════════════════════════════════════════════════════════════════════
             SOUL MADE COLLECTION - Breed-specific personalized products

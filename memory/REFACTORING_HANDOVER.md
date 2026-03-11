@@ -229,7 +229,7 @@ useSession: sessionId, setSessionId, sessionRecovered, setSessionRecovered
 
 - **Email**: `dipali@clubconcierge.in`
 - **Password**: `lola4304`
-- **Preview URL**: `https://golden-pillar-hub.preview.emergentagent.com`
+- **Preview URL**: `https://ai-experience-unify.preview.emergentagent.com`
 
 ---
 

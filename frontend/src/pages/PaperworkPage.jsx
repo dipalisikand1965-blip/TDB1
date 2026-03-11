@@ -21,6 +21,7 @@ import { ConciergeButton } from '../components/mira-os';
 import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import PersonalizedPicks from '../components/PersonalizedPicks';
+import MiraAdvisorCard from '../components/MiraAdvisorCard';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import SoulMadeCollection from '../components/SoulMadeCollection';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
@@ -990,6 +991,13 @@ const PaperworkPage = () => {
       <div className="py-8 bg-gradient-to-b from-white to-slate-50/30">
         {/* Personalized Product Picks - Same as Celebrate/Dine gold standard */}
         <PersonalizedPicks pillar="paperwork" maxProducts={6} />
+
+        {/* ═══════════════════════════════════════════════════════════════════════
+            MIRA ADVISOR - Document Assistant AI
+            ═══════════════════════════════════════════════════════════════════════ */}
+        <div className="max-w-2xl mx-auto px-4 mb-8">
+          <MiraAdvisorCard pillar="paperwork" activePet={activePet} />
+        </div>
         
         <MiraCuratedLayer
           pillar="paperwork"

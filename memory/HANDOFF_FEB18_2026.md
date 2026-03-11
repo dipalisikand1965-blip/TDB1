@@ -304,7 +304,7 @@ Test Pets:
 ## Services
 - Backend: Running on port 8001
 - Frontend: Running on port 3000
-- Preview URL: https://golden-pillar-hub.preview.emergentagent.com
+- Preview URL: https://ai-experience-unify.preview.emergentagent.com
 
 ---
 

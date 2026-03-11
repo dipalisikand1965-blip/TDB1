@@ -58,7 +58,7 @@ Be patient. Be thorough. Honor the Sikand legacy.
 - Admin: `aditya` / `lola4304`
 
 ## 🌐 PREVIEW URL
-https://golden-pillar-hub.preview.emergentagent.com
+https://ai-experience-unify.preview.emergentagent.com
 
 ---
 
