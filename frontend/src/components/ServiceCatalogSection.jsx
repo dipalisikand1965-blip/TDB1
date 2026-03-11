@@ -8,6 +8,7 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { Textarea } from './ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 import { 
   Clock, MapPin, DollarSign, Check, ChevronRight, Loader2,
@@ -73,6 +74,21 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
   // Cross-sell state
   const [showCrossSell, setShowCrossSell] = useState(false);
   const [bookedService, setBookedService] = useState(null);
+  
+  // Concierge form state
+  const [conciergeNotes, setConciergeNotes] = useState('');
+  const [guestPetName, setGuestPetName] = useState('');
+  const [guestPetBreed, setGuestPetBreed] = useState('');
+  const [selectedPet, setSelectedPet] = useState(null);
+  const [userPets, setUserPets] = useState([]);
+  
+  // Fetch user's pets
+  useEffect(() => {
+    if (pets && pets.length > 0) {
+      setUserPets(pets);
+      setSelectedPet(pets[0]);
+    }
+  }, [pets]);
 
   // Fetch services from services_master (unified service source)
   useEffect(() => {
@@ -573,67 +589,131 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
         </DialogContent>
       </Dialog>
 
-      {/* Concierge Contact Modal - Simple contact card for hidePrice mode */}
+      {/* Concierge Contact Modal - Full request form for hidePrice mode */}
       <Dialog open={showConciergeModal} onOpenChange={setShowConciergeModal}>
-        <DialogContent className="max-w-md p-6">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader className="mb-4">
             <DialogTitle className="flex items-center gap-2 text-lg">
-              <Phone className="w-5 h-5 text-rose-500" />
-              Contact Concierge®
+              <MessageCircle className="w-5 h-5 text-rose-500" />
+              Request Concierge® Assistance
             </DialogTitle>
           </DialogHeader>
           
           {selectedService && (
-            <div className="space-y-4">
-              {/* Service Info */}
-              <div className="bg-gradient-to-r from-rose-50 to-pink-50 p-4 rounded-xl">
-                <h3 className="font-bold text-gray-900">{selectedService.name}</h3>
-                <p className="text-sm text-gray-600 mt-1">{selectedService.description}</p>
+            <div className="space-y-5">
+              {/* Service Info Card */}
+              <div className="bg-gradient-to-r from-rose-50 to-pink-50 p-4 rounded-xl border border-rose-200">
+                <div className="flex items-start gap-3">
+                  {selectedService.image && (
+                    <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                      <img src={selectedService.image} alt={selectedService.name} className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="font-bold text-gray-900">{selectedService.name}</h3>
+                    <p className="text-sm text-gray-600 mt-1">{selectedService.description}</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Pet Selection */}
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Your Pet</Label>
+                {userPets.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    {userPets.map(pet => (
+                      <Card 
+                        key={pet.id || pet._id}
+                        className={`p-3 cursor-pointer transition-all ${
+                          selectedPet?.id === pet.id || selectedPet?._id === pet._id
+                            ? 'ring-2 ring-rose-500 bg-rose-50' 
+                            : 'hover:bg-gray-50'
+                        }`}
+                        onClick={() => setSelectedPet(pet)}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full overflow-hidden bg-rose-100 flex items-center justify-center flex-shrink-0">
+                            <PawPrint className="w-5 h-5 text-rose-400" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900 text-sm">{pet.name}</p>
+                            <p className="text-xs text-gray-500">{pet.breed}</p>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Input
+                        placeholder="Pet's name"
+                        value={guestPetName}
+                        onChange={(e) => setGuestPetName(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Input
+                        placeholder="Breed"
+                        value={guestPetBreed}
+                        onChange={(e) => setGuestPetBreed(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Additional Notes */}
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Tell us more about your request</Label>
+                <Textarea 
+                  placeholder={`What would you like for ${selectedPet?.name || 'your pet'}? Any specific requirements or preferences...`}
+                  value={conciergeNotes}
+                  onChange={(e) => setConciergeNotes(e.target.value)}
+                  className="min-h-[80px]"
+                />
               </div>
               
               {/* How Concierge Helps */}
-              <div className="space-y-3">
-                <p className="text-sm text-gray-700 font-medium">Our Concierge® will help you with:</p>
-                <ul className="space-y-2 text-sm text-gray-600">
+              <div className="bg-gray-50 p-4 rounded-xl space-y-2">
+                <p className="text-sm text-gray-700 font-medium">Our Concierge® will:</p>
+                <ul className="space-y-1.5 text-sm text-gray-600">
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                    <span>Finding the right service provider near you</span>
+                    <span>Find the perfect service provider near you</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                    <span>Coordinating appointments and logistics</span>
+                    <span>Handle all coordination and logistics</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                    <span>24/7 support for your pet's needs</span>
+                    <span>Provide updates via WhatsApp</span>
                   </li>
                 </ul>
               </div>
-              
-              {/* Contact Options */}
-              <div className="bg-gray-900 text-white p-4 rounded-xl space-y-3">
-                <p className="text-sm font-medium text-gray-300">Reach out to us:</p>
-                <a 
-                  href="https://wa.me/918971702582" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white py-3 px-4 rounded-lg font-medium transition-colors"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  WhatsApp Us
-                </a>
-              </div>
-              
-              <p className="text-xs text-gray-500 text-center">
-                Available 24/7 for emergencies
-              </p>
             </div>
           )}
           
-          <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setShowConciergeModal(false)} className="w-full">
-              Close
+          <DialogFooter className="mt-4 flex gap-2">
+            <Button variant="outline" onClick={() => setShowConciergeModal(false)} className="flex-1">
+              Cancel
             </Button>
+            <a 
+              href={`https://wa.me/918971702582?text=${encodeURIComponent(
+                `Hi! I'm interested in ${selectedService?.name || 'your service'}.\n\n` +
+                `Pet: ${selectedPet?.name || guestPetName || 'My pet'} (${selectedPet?.breed || guestPetBreed || 'Mixed'})\n` +
+                (conciergeNotes ? `\nRequest: ${conciergeNotes}` : '') +
+                `\n\nSent from The Doggy Company app`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setShowConciergeModal(false)}
+              className="flex-1 inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white py-2.5 px-4 rounded-lg font-medium transition-colors"
+            >
+              <MessageCircle className="w-4 h-4" />
+              Send via WhatsApp
+            </a>
           </DialogFooter>
         </DialogContent>
       </Dialog>
