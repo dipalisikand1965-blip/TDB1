@@ -120,6 +120,8 @@ const ChecklistDownloadButton = ({
       const endpoint = personalization 
         ? `${API_URL}/api/checklists/${pillar}/${checklistId}/personalized?${params}`
         : `${API_URL}/api/checklists/${pillar}/${checklistId}`;
+      
+      console.log('[ChecklistDownload] Fetching from:', endpoint);
         
       const response = await fetch(endpoint);
       
@@ -129,6 +131,8 @@ const ChecklistDownloadButton = ({
 
       const data = await response.json();
       const checklist = data.checklist;
+      
+      console.log('[ChecklistDownload] Checklist data:', checklist?.title);
 
       // Generate PDF based on checklist type
       let pdfDocument;
@@ -139,8 +143,13 @@ const ChecklistDownloadButton = ({
         pdfDocument = <ChecklistPDF checklist={checklist} personalization={personalization} pillar={pillar} />;
       }
 
+      console.log('[ChecklistDownload] Generating PDF...');
+      
       // Generate blob and download
       const blob = await pdf(pdfDocument).toBlob();
+      
+      console.log('[ChecklistDownload] PDF blob created, size:', blob.size);
+      
       const url = URL.createObjectURL(blob);
       
       // Create download link
