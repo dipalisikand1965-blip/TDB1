@@ -1,24 +1,22 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 11, 2026 21:15 IST  
-**Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅ | MIRA ADVISOR 100% ✅ | CELEBRATE 100% ✅ | AI IMAGES 100% ✅ | **LEARN 40% 🔄 IN PROGRESS**
+**Last Updated:** March 11, 2026  
+**Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅ | MIRA ADVISOR 100% ✅ | CELEBRATE 100% ✅ | AI IMAGES 100% ✅ | **LEARN 60% 🔄 IN PROGRESS**
 
 ---
 
-## 🚨 CRITICAL HANDOVER - LEARN PILLAR GOLDEN STANDARD
+## 🚨 LEARN PILLAR - LATEST STATUS
 
-### User Frustration Level: HIGH
-- Multiple sessions with incomplete work
-- Agent not following user's exact specifications
-- User provided detailed mockups that were not matched
-
----
-
-## 🎯 LEARN PILLAR - WHAT USER WANTS
+### ✅ COMPLETED (March 11, 2026)
+1. **Topic Hub Modal Integration** - DONE ✅
+   - Topic boxes now open popup modal instead of navigating to new page
+   - Modal has 4 tabs: Overview, Videos, Products, Services
+   - "Send to Concierge for More Details" button at bottom
+   - All 12 topics work correctly with different content
 
 ### The Golden Standard Flow (in order):
 ```
 1️⃣ Ask bar at top (opens Mira AI) ✅ DONE
-2️⃣ 12 Topic boxes with watercolor illustrations ✅ DONE (but opens page, user wants POPUP)
+2️⃣ 12 Topic boxes with watercolor illustrations ✅ DONE (opens POPUP modal) ✅ DONE
 3️⃣ Learn for my dog (Bruno) - personalized section ❌ NOT DONE
 4️⃣ Watch videos ❌ NOT DONE  
 5️⃣ Products that help ❌ NOT DONE (has old section, needs redesign)
@@ -31,43 +29,11 @@
 
 ---
 
-## ❌ CRITICAL UNFINISHED WORK
+## ❌ REMAINING WORK
 
-### 1. Topic Boxes Should Open as POPUP, Not Page
-**User's exact words:**
-> "Instead of opening as a new page what if it opens as a popup on the same page with everything beautifully laid in tabs with send to concierge for more details at the bottom"
-
-**What exists:**
-- `LearnTopicModal.jsx` was created at `/app/frontend/src/components/learn/LearnTopicModal.jsx`
-- Has tabs: Overview | Videos | Products | Services
-- Has "Send to Concierge" button at bottom
-- **NOT CONNECTED** to LearnPage.jsx
-
-**To fix:**
-```javascript
-// In LearnPage.jsx:
-import LearnTopicModal from '../components/learn/LearnTopicModal';
-
-// Add state:
-const [selectedTopic, setSelectedTopic] = useState(null);
-
-// Change topic box onClick from:
-onClick={() => navigate(`/learn/${topic.slug}`)}
-// To:
-onClick={() => setSelectedTopic(topic.slug)}
-
-// Add modal at end of component:
-<LearnTopicModal 
-  isOpen={!!selectedTopic} 
-  onClose={() => setSelectedTopic(null)} 
-  topicSlug={selectedTopic}
-  onSendToConcierge={(data) => {
-    setSelectedTopic(null);
-    setShowRequestModal(true);
-    // pass data to request form
-  }}
-/>
-```
+### 1. Topic Hub Content is Static (Hardcoded)
+**Status:** Currently content is hardcoded in TOPIC_CONFIG in LearnTopicModal.jsx
+**Need:** Create backend API and MongoDB schema to serve dynamic content
 
 ### 2. "Learn for Bruno" Personalized Section
 **User provided mockup showing:**
@@ -80,24 +46,6 @@ onClick={() => setSelectedTopic(topic.slug)}
   - "Summer hydration tips"
 
 **This section should appear AFTER the 12 topic boxes**
-
-### 3. Each Topic Box Content
-**When popup opens, user wants:**
-- Quick explanation of the topic
-- Videos related to topic
-- Product suggestions
-- Services
-- "Send to Concierge" for more details at bottom
-
-**Content for each of 12 topics is defined in:**
-- `/app/frontend/src/components/learn/LearnTopicModal.jsx` (TOPIC_CONFIG object)
-- `/app/frontend/src/pages/LearnTopicPage.jsx` (TOPIC_CONFIG object)
-
----
-
-## ✅ WHAT WAS COMPLETED
-
-### 1. Ask Bar Opens Mira AI ✅
 - Typing and pressing Enter opens Mira AI panel
 - Works like Emergency and Advisory pages
 - Code in LearnPage.jsx line ~290
