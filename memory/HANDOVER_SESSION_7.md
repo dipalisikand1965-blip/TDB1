@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://learn-golden.preview.emergentagent.com
+https://learn-hub-popup.preview.emergentagent.com
 
 ---
 

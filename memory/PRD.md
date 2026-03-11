@@ -177,7 +177,7 @@ Key sections in Bible:
 
 ## 🔗 URLS & CREDENTIALS
 
-**Preview URL:** https://learn-golden.preview.emergentagent.com
+**Preview URL:** https://learn-hub-popup.preview.emergentagent.com
 
 **Test Credentials:**
 - User: `dipali@clubconcierge.in` / `test123`

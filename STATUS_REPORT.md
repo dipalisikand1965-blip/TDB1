@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://learn-golden.preview.emergentagent.com
+**Preview URL:** https://learn-hub-popup.preview.emergentagent.com
 
 ---
 
