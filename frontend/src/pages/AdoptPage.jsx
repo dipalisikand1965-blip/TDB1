@@ -29,7 +29,7 @@ import {
   ChevronRight, Sparkles, CheckCircle, Package, Utensils,
   Moon, Footprints, Scissors, FileText, ShoppingBag,
   MessageCircle, ArrowRight, Loader2, Baby, User, Crown,
-  Dog, HelpCircle, Bed, Droplets, Bone, Shield
+  Dog, HelpCircle, Bed, Droplets, Bone, Shield, X
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -213,6 +213,12 @@ const AdoptPage = () => {
   const [adoptionPaths, setAdoptionPaths] = useState([]);
   const [pathsLoading, setPathsLoading] = useState(true);
   const [selectedPath, setSelectedPath] = useState(null);
+  
+  // Real Products from API
+  const [realProducts, setRealProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showProductModal, setShowProductModal] = useState(false);
 
   // Icon mapping for dynamic paths
   const ICON_MAP = {
@@ -244,6 +250,109 @@ const AdoptPage = () => {
     };
     fetchPaths();
   }, []);
+
+  // Fetch real products from unified_products API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setProductsLoading(true);
+      try {
+        // Fetch products with essential keywords via search
+        const essentialKeywords = ['bowl', 'collar', 'leash', 'harness', 'bed', 'blanket', 'tag', 'crate', 'pee pad', 'puppy', 'starter'];
+        const allProducts = [];
+        
+        // Fetch products that have 'day1' tag first (our seeded essential products)
+        const day1Response = await fetch(`${API_URL}/api/products?search=day1&limit=50`);
+        if (day1Response.ok) {
+          const day1Data = await day1Response.json();
+          allProducts.push(...(day1Data.products || []));
+        }
+        
+        // Also fetch general products with images
+        const generalResponse = await fetch(`${API_URL}/api/products?limit=300`);
+        if (generalResponse.ok) {
+          const generalData = await generalResponse.json();
+          const filtered = (generalData.products || []).filter(p => 
+            (p.image || p.images?.[0]) && p.price > 0
+          );
+          allProducts.push(...filtered);
+        }
+        
+        // Dedupe by name
+        const seen = new Set();
+        const deduped = allProducts.filter(p => {
+          const key = (p.name || '').toLowerCase();
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        
+        setRealProducts(deduped);
+      } catch (err) {
+        console.error('Failed to fetch adopt products:', err);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  // Get products for current category based on tags/keywords
+  const getProductsForCategory = (categoryId) => {
+    const categoryKeywords = {
+      day1: ['bowl', 'collar', 'leash', 'harness', 'tag', 'bed', 'crate', 'pee pad', 'food container', 'starter kit', 'feeder'],
+      comfort: ['blanket', 'calming', 'anxiety', 'snuggle', 'toy', 'orthopedic', 'cozy', 'crate cover', 'mat'],
+      home_setup: ['gate', 'barrier', 'protector', 'mat', 'storage', 'basket', 'organization', 'welcome'],
+      grooming: ['brush', 'comb', 'shampoo', 'nail', 'ear', 'eye', 'towel', 'grooming', 'bath'],
+      walking: ['harness', 'leash', 'lead', 'collar', 'raincoat', 'car', 'travel', 'treat pouch', 'reflective'],
+      training: ['treat', 'clicker', 'training', 'puzzle', 'enrichment', 'sniff', 'kong', 'chew'],
+      paperwork: ['folder', 'file', 'record', 'card', 'document', 'tag', 'emergency']
+    };
+    
+    const keywords = categoryKeywords[categoryId] || [];
+    const matched = realProducts.filter(p => {
+      const name = (p.name || '').toLowerCase();
+      const desc = (p.description || '').toLowerCase();
+      const tags = (p.tags || []).map(t => t.toLowerCase());
+      return keywords.some(kw => 
+        name.includes(kw) || desc.includes(kw) || tags.some(t => t.includes(kw))
+      );
+    });
+    
+    // Dedupe by name and return max 12
+    const seen = new Set();
+    const deduped = matched.filter(p => {
+      const key = p.name?.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    
+    return deduped.slice(0, 12);
+  };
+
+  // Handle product click
+  const handleProductClick = (product) => {
+    setSelectedProduct(product);
+    setShowProductModal(true);
+  };
+
+  // Add to cart
+  const handleAddToCart = (product) => {
+    // Use existing cart context or localStorage
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const existingIdx = cart.findIndex(item => item.id === product.id);
+    if (existingIdx >= 0) {
+      cart[existingIdx].quantity = (cart[existingIdx].quantity || 1) + 1;
+    } else {
+      cart.push({ ...product, quantity: 1 });
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    toast({
+      title: 'Added to Cart',
+      description: `${product.name} has been added to your cart`,
+    });
+    setShowProductModal(false);
+  };
 
   // Handle intent tile click
   const handleIntentClick = (intent) => {
@@ -487,26 +596,82 @@ const AdoptPage = () => {
                 <p className="text-gray-600">{currentCategory.subtitle}</p>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {currentCategory.products.map((product, idx) => (
-                  <Card
-                    key={idx}
-                    className="p-4 hover:shadow-lg transition-all cursor-pointer group"
-                    onClick={() => navigate(`/shop?search=${encodeURIComponent(product.name)}`)}
-                    data-testid={`product-${idx}`}
-                  >
-                    <div className="text-3xl mb-3 text-center">{product.icon}</div>
-                    <h4 className="font-semibold text-gray-900 text-sm mb-1">{product.name}</h4>
-                    <p className="text-xs text-gray-500 mb-2">{product.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-green-600 font-bold text-sm">₹{product.price}</span>
-                      <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <ShoppingBag className="w-4 h-4" />
-                      </Button>
+              {productsLoading ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="w-8 h-8 text-green-500 animate-spin" />
+                </div>
+              ) : (
+                <>
+                  {/* Real products from API */}
+                  {getProductsForCategory(selectedCategory).length > 0 ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {getProductsForCategory(selectedCategory).map((product, idx) => (
+                        <Card
+                          key={product.id || idx}
+                          className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group"
+                          onClick={() => handleProductClick(product)}
+                          data-testid={`product-${idx}`}
+                        >
+                          {/* Product Image */}
+                          <div className="aspect-square bg-gray-100 relative overflow-hidden">
+                            {product.image || product.images?.[0] ? (
+                              <img 
+                                src={product.image || product.images[0]} 
+                                alt={product.name}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                onError={(e) => { e.target.style.display = 'none'; }}
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-100 to-emerald-50">
+                                <Package className="w-12 h-12 text-green-300" />
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Product Info */}
+                          <div className="p-3">
+                            <h4 className="font-semibold text-gray-900 text-sm mb-1 line-clamp-2">{product.name}</h4>
+                            <p className="text-xs text-gray-500 mb-2 line-clamp-2">{product.short_description || product.description}</p>
+                            <div className="flex items-center justify-between">
+                              <span className="text-green-600 font-bold text-sm">₹{product.price}</span>
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
+                              >
+                                <ShoppingBag className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
                     </div>
-                  </Card>
-                ))}
-              </div>
+                  ) : (
+                    // Fallback to hardcoded products if no real products found
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {currentCategory.products.map((product, idx) => (
+                        <Card
+                          key={idx}
+                          className="p-4 hover:shadow-lg transition-all cursor-pointer group"
+                          onClick={() => navigate(`/shop?search=${encodeURIComponent(product.name)}`)}
+                          data-testid={`product-${idx}`}
+                        >
+                          <div className="text-3xl mb-3 text-center">{product.icon}</div>
+                          <h4 className="font-semibold text-gray-900 text-sm mb-1">{product.name}</h4>
+                          <p className="text-xs text-gray-500 mb-2">{product.description}</p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-green-600 font-bold text-sm">₹{product.price}</span>
+                            <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                              <ShoppingBag className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
 
               <div className="text-center mt-8">
                 <Button 
@@ -724,6 +889,95 @@ const AdoptPage = () => {
               Send Request
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          PRODUCT MODAL - View product details and add to cart
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <Dialog open={showProductModal} onOpenChange={setShowProductModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          {selectedProduct && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-xl">{selectedProduct.name}</DialogTitle>
+              </DialogHeader>
+              
+              <div className="grid md:grid-cols-2 gap-6 py-4">
+                {/* Product Image */}
+                <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                  {selectedProduct.image || selectedProduct.images?.[0] ? (
+                    <img 
+                      src={selectedProduct.image || selectedProduct.images[0]} 
+                      alt={selectedProduct.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-100 to-emerald-50">
+                      <Package className="w-20 h-20 text-green-300" />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Product Details */}
+                <div className="space-y-4">
+                  <div>
+                    <span className="text-3xl font-bold text-green-600">₹{selectedProduct.price}</span>
+                    {selectedProduct.compare_at_price && selectedProduct.compare_at_price > selectedProduct.price && (
+                      <span className="ml-2 text-lg text-gray-400 line-through">₹{selectedProduct.compare_at_price}</span>
+                    )}
+                  </div>
+                  
+                  <p className="text-gray-600">{selectedProduct.description || selectedProduct.ai_description}</p>
+                  
+                  {/* Tags */}
+                  {selectedProduct.tags?.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {selectedProduct.tags.slice(0, 5).map((tag, idx) => (
+                        <span key={idx} className="px-2 py-1 bg-green-50 text-green-700 text-xs rounded-full">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Stock Status */}
+                  <div className="flex items-center gap-2">
+                    {selectedProduct.in_stock !== false ? (
+                      <span className="flex items-center text-green-600 text-sm">
+                        <CheckCircle className="w-4 h-4 mr-1" /> In Stock
+                      </span>
+                    ) : (
+                      <span className="flex items-center text-red-500 text-sm">
+                        <X className="w-4 h-4 mr-1" /> Out of Stock
+                      </span>
+                    )}
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 pt-4">
+                    <Button 
+                      className="flex-1 bg-green-600 hover:bg-green-700"
+                      onClick={() => handleAddToCart(selectedProduct)}
+                      disabled={selectedProduct.in_stock === false}
+                    >
+                      <ShoppingBag className="w-4 h-4 mr-2" />
+                      Add to Cart
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => {
+                        setShowProductModal(false);
+                        navigate(`/shop?search=${encodeURIComponent(selectedProduct.name)}`);
+                      }}
+                    >
+                      View in Shop
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 
