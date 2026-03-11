@@ -95,6 +95,14 @@ const EMOTIONAL_COLLECTIONS = {
     exclude: [],
     emoji: "❤️",
     copy: (name) => `Gifts for ${name}'s humans`
+  },
+  paperwork: {
+    name: "Document Organization",
+    collections: ["documents", "paperwork", "records"],
+    product_types: ["collar_tag", "keychain"],
+    exclude: [],
+    emoji: "📋",
+    copy: (name) => `${name}'s document essentials`
   }
 };
 
