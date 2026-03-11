@@ -36,6 +36,7 @@ import { useAuth } from '../context/AuthContext';
 import { usePillarContext } from '../context/PillarContext';
 import { toast } from 'sonner';
 import { ConciergeButton } from '../components/mira-os';
+import { ChecklistDownloadButton } from '../components/checklists';
 import MiraBirthdayBoxCard from '../components/celebrate/MiraBirthdayBoxCard';
 import PersonalizedItemsSection from '../components/celebrate/PersonalizedItemsSection';
 import BirthdayCountdown from '../components/celebrate/BirthdayCountdown';
@@ -711,6 +712,15 @@ const CelebratePage = () => {
             ═══════════════════════════════════════════════════════════════════════════ */}
         <div className="max-w-2xl mx-auto mb-8">
           <MiraAdvisorCard pillar="celebrate" activePet={activePet} />
+          
+          {/* Download Birthday Party Checklist */}
+          <div className="mt-4 flex justify-center">
+            <ChecklistDownloadButton 
+              pillar="celebrate" 
+              variant="outline"
+              className="border-pink-300 text-pink-700 hover:bg-pink-50"
+            />
+          </div>
         </div>
 
         {/* Personalized Picks for User's Pet - Shows filtered Shopify products */}

@@ -26,6 +26,7 @@ import PillarPicksSection from '../components/PillarPicksSection';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
 import { ConciergeButton } from '../components/mira-os';
+import { ChecklistDownloadButton } from '../components/checklists';
 import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
 import NearbyPlacesCarousel from '../components/NearbyPlacesCarousel';
 import { usePillarContext } from '../context/PillarContext';
@@ -994,6 +995,15 @@ const DinePage = () => {
         <section className="py-8 px-4">
           <div className="max-w-2xl mx-auto">
             <MiraAdvisorCard pillar="dine" activePet={activePet} />
+            
+            {/* Download Feeding Guide Checklist */}
+            <div className="mt-4 flex justify-center">
+              <ChecklistDownloadButton 
+                pillar="dine" 
+                variant="outline"
+                className="border-orange-300 text-orange-700 hover:bg-orange-50"
+              />
+            </div>
           </div>
         </section>
         

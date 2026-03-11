@@ -997,6 +997,15 @@ const PaperworkPage = () => {
             ═══════════════════════════════════════════════════════════════════════ */}
         <div className="max-w-2xl mx-auto px-4 mb-8">
           <MiraAdvisorCard pillar="paperwork" activePet={activePet} />
+          
+          {/* Download Documents Organizer Checklist */}
+          <div className="mt-4 flex justify-center">
+            <ChecklistDownloadButton 
+              pillar="paperwork" 
+              variant="outline"
+              className="border-slate-400 text-slate-700 hover:bg-slate-50"
+            />
+          </div>
         </div>
         
         <MiraCuratedLayer

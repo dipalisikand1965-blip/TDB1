@@ -18,6 +18,7 @@ import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
+import { ChecklistDownloadButton } from '../components/checklists';
 import ProductCard from '../components/ProductCard';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import PillarPicksSection from '../components/PillarPicksSection';
@@ -713,6 +714,15 @@ const LearnPage = () => {
           ═══════════════════════════════════════════════════════════════════════ */}
       <div className="max-w-2xl mx-auto px-4 mb-8">
         <MiraAdvisorCard pillar="learn" activePet={activePet} />
+        
+        {/* Download Training Milestones Checklist */}
+        <div className="mt-4 flex justify-center">
+          <ChecklistDownloadButton 
+            pillar="learn" 
+            variant="outline"
+            className="border-indigo-300 text-indigo-700 hover:bg-indigo-50"
+          />
+        </div>
       </div>
       
       {/* ═══════════════════════════════════════════════════════════════════════ */}

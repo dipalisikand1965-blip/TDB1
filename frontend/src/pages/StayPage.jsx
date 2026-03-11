@@ -14,6 +14,7 @@ import MiraAdvisorCard from '../components/MiraAdvisorCard';
 import { toast } from '../hooks/use-toast';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
+import { ChecklistDownloadButton } from '../components/checklists';
 import ProductCard from '../components/ProductCard';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
@@ -676,6 +677,15 @@ ${stayRequestForm.special_requests || 'None'}
       <section className="py-8 px-4 bg-blue-50/30">
         <div className="max-w-2xl mx-auto">
           <MiraAdvisorCard pillar="stay" activePet={activePet} />
+          
+          {/* Download Boarding Prep Checklist */}
+          <div className="mt-4 flex justify-center">
+            <ChecklistDownloadButton 
+              pillar="stay" 
+              variant="outline"
+              className="border-blue-300 text-blue-700 hover:bg-blue-50"
+            />
+          </div>
         </div>
       </section>
 
