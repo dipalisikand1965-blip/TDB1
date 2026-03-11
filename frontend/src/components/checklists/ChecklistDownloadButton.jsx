@@ -163,8 +163,9 @@ const ChecklistDownloadButton = ({
       URL.revokeObjectURL(url);
 
       toast.success('Checklist downloaded!', {
-        description: `${checklist.title} has been saved to your downloads.`,
-        icon: <CheckCircle className="w-4 h-4 text-green-500" />
+        description: `${checklist.title} saved! Check your Downloads folder 📥`,
+        icon: <CheckCircle className="w-4 h-4 text-green-500" />,
+        duration: 5000
       });
 
     } catch (error) {
