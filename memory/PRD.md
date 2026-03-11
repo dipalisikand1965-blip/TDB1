@@ -1,10 +1,43 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 12, 2026 13:30 IST  
+**Last Updated:** March 12, 2026 14:00 IST  
 **Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅ | MIRA ADVISOR 100% ✅ | CELEBRATE 100% ✅ | AI IMAGES 100% ✅
 
 ---
 
-## ✅ COMPLETED THIS SESSION (March 12, 2026 - Session 8.7) - TESTED ✅
+## 🎯 NEXT PRIORITY: LEARN PILLAR GOLDEN STANDARD TRANSFORMATION
+
+### The Learn Formula: Read → Watch → Shop / Book / Ask
+
+**What Learn IS:**
+- Simple, useful, relevant education for pet parents
+- Content that builds confidence in dog care
+- Always actionable - leads to products, services, or concierge help
+- Personalized to MY dog (breed, age, size, coat, climate, life stage)
+
+**What Learn is NOT:**
+- ❌ Random articles
+- ❌ Long educational essays
+- ❌ SEO-led content dumps
+- ❌ Mixed products and services in same grid (CURRENT ISSUE)
+
+### Implementation Checklist:
+- [ ] Separate Products from Services into distinct sections
+- [ ] Add 12 Topic Category Cards (Puppy basics, Breed guides, Food & feeding, Grooming, Behavior, Training, Travel, Senior care, Health, Rescue/Indie, Seasonal, New pet parent)
+- [ ] Add Learn by Life Stage section (Puppy | Adult | Senior | Adoption)
+- [ ] Add Learn by Topic section (11 topic tiles)
+- [ ] Add "Learn for My Dog" personalization section
+- [ ] Add 6 Guided Learning Paths (New Puppy, Adoption, Senior, Travel, Grooming, Behavior)
+- [ ] Products That Help section (SEPARATE) - only learning-relevant products
+- [ ] Services That Help section (SEPARATE) - trainer, groomer, behavior support
+- [ ] YouTube video integration per topic section
+- [ ] Near Me section for local trainers/groomers
+
+### Sub-Navigation:
+`Start Learning | By Life Stage | By Topic | Learn for My Dog | Guided Paths | Products That Help | Services That Help | Near Me | Ask Concierge`
+
+---
+
+## ✅ COMPLETED THIS SESSION (March 12, 2026 - Session 8.7/8.8) - TESTED ✅
 
 ### 1. Celebration Bundles - FIXED & TESTED ✅
 Fixed the P0 issue where celebration bundles were not displaying:
