@@ -1880,18 +1880,6 @@ const LearnPage = () => {
         isOpen={!!selectedTopic}
         onClose={() => setSelectedTopic(null)}
         topicSlug={selectedTopic}
-        onSendToConcierge={(data) => {
-          // Open Mira AI with concierge context
-          window.dispatchEvent(new CustomEvent('openMiraAI', {
-            detail: {
-              message: `I need help with ${data.topic}: ${data.requestType}`,
-              context: 'concierge',
-              pillar: 'learn',
-              pet_name: activePet?.name,
-              pet_breed: activePet?.breed
-            }
-          }));
-        }}
       />
       
       {/* Concierge® Button - Blue C® for Service Desk chat */}

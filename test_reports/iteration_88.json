@@ -1,0 +1,75 @@
+{
+  "summary": "Tested Learn Topic Modal updates - ALL features working correctly. Overview topics are expandable with Mira's tips (Collapsible accordion), Products tab shows real products from API with prices and 'Continue to Shop' button, Services tab correctly shows 'Ask Concierge' badge only for hasService=false services, clicking badge triggers Universal Service Command which creates service desk ticket successfully.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "LearnTopicModal", "issues": ["Console warning: DialogContent requires a DialogTitle for accessibility - not a blocker but should be fixed for screen readers"]}
+    ]
+  },
+  "test_report_links": [".screenshots/overview_topic_expanded.png", ".screenshots/products_tab_real.png", ".screenshots/services_tab_badges.png", ".screenshots/after_logged_in_service_click.png"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Minor: Add DialogTitle to LearnTopicModal for accessibility compliance (can use VisuallyHidden component)"
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A - frontend only", "frontend": "100%"},
+  "seed_data_creation": "N/A - Topic content is hardcoded in TOPIC_CONFIG, Products fetched from real API",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "LearnTopicModal has 4 tabs: Overview (expandable Collapsible topics with Mira tips), Videos (placeholder), Products (real API fetch from /api/products), Services (hasService flag determines badge visibility). Universal Service Command integration working - creates service desk ticket and navigates to /mira-os concierge page.",
+  "mocked_api_info": {
+    "has_mocked_apis": true,
+    "mocked_apis_list": ["Topic tips content hardcoded in TOPIC_CONFIG (not from database)", "Products are REAL from /api/products API"]
+  },
+  "test_details": {
+    "features_tested": [
+      {
+        "feature": "Overview tab - Expandable topics with Mira tips",
+        "status": "PASS",
+        "evidence": "Clicking topic trigger expands accordion, shows 'Mira's Tip' in styled teal box with sparkle icon"
+      },
+      {
+        "feature": "Products tab - Real products from catalogue",
+        "status": "PASS",
+        "evidence": "API call to /api/products returns real products with images and prices (₹377, ₹335 visible)"
+      },
+      {
+        "feature": "Products tab - Continue to Shop button",
+        "status": "PASS",
+        "evidence": "Button with data-testid='continue-to-shop-btn' present and navigates to /shop"
+      },
+      {
+        "feature": "Services tab - hasService=true services NO badge",
+        "status": "PASS",
+        "evidence": "'Puppy Training Session' and 'First Vet Visit Guidance' shown without 'Ask Concierge' badge"
+      },
+      {
+        "feature": "Services tab - hasService=false services WITH badge",
+        "status": "PASS",
+        "evidence": "'Puppy Socialization Class' shown with 'Ask Concierge' badge"
+      },
+      {
+        "feature": "Service click with badge triggers Universal Service Command",
+        "status": "PASS",
+        "evidence": "Console shows [USC] Request submitted successfully with ticketId, inboxId, requestId"
+      },
+      {
+        "feature": "Send to Concierge button visible",
+        "status": "PASS",
+        "evidence": "Button with text 'Send to Concierge for More Details' visible at modal footer"
+      },
+      {
+        "feature": "Modal stays on same page (no URL navigation when opening)",
+        "status": "PASS",
+        "evidence": "URL stays at /learn when modal opens, only changes after action clicks"
+      }
+    ],
+    "all_tests_passed": true,
+    "test_credentials_used": "dipali@clubconcierge.in / test123"
+  }
+}
