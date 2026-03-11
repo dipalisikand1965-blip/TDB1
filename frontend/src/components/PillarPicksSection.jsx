@@ -129,7 +129,10 @@ const ProductDetailModal = ({ product, pet, pillar, onClose, onAddToCart }) => {
     if (e.target === e.currentTarget) onClose();
   };
   
-  const hasPrice = product.price && product.price > 0;
+  const hasPrice = product.price && (typeof product.price === 'number' ? product.price > 0 : true);
+  const priceValue = typeof product.price === 'object' 
+    ? (product.price.amount || product.price.price || product.price.value || 0)
+    : product.price;
   
   return createPortal(
     <div 
@@ -225,7 +228,7 @@ const ProductDetailModal = ({ product, pet, pillar, onClose, onAddToCart }) => {
               {hasPrice ? (
                 <>
                   <p className="text-xs text-gray-500">Price</p>
-                  <p className="text-2xl font-bold text-gray-900">₹{product.price.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-gray-900">₹{(priceValue || 0).toLocaleString()}</p>
                 </>
               ) : (
                 <p className="text-sm text-purple-600 font-medium">Ask Mira for pricing</p>
@@ -257,7 +260,10 @@ const ProductDetailModal = ({ product, pet, pillar, onClose, onAddToCart }) => {
 const ProductPickCard = ({ pick, pet, pillar, onAddToCart }) => {
   const [showModal, setShowModal] = useState(false);
   
-  const hasPrice = pick.price && pick.price > 0;
+  const hasPrice = pick.price && (typeof pick.price === 'number' ? pick.price > 0 : true);
+  const priceValue = typeof pick.price === 'object' 
+    ? (pick.price.amount || pick.price.price || pick.price.value || 0)
+    : pick.price;
   
   return (
     <>
@@ -326,7 +332,7 @@ const ProductPickCard = ({ pick, pet, pillar, onAddToCart }) => {
           <div className="flex items-center justify-between mt-2">
             {hasPrice ? (
               <span className="font-semibold text-gray-900">
-                ₹{pick.price.toLocaleString()}
+                ₹{(priceValue || 0).toLocaleString()}
               </span>
             ) : (
               <span className="text-xs text-purple-600">Ask Mira</span>

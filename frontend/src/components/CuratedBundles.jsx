@@ -431,7 +431,7 @@ const CuratedBundles = ({ pillar, showTitle = true, className = '', maxBundles }
                     {bundle.items.slice(0, 3).map((item, idx) => (
                       <div key={idx} className="flex items-center gap-2 text-sm text-gray-700">
                         <Check className="w-4 h-4 text-green-500" />
-                        <span>{item}</span>
+                        <span>{typeof item === 'object' ? item.name : item}</span>
                       </div>
                     ))}
                     {bundle.items.length > 3 && (
@@ -519,7 +519,7 @@ const CuratedBundles = ({ pillar, showTitle = true, className = '', maxBundles }
                         <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                           <Check className="w-4 h-4 text-purple-600" />
                         </div>
-                        <span className="text-sm text-gray-800">{item}</span>
+                        <span className="text-sm text-gray-800">{typeof item === 'object' ? item.name : item}</span>
                       </div>
                     ))}
                   </div>
