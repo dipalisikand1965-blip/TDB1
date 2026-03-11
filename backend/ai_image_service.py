@@ -141,24 +141,52 @@ def get_service_image_prompt(service: dict) -> str:
 
 
 async def generate_ai_image(prompt: str) -> Optional[str]:
-    """Generate an image using Emergent's AI image generation"""
+    """Generate an image using Emergent's AI image generation and upload to Cloudinary"""
     try:
-        from emergentintegrations.llm.gemini import GeminiImageGeneration
+        from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+        import base64
         
         if not EMERGENT_LLM_KEY:
             logger.error("EMERGENT_LLM_KEY not configured")
             return None
         
-        generator = GeminiImageGeneration(emergent_api_key=EMERGENT_LLM_KEY)
-        result = await generator.generate_image(
+        # Generate image using OpenAI gpt-image-1
+        image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+        images = await image_gen.generate_images(
             prompt=prompt,
-            model="imagen-4.0-generate-001"
+            number_of_images=1,
+            model="gpt-image-1"
         )
         
-        if result and result.get("url"):
-            return result["url"]
+        if not images or len(images) == 0:
+            logger.error("No images generated")
+            return None
         
-        return None
+        # Convert bytes to base64 for Cloudinary upload
+        image_base64 = base64.b64encode(images[0]).decode('utf-8')
+        image_data_url = f"data:image/png;base64,{image_base64}"
+        
+        # Upload to Cloudinary and return URL
+        cloudinary.config(
+            cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+            api_key=os.getenv("CLOUDINARY_API_KEY"),
+            api_secret=os.getenv("CLOUDINARY_API_SECRET")
+        )
+        
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+        public_id = f"doggy/ai_generated/{timestamp}"
+        
+        result = cloudinary.uploader.upload(
+            image_data_url,
+            public_id=public_id,
+            overwrite=True,
+            resource_type="image",
+            format="webp",
+            quality="auto:good"
+        )
+        
+        return result.get("secure_url")
+        
     except Exception as e:
         logger.error(f"AI image generation failed: {str(e)}")
         return None
@@ -236,51 +264,42 @@ async def process_products_batch(pillar: Optional[str] = None):
             generation_status["last_update"] = datetime.now(timezone.utc).isoformat()
             
             try:
-                # Generate prompt and image
+                # Generate prompt and image (uploads to Cloudinary automatically)
                 prompt = get_product_image_prompt(product)
-                ai_image_url = await generate_ai_image(prompt)
+                cloudinary_url = await generate_ai_image(prompt)
                 
-                if ai_image_url:
-                    # Upload to Cloudinary
-                    cloudinary_url = await upload_to_cloudinary(
-                        ai_image_url, 
-                        product_id, 
-                        "products",
-                        product.get("pillar", "general")
+                if cloudinary_url:
+                    # Update product in database
+                    await db.products.update_one(
+                        {"id": product_id},
+                        {
+                            "$set": {
+                                "image_url": cloudinary_url,
+                                "image": cloudinary_url,
+                                "images": [cloudinary_url],
+                                "ai_generated_image": True,
+                                "image_updated_at": datetime.now(timezone.utc).isoformat()
+                            }
+                        }
                     )
                     
-                    if cloudinary_url:
-                        # Update product in database
-                        await db.products.update_one(
-                            {"id": product_id},
-                            {
-                                "$set": {
-                                    "image_url": cloudinary_url,
-                                    "image": cloudinary_url,
-                                    "images": [cloudinary_url],
-                                    "ai_generated_image": True,
-                                    "image_updated_at": datetime.now(timezone.utc).isoformat()
-                                }
-                            }
-                        )
-                        
-                        generation_status["results"].append({
-                            "id": product_id,
-                            "name": product_name,
-                            "status": "success",
-                            "url": cloudinary_url
-                        })
-                    else:
-                        generation_status["failed"] += 1
+                    generation_status["results"].append({
+                        "id": product_id,
+                        "name": product_name,
+                        "status": "success",
+                        "url": cloudinary_url
+                    })
+                    logger.info(f"Generated image for product: {product_name}")
                 else:
                     generation_status["failed"] += 1
+                    logger.warning(f"Failed to generate image for: {product_name}")
                     
             except Exception as e:
                 logger.error(f"Failed to process product {product_id}: {str(e)}")
                 generation_status["failed"] += 1
             
             # Small delay to avoid rate limits
-            await asyncio.sleep(2)
+            await asyncio.sleep(3)
         
         generation_status["completed"] = len(products)
         
@@ -333,48 +352,39 @@ async def process_services_batch(pillar: Optional[str] = None):
             try:
                 # Generate watercolor prompt and image
                 prompt = get_service_image_prompt(service)
-                ai_image_url = await generate_ai_image(prompt)
+                cloudinary_url = await generate_ai_image(prompt)
                 
-                if ai_image_url:
-                    # Upload to Cloudinary
-                    cloudinary_url = await upload_to_cloudinary(
-                        ai_image_url, 
-                        service_id, 
-                        "services",
-                        service.get("pillar", "general")
+                if cloudinary_url:
+                    # Update service in database
+                    await db.services.update_one(
+                        {"id": service_id},
+                        {
+                            "$set": {
+                                "image_url": cloudinary_url,
+                                "watercolor_image": cloudinary_url,
+                                "ai_generated_image": True,
+                                "image_updated_at": datetime.now(timezone.utc).isoformat()
+                            }
+                        }
                     )
                     
-                    if cloudinary_url:
-                        # Update service in database
-                        await db.services.update_one(
-                            {"id": service_id},
-                            {
-                                "$set": {
-                                    "image_url": cloudinary_url,
-                                    "watercolor_image": cloudinary_url,
-                                    "ai_generated_image": True,
-                                    "image_updated_at": datetime.now(timezone.utc).isoformat()
-                                }
-                            }
-                        )
-                        
-                        generation_status["results"].append({
-                            "id": service_id,
-                            "name": service_name,
-                            "status": "success",
-                            "url": cloudinary_url
-                        })
-                    else:
-                        generation_status["failed"] += 1
+                    generation_status["results"].append({
+                        "id": service_id,
+                        "name": service_name,
+                        "status": "success",
+                        "url": cloudinary_url
+                    })
+                    logger.info(f"Generated watercolor for service: {service_name}")
                 else:
                     generation_status["failed"] += 1
+                    logger.warning(f"Failed to generate watercolor for: {service_name}")
                     
             except Exception as e:
                 logger.error(f"Failed to process service {service_id}: {str(e)}")
                 generation_status["failed"] += 1
             
             # Small delay to avoid rate limits
-            await asyncio.sleep(2)
+            await asyncio.sleep(3)
         
         generation_status["completed"] = len(services)
         
