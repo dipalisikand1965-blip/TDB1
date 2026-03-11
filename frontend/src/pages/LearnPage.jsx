@@ -287,72 +287,24 @@ const LearnPage = () => {
   };
 
   // Ask Mira - AI Learning Assistant
-  const handleAskMira = async () => {
+  // Handle Ask Mira - Opens Mira AI with the query (like Emergency page)
+  const handleAskMira = () => {
     if (!askMiraQuestion.trim()) return;
     
-    setAskMiraLoading(true);
-    setShowAskMira(true);
-    
-    try {
-      const response = await fetch(`${API_URL}/api/os/learn/ask-mira`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` })
-        },
-        body: JSON.stringify({
-          question: askMiraQuestion,
-          pet_id: selectedPet?.id || null
-        })
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setAskMiraResponse(data);
-        
-        // Create service desk ticket for the learning inquiry
-        // Universal Flow: User Intent → Service Desk Ticket → Admin Notification
-        try {
-          await fetch(`${API_URL}/api/service-requests`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              ...(token && { Authorization: `Bearer ${token}` })
-            },
-            body: JSON.stringify({
-              type: 'learn_inquiry',
-              pillar: 'learn',
-              source: 'ask_mira_learn',
-              intent: 'learning_question',
-              customer: {
-                name: user?.name || 'Guest',
-                email: user?.email,
-                phone: user?.phone || user?.whatsapp
-              },
-              details: {
-                question: askMiraQuestion,
-                pet_name: selectedPet?.name || 'N/A',
-                pet_id: selectedPet?.id,
-                mira_response_preview: data.answer?.substring(0, 200) + '...',
-                related_guides: data.related_guides?.length || 0,
-                related_videos: data.related_videos?.length || 0
-              },
-              priority: 'low'
-            })
-          });
-          console.log('[LEARN] Service desk ticket created for Ask Mira inquiry');
-        } catch (ticketError) {
-          console.error('[LEARN] Failed to create service ticket:', ticketError);
-        }
-      } else {
-        toast({ title: 'Failed to get response', variant: 'destructive' });
+    // Open Mira AI with learn context
+    window.dispatchEvent(new CustomEvent('openMiraAI', {
+      detail: {
+        message: askMiraQuestion,
+        initialQuery: askMiraQuestion,
+        context: 'learn',
+        pillar: 'learn',
+        pet_name: activePet?.name,
+        pet_breed: activePet?.breed
       }
-    } catch (error) {
-      console.error('Ask Mira error:', error);
-      toast({ title: 'Something went wrong', variant: 'destructive' });
-    } finally {
-      setAskMiraLoading(false);
-    }
+    }));
+    
+    // Clear the input
+    setAskMiraQuestion('');
   };
 
   const fetchUserPets = async () => {
@@ -585,18 +537,18 @@ const LearnPage = () => {
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { slug: 'puppy-basics', title: 'Puppy Basics', icon: '🐕', iconBg: 'bg-pink-50', desc: 'New puppy checklists, routines, and training guides' },
-              { slug: 'breed-guides', title: 'Breed Guides', icon: '🐾', iconBg: 'bg-blue-50', desc: 'Understand the unique traits of different dog breeds' },
-              { slug: 'food-feeding', title: 'Food & Feeding', icon: '🥣', iconBg: 'bg-orange-50', desc: 'Nutrition advice, feeding schedules, and diet tips' },
-              { slug: 'grooming', title: 'Grooming', icon: '✂️', iconBg: 'bg-purple-50', desc: 'Grooming tips, coat care, and brushing guides' },
-              { slug: 'behavior', title: 'Behavior', icon: '💡', iconBg: 'bg-yellow-50', desc: 'Behavioral issues, training tips, and calming advice' },
-              { slug: 'training-basics', title: 'Training Basics', icon: '🎾', iconBg: 'bg-green-50', desc: 'Training fundamentals, tips, and obedience guides' },
-              { slug: 'travel-with-dogs', title: 'Travel with Dogs', icon: '🚗', iconBg: 'bg-sky-50', desc: 'Travel tips, safety advice, and gear recommendations' },
-              { slug: 'senior-dog-care', title: 'Senior Dog Care', icon: '🦮', iconBg: 'bg-amber-50', desc: 'Senior dog health, comfort, and activity tips' },
-              { slug: 'health-basics', title: 'Health Basics', icon: '➕', iconBg: 'bg-red-50', desc: 'General health care, first aid, and wellness advice' },
-              { slug: 'rescue-indie-care', title: 'Rescue / Indie Care', icon: '🏡', iconBg: 'bg-teal-50', desc: 'Adoption, indie-breed tips, and rehabilitation guides' },
-              { slug: 'seasonal-care', title: 'Seasonal Care', icon: '☀️', iconBg: 'bg-yellow-50', desc: 'Weather care tips for summer, winter, and beyond' },
-              { slug: 'new-pet-parent-guide', title: 'New Pet Parent Guide', icon: '💕', iconBg: 'bg-pink-50', desc: 'Starting out with a new dog or puppy in your home' }
+              { slug: 'puppy-basics', title: 'Puppy Basics', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/93c239031e6456380de0efe5eb0dc4f6c5b0c024dd4773902b6e0c573190b1d8.png', desc: 'New puppy checklists, routines, and training guides' },
+              { slug: 'breed-guides', title: 'Breed Guides', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/b19ce463f91811f725efcf22558df9a370147e238e79f810d6f6f25776b03144.png', desc: 'Understand the unique traits of different dog breeds' },
+              { slug: 'food-feeding', title: 'Food & Feeding', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/5b1a4488a31b3aba09ebc15dd55c6155cee07f252d937530af9763ce6122ed48.png', desc: 'Nutrition advice, feeding schedules, and diet tips' },
+              { slug: 'grooming', title: 'Grooming', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/2aeee0fe285e7f4bf9b0695c92778e425922cb62c68d06f1fe8fdc33715f7aac.png', desc: 'Grooming tips, coat care, and brushing guides' },
+              { slug: 'behavior', title: 'Behavior', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/22b2a63c7ce6c1bf271784616d997150b922e72b42f23b0b0dea6354151c556b.png', desc: 'Behavioral issues, training tips, and calming advice' },
+              { slug: 'training-basics', title: 'Training Basics', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/3e9d2387a56550d68b8a4694f20654d13cb537ecee01b51b0f2cd396ecc09efd.png', desc: 'Training fundamentals, tips, and obedience guides' },
+              { slug: 'travel-with-dogs', title: 'Travel with Dogs', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/9b35a1a9ed5767659671cda04fc117a5abeafb2693411704164c5b37a1062ffe.png', desc: 'Travel tips, safety advice, and gear recommendations' },
+              { slug: 'senior-dog-care', title: 'Senior Dog Care', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/d9d9ebf8fe66ddcef4c455dbe5001f6143ef5b0c6ddf6e61689713ea03d13ec2.png', desc: 'Senior dog health, comfort, and activity tips' },
+              { slug: 'health-basics', title: 'Health Basics', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/c693f115f02adac326f5e6bb07378e3636c4a2774096c30b532317a65464632d.png', desc: 'General health care, first aid, and wellness advice' },
+              { slug: 'rescue-indie-care', title: 'Rescue / Indie Care', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/87e1b52ec6d6ab336a68adcea43c4a143f8de59d3cd2824e64e2c3fd9614441a.png', desc: 'Adoption, indie-breed tips, and rehabilitation guides' },
+              { slug: 'seasonal-care', title: 'Seasonal Care', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/1e5c1f02a009891fbcef1a3e1004e6f1dfe7201bafd892ee8c1d026697842455.png', desc: 'Weather care tips for summer, winter, and beyond' },
+              { slug: 'new-pet-parent-guide', title: 'New Pet Parent Guide', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/484b7ec0a72919db7f6137f25033184bea6787c2ccb296ffb23544249b6ae7a4.png', desc: 'Starting out with a new dog or puppy in your home' }
             ].map((topic) => (
               <Card
                 key={topic.slug}
@@ -606,8 +558,8 @@ const LearnPage = () => {
               >
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-base font-semibold text-gray-900 leading-tight">{topic.title}</h3>
-                  <div className={`w-10 h-10 ${topic.iconBg} rounded-xl flex items-center justify-center flex-shrink-0 ml-2`}>
-                    <span className="text-xl">{topic.icon}</span>
+                  <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 ml-2">
+                    <img src={topic.image} alt={topic.title} className="w-full h-full object-cover" />
                   </div>
                 </div>
                 <p className="text-xs text-gray-500 mb-3 line-clamp-2">{topic.desc}</p>
