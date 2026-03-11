@@ -14,16 +14,16 @@ AI product image generation is running in background. **DO NOT restart backend**
 
 ### Check Progress:
 ```bash
-curl -s "https://learn-hub-popup.preview.emergentagent.com/api/ai-images/status"
+curl -s "https://ai-watercolor.preview.emergentagent.com/api/ai-images/status"
 ```
 
 ### If Generation Stopped, Restart:
 ```bash
 # Start product images:
-curl -X POST "https://learn-hub-popup.preview.emergentagent.com/api/ai-images/generate-product-images"
+curl -X POST "https://ai-watercolor.preview.emergentagent.com/api/ai-images/generate-product-images"
 
 # After products done, generate service watercolors:
-curl -X POST "https://learn-hub-popup.preview.emergentagent.com/api/ai-images/generate-service-images"
+curl -X POST "https://ai-watercolor.preview.emergentagent.com/api/ai-images/generate-service-images"
 ```
 
 ### After ALL Images Generated - SYNC TO PRODUCTION:
@@ -166,7 +166,7 @@ Key sections in Bible:
 
 ## 🔗 URLS & CREDENTIALS
 
-**Preview URL:** https://learn-hub-popup.preview.emergentagent.com
+**Preview URL:** https://ai-watercolor.preview.emergentagent.com
 
 **Test Credentials:**
 - User: `dipali@clubconcierge.in` / `test123`
