@@ -428,15 +428,15 @@ const CuratedBundles = ({ pillar, showTitle = true, className = '', maxBundles }
                     What's Included
                   </p>
                   <div className="space-y-1">
-                    {bundle.items.slice(0, 3).map((item, idx) => (
+                    {(bundle.items || bundle.includes || []).slice(0, 3).map((item, idx) => (
                       <div key={idx} className="flex items-center gap-2 text-sm text-gray-700">
                         <Check className="w-4 h-4 text-green-500" />
                         <span>{typeof item === 'object' ? item.name : item}</span>
                       </div>
                     ))}
-                    {bundle.items.length > 3 && (
+                    {(bundle.items || bundle.includes || []).length > 3 && (
                       <p className="text-xs text-purple-600 font-medium">
-                        +{bundle.items.length - 3} more items
+                        +{(bundle.items || bundle.includes || []).length - 3} more items
                       </p>
                     )}
                   </div>
