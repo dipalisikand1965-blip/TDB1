@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://celebrate-bundles.preview.emergentagent.com
+https://learn-golden.preview.emergentagent.com
 
 ---
 
