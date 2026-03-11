@@ -39,7 +39,7 @@ import {
   GraduationCap, BookOpen, Brain, Star, Award, Trophy,
   CheckCircle, ChevronRight, Sparkles, Loader2, Send,
   ArrowRight, Play, ChevronDown, Target, Users, Calendar,
-  MapPin, Clock, PawPrint, Heart, Shield, Zap, ChevronLeft
+  MapPin, Clock, PawPrint, Heart, Shield, Zap, ChevronLeft, Search
 } from 'lucide-react';
 
 // Elevated Concierge® Learn Experiences
@@ -545,289 +545,132 @@ const LearnPage = () => {
       description="Training and guidance that respects personality. Expert-led training programs for dogs of all ages."
     >
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* HERO SECTION - What would you like to learn about your dog today? */}
+      {/* HERO SECTION: Clean Ask Bar (like Emergency page style) */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="py-12 sm:py-16 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="mb-6">
-            <Badge className="bg-blue-600 text-white mb-3">
-              <BookOpen className="w-3 h-3 mr-1" /> Ask Learn
-            </Badge>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-              What would you like to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">learn</span> about your dog today?
+      <section className="py-8 px-4 bg-gradient-to-b from-stone-50 to-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-6">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              What would you like to learn about your dog today?
             </h1>
-            <p className="text-gray-600">
-              Simple, useful knowledge made for your dog. Read → Watch → Shop / Book / Ask
-            </p>
           </div>
           
-          {/* Ask Mira - AI Learning Assistant */}
-          <div className="max-w-2xl mx-auto mb-6">
-            <div className="relative">
+          <div className="max-w-2xl mx-auto">
+            <div className="flex gap-2 items-center bg-white rounded-full border border-gray-200 shadow-sm p-1.5 pl-5">
+              <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
               <Input
                 value={askMiraQuestion}
                 onChange={(e) => setAskMiraQuestion(e.target.value)}
-                placeholder="Ask anything... How do I stop my puppy from biting?"
-                className="w-full py-6 pl-4 pr-12 text-lg rounded-xl border-2 border-blue-200 focus:border-blue-500"
+                placeholder="Grooming guide for double coats · tips to stop barking"
+                className="flex-1 border-0 focus-visible:ring-0 text-sm placeholder:text-gray-400"
                 onKeyDown={(e) => e.key === 'Enter' && handleAskMira()}
-                data-testid="ask-mira-input"
+                data-testid="ask-learn-input"
               />
               <Button
                 onClick={handleAskMira}
                 disabled={askMiraLoading || !askMiraQuestion.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700"
-                data-testid="ask-mira-submit"
+                className="rounded-full bg-teal-500 hover:bg-teal-600 h-10 w-10 p-0"
               >
-                {askMiraLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                {askMiraLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
               </Button>
             </div>
           </div>
-          
-          {/* Quick question chips */}
-          <div className="flex flex-wrap justify-center gap-2">
-            {['Puppy biting', 'Leash pulling', 'Separation anxiety', 'House training', 'Barking'].map((q) => (
-              <button
-                key={q}
-                onClick={() => { setAskMiraQuestion(q); handleAskMira(); }}
-                className="px-3 py-1.5 bg-white border border-blue-200 rounded-full text-sm text-blue-700 hover:bg-blue-50 transition-colors"
-              >
-                {q}
-              </button>
-            ))}
-          </div>
-          
-          {/* Download Learn Checklist */}
-          <div className="mt-6 flex justify-center">
-            <ChecklistDownloadButton 
-              pillar="learn" 
-              variant="outline"
-              className="border-blue-300 text-blue-700 hover:bg-blue-50"
-            />
-          </div>
         </div>
-      </div>
+      </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* SUB-NAVIGATION - Quick Jump Menu */}
+      {/* 12 TOPIC BOXES - Each opens a topic hub page at /learn/[topic] */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex items-center gap-1 py-2 overflow-x-auto hide-scrollbar">
-            {[
-              { label: 'Start Learning', anchor: 'core-cards', icon: '📚' },
-              { label: 'Life Stage', anchor: 'life-stage', icon: '🐶' },
-              { label: 'Topics', anchor: 'topics', icon: '📖' },
-              { label: 'Guided Paths', anchor: 'guided-paths', icon: '🎯' },
-              { label: 'For My Dog', anchor: 'my-dog', icon: '💜' },
-              { label: 'Products', anchor: 'products', icon: '🛍️' },
-              { label: 'Services', anchor: 'services', icon: '🎓' },
-              { label: 'Near Me', anchor: 'near-me', icon: '📍' }
-            ].map((item, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  const el = document.getElementById(item.anchor);
-                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 whitespace-nowrap transition-colors"
-                data-testid={`subnav-${item.anchor}`}
-              >
-                <span className="text-base">{item.icon}</span>
-                <span className="hidden sm:inline">{item.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* 8 CORE CARDS - Grouped into 3 buckets */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div id="core-cards" className="py-12 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">How can we help?</h2>
-            <p className="text-gray-600 mt-2">Choose what matters most to you right now</p>
-          </div>
-          
-          {/* 3 Column Buckets */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Products & Routines */}
-            <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-100">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
-                  <span className="text-xl">🛍️</span>
-                </div>
-                <h3 className="font-semibold text-gray-900">Products & Routines</h3>
-              </div>
-              <div className="space-y-2">
-                {[
-                  { label: 'Help me choose the right products', icon: '🛒' },
-                  { label: 'Build a routine for my dog', icon: '📅' },
-                  { label: 'Help me with grooming choices', icon: '✨' }
-                ].map((item, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setShowRequestModal(true)}
-                    className="w-full flex items-center gap-3 p-3 bg-white/70 hover:bg-white rounded-xl transition-all text-left group"
-                    data-testid={`learn-card-products-${idx}`}
-                  >
-                    <span className="text-lg">{item.icon}</span>
-                    <span className="text-sm text-gray-700 group-hover:text-gray-900">{item.label}</span>
-                    <ChevronRight className="w-4 h-4 text-gray-400 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </button>
-                ))}
-              </div>
-            </div>
-            
-            {/* Life Stage & Care */}
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                  <span className="text-xl">🐕</span>
-                </div>
-                <h3 className="font-semibold text-gray-900">Life Stage & Care</h3>
-              </div>
-              <div className="space-y-2">
-                {[
-                  { label: 'Guide me for my puppy', icon: '🐶' },
-                  { label: 'Help me with senior dog care', icon: '🦮' },
-                  { label: 'Recommend what suits my breed', icon: '🎯' }
-                ].map((item, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setShowRequestModal(true)}
-                    className="w-full flex items-center gap-3 p-3 bg-white/70 hover:bg-white rounded-xl transition-all text-left group"
-                    data-testid={`learn-card-lifestage-${idx}`}
-                  >
-                    <span className="text-lg">{item.icon}</span>
-                    <span className="text-sm text-gray-700 group-hover:text-gray-900">{item.label}</span>
-                    <ChevronRight className="w-4 h-4 text-gray-400 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </button>
-                ))}
-              </div>
-            </div>
-            
-            {/* Support & Services */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-xl">🤝</span>
-                </div>
-                <h3 className="font-semibold text-gray-900">Support & Services</h3>
-              </div>
-              <div className="space-y-2">
-                {[
-                  { label: 'Find the right trainer', icon: '🎓' },
-                  { label: 'Help me prepare for travel', icon: '✈️' },
-                  { label: 'Find help near me', icon: '📍' }
-                ].map((item, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setShowRequestModal(true)}
-                    className="w-full flex items-center gap-3 p-3 bg-white/70 hover:bg-white rounded-xl transition-all text-left group"
-                    data-testid={`learn-card-support-${idx}`}
-                  >
-                    <span className="text-lg">{item.icon}</span>
-                    <span className="text-sm text-gray-700 group-hover:text-gray-900">{item.label}</span>
-                    <ChevronRight className="w-4 h-4 text-gray-400 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* LEARN BY LIFE STAGE */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div id="life-stage" className="py-12 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Learn by Life Stage</h2>
-            <p className="text-gray-600 mt-2">Every stage needs different care</p>
-          </div>
-          
+      <section className="py-8 px-4 bg-white">
+        <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { stage: 'Puppy', icon: '🐶', color: 'pink', desc: '0-1 year', path: 'puppy' },
-              { stage: 'Adult', icon: '🐕', color: 'blue', desc: '1-7 years', path: 'adult' },
-              { stage: 'Senior', icon: '🦮', color: 'purple', desc: '7+ years', path: 'senior' },
-              { stage: 'New Adoption', icon: '🏠', color: 'green', desc: 'Just joined family', path: 'adoption' }
-            ].map((item, idx) => (
-              <Card 
-                key={idx}
-                className={`p-6 cursor-pointer hover:shadow-lg transition-all bg-gradient-to-br from-${item.color}-50 to-${item.color}-100 border-${item.color}-200`}
-                onClick={() => { setVideoTopic(item.path); fetchYouTubeVideos(item.path); }}
-                data-testid={`life-stage-${item.path}`}
+              { slug: 'puppy-basics', title: 'Puppy Basics', icon: '🐕', iconBg: 'bg-pink-50', desc: 'New puppy checklists, routines, and training guides' },
+              { slug: 'breed-guides', title: 'Breed Guides', icon: '🐾', iconBg: 'bg-blue-50', desc: 'Understand the unique traits of different dog breeds' },
+              { slug: 'food-feeding', title: 'Food & Feeding', icon: '🥣', iconBg: 'bg-orange-50', desc: 'Nutrition advice, feeding schedules, and diet tips' },
+              { slug: 'grooming', title: 'Grooming', icon: '✂️', iconBg: 'bg-purple-50', desc: 'Grooming tips, coat care, and brushing guides' },
+              { slug: 'behavior', title: 'Behavior', icon: '💡', iconBg: 'bg-yellow-50', desc: 'Behavioral issues, training tips, and calming advice' },
+              { slug: 'training-basics', title: 'Training Basics', icon: '🎾', iconBg: 'bg-green-50', desc: 'Training fundamentals, tips, and obedience guides' },
+              { slug: 'travel-with-dogs', title: 'Travel with Dogs', icon: '🚗', iconBg: 'bg-sky-50', desc: 'Travel tips, safety advice, and gear recommendations' },
+              { slug: 'senior-dog-care', title: 'Senior Dog Care', icon: '🦮', iconBg: 'bg-amber-50', desc: 'Senior dog health, comfort, and activity tips' },
+              { slug: 'health-basics', title: 'Health Basics', icon: '➕', iconBg: 'bg-red-50', desc: 'General health care, first aid, and wellness advice' },
+              { slug: 'rescue-indie-care', title: 'Rescue / Indie Care', icon: '🏡', iconBg: 'bg-teal-50', desc: 'Adoption, indie-breed tips, and rehabilitation guides' },
+              { slug: 'seasonal-care', title: 'Seasonal Care', icon: '☀️', iconBg: 'bg-yellow-50', desc: 'Weather care tips for summer, winter, and beyond' },
+              { slug: 'new-pet-parent-guide', title: 'New Pet Parent Guide', icon: '💕', iconBg: 'bg-pink-50', desc: 'Starting out with a new dog or puppy in your home' }
+            ].map((topic) => (
+              <Card
+                key={topic.slug}
+                className="p-4 bg-white border border-gray-100 rounded-2xl hover:shadow-lg hover:border-gray-200 transition-all cursor-pointer group"
+                onClick={() => navigate(`/learn/${topic.slug}`)}
+                data-testid={`topic-${topic.slug}`}
               >
-                <div className="text-center">
-                  <span className="text-4xl mb-3 block">{item.icon}</span>
-                  <h3 className="font-semibold text-gray-900">{item.stage}</h3>
-                  <p className="text-sm text-gray-500 mt-1">{item.desc}</p>
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-base font-semibold text-gray-900 leading-tight">{topic.title}</h3>
+                  <div className={`w-10 h-10 ${topic.iconBg} rounded-xl flex items-center justify-center flex-shrink-0 ml-2`}>
+                    <span className="text-xl">{topic.icon}</span>
+                  </div>
                 </div>
+                <p className="text-xs text-gray-500 mb-3 line-clamp-2">{topic.desc}</p>
+                <button className="flex items-center gap-1 text-sm font-medium text-gray-600 group-hover:text-teal-600 transition-colors">
+                  Explore <ChevronRight className="w-4 h-4" />
+                </button>
               </Card>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* 12 TOPIC CATEGORIES - Soft Illustrated Icons */}
+      {/* HOW CAN WE HELP? - 3 Action Buckets */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div id="topics" className="py-12 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
+      <section className="py-10 px-4 bg-stone-50">
+        <div className="max-w-5xl mx-auto">
           <div className="text-center mb-8">
-            <p className="text-gray-600 mb-2">What would you like to learn about your dog today?</p>
-            <div className="max-w-xl mx-auto relative">
-              <Input
-                value={askMiraQuestion}
-                onChange={(e) => setAskMiraQuestion(e.target.value)}
-                placeholder="Grooming guide for double coats • tips to stop barking"
-                className="pr-12 py-5 rounded-full border-gray-200 text-sm"
-                onKeyDown={(e) => e.key === 'Enter' && handleAskMira()}
-              />
-              <Button
-                onClick={handleAskMira}
-                size="sm"
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full bg-teal-500 hover:bg-teal-600 w-9 h-9 p-0"
-              >
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </div>
+            <h2 className="text-2xl font-bold text-gray-900">How can we help?</h2>
+            <p className="text-gray-600 mt-1">Choose what matters most to you right now</p>
           </div>
           
-          <div className="grid grid-cols-4 md:grid-cols-4 gap-4">
-            {[
-              { topic: 'Puppy Basics', icon: '🐕', bgColor: 'from-pink-50 to-rose-100', borderColor: 'border-pink-200' },
-              { topic: 'Breed Guides', icon: '🐾', bgColor: 'from-blue-50 to-indigo-100', borderColor: 'border-blue-200' },
-              { topic: 'Food & Feeding', icon: '🥣', bgColor: 'from-orange-50 to-amber-100', borderColor: 'border-orange-200' },
-              { topic: 'Grooming', icon: '✂️', bgColor: 'from-purple-50 to-violet-100', borderColor: 'border-purple-200' },
-              { topic: 'Behavior', icon: '💡', bgColor: 'from-yellow-50 to-amber-100', borderColor: 'border-yellow-200' },
-              { topic: 'Training Basics', icon: '🎾', bgColor: 'from-green-50 to-emerald-100', borderColor: 'border-green-200' },
-              { topic: 'Travel with Dogs', icon: '🚗', bgColor: 'from-sky-50 to-blue-100', borderColor: 'border-sky-200' },
-              { topic: 'Senior Dog Care', icon: '🦮', bgColor: 'from-amber-50 to-orange-100', borderColor: 'border-amber-200' },
-              { topic: 'Health Basics', icon: '➕', bgColor: 'from-red-50 to-rose-100', borderColor: 'border-red-200' },
-              { topic: 'Rescue / Indie Care', icon: '🏡', bgColor: 'from-teal-50 to-cyan-100', borderColor: 'border-teal-200' },
-              { topic: 'Seasonal Care', icon: '☀️', bgColor: 'from-yellow-50 to-orange-100', borderColor: 'border-yellow-200' },
-              { topic: 'New Pet Parent Guide', icon: '💕', bgColor: 'from-pink-50 to-rose-100', borderColor: 'border-pink-200' }
-            ].map((item, idx) => (
-              <button
-                key={idx}
-                onClick={() => { setVideoTopic(item.topic.toLowerCase().replace(/ & | |\/| /g, '_')); fetchYouTubeVideos(item.topic.toLowerCase()); }}
-                className={`p-4 rounded-2xl bg-gradient-to-br ${item.bgColor} hover:shadow-lg transition-all text-center border-2 ${item.borderColor} hover:scale-[1.02]`}
-                data-testid={`topic-${item.topic.toLowerCase().replace(/ & | |\/| /g, '-')}`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-800 text-left">{item.topic}</span>
-                  <span className="text-2xl ml-2">{item.icon}</span>
-                </div>
-              </button>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="p-5 bg-gradient-to-br from-amber-50 to-orange-50 border-amber-100 rounded-2xl">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-2xl">📦</span>
+                <h3 className="font-semibold text-gray-900">Products & Routines</h3>
+              </div>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-amber-400 rounded-full" />Help me choose the right products</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-amber-400 rounded-full" />Build a routine for my dog</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-amber-400 rounded-full" />Help me with grooming choices</li>
+              </ul>
+            </Card>
+            
+            <Card className="p-5 bg-gradient-to-br from-teal-50 to-emerald-50 border-teal-100 rounded-2xl">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-2xl">🐕</span>
+                <h3 className="font-semibold text-gray-900">Life Stage & Care</h3>
+              </div>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-teal-400 rounded-full" />Guide me for my puppy</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-teal-400 rounded-full" />Help me with senior dog care</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-teal-400 rounded-full" />Recommend what suits my breed</li>
+              </ul>
+            </Card>
+            
+            <Card className="p-5 bg-gradient-to-br from-violet-50 to-purple-50 border-violet-100 rounded-2xl">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-2xl">🤝</span>
+                <h3 className="font-semibold text-gray-900">Support & Services</h3>
+              </div>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-violet-400 rounded-full" />Find the right trainer</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-violet-400 rounded-full" />Help me prepare for travel</li>
+                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-violet-400 rounded-full" />Find help near me</li>
+              </ul>
+            </Card>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Old sections removed - using new 12 Topic Boxes above */}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* GUIDED LEARNING PATHS */}
