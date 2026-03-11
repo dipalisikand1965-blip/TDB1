@@ -15,7 +15,7 @@
 - **User:** `dipali@clubconcierge.in` / `test123`
 - **Admin:** `aditya` / `lola4304`
 - **Test URL:** `/mira-demo?debug=1`
-- **API URL:** `https://ai-experience-unify.preview.emergentagent.com`
+- **API URL:** `https://celebrate-bundles.preview.emergentagent.com`
 
 ---
 

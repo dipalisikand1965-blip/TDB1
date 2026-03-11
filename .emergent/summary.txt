@@ -1,72 +1,94 @@
 <analysis>**original_problem_statement:**
 The user's primary goal is to elevate all main pillar pages (Advisory, Emergency, Farewell, Adopt, etc.) to a 10/10 golden standard.
 
-The session began with a critical P0 task: migrating the remaining hardcoded content on the  and  pages to be dynamic and database-driven.
+The session involved several key tasks:
+1.  **Mira AI Rollout:** Completing the addition of the  to all pillar pages.
+2.  **PDF Checklists:** Implementing a new feature for users to download printable, personalized PDF checklists for each pillar.
+3.  **Bug Fixes & Enhancements:** Addressing several user-reported issues, including a broken Near Me feature, duplicate content on the  page, and a broken concierge request flow.
+4.  **Content Expansion:** Adding new product bundles to the  pillar.
+5.  **UI/UX Refactoring:** A major restructuring of the  page to be mobile-first and align with the user's vision for content hierarchy.
 
-A major production incident was reported mid-session: a data and image discrepancy between the preview environment and the live production site (). The user requested an immediate fix to sync all products, services, and newly generated AI images to production.
-
-Following the production fix, the user requested several new features and enhancements:
-1.  **Near Me Feature:** Add a local service finder (vets, groomers) to the Adopt page.
-2.  **Adopt Page Product Overhaul:** Replace the static Daily Essentials icons with real, interactive product cards (with AI images) that open a product modal.
-3.  **Unify AI Experience:** Connect the simple Advisor text input boxes on all pillar pages to the main, full-featured Mira AI chat widget.
-4.  **Expand AI Presence:** Add the Mira Advisor component to all pillar pages to emphasize the AI-driven, personalized nature of the service.
-5.  **Pillar-Specific Checklists:** Create printable PDF checklists for each pillar (e.g., First Vet Visit Checklist for Adopt).
-6.  **Automate Cleanup:** Integrate the data-deduplication scripts into the master sync process to prevent future data-drift issues.
+The session ended while debugging an issue with new content not appearing and with several new bug reports from the user regarding the PDF and sharing features.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is in a significantly improved state.
-- **Content is Fully Dynamic:** All four main pillar pages (, , , ) now fetch their Guided Paths and Situation Guides dynamically from the  API. All hardcoded content from the initial build has been successfully migrated.
-- **Production Data Parity:** A critical data discrepancy between the preview and production databases has been resolved. New API endpoints for data export/import () and cleanup () were created and used to sync ~1,500 missing products and fix all missing AI-generated service images on the live site.
-- **Near Me on Adopt Page:** The Adopt page now features a Find Services Near You section, reusing the existing Google Places integration to find local vets, groomers, etc.
-- **Enhanced Adopt Page UX:** The Daily Essentials section on the Adopt page has been transformed from static icons into a tabbed interface of rich product cards with high-quality AI-generated images, prices, and a fully functional Add to Cart modal. New product categories (, , etc.) have been added.
-- **Unified Mira AI Experience:** The simple Advisor input boxes on the , , and  pages have been refactored. They no longer trigger a separate, simple AI response. Instead, they now open the powerful, existing  with the user's question pre-filled, creating a consistent and superior user experience.
-- **Reusable Mira Component:** A new reusable component, , has been created to facilitate the rapid deployment of the Mira AI advisor across all pages.
+The application is in a highly functional state with several recent major improvements.
+-   **Universal Mira AI Integration:** All 13 pillar pages now feature a Mira AI touchpoint. 10 pages use the standardized , while 4 pages (, , , ) have specialized, custom AI integrations.
+-   **Printable PDF Checklist System:** A complete system for generating and downloading checklists is in place. It includes a backend API () serving data for 14 checklists, a frontend component () using  to create the documents, and a  that has been deployed on all pillar pages.
+-   **Checklist Sharing:** The checklist download dropdown has been enhanced with Share via WhatsApp and Share via Email functionality.
+-   **Celebrate Page Overhaul:** The  page has been significantly refactored with a mobile-first layout, a logical content hierarchy, and a fixed concierge flow that now uses a unified, detailed request form.
+-   **Near Me Feature Fixed:** The service finder on the  page is now functional, powered by a new, secure backend proxy () for the Google Places API.
+-   **New Content & Seeders:** Seed scripts have been created to add new Celebration Bundles.
+-   **Documentation:** The  and  files have been updated to reflect the new Mira AI strategy and checklist system.
 
 **Last working item**:
--   **Last item agent was working:** The agent was executing the user's high-priority request to add the newly created  component to all pillar pages to standardize the AI-first user experience. It was in the middle of editing the page files (, , etc.) when the user requested to save and end the session.
+-   **Last item agent was working:** The agent was debugging why newly seeded Celebration Bundles were not appearing on the  page. It was discovered that old data in the  MongoDB collection was conflicting with the new entries. The agent was preparing to clear the collection and re-run the seed script.
 -   **Status:** IN PROGRESS
 -   **Agent Testing Done:** N
--   **Which testing method agent to use?** frontend testing agent
+-   **Which testing method agent to use?** backend testing agent
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1:** Razorpay checkout fails with a body error (P2)
--   **Issue 2:** AI Mockup Generation script persistence is not guaranteed (P2)
--   **Issue 3:** Scrambled pet dashboard on mobile (P3)
+-   **Issue 1:** New Celebration Bundles not displaying on the frontend (P0)
+-   **Issue 2:** PDF download is not working as expected and sends a WhatsApp message instead (P1)
+-   **Issue 3:** Celebration Wall Instagram integration is not implemented (P2)
+-   **Issue 4:** Razorpay checkout fails with a body error (P2)
+-   **Issue 5:** AI Mockup Generation script persistence is not guaranteed (P2)
+-   **Issue 6:** Scrambled pet dashboard on mobile (P3)
 
 **Issues Detail:**
--   **Issue 1: Razorpay checkout fails with a body error**
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** Y
-    -   **Why fix this issue and what will be achieved with the fix?** The core e-commerce functionality is broken, preventing any revenue generation.
+-   **Issue 1: New Celebration Bundles not displaying**
+    -   **Attempted fixes:** A seed script for new bundles () was created and run. The frontend component () was updated to use the correct API (). The agent identified that old data in the  collection is causing the API to return incorrect results.
+    -   **Next debug checklist:**
+        1.  Execute a command to clear the collection: .
+        2.  Run the seed script again: 🎂 Adding new Celebrate Bundles...
+   Current bundles: 8
+   ⏭️ Skipped (exists): First Birthday Special
+   ⏭️ Skipped (exists): Premium Bark-day Bash
+   ⏭️ Skipped (exists): Pawty Essentials
+   ⏭️ Skipped (exists): Senior Celebration
+   ⏭️ Skipped (exists): Adoption Anniversary
+   ⏭️ Skipped (exists): New Puppy Welcome
+
+🎉 Total bundles now: 8 (+0 new).
+        3.  Test the API endpoint  to confirm only the new bundles are returned.
+        4.  Verify visually on the  page that the new bundles appear in the scrollable section.
+    -   **Why fix this issue and what will be achieved with the fix?** Fulfills a direct user request to expand the product catalog for a best-selling category.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Both
 
--   **Issue 2: AI Mockup Generation script persistence**
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** Y
-    -   **Why fix this issue and what will be achieved with the fix?** The script for generating mockups is not a managed service and may not persist, affecting content creation workflows.
-    -   **Should Test frontend/backend/both after fix?** Backend
-
--   **Issue 3: Scrambled pet dashboard on mobile**
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** Y
-    -   **Why fix this issue and what will be achieved with the fix?** The mobile user experience for a key feature is poor.
+-   **Issue 2: PDF download is not working as expected**
+    -   **Attempted fixes:** The agent simplified the PDF component () by removing external font dependencies and added error handling/toast notifications to the download function in .
+    -   **Next debug checklist:**
+        1.  Thoroughly review the  and sharing functions in .
+        2.  Verify the PDF generation logic in  and ensure a valid PDF blob is being created.
+        3.  Use browser developer tools to check for console errors during the download attempt.
+        4.  Confirm the toast notification for download success/failure appears as requested.
+    -   **Why fix this issue and what will be achieved with the fix?** The printable checklist is a key value-add feature that is currently broken, preventing users from accessing it.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Frontend
+
+-   **Issue 3: Celebration Wall Instagram Integration**
+    -   **Attempted fixes:** A placeholder backend route  and corresponding frontend fetch logic were created.
+    -   **Next debug checklist:**
+        1.  Ask the user for Instagram Basic Display API credentials (App ID, App Secret) and a User Access Token.
+        2.  Implement the logic in  to call the Instagram API.
+        3.  Add caching to the endpoint to avoid hitting rate limits.
+    -   **Why fix this issue and what will be achieved with the fix?** Automates content updates on the , making the site feel more dynamic and reducing manual effort.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Both
 
 **In progress Task List**:
--   **Task 1: Complete Rollout of MiraAdvisorCard (P0)**
-    -   **Where to resume:** The agent has created  and has already added it to several pillar pages (, , etc.). It needs to continue adding this component to the remaining pillar pages: , , , , , and . The agent was using a script to perform these edits efficiently.
-    -   **What will be achieved with this?** This will complete the user's strategic goal of placing the Mira AI advisor front-and-center on every pillar page, reinforcing the app's key differentiator.
-    -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Frontend
-    -   **Blocked on something:** None
+-   There are no in-progress tasks separate from the issues listed above.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   (P0) **Implement Pillar-Specific Printable Checklists:** Create a feature that generates a printable PDF checklist for each pillar (e.g., First Vet Visit Checklist for Adopt, Emergency Kit for Emergency). This was a user-requested feature to add value for pet owners.
-    -   (P1) **Pillar-wise Products in Shop:** Refactor the shop page to show  under their respective pillar tabs.
+    -   (P1) **Unify Products in Shop/Admin:** Audit the admin panel product management and the main shop to ensure a unified and streamlined experience for managing pillar-specific products.
+    -   (P1) **Enhance Remaining Pillar Pages:** Elevate the , , , , , and  pages by adding more pillar-specific components and refining their layouts, similar to the depth of  and .
 -   **Future Tasks:**
     -   (P2) Fix Razorpay checkout failure.
     -   (P2) Ensure AI Mockup Generation script runs as a robust, managed service.
@@ -75,25 +97,11 @@ The application is in a significantly improved state.
     -   (P4) Implement a secure, non-hardcoded authentication system for the Admin panel.
 
 **Completed work in this session**
--   **P0 Content Migration (DONE):**
-    -   Refactored  and  to fetch dynamic content from  API.
-    -   Removed all remaining hardcoded content from main pillar pages.
--   **Production Sync & Data Parity (DONE):**
-    -   Created data transfer endpoints (, ).
-    -   Created a service de-duplication endpoint ().
-    -   Successfully synced ~1,500 missing products and fixed all missing AI-generated service images on the live production environment.
-    -   Updated the  script to include the cleanup steps automatically.
--   **Near Me Feature on Adopt Page (DONE):**
-    -   Created and added  to the .
--   **Adopt Page Product Overhaul (DONE):**
-    -   Replaced static icons with a dynamic, tabbed interface of real product cards.
-    -   Generated 12+ new AI product images for Day 1 Essentials, Comfort Zone, Grooming, and Home Setup categories.
-    -   Seeded these new products into the database.
-    -   Implemented a fully functional product modal for adding items to the cart directly from the page.
--   **Unified Mira AI Experience (DONE):**
-    -   Refactored Advisor inputs on , , and  pages to open the main .
--   **Documentation:**
-    -   Updated  and  with a detailed Production Data Sync Guide to prevent future issues.
+-   **Mira AI Rollout (DONE):** The  was successfully added to all remaining pillar pages (, , , ), standardizing the AI experience across the site.
+-   **PDF Checklist System (V1 DONE):** A full-featured checklist system was created and deployed across all pillar pages, including backend API, frontend generation, and a share feature (pending bug fix).
+-   **Celebrate Page Overhaul (DONE):** The page was completely restructured for a mobile-first experience, with a new content hierarchy and a fully functional, unified concierge request flow.
+-   **Near Me Feature (FIXED):** The broken local service finder on the Adopt page was repaired by implementing a new, secure backend proxy to the Google Places API.
+-   **Concierge Button Added (FIXED):** The missing floating concierge button was added to the .
 
 **Earlier issues found/mentioned but not fixed**
 -   **Issue 1:** Razorpay checkout fails with a body error (P2 Priority)
@@ -102,63 +110,59 @@ The application is in a significantly improved state.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork:** Razorpay checkout failure, AI Mockup script persistence, scrambled mobile dashboard.
--   **Recurrence count:** 4+
+-   **Recurrence count:** 5+
 -   **Status:** NOT STARTED
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Production Debugging & Hotfixing:** Diagnosed a critical data discrepancy between environments by comparing database counts and API responses. Resolved it by building and deploying specific data transfer and cleanup endpoints, then executing them against the live production server.
--   **Component-Driven Refactoring:** When faced with adding the same UI element (Mira Advisor) to multiple pages, the agent correctly created a reusable component () to ensure consistency and maintainability.
--   **Data-Driven UI:** Successfully transformed a static section of the  into a dynamic one by generating AI images, seeding them as new products, and refactoring the component to fetch, filter, and display them in interactive product cards with a shared modal.
--   **Event-Driven UI Integration:** Replaced multiple, separate API calls and state management hooks in pillar pages with a single  call to integrate with the existing, complex , greatly simplifying code and unifying the user experience.
-
-**key DB schema**
--   : 
--   : 
--   : Combined view of products for the shop.
--   : 
+-   **Dynamic PDF Generation:** Used  for client-side generation of branded, data-driven PDF checklists, enabling full styling and personalization control.
+-   **Component-Driven Enhancement:** Fixed a broken UX flow by enhancing an existing shared component () with a more detailed modal, ensuring a consistent and improved experience across multiple pages.
+-   **Secure API Proxying:** Resolved a failing third-party integration (Near Me) by creating a backend proxy endpoint () to manage API keys securely and centralize the service call.
+-   **Mobile-First Refactoring:** Reorganized the JSX structure of the complex  based on user feedback to create a more logical and clean content hierarchy for mobile users.
 
 **All files of reference**
--    (Example of multiple features added)
--    (New reusable component)
--    (Contains the new data sync endpoints)
--    (Contains the automated cleanup logic)
--    (Contains the crucial production sync guide)
+-    (Example of major refactoring and fixes)
+-    (Core of the new checklist feature)
+-    (Location of the PDF download bug)
+-    (Script for the P0 content issue)
+-    (Example of fixing a UX flow by enhancing a shared component)
 
 **Critical Info for New Agent**
-1.  **Complete the MiraAdvisorCard Rollout (P0):** Your first task is to finish the in-progress work. Add the  component to the remaining pillar pages (, , , , , ). This will fulfill a key strategic request from the user.
-2.  **Production Sync Process is Documented:** A critical production issue was solved in this session. The process to sync data from preview to production is now documented in  and . Refer to this guide if any future data discrepancies are reported. The  has also been updated to prevent some forms of data drift.
-3.  **Prioritize User's Next Requests:** After completing the Mira rollout, the next tasks requested by the user are: (1) Printable PDF checklists for each pillar, and (2) Showing pillar-specific products on the main shop page.
-4.  **Recurring Issues Remain:** The long-standing issues with Razorpay, the AI mockup script, and the mobile dashboard have not been addressed and remain in the backlog.
+1.  **Fix Bundles First (P0):** Your immediate priority is to resolve the celebration bundles issue. The  collection in MongoDB must be cleared and re-seeded using . This is a content-blocker.
+2.  **Fix PDF Download (P1):** The second priority is to fix the PDF download feature. The user reported it triggers a WhatsApp message instead of downloading a file. Investigate  and . The user also requested a toast notification for download status, which has been added but needs to be tested.
+3.  **Instagram Integration Needs User Input:** The foundation for the Instagram feed is laid, but you cannot proceed without credentials. You must ask the user for their Instagram Basic Display API App ID, App Secret, and a User Access Token.
+4.  **Unified Concierge Flow is the Standard:** The detailed concierge request form (seen on  and now ) is the new standard. Any future service-based features should use this pattern.
+5.  **User Vision for Pillar Pages:** The user wants all pillar pages (, , etc.) to be as rich and detailed as  and . This is a significant upcoming task that will involve more than just adding simple components.
 
 **documents and test reports created in this job**
--    (From content migration testing)
--   
--   
--    (Updated with Production Sync Guide)
--    (Updated with Production Sync Guide)
+-    (Updated)
+-    (Updated)
+-    (Created)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** hell please save complete html prd and handover - Interrupted the agent to save progress and end the session. (PENDING HANDOVER)
-2.  **User:** yes but keep these insructions very well documented else the darn agent handover will screw us - Emphasized the need for clear documentation for the Mira Advisor pattern. (COMPLETED)
-3.  **User:** wow Yes please ... do you think we should have a simlar advisor on each page... - Enthusiastically approved the idea of adding the Mira Advisor to every pillar page. (IN PROGRESS)
-4.  **User:** Would you like me to add more product categories... Yes - Approved adding more AI-generated product categories to the Adopt page. (COMPLETED)
-5.  **User:** Would you like to add a First Vet Visit Checklist feature... yes please actually that is a lovely featuree to have on each pillar - Approved the idea and expanded it to all pillars. (PENDING)
-6.  **User:** run these on production can you add to master sync itself...? - Requested the production data fixes and asked for the cleanup logic to be automated into the master sync. (COMPLETED)
-7.  **User:** i will deploy now and also can you check ervices... - Confirmed deployment and asked to investigate missing service images. (COMPLETED)
-8.  **User:** i ran master sync still didnt come now i did that force... can you do a forced to my deployed site and fix all this please - Reported the production sync issue and asked for a fix. (COMPLETED)
-9.  **User:** so there is a problem ... We have to find what is mising and ensure it syncs to production - The initial report of the critical production data discrepancy. (COMPLETED)
-10. **User:** so there is a problem - Initial message before describing the production sync issue.
+1.  **User:** Ends the session, requesting a detailed handover and documentation update. (PENDING HANDOVER)
+2.  **User:** Asks for more celebration bundles and wants to ensure they are mobile-friendly and appear in the admin section. (IN PROGRESS)
+3.  **User:** Approves the improved concierge request modal and confirms it matches the unified service flow vision. (COMPLETED)
+4.  **User:** Reports the concierge cards on  are still appearing as product cards, not service request cards, and points to the  page as the correct example. (FIXED)
+5.  **User:** Provides a detailed vision for restructuring the  page (hierarchy, component purpose) and reports a duplicate Mira widget. (ADDRESSED)
+6.  **User:** Asks for a toast notification for the PDF download. (IMPLEMENTED, PENDING TEST)
+7.  **User:** Reports that the PDF download is not working (sends a WhatsApp message instead of a file) and provides feedback on the  page layout (all over). (IN PROGRESS)
+8.  **User:** Asks for Instagram integration details, confirms the plan for unifying shop products, and greenlights the enhancement of remaining pillar pages. (ADDRESSED)
+9.  **User:** Asks if a Share Checklist feature can be added for email/WhatsApp and requests verification of the PDF download functionality. (IMPLEMENTED, PENDING TEST)
+10. **User:** Reports that Near Me on the  page is not working, there's duplicate content on the  page, and the Instagram wall isn't updating. (FIXED / ADDRESSED)
 
 **Project Health Check:**
 -   **Broken:**
     -   Razorpay Checkout Flow.
+    -   PDF Checklist Downloading.
 -   **Mocked:**
     -   Admin authentication is hardcoded.
+    -   Instagram feed API is a placeholder.
 -   **Partially Implemented:**
-    -   **Mira Advisor on All Pages:** The reusable component is built, and it has been added to several pages, but the rollout across all pillar pages is incomplete.
+    -   **Celebration Bundles:** Data is seeded but not displaying correctly due to stale data in the DB.
+    -   **Checklist Sharing:** UI is implemented, but the core download functionality it relies on is broken.
 
 **3rd Party Integrations**
 -   OpenAI GPT-4o — uses Emergent LLM Key (powers AI Chats, Image Generation)
@@ -168,16 +172,17 @@ The application is in a significantly improved state.
 -   MongoDB Atlas (Database)
 -   Razorpay (Broken)
 -   Cloudinary (Image storage)
+-    (For PDF generation)
 
 **Testing status**
--   **Testing agent used after significant changes:** YES (Used after the content migration task)
+-   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** None
--   **Known regressions:** None.
+-   **Known regressions:** The PDF download feature appears to have regressed or never worked as intended.
 
 **Credentials to test flow:**
 -   **User:**  / 
 -   **Admin:**  / 
 
 **What agent forgot to execute**
-- The agent was in the middle of executing a user request (rolling out the  to all pages) when the user interrupted to end the session. The task is therefore incomplete but not forgotten. It is correctly listed as the highest priority .</analysis>
+- The agent was interrupted while performing a critical step to fix the bundle display issue (clearing the database collection). This is not forgotten but is the highest priority pending action.</analysis>

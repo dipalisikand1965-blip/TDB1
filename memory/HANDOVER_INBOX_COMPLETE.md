@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://ai-experience-unify.preview.emergentagent.com
+https://celebrate-bundles.preview.emergentagent.com
 ```
 
 ---
