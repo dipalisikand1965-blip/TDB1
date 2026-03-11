@@ -1,6 +1,41 @@
 # The Doggy Company - PRD (Product Requirements Document)
 **Last Updated:** March 11, 2026  
-**Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅ | MIRA ADVISOR 100% ✅ | CELEBRATE 100% ✅ | AI IMAGES 100% ✅ | **LEARN 80% 🔄 IN PROGRESS**
+**Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅ | MIRA ADVISOR 100% ✅ | CELEBRATE 100% ✅ | **AI IMAGES 🔄 GENERATING IN BACKGROUND** | **LEARN 80% 🔄 IN PROGRESS**
+
+---
+
+## 🚨 CRITICAL FOR FUTURE AGENTS - AI IMAGE GENERATION IS RUNNING
+
+### ⚠️ BACKGROUND TASK RUNNING - DO NOT RESTART BACKEND
+AI product image generation is running in background. **DO NOT restart backend** unless necessary.
+
+**Started:** March 11, 2026
+**Est. Completion:** ~90 minutes (500 products × 10 sec each)
+
+### Check Progress:
+```bash
+curl -s "https://learn-hub-popup.preview.emergentagent.com/api/ai-images/status"
+```
+
+### If Generation Stopped, Restart:
+```bash
+# Start product images:
+curl -X POST "https://learn-hub-popup.preview.emergentagent.com/api/ai-images/generate-product-images"
+
+# After products done, generate service watercolors:
+curl -X POST "https://learn-hub-popup.preview.emergentagent.com/api/ai-images/generate-service-images"
+```
+
+### After ALL Images Generated - SYNC TO PRODUCTION:
+```bash
+curl -X POST "https://thedoggycompany.com/api/admin/cleanup-duplicate-services?password=lola4304"
+curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=lola4304"
+curl -X POST "https://thedoggycompany.com/api/mockups/sync-to-production"
+```
+
+### Image Stats:
+- Products: ~500 missing → generating realistic product photos
+- Services: ~161 missing → generate watercolor illustrations AFTER products done
 
 ---
 
