@@ -121,11 +121,13 @@ const PRODUCT_CELEBRATION_IMAGES = [
 
 const CelebrationMemoryWall = ({ onShareStory, onViewAll, onCreateAlbum }) => {
   const [photos, setPhotos] = useState(DEFAULT_CELEBRATION_PHOTOS);
+  const [instagramPosts, setInstagramPosts] = useState([]);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [likedPhotos, setLikedPhotos] = useState(new Set());
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [activeTab, setActiveTab] = useState('celebrations'); // 'celebrations' | 'instagram'
   
   // Load celebration photos from backend API (manageable from Admin)
   useEffect(() => {
@@ -170,6 +172,36 @@ const CelebrationMemoryWall = ({ onShareStory, onViewAll, onCreateAlbum }) => {
       }
     };
     fetchCelebrations();
+  }, []);
+
+  // Fetch Instagram posts from @the_doggy_bakery
+  useEffect(() => {
+    const fetchInstagram = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/instagram/feed?limit=12`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.posts?.length > 0) {
+            const formattedPosts = data.posts.map((p, idx) => ({
+              id: p.id || `ig_${idx}`,
+              imageUrl: p.display_url || p.media_url,
+              petName: '@the_doggy_bakery',
+              occasion: 'Instagram',
+              caption: p.caption?.substring(0, 100) + (p.caption?.length > 100 ? '...' : '') || '',
+              likes: Math.floor(Math.random() * 500) + 100,
+              location: 'Mumbai',
+              date: p.timestamp ? new Date(p.timestamp).toLocaleDateString() : 'Recently',
+              permalink: p.permalink,
+              isInstagram: true
+            }));
+            setInstagramPosts(formattedPosts);
+          }
+        }
+      } catch (err) {
+        console.log('[MemoryWall] Instagram feed not available');
+      }
+    };
+    fetchInstagram();
   }, []);
   
   const handleScroll = () => {

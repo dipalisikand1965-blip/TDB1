@@ -23,6 +23,7 @@ import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
+import { ChecklistDownloadButton } from '../components/checklists';
 import ProductCard from '../components/ProductCard';
 import MultiPetSelector from '../components/MultiPetSelector';
 import { getPetPhotoUrl } from '../utils/petAvatar';
@@ -634,6 +635,15 @@ const FitPage = () => {
           ═══════════════════════════════════════════════════════════════════════ */}
       <div className="max-w-2xl mx-auto px-4 mb-8">
         <MiraAdvisorCard pillar="fit" activePet={activePet} />
+        
+        {/* Download Exercise Plan Checklist */}
+        <div className="mt-4 flex justify-center">
+          <ChecklistDownloadButton 
+            pillar="fit" 
+            variant="outline"
+            className="border-green-300 text-green-700 hover:bg-green-50"
+          />
+        </div>
       </div>
       
       {/* ═══════════════════════════════════════════════════════════════════════
