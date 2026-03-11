@@ -271,6 +271,9 @@ from app.api.bundle_routes import router as bundle_router, set_bundle_db
 # Mockup Cloud Storage (Cloudinary integration)
 from mockup_cloud_storage import mockup_cloud_router, set_db as set_mockup_cloud_db
 
+# AI Image Generation Service (Background image generation for products/services)
+from ai_image_service import ai_image_router, set_db as set_ai_image_db
+
 # Checklist Routes (Printable PDF checklists)
 from checklist_routes import router as checklist_router
 
@@ -19633,6 +19636,10 @@ set_mockup_db(db)  # Initialize Mockups with database
 # Initialize Mockup Cloud Storage (Cloudinary)
 app.include_router(mockup_cloud_router)  # Cloud storage at /api/mockups/*
 set_mockup_cloud_db(db)  # Initialize cloud storage with database
+
+# Initialize AI Image Generation Service
+app.include_router(ai_image_router)  # AI images at /api/ai-images/*
+set_ai_image_db(db)  # Initialize AI image service with database
 
 # Initialize Checklist Routes (Printable PDF checklists)
 app.include_router(checklist_router)  # Checklists at /api/checklists/*
