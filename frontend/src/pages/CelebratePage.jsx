@@ -1195,8 +1195,9 @@ const CelebratePage = () => {
         <ServiceCatalogSection 
           pillar="celebrate"
           title="Celebrate, Personalised"
-          subtitle="See your personalized price based on your city, pet size, and requirements"
+          subtitle="Let our concierge help you create the perfect celebration"
           maxServices={8}
+          hidePrice={true}
         />
       </div>
       
