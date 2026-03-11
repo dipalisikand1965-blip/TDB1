@@ -948,6 +948,8 @@ const PaperworkPage = () => {
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* SOUL MADE PRODUCTS - Document organizers and folders with breed artwork */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SOUL MADE COLLECTION - Breed-specific personalized products */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
       <section className="py-12 px-4" data-testid="paperwork-soul-made-section">
         <div className="max-w-6xl mx-auto">
           <SoulMadeCollection
