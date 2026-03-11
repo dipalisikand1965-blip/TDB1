@@ -24,12 +24,13 @@ import { ConciergeButton } from '../components/mira-os';
 import CuratedBundles from '../components/CuratedBundles';
 import NearbyAdoptServices from '../components/adopt/NearbyAdoptServices';
 import { usePillarContext } from '../context/PillarContext';
+import { ChecklistDownloadButton } from '../components/checklists';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Users,
   ChevronRight, Sparkles, CheckCircle, Package, Utensils,
   Moon, Footprints, Scissors, FileText, ShoppingBag,
   MessageCircle, ArrowRight, Loader2, Baby, User, Crown,
-  Dog, HelpCircle, Bed, Droplets, Bone, Shield, X
+  Dog, HelpCircle, Bed, Droplets, Bone, Shield, X, Download
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -479,6 +480,15 @@ const AdoptPage = () => {
               Powered by Mira AI - your personal pet advisor
             </p>
           </Card>
+          
+          {/* Download Checklists Button */}
+          <div className="mt-4 flex justify-center">
+            <ChecklistDownloadButton 
+              pillar="adopt" 
+              variant="outline"
+              className="border-green-300 text-green-700 hover:bg-green-50"
+            />
+          </div>
         </div>
       </section>
 
