@@ -10,6 +10,7 @@ import { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { usePillarContext } from '../context/PillarContext';
+import MiraAdvisorCard from '../components/MiraAdvisorCard';
 import { toast } from '../hooks/use-toast';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
@@ -666,6 +667,15 @@ ${stayRequestForm.special_requests || 'None'}
         
         <div className="max-w-7xl mx-auto px-4 mt-6">
           <PetJourneyRecommendations currentPillar="stay" />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          MIRA ADVISOR - Boarding Guide AI Assistant
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4 bg-blue-50/30">
+        <div className="max-w-2xl mx-auto">
+          <MiraAdvisorCard pillar="stay" activePet={activePet} />
         </div>
       </section>
 

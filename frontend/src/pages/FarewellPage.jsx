@@ -31,6 +31,7 @@ import RainbowBridgeWall from '../components/RainbowBridgeWall';
 import SoulMadeCollection from '../components/SoulMadeCollection';
 import CuratedBundles from '../components/CuratedBundles';
 import { usePillarContext } from '../context/PillarContext';
+import MiraAdvisorCard from '../components/MiraAdvisorCard';
 
 // Service Categories
 const SERVICE_CATEGORIES = {
@@ -203,38 +204,26 @@ const FarewellPage = () => {
     urgency: 'planned' // planned, urgent, emergency
   });
 
-  // AI Grief Support Handler
-  const handleGriefSupport = async () => {
+  // AI Grief Support Handler - Opens Mira with compassionate context
+  const handleGriefSupport = () => {
     if (!griefQuery.trim()) return;
     
-    setGriefLoading(true);
-    setShowGriefResponse(true);
-    
-    try {
-      const petContext = activePet 
-        ? `The person is grieving ${activePet.name}, a ${activePet.breed || 'beloved dog'}. `
-        : '';
-      
-      const response = await fetch(`${API_URL}/api/mira/ask`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          question: griefQuery,
-          context: `${petContext}GRIEF SUPPORT: This person is experiencing pet loss. Be deeply compassionate, gentle, and understanding. Acknowledge their pain. Offer comfort, not solutions unless asked. Speak from the heart. Keep response warm and supportive, under 150 words. Never minimize their grief.`
-        })
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setGriefResponse(data.response || data.answer || 'I\'m here with you. Your love for your pet is a beautiful thing, and grief is love with nowhere to go. Take all the time you need.');
-      } else {
-        setGriefResponse('I\'m here to listen. Your feelings are valid, and grief takes time. If you need immediate support, please reach out to our compassionate care team.');
+    // Open Mira with grief support context
+    window.dispatchEvent(new CustomEvent('openMiraAI', {
+      detail: {
+        message: griefQuery,
+        initialQuery: griefQuery,
+        context: 'grief_support',
+        pillar: 'farewell',
+        pet_name: activePet?.name,
+        pet_breed: activePet?.breed,
+        compassionate: true
       }
-    } catch (error) {
-      setGriefResponse('I understand this is a difficult time. Our grief support counselors are available to talk when you\'re ready.');
-    } finally {
-      setGriefLoading(false);
-    }
+    }));
+    
+    // Clear input
+    setGriefQuery('');
+    setShowGriefResponse(false);
   };
 
   // Farewell Journey Guided Paths - Now fetched from database
@@ -450,47 +439,17 @@ const FarewellPage = () => {
               />
               <Button 
                 onClick={handleGriefSupport}
-                disabled={griefLoading || !griefQuery.trim()}
+                disabled={!griefQuery.trim()}
                 className="bg-purple-600 hover:bg-purple-700 text-white"
               >
-                {griefLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Heart className="w-4 h-4" />}
+                <Sparkles className="w-4 h-4 mr-1" />
+                Ask Mira
               </Button>
             </div>
             
-            {showGriefResponse && (
-              <div className="mt-4 p-4 bg-white/5 rounded-lg border border-purple-400/20">
-                {griefLoading ? (
-                  <div className="flex items-center gap-2 text-purple-200">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    I'm here with you...
-                  </div>
-                ) : (
-                  <div>
-                    <p className="text-purple-100 leading-relaxed">{griefResponse}</p>
-                    <div className="flex gap-2 mt-4">
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => {
-                          setGriefQuery('');
-                          setShowGriefResponse(false);
-                        }}
-                        className="border-purple-400/30 text-purple-200 hover:bg-purple-600/20"
-                      >
-                        Share More
-                      </Button>
-                      <Button 
-                        size="sm"
-                        className="bg-purple-600 hover:bg-purple-700"
-                        onClick={() => setShowServiceModal(true)}
-                      >
-                        Talk to Counselor
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
+            <p className="text-xs text-purple-300 mt-2 text-center">
+              Powered by Mira AI - compassionate support when you need it
+            </p>
           </Card>
         </div>
       </section>

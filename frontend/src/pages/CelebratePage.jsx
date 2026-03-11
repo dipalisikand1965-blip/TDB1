@@ -48,6 +48,7 @@ import SoulMadeCollection from '../components/SoulMadeCollection';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import PillarPicksSection from '../components/PillarPicksSection';
+import MiraAdvisorCard from '../components/MiraAdvisorCard';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
 
@@ -703,6 +704,13 @@ const CelebratePage = () => {
           <p className="text-gray-600 max-w-xl mx-auto">
             Freshly baked, dog-safe treats from our bakery. Pan India delivery available.
           </p>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════════════════════
+            MIRA ADVISOR - Party Planning AI Assistant
+            ═══════════════════════════════════════════════════════════════════════════ */}
+        <div className="max-w-2xl mx-auto mb-8">
+          <MiraAdvisorCard pillar="celebrate" activePet={activePet} />
         </div>
 
         {/* Personalized Picks for User's Pet - Shows filtered Shopify products */}

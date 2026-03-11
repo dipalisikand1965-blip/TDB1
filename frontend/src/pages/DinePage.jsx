@@ -29,6 +29,7 @@ import { ConciergeButton } from '../components/mira-os';
 import CuratedConciergeSection from '../components/Mira/CuratedConciergeSection';
 import NearbyPlacesCarousel from '../components/NearbyPlacesCarousel';
 import { usePillarContext } from '../context/PillarContext';
+import MiraAdvisorCard from '../components/MiraAdvisorCard';
 import FreshMealsTab from '../components/dine/FreshMealsTab';
 import MapModal from '../components/MapModal';
 import PersonalizedDineSection from '../components/dine/PersonalizedDineSection';
@@ -986,6 +987,16 @@ const DinePage = () => {
             }}
           />
         </section>
+        
+        {/* ═══════════════════════════════════════════════════════════════════════════
+            MIRA ADVISOR - Nutrition Expert AI Assistant
+            ═══════════════════════════════════════════════════════════════════════════ */}
+        <section className="py-8 px-4">
+          <div className="max-w-2xl mx-auto">
+            <MiraAdvisorCard pillar="dine" activePet={activePet} />
+          </div>
+        </section>
+        
         {/* ═══════════════════════════════════════════════════════════════════════ */}
         {/* PET CAFES - City Worldwide Search */}
         {/* ═══════════════════════════════════════════════════════════════════════ */}
