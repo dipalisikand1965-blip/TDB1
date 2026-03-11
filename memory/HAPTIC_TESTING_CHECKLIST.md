@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://golden-pillar-hub.preview.emergentagent.com/mira-demo**
+**https://ai-experience-unify.preview.emergentagent.com/mira-demo**
 
 ---
 

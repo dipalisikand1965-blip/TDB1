@@ -13,7 +13,7 @@ import requests
 import os
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://golden-pillar-hub.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://ai-experience-unify.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 MEMBER_EMAIL = "dipali@clubconcierge.in"

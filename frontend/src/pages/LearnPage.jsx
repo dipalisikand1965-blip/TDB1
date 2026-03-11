@@ -707,6 +707,13 @@ const LearnPage = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <PersonalizedPicks pillar="learn" maxProducts={6} />
       </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          MIRA ADVISOR - Training Mentor AI Assistant
+          ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="max-w-2xl mx-auto px-4 mb-8">
+        <MiraAdvisorCard pillar="learn" activePet={activePet} />
+      </div>
       
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* SOUL MADE PRODUCTS - Training/Learn products with breed artwork */}
