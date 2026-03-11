@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://learn-hub-popup.preview.emergentagent.com
+https://ai-watercolor.preview.emergentagent.com
 
 ---
 
