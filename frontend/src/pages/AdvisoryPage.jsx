@@ -444,46 +444,25 @@ const AdvisoryPage = () => {
     }
   };
 
-  // Ask Advisory AI
-  const handleAskAdvisory = async () => {
+  // Ask Advisory AI - Opens Mira with the query
+  const handleAskAdvisory = () => {
     if (!advisoryQuery.trim()) return;
     
-    setAiLoading(true);
-    setShowAiResponse(true);
-    
-    try {
-      const response = await fetch(`${API_URL}/api/advisory/ask-advisory`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        },
-        body: JSON.stringify({
-          question: advisoryQuery,
-          pet_id: activePet?.id,
-          pet_name: activePet?.name,
-          pet_breed: activePet?.breed,
-          pet_age: activePet?.age_years,
-          context: 'advisory'
-        })
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setAiResponse(data.answer || 'Let me connect you with our Concierge for personalized advice.');
-        
-        // Store related products for display
-        if (data.related_products?.length > 0) {
-          setProducts(prev => [...data.related_products, ...prev.filter(p => !data.related_products.find(rp => rp.id === p.id))]);
-        }
-      } else {
-        setAiResponse('Our Concierge® team is ready to help you with this. Tap below to chat!');
+    // Open Mira with the advisory query pre-filled
+    window.dispatchEvent(new CustomEvent('openMiraAI', {
+      detail: {
+        message: advisoryQuery,
+        initialQuery: advisoryQuery,
+        context: 'advisory',
+        pillar: 'advisory',
+        pet_name: activePet?.name,
+        pet_breed: activePet?.breed
       }
-    } catch (error) {
-      setAiResponse('Our Concierge® team is ready to help you with this. Tap below to chat!');
-    } finally {
-      setAiLoading(false);
-    }
+    }));
+    
+    // Clear the input
+    setAdvisoryQuery('');
+    setShowAiResponse(false);
   };
 
   // State for concierge modal

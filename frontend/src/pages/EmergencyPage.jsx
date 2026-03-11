@@ -306,44 +306,26 @@ const EmergencyPage = () => {
     window.open('https://wa.me/918971702582?text=Hi, I need emergency assistance for my pet', '_blank');
   };
 
-  // AI Emergency Triage
-  const handleEmergencyTriage = async () => {
+  // AI Emergency Triage - Opens Mira with the query
+  const handleEmergencyTriage = () => {
     if (!triageQuery.trim()) return;
     
-    setTriageLoading(true);
-    setShowTriageResponse(true);
-    
-    try {
-      const petContext = activePet 
-        ? `Pet: ${activePet.name}, ${activePet.breed || 'Unknown breed'}, ${activePet.age || 'age unknown'}. `
-        : '';
-      
-      const response = await fetch(`${API_URL}/api/mira/ask`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          question: triageQuery,
-          context: `${petContext}EMERGENCY TRIAGE: This is an urgent pet emergency assessment. Be concise, direct, and helpful. Provide:
-1. SEVERITY (Critical/Urgent/Moderate/Low)
-2. IMMEDIATE ACTIONS (what to do right now)
-3. WHEN TO SEEK VET (clinic vs wait)
-4. WARNING SIGNS to watch for
-
-Keep response under 200 words. Be reassuring but factual.`
-        })
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setTriageResponse(data.response || data.answer || 'Unable to assess. Please call emergency hotline.');
-      } else {
-        setTriageResponse('Unable to connect. Please call the emergency hotline immediately for urgent situations.');
+    // Open Mira with emergency context pre-filled
+    window.dispatchEvent(new CustomEvent('openMiraAI', {
+      detail: {
+        message: triageQuery,
+        initialQuery: triageQuery,
+        context: 'emergency_triage',
+        pillar: 'emergency',
+        pet_name: activePet?.name,
+        pet_breed: activePet?.breed,
+        urgent: true
       }
-    } catch (error) {
-      setTriageResponse('Connection error. For urgent emergencies, please call the 24/7 hotline directly.');
-    } finally {
-      setTriageLoading(false);
-    }
+    }));
+    
+    // Clear the input
+    setTriageQuery('');
+    setShowTriageResponse(false);
   };
 
   const featuredPartners = partners.filter(p => p.is_featured);
