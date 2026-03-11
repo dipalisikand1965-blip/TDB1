@@ -92,6 +92,7 @@ const LearnPage = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const [selectedTopic, setSelectedTopic] = useState(null);
+  const [expandedLearnTip, setExpandedLearnTip] = useState(null);
   
   // Use global pet context
   const { currentPet } = usePillarContext();
@@ -501,7 +502,7 @@ const LearnPage = () => {
       {/* Old sections removed - using new 12 Topic Boxes above */}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* LEARN FOR MY DOG - Personalized Content (matches mockup) */}
+      {/* LEARN FOR MY DOG - Personalized Content with real inline advice */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {(activePet || userPets?.[0]) && (() => {
         const pet = activePet || userPets?.[0];
@@ -510,22 +511,21 @@ const LearnPage = () => {
         const isSenior = pet?.age_months > 84;
         const isPuppy = pet?.age_months < 12;
         
-        // Generate personalized tips based on pet profile
         const personalizedTips = isSenior ? [
-          { icon: GraduationCap, color: 'text-blue-600 bg-blue-100', label: `Training tips for senior ${breed || 'dogs'}` },
-          { icon: Sparkles, color: 'text-amber-600 bg-amber-100', label: 'Gentle grooming guide' },
-          { icon: Heart, color: 'text-rose-600 bg-rose-100', label: 'Senior nutrition basics' },
-          { icon: Activity, color: 'text-teal-600 bg-teal-100', label: 'Low-impact exercise recommendations' }
+          { icon: GraduationCap, color: 'text-blue-600 bg-blue-100', label: `Training tips for senior ${breed || 'dogs'}`, advice: `Senior ${breed || 'dogs'} respond best to short, positive sessions. Focus on mental stimulation over physical — puzzle feeders, nose work, and gentle obedience refreshers. Avoid jumping or high-impact activities. Use extra-soft treats and be patient with slower responses.` },
+          { icon: Sparkles, color: 'text-amber-600 bg-amber-100', label: 'Gentle grooming guide', advice: `Seniors need extra-gentle grooming. Use soft-bristle brushes and warm water baths. Check for lumps, skin changes, or sore spots during every session. Keep nails short to prevent slipping. Massage while brushing — it helps circulation and comfort.` },
+          { icon: Heart, color: 'text-rose-600 bg-rose-100', label: 'Senior nutrition basics', advice: `Senior dogs need fewer calories but higher quality protein. Consider joint supplements (glucosamine, fish oil). Feed 2 smaller meals instead of 1 large one. Watch for weight changes — even 500g matters. Warm food slightly to enhance aroma for fussy eaters.` },
+          { icon: Activity, color: 'text-teal-600 bg-teal-100', label: 'Low-impact exercise', advice: `Two short walks (15-20 min each) are better than one long walk. Swimming is excellent low-impact exercise. Sniff walks provide mental enrichment without strain. Avoid extreme heat or cold. Watch for limping, panting, or reluctance — these signal it's time to rest.` }
         ] : isPuppy ? [
-          { icon: GraduationCap, color: 'text-blue-600 bg-blue-100', label: `Puppy training for ${breed || 'your pup'}` },
-          { icon: Sparkles, color: 'text-amber-600 bg-amber-100', label: 'Puppy grooming basics' },
-          { icon: Heart, color: 'text-rose-600 bg-rose-100', label: 'Puppy nutrition guide' },
-          { icon: Activity, color: 'text-teal-600 bg-teal-100', label: 'Play and exercise for puppies' }
+          { icon: GraduationCap, color: 'text-blue-600 bg-blue-100', label: `Puppy training for ${breed || 'your pup'}`, advice: `Start with name recognition, sit, and come. Keep sessions under 5 minutes — puppies have short attention spans. Use high-value tiny treats. Always end on a positive note. Socialization window closes at 14 weeks — expose to different sounds, surfaces, and gentle people.` },
+          { icon: Sparkles, color: 'text-amber-600 bg-amber-100', label: 'Puppy grooming basics', advice: `Start handling paws, ears, and mouth gently from day one — this makes future grooming easy. First bath at 8-10 weeks with puppy shampoo. Brush daily for 2 minutes. Make every grooming touch a positive experience with treats. Introduce nail clipping gradually.` },
+          { icon: Heart, color: 'text-rose-600 bg-rose-100', label: 'Puppy nutrition guide', advice: `Feed 3-4 small meals daily until 3 months, then 3 meals until 6 months, then 2 meals. Use puppy-specific food (higher protein and fat). Don't free-feed — scheduled meals help with toilet training. Fresh water always available. Avoid table scraps — some human foods are toxic.` },
+          { icon: Activity, color: 'text-teal-600 bg-teal-100', label: 'Play and exercise', advice: `Rule of thumb: 5 minutes of exercise per month of age, twice daily. A 3-month puppy gets 15 minutes. Focus on play, not forced walks. Tug, fetch, and puzzle toys build bonds. Avoid stairs, jumping, or long walks until growth plates close (12-18 months for most breeds).` }
         ] : [
-          { icon: GraduationCap, color: 'text-blue-600 bg-blue-100', label: `Training tips for ${breed || 'your dog'}` },
-          { icon: Sparkles, color: 'text-amber-600 bg-amber-100', label: 'Grooming guide' },
-          { icon: Heart, color: 'text-rose-600 bg-rose-100', label: 'Nutrition basics' },
-          { icon: Activity, color: 'text-teal-600 bg-teal-100', label: 'Exercise recommendations' }
+          { icon: GraduationCap, color: 'text-blue-600 bg-blue-100', label: `Training tips for ${breed || 'your dog'}`, advice: `Consistency is everything. Use the same commands, same hand signals. Practice in different locations to generalize learning. ${breed ? `${breed}s are typically intelligent and respond well to positive reinforcement.` : 'Every dog learns at their own pace.'} Keep sessions fun and reward-based. Training is bonding time, not boot camp.` },
+          { icon: Sparkles, color: 'text-amber-600 bg-amber-100', label: 'Grooming guide', advice: `Brush ${breed ? `your ${breed}` : 'your dog'} 2-3 times weekly minimum. Check ears weekly for redness or odor. Trim nails every 2-4 weeks. Bath every 4-8 weeks unless dirty. Brush teeth 3 times weekly with dog toothpaste. Regular grooming helps you spot health issues early.` },
+          { icon: Heart, color: 'text-rose-600 bg-rose-100', label: 'Nutrition basics', advice: `Feed a balanced diet appropriate for ${breed ? `${breed}s` : 'your dog\'s'} age and size. Adults need 2 meals per day. Measure portions — don't free-feed. Treats should be max 10% of daily calories. Good treat options: carrots, apple slices (no seeds), boiled chicken. Always have fresh water available.` },
+          { icon: Activity, color: 'text-teal-600 bg-teal-100', label: 'Exercise recommendations', advice: `${breed ? `${breed}s typically need` : 'Most dogs need'} 30-60 minutes of exercise daily. Mix walks with play and mental stimulation. Sniff walks are great for mental enrichment. Puzzle feeders, training sessions, and nose work count as exercise too. Watch for signs of fatigue — heavy panting, lagging behind, lying down.` }
         ];
         
         return (
@@ -533,45 +533,48 @@ const LearnPage = () => {
             <div className="max-w-6xl mx-auto px-4">
               <Card className="p-6 md:p-8 bg-white/95 backdrop-blur rounded-3xl border-0 shadow-xl overflow-hidden">
                 <div className="flex flex-col md:flex-row gap-6 items-start">
-                  {/* Left: Pet Info & Tips */}
                   <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-1" data-testid="learn-for-pet-heading">
                       Learn for {petName}
                     </h2>
                     <p className="text-gray-500 text-sm mb-6">
-                      Tips and advice picked just for your {breed || 'Indie'}
+                      Advice picked just for your {breed || 'Indie'} — tap to read
                     </p>
                     
-                    {/* Personalized Tips - Clean list style */}
                     <div className="space-y-3">
                       {personalizedTips.map((tip, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => {
-                            window.dispatchEvent(new CustomEvent('openMiraAI', {
-                              detail: {
-                                message: `Tell me about ${tip.label} for ${petName}`,
-                                context: 'learn',
-                                pillar: 'learn',
-                                pet_name: petName,
-                                pet_breed: breed
-                              }
-                            }));
-                          }}
-                          className="w-full flex items-center gap-4 p-4 bg-gray-50 hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 rounded-2xl transition-all text-left group"
-                          data-testid={`learn-for-pet-tip-${idx}`}
-                        >
-                          <span className={`w-12 h-12 rounded-xl flex items-center justify-center ${tip.color} transition-transform group-hover:scale-110`}>
-                            <tip.icon className="w-5 h-5" />
-                          </span>
-                          <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{tip.label}</span>
-                          <ChevronRight className="w-4 h-4 text-gray-300 ml-auto group-hover:text-teal-500 transition-colors" />
-                        </button>
+                        <div key={idx}>
+                          <button
+                            onClick={() => setExpandedLearnTip(expandedLearnTip === idx ? null : idx)}
+                            className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all text-left group ${
+                              expandedLearnTip === idx 
+                                ? 'bg-gradient-to-r from-pink-50 to-purple-50 shadow-sm' 
+                                : 'bg-gray-50 hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50'
+                            }`}
+                            data-testid={`learn-for-pet-tip-${idx}`}
+                          >
+                            <span className={`w-12 h-12 rounded-xl flex items-center justify-center ${tip.color} transition-transform group-hover:scale-110`}>
+                              <tip.icon className="w-5 h-5" />
+                            </span>
+                            <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 flex-1">{tip.label}</span>
+                            <ChevronRight className={`w-4 h-4 text-gray-300 transition-transform ${expandedLearnTip === idx ? 'rotate-90 text-teal-500' : 'group-hover:text-teal-500'}`} />
+                          </button>
+                          {expandedLearnTip === idx && (
+                            <div className="mt-2 ml-4 p-4 bg-gradient-to-br from-teal-50 to-blue-50 rounded-xl border border-teal-100 animate-in slide-in-from-top-2">
+                              <div className="flex items-start gap-2">
+                                <Sparkles className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <p className="text-xs font-medium text-teal-700 mb-1">Mira's Advice for {petName}</p>
+                                  <p className="text-sm text-gray-700 leading-relaxed">{tip.advice}</p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       ))}
                     </div>
                   </div>
                   
-                  {/* Right: Pet Illustration - Watercolor style */}
                   <div className="w-full md:w-72 flex-shrink-0">
                     <div className="relative">
                       <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200 rounded-full blur-3xl opacity-40" />
@@ -608,37 +611,37 @@ const LearnPage = () => {
             {[
               { 
                 title: 'New Puppy Path', 
-                icon: '🐶', 
+                topicSlug: 'puppy-basics',
                 steps: ['First week at home', 'Toilet training', 'Teething', 'Sleep routine', 'Socialization'],
                 color: 'pink'
               },
               { 
                 title: 'New Adoption Path', 
-                icon: '🏠', 
+                topicSlug: 'rescue-indie-care',
                 steps: ['Decompression', 'Trust building', 'First routine', 'Home boundaries', 'Emotional settling'],
                 color: 'green'
               },
               { 
                 title: 'Senior Dog Path', 
-                icon: '🦮', 
+                topicSlug: 'senior-dog-care',
                 steps: ['Mobility support', 'Comfort needs', 'Diet adjustments', 'Rest & sleep', 'When to seek help'],
                 color: 'purple'
               },
               { 
                 title: 'Travel Path', 
-                icon: '✈️', 
+                topicSlug: 'travel-with-dogs',
                 steps: ['Road trips', 'Crates & carriers', 'Hydration', 'Travel anxiety', 'What to pack'],
                 color: 'blue'
               },
               { 
                 title: 'Grooming Path', 
-                icon: '✨', 
+                topicSlug: 'grooming',
                 steps: ['Coat type guide', 'Brushing basics', 'Bath routine', 'Ears & eyes', 'Nail care'],
                 color: 'amber'
               },
               { 
                 title: 'Behavior Path', 
-                icon: '🧠', 
+                topicSlug: 'behavior',
                 steps: ['Chewing', 'Barking', 'Pulling', 'Separation anxiety', 'Enrichment'],
                 color: 'indigo'
               }
@@ -646,11 +649,13 @@ const LearnPage = () => {
               <Card 
                 key={idx}
                 className="p-5 cursor-pointer hover:shadow-lg transition-all group"
-                onClick={() => setShowRequestModal(true)}
+                onClick={() => setSelectedTopic(path.topicSlug)}
                 data-testid={`guided-path-${idx}`}
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="text-2xl">{path.icon}</span>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-${path.color}-100`}>
+                    <GraduationCap className={`w-5 h-5 text-${path.color}-600`} />
+                  </div>
                   <h3 className="font-semibold text-gray-900 text-sm sm:text-base">{path.title}</h3>
                 </div>
                 <ul className="space-y-1.5">
