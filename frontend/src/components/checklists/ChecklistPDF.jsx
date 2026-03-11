@@ -5,6 +5,7 @@
  * Styled like Pet Wrapped with soul personalization
  * 
  * Created: March 12, 2026
+ * Updated: March 12, 2026 - Fixed font loading for mobile compatibility
  */
 
 import React from 'react';
@@ -14,30 +15,20 @@ import {
   Text, 
   View, 
   StyleSheet, 
-  Image,
-  Font
+  Image
 } from '@react-pdf/renderer';
 
-// Register fonts for better typography
-Font.register({
-  family: 'Inter',
-  fonts: [
-    { src: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hjp-Ek-_EeA.woff2', fontWeight: 400 },
-    { src: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuI6fAZ9hjp-Ek-_EeA.woff2', fontWeight: 600 },
-    { src: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuFuYAZ9hjp-Ek-_EeA.woff2', fontWeight: 700 },
-  ]
-});
-
-// Styles for the PDF document
+// Styles for the PDF document - Using Helvetica (built-in, no external fonts needed)
 const styles = StyleSheet.create({
   page: {
     padding: 40,
     backgroundColor: '#ffffff',
-    fontFamily: 'Inter',
+    fontFamily: 'Helvetica',
   },
   header: {
     marginBottom: 20,
-    borderBottom: '2 solid #9333ea',
+    borderBottom: 2,
+    borderBottomColor: '#9333ea',
     paddingBottom: 15,
   },
   logo: {
@@ -47,7 +38,7 @@ const styles = StyleSheet.create({
   },
   logoText: {
     fontSize: 14,
-    fontWeight: 700,
+    fontWeight: 'bold',
     color: '#9333ea',
     letterSpacing: 0.5,
   },
@@ -64,7 +55,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    fontWeight: 700,
+    fontWeight: 'bold',
     color: '#1f2937',
     marginBottom: 4,
   },
@@ -79,11 +70,11 @@ const styles = StyleSheet.create({
     padding: 12,
     backgroundColor: '#faf5ff',
     borderRadius: 6,
-    borderLeft: '4 solid #9333ea',
+    borderLeftWidth: 4, borderLeftColor: '#9333ea',
   },
   petName: {
     fontSize: 14,
-    fontWeight: 600,
+    fontWeight: 'bold',
     color: '#7c3aed',
   },
   petDetails: {
@@ -97,7 +88,7 @@ const styles = StyleSheet.create({
   soulScoreText: {
     fontSize: 10,
     color: '#9333ea',
-    fontWeight: 600,
+    fontWeight: 'bold',
   },
   section: {
     marginBottom: 15,
@@ -107,7 +98,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
     paddingBottom: 4,
-    borderBottom: '1 solid #e5e7eb',
+    borderBottomWidth: 1, borderBottomColor: '#e5e7eb',
   },
   sectionIcon: {
     fontSize: 14,
@@ -115,7 +106,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 13,
-    fontWeight: 600,
+    fontWeight: 'bold',
     color: '#374151',
   },
   checklistItem: {
@@ -128,7 +119,7 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 2,
-    border: '1.5 solid #9ca3af',
+    borderWidth: 1.5, borderColor: '#9ca3af',
     marginRight: 10,
     marginTop: 2,
   },
@@ -148,7 +139,7 @@ const styles = StyleSheet.create({
   personalizedText: {
     fontSize: 8,
     color: '#7c3aed',
-    fontWeight: 600,
+    fontWeight: 'bold',
   },
   footer: {
     position: 'absolute',
@@ -159,7 +150,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 10,
-    borderTop: '1 solid #e5e7eb',
+    borderTopWidth: 1, borderTopColor: '#e5e7eb',
   },
   footerText: {
     fontSize: 8,
@@ -168,7 +159,7 @@ const styles = StyleSheet.create({
   footerBrand: {
     fontSize: 8,
     color: '#9333ea',
-    fontWeight: 600,
+    fontWeight: 'bold',
   },
   inputLine: {
     borderBottom: '1 dotted #9ca3af',
@@ -181,7 +172,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 6,
     marginTop: 10,
-    borderLeft: '3 solid #f59e0b',
+    borderLeftWidth: 3, borderLeftColor: '#f59e0b',
   },
   noteText: {
     fontSize: 9,
@@ -189,7 +180,7 @@ const styles = StyleSheet.create({
   },
   noteLabel: {
     fontSize: 9,
-    fontWeight: 600,
+    fontWeight: 'bold',
     color: '#b45309',
     marginBottom: 3,
   },
@@ -203,7 +194,7 @@ const cardStyles = StyleSheet.create({
     fontFamily: 'Inter',
   },
   card: {
-    border: '2 solid #ef4444',
+    borderWidth: 2, borderColor: '#ef4444',
     borderRadius: 10,
     padding: 15,
     backgroundColor: '#fef2f2',
@@ -214,16 +205,16 @@ const cardStyles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
     paddingBottom: 8,
-    borderBottom: '1 solid #fecaca',
+    borderBottomWidth: 1, borderBottomColor: '#fecaca',
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: 700,
+    fontWeight: 'bold',
     color: '#dc2626',
   },
   cardPetName: {
     fontSize: 12,
-    fontWeight: 600,
+    fontWeight: 'bold',
     color: '#1f2937',
   },
   cardSection: {
@@ -231,7 +222,7 @@ const cardStyles = StyleSheet.create({
   },
   cardSectionTitle: {
     fontSize: 10,
-    fontWeight: 600,
+    fontWeight: 'bold',
     color: '#991b1b',
     marginBottom: 4,
     textTransform: 'uppercase',
@@ -242,7 +233,7 @@ const cardStyles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 4,
     paddingBottom: 3,
-    borderBottom: '0.5 dotted #fecaca',
+    borderBottomWidth: 0.5, borderBottomColor: '#fecaca', borderStyle: 'dotted',
   },
   cardLabel: {
     fontSize: 9,
@@ -250,7 +241,7 @@ const cardStyles = StyleSheet.create({
   },
   cardValue: {
     fontSize: 9,
-    fontWeight: 600,
+    fontWeight: 'bold',
     color: '#1f2937',
     textAlign: 'right',
     maxWidth: '60%',
@@ -265,7 +256,7 @@ const cardStyles = StyleSheet.create({
     fontSize: 8,
     color: '#991b1b',
     textAlign: 'center',
-    fontWeight: 600,
+    fontWeight: 'bold',
   },
 });
 
