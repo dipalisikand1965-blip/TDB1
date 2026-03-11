@@ -595,8 +595,17 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
           <DialogHeader className="mb-4">
             <DialogTitle className="flex items-center gap-2 text-lg">
               <MessageCircle className="w-5 h-5 text-rose-500" />
-              Request Concierge® Assistance
+              {selectedPet ? (
+                <span>Request for <span className="text-rose-600">{selectedPet.name}</span></span>
+              ) : (
+                <span>Request Concierge® Assistance</span>
+              )}
             </DialogTitle>
+            {selectedPet && (
+              <p className="text-sm text-gray-500 mt-1">
+                Getting help for your {selectedPet.breed || 'pet'}
+              </p>
+            )}
           </DialogHeader>
           
           {selectedService && (
@@ -630,15 +639,30 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
                             : 'hover:bg-gray-50'
                         }`}
                         onClick={() => setSelectedPet(pet)}
+                        data-testid={`pet-select-${pet.name}`}
                       >
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full overflow-hidden bg-rose-100 flex items-center justify-center flex-shrink-0">
-                            <PawPrint className="w-5 h-5 text-rose-400" />
+                            {pet.photo_url || pet.cloudinary_image_url ? (
+                              <img 
+                                src={pet.photo_url || pet.cloudinary_image_url} 
+                                alt={pet.name}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                  e.target.nextSibling.style.display = 'block';
+                                }}
+                              />
+                            ) : null}
+                            <PawPrint className={`w-5 h-5 text-rose-400 ${pet.photo_url || pet.cloudinary_image_url ? 'hidden' : ''}`} />
                           </div>
                           <div>
                             <p className="font-semibold text-gray-900 text-sm">{pet.name}</p>
                             <p className="text-xs text-gray-500">{pet.breed}</p>
                           </div>
+                          {(selectedPet?.id === pet.id || selectedPet?._id === pet._id) && (
+                            <Check className="w-4 h-4 text-rose-500 ml-auto" />
+                          )}
                         </div>
                       </Card>
                     ))}
