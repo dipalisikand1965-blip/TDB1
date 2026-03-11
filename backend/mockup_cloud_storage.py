@@ -426,3 +426,195 @@ async def sync_mockups_to_production(production_url: str):
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Failed to connect to production: {str(e)}")
 
+
+# ===== AI PRODUCT IMAGE MANAGEMENT =====
+
+async def upload_url_to_cloudinary(image_url: str, product_id: str, category: str = "products") -> Optional[str]:
+    """
+    Upload an image from URL to Cloudinary and return the new URL.
+    
+    Args:
+        image_url: The source image URL (e.g., from AI generation)
+        product_id: Unique identifier for the product
+        category: Category folder for organization
+        
+    Returns:
+        Cloudinary URL or None if upload fails
+    """
+    if not is_cloudinary_configured():
+        logger.warning("Cloudinary not configured, skipping upload")
+        return None
+    
+    try:
+        # Clean category for folder use
+        clean_category = category.lower().replace(" ", "_").replace("-", "_")[:30] if category else "general"
+        
+        # Create a unique public_id
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+        public_id = f"doggy/products/{clean_category}/{product_id}_{timestamp}"
+        
+        # Upload to Cloudinary from URL
+        result = cloudinary.uploader.upload(
+            image_url,
+            public_id=public_id,
+            overwrite=True,
+            resource_type="image",
+            format="webp",
+            quality="auto:good",
+            transformation=[
+                {"width": 1000, "height": 1000, "crop": "limit"},
+                {"quality": "auto:good"},
+                {"fetch_format": "auto"}
+            ]
+        )
+        
+        logger.info(f"Uploaded AI image to Cloudinary: {result.get('secure_url')}")
+        return result.get("secure_url")
+        
+    except Exception as e:
+        logger.error(f"Failed to upload URL to Cloudinary: {str(e)}")
+        return None
+
+
+@mockup_cloud_router.post("/upload-ai-image")
+async def upload_ai_image_to_cloudinary(
+    image_url: str,
+    product_id: str,
+    category: str = "products"
+):
+    """
+    Upload an AI-generated image to Cloudinary and optionally update the product.
+    
+    Args:
+        image_url: Source URL of the AI-generated image
+        product_id: Product ID to associate with
+        category: Category for folder organization
+    """
+    if not is_cloudinary_configured():
+        raise HTTPException(status_code=400, detail="Cloudinary not configured")
+    
+    # Upload to Cloudinary
+    cloudinary_url = await upload_url_to_cloudinary(image_url, product_id, category)
+    
+    if not cloudinary_url:
+        raise HTTPException(status_code=500, detail="Failed to upload to Cloudinary")
+    
+    # Update product in database
+    if db is not None:
+        result = await db.products.update_one(
+            {"id": product_id},
+            {
+                "$set": {
+                    "image_url": cloudinary_url,
+                    "image": cloudinary_url,
+                    "images": [cloudinary_url],
+                    "ai_generated_image": True,
+                    "image_updated_at": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        return {
+            "success": True,
+            "cloudinary_url": cloudinary_url,
+            "product_updated": result.modified_count > 0
+        }
+    
+    return {
+        "success": True,
+        "cloudinary_url": cloudinary_url,
+        "product_updated": False
+    }
+
+
+@mockup_cloud_router.post("/bulk-upload-ai-images")
+async def bulk_upload_ai_images(data: dict):
+    """
+    Bulk upload AI-generated images to Cloudinary and update products.
+    
+    Expected data format:
+    {
+        "images": [
+            {"product_id": "xxx", "image_url": "https://...", "category": "grooming"},
+            ...
+        ]
+    }
+    """
+    if not is_cloudinary_configured():
+        raise HTTPException(status_code=400, detail="Cloudinary not configured")
+    
+    images = data.get("images", [])
+    results = {"success": 0, "failed": 0, "details": []}
+    
+    for item in images:
+        product_id = item.get("product_id")
+        image_url = item.get("image_url")
+        category = item.get("category", "products")
+        
+        if not product_id or not image_url:
+            results["failed"] += 1
+            results["details"].append({"product_id": product_id, "error": "Missing product_id or image_url"})
+            continue
+        
+        try:
+            cloudinary_url = await upload_url_to_cloudinary(image_url, product_id, category)
+            
+            if cloudinary_url and db is not None:
+                await db.products.update_one(
+                    {"id": product_id},
+                    {
+                        "$set": {
+                            "image_url": cloudinary_url,
+                            "image": cloudinary_url,
+                            "images": [cloudinary_url],
+                            "ai_generated_image": True,
+                            "image_updated_at": datetime.now(timezone.utc).isoformat()
+                        }
+                    }
+                )
+                results["success"] += 1
+                results["details"].append({"product_id": product_id, "cloudinary_url": cloudinary_url})
+            else:
+                results["failed"] += 1
+                results["details"].append({"product_id": product_id, "error": "Upload failed"})
+                
+        except Exception as e:
+            results["failed"] += 1
+            results["details"].append({"product_id": product_id, "error": str(e)})
+    
+    return results
+
+
+@mockup_cloud_router.get("/ai-image-stats")
+async def get_ai_image_stats():
+    """Get statistics about AI-generated product images"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    total_products = await db.products.count_documents({})
+    ai_generated = await db.products.count_documents({"ai_generated_image": True})
+    
+    # Products with any image
+    with_images = await db.products.count_documents({
+        "$or": [
+            {"image_url": {"$exists": True, "$ne": None, "$ne": ""}},
+            {"image": {"$exists": True, "$ne": None, "$ne": ""}},
+            {"images.0": {"$exists": True}}
+        ]
+    })
+    
+    # Cloudinary images
+    cloudinary_images = await db.products.count_documents({
+        "image_url": {"$regex": "^https://res.cloudinary.com"}
+    })
+    
+    return {
+        "total_products": total_products,
+        "with_images": with_images,
+        "missing_images": total_products - with_images,
+        "ai_generated": ai_generated,
+        "cloudinary_hosted": cloudinary_images,
+        "coverage_percentage": round((with_images / total_products * 100) if total_products > 0 else 0, 1)
+    }
+
+

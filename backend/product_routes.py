@@ -606,3 +606,155 @@ async def get_product_reviews(product_id: str):
 
 # NOTE: POST /api/reviews endpoint moved to review_routes.py (Phase 3 refactoring)
 # The review_routes.py version includes admin notifications and user association
+
+
+# ===== ADMIN IMAGE MANAGEMENT ENDPOINTS =====
+
+class ProductImageUpdate(BaseModel):
+    product_id: str
+    image_url: str
+
+class BulkImageUpdate(BaseModel):
+    updates: List[ProductImageUpdate]
+
+def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
+    """Verify admin credentials"""
+    if not (secrets.compare_digest(credentials.username, ADMIN_USERNAME) and 
+            secrets.compare_digest(credentials.password, ADMIN_PASSWORD)):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return credentials.username
+
+
+@product_router.get("/admin/products/missing-images")
+async def get_products_missing_images(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+    admin: str = Depends(verify_admin)
+):
+    """Get products with missing or placeholder images"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    # Find products where image is missing, empty, or placeholder
+    query = {
+        "$or": [
+            {"image_url": {"$exists": False}},
+            {"image_url": None},
+            {"image_url": ""},
+            {"image": {"$exists": False}},
+            {"image": None},
+            {"image": ""},
+            {"images": {"$size": 0}},
+            {"images": {"$exists": False}}
+        ]
+    }
+    
+    total = await db.products.count_documents(query)
+    products = await db.products.find(
+        query, 
+        {"_id": 0, "id": 1, "name": 1, "category": 1, "pillar": 1, "price": 1}
+    ).skip(skip).limit(limit).to_list(length=limit)
+    
+    return {
+        "total_missing": total,
+        "products": products,
+        "skip": skip,
+        "limit": limit
+    }
+
+
+@product_router.put("/admin/products/update-image")
+async def update_product_image(
+    data: ProductImageUpdate,
+    admin: str = Depends(verify_admin)
+):
+    """Update a single product's image"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    result = await db.products.update_one(
+        {"id": data.product_id},
+        {
+            "$set": {
+                "image_url": data.image_url,
+                "image": data.image_url,
+                "images": [data.image_url],
+                "ai_generated_image": True,
+                "image_updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"success": True, "product_id": data.product_id, "image_url": data.image_url}
+
+
+@product_router.put("/admin/products/bulk-update-images")
+async def bulk_update_product_images(
+    data: BulkImageUpdate,
+    admin: str = Depends(verify_admin)
+):
+    """Bulk update multiple products' images"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    results = {"updated": 0, "failed": [], "success": []}
+    
+    for update in data.updates:
+        try:
+            result = await db.products.update_one(
+                {"id": update.product_id},
+                {
+                    "$set": {
+                        "image_url": update.image_url,
+                        "image": update.image_url,
+                        "images": [update.image_url],
+                        "ai_generated_image": True,
+                        "image_updated_at": datetime.now(timezone.utc).isoformat()
+                    }
+                }
+            )
+            if result.modified_count > 0:
+                results["updated"] += 1
+                results["success"].append(update.product_id)
+            else:
+                results["failed"].append({"id": update.product_id, "reason": "Not found"})
+        except Exception as e:
+            results["failed"].append({"id": update.product_id, "reason": str(e)})
+    
+    return results
+
+
+@product_router.get("/admin/products/image-stats")
+async def get_product_image_stats(admin: str = Depends(verify_admin)):
+    """Get statistics about product images"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    total_products = await db.products.count_documents({})
+    
+    # Products with valid images
+    with_images = await db.products.count_documents({
+        "$and": [
+            {"$or": [
+                {"image_url": {"$exists": True, "$ne": None, "$ne": ""}},
+                {"image": {"$exists": True, "$ne": None, "$ne": ""}},
+                {"images.0": {"$exists": True}}
+            ]}
+        ]
+    })
+    
+    # AI generated images
+    ai_generated = await db.products.count_documents({"ai_generated_image": True})
+    
+    missing_images = total_products - with_images
+    
+    return {
+        "total_products": total_products,
+        "with_images": with_images,
+        "missing_images": missing_images,
+        "ai_generated_images": ai_generated,
+        "coverage_percentage": round((with_images / total_products * 100) if total_products > 0 else 0, 1)
+    }
