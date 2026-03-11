@@ -410,7 +410,7 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
                   <div className="mt-2 flex flex-wrap gap-1">
                     {selectedService.includes.slice(0, 3).map((item, idx) => (
                       <Badge key={idx} variant="outline" className="text-[10px] sm:text-xs bg-white px-1.5 py-0.5">
-                        <Check className="w-2 h-2 mr-0.5" /> {item}
+                        <Check className="w-2 h-2 mr-0.5" /> {typeof item === 'object' ? item.name : item}
                       </Badge>
                     ))}
                   </div>

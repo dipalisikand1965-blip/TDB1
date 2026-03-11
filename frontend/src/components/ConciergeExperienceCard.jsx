@@ -277,7 +277,7 @@ const ConciergeExperienceCard = ({
               {highlights.slice(0, 3).map((item, idx) => (
                 <div key={idx} className="flex items-start gap-2 text-xs text-gray-500">
                   <CheckCircle className="w-3.5 h-3.5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="line-clamp-1">{item}</span>
+                  <span className="line-clamp-1">{typeof item === 'object' ? item.name : item}</span>
                 </div>
               ))}
             </div>
