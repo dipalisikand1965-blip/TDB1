@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -13,96 +12,26 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
-import MiraAdvisorCard from '../components/MiraAdvisorCard';
 import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
-import { ChecklistDownloadButton } from '../components/checklists';
-import ProductCard from '../components/ProductCard';
 import PersonalizedPicks from '../components/PersonalizedPicks';
-import PillarPicksSection from '../components/PillarPicksSection';
-import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
-import SoulMadeCollection from '../components/SoulMadeCollection'; // ADDED: Soul Made Products
-import NearbyLearnServices from '../components/learn/NearbyLearnServices'; // ADDED: Near Me section
-import PetDailyRoutine from '../components/learn/PetDailyRoutine'; // ADDED: Daily Routine
-import SupportForPet from '../components/learn/SupportForPet'; // ADDED: Support Services
-import AskConciergeForPet from '../components/learn/AskConciergeForPet'; // ADDED: Concierge
-import LearnTopicModal from '../components/learn/LearnTopicModal'; // ADDED: Topic Hub Modal
-import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
-import ArchetypeProducts from '../components/ArchetypeProducts';
+import NearbyLearnServices from '../components/learn/NearbyLearnServices';
+import PetDailyRoutine from '../components/learn/PetDailyRoutine';
+import SupportForPet from '../components/learn/SupportForPet';
+import AskConciergeForPet from '../components/learn/AskConciergeForPet';
+import LearnTopicModal from '../components/learn/LearnTopicModal';
 import CuratedBundles from '../components/CuratedBundles';
-import { getSoulBasedReason } from '../utils/petSoulInference';
 import { getPetPhotoUrl } from '../utils/petAvatar';
-import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import { useNavigate } from 'react-router-dom';
 import {
-  GraduationCap, BookOpen, Brain, Star, Award, Trophy,
+  GraduationCap, Brain, Star, Award, Trophy,
   CheckCircle, ChevronRight, Sparkles, Loader2, Send,
-  ArrowRight, Play, ChevronDown, Target, Users, Calendar,
-  MapPin, Clock, PawPrint, Heart, Shield, Zap, ChevronLeft, Search,
+  ArrowRight, Target, Users,
+  MapPin, PawPrint, Heart, Shield, Zap, Search,
   Activity
 } from 'lucide-react';
-
-// Elevated Concierge® Learn Experiences
-const LEARN_EXPERIENCES = [
-  {
-    title: "Behavior Architect®",
-    description: "Beyond basic training — we understand your pet's unique psychology and connect you with specialists who address root causes, not just symptoms. For pulling, barking, anxiety, or aggression.",
-    icon: "🧠",
-    gradient: "from-blue-500 to-indigo-600",
-    badge: "Most Requested",
-    badgeColor: "bg-blue-600",
-    image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80",
-    highlights: [
-      "Behavioral assessment & diagnosis",
-      "Specialist matching by issue type",
-      "Progress tracking & adjustment",
-      "Home environment optimization"
-    ]
-  },
-  {
-    title: "Puppy Foundations Builder®",
-    description: "The first year matters most. We guide you through socialization windows, foundational training, and confidence building — ensuring your puppy grows into a well-adjusted companion.",
-    icon: "🐶",
-    gradient: "from-pink-500 to-rose-600",
-    badge: "Critical Period",
-    badgeColor: "bg-pink-600",
-    image: "https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=800&q=80",
-    highlights: [
-      "Age-appropriate milestone planning",
-      "Socialization scheduling",
-      "Vet & trainer coordination",
-      "Fear prevention protocols"
-    ]
-  },
-  {
-    title: "Advanced Skills Coach®",
-    description: "Ready to level up? From agility to therapy dog certification, we connect you with specialized trainers who take your pet from good to exceptional. Perfect for those who want more.",
-    icon: "🏆",
-    gradient: "from-amber-500 to-orange-600",
-    image: "https://images.unsplash.com/photo-1558929996-da64ba858215?w=800&q=80",
-    highlights: [
-      "Agility & sport training",
-      "Therapy dog preparation",
-      "Trick & performance training",
-      "Competition preparation"
-    ]
-  },
-  {
-    title: "Rescue Rehabilitation Partner®",
-    description: "Adopted a rescue with unknown history? We specialize in rehabilitation journeys — building trust, addressing trauma, and helping your new family member feel safe and loved.",
-    icon: "💚",
-    gradient: "from-green-500 to-teal-600",
-    image: "https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=800&q=80",
-    highlights: [
-      "Trauma-informed approach",
-      "Trust building protocols",
-      "Gradual exposure therapy",
-      "Long-term support planning"
-    ]
-  }
-];
 
 // Learn Type Configuration
 const LEARN_TYPES = {
@@ -136,11 +65,6 @@ const BEHAVIOR_ISSUES = [
   { value: 'resource_guarding', label: 'Resource Guarding' }
 ];
 
-const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80',
-  'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80'
-];
-
 const LearnPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
@@ -166,21 +90,14 @@ const LearnPage = () => {
   const [userPets, setUserPets] = useState([]);
   const [selectedPet, setSelectedPet] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [heroIndex, setHeroIndex] = useState(0);
-  
-  // Topic Hub Modal state
+
   const [selectedTopic, setSelectedTopic] = useState(null);
   
   // Use global pet context
   const { currentPet } = usePillarContext();
   const activePet = currentPet || selectedPet;
   
-  // YouTube Training Videos
-  const [youtubeVideos, setYoutubeVideos] = useState([]);
-  const [youtubeLoading, setYoutubeLoading] = useState(false);
-  const [videoTopic, setVideoTopic] = useState('basic_training');
-  
-  // Ask Mira - AI Learning Assistant
+  // Topic Hub Modal state
   const [askMiraQuestion, setAskMiraQuestion] = useState('');
   const [askMiraResponse, setAskMiraResponse] = useState(null);
   const [askMiraLoading, setAskMiraLoading] = useState(false);
@@ -204,13 +121,6 @@ const LearnPage = () => {
       fetchUserPets();
     }
   }, [user, token]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
 
   const fetchData = async () => {
     setLoading(true);
@@ -245,49 +155,10 @@ const LearnPage = () => {
         const data = await bundlesRes.json();
         setBundles(data.bundles || []);
       }
-      
-      // Fetch initial YouTube videos
-      fetchYouTubeVideos('basic_training');
     } catch (error) {
       console.error('Failed to fetch learn data:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Fetch YouTube training videos by topic
-  const fetchYouTubeVideos = async (topic = 'basic_training') => {
-    setYoutubeLoading(true);
-    try {
-      const response = await fetch(`${API_URL}/api/mira/youtube/by-topic?topic=${encodeURIComponent(topic)}&max_results=6`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success && data.videos) {
-          setYoutubeVideos(data.videos);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch YouTube videos:', error);
-    } finally {
-      setYoutubeLoading(false);
-    }
-  };
-
-  // Fetch breed-specific videos if pet is selected
-  const fetchBreedVideos = async (breed) => {
-    setYoutubeLoading(true);
-    try {
-      const response = await fetch(`${API_URL}/api/mira/youtube/by-breed?breed=${encodeURIComponent(breed)}&max_results=6`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success && data.videos) {
-          setYoutubeVideos(data.videos);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch breed videos:', error);
-    } finally {
-      setYoutubeLoading(false);
     }
   };
 
@@ -630,6 +501,96 @@ const LearnPage = () => {
       {/* Old sections removed - using new 12 Topic Boxes above */}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* LEARN FOR MY DOG - Personalized Content (matches mockup) */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {(activePet || userPets?.[0]) && (() => {
+        const pet = activePet || userPets?.[0];
+        const petName = pet?.name || 'Your Pet';
+        const breed = pet?.breed || '';
+        const isSenior = pet?.age_months > 84;
+        const isPuppy = pet?.age_months < 12;
+        
+        // Generate personalized tips based on pet profile
+        const personalizedTips = isSenior ? [
+          { icon: GraduationCap, color: 'text-blue-600 bg-blue-100', label: `Training tips for senior ${breed || 'dogs'}` },
+          { icon: Sparkles, color: 'text-amber-600 bg-amber-100', label: 'Gentle grooming guide' },
+          { icon: Heart, color: 'text-rose-600 bg-rose-100', label: 'Senior nutrition basics' },
+          { icon: Activity, color: 'text-teal-600 bg-teal-100', label: 'Low-impact exercise recommendations' }
+        ] : isPuppy ? [
+          { icon: GraduationCap, color: 'text-blue-600 bg-blue-100', label: `Puppy training for ${breed || 'your pup'}` },
+          { icon: Sparkles, color: 'text-amber-600 bg-amber-100', label: 'Puppy grooming basics' },
+          { icon: Heart, color: 'text-rose-600 bg-rose-100', label: 'Puppy nutrition guide' },
+          { icon: Activity, color: 'text-teal-600 bg-teal-100', label: 'Play and exercise for puppies' }
+        ] : [
+          { icon: GraduationCap, color: 'text-blue-600 bg-blue-100', label: `Training tips for ${breed || 'your dog'}` },
+          { icon: Sparkles, color: 'text-amber-600 bg-amber-100', label: 'Grooming guide' },
+          { icon: Heart, color: 'text-rose-600 bg-rose-100', label: 'Nutrition basics' },
+          { icon: Activity, color: 'text-teal-600 bg-teal-100', label: 'Exercise recommendations' }
+        ];
+        
+        return (
+          <div id="my-dog" className="py-12 bg-gradient-to-br from-pink-50/50 via-white to-purple-50/50">
+            <div className="max-w-6xl mx-auto px-4">
+              <Card className="p-6 md:p-8 bg-white/95 backdrop-blur rounded-3xl border-0 shadow-xl overflow-hidden">
+                <div className="flex flex-col md:flex-row gap-6 items-start">
+                  {/* Left: Pet Info & Tips */}
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                      Learn for {petName}
+                    </h2>
+                    <p className="text-gray-500 text-sm mb-6">
+                      Tips and advice picked just for your {breed || 'Indie'}
+                    </p>
+                    
+                    {/* Personalized Tips - Clean list style */}
+                    <div className="space-y-3">
+                      {personalizedTips.map((tip, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            window.dispatchEvent(new CustomEvent('openMiraAI', {
+                              detail: {
+                                message: `Tell me about ${tip.label} for ${petName}`,
+                                context: 'learn',
+                                pillar: 'learn',
+                                pet_name: petName,
+                                pet_breed: breed
+                              }
+                            }));
+                          }}
+                          className="w-full flex items-center gap-4 p-4 bg-gray-50 hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 rounded-2xl transition-all text-left group"
+                          data-testid={`learn-for-pet-tip-${idx}`}
+                        >
+                          <span className={`w-12 h-12 rounded-xl flex items-center justify-center ${tip.color} transition-transform group-hover:scale-110`}>
+                            <tip.icon className="w-5 h-5" />
+                          </span>
+                          <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{tip.label}</span>
+                          <ChevronRight className="w-4 h-4 text-gray-300 ml-auto group-hover:text-teal-500 transition-colors" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Right: Pet Illustration - Watercolor style */}
+                  <div className="w-full md:w-72 flex-shrink-0">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200 rounded-full blur-3xl opacity-40" />
+                      <img 
+                        src={getPetPhotoUrl(pet)}
+                        alt={petName}
+                        className="relative w-full aspect-square object-cover rounded-full border-4 border-white shadow-lg"
+                        style={{ filter: 'saturate(0.9) contrast(1.05)' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* GUIDED LEARNING PATHS */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <div id="guided-paths" className="py-12 bg-gray-50">
@@ -712,142 +673,6 @@ const LearnPage = () => {
           </div>
         </div>
       </div>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* LEARN FOR MY DOG - Personalized Content (matches mockup) */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {(activePet || userPets?.[0]) && (() => {
-        const pet = activePet || userPets?.[0];
-        const petName = pet?.name || 'Your Pet';
-        const breed = pet?.breed || '';
-        const isSenior = pet?.age_months > 84;
-        const isPuppy = pet?.age_months < 12;
-        
-        // Generate personalized tips based on pet profile
-        const personalizedTips = isSenior ? [
-          { icon: GraduationCap, color: 'text-blue-600 bg-blue-100', label: `Training tips for senior ${breed || 'dogs'}` },
-          { icon: Sparkles, color: 'text-amber-600 bg-amber-100', label: 'Gentle grooming guide' },
-          { icon: Heart, color: 'text-rose-600 bg-rose-100', label: 'Senior nutrition basics' },
-          { icon: Activity, color: 'text-teal-600 bg-teal-100', label: 'Low-impact exercise recommendations' }
-        ] : isPuppy ? [
-          { icon: GraduationCap, color: 'text-blue-600 bg-blue-100', label: `Puppy training for ${breed || 'your pup'}` },
-          { icon: Sparkles, color: 'text-amber-600 bg-amber-100', label: 'Puppy grooming basics' },
-          { icon: Heart, color: 'text-rose-600 bg-rose-100', label: 'Puppy nutrition guide' },
-          { icon: Activity, color: 'text-teal-600 bg-teal-100', label: 'Play and exercise for puppies' }
-        ] : [
-          { icon: GraduationCap, color: 'text-blue-600 bg-blue-100', label: `Training tips for ${breed || 'your dog'}` },
-          { icon: Sparkles, color: 'text-amber-600 bg-amber-100', label: 'Grooming guide' },
-          { icon: Heart, color: 'text-rose-600 bg-rose-100', label: 'Nutrition basics' },
-          { icon: Activity, color: 'text-teal-600 bg-teal-100', label: 'Exercise recommendations' }
-        ];
-        
-        return (
-          <div id="my-dog" className="py-12 bg-gradient-to-br from-pink-50/50 via-white to-purple-50/50">
-            <div className="max-w-6xl mx-auto px-4">
-              <Card className="p-6 md:p-8 bg-white/95 backdrop-blur rounded-3xl border-0 shadow-xl overflow-hidden">
-                <div className="flex flex-col md:flex-row gap-6 items-start">
-                  {/* Left: Pet Info & Tips */}
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                      Learn for {petName}
-                    </h2>
-                    <p className="text-gray-500 text-sm mb-6">
-                      Tips and advice picked just for your {breed || 'Indie'}
-                    </p>
-                    
-                    {/* Personalized Tips - Clean list style */}
-                    <div className="space-y-3">
-                      {personalizedTips.map((tip, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => {
-                            // Open Mira AI with this topic
-                            window.dispatchEvent(new CustomEvent('openMiraAI', {
-                              detail: {
-                                message: `Tell me about ${tip.label} for ${petName}`,
-                                context: 'learn',
-                                pillar: 'learn',
-                                pet_name: petName,
-                                pet_breed: breed
-                              }
-                            }));
-                          }}
-                          className="w-full flex items-center gap-4 p-4 bg-gray-50 hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 rounded-2xl transition-all text-left group"
-                        >
-                          <span className={`w-12 h-12 rounded-xl flex items-center justify-center ${tip.color} transition-transform group-hover:scale-110`}>
-                            <tip.icon className="w-5 h-5" />
-                          </span>
-                          <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{tip.label}</span>
-                          <ChevronRight className="w-4 h-4 text-gray-300 ml-auto group-hover:text-teal-500 transition-colors" />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Right: Pet Illustration - Watercolor style */}
-                  <div className="w-full md:w-72 flex-shrink-0">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200 rounded-full blur-3xl opacity-40" />
-                      <img 
-                        src={getPetPhotoUrl(pet)}
-                        alt={petName}
-                        className="relative w-full aspect-square object-cover rounded-full border-4 border-white shadow-lg"
-                        style={{ filter: 'saturate(0.9) contrast(1.05)' }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* WATCH VIDEOS - Let's Watch Some Videos */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {youtubeVideos.length > 0 && (
-        <div className="py-12 bg-white">
-          <div className="max-w-6xl mx-auto px-4">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Let's Watch Some Videos</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {youtubeVideos.slice(0, 3).map((video, idx) => (
-                <Card 
-                  key={idx}
-                  className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group"
-                  onClick={() => window.open(`https://youtube.com/watch?v=${video.videoId}`, '_blank')}
-                >
-                  <div className="relative aspect-video">
-                    <img 
-                      src={video.thumbnail}
-                      alt={video.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
-                    <div className="absolute bottom-3 left-3 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                      {video.duration || '5 min'}
-                    </div>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Play className="w-6 h-6 text-gray-800 ml-1" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 line-clamp-2">{video.title}</h3>
-                    <p className="text-sm text-gray-500 mt-1 line-clamp-2">{video.description}</p>
-                  </div>
-                </Card>
-              ))}
-            </div>
-            <div className="text-center mt-6">
-              <Button variant="outline" onClick={() => navigate('/learn/videos')}>
-                Explore All Videos <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* PRODUCTS THAT HELP (SEPARATE SECTION) */}
@@ -996,51 +821,6 @@ const LearnPage = () => {
         />
       )}
 
-      {/* ═══════════════════════════════════════════════════════════════════════
-          MIRA ADVISOR - Training Mentor AI Assistant
-          ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="max-w-2xl mx-auto px-4 mb-8">
-        <MiraAdvisorCard pillar="learn" activePet={activePet} />
-        
-        {/* Download Training Milestones Checklist */}
-        <div className="mt-4 flex justify-center">
-          <ChecklistDownloadButton 
-            pillar="learn" 
-            variant="outline"
-            className="border-indigo-300 text-indigo-700 hover:bg-indigo-50"
-          />
-        </div>
-      </div>
-      
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* SOUL MADE PRODUCTS - Training/Learn products with breed artwork */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {userPets && userPets[0] && (
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <SoulMadeCollection
-            pillar="learn"
-            maxItems={8}
-            showTitle={true}
-          />
-        </div>
-      )}
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {userPets && userPets[0] && (
-        <div className="max-w-6xl mx-auto px-4 mb-8">
-          <BreedSmartRecommendations pillar="learn" />
-        </div>
-      )}
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 mb-8">
-        <ArchetypeProducts pillar="learn" maxProducts={8} showTitle={true} />
-      </div>
-
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* CURATED BUNDLES - Save with handpicked combinations */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
@@ -1048,210 +828,6 @@ const LearnPage = () => {
         <CuratedBundles pillar="learn" showTitle={true} />
       </div>
       
-      {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
-      <MiraCuratedLayer
-        pillar="learn"
-        activePet={activePet || userPets?.[0]}
-        token={token}
-        userEmail={user?.email}
-        isLoading={!userPets && !!token}
-      />
-
-      {/* === CURATED LEARN BUNDLES === */}
-      <div className="py-8 bg-gradient-to-br from-blue-50 to-indigo-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <CuratedBundles pillar="learn" maxBundles={6} showTitle={true} />
-        </div>
-      </div>
-
-      {/* === ELEVATED CONCIERGE® LEARN EXPERIENCES === */}
-      <div className="py-16 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8 sm:mb-12">
-            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-3 sm:mb-4">
-              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span className="text-xs sm:text-sm font-medium">Elevated Experiences</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
-              Learn <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Concierge®</span> Experiences
-            </h2>
-            <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-4">
-              We match your pet with the right specialists for their unique learning style.
-            </p>
-          </div>
-          
-          {/* 2x2 grid on mobile */}
-          <div className="grid grid-cols-2 md:grid-cols-2 gap-3 sm:gap-6">
-            {LEARN_EXPERIENCES.map((exp, idx) => (
-              <ConciergeExperienceCard
-                key={idx}
-                pillar="learn"
-                title={exp.title}
-                description={exp.description}
-                icon={exp.icon}
-                gradient={exp.gradient}
-                badge={exp.badge}
-                badgeColor={exp.badgeColor}
-                highlights={exp.highlights}
-                image={exp.image}
-              />
-            ))}
-          </div>
-          
-          <div className="mt-6 sm:mt-10 text-center">
-            <p className="text-xs sm:text-sm text-gray-500">
-              💬 Not sure where to start? <button onClick={() => setShowRequestModal(true)} className="text-blue-600 hover:underline font-medium">Tell us about your pet</button>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* YouTube Training Videos Section */}
-      <div className="py-16 bg-gradient-to-br from-red-50 via-white to-orange-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Play className="w-8 h-8 text-red-600" />
-              <h2 className="text-3xl font-bold text-gray-900">Training Videos</h2>
-            </div>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Free expert training videos curated for {selectedPet?.name || 'your pet'} - watch and learn at your own pace
-            </p>
-          </div>
-          
-          {/* Topic Filter */}
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
-            {[
-              { id: 'basic_training', label: 'Basic Training', icon: '🎯' },
-              { id: 'puppy_training', label: 'Puppy Training', icon: '🐶' },
-              { id: 'behavior_fix', label: 'Behavior Fixes', icon: '🧠' },
-              { id: 'tricks', label: 'Tricks & Fun', icon: '🎪' },
-              { id: 'leash_training', label: 'Leash Walking', icon: '🦮' },
-              { id: 'anxiety', label: 'Anxiety Help', icon: '💜' },
-            ].map((topic) => (
-              <Button
-                key={topic.id}
-                variant={videoTopic === topic.id ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => {
-                  setVideoTopic(topic.id);
-                  fetchYouTubeVideos(topic.id);
-                }}
-                className={videoTopic === topic.id ? 'bg-red-600 hover:bg-red-700' : ''}
-                data-testid={`video-topic-${topic.id}`}
-              >
-                {topic.icon} {topic.label}
-              </Button>
-            ))}
-            {selectedPet?.breed && (
-              <Button
-                variant={videoTopic === 'breed' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => {
-                  setVideoTopic('breed');
-                  fetchBreedVideos(selectedPet.breed);
-                }}
-                className={videoTopic === 'breed' ? 'bg-red-600 hover:bg-red-700' : ''}
-                data-testid="video-topic-breed"
-              >
-                🐕 {selectedPet.breed} Tips
-              </Button>
-            )}
-          </div>
-          
-          {/* Video Grid */}
-          {youtubeLoading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-red-600" />
-            </div>
-          ) : youtubeVideos.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {youtubeVideos.map((video, idx) => (
-                <Card 
-                  key={video.id || idx} 
-                  className="overflow-hidden hover:shadow-xl transition-all cursor-pointer group"
-                  onClick={() => window.open(video.url || `https://www.youtube.com/watch?v=${video.id}`, '_blank')}
-                  data-testid={`video-card-${idx}`}
-                >
-                  <div className="aspect-video relative overflow-hidden">
-                    <img 
-                      src={video.thumbnail || `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`}
-                      alt={video.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all">
-                        <Play className="w-8 h-8 text-white ml-1" fill="white" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-red-600 transition-colors">
-                      {video.title}
-                    </h3>
-                    {video.channel && (
-                      <p className="text-sm text-gray-500">{video.channel}</p>
-                    )}
-                    {video.description && (
-                      <p className="text-xs text-gray-400 mt-1 line-clamp-2">{video.description}</p>
-                    )}
-                  </div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-gray-500">
-              <Play className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-              <p>No videos found. Try a different topic!</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Why Choose Us */}
-      <div className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Why Learn with The Doggy Company?</h2>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
-            {[
-              { icon: Award, title: 'Certified Trainers', desc: 'All trainers are certified professionals' },
-              { icon: Heart, title: 'Positive Methods', desc: 'Force-free, reward-based training only' },
-              { icon: Target, title: 'Personalized Plans', desc: 'Custom programs for your pet\'s needs' },
-              { icon: Users, title: 'Lifetime Support', desc: 'Ongoing guidance even after program ends' }
-            ].map((item, i) => (
-              <Card key={i} className="p-6 text-center">
-                <div className="w-14 h-14 rounded-full bg-blue-100 mx-auto mb-4 flex items-center justify-center">
-                  <item.icon className="w-7 h-7 text-blue-600" />
-                </div>
-                <h3 className="font-bold text-gray-900 mb-2">{item.title}</h3>
-                <p className="text-sm text-gray-600">{item.desc}</p>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="py-16 bg-gradient-to-r from-blue-600 to-indigo-700">
-        <div className="max-w-3xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Ready to Start Your Training Journey?
-          </h2>
-          <p className="text-blue-100 mb-8">
-            Our concierge will match you with the perfect trainer based on your pet's needs and your goals.
-          </p>
-          <Button 
-            size="lg" 
-            className="bg-white text-blue-600 hover:bg-gray-100"
-            onClick={() => setShowRequestModal(true)}
-          >
-            <GraduationCap className="w-5 h-5 mr-2" /> Get Started Today
-          </Button>
-        </div>
-      </div>
-
       {/* Training Request Modal */}
       <Dialog open={showRequestModal} onOpenChange={setShowRequestModal}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
