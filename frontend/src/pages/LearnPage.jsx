@@ -546,49 +546,60 @@ const LearnPage = () => {
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <div className="py-12 sm:py-16 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-10">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <div className="mb-6">
+            <Badge className="bg-blue-600 text-white mb-3">
+              <BookOpen className="w-3 h-3 mr-1" /> Ask Learn
+            </Badge>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               What would you like to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">learn</span> about your dog today?
             </h1>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-600">
               Simple, useful knowledge made for your dog. Read → Watch → Shop / Book / Ask
             </p>
           </div>
           
           {/* Ask Mira - AI Learning Assistant */}
-          <div className="max-w-2xl mx-auto mb-8">
+          <div className="max-w-2xl mx-auto mb-6">
             <div className="relative">
               <Input
                 value={askMiraQuestion}
                 onChange={(e) => setAskMiraQuestion(e.target.value)}
                 placeholder="Ask anything... How do I stop my puppy from biting?"
-                className="pr-12 py-6 text-lg rounded-xl border-2 border-white bg-white/80 backdrop-blur focus:border-blue-500 shadow-lg"
+                className="w-full py-6 pl-4 pr-12 text-lg rounded-xl border-2 border-blue-200 focus:border-blue-500"
                 onKeyDown={(e) => e.key === 'Enter' && handleAskMira()}
                 data-testid="ask-mira-input"
               />
               <Button
                 onClick={handleAskMira}
                 disabled={askMiraLoading || !askMiraQuestion.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                size="sm"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700"
                 data-testid="ask-mira-submit"
               >
-                {askMiraLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                {askMiraLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
               </Button>
             </div>
-            
-            {/* Quick question chips */}
-            <div className="flex flex-wrap gap-2 mt-4 justify-center">
-              {['Puppy biting', 'Leash pulling', 'Separation anxiety', 'House training', 'Barking'].map((q) => (
-                <button
-                  key={q}
-                  onClick={() => { setAskMiraQuestion(q); handleAskMira(); }}
-                  className="px-3 py-1.5 bg-white/80 hover:bg-white rounded-full text-sm text-gray-700 transition-colors shadow-sm"
-                >
-                  {q}
-                </button>
-              ))}
-            </div>
+          </div>
+          
+          {/* Quick question chips */}
+          <div className="flex flex-wrap justify-center gap-2">
+            {['Puppy biting', 'Leash pulling', 'Separation anxiety', 'House training', 'Barking'].map((q) => (
+              <button
+                key={q}
+                onClick={() => { setAskMiraQuestion(q); handleAskMira(); }}
+                className="px-3 py-1.5 bg-white border border-blue-200 rounded-full text-sm text-blue-700 hover:bg-blue-50 transition-colors"
+              >
+                {q}
+              </button>
+            ))}
+          </div>
+          
+          {/* Download Learn Checklist */}
+          <div className="mt-6 flex justify-center">
+            <ChecklistDownloadButton 
+              pillar="learn" 
+              variant="outline"
+              className="border-blue-300 text-blue-700 hover:bg-blue-50"
+            />
           </div>
         </div>
       </div>
