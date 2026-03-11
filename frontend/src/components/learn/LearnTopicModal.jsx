@@ -373,12 +373,22 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
     if (!config) return;
     setLoadingProducts(true);
     try {
-      // Use first keyword as primary search - no pillar filter to get from full 5000+ catalogue
+      // Search within learn pillar for relevant products - not the full catalog
       const primaryKeyword = config.productKeywords[0];
-      const res = await fetch(`${API_URL}/api/products?search=${encodeURIComponent(primaryKeyword)}&limit=8`);
+      const res = await fetch(`${API_URL}/api/products?search=${encodeURIComponent(primaryKeyword)}&pillar=learn&limit=8`);
       if (res.ok) {
         const data = await res.json();
-        setProducts(data.products || []);
+        // If learn pillar has results, use those. Otherwise try broader search
+        if (data.products && data.products.length > 0) {
+          setProducts(data.products);
+        } else {
+          // Fallback: broader search but still relevant
+          const fallbackRes = await fetch(`${API_URL}/api/products?search=${encodeURIComponent(primaryKeyword)}&limit=8`);
+          if (fallbackRes.ok) {
+            const fallbackData = await fallbackRes.json();
+            setProducts(fallbackData.products || []);
+          }
+        }
       }
     } catch (err) {
       console.error('Failed to fetch products:', err);
@@ -574,7 +584,7 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
               </div>
             </TabsContent>
             
-            {/* Videos Tab - Real YouTube videos */}
+            {/* Videos Tab - YouTube search for topic */}
             <TabsContent value="videos" className="mt-0">
               {loadingVideos ? (
                 <div className="flex items-center justify-center py-8">
@@ -626,27 +636,34 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
                       </div>
                     </Card>
                   ))}
+                  <Button
+                    variant="outline"
+                    onClick={() => window.open(`https://www.youtube.com/results?search_query=dog+${encodeURIComponent(config.title.toLowerCase())}+tips`, '_blank')}
+                    className="w-full mt-2"
+                    data-testid="browse-more-videos-btn"
+                  >
+                    <Play className="w-4 h-4 mr-2" />
+                    Browse More on YouTube
+                    <ExternalLink className="w-3 h-3 ml-2" />
+                  </Button>
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <Play className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-sm text-gray-500 mb-4">No videos found for this topic</p>
+                  <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <Play className="w-8 h-8 text-red-400" />
+                  </div>
+                  <h4 className="font-medium text-gray-900 mb-2">Watch on YouTube</h4>
+                  <p className="text-sm text-gray-500 mb-4 max-w-xs mx-auto">
+                    We've curated the best {config.title.toLowerCase()} videos from trusted dog trainers
+                  </p>
                   <Button
-                    variant="outline"
-                    onClick={() => {
-                      onClose();
-                      window.dispatchEvent(new CustomEvent('openMiraAI', {
-                        detail: {
-                          message: `Tell me about ${config.title}`,
-                          context: 'learn',
-                          pillar: 'learn'
-                        }
-                      }));
-                    }}
-                    className="w-full"
+                    onClick={() => window.open(`https://www.youtube.com/results?search_query=dog+${encodeURIComponent(config.title.toLowerCase())}+tips+guide`, '_blank')}
+                    className="bg-red-600 hover:bg-red-700"
+                    data-testid="watch-on-youtube-btn"
                   >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Ask Mira about {config.title}
+                    <Play className="w-4 h-4 mr-2" />
+                    Watch {config.title} Videos
+                    <ExternalLink className="w-3 h-3 ml-2" />
                   </Button>
                 </div>
               )}
