@@ -28,6 +28,7 @@ import NearbyLearnServices from '../components/learn/NearbyLearnServices'; // AD
 import PetDailyRoutine from '../components/learn/PetDailyRoutine'; // ADDED: Daily Routine
 import SupportForPet from '../components/learn/SupportForPet'; // ADDED: Support Services
 import AskConciergeForPet from '../components/learn/AskConciergeForPet'; // ADDED: Concierge
+import LearnTopicModal from '../components/learn/LearnTopicModal'; // ADDED: Topic Hub Modal
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
@@ -165,6 +166,9 @@ const LearnPage = () => {
   const [selectedPet, setSelectedPet] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [heroIndex, setHeroIndex] = useState(0);
+  
+  // Topic Hub Modal state
+  const [selectedTopic, setSelectedTopic] = useState(null);
   
   // Use global pet context
   const { currentPet } = usePillarContext();
@@ -553,7 +557,7 @@ const LearnPage = () => {
               <Card
                 key={topic.slug}
                 className="p-4 bg-white border border-gray-100 rounded-2xl hover:shadow-lg hover:border-gray-200 transition-all cursor-pointer group"
-                onClick={() => navigate(`/learn/${topic.slug}`)}
+                onClick={() => setSelectedTopic(topic.slug)}
                 data-testid={`topic-${topic.slug}`}
               >
                 <div className="flex items-start justify-between mb-3">
@@ -1869,6 +1873,25 @@ const LearnPage = () => {
         title="Learn, Personalised"
         subtitle="See your personalized price based on your city, pet size, and requirements"
         maxServices={8}
+      />
+      
+      {/* Topic Hub Modal - Opens when clicking topic boxes */}
+      <LearnTopicModal 
+        isOpen={!!selectedTopic}
+        onClose={() => setSelectedTopic(null)}
+        topicSlug={selectedTopic}
+        onSendToConcierge={(data) => {
+          // Open Mira AI with concierge context
+          window.dispatchEvent(new CustomEvent('openMiraAI', {
+            detail: {
+              message: `I need help with ${data.topic}: ${data.requestType}`,
+              context: 'concierge',
+              pillar: 'learn',
+              pet_name: activePet?.name,
+              pet_breed: activePet?.breed
+            }
+          }));
+        }}
       />
       
       {/* Concierge® Button - Blue C® for Service Desk chat */}
