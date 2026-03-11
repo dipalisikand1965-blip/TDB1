@@ -13,6 +13,7 @@ import { createEnjoyRSVP, showUnifiedFlowSuccess, showUnifiedFlowError } from '.
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
+import MiraAdvisorCard from '../components/MiraAdvisorCard';
 import { toast } from '../hooks/use-toast';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import ProductCard from '../components/ProductCard';
