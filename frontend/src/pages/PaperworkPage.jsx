@@ -1022,7 +1022,7 @@ const PaperworkPage = () => {
         {/* Mira's Picks for Pet */}
         {(activePet || userPets?.[0]) && (
           <div className="max-w-6xl mx-auto px-4 mt-6">
-            <PillarPicksSection pillar="paperwork" pet={activePet || userPets[0]} />
+            <PillarPicksSection pillar="paperwork" pet={activePet || userPets?.[0]} />
           </div>
         )}
       </div>
