@@ -18,6 +18,7 @@ import { ConciergeButton } from '../components/mira-os';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
+import { ChecklistDownloadButton } from '../components/checklists';
 // Emergency Components
 import { 
   UrgentHelpButtons, 
@@ -30,7 +31,7 @@ import {
   AlertTriangle, Search, Heart, Phone, MapPin, Clock, Ambulance,
   ChevronRight, Star, Loader2, ArrowRight, Shield, Wind, Skull, 
   CloudLightning, ShieldAlert, CheckCircle, PhoneCall, Siren, 
-  Plane, Baby, Calendar, Navigation
+  Plane, Baby, Calendar, Navigation, Download
 } from 'lucide-react';
 
 // Emergency Type Configuration
@@ -419,6 +420,15 @@ const EmergencyPage = () => {
               </div>
             )}
           </Card>
+          
+          {/* Download Emergency Checklists */}
+          <div className="mt-4 flex justify-center">
+            <ChecklistDownloadButton 
+              pillar="emergency" 
+              variant="outline"
+              className="border-red-300 text-red-700 hover:bg-red-50"
+            />
+          </div>
         </div>
       </section>
 

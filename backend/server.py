@@ -271,6 +271,9 @@ from app.api.bundle_routes import router as bundle_router, set_bundle_db
 # Mockup Cloud Storage (Cloudinary integration)
 from mockup_cloud_storage import mockup_cloud_router, set_db as set_mockup_cloud_db
 
+# Checklist Routes (Printable PDF checklists)
+from checklist_routes import router as checklist_router
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -19624,6 +19627,9 @@ set_mockup_db(db)  # Initialize Mockups with database
 # Initialize Mockup Cloud Storage (Cloudinary)
 app.include_router(mockup_cloud_router)  # Cloud storage at /api/mockups/*
 set_mockup_cloud_db(db)  # Initialize cloud storage with database
+
+# Initialize Checklist Routes (Printable PDF checklists)
+app.include_router(checklist_router)  # Checklists at /api/checklists/*
 
 # Initialize Mira Structured Engine (feature-flagged)
 try:
