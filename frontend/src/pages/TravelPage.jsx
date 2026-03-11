@@ -12,6 +12,7 @@ import { createTravelRequest, showUnifiedFlowSuccess, showUnifiedFlowError } fro
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { usePillarContext } from '../context/PillarContext';
+import MiraAdvisorCard from '../components/MiraAdvisorCard';
 import { toast } from '../hooks/use-toast';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import ProductCard from '../components/ProductCard';
@@ -485,6 +486,15 @@ const TravelPage = () => {
             <PillarPicksSection pillar="travel" pet={activePet || userPets[0]} />
           </div>
         )}
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          MIRA ADVISOR - Travel Companion AI Assistant
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <div className="py-8 px-4 bg-cyan-50/30">
+        <div className="max-w-2xl mx-auto">
+          <MiraAdvisorCard pillar="travel" activePet={activePet} />
+        </div>
       </div>
 
       {/* ==================== SOCIAL PROOF BANNER ==================== */}

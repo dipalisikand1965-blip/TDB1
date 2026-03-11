@@ -71,28 +71,38 @@ All guided paths and journey guides across ALL 4 pillars are now stored in the d
 
 ### 1. Advisor Input → Mira Chat Integration ✅
 Connected pillar advisor inputs to open Mira chat with pre-filled queries:
-- **AdoptPage**: "Adoption Advisor" now opens Mira with adoption context
-- **AdvisoryPage**: Ask Advisory opens Mira with advisory context
-- **EmergencyPage**: Emergency triage opens Mira with emergency context
-- Uses `window.dispatchEvent(new CustomEvent('openMiraAI', { detail: { message, context, pillar } }))`
+- **AdoptPage**: "Adoption Advisor" → Opens Mira with adoption context ✅
+- **AdvisoryPage**: Ask Advisory → Opens Mira with advisory context ✅
+- **EmergencyPage**: Emergency triage → Opens Mira with emergency context ✅
+- **FarewellPage**: Grief Support → Opens Mira with compassionate context ✅
+- **CelebratePage**: Party Planner → Opens Mira ✅
+- **DinePage**: Nutrition Advisor → Opens Mira ✅
+- **StayPage**: Boarding Guide → Opens Mira ✅
+- **TravelPage**: Travel Companion → Opens Mira ✅
+- **CarePage**: Wellness Expert → Opens Mira ✅
+
+**Created Reusable Component**: `/app/frontend/src/components/MiraAdvisorCard.jsx`
+- Supports all 14 pillars with custom colors, names, placeholders
+- Auto-opens Mira chat with context (pillar, pet info)
+- Documented in `/app/memory/MIRA_ADVISOR_GUIDE.md`
 
 ### 2. More Adopt Product Categories with AI Images ✅
-Added 12 new products across 3 categories with AI-generated images:
+Added 20 new products across categories with AI-generated images:
+- **Day 1 Essentials (8)**: Bowl, Collar, Harness, Bed, Leash, Blanket, ID Tag, Pee Pads
 - **Comfort Zone (4)**: Calming Bed, Anxiety Vest, Plush Toy, Crate Cover
-- **Home Setup (4)**: Pet Gate, Welcome Mat, Food Container, Toy Basket  
+- **Home Setup (4)**: Pet Gate, Welcome Mat, Food Container, Toy Basket
 - **Grooming (4)**: Slicker Brush, Puppy Shampoo, Nail Clippers, Pet Towel
 - All synced to production
 
 ### 3. Embedded Cleanup into Master Sync ✅
-Added automatic service cleanup and image fix to the master sync startup process:
-- **Step 10/11**: `cleanup-duplicate-services` - Removes duplicate services keeping ones with images
-- **Step 11/11**: `fix-service-images` - Applies AI images to services missing them
+Added automatic service cleanup to master_sync_on_startup:
+- **Step 10/11**: `cleanup-duplicate-services` - Auto removes duplicates
+- **Step 11/11**: `fix-service-images` - Auto applies AI images
 
-These now run automatically on every deployment - no manual sync needed!
-
-### TODO Next Session:
-- **Printable Checklists per Pillar** (First Vet Visit, Emergency Kit, etc.)
-- Generate PDFs with vaccination templates, questions to ask, notes space
+### TODO Next Session (IMPORTANT):
+- [ ] Add MiraAdvisorCard to remaining pages: FitPage, LearnPage, EnjoyPage
+- [ ] Build Printable Checklists (First Vet Visit, Emergency Kit, etc.)
+- [ ] Pillar-wise unified products in Admin tabs
 
 ---
 
