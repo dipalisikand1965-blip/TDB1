@@ -723,36 +723,11 @@ const CelebratePage = () => {
           />
         </div>
         
-        {/* NEW: Curated Concierge Section - Dynamic picks from Intelligence Layer */}
-        {activePet && token && (
-          <div className="mt-8">
-            {/* Section Header */}
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-pink-500" />
-                  Mira's Picks for {activePet.name}
-                </h2>
-                <p className="text-sm text-gray-500">
-                  Curated celebrations based on {activePet.name}'s personality
-                </p>
-              </div>
-            </div>
-            
-            {/* Curated Concierge Cards */}
-            <div className="bg-gradient-to-br from-slate-900 via-purple-950/90 to-slate-900 rounded-2xl p-4 sm:p-6">
-              <CuratedConciergeSection
-                petId={activePet.id || activePet._id}
-                petName={activePet.name}
-                pillar="celebrate"
-                token={token}
-                userEmail={user?.email}
-              />
-            </div>
-            
             {/* ═══════════════════════════════════════════════════════════════════════ */}
             {/* MIRA'S BIRTHDAY BOX - Soul-Driven Personalized Box Suggestion */}
             {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {activePet && token && (
+          <>
             <div className="mt-6" data-testid="mira-birthday-box-section">
               <MiraBirthdayBoxCard
                 pet={activePet}
@@ -835,7 +810,7 @@ const CelebratePage = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </>
         )}
       </div>
 
