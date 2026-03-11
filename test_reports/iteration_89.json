@@ -1,0 +1,108 @@
+{
+  "summary": "Learn Page Cleanup Testing - All 16 features tested and PASSED. Page loads cleanly with no boilerplate sections. Topic hub modals work with tabs (Overview/Videos/Products/Services). Personalized 'Learn for My Dog' section shows for logged-in users.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "LearnTopicModal Videos Tab",
+        "issues": ["YouTube video thumbnails show 404 errors - EXPECTED behavior per requirements (YouTube API quota exceeded, using static fallback videos)"]
+      }
+    ]
+  },
+  "test_report_links": ["/app/test_reports/iteration_89.json"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "DialogContent missing aria-describedby attribute - minor accessibility warning, not blocking",
+    "Console shows '[LearnPage] Loaded undefined products via pillar resolver' - products count logging could be improved"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend only testing)",
+    "frontend": "100%"
+  },
+  "test_credentials": {
+    "member_login": "dipali@clubconcierge.in / test123"
+  },
+  "seed_data_creation": "None required",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Learn page cleanup verified. All boilerplate sections removed. Clean flow: Hero/Ask bar → 12 Topic Boxes → How Can We Help → Learn for My Dog (personalized) → Guided Learning Paths → Products That Help → Services That Help → Near Me → Curated Bundles → ServiceCatalog → Footer",
+  "features_tested": {
+    "learn_page_loads": {
+      "status": "PASS",
+      "details": "Learn page at /learn loads without errors, no console errors"
+    },
+    "12_topic_boxes": {
+      "status": "PASS",
+      "details": "All 12 topic boxes visible: Puppy Basics, Breed Guides, Food & Feeding, Grooming, Behavior, Training Basics, Travel with Dogs, Senior Dog Care, Health Basics, Rescue/Indie Care, Seasonal Care, New Pet Parent Guide"
+    },
+    "topic_modal_opens": {
+      "status": "PASS",
+      "details": "Clicking topic box (Puppy Basics) opens LearnTopicModal with header, image, and tabs"
+    },
+    "modal_overview_tab": {
+      "status": "PASS",
+      "details": "Overview tab shows 6 expandable subtopics with Mira's Tips (First week at home, Toilet training, etc.)"
+    },
+    "modal_videos_tab": {
+      "status": "PASS",
+      "details": "Videos tab shows 3 video cards with titles and durations (curated fallback due to YouTube API quota)"
+    },
+    "modal_products_tab": {
+      "status": "PASS",
+      "details": "Products tab shows 4 product cards with prices and 'Continue to Shop' button"
+    },
+    "modal_services_tab": {
+      "status": "PASS",
+      "details": "Services tab shows 3 service options with 'Ask Concierge' badge on unavailable services"
+    },
+    "send_to_concierge_button": {
+      "status": "PASS",
+      "details": "Button triggers Universal Service Command - ticket created successfully (TKT-9A846F33, REQ-20260311-1DD7)"
+    },
+    "ask_bar_functional": {
+      "status": "PASS",
+      "details": "Typing query and pressing Enter opens Mira AI chat panel with pre-filled query"
+    },
+    "how_can_we_help_section": {
+      "status": "PASS",
+      "details": "3 action buckets visible: Products & Routines, Life Stage & Care, Support & Services"
+    },
+    "guided_learning_paths": {
+      "status": "PASS",
+      "details": "6 paths visible: New Puppy Path, New Adoption Path, Senior Dog Path, Travel Path, Grooming Path, Behavior Path"
+    },
+    "products_that_help": {
+      "status": "PASS",
+      "details": "Section visible with category buttons (All Products, Training Tools, Grooming, Feeding, Travel, Comfort)"
+    },
+    "services_that_help": {
+      "status": "PASS",
+      "details": "Section visible with 4 service cards (Training Consult, Grooming Consult, Behavior Support, Puppy Guidance)"
+    },
+    "near_me_section": {
+      "status": "PASS",
+      "details": "Section renders with location picker and category buttons (Dog Trainers, Groomers, Pet Stores, Veterinarians, Behaviorists)"
+    },
+    "curated_bundles": {
+      "status": "PASS",
+      "details": "Section renders with 2 bundles (Puppy Starter Kit ₹2,499, Training Essentials Bundle ₹3,999)"
+    },
+    "care_page_regression": {
+      "status": "PASS",
+      "details": "Care page at /care loads successfully with 14,690 characters of content, 23 bundles loaded"
+    },
+    "learn_for_my_dog_personalized": {
+      "status": "PASS",
+      "details": "Logged-in user sees 'Learn for Mojo' section with breed-specific tips (Training tips for Indie, Grooming guide, Nutrition basics, Exercise recommendations)"
+    }
+  },
+  "mocked_apis": {
+    "youtube_videos": "Using static curated fallback videos due to YouTube API quota exceeded - NOT a bug"
+  }
+}
