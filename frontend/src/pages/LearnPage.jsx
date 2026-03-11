@@ -540,24 +540,303 @@ const LearnPage = () => {
       title="Learn - Training & Education | The Doggy Company"
       description="Training and guidance that respects personality. Expert-led training programs for dogs of all ages."
     >
-      {/* Training Types Quick Access */}
-      <div className="py-12 bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4">
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* HERO SECTION - What would you like to learn about your dog today? */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="py-12 sm:py-16 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-10">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              What would you like to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">learn</span> about your dog today?
+            </h1>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Simple, useful knowledge made for your dog. Read → Watch → Shop / Book / Ask
+            </p>
+          </div>
+          
           {/* Ask Mira - AI Learning Assistant */}
-          <div className="mb-12">
-            <div className="max-w-2xl mx-auto">
-              <div className="text-center mb-6">
-                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
-                  <Brain className="w-4 h-4" />
-                  Ask Mira - AI Learning Assistant
+          <div className="max-w-2xl mx-auto mb-8">
+            <div className="relative">
+              <Input
+                value={askMiraQuestion}
+                onChange={(e) => setAskMiraQuestion(e.target.value)}
+                placeholder="Ask anything... How do I stop my puppy from biting?"
+                className="pr-12 py-6 text-lg rounded-xl border-2 border-white bg-white/80 backdrop-blur focus:border-blue-500 shadow-lg"
+                onKeyDown={(e) => e.key === 'Enter' && handleAskMira()}
+                data-testid="ask-mira-input"
+              />
+              <Button
+                onClick={handleAskMira}
+                disabled={askMiraLoading || !askMiraQuestion.trim()}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                size="sm"
+                data-testid="ask-mira-submit"
+              >
+                {askMiraLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+              </Button>
+            </div>
+            
+            {/* Quick question chips */}
+            <div className="flex flex-wrap gap-2 mt-4 justify-center">
+              {['Puppy biting', 'Leash pulling', 'Separation anxiety', 'House training', 'Barking'].map((q) => (
+                <button
+                  key={q}
+                  onClick={() => { setAskMiraQuestion(q); handleAskMira(); }}
+                  className="px-3 py-1.5 bg-white/80 hover:bg-white rounded-full text-sm text-gray-700 transition-colors shadow-sm"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* 8 CORE CARDS - Grouped into 3 buckets */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="py-12 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">How can we help?</h2>
+            <p className="text-gray-600 mt-2">Choose what matters most to you right now</p>
+          </div>
+          
+          {/* 3 Column Buckets */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Products & Routines */}
+            <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-100">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                  <span className="text-xl">🛍️</span>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">Have a question about your pet?</h2>
-                <p className="text-gray-600 mt-2">Ask Mira anything about training, behaviour, health, or care</p>
+                <h3 className="font-semibold text-gray-900">Products & Routines</h3>
               </div>
-              
-              <div className="relative">
-                <Input
-                  value={askMiraQuestion}
+              <div className="space-y-2">
+                {[
+                  { label: 'Help me choose the right products', icon: '🛒' },
+                  { label: 'Build a routine for my dog', icon: '📅' },
+                  { label: 'Help me with grooming choices', icon: '✨' }
+                ].map((item, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setShowRequestModal(true)}
+                    className="w-full flex items-center gap-3 p-3 bg-white/70 hover:bg-white rounded-xl transition-all text-left group"
+                    data-testid={`learn-card-products-${idx}`}
+                  >
+                    <span className="text-lg">{item.icon}</span>
+                    <span className="text-sm text-gray-700 group-hover:text-gray-900">{item.label}</span>
+                    <ChevronRight className="w-4 h-4 text-gray-400 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Life Stage & Care */}
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                  <span className="text-xl">🐕</span>
+                </div>
+                <h3 className="font-semibold text-gray-900">Life Stage & Care</h3>
+              </div>
+              <div className="space-y-2">
+                {[
+                  { label: 'Guide me for my puppy', icon: '🐶' },
+                  { label: 'Help me with senior dog care', icon: '🦮' },
+                  { label: 'Recommend what suits my breed', icon: '🎯' }
+                ].map((item, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setShowRequestModal(true)}
+                    className="w-full flex items-center gap-3 p-3 bg-white/70 hover:bg-white rounded-xl transition-all text-left group"
+                    data-testid={`learn-card-lifestage-${idx}`}
+                  >
+                    <span className="text-lg">{item.icon}</span>
+                    <span className="text-sm text-gray-700 group-hover:text-gray-900">{item.label}</span>
+                    <ChevronRight className="w-4 h-4 text-gray-400 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Support & Services */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-xl">🤝</span>
+                </div>
+                <h3 className="font-semibold text-gray-900">Support & Services</h3>
+              </div>
+              <div className="space-y-2">
+                {[
+                  { label: 'Find the right trainer', icon: '🎓' },
+                  { label: 'Help me prepare for travel', icon: '✈️' },
+                  { label: 'Find help near me', icon: '📍' }
+                ].map((item, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setShowRequestModal(true)}
+                    className="w-full flex items-center gap-3 p-3 bg-white/70 hover:bg-white rounded-xl transition-all text-left group"
+                    data-testid={`learn-card-support-${idx}`}
+                  >
+                    <span className="text-lg">{item.icon}</span>
+                    <span className="text-sm text-gray-700 group-hover:text-gray-900">{item.label}</span>
+                    <ChevronRight className="w-4 h-4 text-gray-400 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* LEARN BY LIFE STAGE */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="py-12 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Learn by Life Stage</h2>
+            <p className="text-gray-600 mt-2">Every stage needs different care</p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { stage: 'Puppy', icon: '🐶', color: 'pink', desc: '0-1 year', path: 'puppy' },
+              { stage: 'Adult', icon: '🐕', color: 'blue', desc: '1-7 years', path: 'adult' },
+              { stage: 'Senior', icon: '🦮', color: 'purple', desc: '7+ years', path: 'senior' },
+              { stage: 'New Adoption', icon: '🏠', color: 'green', desc: 'Just joined family', path: 'adoption' }
+            ].map((item, idx) => (
+              <Card 
+                key={idx}
+                className={`p-6 cursor-pointer hover:shadow-lg transition-all bg-gradient-to-br from-${item.color}-50 to-${item.color}-100 border-${item.color}-200`}
+                onClick={() => { setSelectedVideoTopic(item.path); fetchYouTubeVideos(item.path); }}
+                data-testid={`life-stage-${item.path}`}
+              >
+                <div className="text-center">
+                  <span className="text-4xl mb-3 block">{item.icon}</span>
+                  <h3 className="font-semibold text-gray-900">{item.stage}</h3>
+                  <p className="text-sm text-gray-500 mt-1">{item.desc}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* GUIDED LEARNING PATHS */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="py-12 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <Target className="w-4 h-4" />
+              Step-by-Step Journeys
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Guided Learning Paths</h2>
+            <p className="text-gray-600 mt-2">Follow a structured journey tailored to your situation</p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {[
+              { 
+                title: 'New Puppy Path', 
+                icon: '🐶', 
+                steps: ['First week at home', 'Toilet training', 'Teething', 'Sleep routine', 'Socialization'],
+                color: 'pink'
+              },
+              { 
+                title: 'New Adoption Path', 
+                icon: '🏠', 
+                steps: ['Decompression', 'Trust building', 'First routine', 'Home boundaries', 'Emotional settling'],
+                color: 'green'
+              },
+              { 
+                title: 'Senior Dog Path', 
+                icon: '🦮', 
+                steps: ['Mobility support', 'Comfort needs', 'Diet adjustments', 'Rest & sleep', 'When to seek help'],
+                color: 'purple'
+              },
+              { 
+                title: 'Travel Path', 
+                icon: '✈️', 
+                steps: ['Road trips', 'Crates & carriers', 'Hydration', 'Travel anxiety', 'What to pack'],
+                color: 'blue'
+              },
+              { 
+                title: 'Grooming Path', 
+                icon: '✨', 
+                steps: ['Coat type guide', 'Brushing basics', 'Bath routine', 'Ears & eyes', 'Nail care'],
+                color: 'amber'
+              },
+              { 
+                title: 'Behavior Path', 
+                icon: '🧠', 
+                steps: ['Chewing', 'Barking', 'Pulling', 'Separation anxiety', 'Enrichment'],
+                color: 'indigo'
+              }
+            ].map((path, idx) => (
+              <Card 
+                key={idx}
+                className="p-5 cursor-pointer hover:shadow-lg transition-all group"
+                onClick={() => setShowRequestModal(true)}
+                data-testid={`guided-path-${idx}`}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-2xl">{path.icon}</span>
+                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base">{path.title}</h3>
+                </div>
+                <ul className="space-y-1.5">
+                  {path.steps.slice(0, 4).map((step, stepIdx) => (
+                    <li key={stepIdx} className="flex items-center gap-2 text-xs text-gray-600">
+                      <div className={`w-1.5 h-1.5 rounded-full bg-${path.color}-400`}></div>
+                      {step}
+                    </li>
+                  ))}
+                  {path.steps.length > 4 && (
+                    <li className="text-xs text-blue-600">+{path.steps.length - 4} more steps</li>
+                  )}
+                </ul>
+                <div className="mt-3 pt-3 border-t flex items-center justify-between">
+                  <span className="text-xs text-gray-500">{path.steps.length} steps</span>
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* LEARN FOR MY DOG - Personalized Content */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {(activePet || userPets?.[0]) && (
+        <div className="py-12 bg-gradient-to-br from-purple-50 to-pink-50">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                <Heart className="w-4 h-4" />
+                Personalized for {(activePet || userPets?.[0])?.name}
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                Learn for {(activePet || userPets?.[0])?.name}
+              </h2>
+              <p className="text-gray-600 mt-2">
+                Content tailored to your {(activePet || userPets?.[0])?.breed || 'pet'}
+              </p>
+            </div>
+            
+            {/* Personalized recommendations will load here */}
+            <PillarPicksSection pillar="learn" pet={activePet || userPets?.[0]} />
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* YOUTUBE VIDEOS - Read → Watch → Apply */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
                   onChange={(e) => setAskMiraQuestion(e.target.value)}
                   placeholder="e.g., How do I stop my puppy from biting? Why does my dog bark at strangers?"
                   className="pr-12 py-6 text-lg rounded-xl border-2 border-gray-200 focus:border-blue-500"
