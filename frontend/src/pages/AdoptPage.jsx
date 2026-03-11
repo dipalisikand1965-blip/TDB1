@@ -205,9 +205,6 @@ const AdoptPage = () => {
   
   // AI Adoption Advisor
   const [adoptQuery, setAdoptQuery] = useState('');
-  const [adoptResponse, setAdoptResponse] = useState('');
-  const [adoptLoading, setAdoptLoading] = useState(false);
-  const [showAdoptResponse, setShowAdoptResponse] = useState(false);
   
   // Guided Paths from API
   const [adoptionPaths, setAdoptionPaths] = useState([]);
@@ -299,13 +296,13 @@ const AdoptPage = () => {
   // Get products for current category based on tags/keywords
   const getProductsForCategory = (categoryId) => {
     const categoryKeywords = {
-      day1: ['bowl', 'collar', 'leash', 'harness', 'tag', 'bed', 'crate', 'pee pad', 'food container', 'starter kit', 'feeder'],
-      comfort: ['blanket', 'calming', 'anxiety', 'snuggle', 'toy', 'orthopedic', 'cozy', 'crate cover', 'mat'],
-      home_setup: ['gate', 'barrier', 'protector', 'mat', 'storage', 'basket', 'organization', 'welcome'],
-      grooming: ['brush', 'comb', 'shampoo', 'nail', 'ear', 'eye', 'towel', 'grooming', 'bath'],
-      walking: ['harness', 'leash', 'lead', 'collar', 'raincoat', 'car', 'travel', 'treat pouch', 'reflective'],
+      day1: ['bowl', 'collar', 'leash', 'harness', 'tag', 'bed', 'crate', 'pee pad', 'food container', 'starter kit', 'feeder', 'premium bowl', 'padded leash', 'engraved'],
+      comfort: ['blanket', 'calming', 'anxiety', 'snuggle', 'toy', 'cozy', 'crate cover', 'mat', 'bolster', 'plush', 'settling', 'security'],
+      home_setup: ['gate', 'barrier', 'protector', 'mat', 'storage', 'basket', 'organization', 'welcome', 'container', 'bamboo', 'woven'],
+      grooming: ['brush', 'comb', 'shampoo', 'nail', 'ear', 'eye', 'towel', 'grooming', 'bath', 'slicker', 'clipper', 'microfiber'],
+      walking: ['harness', 'leash', 'lead', 'collar', 'raincoat', 'car', 'travel', 'treat pouch', 'reflective', 'padded'],
       training: ['treat', 'clicker', 'training', 'puzzle', 'enrichment', 'sniff', 'kong', 'chew'],
-      paperwork: ['folder', 'file', 'record', 'card', 'document', 'tag', 'emergency']
+      paperwork: ['folder', 'file', 'record', 'card', 'document', 'tag', 'emergency', 'engraved']
     };
     
     const keywords = categoryKeywords[categoryId] || [];
@@ -316,6 +313,13 @@ const AdoptPage = () => {
       return keywords.some(kw => 
         name.includes(kw) || desc.includes(kw) || tags.some(t => t.includes(kw))
       );
+    });
+    
+    // Sort by priority: seeded products first (have 'adopt' source), then others
+    matched.sort((a, b) => {
+      const aSource = (a.source || '').includes('adopt') ? 0 : 1;
+      const bSource = (b.source || '').includes('adopt') ? 0 : 1;
+      return aSource - bSource;
     });
     
     // Dedupe by name and return max 12
@@ -367,38 +371,22 @@ const AdoptPage = () => {
     }
   };
 
-  // AI Adoption Advisor
-  const handleAdoptionAdvice = async () => {
+  // AI Adoption Advisor - Opens Mira with the query
+  const handleAdoptionAdvice = () => {
     if (!adoptQuery.trim()) return;
     
-    setAdoptLoading(true);
-    setShowAdoptResponse(true);
-    
-    try {
-      const response = await fetch(`${API_URL}/api/mira/chat`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        },
-        body: JSON.stringify({
-          message: adoptQuery,
-          context: 'adoption_advisor',
-          pillar: 'adopt'
-        })
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setAdoptResponse(data.response || data.message || 'I\'m here to help with your adoption journey!');
-      } else {
-        setAdoptResponse('I\'m here to help! For personalized adoption advice, please speak with our concierge team.');
+    // Open Mira with the adoption query pre-filled
+    window.dispatchEvent(new CustomEvent('openMiraAI', {
+      detail: {
+        message: adoptQuery,
+        initialQuery: adoptQuery,
+        context: 'adoption_advisor',
+        pillar: 'adopt'
       }
-    } catch (error) {
-      setAdoptResponse('I\'m here to help! For personalized adoption advice, please speak with our concierge team.');
-    } finally {
-      setAdoptLoading(false);
-    }
+    }));
+    
+    // Clear the input
+    setAdoptQuery('');
   };
 
   // Handle concierge help request
@@ -479,38 +467,17 @@ const AdoptPage = () => {
               />
               <Button 
                 onClick={handleAdoptionAdvice}
-                disabled={adoptLoading || !adoptQuery.trim()}
+                disabled={!adoptQuery.trim()}
                 className="bg-green-600 hover:bg-green-700"
               >
-                {adoptLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Ask'}
+                <Sparkles className="w-4 h-4 mr-1" />
+                Ask Mira
               </Button>
             </div>
             
-            {showAdoptResponse && (
-              <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
-                {adoptLoading ? (
-                  <div className="flex items-center gap-2 text-green-600">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Finding the best advice for you...
-                  </div>
-                ) : (
-                  <div>
-                    <p className="text-gray-700 leading-relaxed">{adoptResponse}</p>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => {
-                        setAdoptQuery('');
-                        setShowAdoptResponse(false);
-                      }}
-                      className="mt-3 border-green-300 text-green-600"
-                    >
-                      Ask Another Question
-                    </Button>
-                  </div>
-                )}
-              </div>
-            )}
+            <p className="text-xs text-gray-500 mt-2 text-center">
+              Powered by Mira AI - your personal pet advisor
+            </p>
           </Card>
         </div>
       </section>

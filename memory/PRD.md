@@ -67,6 +67,35 @@ All guided paths and journey guides across ALL 4 pillars are now stored in the d
 
 ---
 
+## COMPLETED THIS SESSION (March 11, 2026 - Session 8.5)
+
+### 1. Advisor Input → Mira Chat Integration ✅
+Connected pillar advisor inputs to open Mira chat with pre-filled queries:
+- **AdoptPage**: "Adoption Advisor" now opens Mira with adoption context
+- **AdvisoryPage**: Ask Advisory opens Mira with advisory context
+- **EmergencyPage**: Emergency triage opens Mira with emergency context
+- Uses `window.dispatchEvent(new CustomEvent('openMiraAI', { detail: { message, context, pillar } }))`
+
+### 2. More Adopt Product Categories with AI Images ✅
+Added 12 new products across 3 categories with AI-generated images:
+- **Comfort Zone (4)**: Calming Bed, Anxiety Vest, Plush Toy, Crate Cover
+- **Home Setup (4)**: Pet Gate, Welcome Mat, Food Container, Toy Basket  
+- **Grooming (4)**: Slicker Brush, Puppy Shampoo, Nail Clippers, Pet Towel
+- All synced to production
+
+### 3. Embedded Cleanup into Master Sync ✅
+Added automatic service cleanup and image fix to the master sync startup process:
+- **Step 10/11**: `cleanup-duplicate-services` - Removes duplicate services keeping ones with images
+- **Step 11/11**: `fix-service-images` - Applies AI images to services missing them
+
+These now run automatically on every deployment - no manual sync needed!
+
+### TODO Next Session:
+- **Printable Checklists per Pillar** (First Vet Visit, Emergency Kit, etc.)
+- Generate PDFs with vaccination templates, questions to ask, notes space
+
+---
+
 ## COMPLETED THIS SESSION (March 11, 2026 - Session 8.4)
 
 ### 1. Embedded Cleanup into Master Sync ✅
