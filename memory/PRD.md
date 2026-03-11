@@ -1,10 +1,33 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 12, 2026 08:00 IST  
-**Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅ | MIRA ADVISOR 100% ✅
+**Last Updated:** March 12, 2026 10:00 IST  
+**Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅ | MIRA ADVISOR 100% ✅ | CELEBRATE 100% ✅
 
 ---
 
-## ✅ COMPLETED THIS SESSION (March 12, 2026 - Session 8.6)
+## ✅ COMPLETED THIS SESSION (March 12, 2026 - Session 8.7)
+
+### 1. Celebration Bundles - FIXED ✅
+Fixed the P0 issue where celebration bundles were not displaying:
+- Cleared stale data from `celebrate_bundles` collection
+- Added 6 NEW celebration bundles with diverse price points:
+
+| Bundle | Price | Description |
+|--------|-------|-------------|
+| First Birthday Special | ₹1,299 | Perfect for puppy's first bark-day |
+| Premium Bark-day Bash | ₹2,999 | Ultimate luxury celebration |
+| Pawty Essentials | ₹799 | Budget-friendly starter pack |
+| Senior Celebration | ₹1,499 | Age-appropriate, sugar-free treats |
+| Adoption Anniversary | ₹1,199 | Gotcha Day themed bundle |
+| New Puppy Welcome | ₹1,099 | First day celebration kit |
+
+### 2. PDF Checklist Fix ✅
+Fixed EmergencyCardPDF font issue:
+- Changed `fontFamily` from `Inter` to `Helvetica` in `cardStyles`
+- Ensures mobile compatibility (built-in fonts work everywhere)
+
+---
+
+## ✅ COMPLETED PREVIOUS SESSION (March 12, 2026 - Session 8.6)
 
 ### 1. MiraAdvisorCard Rollout - COMPLETE ✅
 Completed the rollout of the reusable `MiraAdvisorCard.jsx` component to ALL remaining pillar pages:

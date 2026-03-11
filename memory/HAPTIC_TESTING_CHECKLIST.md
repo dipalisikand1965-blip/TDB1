@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://ai-experience-unify.preview.emergentagent.com/mira-demo**
+**https://celebrate-bundles.preview.emergentagent.com/mira-demo**
 
 ---
 
