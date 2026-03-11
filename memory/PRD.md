@@ -1,6 +1,6 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 12, 2026 11:00 IST  
-**Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅ | MIRA ADVISOR 100% ✅ | CELEBRATE 100% ✅
+**Last Updated:** March 12, 2026 13:30 IST  
+**Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅ | MIRA ADVISOR 100% ✅ | CELEBRATE 100% ✅ | AI IMAGES 100% ✅
 
 ---
 
@@ -46,6 +46,35 @@ Generated beautiful watercolor-style AI illustrations for ALL pillar bundles usi
 | **TOTAL** | **49** | **✅ 100% Coverage** |
 
 All images uploaded to Cloudinary (`pillar_bundles/{pillar}_bundles` folders) and database updated with `ai_generated: true` flag.
+
+### 4. AI-Generated Service Images - COMPLETE ✅
+Generated beautiful watercolor-style AI illustrations for ALL 160 concierge services across all pillars:
+
+| Pillar | Services | Status |
+|--------|----------|--------|
+| Celebrate | 15 | ✅ 100% AI images |
+| Care | 27 | ✅ 100% AI images |
+| Fit | 23 | ✅ 100% AI images |
+| Travel | 11 | ✅ 100% AI images |
+| Stay | 9 | ✅ 100% AI images |
+| Dine | 9 | ✅ 100% AI images |
+| Learn | 12 | ✅ 100% AI images |
+| Enjoy | 5 | ✅ 100% AI images |
+| Advisory | 8 | ✅ 100% AI images |
+| Emergency | 8 | ✅ 100% AI images |
+| Farewell | 8 | ✅ 100% AI images |
+| Adopt | 9 | ✅ 100% AI images |
+| Paperwork | 16 | ✅ 100% AI images |
+| **TOTAL** | **160** | **✅ 100% Coverage** |
+
+All images uploaded to Cloudinary (`services/{pillar}` folders) with soft watercolor illustration style.
+
+### 5. Concierge Modal Enhancement ✅
+Enhanced pet selection in concierge modal:
+- Shows pet photo (if available) in selection cards
+- Personalized header: "Request for [Pet Name]"
+- Check icon for selected pet
+- Added `data-testid` for testing
 
 ---
 
