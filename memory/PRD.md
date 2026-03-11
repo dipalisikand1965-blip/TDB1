@@ -1,6 +1,6 @@
 # The Doggy Company - PRD (Product Requirements Document)
 **Last Updated:** March 11, 2026  
-**Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅ | MIRA ADVISOR 100% ✅ | CELEBRATE 100% ✅ | AI IMAGES 100% ✅ | **LEARN 70% 🔄 IN PROGRESS**
+**Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅ | MIRA ADVISOR 100% ✅ | CELEBRATE 100% ✅ | AI IMAGES 100% ✅ | **LEARN 80% 🔄 IN PROGRESS**
 
 ---
 
@@ -18,14 +18,19 @@
    - **Services tab** shows "Ask Concierge" badge for unavailable services
    - **Services navigate correctly** → /services for available, service desk for unavailable
    - **"Send to Concierge"** uses Universal Service Command flow (NOT Mira AI)
-   - Testing: 100% pass rate (8/8 tests passed)
+
+3. **YouTube Videos Integration** - DONE ✅
+   - **Videos tab now shows real YouTube videos** for each topic
+   - **Curated fallback videos** when YouTube API quota is exceeded
+   - **12 topics have curated video playlists**: puppy_training, basic_training, dog_grooming, dog_behavior, dog_nutrition, dog_health, senior_dogs, dog_travel, dog_breeds, rescue_dogs, seasonal_care, new_dog_owner
+   - **Video cards show**: Thumbnail, title, channel name, duration, external link
 
 ### The Golden Standard Flow (in order):
 ```
 1️⃣ Ask bar at top (opens Mira AI) ✅ DONE
 2️⃣ 12 Topic boxes with watercolor illustrations ✅ DONE (opens POPUP modal) ✅ DONE
 3️⃣ Learn for my dog (Bruno) - personalized section ❌ NOT DONE
-4️⃣ Watch videos ❌ NOT DONE  
+4️⃣ Watch videos ✅ DONE (inside topic modals)
 5️⃣ Products that help ❌ NOT DONE (has old section, needs redesign)
 6️⃣ Services that help ❌ NOT DONE (has old section, needs redesign)
 7️⃣ Near me ✅ EXISTS (NearbyLearnServices component)

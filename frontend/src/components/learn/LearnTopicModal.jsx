@@ -30,12 +30,77 @@ import {
 } from 'lucide-react';
 
 // Topic configurations with search keywords for products
+// Fallback curated videos when YouTube API quota is exceeded
+const CURATED_VIDEOS = {
+  'puppy_training': [
+    { videoId: 'rS0Iz-EoH1g', title: 'First Week Home - Puppy Training Tips', thumbnail: 'https://img.youtube.com/vi/rS0Iz-EoH1g/mqdefault.jpg', channelTitle: 'Zak George', duration: '12:45' },
+    { videoId: 'dEqQ7bE4mYU', title: 'House Training Your Puppy', thumbnail: 'https://img.youtube.com/vi/dEqQ7bE4mYU/mqdefault.jpg', channelTitle: 'McCann Dogs', duration: '8:23' },
+    { videoId: 'H3bYnp2R4Is', title: 'Puppy Socialization Guide', thumbnail: 'https://img.youtube.com/vi/H3bYnp2R4Is/mqdefault.jpg', channelTitle: 'Kikopup', duration: '10:15' }
+  ],
+  'basic_training': [
+    { videoId: 'ZgqDf9n01aE', title: 'Basic Obedience Training', thumbnail: 'https://img.youtube.com/vi/ZgqDf9n01aE/mqdefault.jpg', channelTitle: 'Zak George', duration: '15:30' },
+    { videoId: 'sKj5Lke1MnA', title: 'Teach Your Dog to Sit, Stay, Down', thumbnail: 'https://img.youtube.com/vi/sKj5Lke1MnA/mqdefault.jpg', channelTitle: 'McCann Dogs', duration: '11:20' },
+    { videoId: 'HKmD2D5j6fg', title: 'Leash Walking Made Easy', thumbnail: 'https://img.youtube.com/vi/HKmD2D5j6fg/mqdefault.jpg', channelTitle: 'Simpawtico', duration: '14:05' }
+  ],
+  'dog_grooming': [
+    { videoId: '8CWKPQjjMLE', title: 'Complete Dog Grooming Guide', thumbnail: 'https://img.youtube.com/vi/8CWKPQjjMLE/mqdefault.jpg', channelTitle: 'Pet Care Pro', duration: '18:45' },
+    { videoId: 'L3p5KW1Xglc', title: 'How to Trim Dog Nails Safely', thumbnail: 'https://img.youtube.com/vi/L3p5KW1Xglc/mqdefault.jpg', channelTitle: 'Vet Ranch', duration: '7:30' },
+    { videoId: 'vDVDwKPvFnI', title: 'Bath Time Tips for Dogs', thumbnail: 'https://img.youtube.com/vi/vDVDwKPvFnI/mqdefault.jpg', channelTitle: 'Pet Grooming', duration: '9:15' }
+  ],
+  'dog_behavior': [
+    { videoId: 'qK6xYF08mCs', title: 'Stop Dog Barking - Proven Methods', thumbnail: 'https://img.youtube.com/vi/qK6xYF08mCs/mqdefault.jpg', channelTitle: 'Zak George', duration: '13:20' },
+    { videoId: '3dMKR5b9u20', title: 'Dealing with Dog Anxiety', thumbnail: 'https://img.youtube.com/vi/3dMKR5b9u20/mqdefault.jpg', channelTitle: 'Kikopup', duration: '16:40' },
+    { videoId: 'R-OVhz4xOt8', title: 'Separation Anxiety Solutions', thumbnail: 'https://img.youtube.com/vi/R-OVhz4xOt8/mqdefault.jpg', channelTitle: 'McCann Dogs', duration: '11:55' }
+  ],
+  'dog_nutrition': [
+    { videoId: 'hWLXhqGMFGI', title: 'Best Dog Food - What to Feed', thumbnail: 'https://img.youtube.com/vi/hWLXhqGMFGI/mqdefault.jpg', channelTitle: 'Vet Explains', duration: '14:10' },
+    { videoId: 'nT1eVl8CiF8', title: 'How Much to Feed Your Dog', thumbnail: 'https://img.youtube.com/vi/nT1eVl8CiF8/mqdefault.jpg', channelTitle: 'Pet Nutrition', duration: '8:45' },
+    { videoId: 'G8u-D_IwAzk', title: 'Homemade Dog Food Recipe', thumbnail: 'https://img.youtube.com/vi/G8u-D_IwAzk/mqdefault.jpg', channelTitle: 'Healthy Pet', duration: '12:30' }
+  ],
+  'dog_health': [
+    { videoId: '7Dz3OlOb1pM', title: 'Dog Health Check at Home', thumbnail: 'https://img.youtube.com/vi/7Dz3OlOb1pM/mqdefault.jpg', channelTitle: 'Vet Explains', duration: '10:20' },
+    { videoId: 'gYgXsILFxYE', title: 'Vaccination Schedule for Dogs', thumbnail: 'https://img.youtube.com/vi/gYgXsILFxYE/mqdefault.jpg', channelTitle: 'Pet Health', duration: '7:50' },
+    { videoId: 'LdKcM0qMRbw', title: 'Dental Care for Dogs', thumbnail: 'https://img.youtube.com/vi/LdKcM0qMRbw/mqdefault.jpg', channelTitle: 'Vet Ranch', duration: '9:35' }
+  ],
+  'senior_dogs': [
+    { videoId: '5aKe6CZbTsk', title: 'Caring for Senior Dogs', thumbnail: 'https://img.youtube.com/vi/5aKe6CZbTsk/mqdefault.jpg', channelTitle: 'Vet Explains', duration: '15:20' },
+    { videoId: '8TxHmXj_Oxk', title: 'Senior Dog Exercise Tips', thumbnail: 'https://img.youtube.com/vi/8TxHmXj_Oxk/mqdefault.jpg', channelTitle: 'Pet Care', duration: '8:40' },
+    { videoId: 'w1nBcH0-aaY', title: 'Joint Care for Older Dogs', thumbnail: 'https://img.youtube.com/vi/w1nBcH0-aaY/mqdefault.jpg', channelTitle: 'Pet Health', duration: '11:15' }
+  ],
+  'dog_travel': [
+    { videoId: 'G9kMsL_bHeg', title: 'Traveling with Your Dog', thumbnail: 'https://img.youtube.com/vi/G9kMsL_bHeg/mqdefault.jpg', channelTitle: 'Pet Travel', duration: '12:30' },
+    { videoId: 'ZfPKBFcj0Pk', title: 'Road Trip Tips with Dogs', thumbnail: 'https://img.youtube.com/vi/ZfPKBFcj0Pk/mqdefault.jpg', channelTitle: 'Dog Adventures', duration: '9:15' },
+    { videoId: 'vKVV8wD8NfI', title: 'Flying with Your Dog', thumbnail: 'https://img.youtube.com/vi/vKVV8wD8NfI/mqdefault.jpg', channelTitle: 'Pet Travel Pro', duration: '14:40' }
+  ],
+  'dog_breeds': [
+    { videoId: 'BxVFjLUb8uE', title: 'Choosing the Right Breed', thumbnail: 'https://img.youtube.com/vi/BxVFjLUb8uE/mqdefault.jpg', channelTitle: 'Pet Guide', duration: '16:20' },
+    { videoId: 'kpXPYrvjffQ', title: 'Popular Dog Breeds Explained', thumbnail: 'https://img.youtube.com/vi/kpXPYrvjffQ/mqdefault.jpg', channelTitle: 'Dog 101', duration: '13:45' },
+    { videoId: 'r5D6bVFj3zE', title: 'Breed-Specific Care Tips', thumbnail: 'https://img.youtube.com/vi/r5D6bVFj3zE/mqdefault.jpg', channelTitle: 'Vet Explains', duration: '11:30' }
+  ],
+  'rescue_dogs': [
+    { videoId: 'L_xZXKfhzI8', title: 'Adopting a Rescue Dog', thumbnail: 'https://img.youtube.com/vi/L_xZXKfhzI8/mqdefault.jpg', channelTitle: 'Rescue Stories', duration: '14:50' },
+    { videoId: 'qX5J6q1oFr4', title: 'First Days with Rescue Dog', thumbnail: 'https://img.youtube.com/vi/qX5J6q1oFr4/mqdefault.jpg', channelTitle: 'Kikopup', duration: '12:20' },
+    { videoId: 'kYnPZPXNxHg', title: 'Building Trust with Rescue Dogs', thumbnail: 'https://img.youtube.com/vi/kYnPZPXNxHg/mqdefault.jpg', channelTitle: 'McCann Dogs', duration: '10:35' }
+  ],
+  'seasonal_care': [
+    { videoId: 'cUHWRvpCH5k', title: 'Summer Safety for Dogs', thumbnail: 'https://img.youtube.com/vi/cUHWRvpCH5k/mqdefault.jpg', channelTitle: 'Vet Explains', duration: '9:45' },
+    { videoId: 'PqHvOBJpWNs', title: 'Winter Care Tips', thumbnail: 'https://img.youtube.com/vi/PqHvOBJpWNs/mqdefault.jpg', channelTitle: 'Pet Care Pro', duration: '8:30' },
+    { videoId: 'bF3e0NQZXVM', title: 'Monsoon Pet Care Guide', thumbnail: 'https://img.youtube.com/vi/bF3e0NQZXVM/mqdefault.jpg', channelTitle: 'Pet Health', duration: '7:20' }
+  ],
+  'new_dog_owner': [
+    { videoId: 'gpCy0d8F2AY', title: 'First Time Dog Owner Guide', thumbnail: 'https://img.youtube.com/vi/gpCy0d8F2AY/mqdefault.jpg', channelTitle: 'Zak George', duration: '18:30' },
+    { videoId: 'jfE8Fk4BgVI', title: 'Preparing for a New Dog', thumbnail: 'https://img.youtube.com/vi/jfE8Fk4BgVI/mqdefault.jpg', channelTitle: 'Pet Guide', duration: '11:45' },
+    { videoId: '1vbJ5VCWvQY', title: 'New Dog Checklist', thumbnail: 'https://img.youtube.com/vi/1vbJ5VCWvQY/mqdefault.jpg', channelTitle: 'McCann Dogs', duration: '13:20' }
+  ]
+};
+
 const TOPIC_CONFIG = {
   'puppy-basics': {
     title: 'Puppy Basics',
     image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/93c239031e6456380de0efe5eb0dc4f6c5b0c024dd4773902b6e0c573190b1d8.png',
     color: 'pink',
     description: 'Everything you need to know about raising a happy, healthy puppy.',
+    videoTopic: 'puppy_training',
     topics: [
       { title: 'First week at home', tip: 'Create a safe, quiet space for your puppy to decompress. Limit visitors for the first few days. Establish a consistent routine from day one.' },
       { title: 'Toilet training', tip: 'Take your puppy out every 2 hours, after meals, and after naps. Praise immediately when they go outside. Use enzymatic cleaners for accidents.' },
@@ -56,6 +121,7 @@ const TOPIC_CONFIG = {
     image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/b19ce463f91811f725efcf22558df9a370147e238e79f810d6f6f25776b03144.png',
     color: 'blue',
     description: 'Understand the unique traits and care needs of different dog breeds.',
+    videoTopic: 'dog_breeds',
     topics: [
       { title: 'Labrador', tip: 'Labs are high-energy and food-motivated. They need daily exercise and mental stimulation. Watch for hip dysplasia and obesity.' },
       { title: 'Shih Tzu', tip: 'Daily brushing is essential. Keep face clean and dry to prevent infections. They overheat easily - avoid hot weather exercise.' },
@@ -75,6 +141,7 @@ const TOPIC_CONFIG = {
     image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/5b1a4488a31b3aba09ebc15dd55c6155cee07f252d937530af9763ce6122ed48.png',
     color: 'orange',
     description: 'Learn about proper nutrition, feeding schedules, and healthy diet choices.',
+    videoTopic: 'dog_nutrition',
     topics: [
       { title: 'How much to feed', tip: 'General rule: 2-3% of body weight for adults. Adjust based on activity level, age, and body condition score.' },
       { title: 'Feeding schedules', tip: 'Adults do best on 2 meals/day. Feed at consistent times. Remove uneaten food after 20 minutes.' },
@@ -93,6 +160,7 @@ const TOPIC_CONFIG = {
     image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/2aeee0fe285e7f4bf9b0695c92778e425922cb62c68d06f1fe8fdc33715f7aac.png',
     color: 'purple',
     description: 'Master grooming techniques for brushing, bathing, nail care, and coat maintenance.',
+    videoTopic: 'dog_grooming',
     topics: [
       { title: 'Brushing basics', tip: 'Brush in the direction of hair growth. Start from the neck, work towards tail. Use treats to make it positive.' },
       { title: 'Bathing guide', tip: 'Bath every 4-8 weeks unless dirty. Use lukewarm water. Protect ears from water. Dry thoroughly, especially in skin folds.' },
@@ -112,6 +180,7 @@ const TOPIC_CONFIG = {
     image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/22b2a63c7ce6c1bf271784616d997150b922e72b42f23b0b0dea6354151c556b.png',
     color: 'yellow',
     description: 'Understand and address common behavioral issues like barking, anxiety, and more.',
+    videoTopic: 'dog_behavior',
     topics: [
       { title: 'Barking', tip: 'Identify the trigger first. Teach "quiet" command. Never yell - it sounds like barking to them. Reward silence.' },
       { title: 'Chewing', tip: 'Provide appropriate chew outlets. Puppy-proof your space. Redirect to toys immediately. Exercise reduces destructive chewing.' },
@@ -131,6 +200,7 @@ const TOPIC_CONFIG = {
     image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/3e9d2387a56550d68b8a4694f20654d13cb537ecee01b51b0f2cd396ecc09efd.png',
     color: 'green',
     description: 'Learn fundamental training techniques for obedience, commands, and leash walking.',
+    videoTopic: 'basic_training',
     topics: [
       { title: 'Sit command', tip: 'Hold treat above nose, move back over head. As they sit, say "sit" and reward. Practice before meals.' },
       { title: 'Stay command', tip: 'Start with 1 second, build duration slowly. Step back one step at a time. Always release with a word like "okay".' },
@@ -150,6 +220,7 @@ const TOPIC_CONFIG = {
     image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/9b35a1a9ed5767659671cda04fc117a5abeafb2693411704164c5b37a1062ffe.png',
     color: 'sky',
     description: 'Prepare for safe and stress-free travel with your dog.',
+    videoTopic: 'dog_travel',
     topics: [
       { title: 'Road trips', tip: 'Stop every 2-3 hours for bathroom breaks. Never leave dog in parked car. Use a secured crate or car harness.' },
       { title: 'Flight preparation', tip: 'Get health certificate 10 days before. Familiarize with carrier weeks ahead. Avoid sedation unless vet-recommended.' },
@@ -168,6 +239,7 @@ const TOPIC_CONFIG = {
     image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/d9d9ebf8fe66ddcef4c455dbe5001f6143ef5b0c6ddf6e61689713ea03d13ec2.png',
     color: 'amber',
     description: 'Caring for your aging companion with comfort and health support.',
+    videoTopic: 'senior_dogs',
     topics: [
       { title: 'Mobility support', tip: 'Use ramps for furniture/cars. Non-slip mats on floors. Shorter, gentler walks more frequently.' },
       { title: 'Arthritis care', tip: 'Warm bedding helps. Joint supplements (glucosamine, fish oil). Low-impact exercise like swimming.' },
@@ -187,6 +259,7 @@ const TOPIC_CONFIG = {
     image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/c693f115f02adac326f5e6bb07378e3636c4a2774096c30b532317a65464632d.png',
     color: 'red',
     description: 'Essential health knowledge including vaccinations and dental care.',
+    videoTopic: 'dog_health',
     topics: [
       { title: 'Vaccination schedule', tip: 'Core vaccines: Rabies, Distemper, Parvovirus, Adenovirus. Puppies need boosters every 3-4 weeks until 16 weeks.' },
       { title: 'Parasite prevention', tip: 'Monthly heartworm prevention year-round. Flea/tick prevention based on your area. Regular deworming schedule.' },
@@ -206,6 +279,7 @@ const TOPIC_CONFIG = {
     image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/87e1b52ec6d6ab336a68adcea43c4a143f8de59d3cd2824e64e2c3fd9614441a.png',
     color: 'teal',
     description: 'Special guidance for adopted dogs and indie breeds.',
+    videoTopic: 'rescue_dogs',
     topics: [
       { title: 'Settling rescue dogs', tip: '3-3-3 rule: 3 days decompression, 3 weeks learning routine, 3 months to feel home. Go slow.' },
       { title: 'Trust building', tip: 'Let them come to you. Hand-feed meals. Create predictable routines. Never force physical affection.' },
@@ -224,6 +298,7 @@ const TOPIC_CONFIG = {
     image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/1e5c1f02a009891fbcef1a3e1004e6f1dfe7201bafd892ee8c1d026697842455.png',
     color: 'yellow',
     description: 'Weather-specific care tips for summer, monsoon, and winter.',
+    videoTopic: 'seasonal_care',
     topics: [
       { title: 'Summer: Heat prevention', tip: 'Walk early morning or late evening. Never leave in car. Provide shade and cool areas. Watch for panting/drooling.' },
       { title: 'Summer: Hydration', tip: 'Carry water on walks. Add ice cubes to bowl. Frozen treats help cool down. Watch for signs of heatstroke.' },
@@ -240,6 +315,7 @@ const TOPIC_CONFIG = {
     image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/484b7ec0a72919db7f6137f25033184bea6787c2ccb296ffb23544249b6ae7a4.png',
     color: 'pink',
     description: 'Your complete starter guide to welcoming a new dog.',
+    videoTopic: 'new_dog_owner',
     topics: [
       { title: 'First supplies', tip: 'Essentials: collar, leash, ID tags, food/water bowls, bed, crate, toys, poop bags, food, treats.' },
       { title: 'First vet visit', tip: 'Schedule within 48 hours. Bring any records from breeder/shelter. Prepare questions. Start vaccination schedule.' },
@@ -266,13 +342,30 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
   const [expandedTopic, setExpandedTopic] = useState(null);
   const [products, setProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
+  const [videos, setVideos] = useState([]);
+  const [loadingVideos, setLoadingVideos] = useState(false);
   
   const config = TOPIC_CONFIG[topicSlug];
+  
+  // Reset state when topic changes
+  useEffect(() => {
+    setActiveTab('overview');
+    setExpandedTopic(null);
+    setProducts([]);
+    setVideos([]);
+  }, [topicSlug]);
   
   // Fetch products when Products tab is opened
   useEffect(() => {
     if (activeTab === 'products' && config && products.length === 0) {
       fetchProducts();
+    }
+  }, [activeTab, config]);
+  
+  // Fetch videos when Videos tab is opened
+  useEffect(() => {
+    if (activeTab === 'videos' && config && videos.length === 0) {
+      fetchVideos();
     }
   }, [activeTab, config]);
   
@@ -290,6 +383,33 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
       console.error('Failed to fetch products:', err);
     } finally {
       setLoadingProducts(false);
+    }
+  };
+  
+  // Fetch YouTube videos by topic (with fallback to curated videos)
+  const fetchVideos = async () => {
+    if (!config) return;
+    setLoadingVideos(true);
+    try {
+      const topic = config.videoTopic || 'dog_care';
+      const res = await fetch(`${API_URL}/api/mira/youtube/by-topic?topic=${encodeURIComponent(topic)}&max_results=6`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.videos && data.videos.length > 0) {
+          setVideos(data.videos);
+          return;
+        }
+      }
+      // Fallback to curated videos if API fails or returns empty
+      const fallbackVideos = CURATED_VIDEOS[config.videoTopic] || CURATED_VIDEOS['basic_training'] || [];
+      setVideos(fallbackVideos);
+    } catch (err) {
+      console.error('Failed to fetch videos:', err);
+      // Use curated fallback videos on error
+      const fallbackVideos = CURATED_VIDEOS[config.videoTopic] || CURATED_VIDEOS['basic_training'] || [];
+      setVideos(fallbackVideos);
+    } finally {
+      setLoadingVideos(false);
     }
   };
   
@@ -453,26 +573,82 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
               </div>
             </TabsContent>
             
-            {/* Videos Tab */}
+            {/* Videos Tab - Real YouTube videos */}
             <TabsContent value="videos" className="mt-0">
-              <p className="text-sm text-gray-500 mb-4">Video content coming soon! In the meantime, ask Mira for personalized guidance.</p>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  onClose();
-                  window.dispatchEvent(new CustomEvent('openMiraAI', {
-                    detail: {
-                      message: `Tell me about ${config.title}`,
-                      context: 'learn',
-                      pillar: 'learn'
-                    }
-                  }));
-                }}
-                className="w-full"
-              >
-                <Sparkles className="w-4 h-4 mr-2" />
-                Ask Mira about {config.title}
-              </Button>
+              {loadingVideos ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
+                </div>
+              ) : videos.length > 0 ? (
+                <div className="space-y-3">
+                  {videos.map((video, idx) => (
+                    <Card 
+                      key={video.videoId || idx}
+                      className="overflow-hidden cursor-pointer hover:shadow-md transition-all"
+                      onClick={() => window.open(`https://youtube.com/watch?v=${video.videoId}`, '_blank')}
+                      data-testid={`video-card-${idx}`}
+                    >
+                      <div className="flex gap-3 p-3">
+                        <div className="relative w-32 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                          {video.thumbnail ? (
+                            <img 
+                              src={video.thumbnail} 
+                              alt={video.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Play className="w-8 h-8 text-gray-300" />
+                            </div>
+                          )}
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 hover:opacity-100 transition-opacity">
+                            <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
+                              <Play className="w-5 h-5 text-teal-600 ml-0.5" />
+                            </div>
+                          </div>
+                          {video.duration && (
+                            <span className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/70 text-white text-xs rounded">
+                              {video.duration}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-gray-900 text-sm line-clamp-2">{video.title}</h4>
+                          {video.channelTitle && (
+                            <p className="text-xs text-gray-500 mt-1">{video.channelTitle}</p>
+                          )}
+                          {video.description && (
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{video.description}</p>
+                          )}
+                        </div>
+                        <ExternalLink className="w-4 h-4 text-gray-400 flex-shrink-0 mt-1" />
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Play className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-sm text-gray-500 mb-4">No videos found for this topic</p>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      onClose();
+                      window.dispatchEvent(new CustomEvent('openMiraAI', {
+                        detail: {
+                          message: `Tell me about ${config.title}`,
+                          context: 'learn',
+                          pillar: 'learn'
+                        }
+                      }));
+                    }}
+                    className="w-full"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Ask Mira about {config.title}
+                  </Button>
+                </div>
+              )}
             </TabsContent>
             
             {/* Products Tab - Real products from catalogue */}
