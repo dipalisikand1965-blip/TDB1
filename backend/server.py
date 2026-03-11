@@ -1632,6 +1632,78 @@ async def lifespan(app: FastAPI):
             except Exception as e:
                 logger.warning(f"[MASTER SYNC 8/8] Guided Paths seed skipped: {e}")
             
+            # Step 10: Cleanup Duplicate Services (CRITICAL FOR PRODUCTION)
+            logger.info("[MASTER SYNC 10/11] Cleaning up duplicate services...")
+            try:
+                # Find and remove duplicate services, keeping ones with images
+                pipeline = [
+                    {"$group": {
+                        "_id": {"name": "$name", "pillar": "$pillar"},
+                        "count": {"$sum": 1},
+                        "ids": {"$push": "$_id"},
+                        "images": {"$push": "$image"}
+                    }},
+                    {"$match": {"count": {"$gt": 1}}}
+                ]
+                
+                duplicates = await db.services_master.aggregate(pipeline).to_list(1000)
+                duplicates_removed = 0
+                
+                for dup in duplicates:
+                    # Find the best version (one with image)
+                    best_idx = 0
+                    for i, img in enumerate(dup["images"]):
+                        if img and ("emergentagent" in str(img) or "cloudinary" in str(img) or (isinstance(img, str) and img.startswith("http"))):
+                            best_idx = i
+                            break
+                    
+                    # Delete all except the best one
+                    ids_to_delete = [dup["ids"][i] for i in range(len(dup["ids"])) if i != best_idx]
+                    
+                    if ids_to_delete:
+                        result = await db.services_master.delete_many({"_id": {"$in": ids_to_delete}})
+                        duplicates_removed += result.deleted_count
+                
+                logger.info(f"[MASTER SYNC 10/11] ✅ Cleaned up {duplicates_removed} duplicate services")
+            except Exception as e:
+                logger.warning(f"[MASTER SYNC 10/11] Duplicate cleanup skipped: {e}")
+            
+            # Step 11: Fix Missing Service Images (CRITICAL FOR PILLAR PAGES)
+            logger.info("[MASTER SYNC 11/11] Fixing missing service images...")
+            try:
+                PILLAR_SERVICE_IMAGES = {
+                    "farewell": {
+                        "End-of-Life Planning": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_end_of_life_planning.png",
+                        "Euthanasia Coordination": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_euthanasia.png",
+                        "Cremation & Burial": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_cremation.png",
+                        "Memorial & Remembrance": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_memorial.png",
+                        "Grief Support Resources": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_grief_support.png",
+                        "Dignified Cremation": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_dignified_cremation.png",
+                        "Memorial Service": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_memorial_service.png",
+                        "Pet Loss Support": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_pet_loss.png",
+                    },
+                    "adopt": {
+                        "Ethical Adoption Discovery": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/adopt_ethical_discovery.png",
+                        "Breed Suitability Advisory": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/adopt_breed_advisory.png",
+                        "Adoption Readiness Planning": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/adopt_readiness.png",
+                        "Home Preparation Guidance": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/adopt_home_prep.png",
+                        "First 30 Days Support": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/adopt_first_30.png",
+                    }
+                }
+                
+                services_fixed = 0
+                for pillar, services in PILLAR_SERVICE_IMAGES.items():
+                    for name, image_url in services.items():
+                        result = await db.services_master.update_many(
+                            {"name": name, "pillar": pillar, "$or": [{"image": None}, {"image": ""}, {"image": {"$exists": False}}]},
+                            {"$set": {"image": image_url}}
+                        )
+                        services_fixed += result.modified_count
+                
+                logger.info(f"[MASTER SYNC 11/11] ✅ Fixed images for {services_fixed} services")
+            except Exception as e:
+                logger.warning(f"[MASTER SYNC 11/11] Service image fix skipped: {e}")
+            
             logger.info("=" * 60)
             logger.info("🎉 MASTER SYNC COMPLETE - ALL DATA READY")
             logger.info("=" * 60)
