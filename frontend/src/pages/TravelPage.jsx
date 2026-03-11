@@ -13,6 +13,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { usePillarContext } from '../context/PillarContext';
 import MiraAdvisorCard from '../components/MiraAdvisorCard';
+import { ChecklistDownloadButton } from '../components/checklists';
 import { toast } from '../hooks/use-toast';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import ProductCard from '../components/ProductCard';
@@ -35,7 +36,7 @@ import {
   Car, Train, Plane, Truck, MapPin, Calendar, Clock, PawPrint,
   Shield, Heart, CheckCircle, AlertTriangle, MessageCircle, Phone,
   ChevronRight, ChevronLeft, Sparkles, Package, Star, Loader2, Info, Send,
-  ArrowRight, Users, Play, X, ChevronDown, Gift, Zap
+  ArrowRight, Users, Play, X, ChevronDown, Gift, Zap, Download
 } from 'lucide-react';
 
 // Travel Types Configuration
@@ -494,6 +495,15 @@ const TravelPage = () => {
       <div className="py-8 px-4 bg-cyan-50/30">
         <div className="max-w-2xl mx-auto">
           <MiraAdvisorCard pillar="travel" activePet={activePet} />
+          
+          {/* Download Travel Checklist */}
+          <div className="mt-4 flex justify-center">
+            <ChecklistDownloadButton 
+              pillar="travel" 
+              variant="outline"
+              className="border-sky-300 text-sky-700 hover:bg-sky-50"
+            />
+          </div>
         </div>
       </div>
 

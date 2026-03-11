@@ -20,11 +20,12 @@ import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
+import { ChecklistDownloadButton } from '../components/checklists';
 import { useNavigate } from 'react-router-dom';
 import {
   Heart, Rainbow, Flower2, Star, Calendar, Phone, Mail, MapPin,
   Clock, ChevronRight, ChevronLeft, Sparkles, Home, CheckCircle, Users,
-  MessageCircle, ArrowRight, Book, Camera, Music, Loader2, X, ShoppingCart
+  MessageCircle, ArrowRight, Book, Camera, Music, Loader2, X, ShoppingCart, Download
 } from 'lucide-react';
 import RainbowBridgeMemorial from '../components/RainbowBridgeMemorial';
 import RainbowBridgeWall from '../components/RainbowBridgeWall';
@@ -451,6 +452,15 @@ const FarewellPage = () => {
               Powered by Mira AI - compassionate support when you need it
             </p>
           </Card>
+          
+          {/* Download Rainbow Bridge Guide */}
+          <div className="mt-4 flex justify-center">
+            <ChecklistDownloadButton 
+              pillar="farewell" 
+              variant="outline"
+              className="border-purple-400 text-purple-300 hover:bg-purple-800/50"
+            />
+          </div>
         </div>
       </section>
 

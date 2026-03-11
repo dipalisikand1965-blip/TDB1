@@ -13,6 +13,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { usePillarContext } from '../context/PillarContext';
 import MiraAdvisorCard from '../components/MiraAdvisorCard';
+import { ChecklistDownloadButton } from '../components/checklists';
 import { toast } from '../hooks/use-toast';
 import ProductCard from '../components/ProductCard';
 import { ConciergeButton } from '../components/mira-os';
@@ -808,6 +809,15 @@ const CarePage = () => {
       <div className="py-8 px-4 bg-teal-50/30">
         <div className="max-w-2xl mx-auto">
           <MiraAdvisorCard pillar="care" activePet={selectedPet} />
+          
+          {/* Download Grooming Schedule */}
+          <div className="mt-4 flex justify-center">
+            <ChecklistDownloadButton 
+              pillar="care" 
+              variant="outline"
+              className="border-teal-300 text-teal-700 hover:bg-teal-50"
+            />
+          </div>
         </div>
       </div>
 

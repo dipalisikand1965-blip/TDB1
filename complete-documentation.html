@@ -56,7 +56,7 @@
     <div class="header">
         <h1>The Doggy Company</h1>
         <p>Mira-OS: The Pet Life Operating System</p>
-        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: March 12, 2026 08:00 IST | Version 8.6.0</p>
+        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: March 12, 2026 08:30 IST | Version 8.6.1 - PDF Checklists</p>
     </div>
 
     <div class="container">
@@ -263,6 +263,89 @@ window.dispatchEvent(new CustomEvent('openMiraAI', {
   }
 }));
             </pre>
+        </div>
+
+        <!-- Session 8.6 Part 2 - Printable PDF Checklists -->
+        <div class="section" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 3px solid #f59e0b;">
+            <h2 style="color: #b45309; border-color: #f59e0b;">✅ Session 8.6 - Printable PDF Checklists COMPLETE (March 12, 2026)</h2>
+            
+            <div class="success-box">
+                <strong>7 BRANDED PDF CHECKLISTS NOW AVAILABLE!</strong>
+            </div>
+
+            <h3>Backend API Endpoints:</h3>
+            <table>
+                <tr><th>Endpoint</th><th>Description</th></tr>
+                <tr><td><code>GET /api/checklists/all/available</code></td><td>List all checklists across pillars</td></tr>
+                <tr><td><code>GET /api/checklists/{pillar}</code></td><td>List checklists for specific pillar</td></tr>
+                <tr><td><code>GET /api/checklists/{pillar}/{id}</code></td><td>Get checklist data</td></tr>
+                <tr><td><code>GET /api/checklists/{pillar}/{id}/personalized</code></td><td>Get personalized with pet data</td></tr>
+            </table>
+
+            <h3>Available Checklists:</h3>
+            <table>
+                <tr><th>Pillar</th><th>Checklist</th><th>Key Content</th></tr>
+                <tr>
+                    <td style="color: #22c55e;">Adopt</td>
+                    <td>🏠 Welcome Home Kit</td>
+                    <td>Day 1 essentials, safety tips, health checklist, first week goals</td>
+                </tr>
+                <tr>
+                    <td style="color: #22c55e;">Adopt</td>
+                    <td>🏥 First Vet Visit Prep</td>
+                    <td>Documents to bring, questions to ask, what to expect</td>
+                </tr>
+                <tr>
+                    <td style="color: #ef4444;">Emergency</td>
+                    <td>🚨 Emergency Ready Card</td>
+                    <td>Wallet-sized with emergency contacts, health info, allergies</td>
+                </tr>
+                <tr>
+                    <td style="color: #ef4444;">Emergency</td>
+                    <td>🩹 Pet First Aid Kit</td>
+                    <td>Wound care, tools, medications, emergency essentials</td>
+                </tr>
+                <tr>
+                    <td style="color: #0ea5e9;">Travel</td>
+                    <td>✈️ Travel Ready Pack</td>
+                    <td>Documents, travel gear, food & medication, pre-travel checklist</td>
+                </tr>
+                <tr>
+                    <td style="color: #a855f7;">Farewell</td>
+                    <td>🌈 Rainbow Bridge Guide</td>
+                    <td>End-of-life preparation, memorial options, grief support</td>
+                </tr>
+                <tr>
+                    <td style="color: #14b8a6;">Care</td>
+                    <td>✨ Grooming Schedule</td>
+                    <td>Daily, weekly, monthly, seasonal care + breed-specific notes</td>
+                </tr>
+            </table>
+
+            <h3>Frontend Components:</h3>
+            <ul>
+                <li><code>/app/frontend/src/components/checklists/ChecklistPDF.jsx</code> - Branded PDF template</li>
+                <li><code>/app/frontend/src/components/checklists/ChecklistDownloadButton.jsx</code> - Dropdown button</li>
+                <li><code>/app/frontend/src/components/checklists/index.js</code> - Export module</li>
+            </ul>
+
+            <h3>Personalization Features:</h3>
+            <ul>
+                <li>Pet name included in PDF title and content</li>
+                <li>Breed-specific items highlighted</li>
+                <li>Soul score displayed (if available)</li>
+                <li>Allergies and medications pre-filled</li>
+                <li>Breed-specific grooming notes (10+ breeds supported)</li>
+            </ul>
+
+            <h3>Pages with Download Button:</h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <span style="background: #22c55e20; color: #22c55e; padding: 5px 10px; border-radius: 4px;">✅ Adopt</span>
+                <span style="background: #ef444420; color: #ef4444; padding: 5px 10px; border-radius: 4px;">✅ Emergency</span>
+                <span style="background: #0ea5e920; color: #0ea5e9; padding: 5px 10px; border-radius: 4px;">✅ Travel</span>
+                <span style="background: #a855f720; color: #a855f7; padding: 5px 10px; border-radius: 4px;">✅ Farewell</span>
+                <span style="background: #14b8a620; color: #14b8a6; padding: 5px 10px; border-radius: 4px;">✅ Care</span>
+            </div>
         </div>
 
         <!-- Session 8.4 Updates -->
