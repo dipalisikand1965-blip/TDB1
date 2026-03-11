@@ -56,11 +56,137 @@
     <div class="header">
         <h1>The Doggy Company</h1>
         <p>Mira-OS: The Pet Life Operating System</p>
-        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: March 11, 2026 18:45 IST | Version 8.3.0</p>
+        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: March 11, 2026 19:30 IST | Version 8.4.0</p>
     </div>
 
     <div class="container">
-        <!-- Session 8.3 Updates - LATEST -->
+        <!-- CRITICAL: Production Sync Guide -->
+        <div class="section" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 3px solid #f59e0b;">
+            <h2 style="color: #b45309; border-color: #f59e0b;">⚠️ CRITICAL: Production Data Sync Guide</h2>
+            
+            <div class="warning-box" style="background: #fef3c7; border: 2px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <strong>🚨 IMPORTANT FOR ALL FUTURE AGENTS:</strong><br>
+                Preview and Production use <strong>DIFFERENT MongoDB databases</strong>. Code deploys automatically, but <strong>DATA DOES NOT</strong>. 
+                After any deployment that adds/modifies products, services, or content, you MUST run the sync commands below.
+            </div>
+
+            <h3>When Does This Happen?</h3>
+            <ul>
+                <li>After deploying new code that seeds/creates data (products, services, bundles)</li>
+                <li>After generating AI images for services</li>
+                <li>After adding new guided paths or content</li>
+                <li>When user reports "missing data" or "wrong images" on production</li>
+            </ul>
+
+            <h3>Available Sync Endpoints (POST requests, require password=lola4304):</h3>
+            <table>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Purpose</th>
+                    <th>When to Use</th>
+                </tr>
+                <tr>
+                    <td><code>/api/admin/bulk-import-products</code></td>
+                    <td>Sync all products from preview to production</td>
+                    <td>After adding Soul Made products, breed products, or any new products</td>
+                </tr>
+                <tr>
+                    <td><code>/api/admin/bulk-import-services</code></td>
+                    <td>Sync all services with images</td>
+                    <td>After generating AI images for services or adding new services</td>
+                </tr>
+                <tr>
+                    <td><code>/api/admin/bulk-import-guided-paths</code></td>
+                    <td>Sync guided paths for all pillars</td>
+                    <td>After modifying Emergency/Advisory/Farewell/Adopt guides</td>
+                </tr>
+                <tr>
+                    <td><code>/api/admin/cleanup-duplicate-services</code></td>
+                    <td>Remove duplicate services, keep ones with images</td>
+                    <td>When services appear duplicated or show wrong images</td>
+                </tr>
+                <tr>
+                    <td><code>/api/admin/fix-service-images</code></td>
+                    <td>Apply AI images to services missing them</td>
+                    <td>When pillar services show stock/placeholder images</td>
+                </tr>
+                <tr>
+                    <td><code>/api/admin/force-full-sync</code></td>
+                    <td>Run all seeders (Shopify, pillars, breeds)</td>
+                    <td>Fresh deployment or major data issues</td>
+                </tr>
+            </table>
+
+            <h3>Quick Sync Script (Run after every deployment with data changes):</h3>
+            <pre style="background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 8px; overflow-x: auto;">
+# 1. Clean duplicates first
+curl -X POST "https://thedoggycompany.com/api/admin/cleanup-duplicate-services?password=lola4304"
+
+# 2. Fix missing images
+curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=lola4304"
+
+# 3. For full product sync (run from Emergent preview terminal):
+# Use the Python script at /app/backend/production_data_sync.py
+            </pre>
+
+            <h3>Data Flow Architecture:</h3>
+            <pre style="background: #f3f4f6; padding: 15px; border-radius: 8px;">
+┌─────────────────────┐     Code Only      ┌─────────────────────┐
+│  PREVIEW (Emergent) │ ═══════════════════▶│  PRODUCTION (Live)  │
+│  mongodb://localhost│                     │  MongoDB Atlas      │
+│  DB: pet-os-live-*  │                     │  DB: thedoggycompany│
+└─────────────────────┘                     └─────────────────────┘
+         │                                            ▲
+         │          Data Sync (Manual)                │
+         └────────────────────────────────────────────┘
+              via /api/admin/bulk-import-* endpoints
+            </pre>
+        </div>
+
+        <!-- Session 8.4 Updates -->
+        <div class="section" style="background: linear-gradient(135deg, #dcfce7, #d1fae5); border: 3px solid #10b981;">
+            <h2 style="color: #166534; border-color: #10b981;">✅ Session 8.4 - "Near Me" Feature + Production Sync (March 11, 2026)</h2>
+            
+            <h3>P1: "Near Me" Feature on Adopt Page</h3>
+            <div class="success-box">
+                <strong>New pet parents can now find local services!</strong>
+            </div>
+            
+            <p>Created <code>NearbyAdoptServices.jsx</code> component with:</p>
+            <ul>
+                <li>5 service categories: Veterinarians, Pet Stores, Dog Trainers, Groomers, Boarding & Daycare</li>
+                <li>Google Places API integration (via existing <code>/api/nearby/places</code> endpoint)</li>
+                <li>Auto location detection with manual search fallback</li>
+                <li>Ratings, open/closed status, phone numbers, Google Maps directions</li>
+            </ul>
+
+            <h3>Production Data Sync Fix</h3>
+            <p>Fixed major data discrepancy between preview and production:</p>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Before</th>
+                    <th>After</th>
+                </tr>
+                <tr>
+                    <td>Products</td>
+                    <td>2,605</td>
+                    <td><span class="badge badge-live">4,177 ✅</span></td>
+                </tr>
+                <tr>
+                    <td>Services</td>
+                    <td>738 (with duplicates)</td>
+                    <td><span class="badge badge-live">1,100+ ✅</span></td>
+                </tr>
+                <tr>
+                    <td>Pillar Service Images</td>
+                    <td>Missing/broken</td>
+                    <td><span class="badge badge-live">All AI images ✅</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Session 8.3 Updates -->
         <div class="section" style="background: linear-gradient(135deg, #dcfce7, #d1fae5); border: 3px solid #10b981;">
             <h2 style="color: #166534; border-color: #10b981;">✅ Session 8.3 - Content Migration COMPLETE (March 11, 2026)</h2>
             <div class="success-box">

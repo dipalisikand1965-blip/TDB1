@@ -22,6 +22,7 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
 import CuratedBundles from '../components/CuratedBundles';
+import NearbyAdoptServices from '../components/adopt/NearbyAdoptServices';
 import { usePillarContext } from '../context/PillarContext';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Users,
@@ -624,6 +625,11 @@ const AdoptPage = () => {
         maxServices={4}
         hidePrice={true}
       />
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          NEAR ME - Find local vets, pet stores, trainers, groomers
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <NearbyAdoptServices />
 
       {/* ═══════════════════════════════════════════════════════════════════════════
           CURATED BUNDLES - Starter kits

@@ -1,6 +1,47 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 11, 2026 18:45 IST  
+**Last Updated:** March 11, 2026 19:30 IST  
 **Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅
+
+---
+
+## ⚠️ CRITICAL: Production Data Sync (READ THIS FIRST!)
+
+### The Problem
+Preview (Emergent) and Production (thedoggycompany.com) use **DIFFERENT MongoDB databases**:
+- **Preview**: `mongodb://localhost:27017/pet-os-live-test_database`
+- **Production**: MongoDB Atlas (different database entirely)
+
+**Code deploys automatically, but DATA DOES NOT.** After any deployment that modifies data, you MUST sync manually.
+
+### When to Sync
+- After adding/modifying products, services, bundles, or guided paths
+- After generating AI images for services
+- When user reports "missing data" or "wrong images" on production
+- After any seed script runs in preview
+
+### Sync Endpoints (All require `?password=lola4304`)
+```bash
+# Clean duplicate services (run first)
+curl -X POST "https://thedoggycompany.com/api/admin/cleanup-duplicate-services?password=lola4304"
+
+# Fix missing service images
+curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=lola4304"
+
+# Bulk import products (use Python script for large syncs)
+curl -X POST "https://thedoggycompany.com/api/admin/bulk-import-products?password=lola4304" -d '{"products": [...]}'
+
+# Bulk import services
+curl -X POST "https://thedoggycompany.com/api/admin/bulk-import-services?password=lola4304" -d '{"services": [...]}'
+
+# Bulk import guided paths
+curl -X POST "https://thedoggycompany.com/api/admin/bulk-import-guided-paths?password=lola4304" -d '{"paths": [...]}'
+
+# Force full sync (runs all seeders)
+curl -X POST "https://thedoggycompany.com/api/admin/force-full-sync?password=lola4304"
+```
+
+### Full Sync Script Location
+`/app/backend/production_data_sync.py` - Run this for complete product/service sync
 
 ---
 
@@ -23,6 +64,43 @@ All guided paths and journey guides across ALL 4 pillars are now stored in the d
 ### 3. ~~Service Category Cards missing Concierge~~ - FIXED ✅
 - Farewell page service cards now have "Talk to Concierge" buttons
 - Clicking opens the service modal with proper form
+
+---
+
+## COMPLETED THIS SESSION (March 11, 2026 - Session 8.4)
+
+### P1: "Near Me" Feature on Adopt Page ✅
+Implemented a complete "Near Me" service locator for new pet parents:
+
+**New Component:** `/app/frontend/src/components/adopt/NearbyAdoptServices.jsx`
+- 5 service categories: Veterinarians, Pet Stores, Dog Trainers, Groomers, Boarding & Daycare
+- Uses Google Places API via existing backend endpoint
+- Location detection with manual search fallback
+- Shows ratings, open/closed status, phone, directions
+
+**Integration:**
+- Added to `AdoptPage.jsx` after Concierge Services section
+- Matches the design pattern of `NearbyEmergencyHelp` and `NearbyAdvisoryServices`
+
+---
+
+### Production Data Sync - CRITICAL FIX ✅
+Fixed major production vs preview data discrepancy:
+- **Root Cause**: Preview and Production use different MongoDB databases
+- **Symptoms**: Missing products (1,146), duplicate services, wrong images on pillar pages
+- **Solution**: Created bulk-import endpoints and sync scripts
+
+**New Endpoints Added:**
+- `POST /api/admin/bulk-import-products` - Sync products to production
+- `POST /api/admin/bulk-import-services` - Sync services to production  
+- `POST /api/admin/bulk-import-guided-paths` - Sync guided paths to production
+- `POST /api/admin/cleanup-duplicate-services` - Remove duplicate services
+- `POST /api/admin/fix-service-images` - Apply AI images to services
+
+**Sync Results:**
+- Products: 2,605 → 4,177 (+1,572 synced)
+- Services: Duplicates removed, images fixed
+- All 4 pillar pages now show correct AI-generated service images
 
 ---
 
