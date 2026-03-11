@@ -1,5 +1,5 @@
 # The Doggy Company - PRD (Product Requirements Document)
-**Last Updated:** March 12, 2026 10:30 IST  
+**Last Updated:** March 12, 2026 11:00 IST  
 **Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅ | MIRA ADVISOR 100% ✅ | CELEBRATE 100% ✅
 
 ---
@@ -28,6 +28,22 @@ Fixed EmergencyCardPDF font issue:
 - Ensures mobile compatibility (built-in fonts work everywhere)
 
 **Test Results:** Font fix verified, download button functional, 14 checklists available across all pillars
+
+### 3. AI-Generated Bundle Images - COMPLETE ✅
+Generated beautiful watercolor-style AI illustrations for all 6 celebration bundles:
+- Used GPT Image 1 (OpenAI) for high-quality generation
+- Uploaded to Cloudinary (folder: `celebrate_bundles`)
+- Updated `celebrate_bundles` collection with new image URLs
+
+**AI Image URLs (Cloudinary):**
+| Bundle | Cloudinary URL |
+|--------|----------------|
+| First Birthday Special | `https://res.cloudinary.com/duoapcx1p/image/upload/celebrate_bundles/bundle_celebrate-bun-001.png` |
+| Premium Bark-day Bash | `https://res.cloudinary.com/duoapcx1p/image/upload/celebrate_bundles/bundle_celebrate-bun-002.png` |
+| Pawty Essentials | `https://res.cloudinary.com/duoapcx1p/image/upload/celebrate_bundles/bundle_celebrate-bun-003.png` |
+| Senior Celebration | `https://res.cloudinary.com/duoapcx1p/image/upload/celebrate_bundles/bundle_celebrate-bun-004.png` |
+| Adoption Anniversary | `https://res.cloudinary.com/duoapcx1p/image/upload/celebrate_bundles/bundle_celebrate-bun-005.png` |
+| New Puppy Welcome | `https://res.cloudinary.com/duoapcx1p/image/upload/celebrate_bundles/bundle_celebrate-bun-006.png` |
 
 ---
 
