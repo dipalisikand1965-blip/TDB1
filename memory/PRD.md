@@ -68,6 +68,20 @@ Built a complete PDF checklist system with personalization and soul data integra
 - Breed-specific grooming notes
 - Wallet-sized emergency card format
 - Professional PDF generation in browser
+- **Share via WhatsApp** - Quick sharing with pet sitters/family
+- **Share via Email** - Email checklist links
+
+### 3. Near Me (Adopt Page) - FIXED ✅
+Fixed the Google Places API integration for the Adopt page:
+- Created `/app/backend/nearby_places_routes.py` with `/api/nearby/places` endpoint
+- Supports text search and nearby search modes
+- Returns vets, pet stores, trainers, groomers, boarding facilities
+- Photos, ratings, opening hours included
+
+### 4. CelebratePage Duplication - FIXED ✅
+- Removed duplicate "Mira's Picks for {pet}" and "CuratedConciergeSection"
+- Fixed JSX syntax error (missing fragment closing tag)
+- Streamlined content sections
 
 ---
 
@@ -168,7 +182,10 @@ Added automatic service cleanup to master_sync_on_startup:
 
 ### TODO Next Session (IMPORTANT):
 - [x] ~~Add MiraAdvisorCard to remaining pages: FitPage, LearnPage, EnjoyPage~~ ✅ DONE
-- [ ] Build Printable Checklists (First Vet Visit, Emergency Kit, etc.)
+- [x] ~~Build Printable Checklists (First Vet Visit, Emergency Kit, etc.)~~ ✅ DONE with sharing
+- [x] ~~Fix Near Me on Adopt page~~ ✅ DONE - Created /api/nearby/places endpoint
+- [x] ~~Fix CelebratePage duplication~~ ✅ DONE
+- [ ] Add Instagram feed integration for Celebration Wall (requires Instagram API setup)
 - [ ] Pillar-wise unified products in Admin tabs
 
 ---

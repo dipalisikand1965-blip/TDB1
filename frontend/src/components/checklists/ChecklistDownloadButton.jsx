@@ -1,15 +1,17 @@
 /**
  * ChecklistDownloadButton.jsx
  * 
- * Button component to download personalized PDF checklists
+ * Button component to download and share personalized PDF checklists
  * Integrates with pet soul data for personalization
+ * Features: Download PDF, Share via WhatsApp, Share via Email
  * 
  * Created: March 12, 2026
+ * Updated: March 12, 2026 - Added sharing features
  */
 
 import React, { useState, useEffect } from 'react';
 import { pdf } from '@react-pdf/renderer';
-import { Download, FileText, Loader2, CheckCircle } from 'lucide-react';
+import { Download, FileText, Loader2, CheckCircle, Share2, MessageCircle, Mail } from 'lucide-react';
 import { Button } from '../ui/button';
 import { 
   DropdownMenu,
@@ -17,7 +19,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-  DropdownMenuLabel
+  DropdownMenuLabel,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent
 } from '../ui/dropdown-menu';
 import { Badge } from '../ui/badge';
 import { toast } from 'sonner';
@@ -163,6 +168,45 @@ const ChecklistDownloadButton = ({
     }
   };
 
+  // Share via WhatsApp
+  const handleWhatsAppShare = (checklist) => {
+    const petName = currentPet?.name || 'my pet';
+    const message = encodeURIComponent(
+      `🐕 ${checklist.title} for ${petName}\n\n` +
+      `I just downloaded this helpful checklist from The Doggy Company!\n\n` +
+      `${checklist.subtitle}\n\n` +
+      `Get your personalized checklist at: https://thedoggycompany.com/${pillar}`
+    );
+    
+    window.open(`https://wa.me/?text=${message}`, '_blank');
+    
+    toast.success('Opening WhatsApp...', {
+      description: 'Share the checklist link with family or pet sitters!'
+    });
+  };
+
+  // Share via Email
+  const handleEmailShare = (checklist) => {
+    const petName = currentPet?.name || 'my pet';
+    const subject = encodeURIComponent(`${checklist.title} for ${petName} - The Doggy Company`);
+    const body = encodeURIComponent(
+      `Hi!\n\n` +
+      `I wanted to share this helpful pet checklist with you:\n\n` +
+      `📋 ${checklist.title}\n` +
+      `${checklist.subtitle}\n\n` +
+      `This is personalized for ${petName}.\n\n` +
+      `You can get your own personalized checklist at:\n` +
+      `https://thedoggycompany.com/${pillar}\n\n` +
+      `- From The Doggy Company 🐾`
+    );
+    
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    
+    toast.success('Opening email...', {
+      description: 'Share the checklist with family or pet sitters!'
+    });
+  };
+
   if (availableChecklists.length === 0) {
     return null;
   }
@@ -211,14 +255,8 @@ const ChecklistDownloadButton = ({
         <DropdownMenuSeparator />
         
         {availableChecklists.map((checklist) => (
-          <DropdownMenuItem
-            key={checklist.id}
-            onClick={() => handleDownload(checklist.id)}
-            disabled={downloadingId === checklist.id}
-            className="cursor-pointer"
-            data-testid={`download-${checklist.id}`}
-          >
-            <div className="flex items-center justify-between w-full">
+          <DropdownMenuSub key={checklist.id}>
+            <DropdownMenuSubTrigger className="cursor-pointer">
               <div className="flex items-center gap-2">
                 <span>{checklist.icon}</span>
                 <div>
@@ -226,13 +264,38 @@ const ChecklistDownloadButton = ({
                   <div className="text-xs text-gray-500">{checklist.subtitle}</div>
                 </div>
               </div>
-              {downloadingId === checklist.id ? (
-                <Loader2 className="w-4 h-4 animate-spin text-purple-500" />
-              ) : (
-                <Download className="w-4 h-4 text-gray-400" />
-              )}
-            </div>
-          </DropdownMenuItem>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent className="w-48">
+              <DropdownMenuItem
+                onClick={() => handleDownload(checklist.id)}
+                disabled={downloadingId === checklist.id}
+                className="cursor-pointer"
+                data-testid={`download-${checklist.id}`}
+              >
+                {downloadingId === checklist.id ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Download className="w-4 h-4 mr-2" />
+                )}
+                Download PDF
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => handleWhatsAppShare(checklist)}
+                className="cursor-pointer text-green-600"
+              >
+                <MessageCircle className="w-4 h-4 mr-2" />
+                Share via WhatsApp
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => handleEmailShare(checklist)}
+                className="cursor-pointer text-blue-600"
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                Share via Email
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
         ))}
         
         {currentPet && (

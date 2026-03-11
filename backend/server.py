@@ -274,6 +274,9 @@ from mockup_cloud_storage import mockup_cloud_router, set_db as set_mockup_cloud
 # Checklist Routes (Printable PDF checklists)
 from checklist_routes import router as checklist_router
 
+# Nearby Places Routes (Google Places API for location-based services)
+from nearby_places_routes import router as nearby_places_router
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -19630,6 +19633,9 @@ set_mockup_cloud_db(db)  # Initialize cloud storage with database
 
 # Initialize Checklist Routes (Printable PDF checklists)
 app.include_router(checklist_router)  # Checklists at /api/checklists/*
+
+# Initialize Nearby Places Routes (Google Places API)
+app.include_router(nearby_places_router)  # Nearby at /api/nearby/*
 
 # Initialize Mira Structured Engine (feature-flagged)
 try:
