@@ -151,8 +151,8 @@ await db.concierge_threads.insert_one(concierge_thread)
 
 ## TEST URLS
 
-- **Main Demo**: https://celebrate-bundles.preview.emergentagent.com/mira-demo
-- **Pure OS Test**: https://celebrate-bundles.preview.emergentagent.com/mira-pure-os
+- **Main Demo**: https://learn-golden.preview.emergentagent.com/mira-demo
+- **Pure OS Test**: https://learn-golden.preview.emergentagent.com/mira-pure-os
 - **Login**: `dipali@clubconcierge.in` / `test123`
 
 ## TEST SCENARIOS

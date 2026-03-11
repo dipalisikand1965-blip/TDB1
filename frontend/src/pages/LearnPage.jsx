@@ -711,7 +711,7 @@ const LearnPage = () => {
               <Card 
                 key={idx}
                 className={`p-6 cursor-pointer hover:shadow-lg transition-all bg-gradient-to-br from-${item.color}-50 to-${item.color}-100 border-${item.color}-200`}
-                onClick={() => { setSelectedVideoTopic(item.path); fetchYouTubeVideos(item.path); }}
+                onClick={() => { setVideoTopic(item.path); fetchYouTubeVideos(item.path); }}
                 data-testid={`life-stage-${item.path}`}
               >
                 <div className="text-center">
@@ -835,157 +835,94 @@ const LearnPage = () => {
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* YOUTUBE VIDEOS - Read → Watch → Apply */}
+      {/* PRODUCTS THAT HELP (SEPARATE SECTION) */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-                  onChange={(e) => setAskMiraQuestion(e.target.value)}
-                  placeholder="e.g., How do I stop my puppy from biting? Why does my dog bark at strangers?"
-                  className="pr-12 py-6 text-lg rounded-xl border-2 border-gray-200 focus:border-blue-500"
-                  onKeyDown={(e) => e.key === 'Enter' && handleAskMira()}
-                  data-testid="ask-mira-input"
-                />
-                <Button
-                  onClick={handleAskMira}
-                  disabled={askMiraLoading || !askMiraQuestion.trim()}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                  size="sm"
-                  data-testid="ask-mira-submit"
-                >
-                  {askMiraLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                </Button>
-              </div>
-              
-              {/* Quick question chips */}
-              <div className="flex flex-wrap gap-2 mt-4 justify-center">
-                {['Puppy biting', 'Leash pulling', 'Separation anxiety', 'House training', 'Barking'].map((q) => (
-                  <button
-                    key={q}
-                    onClick={() => { setAskMiraQuestion(q); handleAskMira(); }}
-                    className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition-colors"
-                  >
-                    {q}
-                  </button>
-                ))}
-              </div>
+      <div className="py-12 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <span>🛍️</span>
+              Products That Help
             </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Training & Learning Products</h2>
+            <p className="text-gray-600 mt-2">Quality products to support your learning journey</p>
           </div>
           
-          {/* Ask Mira Response */}
-          {showAskMira && (
-            <div className="max-w-2xl mx-auto mb-12">
-              <Card className="overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 text-white">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                      <Sparkles className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">Mira's Answer</h3>
-                      <p className="text-sm text-blue-100">Your AI Pet Learning Assistant</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-6">
-                  {askMiraLoading ? (
-                    <div className="flex items-center gap-3 text-gray-500">
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>Mira is thinking...</span>
-                    </div>
-                  ) : askMiraResponse ? (
-                    <div>
-                      <div className="prose prose-sm max-w-none text-gray-700">
-                        <ReactMarkdown
-                          components={{
-                            p: ({children}) => <p className="mb-3 last:mb-0">{children}</p>,
-                            strong: ({children}) => <strong className="font-semibold text-gray-900">{children}</strong>,
-                            ul: ({children}) => <ul className="list-disc list-inside mb-3 space-y-1">{children}</ul>,
-                            ol: ({children}) => <ol className="list-decimal list-inside mb-3 space-y-1">{children}</ol>,
-                            li: ({children}) => <li className="text-gray-700">{children}</li>,
-                            h1: ({children}) => <h1 className="text-lg font-bold mb-2">{children}</h1>,
-                            h2: ({children}) => <h2 className="text-base font-bold mb-2">{children}</h2>,
-                            h3: ({children}) => <h3 className="text-sm font-bold mb-2">{children}</h3>,
-                          }}
-                        >
-                          {askMiraResponse.answer}
-                        </ReactMarkdown>
-                      </div>
-                      
-                      {/* Related Content */}
-                      {(askMiraResponse.related_guides?.length > 0 || askMiraResponse.related_videos?.length > 0) && (
-                        <div className="mt-6 pt-6 border-t">
-                          <h4 className="text-sm font-semibold text-gray-900 mb-3">Related Learn Content</h4>
-                          <div className="flex flex-wrap gap-2">
-                            {askMiraResponse.related_guides?.map((g) => (
-                              <button
-                                key={g.id}
-                                onClick={() => navigate(`/os?tab=learn&open=guide:${g.id}`)}
-                                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 rounded-lg text-sm text-blue-700 flex items-center gap-1"
-                              >
-                                <BookOpen className="w-3 h-3" />
-                                {g.title}
-                              </button>
-                            ))}
-                            {askMiraResponse.related_videos?.map((v) => (
-                              <button
-                                key={v.id}
-                                onClick={() => navigate(`/os?tab=learn&open=video:${v.id}`)}
-                                className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 rounded-lg text-sm text-purple-700 flex items-center gap-1"
-                              >
-                                <Play className="w-3 h-3" />
-                                {v.title}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Ask another */}
-                      <div className="mt-4 flex justify-end">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => { setShowAskMira(false); setAskMiraQuestion(''); setAskMiraResponse(null); }}
-                        >
-                          Ask another question
-                        </Button>
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
-              </Card>
-            </div>
-          )}
-
-          <h2 className="text-2xl font-bold text-center mb-8">What Would You Like to Learn?</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {Object.entries(LEARN_TYPES).map(([key, config]) => {
-              const Icon = config.icon;
-              return (
-                <Card 
-                  key={key}
-                  className={`p-4 cursor-pointer hover:shadow-lg transition-all text-center ${
-                    selectedType === key ? 'ring-2 ring-blue-500' : ''
-                  }`}
-                  onClick={() => {
-                    setSelectedType(key);
-                    setRequestForm(prev => ({ ...prev, learn_type: key }));
-                    setShowRequestModal(true);
-                  }}
-                  data-testid={`learn-type-${key}`}
-                >
-                  <div className={`w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center bg-gradient-to-br ${config.color}`}>
-                    <Icon className="w-6 h-6 text-white" />
-                  </div>
-                  <h3 className="font-medium text-sm text-gray-900">{config.name}</h3>
-                </Card>
-              );
-            })}
+          {/* Product Categories */}
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            {[
+              { id: 'all', label: 'All Products', icon: '🛒' },
+              { id: 'training', label: 'Training Tools', icon: '🎯' },
+              { id: 'grooming', label: 'Grooming', icon: '✨' },
+              { id: 'feeding', label: 'Feeding', icon: '🍽️' },
+              { id: 'travel', label: 'Travel', icon: '✈️' },
+              { id: 'comfort', label: 'Comfort', icon: '🛋️' }
+            ].map((cat) => (
+              <Button
+                key={cat.id}
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/shop?pillar=learn&category=${cat.id}`)}
+                className="hover:bg-amber-50 hover:border-amber-300"
+                data-testid={`product-category-${cat.id}`}
+              >
+                {cat.icon} {cat.label}
+              </Button>
+            ))}
+          </div>
+          
+          {/* Products Grid */}
+          <PersonalizedPicks pillar="learn" maxProducts={8} />
+          
+          <div className="mt-6 text-center">
+            <Button 
+              onClick={() => navigate('/shop?pillar=learn')}
+              variant="outline"
+              className="border-amber-300 text-amber-700 hover:bg-amber-50"
+            >
+              View All Learning Products <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Personalized Picks for User's Pet */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <PersonalizedPicks pillar="learn" maxProducts={6} />
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SERVICES THAT HELP (SEPARATE SECTION) */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="py-12 bg-gradient-to-br from-indigo-50 to-blue-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <span>🎓</span>
+              Services That Help
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Expert Support & Training</h2>
+            <p className="text-gray-600 mt-2">Professional trainers, groomers, and behavioral specialists</p>
+          </div>
+          
+          {/* Service Category Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {[
+              { label: 'Training Consult', icon: '🎯', desc: 'One-on-one guidance' },
+              { label: 'Grooming Consult', icon: '✨', desc: 'Coat care advice' },
+              { label: 'Behavior Support', icon: '🧠', desc: 'Issue resolution' },
+              { label: 'Puppy Guidance', icon: '🐶', desc: 'First year support' }
+            ].map((service, idx) => (
+              <Card 
+                key={idx}
+                className="p-4 cursor-pointer hover:shadow-lg transition-all bg-white/70 hover:bg-white"
+                onClick={() => setShowRequestModal(true)}
+                data-testid={`service-card-${idx}`}
+              >
+                <div className="text-center">
+                  <span className="text-3xl mb-2 block">{service.icon}</span>
+                  <h3 className="font-semibold text-gray-900 text-sm">{service.label}</h3>
+                  <p className="text-xs text-gray-500 mt-1">{service.desc}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════

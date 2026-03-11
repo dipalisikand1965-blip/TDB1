@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://celebrate-bundles.preview.emergentagent.com
+**Preview URL:** https://learn-golden.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

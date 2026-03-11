@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://celebrate-bundles.preview.emergentagent.com
+https://learn-golden.preview.emergentagent.com
 ```
 
 ---
