@@ -263,14 +263,27 @@ const CuratedBundles = ({ pillar, showTitle = true, className = '', maxBundles }
     const fetchBundles = async () => {
       setLoading(true);
       try {
-        // Try to fetch from API - this has image_url from database
-        const response = await fetch(`${API_URL}/api/bundles?pillar=${pillar?.toLowerCase()}&active_only=true`);
+        // Use pillar-specific API endpoint
+        const pillarLower = pillar?.toLowerCase();
+        const apiEndpoint = `${API_URL}/api/${pillarLower}/bundles`;
+        
+        console.log('[CuratedBundles] Fetching from:', apiEndpoint);
+        const response = await fetch(apiEndpoint);
+        
         if (response.ok) {
           const data = await response.json();
           console.log('[CuratedBundles] API response:', data);
           if (data.bundles && data.bundles.length > 0) {
-            console.log('[CuratedBundles] Using API bundles with images');
-            setBundles(data.bundles);
+            console.log('[CuratedBundles] Using API bundles:', data.bundles.length);
+            // Map the API response to the expected format
+            const mappedBundles = data.bundles.map(b => ({
+              ...b,
+              id: b.id || b.slug,
+              bundle_price: b.price || b.bundle_price,
+              image_url: b.image || b.image_url,
+              savings: b.original_price ? b.original_price - (b.price || b.bundle_price) : null
+            }));
+            setBundles(mappedBundles);
             setLoading(false);
             return;
           }
