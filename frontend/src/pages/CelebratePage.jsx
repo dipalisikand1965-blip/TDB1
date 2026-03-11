@@ -616,7 +616,6 @@ const CelebratePage = () => {
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* BIRTHDAY COUNTDOWN - Emotional anticipation builder */}
-      {/* Shows different UI based on days until birthday */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {activePet && (
         <div className="max-w-6xl mx-auto px-4 pt-6 mb-6">
@@ -632,69 +631,11 @@ const CelebratePage = () => {
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 1: SOUL MADE - AI-Generated Personalized Products */}
-      {/* COMPLETELY SEPARATE from Shopify products */}
+      {/* SECTION 1: THEDOGGYBAKERY - HERO PRODUCTS (Our own bakery!) */}
+      {/* Real products from thedoggybakery.com - Fresh cakes & treats */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {activePet && token && (
-        <div className="max-w-6xl mx-auto px-4 py-8 section-fade-in" data-testid="soul-made-section">
-          <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-white rounded-3xl p-6 sm:p-8 border border-purple-100">
-            <SoulMadeCollection
-              key={`soul-made-${activePet?.id || 'guest'}`}
-              pillar="celebrate"
-              maxItems={12}
-              showTitle={true}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {activePet && token && (
-        <div className="max-w-6xl mx-auto px-4 py-4" data-testid="celebrate-breed-smart-section">
-          <BreedSmartRecommendations pillar="celebrate" />
-        </div>
-      )}
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 mb-8">
-        <ArchetypeProducts pillar="celebrate" maxProducts={8} showTitle={true} />
-      </div>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* CURATED BUNDLES - Save with handpicked combinations */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 mb-8">
-        <CuratedBundles pillar="celebrate" showTitle={true} />
-      </div>
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* MIRA CURATED LAYER - Unified Concierge Recommendations */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <MiraCuratedLayer
-        pillar="celebrate"
-        activePet={activePet || userPets?.[0]}
-        token={token}
-        userEmail={user?.email}
-        isLoading={!userPets && !!token}
-      />
-      
-      {/* Mira's Pillar Picks for Pet */}
-      {(activePet || userPets?.[0]) && (
-        <div className="max-w-6xl mx-auto px-4 mt-6">
-          <PillarPicksSection pillar="celebrate" pet={activePet || userPets?.[0]} />
-        </div>
-      )}
-
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 2: THEDOGGYBAKERY - Shopify Products (Cakes, Treats) */}
-      {/* Real products from thedoggybakery.com - NOT customized mockups */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 py-8 section-fade-in" data-testid="shopify-products-section">
-        {/* TheDoggyBakery Header */}
+      <div className="max-w-6xl mx-auto px-4 py-8 section-fade-in" id="products-section" data-testid="shopify-products-section">
+        {/* TheDoggyBakery Header - HERO */}
         <div className="text-center mb-8">
           <Badge className="mb-3 bg-amber-100 text-amber-800 px-4 py-1">
             🍰 Fresh from TheDoggyBakery
@@ -707,9 +648,7 @@ const CelebratePage = () => {
           </p>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════════════════════
-            MIRA ADVISOR - Party Planning AI Assistant
-            ═══════════════════════════════════════════════════════════════════════════ */}
+        {/* MIRA ADVISOR - Party Planning AI Assistant */}
         <div className="max-w-2xl mx-auto mb-8">
           <MiraAdvisorCard pillar="celebrate" activePet={activePet} />
           
@@ -722,127 +661,133 @@ const CelebratePage = () => {
             />
           </div>
         </div>
-
-        {/* Personalized Picks for User's Pet - Shows filtered Shopify products */}
-        {/* Key forces remount when pet changes to ensure fresh data */}
-        <div className="mb-8">
-          <PersonalizedPicks 
-            key={`personalized-picks-${activePet?.id || 'default'}`}
-            pillar="celebrate" 
-            maxProducts={6} 
-          />
-        </div>
-        
-            {/* ═══════════════════════════════════════════════════════════════════════ */}
-            {/* MIRA'S BIRTHDAY BOX - Soul-Driven Personalized Box Suggestion */}
-            {/* ═══════════════════════════════════════════════════════════════════════ */}
-        {activePet && token && (
-          <>
-            <div className="mt-6" data-testid="mira-birthday-box-section">
-              <MiraBirthdayBoxCard
-                pet={activePet}
-                token={token}
-                userEmail={user?.email}
-                onSuccess={(data) => {
-                  console.log('[CelebratePage] Birthday box request created:', data);
-                }}
-              />
-            </div>
-            
-            {/* ═══════════════════════════════════════════════════════════════════════ */}
-            {/* PLAN MY PARTY CTA - Magical party planning wizard trigger */}
-            {/* ═══════════════════════════════════════════════════════════════════════ */}
-            <div className="mt-6">
-              <div 
-                onClick={() => setShowPlanMyPartyWizard(true)}
-                className="group cursor-pointer bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 p-1 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.01]"
-              >
-                <div className="bg-gradient-to-br from-slate-900 to-purple-950 rounded-xl p-5 sm:p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                      <span className="text-2xl sm:text-3xl">🎉</span>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg sm:text-xl font-bold text-white mb-1 flex items-center gap-2">
-                        Plan {activePet?.name}'s Perfect Party
-                        <Sparkles className="w-5 h-5 text-amber-400" />
-                      </h3>
-                      <p className="text-sm text-gray-300">
-                        Let Mira help you create a magical celebration in 3 easy steps
-                      </p>
-                    </div>
-                    <ChevronRight className="w-6 h-6 text-white/60 group-hover:text-white group-hover:translate-x-1 transition-all" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* ═══════════════════════════════════════════════════════════════════════ */}
-            {/* PERSONALIZED ITEMS - Concierge® creates custom items */}
-            {/* NOTE: Mugs, bandanas etc are now in SoulMadeCollection above */}
-            {/* This section kept for custom photo requests only */}
-            {/* ═══════════════════════════════════════════════════════════════════════ */}
-            {/* PersonalizedItemsSection REMOVED - duplicate with SoulMadeCollection */}
-            
-            {/* TheDoggyBakery Promotion - Pan India Delivery */}
-            <div className="mt-6 bg-gradient-to-r from-amber-50 via-orange-50 to-pink-50 rounded-2xl p-5 sm:p-6 border border-amber-200/50 shadow-sm">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg flex-shrink-0">
-                  <Cake className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-bold text-gray-900 text-base sm:text-lg">TheDoggyBakery</h4>
-                    <Badge className="bg-emerald-100 text-emerald-700 text-[10px]">
-                      Pan India Delivery
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-3">
-                    Our in-house artisan bakery crafts fresh, healthy, and delicious cakes & treats 
-                    specially designed for {activePet?.name || 'your pet'}. 100% pet-safe ingredients, no preservatives.
-                  </p>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <a 
-                      href="https://thedoggybakery.com" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm"
-                    >
-                      <Cake className="w-4 h-4" />
-                      Order Fresh Cake
-                      <ChevronRight className="w-4 h-4" />
-                    </a>
-                    <span className="text-xs text-gray-500 flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      Delivers to all major cities
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* CAKE REVEAL SECTION - Sneak peeks and reveals for custom cake orders */}
-      {/* VISION: Build anticipation and excitement for celebrations */}
+      {/* SECTION 2: SOUL-BASED CAKE PICKS (Personalized by pet's soul) */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* TEMPORARILY DISABLED - CakeRevealSection has visual issues, keeping in backend for future */}
-      {/* TODO: Re-enable after fixing animation/CSS issues */}
-      {/* {activePet && token && (
-        <div className="max-w-6xl mx-auto px-4 py-6 section-fade-in">
-          <CakeRevealSection
+      <div className="max-w-6xl mx-auto px-4 mb-8">
+        <PersonalizedPicks 
+          key={`personalized-picks-${activePet?.id || 'default'}`}
+          pillar="celebrate" 
+          maxProducts={6} 
+        />
+      </div>
+
+      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
+      {activePet && token && (
+        <div className="max-w-6xl mx-auto px-4 py-4" data-testid="celebrate-breed-smart-section">
+          <BreedSmartRecommendations pillar="celebrate" />
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 3: CURATED BUNDLES - Birthday Pawty, Gotcha Day */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 mb-8">
+        <CuratedBundles pillar="celebrate" showTitle={true} />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 4: AI MERCHANDISE - Soul Made Collection */}
+      {/* AI-Generated personalized products based on pet's soul */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {activePet && token && (
+        <div className="max-w-6xl mx-auto px-4 py-8 section-fade-in" data-testid="soul-made-section">
+          <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-white rounded-3xl p-6 sm:p-8 border border-purple-100">
+            <SoulMadeCollection
+              key={`soul-made-${activePet?.id || 'guest'}`}
+              pillar="celebrate"
+              maxItems={8}
+              showTitle={true}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* MIRA'S BIRTHDAY BOX - Soul-Driven Personalized Box Suggestion */}
+      {activePet && token && (
+        <div className="max-w-6xl mx-auto px-4 mt-6" data-testid="mira-birthday-box-section">
+          <MiraBirthdayBoxCard
             pet={activePet}
             token={token}
             userEmail={user?.email}
+            onSuccess={(data) => {
+              console.log('[CelebratePage] Birthday box request created:', data);
+            }}
           />
         </div>
-      )} */}
+      )}
+            
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* PLAN MY PARTY CTA - Magical party planning wizard trigger */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 mt-6">
+        <div 
+          onClick={() => setShowPlanMyPartyWizard(true)}
+          className="group cursor-pointer bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 p-1 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.01]"
+        >
+          <div className="bg-gradient-to-br from-slate-900 to-purple-950 rounded-xl p-5 sm:p-6">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <span className="text-2xl sm:text-3xl">🎉</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg sm:text-xl font-bold text-white mb-1 flex items-center gap-2">
+                  Plan {activePet?.name || 'Your Pet'}'s Perfect Party
+                  <Sparkles className="w-5 h-5 text-amber-400" />
+                </h3>
+                <p className="text-sm text-gray-300">
+                  Let Mira help you create a magical celebration in 3 easy steps
+                </p>
+              </div>
+              <ChevronRight className="w-6 h-6 text-white/60 group-hover:text-white group-hover:translate-x-1 transition-all" />
+            </div>
+          </div>
+        </div>
+      </div>
+            
+      {/* TheDoggyBakery Promotion - Pan India Delivery */}
+      <div className="max-w-6xl mx-auto px-4 mt-6">
+        <div className="bg-gradient-to-r from-amber-50 via-orange-50 to-pink-50 rounded-2xl p-5 sm:p-6 border border-amber-200/50 shadow-sm">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg flex-shrink-0">
+              <Cake className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h4 className="font-bold text-gray-900 text-base sm:text-lg">TheDoggyBakery</h4>
+                <Badge className="bg-emerald-100 text-emerald-700 text-[10px]">
+                  Pan India Delivery
+                </Badge>
+              </div>
+              <p className="text-sm text-gray-600 mb-3">
+                Our in-house artisan bakery crafts fresh, healthy, and delicious cakes & treats 
+                specially designed for {activePet?.name || 'your pet'}. 100% pet-safe ingredients, no preservatives.
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <a 
+                  href="https://thedoggybakery.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm"
+                >
+                  <Cake className="w-4 h-4" />
+                  Order Fresh Cake
+                  <ChevronRight className="w-4 h-4" />
+                </a>
+                <span className="text-xs text-gray-500 flex items-center gap-1">
+                  <MapPin className="w-3 h-3" />
+                  Delivers to all major cities
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* CELEBRATION MEMORY WALL - Real moments from the community */}
-      {/* VISION: Create emotional connection through real customer stories */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12 section-fade-in">
         <CelebrationMemoryWall 
