@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://golden-pillar-hub.preview.emergentagent.com` |
+| **Preview** | `https://ai-experience-unify.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |

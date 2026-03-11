@@ -423,7 +423,7 @@ const handleServiceComplete = async (ticket) => {
 | Admin URL | `/admin` |
 | Admin Username | `aditya` |
 | Admin Password | `lola4304` |
-| Preview URL | `https://golden-pillar-hub.preview.emergentagent.com` |
+| Preview URL | `https://ai-experience-unify.preview.emergentagent.com` |
 
 ---
 

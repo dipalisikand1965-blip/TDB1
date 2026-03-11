@@ -628,6 +628,13 @@ const FitPage = () => {
           maxProducts={6} 
         />
       </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          MIRA ADVISOR - Fitness Coach AI Assistant
+          ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="max-w-2xl mx-auto px-4 mb-8">
+        <MiraAdvisorCard pillar="fit" activePet={activePet} />
+      </div>
       
       {/* ═══════════════════════════════════════════════════════════════════════
           SOUL MADE COLLECTION - Breed-specific personalized products
