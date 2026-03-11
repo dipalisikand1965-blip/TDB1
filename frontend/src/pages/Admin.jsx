@@ -147,7 +147,8 @@ import {
   Activity,
   BookOpen,
   Check,
-  Wallet
+  Wallet,
+  Wand2
 } from 'lucide-react';
 import AdminEngagement from '../components/AdminEngagement';
 
@@ -2476,6 +2477,139 @@ const Admin = () => {
                 Push Cloudinary mockups to thedoggycompany.com (~2-4 min for 2000+ products)
               </p>
               
+              {/* 🎨 AI IMAGE GENERATION */}
+              <div className="mt-4 pt-4 border-t border-gray-200 space-y-2">
+                <p className="text-xs text-gray-500 text-center font-medium">🎨 AI Image Generation</p>
+                
+                {/* AI Image Stats */}
+                <div id="ai-image-stats" className="text-xs text-gray-600 bg-gray-50 rounded p-2">
+                  <p>Products: <span id="ai-products-missing">...</span> missing images</p>
+                  <p>Services: <span id="ai-services-missing">...</span> missing watercolors</p>
+                </div>
+                
+                {/* Generate Product Images */}
+                <button
+                  id="gen-product-images-btn"
+                  onClick={async () => {
+                    const btn = document.getElementById('gen-product-images-btn');
+                    const statusDiv = document.getElementById('ai-gen-status');
+                    try {
+                      btn.disabled = true;
+                      btn.textContent = '🎨 Starting...';
+                      statusDiv.classList.remove('hidden');
+                      
+                      // Start generation
+                      const res = await fetch(`${API_URL}/api/ai-images/generate-product-images`, {
+                        method: 'POST'
+                      });
+                      const data = await res.json();
+                      
+                      if (data.status === 'running') {
+                        // Poll for status
+                        const pollStatus = setInterval(async () => {
+                          const statusRes = await fetch(`${API_URL}/api/ai-images/status`);
+                          const status = await statusRes.json();
+                          
+                          document.getElementById('ai-gen-progress').textContent = 
+                            `${status.completed}/${status.total} (${status.progress}%)`;
+                          document.getElementById('ai-gen-current').textContent = 
+                            status.current_item || 'Processing...';
+                          document.getElementById('ai-gen-failed').textContent = 
+                            `Failed: ${status.failed}`;
+                          
+                          if (!status.running) {
+                            clearInterval(pollStatus);
+                            btn.disabled = false;
+                            btn.textContent = '📦 Generate Product Images';
+                            alert(`✅ Done! Generated ${status.completed - status.failed} images. Failed: ${status.failed}`);
+                          }
+                        }, 3000);
+                      }
+                    } catch (e) {
+                      console.error(e);
+                      alert('Error starting generation');
+                      btn.disabled = false;
+                      btn.textContent = '📦 Generate Product Images';
+                    }
+                  }}
+                  className="w-full p-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg text-sm font-bold hover:from-pink-600 hover:to-purple-600"
+                >
+                  📦 Generate Product Images
+                </button>
+                
+                {/* Generate Service Watercolors */}
+                <button
+                  id="gen-service-images-btn"
+                  onClick={async () => {
+                    const btn = document.getElementById('gen-service-images-btn');
+                    const statusDiv = document.getElementById('ai-gen-status');
+                    try {
+                      btn.disabled = true;
+                      btn.textContent = '🎨 Starting...';
+                      statusDiv.classList.remove('hidden');
+                      
+                      // Start generation
+                      const res = await fetch(`${API_URL}/api/ai-images/generate-service-images`, {
+                        method: 'POST'
+                      });
+                      const data = await res.json();
+                      
+                      if (data.status === 'running') {
+                        // Poll for status
+                        const pollStatus = setInterval(async () => {
+                          const statusRes = await fetch(`${API_URL}/api/ai-images/status`);
+                          const status = await statusRes.json();
+                          
+                          document.getElementById('ai-gen-progress').textContent = 
+                            `${status.completed}/${status.total} (${status.progress}%)`;
+                          document.getElementById('ai-gen-current').textContent = 
+                            status.current_item || 'Processing...';
+                          document.getElementById('ai-gen-failed').textContent = 
+                            `Failed: ${status.failed}`;
+                          
+                          if (!status.running) {
+                            clearInterval(pollStatus);
+                            btn.disabled = false;
+                            btn.textContent = '🖼️ Generate Service Watercolors';
+                            alert(`✅ Done! Generated ${status.completed - status.failed} watercolors. Failed: ${status.failed}`);
+                          }
+                        }, 3000);
+                      }
+                    } catch (e) {
+                      console.error(e);
+                      alert('Error starting generation');
+                      btn.disabled = false;
+                      btn.textContent = '🖼️ Generate Service Watercolors';
+                    }
+                  }}
+                  className="w-full p-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-lg text-sm font-bold hover:from-teal-600 hover:to-cyan-600"
+                >
+                  🖼️ Generate Service Watercolors
+                </button>
+                
+                {/* Stop Generation */}
+                <button
+                  onClick={async () => {
+                    await fetch(`${API_URL}/api/ai-images/stop`, { method: 'POST' });
+                    document.getElementById('gen-product-images-btn').disabled = false;
+                    document.getElementById('gen-product-images-btn').textContent = '📦 Generate Product Images';
+                    document.getElementById('gen-service-images-btn').disabled = false;
+                    document.getElementById('gen-service-images-btn').textContent = '🖼️ Generate Service Watercolors';
+                    alert('Generation stopped');
+                  }}
+                  className="w-full p-2 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200"
+                >
+                  ⏹️ Stop Generation
+                </button>
+                
+                {/* Progress Display */}
+                <div id="ai-gen-status" className="hidden text-xs bg-blue-50 rounded p-2 space-y-1">
+                  <p>Progress: <span id="ai-gen-progress">0/0 (0%)</span></p>
+                  <p>Current: <span id="ai-gen-current">-</span></p>
+                  <p><span id="ai-gen-failed">Failed: 0</span></p>
+                </div>
+              </div>
+              
               {/* 📚 DOCUMENTATION BUTTONS */}
               <div className="mt-4 pt-4 border-t border-gray-200 space-y-2">
                 <p className="text-xs text-gray-500 text-center font-medium">📚 Documentation</p>
@@ -3023,6 +3157,68 @@ const Admin = () => {
               >
                 {fixingImages ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <Image className="w-4 h-4 mr-2" />}
                 {fixingImages ? 'Fixing...' : '🖼️ FIX IMAGES'}
+              </Button>
+              
+              {/* 🎨 AI IMAGE GENERATION Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                id="ai-gen-btn"
+                className="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white border-0 text-sm font-bold shadow-lg px-4 ml-2"
+                onClick={async () => {
+                  const btn = document.getElementById('ai-gen-btn');
+                  try {
+                    btn.disabled = true;
+                    btn.innerHTML = '🎨 Starting...';
+                    
+                    // Get stats first
+                    const statsRes = await fetch(`${API_URL}/api/ai-images/stats`);
+                    const stats = await statsRes.json();
+                    
+                    const choice = window.confirm(
+                      `📊 Image Stats:\n` +
+                      `Products: ${stats.products.missing_images} missing images\n` +
+                      `Services: ${stats.services.missing_images} missing watercolors\n\n` +
+                      `Click OK to generate PRODUCT images\n` +
+                      `Click Cancel to generate SERVICE watercolors`
+                    );
+                    
+                    const endpoint = choice ? 'generate-product-images' : 'generate-service-images';
+                    const type = choice ? 'product' : 'service';
+                    
+                    // Start generation
+                    const res = await fetch(`${API_URL}/api/ai-images/${endpoint}`, { method: 'POST' });
+                    const data = await res.json();
+                    
+                    if (data.status === 'running') {
+                      btn.innerHTML = `🎨 Generating ${type}s...`;
+                      
+                      // Poll for status
+                      const pollInterval = setInterval(async () => {
+                        const statusRes = await fetch(`${API_URL}/api/ai-images/status`);
+                        const status = await statusRes.json();
+                        
+                        btn.innerHTML = `🎨 ${status.completed}/${status.total} (${status.progress}%)`;
+                        
+                        if (!status.running) {
+                          clearInterval(pollInterval);
+                          btn.disabled = false;
+                          btn.innerHTML = '🎨 AI IMAGES';
+                          alert(`✅ Done! Generated ${status.completed - status.failed} images.\nFailed: ${status.failed}`);
+                        }
+                      }, 5000);
+                    }
+                  } catch (e) {
+                    console.error(e);
+                    alert('Error: ' + e.message);
+                    btn.disabled = false;
+                    btn.innerHTML = '🎨 AI IMAGES';
+                  }
+                }}
+                data-testid="ai-gen-btn"
+              >
+                <Wand2 className="w-4 h-4 mr-2" />
+                🎨 AI IMAGES
               </Button>
               
               {/* ☁️ SYNC SOUL MADE TO PRODUCTION Button */}
