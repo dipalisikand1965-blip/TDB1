@@ -40,7 +40,8 @@ import {
   GraduationCap, BookOpen, Brain, Star, Award, Trophy,
   CheckCircle, ChevronRight, Sparkles, Loader2, Send,
   ArrowRight, Play, ChevronDown, Target, Users, Calendar,
-  MapPin, Clock, PawPrint, Heart, Shield, Zap, ChevronLeft, Search
+  MapPin, Clock, PawPrint, Heart, Shield, Zap, ChevronLeft, Search,
+  Activity
 } from 'lucide-react';
 
 // Elevated Concierge® Learn Experiences
@@ -724,63 +725,75 @@ const LearnPage = () => {
         
         // Generate personalized tips based on pet profile
         const personalizedTips = isSenior ? [
-          { icon: '🦴', label: 'Joint comfort for senior dogs' },
-          { icon: '🌡️', label: `Heat care for ${breed || 'senior dogs'}` },
-          { icon: '🦮', label: 'Better leash manners' },
-          { icon: '💧', label: 'Summer hydration tips' }
+          { icon: GraduationCap, color: 'text-blue-600 bg-blue-100', label: `Training tips for senior ${breed || 'dogs'}` },
+          { icon: Sparkles, color: 'text-amber-600 bg-amber-100', label: 'Gentle grooming guide' },
+          { icon: Heart, color: 'text-rose-600 bg-rose-100', label: 'Senior nutrition basics' },
+          { icon: Activity, color: 'text-teal-600 bg-teal-100', label: 'Low-impact exercise recommendations' }
         ] : isPuppy ? [
-          { icon: '🐶', label: 'Puppy training basics' },
-          { icon: '🦷', label: 'Teething and biting solutions' },
-          { icon: '🏠', label: 'Crate training guide' },
-          { icon: '🎾', label: 'Socialization tips' }
+          { icon: GraduationCap, color: 'text-blue-600 bg-blue-100', label: `Puppy training for ${breed || 'your pup'}` },
+          { icon: Sparkles, color: 'text-amber-600 bg-amber-100', label: 'Puppy grooming basics' },
+          { icon: Heart, color: 'text-rose-600 bg-rose-100', label: 'Puppy nutrition guide' },
+          { icon: Activity, color: 'text-teal-600 bg-teal-100', label: 'Play and exercise for puppies' }
         ] : [
-          { icon: '🎯', label: `Training tips for ${breed || 'your dog'}` },
-          { icon: '✨', label: 'Grooming guide' },
-          { icon: '🥗', label: 'Nutrition basics' },
-          { icon: '🏃', label: 'Exercise recommendations' }
+          { icon: GraduationCap, color: 'text-blue-600 bg-blue-100', label: `Training tips for ${breed || 'your dog'}` },
+          { icon: Sparkles, color: 'text-amber-600 bg-amber-100', label: 'Grooming guide' },
+          { icon: Heart, color: 'text-rose-600 bg-rose-100', label: 'Nutrition basics' },
+          { icon: Activity, color: 'text-teal-600 bg-teal-100', label: 'Exercise recommendations' }
         ];
         
         return (
-          <div id="my-dog" className="py-12 bg-gradient-to-br from-blue-50 via-white to-green-50">
+          <div id="my-dog" className="py-12 bg-gradient-to-br from-pink-50/50 via-white to-purple-50/50">
             <div className="max-w-6xl mx-auto px-4">
-              <Card className="p-6 md:p-8 bg-white/90 backdrop-blur rounded-3xl border-0 shadow-lg">
-                <div className="flex flex-col md:flex-row gap-6">
+              <Card className="p-6 md:p-8 bg-white/95 backdrop-blur rounded-3xl border-0 shadow-xl overflow-hidden">
+                <div className="flex flex-col md:flex-row gap-6 items-start">
                   {/* Left: Pet Info & Tips */}
                   <div className="flex-1">
                     <h2 className="text-2xl font-bold text-gray-900 mb-1">
                       Learn for {petName}
                     </h2>
-                    <p className="text-gray-600 text-sm mb-6">
-                      Tips and advice picked just for your {isSenior ? 'senior ' : isPuppy ? 'puppy ' : ''}{breed || 'dog'}
+                    <p className="text-gray-500 text-sm mb-6">
+                      Tips and advice picked just for your {breed || 'Indie'}
                     </p>
                     
-                    {/* Personalized Tips */}
+                    {/* Personalized Tips - Clean list style */}
                     <div className="space-y-3">
                       {personalizedTips.map((tip, idx) => (
                         <button
                           key={idx}
-                          onClick={() => { setVideoTopic(tip.label.toLowerCase().replace(/ /g, '_')); }}
-                          className="w-full flex items-center gap-3 p-3 bg-gray-50 hover:bg-blue-50 rounded-xl transition-all text-left"
+                          onClick={() => {
+                            // Open Mira AI with this topic
+                            window.dispatchEvent(new CustomEvent('openMiraAI', {
+                              detail: {
+                                message: `Tell me about ${tip.label} for ${petName}`,
+                                context: 'learn',
+                                pillar: 'learn',
+                                pet_name: petName,
+                                pet_breed: breed
+                              }
+                            }));
+                          }}
+                          className="w-full flex items-center gap-4 p-4 bg-gray-50 hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 rounded-2xl transition-all text-left group"
                         >
-                          <span className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm text-xl">
-                            {tip.icon}
+                          <span className={`w-12 h-12 rounded-xl flex items-center justify-center ${tip.color} transition-transform group-hover:scale-110`}>
+                            <tip.icon className="w-5 h-5" />
                           </span>
-                          <span className="text-sm font-medium text-gray-700">{tip.label}</span>
+                          <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{tip.label}</span>
+                          <ChevronRight className="w-4 h-4 text-gray-300 ml-auto group-hover:text-teal-500 transition-colors" />
                         </button>
                       ))}
                     </div>
                   </div>
                   
-                  {/* Right: Pet Illustration */}
-                  <div className="w-full md:w-64 flex-shrink-0">
+                  {/* Right: Pet Illustration - Watercolor style */}
+                  <div className="w-full md:w-72 flex-shrink-0">
                     <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200 rounded-full blur-3xl opacity-40" />
                       <img 
                         src={getPetPhotoUrl(pet)}
                         alt={petName}
-                        className="w-full aspect-square object-cover rounded-2xl"
+                        className="relative w-full aspect-square object-cover rounded-full border-4 border-white shadow-lg"
+                        style={{ filter: 'saturate(0.9) contrast(1.05)' }}
                       />
-                      {/* Watercolor effect overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-white/30 to-transparent rounded-2xl" />
                     </div>
                   </div>
                 </div>
@@ -1407,25 +1420,6 @@ const LearnPage = () => {
           )}
         </div>
       </div>
-
-      {/* Training Products */}
-      {products.length > 0 && (
-        <div className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900">Training Essentials</h2>
-                <p className="text-gray-600 mt-1">Tools and treats for effective training</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} pillar="learn" />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Why Choose Us */}
       <div className="py-16 bg-gray-50">
