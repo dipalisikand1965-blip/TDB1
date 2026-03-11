@@ -56,7 +56,7 @@
     <div class="header">
         <h1>The Doggy Company</h1>
         <p>Mira-OS: The Pet Life Operating System</p>
-        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: March 11, 2026 19:30 IST | Version 8.4.0</p>
+        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: March 12, 2026 08:00 IST | Version 8.6.0</p>
     </div>
 
     <div class="container">
@@ -140,6 +140,128 @@ curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=
          │          Data Sync (Manual)                │
          └────────────────────────────────────────────┘
               via /api/admin/bulk-import-* endpoints
+            </pre>
+        </div>
+
+        <!-- Session 8.6 Updates - Mira Advisor Complete -->
+        <div class="section" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border: 3px solid #0ea5e9;">
+            <h2 style="color: #0369a1; border-color: #0ea5e9;">✅ Session 8.6 - Mira Advisor Rollout COMPLETE (March 12, 2026)</h2>
+            
+            <div class="success-box">
+                <strong>ALL 13 PILLAR PAGES NOW HAVE MIRA AI INTEGRATION!</strong>
+            </div>
+
+            <h3>Two Implementation Approaches:</h3>
+            
+            <h4>1. MiraAdvisorCard Component (10 pages)</h4>
+            <p>A reusable, standardized component with consistent UI but pillar-specific theming:</p>
+            <table>
+                <tr>
+                    <th>Page</th>
+                    <th>Advisor Name</th>
+                    <th>Theme Color</th>
+                    <th>Example Placeholder</th>
+                </tr>
+                <tr>
+                    <td>Celebrate</td>
+                    <td>Party Planner</td>
+                    <td><span style="background: #ec4899; color: white; padding: 2px 8px; border-radius: 4px;">Pink</span></td>
+                    <td>"What cake is best for my Labrador's birthday?"</td>
+                </tr>
+                <tr>
+                    <td>Dine</td>
+                    <td>Nutrition Advisor</td>
+                    <td><span style="background: #f97316; color: white; padding: 2px 8px; border-radius: 4px;">Orange</span></td>
+                    <td>"What food is best for my dog's allergies?"</td>
+                </tr>
+                <tr>
+                    <td>Stay</td>
+                    <td>Boarding Guide</td>
+                    <td><span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px;">Blue</span></td>
+                    <td>"How do I prepare my anxious dog for boarding?"</td>
+                </tr>
+                <tr>
+                    <td>Travel</td>
+                    <td>Travel Companion</td>
+                    <td><span style="background: #0ea5e9; color: white; padding: 2px 8px; border-radius: 4px;">Sky</span></td>
+                    <td>"What documents do I need to fly with my dog?"</td>
+                </tr>
+                <tr>
+                    <td>Care</td>
+                    <td>Wellness Expert</td>
+                    <td><span style="background: #14b8a6; color: white; padding: 2px 8px; border-radius: 4px;">Teal</span></td>
+                    <td>"How often should I groom my Shih Tzu?"</td>
+                </tr>
+                <tr>
+                    <td>Enjoy</td>
+                    <td>Activity Buddy</td>
+                    <td><span style="background: #a855f7; color: white; padding: 2px 8px; border-radius: 4px;">Purple</span></td>
+                    <td>"Best outdoor activities for a senior dog?"</td>
+                </tr>
+                <tr>
+                    <td>Fit</td>
+                    <td>Fitness Coach</td>
+                    <td><span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 4px;">Green</span></td>
+                    <td>"Exercise plan for my overweight Pug?"</td>
+                </tr>
+                <tr>
+                    <td>Learn</td>
+                    <td>Training Mentor</td>
+                    <td><span style="background: #6366f1; color: white; padding: 2px 8px; border-radius: 4px;">Indigo</span></td>
+                    <td>"How to stop my puppy from biting?"</td>
+                </tr>
+                <tr>
+                    <td>Paperwork</td>
+                    <td>Document Assistant</td>
+                    <td><span style="background: #64748b; color: white; padding: 2px 8px; border-radius: 4px;">Slate</span></td>
+                    <td>"What vaccination records do I need?"</td>
+                </tr>
+            </table>
+
+            <h4>2. Custom openMiraAI Implementations (4 pages)</h4>
+            <p>Specialized, pillar-specific UI for sensitive/urgent pillars:</p>
+            <table>
+                <tr>
+                    <th>Page</th>
+                    <th>Special Feature</th>
+                    <th>Why Custom?</th>
+                </tr>
+                <tr>
+                    <td>🚨 Emergency</td>
+                    <td>AI Emergency Triage with severity badges</td>
+                    <td>Shows CRITICAL/URGENT/MODERATE/LOW severity assessment</td>
+                </tr>
+                <tr>
+                    <td>💜 Farewell</td>
+                    <td>Grief Support with compassionate UI</td>
+                    <td>Uses gentle, empathetic language for sensitive memorial context</td>
+                </tr>
+                <tr>
+                    <td>🏠 Adopt</td>
+                    <td>Adoption Advisor with journey context</td>
+                    <td>Includes adoption stage context (before, first 7 days, etc.)</td>
+                </tr>
+                <tr>
+                    <td>📋 Advisory</td>
+                    <td>Ask Advisory tied to guided paths</td>
+                    <td>Life-stage context (puppy, senior, multi-dog households)</td>
+                </tr>
+            </table>
+
+            <h3>Component Location:</h3>
+            <code>/app/frontend/src/components/MiraAdvisorCard.jsx</code>
+            
+            <h3>How It Works:</h3>
+            <pre style="background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 8px; overflow-x: auto;">
+// User types question → clicks "Ask Mira" → opens MiraChatWidget
+window.dispatchEvent(new CustomEvent('openMiraAI', {
+  detail: {
+    message: query,           // User's question
+    context: pillar,          // e.g., 'fit', 'learn', 'enjoy'
+    pet_name: activePet?.name,
+    pet_breed: activePet?.breed
+  }
+}));
             </pre>
         </div>
 
