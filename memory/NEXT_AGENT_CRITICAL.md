@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://ai-experience-unify.preview.emergentagent.com
+https://celebrate-bundles.preview.emergentagent.com
 
 ---
 

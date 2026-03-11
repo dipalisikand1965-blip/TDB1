@@ -191,7 +191,7 @@ const cardStyles = StyleSheet.create({
   page: {
     padding: 20,
     backgroundColor: '#ffffff',
-    fontFamily: 'Inter',
+    fontFamily: 'Helvetica',
   },
   card: {
     borderWidth: 2, borderColor: '#ef4444',
