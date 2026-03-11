@@ -204,9 +204,9 @@ const SoulMadeProductCard = ({ product, petName, archetype, onViewDetails }) => 
     return name;
   };
 
-  // Handle price - could be number, object, or undefined
-  const priceValue = typeof product.price === 'object' 
-    ? (product.price?.amount || product.price?.price || product.price?.value)
+  // Handle price - could be number, object, or undefined/null
+  const priceValue = (product.price && typeof product.price === 'object')
+    ? (product.price.amount || product.price.price || product.price.value)
     : product.price;
   const price = priceValue ? `₹${priceValue}` : 'Price on request';
   const personalizedName = getPersonalizedName();

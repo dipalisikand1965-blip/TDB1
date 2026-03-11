@@ -129,10 +129,10 @@ const ProductDetailModal = ({ product, pet, pillar, onClose, onAddToCart }) => {
     if (e.target === e.currentTarget) onClose();
   };
   
-  const hasPrice = product.price && (typeof product.price === 'number' ? product.price > 0 : true);
-  const priceValue = typeof product.price === 'object' 
+  const hasPrice = product.price != null && (typeof product.price === 'number' ? product.price > 0 : true);
+  const priceValue = (product.price && typeof product.price === 'object') 
     ? (product.price.amount || product.price.price || product.price.value || 0)
-    : product.price;
+    : (product.price || 0);
   
   return createPortal(
     <div 
@@ -260,10 +260,10 @@ const ProductDetailModal = ({ product, pet, pillar, onClose, onAddToCart }) => {
 const ProductPickCard = ({ pick, pet, pillar, onAddToCart }) => {
   const [showModal, setShowModal] = useState(false);
   
-  const hasPrice = pick.price && (typeof pick.price === 'number' ? pick.price > 0 : true);
-  const priceValue = typeof pick.price === 'object' 
+  const hasPrice = pick.price != null && (typeof pick.price === 'number' ? pick.price > 0 : true);
+  const priceValue = (pick.price && typeof pick.price === 'object') 
     ? (pick.price.amount || pick.price.price || pick.price.value || 0)
-    : pick.price;
+    : (pick.price || 0);
   
   return (
     <>
