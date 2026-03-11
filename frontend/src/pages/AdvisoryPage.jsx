@@ -34,6 +34,7 @@ import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
+import { ChecklistDownloadButton } from '../components/checklists';
 import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
@@ -852,6 +853,15 @@ const AdvisoryPage = () => {
               </button>
             ))}
           </div>
+          
+          {/* Download Life Stage Guide Checklist */}
+          <div className="mt-6 flex justify-center">
+            <ChecklistDownloadButton 
+              pillar="advisory" 
+              variant="outline"
+              className="border-violet-300 text-violet-700 hover:bg-violet-50"
+            />
+          </div>
         </div>
       </section>
 
@@ -1301,6 +1311,14 @@ const AdvisoryPage = () => {
 
       {/* Concierge Modal */}
       <ConciergeModal />
+      
+      {/* Floating Concierge Button */}
+      <ConciergeButton 
+        pillar="advisory"
+        petName={activePet?.name}
+        context={activePet?.breed}
+        position="bottom-right"
+      />
     </PillarPageLayout>
   );
 };

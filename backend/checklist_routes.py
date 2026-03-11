@@ -397,6 +397,422 @@ CHECKLISTS = {
                 }
             ]
         }
+    },
+    
+    # ─────────────────────────────────────────────────────────────────────────
+    # DINE PILLAR CHECKLISTS
+    # ─────────────────────────────────────────────────────────────────────────
+    "dine": {
+        "feeding_guide": {
+            "id": "feeding_guide",
+            "title": "Feeding Guide",
+            "subtitle": "Nutrition essentials for your pet's health",
+            "icon": "🍖",
+            "color": "#f97316",
+            "sections": [
+                {
+                    "title": "Daily Feeding Schedule",
+                    "icon": "⏰",
+                    "items": [
+                        {"text": "Puppies (2-4 months): 4 meals per day", "personalized": True, "field": "life_stage"},
+                        {"text": "Puppies (4-6 months): 3 meals per day", "personalized": True, "field": "life_stage"},
+                        {"text": "Adults: 2 meals per day (morning & evening)", "personalized": False},
+                        {"text": "Seniors: 2-3 smaller meals per day", "personalized": True, "field": "life_stage"},
+                        {"text": "Maintain consistent feeding times", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Portion Guidelines",
+                    "icon": "📏",
+                    "items": [
+                        {"text": "Small dogs (up to 10kg): 1/2 to 1 cup/day", "personalized": True, "field": "size"},
+                        {"text": "Medium dogs (10-25kg): 1 to 2 cups/day", "personalized": True, "field": "size"},
+                        {"text": "Large dogs (25-45kg): 2 to 3 cups/day", "personalized": True, "field": "size"},
+                        {"text": "Adjust based on activity level", "personalized": False},
+                        {"text": "Monitor weight weekly and adjust portions", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Foods to Avoid",
+                    "icon": "⚠️",
+                    "items": [
+                        {"text": "Chocolate (toxic - all types)", "personalized": False},
+                        {"text": "Grapes and raisins", "personalized": False},
+                        {"text": "Onions and garlic", "personalized": False},
+                        {"text": "Xylitol (sugar-free products)", "personalized": False},
+                        {"text": "Macadamia nuts", "personalized": False},
+                        {"text": "Alcohol and caffeine", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Healthy Treats",
+                    "icon": "🥕",
+                    "items": [
+                        {"text": "Carrots (raw or cooked)", "personalized": False},
+                        {"text": "Apple slices (no seeds)", "personalized": False},
+                        {"text": "Blueberries", "personalized": False},
+                        {"text": "Plain cooked chicken", "personalized": False},
+                        {"text": "Treats should be <10% of daily calories", "personalized": False},
+                    ]
+                }
+            ]
+        }
+    },
+    
+    # ─────────────────────────────────────────────────────────────────────────
+    # STAY PILLAR CHECKLISTS
+    # ─────────────────────────────────────────────────────────────────────────
+    "stay": {
+        "boarding_prep": {
+            "id": "boarding_prep",
+            "title": "Boarding Prep Checklist",
+            "subtitle": "Prepare your pet for a comfortable stay",
+            "icon": "🏨",
+            "color": "#3b82f6",
+            "sections": [
+                {
+                    "title": "Before Booking",
+                    "icon": "📋",
+                    "items": [
+                        {"text": "Verify vaccination requirements", "personalized": False},
+                        {"text": "Schedule vet visit if vaccines due", "personalized": False},
+                        {"text": "Get copies of vaccination records", "personalized": False},
+                        {"text": "Ask about medication administration policy", "personalized": True, "field": "medications"},
+                        {"text": "Tour the facility if possible", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "What to Pack",
+                    "icon": "🎒",
+                    "items": [
+                        {"text": "Enough food for entire stay + 1 extra day", "personalized": False},
+                        {"text": "Medications with clear instructions", "personalized": True, "field": "medications"},
+                        {"text": "Favorite toy or comfort item", "personalized": False},
+                        {"text": "Blanket or bed that smells like home", "personalized": False},
+                        {"text": "Treats (if facility allows)", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Documents & Info",
+                    "icon": "📄",
+                    "items": [
+                        {"text": "Vaccination records", "personalized": False},
+                        {"text": "Emergency contact numbers", "personalized": False},
+                        {"text": "Vet contact information", "personalized": False},
+                        {"text": "Feeding schedule and portions", "personalized": False},
+                        {"text": "Any behavioral notes (fears, triggers)", "personalized": True, "field": "anxiety_triggers"},
+                    ]
+                },
+                {
+                    "title": "Pre-Stay Tips",
+                    "icon": "💡",
+                    "items": [
+                        {"text": "Take long walk before drop-off", "personalized": False},
+                        {"text": "Keep goodbye brief and positive", "personalized": False},
+                        {"text": "Don't show anxiety (pets sense it)", "personalized": False},
+                        {"text": "Confirm pickup time in advance", "personalized": False},
+                        {"text": "Leave unwashed item for scent comfort", "personalized": False},
+                    ]
+                }
+            ]
+        }
+    },
+    
+    # ─────────────────────────────────────────────────────────────────────────
+    # CELEBRATE PILLAR CHECKLISTS
+    # ─────────────────────────────────────────────────────────────────────────
+    "celebrate": {
+        "birthday_party": {
+            "id": "birthday_party",
+            "title": "Birthday Party Planner",
+            "subtitle": "Plan the perfect celebration for your pet",
+            "icon": "🎂",
+            "color": "#ec4899",
+            "sections": [
+                {
+                    "title": "2 Weeks Before",
+                    "icon": "📅",
+                    "items": [
+                        {"text": "Set date and time", "personalized": False},
+                        {"text": "Create guest list (dogs + humans)", "personalized": False},
+                        {"text": "Order pet-safe cake", "personalized": True, "field": "allergies"},
+                        {"text": "Plan venue (home, park, dog cafe)", "personalized": False},
+                        {"text": "Send invitations", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "1 Week Before",
+                    "icon": "🛒",
+                    "items": [
+                        {"text": "Buy party supplies (banners, hats)", "personalized": False},
+                        {"text": "Order personalized items (bandana, toys)", "personalized": False},
+                        {"text": "Plan games and activities", "personalized": False},
+                        {"text": "Prepare goodie bags for guests", "personalized": False},
+                        {"text": "Confirm cake order", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Day Before",
+                    "icon": "✨",
+                    "items": [
+                        {"text": "Set up decorations", "personalized": False},
+                        {"text": "Prepare camera/phone for photos", "personalized": False},
+                        {"text": "Prepare food area (pet-safe treats)", "personalized": False},
+                        {"text": "Create a comfortable rest space", "personalized": False},
+                        {"text": "Charge phone for photos/videos", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Party Day",
+                    "icon": "🎉",
+                    "items": [
+                        {"text": "Pick up cake", "personalized": False},
+                        {"text": "Set up pet-safe food station", "personalized": False},
+                        {"text": "Have water bowls available", "personalized": False},
+                        {"text": "Take lots of photos!", "personalized": True, "field": "name"},
+                        {"text": "Monitor pets for overstimulation", "personalized": False},
+                        {"text": "Share celebration on social media", "personalized": False},
+                    ]
+                }
+            ]
+        }
+    },
+    
+    # ─────────────────────────────────────────────────────────────────────────
+    # LEARN PILLAR CHECKLISTS
+    # ─────────────────────────────────────────────────────────────────────────
+    "learn": {
+        "training_milestones": {
+            "id": "training_milestones",
+            "title": "Training Milestones",
+            "subtitle": "Track your pet's learning journey",
+            "icon": "🎓",
+            "color": "#6366f1",
+            "sections": [
+                {
+                    "title": "Basic Commands (Week 1-4)",
+                    "icon": "📗",
+                    "items": [
+                        {"text": "Sit - basic position command", "personalized": False},
+                        {"text": "Stay - impulse control foundation", "personalized": False},
+                        {"text": "Come - recall (most important for safety)", "personalized": False},
+                        {"text": "Down - relaxation position", "personalized": False},
+                        {"text": "Name recognition - attention foundation", "personalized": True, "field": "name"},
+                    ]
+                },
+                {
+                    "title": "Intermediate Skills (Month 2-3)",
+                    "icon": "📘",
+                    "items": [
+                        {"text": "Leave it - impulse control", "personalized": False},
+                        {"text": "Drop it - release command", "personalized": False},
+                        {"text": "Heel - walking beside you", "personalized": False},
+                        {"text": "Wait - door/car safety", "personalized": False},
+                        {"text": "Place/Bed - go to designated spot", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Socialization Goals",
+                    "icon": "🐕",
+                    "items": [
+                        {"text": "Meeting new people calmly", "personalized": False},
+                        {"text": "Greeting other dogs politely", "personalized": False},
+                        {"text": "Walking in busy areas", "personalized": False},
+                        {"text": "Car rides without anxiety", "personalized": True, "field": "anxiety_triggers"},
+                        {"text": "Vet/groomer visits", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Training Tips",
+                    "icon": "💡",
+                    "items": [
+                        {"text": "Keep sessions short (5-10 minutes)", "personalized": False},
+                        {"text": "Use high-value treats", "personalized": False},
+                        {"text": "Practice in different environments", "personalized": False},
+                        {"text": "End on a positive note", "personalized": False},
+                        {"text": "Be consistent with commands", "personalized": False},
+                    ]
+                }
+            ]
+        }
+    },
+    
+    # ─────────────────────────────────────────────────────────────────────────
+    # FIT PILLAR CHECKLISTS
+    # ─────────────────────────────────────────────────────────────────────────
+    "fit": {
+        "exercise_plan": {
+            "id": "exercise_plan",
+            "title": "Weekly Exercise Plan",
+            "subtitle": "Keep your pet active and healthy",
+            "icon": "💪",
+            "color": "#22c55e",
+            "sections": [
+                {
+                    "title": "Daily Activity Goals",
+                    "icon": "🎯",
+                    "items": [
+                        {"text": "Puppies: 5 min exercise per month of age, 2x daily", "personalized": True, "field": "life_stage"},
+                        {"text": "Adults: 30-60 min exercise daily", "personalized": False},
+                        {"text": "Seniors: 20-30 min gentle activity daily", "personalized": True, "field": "life_stage"},
+                        {"text": "High-energy breeds: 60-90+ min daily", "personalized": True, "field": "breed"},
+                        {"text": "Mental stimulation: 15-20 min daily", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Activity Ideas",
+                    "icon": "🏃",
+                    "items": [
+                        {"text": "Morning walk (20-30 min)", "personalized": False},
+                        {"text": "Fetch or tug-of-war", "personalized": False},
+                        {"text": "Swimming (great for joints)", "personalized": False},
+                        {"text": "Agility training", "personalized": False},
+                        {"text": "Interactive puzzle toys", "personalized": False},
+                        {"text": "Playdates with other dogs", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Safety Guidelines",
+                    "icon": "⚠️",
+                    "items": [
+                        {"text": "Avoid exercise in extreme heat", "personalized": False},
+                        {"text": "Watch for signs of fatigue", "personalized": False},
+                        {"text": "Keep hydration available", "personalized": False},
+                        {"text": "Warm up before intense activity", "personalized": False},
+                        {"text": "Cool down after exercise", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Weekly Schedule",
+                    "icon": "📆",
+                    "items": [
+                        {"text": "Mon/Wed/Fri: Long walks or runs", "personalized": False},
+                        {"text": "Tue/Thu: Play sessions and training", "personalized": False},
+                        {"text": "Sat: Adventure day (hike, beach, park)", "personalized": False},
+                        {"text": "Sun: Gentle rest day activity", "personalized": False},
+                        {"text": "Track progress and adjust as needed", "personalized": False},
+                    ]
+                }
+            ]
+        }
+    },
+    
+    # ─────────────────────────────────────────────────────────────────────────
+    # PAPERWORK PILLAR CHECKLISTS
+    # ─────────────────────────────────────────────────────────────────────────
+    "paperwork": {
+        "documents_organizer": {
+            "id": "documents_organizer",
+            "title": "Pet Documents Organizer",
+            "subtitle": "Keep all important records in one place",
+            "icon": "📁",
+            "color": "#64748b",
+            "sections": [
+                {
+                    "title": "Essential Documents",
+                    "icon": "📋",
+                    "items": [
+                        {"text": "Vaccination records (current)", "personalized": False},
+                        {"text": "Adoption/purchase papers", "personalized": False},
+                        {"text": "Microchip registration", "personalized": True, "field": "microchip"},
+                        {"text": "Pet insurance policy", "personalized": False},
+                        {"text": "Spay/neuter certificate", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Medical Records",
+                    "icon": "🏥",
+                    "items": [
+                        {"text": "Vet visit history", "personalized": False},
+                        {"text": "Medication list and dosages", "personalized": True, "field": "medications"},
+                        {"text": "Allergy documentation", "personalized": True, "field": "allergies"},
+                        {"text": "Surgery/procedure records", "personalized": False},
+                        {"text": "Lab test results", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Legal Documents",
+                    "icon": "⚖️",
+                    "items": [
+                        {"text": "Registration/license", "personalized": False},
+                        {"text": "Breed certification (if applicable)", "personalized": True, "field": "breed"},
+                        {"text": "Housing pet agreement", "personalized": False},
+                        {"text": "Travel permits (if needed)", "personalized": False},
+                        {"text": "Pet trust/will provisions", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Annual Checklist",
+                    "icon": "📅",
+                    "items": [
+                        {"text": "Renew pet license", "personalized": False},
+                        {"text": "Update microchip contact info", "personalized": False},
+                        {"text": "Review insurance policy", "personalized": False},
+                        {"text": "Schedule annual vet checkup", "personalized": False},
+                        {"text": "Update vaccination records", "personalized": False},
+                    ]
+                }
+            ]
+        }
+    },
+    
+    # ─────────────────────────────────────────────────────────────────────────
+    # ADVISORY PILLAR CHECKLISTS
+    # ─────────────────────────────────────────────────────────────────────────
+    "advisory": {
+        "life_stage_guide": {
+            "id": "life_stage_guide",
+            "title": "Life Stage Guide",
+            "subtitle": "Tailored care for every stage of life",
+            "icon": "🐕",
+            "color": "#8b5cf6",
+            "sections": [
+                {
+                    "title": "Puppy (0-1 year)",
+                    "icon": "🐶",
+                    "items": [
+                        {"text": "Vaccination schedule completion", "personalized": False},
+                        {"text": "Socialization window (8-16 weeks)", "personalized": False},
+                        {"text": "Basic training foundation", "personalized": False},
+                        {"text": "Spay/neuter discussion with vet", "personalized": False},
+                        {"text": "Puppy-proofing home", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Adult (1-7 years)",
+                    "icon": "🐕",
+                    "items": [
+                        {"text": "Annual vet checkups", "personalized": False},
+                        {"text": "Dental care routine", "personalized": False},
+                        {"text": "Consistent exercise schedule", "personalized": False},
+                        {"text": "Weight management", "personalized": False},
+                        {"text": "Parasite prevention", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Senior (7+ years)",
+                    "icon": "🧓",
+                    "items": [
+                        {"text": "Bi-annual vet checkups", "personalized": False},
+                        {"text": "Joint health supplements", "personalized": False},
+                        {"text": "Adjusted diet for seniors", "personalized": False},
+                        {"text": "Comfortable bedding for joints", "personalized": False},
+                        {"text": "Monitor cognitive changes", "personalized": False},
+                    ]
+                },
+                {
+                    "title": "Multi-Dog Household",
+                    "icon": "🐕‍🦺",
+                    "items": [
+                        {"text": "Separate feeding areas", "personalized": False},
+                        {"text": "Individual attention time", "personalized": False},
+                        {"text": "Resource guarding prevention", "personalized": False},
+                        {"text": "Compatible play styles", "personalized": False},
+                        {"text": "Quiet spaces for each dog", "personalized": False},
+                    ]
+                }
+            ]
+        }
     }
 }
 

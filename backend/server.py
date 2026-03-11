@@ -277,6 +277,9 @@ from checklist_routes import router as checklist_router
 # Nearby Places Routes (Google Places API for location-based services)
 from nearby_places_routes import router as nearby_places_router
 
+# Instagram Feed Routes (for celebration wall)
+from instagram_routes import router as instagram_router
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -19636,6 +19639,9 @@ app.include_router(checklist_router)  # Checklists at /api/checklists/*
 
 # Initialize Nearby Places Routes (Google Places API)
 app.include_router(nearby_places_router)  # Nearby at /api/nearby/*
+
+# Initialize Instagram Feed Routes
+app.include_router(instagram_router)  # Instagram at /api/instagram/*
 
 # Initialize Mira Structured Engine (feature-flagged)
 try:
