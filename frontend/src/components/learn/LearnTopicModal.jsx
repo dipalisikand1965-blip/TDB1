@@ -12,7 +12,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Dialog, DialogContent } from '../ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '../ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -355,6 +355,9 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden p-0 rounded-3xl" data-testid="learn-topic-modal">
+        {/* Visually hidden title for accessibility */}
+        <DialogTitle className="sr-only">{config.title}</DialogTitle>
+        
         {/* Header with Image */}
         <div className="relative h-32 bg-gradient-to-br from-pink-50 to-purple-50">
           <img 

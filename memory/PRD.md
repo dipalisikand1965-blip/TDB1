@@ -1,6 +1,6 @@
 # The Doggy Company - PRD (Product Requirements Document)
 **Last Updated:** March 11, 2026  
-**Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅ | MIRA ADVISOR 100% ✅ | CELEBRATE 100% ✅ | AI IMAGES 100% ✅ | **LEARN 60% 🔄 IN PROGRESS**
+**Status:** EMERGENCY 100% ✅ | ADVISORY 100% ✅ | FAREWELL 100% ✅ | ADOPT 100% ✅ | MOBILE 100% ✅ | MIRA ADVISOR 100% ✅ | CELEBRATE 100% ✅ | AI IMAGES 100% ✅ | **LEARN 70% 🔄 IN PROGRESS**
 
 ---
 
@@ -10,8 +10,15 @@
 1. **Topic Hub Modal Integration** - DONE ✅
    - Topic boxes now open popup modal instead of navigating to new page
    - Modal has 4 tabs: Overview, Videos, Products, Services
-   - "Send to Concierge for More Details" button at bottom
-   - All 12 topics work correctly with different content
+
+2. **Topic Hub Modal Enhanced** - DONE ✅
+   - **Overview topics are clickable** → Expands with Mira's tips in beautiful accordion
+   - **Products tab shows REAL products** from API catalogue with images, prices
+   - **"Continue to Shop" button** navigates to /shop
+   - **Services tab** shows "Ask Concierge" badge for unavailable services
+   - **Services navigate correctly** → /services for available, service desk for unavailable
+   - **"Send to Concierge"** uses Universal Service Command flow (NOT Mira AI)
+   - Testing: 100% pass rate (8/8 tests passed)
 
 ### The Golden Standard Flow (in order):
 ```
@@ -32,20 +39,14 @@
 ## ❌ REMAINING WORK
 
 ### 1. Topic Hub Content is Static (Hardcoded)
-**Status:** Currently content is hardcoded in TOPIC_CONFIG in LearnTopicModal.jsx
+**Status:** Topic tips are hardcoded in TOPIC_CONFIG in LearnTopicModal.jsx
 **Need:** Create backend API and MongoDB schema to serve dynamic content
 
 ### 2. "Learn for Bruno" Personalized Section
 **User provided mockup showing:**
 - Pet watercolor illustration on right side
 - "Learn for Bruno" header
-- Personalized tips based on pet profile:
-  - "Joint comfort for senior dogs"
-  - "Heat care for Labradors"
-  - "Better leash manners"
-  - "Summer hydration tips"
-
-**This section should appear AFTER the 12 topic boxes**
+- Personalized tips based on pet profile
 - Typing and pressing Enter opens Mira AI panel
 - Works like Emergency and Advisory pages
 - Code in LearnPage.jsx line ~290
