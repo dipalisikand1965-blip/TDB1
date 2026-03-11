@@ -24,6 +24,7 @@ import PersonalizedPicks from '../components/PersonalizedPicks';
 import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import SoulMadeCollection from '../components/SoulMadeCollection'; // ADDED: Soul Made Products
+import NearbyLearnServices from '../components/learn/NearbyLearnServices'; // ADDED: Near Me section
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
@@ -593,9 +594,42 @@ const LearnPage = () => {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SUB-NAVIGATION - Quick Jump Menu */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex items-center gap-1 py-2 overflow-x-auto hide-scrollbar">
+            {[
+              { label: 'Start Learning', anchor: 'core-cards', icon: '📚' },
+              { label: 'Life Stage', anchor: 'life-stage', icon: '🐶' },
+              { label: 'Topics', anchor: 'topics', icon: '📖' },
+              { label: 'Guided Paths', anchor: 'guided-paths', icon: '🎯' },
+              { label: 'For My Dog', anchor: 'my-dog', icon: '💜' },
+              { label: 'Products', anchor: 'products', icon: '🛍️' },
+              { label: 'Services', anchor: 'services', icon: '🎓' },
+              { label: 'Near Me', anchor: 'near-me', icon: '📍' }
+            ].map((item, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  const el = document.getElementById(item.anchor);
+                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 whitespace-nowrap transition-colors"
+                data-testid={`subnav-${item.anchor}`}
+              >
+                <span className="text-base">{item.icon}</span>
+                <span className="hidden sm:inline">{item.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* 8 CORE CARDS - Grouped into 3 buckets */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="py-12 bg-white">
+      <div id="core-cards" className="py-12 bg-white">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">How can we help?</h2>
@@ -694,7 +728,7 @@ const LearnPage = () => {
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* LEARN BY LIFE STAGE */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="py-12 bg-gray-50">
+      <div id="life-stage" className="py-12 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Learn by Life Stage</h2>
@@ -726,9 +760,48 @@ const LearnPage = () => {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* 12 TOPIC CATEGORIES - Complete Coverage */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div id="topics" className="py-12 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Learn by Topic</h2>
+            <p className="text-gray-600 mt-2">Explore all 12 essential areas of dog care</p>
+          </div>
+          
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+            {[
+              { topic: 'Puppy Basics', icon: '🐶', color: 'pink' },
+              { topic: 'Breed Guides', icon: '🐕', color: 'indigo' },
+              { topic: 'Food & Feeding', icon: '🍽️', color: 'orange' },
+              { topic: 'Grooming', icon: '✨', color: 'pink' },
+              { topic: 'Behavior', icon: '🧠', color: 'purple' },
+              { topic: 'Training', icon: '🎯', color: 'blue' },
+              { topic: 'Travel', icon: '✈️', color: 'sky' },
+              { topic: 'Senior Care', icon: '🦮', color: 'amber' },
+              { topic: 'Health Basics', icon: '💊', color: 'red' },
+              { topic: 'Rescue/Indie', icon: '🏠', color: 'green' },
+              { topic: 'Seasonal Care', icon: '🌞', color: 'yellow' },
+              { topic: 'New Pet Parent', icon: '👋', color: 'teal' }
+            ].map((item, idx) => (
+              <button
+                key={idx}
+                onClick={() => { setVideoTopic(item.topic.toLowerCase().replace(/ & | /g, '_')); fetchYouTubeVideos(item.topic.toLowerCase()); }}
+                className={`p-4 rounded-xl bg-gradient-to-br from-${item.color}-50 to-${item.color}-100 hover:from-${item.color}-100 hover:to-${item.color}-200 transition-all text-center group border border-${item.color}-200`}
+                data-testid={`topic-${item.topic.toLowerCase().replace(/ & | /g, '-')}`}
+              >
+                <span className="text-2xl block mb-1">{item.icon}</span>
+                <span className="text-xs font-medium text-gray-700">{item.topic}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* GUIDED LEARNING PATHS */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="py-12 bg-white">
+      <div id="guided-paths" className="py-12 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
@@ -813,7 +886,7 @@ const LearnPage = () => {
       {/* LEARN FOR MY DOG - Personalized Content */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {(activePet || userPets?.[0]) && (
-        <div className="py-12 bg-gradient-to-br from-purple-50 to-pink-50">
+        <div id="my-dog" className="py-12 bg-gradient-to-br from-purple-50 to-pink-50">
           <div className="max-w-6xl mx-auto px-4">
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
@@ -824,8 +897,52 @@ const LearnPage = () => {
                 Learn for {(activePet || userPets?.[0])?.name}
               </h2>
               <p className="text-gray-600 mt-2">
-                Content tailored to your {(activePet || userPets?.[0])?.breed || 'pet'}
+                Content tailored to your {(activePet || userPets?.[0])?.breed || 'pet'}'s breed, age & needs
               </p>
+            </div>
+            
+            {/* Personalized Learning Categories based on Pet Profile */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              {[
+                { 
+                  title: 'Breed Care', 
+                  desc: `Care tips for ${(activePet || userPets?.[0])?.breed || 'your breed'}`,
+                  icon: '🐕',
+                  color: 'purple'
+                },
+                { 
+                  title: 'Life Stage', 
+                  desc: (activePet || userPets?.[0])?.age_months < 12 ? 'Puppy essentials' : 
+                        (activePet || userPets?.[0])?.age_months > 84 ? 'Senior care' : 'Adult dog care',
+                  icon: '📅',
+                  color: 'blue'
+                },
+                { 
+                  title: 'Size Guide', 
+                  desc: `Tips for ${(activePet || userPets?.[0])?.size || 'your dog'}'s size`,
+                  icon: '📏',
+                  color: 'green'
+                },
+                { 
+                  title: 'Seasonal Care', 
+                  desc: new Date().getMonth() >= 3 && new Date().getMonth() <= 8 ? 'Summer heat tips' : 'Winter comfort',
+                  icon: '🌤️',
+                  color: 'amber'
+                }
+              ].map((item, idx) => (
+                <Card 
+                  key={idx}
+                  className={`p-4 cursor-pointer hover:shadow-lg transition-all bg-white/80 hover:bg-white border-${item.color}-200`}
+                  onClick={() => { setVideoTopic(item.title.toLowerCase().replace(' ', '_')); }}
+                  data-testid={`personalized-${item.title.toLowerCase().replace(' ', '-')}`}
+                >
+                  <div className="text-center">
+                    <span className="text-2xl mb-2 block">{item.icon}</span>
+                    <h3 className="font-semibold text-gray-900 text-sm">{item.title}</h3>
+                    <p className="text-xs text-gray-500 mt-1">{item.desc}</p>
+                  </div>
+                </Card>
+              ))}
             </div>
             
             {/* Personalized recommendations will load here */}
@@ -837,7 +954,7 @@ const LearnPage = () => {
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* PRODUCTS THAT HELP (SEPARATE SECTION) */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="py-12 bg-white">
+      <div id="products" className="py-12 bg-white">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
@@ -889,7 +1006,7 @@ const LearnPage = () => {
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* SERVICES THAT HELP (SEPARATE SECTION) */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="py-12 bg-gradient-to-br from-indigo-50 to-blue-50">
+      <div id="services" className="py-12 bg-gradient-to-br from-indigo-50 to-blue-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
@@ -923,6 +1040,13 @@ const LearnPage = () => {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* NEAR ME - Local trainers, groomers, pet stores, vets */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div id="near-me">
+        <NearbyLearnServices />
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════
