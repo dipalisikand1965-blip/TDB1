@@ -109,7 +109,7 @@ const TOPIC_CONFIG = {
       { title: 'Teething', tip: 'Teething peaks at 4-6 months. Freeze wet washcloths for soothing. Redirect biting to appropriate chew toys immediately.' },
       { title: 'Socialization', tip: 'The critical window is 3-14 weeks. Expose to 100 new positive experiences safely. Carry them to see the world before fully vaccinated.' }
     ],
-    productKeywords: ['puppy', 'starter', 'pee pad', 'teething', 'crate'],
+    productKeywords: ['puppy', 'pee pad', 'teething', 'crate', 'starter kit'],
     services: [
       { name: 'Puppy Training Session', pillar: 'learn', hasService: true },
       { name: 'First Vet Visit Guidance', pillar: 'care', hasService: true },
@@ -130,7 +130,7 @@ const TOPIC_CONFIG = {
       { title: 'Pug', tip: 'Pugs are brachycephalic - avoid heat and intense exercise. Clean facial wrinkles daily. Monitor breathing during activities.' },
       { title: 'German Shepherd', tip: 'GSDs need mental work as much as physical. Early socialization is crucial. Watch for digestive issues and hip problems.' }
     ],
-    productKeywords: ['breed', 'harness', 'cooling', 'shedding', 'brush'],
+    productKeywords: ['harness', 'cooling vest', 'breed specific', 'deshedding', 'breed care'],
     services: [
       { name: 'Breed Consultation', pillar: 'advisory', hasService: true },
       { name: 'Grooming for Your Breed', pillar: 'care', hasService: true }
@@ -149,7 +149,7 @@ const TOPIC_CONFIG = {
       { title: 'Healthy treats', tip: 'Treats should be max 10% of daily calories. Great options: carrots, apple slices, freeze-dried meat, plain boiled chicken.' },
       { title: 'Hydration', tip: 'Dogs need about 1 oz of water per pound of body weight daily. More in hot weather or after exercise.' }
     ],
-    productKeywords: ['food', 'bowl', 'feeder', 'slow feeder', 'lick mat', 'treat'],
+    productKeywords: ['slow feeder', 'food bowl', 'lick mat', 'food storage', 'treat dispenser'],
     services: [
       { name: 'Nutrition Consultation', pillar: 'dine', hasService: true },
       { name: 'Diet Planning', pillar: 'dine', hasService: true }
@@ -168,7 +168,7 @@ const TOPIC_CONFIG = {
       { title: 'Ear cleaning', tip: 'Check ears weekly. Use vet-approved cleaner. Never insert anything into the ear canal. Watch for redness or odor.' },
       { title: 'Coat care by breed', tip: 'Double coats: never shave. Wire coats: hand-strip. Curly coats: regular professional grooming. Smooth coats: weekly brushing.' }
     ],
-    productKeywords: ['grooming', 'brush', 'shampoo', 'nail', 'ear', 'towel'],
+    productKeywords: ['brush', 'shampoo', 'nail clipper', 'ear cleaner', 'grooming'],
     services: [
       { name: 'Groomers Near You', pillar: 'care', hasService: true },
       { name: 'Grooming Consultation', pillar: 'care', hasService: true },
@@ -189,7 +189,7 @@ const TOPIC_CONFIG = {
       { title: 'Hyperactivity', tip: 'Mental exercise tires dogs faster than physical. Try puzzle feeders, training sessions, sniff walks.' },
       { title: 'Fear responses', tip: 'Never force interactions. Let them approach at their pace. Counter-condition with high-value treats.' }
     ],
-    productKeywords: ['calming', 'anxiety', 'chew', 'enrichment', 'puzzle'],
+    productKeywords: ['calming spray', 'anxiety vest', 'puzzle toy', 'chew toy', 'enrichment'],
     services: [
       { name: 'Behavior Consultation', pillar: 'learn', hasService: true },
       { name: 'Behavior Trainer', pillar: 'learn', hasService: true }
@@ -208,7 +208,7 @@ const TOPIC_CONFIG = {
       { title: 'Leash walking', tip: 'Stop when they pull. Reward walking beside you. Use a front-clip harness for pullers. Be patient and consistent.' },
       { title: 'House rules', tip: 'Decide rules before bringing dog home. Everyone must enforce consistently. Use management (baby gates) initially.' }
     ],
-    productKeywords: ['training', 'treat', 'clicker', 'leash', 'harness'],
+    productKeywords: ['training treats', 'clicker', 'training leash', 'treat pouch', 'harness'],
     services: [
       { name: 'Trainers Near You', pillar: 'learn', hasService: true },
       { name: 'Training Consultation', pillar: 'learn', hasService: true },
@@ -228,7 +228,7 @@ const TOPIC_CONFIG = {
       { title: 'Packing checklist', tip: 'Food, bowls, leash, waste bags, medications, health records, recent photo, favorite toy, first aid kit.' },
       { title: 'Travel safety', tip: 'ID tags updated. Microchip registered. Know emergency vets at destination. Keep routine as normal as possible.' }
     ],
-    productKeywords: ['travel', 'carrier', 'car', 'seat belt', 'portable', 'bowl'],
+    productKeywords: ['carrier', 'car seat', 'travel bowl', 'travel kit', 'portable'],
     services: [
       { name: 'Travel Concierge', pillar: 'travel', hasService: true },
       { name: 'Pet-Friendly Hotel Booking', pillar: 'travel', hasService: true }
@@ -247,7 +247,7 @@ const TOPIC_CONFIG = {
       { title: 'Slower exercise', tip: 'Two short walks better than one long. Watch for signs of fatigue. Avoid extreme temperatures.' },
       { title: 'Comfort routines', tip: 'Maintain familiar routines. Orthopedic beds help joints. Keep food/water easily accessible.' }
     ],
-    productKeywords: ['senior', 'orthopedic', 'joint', 'supplement', 'raised', 'ramp'],
+    productKeywords: ['orthopedic bed', 'joint supplement', 'senior food', 'ramp', 'mobility'],
     services: [
       { name: 'Physiotherapy', pillar: 'care', hasService: true },
       { name: 'Senior Dog Vet Consult', pillar: 'care', hasService: true },
@@ -267,7 +267,7 @@ const TOPIC_CONFIG = {
       { title: 'Basic symptoms', tip: 'Know normal vitals: temp 101-102.5°F, heart rate 60-140 bpm. Watch for lethargy, appetite changes, unusual behavior.' },
       { title: 'Hydration', tip: 'Signs of dehydration: dry gums, sunken eyes, skin tenting. Offer fresh water always. Add water to kibble if needed.' }
     ],
-    productKeywords: ['dental', 'health', 'supplement', 'first aid', 'wipes'],
+    productKeywords: ['dental chew', 'first aid', 'health supplement', 'tick spray', 'deworming'],
     services: [
       { name: 'Vets Near You', pillar: 'care', hasService: true },
       { name: 'Health Checkup', pillar: 'care', hasService: true },
@@ -286,7 +286,7 @@ const TOPIC_CONFIG = {
       { title: 'Trauma behaviour', tip: 'Triggers may be unpredictable. Dont punish fear responses. Work with a positive-reinforcement trainer.' },
       { title: 'Routine building', tip: 'Consistency is key. Same feeding times, walk times, sleep area. Structure reduces anxiety.' }
     ],
-    productKeywords: ['calming', 'bed', 'comfort', 'enrichment', 'anxiety'],
+    productKeywords: ['calming bed', 'comfort blanket', 'snuffle mat', 'rescue', 'anxiety'],
     services: [
       { name: 'Behaviour Help', pillar: 'learn', hasService: true },
       { name: 'Adoption Support', pillar: 'adopt', hasService: true },
@@ -305,7 +305,7 @@ const TOPIC_CONFIG = {
       { title: 'Monsoon: Paw care', tip: 'Dry paws after every walk. Check between toes for infections. Use paw balm. Avoid puddles with stagnant water.' },
       { title: 'Winter: Warmth', tip: 'Short-haired dogs need sweaters. Wipe salt from paws. Provide warm bedding. Watch for hypothermia signs.' }
     ],
-    productKeywords: ['cooling', 'paw', 'sweater', 'coat', 'balm', 'blanket'],
+    productKeywords: ['cooling mat', 'paw balm', 'dog sweater', 'rain coat', 'winter jacket'],
     services: [
       { name: 'Seasonal Care Consultation', pillar: 'advisory', hasService: true }
     ]
@@ -323,7 +323,7 @@ const TOPIC_CONFIG = {
       { title: 'Sleep area', tip: 'Crate or bed in quiet, draft-free area. Near you initially. Consistent location helps them settle.' },
       { title: 'Training basics', tip: 'Start with name recognition. House training from day one. Positive reinforcement only. Short sessions.' }
     ],
-    productKeywords: ['starter', 'kit', 'bed', 'bowl', 'collar', 'leash', 'crate'],
+    productKeywords: ['starter kit', 'collar', 'leash', 'bed', 'bowl', 'crate'],
     services: [
       { name: 'New Pet Onboarding', pillar: 'advisory', hasService: true },
       { name: 'First Vet Visit', pillar: 'care', hasService: true },
@@ -373,8 +373,9 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
     if (!config) return;
     setLoadingProducts(true);
     try {
-      const keywords = config.productKeywords.join(',');
-      const res = await fetch(`${API_URL}/api/products?pillar=learn&keywords=${encodeURIComponent(keywords)}&limit=8`);
+      // Use first keyword as primary search - no pillar filter to get from full 5000+ catalogue
+      const primaryKeyword = config.productKeywords[0];
+      const res = await fetch(`${API_URL}/api/products?search=${encodeURIComponent(primaryKeyword)}&limit=8`);
       if (res.ok) {
         const data = await res.json();
         setProducts(data.products || []);
