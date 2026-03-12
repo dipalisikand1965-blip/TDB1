@@ -450,6 +450,51 @@ const LearnPage = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* DAILY LEARNING TIP - Dynamic content that changes every day */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {(() => {
+        const dailyTips = [
+          { tip: "Dogs learn best in short 5-minute sessions. Three short sessions beat one long one every time.", category: "Training", color: "from-blue-500 to-indigo-500", icon: GraduationCap },
+          { tip: "A tired dog is a well-behaved dog. Mental stimulation (puzzle toys, nose work) tires them faster than physical exercise.", category: "Behavior", color: "from-purple-500 to-pink-500", icon: Brain },
+          { tip: "Consistency matters more than intensity. Use the same words, same tone, same rewards every single time.", category: "Training", color: "from-teal-500 to-emerald-500", icon: Target },
+          { tip: "Your dog's breed affects how they learn. Hounds follow their nose, herders want a job, terriers need variety.", category: "Breed Tips", color: "from-amber-500 to-orange-500", icon: Star },
+          { tip: "Socialization window closes at 14 weeks. Expose puppies to different sounds, surfaces, people, and gentle dogs early.", category: "Puppy", color: "from-pink-500 to-rose-500", icon: Heart },
+          { tip: "If your dog is pulling on leash, stop walking. They learn that pulling = no movement. Loose leash = we go.", category: "Walking", color: "from-green-500 to-teal-500", icon: Activity },
+          { tip: "Never punish a dog who comes to you — even if they just did something wrong. Coming to you should always be positive.", category: "Recall", color: "from-indigo-500 to-blue-500", icon: Shield },
+        ];
+        const today = new Date();
+        const dayIndex = today.getDate() % dailyTips.length;
+        const todaysTip = dailyTips[dayIndex];
+        const TipIcon = todaysTip.icon;
+        
+        return (
+          <div className="py-6 px-4">
+            <div className="max-w-5xl mx-auto">
+              <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-r ${todaysTip.color} p-5 md:p-6 text-white`}>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-8 translate-x-8" />
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-6 -translate-x-6" />
+                <div className="relative flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                    <TipIcon className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Sparkles className="w-4 h-4" />
+                      <span className="text-xs font-medium text-white/80 uppercase tracking-wider">Today's Learning Tip</span>
+                      <span className="text-xs text-white/60 ml-auto hidden sm:block">{todaysTip.category}</span>
+                    </div>
+                    <p className="text-sm md:text-base font-medium leading-relaxed" data-testid="daily-learning-tip">
+                      {todaysTip.tip}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* HOW CAN WE HELP? - 3 Action Buckets */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <section className="py-10 px-4 bg-stone-50">
@@ -460,9 +505,18 @@ const LearnPage = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="p-5 bg-gradient-to-br from-amber-50 to-orange-50 border-amber-100 rounded-2xl">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">📦</span>
+            <Card className="p-5 bg-gradient-to-br from-amber-50 to-orange-50 border-amber-100 rounded-2xl cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('openMiraAI', {
+                  detail: { message: 'Help me choose the right products and build a routine for my dog', context: 'learn', pillar: 'learn' }
+                }));
+              }}
+              data-testid="help-products-routines"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+                  <Award className="w-5 h-5 text-amber-600" />
+                </div>
                 <h3 className="font-semibold text-gray-900">Products & Routines</h3>
               </div>
               <ul className="space-y-2 text-sm text-gray-600">
@@ -472,9 +526,18 @@ const LearnPage = () => {
               </ul>
             </Card>
             
-            <Card className="p-5 bg-gradient-to-br from-teal-50 to-emerald-50 border-teal-100 rounded-2xl">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">🐕</span>
+            <Card className="p-5 bg-gradient-to-br from-teal-50 to-emerald-50 border-teal-100 rounded-2xl cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('openMiraAI', {
+                  detail: { message: 'Guide me based on my dog\'s life stage and breed', context: 'learn', pillar: 'learn' }
+                }));
+              }}
+              data-testid="help-life-stage"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center">
+                  <PawPrint className="w-5 h-5 text-teal-600" />
+                </div>
                 <h3 className="font-semibold text-gray-900">Life Stage & Care</h3>
               </div>
               <ul className="space-y-2 text-sm text-gray-600">
@@ -484,9 +547,18 @@ const LearnPage = () => {
               </ul>
             </Card>
             
-            <Card className="p-5 bg-gradient-to-br from-violet-50 to-purple-50 border-violet-100 rounded-2xl">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">🤝</span>
+            <Card className="p-5 bg-gradient-to-br from-violet-50 to-purple-50 border-violet-100 rounded-2xl cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('openMiraAI', {
+                  detail: { message: 'Help me find the right trainer and services near me', context: 'learn', pillar: 'learn' }
+                }));
+              }}
+              data-testid="help-support-services"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center">
+                  <Users className="w-5 h-5 text-violet-600" />
+                </div>
                 <h3 className="font-semibold text-gray-900">Support & Services</h3>
               </div>
               <ul className="space-y-2 text-sm text-gray-600">
