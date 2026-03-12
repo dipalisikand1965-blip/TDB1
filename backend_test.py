@@ -1,352 +1,435 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Doggy Company / Mira Pet Life Operating System
-Tests all the key endpoints requested in the review requirements.
+Backend Testing Suite - Admin Media Upload & Nearby Places
+===========================================================
+
+Testing focused backend verification for:
+1. POST /api/upload/product-image returns 200 for a valid PNG upload
+2. POST /api/upload/service-image returns 200 for a valid PNG upload  
+3. POST /api/upload/bundle-image returns 200 for a valid PNG upload
+4. Product upload persistence: create product -> upload image -> verify persistence
+5. Service upload persistence: create service -> upload image -> verify persistence  
+6. Nearby Google-powered route check: /api/nearby/places with representative queries
+
+Author: Testing Agent
+Date: December 30, 2024
 """
 
-import requests
+import asyncio
+import httpx
+import os
 import json
-import sys
-from datetime import datetime
-from typing import Dict, Any
+import uuid
+from typing import Dict, Any, Optional
+from datetime import datetime, timezone
+import base64
+from io import BytesIO
+from PIL import Image
+import logging
 
-class DoggyCompanyAPITester:
-    def __init__(self, base_url="https://pet-os-refactor.preview.emergentagent.com"):
-        self.base_url = base_url
-        self.token = None
-        self.tests_run = 0
-        self.tests_passed = 0
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+# Base URL for the backend (using frontend env variable)
+BASE_URL = "https://pet-os-refactor.preview.emergentagent.com"
+
+class BackendTester:
+    def __init__(self):
+        self.client = httpx.AsyncClient(timeout=30.0)
+        self.base_url = BASE_URL
         self.test_results = []
         
-        # Test credentials from review request  
-        self.test_email = "dipali@clubconcierge.in"
-        self.test_password = "lola4304"  # Correct password from backend/.env
-
-    def log_test(self, name: str, success: bool, response_data: Dict = None, error: str = None):
-        """Log a test result"""
-        self.tests_run += 1
-        if success:
-            self.tests_passed += 1
-            
-        result = {
-            "test": name,
-            "success": success,
-            "timestamp": datetime.now().isoformat(),
-        }
+    async def create_test_png_image(self) -> bytes:
+        """Create a simple test PNG image for upload testing"""
+        img = Image.new('RGB', (100, 100), color='red')
+        bio = BytesIO()
+        img.save(bio, format='PNG')
+        return bio.getvalue()
         
-        if error:
-            result["error"] = error
-        if response_data:
-            result["response"] = response_data
-            
+    def log_result(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
+        """Log test result"""
+        result = {
+            "test": test_name,
+            "success": success,
+            "details": details,
+            "timestamp": datetime.now().isoformat(),
+            "response_data": response_data
+        }
         self.test_results.append(result)
         
         status = "✅ PASS" if success else "❌ FAIL"
-        print(f"\n{status} - {name}")
-        if error:
-            print(f"   Error: {error}")
-        if response_data and success:
-            print(f"   Response keys: {list(response_data.keys()) if isinstance(response_data, dict) else 'Non-dict response'}")
-
-    def run_test(self, name: str, method: str, endpoint: str, expected_status: int, 
-                 data: Dict = None, headers: Dict = None) -> tuple[bool, Dict]:
-        """Run a single API test"""
-        url = f"{self.base_url}{endpoint}"
+        logger.info(f"{status} {test_name}: {details}")
         
-        if headers is None:
-            headers = {'Content-Type': 'application/json'}
+    async def test_upload_endpoints(self):
+        """Test 1-3: Upload endpoints for product, service, and bundle images"""
         
-        if self.token and 'Authorization' not in headers:
-            headers['Authorization'] = f'Bearer {self.token}'
-
-        try:
-            if method == 'GET':
-                response = requests.get(url, headers=headers, timeout=30)
-            elif method == 'POST':
-                response = requests.post(url, json=data, headers=headers, timeout=30)
-            elif method == 'PUT':
-                response = requests.put(url, json=data, headers=headers, timeout=30)
-            elif method == 'DELETE':
-                response = requests.delete(url, headers=headers, timeout=30)
-            else:
-                self.log_test(name, False, error=f"Unsupported method: {method}")
-                return False, {}
-
-            success = response.status_code == expected_status
-            
+        test_image = await self.create_test_png_image()
+        
+        upload_endpoints = [
+            ("/api/upload/product-image", "Product Image Upload"),
+            ("/api/upload/service-image", "Service Image Upload"), 
+            ("/api/upload/bundle-image", "Bundle Image Upload")
+        ]
+        
+        for endpoint, test_name in upload_endpoints:
             try:
-                response_data = response.json() if response.content else {}
-            except json.JSONDecodeError:
-                response_data = {"raw_response": response.text}
-            
-            if success:
-                self.log_test(name, True, response_data)
-                return True, response_data
-            else:
-                self.log_test(name, False, response_data, 
-                            f"Expected status {expected_status}, got {response.status_code}")
-                return False, response_data
+                files = {"file": ("test.png", test_image, "image/png")}
                 
-        except requests.exceptions.Timeout:
-            self.log_test(name, False, error="Request timed out")
-            return False, {}
-        except requests.exceptions.RequestException as e:
-            self.log_test(name, False, error=f"Request failed: {str(e)}")
-            return False, {}
-        except Exception as e:
-            self.log_test(name, False, error=f"Unexpected error: {str(e)}")
-            return False, {}
-
-    def test_login_flow(self):
-        """Test the login flow with provided credentials"""
-        print("\n🔐 Testing Login Flow...")
-        
-        success, response = self.run_test(
-            "Login with dipali@clubconcierge.in",
-            "POST",
-            "/api/auth/login",
-            200,
-            {
-                "email": self.test_email,
-                "password": self.test_password
-            }
-        )
-        
-        if success and 'access_token' in response:
-            self.token = response['access_token']
-            print(f"   ✓ Login successful, token received")
-            return True
-        elif success and 'token' in response:
-            self.token = response['token']
-            print(f"   ✓ Login successful, token received")
-            return True
-        else:
-            print(f"   ❌ Login failed or no token in response")
-            return False
-
-    def test_paw_points_api(self):
-        """Test Paw Points balance API"""
-        print("\n🐾 Testing Paw Points API...")
-        
-        if not self.token:
-            self.log_test("Paw Points Balance", False, error="No authentication token")
-            return False
-            
-        success, response = self.run_test(
-            "Get Paw Points Balance",
-            "GET",
-            "/api/paw-points/balance",
-            200
-        )
-        
-        return success and 'balance' in response
-
-    def test_mira_chat_api(self):
-        """Test Mira AI chat API"""
-        print("\n🤖 Testing Mira Chat AI API...")
-        
-        success, response = self.run_test(
-            "Mira Chat - Pet Care Question",
-            "POST",
-            "/api/mira/chat",
-            200,
-            {
-                "message": "What should I feed my dog?",
-                "user_id": "test_user",
-                "session_id": "test_session_001"
-            }
-        )
-        
-        return success and ('response' in response or 'message' in response or 'content' in response)
-
-    def test_os_learn_api(self):
-        """Test OS LEARN content API"""
-        print("\n📚 Testing OS LEARN API...")
-        
-        success, response = self.run_test(
-            "Get LEARN Home Content",
-            "GET",
-            "/api/os/learn/home",
-            200
-        )
-        
-        # Accept various response structures for learn content
-        has_content = (
-            success and (
-                'content' in response or 
-                'videos' in response or 
-                'articles' in response or 
-                'categories' in response or
-                'learn_content' in response or
-                len(response) > 0
-            )
-        )
-        
-        return has_content
-
-    def test_health_check(self):
-        """Test basic health check"""
-        print("\n🏥 Testing Health Check...")
-        
-        success, response = self.run_test(
-            "API Health Check",
-            "GET",
-            "/api/health",
-            200
-        )
-        
-        return success
-
-    def test_pet_soul_api(self):
-        """Test Pet Soul related APIs"""
-        print("\n✨ Testing Pet Soul API...")
-        
-        # Test getting pet soul questions
-        success, response = self.run_test(
-            "Get Pet Soul Questions",
-            "GET",
-            "/pet-soul/questions",
-            200
-        )
-        
-        return success and 'folders' in response
-
-    def test_documentation_generation(self):
-        """Test the updated documentation generation functionality"""
-        print("\n📚 Testing Documentation Generation...")
-        
-        # Test the complete documentation endpoint as requested in review
-        url = f"{self.base_url}/complete-documentation.html"
+                response = await self.client.post(
+                    f"{self.base_url}{endpoint}",
+                    files=files
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    image_url = data.get('image_url') or data.get('url')
+                    self.log_result(
+                        test_name, 
+                        True, 
+                        f"Upload successful, image URL: {image_url}", 
+                        data
+                    )
+                else:
+                    self.log_result(
+                        test_name, 
+                        False, 
+                        f"Upload failed with status {response.status_code}: {response.text}"
+                    )
+                    
+            except Exception as e:
+                self.log_result(test_name, False, f"Upload error: {str(e)}")
+                
+    async def test_product_upload_persistence(self):
+        """Test 4: Product creation -> image upload -> persistence verification"""
         
         try:
-            print(f"   Testing: {url}")
-            response = requests.get(url, timeout=30)
+            # Step 1: Create a temporary product
+            product_data = {
+                "name": f"Test Product {uuid.uuid4().hex[:8]}",
+                "product_type": "physical",
+                "pricing": {
+                    "base_price": 299.0,
+                    "currency": "INR"
+                },
+                "visibility": {
+                    "status": "active"
+                }
+            }
             
-            # Test 1: GET returns 200
-            if response.status_code != 200:
-                self.log_test("Documentation Generation - Status 200", False, 
-                            error=f"Expected 200, got {response.status_code}")
-                return False
+            create_response = await self.client.post(
+                f"{self.base_url}/api/product-box/products",
+                json=product_data
+            )
             
-            self.log_test("Documentation Generation - Status 200", True, 
-                         {"status_code": 200})
+            if create_response.status_code != 200:
+                self.log_result(
+                    "Product Creation", 
+                    False, 
+                    f"Failed to create product: {create_response.status_code} - {create_response.text}"
+                )
+                return
+                
+            product = create_response.json().get("product", {})
+            product_id = product.get("id")
             
-            # Test 2: Response is substantial and contains required content
-            content = response.text
-            content_length = len(content)
+            if not product_id:
+                self.log_result("Product Creation", False, "No product ID returned")
+                return
+                
+            self.log_result("Product Creation", True, f"Created product: {product_id}")
             
-            if content_length < 1000:
-                self.log_test("Documentation Generation - Content Size", False,
-                            error=f"Content too small ({content_length} chars)")
-                return False
+            # Step 2: Upload image for the product
+            test_image = await self.create_test_png_image()
+            files = {"file": ("product_test.png", test_image, "image/png")}
             
-            # Check for required strings from review request
-            required_strings = ["Complete Documentation", "296 documents", "88,370 lines"]
-            missing_strings = []
+            upload_response = await self.client.post(
+                f"{self.base_url}/api/admin/product/{product_id}/upload-image",
+                files=files
+            )
             
-            for required_string in required_strings:
-                if required_string not in content:
-                    # Check for variations in line count format
-                    if "lines" in required_string and ("88370 lines" in content or "88,370" in content):
-                        continue
-                    missing_strings.append(required_string)
+            if upload_response.status_code != 200:
+                self.log_result(
+                    "Product Image Upload", 
+                    False, 
+                    f"Failed to upload image: {upload_response.status_code} - {upload_response.text}"
+                )
+                return
+                
+            upload_data = upload_response.json()
+            uploaded_image_url = upload_data.get('url') or upload_data.get('image_url')
+            self.log_result("Product Image Upload", True, f"Uploaded image: {uploaded_image_url}")
             
-            if missing_strings:
-                self.log_test("Documentation Generation - Required Content", False,
-                            error=f"Missing required strings: {missing_strings}")
-                return False
+            # Step 3: Verify persistence - fetch product and check image data
+            verify_response = await self.client.get(f"{self.base_url}/api/product-box/products/{product_id}")
             
-            # Test 3: No obvious backend errors
-            error_indicators = ["500 Internal Server Error", "502 Bad Gateway", 
-                              "Application Error", "Exception", "Error occurred"]
+            if verify_response.status_code != 200:
+                self.log_result(
+                    "Product Persistence Check", 
+                    False, 
+                    f"Failed to fetch updated product: {verify_response.status_code}"
+                )
+                return
+                
+            updated_product = verify_response.json()
+            persisted_image_url = updated_product.get('image_url') or updated_product.get('images', [None])[0]
             
-            for error in error_indicators:
-                if error.lower() in content.lower():
-                    self.log_test("Documentation Generation - No Backend Errors", False,
-                                error=f"Backend error detected: {error}")
-                    return False
-            
-            self.log_test("Documentation Generation - Complete Verification", True, {
-                "content_size": content_length,
-                "contains_required_content": True,
-                "no_backend_errors": True
-            })
-            
-            print(f"   ✓ Documentation page loaded successfully")
-            print(f"   ✓ Content size: {content_length:,} characters")
-            print(f"   ✓ Contains all required strings: {required_strings}")
-            print(f"   ✓ No backend errors detected")
-            
-            return True
-            
-        except requests.exceptions.RequestException as e:
-            self.log_test("Documentation Generation", False, error=f"Request failed: {str(e)}")
-            return False
+            if persisted_image_url and uploaded_image_url and uploaded_image_url in persisted_image_url:
+                self.log_result(
+                    "Product Upload Persistence", 
+                    True, 
+                    f"Image persisted successfully: {persisted_image_url}",
+                    {"product_id": product_id, "persisted_image": persisted_image_url}
+                )
+            else:
+                self.log_result(
+                    "Product Upload Persistence", 
+                    False, 
+                    f"Image not persisted. Expected: {uploaded_image_url}, Got: {persisted_image_url}"
+                )
+                
         except Exception as e:
-            self.log_test("Documentation Generation", False, error=f"Unexpected error: {str(e)}")
-            return False
-
-    def run_all_tests(self):
-        """Run all backend API tests"""
-        print("=" * 60)
-        print("🐕 DOGGY COMPANY BACKEND API TESTS")
-        print(f"Testing against: {self.base_url}")
-        print("=" * 60)
-        
-        # Start with health check
-        self.test_health_check()
-        
-        # Test login flow (required for authenticated endpoints)
-        login_success = self.test_login_flow()
-        
-        # Test core APIs from review requirements
-        self.test_mira_chat_api()
-        self.test_os_learn_api()
-        
-        if login_success:
-            self.test_paw_points_api()
-        
-        # Test Pet Soul (public endpoint)
-        self.test_pet_soul_api()
-        
-        # Test Documentation Generation (as requested in review)
-        self.test_documentation_generation()
-        
-        # Print final summary
-        print("\n" + "=" * 60)
-        print("📊 BACKEND TEST RESULTS SUMMARY")
-        print("=" * 60)
-        print(f"Tests Run: {self.tests_run}")
-        print(f"Tests Passed: {self.tests_passed}")
-        print(f"Success Rate: {(self.tests_passed/self.tests_run)*100:.1f}%")
-        
-        if self.tests_passed == self.tests_run:
-            print("\n🎉 ALL BACKEND TESTS PASSED!")
-        else:
-            print(f"\n⚠️  {self.tests_run - self.tests_passed} test(s) failed")
+            self.log_result("Product Upload Persistence", False, f"Error: {str(e)}")
             
-        # Print failed tests
-        failed_tests = [r for r in self.test_results if not r['success']]
-        if failed_tests:
-            print("\n❌ Failed Tests:")
-            for test in failed_tests:
-                print(f"   • {test['test']}: {test.get('error', 'Unknown error')}")
+    async def test_service_upload_persistence(self):
+        """Test 5: Service creation -> image upload -> persistence verification"""
         
-        return self.tests_passed == self.tests_run
+        try:
+            # Step 1: Create a temporary service
+            service_data = {
+                "name": f"Test Service {uuid.uuid4().hex[:8]}",
+                "pillar": "care",
+                "description": "Test service for image upload verification",
+                "base_price": 150.0,
+                "is_bookable": True,
+                "is_active": True
+            }
+            
+            create_response = await self.client.post(
+                f"{self.base_url}/api/service-box/services",
+                json=service_data
+            )
+            
+            if create_response.status_code != 200:
+                self.log_result(
+                    "Service Creation", 
+                    False, 
+                    f"Failed to create service: {create_response.status_code} - {create_response.text}"
+                )
+                return
+                
+            service = create_response.json().get("service", {})
+            service_id = service.get("id")
+            
+            if not service_id:
+                self.log_result("Service Creation", False, "No service ID returned")
+                return
+                
+            self.log_result("Service Creation", True, f"Created service: {service_id}")
+            
+            # Step 2: Upload image for the service
+            test_image = await self.create_test_png_image()
+            files = {"file": ("service_test.png", test_image, "image/png")}
+            
+            upload_response = await self.client.post(
+                f"{self.base_url}/api/admin/service/{service_id}/upload-image",
+                files=files
+            )
+            
+            if upload_response.status_code != 200:
+                self.log_result(
+                    "Service Image Upload", 
+                    False, 
+                    f"Failed to upload image: {upload_response.status_code} - {upload_response.text}"
+                )
+                return
+                
+            upload_data = upload_response.json()
+            uploaded_image_url = upload_data.get('url') or upload_data.get('image_url')
+            self.log_result("Service Image Upload", True, f"Uploaded image: {uploaded_image_url}")
+            
+            # Step 3: Verify persistence - fetch service and check image data
+            verify_response = await self.client.get(f"{self.base_url}/api/service-box/services/{service_id}")
+            
+            if verify_response.status_code != 200:
+                self.log_result(
+                    "Service Persistence Check", 
+                    False, 
+                    f"Failed to fetch updated service: {verify_response.status_code}"
+                )
+                return
+                
+            updated_service = verify_response.json()
+            persisted_image_url = updated_service.get('image_url')
+            
+            if persisted_image_url and uploaded_image_url and uploaded_image_url in persisted_image_url:
+                self.log_result(
+                    "Service Upload Persistence", 
+                    True, 
+                    f"Image persisted successfully: {persisted_image_url}",
+                    {"service_id": service_id, "persisted_image": persisted_image_url}
+                )
+            else:
+                self.log_result(
+                    "Service Upload Persistence", 
+                    False, 
+                    f"Image not persisted. Expected: {uploaded_image_url}, Got: {persisted_image_url}"
+                )
+                
+        except Exception as e:
+            self.log_result("Service Upload Persistence", False, f"Error: {str(e)}")
+            
+    async def test_nearby_places_google_powered(self):
+        """Test 6: Nearby Google-powered route checks with representative queries"""
+        
+        # Goa coordinates for testing  
+        goa_lat = 15.2993
+        goa_lng = 74.1240
+        
+        test_queries = [
+            {
+                "type": "lodging",
+                "keyword": "pet friendly hotel",
+                "description": "Stay / Pet Friendly Hotel search"
+            },
+            {
+                "type": "restaurant", 
+                "keyword": "pet friendly cafe",
+                "description": "Dine / Pet Friendly Cafe search"
+            },
+            {
+                "type": "veterinary_care",
+                "keyword": "vet",
+                "description": "Advisory / Veterinary Care search"
+            }
+        ]
+        
+        for query in test_queries:
+            try:
+                params = {
+                    "lat": goa_lat,
+                    "lng": goa_lng,
+                    "type": query["type"],
+                    "keyword": query["keyword"],
+                    "radius": 10000  # 10km radius
+                }
+                
+                response = await self.client.get(
+                    f"{self.base_url}/api/nearby/places",
+                    params=params
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    places = data.get('places', [])
+                    
+                    if places and len(places) > 0:
+                        self.log_result(
+                            f"Nearby Places - {query['description']}", 
+                            True, 
+                            f"Found {len(places)} results for '{query['keyword']}' in Goa",
+                            {"places_count": len(places), "first_result": places[0] if places else None}
+                        )
+                    else:
+                        self.log_result(
+                            f"Nearby Places - {query['description']}", 
+                            False, 
+                            f"No results found for '{query['keyword']}' in Goa"
+                        )
+                else:
+                    self.log_result(
+                        f"Nearby Places - {query['description']}", 
+                        False, 
+                        f"API returned {response.status_code}: {response.text}"
+                    )
+                    
+            except Exception as e:
+                self.log_result(
+                    f"Nearby Places - {query['description']}", 
+                    False, 
+                    f"Error: {str(e)}"
+                )
+                
+    async def run_all_tests(self):
+        """Run all backend verification tests"""
+        
+        logger.info("🚀 Starting Backend Verification Tests...")
+        logger.info(f"🎯 Testing against: {self.base_url}")
+        
+        try:
+            # Test 1-3: Upload endpoints
+            await self.test_upload_endpoints()
+            
+            # Test 4: Product upload persistence
+            await self.test_product_upload_persistence()
+            
+            # Test 5: Service upload persistence  
+            await self.test_service_upload_persistence()
+            
+            # Test 6: Nearby places Google-powered API
+            await self.test_nearby_places_google_powered()
+            
+        except Exception as e:
+            logger.error(f"Critical error during testing: {e}")
+            
+        finally:
+            await self.client.aclose()
+            
+        # Generate summary
+        self.generate_summary()
+        
+    def generate_summary(self):
+        """Generate and print test summary"""
+        
+        total_tests = len(self.test_results)
+        passed_tests = sum(1 for result in self.test_results if result["success"])
+        failed_tests = total_tests - passed_tests
+        
+        print("\n" + "="*80)
+        print("🧪 BACKEND VERIFICATION TEST RESULTS")
+        print("="*80)
+        print(f"📊 Total Tests: {total_tests}")
+        print(f"✅ Passed: {passed_tests}")
+        print(f"❌ Failed: {failed_tests}")
+        print(f"🎯 Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+        print()
+        
+        if failed_tests > 0:
+            print("❌ FAILED TESTS:")
+            print("-" * 40)
+            for result in self.test_results:
+                if not result["success"]:
+                    print(f"• {result['test']}: {result['details']}")
+            print()
+            
+        print("✅ PASSED TESTS:")
+        print("-" * 40)
+        for result in self.test_results:
+            if result["success"]:
+                print(f"• {result['test']}: {result['details']}")
+        
+        print("\n" + "="*80)
+        
+        # Save detailed results to JSON
+        with open("/app/backend_test_results.json", "w") as f:
+            json.dump({
+                "summary": {
+                    "total": total_tests,
+                    "passed": passed_tests,
+                    "failed": failed_tests,
+                    "success_rate": (passed_tests/total_tests)*100
+                },
+                "tests": self.test_results,
+                "timestamp": datetime.now().isoformat(),
+                "base_url": self.base_url
+            }, f, indent=2)
+            
+        logger.info("📁 Detailed results saved to backend_test_results.json")
 
-def main():
-    """Main test runner"""
-    tester = DoggyCompanyAPITester()
-    
-    try:
-        all_passed = tester.run_all_tests()
-        return 0 if all_passed else 1
-    except KeyboardInterrupt:
-        print("\n\n🛑 Tests interrupted by user")
-        return 1
-    except Exception as e:
-        print(f"\n\n💥 Test runner error: {e}")
-        return 1
+async def main():
+    """Main entry point"""
+    tester = BackendTester()
+    await tester.run_all_tests()
 
 if __name__ == "__main__":
-    sys.exit(main())
+    asyncio.run(main())

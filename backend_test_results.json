@@ -1,0 +1,190 @@
+{
+  "summary": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0,
+    "success_rate": 100.0
+  },
+  "tests": [
+    {
+      "test": "Product Image Upload",
+      "success": true,
+      "details": "Upload successful, image URL: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331085/doggy/products/admin_upload_20260312155805.webp",
+      "timestamp": "2026-03-12T15:58:06.087078",
+      "response_data": {
+        "message": "Image uploaded successfully to Cloudinary",
+        "url": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773331085/doggy/products/admin_upload_20260312155805.webp",
+        "public_id": "doggy/products/admin_upload_20260312155805",
+        "filename": "test.png"
+      }
+    },
+    {
+      "test": "Service Image Upload",
+      "success": true,
+      "details": "Upload successful, image URL: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331086/doggy/services/admin_upload_20260312155806.webp",
+      "timestamp": "2026-03-12T15:58:06.760461",
+      "response_data": {
+        "message": "Image uploaded successfully to Cloudinary",
+        "url": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773331086/doggy/services/admin_upload_20260312155806.webp",
+        "public_id": "doggy/services/admin_upload_20260312155806",
+        "filename": "test.png"
+      }
+    },
+    {
+      "test": "Bundle Image Upload",
+      "success": true,
+      "details": "Upload successful, image URL: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331086/doggy/bundles/admin_upload_20260312155806.webp",
+      "timestamp": "2026-03-12T15:58:07.263377",
+      "response_data": {
+        "message": "Bundle image uploaded successfully to Cloudinary",
+        "url": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773331086/doggy/bundles/admin_upload_20260312155806.webp",
+        "public_id": "doggy/bundles/admin_upload_20260312155806",
+        "filename": "test.png"
+      }
+    },
+    {
+      "test": "Product Creation",
+      "success": true,
+      "details": "Created product: PROD-9AFF9BFD0684",
+      "timestamp": "2026-03-12T15:58:07.319833",
+      "response_data": null
+    },
+    {
+      "test": "Product Image Upload",
+      "success": true,
+      "details": "Uploaded image: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331087/doggy/products/PROD-9AFF9BFD0684_20260312155807.webp",
+      "timestamp": "2026-03-12T15:58:07.930963",
+      "response_data": null
+    },
+    {
+      "test": "Product Upload Persistence",
+      "success": true,
+      "details": "Image persisted successfully: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331087/doggy/products/PROD-9AFF9BFD0684_20260312155807.webp",
+      "timestamp": "2026-03-12T15:58:07.990958",
+      "response_data": {
+        "product_id": "PROD-9AFF9BFD0684",
+        "persisted_image": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773331087/doggy/products/PROD-9AFF9BFD0684_20260312155807.webp"
+      }
+    },
+    {
+      "test": "Service Creation",
+      "success": true,
+      "details": "Created service: SVC-CARE-TEST-SERVICE-91C9C2F",
+      "timestamp": "2026-03-12T15:58:08.052341",
+      "response_data": null
+    },
+    {
+      "test": "Service Image Upload",
+      "success": true,
+      "details": "Uploaded image: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331088/doggy/services/SVC-CARE-TEST-SERVICE-91C9C2F_20260312155808.webp",
+      "timestamp": "2026-03-12T15:58:08.511538",
+      "response_data": null
+    },
+    {
+      "test": "Service Upload Persistence",
+      "success": true,
+      "details": "Image persisted successfully: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331088/doggy/services/SVC-CARE-TEST-SERVICE-91C9C2F_20260312155808.webp",
+      "timestamp": "2026-03-12T15:58:08.570407",
+      "response_data": {
+        "service_id": "SVC-CARE-TEST-SERVICE-91C9C2F",
+        "persisted_image": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773331088/doggy/services/SVC-CARE-TEST-SERVICE-91C9C2F_20260312155808.webp"
+      }
+    },
+    {
+      "test": "Nearby Places - Stay / Pet Friendly Hotel search",
+      "success": true,
+      "details": "Found 10 results for 'pet friendly hotel' in Goa",
+      "timestamp": "2026-03-12T15:58:08.934238",
+      "response_data": {
+        "places_count": 10,
+        "first_result": {
+          "id": "ChIJgwKGkJ6zvzsRxvugbqoqrnM",
+          "name": "The Treehouse",
+          "address": "H.No. 500, A-II, near St Sebastian Chapel, Fondegale, Curtorim, Shelvan, Goa 403709, India",
+          "phone": null,
+          "rating": 4.9,
+          "total_ratings": 7,
+          "website": null,
+          "is_open_now": null,
+          "opening_hours": null,
+          "status": "OPERATIONAL",
+          "photo_url": "https://places.googleapis.com/v1/places/ChIJgwKGkJ6zvzsRxvugbqoqrnM/photos/ATCDNfUln3kwWXoEKt4KP4e-c9hfECT-yht62vwPzynWfvyHIaQY1qrp6baRBy7FLKCWQdhNwJdlqhjljRhzI-Rqem--OUSMMIU87F_3UfU0bGLGnlOL7DdQTlhDJ9Us3KCHrt_nUfzsiBanIi5HyTmFWpqN2S1sWtnD9uIYNxeJFmi3_PyvOv5mmgv3IRdGQqbPj54WY3pH3vBvZkr4vtrpkuBkYycixg4i1X7wD3QOlF2KdLzFkO8lheT6wDPXHDVVQBN-igGlqkp-EU9ziJN_uyuFvMlhE0GtkGlV6MeTUJ5How/media?maxHeightPx=300&maxWidthPx=400&key=AIzaSy<REDACTED_ROTATED>",
+          "location": {
+            "lat": 15.2811398,
+            "lng": 74.014383
+          }
+        }
+      }
+    },
+    {
+      "test": "Nearby Places - Dine / Pet Friendly Cafe search",
+      "success": true,
+      "details": "Found 10 results for 'pet friendly cafe' in Goa",
+      "timestamp": "2026-03-12T15:58:09.306108",
+      "response_data": {
+        "places_count": 10,
+        "first_result": {
+          "id": "ChIJESLFddvBvzsRJMOeuBUUsGE",
+          "name": "Bouncing Buddies",
+          "address": "A-10 Ground Floor, Shop no 10, Esmeralda Casa de Povo, behind copper leaf Restaraunt, Santa Inez, Taleigao, Panaji, Goa 403002, India",
+          "phone": "084848 99454",
+          "rating": 4.9,
+          "total_ratings": 501,
+          "website": "https://www.bouncingbuddies.in/",
+          "is_open_now": true,
+          "opening_hours": [
+            "Monday: Closed",
+            "Tuesday: 11:30\u202fAM\u2009\u2013\u20099:30\u202fPM",
+            "Wednesday: 11:30\u202fAM\u2009\u2013\u20099:30\u202fPM",
+            "Thursday: 11:30\u202fAM\u2009\u2013\u20099:30\u202fPM",
+            "Friday: 11:00\u202fAM\u2009\u2013\u20099:30\u202fPM",
+            "Saturday: 11:30\u202fAM\u2009\u2013\u20099:30\u202fPM",
+            "Sunday: 11:30\u202fAM\u2009\u2013\u20099:30\u202fPM"
+          ],
+          "status": "OPERATIONAL",
+          "photo_url": "https://places.googleapis.com/v1/places/ChIJESLFddvBvzsRJMOeuBUUsGE/photos/ATCDNfWqpa9NJKtm9moATq3e_vPja4hU0r3IXx1-QLSraTL29RWJ4T53Z7xebQUjUZIKBtYlRxVvBY1d0OeTKR8GcfeGlWEYptbUOvq-FVO1OxYFMl-iy1cIsAyqNe2tpNZxACjgSdn6p-tMlQmEulrrkdeUpTKSaiVcA9WwNy6YXLKWzdYGLJOfH05E4Q-ovONk-OGhCIIz1vt2LUUDFf1cL_FGWT9VeUrE0RFfBG8nLz1L8tMlpCs26S2-XgA3W44-C7pbI9UPVnivfFRdWWAW15IPIY0tWdU_-WNQibcPjUm7Zw/media?maxHeightPx=300&maxWidthPx=400&key=AIzaSy<REDACTED_ROTATED>",
+          "location": {
+            "lat": 15.482180999999999,
+            "lng": 73.8197
+          }
+        }
+      }
+    },
+    {
+      "test": "Nearby Places - Advisory / Veterinary Care search",
+      "success": true,
+      "details": "Found 10 results for 'vet' in Goa",
+      "timestamp": "2026-03-12T15:58:09.612839",
+      "response_data": {
+        "places_count": 10,
+        "first_result": {
+          "id": "ChIJkQc85kdNvjsRaO1aExqbzDw",
+          "name": "Vet bloom veterinary clinic",
+          "address": "qupem road, Culwaddo, Ambavali, Cuncolim, Goa 403703, India",
+          "phone": "083290 47162",
+          "rating": 5,
+          "total_ratings": 11,
+          "website": null,
+          "is_open_now": true,
+          "opening_hours": [
+            "Monday: 6:00\u2009\u2013\u200910:00\u202fPM",
+            "Tuesday: 6:00\u2009\u2013\u200910:00\u202fPM",
+            "Wednesday: 6:00\u2009\u2013\u200910:00\u202fPM",
+            "Thursday: 6:00\u2009\u2013\u200910:00\u202fPM",
+            "Friday: 6:00\u2009\u2013\u200910:00\u202fPM",
+            "Saturday: 6:00\u2009\u2013\u200910:00\u202fPM",
+            "Sunday: 3:00\u2009\u2013\u20097:00\u202fPM"
+          ],
+          "status": "OPERATIONAL",
+          "photo_url": "https://places.googleapis.com/v1/places/ChIJkQc85kdNvjsRaO1aExqbzDw/photos/ATCDNfUn4dakPQHvXMOBNvoJOBXbHwDpyYe1BOyjMzA0pJe2jz1mnzKrI5cjHk6d9k0q1_4g6J0kzPTfKJx9zjVRjm5ZVW45WQkfLGCF0YJDoAKKFHLKnDvv-7-yqexMkq2bu3I9fPwkXjhwwxj7BnkrCs2MBl0qk7pdj0e3TTX0xohJJYuBiowZRs6Fba15ln6umObaVnWH7ER5NQNXMyzQRdWNMnmsMOhb3R1_8zcLJKEz300LbXVWL7AokvC5S7SKguJ5_a9kt5pSOMLri6rsD9Q4BzSKueOIVyA7z3qL_7yccg/media?maxHeightPx=300&maxWidthPx=400&key=AIzaSy<REDACTED_ROTATED>",
+          "location": {
+            "lat": 15.1828366,
+            "lng": 74.00400929999999
+          }
+        }
+      }
+    }
+  ],
+  "timestamp": "2026-03-12T15:58:09.613178",
+  "base_url": "https://pet-os-refactor.preview.emergentagent.com"
+}
