@@ -1,5 +1,5 @@
 # The Doggy Company - MASTER PRD & ARCHITECTURE
-## Last Updated: December 14, 2025 | Version 12.6.0
+## Last Updated: December 14, 2025 | Version 12.7.0
 
 ---
 
@@ -60,89 +60,39 @@ SECTION ORDER (Every Pillar Page MUST Follow):
 
 10. MIRA CURATED LAYER
     - MiraCuratedLayer component
+    - "Curated for {petName}" section
     - Unified concierge recommendations
 
 11. SERVICES SECTION
     - "Services That Help" heading
     - Grid of service cards
     - Opens flow modals
-
-12. REQUEST FORM (Where applicable)
-    - Service request wizard
 ```
 
 ---
 
-## PILLAR REFACTORING STATUS
+## PILLAR PAGE AUDIT (December 14, 2025)
 
-| # | Pillar | Gold Standard? | Unique AI Images? | Status |
-|---|--------|----------------|-------------------|--------|
-| 1 | Learn | REFERENCE | YES (12 topics) | COMPLETE |
-| 2 | Care | YES | YES (4 topics) | COMPLETE |
-| 3 | Dine | YES | YES (4 topics) | COMPLETE |
-| 4 | Paperwork | Partial | YES | NEEDS REFACTOR |
-| 5 | Fit | YES | YES (4 topics) | COMPLETE - Ask Mira at top |
-| 6 | Travel | YES | YES (4 topics) | COMPLETE - Ask Mira at top |
-| 7 | Stay | Partial | YES (4 topics) | NEEDS REFACTOR |
-| 8 | Enjoy | Partial | YES (4 topics) | NEEDS REFACTOR |
-| 9 | Celebrate | Partial | YES (4 topics) | NEEDS REFACTOR |
-| 10 | Emergency | Partial | YES (4 topics) | NEEDS REFACTOR |
-| 11 | Advisory | Partial | YES (4 topics) | NEEDS REFACTOR |
-| 12 | Farewell | Partial | YES (4 topics) | NEEDS REFACTOR |
-| 13 | Adopt | Partial | YES (4 topics) | NEEDS REFACTOR |
-| 14 | Shop | Partial | YES (4 topics) | NEEDS REFACTOR |
+| # | Pillar | Ask Mira | Topics | Daily Tip | Help Buckets | Guided Paths | Bundles | Products | Picks | Curated | STATUS |
+|---|--------|----------|--------|-----------|--------------|--------------|---------|----------|-------|---------|--------|
+| 1 | Learn | YES | YES | YES | YES | YES | YES | YES | YES | - | GOLD STANDARD |
+| 2 | Care | YES | YES | YES | YES | YES | YES | YES | YES | YES | COMPLETE |
+| 3 | Dine | YES | YES | YES | YES | YES | YES | YES | YES | YES | COMPLETE |
+| 4 | Fit | YES | YES | YES | YES | YES | YES | YES | YES | YES | COMPLETE |
+| 5 | Travel | YES | YES | PARTIAL | NO | PARTIAL | YES | YES | YES | YES | NEEDS WORK |
+| 6 | Stay | PARTIAL | YES | NO | NO | NO | YES | YES | YES | YES | NEEDS WORK |
+| 7 | Enjoy | PARTIAL | YES | NO | NO | NO | YES | YES | YES | YES | NEEDS WORK |
+| 8 | Celebrate | PARTIAL | YES | NO | NO | NO | YES | YES | YES | YES | NEEDS WORK |
+| 9 | Emergency | PARTIAL | YES | NO | NO | NO | YES | YES | NO | NO | NEEDS WORK |
+| 10 | Advisory | PARTIAL | YES | NO | NO | YES | YES | YES | NO | NO | NEEDS WORK |
+| 11 | Farewell | PARTIAL | YES | NO | NO | PARTIAL | YES | YES | NO | NO | NEEDS WORK |
+| 12 | Adopt | PARTIAL | YES | NO | NO | PARTIAL | YES | NO | NO | NO | NEEDS WORK |
+| 13 | Shop | PARTIAL | YES | NO | NO | NO | NO | NO | YES | YES | NEEDS WORK |
+| 14 | Paperwork | YES | NO | NO | NO | NO | YES | YES | YES | YES | NEEDS WORK |
 
----
-
-## AI WATERCOLOR IMAGES - ALL 48 TOPIC IMAGES GENERATED
-
-### Care Topics (COMPLETE)
-- Grooming: Golden retriever being brushed
-- Health & Wellness: Puppy with veterinarian
-- Dental Care: Dog with sparkling teeth
-- Skin & Coat: Fluffy dog with healthy coat
-
-### Dine Topics (COMPLETE)
-- Fresh Food: Dog with homemade food bowl
-- Dry Food: Dog with premium kibble
-- Treats: Dog with healthy treats
-- Special Diets: Dog with hypoallergenic meal
-
-### Fit Topics (COMPLETE)
-- Exercise Plans: Athletic dog running
-- Weight Management: Dog being weighed
-- Agility Training: Dog jumping obstacles
-- Swimming: Happy dog in water
-
-### Travel Topics (COMPLETE)
-- Air Travel: Dog in carrier at airport
-- Road Trips: Dog looking out car window
-- Destinations: Dog at beach paradise
-- Travel Gear: Organized pet travel supplies
-
-### Stay Topics (COMPLETE)
-- Boarding, Daycare, Hotels, Sitting
-
-### Enjoy Topics (COMPLETE)
-- Pet Events, Playdates, Toys & Games, Enrichment
-
-### Celebrate Topics (COMPLETE)
-- Birthdays, Gotcha Day, Gifts, Photoshoots
-
-### Emergency Topics (COMPLETE)
-- Emergency Vet, First Aid, Poison Control, Lost Pet
-
-### Advisory Topics (COMPLETE)
-- Behavior, Nutrition, Training, Health
-
-### Farewell Topics (COMPLETE)
-- End-of-Life Care, Cremation, Memorials, Grief Support
-
-### Adopt Topics (COMPLETE)
-- Adopt a Dog, Foster, Shelters, Adoption Prep
-
-### Shop Topics (COMPLETE)
-- Essentials, New Arrivals, Bestsellers, Deals
+### Summary:
+- **COMPLETE (4):** Learn, Care, Dine, Fit
+- **NEEDS WORK (10):** Travel, Stay, Enjoy, Celebrate, Emergency, Advisory, Farewell, Adopt, Shop, Paperwork
 
 ---
 
@@ -153,10 +103,9 @@ SECTION ORDER (Every Pillar Page MUST Follow):
 - **Products with AI watercolor images:** 209 (100%)
 - **Products needing images:** 0
 
-### Image Generation Completed:
-- Emergency pillar: 20 products
-- Advisory pillar: 77 products (food, grooming, home comfort, training, travel, puppy, senior, seasonal)
-- All products now have unique, contextual AI-generated watercolor illustrations
+### Services:
+- **Stay services:** Updated with new watercolor images (Dec 14)
+- **Dine services:** Service cards added to page
 
 ---
 
@@ -183,7 +132,9 @@ SECTION ORDER (Every Pillar Page MUST Follow):
 7. **Personalized** - Breed/archetype/soul picks toggles
 8. **Concierge** - Premium assistance options
 9. **Mira Prompts** - AI suggestion triggers
-10. **Custom** - Pillar-specific features
+10. **Help Buckets** - 3 action buckets (NEW)
+11. **Daily Tips** - Rotating tips (NEW)
+12. **Guided Paths** - Step-by-step journeys (NEW)
 
 ### CMS-Editable Status:
 - [x] Page Settings (Title, Subtitle)
@@ -192,9 +143,9 @@ SECTION ORDER (Every Pillar Page MUST Follow):
 - [x] Products
 - [x] Bundles
 - [x] Services
-- [x] Help Buckets (3 action buckets) - **IMPLEMENTED DEC 14**
-- [x] Daily Tips (rotating tips) - **IMPLEMENTED DEC 14**
-- [x] Guided Paths (step-by-step journeys) - **IMPLEMENTED DEC 14**
+- [x] Help Buckets (3 action buckets) - IMPLEMENTED DEC 14
+- [x] Daily Tips (rotating tips) - IMPLEMENTED DEC 14
+- [x] Guided Paths (step-by-step journeys) - IMPLEMENTED DEC 14
 
 ---
 
@@ -211,7 +162,7 @@ SECTION ORDER (Every Pillar Page MUST Follow):
   BreedSmartRecommendations.jsx
   CuratedBundles.jsx
   Mira/
-    MiraCuratedLayer.jsx   # Unified concierge
+    MiraCuratedLayer.jsx   # "Curated for {petName}" - Unified concierge
     MiraCarePlan.jsx       # Care-specific plan
 ```
 
@@ -219,20 +170,31 @@ SECTION ORDER (Every Pillar Page MUST Follow):
 ```
 /app/frontend/src/pages/
   LearnPage.jsx       # GOLD STANDARD - Reference for all pages
-  CarePage.jsx        # REFACTORED to Gold Standard
-  DinePage.jsx        # REFACTORED to Gold Standard
-  PaperworkPage.jsx   # Needs refactor
-  FitPage.jsx         # Needs refactor
-  TravelPage.jsx      # Needs refactor
-  StayPage.jsx        # Needs refactor
-  EnjoyPage.jsx       # Needs refactor
-  CelebratePage.jsx   # Needs refactor
-  EmergencyPage.jsx   # Needs refactor
-  AdvisoryPage.jsx    # Needs refactor
-  FarewellPage.jsx    # Needs refactor
-  AdoptPage.jsx       # Needs refactor
-  ShopPage.jsx        # Needs refactor
+  CarePage.jsx        # COMPLETE - Gold Standard compliant
+  DinePage.jsx        # COMPLETE - Gold Standard compliant
+  FitPage.jsx         # COMPLETE - Gold Standard compliant
+  TravelPage.jsx      # NEEDS: Help Buckets, Daily Tip
+  StayPage.jsx        # NEEDS: Ask Mira, Daily Tip, Help Buckets, Guided Paths
+  EnjoyPage.jsx       # NEEDS: Ask Mira, Daily Tip, Help Buckets, Guided Paths
+  CelebratePage.jsx   # NEEDS: Ask Mira, Daily Tip, Help Buckets, Guided Paths
+  EmergencyPage.jsx   # NEEDS: Ask Mira, Daily Tip, Help Buckets, Guided Paths, Picks, Curated
+  AdvisoryPage.jsx    # NEEDS: Ask Mira, Daily Tip, Help Buckets, Picks, Curated
+  FarewellPage.jsx    # NEEDS: Ask Mira, Daily Tip, Help Buckets, Picks, Curated
+  AdoptPage.jsx       # NEEDS: Ask Mira, Daily Tip, Help Buckets, Products, Picks, Curated
+  ShopPage.jsx        # NEEDS: Ask Mira, Daily Tip, Help Buckets, Guided Paths, Bundles, Products
+  PaperworkPage.jsx   # NEEDS: Topics, Daily Tip, Help Buckets, Guided Paths
 ```
+
+---
+
+## KNOWN ISSUES
+
+| Issue | Priority | Status |
+|-------|----------|--------|
+| 10 pillars need Gold Standard refactor | P0 | IDENTIFIED |
+| Sync to production "body stream already read" error | P1 | TO FIX |
+| Razorpay checkout failure | P2 | NOT STARTED |
+| Mobile pet dashboard scrambled | P3 | NOT STARTED |
 
 ---
 
@@ -262,6 +224,11 @@ POST /api/paperwork/admin/products/bulk-update-images
 POST /api/paperwork/admin/bundles/bulk-update-images
 ```
 
+### Sync to Production
+```
+POST /api/admin/sync-to-production
+```
+
 ---
 
 ## TESTING CREDENTIALS
@@ -271,28 +238,7 @@ POST /api/paperwork/admin/bundles/bulk-update-images
 | Admin | `aditya` | `lola4304` |
 | User | `dipali@clubconcierge.in` | `test123` |
 
-Test pet: **Mojo** (Shih Tzu)
-
----
-
-## KNOWN ISSUES
-
-| Issue | Priority | Status |
-|-------|----------|--------|
-| ~880 products missing images | P0 | IDENTIFIED - NOT STARTED |
-| 11 pillars need Gold Standard refactor | P0 | IN PROGRESS |
-| Razorpay checkout failure | P2 | NOT STARTED |
-| Mobile pet dashboard scrambled | P3 | NOT STARTED |
-
----
-
-## PRODUCTION SYNC COMMANDS
-
-```bash
-# Run after deployment
-curl -X POST "https://thedoggycompany.com/api/admin/cleanup-duplicate-services?password=lola4304"
-curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=lola4304"
-```
+Test pet: **Mojo** (Shih Tzu), **Mystique** (Shih Tzu)
 
 ---
 
@@ -301,26 +247,36 @@ curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=
 1. ~~**P0**: Make Help Buckets, Daily Tips, Guided Paths CMS-editable~~ **DONE**
 2. ~~**P0**: Create Admin Guide document for content editors~~ **DONE**
 3. ~~**P0**: Generate AI watercolor images for all products~~ **DONE** (209 products)
-4. **P0**: Refactor remaining 11 pillars to Gold Standard
-5. **P2**: Fix Razorpay checkout
-6. **P3**: Fix mobile pet dashboard
+4. **P0**: Refactor remaining 10 pillars to Gold Standard
+   - Travel: Add Help Buckets, Daily Tip
+   - Stay: Add Ask Mira, Daily Tip, Help Buckets, Guided Paths
+   - Enjoy: Add Ask Mira, Daily Tip, Help Buckets, Guided Paths
+   - Celebrate: Add Ask Mira, Daily Tip, Help Buckets, Guided Paths
+   - Emergency: Add Ask Mira, Daily Tip, Help Buckets, Guided Paths, Picks, Curated
+   - Advisory: Add Ask Mira, Daily Tip, Help Buckets, Picks, Curated
+   - Farewell: Add Ask Mira, Daily Tip, Help Buckets, Picks, Curated
+   - Adopt: Add Ask Mira, Daily Tip, Help Buckets, Products, Picks, Curated
+   - Shop: Add Ask Mira, Daily Tip, Help Buckets, Guided Paths, Bundles, Products
+   - Paperwork: Add Topics, Daily Tip, Help Buckets, Guided Paths
+5. **P1**: Fix "Sync to production" body stream error
+6. **P2**: Fix Razorpay checkout
+7. **P3**: Fix mobile pet dashboard
 
 ---
 
 ## CHANGELOG
 
 ### December 14, 2025
+- **Comprehensive Audit Complete**: Identified 10 pillars needing Gold Standard refactor
 - **Product Image Makeover COMPLETE**: Generated 97 unique AI watercolor images for all products
-  - Emergency pillar: First aid kits, medical supplies, recovery items
-  - Advisory pillar: Food/feeding, grooming, home comfort, training, travel, puppy, senior, seasonal products
-  - All products_master (97) and unified_products (112) now have images
-- **Gold Standard Refactoring IN PROGRESS**:
-  - FitPage: Added Ask Mira Bar, Daily Tips, Help Buckets, Guided Paths sections
-  - TravelPage: Added Ask Mira Bar at top
+- **Stay Service Images Updated**: New watercolor illustrations for hotel, boarding, daycare services
+- **Dine Services Added**: Service category cards (Cafe Reservations, Birthday, Catering, Nutrition)
+- **Gold Standard Refactoring**:
+  - FitPage: Ask Mira Bar + Daily Tip + Help Buckets + Guided Paths - COMPLETE
+  - TravelPage: Ask Mira Bar - ADDED
 - CMS-editable sections implemented: Help Buckets, Daily Tips, Guided Paths
 - Updated PillarPageCMS.jsx with 3 new tabs for editing page sections
 - Updated backend API to save/load helpBuckets, dailyTips, guidedPaths
-- Updated CarePage.jsx to use CMS data when available (falls back to defaults)
 - Created Admin Guide document at /app/admin-guide.html
 - Documentation updated proactively
 
@@ -330,14 +286,7 @@ curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=
 - Generated 48 unique AI watercolor images (4 per pillar x 12 pillars)
 - Updated PillarTopicsGrid with all new images
 - Created PillarTopicModal for consistent modal experience
-- Identified ~880 products needing images
-
-### Previous Sessions
-- All 14 pillar pages have CMS integration
-- Product modals fixed (ArchetypeProducts, PersonalizedPicks)
-- Paperwork page images complete
-- Stay/Insurance service images updated
 
 ---
 
-**END OF PRD - Version 12.6.0**
+**END OF PRD - Version 12.7.0**
