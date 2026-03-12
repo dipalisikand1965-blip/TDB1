@@ -755,11 +755,6 @@ ${stayRequestForm.special_requests || 'None'}
       <PillarTopicsGrid
         pillar="stay"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.stay}
-        onTopicClick={(topic) => {
-          // Navigate to services page filtered by this topic/category
-          const searchTerm = topic.title || topic.name;
-          window.location.href = `/services?pillar=stay&search=${encodeURIComponent(searchTerm)}`;
-        }}
         columns={4}
       />
 
