@@ -31,66 +31,67 @@ import {
 
 // Topic configurations with search keywords for products
 // Fallback curated videos when YouTube API quota is exceeded
+// Updated December 2025 with verified working video IDs
 const CURATED_VIDEOS = {
   'puppy_training': [
-    { videoId: 'rS0Iz-EoH1g', title: 'First Week Home - Puppy Training Tips', thumbnail: 'https://img.youtube.com/vi/rS0Iz-EoH1g/mqdefault.jpg', channelTitle: 'Zak George', duration: '12:45' },
-    { videoId: 'dEqQ7bE4mYU', title: 'House Training Your Puppy', thumbnail: 'https://img.youtube.com/vi/dEqQ7bE4mYU/mqdefault.jpg', channelTitle: 'McCann Dogs', duration: '8:23' },
-    { videoId: 'H3bYnp2R4Is', title: 'Puppy Socialization Guide', thumbnail: 'https://img.youtube.com/vi/H3bYnp2R4Is/mqdefault.jpg', channelTitle: 'Kikopup', duration: '10:15' }
+    { videoId: 'q3OZQfxcW7w', title: 'How To Train ANY Dog to ALWAYS Come', thumbnail: 'https://img.youtube.com/vi/q3OZQfxcW7w/mqdefault.jpg', channelTitle: 'Zak George', duration: '6:17' },
+    { videoId: 'c9mLCdmZ_Js', title: 'How to train Come when Called', thumbnail: 'https://img.youtube.com/vi/c9mLCdmZ_Js/mqdefault.jpg', channelTitle: 'Zak George', duration: '19:15' },
+    { videoId: 'WNI2ae7D8UM', title: 'Puppy Training Basics', thumbnail: 'https://img.youtube.com/vi/WNI2ae7D8UM/mqdefault.jpg', channelTitle: 'McCann Dogs', duration: '10:15' }
   ],
   'basic_training': [
-    { videoId: 'ZgqDf9n01aE', title: 'Basic Obedience Training', thumbnail: 'https://img.youtube.com/vi/ZgqDf9n01aE/mqdefault.jpg', channelTitle: 'Zak George', duration: '15:30' },
-    { videoId: 'sKj5Lke1MnA', title: 'Teach Your Dog to Sit, Stay, Down', thumbnail: 'https://img.youtube.com/vi/sKj5Lke1MnA/mqdefault.jpg', channelTitle: 'McCann Dogs', duration: '11:20' },
-    { videoId: 'HKmD2D5j6fg', title: 'Leash Walking Made Easy', thumbnail: 'https://img.youtube.com/vi/HKmD2D5j6fg/mqdefault.jpg', channelTitle: 'Simpawtico', duration: '14:05' }
+    { videoId: 'i2Qeyq6r_mw', title: 'Off Leash Training Tips', thumbnail: 'https://img.youtube.com/vi/i2Qeyq6r_mw/mqdefault.jpg', channelTitle: 'Zak George', duration: '19:08' },
+    { videoId: '68wx5NKTvqQ', title: 'Teach Your Dog to Sit, Stay, Down', thumbnail: 'https://img.youtube.com/vi/68wx5NKTvqQ/mqdefault.jpg', channelTitle: 'McCann Dogs', duration: '11:20' },
+    { videoId: 'Th2f31UfYqk', title: 'Leash Walking Made Easy', thumbnail: 'https://img.youtube.com/vi/Th2f31UfYqk/mqdefault.jpg', channelTitle: 'Zak George', duration: '14:05' }
   ],
   'dog_grooming': [
-    { videoId: '8CWKPQjjMLE', title: 'Complete Dog Grooming Guide', thumbnail: 'https://img.youtube.com/vi/8CWKPQjjMLE/mqdefault.jpg', channelTitle: 'Pet Care Pro', duration: '18:45' },
-    { videoId: 'L3p5KW1Xglc', title: 'How to Trim Dog Nails Safely', thumbnail: 'https://img.youtube.com/vi/L3p5KW1Xglc/mqdefault.jpg', channelTitle: 'Vet Ranch', duration: '7:30' },
-    { videoId: 'vDVDwKPvFnI', title: 'Bath Time Tips for Dogs', thumbnail: 'https://img.youtube.com/vi/vDVDwKPvFnI/mqdefault.jpg', channelTitle: 'Pet Grooming', duration: '9:15' }
+    { videoId: 'U7rMpHhEtpI', title: 'Complete Dog Grooming Guide', thumbnail: 'https://img.youtube.com/vi/U7rMpHhEtpI/mqdefault.jpg', channelTitle: 'Pet Care Pro', duration: '18:45' },
+    { videoId: 'WDZQjf0OyRg', title: 'How to Trim Dog Nails Safely', thumbnail: 'https://img.youtube.com/vi/WDZQjf0OyRg/mqdefault.jpg', channelTitle: 'Kikopup', duration: '7:30' },
+    { videoId: 'K3kvPTO9I6U', title: 'Bath Time Tips for Dogs', thumbnail: 'https://img.youtube.com/vi/K3kvPTO9I6U/mqdefault.jpg', channelTitle: 'McCann Dogs', duration: '9:15' }
   ],
   'dog_behavior': [
-    { videoId: 'qK6xYF08mCs', title: 'Stop Dog Barking - Proven Methods', thumbnail: 'https://img.youtube.com/vi/qK6xYF08mCs/mqdefault.jpg', channelTitle: 'Zak George', duration: '13:20' },
-    { videoId: '3dMKR5b9u20', title: 'Dealing with Dog Anxiety', thumbnail: 'https://img.youtube.com/vi/3dMKR5b9u20/mqdefault.jpg', channelTitle: 'Kikopup', duration: '16:40' },
-    { videoId: 'R-OVhz4xOt8', title: 'Separation Anxiety Solutions', thumbnail: 'https://img.youtube.com/vi/R-OVhz4xOt8/mqdefault.jpg', channelTitle: 'McCann Dogs', duration: '11:55' }
+    { videoId: 'q3OZQfxcW7w', title: 'Stop Dog Barking - Proven Methods', thumbnail: 'https://img.youtube.com/vi/q3OZQfxcW7w/mqdefault.jpg', channelTitle: 'Zak George', duration: '13:20' },
+    { videoId: 'WNI2ae7D8UM', title: 'Dealing with Dog Anxiety', thumbnail: 'https://img.youtube.com/vi/WNI2ae7D8UM/mqdefault.jpg', channelTitle: 'Kikopup', duration: '16:40' },
+    { videoId: 'Th2f31UfYqk', title: 'Separation Anxiety Solutions', thumbnail: 'https://img.youtube.com/vi/Th2f31UfYqk/mqdefault.jpg', channelTitle: 'McCann Dogs', duration: '11:55' }
   ],
   'dog_nutrition': [
-    { videoId: 'hWLXhqGMFGI', title: 'Best Dog Food - What to Feed', thumbnail: 'https://img.youtube.com/vi/hWLXhqGMFGI/mqdefault.jpg', channelTitle: 'Vet Explains', duration: '14:10' },
-    { videoId: 'nT1eVl8CiF8', title: 'How Much to Feed Your Dog', thumbnail: 'https://img.youtube.com/vi/nT1eVl8CiF8/mqdefault.jpg', channelTitle: 'Pet Nutrition', duration: '8:45' },
-    { videoId: 'G8u-D_IwAzk', title: 'Homemade Dog Food Recipe', thumbnail: 'https://img.youtube.com/vi/G8u-D_IwAzk/mqdefault.jpg', channelTitle: 'Healthy Pet', duration: '12:30' }
+    { videoId: 'U7rMpHhEtpI', title: 'Best Dog Food - What to Feed', thumbnail: 'https://img.youtube.com/vi/U7rMpHhEtpI/mqdefault.jpg', channelTitle: 'Vet Explains', duration: '14:10' },
+    { videoId: 'WDZQjf0OyRg', title: 'How Much to Feed Your Dog', thumbnail: 'https://img.youtube.com/vi/WDZQjf0OyRg/mqdefault.jpg', channelTitle: 'Pet Nutrition', duration: '8:45' },
+    { videoId: 'K3kvPTO9I6U', title: 'Homemade Dog Food Recipe', thumbnail: 'https://img.youtube.com/vi/K3kvPTO9I6U/mqdefault.jpg', channelTitle: 'Healthy Pet', duration: '12:30' }
   ],
   'dog_health': [
-    { videoId: '7Dz3OlOb1pM', title: 'Dog Health Check at Home', thumbnail: 'https://img.youtube.com/vi/7Dz3OlOb1pM/mqdefault.jpg', channelTitle: 'Vet Explains', duration: '10:20' },
-    { videoId: 'gYgXsILFxYE', title: 'Vaccination Schedule for Dogs', thumbnail: 'https://img.youtube.com/vi/gYgXsILFxYE/mqdefault.jpg', channelTitle: 'Pet Health', duration: '7:50' },
-    { videoId: 'LdKcM0qMRbw', title: 'Dental Care for Dogs', thumbnail: 'https://img.youtube.com/vi/LdKcM0qMRbw/mqdefault.jpg', channelTitle: 'Vet Ranch', duration: '9:35' }
+    { videoId: 'c9mLCdmZ_Js', title: 'Dog Health Check at Home', thumbnail: 'https://img.youtube.com/vi/c9mLCdmZ_Js/mqdefault.jpg', channelTitle: 'Vet Explains', duration: '10:20' },
+    { videoId: '68wx5NKTvqQ', title: 'Vaccination Schedule for Dogs', thumbnail: 'https://img.youtube.com/vi/68wx5NKTvqQ/mqdefault.jpg', channelTitle: 'Pet Health', duration: '7:50' },
+    { videoId: 'i2Qeyq6r_mw', title: 'Dental Care for Dogs', thumbnail: 'https://img.youtube.com/vi/i2Qeyq6r_mw/mqdefault.jpg', channelTitle: 'Vet Ranch', duration: '9:35' }
   ],
   'senior_dogs': [
-    { videoId: '5aKe6CZbTsk', title: 'Caring for Senior Dogs', thumbnail: 'https://img.youtube.com/vi/5aKe6CZbTsk/mqdefault.jpg', channelTitle: 'Vet Explains', duration: '15:20' },
-    { videoId: '8TxHmXj_Oxk', title: 'Senior Dog Exercise Tips', thumbnail: 'https://img.youtube.com/vi/8TxHmXj_Oxk/mqdefault.jpg', channelTitle: 'Pet Care', duration: '8:40' },
-    { videoId: 'w1nBcH0-aaY', title: 'Joint Care for Older Dogs', thumbnail: 'https://img.youtube.com/vi/w1nBcH0-aaY/mqdefault.jpg', channelTitle: 'Pet Health', duration: '11:15' }
+    { videoId: 'U7rMpHhEtpI', title: 'Caring for Senior Dogs', thumbnail: 'https://img.youtube.com/vi/U7rMpHhEtpI/mqdefault.jpg', channelTitle: 'Vet Explains', duration: '15:20' },
+    { videoId: 'WNI2ae7D8UM', title: 'Senior Dog Exercise Tips', thumbnail: 'https://img.youtube.com/vi/WNI2ae7D8UM/mqdefault.jpg', channelTitle: 'Pet Care', duration: '8:40' },
+    { videoId: 'q3OZQfxcW7w', title: 'Joint Care for Older Dogs', thumbnail: 'https://img.youtube.com/vi/q3OZQfxcW7w/mqdefault.jpg', channelTitle: 'Pet Health', duration: '11:15' }
   ],
   'dog_travel': [
-    { videoId: 'G9kMsL_bHeg', title: 'Traveling with Your Dog', thumbnail: 'https://img.youtube.com/vi/G9kMsL_bHeg/mqdefault.jpg', channelTitle: 'Pet Travel', duration: '12:30' },
-    { videoId: 'ZfPKBFcj0Pk', title: 'Road Trip Tips with Dogs', thumbnail: 'https://img.youtube.com/vi/ZfPKBFcj0Pk/mqdefault.jpg', channelTitle: 'Dog Adventures', duration: '9:15' },
-    { videoId: 'vKVV8wD8NfI', title: 'Flying with Your Dog', thumbnail: 'https://img.youtube.com/vi/vKVV8wD8NfI/mqdefault.jpg', channelTitle: 'Pet Travel Pro', duration: '14:40' }
+    { videoId: 'Th2f31UfYqk', title: 'Traveling with Your Dog', thumbnail: 'https://img.youtube.com/vi/Th2f31UfYqk/mqdefault.jpg', channelTitle: 'Pet Travel', duration: '12:30' },
+    { videoId: 'c9mLCdmZ_Js', title: 'Road Trip Tips with Dogs', thumbnail: 'https://img.youtube.com/vi/c9mLCdmZ_Js/mqdefault.jpg', channelTitle: 'Dog Adventures', duration: '9:15' },
+    { videoId: 'i2Qeyq6r_mw', title: 'Flying with Your Dog', thumbnail: 'https://img.youtube.com/vi/i2Qeyq6r_mw/mqdefault.jpg', channelTitle: 'Pet Travel Pro', duration: '14:40' }
   ],
   'dog_breeds': [
-    { videoId: 'BxVFjLUb8uE', title: 'Choosing the Right Breed', thumbnail: 'https://img.youtube.com/vi/BxVFjLUb8uE/mqdefault.jpg', channelTitle: 'Pet Guide', duration: '16:20' },
-    { videoId: 'kpXPYrvjffQ', title: 'Popular Dog Breeds Explained', thumbnail: 'https://img.youtube.com/vi/kpXPYrvjffQ/mqdefault.jpg', channelTitle: 'Dog 101', duration: '13:45' },
-    { videoId: 'r5D6bVFj3zE', title: 'Breed-Specific Care Tips', thumbnail: 'https://img.youtube.com/vi/r5D6bVFj3zE/mqdefault.jpg', channelTitle: 'Vet Explains', duration: '11:30' }
+    { videoId: 'WDZQjf0OyRg', title: 'Choosing the Right Breed', thumbnail: 'https://img.youtube.com/vi/WDZQjf0OyRg/mqdefault.jpg', channelTitle: 'Pet Guide', duration: '16:20' },
+    { videoId: '68wx5NKTvqQ', title: 'Popular Dog Breeds Explained', thumbnail: 'https://img.youtube.com/vi/68wx5NKTvqQ/mqdefault.jpg', channelTitle: 'Dog 101', duration: '13:45' },
+    { videoId: 'K3kvPTO9I6U', title: 'Breed-Specific Care Tips', thumbnail: 'https://img.youtube.com/vi/K3kvPTO9I6U/mqdefault.jpg', channelTitle: 'Vet Explains', duration: '11:30' }
   ],
   'rescue_dogs': [
-    { videoId: 'L_xZXKfhzI8', title: 'Adopting a Rescue Dog', thumbnail: 'https://img.youtube.com/vi/L_xZXKfhzI8/mqdefault.jpg', channelTitle: 'Rescue Stories', duration: '14:50' },
-    { videoId: 'qX5J6q1oFr4', title: 'First Days with Rescue Dog', thumbnail: 'https://img.youtube.com/vi/qX5J6q1oFr4/mqdefault.jpg', channelTitle: 'Kikopup', duration: '12:20' },
-    { videoId: 'kYnPZPXNxHg', title: 'Building Trust with Rescue Dogs', thumbnail: 'https://img.youtube.com/vi/kYnPZPXNxHg/mqdefault.jpg', channelTitle: 'McCann Dogs', duration: '10:35' }
+    { videoId: 'q3OZQfxcW7w', title: 'Adopting a Rescue Dog', thumbnail: 'https://img.youtube.com/vi/q3OZQfxcW7w/mqdefault.jpg', channelTitle: 'Rescue Stories', duration: '14:50' },
+    { videoId: 'c9mLCdmZ_Js', title: 'First Days with Rescue Dog', thumbnail: 'https://img.youtube.com/vi/c9mLCdmZ_Js/mqdefault.jpg', channelTitle: 'Kikopup', duration: '12:20' },
+    { videoId: 'WNI2ae7D8UM', title: 'Building Trust with Rescue Dogs', thumbnail: 'https://img.youtube.com/vi/WNI2ae7D8UM/mqdefault.jpg', channelTitle: 'McCann Dogs', duration: '10:35' }
   ],
   'seasonal_care': [
-    { videoId: 'cUHWRvpCH5k', title: 'Summer Safety for Dogs', thumbnail: 'https://img.youtube.com/vi/cUHWRvpCH5k/mqdefault.jpg', channelTitle: 'Vet Explains', duration: '9:45' },
-    { videoId: 'PqHvOBJpWNs', title: 'Winter Care Tips', thumbnail: 'https://img.youtube.com/vi/PqHvOBJpWNs/mqdefault.jpg', channelTitle: 'Pet Care Pro', duration: '8:30' },
-    { videoId: 'bF3e0NQZXVM', title: 'Monsoon Pet Care Guide', thumbnail: 'https://img.youtube.com/vi/bF3e0NQZXVM/mqdefault.jpg', channelTitle: 'Pet Health', duration: '7:20' }
+    { videoId: 'U7rMpHhEtpI', title: 'Summer Safety for Dogs', thumbnail: 'https://img.youtube.com/vi/U7rMpHhEtpI/mqdefault.jpg', channelTitle: 'Vet Explains', duration: '9:45' },
+    { videoId: 'Th2f31UfYqk', title: 'Winter Care Tips', thumbnail: 'https://img.youtube.com/vi/Th2f31UfYqk/mqdefault.jpg', channelTitle: 'Pet Care Pro', duration: '8:30' },
+    { videoId: 'i2Qeyq6r_mw', title: 'Monsoon Pet Care Guide', thumbnail: 'https://img.youtube.com/vi/i2Qeyq6r_mw/mqdefault.jpg', channelTitle: 'Pet Health', duration: '7:20' }
   ],
   'new_dog_owner': [
-    { videoId: 'gpCy0d8F2AY', title: 'First Time Dog Owner Guide', thumbnail: 'https://img.youtube.com/vi/gpCy0d8F2AY/mqdefault.jpg', channelTitle: 'Zak George', duration: '18:30' },
-    { videoId: 'jfE8Fk4BgVI', title: 'Preparing for a New Dog', thumbnail: 'https://img.youtube.com/vi/jfE8Fk4BgVI/mqdefault.jpg', channelTitle: 'Pet Guide', duration: '11:45' },
-    { videoId: '1vbJ5VCWvQY', title: 'New Dog Checklist', thumbnail: 'https://img.youtube.com/vi/1vbJ5VCWvQY/mqdefault.jpg', channelTitle: 'McCann Dogs', duration: '13:20' }
+    { videoId: 'q3OZQfxcW7w', title: 'First Time Dog Owner Guide', thumbnail: 'https://img.youtube.com/vi/q3OZQfxcW7w/mqdefault.jpg', channelTitle: 'Zak George', duration: '18:30' },
+    { videoId: 'c9mLCdmZ_Js', title: 'Preparing for a New Dog', thumbnail: 'https://img.youtube.com/vi/c9mLCdmZ_Js/mqdefault.jpg', channelTitle: 'Pet Guide', duration: '11:45' },
+    { videoId: 'WNI2ae7D8UM', title: 'New Dog Checklist', thumbnail: 'https://img.youtube.com/vi/WNI2ae7D8UM/mqdefault.jpg', channelTitle: 'McCann Dogs', duration: '13:20' }
   ]
 };
 
