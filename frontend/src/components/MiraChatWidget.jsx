@@ -1210,10 +1210,13 @@ const MiraChatWidget = ({
       // 1. Event specifies our pillar OR
       // 2. Event is from mobile_nav OR
       // 3. Event is from search_panel (universal bar "Continue in Chat")
+      // 4. Event has no pillar at all (use the existing widget on this page)
       const shouldOpen = 
+        !event.detail?.pillar ||
         event.detail?.pillar === pillar || 
         event.detail?.source === 'mobile_nav' ||
-        event.detail?.source === 'search_panel';
+        event.detail?.source === 'search_panel' ||
+        event.detail?.source === 'pillar_top_bar';
       
       if (shouldOpen) {
         console.log('[MiraChatWidget] Opening for pillar:', pillar, 'source:', event.detail?.source);
@@ -1224,13 +1227,19 @@ const MiraChatWidget = ({
           const msg = event.detail.message || event.detail.initialQuery;
           setInputValue(msg);
           console.log('[MiraChatWidget] Pre-filled query:', msg);
+
+          if (event.detail?.source === 'pillar_top_bar') {
+            setTimeout(() => {
+              sendMessage(msg);
+            }, 120);
+          }
         }
       }
     };
     
     window.addEventListener('openMiraAI', handleOpenMira);
     return () => window.removeEventListener('openMiraAI', handleOpenMira);
-  }, [pillar]);
+  }, [pillar, sendMessage]);
   
   // Get orb state based on current activity
   const getOrbState = () => {
