@@ -203,8 +203,11 @@ const LearnProductsGrid = ({ maxProducts = 8, showCategories = true, categoryFil
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      // Get pet's breed for personalization
-      const petBreed = currentPet?.breed?.toLowerCase() || '';
+      // Get pet's breed for personalization - STRICT filtering
+      const petBreed = currentPet?.breed?.toLowerCase()?.trim() || '';
+      const petName = currentPet?.name || '';
+      
+      console.log('[LearnProductsGrid] Filtering for breed:', petBreed, 'pet:', petName);
       
       // Use unified product-box API for full CRUD support
       const response = await fetch(`${API_URL}/api/product-box/products?pillar=learn&limit=200`);
@@ -212,33 +215,47 @@ const LearnProductsGrid = ({ maxProducts = 8, showCategories = true, categoryFil
         const data = await response.json();
         let allProducts = data.products || [];
         
-        // PERSONALIZATION: Filter and prioritize by pet's breed
+        // STRICT PERSONALIZATION: ONLY show products for this pet's breed
         if (petBreed) {
-          // Separate breed-specific products from generic ones
-          const breedSpecific = allProducts.filter(p => {
+          // List of ALL breed names to filter against
+          const allBreedNames = [
+            'indie', 'labrador', 'golden retriever', 'pug', 'beagle', 'shih tzu', 
+            'german shepherd', 'rottweiler', 'bulldog', 'boxer', 'husky', 
+            'poodle', 'dachshund', 'chihuahua', 'great dane', 'doberman',
+            'cocker spaniel', 'schnauzer', 'schnoodle', 'cavalier', 'maltese',
+            'yorkshire', 'pomeranian', 'scottish terrier', 'boston terrier',
+            'french bulldog', 'corgi', 'border collie', 'australian shepherd',
+            'jack russell', 'bichon', 'lhasa apso', 'shiba inu', 'akita',
+            'saint bernard', 'newfoundland', 'bernese', 'mastiff', 'weimaraner'
+          ];
+          
+          // Get products that are SPECIFICALLY for this pet's breed
+          const breedSpecificProducts = allProducts.filter(p => {
             const name = (p.name || '').toLowerCase();
             const tags = (p.tags || []).map(t => t.toLowerCase());
-            const description = (p.description || '').toLowerCase();
             
-            // Check if product is for this specific breed
-            return name.includes(petBreed) || 
-                   tags.includes(petBreed) ||
-                   description.includes(petBreed);
+            // Check if product mentions the pet's breed
+            const isForThisBreed = name.includes(petBreed) || 
+                                   tags.some(t => t.includes(petBreed));
+            
+            return isForThisBreed;
           });
           
-          // Get generic training products (not breed-specific for OTHER breeds)
+          // Get GENERIC products (no breed name in title)
           const genericProducts = allProducts.filter(p => {
             const name = (p.name || '').toLowerCase();
-            // Exclude products that are clearly for OTHER breeds
-            const otherBreeds = ['chihuahua', 'pug', 'shih tzu', 'scottish', 'labrador', 'golden', 'poodle', 'beagle', 'bulldog', 'boxer', 'husky', 'german shepherd', 'rottweiler', 'schnoodle', 'dachshund', 'corgi'];
-            const isOtherBreed = otherBreeds.some(b => 
-              name.includes(b) && !name.includes(petBreed) && petBreed !== b
-            );
-            return !isOtherBreed;
+            
+            // Check if product has ANY breed name in it
+            const hasAnyBreed = allBreedNames.some(breed => name.includes(breed));
+            
+            // Only include if it has NO breed name (truly generic)
+            return !hasAnyBreed;
           });
           
-          // Combine: breed-specific first, then generic
-          allProducts = [...breedSpecific, ...genericProducts.filter(p => !breedSpecific.includes(p))];
+          console.log('[LearnProductsGrid] Breed-specific:', breedSpecificProducts.length, 'Generic:', genericProducts.length);
+          
+          // Show breed-specific FIRST, then generic products
+          allProducts = [...breedSpecificProducts, ...genericProducts];
         }
         
         setProducts(allProducts);
