@@ -32,18 +32,36 @@ import {
   Shield, Heart, Plane, FileText, Sparkles, Scale, Upload, Download,
   Folder, FolderOpen, File, Eye, Trash2, Bell, Calendar, Clock,
   CheckCircle, AlertCircle, Plus, ChevronRight, Lock, Search,
-  PawPrint, Star, Loader2, X, ExternalLink, ArrowRight, ShoppingBag
+  PawPrint, Star, Loader2, X, ExternalLink, ArrowRight, ShoppingBag,
+  MessageCircle, Crown, Brain, Lightbulb, HelpCircle, Gift
 } from 'lucide-react';
 
-// Document Categories with icons and colors
-const CATEGORY_CONFIG = {
-  identity: { name: 'Identity & Safety', icon: Shield, color: 'from-blue-600 to-indigo-700', bgColor: 'bg-blue-50', textColor: 'text-blue-600', borderColor: 'border-blue-200' },
-  medical: { name: 'Medical & Health', icon: Heart, color: 'from-red-500 to-rose-600', bgColor: 'bg-red-50', textColor: 'text-red-600', borderColor: 'border-red-200' },
-  travel: { name: 'Travel Documents', icon: Plane, color: 'from-cyan-500 to-blue-600', bgColor: 'bg-cyan-50', textColor: 'text-cyan-600', borderColor: 'border-cyan-200' },
-  insurance: { name: 'Insurance & Financial', icon: FileText, color: 'from-emerald-500 to-green-600', bgColor: 'bg-emerald-50', textColor: 'text-emerald-600', borderColor: 'border-emerald-200' },
-  care: { name: 'Care & Training', icon: Sparkles, color: 'from-purple-500 to-violet-600', bgColor: 'bg-purple-50', textColor: 'text-purple-600', borderColor: 'border-purple-200' },
-  legal: { name: 'Legal & Compliance', icon: Scale, color: 'from-amber-500 to-orange-600', bgColor: 'bg-amber-50', textColor: 'text-amber-600', borderColor: 'border-amber-200' }
+// ═══════════════════════════════════════════════════════════════════════════════
+// DEFAULT CMS CONFIG - Fallback if CMS returns empty
+// ═══════════════════════════════════════════════════════════════════════════════
+const DEFAULT_CATEGORY_CONFIG = {
+  identity: { id: 'identity', name: 'Identity & Safety', icon: 'Shield', color: 'from-blue-600 to-indigo-700', bgColor: 'bg-blue-50', textColor: 'text-blue-600', borderColor: 'border-blue-200', description: 'Core identity documents' },
+  medical: { id: 'medical', name: 'Medical & Health', icon: 'Heart', color: 'from-red-500 to-rose-600', bgColor: 'bg-red-50', textColor: 'text-red-600', borderColor: 'border-red-200', description: 'Health records & vaccinations' },
+  travel: { id: 'travel', name: 'Travel Documents', icon: 'Plane', color: 'from-cyan-500 to-blue-600', bgColor: 'bg-cyan-50', textColor: 'text-cyan-600', borderColor: 'border-cyan-200', description: 'Travel certificates' },
+  insurance: { id: 'insurance', name: 'Insurance & Financial', icon: 'FileText', color: 'from-emerald-500 to-green-600', bgColor: 'bg-emerald-50', textColor: 'text-emerald-600', borderColor: 'border-emerald-200', description: 'Insurance & receipts' },
+  care: { id: 'care', name: 'Care & Training', icon: 'Sparkles', color: 'from-purple-500 to-violet-600', bgColor: 'bg-purple-50', textColor: 'text-purple-600', borderColor: 'border-purple-200', description: 'Grooming & training' },
+  legal: { id: 'legal', name: 'Legal & Compliance', icon: 'Scale', color: 'from-amber-500 to-orange-600', bgColor: 'bg-amber-50', textColor: 'text-amber-600', borderColor: 'border-amber-200', description: 'Licenses & permits' }
 };
+
+const DEFAULT_MIRA_PROMPTS = [
+  { id: '1', type: 'tip', trigger: 'no_microchip', message: "{petName} doesn't have microchip records yet. This is essential for identification and safety." },
+  { id: '2', type: 'reminder', trigger: 'vaccination_due', message: "Vaccination is due soon. Would you like me to remind you closer to the date?" },
+  { id: '3', type: 'suggestion', trigger: 'incomplete_vault', message: "Your document vault is {percent}% complete. Our concierge team can help you organize the rest!" }
+];
+
+const DEFAULT_CONCIERGE_SERVICES = [
+  { id: 'doc-assist', name: 'Document Assistance', description: 'Help organizing, digitizing, and setting up reminders', price: 499, turnaround: '24-48 hours', cta_text: 'Get Help', includes: ['Document review', 'Digital organization', 'Reminder setup'] },
+  { id: 'passport-service', name: 'Pet Passport Service', description: 'Full-service passport processing for international travel', price: 2999, turnaround: '5-7 days', cta_text: 'Start Process', includes: ['Document collection', 'Vet coordination', 'Application filing'] },
+  { id: 'insurance-advisory', name: 'Insurance Advisory', description: 'Expert help comparing and choosing pet insurance', price: 0, turnaround: '1-2 days', cta_text: 'Get Free Advice', includes: ['Policy comparison', 'Coverage analysis', 'Claim guidance'] }
+];
+
+// Icon mapping for dynamic rendering
+const ICON_MAP = { Shield, Heart, Plane, FileText, Sparkles, Scale, Folder, Star, Crown, Bell, Brain };
 
 const PaperworkPage = () => {
   const { user, token } = useAuth();
@@ -53,6 +71,31 @@ const PaperworkPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // CMS STATE - Loaded from /api/paperwork/page-config
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const [cmsConfig, setCmsConfig] = useState({
+    title: "Keep {petName}'s world in order",
+    subtitle: 'Your secure vault for all pet documents, records & reminders',
+    askMira: {
+      enabled: true,
+      placeholder: 'Find vaccination records... insurance renewal dates',
+      buttonColor: 'bg-blue-500'
+    },
+    sections: {
+      askMira: { enabled: true },
+      miraPrompts: { enabled: true },
+      documentVault: { enabled: true },
+      conciergeServices: { enabled: true },
+      bundles: { enabled: true },
+      products: { enabled: true },
+      personalized: { enabled: true }
+    }
+  });
+  const [cmsCategories, setCmsCategories] = useState([]);
+  const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
+  const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
   
   const [loading, setLoading] = useState(true);
   const [userPets, setUserPets] = useState([]);
@@ -66,6 +109,10 @@ const PaperworkPage = () => {
   // Use global pet context
   const { currentPet } = usePillarContext();
   const activePet = currentPet || selectedPet;
+  
+  // Ask Mira state
+  const [askMiraQuestion, setAskMiraQuestion] = useState('');
+  const [askMiraLoading, setAskMiraLoading] = useState(false);
   
   const [activeCategory, setActiveCategory] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -91,8 +138,32 @@ const PaperworkPage = () => {
     urgency: 'normal'
   });
 
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // COMPUTED VALUES - Categories, prompts with fallback to defaults
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const documentCategories = cmsCategories.length > 0 ? cmsCategories : Object.values(DEFAULT_CATEGORY_CONFIG);
+  const conciergeServices = cmsConciergeServices.length > 0 ? cmsConciergeServices : DEFAULT_CONCIERGE_SERVICES;
+  const miraPrompts = cmsMiraPrompts.length > 0 ? cmsMiraPrompts : DEFAULT_MIRA_PROMPTS;
+  
+  // Personalize title with pet name
+  const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet') || 
+    `Keep ${activePet?.name || 'your pet'}'s world in order`;
+
+  // Get contextual Mira prompt based on document state
+  const getContextualMiraPrompt = () => {
+    const completionPercent = getCompletionPercentage();
+    if (completionPercent < 30) {
+      return miraPrompts.find(p => p.trigger === 'no_microchip') || miraPrompts[0];
+    } else if (completionPercent < 100) {
+      const prompt = miraPrompts.find(p => p.trigger === 'incomplete_vault') || miraPrompts[2];
+      return { ...prompt, message: prompt?.message?.replace('{percent}', completionPercent) || '' };
+    }
+    return null;
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
+    fetchCMSConfig();
     fetchInitialData();
   }, []);
 
@@ -102,6 +173,49 @@ const PaperworkPage = () => {
       fetchPetReminders(selectedPet.id);
     }
   }, [selectedPet, token]);
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // FETCH CMS CONFIGURATION
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const fetchCMSConfig = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/paperwork/page-config`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.config && Object.keys(data.config).length > 0) {
+          setCmsConfig(prev => ({ ...prev, ...data.config }));
+        }
+        if (data.documentCategories?.length > 0) {
+          setCmsCategories(data.documentCategories);
+        }
+        if (data.conciergeServices?.length > 0) {
+          setCmsConciergeServices(data.conciergeServices);
+        }
+        if (data.miraPrompts?.length > 0) {
+          setCmsMiraPrompts(data.miraPrompts);
+        }
+        console.log('[PaperworkPage] CMS config loaded');
+      }
+    } catch (error) {
+      console.error('Failed to fetch CMS config:', error);
+    }
+  };
+
+  const handleAskMira = async () => {
+    if (!askMiraQuestion.trim()) return;
+    setAskMiraLoading(true);
+    try {
+      // Open Mira AI with the question
+      window.dispatchEvent(new CustomEvent('openMiraAI', {
+        detail: { message: askMiraQuestion, context: 'paperwork', pillar: 'paperwork' }
+      }));
+      setAskMiraQuestion('');
+    } catch (error) {
+      console.error('Mira error:', error);
+    } finally {
+      setAskMiraLoading(false);
+    }
+  };
 
   const fetchInitialData = async () => {
     setLoading(true);
