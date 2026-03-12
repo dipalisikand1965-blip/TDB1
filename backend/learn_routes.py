@@ -27,7 +27,7 @@ def get_db():
 
 @router.get("/page-config")
 async def get_page_config():
-    """Get the complete Learn page configuration"""
+    """Get the complete Learn page configuration - COMPREHENSIVE CMS"""
     db = get_db()
     
     # Get page config
@@ -39,18 +39,24 @@ async def get_page_config():
     # Get selected items
     selections = await db.page_selections.find_one({"pillar": "learn"}, {"_id": 0})
     
+    # Get additional CMS content
+    cms_content = await db.learn_cms_content.find_one({"pillar": "learn"}, {"_id": 0})
+    
     return {
         "config": config or {},
         "topics": topics or [],
         "selectedBundles": (selections or {}).get("bundles", []),
         "selectedProducts": (selections or {}).get("products", []),
-        "selectedServices": (selections or {}).get("services", [])
+        "selectedServices": (selections or {}).get("services", []),
+        "dailyTips": (cms_content or {}).get("dailyTips", []),
+        "guidedPaths": (cms_content or {}).get("guidedPaths", []),
+        "helpBuckets": (cms_content or {}).get("helpBuckets", [])
     }
 
 
 @router.post("/page-config")
 async def save_page_config(data: dict):
-    """Save the complete Learn page configuration"""
+    """Save the complete Learn page configuration - COMPREHENSIVE CMS"""
     db = get_db()
     
     # Save page config
@@ -81,6 +87,20 @@ async def save_page_config(data: dict):
     await db.page_selections.update_one(
         {"pillar": "learn"},
         {"$set": selections},
+        upsert=True
+    )
+    
+    # Save additional CMS content (daily tips, guided paths, help buckets)
+    cms_content = {
+        "pillar": "learn",
+        "dailyTips": data.get("dailyTips", []),
+        "guidedPaths": data.get("guidedPaths", []),
+        "helpBuckets": data.get("helpBuckets", []),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.learn_cms_content.update_one(
+        {"pillar": "learn"},
+        {"$set": cms_content},
         upsert=True
     )
     
