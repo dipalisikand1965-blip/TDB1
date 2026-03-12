@@ -511,10 +511,9 @@ const EnjoyPage = () => {
         pillar="enjoy"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.enjoy}
         onTopicClick={(topic) => {
-          const experienceSection = document.getElementById('experiences-list');
-          if (experienceSection) {
-            experienceSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+          // Navigate to services page filtered by this topic/category
+          const searchTerm = topic.title || topic.name;
+          window.location.href = `/services?pillar=enjoy&search=${encodeURIComponent(searchTerm)}`;
         }}
         columns={4}
       />

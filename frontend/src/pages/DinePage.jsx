@@ -464,15 +464,9 @@ const DinePage = () => {
         pillar="dine"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.dine}
         onTopicClick={(topic) => {
-          // Map topic to tab
-          const tabMap = {
-            'fresh': 'fresh-meals',
-            'dry': 'dry-food',
-            'treats': 'treats',
-            'special': 'special-diets'
-          };
-          const newTab = tabMap[topic.slug] || 'all';
-          handleTabChange(newTab);
+          // Navigate to shop page filtered by this food category
+          const searchTerm = topic.title || topic.name;
+          window.location.href = `/shop?pillar=dine&search=${encodeURIComponent(searchTerm)}`;
         }}
         columns={4}
       />

@@ -681,16 +681,9 @@ const CelebratePage = () => {
         pillar="celebrate"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.celebrate}
         onTopicClick={(topic) => {
-          // Map topic to category filter
-          const categoryMap = {
-            'birthdays': 'cakes',
-            'gotcha': 'hampers',
-            'gifts': 'treats',
-            'photoshoots': 'accessories'
-          };
-          const category = categoryMap[topic.slug] || topic.slug;
-          setSearchParams({ category });
-          document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
+          // Navigate to shop page filtered by this celebration category
+          const searchTerm = topic.title || topic.name;
+          window.location.href = `/shop?pillar=celebrate&search=${encodeURIComponent(searchTerm)}`;
         }}
         columns={4}
       />

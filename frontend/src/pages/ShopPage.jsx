@@ -887,14 +887,9 @@ const ShopPage = () => {
         pillar="shop"
         topics={DEFAULT_PILLAR_TOPICS.shop}
         onTopicClick={(topic) => {
-          // Map topic to pillar filter
-          const filterMap = {
-            'essentials': 'care',
-            'new': 'all',
-            'bestsellers': 'celebrate',
-            'deals': 'all'
-          };
-          setSelectedPillar(filterMap[topic.slug] || 'all');
+          // Navigate to shop with search filter
+          const searchTerm = topic.title || topic.name;
+          window.location.href = `/shop?search=${encodeURIComponent(searchTerm)}`;
         }}
         columns={4}
       />

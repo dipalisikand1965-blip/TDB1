@@ -690,11 +690,9 @@ const CarePage = () => {
         pillar="care"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.care}
         onTopicClick={(topic) => {
-          // Scroll to services section when topic is clicked
-          const servicesSection = document.getElementById('care-services');
-          if (servicesSection) {
-            servicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+          // Navigate to services page filtered by this topic/category
+          const searchTerm = topic.title || topic.name;
+          window.location.href = `/services?pillar=care&search=${encodeURIComponent(searchTerm)}`;
         }}
         columns={4}
       />
