@@ -1,33 +1,34 @@
-# The Doggy Company — MASTER DOCUMENTATION
-## Last Updated: December 12, 2025 | Version 11.0.0
+# The Doggy Company - MASTER DOCUMENTATION
+## Last Updated: December 12, 2025 | Version 12.0.0
 
 ---
 
-# ⚠️ CRITICAL: READ THIS ENTIRE DOCUMENT BEFORE MAKING ANY CHANGES ⚠️
+# CRITICAL: READ THIS ENTIRE DOCUMENT BEFORE MAKING ANY CHANGES
 
 ---
 
 ## TABLE OF CONTENTS
 1. [Original Problem Statement](#1-original-problem-statement)
-2. [PAGE CMS ARCHITECTURE - THE GOLDEN STANDARD](#2-page-cms-architecture)
-3. [ALL 14 PILLAR CMS STATUS](#3-all-14-pillar-cms-status)
-4. [HOW TO BUILD A NEW PILLAR PAGE](#4-how-to-build-a-new-pillar-page)
-5. [API ENDPOINTS REFERENCE](#5-api-endpoints-reference)
-6. [FILE STRUCTURE](#6-file-structure)
-7. [PERSONALIZATION SYSTEM](#7-personalization-system)
-8. [TESTING CREDENTIALS](#8-testing-credentials)
-9. [KNOWN ISSUES & FIXES](#9-known-issues)
-10. [FUTURE TASKS](#10-future-tasks)
+2. [14-PILLAR CMS ARCHITECTURE - THE GOLDEN STANDARD](#2-14-pillar-cms-architecture---the-golden-standard)
+3. [Technical Implementation Details](#3-technical-implementation-details)
+4. [All 14 Pillar CMS Status](#4-all-14-pillar-cms-status)
+5. [How To Build a New CMS-Driven Page](#5-how-to-build-a-new-cms-driven-page)
+6. [API Reference](#6-api-reference)
+7. [File Structure Map](#7-file-structure-map)
+8. [Personalization System](#8-personalization-system)
+9. [Testing Credentials](#9-testing-credentials)
+10. [Known Issues](#10-known-issues)
+11. [Future Tasks & Roadmap](#11-future-tasks--roadmap)
 
 ---
 
 # 1. ORIGINAL PROBLEM STATEMENT
 
-Build **"The World's First Pet Life Operating System"** — **The Doggy Company** with:
+Build **"The World's First Pet Life Operating System"** - **The Doggy Company**
 
 | Feature | Description |
 |---------|-------------|
-| **14 Life Pillars** | Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Emergency, Advisory, Farewell, Adopt, Shop |
+| **14 Life Pillars** | Learn, Paperwork, Care, Fit, Travel, Stay, Dine, Enjoy, Celebrate, Emergency, Advisory, Farewell, Adopt, Shop |
 | **AI Concierge (Mira)** | Conversational AI that knows pet's soul, breed, health, preferences |
 | **Pet Soul Engine** | Personality profiling, archetype matching, breed intelligence |
 | **Product Catalog** | 5,000+ products with Shopify integration |
@@ -38,260 +39,283 @@ Build **"The World's First Pet Life Operating System"** — **The Doggy Company*
 
 ---
 
-# 2. PAGE CMS ARCHITECTURE - THE GOLDEN STANDARD
+# 2. 14-PILLAR CMS ARCHITECTURE - THE GOLDEN STANDARD
 
-## ⚠️ EVERY PILLAR PAGE MUST USE THIS ARCHITECTURE ⚠️
+## 2.1 What is the Page CMS?
 
-### 2.1 What is Page CMS?
+The Page CMS is a **centralized, database-driven content management system** that allows admins to control **every aspect** of pillar pages from the Admin Panel without touching code.
 
-A centralized Admin interface where **EVERY component** of a pillar page is configurable:
-- No hardcoded content
-- Admins control everything from Admin Panel
-- Consistent structure across all 14 pillars
-- Pages render dynamically from database
+### Key Principles:
+- **NO hardcoded content** - All text, images, categories, and sections come from the database
+- **Admins control everything** - Non-technical users can modify page content
+- **Consistent structure** - All 14 pillars follow the same architectural pattern
+- **Dynamic rendering** - Pages render content fetched from API at runtime
+- **Personalization preserved** - CMS content supports placeholders like `{petName}` and `{breedName}`
 
-### 2.2 Standard CMS Structure (9 Tabs)
+## 2.2 Architecture Overview
 
 ```
-PILLAR PAGE CMS
-│
-├── Tab 1: 🎨 PAGE SETTINGS
-│   ├── Page Title (use {petName} for personalization)
-│   ├── Page Subtitle
-│   ├── Hero Image (Cloudinary upload)
-│   ├── Theme Color
-│   └── Section Visibility Toggles
-│
-├── Tab 2: 🔍 ASK MIRA BAR
-│   ├── Enable/Disable toggle
-│   ├── Placeholder text
-│   ├── Button color
-│   └── Quick suggestions (array)
-│
-├── Tab 3: 📁 CATEGORIES/TOPICS
-│   ├── Add/Edit/Delete categories
-│   ├── Each category has:
-│   │   ├── Name
-│   │   ├── Icon
-│   │   ├── Color gradient
-│   │   ├── Description
-│   │   ├── Image (Cloudinary)
-│   │   └── Subcategories (array)
-│
-├── Tab 4: 🛍️ PRODUCTS
-│   └── Select featured products from catalog
-│
-├── Tab 5: 🎁 BUNDLES
-│   └── Select featured bundles from catalog
-│
-├── Tab 6: 💼 SERVICES
-│   └── Select featured services from catalog
-│
-├── Tab 7: 🐕 PERSONALIZED
-│   ├── Breed-Smart Recommendations (toggle)
-│   ├── Life Stage Products (toggle)
-│   ├── Archetype-Based Picks (toggle)
-│   └── Soul-Made Collection (toggle)
-│
-├── Tab 8: 👑 CONCIERGE SERVICES
-│   ├── Add/Edit/Delete premium services
-│   ├── Each service has:
-│   │   ├── Name
-│   │   ├── Description
-│   │   ├── Price (₹)
-│   │   ├── Turnaround time
-│   │   ├── CTA button text
-│   │   └── Includes (array)
-│
-└── Tab 9: 🧠 MIRA PROMPTS
-    ├── Add/Edit/Delete AI prompts
-    ├── Each prompt has:
-    │   ├── Type (tip/reminder/suggestion/nudge)
-    │   ├── Trigger condition
-    │   └── Message (use {petName}, {breedName})
+                    ┌─────────────────────────────────────────┐
+                    │           ADMIN PANEL                   │
+                    │    /admin?tab={pillar}-cms              │
+                    └─────────────────┬───────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        PillarPageCMS.jsx                                     │
+│    Generic React component that renders 10-tab CMS UI for ANY pillar        │
+│    Usage: <PillarPageCMS pillar="care" />                                   │
+└─────────────────────────────────┬───────────────────────────────────────────┘
+                                  │
+              ┌───────────────────┼───────────────────┐
+              │                   │                   │
+              ▼                   ▼                   ▼
+┌─────────────────────┐  ┌────────────────┐  ┌────────────────────┐
+│ GET /api/{pillar}/  │  │ POST /api/     │  │  MongoDB           │
+│   page-config       │  │ {pillar}/      │  │  Collections       │
+│                     │  │ page-config    │  │                    │
+│ Fetches all config  │  │                │  │ - page_configs     │
+│ for a pillar        │  │ Saves config   │  │ - pillar_cms_      │
+│                     │  │ to MongoDB     │  │   categories       │
+└─────────────────────┘  └────────────────┘  │ - pillar_cms_      │
+                                             │   content          │
+                                             │ - page_selections  │
+                                             └────────────────────┘
+                                  │
+                                  ▼
+              ┌─────────────────────────────────────────┐
+              │        PILLAR PAGE (Frontend)           │
+              │        e.g. LearnPage.jsx               │
+              │                                         │
+              │  1. Calls fetchCMSConfig()              │
+              │  2. Sets state from API response        │
+              │  3. Renders sections conditionally      │
+              │  4. Uses CMS data with fallbacks        │
+              └─────────────────────────────────────────┘
 ```
 
-### 2.3 Page Layout Standard (Option A - Mira on Top)
+## 2.3 The Generic CMS Component
+
+**File:** `/app/frontend/src/components/admin/PillarPageCMS.jsx`
+
+This single component powers the CMS admin UI for 12 of the 14 pillars (Learn and Paperwork have custom CMS components for their unique requirements).
+
+### Usage:
+```jsx
+import PillarPageCMS from '../components/admin/PillarPageCMS';
+
+// In Admin.jsx render:
+{activeTab === 'care-cms' && <PillarPageCMS pillar="care" />}
+{activeTab === 'fit-cms' && <PillarPageCMS pillar="fit" />}
+// ... etc for all 12 generic pillars
+```
+
+### Built-in Pillar Configurations:
+```javascript
+const PILLAR_CONFIGS = {
+  care: { name: 'Care', icon: Heart, color: 'from-rose-500 to-pink-600', ... },
+  fit: { name: 'Fit', icon: Dumbbell, color: 'from-green-500 to-emerald-600', ... },
+  travel: { name: 'Travel', icon: Plane, color: 'from-cyan-500 to-blue-600', ... },
+  stay: { name: 'Stay', icon: Bed, color: 'from-indigo-500 to-purple-600', ... },
+  dine: { name: 'Dine', icon: Utensils, color: 'from-orange-500 to-amber-600', ... },
+  enjoy: { name: 'Enjoy', icon: PartyPopper, color: 'from-pink-500 to-rose-600', ... },
+  celebrate: { name: 'Celebrate', icon: PartyPopper, color: 'from-purple-500 to-pink-600', ... },
+  emergency: { name: 'Emergency', icon: AlertTriangle, color: 'from-red-500 to-rose-600', ... },
+  advisory: { name: 'Advisory', icon: BookOpen, color: 'from-teal-500 to-emerald-600', ... },
+  farewell: { name: 'Farewell', icon: Flower2, color: 'from-gray-500 to-slate-600', ... },
+  adopt: { name: 'Adopt', icon: Dog, color: 'from-amber-500 to-orange-600', ... },
+  shop: { name: 'Shop', icon: ShoppingBag, color: 'from-blue-500 to-indigo-600', ... }
+};
+```
+
+## 2.4 Standard CMS Tabs (10 Tabs)
+
+Every pillar CMS has these 10 configurable tabs:
+
+| Tab # | Tab Name | Description | Key Fields |
+|-------|----------|-------------|------------|
+| 1 | Page Settings | Overall page configuration | title, subtitle, heroImage, themeColor, sectionToggles |
+| 2 | Ask Mira Bar | AI search bar configuration | enabled, placeholder, buttonColor, quickSuggestions[] |
+| 3 | Categories/Topics | Main content sections | name, icon, color, description, image, subcategories[] |
+| 4 | Products | Featured products selection | Select from unified_products catalog |
+| 5 | Bundles | Curated bundles | Select from bundles collection |
+| 6 | Services | Related services | Select from services_master catalog |
+| 7 | Personalized | Personalization toggles | breedSmart, lifeStage, archetypePicks, soulCollection |
+| 8 | Concierge | Premium services | name, description, price, turnaround, includes[] |
+| 9 | Mira Prompts | AI contextual tips | type, trigger, message (with {petName} placeholders) |
+| 10 | Custom | Pillar-specific features | Varies by pillar |
+
+## 2.5 Standard Page Layout (Mira on Top)
+
+All pillar pages should follow this standardized layout:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  🔍 ASK MIRA BAR (Search/AI assistant)                      │
+│  HEADER / NAVIGATION                                        │
 ├─────────────────────────────────────────────────────────────┤
-│  💬 MIRA'S CONTEXTUAL TIP                                   │
-│  "Mystique doesn't have microchip records yet..."           │
+│  1. ASK MIRA BAR (Search/AI)                                │
+│     "What would you like to learn about {petName} today?"   │
 ├─────────────────────────────────────────────────────────────┤
-│  📁 MAIN CONTENT (Categories/Topics/Vault)                  │
+│  2. MIRA'S CONTEXTUAL TIP                                   │
+│     "Mystique doesn't have microchip records yet..."        │
 ├─────────────────────────────────────────────────────────────┤
-│  🐕 PERSONALIZED FOR {petName}                              │
-│  (Breed-smart, archetype picks, soul collection)            │
+│  3. MAIN CONTENT (Categories/Topics Grid)                   │
+│     [Topic 1] [Topic 2] [Topic 3] [Topic 4]                 │
+│     [Topic 5] [Topic 6] [Topic 7] [Topic 8]                 │
 ├─────────────────────────────────────────────────────────────┤
-│  🎁 BUNDLES                                                 │
+│  4. DAILY TIP (Rotating content)                            │
 ├─────────────────────────────────────────────────────────────┤
-│  🛍️ PRODUCTS                                                │
+│  5. PERSONALIZED FOR {petName}                              │
+│     (Breed-smart picks, archetype recommendations)          │
 ├─────────────────────────────────────────────────────────────┤
-│  👑 CONCIERGE SERVICES                                      │
+│  6. CURATED BUNDLES                                         │
+├─────────────────────────────────────────────────────────────┤
+│  7. PRODUCTS                                                │
+├─────────────────────────────────────────────────────────────┤
+│  8. CONCIERGE SERVICES                                      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-# 3. ALL 14 PILLAR CMS STATUS
+# 3. TECHNICAL IMPLEMENTATION DETAILS
 
-## 3.1 CMS Admin UI Status
+## 3.1 Backend API Endpoints
 
-| # | Pillar | CMS File | Admin Tab | Status | Categories |
-|---|--------|----------|-----------|--------|------------|
-| 1 | Learn | `LearnPageCMS.jsx` | `learn-cms` | ✅ COMPLETE | 12 Topics |
-| 2 | Paperwork | `PaperworkPageCMS.jsx` | `paperwork-cms` | ✅ COMPLETE | 6 Doc Types |
-| 3 | Care | `PillarPageCMS.jsx` | `care-cms` | ✅ COMPLETE | 6 Categories |
-| 4 | Fit | `PillarPageCMS.jsx` | `fit-cms` | ✅ COMPLETE | 6 Categories |
-| 5 | Travel | `PillarPageCMS.jsx` | `travel-cms` | ✅ COMPLETE | 6 Categories |
-| 6 | Stay | `PillarPageCMS.jsx` | `stay-cms` | ✅ COMPLETE | 6 Categories |
-| 7 | Dine | `PillarPageCMS.jsx` | `dine-cms` | ✅ COMPLETE | 6 Categories |
-| 8 | Enjoy | `PillarPageCMS.jsx` | `enjoy-cms` | ✅ COMPLETE | 6 Categories |
-| 9 | Celebrate | `PillarPageCMS.jsx` | `celebrate-cms` | ✅ COMPLETE | 6 Categories |
-| 10 | Emergency | `PillarPageCMS.jsx` | `emergency-cms` | ✅ COMPLETE | 6 Categories |
-| 11 | Advisory | `PillarPageCMS.jsx` | `advisory-cms` | ✅ COMPLETE | 6 Categories |
-| 12 | Farewell | `PillarPageCMS.jsx` | `farewell-cms` | ✅ COMPLETE | 6 Categories |
-| 13 | Adopt | `PillarPageCMS.jsx` | `adopt-cms` | ✅ COMPLETE | 6 Categories |
-| 14 | Shop | `PillarPageCMS.jsx` | `shop-cms` | ✅ COMPLETE | 6 Categories |
+**Generic Endpoint for 12 Pillars:**
 
-## 3.2 Page Dynamic Rendering Status
+```python
+# File: /app/backend/server.py
 
-| # | Pillar | Page File | Renders from CMS? | Status |
-|---|--------|-----------|-------------------|--------|
-| 1 | Learn | `LearnPage.jsx` | ✅ YES | COMPLETE |
-| 2 | Paperwork | `PaperworkPage.jsx` | 🔄 IN PROGRESS | Refactoring |
-| 3 | Care | `CarePage.jsx` | ❌ NO | TODO |
-| 4 | Fit | `FitPage.jsx` | ❌ NO | TODO |
-| 5 | Travel | `TravelPage.jsx` | ❌ NO | TODO |
-| 6 | Stay | `StayPage.jsx` | ❌ NO | TODO |
-| 7 | Dine | `DinePage.jsx` | ❌ NO | TODO |
-| 8 | Enjoy | `EnjoyPage.jsx` | ❌ NO | TODO |
-| 9 | Celebrate | `CelebratePage.jsx` | ❌ NO | TODO |
-| 10 | Emergency | `EmergencyPage.jsx` | ❌ NO | TODO |
-| 11 | Advisory | `AdvisoryPage.jsx` | ❌ NO | TODO |
-| 12 | Farewell | `FarewellPage.jsx` | ❌ NO | TODO |
-| 13 | Adopt | `AdoptPage.jsx` | ❌ NO | TODO |
-| 14 | Shop | `ShopPage.jsx` | ❌ NO | TODO |
+VALID_CMS_PILLARS = ['care', 'fit', 'travel', 'stay', 'dine', 'enjoy', 
+                     'celebrate', 'emergency', 'advisory', 'farewell', 'adopt', 'shop']
 
----
-
-# 4. HOW TO BUILD A NEW PILLAR PAGE (CMS-Driven)
-
-## Step 1: Check if CMS Admin exists
-- Go to `/admin?tab={pillar}-cms`
-- If it loads, CMS admin is ready
-- If not, add to `Admin.jsx` (see Section 6)
-
-## Step 2: Seed default data
-```bash
-curl -X POST "{API_URL}/api/{pillar}/page-config" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "config": {
-      "pillar": "{pillar}",
-      "title": "Title with {petName}",
-      "subtitle": "Subtitle here",
-      "askMira": { "enabled": true, "placeholder": "Search..." }
-    },
-    "categories": [...],
-    "conciergeServices": [...],
-    "miraPrompts": [...]
-  }'
-```
-
-## Step 3: Refactor the Page component
-
-```jsx
-// 1. Add CMS state at top of component
-const [cmsConfig, setCmsConfig] = useState({
-  title: 'Default title with {petName}',
-  subtitle: 'Default subtitle',
-  askMira: { enabled: true, placeholder: 'Search...' },
-  sections: { askMira: { enabled: true }, ... }
-});
-const [cmsCategories, setCmsCategories] = useState([]);
-const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
-const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
-
-// 2. Add fetchCMSConfig function
-const fetchCMSConfig = async () => {
-  try {
-    const res = await fetch(`${API_URL}/api/{pillar}/page-config`);
-    if (res.ok) {
-      const data = await res.json();
-      if (data.config) setCmsConfig(prev => ({ ...prev, ...data.config }));
-      if (data.categories?.length) setCmsCategories(data.categories);
-      if (data.conciergeServices?.length) setCmsConciergeServices(data.conciergeServices);
-      if (data.miraPrompts?.length) setCmsMiraPrompts(data.miraPrompts);
+@api_router.get("/{pillar}/page-config")
+async def get_pillar_page_config(pillar: str):
+    """
+    GET /api/{pillar}/page-config
+    Returns complete page configuration for any pillar
+    """
+    if pillar not in VALID_CMS_PILLARS:
+        raise HTTPException(status_code=404, detail=f"Use dedicated route for {pillar}")
+    
+    config = await db.page_configs.find_one({"pillar": pillar}, {"_id": 0})
+    categories = await db.pillar_cms_categories.find({"pillar": pillar}, {"_id": 0}).to_list(50)
+    cms_content = await db.pillar_cms_content.find_one({"pillar": pillar}, {"_id": 0})
+    selections = await db.page_selections.find_one({"pillar": pillar}, {"_id": 0})
+    
+    return {
+        "config": config or {},
+        "categories": categories or [],
+        "conciergeServices": (cms_content or {}).get("conciergeServices", []),
+        "miraPrompts": (cms_content or {}).get("miraPrompts", []),
+        "selectedProducts": (selections or {}).get("products", []),
+        "selectedBundles": (selections or {}).get("bundles", []),
+        "selectedServices": (selections or {}).get("services", []),
+        "personalizationConfig": (cms_content or {}).get("personalizationConfig", {
+            "breedSmart": {"enabled": True},
+            "lifeStage": {"enabled": True},
+            "archetypePicks": {"enabled": True},
+            "soulCollection": {"enabled": True}
+        })
     }
-  } catch (err) { console.error(err); }
-};
 
-// 3. Call in useEffect
-useEffect(() => {
-  fetchCMSConfig();
-  // ... other fetch calls
-}, []);
-
-// 4. Use computed values with fallbacks
-const categories = cmsCategories.length > 0 ? cmsCategories : DEFAULT_CATEGORIES;
-const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet');
-
-// 5. Render conditionally based on sections
-{cmsConfig.sections?.askMira?.enabled !== false && (
-  <AskMiraSection placeholder={cmsConfig.askMira?.placeholder} />
-)}
+@api_router.post("/{pillar}/page-config")
+async def save_pillar_page_config(pillar: str, data: dict):
+    """
+    POST /api/{pillar}/page-config
+    Saves complete page configuration for any pillar
+    """
+    # Saves to: page_configs, pillar_cms_categories, pillar_cms_content, page_selections
 ```
 
-## Step 4: Test
-1. Login as admin: `aditya / lola4304`
-2. Go to `/admin?tab={pillar}-cms`
-3. Make changes, save
-4. Visit `/{pillar}` page
-5. Verify changes appear
+**Dedicated Endpoints for Learn and Paperwork:**
 
----
+- Learn: `/api/learn/page-config` - Has additional fields for topics, dailyTips, guidedPaths
+- Paperwork: `/api/paperwork/page-config` - Has additional fields for documentCategories, vaultItems, checklistItems
 
-# 5. API ENDPOINTS REFERENCE
+## 3.2 Database Collections
 
-## 5.1 Page Config Endpoints
+```
+MongoDB Database: the_doggy_company
 
-| Pillar | GET Endpoint | POST Endpoint |
-|--------|--------------|---------------|
-| Learn | `/api/learn/page-config` | `/api/learn/page-config` |
-| Paperwork | `/api/paperwork/page-config` | `/api/paperwork/page-config` |
-| Care | `/api/care/page-config` | `/api/care/page-config` |
-| Fit | `/api/fit/page-config` | `/api/fit/page-config` |
-| Travel | `/api/travel/page-config` | `/api/travel/page-config` |
-| Stay | `/api/stay/page-config` | `/api/stay/page-config` |
-| Dine | `/api/dine/page-config` | `/api/dine/page-config` |
-| Enjoy | `/api/enjoy/page-config` | `/api/enjoy/page-config` |
-| Celebrate | `/api/celebrate/page-config` | `/api/celebrate/page-config` |
-| Emergency | `/api/emergency/page-config` | `/api/emergency/page-config` |
-| Advisory | `/api/advisory/page-config` | `/api/advisory/page-config` |
-| Farewell | `/api/farewell/page-config` | `/api/farewell/page-config` |
-| Adopt | `/api/adopt/page-config` | `/api/adopt/page-config` |
-| Shop | `/api/shop/page-config` | `/api/shop/page-config` |
+Collections for CMS:
+├── page_configs           # Main page settings (title, subtitle, theme)
+│   └── Index: { pillar: 1 }
+│
+├── pillar_cms_categories  # Categories/topics for each pillar
+│   └── Index: { pillar: 1 }
+│
+├── pillar_cms_content     # Concierge services, Mira prompts, personalization config
+│   └── Index: { pillar: 1 }
+│
+├── page_selections        # Selected products, bundles, services
+│   └── Index: { pillar: 1 }
+│
+├── learn_topics           # Learn page specific topics (12 topics)
+│
+├── learn_cms_content      # Learn page daily tips, help buckets
+│
+├── paperwork_cms_categories  # Paperwork document categories
+│
+└── paperwork_cms_content     # Paperwork checklists, reminders
+```
 
-## 5.2 Response Format
+## 3.3 Response Format
 
 ```json
 {
   "config": {
     "pillar": "care",
-    "title": "Everything {petName} needs",
-    "subtitle": "Grooming, health, wellness",
-    "askMira": { "enabled": true, "placeholder": "..." },
-    "sections": { "askMira": { "enabled": true }, ... }
+    "title": "Everything {petName} needs to feel loved",
+    "subtitle": "Grooming, health, wellness & daily care essentials",
+    "heroImage": "https://...",
+    "themeColor": "rose",
+    "askMira": {
+      "enabled": true,
+      "placeholder": "Grooming tips for {breedName}...",
+      "buttonColor": "bg-rose-500"
+    },
+    "sections": {
+      "askMira": { "enabled": true },
+      "categories": { "enabled": true },
+      "dailyTip": { "enabled": true },
+      "personalized": { "enabled": true },
+      "bundles": { "enabled": true },
+      "products": { "enabled": true },
+      "concierge": { "enabled": true }
+    }
   },
-  "categories": [...],
-  "conciergeServices": [...],
-  "miraPrompts": [...],
-  "selectedProducts": [...],
-  "selectedBundles": [...],
-  "selectedServices": [...],
+  "categories": [
+    {
+      "id": "grooming",
+      "name": "Grooming",
+      "icon": "Sparkles",
+      "color": "from-pink-500 to-rose-500",
+      "description": "Keep your pet looking and feeling their best",
+      "image": "https://..."
+    }
+  ],
+  "conciergeServices": [
+    {
+      "id": "1",
+      "name": "Personal Grooming Consultation",
+      "description": "1-on-1 grooming guidance for your pet's specific needs",
+      "price": 999,
+      "turnaround": "24 hours",
+      "includes": ["Video call", "Written plan", "Product recommendations"]
+    }
+  ],
+  "miraPrompts": [
+    {
+      "type": "tip",
+      "trigger": "page_load",
+      "message": "Did you know? {breedName}s need grooming every 4-6 weeks!"
+    }
+  ],
+  "selectedProducts": ["prod_123", "prod_456"],
+  "selectedBundles": ["bundle_789"],
+  "selectedServices": ["svc_abc"],
   "personalizationConfig": {
     "breedSmart": { "enabled": true },
     "lifeStage": { "enabled": true },
@@ -303,110 +327,336 @@ const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your
 
 ---
 
-# 6. FILE STRUCTURE
+# 4. ALL 14 PILLAR CMS STATUS
 
-## 6.1 CMS Admin Components
+## 4.1 Admin CMS UI Status
+
+| # | Pillar | CMS Component | Admin Tab | Default Categories | Status |
+|---|--------|---------------|-----------|---------------------|--------|
+| 1 | Learn | `LearnPageCMS.jsx` | `learn-cms` | 12 Topics | COMPLETE |
+| 2 | Paperwork | `PaperworkPageCMS.jsx` | `paperwork-cms` | 6 Doc Types | COMPLETE |
+| 3 | Care | `PillarPageCMS.jsx` | `care-cms` | 6 Categories | COMPLETE |
+| 4 | Fit | `PillarPageCMS.jsx` | `fit-cms` | 6 Categories | COMPLETE |
+| 5 | Travel | `PillarPageCMS.jsx` | `travel-cms` | 6 Categories | COMPLETE |
+| 6 | Stay | `PillarPageCMS.jsx` | `stay-cms` | 6 Categories | COMPLETE |
+| 7 | Dine | `PillarPageCMS.jsx` | `dine-cms` | 6 Categories | COMPLETE |
+| 8 | Enjoy | `PillarPageCMS.jsx` | `enjoy-cms` | 6 Categories | COMPLETE |
+| 9 | Celebrate | `PillarPageCMS.jsx` | `celebrate-cms` | 6 Categories | COMPLETE |
+| 10 | Emergency | `PillarPageCMS.jsx` | `emergency-cms` | 6 Categories | COMPLETE |
+| 11 | Advisory | `PillarPageCMS.jsx` | `advisory-cms` | 6 Categories | COMPLETE |
+| 12 | Farewell | `PillarPageCMS.jsx` | `farewell-cms` | 6 Categories | COMPLETE |
+| 13 | Adopt | `PillarPageCMS.jsx` | `adopt-cms` | 6 Categories | COMPLETE |
+| 14 | Shop | `PillarPageCMS.jsx` | `shop-cms` | 6 Categories | COMPLETE |
+
+## 4.2 Page Dynamic Rendering Status
+
+| # | Pillar | Page File | CMS-Driven? | Personalization? | Status |
+|---|--------|-----------|-------------|------------------|--------|
+| 1 | Learn | `LearnPage.jsx` | YES | YES | COMPLETE |
+| 2 | Paperwork | `PaperworkPage.jsx` | IN PROGRESS | YES | REFACTORING |
+| 3 | Care | `CarePage.jsx` | NO | Partial | TODO |
+| 4 | Fit | `FitPage.jsx` | NO | Partial | TODO |
+| 5 | Travel | `TravelPage.jsx` | NO | Partial | TODO |
+| 6 | Stay | `StayPage.jsx` | NO | Partial | TODO |
+| 7 | Dine | `DinePage.jsx` | NO | Partial | TODO |
+| 8 | Enjoy | `EnjoyPage.jsx` | NO | Partial | TODO |
+| 9 | Celebrate | `CelebratePage.jsx` | NO | Partial | TODO |
+| 10 | Emergency | `EmergencyPage.jsx` | NO | Partial | TODO |
+| 11 | Advisory | `AdvisoryPage.jsx` | NO | Partial | TODO |
+| 12 | Farewell | `FarewellPage.jsx` | NO | Partial | TODO |
+| 13 | Adopt | `AdoptPage.jsx` | NO | Partial | TODO |
+| 14 | Shop | `ShopPage.jsx` | NO | Partial | TODO |
+
+---
+
+# 5. HOW TO BUILD A NEW CMS-DRIVEN PAGE
+
+## Step 1: Verify CMS Admin Exists
+
+1. Login as admin: `/admin?tab={pillar}-cms`
+2. If it renders, CMS admin is ready
+3. If not, add to `Admin.jsx`:
+
+```jsx
+// In Admin.jsx, add to the PAGE CMS section tabs:
+{ id: '{pillar}-cms', label: '{Pillar}', icon: IconComponent },
+
+// Add render:
+{activeTab === '{pillar}-cms' && <PillarPageCMS pillar="{pillar}" />}
+```
+
+## Step 2: Add CMS State to Page Component
+
+```jsx
+// At top of component (e.g., CarePage.jsx):
+
+// CMS State
+const [cmsConfig, setCmsConfig] = useState({
+  title: 'Default title with {petName}',
+  subtitle: 'Default subtitle',
+  askMira: { enabled: true, placeholder: 'Search...' },
+  sections: {
+    askMira: { enabled: true },
+    categories: { enabled: true },
+    dailyTip: { enabled: true },
+    personalized: { enabled: true },
+    bundles: { enabled: true },
+    products: { enabled: true },
+    concierge: { enabled: true }
+  }
+});
+const [cmsCategories, setCmsCategories] = useState([]);
+const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
+const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+```
+
+## Step 3: Add fetchCMSConfig Function
+
+```jsx
+// Fetch CMS configuration
+const fetchCMSConfig = async () => {
+  try {
+    const response = await fetch(`${API_URL}/api/{pillar}/page-config`);
+    if (response.ok) {
+      const data = await response.json();
+      
+      // Update config if exists
+      if (data.config && Object.keys(data.config).length > 0) {
+        setCmsConfig(prev => ({ ...prev, ...data.config }));
+      }
+      
+      // Update categories if exists
+      if (data.categories && data.categories.length > 0) {
+        setCmsCategories(data.categories);
+      }
+      
+      // Update concierge services
+      if (data.conciergeServices && data.conciergeServices.length > 0) {
+        setCmsConciergeServices(data.conciergeServices);
+      }
+      
+      // Update Mira prompts
+      if (data.miraPrompts && data.miraPrompts.length > 0) {
+        setCmsMiraPrompts(data.miraPrompts);
+      }
+      
+      console.log(`[{Pillar}Page] CMS config loaded`);
+    }
+  } catch (error) {
+    console.error('Failed to fetch CMS config:', error);
+    // Fallback to defaults is automatic
+  }
+};
+```
+
+## Step 4: Call in useEffect
+
+```jsx
+useEffect(() => {
+  fetchCMSConfig();  // Load CMS config first
+  fetchOtherData();  // Other data fetches
+}, []);
+```
+
+## Step 5: Create Computed Values with Fallbacks
+
+```jsx
+// Use CMS data with fallback to defaults
+const categories = cmsCategories.length > 0 ? cmsCategories : DEFAULT_CATEGORIES;
+const conciergeServices = cmsConciergeServices.length > 0 ? cmsConciergeServices : DEFAULT_SERVICES;
+
+// Personalize title with pet name
+const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet') ||
+  `Default title for ${activePet?.name || 'your pet'}`;
+```
+
+## Step 6: Render Sections Conditionally
+
+```jsx
+// Only render if enabled in CMS
+{cmsConfig.sections?.askMira?.enabled !== false && (
+  <AskMiraSection 
+    placeholder={cmsConfig.askMira?.placeholder} 
+    buttonColor={cmsConfig.askMira?.buttonColor}
+  />
+)}
+
+{cmsConfig.sections?.categories?.enabled !== false && (
+  <CategoriesSection categories={categories} />
+)}
+
+{cmsConfig.sections?.personalized?.enabled !== false && activePet && (
+  <PersonalizedSection pet={activePet} />
+)}
+```
+
+## Step 7: Test
+
+1. Login as admin: `aditya / lola4304`
+2. Go to `/admin?tab={pillar}-cms`
+3. Make changes, save
+4. Visit `/{pillar}` page as user
+5. Verify changes appear
+6. Test personalization with logged-in user who has a pet
+
+---
+
+# 6. API REFERENCE
+
+## 6.1 Generic Pillar Page Config Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/{pillar}/page-config` | Get page configuration |
+| POST | `/api/{pillar}/page-config` | Save page configuration |
+
+**Valid pillars:** care, fit, travel, stay, dine, enjoy, celebrate, emergency, advisory, farewell, adopt, shop
+
+## 6.2 Dedicated Endpoints (Learn & Paperwork)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/learn/page-config` | Get Learn page config |
+| POST | `/api/learn/page-config` | Save Learn page config |
+| GET | `/api/paperwork/page-config` | Get Paperwork page config |
+| POST | `/api/paperwork/page-config` | Save Paperwork page config |
+
+## 6.3 Example Curl Commands
+
+```bash
+# Get Care page config
+curl -X GET "https://yourapp.com/api/care/page-config"
+
+# Save Care page config
+curl -X POST "https://yourapp.com/api/care/page-config" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "config": {
+      "title": "Care for {petName}",
+      "subtitle": "Complete wellness solutions",
+      "askMira": { "enabled": true, "placeholder": "Search care..." }
+    },
+    "categories": [...],
+    "conciergeServices": [...],
+    "miraPrompts": [...]
+  }'
+```
+
+---
+
+# 7. FILE STRUCTURE MAP
+
+## 7.1 CMS Admin Components
 
 ```
 /app/frontend/src/components/admin/
-├── LearnPageCMS.jsx          # Custom CMS for Learn (825 lines)
-├── PaperworkPageCMS.jsx      # Custom CMS for Paperwork (900+ lines)
-├── PillarPageCMS.jsx         # Universal CMS for all other pillars (1095 lines)
-└── CloudinaryUploader.jsx    # Image upload component
+├── LearnPageCMS.jsx           # Custom CMS for Learn (unique tabs)
+├── PaperworkPageCMS.jsx       # Custom CMS for Paperwork (unique tabs)
+├── PillarPageCMS.jsx          # GENERIC CMS for 12 pillars (1098 lines)
+└── CloudinaryUploader.jsx     # Image upload component
 ```
 
-## 6.2 Page Components
+## 7.2 Page Components (to be refactored)
 
 ```
 /app/frontend/src/pages/
-├── LearnPage.jsx             # ✅ CMS-driven
-├── PaperworkPage.jsx         # 🔄 Refactoring to CMS
-├── CarePage.jsx              # ❌ TODO: Refactor
-├── FitPage.jsx               # ❌ TODO: Refactor
-├── TravelPage.jsx            # ❌ TODO: Refactor
-├── StayPage.jsx              # ❌ TODO: Refactor
-├── DinePage.jsx              # ❌ TODO: Refactor
-├── EnjoyPage.jsx             # ❌ TODO: Refactor
-├── CelebratePage.jsx         # ❌ TODO: Refactor
-├── EmergencyPage.jsx         # ❌ TODO: Refactor
-├── AdvisoryPage.jsx          # ❌ TODO: Refactor
-├── FarewellPage.jsx          # ❌ TODO: Refactor
-├── AdoptPage.jsx             # ❌ TODO: Refactor
-└── ShopPage.jsx              # ❌ TODO: Refactor
+├── LearnPage.jsx              # DONE - CMS-driven
+├── PaperworkPage.jsx          # IN PROGRESS
+├── CarePage.jsx               # TODO
+├── FitPage.jsx                # TODO
+├── TravelPage.jsx             # TODO
+├── StayPage.jsx               # TODO
+├── DinePage.jsx               # TODO
+├── EnjoyPage.jsx              # TODO
+├── CelebratePage.jsx          # TODO
+├── EmergencyPage.jsx          # TODO
+├── AdvisoryPage.jsx           # TODO
+├── FarewellPage.jsx           # TODO
+├── AdoptPage.jsx              # TODO
+└── ShopPage.jsx               # TODO
 ```
 
-## 6.3 Backend Routes
+## 7.3 Backend
 
 ```
 /app/backend/
-├── server.py                 # Generic /api/{pillar}/page-config endpoints
-├── learn_routes.py           # /api/learn/* endpoints
-└── paperwork_routes.py       # /api/paperwork/* endpoints
+├── server.py                  # Main server - contains generic CMS endpoints
+│   ├── GET/POST /{pillar}/page-config (line ~6500)
+│   └── VALID_CMS_PILLARS list
+├── learn_routes.py            # Learn-specific endpoints (if exists)
+└── paperwork_routes.py        # Paperwork-specific endpoints (if exists)
 ```
 
-## 6.4 Database Collections
+## 7.4 Admin Panel Integration
 
 ```
-MongoDB Collections:
-├── page_configs              # Stores pillar page settings
-├── pillar_cms_categories     # Categories for each pillar
-├── pillar_cms_content        # Concierge services, Mira prompts
-├── page_selections           # Selected products/bundles/services
-├── learn_topics              # Learn page topics
-├── learn_cms_content         # Learn page daily tips, guided paths
-├── paperwork_cms_categories  # Paperwork document categories
-└── paperwork_cms_content     # Paperwork checklist, reminders
+/app/frontend/src/pages/Admin.jsx
+
+Line ~2977-2990: PAGE CMS tab definitions
+├── { id: 'learn-cms', label: 'Learn', icon: GraduationCap }
+├── { id: 'paperwork-cms', label: 'Paperwork', icon: FileText }
+├── { id: 'care-cms', label: 'Care', icon: Heart }
+│   ... (all 14 pillars)
+└── { id: 'shop-cms', label: 'Shop', icon: ShoppingBag }
+
+Line ~3670-3691: Tab rendering
+├── {activeTab === 'learn-cms' && <LearnPageCMS />}
+├── {activeTab === 'paperwork-cms' && <PaperworkPageCMS />}
+├── {activeTab === 'care-cms' && <PillarPageCMS pillar="care" />}
+│   ... (all 12 generic pillars)
+└── {activeTab === 'shop-cms' && <PillarPageCMS pillar="shop" />}
 ```
 
 ---
 
-# 7. PERSONALIZATION SYSTEM
+# 8. PERSONALIZATION SYSTEM
 
-## 7.1 Dynamic Variables
+## 8.1 Dynamic Variables
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `{petName}` | Current pet's name | "Mystique" |
+| `{petName}` | Current pet's name | "Mojo" |
 | `{breedName}` | Pet's breed | "Shih Tzu" |
+| `{petAge}` | Pet's age in human terms | "3 years" |
 | `{percent}` | Completion percentage | "67" |
 | `{days}` | Days until event | "30" |
 
-## 7.2 Personalization Types
+## 8.2 Personalization Types
 
 | Type | Description | CMS Toggle |
 |------|-------------|------------|
-| **Breed-Smart** | Products matched to breed | `breedSmart.enabled` |
-| **Life Stage** | Puppy/Adult/Senior products | `lifeStage.enabled` |
-| **Archetype** | Based on personality type | `archetypePicks.enabled` |
-| **Soul Collection** | Based on pet soul profile | `soulCollection.enabled` |
+| **Breed-Smart** | Products filtered by breed characteristics | `breedSmart.enabled` |
+| **Life Stage** | Puppy/Adult/Senior appropriate products | `lifeStage.enabled` |
+| **Archetype** | Based on pet personality type (Guardian, Explorer, etc.) | `archetypePicks.enabled` |
+| **Soul Collection** | Based on pet soul profile analysis | `soulCollection.enabled` |
 
-## 7.3 How Personalization Works
+## 8.3 How Personalization Works
 
-1. Page loads → fetches CMS config
-2. Gets current pet from context (`usePillarContext`)
-3. Replaces `{petName}` in titles with actual name
-4. Filters products based on breed/size/age
-5. Shows archetype-specific recommendations
+1. Page loads and calls `fetchCMSConfig()`
+2. Gets current pet from `usePillarContext()` hook
+3. Replaces `{petName}`, `{breedName}` placeholders in CMS text
+4. Filters products/services based on pet's breed, age, size
+5. Shows archetype-specific recommendations if soul profile exists
 
 ---
 
-# 8. TESTING CREDENTIALS
+# 9. TESTING CREDENTIALS
 
 | Role | Username/Email | Password |
 |------|----------------|----------|
 | **Admin** | `aditya` | `lola4304` |
 | **User** | `dipali@clubconcierge.in` | `test123` |
 
-### User's Pet Data
-- Pet Name: **Mojo** (previously Mystique)
+### Test User's Pet Data
+- Pet Name: **Mojo**
 - Breed: **Shih Tzu**
 - Has soul profile: Yes
 
 ---
 
-# 9. KNOWN ISSUES & FIXES
+# 10. KNOWN ISSUES
 
-## 9.1 Current Issues
+## 10.1 Current Issues
 
 | Issue | Priority | Status |
 |-------|----------|--------|
@@ -415,46 +665,59 @@ MongoDB Collections:
 | AI image generation not persistent | P1 | NOT STARTED |
 | Bidirectional sync needs UI | P2 | NOT STARTED |
 
-## 9.2 Recurring Issues
+## 10.2 Common Fixes
 
-| Issue | Fix |
-|-------|-----|
-| AI generation stops | Restart via `/api/ai-images/generate-product-images?password=lola4304` |
+| Issue | Solution |
+|-------|----------|
 | MongoDB ObjectId error | Exclude `_id` in projections: `{"_id": 0}` |
 | React hooks error | All hooks must be called before any early return |
+| CMS not loading | Check pillar is in VALID_CMS_PILLARS or has dedicated route |
+| Personalization not showing | Verify user is logged in and has a pet profile |
 
 ---
 
-# 10. FUTURE TASKS
+# 11. FUTURE TASKS & ROADMAP
 
-## 10.1 Priority Order
+## 11.1 Immediate (P0)
 
-1. **P0**: Finish PaperworkPage.jsx refactor (Mira on top, CMS-driven)
-2. **P1**: Refactor remaining 12 pillar pages to be CMS-driven
-3. **P1**: Generate AI watercolor illustrations for personalized sections
-4. **P2**: Fix Razorpay checkout
-5. **P2**: Add bidirectional sync UI to admin
-6. **P3**: Fix mobile pet dashboard
-7. **P3**: Make AI generation persistent (queue-based)
+1. **Refactor PaperworkPage.jsx** - Complete CMS-driven implementation
+   - Move Mira assistant to top
+   - Add product modals for Document Organisation Kits
+   - Use beautiful illustrations
 
-## 10.2 Page Refactor Checklist
+## 11.2 Next Phase (P1)
 
-For each pillar page:
-- [ ] Add CMS state variables
-- [ ] Add `fetchCMSConfig()` function
-- [ ] Call in useEffect
-- [ ] Add default fallbacks
-- [ ] Replace hardcoded content with CMS data
-- [ ] Add Mira bar at top
-- [ ] Add contextual Mira prompt
-- [ ] Add personalized sections
-- [ ] Add concierge services from CMS
-- [ ] Test with logged-in user
-- [ ] Verify personalization works
+2. **Refactor remaining 12 pillar pages** - Make them CMS-driven
+   - Follow the pattern established in LearnPage.jsx
+   - Ensure all personalization works
+   - Test with logged-in user
+
+3. **Implement persistent background tasks** - Replace FastAPI BackgroundTasks with Celery
+
+## 11.3 Later (P2)
+
+4. Fix Razorpay checkout
+5. Add bidirectional sync UI to admin
+6. Fix mobile pet dashboard
+
+## 11.4 Page Refactor Checklist
+
+For each pillar page, verify:
+- [ ] CMS state variables added
+- [ ] `fetchCMSConfig()` function added
+- [ ] Called in useEffect
+- [ ] Default fallbacks exist
+- [ ] Hardcoded content replaced with CMS data
+- [ ] Ask Mira bar at top
+- [ ] Contextual Mira prompt shown
+- [ ] Personalized sections work
+- [ ] Concierge services render from CMS
+- [ ] Tested with logged-in user
+- [ ] Personalization verified with pet profile
 
 ---
 
-# 11. PILLAR CATEGORY DEFAULTS
+# 12. PILLAR DEFAULT CATEGORIES
 
 ## Learn (12 Topics)
 1. Puppy Basics
@@ -470,113 +733,37 @@ For each pillar page:
 11. Seasonal Care
 12. New Pet Parent Guide
 
-## Paperwork (6 Categories)
-1. Identity & Safety (microchip, adoption, registration)
-2. Medical & Health (vaccination, deworming, health checkup)
-3. Travel Documents (airline cert, health cert, passport)
-4. Insurance & Financial (policy, claims, receipts)
-5. Care & Training (grooming, training certs)
-6. Legal & Compliance (license, permits)
+## Other Pillars (6 Categories each)
 
-## Care (6 Categories)
-1. Grooming
-2. Health & Wellness
-3. Hygiene
-4. Dental Care
-5. Skin & Coat
-6. Senior Care
+**Paperwork:** Identity & Safety, Medical & Health, Travel Documents, Insurance & Financial, Care & Training, Legal & Compliance
 
-## Fit (6 Categories)
-1. Exercise & Activity
-2. Weight Management
-3. Agility & Sports
-4. Swimming
-5. Walks & Hikes
-6. Rest & Recovery
+**Care:** Grooming, Health & Wellness, Hygiene, Dental Care, Skin & Coat, Senior Care
 
-## Travel (6 Categories)
-1. Air Travel
-2. Road Trips
-3. Pet-Friendly Destinations
-4. Travel Gear
-5. Travel Documents
-6. Travel Safety
+**Fit:** Exercise & Activity, Weight Management, Agility & Sports, Swimming, Walks & Hikes, Rest & Recovery
 
-## Stay (6 Categories)
-1. Pet Boarding
-2. Daycare
-3. Pet Hotels
-4. Home Sitting
-5. Overnight Care
-6. Special Needs Boarding
+**Travel:** Air Travel, Road Trips, Pet-Friendly Destinations, Travel Gear, Travel Documents, Travel Safety
 
-## Dine (6 Categories)
-1. Fresh Food
-2. Dry Food & Kibble
-3. Treats & Snacks
-4. Supplements
-5. Special Diets
-6. Meal Plans
+**Stay:** Pet Boarding, Daycare, Pet Hotels, Home Sitting, Overnight Care, Special Needs Boarding
 
-## Enjoy (6 Categories)
-1. Pet Events
-2. Activities
-3. Playdates
-4. Toys & Games
-5. Enrichment
-6. Experiences
+**Dine:** Fresh Food, Dry Food & Kibble, Treats & Snacks, Supplements, Special Diets, Meal Plans
 
-## Celebrate (6 Categories)
-1. Birthdays
-2. Gotcha Day
-3. Special Occasions
-4. Gifts & Surprises
-5. Pet Cakes & Treats
-6. Photoshoots
+**Enjoy:** Pet Events, Activities, Playdates, Toys & Games, Enrichment, Experiences
 
-## Emergency (6 Categories)
-1. Emergency Vet
-2. First Aid
-3. Poison Control
-4. Lost Pet Help
-5. Urgent Care
-6. Emergency Insurance
+**Celebrate:** Birthdays, Gotcha Day, Special Occasions, Gifts & Surprises, Pet Cakes & Treats, Photoshoots
 
-## Advisory (6 Categories)
-1. Nutrition Advisory
-2. Behavior Consultation
-3. Training Guidance
-4. Health Advisory
-5. Breed Expert
-6. Lifestyle Planning
+**Emergency:** Emergency Vet, First Aid, Poison Control, Lost Pet Help, Urgent Care, Emergency Insurance
 
-## Farewell (6 Categories)
-1. End-of-Life Care
-2. Cremation Services
-3. Memorials
-4. Urns & Keepsakes
-5. Grief Support
-6. Rainbow Bridge
+**Advisory:** Nutrition Advisory, Behavior Consultation, Training Guidance, Health Advisory, Breed Expert, Lifestyle Planning
 
-## Adopt (6 Categories)
-1. Adopt a Dog
-2. Foster
-3. Rescue Support
-4. Shelters Near You
-5. Rehoming
-6. Adoption Prep
+**Farewell:** End-of-Life Care, Cremation Services, Memorials, Urns & Keepsakes, Grief Support, Rainbow Bridge
 
-## Shop (6 Categories)
-1. Essentials
-2. Collections
-3. New Arrivals
-4. Bestsellers
-5. Deals & Offers
-6. Subscriptions
+**Adopt:** Adopt a Dog, Foster, Rescue Support, Shelters Near You, Rehoming, Adoption Prep
+
+**Shop:** Essentials, Collections, New Arrivals, Bestsellers, Deals & Offers, Subscriptions
 
 ---
 
 # END OF DOCUMENTATION
 
-**This document is the SINGLE SOURCE OF TRUTH for the Page CMS architecture.**
-**ALL future agents MUST read this before making changes.**
+**This document is the SINGLE SOURCE OF TRUTH for the 14-Pillar CMS Architecture.**
+**ALL future development MUST adhere to this standard.**

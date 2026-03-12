@@ -292,13 +292,13 @@ tail -50 /var/log/supervisor/backend.err.log
 sudo supervisorctl restart frontend backend
 
 # Test admin notifications
-curl -s -u "aditya:lola4304" "https://learn-page-studio.preview.emergentagent.com/api/admin/notifications?limit=5"
+curl -s -u "aditya:lola4304" "https://dynamic-cms-platform.preview.emergentagent.com/api/admin/notifications?limit=5"
 
 # Test ticket enrichment
-curl -s -X POST "https://learn-page-studio.preview.emergentagent.com/api/service_desk/resolve_ticket/TCK-XXX"
+curl -s -X POST "https://dynamic-cms-platform.preview.emergentagent.com/api/service_desk/resolve_ticket/TCK-XXX"
 
 # Check pet soul data
-curl -s "https://learn-page-studio.preview.emergentagent.com/api/pets/pet-3661ae55d2e2"
+curl -s "https://dynamic-cms-platform.preview.emergentagent.com/api/pets/pet-3661ae55d2e2"
 ```
 
 ---
