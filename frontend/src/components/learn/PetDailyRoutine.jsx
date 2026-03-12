@@ -1,18 +1,18 @@
 /**
  * PetDailyRoutine.jsx
  * Personalized daily routine suggestions based on pet profile
- * Uses watercolor-themed cards instead of stock photos
+ * NOW FETCHES REAL PRODUCTS from Product Box with actual images
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
-import { Sun, Cloud, Sunset, Moon, ChevronRight, ShoppingBag } from 'lucide-react';
+import { Sun, Cloud, Sunset, Moon, ChevronRight, ShoppingBag, Loader2 } from 'lucide-react';
+import { API_URL } from '../../utils/api';
 
 const getRoutineSuggestions = (pet) => {
   const isSenior = pet?.age_months > 84;
   const isPuppy = pet?.age_months < 12;
-  const breed = pet?.breed?.toLowerCase() || '';
   
   if (isSenior) {
     return {
@@ -40,12 +40,7 @@ const getRoutineSuggestions = (pet) => {
         iconColor: 'text-indigo-600',
         activities: ['Orthopedic bed', 'Calm environment', 'Comfort check'],
       },
-      products: [
-        { name: 'Orthopedic Bed', price: '₹2,499' },
-        { name: 'Slow Feeder Bowl', price: '₹599' },
-        { name: 'Cooling Mat', price: '₹649' },
-        { name: 'Joint Supplement', price: '₹899' }
-      ]
+      productKeywords: ['senior', 'orthopedic', 'joint', 'comfort', 'slow feeder', 'supplement']
     };
   }
   
@@ -75,153 +70,198 @@ const getRoutineSuggestions = (pet) => {
         iconColor: 'text-indigo-600',
         activities: ['Last potty break', 'Crate time', 'Quiet sleep'],
       },
-      products: [
-        { name: 'Puppy Crate', price: '₹1,999' },
-        { name: 'Training Treats', price: '₹349' },
-        { name: 'Teething Toys', price: '₹499' },
-        { name: 'Potty Pads', price: '₹599' }
-      ]
+      productKeywords: ['puppy', 'training', 'crate', 'treat', 'clicker', 'starter']
     };
   }
   
+  // Adult dog default
   return {
     morning: {
       icon: Sun,
       color: 'from-amber-100 to-orange-100',
       iconColor: 'text-amber-600',
-      activities: ['30-45 min walk', 'Breakfast', 'Mental stimulation'],
+      activities: ['45-60 min walk', 'Morning meal', 'Training recap'],
     },
     midday: {
       icon: Cloud,
       color: 'from-sky-100 to-blue-100',
       iconColor: 'text-sky-600',
-      activities: ['Rest time', 'Short training', 'Puzzle toy'],
+      activities: ['Enrichment toys', 'Rest period', 'Short play'],
     },
     evening: {
       icon: Sunset,
       color: 'from-rose-100 to-pink-100',
       iconColor: 'text-rose-600',
-      activities: ['Active exercise', 'Dinner', 'Play session'],
+      activities: ['Long walk or run', 'Evening meal', 'Play time'],
     },
     night: {
       icon: Moon,
       color: 'from-indigo-100 to-purple-100',
       iconColor: 'text-indigo-600',
-      activities: ['Evening walk', 'Grooming', 'Settle for sleep'],
+      activities: ['Last walk', 'Calm time', 'Sleep routine'],
     },
-    products: [
-      { name: 'Puzzle Feeder', price: '₹799' },
-      { name: 'Quality Leash', price: '₹599' },
-      { name: 'Grooming Kit', price: '₹1,299' },
-      { name: 'Comfortable Bed', price: '₹1,999' }
-    ]
+    productKeywords: ['training', 'enrichment', 'puzzle', 'leash', 'toy', 'bed']
   };
 };
 
 const PetDailyRoutine = ({ pet, onProductClick }) => {
-  if (!pet) return null;
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   const routine = getRoutineSuggestions(pet);
-  const petName = pet.name || 'Your Pet';
   
+  // Fetch REAL products from Product Box based on routine keywords
+  useEffect(() => {
+    const fetchRoutineProducts = async () => {
+      setLoading(true);
+      try {
+        // Fetch products from Product Box
+        const response = await fetch(`${API_URL}/api/product-box/products?pillar=learn&limit=50`);
+        if (response.ok) {
+          const data = await response.json();
+          const allProducts = data.products || [];
+          
+          // Filter products based on routine keywords
+          const keywords = routine.productKeywords || [];
+          const petBreed = (pet?.breed || '').toLowerCase();
+          
+          // Score products by relevance
+          const scoredProducts = allProducts.map(p => {
+            let score = 0;
+            const name = (p.name || '').toLowerCase();
+            const description = (p.description || '').toLowerCase();
+            const tags = (p.tags || []).map(t => t.toLowerCase());
+            
+            // Check keyword matches
+            keywords.forEach(kw => {
+              if (name.includes(kw)) score += 3;
+              if (description.includes(kw)) score += 1;
+              if (tags.includes(kw)) score += 2;
+            });
+            
+            // Bonus for breed match
+            if (petBreed && (name.includes(petBreed) || tags.includes(petBreed))) {
+              score += 5;
+            }
+            
+            // Must have an image
+            const hasImage = p.image_url || p.image || (p.images && p.images[0]);
+            if (!hasImage) score = 0;
+            
+            return { ...p, score };
+          });
+          
+          // Sort by score and take top 4
+          const topProducts = scoredProducts
+            .filter(p => p.score > 0)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 4);
+          
+          // If not enough products, fill with any products that have images
+          if (topProducts.length < 4) {
+            const remainingNeeded = 4 - topProducts.length;
+            const existingIds = topProducts.map(p => p.id);
+            const additionalProducts = allProducts
+              .filter(p => !existingIds.includes(p.id) && (p.image_url || p.image))
+              .slice(0, remainingNeeded);
+            topProducts.push(...additionalProducts);
+          }
+          
+          setProducts(topProducts);
+        }
+      } catch (error) {
+        console.error('Failed to fetch routine products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchRoutineProducts();
+  }, [pet?.breed, pet?.age_months]);
+
+  if (!pet) return null;
+
   return (
-    <div className="py-12 bg-gradient-to-br from-amber-50/50 to-orange-50/50" data-testid="pet-daily-routine">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            {petName}'s Daily Routine
-          </h2>
-          <p className="text-gray-600 mt-1">A suggested schedule based on {petName}'s needs</p>
-        </div>
+    <Card className="p-6 bg-gradient-to-br from-stone-50 to-amber-50 border-0 shadow-lg" data-testid="pet-daily-routine">
+      <h2 className="text-xl font-bold text-gray-900 mb-1">
+        {pet.name}'s Daily Routine
+      </h2>
+      <p className="text-gray-600 mb-6">Personalized schedule based on {pet.breed || 'your pet'}'s needs</p>
+      
+      {/* Routine Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {['morning', 'midday', 'evening', 'night'].map((time) => {
+          const slot = routine[time];
+          const Icon = slot.icon;
+          return (
+            <Card key={time} className={`p-4 bg-gradient-to-br ${slot.color} border-0`}>
+              <div className="flex items-center gap-2 mb-3">
+                <Icon className={`w-5 h-5 ${slot.iconColor}`} />
+                <h3 className="font-semibold capitalize text-gray-800">{time}</h3>
+              </div>
+              <ul className="space-y-1.5">
+                {slot.activities.map((activity, idx) => (
+                  <li key={idx} className="text-sm text-gray-700 flex items-start gap-2">
+                    <span className="text-gray-400">•</span>
+                    {activity}
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          );
+        })}
+      </div>
+      
+      {/* Products Section - REAL products from Product Box */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Products that support {pet.name}'s routine
+        </h3>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
-          {['morning', 'midday', 'evening', 'night'].map((time) => {
-            const TimeIcon = routine[time].icon;
-            return (
-              <Card 
-                key={time}
-                className="overflow-hidden hover:shadow-lg transition-all"
-                data-testid={`routine-${time}`}
-              >
-                <div className={`relative h-24 sm:h-28 bg-gradient-to-br ${routine[time].color} flex items-center justify-center`}>
-                  <TimeIcon className={`w-10 h-10 sm:w-12 sm:h-12 ${routine[time].iconColor} opacity-80`} />
-                  <div className="absolute bottom-2 left-3">
-                    <span className="font-semibold capitalize text-sm text-gray-800">{time}</span>
-                  </div>
-                </div>
-                <div className="p-3">
-                  {routine[time].activities.map((activity, idx) => (
-                    <p key={idx} className="text-xs text-gray-600 flex items-center gap-1.5 mb-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" />
-                      {activity}
-                    </p>
-                  ))}
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-        
-        <div className="flex justify-center gap-2 mb-8">
-          {['amber', 'sky', 'rose', 'indigo'].map((color, i) => (
-            <React.Fragment key={i}>
-              <span className={`w-2.5 h-2.5 rounded-full bg-${color}-400`} />
-              {i < 3 && <span className={`w-8 h-0.5 bg-gradient-to-r from-${color}-300 to-${['sky','rose','indigo','indigo'][i]}-300 self-center`} />}
-            </React.Fragment>
-          ))}
-        </div>
-        
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Products that support this routine
-          </h3>
+        {loading ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="w-6 h-6 animate-spin text-amber-600" />
+          </div>
+        ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {routine.products.map((product, idx) => {
-              // Product images for common routine products (Cloudinary URLs)
-              const productImages = {
-                'Orthopedic Bed': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293718/doggy/products/orthopedic_bed.webp',
-                'Slow Feeder Bowl': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293718/doggy/products/slow_feeder.webp',
-                'Cooling Mat': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293718/doggy/products/orthopedic_bed.webp',
-                'Joint Supplement': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293718/doggy/products/slow_feeder.webp',
-                'Puppy Pad Set': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293720/doggy/products/puzzle_toys.webp',
-                'Training Clicker': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293719/doggy/products/training_clicker.webp',
-                'Puzzle Toy Set': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293720/doggy/products/puzzle_toys.webp',
-                'Crate Mat': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293718/doggy/products/orthopedic_bed.webp',
-                'Food Puzzle': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293720/doggy/products/puzzle_toys.webp',
-                'Training Treats': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293719/doggy/products/training_clicker.webp',
-                'LED Collar': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293719/doggy/products/training_clicker.webp',
-                'Comfort Bed': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293718/doggy/products/orthopedic_bed.webp',
-              };
-              const imageUrl = productImages[product.name] || 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293720/doggy/products/puzzle_toys.webp';
+            {products.map((product, idx) => {
+              const imageUrl = product.image_url || product.image || product.images?.[0];
               
               return (
                 <Card 
-                  key={idx}
-                  className="p-4 cursor-pointer hover:shadow-lg transition-all bg-white group overflow-hidden"
-                  onClick={() => onProductClick?.(product.name)}
+                  key={product.id || idx}
+                  className="p-3 cursor-pointer hover:shadow-lg transition-all bg-white group overflow-hidden"
+                  onClick={() => onProductClick?.(product)}
                   data-testid={`routine-product-${idx}`}
                 >
                   <div className="aspect-square rounded-xl mb-3 overflow-hidden bg-gradient-to-br from-stone-50 to-gray-100">
-                    <img 
-                      src={imageUrl}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center"><svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg></div>';
-                      }}
-                    />
+                    {imageUrl ? (
+                      <img 
+                        src={imageUrl}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <ShoppingBag className="w-8 h-8 text-gray-300" />
+                      </div>
+                    )}
                   </div>
-                  <h4 className="font-medium text-gray-900 text-sm">{product.name}</h4>
-                  <p className="text-sm text-amber-600 font-semibold mt-1">From {product.price}</p>
+                  <h4 className="font-medium text-gray-900 text-sm line-clamp-2">{product.name}</h4>
+                  <p className="text-sm text-amber-600 font-semibold mt-1">
+                    ₹{product.price || product.pricing?.selling_price || '999'}
+                  </p>
                   <ChevronRight className="w-4 h-4 text-gray-300 mt-2 group-hover:text-amber-500 transition-colors" />
                 </Card>
               );
             })}
           </div>
-        </div>
+        )}
       </div>
-    </div>
+    </Card>
   );
 };
 
