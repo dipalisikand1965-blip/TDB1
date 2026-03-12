@@ -837,3 +837,7 @@ backend/data/mockup_backup.json.gz
 # Environment files
 *.env
 *.env.*
+-e 
+# Environment files
+*.env
+*.env.*
