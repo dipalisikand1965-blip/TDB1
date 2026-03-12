@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document
-## Version 13.4.0 | March 12, 2026
+## Version 13.5.0 | March 12, 2026
 
 ---
 
@@ -224,6 +224,12 @@ Credentials: admin `aditya` / `lola4304`
 ---
 
 ## CHANGELOG
+
+### March 12, 2026 — v13.5.0 — HANDOVER + DOCS RECOVERY HARDENED ✅
+- Updated `AGENT_START_HERE.md` to reflect the **current** March 12 recovery state instead of stale February/March guidance
+- Elevated `NEXT_AGENT_CRITICAL.md` and `COMPLETE_SESSION_HANDOFF.md` in documentation generation priority so they surface near the top of live docs
+- Added explicit next-agent rules for: gold-standard pillar order, image-style doctrine, documentation regeneration, and preserving already-good illustrations
+- Preserved the current truth that selective service regeneration is complete for **Celebrate / Care / Fit**, while **Stay / Travel / Farewell / Adopt / Paperwork** still need review-first visual cleanup
 
 ### March 12, 2026 — v13.4.0 — FIT / DINE GOLD-STANDARD CORRECTIONS ✅
 - Corrected **Fit** top-section sequence so the core Gold Standard now flows with Ask Mira → Daily/Help → Personalized layer → Guided Paths in the correct order near the top of the page
