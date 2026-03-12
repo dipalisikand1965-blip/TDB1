@@ -30,7 +30,7 @@ import {
   CheckCircle, ChevronRight, Sparkles, Loader2, Send,
   ArrowRight, Target, Users,
   MapPin, PawPrint, Heart, Shield, Zap, Search,
-  Activity
+  Activity, Sun, CloudRain, Thermometer
 } from 'lucide-react';
 
 // Learn Type Configuration
@@ -93,6 +93,7 @@ const LearnPage = () => {
 
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [expandedLearnTip, setExpandedLearnTip] = useState(null);
+  const [weatherData, setWeatherData] = useState(null);
   
   // Use global pet context
   const { currentPet } = usePillarContext();
@@ -114,6 +115,7 @@ const LearnPage = () => {
     location_preference: 'home',
     notes: ''
   });
+  const [modalContext, setModalContext] = useState(null); // Stores context when opened from Support services
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -199,6 +201,17 @@ const LearnPage = () => {
     } catch (error) {
       console.error('Failed to fetch pets:', error);
     }
+    // Fetch weather for breed-specific seasonal tips
+    try {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          const wRes = await fetch(`${API_URL}/api/weather?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
+          if (wRes.ok) setWeatherData(await wRes.json());
+        }, () => {
+          fetch(`${API_URL}/api/weather?lat=19.076&lon=72.8777`).then(r => r.json()).then(d => setWeatherData(d)).catch(() => {});
+        });
+      }
+    } catch (e) { /* weather is optional */ }
   };
 
   const handleSubmitRequest = async () => {
@@ -666,12 +679,96 @@ const LearnPage = () => {
       })()}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* BREED SPOTLIGHT + WEATHER ALERT - Dynamic, personalized */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {(activePet || userPets?.[0]) && (() => {
+        const pet = activePet || userPets?.[0];
+        const petName = pet?.name || 'Your Pet';
+        const breed = pet?.breed || 'Indie';
+        const isSenior = pet?.age_months > 84;
+        const isPuppy = pet?.age_months < 12;
+        const ageLabel = isPuppy ? 'puppy' : isSenior ? 'senior' : 'adult';
+        
+        // Breed fun facts
+        const breedFacts = {
+          'Indie': [
+            'Indies are one of the oldest dog breeds, naturally evolved for India\'s climate',
+            'They have exceptional immune systems and are less prone to genetic disorders',
+            'Indies are highly intelligent and learn tricks faster than many purebreds',
+            'Their short coat makes grooming easy — 5 minutes of brushing 2x a week is enough'
+          ],
+          'default': [
+            `${breed}s are known for their loyalty and intelligence`,
+            `Regular mental stimulation is key for ${breed}s — they thrive on learning new things`,
+            `${breed}s benefit from a consistent daily routine more than most breeds`,
+            `Social interaction with other dogs helps ${breed}s stay emotionally balanced`
+          ]
+        };
+        
+        const facts = breedFacts[breed] || breedFacts['default'];
+        const today = new Date();
+        const factIndex = today.getDate() % facts.length;
+        
+        // Weather-based tips
+        const temp = weatherData?.temperature || weatherData?.temp || weatherData?.feels_like;
+        const condition = weatherData?.description || weatherData?.condition || '';
+        const isHot = temp > 30;
+        const isRainy = condition.toLowerCase().includes('rain') || condition.toLowerCase().includes('drizzle');
+        const isCold = temp < 15;
+        
+        let weatherTip = null;
+        if (temp) {
+          if (isHot) weatherTip = { icon: Thermometer, color: 'text-red-500', bg: 'bg-red-50', text: `It's ${Math.round(temp)}° — avoid walks between 11am-4pm. Check pavement with your hand — if it's too hot for you, it's too hot for ${petName}'s paws.` };
+          else if (isRainy) weatherTip = { icon: CloudRain, color: 'text-blue-500', bg: 'bg-blue-50', text: `Rain expected today — dry ${petName}'s paws and ears after walks to prevent infections. Indoor enrichment games are perfect for rainy days!` };
+          else if (isCold) weatherTip = { icon: Thermometer, color: 'text-blue-500', bg: 'bg-blue-50', text: `It's ${Math.round(temp)}° — ${isPuppy ? 'puppies' : isSenior ? 'senior dogs' : 'short-coated dogs'} may need a light jacket. Keep walks shorter and watch for shivering.` };
+          else weatherTip = { icon: Sun, color: 'text-amber-500', bg: 'bg-amber-50', text: `${Math.round(temp)}° — Perfect weather for ${petName}! Great day for outdoor training, a long walk, or socialization at the park.` };
+        }
+        
+        return (
+          <div className="py-8 px-4" data-testid="breed-spotlight">
+            <div className="max-w-5xl mx-auto space-y-4">
+              {/* Breed Spotlight Card */}
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400 p-5 md:p-6 text-white">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-12 translate-x-12" />
+                <div className="absolute bottom-0 left-0 w-28 h-28 bg-white/10 rounded-full translate-y-10 -translate-x-10" />
+                <div className="relative">
+                  <div className="flex items-center gap-2 mb-2">
+                    <PawPrint className="w-4 h-4" />
+                    <span className="text-xs font-medium text-white/80 uppercase tracking-wider">Breed Spotlight</span>
+                    <span className="text-xs text-white/60 ml-auto">{breed}</span>
+                  </div>
+                  <p className="text-sm md:text-base font-medium leading-relaxed" data-testid="breed-fact">
+                    {facts[factIndex]}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Weather Alert Card */}
+              {weatherTip && (
+                <div className={`rounded-2xl ${weatherTip.bg} border border-gray-100 p-4 md:p-5`}>
+                  <div className="flex items-start gap-3">
+                    <weatherTip.icon className={`w-6 h-6 ${weatherTip.color} flex-shrink-0 mt-0.5`} />
+                    <div>
+                      <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Today's Weather Tip</span>
+                      <p className="text-sm text-gray-700 mt-1 leading-relaxed" data-testid="weather-tip">
+                        {weatherTip.text}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* GUIDED LEARNING PATHS */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <div id="guided-paths" className="py-12 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
               <Target className="w-4 h-4" />
               Step-by-Step Journeys
             </div>
@@ -856,7 +953,34 @@ const LearnPage = () => {
         <SupportForPet 
           pet={activePet || userPets?.[0]} 
           onServiceClick={(service) => {
-            setRequestForm(prev => ({ ...prev, learn_type: service.id }));
+            // Map support service IDs to closest LEARN_TYPES key
+            const serviceTypeMap = {
+              'behavior': 'behavior_modification',
+              'training': 'advanced_training',
+              'grooming': 'basic_obedience',
+              'nutrition_adult': 'basic_obedience',
+              'exercise': 'agility',
+              'wellness': 'basic_obedience',
+              'joint_care': 'basic_obedience',
+              'senior_routine': 'basic_obedience',
+              'leash_training': 'basic_obedience',
+              'nutrition': 'basic_obedience',
+              'physiotherapy': 'therapy_training',
+              'home_comfort': 'basic_obedience',
+              'puppy_basics': 'puppy_training',
+              'vet_checkup': 'basic_obedience',
+              'nutrition_puppy': 'puppy_training',
+              'socialization': 'puppy_training',
+              'teething': 'puppy_training',
+              'home_setup': 'puppy_training',
+            };
+            const mappedType = serviceTypeMap[service.id] || 'basic_obedience';
+            setRequestForm(prev => ({ 
+              ...prev, 
+              learn_type: mappedType,
+              notes: `Interested in: ${service.title}\n${service.desc}`
+            }));
+            setModalContext({ title: service.title, desc: service.desc });
             setShowRequestModal(true);
           }}
         />
@@ -902,13 +1026,19 @@ const LearnPage = () => {
       </div>
       
       {/* Training Request Modal */}
-      <Dialog open={showRequestModal} onOpenChange={setShowRequestModal}>
+      <Dialog open={showRequestModal} onOpenChange={(open) => {
+        setShowRequestModal(open);
+        if (!open) setModalContext(null);
+      }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <GraduationCap className="w-6 h-6 text-blue-600" />
-              Request Training
+              {modalContext ? modalContext.title : 'Request Training'}
             </DialogTitle>
+            {modalContext && (
+              <p className="text-sm text-gray-500 mt-1">{modalContext.desc}</p>
+            )}
           </DialogHeader>
           
           <div className="space-y-6 py-4">
