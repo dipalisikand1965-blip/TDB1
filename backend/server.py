@@ -19932,6 +19932,18 @@ async def fix_service_images(password: str = Query(...)):
     
     # Map of pillar service images 
     PILLAR_SERVICE_IMAGES = {
+        "stay": {
+            "Pet-Friendly Hotel Discovery": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/f58c26edc49f7e458711f3fff7c2b7b771b5799824403c7ebec826219778dabc.png",
+            "Room Suitability Advisory": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/9dd7638b1485ee54d023b900952c67f7bcd5580e46d511de54e449907e6f8e7e.png",
+            "Long-Stay Assistance": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/f9839687506630b2114f96ef8c020a2658baaf732d7229f9dee5aac10c583c97.png",
+            "Boarding Alternatives": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/f501f55ff171e2c8007a7031efb33821453d8aa9d5580a6cfe7e10956c7e26c8.png",
+            "Premium Pet Boarding": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/faa9cf36547278a15c4068db6e8adf380e3fb9bd1b259d97d96bc15a4e37251d.png",
+            "Daycare": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/560f7256acace0a73e3ed3a1b8d0a8f8c9d8d665dfab6b884e76f4012f8bf650.png",
+            "Standard Boarding": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/223dae71d548b1c78aa3beb69557fabde32ed86192d64c0c6a246a7b67ac6776.png",
+            "Luxury Suite Boarding": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/0f0c68a7c002dbf95ca4453e4533cd48960aba9ff63e897be4b7a9cf96271109.png",
+            "In-Home Pet Sitting": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/d14ab16504e86c1cf3ed6566416bb0be20888775823ce2395a45ec03a72ceb3c.png",
+            "Property Rule Verification": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/8c6157ea51160f921fa8d90d28cfe06a25e1958a2b342834eaf45a570a3460e0.png",
+        },
         "insure": {
             "Free Insurance Quote Comparison": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/927cb368e3f561742892f5f94c5b97265e18d219bdc369692ae6afc898c866de.png",
             "Pet Insurance Quote Comparison": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/927cb368e3f561742892f5f94c5b97265e18d219bdc369692ae6afc898c866de.png",
@@ -19967,28 +19979,17 @@ async def fix_service_images(password: str = Query(...)):
     }
     
     updated = 0
-    # Generic images that should be replaced
-    GENERIC_IMAGES = [
-        "https://images.unsplash.com/photo-1587300003388-59208cc962cb",  # Generic dog
-        "https://images.unsplash.com/photo-1583511655826-05700d52f4d9",  # Another generic
-        "https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993",  # Rope toy
+    # Generic images that should be replaced (including cloudinary placeholders)
+    GENERIC_PATTERNS = [
+        "unsplash.com",
+        "res.cloudinary.com/duoapcx1p/image/upload",  # Placeholder cloudinary images
     ]
     
     for pillar, services in PILLAR_SERVICE_IMAGES.items():
         for name, image_url in services.items():
-            # Update if image is missing OR if it's a generic placeholder
+            # Update by exact name match regardless of existing image
             result = await db.services_master.update_many(
-                {"name": name, "$or": [
-                    {"pillar": pillar},
-                    {"category": pillar},
-                    {"tags": pillar.capitalize()}
-                ], "$or": [
-                    {"image": None}, 
-                    {"image": ""}, 
-                    {"image": {"$exists": False}},
-                    {"image": {"$regex": "unsplash.com"}},
-                    {"image_url": {"$regex": "unsplash.com"}}
-                ]},
+                {"name": name},
                 {"$set": {"image": image_url, "image_url": image_url}}
             )
             updated += result.modified_count
