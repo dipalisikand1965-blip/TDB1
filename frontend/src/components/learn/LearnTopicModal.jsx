@@ -390,118 +390,28 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
     if (!config) return;
     setLoadingProducts(true);
     try {
-      const topicSlugLower = topicSlug?.toLowerCase() || '';
-      let productsToShow = [];
-      
-      // INTELLIGENT TOPIC-BASED PRODUCT FETCHING
-      // Different topics need different product sources
-      
-      if (topicSlugLower.includes('puppy') || topicSlugLower.includes('basics')) {
-        // PUPPY BASICS: Show generic puppy training tools (from /api/learn/products)
-        const res = await fetch(`${API_URL}/api/learn/products`);
-        if (res.ok) {
-          const data = await res.json();
-          // These are curated generic training products with watercolor images
-          productsToShow = (data.products || []).filter(p => {
-            const name = (p.name || '').toLowerCase();
-            // Prioritize: clicker, treats, puzzle, starter kit, training
-            return name.includes('clicker') || name.includes('treat') || 
-                   name.includes('puppy') || name.includes('puzzle') || 
-                   name.includes('starter') || name.includes('training');
-          }).slice(0, 8);
-        }
-      } else if (topicSlugLower.includes('groom')) {
-        // GROOMING: Show grooming products
-        const res = await fetch(`${API_URL}/api/learn/products`);
-        if (res.ok) {
-          const data = await res.json();
-          const allProducts = data.products || [];
-          // Look for grooming-related products
-          productsToShow = allProducts.filter(p => {
-            const name = (p.name || '').toLowerCase();
-            return name.includes('brush') || name.includes('shampoo') || 
-                   name.includes('groom') || name.includes('nail') || 
-                   name.includes('comb') || name.includes('mat');
-          }).slice(0, 8);
-          
-          // Fallback: if no grooming products, show general training tools
-          if (productsToShow.length < 4) {
-            productsToShow = allProducts.slice(0, 8);
-          }
-        }
-      } else if (topicSlugLower.includes('food') || topicSlugLower.includes('feeding') || topicSlugLower.includes('nutrition')) {
-        // FOOD & FEEDING: Show food-related products
-        const res = await fetch(`${API_URL}/api/learn/products`);
-        if (res.ok) {
-          const data = await res.json();
-          const allProducts = data.products || [];
-          productsToShow = allProducts.filter(p => {
-            const name = (p.name || '').toLowerCase();
-            return name.includes('treat') || name.includes('bowl') || 
-                   name.includes('feeder') || name.includes('food') ||
-                   name.includes('snuffle');
-          }).slice(0, 8);
-          
-          if (productsToShow.length < 4) {
-            productsToShow = allProducts.slice(0, 8);
-          }
-        }
-      } else if (topicSlugLower.includes('breed')) {
-        // BREED GUIDES: Show breed-specific products for user's pet
-        const petBreed = currentPet?.breed?.toLowerCase() || '';
-        const res = await fetch(`${API_URL}/api/product-box/products?pillar=learn&limit=50`);
-        if (res.ok) {
-          const data = await res.json();
-          const allProducts = data.products || [];
-          
-          if (petBreed) {
-            // Show products for user's breed
-            productsToShow = allProducts.filter(p => {
-              const name = (p.name || '').toLowerCase();
-              return name.includes(petBreed);
-            }).slice(0, 8);
-          }
-          
-          // Fallback: show variety of breed products
-          if (productsToShow.length < 4) {
-            productsToShow = allProducts.slice(0, 8);
-          }
-        }
-      } else if (topicSlugLower.includes('behavior') || topicSlugLower.includes('anxiety')) {
-        // BEHAVIOR: Show anxiety/behavior products
-        const res = await fetch(`${API_URL}/api/learn/products`);
-        if (res.ok) {
-          const data = await res.json();
-          const allProducts = data.products || [];
-          productsToShow = allProducts.filter(p => {
-            const name = (p.name || '').toLowerCase();
-            return name.includes('anxiety') || name.includes('calm') || 
-                   name.includes('puzzle') || name.includes('enrichment') ||
-                   name.includes('snuffle');
-          }).slice(0, 8);
-          
-          if (productsToShow.length < 4) {
-            productsToShow = allProducts.slice(0, 8);
-          }
-        }
-      } else {
-        // DEFAULT: Show general training products from curated list
-        const res = await fetch(`${API_URL}/api/learn/products`);
-        if (res.ok) {
-          const data = await res.json();
-          productsToShow = (data.products || []).slice(0, 8);
+      // FIRST: Try to get admin-assigned products for this topic
+      const topicRes = await fetch(`${API_URL}/api/learn/topic-products/${topicSlug}`);
+      if (topicRes.ok) {
+        const topicData = await topicRes.json();
+        const assignedProducts = topicData.products || [];
+        
+        // If admin has assigned products, use those
+        if (assignedProducts.length > 0) {
+          setProducts(assignedProducts.slice(0, 8));
+          return;
         }
       }
       
-      // Ensure products have images
-      productsToShow = productsToShow.filter(p => 
-        p.image_url || p.image || (p.images && p.images[0])
-      );
-      
-      setProducts(productsToShow);
+      // FALLBACK: Use curated training products if no admin assignments
+      const learnRes = await fetch(`${API_URL}/api/learn/products`);
+      if (learnRes.ok) {
+        const learnData = await learnRes.json();
+        setProducts((learnData.products || []).slice(0, 8));
+      }
     } catch (err) {
       console.error('Failed to fetch products:', err);
-      // Fallback to curated products
+      // Last fallback
       try {
         const res = await fetch(`${API_URL}/api/learn/products`);
         if (res.ok) {

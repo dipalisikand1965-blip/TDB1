@@ -65,6 +65,7 @@ import AdminRainbowBridge from '../components/admin/AdminRainbowBridge';
 import PetWrappedAdmin from '../components/admin/PetWrappedAdmin';
 import SoulProductsManager from '../components/admin/SoulProductsManager';
 import BundlesManager from '../components/admin/BundlesManager';
+import TopicProductsManager from '../components/admin/TopicProductsManager';
 import { testimonials as mockTestimonials, faqs as mockFaqs } from '../mockData';
 import { API_URL } from '../utils/api';
 import { getPetPhotoUrl } from '../utils/petAvatar';
@@ -2974,6 +2975,7 @@ const Admin = () => {
               { id: 'fulfilment', label: 'Fulfilment', icon: Truck },
               { id: 'product-box', label: 'Product Box', icon: Package },
               { id: 'service-box', label: 'Service Box', icon: Briefcase },
+              { id: 'topic-products', label: 'Topic Products', icon: GraduationCap },
               { id: 'soul-products', label: 'Soul Products', icon: Sparkles },
               { id: 'bundles', label: 'Bundles', icon: Gift },
               { id: 'collections', label: 'Collections', icon: Layers },
@@ -3621,6 +3623,11 @@ const Admin = () => {
         {/* Bundles Manager Tab */}
         {activeTab === 'bundles' && (
           <BundlesManager />
+        )}
+
+        {/* Topic Products Manager Tab */}
+        {activeTab === 'topic-products' && (
+          <TopicProductsManager />
         )}
 
         {/* Service Box Tab */}
