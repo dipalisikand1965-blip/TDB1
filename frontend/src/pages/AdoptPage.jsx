@@ -22,6 +22,7 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
 import CuratedBundles from '../components/CuratedBundles';
+import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import NearbyAdoptServices from '../components/adopt/NearbyAdoptServices';
 import { usePillarContext } from '../context/PillarContext';
 import { ChecklistDownloadButton } from '../components/checklists';
@@ -460,6 +461,22 @@ const AdoptPage = () => {
       title="Adopt - Bringing a Dog Home | The Doggy Company"
       description="Everything you need to bring a dog home properly. Guidance, checklists, products, and concierge help."
     >
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          ADOPT TOPIC CARDS - Quick access to adoption categories
+          Adopt a Dog, Foster, Shelters, Adoption Prep
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <PillarTopicsGrid
+        pillar="adopt"
+        topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.adopt}
+        onTopicClick={(topic) => {
+          const productSection = document.getElementById('adopt-products');
+          if (productSection) {
+            productSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }}
+        columns={4}
+      />
+
       {/* ═══════════════════════════════════════════════════════════════════════════
           HERO SECTION - "I am bringing a dog home. Help me do it properly."
           ═══════════════════════════════════════════════════════════════════════════ */}

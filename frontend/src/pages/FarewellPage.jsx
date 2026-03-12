@@ -31,6 +31,7 @@ import RainbowBridgeMemorial from '../components/RainbowBridgeMemorial';
 import RainbowBridgeWall from '../components/RainbowBridgeWall';
 import SoulMadeCollection from '../components/SoulMadeCollection';
 import CuratedBundles from '../components/CuratedBundles';
+import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { usePillarContext } from '../context/PillarContext';
 import MiraAdvisorCard from '../components/MiraAdvisorCard';
 
@@ -426,6 +427,22 @@ const FarewellPage = () => {
       title="Farewell - Memorial Services | The Doggy Company"
       description="Compassionate end-of-life services. Support with dignity and care."
     >
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          FAREWELL TOPIC CARDS - Quick access to memorial categories
+          End-of-Life Care, Cremation, Memorials, Grief Support
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <PillarTopicsGrid
+        pillar="farewell"
+        topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.farewell}
+        onTopicClick={(topic) => {
+          const packagesSection = document.getElementById('packages');
+          if (packagesSection) {
+            packagesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }}
+        columns={4}
+      />
+
       {/* 24/7 Support Banner - Below Hero */}
       <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-4">
         <div className="max-w-7xl mx-auto px-4">

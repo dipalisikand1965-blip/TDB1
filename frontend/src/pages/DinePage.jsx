@@ -42,6 +42,7 @@ import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
+import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 
 // Get user from AuthContext or localStorage
 const getUser = () => {
@@ -454,6 +455,27 @@ const DinePage = () => {
     >
       {/* Main Content with iOS Safe Area Bottom Padding */}
       <div className="pb-24 theme-dine" data-testid="dine-page">
+      
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          DINE TOPIC CARDS - Quick access to food categories
+          Fresh Food, Dry Food, Treats, Special Diets
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <PillarTopicsGrid
+        pillar="dine"
+        topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.dine}
+        onTopicClick={(topic) => {
+          // Map topic to tab
+          const tabMap = {
+            'fresh': 'fresh-meals',
+            'dry': 'dry-food',
+            'treats': 'treats',
+            'special': 'special-diets'
+          };
+          const newTab = tabMap[topic.slug] || 'all';
+          handleTabChange(newTab);
+        }}
+        columns={4}
+      />
       
       {/* ═══════════════════════════════════════════════════════════════════════════════ */}
       {/* TUMMY PROFILE DASHBOARD - Personalized nutrition insights */}

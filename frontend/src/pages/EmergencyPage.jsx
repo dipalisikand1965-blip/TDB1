@@ -18,6 +18,7 @@ import { ConciergeButton } from '../components/mira-os';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
+import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { ChecklistDownloadButton } from '../components/checklists';
 // Emergency Components
 import { 
@@ -386,6 +387,22 @@ const EmergencyPage = () => {
       title="Emergency - 24/7 Pet Support | The Doggy Company"
       description="Immediate help for lost pets, medical emergencies, accidents, and more. Our team and partner network are ready to respond 24/7."
     >
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          EMERGENCY TOPIC CARDS - Quick access to emergency categories
+          Emergency Vet, First Aid, Poison Control, Lost Pet
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <PillarTopicsGrid
+        pillar="emergency"
+        topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.emergency}
+        onTopicClick={(topic) => {
+          const nearbySection = document.getElementById('nearby-help');
+          if (nearbySection) {
+            nearbySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }}
+        columns={4}
+      />
+
       {/* ═══════════════════════════════════════════════════════════════════════════
           LAYER 1: URGENT HELP BUTTONS - Top of page, panic mode, no scrolling needed
           ═══════════════════════════════════════════════════════════════════════════ */}

@@ -40,6 +40,7 @@ import { getPetPhotoUrl } from '../utils/petAvatar';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
+import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import NearbyAdvisoryServices from '../components/advisory/NearbyAdvisoryServices';
 import AdvisoryProductsGrid from '../components/advisory/AdvisoryProductsGrid';
 import {
@@ -784,6 +785,22 @@ const AdvisoryPage = () => {
       title="Advisory - Pet Guidance | The Doggy Company"
       description="Help deciding what's right for your dog. Food, grooming, training, travel, senior care - personalized guidance based on your pet's needs."
     >
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          ADVISORY TOPIC CARDS - Quick access to guidance categories
+          Behavior, Nutrition, Training, Health
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <PillarTopicsGrid
+        pillar="advisory"
+        topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.advisory}
+        onTopicClick={(topic) => {
+          const servicesSection = document.getElementById('advisory-services');
+          if (servicesSection) {
+            servicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }}
+        columns={4}
+      />
+
       {/* ═══════════════════════════════════════════════════════════════════════════
           LAYER 1: ASK ADVISORY - AI Decision Support Hero
           ═══════════════════════════════════════════════════════════════════════════ */}
