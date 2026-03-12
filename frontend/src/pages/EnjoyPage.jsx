@@ -38,6 +38,7 @@ import QuickWinTip from '../components/QuickWinTip';
 import LocalPlacesSection from '../components/LocalPlacesSection';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { PillarDailyTip, PillarHelpBuckets, PillarGuidedPaths } from '../components/PillarGoldSections';
+import { PillarAskMiraHero } from '../components/PillarAskMiraHero';
 import {
   PartyPopper, Calendar, MapPin, Users, Clock, PawPrint,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
@@ -229,6 +230,26 @@ const EnjoyPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [availableCities, setAvailableCities] = useState([]);
   const [productsToShow, setProductsToShow] = useState(8);
+  const [askMiraQuestion, setAskMiraQuestion] = useState('');
+  const [askMiraLoading, setAskMiraLoading] = useState(false);
+
+  const handleAskMira = () => {
+    if (!askMiraQuestion.trim()) return;
+    setAskMiraLoading(true);
+    window.dispatchEvent(new CustomEvent('openMiraAI', {
+      detail: {
+        message: askMiraQuestion,
+        initialQuery: askMiraQuestion,
+        context: 'enjoy',
+        pillar: 'enjoy',
+        source: 'pillar_top_bar',
+        pet_name: activePet?.name,
+        pet_breed: activePet?.breed
+      }
+    }));
+    setAskMiraQuestion('');
+    setTimeout(() => setAskMiraLoading(false), 800);
+  };
   
   // Handle URL type parameter - scroll to experiences and set filter
   useEffect(() => {
@@ -497,6 +518,24 @@ const EnjoyPage = () => {
         .stagger-7 { animation-delay: 0.35s; }
         .stagger-8 { animation-delay: 0.4s; }
       `}</style>
+
+      {cmsConfig.sections?.askMira?.enabled !== false && (
+        <PillarAskMiraHero
+          theme="amber"
+          sectionTestId="enjoy-top-ask-mira"
+          badgeTestId="enjoy-ask-mira-badge"
+          titleTestId="enjoy-page-title"
+          inputTestId="ask-enjoy-input"
+          submitTestId="ask-enjoy-submit"
+          title={pageTitle}
+          description="Let Mira shape the fun first — outings, playdates, enrichment, and adventures tuned to your pet, all continuing in the same chat below."
+          value={askMiraQuestion}
+          onChange={(e) => setAskMiraQuestion(e.target.value)}
+          onSubmit={handleAskMira}
+          loading={askMiraLoading}
+          placeholder={cmsConfig.askMira?.placeholder || "Dog parks near me... playdate ideas... enrichment for anxious dogs"}
+        />
+      )}
 
       {/* ==================== SOCIAL PROOF BANNER ==================== */}
       <div className="bg-white border-b border-gray-100 py-3">
