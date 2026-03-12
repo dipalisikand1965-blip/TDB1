@@ -40,6 +40,7 @@ import { getPetPhotoUrl } from '../utils/petAvatar';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import { PillarSoulLayer } from '../components/PillarSoulLayer';
+import { PillarAskMiraHero } from '../components/PillarAskMiraHero';
 import CuratedBundles from '../components/CuratedBundles';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { PillarDailyTip, PillarHelpBuckets } from '../components/PillarGoldSections';
@@ -302,6 +303,7 @@ const AdvisoryPage = () => {
   const [showAiResponse, setShowAiResponse] = useState(false);
   const [aiResponse, setAiResponse] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
+  const [askMiraLoading, setAskMiraLoading] = useState(false);
   
   // Guided Paths from API
   const [guidedPaths, setGuidedPaths] = useState(FALLBACK_GUIDED_PATHS);
@@ -519,6 +521,7 @@ const AdvisoryPage = () => {
   // Ask Advisory AI - Opens Mira with the query
   const handleAskAdvisory = () => {
     if (!advisoryQuery.trim()) return;
+    setAskMiraLoading(true);
     
     // Open Mira with the advisory query pre-filled
     window.dispatchEvent(new CustomEvent('openMiraAI', {
@@ -527,6 +530,7 @@ const AdvisoryPage = () => {
         initialQuery: advisoryQuery,
         context: 'advisory',
         pillar: 'advisory',
+        source: 'pillar_top_bar',
         pet_name: activePet?.name,
         pet_breed: activePet?.breed
       }
@@ -535,6 +539,7 @@ const AdvisoryPage = () => {
     // Clear the input
     setAdvisoryQuery('');
     setShowAiResponse(false);
+    setTimeout(() => setAskMiraLoading(false), 800);
   };
 
   // State for concierge modal
@@ -795,6 +800,54 @@ const AdvisoryPage = () => {
       title="Advisory - Pet Guidance | The Doggy Company"
       description="Help deciding what's right for your dog. Food, grooming, training, travel, senior care - personalized guidance based on your pet's needs."
     >
+      <div ref={askAdvisoryRef}>
+        <PillarAskMiraHero
+          theme="violet"
+          sectionTestId="advisory-top-ask-mira"
+          badgeTestId="advisory-ask-mira-badge"
+          titleTestId="advisory-page-title"
+          inputTestId="ask-advisory-input-top"
+          submitTestId="ask-advisory-submit-top"
+          title={`What would you like help deciding for ${petName}?`}
+          description="Start with Mira for soul-aware guidance, then continue in the same advisory chat below without opening another assistant."
+          value={advisoryQuery}
+          onChange={(e) => setAdvisoryQuery(e.target.value)}
+          onSubmit={handleAskAdvisory}
+          loading={askMiraLoading}
+          placeholder={`e.g., "Best food for my ${petBreed || 'dog'}" or "What bed should I buy?"`}
+          children={userPets.length > 0 ? (
+            <div className="flex justify-center gap-3 flex-wrap" data-testid="pet-selector-top">
+              {userPets.map(pet => (
+                <Card 
+                  key={pet.id}
+                  className={`p-2 px-4 cursor-pointer transition-all ${
+                    (selectedPet?.id === pet.id || (!selectedPet && currentPet?.id === pet.id))
+                      ? 'ring-2 ring-violet-500 bg-violet-50' 
+                      : 'hover:bg-violet-50'
+                  }`}
+                  onClick={() => setSelectedPet(pet)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full overflow-hidden bg-violet-100 flex items-center justify-center">
+                      <img 
+                        src={getPetPhotoUrl(pet)} 
+                        alt={pet.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/32'; }}
+                      />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-medium text-sm">{pet.name}</p>
+                      <p className="text-xs text-gray-500">{pet.breed}</p>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : null}
+        />
+      </div>
+
       {/* ═══════════════════════════════════════════════════════════════════════════════
           ADVISORY TOPIC CARDS - Quick access to guidance categories
           Behavior, Nutrition, Training, Health

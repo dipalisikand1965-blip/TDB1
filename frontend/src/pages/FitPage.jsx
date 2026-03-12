@@ -39,6 +39,7 @@ import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { getSoulBasedReason } from '../utils/petSoulInference';
+import { PillarAskMiraHero } from '../components/PillarAskMiraHero';
 // New engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
 import TransformationStories from '../components/TransformationStories';
@@ -391,7 +392,7 @@ const FitPage = () => {
     if (!askMiraQuestion.trim()) return;
     setAskMiraLoading(true);
     window.dispatchEvent(new CustomEvent('openMiraAI', {
-      detail: { message: askMiraQuestion, context: 'fit', pillar: 'fit' }
+      detail: { message: askMiraQuestion, context: 'fit', pillar: 'fit', source: 'pillar_top_bar', pet_name: activePet?.name, pet_breed: activePet?.breed }
     }));
     setTimeout(() => {
       setAskMiraLoading(false);
@@ -758,37 +759,21 @@ const FitPage = () => {
           1. ASK MIRA BAR - GOLD STANDARD (Must be first!)
           ═══════════════════════════════════════════════════════════════════════════════ */}
       {cmsConfig.sections?.askMira?.enabled !== false && (
-        <section className="py-8 px-4 bg-gradient-to-b from-teal-50 to-white">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-6">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900" data-testid="fit-page-title">
-                {pageTitle}
-              </h1>
-              <p className="text-gray-600 mt-2">{cmsConfig.subtitle || 'Exercise, activities, fitness goals & wellness routines'}</p>
-            </div>
-            
-            <div className="max-w-2xl mx-auto">
-              <div className="flex gap-2 items-center bg-white rounded-full border border-gray-200 shadow-sm p-1.5 pl-5">
-                <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                <Input
-                  value={askMiraQuestion}
-                  onChange={(e) => setAskMiraQuestion(e.target.value)}
-                  placeholder={cmsConfig.askMira?.placeholder || "Exercise ideas for my breed... weight loss tips... swimming classes"}
-                  className="flex-1 border-0 focus-visible:ring-0 text-sm placeholder:text-gray-400"
-                  onKeyDown={(e) => e.key === 'Enter' && handleAskMira()}
-                  data-testid="ask-fit-input"
-                />
-                <Button
-                  onClick={handleAskMira}
-                  disabled={askMiraLoading || !askMiraQuestion.trim()}
-                  className={`rounded-full ${cmsConfig.askMira?.buttonColor || 'bg-teal-500'} hover:opacity-90 h-10 w-10 p-0`}
-                >
-                  {askMiraLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
+        <PillarAskMiraHero
+          theme="teal"
+          sectionTestId="fit-top-ask-mira"
+          badgeTestId="fit-ask-mira-badge"
+          titleTestId="fit-page-title"
+          inputTestId="ask-fit-input"
+          submitTestId="ask-fit-submit"
+          title={pageTitle}
+          description="Start with Mira for a soul-aware fitness plan, then continue in the same chat below — no duplicate assistant, no lost context."
+          value={askMiraQuestion}
+          onChange={(e) => setAskMiraQuestion(e.target.value)}
+          onSubmit={handleAskMira}
+          loading={askMiraLoading}
+          placeholder={cmsConfig.askMira?.placeholder || "Exercise ideas for my breed... weight loss tips... swimming classes"}
+        />
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
