@@ -1,5 +1,5 @@
 # The Doggy Company — Complete Product Requirements Document
-## Last Updated: December 12, 2025 (Version 10.1 - Learn Page CMS Complete)
+## Last Updated: December 12, 2025 (Version 10.2 - Learn Page Fully CMS-Driven)
 
 ---
 
@@ -16,34 +16,42 @@ Build **"The World's First Pet Life Operating System"** — a comprehensive plat
 
 ---
 
-## LATEST COMPLETION: LEARN PAGE CMS (December 12, 2025)
+## LATEST COMPLETION: LEARN PAGE CMS + DYNAMIC RENDERING (December 12, 2025)
 
-### What Was Built
+### Phase 1: Admin CMS UI ✅ COMPLETE
 A **comprehensive Learn Page CMS** with 7 tabs controlling every aspect of the Learn page:
 
 | Tab | Features |
 |-----|----------|
-| **Settings** | Page Title, Subtitle, Theme Color, Hero Image (Cloudinary), Section Visibility toggles |
+| **Settings** | Page Title with `{petName}` personalization, Subtitle, Theme Color, Hero Image, Section Visibility |
 | **Ask Mira** | Enable/disable search bar, Placeholder text, Button color, Quick suggestions |
-| **Topics** | Add/edit/delete 12+ topics, each with subtopics, YouTube videos, products, services |
-| **Content** | Daily Learning Tips, Guided Learning Paths, Help Buckets configuration |
-| **Bundles** | Select featured bundles to display on page |
-| **Products** | Select featured products (10 curated training products with AI watercolor images) |
-| **Services** | Select featured services to display on page |
+| **Topics** | Add/edit/delete 12 topics, each with subtopics, YouTube videos, products, services |
+| **Content** | Daily Learning Tips (rotating), Guided Learning Paths, Help Buckets |
+| **Bundles** | Select featured bundles to display |
+| **Products** | Select featured products |
+| **Services** | Select featured services |
 
-### API Endpoints
-- `GET /api/learn/page-config` - Returns full CMS configuration
-- `POST /api/learn/page-config` - Saves full CMS configuration
-- `GET /api/ai-images/status` - AI image generation status
+### Phase 2: Dynamic Page Rendering ✅ COMPLETE
+**LearnPage.jsx refactored to be 100% CMS-driven:**
+- Fetches configuration from `/api/learn/page-config` on page load
+- Topics, Daily Tips, Help Buckets all render from CMS data
+- Title personalization: `{petName}` → actual pet name (e.g., "Mojo")
+- Default fallbacks if CMS returns empty data (ensures page never breaks)
+
+### Personalization Verified ✅
+| User State | Title Shows |
+|------------|-------------|
+| Guest (not logged in) | "What would you like to learn about **your dog** today?" |
+| Logged in with pet | "What would you like to learn about **Mojo** today?" |
+
+### Testing Status: ✅ 100% PASSED (Both iterations)
+- **iteration_95.json**: CMS Admin UI - all 7 tabs functional
+- **iteration_96.json**: Dynamic page rendering + personalization verified
 
 ### Files Modified
-- `/app/frontend/src/components/admin/LearnPageCMS.jsx` - Complete CMS UI (825 lines)
-- `/app/backend/learn_routes.py` - Updated endpoints to handle dailyTips, guidedPaths, helpBuckets
-
-### Testing Status: ✅ 100% PASSED
-- All 7 CMS tabs functional
-- Backend API GET/POST working
-- Data persistence verified
+- `/app/frontend/src/components/admin/LearnPageCMS.jsx` - Complete CMS UI (825+ lines)
+- `/app/frontend/src/pages/LearnPage.jsx` - Refactored for CMS-driven rendering
+- `/app/backend/learn_routes.py` - Updated endpoints for dailyTips, guidedPaths, helpBuckets
 
 ---
 
