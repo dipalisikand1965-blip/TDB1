@@ -177,6 +177,50 @@ const ProductBoxEditor = ({
   const [activeTab, setActiveTab] = useState('basics');
   const [dogBreeds, setDogBreeds] = useState([]);
   const [loadingBreeds, setLoadingBreeds] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  
+  // Handle image upload to Cloudinary
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !product?.id) {
+      alert('Please save the product first before uploading an image');
+      return;
+    }
+    
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Invalid file type. Please upload JPG, PNG, or WebP images');
+      return;
+    }
+    
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await fetch(`${API_URL}/api/admin/product/${product.id}/upload-image`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Update the product with the new Cloudinary URL
+        updateField('media.primary_image', data.url);
+        updateField('image', data.url);
+        updateField('image_url', data.url);
+        alert('Image uploaded to Cloudinary successfully! Image will persist through deployments.');
+      } else {
+        const err = await response.json();
+        alert('Upload failed: ' + (err.detail || 'Unknown error'));
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      alert('Upload error: ' + err.message);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
   
   // Fetch breeds dynamically from breed manager
   useEffect(() => {
@@ -1240,9 +1284,56 @@ const ProductBoxEditor = ({
             <Card className="p-4">
               <SectionHeader icon={ImagePlus} title="Product Images" />
               
+              {/* CLOUDINARY FILE UPLOAD - PRIMARY OPTION */}
+              <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border-2 border-purple-200">
+                <Label className="text-lg font-semibold text-purple-700 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  Upload Image File (Recommended - Persists through Deployments!)
+                </Label>
+                <p className="text-sm text-purple-600 mb-3">
+                  Images uploaded here are stored in Cloudinary and will NOT be lost during redeployment.
+                </p>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="product-editor-image-upload"
+                    disabled={uploadingImage || !product?.id}
+                  />
+                  <label
+                    htmlFor="product-editor-image-upload"
+                    className={`flex items-center gap-2 px-6 py-3 rounded-lg cursor-pointer transition-all text-white font-medium ${
+                      uploadingImage || !product?.id
+                        ? 'bg-gray-400 cursor-not-allowed' 
+                        : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-md hover:shadow-lg'
+                    }`}
+                  >
+                    {uploadingImage ? (
+                      <>
+                        <RefreshCw className="w-5 h-5 animate-spin" />
+                        Uploading to Cloudinary...
+                      </>
+                    ) : (
+                      <>
+                        <ImagePlus className="w-5 h-5" />
+                        Choose Image File
+                      </>
+                    )}
+                  </label>
+                  <span className="text-sm text-gray-500">JPG, PNG, WebP (max 10MB)</span>
+                </div>
+                {!product?.id && (
+                  <p className="text-amber-600 text-sm mt-2 font-medium">
+                    ⚠️ Save the product first before uploading an image
+                  </p>
+                )}
+              </div>
+              
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Primary Image URL</Label>
+                  <Label>Primary Image URL (or paste URL manually)</Label>
                   <Input 
                     value={getValue('media.primary_image', '') || getValue('image', '')}
                     onChange={(e) => {
