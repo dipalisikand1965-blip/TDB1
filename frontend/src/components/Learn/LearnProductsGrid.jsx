@@ -1,6 +1,6 @@
 /**
  * LearnProductsGrid.jsx
- * Products grid for Learn page - styled to match AdvisoryProductsGrid
+ * Products grid for Learn page - styled to match AdvisoryProductsGrid EXACTLY
  * Beautiful card layout with hover effects, category badges, and pricing display
  */
 
@@ -8,7 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   ShoppingCart, Package, Loader2, ChevronRight, Star, Check, X,
   BookOpen, Brain, Target, Sparkles, Baby, GraduationCap,
-  Truck, Info, Plus, Minus, Puzzle
+  Truck, Info, Plus, Minus, Puzzle, Bone, Heart, Scissors
 } from 'lucide-react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
@@ -19,15 +19,21 @@ import { usePillarContext } from '../../context/PillarContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Category configurations for Learn pillar
+// Category configurations for Learn pillar - MATCHING ADVISORY STYLE
 const CATEGORIES = {
-  training_aids: { name: 'Training Aids', icon: Target, color: 'bg-blue-100 text-blue-700' },
+  training_aids: { name: 'Training Aids', icon: Target, color: 'bg-amber-100 text-amber-700' },
   puzzles: { name: 'Puzzles & Games', icon: Puzzle, color: 'bg-purple-100 text-purple-700' },
-  books: { name: 'Books & Guides', icon: BookOpen, color: 'bg-amber-100 text-amber-700' },
+  books: { name: 'Books & Guides', icon: BookOpen, color: 'bg-blue-100 text-blue-700' },
   behavior: { name: 'Behavior Tools', icon: Brain, color: 'bg-green-100 text-green-700' },
   puppy_training: { name: 'Puppy Training', icon: Baby, color: 'bg-pink-100 text-pink-700' },
   enrichment: { name: 'Enrichment', icon: Sparkles, color: 'bg-orange-100 text-orange-700' },
-  education: { name: 'Education', icon: GraduationCap, color: 'bg-cyan-100 text-cyan-700' }
+  education: { name: 'Education', icon: GraduationCap, color: 'bg-cyan-100 text-cyan-700' },
+  treats: { name: 'Treats & Rewards', icon: Bone, color: 'bg-red-100 text-red-700' },
+  grooming: { name: 'Grooming', icon: Scissors, color: 'bg-violet-100 text-violet-700' },
+  'breed-training_logs': { name: 'Training Logs', icon: BookOpen, color: 'bg-amber-100 text-amber-700' },
+  'breed-treat_pouchs': { name: 'Treat Pouches', icon: Bone, color: 'bg-pink-100 text-pink-700' },
+  'breed-treat_jars': { name: 'Treat Jars', icon: Heart, color: 'bg-red-100 text-red-700' },
+  tricks: { name: 'Tricks', icon: Sparkles, color: 'bg-purple-100 text-purple-700' }
 };
 
 // Product Detail Modal
@@ -172,23 +178,21 @@ const LearnProductsGrid = ({ maxProducts = 8, showCategories = true, categoryFil
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/learn/products?limit=${maxProducts * 2}`);
+      // Use unified product-box API for full CRUD support
+      const response = await fetch(`${API_URL}/api/product-box/products?pillar=learn&limit=100`);
       if (response.ok) {
         const data = await response.json();
         setProducts(data.products || []);
-      }
-    } catch (error) {
-      console.error('Failed to fetch learn products:', error);
-      // Fallback to product-box
-      try {
-        const fallbackRes = await fetch(`${API_URL}/api/product-box/products?pillar=learn&limit=${maxProducts * 2}`);
+      } else {
+        // Fallback to learn-specific endpoint
+        const fallbackRes = await fetch(`${API_URL}/api/learn/products?limit=100`);
         if (fallbackRes.ok) {
           const fallbackData = await fallbackRes.json();
           setProducts(fallbackData.products || []);
         }
-      } catch (e) {
-        console.debug('Fallback also failed:', e);
       }
+    } catch (error) {
+      console.error('Failed to fetch learn products:', error);
     } finally {
       setLoading(false);
     }
