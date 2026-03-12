@@ -363,8 +363,7 @@ const ServiceBox = () => {
   // Handle service image upload (uploads to Cloudinary)
   const handleServiceImageUpload = async (e) => {
     const file = e.target.files?.[0];
-    if (!file || !selectedService?.id) {
-      toast({ title: 'Save first', description: 'Please save the service before uploading an image', variant: 'destructive' });
+    if (!file) {
       return;
     }
     
@@ -380,8 +379,12 @@ const ServiceBox = () => {
       const formData = new FormData();
       formData.append('file', file);
       
-      // Upload directly to service endpoint
-      const response = await fetch(`${API_URL}/api/admin/service/${selectedService.id}/upload-image`, {
+      const isExistingService = selectedService?.id && !selectedService.id.startsWith('NEW-');
+      const uploadUrl = isExistingService
+        ? `${API_URL}/api/admin/service/${selectedService.id}/upload-image`
+        : `${API_URL}/api/upload/service-image`;
+
+      const response = await fetch(uploadUrl, {
         method: 'POST',
         body: formData
       });
@@ -389,11 +392,16 @@ const ServiceBox = () => {
       if (response.ok) {
         const data = await response.json();
         handleInputChange('image_url', data.url);
+        handleInputChange('watercolor_image', data.url);
         toast({ 
           title: 'Image uploaded!', 
-          description: 'Image uploaded to Cloudinary and linked to service.' 
+          description: isExistingService
+            ? 'Image uploaded to Cloudinary and linked to service.'
+            : 'Image uploaded to Cloudinary. Save the service to keep this image linked.' 
         });
-        fetchServices();
+        if (isExistingService) {
+          fetchServices();
+        }
       } else {
         const err = await response.json();
         toast({ title: 'Upload failed', description: err.detail || 'Failed to upload image', variant: 'destructive' });
@@ -991,12 +999,12 @@ const ServiceBox = () => {
                           onChange={handleServiceImageUpload}
                           className="hidden"
                           id="service-image-upload"
-                          disabled={uploadingImage || !selectedService.id || selectedService.id.startsWith('NEW-')}
+                          disabled={uploadingImage}
                         />
                         <label
                           htmlFor="service-image-upload"
                           className={`flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer transition-colors ${
-                            uploadingImage || !selectedService.id || selectedService.id.startsWith('NEW-')
+                            uploadingImage
                               ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
                               : 'bg-purple-600 text-white hover:bg-purple-700'
                           }`}
@@ -1017,7 +1025,7 @@ const ServiceBox = () => {
                       </div>
                       <p className="text-xs text-green-600 mt-1">Uploads to Cloudinary - persists through deployments!</p>
                       {!selectedService.id || selectedService.id.startsWith('NEW-') ? (
-                        <p className="text-xs text-amber-600 mt-1">Save the service first before uploading an image</p>
+                        <p className="text-xs text-amber-600 mt-1">You can upload now — just remember to save the service afterwards</p>
                       ) : null}
                     </div>
                     
