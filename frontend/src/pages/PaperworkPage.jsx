@@ -794,11 +794,11 @@ const PaperworkPage = () => {
                       
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-2xl font-bold text-blue-600">{bundle.price}</span>
-                        {bundle.original_price && (
+                        {bundle.original_price && bundle.original_price > bundle.price && (
                           <>
                             <span className="text-sm text-gray-400 line-through">{bundle.original_price}</span>
                             <Badge className="bg-green-100 text-green-700">
-                              Save {bundle.original_price - bundle.price}
+                              Save {Math.round(bundle.original_price - bundle.price)}
                             </Badge>
                           </>
                         )}
