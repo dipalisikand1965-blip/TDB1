@@ -225,6 +225,16 @@ Credentials: admin `aditya` / `lola4304`
 
 ## CHANGELOG
 
+### March 12, 2026 — v13.6.0 — CARE PAGE IMAGE FIX ✅
+- **Fixed Care Bundles Images**: All 12 Care bundles now have AI-generated watercolor illustrations instead of stock photos
+- **Golden Rules Enforced**:
+  - Bundles = Watercolor illustrated compositions ✅
+  - Products = Realistic product photography ✅ (was already correct)
+- Added `get_bundle_image_prompt()` function to `ai_image_service.py` for watercolor bundle generation
+- Created `/api/ai-images/generate-bundle-images` endpoint with `force_regenerate` option
+- Created utility script `/app/backend/scripts/fix_care_bundle_images.py` for targeted bundle fixes
+- Verified on preview: Care page now shows watercolor bundles and realistic products
+
 ### March 12, 2026 — v13.5.0 — HANDOVER + DOCS RECOVERY HARDENED ✅
 - Updated `AGENT_START_HERE.md` to reflect the **current** March 12 recovery state instead of stale February/March guidance
 - Elevated `NEXT_AGENT_CRITICAL.md` and `COMPLETE_SESSION_HANDOFF.md` in documentation generation priority so they surface near the top of live docs
