@@ -165,7 +165,7 @@ useEffect(() => {
 | Hosting | Kubernetes (Emergent preview) |
 
 ### Key URLs
-- Preview: `https://learn-golden-2.preview.emergentagent.com`
+- Preview: `https://learn-page-studio.preview.emergentagent.com`
 - Production: `https://thedoggycompany.com`
 
 ### Credentials

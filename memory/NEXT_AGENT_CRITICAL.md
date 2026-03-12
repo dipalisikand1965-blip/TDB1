@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://learn-golden-2.preview.emergentagent.com
+https://learn-page-studio.preview.emergentagent.com
 
 ---
 

@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://learn-golden-2.preview.emergentagent.com
+https://learn-page-studio.preview.emergentagent.com
 ```
 
 ---

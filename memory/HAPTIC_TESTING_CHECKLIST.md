@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://learn-golden-2.preview.emergentagent.com/mira-demo**
+**https://learn-page-studio.preview.emergentagent.com/mira-demo**
 
 ---
 
