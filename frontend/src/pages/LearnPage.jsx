@@ -17,6 +17,7 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
 import PersonalizedPicks from '../components/PersonalizedPicks';
+import LearnProductsGrid from '../components/Learn/LearnProductsGrid';
 import NearbyLearnServices from '../components/learn/NearbyLearnServices';
 import PetDailyRoutine from '../components/learn/PetDailyRoutine';
 import SupportForPet from '../components/learn/SupportForPet';
@@ -894,8 +895,8 @@ const LearnPage = () => {
             ))}
           </div>
           
-          {/* Products Grid */}
-          <PersonalizedPicks pillar="learn" maxProducts={8} />
+          {/* Products Grid - Beautiful Advisory-style layout */}
+          <LearnProductsGrid maxProducts={8} showCategories={false} />
           
           <div className="mt-6 text-center">
             <Button 

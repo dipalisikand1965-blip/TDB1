@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="18" skipped="0" tests="20" time="436.003" timestamp="2026-03-12T03:45:43.096574+00:00" hostname="agent-env-ed06aa23-dd57-4884-ae81-3fc5812afae1"><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestHealthCheck" name="test_health_endpoint" time="13.001" /><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestLearnPageEndpoints" name="test_learn_products_endpoint" time="60.152"><failure message="AssertionError: Learn products failed: 502&#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:33: in test_learn_products_endpoint
+    assert response.status_code == 200, f"Learn products failed: {response.status_code}"
+E   AssertionError: Learn products failed: 502
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestLearnPageEndpoints" name="test_learn_bundles_endpoint" time="60.247"><failure message="AssertionError: Learn bundles failed: 502&#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:41: in test_learn_bundles_endpoint
+    assert response.status_code == 200, f"Learn bundles failed: {response.status_code}"
+E   AssertionError: Learn bundles failed: 502
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestLearnPageEndpoints" name="test_learn_programs_endpoint" time="60.237"><failure message="AssertionError: Learn programs failed: 502&#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:49: in test_learn_programs_endpoint
+    assert response.status_code == 200, f"Learn programs failed: {response.status_code}"
+E   AssertionError: Learn programs failed: 502
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestLearnPageEndpoints" name="test_products_with_pillar_filter" time="60.282"><failure message="AssertionError: Products with pillar failed: 502&#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:57: in test_products_with_pillar_filter
+    assert response.status_code == 200, f"Products with pillar failed: {response.status_code}"
+E   AssertionError: Products with pillar failed: 502
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestAdvisoryPageEndpoints" name="test_advisory_products_endpoint" time="60.214"><failure message="AssertionError: Advisory products failed: 502&#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:69: in test_advisory_products_endpoint
+    assert response.status_code == 200, f"Advisory products failed: {response.status_code}"
+E   AssertionError: Advisory products failed: 502
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestAIImageEndpoints" name="test_ai_images_status" time="60.167"><failure message="AssertionError: AI images status failed: 502&#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:81: in test_ai_images_status
+    assert response.status_code == 200, f"AI images status failed: {response.status_code}"
+E   AssertionError: AI images status failed: 502
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestAIImageEndpoints" name="test_ai_images_stats" time="59.991"><failure message="AssertionError: AI images stats failed: 502&#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:92: in test_ai_images_stats
+    assert response.status_code == 200, f"AI images stats failed: {response.status_code}"
+E   AssertionError: AI images stats failed: 502
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestAdminUploadEndpoints" name="test_product_upload_without_file" time="0.235"><failure message="AssertionError: Expected 422, got: 502&#10;assert 502 == 422&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:107: in test_product_upload_without_file
+    assert response.status_code == 422, f"Expected 422, got: {response.status_code}"
+E   AssertionError: Expected 422, got: 502
+E   assert 502 == 422
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestAdminUploadEndpoints" name="test_product_upload_invalid_content_type" time="0.154"><failure message="AssertionError: Expected 400, got: 502&#10;assert 502 == 400&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:119: in test_product_upload_invalid_content_type
+    assert response.status_code == 400, f"Expected 400, got: {response.status_code}"
+E   AssertionError: Expected 400, got: 502
+E   assert 502 == 400
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestAdminUploadEndpoints" name="test_service_upload_without_file" time="0.158"><failure message="AssertionError: Expected 422, got: 502&#10;assert 502 == 422&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:127: in test_service_upload_without_file
+    assert response.status_code == 422, f"Expected 422, got: {response.status_code}"
+E   AssertionError: Expected 422, got: 502
+E   assert 502 == 422
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestAdminUploadEndpoints" name="test_service_upload_invalid_content_type" time="0.105"><failure message="AssertionError: Expected 400, got: 502&#10;assert 502 == 400&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:138: in test_service_upload_invalid_content_type
+    assert response.status_code == 400, f"Expected 400, got: {response.status_code}"
+E   AssertionError: Expected 400, got: 502
+E   assert 502 == 400
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestPostDeploymentEndpoints" name="test_cleanup_duplicate_services_requires_password" time="0.099"><failure message="AssertionError: Expected 422 for missing password, got: 502&#10;assert 502 == 422&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:150: in test_cleanup_duplicate_services_requires_password
+    assert response.status_code == 422, f"Expected 422 for missing password, got: {response.status_code}"
+E   AssertionError: Expected 422 for missing password, got: 502
+E   assert 502 == 422
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestPostDeploymentEndpoints" name="test_cleanup_duplicate_services_invalid_password" time="0.161"><failure message="AssertionError: Expected 403 for invalid password, got: 502&#10;assert 502 == 403&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:157: in test_cleanup_duplicate_services_invalid_password
+    assert response.status_code == 403, f"Expected 403 for invalid password, got: {response.status_code}"
+E   AssertionError: Expected 403 for invalid password, got: 502
+E   assert 502 == 403
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestPostDeploymentEndpoints" name="test_cleanup_duplicate_services_valid" time="0.103"><failure message="AssertionError: Cleanup failed: 502, The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:163: in test_cleanup_duplicate_services_valid
+    assert response.status_code == 200, f"Cleanup failed: {response.status_code}, {response.text}"
+E   AssertionError: Cleanup failed: 502, The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestPostDeploymentEndpoints" name="test_fix_service_images_requires_password" time="0.103"><failure message="AssertionError: Expected 422 for missing password, got: 502&#10;assert 502 == 422&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:173: in test_fix_service_images_requires_password
+    assert response.status_code == 422, f"Expected 422 for missing password, got: {response.status_code}"
+E   AssertionError: Expected 422 for missing password, got: 502
+E   assert 502 == 422
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestPostDeploymentEndpoints" name="test_fix_service_images_invalid_password" time="0.106"><failure message="AssertionError: Expected 403 for invalid password, got: 502&#10;assert 502 == 403&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:180: in test_fix_service_images_invalid_password
+    assert response.status_code == 403, f"Expected 403 for invalid password, got: {response.status_code}"
+E   AssertionError: Expected 403 for invalid password, got: 502
+E   assert 502 == 403
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestPostDeploymentEndpoints" name="test_fix_service_images_valid" time="0.101"><failure message="AssertionError: Fix images failed: 502, The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:186: in test_fix_service_images_valid
+    assert response.status_code == 200, f"Fix images failed: {response.status_code}, {response.text}"
+E   AssertionError: Fix images failed: 502, The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestAdminLogin" name="test_admin_login" time="0.103"><failure message="AssertionError: Admin login failed: 502&#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_learn_cloudinary_endpoints.py:202: in test_admin_login
+    assert response.status_code == 200, f"Admin login failed: {response.status_code}"
+E   AssertionError: Admin login failed: 502
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_learn_cloudinary_endpoints.TestAdminLogin" name="test_admin_login_invalid" time="0.105" /></testsuite></testsuites>

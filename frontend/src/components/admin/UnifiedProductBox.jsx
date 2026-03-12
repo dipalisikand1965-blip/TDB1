@@ -69,6 +69,7 @@ const UnifiedProductBox = () => {
   const [quickEditType, setQuickEditType] = useState(null); // 'image', 'price', 'pillars', 'name', 'mira_hint'
   const [quickEditValue, setQuickEditValue] = useState(null);
   const [quickSaving, setQuickSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -273,6 +274,49 @@ const UnifiedProductBox = () => {
       toast({ title: 'Error', description: 'Failed to update', variant: 'destructive' });
     } finally {
       setQuickSaving(false);
+    }
+  };
+
+  // Handle file upload for product image (uploads to Cloudinary)
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !quickEditProduct) return;
+    
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: 'Invalid file type', description: 'Please upload JPG, PNG, or WebP images', variant: 'destructive' });
+      return;
+    }
+    
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      // Upload directly to product endpoint
+      const response = await fetch(`${API_URL}/api/admin/product/${quickEditProduct.id}/upload-image`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setQuickEditValue(data.url);
+        toast({ 
+          title: 'Image uploaded!', 
+          description: 'Image uploaded to Cloudinary and linked to product. Click Save to confirm.' 
+        });
+        fetchProducts();
+      } else {
+        const err = await response.json();
+        toast({ title: 'Upload failed', description: err.detail || 'Failed to upload image', variant: 'destructive' });
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      toast({ title: 'Upload error', description: 'Failed to upload image', variant: 'destructive' });
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -1395,7 +1439,7 @@ const UnifiedProductBox = () => {
             {quickEditType === 'image' && (
               <div className="space-y-4">
                 <div className="flex gap-4 items-start">
-                  <div className="w-20 h-20 rounded border overflow-hidden flex-shrink-0">
+                  <div className="w-24 h-24 rounded border overflow-hidden flex-shrink-0 relative">
                     {quickEditValue ? (
                       <img src={quickEditValue} alt="Preview" className="w-full h-full object-cover" />
                     ) : (
@@ -1403,16 +1447,52 @@ const UnifiedProductBox = () => {
                         <Package className="w-8 h-8 text-gray-300" />
                       </div>
                     )}
+                    {uploadingImage && (
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                        <RefreshCw className="w-6 h-6 text-white animate-spin" />
+                      </div>
+                    )}
                   </div>
-                  <div className="flex-1">
-                    <Label>Image URL</Label>
-                    <Input
-                      value={quickEditValue || ''}
-                      onChange={(e) => setQuickEditValue(e.target.value)}
-                      placeholder="https://..."
-                      className="mt-1"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">Paste a direct image URL (Shopify, Unsplash, etc.)</p>
+                  <div className="flex-1 space-y-3">
+                    {/* File Upload - Primary */}
+                    <div>
+                      <Label className="text-purple-700 font-semibold">Upload Image File (Recommended)</Label>
+                      <div className="mt-1 flex items-center gap-2">
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                          id="product-image-upload"
+                          disabled={uploadingImage}
+                        />
+                        <label
+                          htmlFor="product-image-upload"
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer transition-colors ${
+                            uploadingImage 
+                              ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                              : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                          }`}
+                        >
+                          <Upload className="w-4 h-4" />
+                          {uploadingImage ? 'Uploading...' : 'Choose File'}
+                        </label>
+                        <span className="text-xs text-gray-500">JPG, PNG, WebP (max 5MB)</span>
+                      </div>
+                      <p className="text-xs text-green-600 mt-1">Uploads to Cloudinary - persists through deployments!</p>
+                    </div>
+                    
+                    {/* URL Input - Secondary */}
+                    <div>
+                      <Label className="text-gray-500">Or paste image URL</Label>
+                      <Input
+                        value={quickEditValue || ''}
+                        onChange={(e) => setQuickEditValue(e.target.value)}
+                        placeholder="https://..."
+                        className="mt-1"
+                      />
+                      <p className="text-xs text-gray-400 mt-1">Use for external URLs (Shopify, Unsplash, etc.)</p>
+                    </div>
                   </div>
                 </div>
               </div>

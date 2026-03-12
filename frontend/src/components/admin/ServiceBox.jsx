@@ -19,7 +19,7 @@ import {
   RefreshCw, Loader2, Download, Sparkles, Calendar,
   Phone, PawPrint, ChevronDown, Users, TrendingUp,
   Star, AlertCircle, BarChart3, Building2, Filter,
-  CheckCircle, XCircle, List, Grid3X3, CalendarDays
+  CheckCircle, XCircle, List, Grid3X3, CalendarDays, Upload
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
@@ -56,6 +56,7 @@ const ServiceBox = () => {
   const [showEditor, setShowEditor] = useState(false);
   const [saving, setSaving] = useState(false);
   const [activeView, setActiveView] = useState('list'); // list, grid, calendar
+  const [uploadingImage, setUploadingImage] = useState(false);
   
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -357,6 +358,52 @@ const ServiceBox = () => {
   // Handle editor input changes
   const handleInputChange = (field, value) => {
     setSelectedService(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Handle service image upload (uploads to Cloudinary)
+  const handleServiceImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedService?.id) {
+      toast({ title: 'Save first', description: 'Please save the service before uploading an image', variant: 'destructive' });
+      return;
+    }
+    
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: 'Invalid file type', description: 'Please upload JPG, PNG, or WebP images', variant: 'destructive' });
+      return;
+    }
+    
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      // Upload directly to service endpoint
+      const response = await fetch(`${API_URL}/api/admin/service/${selectedService.id}/upload-image`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        handleInputChange('image_url', data.url);
+        toast({ 
+          title: 'Image uploaded!', 
+          description: 'Image uploaded to Cloudinary and linked to service.' 
+        });
+        fetchServices();
+      } else {
+        const err = await response.json();
+        toast({ title: 'Upload failed', description: err.detail || 'Failed to upload image', variant: 'destructive' });
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      toast({ title: 'Upload error', description: 'Failed to upload image', variant: 'destructive' });
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   // Handle city pricing
@@ -932,8 +979,51 @@ const ServiceBox = () => {
                   </div>
                   
                   <div className="col-span-2">
-                    <Label>Image URL</Label>
-                    <div className="flex gap-2">
+                    <Label className="text-lg font-semibold">Service Image</Label>
+                    
+                    {/* File Upload - Primary (NEW) */}
+                    <div className="mt-2 mb-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <Label className="text-purple-700 font-medium">Upload Image File (Recommended)</Label>
+                      <div className="mt-2 flex items-center gap-3">
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
+                          onChange={handleServiceImageUpload}
+                          className="hidden"
+                          id="service-image-upload"
+                          disabled={uploadingImage || !selectedService.id || selectedService.id.startsWith('NEW-')}
+                        />
+                        <label
+                          htmlFor="service-image-upload"
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer transition-colors ${
+                            uploadingImage || !selectedService.id || selectedService.id.startsWith('NEW-')
+                              ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                              : 'bg-purple-600 text-white hover:bg-purple-700'
+                          }`}
+                        >
+                          {uploadingImage ? (
+                            <>
+                              <RefreshCw className="w-4 h-4 animate-spin" />
+                              Uploading...
+                            </>
+                          ) : (
+                            <>
+                              <Briefcase className="w-4 h-4" />
+                              Choose File
+                            </>
+                          )}
+                        </label>
+                        <span className="text-xs text-gray-500">JPG, PNG, WebP (max 5MB)</span>
+                      </div>
+                      <p className="text-xs text-green-600 mt-1">Uploads to Cloudinary - persists through deployments!</p>
+                      {!selectedService.id || selectedService.id.startsWith('NEW-') ? (
+                        <p className="text-xs text-amber-600 mt-1">Save the service first before uploading an image</p>
+                      ) : null}
+                    </div>
+                    
+                    {/* URL Input + AI Generate - Secondary */}
+                    <Label className="text-gray-500 text-sm">Or paste URL / Generate AI Image</Label>
+                    <div className="flex gap-2 mt-1">
                       <Input
                         value={selectedService.image_url || ''}
                         onChange={(e) => handleInputChange('image_url', e.target.value)}
@@ -973,7 +1063,7 @@ const ServiceBox = () => {
                         data-testid="generate-service-image-btn"
                       >
                         <Sparkles className="w-4 h-4 mr-1" />
-                        Generate
+                        Generate AI
                       </Button>
                     </div>
                     {selectedService.image_url && (
