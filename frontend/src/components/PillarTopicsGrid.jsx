@@ -94,10 +94,10 @@ export const DEFAULT_PILLAR_TOPICS = {
     { id: 'sitting', slug: 'sitting', title: 'Pet Sitting', description: 'In-home care while you\'re away', image: 'https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/d14ab16504e86c1cf3ed6566416bb0be20888775823ce2395a45ec03a72ceb3c.png' },
   ],
   care: [
-    { id: 'grooming', slug: 'grooming', title: 'Grooming', description: 'Bathing, brushing & coat care', image: 'https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/b3fadc3b468a0086269a3c93a886b5aca3fda875bc56a267a15dcf08dc24a233.png' },
-    { id: 'health', slug: 'health', title: 'Health & Wellness', description: 'Preventive care & checkups', image: 'https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/0dd0f4cc534f2469ead15a5c3d2182a2d3c6035522046be55bc9d7d692d98a62.png' },
-    { id: 'dental', slug: 'dental', title: 'Dental Care', description: 'Teeth cleaning & oral health', image: 'https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/184cc84060758b19cb89a1e1edede9fb8ac1512144b7fbea10d1e6b94a0bec98.png' },
-    { id: 'skin', slug: 'skin', title: 'Skin & Coat', description: 'Addressing skin issues', image: 'https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/819db193575b5c227b2a548ebbfa3956d3d9021d4a108e66b84cde5d37844bd4.png' },
+    { id: 'grooming', slug: 'grooming', title: 'Grooming', description: 'Bathing, brushing & coat care', image: 'https://static.prod-images.emergentagent.com/jobs/bfdd58b0-9e29-4bbc-bfa6-923e1f6827da/images/ac244e936762d5167e08003826cc212675edb4681160ab0e623ac427b2eab48b.png' },
+    { id: 'health', slug: 'health', title: 'Health & Wellness', description: 'Preventive care & checkups', image: 'https://static.prod-images.emergentagent.com/jobs/bfdd58b0-9e29-4bbc-bfa6-923e1f6827da/images/ca83e28df7d4b5d0a20b026170ebdf5877e4e4af30c34b3d51d24eb3be141afc.png' },
+    { id: 'dental', slug: 'dental', title: 'Dental Care', description: 'Teeth cleaning & oral health', image: 'https://static.prod-images.emergentagent.com/jobs/bfdd58b0-9e29-4bbc-bfa6-923e1f6827da/images/de501f8bdf811377aeea9412f9b7ff6fb5e443ab900da010dd6a687f2fc0c816.png' },
+    { id: 'skin', slug: 'skin', title: 'Skin & Coat', description: 'Addressing skin issues', image: 'https://static.prod-images.emergentagent.com/jobs/bfdd58b0-9e29-4bbc-bfa6-923e1f6827da/images/ce13cb96affa028566a1a81358f797d00b0ccd1536b26b6e8c38e18d8cf415d2.png' },
   ],
   fit: [
     { id: 'exercise', slug: 'exercise', title: 'Exercise Plans', description: 'Daily activity routines', image: 'https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/1fe2fada2637158b9f3e4484188e659e717b3c4c2edd2530602035aea4da2bab.png' },

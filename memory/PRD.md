@@ -1,336 +1,222 @@
-# The Doggy Company - MASTER DOCUMENTATION
-## Last Updated: December 12, 2025 | Version 12.3.0
+# The Doggy Company - MASTER PRD & ARCHITECTURE
+## Last Updated: December 12, 2025 | Version 12.4.0
 
 ---
 
-# CRITICAL: READ THIS ENTIRE DOCUMENT BEFORE MAKING ANY CHANGES
+# CRITICAL: THE LEARN PAGE IS THE GOLD STANDARD
+
+Every pillar page MUST follow the LEARN page's exact hierarchy. This is non-negotiable.
 
 ---
 
-## LATEST UPDATES (Dec 12, 2025)
-
-### COMPLETED TODAY:
-1. **ALL 14 PILLAR PAGES NOW HAVE CMS INTEGRATION** 
-   - Learn, Paperwork, Care, Fit, Travel, Stay, Dine, Enjoy, Celebrate, Emergency, Advisory, Farewell, Adopt, Shop
-   - Each page fetches config from `/api/{pillar}/page-config`
-   - Personalized titles using `{petName}` placeholders
-
-2. **PRODUCT MODALS FIXED**
-   - ArchetypeProducts component ("Party picks for {pet}") now opens full product modal on click
-   - PersonalizedPicks component ("Fun picks for {pet}") has working modals
-   - All product cards across the app have modal functionality
-
-3. **AI-GENERATED WATERCOLOR IMAGES**
-   - 14 Paperwork products with unique images
-   - 9 Paperwork bundles with unique images
-   - 29+ services updated with contextual images (Stay, Insurance, etc.)
-   - Topic card images for Care, Fit, Travel, Dine, Stay pillars
-
-4. **NEW COMPONENTS CREATED**
-   - `PillarTopicsGrid.jsx` - Reusable topic cards component for any pillar
-   - Default topics with AI images for Stay, Care, Fit, Travel, Dine
-
-5. **SERVICE IMAGES FIXED**
-   - All Stay, Insurance services now have AI-generated watercolor images
-   - Backend endpoint `/api/admin/fix-service-images` updates all generic placeholders
-   - Services API confirmed returning new images
-
----
-
-## TABLE OF CONTENTS
-1. [Original Problem Statement](#1-original-problem-statement)
-2. [14-PILLAR CMS ARCHITECTURE](#2-14-pillar-cms-architecture)
-3. [Technical Implementation](#3-technical-implementation)
-4. [All 14 Pillar CMS Status](#4-all-14-pillar-cms-status)
-5. [How To Build a CMS-Driven Page](#5-how-to-build-a-cms-driven-page)
-6. [API Reference](#6-api-reference)
-7. [File Structure Map](#7-file-structure-map)
-8. [Personalization System](#8-personalization-system)
-9. [Testing Credentials](#9-testing-credentials)
-10. [Known Issues](#10-known-issues)
-11. [Future Tasks & Roadmap](#11-future-tasks--roadmap)
-12. [PillarTopicsGrid Component](#12-pillartopicsgrid-component)
-
----
-
-# 1. ORIGINAL PROBLEM STATEMENT
-
-Build **"The World's First Pet Life Operating System"** - **The Doggy Company**
-
-| Feature | Description |
-|---------|-------------|
-| **14 Life Pillars** | Learn, Paperwork, Care, Fit, Travel, Stay, Dine, Enjoy, Celebrate, Emergency, Advisory, Farewell, Adopt, Shop |
-| **AI Concierge (Mira)** | Conversational AI that knows pet's soul, breed, health, preferences |
-| **Pet Soul Engine** | Personality profiling, archetype matching, breed intelligence |
-| **Product Catalog** | 5,000+ products with Shopify integration |
-| **Service Catalog** | 1,100+ services across all pillars |
-| **Deep Personalization** | Based on pet profile, breed, age, health conditions |
-| **AI Watercolor Aesthetic** | All visual assets in watercolor style |
-
----
-
-# 2. 14-PILLAR CMS ARCHITECTURE
-
-## 2.1 Architecture Overview
+## GOLD STANDARD SECTION HIERARCHY (From Learn Page)
 
 ```
-┌─────────────────────────────────────────┐
-│           ADMIN PANEL                   │
-│    /admin?tab={pillar}-cms              │
-└─────────────────┬───────────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    PillarPageCMS.jsx                             │
-│    Generic React component for 12 pillars                        │
-│    LearnPageCMS.jsx / PaperworkPageCMS.jsx for custom needs     │
-└─────────────────────────────────┬───────────────────────────────┘
-                                  │
-              ┌───────────────────┼───────────────────┐
-              ▼                   ▼                   ▼
-┌─────────────────────┐  ┌────────────────┐  ┌────────────────────┐
-│ GET /api/{pillar}/  │  │ POST /api/     │  │  MongoDB           │
-│   page-config       │  │ {pillar}/      │  │  Collections       │
-│                     │  │ page-config    │  │  - page_configs    │
-└─────────────────────┘  └────────────────┘  │  - pillar_cms_*    │
-                                             └────────────────────┘
+SECTION ORDER (Every Pillar Page MUST Follow):
+
+1. ASK MIRA BAR (CMS DRIVEN)
+   - Title with {petName} placeholder
+   - Search input with CMS placeholder
+   - Button with CMS color
+
+2. TOPIC BOXES (4 topic cards, CMS DRIVEN)
+   - Grid layout (2x2 on mobile, 4 columns on desktop)
+   - UNIQUE AI watercolor images per topic
+   - Opens PillarTopicModal (Overview | Products | Services)
+   
+3. DAILY TIP (Rotates based on day)
+   - Category-specific icon
+   - Tip content with expert advice
+   - Badge showing category
+
+4. HOW CAN WE HELP? (3 Action Buckets)
+   - Opens Mira chat with context
+   - Color-coded by category
+   - 4 action items per bucket
+
+5. PERSONALIZED FOR {PET} (Logged-in users)
+   - Pet photo
+   - MiraCarePlan / MiraLearnPlan component
+   - Expandable tips based on breed/age
+
+6. GUIDED PATHS (6 step-by-step journeys)
+   - Each path has 5 steps
+   - Color-coded by theme
+   - Opens Mira for guidance
+
+7. CURATED BUNDLES
+   - CuratedBundles component
+   - Watercolor AI images
+   - Save messaging
+
+8. PRODUCTS SECTION
+   - SoulMadeCollection (breed-specific)
+   - BreedSmartRecommendations
+   - ArchetypeProducts
+
+9. PERSONALIZED PICKS
+   - PersonalizedPicks component
+   - "Fun picks for {pet}"
+
+10. MIRA CURATED LAYER
+    - MiraCuratedLayer component
+    - Unified concierge recommendations
+
+11. SERVICES SECTION
+    - "Services That Help" heading
+    - Grid of service cards
+    - Opens flow modals
+
+12. REQUEST FORM (Where applicable)
+    - Service request wizard
 ```
-
-## 2.2 Key Components with Product Modals
-
-| Component | Location | Modal Status |
-|-----------|----------|--------------|
-| PersonalizedPicks | `/components/PersonalizedPicks.jsx` | ✅ HAS MODAL |
-| ArchetypeProducts | `/components/ArchetypeProducts.jsx` | ✅ HAS MODAL (FIXED) |
-| SoulMadeCollection | `/components/SoulMadeCollection.jsx` | ✅ HAS MODAL |
-| LearnProductsGrid | `/components/Learn/LearnProductsGrid.jsx` | ✅ HAS MODAL |
-| PillarTopicsGrid | `/components/PillarTopicsGrid.jsx` | ✅ Topic cards |
-| ProductCard | `/components/ProductCard.jsx` | ✅ Contains ProductDetailModal |
-
-## 2.3 Standard CMS Tabs (10 Tabs)
-
-| # | Tab Name | Key Fields |
-|---|----------|------------|
-| 1 | Page Settings | title, subtitle, heroImage, themeColor |
-| 2 | Ask Mira Bar | enabled, placeholder, buttonColor |
-| 3 | Categories/Topics | name, icon, color, description, image |
-| 4 | Products | selectedProducts[] |
-| 5 | Bundles | selectedBundles[] |
-| 6 | Services | selectedServices[] |
-| 7 | Personalized | breedSmart, lifeStage, archetypePicks |
-| 8 | Concierge | name, description, price, includes[] |
-| 9 | Mira Prompts | type, trigger, message |
-| 10 | Custom | Pillar-specific features |
 
 ---
 
-# 3. TECHNICAL IMPLEMENTATION
+## PILLAR REFACTORING STATUS
 
-## 3.1 CMS State Pattern (Add to any page)
+| # | Pillar | Gold Standard? | Unique AI Images? | Status |
+|---|--------|----------------|-------------------|--------|
+| 1 | Learn | ✅ REFERENCE | ✅ YES | COMPLETE |
+| 2 | Care | ✅ YES | ✅ YES (4 topics) | COMPLETE |
+| 3 | Paperwork | ⚠️ Partial | ✅ YES | NEEDS REFACTOR |
+| 4 | Dine | ❌ NO | ⚠️ Partial | NEEDS REFACTOR |
+| 5 | Fit | ❌ NO | ⚠️ Partial | NEEDS REFACTOR |
+| 6 | Travel | ❌ NO | ⚠️ Partial | NEEDS REFACTOR |
+| 7 | Stay | ⚠️ Partial | ✅ YES | NEEDS REFACTOR |
+| 8 | Enjoy | ❌ NO | ❌ NO | NEEDS REFACTOR |
+| 9 | Celebrate | ❌ NO | ❌ NO | NEEDS REFACTOR |
+| 10 | Emergency | ❌ NO | ❌ NO | NEEDS REFACTOR |
+| 11 | Advisory | ❌ NO | ❌ NO | NEEDS REFACTOR |
+| 12 | Farewell | ❌ NO | ❌ NO | NEEDS REFACTOR |
+| 13 | Adopt | ❌ NO | ❌ NO | NEEDS REFACTOR |
+| 14 | Shop | ❌ NO | ❌ NO | NEEDS REFACTOR |
 
-```javascript
-// CMS STATE
-const [cmsConfig, setCmsConfig] = useState({
-  title: "Page title with {petName}",
-  subtitle: 'Subtitle text',
-  askMira: { enabled: true, placeholder: "Search...", buttonColor: 'bg-blue-500' },
-  sections: {
-    askMira: { enabled: true },
-    categories: { enabled: true },
-    products: { enabled: true },
-    personalized: { enabled: true }
-  }
-});
-const [cmsCategories, setCmsCategories] = useState([]);
-const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+---
 
-// Fetch function
-const fetchCMSConfig = async () => {
-  const response = await fetch(`${API_URL}/api/{pillar}/page-config`);
-  if (response.ok) {
-    const data = await response.json();
-    if (data.config) setCmsConfig(prev => ({ ...prev, ...data.config }));
-    if (data.categories?.length) setCmsCategories(data.categories);
-  }
-};
+## AI WATERCOLOR IMAGE REQUIREMENTS
 
-// Call in useEffect
-useEffect(() => {
-  fetchCMSConfig();
-}, []);
+**Every pillar needs:**
+1. **4 Topic Card Images** - Unique watercolor illustration for each topic
+2. **Bundle Images** - Watercolor style product bundles
+3. **Service Images** - Contextual watercolor for services
+
+**Image Style Guide:**
+- Soft watercolor brush strokes
+- Pastel/muted color palettes
+- Dogs as main subjects (matching pillar theme)
+- Warm, inviting, professional feel
+- No text in images
+
+**Generated Images So Far:**
+
+### Care Topics (COMPLETE)
+- Grooming: `ac244e936762d5167e08003826cc212675edb4681160ab0e623ac427b2eab48b.png`
+- Health: `ca83e28df7d4b5d0a20b026170ebdf5877e4e4af30c34b3d51d24eb3be141afc.png`
+- Dental: `de501f8bdf811377aeea9412f9b7ff6fb5e443ab900da010dd6a687f2fc0c816.png`
+- Skin & Coat: `ce13cb96affa028566a1a81358f797d00b0ccd1536b26b6e8c38e18d8cf415d2.png`
+
+### Stay Topics (COMPLETE)
+- Boarding, Daycare, Hotels, Sitting - All have unique images
+
+### Paperwork (COMPLETE)
+- 14 products, 9 bundles - All have unique watercolor images
+
+---
+
+## CMS CONDITIONAL RENDERING PATTERN
+
+```jsx
+// EVERY section must be wrapped with CMS conditional
+{cmsConfig.sections?.askMira?.enabled !== false && (
+  <AskMiraSection />
+)}
+
+{cmsConfig.sections?.topics?.enabled !== false && (
+  <PillarTopicsGrid pillar="care" />
+)}
+
+{cmsConfig.sections?.dailyTip?.enabled !== false && (
+  <DailyTipSection />
+)}
+
+{cmsConfig.sections?.helpBuckets?.enabled !== false && (
+  <HelpBucketsSection />
+)}
 ```
 
-## 3.2 Image Update Endpoints
+---
 
-```bash
-# Fix service images (replaces generic Unsplash/Cloudinary placeholders)
+## COMPONENT LOCATIONS
+
+```
+/app/frontend/src/components/
+├── PillarTopicsGrid.jsx       # Topic cards + modal
+├── PillarTopicModal.jsx       # Modal for topic details
+├── PersonalizedPicks.jsx      # "Fun picks for {pet}"
+├── ArchetypeProducts.jsx      # "Party picks for {pet}"
+├── SoulMadeCollection.jsx     # Breed-specific products
+├── BreedSmartRecommendations.jsx
+├── CuratedBundles.jsx
+├── Mira/
+│   ├── MiraCuratedLayer.jsx   # Unified concierge layer
+│   └── MiraCarePlan.jsx       # Care-specific Mira plan
+└── admin/
+    ├── PillarPageCMS.jsx      # Generic CMS (12 pillars)
+    ├── LearnPageCMS.jsx       # Custom Learn CMS
+    └── PaperworkPageCMS.jsx   # Custom Paperwork CMS
+```
+
+---
+
+## API ENDPOINTS
+
+### CMS Config
+```
+GET  /api/{pillar}/page-config
+POST /api/{pillar}/page-config
+```
+
+### Products & Bundles
+```
+GET /api/products?pillar={pillar}&search={term}
+GET /api/bundles?pillar={pillar}
+```
+
+### Services
+```
+GET /api/services?pillar={pillar}&search={term}
+```
+
+### Image Updates (Admin)
+```
 POST /api/admin/fix-service-images?password=lola4304
-
-# Bulk update product images
 POST /api/paperwork/admin/products/bulk-update-images
-Body: { "images": { "product_id": "image_url", ... } }
-
-# Bulk update bundle images
 POST /api/paperwork/admin/bundles/bulk-update-images
-Body: { "images": { "bundle_id": "image_url", ... } }
 ```
 
 ---
 
-# 4. ALL 14 PILLAR CMS STATUS
+## TESTING CREDENTIALS
 
-## 4.1 Admin CMS UI Status - ALL COMPLETE ✅
-
-| # | Pillar | Admin Tab | CMS Component |
-|---|--------|-----------|---------------|
-| 1 | Learn | `learn-cms` | LearnPageCMS.jsx |
-| 2 | Paperwork | `paperwork-cms` | PaperworkPageCMS.jsx |
-| 3-14 | Others | `{pillar}-cms` | PillarPageCMS.jsx (generic) |
-
-## 4.2 Page Dynamic Rendering Status - ALL COMPLETE
-
-| # | Pillar | CMS-Driven? | Product Modals? | Topic Cards? |
-|---|--------|-------------|-----------------|--------------|
-| 1 | Learn | YES | YES | YES (12 topics) |
-| 2 | Paperwork | YES | YES | YES (6 categories) |
-| 3 | Care | YES | YES | YES (4 cards) |
-| 4 | Fit | YES | YES | YES (4 cards) |
-| 5 | Travel | YES | YES | YES (4 cards) |
-| 6 | Stay | YES | YES | YES (4 cards) |
-| 7 | Dine | YES | YES | YES (4 cards) |
-| 8 | Enjoy | YES | YES | YES (4 cards) |
-| 9 | Celebrate | YES | YES | YES (4 cards) |
-| 10 | Emergency | YES | YES | YES (4 cards) |
-| 11 | Advisory | YES | YES | YES (4 cards) |
-| 12 | Farewell | YES | YES | YES (4 cards) |
-| 13 | Adopt | YES | YES | YES (4 cards) |
-| 14 | Shop | YES | YES | YES (4 cards) |
+| Role | Username/Email | Password |
+|------|----------------|----------|
+| Admin | `aditya` | `lola4304` |
+| User | `dipali@clubconcierge.in` | `test123` |
 
 ---
 
-# 5. HOW TO BUILD A CMS-DRIVEN PAGE
-
-## Step-by-Step Checklist
-
-- [x] 1. Add CMS state variables (cmsConfig, cmsCategories, etc.)
-- [x] 2. Add `fetchCMSConfig()` function
-- [x] 3. Call `fetchCMSConfig()` in useEffect
-- [x] 4. Create computed values with fallbacks
-- [x] 5. Render sections conditionally based on `cmsConfig.sections`
-- [x] 6. Use `{petName}` placeholders in titles
-- [ ] 7. Add PillarTopicsGrid component for topic cards
-- [ ] 8. Test with admin CMS changes
-
----
-
-# 6. API REFERENCE
-
-## 6.1 Generic CMS Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/{pillar}/page-config` | Get page config |
-| POST | `/api/{pillar}/page-config` | Save page config |
-
-**Valid pillars:** care, fit, travel, stay, dine, enjoy, celebrate, emergency, advisory, farewell, adopt, shop
-
-## 6.2 Dedicated Endpoints
-
-| Method | Endpoint |
-|--------|----------|
-| GET/POST | `/api/learn/page-config` |
-| GET/POST | `/api/paperwork/page-config` |
-
-## 6.3 Admin Image Fix Endpoints
+## PRODUCTION SYNC COMMANDS
 
 ```bash
-# Production sync commands (run after deployment)
+# Run after deployment
 curl -X POST "https://thedoggycompany.com/api/admin/cleanup-duplicate-services?password=lola4304"
 curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=lola4304"
 ```
 
 ---
 
-# 7. FILE STRUCTURE MAP
-
-## 7.1 CMS Admin Components
-
-```
-/app/frontend/src/components/admin/
-├── LearnPageCMS.jsx           # Custom CMS for Learn
-├── PaperworkPageCMS.jsx       # Custom CMS for Paperwork
-├── PillarPageCMS.jsx          # GENERIC CMS for 12 pillars
-└── CloudinaryUploader.jsx     # Image uploads
-```
-
-## 7.2 Page Components (ALL CMS-DRIVEN)
-
-```
-/app/frontend/src/pages/
-├── LearnPage.jsx              # ✅ CMS + Topics
-├── PaperworkPage.jsx          # ✅ CMS + Categories
-├── CarePage.jsx               # ✅ CMS
-├── FitPage.jsx                # ✅ CMS
-├── TravelPage.jsx             # ✅ CMS
-├── StayPage.jsx               # ✅ CMS
-├── DinePage.jsx               # ✅ CMS
-├── EnjoyPage.jsx              # ✅ CMS
-├── CelebratePage.jsx          # ✅ CMS
-├── EmergencyPage.jsx          # ✅ CMS
-├── AdvisoryPage.jsx           # ✅ CMS
-├── FarewellPage.jsx           # ✅ CMS
-├── AdoptPage.jsx              # ✅ CMS
-└── ShopPage.jsx               # ✅ CMS
-```
-
-## 7.3 Product Display Components (ALL HAVE MODALS)
-
-```
-/app/frontend/src/components/
-├── PersonalizedPicks.jsx      # "Fun picks for {pet}" ✅
-├── ArchetypeProducts.jsx      # "Party picks for {pet}" ✅ FIXED
-├── SoulMadeCollection.jsx     # Soul-based products ✅
-├── BreedSmartRecommendations.jsx
-├── CuratedBundles.jsx
-├── PillarTopicsGrid.jsx       # Topic cards ✅
-└── ProductCard.jsx            # ProductDetailModal
-```
-
----
-
-# 8. PERSONALIZATION SYSTEM
-
-## 8.1 Dynamic Variables
-
-| Variable | Example |
-|----------|---------|
-| `{petName}` | "Mojo" |
-| `{breedName}` | "Shih Tzu" |
-| `{petAge}` | "3 years" |
-
-## 8.2 Personalization Types
-
-| Type | CMS Toggle |
-|------|------------|
-| Breed-Smart | `breedSmart.enabled` |
-| Life Stage | `lifeStage.enabled` |
-| Archetype | `archetypePicks.enabled` |
-| Soul Collection | `soulCollection.enabled` |
-
----
-
-# 9. TESTING CREDENTIALS
-
-| Role | Username/Email | Password |
-|------|----------------|----------|
-| **Admin** | `aditya` | `lola4304` |
-| **User** | `dipali@clubconcierge.in` | `test123` |
-
-Test pet: **Mojo** (Shih Tzu)
-
----
-
-# 10. KNOWN ISSUES
+## KNOWN ISSUES
 
 | Issue | Priority | Status |
 |-------|----------|--------|
@@ -339,72 +225,14 @@ Test pet: **Mojo** (Shih Tzu)
 
 ---
 
-# 11. FUTURE TASKS & ROADMAP
+## NEXT TASKS (Priority Order)
 
-## 11.1 COMPLETED ✅
-
-1. All 14 pillar pages have CMS integration
-2. ArchetypeProducts modal fixed
-3. AI images for Paperwork products/bundles
-4. AI images for Stay/Insurance services
-5. PillarTopicsGrid component created with AI images
-6. Service images updated in backend
-
-## 11.2 NEXT (P1)
-
-1. Generate remaining AI topic images for Enjoy, Celebrate, Emergency, Advisory, Farewell, Adopt, Shop pillars (using default gradient placeholders currently)
-
-## 11.3 LATER (P2)
-
-1. Fix Razorpay checkout
-2. Mobile pet dashboard
-3. Instagram integration for Celebration Wall
+1. **P0**: Refactor ALL remaining 11 pillars to Gold Standard
+2. **P1**: Generate unique AI watercolor images for each pillar's topics
+3. **P1**: Update bundle images to watercolor style
+4. **P2**: Fix Razorpay checkout
+5. **P3**: Fix mobile pet dashboard
 
 ---
 
-# 12. PILLARTOPICSGRID COMPONENT
-
-## 12.1 Location
-`/app/frontend/src/components/PillarTopicsGrid.jsx`
-
-## 12.2 Usage
-
-```jsx
-import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
-
-// In your page component:
-<PillarTopicsGrid
-  pillar="stay"
-  topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.stay}
-  onTopicClick={(topic) => handleTopicClick(topic)}
-  columns={4}
-/>
-```
-
-## 12.3 Pillars with AI Images
-
-| Pillar | Topics with Images |
-|--------|-------------------|
-| Stay | Boarding, Daycare, Hotels, Sitting |
-| Care | Grooming, Health, Dental, Skin |
-| Fit | Exercise, Weight, Agility, Swimming |
-| Travel | Flights, Road, Destinations, Gear |
-| Dine | Fresh, Dry, Treats, Special |
-
-## 12.4 Pillars Pending Images
-
-Enjoy, Celebrate, Emergency, Advisory, Farewell, Adopt, Shop
-
----
-
-# PRODUCTION SYNC COMMANDS
-
-```bash
-# Run these after deployment to sync images and cleanup
-curl -X POST "https://thedoggycompany.com/api/admin/cleanup-duplicate-services?password=lola4304"
-curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=lola4304"
-```
-
----
-
-**END OF DOCUMENTATION - Version 12.3.0**
+**END OF PRD - Version 12.4.0**
