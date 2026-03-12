@@ -26,6 +26,7 @@ import { toast } from '../../hooks/use-toast';
 import { API_URL } from '../../utils/api';
 import PillarBundlesTab from './PillarBundlesTab';
 import PillarExperiencesTab from './PillarExperiencesTab';
+import CloudinaryUploader from './CloudinaryUploader';
 
 const ShopManager = ({ getAuthHeader }) => {
   const [activeSubTab, setActiveSubTab] = useState('products');
@@ -1042,6 +1043,18 @@ const ShopManager = ({ getAuthHeader }) => {
                   value={productForm.image}
                   onChange={(e) => setProductForm({...productForm, image: e.target.value})}
                   placeholder="https://..."
+                />
+              </div>
+              
+              {/* Cloudinary Upload */}
+              <div className="col-span-2">
+                <CloudinaryUploader
+                  entityType="product"
+                  entityId={editingProduct?.id}
+                  currentImageUrl={productForm.image}
+                  onUploadSuccess={(url) => setProductForm({...productForm, image: url})}
+                  label="Upload Product Image"
+                  showPreview={true}
                 />
               </div>
               <div className="col-span-2">

@@ -35,6 +35,7 @@ import {
   Boxes,
   Tag
 } from 'lucide-react';
+import CloudinaryUploader from './CloudinaryUploader';
 
 /**
  * SoulProductsManager
