@@ -956,7 +956,7 @@ const MiraAI = () => {
         location.pathname === path || location.pathname.startsWith(path + '/')
       );
       
-      if (isOnPillarPage && event.detail?.source === 'mobile_nav') {
+      if (isOnPillarPage) {
         // Let MiraChatWidget on the pillar page handle this
         console.log('[MiraAI] Deferring to MiraChatWidget for pillar page:', location.pathname);
         return;

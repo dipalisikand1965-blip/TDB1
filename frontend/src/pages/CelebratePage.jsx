@@ -198,10 +198,30 @@ const CelebratePage = () => {
   const [cmsHelpBuckets, setCmsHelpBuckets] = useState([]);
   const [cmsDailyTips, setCmsDailyTips] = useState([]);
   const [cmsGuidedPaths, setCmsGuidedPaths] = useState([]);
+  const [askMiraQuestion, setAskMiraQuestion] = useState('');
+  const [askMiraLoading, setAskMiraLoading] = useState(false);
   
   // Personalize title with pet name
   const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet') || 
     `Celebrate ${activePet?.name || "your pet"}'s special moments`;
+
+  const handleAskMira = () => {
+    if (!askMiraQuestion.trim()) return;
+    setAskMiraLoading(true);
+    window.dispatchEvent(new CustomEvent('openMiraAI', {
+      detail: {
+        message: askMiraQuestion,
+        initialQuery: askMiraQuestion,
+        context: 'celebrate',
+        pillar: 'celebrate',
+        source: 'pillar_top_bar',
+        pet_name: activePet?.name,
+        pet_breed: activePet?.breed
+      }
+    }));
+    setAskMiraQuestion('');
+    setTimeout(() => setAskMiraLoading(false), 800);
+  };
   
   // ═══════════════════════════════════════════════════════════════════════════════
   // FETCH CMS CONFIGURATION
@@ -685,6 +705,52 @@ const CelebratePage = () => {
     >
       {/* Main Content with iOS Safe Area Bottom Padding */}
       <div className="pb-24 theme-celebrate" data-testid="celebrate-page">
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          1. ASK MIRA BAR - Gold Standard top entry, more prominent on Celebrate
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      {cmsConfig.sections?.askMira?.enabled !== false && (
+        <section className="px-4 py-8 bg-gradient-to-b from-rose-50 via-pink-50 to-white" data-testid="celebrate-top-ask-mira">
+          <div className="max-w-5xl mx-auto">
+            <div className="rounded-[2rem] border border-pink-100 bg-gradient-to-r from-white via-pink-50 to-rose-50 p-6 md:p-8 shadow-[0_20px_60px_rgba(244,114,182,0.15)]">
+              <div className="text-center mb-5">
+                <Badge className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-1.5 mb-3" data-testid="celebrate-ask-mira-badge">
+                  <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+                  Ask Mira First
+                </Badge>
+                <h1 className="text-3xl sm:text-4xl font-bold text-slate-900" data-testid="celebrate-page-title">
+                  {pageTitle}
+                </h1>
+                <p className="text-sm md:text-base text-slate-600 mt-2 max-w-2xl mx-auto">
+                  Start with Mira for soul-aware ideas, then continue in the same chat below — no duplicate assistant, no lost context.
+                </p>
+              </div>
+
+              <div className="max-w-3xl mx-auto">
+                <div className="flex gap-2 items-center bg-white rounded-full border-2 border-pink-200 shadow-sm p-1.5 pl-5">
+                  <Search className="w-5 h-5 text-pink-400 flex-shrink-0" />
+                  <Input
+                    value={askMiraQuestion}
+                    onChange={(e) => setAskMiraQuestion(e.target.value)}
+                    placeholder={cmsConfig.askMira?.placeholder || `Party ideas for ${activePet?.name || 'my pet'}... gotcha day gifts... memory keepsakes`}
+                    className="flex-1 border-0 focus-visible:ring-0 text-sm md:text-base placeholder:text-slate-400"
+                    onKeyDown={(e) => e.key === 'Enter' && handleAskMira()}
+                    data-testid="ask-celebrate-input"
+                  />
+                  <Button
+                    onClick={handleAskMira}
+                    disabled={askMiraLoading || !askMiraQuestion.trim()}
+                    className="rounded-full bg-gradient-to-r from-pink-500 to-rose-500 hover:opacity-90 h-11 px-5 md:px-6 text-white"
+                    data-testid="ask-celebrate-submit"
+                  >
+                    {askMiraLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Sparkles className="w-4 h-4 mr-2" />Ask Mira</>}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
           CELEBRATE TOPIC CARDS - Quick access to celebration categories
