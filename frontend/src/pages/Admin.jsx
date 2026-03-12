@@ -67,6 +67,7 @@ import SoulProductsManager from '../components/admin/SoulProductsManager';
 import BundlesManager from '../components/admin/BundlesManager';
 import TopicProductsManager from '../components/admin/TopicProductsManager';
 import LearnPageCMS from '../components/admin/LearnPageCMS';
+import PaperworkPageCMS from '../components/admin/PaperworkPageCMS';
 import { testimonials as mockTestimonials, faqs as mockFaqs } from '../mockData';
 import { API_URL } from '../utils/api';
 import { getPetPhotoUrl } from '../utils/petAvatar';
@@ -2973,6 +2974,7 @@ const Admin = () => {
             <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-amber-100 rounded">📄 Page CMS</span>
             {[
               { id: 'learn-cms', label: 'Learn Page', icon: GraduationCap },
+              { id: 'paperwork-cms', label: 'Paperwork Page', icon: FileText },
             ].map((tab) => (
               <Button
                 key={tab.id}
@@ -3654,6 +3656,11 @@ const Admin = () => {
         {/* Learn Page CMS Tab */}
         {activeTab === 'learn-cms' && (
           <LearnPageCMS />
+        )}
+
+        {/* Paperwork Page CMS Tab */}
+        {activeTab === 'paperwork-cms' && (
+          <PaperworkPageCMS />
         )}
 
         {/* Service Box Tab */}

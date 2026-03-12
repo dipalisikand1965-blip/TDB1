@@ -111,6 +111,94 @@ DOCUMENT_CATEGORIES = {
 
 REMINDER_CHANNELS = ["email", "whatsapp", "both", "app"]
 
+# ==================== PAGE CMS CONFIGURATION ====================
+
+@router.get("/page-config")
+async def get_paperwork_page_config():
+    """Get the complete Paperwork page CMS configuration"""
+    db = get_db()
+    
+    # Get page config
+    config = await db.page_configs.find_one({"pillar": "paperwork"}, {"_id": 0})
+    
+    # Get document categories from CMS (or use defaults)
+    categories = await db.paperwork_cms_categories.find({}, {"_id": 0}).to_list(20)
+    
+    # Get CMS content
+    cms_content = await db.paperwork_cms_content.find_one({"pillar": "paperwork"}, {"_id": 0})
+    
+    # Get selections
+    selections = await db.page_selections.find_one({"pillar": "paperwork"}, {"_id": 0})
+    
+    return {
+        "config": config or {},
+        "documentCategories": categories if categories else list(DOCUMENT_CATEGORIES.values()),
+        "checklistItems": (cms_content or {}).get("checklistItems", []),
+        "reminderTemplates": (cms_content or {}).get("reminderTemplates", []),
+        "conciergeServices": (cms_content or {}).get("conciergeServices", []),
+        "miraPrompts": (cms_content or {}).get("miraPrompts", []),
+        "selectedProducts": (selections or {}).get("products", []),
+        "selectedBundles": (selections or {}).get("bundles", []),
+        "selectedServices": (selections or {}).get("services", []),
+        "personalizationConfig": (cms_content or {}).get("personalizationConfig", {})
+    }
+
+
+@router.post("/page-config")
+async def save_paperwork_page_config(data: dict):
+    """Save the complete Paperwork page CMS configuration"""
+    db = get_db()
+    
+    # Save page config
+    config = data.get("config", {})
+    config["pillar"] = "paperwork"
+    config["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.page_configs.update_one(
+        {"pillar": "paperwork"},
+        {"$set": config},
+        upsert=True
+    )
+    
+    # Save document categories
+    categories = data.get("documentCategories", [])
+    if categories:
+        await db.paperwork_cms_categories.delete_many({})
+        for cat in categories:
+            cat["pillar"] = "paperwork"
+            await db.paperwork_cms_categories.insert_one(cat)
+    
+    # Save CMS content (checklist, reminders, concierge, mira prompts, personalization)
+    cms_content = {
+        "pillar": "paperwork",
+        "checklistItems": data.get("checklistItems", []),
+        "reminderTemplates": data.get("reminderTemplates", []),
+        "conciergeServices": data.get("conciergeServices", []),
+        "miraPrompts": data.get("miraPrompts", []),
+        "personalizationConfig": data.get("personalizationConfig", {}),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.paperwork_cms_content.update_one(
+        {"pillar": "paperwork"},
+        {"$set": cms_content},
+        upsert=True
+    )
+    
+    # Save selections
+    selections = {
+        "pillar": "paperwork",
+        "products": data.get("selectedProducts", []),
+        "bundles": data.get("selectedBundles", []),
+        "services": data.get("selectedServices", [])
+    }
+    await db.page_selections.update_one(
+        {"pillar": "paperwork"},
+        {"$set": selections},
+        upsert=True
+    )
+    
+    return {"success": True, "message": "Paperwork page configuration saved"}
+
+
 # Insurance Services under Paperwork - "Insure" pillar
 INSURANCE_SERVICES = {
     "quote_request": {
@@ -1096,16 +1184,33 @@ async def delete_paperwork_product(product_id: str):
 
 @router.get("/bundles")
 async def get_paperwork_bundles(category: Optional[str] = None, limit: int = 20):
-    """Get paperwork bundles including Insure bundles"""
+    """Get paperwork bundles including Insure bundles - queries both collections"""
     db = get_db()
     
+    # Query paperwork_bundles collection
     query = {"$or": [{"is_active": True}, {"active": True}]}
     if category:
         query = {"$and": [query, {"category": category}]}
     
     bundles = await db.paperwork_bundles.find(query, {"_id": 0}).to_list(limit)
     
-    return {"bundles": bundles, "total": len(bundles)}
+    # Also query main bundles collection for paperwork pillar
+    main_bundles = await db.bundles.find(
+        {"$or": [{"category": "paperwork"}, {"pillar": "paperwork"}]},
+        {"_id": 0}
+    ).to_list(limit)
+    
+    # Combine and dedupe
+    all_bundles = bundles + main_bundles
+    seen_ids = set()
+    unique_bundles = []
+    for b in all_bundles:
+        bid = b.get("id") or b.get("_id")
+        if bid and bid not in seen_ids:
+            seen_ids.add(bid)
+            unique_bundles.append(b)
+    
+    return {"bundles": unique_bundles, "total": len(unique_bundles)}
 
 
 @router.post("/admin/bundles")
