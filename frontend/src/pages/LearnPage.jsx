@@ -364,7 +364,8 @@ const LearnPage = () => {
       learnForPet: { enabled: true },
       bundles: { enabled: true },
       products: { enabled: true },
-      services: { enabled: true }
+      services: { enabled: true },
+      personalized: { enabled: true }
     }
   });
   const [cmsTopics, setCmsTopics] = useState([]);
@@ -1267,6 +1268,17 @@ const LearnPage = () => {
           </div>
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* PERSONALIZED PICKS - FUN PICKS FOR {PET} - CMS DRIVEN */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {cmsConfig.sections?.personalized?.enabled !== false && (
+        <section className="py-8 px-4 bg-gradient-to-b from-white to-teal-50/30" data-testid="learn-personalized-picks">
+          <div className="max-w-6xl mx-auto">
+            <PersonalizedPicks pillar="learn" maxProducts={8} />
+          </div>
+        </section>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* SERVICES THAT HELP (SEPARATE SECTION) */}
