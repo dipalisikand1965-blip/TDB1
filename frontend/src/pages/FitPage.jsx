@@ -49,7 +49,8 @@ import {
   CheckCircle, ChevronRight, ChevronLeft, Sparkles, Star, Loader2, Send,
   ArrowRight, Play, ChevronDown, Target, Zap, PawPrint,
   Calendar, Award, ShoppingBag, Clock, X, Phone, Package,
-  MessageCircle, Bookmark, Share2, ShoppingCart
+  MessageCircle, Bookmark, Share2, ShoppingCart, Search, Shield,
+  ClipboardList, GraduationCap
 } from 'lucide-react';
 
 // Elevated Concierge® Fit Experiences
@@ -377,6 +378,26 @@ const FitPage = () => {
   const [cmsCategories, setCmsCategories] = useState([]);
   const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
   const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  // NEW: CMS-driven Help Buckets, Daily Tips, Guided Paths
+  const [cmsHelpBuckets, setCmsHelpBuckets] = useState([]);
+  const [cmsDailyTips, setCmsDailyTips] = useState([]);
+  const [cmsGuidedPaths, setCmsGuidedPaths] = useState([]);
+  
+  // Ask Mira state
+  const [askMiraQuestion, setAskMiraQuestion] = useState('');
+  const [askMiraLoading, setAskMiraLoading] = useState(false);
+  
+  const handleAskMira = () => {
+    if (!askMiraQuestion.trim()) return;
+    setAskMiraLoading(true);
+    window.dispatchEvent(new CustomEvent('openMiraAI', {
+      detail: { message: askMiraQuestion, context: 'fit', pillar: 'fit' }
+    }));
+    setTimeout(() => {
+      setAskMiraLoading(false);
+      setAskMiraQuestion('');
+    }, 500);
+  };
   
   // Personalize title with pet name
   const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet') || 
@@ -401,6 +422,16 @@ const FitPage = () => {
         }
         if (data.miraPrompts?.length > 0) {
           setCmsMiraPrompts(data.miraPrompts);
+        }
+        // NEW: Load Help Buckets, Daily Tips, Guided Paths from CMS
+        if (data.helpBuckets?.length > 0) {
+          setCmsHelpBuckets(data.helpBuckets);
+        }
+        if (data.dailyTips?.length > 0) {
+          setCmsDailyTips(data.dailyTips);
+        }
+        if (data.guidedPaths?.length > 0) {
+          setCmsGuidedPaths(data.guidedPaths);
         }
         console.log('[FitPage] CMS config loaded');
       }
@@ -649,6 +680,60 @@ const FitPage = () => {
   // Get unique categories from services for the filter bar
   const availableCategories = [...new Set(services.map(s => s.category).filter(Boolean))];
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // DEFAULT DATA FOR GOLD STANDARD SECTIONS
+  // ═══════════════════════════════════════════════════════════════════════════════
+  
+  // Fit Help Buckets - DEFAULTS (used when no CMS data)
+  const defaultHelpBuckets = [
+    {
+      id: 'exercise',
+      title: 'Exercise Help',
+      icon: 'Activity',
+      color: 'teal',
+      items: ['Daily exercise routine', 'Breed-specific activities', 'Indoor exercise ideas', 'Exercise for seniors']
+    },
+    {
+      id: 'weight',
+      title: 'Weight Management',
+      icon: 'Scale',
+      color: 'green',
+      items: ['Weight loss plans', 'Portion control tips', 'Healthy treat alternatives', 'Progress tracking']
+    },
+    {
+      id: 'activities',
+      title: 'Activities & Sports',
+      icon: 'Trophy',
+      color: 'amber',
+      items: ['Swimming classes', 'Agility training', 'Dog park etiquette', 'Group activities']
+    }
+  ];
+  const helpBuckets = cmsHelpBuckets.length > 0 ? cmsHelpBuckets : defaultHelpBuckets;
+
+  // Fit Guided Paths - DEFAULTS
+  const defaultGuidedPaths = [
+    { title: 'New to Fitness Path', topicSlug: 'exercise', steps: ['Assess current fitness', 'Start slow walks', 'Build endurance', 'Add variety', 'Track progress'], color: 'teal' },
+    { title: 'Weight Loss Journey', topicSlug: 'weight', steps: ['Weigh your pet', 'Calculate calories', 'Adjust portions', 'Increase activity', 'Weekly check-ins'], color: 'green' },
+    { title: 'Agility Starter Path', topicSlug: 'agility', steps: ['Basic commands', 'Simple obstacles', 'Tunnel training', 'Jump practice', 'Course running'], color: 'amber' },
+    { title: 'Swimming Introduction', topicSlug: 'swimming', steps: ['Water comfort', 'Shallow entry', 'Float training', 'Paddle strokes', 'Deep water'], color: 'blue' },
+    { title: 'Senior Fitness Path', topicSlug: 'exercise', steps: ['Gentle assessment', 'Low-impact walks', 'Joint-friendly play', 'Rest schedule', 'Mobility support'], color: 'purple' },
+    { title: 'Puppy Energy Path', topicSlug: 'exercise', steps: ['Short play bursts', 'Socialization play', 'Basic fetch', 'Structured walks', 'Rest importance'], color: 'pink' }
+  ];
+  const guidedPaths = cmsGuidedPaths.length > 0 ? cmsGuidedPaths : defaultGuidedPaths;
+
+  // Daily Fit Tips - DEFAULTS
+  const defaultDailyFitTips = [
+    { category: 'Exercise', tip: 'Most dogs need 30-60 minutes of exercise daily. High-energy breeds may need 1-2 hours. Always match intensity to your dog\'s fitness level.', icon: Activity, color: 'from-teal-500 to-emerald-500' },
+    { category: 'Walking', tip: 'Vary your walking routes to keep things interesting. New smells and sights provide mental stimulation that\'s just as important as physical exercise.', icon: Heart, color: 'from-green-500 to-teal-500' },
+    { category: 'Swimming', tip: 'Swimming is excellent low-impact exercise, especially for dogs with joint issues. Start in shallow water and never force a dog who\'s uncomfortable.', icon: Sparkles, color: 'from-blue-500 to-cyan-500' },
+    { category: 'Weight', tip: 'You should be able to feel your dog\'s ribs without pressing hard. If you can\'t, it may be time to adjust diet and increase exercise.', icon: Scale, color: 'from-amber-500 to-orange-500' },
+    { category: 'Rest', tip: 'Rest days are important! Dogs need 12-14 hours of sleep daily. Puppies and seniors need even more. Don\'t over-exercise.', icon: Shield, color: 'from-purple-500 to-violet-500' },
+    { category: 'Play', tip: 'Interactive play like fetch or tug-of-war strengthens your bond while providing exercise. Keep sessions short but frequent throughout the day.', icon: Trophy, color: 'from-pink-500 to-rose-500' },
+    { category: 'Agility', tip: 'You don\'t need fancy equipment for agility fun. Use household items like boxes and broomsticks to create simple obstacle courses.', icon: Zap, color: 'from-emerald-500 to-green-500' }
+  ];
+  const dailyFitTips = cmsDailyTips.length > 0 ? cmsDailyTips : defaultDailyFitTips;
+  const todaysTip = dailyFitTips[new Date().getDay() % dailyFitTips.length];
+  
   if (loading) {
     return (
       <PillarPageLayout
@@ -669,27 +754,184 @@ const FitPage = () => {
       title="Fit - Movement & Energy | The Doggy Company"
       description="Activity that matches your pet's rhythm. Expert fitness programmes, weight management, and activity tracking."
     >
-      {/* ==================== SOCIAL PROOF BANNER ==================== */}
-      <div className="bg-white border-b border-gray-100 py-3">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
-          <FitnessJourneyCounter pillar="fit" />
-          <RotatingSocialProof 
-            petName={userPets[0]?.name} 
-            breedName={userPets[0]?.breed} 
-          />
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          1. ASK MIRA BAR - GOLD STANDARD (Must be first!)
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      {cmsConfig.sections?.askMira?.enabled !== false && (
+        <section className="py-8 px-4 bg-gradient-to-b from-teal-50 to-white">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-6">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900" data-testid="fit-page-title">
+                {pageTitle}
+              </h1>
+              <p className="text-gray-600 mt-2">{cmsConfig.subtitle || 'Exercise, activities, fitness goals & wellness routines'}</p>
+            </div>
+            
+            <div className="max-w-2xl mx-auto">
+              <div className="flex gap-2 items-center bg-white rounded-full border border-gray-200 shadow-sm p-1.5 pl-5">
+                <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <Input
+                  value={askMiraQuestion}
+                  onChange={(e) => setAskMiraQuestion(e.target.value)}
+                  placeholder={cmsConfig.askMira?.placeholder || "Exercise ideas for my breed... weight loss tips... swimming classes"}
+                  className="flex-1 border-0 focus-visible:ring-0 text-sm placeholder:text-gray-400"
+                  onKeyDown={(e) => e.key === 'Enter' && handleAskMira()}
+                  data-testid="ask-fit-input"
+                />
+                <Button
+                  onClick={handleAskMira}
+                  disabled={askMiraLoading || !askMiraQuestion.trim()}
+                  className={`rounded-full ${cmsConfig.askMira?.buttonColor || 'bg-teal-500'} hover:opacity-90 h-10 w-10 p-0`}
+                >
+                  {askMiraLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          2. TOPIC CARDS - 4 Fitness Categories (After Ask Mira)
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      {cmsConfig.sections?.categories?.enabled !== false && (
+        <PillarTopicsGrid
+          pillar="fit"
+          topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.fit}
+          columns={4}
+        />
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          3. DAILY FIT TIP - Rotates based on day
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-6 px-4 bg-gradient-to-r from-teal-50 to-emerald-50">
+        <div className="max-w-4xl mx-auto">
+          <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-r ${todaysTip.color || 'from-teal-500 to-emerald-500'} p-5 md:p-6 text-white`}>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-8 translate-x-8" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-6 -translate-x-6" />
+            <div className="relative flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                {todaysTip.icon ? <todaysTip.icon className="w-6 h-6 text-white" /> : <Activity className="w-6 h-6 text-white" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <Sparkles className="w-4 h-4" />
+                  <span className="text-xs font-medium text-white/80 uppercase tracking-wider">Today's Fitness Tip</span>
+                  <span className="text-xs text-white/60 ml-auto hidden sm:block">{todaysTip.category}</span>
+                </div>
+                <p className="text-sm md:text-base font-medium leading-relaxed" data-testid="daily-fit-tip">
+                  {todaysTip.tip}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          4. HOW CAN WE HELP? - 3 Action Buckets
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-10 px-4 bg-stone-50">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">How can we help?</h2>
+            <p className="text-gray-600 mt-1">Choose what matters most to you right now</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {helpBuckets.map((bucket, idx) => {
+              const iconMap = { Activity, Scale, Trophy, Heart, Sparkles, PawPrint, Shield, Star };
+              const BucketIcon = iconMap[bucket.icon] || Activity;
+              const colorMap = {
+                'teal': { bg: 'bg-gradient-to-br from-teal-50 to-emerald-50', border: 'border-teal-100', icon: 'bg-teal-100', iconColor: 'text-teal-600', dot: 'bg-teal-400' },
+                'green': { bg: 'bg-gradient-to-br from-green-50 to-emerald-50', border: 'border-green-100', icon: 'bg-green-100', iconColor: 'text-green-600', dot: 'bg-green-400' },
+                'amber': { bg: 'bg-gradient-to-br from-amber-50 to-orange-50', border: 'border-amber-100', icon: 'bg-amber-100', iconColor: 'text-amber-600', dot: 'bg-amber-400' }
+              };
+              const colors = colorMap[bucket.color] || colorMap.teal;
+              
+              return (
+                <Card 
+                  key={bucket.id || idx}
+                  className={`p-5 ${colors.bg} ${colors.border} rounded-2xl cursor-pointer hover:shadow-md transition-shadow`}
+                  onClick={() => {
+                    window.dispatchEvent(new CustomEvent('openMiraAI', {
+                      detail: { message: bucket.items?.join(', ') || bucket.title, context: 'fit', pillar: 'fit' }
+                    }));
+                  }}
+                  data-testid={`help-bucket-${idx}`}
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={`w-10 h-10 rounded-xl ${colors.icon} flex items-center justify-center`}>
+                      <BucketIcon className={`w-5 h-5 ${colors.iconColor}`} />
+                    </div>
+                    <h3 className="font-semibold text-gray-900">{bucket.title}</h3>
+                  </div>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    {(bucket.items || []).map((item, itemIdx) => (
+                      <li key={itemIdx} className="flex items-center gap-2">
+                        <span className={`w-1 h-1 ${colors.dot} rounded-full`} />{item}
+                      </li>
+                    ))}
+                  </ul>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          5. GUIDED FITNESS PATHS - Step-by-step journeys
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <div id="guided-paths" className="py-12 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-500 to-emerald-500 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <ClipboardList className="w-4 h-4" />
+              Step-by-Step Journeys
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Guided Fitness Paths</h2>
+            <p className="text-gray-600 mt-2">Follow a structured journey tailored to your needs</p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {guidedPaths.map((path, idx) => (
+              <Card 
+                key={idx}
+                className="p-5 cursor-pointer hover:shadow-lg transition-all group"
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('openMiraAI', {
+                    detail: { 
+                      message: `I want to follow the "${path.title}" fitness journey. Steps: ${path.steps?.join(', ')}`,
+                      context: 'fit',
+                      pillar: 'fit'
+                    }
+                  }));
+                }}
+                data-testid={`guided-path-${idx}`}
+              >
+                <div className={`w-10 h-10 rounded-xl bg-${path.color}-100 flex items-center justify-center mb-3`}>
+                  <Target className={`w-5 h-5 text-${path.color}-600`} />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-teal-600 transition-colors">{path.title}</h3>
+                <div className="flex flex-wrap gap-1">
+                  {(path.steps || []).slice(0, 3).map((step, stepIdx) => (
+                    <span key={stepIdx} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{step}</span>
+                  ))}
+                  {(path.steps || []).length > 3 && (
+                    <span className="text-xs bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full">+{path.steps.length - 3} more</span>
+                  )}
+                </div>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
-          FIT TOPIC CARDS - Quick access to fitness categories
-          Exercise Plans, Weight Management, Agility Training, Swimming
+          6. PERSONALIZED FOR PET - If logged in with pet
           ═══════════════════════════════════════════════════════════════════════════════ */}
-      <PillarTopicsGrid
-        pillar="fit"
-        topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.fit}
-        columns={4}
-      />
-
       {/* Personalized Picks for User's Pet */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <PersonalizedPicks 
@@ -699,9 +941,9 @@ const FitPage = () => {
         />
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════════════════
           MIRA ADVISOR - Fitness Coach AI Assistant
-          ═══════════════════════════════════════════════════════════════════════ */}
+          ═══════════════════════════════════════════════════════════ */}
       <div className="max-w-2xl mx-auto px-4 mb-8">
         <MiraAdvisorCard pillar="fit" activePet={activePet} />
         

@@ -37,7 +37,8 @@ import {
   Car, Train, Plane, Truck, MapPin, Calendar, Clock, PawPrint,
   Shield, Heart, CheckCircle, AlertTriangle, MessageCircle, Phone,
   ChevronRight, ChevronLeft, Sparkles, Package, Star, Loader2, Info, Send,
-  ArrowRight, Users, Play, X, ChevronDown, Gift, Zap, Download
+  ArrowRight, Users, Play, X, ChevronDown, Gift, Zap, Download, Search,
+  Target, Activity, ClipboardList
 } from 'lucide-react';
 
 // Travel Types Configuration
@@ -202,6 +203,24 @@ const TravelPage = () => {
   const [cmsCategories, setCmsCategories] = useState([]);
   const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
   const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  // NEW: CMS-driven and Ask Mira state
+  const [cmsHelpBuckets, setCmsHelpBuckets] = useState([]);
+  const [cmsDailyTips, setCmsDailyTips] = useState([]);
+  const [cmsGuidedPaths, setCmsGuidedPaths] = useState([]);
+  const [askMiraQuestion, setAskMiraQuestion] = useState('');
+  const [askMiraLoading, setAskMiraLoading] = useState(false);
+  
+  const handleAskMira = () => {
+    if (!askMiraQuestion.trim()) return;
+    setAskMiraLoading(true);
+    window.dispatchEvent(new CustomEvent('openMiraAI', {
+      detail: { message: askMiraQuestion, context: 'travel', pillar: 'travel' }
+    }));
+    setTimeout(() => {
+      setAskMiraLoading(false);
+      setAskMiraQuestion('');
+    }, 500);
+  };
   
   // Personalize title with pet name
   const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet') || 
@@ -486,9 +505,45 @@ const TravelPage = () => {
       title="Travel - Pet Travel Gear & Services | The Doggy Company"
       description="Everything you need for adventures with your furry companion."
     >
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          1. ASK MIRA BAR - GOLD STANDARD (Must be first!)
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      {cmsConfig.sections?.askMira?.enabled !== false && (
+        <section className="py-8 px-4 bg-gradient-to-b from-cyan-50 to-white">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-6">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900" data-testid="travel-page-title">
+                {pageTitle}
+              </h1>
+              <p className="text-gray-600 mt-2">{cmsConfig.subtitle || 'Pet travel, road trips, flights & relocation services'}</p>
+            </div>
+            
+            <div className="max-w-2xl mx-auto">
+              <div className="flex gap-2 items-center bg-white rounded-full border border-gray-200 shadow-sm p-1.5 pl-5">
+                <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <Input
+                  value={askMiraQuestion}
+                  onChange={(e) => setAskMiraQuestion(e.target.value)}
+                  placeholder={cmsConfig.askMira?.placeholder || "Travel tips for anxious dogs... pet-friendly hotels... flight carrier size"}
+                  className="flex-1 border-0 focus-visible:ring-0 text-sm placeholder:text-gray-400"
+                  onKeyDown={(e) => e.key === 'Enter' && handleAskMira()}
+                  data-testid="ask-travel-input"
+                />
+                <Button
+                  onClick={handleAskMira}
+                  disabled={askMiraLoading || !askMiraQuestion.trim()}
+                  className={`rounded-full ${cmsConfig.askMira?.buttonColor || 'bg-cyan-500'} hover:opacity-90 h-10 w-10 p-0`}
+                >
+                  {askMiraLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
-          TRAVEL TOPIC CARDS - Quick access to travel categories
+          2. TRAVEL TOPIC CARDS - Quick access to travel categories
           Air Travel, Road Trips, Pet-Friendly Destinations, Travel Gear
           ═══════════════════════════════════════════════════════════════════════════════ */}
       <PillarTopicsGrid
