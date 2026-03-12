@@ -30,6 +30,7 @@ import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTop
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import PillarPageLayout from '../components/PillarPageLayout';
+import { PillarDailyTip, PillarHelpBuckets, PillarGuidedPaths } from '../components/PillarGoldSections';
 // FitPage-style engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
 import TransformationStories from '../components/TransformationStories';
@@ -157,6 +158,9 @@ const StayPage = () => {
   const [cmsCategories, setCmsCategories] = useState([]);
   const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
   const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  const [cmsHelpBuckets, setCmsHelpBuckets] = useState([]);
+  const [cmsDailyTips, setCmsDailyTips] = useState([]);
+  const [cmsGuidedPaths, setCmsGuidedPaths] = useState([]);
   
   // ═══════════════════════════════════════════════════════════════════════════════
   // FETCH CMS CONFIGURATION
@@ -178,13 +182,22 @@ const StayPage = () => {
         if (data.miraPrompts?.length > 0) {
           setCmsMiraPrompts(data.miraPrompts);
         }
+        if (data.helpBuckets?.length > 0) {
+          setCmsHelpBuckets(data.helpBuckets);
+        }
+        if (data.dailyTips?.length > 0) {
+          setCmsDailyTips(data.dailyTips);
+        }
+        if (data.guidedPaths?.length > 0) {
+          setCmsGuidedPaths(data.guidedPaths);
+        }
         console.log('[StayPage] CMS config loaded');
       }
     } catch (error) {
       console.error('[StayPage] Failed to fetch CMS config:', error);
     }
   };
-  
+
   // Personalize title with pet name
   const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet') || 
     `Find the perfect stay for ${activePet?.name || 'your pet'}`;
@@ -756,6 +769,45 @@ ${stayRequestForm.special_requests || 'None'}
         pillar="stay"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.stay}
         columns={4}
+      />
+
+      {/* ════════════════════════════════════════════════════════════════════
+          3. DAILY STAY TIP + 4. HOW CAN WE HELP + 5. GUIDED PATHS
+          Gold Standard sections
+          ════════════════════════════════════════════════════════════════════ */}
+      <PillarDailyTip
+        tips={cmsDailyTips.length > 0 ? cmsDailyTips : [
+          { category: 'Booking Tips', tip: 'Always confirm pet policies 24 hours before arrival. Even pet-friendly hotels sometimes have size or breed restrictions.', icon: 'CheckCircle', color: 'from-emerald-500 to-green-500' },
+          { category: 'Boarding Prep', tip: 'Bring your pet\'s own food for the boarding stay. Sudden diet changes can cause digestive upset during an already stressful time.', icon: 'Heart', color: 'from-teal-500 to-cyan-500' },
+          { category: 'Settling In', tip: 'Leave a worn t-shirt or blanket with your pet at the boarding facility. Your familiar scent provides enormous comfort.', icon: 'Home', color: 'from-blue-500 to-teal-500' },
+          { category: 'Health Check', tip: 'Visit the boarding facility before your pet\'s first stay. This allows your pet to familiarise themselves with the smell and sounds.', icon: 'Shield', color: 'from-green-500 to-emerald-500' },
+          { category: 'Vaccination', tip: 'Most boarding facilities require up-to-date vaccinations. Schedule your vet visit at least 2 weeks before the boarding date.', icon: 'Calendar', color: 'from-cyan-500 to-sky-500' },
+          { category: 'Multi-Pet', tip: 'If you have multiple pets, ask if they can stay together. Familiar company reduces stress for pets who live together.', icon: 'Users', color: 'from-violet-500 to-purple-500' },
+          { category: 'Senior Pets', tip: 'Senior pets may need more frequent check-ins. Ask your facility about their monitoring schedule for older dogs.', icon: 'Star', color: 'from-amber-500 to-orange-500' },
+        ]}
+        tipLabel="Today's Stay Tip"
+      />
+
+      <PillarHelpBuckets
+        pillar="stay"
+        buckets={cmsHelpBuckets.length > 0 ? cmsHelpBuckets : [
+          { id: 'find', title: 'Find a Stay', icon: 'Search', color: 'green', items: ['Pet-friendly hotels', 'Luxury resorts', 'Budget stays', 'Last-minute booking'] },
+          { id: 'boarding', title: 'Boarding Help', icon: 'Home', color: 'teal', items: ['Day boarding', 'Overnight care', 'Multi-pet stays', 'Senior pet care'] },
+          { id: 'prep', title: 'Prepare for Stay', icon: 'Clipboard', color: 'cyan', items: ['Packing checklist', 'Vaccination records', 'Anxiety tips', 'Feeding schedule'] },
+        ]}
+      />
+
+      <PillarGuidedPaths
+        pillar="stay"
+        heading="Guided Stay Paths"
+        paths={cmsGuidedPaths.length > 0 ? cmsGuidedPaths : [
+          { title: 'First Boarding Path', topicSlug: 'boarding', steps: ['Choose facility', 'Trial half-day', 'Pack essentials', 'Drop-off routine', 'Pick-up check'], color: 'green' },
+          { title: 'Luxury Hotel Stay', topicSlug: 'hotel', steps: ['Find pet-friendly hotels', 'Confirm pet amenities', 'Book room', 'Prepare kit', 'Check-in'], color: 'teal' },
+          { title: 'Extended Boarding', topicSlug: 'boarding', steps: ['Vet clearance', 'Extended pack', 'Schedule updates', 'Mid-stay visit', 'Reunion routine'], color: 'cyan' },
+          { title: 'Multi-Pet Stay', topicSlug: 'boarding', steps: ['Confirm group stays', 'Separate feeding plan', 'Joint play schedule', 'Check-in together', 'Pack for each pet'], color: 'blue' },
+          { title: 'Anxious Pet Stay', topicSlug: 'boarding', steps: ['Comfort items', 'Scent therapy', 'Practice visits', 'Familiar schedule', 'Calming support'], color: 'violet' },
+          { title: 'Holiday Planning', topicSlug: 'boarding', steps: ['Book 6 weeks ahead', 'Vaccinations current', 'Emergency contacts', 'Special instructions', 'Return welcome home'], color: 'indigo' },
+        ]}
       />
 
       {/* ==================== MIRA'S CURATED LAYER - Gold Standard - ALWAYS FIRST ==================== */}

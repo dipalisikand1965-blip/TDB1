@@ -32,6 +32,7 @@ import RainbowBridgeWall from '../components/RainbowBridgeWall';
 import SoulMadeCollection from '../components/SoulMadeCollection';
 import CuratedBundles from '../components/CuratedBundles';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
+import { PillarDailyTip, PillarHelpBuckets } from '../components/PillarGoldSections';
 import { usePillarContext } from '../context/PillarContext';
 import MiraAdvisorCard from '../components/MiraAdvisorCard';
 
@@ -156,7 +157,8 @@ const FarewellPage = () => {
   const [cmsCategories, setCmsCategories] = useState([]);
   const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
   const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
-  
+  const [cmsHelpBuckets, setCmsHelpBuckets] = useState([]);
+  const [cmsDailyTips, setCmsDailyTips] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [pets, setPets] = useState([]);
   const [userPets, setUserPets] = useState([]);
@@ -199,6 +201,12 @@ const FarewellPage = () => {
         }
         if (data.miraPrompts?.length > 0) {
           setCmsMiraPrompts(data.miraPrompts);
+        }
+        if (data.helpBuckets?.length > 0) {
+          setCmsHelpBuckets(data.helpBuckets);
+        }
+        if (data.dailyTips?.length > 0) {
+          setCmsDailyTips(data.dailyTips);
         }
         console.log('[FarewellPage] CMS config loaded');
       }
@@ -435,6 +443,32 @@ const FarewellPage = () => {
         pillar="farewell"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.farewell}
         columns={4}
+      />
+
+      {/* ════════════════════════════════════════════════════════════════════
+          3. DAILY FAREWELL TIP + 4. HOW CAN WE HELP
+          Gold Standard sections (Guided Paths already below)
+          ════════════════════════════════════════════════════════════════════ */}
+      <PillarDailyTip
+        tips={cmsDailyTips.length > 0 ? cmsDailyTips : [
+          { category: 'Grief Support', tip: 'Grieving a pet is real grief. Research shows pet loss can be as intense as losing a family member. Be kind to yourself during this time.', icon: 'Heart', color: 'from-slate-500 to-gray-600' },
+          { category: 'End-of-Life Care', tip: 'Ask your vet about home visits for final appointments. A peaceful, familiar environment can make a profound difference for your pet and family.', icon: 'Home', color: 'from-gray-600 to-slate-700' },
+          { category: 'Memorial Ideas', tip: 'A paw print casting or a small tree planted in memory are meaningful tributes that keep your pet\'s presence alive in your home or garden.', icon: 'Star', color: 'from-slate-600 to-gray-700' },
+          { category: 'Quality of Life', tip: 'When assessing quality of life, focus on more good days than bad. Ask yourself: Is your pet still enjoying the things they love most?', icon: 'Shield', color: 'from-gray-500 to-slate-600' },
+          { category: 'Cremation Options', tip: 'There are two types of cremation: individual (ashes returned to you) and communal (shared). Ask your vet to explain both before making a decision.', icon: 'Clipboard', color: 'from-slate-500 to-gray-500' },
+          { category: 'Children & Grief', tip: 'Be honest with children about pet loss. Research shows honest, age-appropriate conversations lead to healthier emotional processing than euphemisms.', icon: 'Users', color: 'from-gray-600 to-slate-700' },
+          { category: 'Rainbow Bridge', tip: 'Many pet owners find community in grief groups, both in-person and online. You are not alone. Others understand the depth of what you\'re experiencing.', icon: 'PawPrint', color: 'from-indigo-500 to-slate-600' },
+        ]}
+        tipLabel="Today's Compassionate Tip"
+      />
+
+      <PillarHelpBuckets
+        pillar="farewell"
+        buckets={cmsHelpBuckets.length > 0 ? cmsHelpBuckets : [
+          { id: 'grief', title: 'Grief Support', icon: 'Heart', color: 'indigo', items: ['One-on-one counselling', 'Grief support groups', 'Processing resources', 'Talking to children'] },
+          { id: 'services', title: 'End-of-Life Services', icon: 'Star', color: 'violet', items: ['Home vet visits', 'Cremation options', 'Burial services', 'Memorial packages'] },
+          { id: 'memories', title: 'Create a Memorial', icon: 'Award', color: 'purple', items: ['Paw print kits', 'Photo albums', 'Memorial gardens', 'Custom portraits'] },
+        ]}
       />
 
       {/* 24/7 Support Banner - Below Hero */}

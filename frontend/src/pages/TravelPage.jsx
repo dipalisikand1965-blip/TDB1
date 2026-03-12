@@ -33,6 +33,7 @@ import CuratedBundles from '../components/CuratedBundles';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
+import { PillarDailyTip, PillarHelpBuckets, PillarGuidedPaths } from '../components/PillarGoldSections';
 import {
   Car, Train, Plane, Truck, MapPin, Calendar, Clock, PawPrint,
   Shield, Heart, CheckCircle, AlertTriangle, MessageCircle, Phone,
@@ -245,6 +246,15 @@ const TravelPage = () => {
         }
         if (data.miraPrompts?.length > 0) {
           setCmsMiraPrompts(data.miraPrompts);
+        }
+        if (data.helpBuckets?.length > 0) {
+          setCmsHelpBuckets(data.helpBuckets);
+        }
+        if (data.dailyTips?.length > 0) {
+          setCmsDailyTips(data.dailyTips);
+        }
+        if (data.guidedPaths?.length > 0) {
+          setCmsGuidedPaths(data.guidedPaths);
         }
         console.log('[TravelPage] CMS config loaded');
       }
@@ -550,6 +560,45 @@ const TravelPage = () => {
         pillar="travel"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.travel}
         columns={4}
+      />
+
+      {/* ════════════════════════════════════════════════════════════════════
+          3. DAILY TRAVEL TIP + 4. HOW CAN WE HELP + 6. GUIDED PATHS
+          Gold Standard sections (inserted after Topics Grid)
+          ════════════════════════════════════════════════════════════════════ */}
+      <PillarDailyTip
+        tips={cmsDailyTips.length > 0 ? cmsDailyTips : [
+          { category: 'Carrier Safety', tip: 'Always test your pet\'s carrier a week before travel. Let them sleep in it to reduce stress on travel day.', icon: 'Shield', color: 'from-cyan-500 to-blue-500' },
+          { category: 'Flight Tips', tip: 'Book direct flights when possible. Less handling and shorter travel time means less stress for your pet.', icon: 'CheckCircle', color: 'from-blue-500 to-indigo-500' },
+          { category: 'Hydration', tip: 'Freeze your pet\'s water bowl the night before travel. It won\'t spill during transit and provides hydration as it melts.', icon: 'Heart', color: 'from-teal-500 to-cyan-500' },
+          { category: 'ID & Safety', tip: 'Always carry a recent photo of your pet while travelling. In case of separation, it makes reunification faster.', icon: 'PawPrint', color: 'from-cyan-500 to-sky-500' },
+          { category: 'Anxiety Help', tip: 'Apply a few drops of lavender oil near (not on) your pet\'s carrier. It can help calm travel anxiety naturally.', icon: 'Sparkles', color: 'from-indigo-500 to-violet-500' },
+          { category: 'Road Safety', tip: 'Never let your dog hang out of car windows. Even short trips can cause eye injuries from dust and debris.', icon: 'AlertCircle', color: 'from-amber-500 to-orange-500' },
+          { category: 'Hotel Tips', tip: 'Always call ahead to confirm pet policies. Some hotels charge fees or have size restrictions not listed online.', icon: 'Home', color: 'from-emerald-500 to-teal-500' },
+        ]}
+        tipLabel="Today's Travel Tip"
+      />
+
+      <PillarHelpBuckets
+        pillar="travel"
+        buckets={cmsHelpBuckets.length > 0 ? cmsHelpBuckets : [
+          { id: 'plan', title: 'Plan My Trip', icon: 'MapPin', color: 'cyan', items: ['Pet-friendly routes', 'Airline pet policies', 'Destination checklist', 'Booking assistance'] },
+          { id: 'gear', title: 'Travel Gear', icon: 'Package', color: 'blue', items: ['IATA-approved carriers', 'Travel water bowls', 'Safety harnesses', 'First aid kits'] },
+          { id: 'anxiety', title: 'Calm Travel Anxiety', icon: 'Heart', color: 'indigo', items: ['Anti-anxiety products', 'Calming techniques', 'Vet consultation', 'Desensitisation tips'] },
+        ]}
+      />
+
+      <PillarGuidedPaths
+        pillar="travel"
+        heading="Guided Travel Paths"
+        paths={cmsGuidedPaths.length > 0 ? cmsGuidedPaths : [
+          { title: 'First Flight Path', topicSlug: 'flight', steps: ['Check airline rules', 'Get health cert', 'Train in carrier', 'Day-of prep', 'Airport arrival'], color: 'blue' },
+          { title: 'Road Trip Starter', topicSlug: 'road', steps: ['Plan pet stops', 'Pack essentials', 'Safety harness', 'First rest stop', 'Arrival routine'], color: 'cyan' },
+          { title: 'Relocation Guide', topicSlug: 'relocation', steps: ['New home prep', 'Familiar scents', 'Routine maintenance', 'Local vet search', 'Settle in'], color: 'teal' },
+          { title: 'International Travel', topicSlug: 'flight', steps: ['Passport & docs', 'Import rules', 'Microchipping', 'Health clearance', 'Arrival customs'], color: 'indigo' },
+          { title: 'Multi-Pet Journey', topicSlug: 'road', steps: ['Separate carriers', 'Group check-ins', 'Feed separately', 'Rest coordination', 'Arrival'], color: 'violet' },
+          { title: 'Senior Pet Travel', topicSlug: 'travel', steps: ['Vet clearance', 'Comfort gear', 'Frequent breaks', 'Medication plan', 'Gentle settling'], color: 'purple' },
+        ]}
       />
 
       {/* ==================== PERSONALIZED PICKS - ALWAYS FIRST ==================== */}

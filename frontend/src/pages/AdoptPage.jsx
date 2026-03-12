@@ -23,6 +23,7 @@ import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
 import CuratedBundles from '../components/CuratedBundles';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
+import { PillarDailyTip, PillarHelpBuckets } from '../components/PillarGoldSections';
 import NearbyAdoptServices from '../components/adopt/NearbyAdoptServices';
 import { usePillarContext } from '../context/PillarContext';
 import { ChecklistDownloadButton } from '../components/checklists';
@@ -250,6 +251,8 @@ const AdoptPage = () => {
   });
   const [cmsCategories, setCmsCategories] = useState([]);
   const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  const [cmsHelpBuckets, setCmsHelpBuckets] = useState([]);
+  const [cmsDailyTips, setCmsDailyTips] = useState([]);
   
   // Personalize title with pet name
   const pageTitle = cmsConfig.title;
@@ -267,6 +270,12 @@ const AdoptPage = () => {
         }
         if (data.miraPrompts?.length > 0) {
           setCmsMiraPrompts(data.miraPrompts);
+        }
+        if (data.helpBuckets?.length > 0) {
+          setCmsHelpBuckets(data.helpBuckets);
+        }
+        if (data.dailyTips?.length > 0) {
+          setCmsDailyTips(data.dailyTips);
         }
         console.log('[AdoptPage] CMS config loaded');
       }
@@ -469,6 +478,32 @@ const AdoptPage = () => {
         pillar="adopt"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.adopt}
         columns={4}
+      />
+
+      {/* ════════════════════════════════════════════════════════════════════
+          3. DAILY ADOPT TIP + 4. HOW CAN WE HELP
+          Gold Standard sections (Guided Paths already below)
+          ════════════════════════════════════════════════════════════════════ */}
+      <PillarDailyTip
+        tips={cmsDailyTips.length > 0 ? cmsDailyTips : [
+          { category: 'Adoption Advice', tip: 'Choose a dog based on energy level match, not looks. An active dog in a small apartment creates stress for both pet and owner.', icon: 'Heart', color: 'from-amber-500 to-orange-500' },
+          { category: 'First Week', tip: 'The "3-3-3 rule": 3 days to decompress, 3 weeks to learn routine, 3 months to feel at home. Be patient — it takes time for rescue dogs to open up.', icon: 'Calendar', color: 'from-orange-500 to-amber-600' },
+          { category: 'Home Prep', tip: 'Before your new dog arrives, get down on all fours and look for hazards at dog level: exposed cords, toxic plants, accessible trash. Puppy-proof your home.', icon: 'Home', color: 'from-amber-600 to-orange-600' },
+          { category: 'Shelter Tips', tip: 'Visit the shelter more than once before deciding. A dog\'s true personality often doesn\'t show in the shelter environment. Multiple visits help.', icon: 'Search', color: 'from-yellow-500 to-amber-500' },
+          { category: 'Vet Check', tip: 'Schedule a vet check within the first 72 hours of adoption. This creates a health baseline and catches any issues before they become expensive.', icon: 'Shield', color: 'from-amber-500 to-yellow-500' },
+          { category: 'Training', tip: 'Start training on day one, even for older rescue dogs. Clear, consistent rules from the beginning prevent confusion and build trust faster.', icon: 'GraduationCap', color: 'from-orange-400 to-amber-500' },
+          { category: 'Fostering', tip: 'Fostering a dog before adopting is the best way to know if the fit is right. Most foster dogs end up being "foster failures" — and that\'s beautiful.', icon: 'PawPrint', color: 'from-amber-400 to-orange-400' },
+        ]}
+        tipLabel="Today's Adoption Tip"
+      />
+
+      <PillarHelpBuckets
+        pillar="adopt"
+        buckets={cmsHelpBuckets.length > 0 ? cmsHelpBuckets : [
+          { id: 'find', title: 'Find a Dog', icon: 'Search', color: 'amber', items: ['Local shelters', 'Breed-specific rescue', 'Senior dogs', 'Foster-to-adopt'] },
+          { id: 'prepare', title: 'Prepare Your Home', icon: 'Home', color: 'orange', items: ['Puppy-proofing checklist', 'Essential supplies', 'Safe spaces', 'Family prep'] },
+          { id: 'first_week', title: 'First Week Guide', icon: 'Calendar', color: 'yellow', items: ['3-3-3 rule guide', 'Vet appointment', 'Routine building', 'Introduction tips'] },
+        ]}
       />
 
       {/* ═══════════════════════════════════════════════════════════════════════════
