@@ -89,7 +89,11 @@ const ServiceBox = () => {
       const response = await fetch(`${API_URL}/api/service-box/services?${params}`);
       const data = await response.json();
       
-      setServices(data.services || []);
+      const normalizedServices = (data.services || []).map(service => ({
+        ...service,
+        image_url: service.image_url || service.watercolor_image || service.image || ''
+      }));
+      setServices(normalizedServices);
       setTotalServices(data.total || 0);
     } catch (err) {
       console.error('Error fetching services:', err);
@@ -136,7 +140,7 @@ const ServiceBox = () => {
       available_time_slots: selectedService.available_time_slots || [],
       includes: selectedService.includes || [],
       add_ons: selectedService.add_ons || [],
-      image_url: selectedService.image_url || '',
+      image_url: selectedService.image_url || selectedService.watercolor_image || selectedService.image || '',
       paw_points_eligible: selectedService.paw_points_eligible !== false,
       paw_points_value: selectedService.paw_points_value || 10,
       is_active: selectedService.is_active !== false,
@@ -685,8 +689,8 @@ const ServiceBox = () => {
                       <tr key={service.id} className="hover:bg-gray-50 transition-colors" data-testid={`service-row-${service.id}`}>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
-                            {service.image_url ? (
-                              <img src={service.image_url} alt="" className="w-12 h-12 rounded-lg object-cover" />
+                            {(service.image_url || service.watercolor_image || service.image) ? (
+                              <img src={service.image_url || service.watercolor_image || service.image} alt="" className="w-12 h-12 rounded-lg object-cover" />
                             ) : (
                               <div className={`w-12 h-12 rounded-lg ${pillarInfo.color} flex items-center justify-center text-white text-xl`}>
                                 {pillarInfo.icon}
@@ -1033,7 +1037,7 @@ const ServiceBox = () => {
                     <Label className="text-gray-500 text-sm">Or paste URL / Generate AI Image</Label>
                     <div className="flex gap-2 mt-1">
                       <Input
-                        value={selectedService.image_url || ''}
+                        value={selectedService.image_url || selectedService.watercolor_image || selectedService.image || ''}
                         onChange={(e) => handleInputChange('image_url', e.target.value)}
                         placeholder="https://..."
                         data-testid="service-image-input"
@@ -1074,10 +1078,10 @@ const ServiceBox = () => {
                         Generate AI
                       </Button>
                     </div>
-                    {selectedService.image_url && (
+                    {(selectedService.image_url || selectedService.watercolor_image || selectedService.image) && (
                       <div className="mt-2">
                         <img 
-                          src={selectedService.image_url} 
+                          src={selectedService.image_url || selectedService.watercolor_image || selectedService.image} 
                           alt={selectedService.name} 
                           className="w-32 h-32 object-cover rounded-lg border"
                         />
