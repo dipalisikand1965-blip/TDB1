@@ -266,9 +266,66 @@ const CarePage = () => {
   const [requestResult, setRequestResult] = useState(null);
   const [heroIndex, setHeroIndex] = useState(0);
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // CMS STATE - Loaded from /api/care/page-config
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const [cmsConfig, setCmsConfig] = useState({
+    title: "Caring for {petName} made simple",
+    subtitle: 'Grooming, health, wellness & daily care essentials',
+    askMira: {
+      enabled: true,
+      placeholder: "Grooming tips for double coats... vet near me",
+      buttonColor: 'bg-rose-500'
+    },
+    sections: {
+      askMira: { enabled: true },
+      miraPrompts: { enabled: true },
+      careExperiences: { enabled: true },
+      bundles: { enabled: true },
+      products: { enabled: true },
+      conciergeServices: { enabled: true },
+      personalized: { enabled: true }
+    }
+  });
+  const [cmsCategories, setCmsCategories] = useState([]);
+  const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
+  const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  
+  // Personalize title with pet name
+  const pageTitle = cmsConfig.title?.replace('{petName}', selectedPet?.name || 'your pet') || 
+    `Caring for ${selectedPet?.name || 'your pet'} made simple`;
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // FETCH CMS CONFIGURATION
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const fetchCMSConfig = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/care/page-config`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.config && Object.keys(data.config).length > 0) {
+          setCmsConfig(prev => ({ ...prev, ...data.config }));
+        }
+        if (data.categories?.length > 0) {
+          setCmsCategories(data.categories);
+        }
+        if (data.conciergeServices?.length > 0) {
+          setCmsConciergeServices(data.conciergeServices);
+        }
+        if (data.miraPrompts?.length > 0) {
+          setCmsMiraPrompts(data.miraPrompts);
+        }
+        console.log('[CarePage] CMS config loaded');
+      }
+    } catch (error) {
+      console.error('[CarePage] Failed to fetch CMS config:', error);
+    }
+  };
+  
   // Scroll to top when page loads
   useEffect(() => {
     window.scrollTo(0, 0);
+    fetchCMSConfig(); // Load CMS config
   }, []);
   
   // Handle URL type parameter - scroll to services and open relevant flow

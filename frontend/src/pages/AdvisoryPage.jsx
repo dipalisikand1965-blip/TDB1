@@ -330,8 +330,57 @@ const AdvisoryPage = () => {
   const petBreed = activePet?.breed || '';
   const petAge = activePet?.age_years || activePet?.age || 0;
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // CMS STATE - Loaded from /api/advisory/page-config
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const [cmsConfig, setCmsConfig] = useState({
+    title: "Expert advice for {petName}",
+    subtitle: 'Behavior, nutrition, training & health consultations',
+    askMira: {
+      enabled: true,
+      placeholder: "Behavior issues... nutrition advice",
+      buttonColor: 'bg-teal-500'
+    },
+    sections: {
+      askMira: { enabled: true },
+      miraPrompts: { enabled: true },
+      advisory: { enabled: true },
+      bundles: { enabled: true },
+      products: { enabled: true },
+      personalized: { enabled: true }
+    }
+  });
+  const [cmsCategories, setCmsCategories] = useState([]);
+  const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  
+  // Personalize title with pet name
+  const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet') || 
+    `Expert advice for ${activePet?.name || 'your pet'}`;
+  
+  const fetchCMSConfig = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/advisory/page-config`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.config && Object.keys(data.config).length > 0) {
+          setCmsConfig(prev => ({ ...prev, ...data.config }));
+        }
+        if (data.categories?.length > 0) {
+          setCmsCategories(data.categories);
+        }
+        if (data.miraPrompts?.length > 0) {
+          setCmsMiraPrompts(data.miraPrompts);
+        }
+        console.log('[AdvisoryPage] CMS config loaded');
+      }
+    } catch (error) {
+      console.error('[AdvisoryPage] Failed to fetch CMS config:', error);
+    }
+  };
+  
   useEffect(() => {
     window.scrollTo(0, 0);
+    fetchCMSConfig(); // Load CMS config
     fetchData();
     fetchWeather();
     fetchGuidedPaths();

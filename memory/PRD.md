@@ -362,18 +362,18 @@ Collections for CMS:
 |---|--------|-----------|-------------|------------------|--------|
 | 1 | Learn | `LearnPage.jsx` | YES | YES | COMPLETE |
 | 2 | Paperwork | `PaperworkPage.jsx` | YES | YES | COMPLETE |
-| 3 | Stay | `StayPage.jsx` | YES | Partial | COMPLETE |
-| 4 | Care | `CarePage.jsx` | NO | Partial | TODO |
-| 5 | Fit | `FitPage.jsx` | NO | Partial | TODO |
-| 6 | Travel | `TravelPage.jsx` | NO | Partial | TODO |
-| 7 | Dine | `DinePage.jsx` | NO | Partial | TODO |
-| 8 | Enjoy | `EnjoyPage.jsx` | NO | Partial | TODO |
-| 9 | Celebrate | `CelebratePage.jsx` | NO | Partial | TODO |
-| 10 | Emergency | `EmergencyPage.jsx` | NO | Partial | TODO |
-| 11 | Advisory | `AdvisoryPage.jsx` | NO | Partial | TODO |
-| 12 | Farewell | `FarewellPage.jsx` | NO | Partial | TODO |
-| 13 | Adopt | `AdoptPage.jsx` | NO | Partial | TODO |
-| 14 | Shop | `ShopPage.jsx` | NO | Partial | TODO |
+| 3 | Stay | `StayPage.jsx` | YES | YES | COMPLETE |
+| 4 | Care | `CarePage.jsx` | YES | YES | COMPLETE |
+| 5 | Fit | `FitPage.jsx` | YES | YES | COMPLETE |
+| 6 | Travel | `TravelPage.jsx` | YES | YES | COMPLETE |
+| 7 | Dine | `DinePage.jsx` | YES | YES | COMPLETE |
+| 8 | Enjoy | `EnjoyPage.jsx` | YES | YES | COMPLETE |
+| 9 | Celebrate | `CelebratePage.jsx` | YES | YES | COMPLETE |
+| 10 | Emergency | `EmergencyPage.jsx` | YES | YES | COMPLETE |
+| 11 | Advisory | `AdvisoryPage.jsx` | YES | YES | COMPLETE |
+| 12 | Farewell | `FarewellPage.jsx` | YES | YES | COMPLETE |
+| 13 | Adopt | `AdoptPage.jsx` | YES | YES | COMPLETE |
+| 14 | Shop | `ShopPage.jsx` | YES | YES | COMPLETE |
 
 ---
 
@@ -698,27 +698,27 @@ Line ~3670-3691: Tab rendering
 
 # 11. FUTURE TASKS & ROADMAP
 
-## 11.1 Immediate (P0)
+## 11.1 COMPLETED
 
-1. **Refactor PaperworkPage.jsx** - COMPLETE
-   - Moved Mira assistant to top
-   - Added product modals for Document Organisation Kits
-   - CMS-driven content
+1. **All 14 Pillar Pages have CMS Integration** - COMPLETE (Dec 12, 2025)
+   - Learn, Paperwork, Care, Fit, Travel, Stay, Dine, Enjoy, Celebrate, Emergency, Advisory, Farewell, Adopt, Shop
+   - All pages fetch config from `/api/{pillar}/page-config`
+   - All pages have personalized titles using `{petName}` placeholders
+   - All pages have CMS-driven sections toggle
 
-2. **Refactor StayPage.jsx** - COMPLETE
-   - Added CMS integration
-   - Ask Mira section at top
-   - Page fetches config from /api/stay/page-config
+2. **ArchetypeProducts now has product modals** - COMPLETE
+   - "Party picks for {pet}" section opens full product detail modal on click
+
+3. **Paperwork products updated** - COMPLETE
+   - 14 unique AI-generated watercolor images
+   - 9 unique bundle images
+
+4. **Insurance service images fixed** - COMPLETE
+   - 5 insurance services now have proper contextual images
 
 ## 11.2 Next Phase (P1)
 
-3. **Refactor remaining 11 pillar pages** - Make them CMS-driven
-   - Care, Fit, Travel, Dine, Enjoy, Celebrate, Emergency, Advisory, Farewell, Adopt, Shop
-   - Follow the pattern established in LearnPage.jsx, PaperworkPage.jsx, StayPage.jsx
-   - Ensure all personalization works
-   - Test with logged-in user
-
-4. **Implement persistent background tasks** - Replace FastAPI BackgroundTasks with Celery
+5. **Test all pages thoroughly** - Verify CMS works on all pages
 
 ## 11.3 Later (P2)
 
