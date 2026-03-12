@@ -28,6 +28,7 @@ import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
 import { ChecklistDownloadButton } from '../components/checklists';
+import { getPetPhotoUrl } from '../utils/petAvatar';
 import {
   Shield, Heart, Plane, FileText, Sparkles, Scale, Upload, Download,
   Folder, FolderOpen, File, Eye, Trash2, Bell, Calendar, Clock,
@@ -40,12 +41,12 @@ import {
 // DEFAULT CMS CONFIG - Fallback if CMS returns empty
 // ═══════════════════════════════════════════════════════════════════════════════
 const DEFAULT_CATEGORY_CONFIG = {
-  identity: { id: 'identity', name: 'Identity & Safety', icon: 'Shield', color: 'from-blue-600 to-indigo-700', bgColor: 'bg-blue-50', textColor: 'text-blue-600', borderColor: 'border-blue-200', description: 'Core identity documents' },
-  medical: { id: 'medical', name: 'Medical & Health', icon: 'Heart', color: 'from-red-500 to-rose-600', bgColor: 'bg-red-50', textColor: 'text-red-600', borderColor: 'border-red-200', description: 'Health records & vaccinations' },
-  travel: { id: 'travel', name: 'Travel Documents', icon: 'Plane', color: 'from-cyan-500 to-blue-600', bgColor: 'bg-cyan-50', textColor: 'text-cyan-600', borderColor: 'border-cyan-200', description: 'Travel certificates' },
-  insurance: { id: 'insurance', name: 'Insurance & Financial', icon: 'FileText', color: 'from-emerald-500 to-green-600', bgColor: 'bg-emerald-50', textColor: 'text-emerald-600', borderColor: 'border-emerald-200', description: 'Insurance & receipts' },
-  care: { id: 'care', name: 'Care & Training', icon: 'Sparkles', color: 'from-purple-500 to-violet-600', bgColor: 'bg-purple-50', textColor: 'text-purple-600', borderColor: 'border-purple-200', description: 'Grooming & training' },
-  legal: { id: 'legal', name: 'Legal & Compliance', icon: 'Scale', color: 'from-amber-500 to-orange-600', bgColor: 'bg-amber-50', textColor: 'text-amber-600', borderColor: 'border-amber-200', description: 'Licenses & permits' }
+  identity: { id: 'identity', name: 'Identity & Safety', icon: 'Shield', color: 'from-blue-600 to-indigo-700', bgColor: 'bg-blue-50', textColor: 'text-blue-600', borderColor: 'border-blue-200', description: 'Core identity documents', subcategories: [{ id: 'microchip', name: 'Microchip Registration', required: true }, { id: 'adoption', name: 'Adoption Certificate', required: true }, { id: 'pedigree', name: 'Pedigree Certificate' }, { id: 'registration', name: 'KCI Registration' }] },
+  medical: { id: 'medical', name: 'Medical & Health', icon: 'Heart', color: 'from-red-500 to-rose-600', bgColor: 'bg-red-50', textColor: 'text-red-600', borderColor: 'border-red-200', description: 'Health records & vaccinations', subcategories: [{ id: 'vaccination', name: 'Vaccination Records', required: true, has_reminder: true }, { id: 'deworming', name: 'Deworming Records', has_reminder: true }, { id: 'health_checkup', name: 'Health Checkup Reports' }, { id: 'prescriptions', name: 'Prescriptions' }] },
+  travel: { id: 'travel', name: 'Travel Documents', icon: 'Plane', color: 'from-cyan-500 to-blue-600', bgColor: 'bg-cyan-50', textColor: 'text-cyan-600', borderColor: 'border-cyan-200', description: 'Travel certificates', subcategories: [{ id: 'airline_cert', name: 'Airline Health Certificate' }, { id: 'pet_passport', name: 'Pet Passport' }, { id: 'import_permit', name: 'Import Permit' }] },
+  insurance: { id: 'insurance', name: 'Insurance & Financial', icon: 'FileText', color: 'from-emerald-500 to-green-600', bgColor: 'bg-emerald-50', textColor: 'text-emerald-600', borderColor: 'border-emerald-200', description: 'Insurance & receipts', subcategories: [{ id: 'policy', name: 'Insurance Policy' }, { id: 'claims', name: 'Claim Documents' }, { id: 'receipts', name: 'Purchase Receipts' }] },
+  care: { id: 'care', name: 'Care & Training', icon: 'Sparkles', color: 'from-purple-500 to-violet-600', bgColor: 'bg-purple-50', textColor: 'text-purple-600', borderColor: 'border-purple-200', description: 'Grooming & training', subcategories: [{ id: 'grooming', name: 'Grooming Records' }, { id: 'training_cert', name: 'Training Certificates' }, { id: 'behavior', name: 'Behavior Reports' }] },
+  legal: { id: 'legal', name: 'Legal & Compliance', icon: 'Scale', color: 'from-amber-500 to-orange-600', bgColor: 'bg-amber-50', textColor: 'text-amber-600', borderColor: 'border-amber-200', description: 'Licenses & permits', subcategories: [{ id: 'license', name: 'Pet License' }, { id: 'permits', name: 'Housing Permits' }, { id: 'noc', name: 'Society NOC' }] }
 };
 
 const DEFAULT_MIRA_PROMPTS = [
@@ -87,6 +88,7 @@ const PaperworkPage = () => {
       askMira: { enabled: true },
       miraPrompts: { enabled: true },
       documentVault: { enabled: true },
+      documentKits: { enabled: true },
       conciergeServices: { enabled: true },
       bundles: { enabled: true },
       products: { enabled: true },
@@ -113,6 +115,9 @@ const PaperworkPage = () => {
   // Ask Mira state
   const [askMiraQuestion, setAskMiraQuestion] = useState('');
   const [askMiraLoading, setAskMiraLoading] = useState(false);
+  
+  // Product modal state
+  const [selectedProduct, setSelectedProduct] = useState(null);
   
   const [activeCategory, setActiveCategory] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -142,6 +147,9 @@ const PaperworkPage = () => {
   // COMPUTED VALUES - Categories, prompts with fallback to defaults
   // ═══════════════════════════════════════════════════════════════════════════════
   const documentCategories = cmsCategories.length > 0 ? cmsCategories : Object.values(DEFAULT_CATEGORY_CONFIG);
+  const documentCategoriesMap = cmsCategories.length > 0 
+    ? cmsCategories.reduce((acc, cat) => ({ ...acc, [cat.id]: cat }), {})
+    : DEFAULT_CATEGORY_CONFIG;
   const conciergeServices = cmsConciergeServices.length > 0 ? cmsConciergeServices : DEFAULT_CONCIERGE_SERVICES;
   const miraPrompts = cmsMiraPrompts.length > 0 ? cmsMiraPrompts : DEFAULT_MIRA_PROMPTS;
   
@@ -153,7 +161,8 @@ const PaperworkPage = () => {
   const getContextualMiraPrompt = () => {
     const completionPercent = getCompletionPercentage();
     if (completionPercent < 30) {
-      return miraPrompts.find(p => p.trigger === 'no_microchip') || miraPrompts[0];
+      const prompt = miraPrompts.find(p => p.trigger === 'no_microchip') || miraPrompts[0];
+      return { ...prompt, message: prompt?.message?.replace('{petName}', activePet?.name || 'Your pet') || '' };
     } else if (completionPercent < 100) {
       const prompt = miraPrompts.find(p => p.trigger === 'incomplete_vault') || miraPrompts[2];
       return { ...prompt, message: prompt?.message?.replace('{percent}', completionPercent) || '' };
@@ -207,7 +216,13 @@ const PaperworkPage = () => {
     try {
       // Open Mira AI with the question
       window.dispatchEvent(new CustomEvent('openMiraAI', {
-        detail: { message: askMiraQuestion, context: 'paperwork', pillar: 'paperwork' }
+        detail: { 
+          message: askMiraQuestion, 
+          context: 'paperwork', 
+          pillar: 'paperwork',
+          pet_name: activePet?.name,
+          pet_breed: activePet?.breed
+        }
       }));
       setAskMiraQuestion('');
     } catch (error) {
@@ -400,9 +415,8 @@ const PaperworkPage = () => {
       });
 
       if (response.ok) {
-        const result = await response.json();
         toast({
-          title: "Request Submitted! 📄",
+          title: "Request Submitted!",
           description: "Our team will help you with your paperwork within 24 hours."
         });
         setShowRequestModal(false);
@@ -431,15 +445,102 @@ const PaperworkPage = () => {
     }
   };
 
-  const selectedSubcategories = categories[uploadForm.category]?.subcategories || [];
+  const handleAddToCart = (product) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price || 999,
+      quantity: 1,
+      image_url: product.image || product.image_url,
+      pillar: 'paperwork'
+    });
+    toast({
+      title: "Added to cart",
+      description: product.name,
+    });
+    setSelectedProduct(null);
+  };
+
+  const selectedSubcategories = documentCategoriesMap[uploadForm.category]?.subcategories || [];
+
+  // Get contextual Mira prompt for display
+  const contextualPrompt = getContextualMiraPrompt();
 
   return (
     <PillarPageLayout
       pillar="paperwork"
       title="Paperwork - Document Vault | The Doggy Company"
-      description="Secure pet document storage. Identity, medical records, travel papers, insurance — neatly organized, securely stored, instantly accessible."
+      description="Secure pet document storage. Identity, medical records, travel papers, insurance - neatly organized, securely stored, instantly accessible."
     >
-      {/* Quick Action Banner - Below Hero */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* 1. ASK MIRA BAR - CMS DRIVEN (Moved to TOP as per requirements) */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {cmsConfig.sections?.askMira?.enabled !== false && (
+        <section className="py-8 px-4 bg-gradient-to-b from-slate-50 to-white" data-testid="paperwork-ask-mira">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-6">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900" data-testid="paperwork-page-title">
+                {pageTitle}
+              </h1>
+              <p className="text-gray-600 mt-2">{cmsConfig.subtitle}</p>
+            </div>
+            
+            <div className="max-w-2xl mx-auto">
+              <div className="flex gap-2 items-center bg-white rounded-full border border-gray-200 shadow-sm p-1.5 pl-5">
+                <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <Input
+                  value={askMiraQuestion}
+                  onChange={(e) => setAskMiraQuestion(e.target.value)}
+                  placeholder={cmsConfig.askMira?.placeholder || "Find vaccination records... insurance renewal dates"}
+                  className="flex-1 border-0 focus-visible:ring-0 text-sm placeholder:text-gray-400"
+                  onKeyDown={(e) => e.key === 'Enter' && handleAskMira()}
+                  data-testid="ask-paperwork-input"
+                />
+                <Button
+                  onClick={handleAskMira}
+                  disabled={askMiraLoading || !askMiraQuestion.trim()}
+                  className={`rounded-full ${cmsConfig.askMira?.buttonColor || 'bg-blue-500'} hover:opacity-90 h-10 w-10 p-0`}
+                >
+                  {askMiraLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* 2. MIRA'S CONTEXTUAL PROMPT - CMS DRIVEN */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {cmsConfig.sections?.miraPrompts?.enabled !== false && contextualPrompt && activePet && (
+        <div className="px-4 pb-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 p-5 text-white">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-8 translate-x-8" />
+              <div className="relative flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                  {contextualPrompt.type === 'tip' ? <Lightbulb className="w-6 h-6" /> :
+                   contextualPrompt.type === 'reminder' ? <Bell className="w-6 h-6" /> :
+                   <Sparkles className="w-6 h-6" />}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-medium text-white/80 uppercase tracking-wider">
+                      {contextualPrompt.type === 'tip' ? 'Mira\'s Tip' : 
+                       contextualPrompt.type === 'reminder' ? 'Reminder' : 'Suggestion'}
+                    </span>
+                  </div>
+                  <p className="text-sm md:text-base font-medium leading-relaxed" data-testid="mira-contextual-prompt">
+                    {contextualPrompt.message}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Action Banner */}
       <div className="bg-gradient-to-r from-slate-700 to-slate-800 text-white py-4">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -479,9 +580,11 @@ const PaperworkPage = () => {
         </div>
       </div>
 
-      {/* Document Vault Section (for logged in users) */}
-      {user && (
-        <section className="py-12 bg-white">
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* 3. DOCUMENT VAULT SECTION - CMS DRIVEN Categories */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {cmsConfig.sections?.documentVault?.enabled !== false && user && (
+        <section className="py-12 bg-white" data-testid="document-vault-section">
           <div className="max-w-7xl mx-auto px-4">
             {/* Pet Selector */}
             {userPets.length > 0 && (
@@ -524,15 +627,16 @@ const PaperworkPage = () => {
                   <p className="text-sm text-blue-200 mt-2">
                     {getCompletionPercentage() < 100 
                       ? "Upload microchip, vaccination, and adoption docs to complete essentials"
-                      : "All essential documents uploaded! Great job! 🎉"
+                      : "All essential documents uploaded! Great job!"
                     }
                   </p>
                 </Card>
 
-                {/* Document Folders Grid - 2x3 on mobile */}
+                {/* Document Folders Grid - Using CMS categories */}
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-8">
-                  {Object.entries(CATEGORY_CONFIG).map(([catId, config]) => {
-                    const Icon = config.icon;
+                  {documentCategories.map((catConfig) => {
+                    const catId = catConfig.id;
+                    const IconComponent = ICON_MAP[catConfig.icon] || Folder;
                     const catDocs = documents[catId]?.documents || [];
                     const isActive = activeCategory === catId;
                     
@@ -540,21 +644,21 @@ const PaperworkPage = () => {
                       <Card 
                         key={catId}
                         className={`p-2 sm:p-4 cursor-pointer transition-all hover:shadow-lg ${
-                          isActive ? `ring-2 ring-offset-2 ${config.borderColor} ring-blue-500` : ''
+                          isActive ? `ring-2 ring-offset-2 ring-blue-500` : ''
                         }`}
                         onClick={() => setActiveCategory(isActive ? null : catId)}
                         data-testid={`folder-${catId}`}
                       >
                         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-4">
-                          <div className={`p-2 sm:p-3 rounded-xl bg-gradient-to-br ${config.color}`}>
+                          <div className={`p-2 sm:p-3 rounded-xl bg-gradient-to-br ${catConfig.color}`}>
                             {isActive ? (
                               <FolderOpen className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                             ) : (
-                              <Folder className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                              <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                             )}
                           </div>
                           <div className="flex-1 text-center sm:text-left">
-                            <h3 className="font-semibold text-gray-900 text-xs sm:text-base">{config.name}</h3>
+                            <h3 className="font-semibold text-gray-900 text-xs sm:text-base">{catConfig.name}</h3>
                             <p className="text-[10px] sm:text-sm text-gray-500">{catDocs.length} docs</p>
                           </div>
                           <ChevronRight className={`hidden sm:block w-5 h-5 text-gray-400 transition-transform ${isActive ? 'rotate-90' : ''}`} />
@@ -566,7 +670,7 @@ const PaperworkPage = () => {
                             {catDocs.map((doc) => (
                               <div key={doc.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                                 <div className="flex items-center gap-2">
-                                  <File className={`w-4 h-4 ${config.textColor}`} />
+                                  <File className={`w-4 h-4 ${catConfig.textColor}`} />
                                   <span className="text-sm text-gray-700">{doc.document_name}</span>
                                 </div>
                                 <div className="flex gap-1">
@@ -642,119 +746,271 @@ const PaperworkPage = () => {
         </section>
       )}
 
-      {/* Products & Bundles Section */}
-      <section id="paperwork-products" className="py-12 bg-gradient-to-b from-slate-50 to-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-              Document Organization Kits
-            </h2>
-            <p className="text-gray-600">Everything you need to keep your pet's paperwork organized</p>
-          </div>
-          
-          {/* Bundles */}
-          {bundles.length > 0 && (
-            <div className="mb-12">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6 flex items-center gap-2">
-                <Star className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" /> Featured Bundles
-              </h3>
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-                {bundles.map((bundle) => (
-                  <Card 
-                    key={bundle.id} 
-                    className={`p-3 sm:p-5 border-2 hover:shadow-xl transition-all ${
-                      bundle.is_premium ? 'border-blue-400 bg-gradient-to-b from-blue-50 to-white' : 'border-gray-200'
-                    }`}
-                    data-testid={`bundle-${bundle.id}`}
-                  >
-                    {bundle.is_premium && (
-                      <Badge className="bg-blue-600 mb-2 sm:mb-3 text-[10px] sm:text-xs">Premium</Badge>
-                    )}
-                    {bundle.is_recommended && !bundle.is_premium && (
-                      <Badge className="bg-green-600 mb-2 sm:mb-3 text-[10px] sm:text-xs">Recommended</Badge>
-                    )}
-                    {bundle.for_new_pet_parents && (
-                      <Badge variant="outline" className="text-purple-600 border-purple-300 mb-2 sm:mb-3 text-[10px] sm:text-xs">New Parents</Badge>
-                    )}
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">{bundle.name}</h4>
-                    <p className="text-sm text-gray-600 mb-4">{bundle.description}</p>
-                    
-                    {bundle.includes_service && (
-                      <Badge variant="outline" className="text-blue-600 mb-3">
-                        <CheckCircle className="w-3 h-3 mr-1" /> Includes {bundle.service_type?.replace(/_/g, ' ')}
-                      </Badge>
-                    )}
-                    
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-2xl font-bold text-blue-600">₹{bundle.price}</span>
-                      <span className="text-sm text-gray-400 line-through">₹{bundle.original_price}</span>
-                      <Badge className="bg-green-100 text-green-700">
-                        Save ₹{bundle.original_price - bundle.price}
-                      </Badge>
-                    </div>
-                    
-                    {bundle.paw_reward_points > 0 && (
-                      <p className="text-sm text-blue-600 mb-4">🐾 Earn {bundle.paw_reward_points} Paw Points</p>
-                    )}
-                    
-                    <Button 
-                      className="w-full bg-blue-600 hover:bg-blue-700"
-                      onClick={() => {
-                        addToCart({
-                          id: bundle.id,
-                          name: bundle.name,
-                          price: bundle.price,
-                          image: bundle.image || 'https://via.placeholder.com/200?text=Paperwork+Bundle',
-                          quantity: 1,
-                          pillar: 'paperwork'
-                        });
-                        toast({
-                          title: "Added to Cart! 📄",
-                          description: `${bundle.name} added to your cart`
-                        });
-                      }}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* 4. DOCUMENT ORGANISATION KITS - Products with Full Modal */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {cmsConfig.sections?.documentKits?.enabled !== false && (
+        <section id="paperwork-products" className="py-12 bg-gradient-to-b from-slate-50 to-white" data-testid="document-kits-section">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                Document Organisation Kits
+              </h2>
+              <p className="text-gray-600">Everything you need to keep your pet's paperwork organized</p>
+            </div>
+            
+            {/* Bundles */}
+            {bundles.length > 0 && (
+              <div className="mb-12">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6 flex items-center gap-2">
+                  <Star className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" /> Featured Bundles
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {bundles.map((bundle) => (
+                    <Card 
+                      key={bundle.id} 
+                      className={`p-4 sm:p-5 border-2 hover:shadow-xl transition-all ${
+                        bundle.is_premium ? 'border-blue-400 bg-gradient-to-b from-blue-50 to-white' : 'border-gray-200'
+                      }`}
+                      data-testid={`bundle-${bundle.id}`}
                     >
-                      Add to Cart
-                    </Button>
-                  </Card>
-                ))}
+                      {bundle.is_premium && (
+                        <Badge className="bg-blue-600 mb-2 sm:mb-3 text-[10px] sm:text-xs">Premium</Badge>
+                      )}
+                      {bundle.is_recommended && !bundle.is_premium && (
+                        <Badge className="bg-green-600 mb-2 sm:mb-3 text-[10px] sm:text-xs">Recommended</Badge>
+                      )}
+                      {bundle.for_new_pet_parents && (
+                        <Badge variant="outline" className="text-purple-600 border-purple-300 mb-2 sm:mb-3 text-[10px] sm:text-xs">New Parents</Badge>
+                      )}
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">{bundle.name}</h4>
+                      <p className="text-sm text-gray-600 mb-4">{bundle.description}</p>
+                      
+                      {bundle.includes_service && (
+                        <Badge variant="outline" className="text-blue-600 mb-3">
+                          <CheckCircle className="w-3 h-3 mr-1" /> Includes {bundle.service_type?.replace(/_/g, ' ')}
+                        </Badge>
+                      )}
+                      
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-2xl font-bold text-blue-600">{bundle.price}</span>
+                        {bundle.original_price && (
+                          <>
+                            <span className="text-sm text-gray-400 line-through">{bundle.original_price}</span>
+                            <Badge className="bg-green-100 text-green-700">
+                              Save {bundle.original_price - bundle.price}
+                            </Badge>
+                          </>
+                        )}
+                      </div>
+                      
+                      {bundle.paw_reward_points > 0 && (
+                        <p className="text-sm text-blue-600 mb-4">Earn {bundle.paw_reward_points} Paw Points</p>
+                      )}
+                      
+                      <Button 
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                        onClick={() => {
+                          addToCart({
+                            id: bundle.id,
+                            name: bundle.name,
+                            price: bundle.price,
+                            image: bundle.image || 'https://via.placeholder.com/200?text=Paperwork+Bundle',
+                            quantity: 1,
+                            pillar: 'paperwork'
+                          });
+                          toast({
+                            title: "Added to Cart!",
+                            description: `${bundle.name} added to your cart`
+                          });
+                        }}
+                      >
+                        Add to Cart
+                      </Button>
+                    </Card>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-          
-          {/* Products by Type - Using ProductCard for clickable modals */}
-          {products.length > 0 && (
-            <div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-                <ShoppingBag className="w-5 h-5 text-blue-500" />
-                Individual Products
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {products.slice(0, 10).map((product) => (
-                  <ProductCard key={product.id} product={product} pillar="paperwork" />
-                ))}
+            )}
+            
+            {/* Products with Click Modal */}
+            {products.length > 0 && (
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                  <ShoppingBag className="w-5 h-5 text-blue-500" />
+                  Individual Products
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                  {products.slice(0, 10).map((product, idx) => (
+                    <Card 
+                      key={product.id || idx}
+                      className="group cursor-pointer hover:shadow-lg transition-all overflow-hidden"
+                      onClick={() => setSelectedProduct(product)}
+                      data-testid={`product-${product.id || idx}`}
+                    >
+                      <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50">
+                        {product.image || product.image_url ? (
+                          <img 
+                            src={product.image || product.image_url}
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            onError={(e) => { e.target.style.display = 'none'; }}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <FileText className="w-12 h-12 text-blue-200" />
+                          </div>
+                        )}
+                        {product.compare_price && product.compare_price > product.price && (
+                          <Badge className="absolute top-2 right-2 bg-green-500 text-white text-xs">
+                            {Math.round((1 - product.price / product.compare_price) * 100)}% OFF
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="p-3">
+                        <h3 className="font-medium text-gray-900 text-sm line-clamp-2 mb-1">{product.name}</h3>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-blue-600 font-bold">{product.price}</span>
+                          {product.compare_price && product.compare_price > product.price && (
+                            <span className="text-gray-400 text-xs line-through">{product.compare_price}</span>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      </section>
+            )}
+          </div>
+        </section>
+      )}
 
-      {/* CTA Section */}
-      <section className="py-12 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">Need Help Organizing Documents?</h2>
-          <p className="text-lg text-blue-100 mb-8">
-            Our concierge® team can help you organize, digitize, and set up reminders for all your pet's important paperwork.
-          </p>
-          <Button 
-            size="lg" 
-            className="bg-white text-blue-600 hover:bg-blue-50"
-            onClick={() => setShowRequestModal(true)}
+      {/* Product Detail Modal */}
+      {selectedProduct && (
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          onClick={() => setSelectedProduct(null)}
+        >
+          <Card 
+            className="bg-white max-w-lg w-full max-h-[85vh] overflow-hidden shadow-2xl"
+            onClick={e => e.stopPropagation()}
           >
-            Request Document Assistance <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
+            <div className="relative">
+              {(selectedProduct.image || selectedProduct.image_url) ? (
+                <img 
+                  src={selectedProduct.image || selectedProduct.image_url}
+                  alt={selectedProduct.name}
+                  className="w-full h-56 object-cover"
+                />
+              ) : (
+                <div className="w-full h-56 bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
+                  <FileText className="w-16 h-16 text-blue-300" />
+                </div>
+              )}
+              <button 
+                onClick={() => setSelectedProduct(null)}
+                className="absolute top-3 right-3 bg-white rounded-full p-2 hover:bg-gray-100 shadow-md"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="p-5">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">{selectedProduct.name}</h2>
+              <p className="text-gray-600 text-sm mb-4">{selectedProduct.description}</p>
+              
+              <div className="flex items-baseline gap-2 mb-4">
+                <span className="text-2xl font-bold text-blue-600">{selectedProduct.price}</span>
+                {selectedProduct.compare_price && selectedProduct.compare_price > selectedProduct.price && (
+                  <>
+                    <span className="text-gray-400 line-through">{selectedProduct.compare_price}</span>
+                    <Badge className="bg-green-100 text-green-700">
+                      {Math.round((1 - selectedProduct.price / selectedProduct.compare_price) * 100)}% off
+                    </Badge>
+                  </>
+                )}
+              </div>
+              
+              {selectedProduct.paw_reward_points && (
+                <p className="text-sm text-blue-600 mb-4 flex items-center gap-1">
+                  <PawPrint className="w-4 h-4" />
+                  Earn {selectedProduct.paw_reward_points} paw points
+                </p>
+              )}
+              
+              <Button 
+                onClick={() => handleAddToCart(selectedProduct)}
+                className="w-full bg-blue-500 hover:bg-blue-600"
+                size="lg"
+              >
+                Add to Cart - {selectedProduct.price}
+              </Button>
+            </div>
+          </Card>
         </div>
-      </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* 5. CONCIERGE SERVICES - CMS DRIVEN */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {cmsConfig.sections?.conciergeServices?.enabled !== false && (
+        <section className="py-12 bg-gradient-to-r from-blue-600 to-indigo-700 text-white" data-testid="concierge-services-section">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold mb-2">Need Help Organizing Documents?</h2>
+              <p className="text-blue-100">Our concierge team can help you organize, digitize, and set up reminders</p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              {conciergeServices.map((service) => (
+                <Card key={service.id} className="p-6 bg-white/10 backdrop-blur border-white/20 text-white">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                      <Crown className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">{service.name}</h3>
+                      <p className="text-sm text-blue-200">{service.turnaround}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-blue-100 mb-4">{service.description}</p>
+                  {service.includes && service.includes.length > 0 && (
+                    <ul className="text-sm text-blue-100 mb-4 space-y-1">
+                      {service.includes.map((item, idx) => (
+                        <li key={idx} className="flex items-center gap-2">
+                          <CheckCircle className="w-3 h-3 text-green-300" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <span className="text-xl font-bold">
+                      {service.price === 0 ? 'Free' : `${service.price}`}
+                    </span>
+                    <Button 
+                      size="sm" 
+                      className="bg-white text-blue-600 hover:bg-blue-50"
+                      onClick={() => setShowRequestModal(true)}
+                    >
+                      {service.cta_text || 'Get Started'}
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+            
+            <div className="text-center">
+              <Button 
+                size="lg" 
+                className="bg-white text-blue-600 hover:bg-blue-50"
+                onClick={() => setShowRequestModal(true)}
+              >
+                Request Document Assistance <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Upload Modal */}
       <Dialog open={showUploadModal} onOpenChange={setShowUploadModal}>
@@ -777,8 +1033,8 @@ const PaperworkPage = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
-                    <SelectItem key={key} value={key}>{config.name}</SelectItem>
+                  {documentCategories.map((catConfig) => (
+                    <SelectItem key={catConfig.id} value={catConfig.id}>{catConfig.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -834,7 +1090,6 @@ const PaperworkPage = () => {
             <div>
               <Label>Upload Document *</Label>
               <div className="mt-2 space-y-3">
-                {/* File Input */}
                 <div className="relative">
                   <input 
                     type="file" 
@@ -856,7 +1111,7 @@ const PaperworkPage = () => {
                     <Upload className="w-8 h-8 text-gray-400" />
                     {uploadForm.file ? (
                       <div className="text-center">
-                        <p className="font-medium text-green-600">✅ {uploadForm.file.name}</p>
+                        <p className="font-medium text-green-600">{uploadForm.file.name}</p>
                         <p className="text-xs text-gray-500">{(uploadForm.file.size / 1024).toFixed(1)} KB</p>
                       </div>
                     ) : (
@@ -868,7 +1123,6 @@ const PaperworkPage = () => {
                   </button>
                 </div>
                 
-                {/* OR Divider */}
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-gray-200"></div>
@@ -878,7 +1132,6 @@ const PaperworkPage = () => {
                   </div>
                 </div>
                 
-                {/* URL Input */}
                 <Input 
                   value={uploadForm.file_url}
                   onChange={(e) => setUploadForm({...uploadForm, file_url: e.target.value, file: null})}
@@ -968,7 +1221,7 @@ const PaperworkPage = () => {
             <div className="text-center">
               <FileText className="w-12 h-12 mx-auto text-blue-500 mb-2" />
               <p className="text-sm text-gray-600">
-                Our concierge® team can help organize, digitize, and manage your pet's paperwork.
+                Our concierge team can help organize, digitize, and manage your pet's paperwork.
               </p>
             </div>
             
@@ -1051,67 +1304,59 @@ const PaperworkPage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* === SERVICE CATALOG WITH PRICING === */}
-      <ServiceCatalogSection 
-        pillar="paperwork"
-        title="Paperwork, Personalised"
-        subtitle="Documentation services with transparent pricing"
-        maxServices={8}
-      />
-
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* SOUL MADE PRODUCTS - Document organizers and folders with breed artwork */}
+      {/* PERSONALIZED SECTIONS - CMS DRIVEN */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* SOUL MADE COLLECTION - Breed-specific personalized products */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-12 px-4" data-testid="paperwork-soul-made-section">
-        <div className="max-w-6xl mx-auto">
-          <SoulMadeCollection
+      {cmsConfig.sections?.personalized?.enabled !== false && (
+        <>
+          {/* SERVICE CATALOG WITH PRICING */}
+          <ServiceCatalogSection 
             pillar="paperwork"
-            maxItems={8}
-            showTitle={true}
+            title="Paperwork, Personalised"
+            subtitle="Documentation services with transparent pricing"
+            maxServices={8}
           />
-        </div>
-      </section>
 
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4" data-testid="paperwork-breed-smart-section">
-        <div className="max-w-6xl mx-auto">
-          <BreedSmartRecommendations pillar="paperwork" />
-        </div>
-      </section>
+          {/* SOUL MADE COLLECTION */}
+          <section className="py-12 px-4" data-testid="paperwork-soul-made-section">
+            <div className="max-w-6xl mx-auto">
+              <SoulMadeCollection
+                pillar="paperwork"
+                maxItems={8}
+                showTitle={true}
+              />
+            </div>
+          </section>
 
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <ArchetypeProducts pillar="paperwork" maxProducts={8} showTitle={true} />
-        </div>
-      </section>
+          {/* BREED-SMART RECOMMENDATIONS */}
+          <section className="py-8 px-4" data-testid="paperwork-breed-smart-section">
+            <div className="max-w-6xl mx-auto">
+              <BreedSmartRecommendations pillar="paperwork" />
+            </div>
+          </section>
 
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* CURATED BUNDLES - Save with handpicked combinations */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <CuratedBundles pillar="paperwork" showTitle={true} />
-        </div>
-      </section>
+          {/* ARCHETYPE-PERSONALIZED PRODUCTS */}
+          <section className="py-8 px-4">
+            <div className="max-w-6xl mx-auto">
+              <ArchetypeProducts pillar="paperwork" maxProducts={8} showTitle={true} />
+            </div>
+          </section>
+
+          {/* CURATED BUNDLES */}
+          <section className="py-8 px-4">
+            <div className="max-w-6xl mx-auto">
+              <CuratedBundles pillar="paperwork" showTitle={true} />
+            </div>
+          </section>
+        </>
+      )}
       
-      {/* ═══════════════════════════════════════════════════════════════════
-          MIRA'S CURATED LAYER - Gold Standard Unified Component
-          Includes: Header + CuratedConciergeSection + PersonalizedPillarSection
-          ═══════════════════════════════════════════════════════════════════ */}
+      {/* MIRA'S CURATED LAYER */}
       <div className="py-8 bg-gradient-to-b from-white to-slate-50/30">
-        {/* Personalized Product Picks - Same as Celebrate/Dine gold standard */}
+        {/* Personalized Product Picks */}
         <PersonalizedPicks pillar="paperwork" maxProducts={6} />
 
-        {/* ═══════════════════════════════════════════════════════════════════════
-            MIRA ADVISOR - Document Assistant AI
-            ═══════════════════════════════════════════════════════════════════════ */}
+        {/* MIRA ADVISOR */}
         <div className="max-w-2xl mx-auto px-4 mb-8">
           <MiraAdvisorCard pillar="paperwork" activePet={activePet} />
           
@@ -1141,7 +1386,7 @@ const PaperworkPage = () => {
         )}
       </div>
       
-      {/* Concierge® Button - Blue C® for Service Desk chat */}
+      {/* Concierge Button */}
       <ConciergeButton 
         pillar="paperwork" 
         position="bottom-right"

@@ -19996,6 +19996,11 @@ async def export_all_data(password: str = Query(...)):
 
 
 # Include routers
+# NOTE: Pillar-specific routers must be registered BEFORE api_router
+# because api_router has a generic /{pillar}/page-config route that would
+# otherwise intercept requests intended for dedicated pillar routes
+app.include_router(learn_router)  # Learn Pillar - BEFORE api_router
+app.include_router(paperwork_router)  # Paperwork Pillar - BEFORE api_router
 app.include_router(api_router)
 app.include_router(admin_router)
 app.include_router(fulfilment_router)
@@ -20048,9 +20053,7 @@ app.include_router(travel_router)  # Travel Pillar
 app.include_router(care_router)  # Care Pillar
 app.include_router(enjoy_router)  # Enjoy Pillar
 app.include_router(fit_router)  # Fit Pillar
-app.include_router(learn_router)  # Learn Pillar
 app.include_router(advisory_router)  # Advisory Pillar
-app.include_router(paperwork_router)  # Paperwork Pillar
 app.include_router(emergency_router)  # Emergency Pillar
 app.include_router(celebrate_router)  # Celebrate Pillar
 app.include_router(adopt_router)  # Adopt Pillar
