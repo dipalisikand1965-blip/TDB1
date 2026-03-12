@@ -23,10 +23,11 @@ import { toast } from 'sonner';
 import useUniversalServiceCommand, { ENTRY_POINTS, REQUEST_TYPES } from '../../hooks/useUniversalServiceCommand';
 import { useAuth } from '../../context/AuthContext';
 import { usePillarContext } from '../../context/PillarContext';
+import { useCart } from '../../context/CartContext';
 import {
   X, BookOpen, Play, ShoppingBag, Users, MessageCircle,
   ChevronRight, ChevronDown, ExternalLink, Loader2, Sparkles,
-  ArrowRight
+  ArrowRight, ShoppingCart, Plus
 } from 'lucide-react';
 
 // Topic configurations with search keywords for products
@@ -338,6 +339,7 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
   const { user, token } = useAuth();
   const { currentPet } = usePillarContext();
   const { submitRequest, isSubmitting } = useUniversalServiceCommand();
+  const { addToCart } = useCart();
   
   const [activeTab, setActiveTab] = useState('overview');
   const [expandedTopic, setExpandedTopic] = useState(null);
@@ -347,6 +349,20 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
   const [loadingVideos, setLoadingVideos] = useState(false);
   
   const config = TOPIC_CONFIG[topicSlug];
+  
+  // Handle add to cart
+  const handleAddToCart = (product, e) => {
+    e?.stopPropagation();
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price || product.pricing?.selling_price || 999,
+      quantity: 1,
+      image_url: product.image_url || product.image,
+      pillar: 'learn'
+    });
+    toast.success(`Added ${product.name} to cart`);
+  };
   
   // Reset state when topic changes
   useEffect(() => {
@@ -375,7 +391,7 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
     setLoadingProducts(true);
     try {
       // Get pet's breed for personalization
-      const petBreed = selectedPet?.breed?.toLowerCase() || '';
+      const petBreed = currentPet?.breed?.toLowerCase() || '';
       
       // Fetch from Product Box with learn pillar
       const res = await fetch(`${API_URL}/api/product-box/products?pillar=learn&limit=50`);
@@ -713,19 +729,15 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
                     {products.slice(0, 4).map((product, idx) => (
                       <Card 
                         key={product.id || idx}
-                        className="p-3 cursor-pointer hover:shadow-md transition-all"
-                        onClick={() => {
-                          onClose();
-                          navigate(`/product/${product.id}`);
-                        }}
+                        className="p-3 cursor-pointer hover:shadow-md transition-all group"
                         data-testid={`product-card-${idx}`}
                       >
-                        <div className="aspect-square bg-gray-100 rounded-lg mb-2 overflow-hidden">
+                        <div className="aspect-square bg-gray-100 rounded-lg mb-2 overflow-hidden relative">
                           {(product.image_url || product.image || product.images?.[0]) ? (
                             <img 
                               src={product.image_url || product.image || product.images?.[0]} 
                               alt={product.name} 
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                               onError={(e) => { e.target.style.display = 'none'; }}
                             />
                           ) : (
@@ -734,10 +746,19 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
                             </div>
                           )}
                         </div>
-                        <h4 className="font-medium text-gray-900 text-xs line-clamp-2">{product.name}</h4>
+                        <h4 className="font-medium text-gray-900 text-xs line-clamp-2 mb-1">{product.name}</h4>
                         {(product.price || product.pricing?.selling_price) && (
-                          <p className="text-sm font-semibold text-teal-600 mt-1">₹{product.price || product.pricing?.selling_price}</p>
+                          <p className="text-sm font-semibold text-teal-600">₹{product.price || product.pricing?.selling_price}</p>
                         )}
+                        <Button 
+                          size="sm"
+                          onClick={(e) => handleAddToCart(product, e)}
+                          className="w-full mt-2 bg-teal-600 hover:bg-teal-700 text-xs h-8"
+                          data-testid={`add-to-cart-${idx}`}
+                        >
+                          <ShoppingCart className="w-3 h-3 mr-1" />
+                          Add to Cart
+                        </Button>
                       </Card>
                     ))}
                   </div>
@@ -749,7 +770,7 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
                     className="w-full bg-teal-600 hover:bg-teal-700"
                     data-testid="continue-to-shop-btn"
                   >
-                    Continue to Shop
+                    View More Products
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </>
