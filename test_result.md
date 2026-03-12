@@ -102,83 +102,10 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Please run a focused backend verification on https://pet-os-refactor.preview.emergentagent.com for the latest admin media/upload and nearby-places fixes. Please verify these exact cases: 1. POST /api/upload/product-image returns 200 for a valid PNG upload. 2. POST /api/upload/service-image returns 200 for a valid PNG upload. 3. POST /api/upload/bundle-image returns 200 for a valid PNG upload. 4. Product upload persistence: create a temporary product via /api/product-box/products, upload an image with /api/admin/product/{id}/upload-image, then confirm the product fetched back from /api/product-box/products has persisted image_url/images data. 5. Service upload persistence: create a temporary service via /api/service-box/services, upload an image with /api/admin/service/{id}/upload-image, then confirm the service fetched back from /api/service-box/services has persisted image_url. 6. Nearby Google-powered route check: /api/nearby/places should return 200 and non-empty results for representative Stay / Dine / Advisory-style queries using Goa coordinates."
+user_problem_statement: "Please test the latest Fit/Dine fixes on https://pet-os-refactor.preview.emergentagent.com. Member credentials: dipali@clubconcierge.in / test123. Verify: 1. Login works (may be slow ~12s). 2. On /fit, verify core top-order: Ask Mira input before daily tip/help buckets, personalized layer (data-testid=fit-personalized-picks-top) before #guided-paths. 3. On /dine, verify personalized section (data-testid=dine-personalized-picks-top) near top. 4. On /dine, verify nearby dining cards render (not empty skeletons) and reserve buttons visible."
 
 backend:
-  - task: "Upload Endpoints - Product Image"
-    implemented: true
-    working: true
-    file: "/app/backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "✅ POST /api/upload/product-image returns 200 for valid PNG upload. Successfully uploaded test image and received Cloudinary URL: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331085/doggy/products/admin_upload_20260312155805.webp"
-
-  - task: "Upload Endpoints - Service Image"
-    implemented: true
-    working: true
-    file: "/app/backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "✅ POST /api/upload/service-image returns 200 for valid PNG upload. Successfully uploaded test image and received Cloudinary URL: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331086/doggy/services/admin_upload_20260312155806.webp"
-
-  - task: "Upload Endpoints - Bundle Image"
-    implemented: true
-    working: true
-    file: "/app/backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "✅ POST /api/upload/bundle-image returns 200 for valid PNG upload. Successfully uploaded test image and received Cloudinary URL: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331086/doggy/bundles/admin_upload_20260312155806.webp"
-
-  - task: "Product Upload Persistence"
-    implemented: true
-    working: true
-    file: "/app/backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "✅ Product upload persistence verified: Created temporary product PROD-9AFF9BFD0684 via /api/product-box/products, uploaded image via /api/admin/product/{id}/upload-image, verified image persistence in fetched product data. Image URL correctly persisted: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331087/doggy/products/PROD-9AFF9BFD0684_20260312155807.webp"
-
-  - task: "Service Upload Persistence"
-    implemented: true
-    working: true
-    file: "/app/backend/service_box_routes.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "✅ Service upload persistence verified: Created temporary service SVC-CARE-TEST-SERVICE-91C9C2F via /api/service-box/services, uploaded image via /api/admin/service/{id}/upload-image, verified image persistence in fetched service data. Image URL correctly persisted: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331088/doggy/services/SVC-CARE-TEST-SERVICE-91C9C2F_20260312155808.webp"
-
-  - task: "Nearby Places Google-Powered API"
-    implemented: true
-    working: true
-    file: "/app/backend/nearby_places_routes.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "✅ /api/nearby/places Google-powered route verified: All representative queries for Stay (pet friendly hotel), Dine (pet friendly cafe), and Advisory (vet) using Goa coordinates returned 200 status with non-empty results. Stay query found 10 results, Dine query found 10 results, Advisory query found 10 results. Google Places API integration functioning correctly."
-
-frontend:
-  - task: "Frontend Testing - Not Requested"
+  - task: "Backend testing not requested"
     implemented: true
     working: "NA"
     file: "N/A"
@@ -188,36 +115,105 @@ frontend:
     status_history:
         - working: "NA"
           agent: "testing"
-          comment: "Frontend testing not requested in this verification cycle. Focus was specifically on backend admin media/upload endpoints and nearby places API functionality."
+          comment: "Backend testing not requested. Focus is on frontend Fit/Dine page fixes."
+
+frontend:
+  - task: "User Login Authentication"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/LoginPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Login functionality needs testing with member credentials: dipali@clubconcierge.in / test123. Auth calls may take ~12 seconds."
+        - working: true
+          agent: "testing"
+          comment: "✅ Login successful with member credentials (dipali@clubconcierge.in). Successfully authenticated and redirected to /pet-home. Auth took ~3 seconds, faster than expected 12s."
+
+  - task: "Fit Page - Ask Mira Input Position"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/FitPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Verify Ask Mira input appears before daily tip/help buckets sections. Gold Standard sequence requirement."
+        - working: true
+          agent: "testing"
+          comment: "✅ Gold Standard order verified. Ask Mira input (Y=704px) appears BEFORE daily tip (Y=1063px) and help buckets (Y=1293px). Correct top-order sequence maintained."
+
+  - task: "Fit Page - Personalized Layer Position"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/FitPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Verify personalized layer with data-testid='fit-personalized-picks-top' appears before #guided-paths element. Critical ordering for Gold Standard."
+        - working: true
+          agent: "testing"
+          comment: "✅ Gold Standard ordering verified. Personalized layer (data-testid='fit-personalized-picks-top', Y=1535px) correctly positioned BEFORE guided paths section (id='guided-paths', Y=2095px). Critical sequence maintained."
+
+  - task: "Dine Page - Personalized Picks Position"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/DinePage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Verify personalized section with data-testid='dine-personalized-picks-top' contains personalized picks near the top of page."
+        - working: true
+          agent: "testing"
+          comment: "✅ Dine personalized section verified. Element with data-testid='dine-personalized-picks-top' found at Y=2062px with substantial content (15,496 characters), confirming personalized picks are rendering properly near top of content area."
+
+  - task: "Dine Page - Nearby Dining Cards Rendering"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/DinePage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Verify nearby dining cards actually render (not empty skeletons) and reserve buttons are visible. NearbyPlacesCarousel component must show real data."
+        - working: true
+          agent: "testing"
+          comment: "✅ Nearby dining cards rendering successfully. Found 'Nearby Pet-Friendly Spots' section with 37 card elements (not empty skeletons). 7 reserve buttons visible and functional. NearbyPlacesCarousel component displaying real data correctly."
 
 metadata:
   created_by: "testing_agent"
-  version: "3.0"
-  test_sequence: 4
-  run_ui: false
+  version: "4.0"
+  test_sequence: 5
+  run_ui: true
 
 test_plan:
   current_focus:
-    - "Upload Endpoints - Product Image"
-    - "Upload Endpoints - Service Image"
-    - "Upload Endpoints - Bundle Image"
-    - "Product Upload Persistence"
-    - "Service Upload Persistence"
-    - "Nearby Places Google-Powered API"
+    - "User Login Authentication"
+    - "Fit Page - Ask Mira Input Position"
+    - "Fit Page - Personalized Layer Position"
+    - "Dine Page - Personalized Picks Position"
+    - "Dine Page - Nearby Dining Cards Rendering"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
+    - agent: "main"
+      message: "🎯 NEW TEST REQUEST - Frontend Fit/Dine page fixes verification requested. Focus on Gold Standard ordering: Ask Mira positioning, personalized picks placement, and nearby dining cards rendering."
     - agent: "testing"
-      message: "🎯 BACKEND VERIFICATION INITIATED - Focused testing on admin media/upload endpoints and nearby-places fixes as requested."
+      message: "📋 TEST PLAN UPDATED - Created 5 high-priority frontend test tasks: Login authentication, Fit page Ask Mira position, Fit page personalized layer ordering, Dine page personalized picks, and Dine page nearby cards rendering. Starting comprehensive UI testing with Playwright."
     - agent: "testing"
-      message: "✅ UPLOAD ENDPOINTS VERIFIED - All 3 upload endpoints (product-image, service-image, bundle-image) return 200 status for valid PNG uploads and successfully upload to Cloudinary with proper URL responses."
-    - agent: "testing"
-      message: "✅ PRODUCT PERSISTENCE VERIFIED - Full flow tested: create product via /api/product-box/products → upload image via /api/admin/product/{id}/upload-image → verify persistence in product data. Image URLs correctly stored and retrieved."
-    - agent: "testing"
-      message: "✅ SERVICE PERSISTENCE VERIFIED - Full flow tested: create service via /api/service-box/services → upload image via /api/admin/service/{id}/upload-image → verify persistence in service data. Image URLs correctly stored and retrieved."
-    - agent: "testing"
-      message: "✅ NEARBY PLACES API VERIFIED - /api/nearby/places Google-powered API working correctly for representative Stay/Dine/Advisory queries using Goa coordinates. All queries return 200 status with non-empty results (10 results each)."
-    - agent: "testing"
-      message: "🏆 ALL BACKEND VERIFICATION TESTS PASSED - 12/12 tests successful (100% pass rate). Upload endpoints, persistence flows, and Google Places integration all functioning correctly."
+      message: "✅ ALL TESTS PASSED (5/5) - Login successful, Fit page Gold Standard ordering verified (Ask Mira before daily tip/help buckets, personalized layer before guided paths), Dine page personalized picks rendering with content, nearby dining cards displaying with reserve buttons. All user-visible requirements met."

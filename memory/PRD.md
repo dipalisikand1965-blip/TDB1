@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document
-## Version 13.3.0 | March 12, 2026
+## Version 13.4.0 | March 12, 2026
 
 ---
 
@@ -224,6 +224,12 @@ Credentials: admin `aditya` / `lola4304`
 ---
 
 ## CHANGELOG
+
+### March 12, 2026 — v13.4.0 — FIT / DINE GOLD-STANDARD CORRECTIONS ✅
+- Corrected **Fit** top-section sequence so the core Gold Standard now flows with Ask Mira → Daily/Help → Personalized layer → Guided Paths in the correct order near the top of the page
+- Corrected **Dine** so personalized picks now sit in the earlier personalized section instead of appearing later out of order
+- Fixed **Dine nearby places display** by wiring the carousel to the real fetched data and re-fetching when the detected city resolves, so live nearby dining cards now render instead of empty skeletons
+- Verified on preview with member login: Fit section order now places personalized content before guided paths, and Dine shows live nearby pet-friendly spots with visible reserve buttons
 
 ### March 12, 2026 — v13.3.0 — ADMIN MEDIA + IMAGE STYLE FIXES ✅
 - Fixed **product image upload persistence** so admin uploads now save back to `products_master` correctly (not just side collections)
