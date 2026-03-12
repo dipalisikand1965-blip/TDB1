@@ -872,31 +872,8 @@ const LearnPage = () => {
             <p className="text-gray-600 mt-2">Quality products to support your learning journey</p>
           </div>
           
-          {/* Product Categories */}
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
-            {[
-              { id: 'all', label: 'All Products', icon: PawPrint },
-              { id: 'training', label: 'Training Tools', icon: Target },
-              { id: 'grooming', label: 'Grooming', icon: Sparkles },
-              { id: 'feeding', label: 'Feeding', icon: Heart },
-              { id: 'travel', label: 'Travel', icon: MapPin },
-              { id: 'comfort', label: 'Comfort', icon: Shield }
-            ].map((cat) => (
-              <Button
-                key={cat.id}
-                variant="outline"
-                size="sm"
-                onClick={() => navigate(`/shop?pillar=learn&category=${cat.id}`)}
-                className="hover:bg-amber-50 hover:border-amber-300"
-                data-testid={`product-category-${cat.id}`}
-              >
-                <cat.icon className="w-3.5 h-3.5 mr-1.5" /> {cat.label}
-              </Button>
-            ))}
-          </div>
-          
-          {/* Products Grid - Beautiful Advisory-style layout */}
-          <LearnProductsGrid maxProducts={8} showCategories={false} />
+          {/* Products Grid - Beautiful Advisory-style layout with built-in categories */}
+          <LearnProductsGrid maxProducts={24} showCategories={true} />
           
           <div className="mt-6 text-center">
             <Button 
