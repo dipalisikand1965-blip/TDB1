@@ -26,6 +26,8 @@ import { ConciergeButton } from '../components/mira-os';
 import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import PersonalizedPicks from '../components/PersonalizedPicks';
+import SoulMadeCollection from '../components/SoulMadeCollection';
+import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { PillarDailyTip, PillarHelpBuckets, PillarGuidedPaths } from '../components/PillarGoldSections';
@@ -1143,6 +1145,20 @@ const ShopPage = () => {
       <div className="py-8 bg-gradient-to-b from-white to-fuchsia-50/30">
         {/* Personalized Product Picks - Same as Celebrate/Dine gold standard */}
         <PersonalizedPicks pillar="shop" maxProducts={6} />
+
+        {selectedPet && (
+          <div className="max-w-7xl mx-auto px-4 mt-8">
+            <div className="rounded-3xl border border-fuchsia-100 bg-white p-4 sm:p-6" data-testid="shop-soul-made-layer">
+              <SoulMadeCollection pillar="shop" maxItems={8} showTitle={true} />
+            </div>
+          </div>
+        )}
+
+        {selectedPet && (
+          <div className="max-w-7xl mx-auto px-4 mt-8">
+            <BreedSmartRecommendations pillar="shop" />
+          </div>
+        )}
         
         <MiraCuratedLayer
           pillar="shop"

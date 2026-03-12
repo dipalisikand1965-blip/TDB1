@@ -17,6 +17,7 @@ import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
+import { PillarSoulLayer } from '../components/PillarSoulLayer';
 import CuratedBundles from '../components/CuratedBundles';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { PillarDailyTip, PillarHelpBuckets, PillarGuidedPaths } from '../components/PillarGoldSections';
@@ -616,6 +617,14 @@ const EmergencyPage = () => {
           onEdit={() => toast({ title: 'Edit Pet', description: 'Navigate to My Pets to update info' })}
         />
       </div>
+
+      <PillarSoulLayer
+        pillar="emergency"
+        activePet={activePet}
+        title={`Prepared for ${activePet?.name || 'your pet'}`}
+        subtitle={`Fast, soul-aware emergency recommendations for ${activePet?.name || 'your pet'} — so urgent help is shaped by who they are, not just what happened.`}
+        maxProducts={4}
+      />
 
       {/* ═══════════════════════════════════════════════════════════════════════════
           LAYER 5: EMERGENCY SITUATION GUIDES - 10+ actionable guides

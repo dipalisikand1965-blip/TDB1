@@ -102,115 +102,112 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the preview app at https://pet-os-refactor.preview.emergentagent.com for the latest Adopt pillar + documentation work. Verify: 1) Login with dipali@clubconcierge.in / test123, 2) Navigate to /adopt and verify personalized Pet OS section with specific data-testids, 3) Confirm personalization for active pet (Mojo), 4) Verify location modal can be dismissed, 5) Check /complete-documentation.html loads with stats showing 296 documents and ~88,370 lines."
+user_problem_statement: "Retest the preview app at https://pet-os-refactor.preview.emergentagent.com after the latest Pet OS soul-layer rollout. Member credentials: dipali@clubconcierge.in / test123. Verify these logged-in user-visible cases: 1) /emergency shows new personalized layer with data-testid='emergency-soul-layer-title' and text similar to 'Prepared for Mojo', 2) /advisory shows new personalized layer with data-testid='advisory-soul-layer-title' and text similar to 'Advice shaped for Mojo', 3) /farewell shows new personalized layer with data-testid='farewell-soul-layer-title' and text similar to 'In memory of Mojo', 4) /learn shows new personalized layer with data-testid='learn-soul-layer-title' and visible Soul Made / picks section for Mojo, 5) /shop shows new soul-made layer with data-testid='shop-soul-made-layer' for a logged-in pet context. Focus on user-visible regressions only."
 
 frontend:
-  - task: "Member Login Flow"
+  - task: "Member Login Flow for Soul-Layer Testing"
     implemented: true
-    working: true
+    working: false
     file: "/app/frontend/src/pages/Login.jsx"
     stuck_count: 0
-    priority: "high"
-    needs_retesting: false
+    priority: "critical"
+    needs_retesting: true
     status_history:
         - working: "NA"
           agent: "main"
-          comment: "Member login functionality with credentials dipali@clubconcierge.in / test123. Needs testing to verify login and redirect."
-        - working: true
+          comment: "Need to verify login for soul-layer testing with dipali@clubconcierge.in / test123"
+        - working: false
           agent: "testing"
-          comment: "✅ MEMBER LOGIN WORKING PERFECTLY - Tested login with dipali@clubconcierge.in / test123. Login page loads correctly with all data-testids present (login-page, login-email-input, login-password-input, login-submit-btn). Authentication successful with token stored (length: 168). Redirects correctly to /pet-home after login. User context properly set with email dipali@clubconcierge.in. Protected route access working."
+          comment: "❌ LOGIN FAILING IN AUTOMATED TEST - Login button shows 'Signing in...' state but does not redirect after 8 seconds. When testing manually by navigating to pages, user is not authenticated (shows 'Sign In' button in header). This is BLOCKING all soul-layer tests since the soul layers only display for logged-in users with active pets. Login was working in previous tests - this appears to be either a timeout issue in the test environment or a regression in the login flow. CRITICAL BLOCKER for soul-layer verification."
 
-  - task: "Adopt Page Personalized Pet OS Section"
+  - task: "Emergency Page Soul Layer (/emergency)"
     implemented: true
-    working: true
-    file: "/app/frontend/src/pages/AdoptPage.jsx"
+    working: "NA"
+    file: "/app/frontend/src/pages/EmergencyPage.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
-          agent: "main"
-          comment: "Personalized Pet OS section on /adopt page with specific data-testids for logged-in users. Shows personalized adoption plan for active pet. Needs testing to verify all required elements are present."
-        - working: true
           agent: "testing"
-          comment: "✅ ADOPT PAGE PET OS SECTION FULLY WORKING - All required data-testids present and functioning: 1) adopt-pet-os-section exists and displays correctly, 2) adopt-personalized-heading shows 'A better adoption plan for Mojo' - properly personalized, 3) adopt-personalized-commerce-section exists and renders, 4) adopt-personalized-commerce-title shows 'Personalized for Mojo'. Pet personalization working perfectly - Active pet: Mojo (Indie breed), pet photo displayed, breed information shown. Soul score displayed (88%). All soul notes cards render correctly. 'Ask Mira about Mojo' and 'Continue Mojo's Soul Journey' buttons present and functional."
+          comment: "BLOCKED BY LOGIN - Cannot verify emergency-soul-layer-title element. Code review shows PillarSoulLayer component correctly implemented at line 621-627 with title='Prepared for ${activePet?.name || \"your pet\"}' and data-testid='emergency-soul-layer-title'. Component structure is correct but cannot test without successful login. Expected text: 'Prepared for Mojo' or similar personalization."
 
-  - task: "Adopt Page Active Pet Personalization"
+  - task: "Advisory Page Soul Layer (/advisory)"
     implemented: true
-    working: true
-    file: "/app/frontend/src/pages/AdoptPage.jsx"
+    working: "NA"
+    file: "/app/frontend/src/pages/AdvisoryPage.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "✅ ACTIVE PET PERSONALIZATION VERIFIED - Page correctly personalizes for active pet Mojo. Found active pet name (adopt-active-pet-name): 'Mojo', active pet breed (adopt-active-pet-breed): 'Indie', active pet photo (adopt-active-pet-photo) with proper src from /api/pet-photo/pet-mojo-7327ad56. Pet name appears throughout personalized sections including headings and commerce titles. Soul Made Collection fetching breed-specific products for Indie breed. Personalized picks component loading for Mojo."
-
-  - task: "Location Modal Behavior"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/components/Mira/LocationPromptModal.jsx"
-    stuck_count: 0
-    priority: "medium"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "✅ LOCATION MODAL WORKING - 'Set Your Location' modal appears on /adopt page as designed. Modal includes: 1) Search city input field, 2) 'Use My Current Location' button with geolocation, 3) Popular cities quick selection, 4) Close button (X) for dismissal. Modal is dismissible and does not block page interaction. When user denies location permission, modal handles gracefully. No blocking overlay issues detected. Page remains accessible with 1 dialog present but no interaction blocking."
-
-  - task: "Complete Documentation Page"
-    implemented: true
-    working: true
-    file: "/app/frontend/public/complete-documentation.html"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
-          agent: "main"
-          comment: "Static HTML documentation page with complete project documentation. Should load at /complete-documentation.html and show stats with document count and line count."
-        - working: true
           agent: "testing"
-          comment: "✅ DOCUMENTATION PAGE FULLY WORKING - /complete-documentation.html loads successfully with title 'The Doggy Company - Complete Documentation'. Stats section displays EXACTLY as specified: '📊 Statistics: 296 documents | 88,370 lines | Everything you've built!' Page has substantial content (2,582,009 characters) with complete documentation, table of contents, and all memory folder files indexed. Page is not blank and renders correctly. Last updated timestamp shows March 12, 2026 at 15:02. All verification requirements met perfectly."
-        - working: true
+          comment: "BLOCKED BY LOGIN - Cannot verify advisory-soul-layer-title element. Code review shows PillarSoulLayer component correctly implemented at line 1229-1235 with title='Advice shaped for ${activePet?.name || \"your pet\"}' and data-testid='advisory-soul-layer-title'. Component structure is correct but cannot test without successful login. Expected text: 'Advice shaped for Mojo' or similar personalization."
+
+  - task: "Farewell Page Soul Layer (/farewell)"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/FarewellPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
           agent: "testing"
-          comment: "✅ BACKEND DOCUMENTATION GENERATION RE-VERIFIED - Latest testing confirms the updated documentation generation is working perfectly. GET /complete-documentation.html returns 200 status. Response contains 3,928,417 characters of substantial content. Exact required statistics found: 'Complete Documentation', '296 documents', '88,370 lines'. No backend errors preventing delivery. Documentation now successfully generated from full /app/memory markdown set (not truncated subset). All verification cases from review request PASSED."
+          comment: "BLOCKED BY LOGIN - Cannot verify farewell-soul-layer-title element. Code review shows PillarSoulLayer component correctly implemented at line 651-657 with title='In memory of ${activePet?.name || \"your pet\"}' and data-testid='farewell-soul-layer-title'. Component structure is correct but cannot test without successful login. Expected text: 'In memory of Mojo' or similar personalization."
+
+  - task: "Learn Page Soul Layer (/learn)"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/LearnPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "BLOCKED BY LOGIN - Cannot verify learn-soul-layer-title element. Code review shows custom soul layer implementation (not using PillarSoulLayer component) at line ~1210+ with title='Training picks shaped for ${activePet.name}' and data-testid='learn-soul-layer-title'. Also includes data-testid='learn-soul-layer' for the section and SoulMadeCollection component. Component structure is correct but cannot test without successful login. Expected text: 'Training picks shaped for Mojo' or similar."
+
+  - task: "Shop Page Soul Made Layer (/shop)"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/ShopPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "BLOCKED BY LOGIN - Cannot verify shop-soul-made-layer element. Code review shows the shop page has a section at line 1142-1155 with data-testid='shop-soul-made-layer' wrapping the SoulMadeCollection component. This is a different structure from other pillars (not using PillarSoulLayer component). Component structure is correct but cannot test without successful login and active pet context."
 
 metadata:
   created_by: "testing_agent"
-  version: "1.0"
-  test_sequence: 2
+  version: "2.0"
+  test_sequence: 3
 
 test_plan:
   current_focus:
-    - "Member Login Flow"
-    - "Adopt Page Personalized Pet OS Section"
-    - "Complete Documentation Page"
-  stuck_tasks: []
+    - "Member Login Flow for Soul-Layer Testing"
+    - "Emergency Page Soul Layer (/emergency)"
+    - "Advisory Page Soul Layer (/advisory)"
+    - "Farewell Page Soul Layer (/farewell)"
+    - "Learn Page Soul Layer (/learn)"
+    - "Shop Page Soul Made Layer (/shop)"
+  stuck_tasks:
+    - "Member Login Flow for Soul-Layer Testing"
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
     - agent: "testing"
-      message: "✅ ADOPT PILLAR + DOCUMENTATION TESTING COMPLETE - All critical verification points from the review request have PASSED successfully. Tested on preview app: https://pet-os-refactor.preview.emergentagent.com"
+      message: "🔍 SOUL-LAYER ROLLOUT TESTING INITIATED - Testing new Pet OS soul-layer personalization across 5 pillar pages (/emergency, /advisory, /farewell, /learn, /shop) as requested."
     - agent: "testing"
-      message: "✅ LOGIN FLOW (Test 1/6) - Member login with dipali@clubconcierge.in / test123 works perfectly. Login page loads with all data-testids, authentication successful, token stored (168 chars), proper redirect to /pet-home, user context set correctly."
+      message: "✅ CODE REVIEW COMPLETE - All 5 soul-layer implementations verified in code: 1) EmergencyPage uses PillarSoulLayer with 'Prepared for [pet]', 2) AdvisoryPage uses PillarSoulLayer with 'Advice shaped for [pet]', 3) FarewellPage uses PillarSoulLayer with 'In memory of [pet]', 4) LearnPage uses custom soul layer with 'Training picks shaped for [pet]' + SoulMadeCollection, 5) ShopPage has shop-soul-made-layer wrapping SoulMadeCollection. All data-testids are correctly implemented as per review request."
     - agent: "testing"
-      message: "✅ ADOPT PAGE NAVIGATION (Test 2/6) - Successfully navigated to /adopt page. Page loads completely with all sections rendered. Location modal appears as designed and is dismissible without blocking interaction."
+      message: "❌ CRITICAL BLOCKER - LOGIN FLOW FAILING IN AUTOMATED TESTING - Attempted login with dipali@clubconcierge.in / test123. Login button enters 'Signing in...' state but does not complete redirect after 8+ seconds. When navigating to pillar pages without successful login, user is NOT authenticated (header shows 'Sign In' button). This completely blocks all 5 soul-layer verification tests since the PillarSoulLayer component only renders for logged-in users with active pets (line 16 in PillarSoulLayer.jsx: 'if (!activePet) return null')."
     - agent: "testing"
-      message: "✅ PERSONALIZED PET OS SECTION (Test 3/6) - ALL 4 REQUIRED DATA-TESTIDS FOUND AND WORKING: 1) adopt-pet-os-section ✅, 2) adopt-personalized-heading ✅ ('A better adoption plan for Mojo'), 3) adopt-personalized-commerce-section ✅, 4) adopt-personalized-commerce-title ✅ ('Personalized for Mojo'). Section displays correctly with soul score arc, pet photo, breed info, and soul notes."
+      message: "⚠️ POSSIBLE CAUSES - 1) Login API endpoint experiencing slow response times (>8 seconds), 2) Token storage/retrieval issue preventing auth state persistence, 3) Test environment network latency affecting authentication flow, 4) Recent code changes affecting login redirect logic. Previous test results show login WAS working in earlier test cycle (test_sequence: 2)."
     - agent: "testing"
-      message: "✅ ACTIVE PET PERSONALIZATION (Test 4/6) - Page correctly personalizes for active pet Mojo (Indie breed). Pet name appears in headings, pet photo loads from /api/pet-photo/pet-mojo-7327ad56, breed-specific products load, soul score (88%) displayed. All personalization elements working as expected."
+      message: "📋 VERIFICATION STATUS - All 5 soul-layer tasks marked as working='NA' and needs_retesting=true. Cannot provide PASS/FAIL verification without successful login. Code structure is correct and matches requirements. All expected data-testids are present in source code. Issue is purely authentication-related, not implementation-related."
     - agent: "testing"
-      message: "✅ LOCATION MODAL (Test 5/6) - 'Set Your Location' modal appears and is fully functional. Includes search input, geolocation button, popular cities selection, and close button. Modal is dismissible and does not block page usage. Handles user permission denial gracefully."
-    - agent: "testing"
-      message: "✅ DOCUMENTATION PAGE (Test 6/6) - /complete-documentation.html loads perfectly. Page title correct, stats section shows EXACT expected values: '296 documents | 88,370 lines'. Page contains 2.5M+ characters of documentation content with full table of contents and all memory files indexed. Page is not blank and renders correctly."
-    - agent: "testing"
-      message: "📸 SCREENSHOTS CAPTURED - 4 screenshots saved showing: 1) adopt-page-full.png - full /adopt page with location modal, 2) adopt-pet-os-section.png - personalized Pet OS section for Mojo, 3) adopt-commerce-section.png - personalized commerce recommendations, 4) documentation-page.png - complete documentation with stats."
-    - agent: "testing"
-      message: "⚠️ MINOR OBSERVATIONS (Non-blocking) - Some CDN/RUM network requests fail (not critical), WebSocket connection warnings for concierge realtime (not affecting basic functionality), one dialog remains open but doesn't block interaction. These are minor issues that don't affect the core user-visible functionality being tested."
-    - agent: "testing"
-      message: "🎯 FINAL VERDICT - ALL 6 EXACT VERIFICATION CASES FROM REVIEW REQUEST PASSED. No user-visible regressions detected. The Adopt pillar personalization and documentation updates are working perfectly on the preview environment. Ready for user validation."
-    - agent: "testing"
-      message: "🔄 BACKEND DOCUMENTATION GENERATION RE-VERIFICATION - Conducted lightweight backend verification for the latest documentation generation change. Verified: 1) GET /complete-documentation.html returns 200 ✅, 2) Response contains 'Complete Documentation', '296 documents', '88,370 lines' ✅, 3) No backend errors preventing delivery ✅. Content size: 3.9M characters (substantial, not blank). Documentation successfully generated from full /app/memory markdown set as requested. ALL verification requirements from review request met perfectly."
+      message: "🎯 RECOMMENDED NEXT STEPS - Main agent should: 1) Investigate login API response times on preview environment, 2) Check backend logs for auth errors around timestamp of test, 3) Verify token generation and storage mechanism, 4) Test login manually on preview.emergentagent.com to confirm if issue is environment-specific or test-specific, 5) Consider implementing retry logic or increasing timeout in login flow if API is slow but functional."
