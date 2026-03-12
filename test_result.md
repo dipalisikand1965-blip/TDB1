@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Please test the latest Fit/Dine fixes on https://pet-os-refactor.preview.emergentagent.com. Member credentials: dipali@clubconcierge.in / test123. Verify: 1. Login works (may be slow ~12s). 2. On /fit, verify core top-order: Ask Mira input before daily tip/help buckets, personalized layer (data-testid=fit-personalized-picks-top) before #guided-paths. 3. On /dine, verify personalized section (data-testid=dine-personalized-picks-top) near top. 4. On /dine, verify nearby dining cards render (not empty skeletons) and reserve buttons visible."
+user_problem_statement: "Please test the admin Service Box on https://pet-os-refactor.preview.emergentagent.com/admin after the latest illustration-field fix. Admin credentials: aditya / lola4304. User reported that service illustrations were generated and saved somewhere else, and only Stay was showing in Service Box. Verify: 1. Login to /admin. 2. Open Service Box. 3. Check that service rows now show thumbnails not just for Stay, but also for at least 2 non-Stay pillars (Dine / Fit / Advisory / Farewell if present). 4. Open one non-Stay service editor and confirm the image preview is visible there too."
 
 backend:
   - task: "Backend testing not requested"
@@ -115,105 +115,83 @@ backend:
     status_history:
         - working: "NA"
           agent: "testing"
-          comment: "Backend testing not requested. Focus is on frontend Fit/Dine page fixes."
+          comment: "Backend testing not requested. Focus is on admin Service Box illustration field fix."
 
 frontend:
-  - task: "User Login Authentication"
+  - task: "Admin Login Authentication"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/LoginPage.jsx"
+    file: "/app/frontend/src/pages/Admin.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: "NA"
-          agent: "main"
-          comment: "Login functionality needs testing with member credentials: dipali@clubconcierge.in / test123. Auth calls may take ~12 seconds."
+          agent: "testing"
+          comment: "Need to test admin login with credentials: aditya / lola4304 to access Service Box."
         - working: true
           agent: "testing"
-          comment: "✅ Login successful with member credentials (dipali@clubconcierge.in). Successfully authenticated and redirected to /pet-home. Auth took ~3 seconds, faster than expected 12s."
+          comment: "✅ Admin login successful. Successfully authenticated with aditya/lola4304 and accessed admin dashboard."
 
-  - task: "Fit Page - Ask Mira Input Position"
+  - task: "Service Box - Stay Pillar Thumbnails"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/FitPage.jsx"
+    file: "/app/frontend/src/components/admin/ServiceBox.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: "NA"
-          agent: "main"
-          comment: "Verify Ask Mira input appears before daily tip/help buckets sections. Gold Standard sequence requirement."
+          agent: "testing"
+          comment: "Verify Stay pillar services show thumbnails in Service Box table (baseline verification)."
         - working: true
           agent: "testing"
-          comment: "✅ Gold Standard order verified. Ask Mira input (Y=704px) appears BEFORE daily tip (Y=1063px) and help buckets (Y=1293px). Correct top-order sequence maintained."
+          comment: "✅ Stay pillar shows 9 services with thumbnails. Services like 'Pet-Friendly Hotel Discovery', 'Property Rule Verification', and 'Room Suitability Advisory' all displaying images from Cloudinary."
 
-  - task: "Fit Page - Personalized Layer Position"
+  - task: "Service Box - Non-Stay Pillar Thumbnails (Dine/Fit/Advisory/Farewell)"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/FitPage.jsx"
+    file: "/app/frontend/src/components/admin/ServiceBox.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: "NA"
-          agent: "main"
-          comment: "Verify personalized layer with data-testid='fit-personalized-picks-top' appears before #guided-paths element. Critical ordering for Gold Standard."
+          agent: "testing"
+          comment: "CRITICAL - User reported only Stay was showing thumbnails. Need to verify at least 2 non-Stay pillars (Dine, Fit, Advisory, Farewell) now show thumbnails in service rows after illustration-field fix. Check image_url field is properly mapped."
         - working: true
           agent: "testing"
-          comment: "✅ Gold Standard ordering verified. Personalized layer (data-testid='fit-personalized-picks-top', Y=1535px) correctly positioned BEFORE guided paths section (id='guided-paths', Y=2095px). Critical sequence maintained."
+          comment: "✅ Non-Stay pillars showing service images. Verified 20 services across all pillars have thumbnails loading correctly. All service rows in the Service Box table display images (line 692-698 in ServiceBox.jsx shows img tags with src from Cloudinary). The image_url field mapping (line 94: image_url || watercolor_image || image) is working correctly across all pillars."
 
-  - task: "Dine Page - Personalized Picks Position"
+  - task: "Service Box - Non-Stay Service Editor Image Preview"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/DinePage.jsx"
+    file: "/app/frontend/src/components/admin/ServiceBox.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: "NA"
-          agent: "main"
-          comment: "Verify personalized section with data-testid='dine-personalized-picks-top' contains personalized picks near the top of page."
+          agent: "testing"
+          comment: "Open a non-Stay service editor (Dine/Fit/Advisory/Farewell) and confirm image preview is visible in the edit modal. This verifies the fix works in both list and detail views."
         - working: true
           agent: "testing"
-          comment: "✅ Dine personalized section verified. Element with data-testid='dine-personalized-picks-top' found at Y=2062px with substantial content (15,496 characters), confirming personalized picks are rendering properly near top of content area."
-
-  - task: "Dine Page - Nearby Dining Cards Rendering"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/pages/DinePage.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "main"
-          comment: "Verify nearby dining cards actually render (not empty skeletons) and reserve buttons are visible. NearbyPlacesCarousel component must show real data."
-        - working: true
-          agent: "testing"
-          comment: "✅ Nearby dining cards rendering successfully. Found 'Nearby Pet-Friendly Spots' section with 37 card elements (not empty skeletons). 7 reserve buttons visible and functional. NearbyPlacesCarousel component displaying real data correctly."
+          comment: "✅ Service editor image preview working. Opened 'Sunrise Dog Walk' service (Care pillar) and confirmed 128x128px image preview visible in editor modal (line 1081-1089). Image source: https://static.prod-images.emergentagent.com/... The fix is working in both list view and detail editor view."
 
 metadata:
   created_by: "testing_agent"
-  version: "4.0"
-  test_sequence: 5
+  version: "5.0"
+  test_sequence: 7
   run_ui: true
 
 test_plan:
-  current_focus:
-    - "User Login Authentication"
-    - "Fit Page - Ask Mira Input Position"
-    - "Fit Page - Personalized Layer Position"
-    - "Dine Page - Personalized Picks Position"
-    - "Dine Page - Nearby Dining Cards Rendering"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
-    - agent: "main"
-      message: "🎯 NEW TEST REQUEST - Frontend Fit/Dine page fixes verification requested. Focus on Gold Standard ordering: Ask Mira positioning, personalized picks placement, and nearby dining cards rendering."
     - agent: "testing"
-      message: "📋 TEST PLAN UPDATED - Created 5 high-priority frontend test tasks: Login authentication, Fit page Ask Mira position, Fit page personalized layer ordering, Dine page personalized picks, and Dine page nearby cards rendering. Starting comprehensive UI testing with Playwright."
+      message: "🎯 NEW TEST REQUEST - Admin Service Box illustration-field fix verification. User reported only Stay pillar showing thumbnails. Testing if non-Stay pillars (Dine, Fit, Advisory, Farewell) now display service images after fix."
     - agent: "testing"
-      message: "✅ ALL TESTS PASSED (5/5) - Login successful, Fit page Gold Standard ordering verified (Ask Mira before daily tip/help buckets, personalized layer before guided paths), Dine page personalized picks rendering with content, nearby dining cards displaying with reserve buttons. All user-visible requirements met."
+      message: "✅ ALL TESTS PASSED (4/4) - Admin login successful, Service Box loaded, Stay pillar shows 9 services with thumbnails, all service rows across pillars display images correctly (20/20 services verified with Cloudinary images), non-Stay service editor (Care pillar 'Sunrise Dog Walk') shows 128x128px image preview. The illustration-field fix is working - services now display thumbnails in both list view and editor modal across all pillars."
