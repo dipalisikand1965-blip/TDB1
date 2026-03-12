@@ -1,629 +1,582 @@
-# The Doggy Company — Complete Product Requirements Document
-## Last Updated: December 12, 2025 (Version 10.2 - Learn Page Fully CMS-Driven)
+# The Doggy Company — MASTER DOCUMENTATION
+## Last Updated: December 12, 2025 | Version 11.0.0
 
 ---
 
-## 1. Original Problem Statement
-
-Build **"The World's First Pet Life Operating System"** — a comprehensive platform called **The Doggy Company** with:
-- **14 life pillars** (Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Emergency, Advisory, Farewell, Adopt, Shop)
-- **AI-powered concierge (Mira)** — conversational AI that knows your pet's soul, breed, health, preferences
-- **Pet Soul Engine** — personality profiling, archetype matching, breed intelligence
-- **5,000+ products** and **1,100+ services** catalog with Shopify integration
-- **Deep personalization** based on pet profile, breed, age, health conditions
-- **AI watercolor aesthetic** for all visual assets
-- **Concierge-grade service desk** with ticket system, SLA tracking, escalation
+# ⚠️ CRITICAL: READ THIS ENTIRE DOCUMENT BEFORE MAKING ANY CHANGES ⚠️
 
 ---
 
-## LATEST: ALL 14 PILLAR CMS SYSTEMS COMPLETE (December 12, 2025)
-
-### Universal CMS Architecture
-Created a **scalable, reusable CMS** that works for ALL 14 pillars:
-
-| Pillar | CMS Status | Default Categories |
-|--------|------------|-------------------|
-| Learn | ✅ Custom (LearnPageCMS.jsx) | 12 Topics |
-| Paperwork | ✅ Custom (PaperworkPageCMS.jsx) | 6 Doc Categories |
-| Care | ✅ Universal (PillarPageCMS.jsx) | 6 Categories |
-| Fit | ✅ Universal | 6 Categories |
-| Travel | ✅ Universal | 6 Categories |
-| Stay | ✅ Universal | 6 Categories |
-| Dine | ✅ Universal | 6 Categories |
-| Enjoy | ✅ Universal | 6 Categories |
-| Celebrate | ✅ Universal | 6 Categories |
-| Emergency | ✅ Universal | 6 Categories |
-| Advisory | ✅ Universal | 6 Categories |
-| Farewell | ✅ Universal | 6 Categories |
-| Adopt | ✅ Universal | 6 Categories |
-| Shop | ✅ Universal | 6 Categories |
-
-### CMS Features (9 Tabs per Pillar)
-1. **Settings** - Title with {petName}, Subtitle, Hero Image, Section Visibility
-2. **Ask Mira** - Search bar config, placeholder, suggestions
-3. **Categories** - Add/edit categories with images, subcategories, colors
-4. **Products** - Select featured products
-5. **Bundles** - Select featured bundles
-6. **Services** - Select featured services
-7. **Personalized** - Breed-smart, life stage, archetype, soul toggles
-8. **Concierge** - Premium services with pricing & CTAs
-9. **Mira Prompts** - Contextual tips, reminders, suggestions, nudges
-
-### Backend API
-- **Generic Endpoint**: `GET/POST /api/{pillar}/page-config`
-- Works for all 12 pillars (care, fit, travel, stay, dine, enjoy, celebrate, emergency, advisory, farewell, adopt, shop)
-- Learn and Paperwork have dedicated routes
-
-### Files Created
-- `/app/frontend/src/components/admin/PillarPageCMS.jsx` - Universal CMS component (1095 lines)
-- Updated `/app/backend/server.py` - Generic page-config endpoints
+## TABLE OF CONTENTS
+1. [Original Problem Statement](#1-original-problem-statement)
+2. [PAGE CMS ARCHITECTURE - THE GOLDEN STANDARD](#2-page-cms-architecture)
+3. [ALL 14 PILLAR CMS STATUS](#3-all-14-pillar-cms-status)
+4. [HOW TO BUILD A NEW PILLAR PAGE](#4-how-to-build-a-new-pillar-page)
+5. [API ENDPOINTS REFERENCE](#5-api-endpoints-reference)
+6. [FILE STRUCTURE](#6-file-structure)
+7. [PERSONALIZATION SYSTEM](#7-personalization-system)
+8. [TESTING CREDENTIALS](#8-testing-credentials)
+9. [KNOWN ISSUES & FIXES](#9-known-issues)
+10. [FUTURE TASKS](#10-future-tasks)
 
 ---
 
-## PREVIOUS: PAPERWORK PAGE CMS (December 12, 2025)
+# 1. ORIGINAL PROBLEM STATEMENT
 
-### What Was Built
-A **comprehensive Paperwork Page CMS** with 11 tabs controlling every aspect:
+Build **"The World's First Pet Life Operating System"** — **The Doggy Company** with:
 
-| Tab | Features |
-|-----|----------|
-| **Settings** | Page Title with `{petName}`, Subtitle, Theme Color, Hero Image, Section Visibility |
-| **Ask Mira** | Enable/disable, Placeholder text, Button color, Quick suggestions |
-| **Categories** | 6 document folders (Identity, Medical, Travel, Insurance, Care, Legal) with subcategories |
-| **Checklist** | Essential + recommended documents for completion tracker |
-| **Reminders** | 5 reminder templates with days, message, channels (email/sms/push) |
-| **Products** | Select featured paperwork products |
-| **Bundles** | Select featured paperwork bundles |
-| **Services** | Select document services |
-| **Personalized** | Breed-smart, life stage, archetype, soul collection toggles |
-| **Concierge** | 6 premium services (Document Assist, Passport, Microchip, Insurance, Emergency, Renewal) |
-| **Mira Prompts** | Contextual tips, reminders, suggestions, nudges with triggers |
-
-### Pre-Seeded Data
-- **6 Document Categories** with subcategories
-- **6 Checklist Items** (Microchip, Vaccination, Adoption, Insurance, License, Health Cert)
-- **5 Reminder Templates** (Vaccination, Insurance, License, Health Checkup, Deworming)
-- **6 Concierge Services** with pricing (₹0 to ₹2999)
-- **6 Mira Prompts** (tips, reminders, suggestions, nudges)
-
-### Testing Status: ✅ 100% PASSED (iteration_97)
-- Backend: 14/14 tests passed
-- Frontend: All 11 tabs verified
+| Feature | Description |
+|---------|-------------|
+| **14 Life Pillars** | Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Emergency, Advisory, Farewell, Adopt, Shop |
+| **AI Concierge (Mira)** | Conversational AI that knows pet's soul, breed, health, preferences |
+| **Pet Soul Engine** | Personality profiling, archetype matching, breed intelligence |
+| **Product Catalog** | 5,000+ products with Shopify integration |
+| **Service Catalog** | 1,100+ services across all pillars |
+| **Deep Personalization** | Based on pet profile, breed, age, health conditions |
+| **AI Watercolor Aesthetic** | All visual assets in watercolor style |
+| **Concierge Service Desk** | Ticket system, SLA tracking, escalation |
 
 ---
 
-## PREVIOUS: LEARN PAGE CMS (December 12, 2025)
+# 2. PAGE CMS ARCHITECTURE - THE GOLDEN STANDARD
 
-### Phase 1: Admin CMS UI ✅ COMPLETE
-A **comprehensive Learn Page CMS** with 7 tabs controlling every aspect of the Learn page:
+## ⚠️ EVERY PILLAR PAGE MUST USE THIS ARCHITECTURE ⚠️
 
-| Tab | Features |
-|-----|----------|
-| **Settings** | Page Title with `{petName}` personalization, Subtitle, Theme Color, Hero Image, Section Visibility |
-| **Ask Mira** | Enable/disable search bar, Placeholder text, Button color, Quick suggestions |
-| **Topics** | Add/edit/delete 12 topics, each with subtopics, YouTube videos, products, services |
-| **Content** | Daily Learning Tips (rotating), Guided Learning Paths, Help Buckets |
-| **Bundles** | Select featured bundles to display |
-| **Products** | Select featured products |
-| **Services** | Select featured services |
+### 2.1 What is Page CMS?
 
-### Phase 2: Dynamic Page Rendering ✅ COMPLETE
-**LearnPage.jsx refactored to be 100% CMS-driven:**
-- Fetches configuration from `/api/learn/page-config` on page load
-- Topics, Daily Tips, Help Buckets all render from CMS data
-- Title personalization: `{petName}` → actual pet name (e.g., "Mojo")
-- Default fallbacks if CMS returns empty data (ensures page never breaks)
+A centralized Admin interface where **EVERY component** of a pillar page is configurable:
+- No hardcoded content
+- Admins control everything from Admin Panel
+- Consistent structure across all 14 pillars
+- Pages render dynamically from database
 
-### Personalization Verified ✅
-| User State | Title Shows |
-|------------|-------------|
-| Guest (not logged in) | "What would you like to learn about **your dog** today?" |
-| Logged in with pet | "What would you like to learn about **Mojo** today?" |
-
-### Testing Status: ✅ 100% PASSED (Both iterations)
-- **iteration_95.json**: CMS Admin UI - all 7 tabs functional
-- **iteration_96.json**: Dynamic page rendering + personalization verified
-
-### Files Modified
-- `/app/frontend/src/components/admin/LearnPageCMS.jsx` - Complete CMS UI (825+ lines)
-- `/app/frontend/src/pages/LearnPage.jsx` - Refactored for CMS-driven rendering
-- `/app/backend/learn_routes.py` - Updated endpoints for dailyTips, guidedPaths, helpBuckets
-
----
-
-## 2. PAGE CMS ARCHITECTURE (⚠️ CRITICAL - READ THIS FIRST)
-
-### 2.1 Overview
-
-**ALL pillar pages MUST use the Page CMS architecture.** This ensures:
-- Admins control ALL content from the Admin Panel
-- No hardcoded product/service assignments
-- Consistent structure across all pillars
-- Easy maintenance and updates
-
-### 2.2 Page CMS Structure
+### 2.2 Standard CMS Structure (9 Tabs)
 
 ```
-PILLAR PAGE CMS (Template for ALL Pillars)
+PILLAR PAGE CMS
 │
-├── 🎨 PAGE SETTINGS
-│   ├── Page Title (editable)
-│   ├── Page Subtitle (editable)
+├── Tab 1: 🎨 PAGE SETTINGS
+│   ├── Page Title (use {petName} for personalization)
+│   ├── Page Subtitle
 │   ├── Hero Image (Cloudinary upload)
 │   ├── Theme Color
 │   └── Section Visibility Toggles
 │
-├── 📚 TOPICS SECTION
-│   ├── Section Title
-│   └── Topics (add/remove/reorder):
-│       └── EACH TOPIC:
-│           ├── Title, Slug, Description
-│           ├── Image (Cloudinary upload)
-│           └── MODAL CONTENT:
-│               ├── Subtopics → Overview Tab
-│               ├── Videos (YouTube URLs) → Videos Tab
-│               ├── Products (pick from catalog) → Products Tab
-│               └── Services (pick from catalog) → Services Tab
+├── Tab 2: 🔍 ASK MIRA BAR
+│   ├── Enable/Disable toggle
+│   ├── Placeholder text
+│   ├── Button color
+│   └── Quick suggestions (array)
 │
-├── 🎁 BUNDLES SECTION
-│   └── Selected Bundles (pick from catalog)
+├── Tab 3: 📁 CATEGORIES/TOPICS
+│   ├── Add/Edit/Delete categories
+│   ├── Each category has:
+│   │   ├── Name
+│   │   ├── Icon
+│   │   ├── Color gradient
+│   │   ├── Description
+│   │   ├── Image (Cloudinary)
+│   │   └── Subcategories (array)
 │
-├── 🛍️ PRODUCTS SECTION
-│   └── Featured Products (pick from catalog)
+├── Tab 4: 🛍️ PRODUCTS
+│   └── Select featured products from catalog
 │
-├── 🔧 SERVICES SECTION
-│   └── Featured Services (pick from catalog)
+├── Tab 5: 🎁 BUNDLES
+│   └── Select featured bundles from catalog
 │
-└── 👤 PERSONALIZATION
-    ├── Show breed-specific products
-    ├── Show archetype recommendations
-    └── Show "Recommended for {pet}"
+├── Tab 6: 💼 SERVICES
+│   └── Select featured services from catalog
+│
+├── Tab 7: 🐕 PERSONALIZED
+│   ├── Breed-Smart Recommendations (toggle)
+│   ├── Life Stage Products (toggle)
+│   ├── Archetype-Based Picks (toggle)
+│   └── Soul-Made Collection (toggle)
+│
+├── Tab 8: 👑 CONCIERGE SERVICES
+│   ├── Add/Edit/Delete premium services
+│   ├── Each service has:
+│   │   ├── Name
+│   │   ├── Description
+│   │   ├── Price (₹)
+│   │   ├── Turnaround time
+│   │   ├── CTA button text
+│   │   └── Includes (array)
+│
+└── Tab 9: 🧠 MIRA PROMPTS
+    ├── Add/Edit/Delete AI prompts
+    ├── Each prompt has:
+    │   ├── Type (tip/reminder/suggestion/nudge)
+    │   ├── Trigger condition
+    │   └── Message (use {petName}, {breedName})
 ```
 
-### 2.3 Database Collections
+### 2.3 Page Layout Standard (Option A - Mira on Top)
 
-| Collection | Purpose |
-|------------|---------|
-| `page_configs` | Page-level settings (title, hero, sections) |
-| `{pillar}_topics` | Topics for each pillar page |
-| `page_selections` | Featured bundles/products/services per page |
+```
+┌─────────────────────────────────────────────────────────────┐
+│  🔍 ASK MIRA BAR (Search/AI assistant)                      │
+├─────────────────────────────────────────────────────────────┤
+│  💬 MIRA'S CONTEXTUAL TIP                                   │
+│  "Mystique doesn't have microchip records yet..."           │
+├─────────────────────────────────────────────────────────────┤
+│  📁 MAIN CONTENT (Categories/Topics/Vault)                  │
+├─────────────────────────────────────────────────────────────┤
+│  🐕 PERSONALIZED FOR {petName}                              │
+│  (Breed-smart, archetype picks, soul collection)            │
+├─────────────────────────────────────────────────────────────┤
+│  🎁 BUNDLES                                                 │
+├─────────────────────────────────────────────────────────────┤
+│  🛍️ PRODUCTS                                                │
+├─────────────────────────────────────────────────────────────┤
+│  👑 CONCIERGE SERVICES                                      │
+└─────────────────────────────────────────────────────────────┘
+```
 
-### 2.4 API Endpoints Pattern
+---
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/{pillar}/page-config` | GET | Load page configuration |
-| `/api/{pillar}/page-config` | POST | Save page configuration |
-| `/api/{pillar}/topic-products/{slug}` | GET | Get products for topic modal |
+# 3. ALL 14 PILLAR CMS STATUS
 
-### 2.5 Frontend Files Pattern
+## 3.1 CMS Admin UI Status
 
-| File | Purpose |
-|------|---------|
-| `/components/admin/{Pillar}PageCMS.jsx` | Admin CMS interface |
-| `/pages/{Pillar}Page.jsx` | The pillar page (reads from CMS) |
-| `/components/{pillar}/{Pillar}TopicModal.jsx` | Topic modal component |
+| # | Pillar | CMS File | Admin Tab | Status | Categories |
+|---|--------|----------|-----------|--------|------------|
+| 1 | Learn | `LearnPageCMS.jsx` | `learn-cms` | ✅ COMPLETE | 12 Topics |
+| 2 | Paperwork | `PaperworkPageCMS.jsx` | `paperwork-cms` | ✅ COMPLETE | 6 Doc Types |
+| 3 | Care | `PillarPageCMS.jsx` | `care-cms` | ✅ COMPLETE | 6 Categories |
+| 4 | Fit | `PillarPageCMS.jsx` | `fit-cms` | ✅ COMPLETE | 6 Categories |
+| 5 | Travel | `PillarPageCMS.jsx` | `travel-cms` | ✅ COMPLETE | 6 Categories |
+| 6 | Stay | `PillarPageCMS.jsx` | `stay-cms` | ✅ COMPLETE | 6 Categories |
+| 7 | Dine | `PillarPageCMS.jsx` | `dine-cms` | ✅ COMPLETE | 6 Categories |
+| 8 | Enjoy | `PillarPageCMS.jsx` | `enjoy-cms` | ✅ COMPLETE | 6 Categories |
+| 9 | Celebrate | `PillarPageCMS.jsx` | `celebrate-cms` | ✅ COMPLETE | 6 Categories |
+| 10 | Emergency | `PillarPageCMS.jsx` | `emergency-cms` | ✅ COMPLETE | 6 Categories |
+| 11 | Advisory | `PillarPageCMS.jsx` | `advisory-cms` | ✅ COMPLETE | 6 Categories |
+| 12 | Farewell | `PillarPageCMS.jsx` | `farewell-cms` | ✅ COMPLETE | 6 Categories |
+| 13 | Adopt | `PillarPageCMS.jsx` | `adopt-cms` | ✅ COMPLETE | 6 Categories |
+| 14 | Shop | `PillarPageCMS.jsx` | `shop-cms` | ✅ COMPLETE | 6 Categories |
 
-### 2.6 How to Add CMS to a New Pillar
+## 3.2 Page Dynamic Rendering Status
 
-**Step 1: Copy Learn as Template**
+| # | Pillar | Page File | Renders from CMS? | Status |
+|---|--------|-----------|-------------------|--------|
+| 1 | Learn | `LearnPage.jsx` | ✅ YES | COMPLETE |
+| 2 | Paperwork | `PaperworkPage.jsx` | 🔄 IN PROGRESS | Refactoring |
+| 3 | Care | `CarePage.jsx` | ❌ NO | TODO |
+| 4 | Fit | `FitPage.jsx` | ❌ NO | TODO |
+| 5 | Travel | `TravelPage.jsx` | ❌ NO | TODO |
+| 6 | Stay | `StayPage.jsx` | ❌ NO | TODO |
+| 7 | Dine | `DinePage.jsx` | ❌ NO | TODO |
+| 8 | Enjoy | `EnjoyPage.jsx` | ❌ NO | TODO |
+| 9 | Celebrate | `CelebratePage.jsx` | ❌ NO | TODO |
+| 10 | Emergency | `EmergencyPage.jsx` | ❌ NO | TODO |
+| 11 | Advisory | `AdvisoryPage.jsx` | ❌ NO | TODO |
+| 12 | Farewell | `FarewellPage.jsx` | ❌ NO | TODO |
+| 13 | Adopt | `AdoptPage.jsx` | ❌ NO | TODO |
+| 14 | Shop | `ShopPage.jsx` | ❌ NO | TODO |
+
+---
+
+# 4. HOW TO BUILD A NEW PILLAR PAGE (CMS-Driven)
+
+## Step 1: Check if CMS Admin exists
+- Go to `/admin?tab={pillar}-cms`
+- If it loads, CMS admin is ready
+- If not, add to `Admin.jsx` (see Section 6)
+
+## Step 2: Seed default data
 ```bash
-# Copy these files and rename:
-cp LearnPageCMS.jsx {Pillar}PageCMS.jsx
-cp LearnTopicModal.jsx {Pillar}TopicModal.jsx
+curl -X POST "{API_URL}/api/{pillar}/page-config" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "config": {
+      "pillar": "{pillar}",
+      "title": "Title with {petName}",
+      "subtitle": "Subtitle here",
+      "askMira": { "enabled": true, "placeholder": "Search..." }
+    },
+    "categories": [...],
+    "conciergeServices": [...],
+    "miraPrompts": [...]
+  }'
 ```
 
-**Step 2: Create Backend Endpoints**
-```python
-# In {pillar}_routes.py
+## Step 3: Refactor the Page component
 
-@router.get("/page-config")
-async def get_page_config():
-    db = get_db()
-    config = await db.page_configs.find_one({"pillar": "{pillar}"})
-    topics = await db.{pillar}_topics.find({}).sort("order", 1).to_list(50)
-    return {"config": config, "topics": topics}
-
-@router.post("/page-config")
-async def save_page_config(data: dict):
-    # Save config and topics
-    ...
-```
-
-**Step 3: Add to Admin Panel**
 ```jsx
-// In Admin.jsx
-import {Pillar}PageCMS from '../components/admin/{Pillar}PageCMS';
-
-// Add tab
-{ id: '{pillar}-cms', label: '{Pillar} Page', icon: Icon }
-
-// Add content
-{activeTab === '{pillar}-cms' && <{Pillar}PageCMS />}
-```
-
-**Step 4: Update Pillar Page to Read from CMS**
-```jsx
-// In {Pillar}Page.jsx
-useEffect(() => {
-    fetch(`${API_URL}/api/{pillar}/page-config`)
-        .then(res => res.json())
-        .then(data => {
-            setPageConfig(data.config);
-            setTopics(data.topics);
-        });
-}, []);
-```
-
-### 2.7 ⚠️ RULES FOR ALL AGENTS
-
-1. **NEVER hardcode product/service assignments**
-2. **ALWAYS use CMS for admin-controlled content**
-3. **ALWAYS provide fallbacks when no products assigned**
-4. **ALWAYS use CloudinaryUploader for images**
-5. **ALWAYS follow the same structure for ALL pillars**
-
----
-
-## 3. Platform Architecture
-
-### Tech Stack
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18 + Tailwind CSS + Shadcn/UI |
-| Backend | FastAPI (Python) + MongoDB Atlas |
-| AI | OpenAI GPT-4o via Emergent LLM Key |
-| Images | Cloudinary + AI watercolor generation |
-| Payments | Razorpay (BROKEN), Shopify sync |
-| APIs | Google Places, OpenWeatherMap, YouTube Data API, Shopify |
-| Auth | JWT-based custom auth |
-| Hosting | Kubernetes (Emergent preview) |
-
-### Key URLs
-- Preview: `https://learn-page-studio.preview.emergentagent.com`
-- Production: `https://thedoggycompany.com`
-
-### Credentials
-- User: `dipali@clubconcierge.in` / `test123`
-- Admin: `aditya` / `lola4304`
-
----
-
-## 4. Learn Page CMS (REFERENCE IMPLEMENTATION)
-
-### 4.1 Files
-
-| File | Path | Purpose |
-|------|------|---------|
-| LearnPageCMS.jsx | `/frontend/src/components/admin/LearnPageCMS.jsx` | Admin CMS |
-| LearnTopicModal.jsx | `/frontend/src/components/learn/LearnTopicModal.jsx` | Topic modal |
-| LearnPage.jsx | `/frontend/src/pages/LearnPage.jsx` | The page |
-| learn_routes.py | `/backend/learn_routes.py` | API endpoints |
-
-### 4.2 Admin Location
-
-Admin Panel → **Page CMS** → **Learn Page**
-
-### 4.3 What Admin Can Control
-
-- Page title and subtitle
-- Hero image
-- Topics (add/remove/reorder)
-- For each topic: subtopics, videos, products, services
-- Featured bundles
-- Featured products
-- Featured services
-- Section visibility
-
----
-
-## 5. Pillar Implementation Status
-
-| Pillar | CMS Implemented | Status |
-|--------|-----------------|--------|
-| Learn | ✅ YES | Golden Standard |
-| Advisory | ❌ Hardcoded | Needs CMS |
-| Care | ❌ Hardcoded | Needs CMS |
-| Fit | ❌ Hardcoded | Needs CMS |
-| Stay | ❌ Hardcoded | Needs CMS |
-| Travel | ❌ Hardcoded | Needs CMS |
-| Dine | ❌ Hardcoded | Needs CMS |
-| Enjoy | ❌ Hardcoded | Needs CMS |
-| Celebrate | ❌ Hardcoded | Needs CMS |
-| Paperwork | ❌ Hardcoded | Needs CMS |
-| Emergency | ❌ Hardcoded | Needs CMS |
-| Farewell | ❌ Hardcoded | Needs CMS |
-| Adopt | ❌ Hardcoded | Needs CMS |
-| Shop | N/A | Different structure |
-
----
-
-## 6. AI Image Generation System
-
-### Status
-- Running in background
-- Generates watercolor images for breed-specific products
-- Progress visible in Admin Panel
-
-### Endpoints
-| Endpoint | Purpose |
-|----------|---------|
-| `GET /api/ai-images/status` | Check if running |
-| `GET /api/ai-images/stats` | Coverage stats |
-| `POST /api/ai-images/generate-product-images?password=lola4304` | Start generation |
-| `POST /api/ai-images/stop` | Stop generation |
-
-### ⚠️ Note for Agents
-AI generation is an in-memory process. It STOPS when the backend restarts or agent forks. Restart it with:
-```bash
-curl -X POST "https://URL/api/ai-images/generate-product-images?password=lola4304"
-```
-
----
-
-## 7. Current Issues (Prioritized)
-
-### P0 - Critical
-- [ ] Apply CMS pattern to remaining pillars
-
-### P1 - High
-- [ ] Fix Razorpay checkout
-- [ ] Make AI generation persistent (survives restarts)
-
-### P2 - Medium
-- [ ] Fix mobile pet dashboard
-- [ ] Instagram integration
-
-### P3 - Low
-- [ ] YouTube API quota upgrade
-
----
-
-## 8. Testing Credentials
-
-| Type | Username | Password |
-|------|----------|----------|
-| User | dipali@clubconcierge.in | test123 |
-| Admin | aditya | lola4304 |
-
----
-
-## 9. Post-Deployment Checklist
-
-```bash
-# 1. Restart AI image generation
-curl -X POST "https://URL/api/ai-images/generate-product-images?password=lola4304"
-
-# 2. Seed topic products
-curl -X POST "https://URL/api/learn/topic-products/seed"
-
-# 3. Check page config API
-curl "https://URL/api/learn/page-config"
-```
-
----
-
-## 10. Next Agent Instructions
-
-1. **Check AI generation status** - Restart if not running
-2. **Use Learn Page CMS as template** for other pillars
-3. **Follow the CMS architecture** - No hardcoding!
-4. **Test modals** - Products tab should show admin-assigned products
-8. ArchetypeProducts
-
-### 3.2 Learn Bundles (4 NEW - in `learn_bundles` collection)
-
-| Bundle | Price | Items |
-|--------|-------|-------|
-| New Puppy Training Bundle | ₹6,499 | Puppy Training Course, Clicker, Treat Pouch, Treats |
-| Behavior Bootcamp Bundle | ₹7,499 | Behavior Program, Anxiety Course, Harness, Calming |
-| Training Tools Starter Kit | ₹999 | Clicker, Treat Pouch, 2x Training Treats |
-| Recall & Leash Mastery Bundle | ₹4,499 | Recall Course, Leash Course, Lead, Treats |
-
-### 3.3 Personalization Logic
-
-**How Products are Filtered by Breed:**
-```javascript
-// In LearnProductsGrid.jsx
-const petBreed = currentPet?.breed?.toLowerCase() || '';
-
-// 1. Get breed-specific products
-const breedSpecific = products.filter(p => 
-  p.name.includes(petBreed) || 
-  p.tags.includes(petBreed) ||
-  p.description.includes(petBreed)
-);
-
-// 2. Exclude OTHER breeds' products
-const genericProducts = products.filter(p => {
-  const otherBreeds = ['chihuahua', 'pug', 'shih tzu', ...];
-  const isOtherBreed = otherBreeds.some(b => 
-    p.name.includes(b) && !p.name.includes(petBreed)
-  );
-  return !isOtherBreed;
+// 1. Add CMS state at top of component
+const [cmsConfig, setCmsConfig] = useState({
+  title: 'Default title with {petName}',
+  subtitle: 'Default subtitle',
+  askMira: { enabled: true, placeholder: 'Search...' },
+  sections: { askMira: { enabled: true }, ... }
 });
+const [cmsCategories, setCmsCategories] = useState([]);
+const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
+const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
 
-// 3. Combine: breed-specific first, then generic
-allProducts = [...breedSpecific, ...genericProducts];
+// 2. Add fetchCMSConfig function
+const fetchCMSConfig = async () => {
+  try {
+    const res = await fetch(`${API_URL}/api/{pillar}/page-config`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.config) setCmsConfig(prev => ({ ...prev, ...data.config }));
+      if (data.categories?.length) setCmsCategories(data.categories);
+      if (data.conciergeServices?.length) setCmsConciergeServices(data.conciergeServices);
+      if (data.miraPrompts?.length) setCmsMiraPrompts(data.miraPrompts);
+    }
+  } catch (err) { console.error(err); }
+};
+
+// 3. Call in useEffect
+useEffect(() => {
+  fetchCMSConfig();
+  // ... other fetch calls
+}, []);
+
+// 4. Use computed values with fallbacks
+const categories = cmsCategories.length > 0 ? cmsCategories : DEFAULT_CATEGORIES;
+const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet');
+
+// 5. Render conditionally based on sections
+{cmsConfig.sections?.askMira?.enabled !== false && (
+  <AskMiraSection placeholder={cmsConfig.askMira?.placeholder} />
+)}
 ```
 
-### 3.4 AI Image Generation System
+## Step 4: Test
+1. Login as admin: `aditya / lola4304`
+2. Go to `/admin?tab={pillar}-cms`
+3. Make changes, save
+4. Visit `/{pillar}` page
+5. Verify changes appear
 
-**Status:** RUNNING IN BACKGROUND
-**Important:** This is an in-memory Python process that stops on agent fork.
+---
 
-| Endpoint | Purpose |
-|----------|---------|
-| `GET /api/ai-images/status` | Check if running, current progress |
-| `GET /api/ai-images/stats` | Total products, coverage percentage |
-| `POST /api/ai-images/generate-product-images?password=lola4304` | Start generation |
-| `POST /api/ai-images/stop` | Stop generation |
+# 5. API ENDPOINTS REFERENCE
 
-**Admin UI:** Floating progress panel (bottom-right) shows real-time status.
+## 5.1 Page Config Endpoints
 
-### 3.5 Cloudinary Image Upload System
+| Pillar | GET Endpoint | POST Endpoint |
+|--------|--------------|---------------|
+| Learn | `/api/learn/page-config` | `/api/learn/page-config` |
+| Paperwork | `/api/paperwork/page-config` | `/api/paperwork/page-config` |
+| Care | `/api/care/page-config` | `/api/care/page-config` |
+| Fit | `/api/fit/page-config` | `/api/fit/page-config` |
+| Travel | `/api/travel/page-config` | `/api/travel/page-config` |
+| Stay | `/api/stay/page-config` | `/api/stay/page-config` |
+| Dine | `/api/dine/page-config` | `/api/dine/page-config` |
+| Enjoy | `/api/enjoy/page-config` | `/api/enjoy/page-config` |
+| Celebrate | `/api/celebrate/page-config` | `/api/celebrate/page-config` |
+| Emergency | `/api/emergency/page-config` | `/api/emergency/page-config` |
+| Advisory | `/api/advisory/page-config` | `/api/advisory/page-config` |
+| Farewell | `/api/farewell/page-config` | `/api/farewell/page-config` |
+| Adopt | `/api/adopt/page-config` | `/api/adopt/page-config` |
+| Shop | `/api/shop/page-config` | `/api/shop/page-config` |
 
-**Reusable Component:** `CloudinaryUploader.jsx`
-**Integrated Into:** ProductBoxEditor, ServiceBox, BundlesManager, ShopManager
+## 5.2 Response Format
 
-**Backend Endpoints:**
-```
-POST /api/admin/product/{id}/upload-image
-POST /api/admin/service/{id}/upload-image
-POST /api/admin/bundle/{id}/upload-image
-POST /api/upload/cloudinary (generic)
+```json
+{
+  "config": {
+    "pillar": "care",
+    "title": "Everything {petName} needs",
+    "subtitle": "Grooming, health, wellness",
+    "askMira": { "enabled": true, "placeholder": "..." },
+    "sections": { "askMira": { "enabled": true }, ... }
+  },
+  "categories": [...],
+  "conciergeServices": [...],
+  "miraPrompts": [...],
+  "selectedProducts": [...],
+  "selectedBundles": [...],
+  "selectedServices": [...],
+  "personalizationConfig": {
+    "breedSmart": { "enabled": true },
+    "lifeStage": { "enabled": true },
+    "archetypePicks": { "enabled": true },
+    "soulCollection": { "enabled": true }
+  }
+}
 ```
 
 ---
 
-## 4. Current System Status
+# 6. FILE STRUCTURE
 
-### Pillar Completion Status
-| Pillar | Status | Key Features |
-|--------|--------|--------------|
-| Learn | **95%** | Bundles, Products, Topics, Personalization, AI Images |
-| Advisory | **95%** | AI Chat, Guided Paths, Watercolor illustrations |
-| Farewell | 100% | Grief Support AI, Memorial Services |
-| Adopt | 100% | Adoption Advisor, 3-3-3 Rule Paths |
-| Celebrate | ~90% | Bundles, Soul Made products |
-| Shop | ~85% | Products, filters |
-| Care | ~85% | Grooming, wellness |
-| Dine | ~85% | Restaurants, meal plans |
-| Stay | ~80% | Boarding, daycare |
-| Travel | ~80% | Pet-friendly destinations |
-| Enjoy | ~75% | Parks, activities |
-| Fit | ~75% | Exercise, weight management |
-| Paperwork | ~70% | Documents, insurance |
+## 6.1 CMS Admin Components
 
-### Known Issues
-
-**BROKEN:**
-- Razorpay Checkout — Fails with "body error" (recurring 5+ sessions)
-- YouTube Videos — Some links to unavailable videos
-
-**DEGRADED:**
-- YouTube API — Quota may be exceeded, using static fallback
-
-**UI BUGS:**
-- Mobile Pet Dashboard — Scrambled layout (not addressed)
-- Soul Made Products — Some show same breed portrait
-
----
-
-## 5. Files Modified This Session
-
-### Frontend
 ```
-/app/frontend/src/pages/LearnPage.jsx
-/app/frontend/src/components/Learn/LearnProductsGrid.jsx
-/app/frontend/src/components/admin/CloudinaryUploader.jsx
-/app/frontend/src/pages/Admin.jsx
+/app/frontend/src/components/admin/
+├── LearnPageCMS.jsx          # Custom CMS for Learn (825 lines)
+├── PaperworkPageCMS.jsx      # Custom CMS for Paperwork (900+ lines)
+├── PillarPageCMS.jsx         # Universal CMS for all other pillars (1095 lines)
+└── CloudinaryUploader.jsx    # Image upload component
 ```
 
-### Backend
+## 6.2 Page Components
+
 ```
-/app/backend/server.py (Cloudinary upload endpoints)
-/app/backend/ai_image_service.py (AI generation service)
+/app/frontend/src/pages/
+├── LearnPage.jsx             # ✅ CMS-driven
+├── PaperworkPage.jsx         # 🔄 Refactoring to CMS
+├── CarePage.jsx              # ❌ TODO: Refactor
+├── FitPage.jsx               # ❌ TODO: Refactor
+├── TravelPage.jsx            # ❌ TODO: Refactor
+├── StayPage.jsx              # ❌ TODO: Refactor
+├── DinePage.jsx              # ❌ TODO: Refactor
+├── EnjoyPage.jsx             # ❌ TODO: Refactor
+├── CelebratePage.jsx         # ❌ TODO: Refactor
+├── EmergencyPage.jsx         # ❌ TODO: Refactor
+├── AdvisoryPage.jsx          # ❌ TODO: Refactor
+├── FarewellPage.jsx          # ❌ TODO: Refactor
+├── AdoptPage.jsx             # ❌ TODO: Refactor
+└── ShopPage.jsx              # ❌ TODO: Refactor
 ```
 
----
+## 6.3 Backend Routes
 
-## 6. Post-Deployment Commands
+```
+/app/backend/
+├── server.py                 # Generic /api/{pillar}/page-config endpoints
+├── learn_routes.py           # /api/learn/* endpoints
+└── paperwork_routes.py       # /api/paperwork/* endpoints
+```
 
-**RUN THESE AFTER EVERY DEPLOYMENT:**
-```bash
-# Step 1: Clean up duplicate services
-curl -X POST "https://thedoggycompany.com/api/admin/cleanup-duplicate-services?password=lola4304"
+## 6.4 Database Collections
 
-# Step 2: Fix service images
-curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=lola4304"
-
-# Step 3: Restart AI image generation (if needed)
-curl -X POST "https://thedoggycompany.com/api/ai-images/generate-product-images?password=lola4304"
+```
+MongoDB Collections:
+├── page_configs              # Stores pillar page settings
+├── pillar_cms_categories     # Categories for each pillar
+├── pillar_cms_content        # Concierge services, Mira prompts
+├── page_selections           # Selected products/bundles/services
+├── learn_topics              # Learn page topics
+├── learn_cms_content         # Learn page daily tips, guided paths
+├── paperwork_cms_categories  # Paperwork document categories
+└── paperwork_cms_content     # Paperwork checklist, reminders
 ```
 
 ---
 
-## 7. Prioritized Backlog
+# 7. PERSONALIZATION SYSTEM
 
-### P0 — Critical
-- [ ] Keep AI image generation running (manually restart after forks)
-- [ ] Ensure Learn page personalization works with logged-in users
+## 7.1 Dynamic Variables
 
-### P1 — High
-- [ ] Fix Razorpay checkout
-- [ ] Enhance remaining pillar pages to golden standard (Fit, Stay, Travel, Dine)
-- [ ] Add bidirectional sync UI to admin panel
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `{petName}` | Current pet's name | "Mystique" |
+| `{breedName}` | Pet's breed | "Shih Tzu" |
+| `{percent}` | Completion percentage | "67" |
+| `{days}` | Days until event | "30" |
 
-### P2 — Medium
-- [ ] Fix mobile pet dashboard scramble
-- [ ] Unique images for Soul Made products
-- [ ] Instagram integration for Celebration Wall
+## 7.2 Personalization Types
 
-### P3 — Low
-- [ ] YouTube API quota upgrade
-- [ ] Paperwork page verification
+| Type | Description | CMS Toggle |
+|------|-------------|------------|
+| **Breed-Smart** | Products matched to breed | `breedSmart.enabled` |
+| **Life Stage** | Puppy/Adult/Senior products | `lifeStage.enabled` |
+| **Archetype** | Based on personality type | `archetypePicks.enabled` |
+| **Soul Collection** | Based on pet soul profile | `soulCollection.enabled` |
 
----
+## 7.3 How Personalization Works
 
-## 8. API Endpoints Reference
-
-### Learn Pillar
-```
-GET  /api/learn/bundles           → From learn_bundles collection
-GET  /api/product-box/products?pillar=learn&limit=200
-```
-
-### AI Image Generation
-```
-GET  /api/ai-images/status
-GET  /api/ai-images/stats
-POST /api/ai-images/generate-product-images?password=lola4304
-POST /api/ai-images/stop
-```
-
-### Image Upload (Cloudinary)
-```
-POST /api/admin/product/{id}/upload-image
-POST /api/admin/service/{id}/upload-image
-POST /api/admin/bundle/{id}/upload-image
-POST /api/upload/cloudinary
-```
+1. Page loads → fetches CMS config
+2. Gets current pet from context (`usePillarContext`)
+3. Replaces `{petName}` in titles with actual name
+4. Filters products based on breed/size/age
+5. Shows archetype-specific recommendations
 
 ---
 
-## 9. Database Collections
+# 8. TESTING CREDENTIALS
 
-| Collection | Purpose |
-|------------|---------|
-| products | Main product catalog |
-| unified_products | Product Box unified view |
-| services | Service catalog |
-| bundles | Generic bundles (all pillars) |
-| **learn_bundles** | Learn-specific bundles (4 items) |
-| learn_content | Learn topic content |
-| pets | User pets with soul data |
-| users | User accounts |
+| Role | Username/Email | Password |
+|------|----------------|----------|
+| **Admin** | `aditya` | `lola4304` |
+| **User** | `dipali@clubconcierge.in` | `test123` |
 
----
-
-## 10. Next Agent Instructions
-
-1. **CHECK AI GENERATION:** `curl /api/ai-images/status` - restart if not running
-2. **VERIFY LEARN BUNDLES:** Should show 4 bundles with watercolor images
-3. **TEST PERSONALIZATION:** Login as user, check products filter by pet breed
-4. **MONITOR PROGRESS:** Admin Panel → AI IMAGES → Check progress panel
-
-**DO NOT:**
-- Change `learn_bundles` collection name
-- Remove Cloudinary upload endpoints
-- Modify the personalization logic in LearnProductsGrid.jsx
+### User's Pet Data
+- Pet Name: **Mojo** (previously Mystique)
+- Breed: **Shih Tzu**
+- Has soul profile: Yes
 
 ---
 
-## 11. Testing Credentials
+# 9. KNOWN ISSUES & FIXES
 
-| Type | Username | Password |
-|------|----------|----------|
-| User | dipali@clubconcierge.in | test123 |
-| Admin | aditya | lola4304 |
+## 9.1 Current Issues
+
+| Issue | Priority | Status |
+|-------|----------|--------|
+| Razorpay checkout "body error" | P2 | NOT STARTED |
+| Mobile pet dashboard scrambled | P3 | NOT STARTED |
+| AI image generation not persistent | P1 | NOT STARTED |
+| Bidirectional sync needs UI | P2 | NOT STARTED |
+
+## 9.2 Recurring Issues
+
+| Issue | Fix |
+|-------|-----|
+| AI generation stops | Restart via `/api/ai-images/generate-product-images?password=lola4304` |
+| MongoDB ObjectId error | Exclude `_id` in projections: `{"_id": 0}` |
+| React hooks error | All hooks must be called before any early return |
+
+---
+
+# 10. FUTURE TASKS
+
+## 10.1 Priority Order
+
+1. **P0**: Finish PaperworkPage.jsx refactor (Mira on top, CMS-driven)
+2. **P1**: Refactor remaining 12 pillar pages to be CMS-driven
+3. **P1**: Generate AI watercolor illustrations for personalized sections
+4. **P2**: Fix Razorpay checkout
+5. **P2**: Add bidirectional sync UI to admin
+6. **P3**: Fix mobile pet dashboard
+7. **P3**: Make AI generation persistent (queue-based)
+
+## 10.2 Page Refactor Checklist
+
+For each pillar page:
+- [ ] Add CMS state variables
+- [ ] Add `fetchCMSConfig()` function
+- [ ] Call in useEffect
+- [ ] Add default fallbacks
+- [ ] Replace hardcoded content with CMS data
+- [ ] Add Mira bar at top
+- [ ] Add contextual Mira prompt
+- [ ] Add personalized sections
+- [ ] Add concierge services from CMS
+- [ ] Test with logged-in user
+- [ ] Verify personalization works
+
+---
+
+# 11. PILLAR CATEGORY DEFAULTS
+
+## Learn (12 Topics)
+1. Puppy Basics
+2. Breed Guides
+3. Food & Feeding
+4. Grooming
+5. Behavior
+6. Training Basics
+7. Travel with Dogs
+8. Senior Dog Care
+9. Health Basics
+10. Rescue / Indie Care
+11. Seasonal Care
+12. New Pet Parent Guide
+
+## Paperwork (6 Categories)
+1. Identity & Safety (microchip, adoption, registration)
+2. Medical & Health (vaccination, deworming, health checkup)
+3. Travel Documents (airline cert, health cert, passport)
+4. Insurance & Financial (policy, claims, receipts)
+5. Care & Training (grooming, training certs)
+6. Legal & Compliance (license, permits)
+
+## Care (6 Categories)
+1. Grooming
+2. Health & Wellness
+3. Hygiene
+4. Dental Care
+5. Skin & Coat
+6. Senior Care
+
+## Fit (6 Categories)
+1. Exercise & Activity
+2. Weight Management
+3. Agility & Sports
+4. Swimming
+5. Walks & Hikes
+6. Rest & Recovery
+
+## Travel (6 Categories)
+1. Air Travel
+2. Road Trips
+3. Pet-Friendly Destinations
+4. Travel Gear
+5. Travel Documents
+6. Travel Safety
+
+## Stay (6 Categories)
+1. Pet Boarding
+2. Daycare
+3. Pet Hotels
+4. Home Sitting
+5. Overnight Care
+6. Special Needs Boarding
+
+## Dine (6 Categories)
+1. Fresh Food
+2. Dry Food & Kibble
+3. Treats & Snacks
+4. Supplements
+5. Special Diets
+6. Meal Plans
+
+## Enjoy (6 Categories)
+1. Pet Events
+2. Activities
+3. Playdates
+4. Toys & Games
+5. Enrichment
+6. Experiences
+
+## Celebrate (6 Categories)
+1. Birthdays
+2. Gotcha Day
+3. Special Occasions
+4. Gifts & Surprises
+5. Pet Cakes & Treats
+6. Photoshoots
+
+## Emergency (6 Categories)
+1. Emergency Vet
+2. First Aid
+3. Poison Control
+4. Lost Pet Help
+5. Urgent Care
+6. Emergency Insurance
+
+## Advisory (6 Categories)
+1. Nutrition Advisory
+2. Behavior Consultation
+3. Training Guidance
+4. Health Advisory
+5. Breed Expert
+6. Lifestyle Planning
+
+## Farewell (6 Categories)
+1. End-of-Life Care
+2. Cremation Services
+3. Memorials
+4. Urns & Keepsakes
+5. Grief Support
+6. Rainbow Bridge
+
+## Adopt (6 Categories)
+1. Adopt a Dog
+2. Foster
+3. Rescue Support
+4. Shelters Near You
+5. Rehoming
+6. Adoption Prep
+
+## Shop (6 Categories)
+1. Essentials
+2. Collections
+3. New Arrivals
+4. Bestsellers
+5. Deals & Offers
+6. Subscriptions
+
+---
+
+# END OF DOCUMENTATION
+
+**This document is the SINGLE SOURCE OF TRUTH for the Page CMS architecture.**
+**ALL future agents MUST read this before making changes.**
