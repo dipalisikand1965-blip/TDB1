@@ -24,6 +24,8 @@ import SupportForPet from '../components/learn/SupportForPet';
 import AskConciergeForPet from '../components/learn/AskConciergeForPet';
 import LearnTopicModal from '../components/learn/LearnTopicModal';
 import CuratedBundles from '../components/CuratedBundles';
+import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
+import ArchetypeProducts from '../components/ArchetypeProducts';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -854,26 +856,81 @@ const LearnPage = () => {
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <div className="py-12 bg-gradient-to-br from-rose-50 via-white to-orange-50">
         <div className="max-w-6xl mx-auto px-4">
-          <CuratedBundles pillar="learn" maxBundles={3} showTitle={true} />
+          {/* Soul Butterfly Bundles Header - matching Advisory */}
+          <div className="text-center mb-8">
+            <h2 className="text-xl font-bold text-gray-900 flex items-center justify-center gap-2">
+              <Sparkles className="w-5 h-5 text-pink-500" />
+              {selectedPet?.soul_archetype || 'Learning'} Bundles
+            </h2>
+            <p className="text-gray-600 mt-1">Complete solutions for your {selectedPet?.breed || 'pet'}</p>
+          </div>
+          <CuratedBundles pillar="learn" maxBundles={3} showTitle={false} />
         </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* PRODUCTS THAT HELP (SEPARATE SECTION) */}
+      {/* RECOMMENDED FOR PET - Personalized Tags Section (Like Advisory) */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div id="products" className="py-12 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
-              <Award className="w-4 h-4" />
-              Products That Help
+      {selectedPet && (
+        <div className="py-8 bg-gradient-to-b from-amber-50/50 to-white">
+          <div className="max-w-6xl mx-auto px-4 text-center">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <img 
+                src={getPetPhotoUrl(selectedPet)} 
+                alt={selectedPet.name}
+                className="w-12 h-12 rounded-full object-cover border-2 border-amber-300 shadow-md"
+              />
+              <h2 className="text-2xl font-bold text-gray-900">
+                Recommended for {selectedPet.name}
+              </h2>
+              <Sparkles className="w-6 h-6 text-amber-500" />
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Training & Learning Products</h2>
-            <p className="text-gray-600 mt-2">Quality products to support your learning journey</p>
+            <p className="text-gray-600 mb-6">Items chosen with {selectedPet.name} in mind</p>
+            
+            {/* Pet Tags - breed, age, archetype */}
+            <div className="flex flex-wrap justify-center gap-3">
+              {selectedPet.breed && (
+                <Badge className="bg-white border-2 border-amber-200 text-amber-700 px-4 py-2 text-sm font-medium shadow-sm">
+                  {selectedPet.breed}
+                </Badge>
+              )}
+              {selectedPet.age && (
+                <Badge className="bg-white border-2 border-amber-200 text-gray-700 px-4 py-2 text-sm font-medium shadow-sm">
+                  {selectedPet.age} years old
+                </Badge>
+              )}
+              {selectedPet.soul_archetype && (
+                <Badge className="bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-300 text-amber-800 px-4 py-2 text-sm font-semibold shadow-sm">
+                  {selectedPet.soul_archetype}
+                </Badge>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* PRODUCTS FOR PET'S NEEDS (Advisory-style layout) */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <section id="products" className="py-8 px-4 bg-gradient-to-b from-amber-50 to-white" data-testid="learn-products-section">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-2 mb-6">
+            <Award className="w-6 h-6 text-amber-600" />
+            <h2 className="text-xl font-bold text-gray-900">Products for {selectedPet?.name || 'Your Pet'}'s Learning</h2>
           </div>
           
           {/* Products Grid - Beautiful Advisory-style layout with built-in categories */}
           <LearnProductsGrid maxProducts={24} showCategories={true} />
+          
+          {/* Smart Recommendations */}
+          <div className="mt-8">
+            <BreedSmartRecommendations pillar="learn" />
+          </div>
+          
+          {/* Archetype Products */}
+          <div className="mt-8">
+            <ArchetypeProducts pillar="learn" maxProducts={8} showTitle={true} />
+          </div>
           
           <div className="mt-6 text-center">
             <Button 
@@ -885,7 +942,7 @@ const LearnPage = () => {
             </Button>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* SERVICES THAT HELP (SEPARATE SECTION) */}
