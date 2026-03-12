@@ -98,7 +98,15 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
         // Fetch more than display to know if there are more
         const response = await fetch(`${API_URL}/api/service-box/services?pillar=${pillar}&limit=100&is_active=true`);
         const data = await response.json();
-        setServices(data.services || []);
+        const normalizedServices = (data.services || []).map((service) => {
+          const preferredImage = service.image_url || service.watercolor_image || service.image || '';
+          return {
+            ...service,
+            image: preferredImage,
+            image_url: preferredImage,
+          };
+        });
+        setServices(normalizedServices);
         setTotalServices(data.total || data.services?.length || 0);
       } catch (err) {
         console.error('Error fetching services:', err);

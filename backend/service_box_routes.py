@@ -170,10 +170,10 @@ async def list_services(
     services = await db.services_master.find(query, {"_id": 0}).sort("pillar", 1).skip(skip).limit(limit).to_list(limit)
 
     for service in services:
-        if not service.get("image_url") and service.get("watercolor_image"):
-            service["image_url"] = service["watercolor_image"]
-        if not service.get("image") and service.get("image_url"):
-            service["image"] = service["image_url"]
+        preferred_image = service.get("image_url") or service.get("watercolor_image") or service.get("image")
+        if preferred_image:
+            service["image_url"] = preferred_image
+            service["image"] = preferred_image
     
     return {
         "services": services,
@@ -196,10 +196,10 @@ async def get_service(service_id: str):
     if not service:
         raise HTTPException(status_code=404, detail="Service not found")
 
-    if not service.get("image_url") and service.get("watercolor_image"):
-        service["image_url"] = service["watercolor_image"]
-    if not service.get("image") and service.get("image_url"):
-        service["image"] = service["image_url"]
+    preferred_image = service.get("image_url") or service.get("watercolor_image") or service.get("image")
+    if preferred_image:
+        service["image_url"] = preferred_image
+        service["image"] = preferred_image
     
     return service
 
