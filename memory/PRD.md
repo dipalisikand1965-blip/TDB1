@@ -81,8 +81,8 @@ SECTION ORDER (Every Pillar Page MUST Follow):
 | 2 | Care | YES | YES (4 topics) | COMPLETE |
 | 3 | Dine | YES | YES (4 topics) | COMPLETE |
 | 4 | Paperwork | Partial | YES | NEEDS REFACTOR |
-| 5 | Fit | Partial | YES (4 topics) | NEEDS REFACTOR |
-| 6 | Travel | Partial | YES (4 topics) | NEEDS REFACTOR |
+| 5 | Fit | YES | YES (4 topics) | COMPLETE - Ask Mira at top |
+| 6 | Travel | YES | YES (4 topics) | COMPLETE - Ask Mira at top |
 | 7 | Stay | Partial | YES (4 topics) | NEEDS REFACTOR |
 | 8 | Enjoy | Partial | YES (4 topics) | NEEDS REFACTOR |
 | 9 | Celebrate | Partial | YES (4 topics) | NEEDS REFACTOR |
@@ -314,6 +314,9 @@ curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=
   - Emergency pillar: First aid kits, medical supplies, recovery items
   - Advisory pillar: Food/feeding, grooming, home comfort, training, travel, puppy, senior, seasonal products
   - All products_master (97) and unified_products (112) now have images
+- **Gold Standard Refactoring IN PROGRESS**:
+  - FitPage: Added Ask Mira Bar, Daily Tips, Help Buckets, Guided Paths sections
+  - TravelPage: Added Ask Mira Bar at top
 - CMS-editable sections implemented: Help Buckets, Daily Tips, Guided Paths
 - Updated PillarPageCMS.jsx with 3 new tabs for editing page sections
 - Updated backend API to save/load helpBuckets, dailyTips, guidedPaths
