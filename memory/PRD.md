@@ -154,6 +154,7 @@ The current focus was elevating the **Learn page** to a "10/10 golden standard" 
 | Fit | ~75% | Exercise, weight management |
 | Shop | ~85% | Products display, filters |
 | Paperwork | ~70% | Was crashing, fix pending verification |
+| Learn | 95% | Products now match Advisory style (LearnProductsGrid) |
 
 ---
 
@@ -173,6 +174,10 @@ The current focus was elevating the **Learn page** to a "10/10 golden standard" 
 
 ### PENDING VERIFICATION
 - **Paperwork Page** — Previous crash fix needs user testing.
+
+### ✅ RESOLVED THIS SESSION
+- **Admin Image Upload** — Now uploads to Cloudinary (persists through deployments!)
+- **Learn Products Style** — Now matches Advisory page with LearnProductsGrid component
 
 ---
 
