@@ -31,6 +31,7 @@ import RainbowBridgeMemorial from '../components/RainbowBridgeMemorial';
 import RainbowBridgeWall from '../components/RainbowBridgeWall';
 import SoulMadeCollection from '../components/SoulMadeCollection';
 import { PillarSoulLayer } from '../components/PillarSoulLayer';
+import { PillarAskMiraHero } from '../components/PillarAskMiraHero';
 import CuratedBundles from '../components/CuratedBundles';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { PillarDailyTip, PillarHelpBuckets } from '../components/PillarGoldSections';
@@ -174,6 +175,8 @@ const FarewellPage = () => {
   const [griefResponse, setGriefResponse] = useState('');
   const [griefLoading, setGriefLoading] = useState(false);
   const [showGriefResponse, setShowGriefResponse] = useState(false);
+  const [topAskMiraQuestion, setTopAskMiraQuestion] = useState('');
+  const [topAskMiraLoading, setTopAskMiraLoading] = useState(false);
   const [selectedPath, setSelectedPath] = useState(null);
   
   // Use global pet context
@@ -293,6 +296,24 @@ const FarewellPage = () => {
     // Clear input
     setGriefQuery('');
     setShowGriefResponse(false);
+  };
+
+  const handleTopAskMira = () => {
+    if (!topAskMiraQuestion.trim()) return;
+    setTopAskMiraLoading(true);
+    window.dispatchEvent(new CustomEvent('openMiraAI', {
+      detail: {
+        message: topAskMiraQuestion,
+        initialQuery: topAskMiraQuestion,
+        context: 'grief_support',
+        pillar: 'farewell',
+        source: 'pillar_top_bar',
+        pet_name: activePet?.name,
+        pet_breed: activePet?.breed,
+      }
+    }));
+    setTopAskMiraQuestion('');
+    setTimeout(() => setTopAskMiraLoading(false), 800);
   };
 
   // Farewell Journey Guided Paths - Now fetched from database
@@ -436,6 +457,24 @@ const FarewellPage = () => {
       title="Farewell - Memorial Services | The Doggy Company"
       description="Compassionate end-of-life services. Support with dignity and care."
     >
+      {cmsConfig.sections?.askMira?.enabled !== false && (
+        <PillarAskMiraHero
+          theme="violet"
+          sectionTestId="farewell-top-ask-mira"
+          badgeTestId="farewell-ask-mira-badge"
+          titleTestId="farewell-page-title"
+          inputTestId="ask-farewell-input"
+          submitTestId="ask-farewell-submit"
+          title={pageTitle}
+          description="Begin with Mira for gentle, soul-aware support and continue in the same chat below — one assistant, one memory, one thread."
+          value={topAskMiraQuestion}
+          onChange={(e) => setTopAskMiraQuestion(e.target.value)}
+          onSubmit={handleTopAskMira}
+          loading={topAskMiraLoading}
+          placeholder={cmsConfig.askMira?.placeholder || 'Cremation services... memorial ideas... how do I know when it is time?'}
+        />
+      )}
+
       {/* ═══════════════════════════════════════════════════════════════════════════════
           FAREWELL TOPIC CARDS - Quick access to memorial categories
           End-of-Life Care, Cremation, Memorials, Grief Support
