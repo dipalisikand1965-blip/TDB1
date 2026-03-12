@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://learn-golden-2.preview.emergentagent.com
+https://learn-page-studio.preview.emergentagent.com
 ```
 
 ---
