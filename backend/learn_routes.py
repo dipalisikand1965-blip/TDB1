@@ -23,6 +23,70 @@ def get_db():
 
 
 
+# ==================== PAGE CMS CONFIGURATION ====================
+
+@router.get("/page-config")
+async def get_page_config():
+    """Get the complete Learn page configuration"""
+    db = get_db()
+    
+    # Get page config
+    config = await db.page_configs.find_one({"pillar": "learn"}, {"_id": 0})
+    
+    # Get topics with their full configuration
+    topics = await db.learn_topics.find({}, {"_id": 0}).sort("order", 1).to_list(50)
+    
+    # Get selected items
+    selections = await db.page_selections.find_one({"pillar": "learn"}, {"_id": 0})
+    
+    return {
+        "config": config or {},
+        "topics": topics or [],
+        "selectedBundles": (selections or {}).get("bundles", []),
+        "selectedProducts": (selections or {}).get("products", []),
+        "selectedServices": (selections or {}).get("services", [])
+    }
+
+
+@router.post("/page-config")
+async def save_page_config(data: dict):
+    """Save the complete Learn page configuration"""
+    db = get_db()
+    
+    # Save page config
+    config = data.get("config", {})
+    config["pillar"] = "learn"
+    await db.page_configs.update_one(
+        {"pillar": "learn"},
+        {"$set": config},
+        upsert=True
+    )
+    
+    # Save topics
+    topics = data.get("topics", [])
+    if topics:
+        # Delete existing topics and insert new ones
+        await db.learn_topics.delete_many({})
+        for i, topic in enumerate(topics):
+            topic["order"] = i
+            await db.learn_topics.insert_one(topic)
+    
+    # Save selections
+    selections = {
+        "pillar": "learn",
+        "bundles": data.get("selectedBundles", []),
+        "products": data.get("selectedProducts", []),
+        "services": data.get("selectedServices", [])
+    }
+    await db.page_selections.update_one(
+        {"pillar": "learn"},
+        {"$set": selections},
+        upsert=True
+    )
+    
+    return {"success": True, "message": "Learn page configuration saved"}
+
+
 # ==================== TOPIC PRODUCTS MANAGEMENT ====================
 
 @router.post("/topic-products/seed")

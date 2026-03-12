@@ -66,6 +66,7 @@ import PetWrappedAdmin from '../components/admin/PetWrappedAdmin';
 import SoulProductsManager from '../components/admin/SoulProductsManager';
 import BundlesManager from '../components/admin/BundlesManager';
 import TopicProductsManager from '../components/admin/TopicProductsManager';
+import LearnPageCMS from '../components/admin/LearnPageCMS';
 import { testimonials as mockTestimonials, faqs as mockFaqs } from '../mockData';
 import { API_URL } from '../utils/api';
 import { getPetPhotoUrl } from '../utils/petAvatar';
@@ -2967,6 +2968,26 @@ const Admin = () => {
             ))}
           </div>
           
+          {/* Page CMS - Full control over pillar pages */}
+          <div className="flex gap-2 flex-wrap items-center mb-4">
+            <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-amber-100 rounded">📄 Page CMS</span>
+            {[
+              { id: 'learn-cms', label: 'Learn Page', icon: GraduationCap },
+            ].map((tab) => (
+              <Button
+                key={tab.id}
+                variant={activeTab === tab.id ? 'default' : 'ghost'}
+                className={activeTab === tab.id ? 'bg-amber-600 text-white' : ''}
+                onClick={() => setActiveTab(tab.id)}
+                size="sm"
+                data-testid={`admin-tab-${tab.id}`}
+              >
+                <tab.icon className="w-4 h-4 mr-1" />
+                {tab.label}
+              </Button>
+            ))}
+          </div>
+          
           {/* Commerce */}
           <div className="flex gap-2 flex-wrap items-center mb-4">
             <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-green-100 rounded">📦 Commerce</span>
@@ -3628,6 +3649,11 @@ const Admin = () => {
         {/* Topic Products Manager Tab */}
         {activeTab === 'topic-products' && (
           <TopicProductsManager />
+        )}
+
+        {/* Learn Page CMS Tab */}
+        {activeTab === 'learn-cms' && (
+          <LearnPageCMS />
         )}
 
         {/* Service Box Tab */}
