@@ -860,7 +860,9 @@ const LearnPage = () => {
           <div className="text-center mb-8">
             <h2 className="text-xl font-bold text-gray-900 flex items-center justify-center gap-2">
               <Sparkles className="w-5 h-5 text-pink-500" />
-              {selectedPet?.soul_archetype || 'Learning'} Bundles
+              {typeof selectedPet?.soul_archetype === 'object' 
+                ? (selectedPet?.soul_archetype?.archetype_name || 'Learning')
+                : (selectedPet?.soul_archetype || 'Learning')} Bundles
             </h2>
             <p className="text-gray-600 mt-1">Complete solutions for your {selectedPet?.breed || 'pet'}</p>
           </div>
@@ -901,7 +903,9 @@ const LearnPage = () => {
               )}
               {selectedPet.soul_archetype && (
                 <Badge className="bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-300 text-amber-800 px-4 py-2 text-sm font-semibold shadow-sm">
-                  {selectedPet.soul_archetype}
+                  {typeof selectedPet.soul_archetype === 'object' 
+                    ? (selectedPet.soul_archetype.archetype_name || selectedPet.soul_archetype.primary_archetype || 'Soul')
+                    : selectedPet.soul_archetype}
                 </Badge>
               )}
             </div>
