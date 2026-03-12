@@ -8,6 +8,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
@@ -16,6 +17,7 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { usePillarContext } from '../context/PillarContext';
 import { useCart } from '../context/CartContext';
+import { ProductDetailModal } from './ProductCard';
 import { 
   getPersonalizedGreeting, 
   getProductIntro,
@@ -62,6 +64,8 @@ const ArchetypeProducts = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [petData, setPetData] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   
   useEffect(() => {
     const fetchProducts = async () => {
@@ -196,15 +200,20 @@ const ArchetypeProducts = ({
         {products.map((product) => (
           <Card 
             key={product.id}
-            className={`overflow-hidden hover:shadow-lg transition-all duration-300 ${colors.border} border`}
+            className={`overflow-hidden hover:shadow-lg transition-all duration-300 ${colors.border} border cursor-pointer group`}
+            onClick={() => {
+              setSelectedProduct(product);
+              setShowModal(true);
+            }}
+            data-testid={`archetype-product-${product.id}`}
           >
             {/* Product Image */}
-            <div className="relative aspect-square bg-gray-100">
-              {product.mockup_url ? (
+            <div className="relative aspect-square bg-gray-100 overflow-hidden">
+              {product.mockup_url || product.image_url || product.image ? (
                 <img
-                  src={product.mockup_url}
+                  src={product.mockup_url || product.image_url || product.image}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   loading="lazy"
                 />
               ) : (
@@ -254,7 +263,10 @@ const ArchetypeProducts = ({
                   size="sm"
                   variant="outline"
                   className={`${colors.border} ${colors.accent} hover:bg-purple-50`}
-                  onClick={() => handleAddToCart(product)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddToCart(product);
+                  }}
                 >
                   <ShoppingCart className="w-4 h-4" />
                 </Button>
@@ -263,6 +275,31 @@ const ArchetypeProducts = ({
           </Card>
         ))}
       </div>
+      
+      {/* Product Detail Modal */}
+      {showModal && selectedProduct && createPortal(
+        <ProductDetailModal
+          product={selectedProduct}
+          pillar={pillar}
+          selectedPet={currentPet}
+          isOpen={showModal}
+          onClose={() => {
+            setShowModal(false);
+            setSelectedProduct(null);
+          }}
+          onAddToCart={(product) => {
+            addToCart({
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              image_url: product.mockup_url || product.image_url || product.image,
+              quantity: 1,
+              pillar: pillar
+            });
+          }}
+        />,
+        document.body
+      )}
     </div>
   );
 };
