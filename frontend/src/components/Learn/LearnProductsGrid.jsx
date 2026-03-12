@@ -36,45 +36,69 @@ const CATEGORIES = {
   tricks: { name: 'Tricks', icon: Sparkles, color: 'bg-purple-100 text-purple-700' }
 };
 
-// Product Detail Modal
+// Product Detail Modal - Fixed positioning with proper overlay
 const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
   const [quantity, setQuantity] = useState(1);
+  
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
   
   if (!isOpen || !product) return null;
   
   const CategoryIcon = CATEGORIES[product.category]?.icon || Package;
+  const productImage = product.image_url || product.image || product.images?.[0];
   
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={onClose}>
+    <div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+    >
       <div 
-        className="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+        className="bg-white rounded-2xl max-w-lg w-full max-h-[85vh] overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200"
         onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
+        {/* Header with Image */}
         <div className="relative">
-          <img 
-            src={product.image_url || product.image || 'https://via.placeholder.com/400x300'} 
-            alt={product.name}
-            className="w-full h-56 object-cover rounded-t-xl"
-          />
+          {productImage ? (
+            <img 
+              src={productImage} 
+              alt={product.name}
+              className="w-full h-56 object-cover"
+              onError={(e) => {
+                e.target.src = 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293720/doggy/products/puzzle_toys.webp';
+              }}
+            />
+          ) : (
+            <div className="w-full h-56 bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
+              <Package className="w-16 h-16 text-amber-300" />
+            </div>
+          )}
           <button 
             onClick={onClose}
-            className="absolute top-3 right-3 bg-white/90 rounded-full p-2 hover:bg-white"
+            className="absolute top-3 right-3 bg-white rounded-full p-2 hover:bg-gray-100 shadow-md transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
           
           {/* Category badge */}
           <div className="absolute bottom-3 left-3">
-            <Badge className={CATEGORIES[product.category]?.color || 'bg-amber-100 text-amber-700'}>
+            <Badge className={`${CATEGORIES[product.category]?.color || 'bg-amber-100 text-amber-700'} shadow-sm`}>
               <CategoryIcon className="w-3 h-3 mr-1" />
               {CATEGORIES[product.category]?.name || 'Learning'}
             </Badge>
           </div>
         </div>
         
-        {/* Content */}
-        <div className="p-5">
+        {/* Scrollable Content */}
+        <div className="p-5 overflow-y-auto max-h-[calc(85vh-14rem)]">
           <h2 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h2>
           <p className="text-gray-600 text-sm mb-4">{product.description}</p>
           
@@ -154,9 +178,10 @@ const LearnProductsGrid = ({ maxProducts = 8, showCategories = true, categoryFil
   const { addToCart } = useCart();
   const { currentPet } = usePillarContext();
 
+  // Fetch products when component mounts OR when pet changes
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [currentPet?.breed]);
 
   // When categoryFilter changes, apply it
   useEffect(() => {
@@ -178,11 +203,45 @@ const LearnProductsGrid = ({ maxProducts = 8, showCategories = true, categoryFil
   const fetchProducts = async () => {
     setLoading(true);
     try {
+      // Get pet's breed for personalization
+      const petBreed = currentPet?.breed?.toLowerCase() || '';
+      
       // Use unified product-box API for full CRUD support
-      const response = await fetch(`${API_URL}/api/product-box/products?pillar=learn&limit=100`);
+      const response = await fetch(`${API_URL}/api/product-box/products?pillar=learn&limit=200`);
       if (response.ok) {
         const data = await response.json();
-        setProducts(data.products || []);
+        let allProducts = data.products || [];
+        
+        // PERSONALIZATION: Filter and prioritize by pet's breed
+        if (petBreed) {
+          // Separate breed-specific products from generic ones
+          const breedSpecific = allProducts.filter(p => {
+            const name = (p.name || '').toLowerCase();
+            const tags = (p.tags || []).map(t => t.toLowerCase());
+            const description = (p.description || '').toLowerCase();
+            
+            // Check if product is for this specific breed
+            return name.includes(petBreed) || 
+                   tags.includes(petBreed) ||
+                   description.includes(petBreed);
+          });
+          
+          // Get generic training products (not breed-specific for OTHER breeds)
+          const genericProducts = allProducts.filter(p => {
+            const name = (p.name || '').toLowerCase();
+            // Exclude products that are clearly for OTHER breeds
+            const otherBreeds = ['chihuahua', 'pug', 'shih tzu', 'scottish', 'labrador', 'golden', 'poodle', 'beagle', 'bulldog', 'boxer', 'husky', 'german shepherd', 'rottweiler', 'schnoodle', 'dachshund', 'corgi'];
+            const isOtherBreed = otherBreeds.some(b => 
+              name.includes(b) && !name.includes(petBreed) && petBreed !== b
+            );
+            return !isOtherBreed;
+          });
+          
+          // Combine: breed-specific first, then generic
+          allProducts = [...breedSpecific, ...genericProducts.filter(p => !breedSpecific.includes(p))];
+        }
+        
+        setProducts(allProducts);
       } else {
         // Fallback to learn-specific endpoint
         const fallbackRes = await fetch(`${API_URL}/api/learn/products?limit=100`);

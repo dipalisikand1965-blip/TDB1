@@ -920,7 +920,11 @@ const LearnPage = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-2 mb-6">
             <Award className="w-6 h-6 text-amber-600" />
-            <h2 className="text-xl font-bold text-gray-900">Products for {selectedPet?.name || 'Your Pet'}'s Learning</h2>
+            <h2 className="text-xl font-bold text-gray-900">
+              {selectedPet?.breed 
+                ? `${selectedPet.breed} Training Products for ${selectedPet.name}` 
+                : `Products for ${selectedPet?.name || 'Your Pet'}'s Learning`}
+            </h2>
           </div>
           
           {/* Products Grid - Beautiful Advisory-style layout with built-in categories */}
