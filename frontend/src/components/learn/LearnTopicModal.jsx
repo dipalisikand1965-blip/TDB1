@@ -390,56 +390,127 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
     if (!config) return;
     setLoadingProducts(true);
     try {
-      // Get pet's breed for personalization
-      const petBreed = currentPet?.breed?.toLowerCase() || '';
+      const topicSlugLower = topicSlug?.toLowerCase() || '';
+      let productsToShow = [];
       
-      // Fetch from Product Box with learn pillar
-      const res = await fetch(`${API_URL}/api/product-box/products?pillar=learn&limit=50`);
-      if (res.ok) {
-        const data = await res.json();
-        let allProducts = data.products || [];
-        
-        // Filter by topic keywords
-        const keywords = config.productKeywords || [];
-        
-        // Score and filter products
-        const scoredProducts = allProducts.map(p => {
-          let score = 0;
-          const name = (p.name || '').toLowerCase();
-          const description = (p.description || '').toLowerCase();
-          const tags = (p.tags || []).map(t => t.toLowerCase());
+      // INTELLIGENT TOPIC-BASED PRODUCT FETCHING
+      // Different topics need different product sources
+      
+      if (topicSlugLower.includes('puppy') || topicSlugLower.includes('basics')) {
+        // PUPPY BASICS: Show generic puppy training tools (from /api/learn/products)
+        const res = await fetch(`${API_URL}/api/learn/products`);
+        if (res.ok) {
+          const data = await res.json();
+          // These are curated generic training products with watercolor images
+          productsToShow = (data.products || []).filter(p => {
+            const name = (p.name || '').toLowerCase();
+            // Prioritize: clicker, treats, puzzle, starter kit, training
+            return name.includes('clicker') || name.includes('treat') || 
+                   name.includes('puppy') || name.includes('puzzle') || 
+                   name.includes('starter') || name.includes('training');
+          }).slice(0, 8);
+        }
+      } else if (topicSlugLower.includes('groom')) {
+        // GROOMING: Show grooming products
+        const res = await fetch(`${API_URL}/api/learn/products`);
+        if (res.ok) {
+          const data = await res.json();
+          const allProducts = data.products || [];
+          // Look for grooming-related products
+          productsToShow = allProducts.filter(p => {
+            const name = (p.name || '').toLowerCase();
+            return name.includes('brush') || name.includes('shampoo') || 
+                   name.includes('groom') || name.includes('nail') || 
+                   name.includes('comb') || name.includes('mat');
+          }).slice(0, 8);
           
-          // Check keyword matches
-          keywords.forEach(kw => {
-            if (name.includes(kw.toLowerCase())) score += 3;
-            if (description.includes(kw.toLowerCase())) score += 1;
-            if (tags.some(t => t.includes(kw.toLowerCase()))) score += 2;
-          });
+          // Fallback: if no grooming products, show general training tools
+          if (productsToShow.length < 4) {
+            productsToShow = allProducts.slice(0, 8);
+          }
+        }
+      } else if (topicSlugLower.includes('food') || topicSlugLower.includes('feeding') || topicSlugLower.includes('nutrition')) {
+        // FOOD & FEEDING: Show food-related products
+        const res = await fetch(`${API_URL}/api/learn/products`);
+        if (res.ok) {
+          const data = await res.json();
+          const allProducts = data.products || [];
+          productsToShow = allProducts.filter(p => {
+            const name = (p.name || '').toLowerCase();
+            return name.includes('treat') || name.includes('bowl') || 
+                   name.includes('feeder') || name.includes('food') ||
+                   name.includes('snuffle');
+          }).slice(0, 8);
           
-          // Bonus for pet's breed match
-          if (petBreed && name.includes(petBreed)) score += 5;
+          if (productsToShow.length < 4) {
+            productsToShow = allProducts.slice(0, 8);
+          }
+        }
+      } else if (topicSlugLower.includes('breed')) {
+        // BREED GUIDES: Show breed-specific products for user's pet
+        const petBreed = currentPet?.breed?.toLowerCase() || '';
+        const res = await fetch(`${API_URL}/api/product-box/products?pillar=learn&limit=50`);
+        if (res.ok) {
+          const data = await res.json();
+          const allProducts = data.products || [];
           
-          // Must have an image
-          const hasImage = p.image_url || p.image || (p.images && p.images[0]);
-          if (!hasImage) score -= 10;
+          if (petBreed) {
+            // Show products for user's breed
+            productsToShow = allProducts.filter(p => {
+              const name = (p.name || '').toLowerCase();
+              return name.includes(petBreed);
+            }).slice(0, 8);
+          }
           
-          // Exclude products for OTHER breeds
-          const otherBreeds = ['chihuahua', 'pug', 'shih tzu', 'scottish', 'labrador', 'golden', 'poodle', 'beagle', 'bulldog', 'husky', 'german shepherd', 'schnoodle', 'dachshund'];
-          const isOtherBreed = otherBreeds.some(b => name.includes(b) && b !== petBreed);
-          if (isOtherBreed && petBreed) score -= 20;
+          // Fallback: show variety of breed products
+          if (productsToShow.length < 4) {
+            productsToShow = allProducts.slice(0, 8);
+          }
+        }
+      } else if (topicSlugLower.includes('behavior') || topicSlugLower.includes('anxiety')) {
+        // BEHAVIOR: Show anxiety/behavior products
+        const res = await fetch(`${API_URL}/api/learn/products`);
+        if (res.ok) {
+          const data = await res.json();
+          const allProducts = data.products || [];
+          productsToShow = allProducts.filter(p => {
+            const name = (p.name || '').toLowerCase();
+            return name.includes('anxiety') || name.includes('calm') || 
+                   name.includes('puzzle') || name.includes('enrichment') ||
+                   name.includes('snuffle');
+          }).slice(0, 8);
           
-          return { ...p, score };
-        });
-        
-        // Sort by score and take top 8
-        const topProducts = scoredProducts
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 8);
-        
-        setProducts(topProducts);
+          if (productsToShow.length < 4) {
+            productsToShow = allProducts.slice(0, 8);
+          }
+        }
+      } else {
+        // DEFAULT: Show general training products from curated list
+        const res = await fetch(`${API_URL}/api/learn/products`);
+        if (res.ok) {
+          const data = await res.json();
+          productsToShow = (data.products || []).slice(0, 8);
+        }
       }
+      
+      // Ensure products have images
+      productsToShow = productsToShow.filter(p => 
+        p.image_url || p.image || (p.images && p.images[0])
+      );
+      
+      setProducts(productsToShow);
     } catch (err) {
       console.error('Failed to fetch products:', err);
+      // Fallback to curated products
+      try {
+        const res = await fetch(`${API_URL}/api/learn/products`);
+        if (res.ok) {
+          const data = await res.json();
+          setProducts((data.products || []).slice(0, 8));
+        }
+      } catch (e) {
+        setProducts([]);
+      }
     } finally {
       setLoadingProducts(false);
     }
