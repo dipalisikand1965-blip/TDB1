@@ -68,6 +68,239 @@ const BEHAVIOR_ISSUES = [
   { value: 'resource_guarding', label: 'Resource Guarding' }
 ];
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// TRAINING PRODUCTS SECTION - Like Advisory's "Care Products" (with category tabs)
+// ═══════════════════════════════════════════════════════════════════════════════
+const TRAINING_CATEGORIES = [
+  { id: 'all', name: 'All Products', icon: Star },
+  { id: 'training', name: 'Training Tools', icon: Target },
+  { id: 'puzzles', name: 'Puzzles & Enrichment', icon: Brain },
+  { id: 'books', name: 'Books & Guides', icon: GraduationCap },
+  { id: 'treats', name: 'Training Treats', icon: Heart }
+];
+
+const TrainingProductsSection = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const { addToCart } = useCart();
+  
+  useEffect(() => {
+    fetchTrainingProducts();
+  }, []);
+  
+  const fetchTrainingProducts = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/learn/products?limit=20`);
+      if (response.ok) {
+        const data = await response.json();
+        setProducts(data.products || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch training products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleAddToCart = (product) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price || 999,
+      quantity: 1,
+      image_url: product.image || product.image_url,
+      pillar: 'learn'
+    });
+    toast({
+      title: "Added to cart",
+      description: product.name,
+    });
+    setSelectedProduct(null);
+  };
+  
+  const filteredProducts = activeCategory === 'all' 
+    ? products 
+    : products.filter(p => {
+        const name = (p.name || '').toLowerCase();
+        const desc = (p.description || '').toLowerCase();
+        switch(activeCategory) {
+          case 'training': return name.includes('clicker') || name.includes('train') || name.includes('leash') || name.includes('pouch');
+          case 'puzzles': return name.includes('puzzle') || name.includes('interactive') || name.includes('enrichment');
+          case 'books': return name.includes('book') || name.includes('guide') || desc.includes('guide');
+          case 'treats': return name.includes('treat') || name.includes('snack');
+          default: return true;
+        }
+      });
+  
+  if (loading) {
+    return (
+      <section className="py-10 bg-gradient-to-b from-white to-amber-50/30">
+        <div className="max-w-6xl mx-auto px-4 flex justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+        </div>
+      </section>
+    );
+  }
+  
+  return (
+    <section className="py-10 bg-gradient-to-b from-white to-amber-50/30" data-testid="training-products-section">
+      <div className="max-w-6xl mx-auto px-4">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2">
+            <GraduationCap className="w-6 h-6 text-amber-600" />
+            <h2 className="text-xl font-bold text-gray-900">Training Products</h2>
+          </div>
+        </div>
+        
+        {/* Category Tabs */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {TRAINING_CATEGORIES.map(cat => {
+            const Icon = cat.icon;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  activeCategory === cat.id
+                    ? 'bg-amber-500 text-white shadow-md'
+                    : 'bg-white text-gray-600 hover:bg-amber-50 border border-gray-200'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {cat.name}
+              </button>
+            );
+          })}
+        </div>
+        
+        {/* Products Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {filteredProducts.slice(0, 10).map((product, idx) => (
+            <Card 
+              key={product.id || idx}
+              className="group cursor-pointer hover:shadow-lg transition-all overflow-hidden"
+              onClick={() => setSelectedProduct(product)}
+            >
+              <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50">
+                {product.image || product.image_url ? (
+                  <img 
+                    src={product.image || product.image_url}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <GraduationCap className="w-12 h-12 text-amber-200" />
+                  </div>
+                )}
+                {product.compare_price && product.compare_price > product.price && (
+                  <Badge className="absolute top-2 right-2 bg-green-500 text-white text-xs">
+                    {Math.round((1 - product.price / product.compare_price) * 100)}% OFF
+                  </Badge>
+                )}
+              </div>
+              <div className="p-3">
+                <h3 className="font-medium text-gray-900 text-sm line-clamp-2 mb-1">{product.name}</h3>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-amber-600 font-bold">₹{product.price}</span>
+                  {product.compare_price && product.compare_price > product.price && (
+                    <span className="text-gray-400 text-xs line-through">₹{product.compare_price}</span>
+                  )}
+                </div>
+                {product.paw_reward_points && (
+                  <p className="text-xs text-gray-500 mt-1">+{product.paw_reward_points} paw points</p>
+                )}
+              </div>
+            </Card>
+          ))}
+        </div>
+        
+        {/* View More */}
+        <div className="text-center mt-6">
+          <Button 
+            variant="outline" 
+            className="border-amber-300 text-amber-700 hover:bg-amber-50"
+            onClick={() => window.location.href = '/shop?pillar=learn'}
+          >
+            View All Training Products <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+        </div>
+      </div>
+      
+      {/* Product Detail Modal */}
+      {selectedProduct && (
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          onClick={() => setSelectedProduct(null)}
+        >
+          <Card 
+            className="bg-white max-w-lg w-full max-h-[85vh] overflow-hidden shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="relative">
+              {(selectedProduct.image || selectedProduct.image_url) ? (
+                <img 
+                  src={selectedProduct.image || selectedProduct.image_url}
+                  alt={selectedProduct.name}
+                  className="w-full h-56 object-cover"
+                />
+              ) : (
+                <div className="w-full h-56 bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
+                  <GraduationCap className="w-16 h-16 text-amber-300" />
+                </div>
+              )}
+              <button 
+                onClick={() => setSelectedProduct(null)}
+                className="absolute top-3 right-3 bg-white rounded-full p-2 hover:bg-gray-100 shadow-md"
+              >
+                <span className="sr-only">Close</span>
+                ✕
+              </button>
+            </div>
+            <div className="p-5">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">{selectedProduct.name}</h2>
+              <p className="text-gray-600 text-sm mb-4">{selectedProduct.description}</p>
+              
+              <div className="flex items-baseline gap-2 mb-4">
+                <span className="text-2xl font-bold text-amber-600">₹{selectedProduct.price}</span>
+                {selectedProduct.compare_price && selectedProduct.compare_price > selectedProduct.price && (
+                  <>
+                    <span className="text-gray-400 line-through">₹{selectedProduct.compare_price}</span>
+                    <Badge className="bg-green-100 text-green-700">
+                      {Math.round((1 - selectedProduct.price / selectedProduct.compare_price) * 100)}% off
+                    </Badge>
+                  </>
+                )}
+              </div>
+              
+              {selectedProduct.paw_reward_points && (
+                <p className="text-sm text-amber-600 mb-4 flex items-center gap-1">
+                  <PawPrint className="w-4 h-4" />
+                  Earn {selectedProduct.paw_reward_points} paw points
+                </p>
+              )}
+              
+              <Button 
+                onClick={() => handleAddToCart(selectedProduct)}
+                className="w-full bg-amber-500 hover:bg-amber-600"
+                size="lg"
+              >
+                Add to Cart - ₹{selectedProduct.price}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
+    </section>
+  );
+};
+
 const LearnPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
@@ -867,6 +1100,11 @@ const LearnPage = () => {
           <CuratedBundles pillar="learn" maxBundles={3} showTitle={false} />
         </div>
       </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* TRAINING PRODUCTS - Like Advisory's "Care Products" Section */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <TrainingProductsSection />
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* RECOMMENDED FOR PET - Personalized Tags Section (Like Advisory) */}

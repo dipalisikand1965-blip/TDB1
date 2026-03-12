@@ -384,7 +384,7 @@ async def get_trainers(
 # ==================== PRODUCTS ====================
 
 @router.get("/products")
-async def get_learn_products(limit: int = 20):
+async def get_learn_products(limit: int = 20, products_only: bool = True):
     """Get training-related products from unified_products collection"""
     db = get_db()
     
@@ -406,72 +406,143 @@ async def get_learn_products(limit: int = 20):
             if p.get("id") not in seen_ids:
                 products.append(p)
     
-    # If no products, return sample products
-    if not products:
-        products = [
-            {
-                "id": "prod_clicker",
-                "name": "Professional Training Clicker Set",
-                "price": 349,
-                "compare_price": 499,
-                "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400",
-                "description": "Set of 3 clickers with wrist straps for effective positive reinforcement training.",
-                "pillar": "learn",
-                "paw_reward_points": 35
-            },
-            {
-                "id": "prod_treat_pouch",
-                "name": "Training Treat Pouch",
-                "price": 799,
-                "compare_price": 999,
-                "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400",
-                "description": "Convenient magnetic closure treat pouch with belt clip and poop bag dispenser.",
-                "pillar": "learn",
-                "paw_reward_points": 80
-            },
-            {
-                "id": "prod_training_treats",
-                "name": "High-Value Training Treats",
-                "price": 449,
-                "compare_price": 549,
-                "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400",
-                "description": "Small, soft, and irresistible treats perfect for training sessions.",
-                "pillar": "learn",
-                "paw_reward_points": 45
-            },
-            {
-                "id": "prod_long_leash",
-                "name": "10m Training Long Line",
-                "price": 1299,
-                "compare_price": 1599,
-                "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400",
-                "description": "Durable biothane long line for recall training and off-leash work.",
-                "pillar": "learn",
-                "paw_reward_points": 130
-            },
-            {
-                "id": "prod_puzzle_toy",
-                "name": "Interactive Puzzle Toy Set",
-                "price": 1499,
-                "compare_price": 1999,
-                "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
-                "description": "Set of 3 puzzle toys for mental stimulation and food enrichment.",
-                "pillar": "learn",
-                "paw_reward_points": 150
-            },
-            {
-                "id": "prod_training_book",
-                "name": "The Complete Dog Training Guide",
-                "price": 899,
-                "compare_price": 1199,
-                "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400",
-                "description": "Comprehensive guide covering puppy to advanced training techniques.",
-                "pillar": "learn",
-                "paw_reward_points": 90
-            }
-        ]
+    # ALWAYS return curated physical training products
+    # These are like Advisory's "Care Products" - actual physical products
+    curated_training_products = [
+        {
+            "id": "learn-clicker-set",
+            "name": "Professional Training Clicker Set",
+            "price": 349,
+            "compare_price": 499,
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop",
+            "image_url": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop",
+            "description": "Set of 3 professional clickers with wrist straps for effective positive reinforcement training.",
+            "pillar": "learn",
+            "category": "training_tools",
+            "paw_reward_points": 35,
+            "in_stock": True
+        },
+        {
+            "id": "learn-treat-pouch",
+            "name": "Training Treat Pouch",
+            "price": 799,
+            "compare_price": 999,
+            "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=400&fit=crop",
+            "image_url": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=400&fit=crop",
+            "description": "Convenient magnetic closure treat pouch with belt clip and poop bag dispenser.",
+            "pillar": "learn",
+            "category": "training_tools",
+            "paw_reward_points": 80,
+            "in_stock": True
+        },
+        {
+            "id": "learn-training-treats",
+            "name": "High-Value Training Treats Pack",
+            "price": 449,
+            "compare_price": 549,
+            "image": "https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=400&h=400&fit=crop",
+            "image_url": "https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=400&h=400&fit=crop",
+            "description": "Small, soft, and irresistible treats perfect for training sessions. Chicken & liver flavor.",
+            "pillar": "learn",
+            "category": "treats",
+            "paw_reward_points": 45,
+            "in_stock": True
+        },
+        {
+            "id": "learn-long-line",
+            "name": "10m Training Long Line",
+            "price": 1299,
+            "compare_price": 1599,
+            "image": "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=400&fit=crop",
+            "image_url": "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=400&h=400&fit=crop",
+            "description": "Durable biothane long line for recall training and off-leash work. Waterproof and easy to clean.",
+            "pillar": "learn",
+            "category": "training_tools",
+            "paw_reward_points": 130,
+            "in_stock": True
+        },
+        {
+            "id": "learn-puzzle-set",
+            "name": "Interactive Puzzle Toy Set",
+            "price": 1499,
+            "compare_price": 1999,
+            "image": "https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?w=400&h=400&fit=crop",
+            "image_url": "https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?w=400&h=400&fit=crop",
+            "description": "Set of 3 puzzle toys for mental stimulation and food enrichment. Multiple difficulty levels.",
+            "pillar": "learn",
+            "category": "puzzles",
+            "paw_reward_points": 150,
+            "in_stock": True
+        },
+        {
+            "id": "learn-training-book",
+            "name": "The Complete Dog Training Guide",
+            "price": 899,
+            "compare_price": 1199,
+            "image": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=400&fit=crop",
+            "image_url": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=400&fit=crop",
+            "description": "Comprehensive guide covering puppy to advanced training techniques with illustrations.",
+            "pillar": "learn",
+            "category": "books",
+            "paw_reward_points": 90,
+            "in_stock": True
+        },
+        {
+            "id": "learn-target-stick",
+            "name": "Professional Target Stick",
+            "price": 599,
+            "compare_price": 799,
+            "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
+            "image_url": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
+            "description": "Telescoping target stick for precision training and trick teaching.",
+            "pillar": "learn",
+            "category": "training_tools",
+            "paw_reward_points": 60,
+            "in_stock": True
+        },
+        {
+            "id": "learn-snuffle-mat",
+            "name": "Snuffle Mat for Mental Enrichment",
+            "price": 1199,
+            "compare_price": 1499,
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop",
+            "image_url": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop",
+            "description": "Interactive feeding mat that engages your dog's natural foraging instincts.",
+            "pillar": "learn",
+            "category": "puzzles",
+            "paw_reward_points": 120,
+            "in_stock": True
+        },
+        {
+            "id": "learn-anxiety-kit",
+            "name": "Anxiety Relief Training Kit",
+            "price": 2499,
+            "compare_price": 2999,
+            "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=400&fit=crop",
+            "image_url": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=400&fit=crop",
+            "description": "Complete kit with calming treats, anxiety wrap, and training guide for anxious dogs.",
+            "pillar": "learn",
+            "category": "training_tools",
+            "paw_reward_points": 250,
+            "in_stock": True
+        },
+        {
+            "id": "learn-puppy-starter",
+            "name": "Puppy Training Starter Kit",
+            "price": 1999,
+            "compare_price": 2499,
+            "image": "https://images.unsplash.com/photo-1591946614720-90a587da4a36?w=400&h=400&fit=crop",
+            "image_url": "https://images.unsplash.com/photo-1591946614720-90a587da4a36?w=400&h=400&fit=crop",
+            "description": "Everything for new puppy parents: training pads, clicker, treats, toy, and guide book.",
+            "pillar": "learn",
+            "category": "training_tools",
+            "paw_reward_points": 200,
+            "in_stock": True
+        }
+    ]
     
-    return {"products": products, "count": len(products)}
+    # Return curated products for the "Care Products" style section
+    return {"products": curated_training_products, "count": len(curated_training_products)}
 
 
 # ==================== GUIDES ====================
