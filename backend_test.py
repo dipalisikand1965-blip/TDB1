@@ -211,6 +211,81 @@ class DoggyCompanyAPITester:
         
         return success and 'folders' in response
 
+    def test_documentation_generation(self):
+        """Test the updated documentation generation functionality"""
+        print("\n📚 Testing Documentation Generation...")
+        
+        # Test the complete documentation endpoint as requested in review
+        url = f"{self.base_url}/complete-documentation.html"
+        
+        try:
+            print(f"   Testing: {url}")
+            response = requests.get(url, timeout=30)
+            
+            # Test 1: GET returns 200
+            if response.status_code != 200:
+                self.log_test("Documentation Generation - Status 200", False, 
+                            error=f"Expected 200, got {response.status_code}")
+                return False
+            
+            self.log_test("Documentation Generation - Status 200", True, 
+                         {"status_code": 200})
+            
+            # Test 2: Response is substantial and contains required content
+            content = response.text
+            content_length = len(content)
+            
+            if content_length < 1000:
+                self.log_test("Documentation Generation - Content Size", False,
+                            error=f"Content too small ({content_length} chars)")
+                return False
+            
+            # Check for required strings from review request
+            required_strings = ["Complete Documentation", "296 documents", "88,370 lines"]
+            missing_strings = []
+            
+            for required_string in required_strings:
+                if required_string not in content:
+                    # Check for variations in line count format
+                    if "lines" in required_string and ("88370 lines" in content or "88,370" in content):
+                        continue
+                    missing_strings.append(required_string)
+            
+            if missing_strings:
+                self.log_test("Documentation Generation - Required Content", False,
+                            error=f"Missing required strings: {missing_strings}")
+                return False
+            
+            # Test 3: No obvious backend errors
+            error_indicators = ["500 Internal Server Error", "502 Bad Gateway", 
+                              "Application Error", "Exception", "Error occurred"]
+            
+            for error in error_indicators:
+                if error.lower() in content.lower():
+                    self.log_test("Documentation Generation - No Backend Errors", False,
+                                error=f"Backend error detected: {error}")
+                    return False
+            
+            self.log_test("Documentation Generation - Complete Verification", True, {
+                "content_size": content_length,
+                "contains_required_content": True,
+                "no_backend_errors": True
+            })
+            
+            print(f"   ✓ Documentation page loaded successfully")
+            print(f"   ✓ Content size: {content_length:,} characters")
+            print(f"   ✓ Contains all required strings: {required_strings}")
+            print(f"   ✓ No backend errors detected")
+            
+            return True
+            
+        except requests.exceptions.RequestException as e:
+            self.log_test("Documentation Generation", False, error=f"Request failed: {str(e)}")
+            return False
+        except Exception as e:
+            self.log_test("Documentation Generation", False, error=f"Unexpected error: {str(e)}")
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("=" * 60)
@@ -233,6 +308,9 @@ class DoggyCompanyAPITester:
         
         # Test Pet Soul (public endpoint)
         self.test_pet_soul_api()
+        
+        # Test Documentation Generation (as requested in review)
+        self.test_documentation_generation()
         
         # Print final summary
         print("\n" + "=" * 60)
