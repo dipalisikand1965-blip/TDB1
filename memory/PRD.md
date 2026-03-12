@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document
-## Version 13.1.0 | March 12, 2026
+## Version 13.2.0 | March 12, 2026
 
 ---
 
@@ -147,7 +147,7 @@ Credentials: admin `aditya` / `lola4304`
 ## ROADMAP
 
 ### P1 (Next)
-- Finish the soul/personalization audit on remaining pillar pages after Adopt
+- Finish the final soul/personalization audit sweep for any remaining weaker pillar moments
 - Fix Stay pillar service images
 - Investigate Sync to Production `db_name` failure thoroughly
 - Fix Razorpay checkout
@@ -224,6 +224,12 @@ Credentials: admin `aditya` / `lola4304`
 ---
 
 ## CHANGELOG
+
+### March 12, 2026 — v13.2.0 — SOUL LAYER ROLLOUT CONTINUED ✅
+- Added a reusable `PillarSoulLayer` component to speed up Pet OS rollout without bloating page files
+- Extended visible soul/personalization layers on **Emergency, Advisory, Farewell, and Learn** for logged-in users
+- Extended **Shop** with Soul Made + breed-smart layer so the commerce experience feels more personal, not generic
+- Verified on preview with member login that Emergency, Advisory, Farewell, Learn, and Shop now surface new personalized layers for Mojo
 
 ### March 12, 2026 — v13.1.0 — FULL DOCS + ADOPT SOUL LAYER ✅
 - `complete-documentation.html` now regenerates from the full `/app/memory` markdown set (296 docs / 88,362 lines), not a truncated subset

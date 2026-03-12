@@ -39,6 +39,7 @@ import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
+import { PillarSoulLayer } from '../components/PillarSoulLayer';
 import CuratedBundles from '../components/CuratedBundles';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { PillarDailyTip, PillarHelpBuckets } from '../components/PillarGoldSections';
@@ -1224,6 +1225,14 @@ const AdvisoryPage = () => {
           )}
         </div>
       </section>
+
+      <PillarSoulLayer
+        pillar="advisory"
+        activePet={activePet}
+        title={`Advice shaped for ${activePet?.name || 'your pet'}`}
+        subtitle={`A Pet OS advisory layer for ${activePet?.name || 'your pet'} — recommendations grounded in breed, soul context, and the decisions you are trying to make right now.`}
+        maxProducts={6}
+      />
 
       {/* ═══════════════════════════════════════════════════════════════════════════
           LAYER 6: ADVISORY PRODUCTS & BUNDLES - Soul-created structure
