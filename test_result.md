@@ -102,112 +102,122 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Retest the preview app at https://pet-os-refactor.preview.emergentagent.com after the latest Pet OS soul-layer rollout. Member credentials: dipali@clubconcierge.in / test123. Verify these logged-in user-visible cases: 1) /emergency shows new personalized layer with data-testid='emergency-soul-layer-title' and text similar to 'Prepared for Mojo', 2) /advisory shows new personalized layer with data-testid='advisory-soul-layer-title' and text similar to 'Advice shaped for Mojo', 3) /farewell shows new personalized layer with data-testid='farewell-soul-layer-title' and text similar to 'In memory of Mojo', 4) /learn shows new personalized layer with data-testid='learn-soul-layer-title' and visible Soul Made / picks section for Mojo, 5) /shop shows new soul-made layer with data-testid='shop-soul-made-layer' for a logged-in pet context. Focus on user-visible regressions only."
+user_problem_statement: "Please run a focused backend verification on https://pet-os-refactor.preview.emergentagent.com for the latest admin media/upload and nearby-places fixes. Please verify these exact cases: 1. POST /api/upload/product-image returns 200 for a valid PNG upload. 2. POST /api/upload/service-image returns 200 for a valid PNG upload. 3. POST /api/upload/bundle-image returns 200 for a valid PNG upload. 4. Product upload persistence: create a temporary product via /api/product-box/products, upload an image with /api/admin/product/{id}/upload-image, then confirm the product fetched back from /api/product-box/products has persisted image_url/images data. 5. Service upload persistence: create a temporary service via /api/service-box/services, upload an image with /api/admin/service/{id}/upload-image, then confirm the service fetched back from /api/service-box/services has persisted image_url. 6. Nearby Google-powered route check: /api/nearby/places should return 200 and non-empty results for representative Stay / Dine / Advisory-style queries using Goa coordinates."
+
+backend:
+  - task: "Upload Endpoints - Product Image"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ POST /api/upload/product-image returns 200 for valid PNG upload. Successfully uploaded test image and received Cloudinary URL: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331085/doggy/products/admin_upload_20260312155805.webp"
+
+  - task: "Upload Endpoints - Service Image"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ POST /api/upload/service-image returns 200 for valid PNG upload. Successfully uploaded test image and received Cloudinary URL: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331086/doggy/services/admin_upload_20260312155806.webp"
+
+  - task: "Upload Endpoints - Bundle Image"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ POST /api/upload/bundle-image returns 200 for valid PNG upload. Successfully uploaded test image and received Cloudinary URL: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331086/doggy/bundles/admin_upload_20260312155806.webp"
+
+  - task: "Product Upload Persistence"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ Product upload persistence verified: Created temporary product PROD-9AFF9BFD0684 via /api/product-box/products, uploaded image via /api/admin/product/{id}/upload-image, verified image persistence in fetched product data. Image URL correctly persisted: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331087/doggy/products/PROD-9AFF9BFD0684_20260312155807.webp"
+
+  - task: "Service Upload Persistence"
+    implemented: true
+    working: true
+    file: "/app/backend/service_box_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ Service upload persistence verified: Created temporary service SVC-CARE-TEST-SERVICE-91C9C2F via /api/service-box/services, uploaded image via /api/admin/service/{id}/upload-image, verified image persistence in fetched service data. Image URL correctly persisted: https://res.cloudinary.com/duoapcx1p/image/upload/v1773331088/doggy/services/SVC-CARE-TEST-SERVICE-91C9C2F_20260312155808.webp"
+
+  - task: "Nearby Places Google-Powered API"
+    implemented: true
+    working: true
+    file: "/app/backend/nearby_places_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ /api/nearby/places Google-powered route verified: All representative queries for Stay (pet friendly hotel), Dine (pet friendly cafe), and Advisory (vet) using Goa coordinates returned 200 status with non-empty results. Stay query found 10 results, Dine query found 10 results, Advisory query found 10 results. Google Places API integration functioning correctly."
 
 frontend:
-  - task: "Member Login Flow for Soul-Layer Testing"
-    implemented: true
-    working: false
-    file: "/app/frontend/src/pages/Login.jsx"
-    stuck_count: 0
-    priority: "critical"
-    needs_retesting: true
-    status_history:
-        - working: "NA"
-          agent: "main"
-          comment: "Need to verify login for soul-layer testing with dipali@clubconcierge.in / test123"
-        - working: false
-          agent: "testing"
-          comment: "❌ LOGIN FAILING IN AUTOMATED TEST - Login button shows 'Signing in...' state but does not redirect after 8 seconds. When testing manually by navigating to pages, user is not authenticated (shows 'Sign In' button in header). This is BLOCKING all soul-layer tests since the soul layers only display for logged-in users with active pets. Login was working in previous tests - this appears to be either a timeout issue in the test environment or a regression in the login flow. CRITICAL BLOCKER for soul-layer verification."
-
-  - task: "Emergency Page Soul Layer (/emergency)"
+  - task: "Frontend Testing - Not Requested"
     implemented: true
     working: "NA"
-    file: "/app/frontend/src/pages/EmergencyPage.jsx"
+    file: "N/A"
     stuck_count: 0
-    priority: "high"
-    needs_retesting: true
+    priority: "low"
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "testing"
-          comment: "BLOCKED BY LOGIN - Cannot verify emergency-soul-layer-title element. Code review shows PillarSoulLayer component correctly implemented at line 621-627 with title='Prepared for ${activePet?.name || \"your pet\"}' and data-testid='emergency-soul-layer-title'. Component structure is correct but cannot test without successful login. Expected text: 'Prepared for Mojo' or similar personalization."
-
-  - task: "Advisory Page Soul Layer (/advisory)"
-    implemented: true
-    working: "NA"
-    file: "/app/frontend/src/pages/AdvisoryPage.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "BLOCKED BY LOGIN - Cannot verify advisory-soul-layer-title element. Code review shows PillarSoulLayer component correctly implemented at line 1229-1235 with title='Advice shaped for ${activePet?.name || \"your pet\"}' and data-testid='advisory-soul-layer-title'. Component structure is correct but cannot test without successful login. Expected text: 'Advice shaped for Mojo' or similar personalization."
-
-  - task: "Farewell Page Soul Layer (/farewell)"
-    implemented: true
-    working: "NA"
-    file: "/app/frontend/src/pages/FarewellPage.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "BLOCKED BY LOGIN - Cannot verify farewell-soul-layer-title element. Code review shows PillarSoulLayer component correctly implemented at line 651-657 with title='In memory of ${activePet?.name || \"your pet\"}' and data-testid='farewell-soul-layer-title'. Component structure is correct but cannot test without successful login. Expected text: 'In memory of Mojo' or similar personalization."
-
-  - task: "Learn Page Soul Layer (/learn)"
-    implemented: true
-    working: "NA"
-    file: "/app/frontend/src/pages/LearnPage.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "BLOCKED BY LOGIN - Cannot verify learn-soul-layer-title element. Code review shows custom soul layer implementation (not using PillarSoulLayer component) at line ~1210+ with title='Training picks shaped for ${activePet.name}' and data-testid='learn-soul-layer-title'. Also includes data-testid='learn-soul-layer' for the section and SoulMadeCollection component. Component structure is correct but cannot test without successful login. Expected text: 'Training picks shaped for Mojo' or similar."
-
-  - task: "Shop Page Soul Made Layer (/shop)"
-    implemented: true
-    working: "NA"
-    file: "/app/frontend/src/pages/ShopPage.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "BLOCKED BY LOGIN - Cannot verify shop-soul-made-layer element. Code review shows the shop page has a section at line 1142-1155 with data-testid='shop-soul-made-layer' wrapping the SoulMadeCollection component. This is a different structure from other pillars (not using PillarSoulLayer component). Component structure is correct but cannot test without successful login and active pet context."
+          comment: "Frontend testing not requested in this verification cycle. Focus was specifically on backend admin media/upload endpoints and nearby places API functionality."
 
 metadata:
   created_by: "testing_agent"
-  version: "2.0"
-  test_sequence: 3
+  version: "3.0"
+  test_sequence: 4
+  run_ui: false
 
 test_plan:
   current_focus:
-    - "Member Login Flow for Soul-Layer Testing"
-    - "Emergency Page Soul Layer (/emergency)"
-    - "Advisory Page Soul Layer (/advisory)"
-    - "Farewell Page Soul Layer (/farewell)"
-    - "Learn Page Soul Layer (/learn)"
-    - "Shop Page Soul Made Layer (/shop)"
-  stuck_tasks:
-    - "Member Login Flow for Soul-Layer Testing"
+    - "Upload Endpoints - Product Image"
+    - "Upload Endpoints - Service Image"
+    - "Upload Endpoints - Bundle Image"
+    - "Product Upload Persistence"
+    - "Service Upload Persistence"
+    - "Nearby Places Google-Powered API"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
     - agent: "testing"
-      message: "🔍 SOUL-LAYER ROLLOUT TESTING INITIATED - Testing new Pet OS soul-layer personalization across 5 pillar pages (/emergency, /advisory, /farewell, /learn, /shop) as requested."
+      message: "🎯 BACKEND VERIFICATION INITIATED - Focused testing on admin media/upload endpoints and nearby-places fixes as requested."
     - agent: "testing"
-      message: "✅ CODE REVIEW COMPLETE - All 5 soul-layer implementations verified in code: 1) EmergencyPage uses PillarSoulLayer with 'Prepared for [pet]', 2) AdvisoryPage uses PillarSoulLayer with 'Advice shaped for [pet]', 3) FarewellPage uses PillarSoulLayer with 'In memory of [pet]', 4) LearnPage uses custom soul layer with 'Training picks shaped for [pet]' + SoulMadeCollection, 5) ShopPage has shop-soul-made-layer wrapping SoulMadeCollection. All data-testids are correctly implemented as per review request."
+      message: "✅ UPLOAD ENDPOINTS VERIFIED - All 3 upload endpoints (product-image, service-image, bundle-image) return 200 status for valid PNG uploads and successfully upload to Cloudinary with proper URL responses."
     - agent: "testing"
-      message: "❌ CRITICAL BLOCKER - LOGIN FLOW FAILING IN AUTOMATED TESTING - Attempted login with dipali@clubconcierge.in / test123. Login button enters 'Signing in...' state but does not complete redirect after 8+ seconds. When navigating to pillar pages without successful login, user is NOT authenticated (header shows 'Sign In' button). This completely blocks all 5 soul-layer verification tests since the PillarSoulLayer component only renders for logged-in users with active pets (line 16 in PillarSoulLayer.jsx: 'if (!activePet) return null')."
+      message: "✅ PRODUCT PERSISTENCE VERIFIED - Full flow tested: create product via /api/product-box/products → upload image via /api/admin/product/{id}/upload-image → verify persistence in product data. Image URLs correctly stored and retrieved."
     - agent: "testing"
-      message: "⚠️ POSSIBLE CAUSES - 1) Login API endpoint experiencing slow response times (>8 seconds), 2) Token storage/retrieval issue preventing auth state persistence, 3) Test environment network latency affecting authentication flow, 4) Recent code changes affecting login redirect logic. Previous test results show login WAS working in earlier test cycle (test_sequence: 2)."
+      message: "✅ SERVICE PERSISTENCE VERIFIED - Full flow tested: create service via /api/service-box/services → upload image via /api/admin/service/{id}/upload-image → verify persistence in service data. Image URLs correctly stored and retrieved."
     - agent: "testing"
-      message: "📋 VERIFICATION STATUS - All 5 soul-layer tasks marked as working='NA' and needs_retesting=true. Cannot provide PASS/FAIL verification without successful login. Code structure is correct and matches requirements. All expected data-testids are present in source code. Issue is purely authentication-related, not implementation-related."
+      message: "✅ NEARBY PLACES API VERIFIED - /api/nearby/places Google-powered API working correctly for representative Stay/Dine/Advisory queries using Goa coordinates. All queries return 200 status with non-empty results (10 results each)."
     - agent: "testing"
-      message: "🎯 RECOMMENDED NEXT STEPS - Main agent should: 1) Investigate login API response times on preview environment, 2) Check backend logs for auth errors around timestamp of test, 3) Verify token generation and storage mechanism, 4) Test login manually on preview.emergentagent.com to confirm if issue is environment-specific or test-specific, 5) Consider implementing retry logic or increasing timeout in login flow if API is slow but functional."
+      message: "🏆 ALL BACKEND VERIFICATION TESTS PASSED - 12/12 tests successful (100% pass rate). Upload endpoints, persistence flows, and Google Places integration all functioning correctly."
