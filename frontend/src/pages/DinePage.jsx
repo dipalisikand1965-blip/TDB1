@@ -463,11 +463,6 @@ const DinePage = () => {
       <PillarTopicsGrid
         pillar="dine"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.dine}
-        onTopicClick={(topic) => {
-          // Navigate to shop page filtered by this food category
-          const searchTerm = topic.title || topic.name;
-          window.location.href = `/shop?pillar=dine&search=${encodeURIComponent(searchTerm)}`;
-        }}
         columns={4}
       />
       

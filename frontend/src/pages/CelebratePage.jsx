@@ -680,11 +680,6 @@ const CelebratePage = () => {
       <PillarTopicsGrid
         pillar="celebrate"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.celebrate}
-        onTopicClick={(topic) => {
-          // Navigate to shop page filtered by this celebration category
-          const searchTerm = topic.title || topic.name;
-          window.location.href = `/shop?pillar=celebrate&search=${encodeURIComponent(searchTerm)}`;
-        }}
         columns={4}
       />
 

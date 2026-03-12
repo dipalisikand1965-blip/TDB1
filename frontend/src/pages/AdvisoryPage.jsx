@@ -792,11 +792,6 @@ const AdvisoryPage = () => {
       <PillarTopicsGrid
         pillar="advisory"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.advisory}
-        onTopicClick={(topic) => {
-          // Navigate to services page filtered by this advisory category
-          const searchTerm = topic.title || topic.name;
-          window.location.href = `/services?pillar=advisory&search=${encodeURIComponent(searchTerm)}`;
-        }}
         columns={4}
       />
 

@@ -394,11 +394,6 @@ const EmergencyPage = () => {
       <PillarTopicsGrid
         pillar="emergency"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.emergency}
-        onTopicClick={(topic) => {
-          // Navigate to services page filtered by this emergency category
-          const searchTerm = topic.title || topic.name;
-          window.location.href = `/services?pillar=emergency&search=${encodeURIComponent(searchTerm)}`;
-        }}
         columns={4}
       />
 

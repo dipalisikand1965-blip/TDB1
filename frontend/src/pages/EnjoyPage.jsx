@@ -510,11 +510,6 @@ const EnjoyPage = () => {
       <PillarTopicsGrid
         pillar="enjoy"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.enjoy}
-        onTopicClick={(topic) => {
-          // Navigate to services page filtered by this topic/category
-          const searchTerm = topic.title || topic.name;
-          window.location.href = `/services?pillar=enjoy&search=${encodeURIComponent(searchTerm)}`;
-        }}
         columns={4}
       />
 
