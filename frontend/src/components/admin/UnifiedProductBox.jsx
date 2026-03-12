@@ -168,7 +168,7 @@ const UnifiedProductBox = () => {
       const sanitizedProduct = {};
       const allowedFields = [
         'name', 'product_type', 'short_description', 'long_description', 'description',
-        'category', 'subcategory', 'tags', 'image', 'image_url', 'images', 'media', 
+        'category', 'subcategory', 'tags', 'image', 'image_url', 'images', 'thumbnail', 'media', 
         'price', 'originalPrice', 'base_price', 'pricing', 'gst_rate',
         'variants', 'options', 'has_variants', 'in_stock', 'visibility', 'available',
         'primary_pillar', 'pillars', 'paw_rewards', 'pet_safety', 'mira_visibility',
@@ -223,6 +223,7 @@ const UnifiedProductBox = () => {
       
       if (quickEditType === 'image') {
         updateData = {
+          image: quickEditValue,
           image_url: quickEditValue,
           thumbnail: quickEditValue,
           images: [quickEditValue]

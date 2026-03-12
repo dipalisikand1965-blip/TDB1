@@ -572,23 +572,23 @@ async def generate_bundle_image(bundle_id: str):
         
         # Pillar-specific styling
         pillar_styles = {
-            "celebrate": "festive party setup with balloons and decorations",
-            "travel": "adventure travel kit layout on map background",
-            "dine": "elegant dining table arrangement",
-            "care": "spa and grooming setup with soft towels",
-            "stay": "cozy home interior setting",
-            "fit": "outdoor adventure gear layout",
-            "farewell": "peaceful memorial setting with soft lighting",
-            "enjoy": "playful activity setup",
-            "learn": "educational training setup"
+            "celebrate": "joyful watercolor celebration still life with ribbons, cake, and keepsakes",
+            "travel": "watercolor travel kit composition with maps, tags, and carrier accessories",
+            "dine": "watercolor dining still life with bowls, treats, and mealtime accessories",
+            "care": "watercolor wellness arrangement with grooming and care essentials",
+            "stay": "watercolor cozy home vignette with bedding and comfort items",
+            "fit": "watercolor movement bundle layout with active gear and outdoor energy",
+            "farewell": "peaceful memorial watercolor arrangement with keepsakes and soft candlelight mood",
+            "enjoy": "playful watercolor activity setup with toys and enrichment items",
+            "learn": "watercolor learning table layout with training aids and guidebooks"
         }
         
-        style = pillar_styles.get(pillar, "professional product photography")
+        style = pillar_styles.get(pillar, "watercolor bundle illustration")
         
-        prompt = f"""Professional product photography of a pet product bundle: {bundle_name}.
+        prompt = f"""Premium watercolor illustration of a pet product bundle: {bundle_name}.
 Items included: {items_text}.
-Style: {style}, clean white/neutral background, items arranged in an aesthetically pleasing composition.
-High-quality e-commerce product image, soft lighting, no text or labels."""
+Style direction: {style}. Arrange the items in an elegant top-down or three-quarter composition with tasteful spacing.
+Use soft handcrafted brush textures, warm emotional tones, premium editorial styling, no text or labels, not photorealistic."""
         
         # Generate image using OpenAI (same as mockup generation)
         from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
