@@ -1,213 +1,880 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Doggy Company - Gold Standard Documentation v12.6</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Doggy Company — Complete System Documentation</title>
   <style>
-    body { font-family: 'Inter', system-ui, sans-serif; }
-    .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-    pre { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.75rem; }
-    code { background: #f3f4f6; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.75rem; }
-    .gold-border { border: 3px solid #f59e0b; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f0f13; color: #e2e8f0; line-height: 1.7; }
+    .hero { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%); padding: 60px 40px; text-align: center; border-bottom: 1px solid #7c3aed40; }
+    .hero h1 { font-size: 2.8rem; font-weight: 800; color: #fff; letter-spacing: -1px; }
+    .hero .badge { display: inline-block; background: #7c3aed; color: #fff; border-radius: 999px; padding: 4px 16px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+    .hero p { color: #c4b5fd; font-size: 1.1rem; max-width: 600px; margin: 12px auto 0; }
+    .hero .meta { color: #7c6fa0; font-size: 0.85rem; margin-top: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 48px 0; border-bottom: 1px solid #1e1b3a; }
+    h2 { font-size: 1.6rem; font-weight: 700; color: #a78bfa; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+    h3 { font-size: 1.15rem; font-weight: 600; color: #c4b5fd; margin: 20px 0 10px; }
+    h4 { font-size: 1rem; font-weight: 600; color: #ddd6fe; margin: 14px 0 6px; }
+    p { color: #94a3b8; margin-bottom: 12px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    @media (max-width: 768px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } .hero h1 { font-size: 2rem; } }
+    .card { background: #16131f; border: 1px solid #2d2a4a; border-radius: 12px; padding: 20px; }
+    .card.highlight { border-color: #7c3aed40; background: linear-gradient(135deg, #1e1b4b20, #16131f); }
+    .card h4 { color: #a78bfa; margin-top: 0; }
+    .status { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .status.done { background: #14532d; color: #4ade80; }
+    .status.live { background: #1e3a5f; color: #60a5fa; }
+    .status.partial { background: #44260c; color: #fb923c; }
+    .status.broken { background: #450a0a; color: #f87171; }
+    .status.todo { background: #1c1c2e; color: #94a3b8; }
+    ul { padding-left: 20px; color: #94a3b8; }
+    ul li { margin-bottom: 6px; }
+    ul li strong { color: #c4b5fd; }
+    .tag { display: inline-block; background: #1e1b4b; border: 1px solid #4338ca40; color: #a78bfa; border-radius: 6px; padding: 2px 10px; font-size: 0.78rem; margin: 2px; }
+    .soul-quote { background: linear-gradient(135deg, #1e1b4b, #2d1b4e); border-left: 3px solid #7c3aed; padding: 20px 24px; border-radius: 0 12px 12px 0; margin: 24px 0; font-style: italic; color: #c4b5fd; font-size: 1.05rem; }
+    .table { width: 100%; border-collapse: collapse; }
+    .table th { background: #1e1b4b; color: #a78bfa; padding: 10px 14px; text-align: left; font-size: 0.85rem; border-bottom: 1px solid #4338ca30; }
+    .table td { padding: 10px 14px; border-bottom: 1px solid #1e1b3a; color: #94a3b8; font-size: 0.88rem; }
+    .table tr:hover td { background: #16131f; }
+    .api-endpoint { font-family: 'Courier New', monospace; background: #0d0c16; border: 1px solid #2d2a4a; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; color: #60a5fa; margin: 4px 0; display: block; }
+    .method { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; margin-right: 6px; }
+    .get { background: #14532d; color: #4ade80; }
+    .post { background: #1e3a5f; color: #60a5fa; }
+    .put { background: #44260c; color: #fb923c; }
+    .delete { background: #450a0a; color: #f87171; }
+    .nav { position: sticky; top: 0; background: #0f0f13; border-bottom: 1px solid #1e1b3a; z-index: 100; padding: 12px 0; }
+    .nav-inner { display: flex; gap: 4px; overflow-x: auto; padding: 0 24px; max-width: 1200px; margin: 0 auto; }
+    .nav a { color: #7c6fa0; font-size: 0.78rem; white-space: nowrap; padding: 4px 10px; border-radius: 6px; text-decoration: none; }
+    .nav a:hover { background: #1e1b4b; color: #a78bfa; }
+    .issue-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: #16131f; border: 1px solid #2d2a4a; border-radius: 8px; margin-bottom: 8px; }
+    .issue-priority { min-width: 36px; height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; }
+    .p0 { background: #450a0a; color: #f87171; }
+    .p1 { background: #44260c; color: #fb923c; }
+    .p2 { background: #362a0a; color: #fbbf24; }
+    .p3 { background: #1c2a1c; color: #4ade80; }
+    footer { padding: 40px 24px; text-align: center; color: #4a4a6a; font-size: 0.82rem; border-top: 1px solid #1e1b3a; }
+    .module-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .progress-bar { background: #1e1b3a; border-radius: 999px; height: 6px; overflow: hidden; }
+    .progress-fill { background: linear-gradient(90deg, #7c3aed, #a855f7); border-radius: 999px; height: 100%; }
+    .stat-row { display: flex; gap: 16px; flex-wrap: wrap; margin: 16px 0; }
+    .stat { background: #16131f; border: 1px solid #2d2a4a; border-radius: 10px; padding: 16px 20px; flex: 1; min-width: 140px; }
+    .stat .num { font-size: 2rem; font-weight: 800; color: #a78bfa; }
+    .stat .label { font-size: 0.78rem; color: #64748b; }
+    blockquote { border-left: 3px solid #7c3aed; padding: 12px 20px; color: #a78bfa; font-style: italic; background: #16131f; border-radius: 0 8px 8px 0; margin: 16px 0; }
   </style>
 </head>
-<body class="bg-gray-50">
-  <header class="gradient-bg text-white py-8">
-    <div class="max-w-6xl mx-auto px-6">
-      <h1 class="text-2xl font-bold mb-2">The Doggy Company - Documentation</h1>
-      <p class="opacity-90">Version 13.0.0 | March 12, 2026</p>
-    </div>
-  </header>
+<body>
 
-  <main class="max-w-6xl mx-auto px-6 py-6">
+<div class="hero">
+  <div class="badge">Pet Life Operating System</div>
+  <h1>The Doggy Company®</h1>
+  <p>The world's first soul-driven pet operating system — built over 200+ days with love, vision, and extraordinary depth.</p>
+  <p class="meta">Version 13.0.0 &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; 22,000+ lines of backend · 14 Pillars · 221 API endpoints · 51 Soul Questions</p>
+</div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#vision">Vision</a>
+    <a href="#soul">Pet Soul</a>
+    <a href="#mira">Mira AI</a>
+    <a href="#pillars">14 Pillars</a>
+    <a href="#servicedesk">Service Desk</a>
+    <a href="#dashboard">Member Dashboard</a>
+    <a href="#commerce">Commerce</a>
+    <a href="#gamification">Gamification</a>
+    <a href="#community">Community</a>
+    <a href="#admin">Admin</a>
+    <a href="#integrations">Integrations</a>
+    <a href="#routes">Routes</a>
+    <a href="#issues">Known Issues</a>
+    <a href="#roadmap">Roadmap</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- VISION -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="vision">
+  <div class="container">
+    <h2>The Vision</h2>
     
-    <!-- GOLD STANDARD BOX -->
-    <section class="bg-amber-50 rounded-xl p-6 border-2 border-amber-400 mb-6">
-      <h2 class="text-xl font-bold text-amber-800 mb-4">LEARN PAGE = GOLD STANDARD</h2>
-      <p class="text-amber-900 mb-4">Every pillar page MUST follow this exact section order:</p>
-      <ol class="grid grid-cols-2 gap-2 text-sm">
-        <li class="bg-white p-2 rounded"><strong>1.</strong> Ask Mira Bar</li>
-        <li class="bg-white p-2 rounded"><strong>2.</strong> Topic Cards (4)</li>
-        <li class="bg-white p-2 rounded"><strong>3.</strong> Daily Tip</li>
-        <li class="bg-white p-2 rounded"><strong>4.</strong> Help Buckets (3)</li>
-        <li class="bg-white p-2 rounded"><strong>5.</strong> Personalized Section</li>
-        <li class="bg-white p-2 rounded"><strong>6.</strong> Guided Paths (6)</li>
-        <li class="bg-white p-2 rounded"><strong>7.</strong> Curated Bundles</li>
-        <li class="bg-white p-2 rounded"><strong>8.</strong> Products Section</li>
-        <li class="bg-white p-2 rounded"><strong>9.</strong> Personalized Picks</li>
-        <li class="bg-white p-2 rounded"><strong>10.</strong> Services Section</li>
-      </ol>
-    </section>
-
-    <!-- STATUS TABLE -->
-    <section class="bg-white rounded-xl p-6 shadow-sm border mb-6">
-      <h2 class="text-xl font-bold mb-4">Pillar Status</h2>
-      <table class="w-full text-sm">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="text-left py-2 px-3">Pillar</th>
-            <th class="text-left py-2 px-3">Gold Standard</th>
-            <th class="text-left py-2 px-3">AI Images</th>
-            <th class="text-left py-2 px-3">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-t bg-amber-50"><td class="py-2 px-3 font-bold">Learn</td><td class="py-2 px-3">REFERENCE</td><td class="py-2 px-3">12</td><td class="py-2 px-3"><span class="bg-green-500 text-white px-2 py-0.5 rounded text-xs">COMPLETE</span></td></tr>
-          <tr class="border-t bg-green-50"><td class="py-2 px-3 font-bold">Care</td><td class="py-2 px-3">YES</td><td class="py-2 px-3">4</td><td class="py-2 px-3"><span class="bg-green-500 text-white px-2 py-0.5 rounded text-xs">COMPLETE</span></td></tr>
-          <tr class="border-t bg-green-50"><td class="py-2 px-3 font-bold">Dine</td><td class="py-2 px-3">YES</td><td class="py-2 px-3">4</td><td class="py-2 px-3"><span class="bg-green-500 text-white px-2 py-0.5 rounded text-xs">COMPLETE</span></td></tr>
-          <tr class="border-t"><td class="py-2 px-3">Paperwork</td><td class="py-2 px-3">Partial</td><td class="py-2 px-3">YES</td><td class="py-2 px-3"><span class="bg-yellow-500 text-white px-2 py-0.5 rounded text-xs">NEEDS REFACTOR</span></td></tr>
-          <tr class="border-t"><td class="py-2 px-3">Fit</td><td class="py-2 px-3">Partial</td><td class="py-2 px-3">4</td><td class="py-2 px-3"><span class="bg-yellow-500 text-white px-2 py-0.5 rounded text-xs">NEEDS REFACTOR</span></td></tr>
-          <tr class="border-t"><td class="py-2 px-3">Travel</td><td class="py-2 px-3">Partial</td><td class="py-2 px-3">4</td><td class="py-2 px-3"><span class="bg-yellow-500 text-white px-2 py-0.5 rounded text-xs">NEEDS REFACTOR</span></td></tr>
-          <tr class="border-t"><td class="py-2 px-3">Stay</td><td class="py-2 px-3">Partial</td><td class="py-2 px-3">4</td><td class="py-2 px-3"><span class="bg-yellow-500 text-white px-2 py-0.5 rounded text-xs">NEEDS REFACTOR</span></td></tr>
-          <tr class="border-t"><td class="py-2 px-3">Enjoy</td><td class="py-2 px-3">Partial</td><td class="py-2 px-3">4</td><td class="py-2 px-3"><span class="bg-yellow-500 text-white px-2 py-0.5 rounded text-xs">NEEDS REFACTOR</span></td></tr>
-          <tr class="border-t"><td class="py-2 px-3">Celebrate</td><td class="py-2 px-3">Partial</td><td class="py-2 px-3">4</td><td class="py-2 px-3"><span class="bg-yellow-500 text-white px-2 py-0.5 rounded text-xs">NEEDS REFACTOR</span></td></tr>
-          <tr class="border-t"><td class="py-2 px-3">Emergency</td><td class="py-2 px-3">Partial</td><td class="py-2 px-3">4</td><td class="py-2 px-3"><span class="bg-yellow-500 text-white px-2 py-0.5 rounded text-xs">NEEDS REFACTOR</span></td></tr>
-          <tr class="border-t"><td class="py-2 px-3">Advisory</td><td class="py-2 px-3">Partial</td><td class="py-2 px-3">4</td><td class="py-2 px-3"><span class="bg-yellow-500 text-white px-2 py-0.5 rounded text-xs">NEEDS REFACTOR</span></td></tr>
-          <tr class="border-t"><td class="py-2 px-3">Farewell</td><td class="py-2 px-3">Partial</td><td class="py-2 px-3">4</td><td class="py-2 px-3"><span class="bg-yellow-500 text-white px-2 py-0.5 rounded text-xs">NEEDS REFACTOR</span></td></tr>
-          <tr class="border-t"><td class="py-2 px-3">Adopt</td><td class="py-2 px-3">Partial</td><td class="py-2 px-3">4</td><td class="py-2 px-3"><span class="bg-yellow-500 text-white px-2 py-0.5 rounded text-xs">NEEDS REFACTOR</span></td></tr>
-          <tr class="border-t"><td class="py-2 px-3">Shop</td><td class="py-2 px-3">Partial</td><td class="py-2 px-3">4</td><td class="py-2 px-3"><span class="bg-yellow-500 text-white px-2 py-0.5 rounded text-xs">NEEDS REFACTOR</span></td></tr>
-        </tbody>
-      </table>
-    </section>
-
-    <!-- IMAGE STATUS -->
-    <section class="bg-red-50 rounded-xl p-6 border border-red-200 mb-6">
-      <h2 class="text-xl font-bold text-red-800 mb-4">Product Image Status</h2>
-      <div class="grid md:grid-cols-2 gap-4">
-        <div class="bg-white p-4 rounded-lg">
-          <h3 class="font-bold mb-2">Products (~1,500 total)</h3>
-          <ul class="text-sm space-y-1">
-            <li>With AI images: ~620</li>
-            <li class="text-red-600">Needing images: ~880</li>
-            <li class="text-red-600 ml-4">- unknown pillar: ~500</li>
-            <li class="text-red-600 ml-4">- celebrate: ~211</li>
-            <li class="text-red-600 ml-4">- shop: ~166</li>
-            <li class="text-red-600 ml-4">- care: ~3</li>
-          </ul>
-        </div>
-        <div class="bg-white p-4 rounded-lg">
-          <h3 class="font-bold mb-2">Topic Cards (48 total)</h3>
-          <p class="text-green-600 font-medium">ALL 48 COMPLETE</p>
-          <p class="text-sm text-gray-600 mt-2">4 unique AI watercolor images per pillar x 12 pillars</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- HOW TO EDIT -->
-    <section class="bg-white rounded-xl p-6 shadow-sm border mb-6">
-      <h2 class="text-xl font-bold mb-4">How to Edit Content</h2>
-      <div class="grid md:grid-cols-2 gap-6">
-        <div class="bg-blue-50 p-4 rounded-lg">
-          <h3 class="font-bold text-blue-800 mb-2">Via Admin Panel (No Code)</h3>
-          <ol class="text-sm space-y-2">
-            <li>1. Go to <code>/admin</code></li>
-            <li>2. Select pillar tab (e.g., <code>care-cms</code>)</li>
-            <li>3. Edit in the appropriate tab:</li>
-            <li class="ml-4">- <strong>Page Settings</strong> - Title, Subtitle</li>
-            <li class="ml-4">- <strong>Categories</strong> - Topic cards, images</li>
-            <li class="ml-4">- <strong>Products</strong> - Featured products</li>
-            <li class="ml-4">- <strong>Services</strong> - Related services</li>
-          </ol>
-        </div>
-        <div class="bg-purple-50 p-4 rounded-lg">
-          <h3 class="font-bold text-purple-800 mb-2">Via Code (Defaults)</h3>
-          <p class="text-sm mb-2">For permanent default changes:</p>
-          <pre class="text-xs">/app/frontend/src/components/admin/
-  PillarPageCMS.jsx   # All pillars
-  LearnPageCMS.jsx    # Learn specific
-/app/frontend/src/pages/
-  CarePage.jsx        # Help Buckets, Tips
-  DinePage.jsx        # Help Buckets, Tips
-  etc.</pre>
-        </div>
-      </div>
-    </section>
-
-    <!-- WHAT'S CMS EDITABLE -->
-    <section class="bg-white rounded-xl p-6 shadow-sm border mb-6">
-      <h2 class="text-xl font-bold mb-4">CMS Editable vs Code</h2>
-      <table class="w-full text-sm">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="text-left py-2 px-3">Content</th>
-            <th class="text-left py-2 px-3">CMS Editable?</th>
-            <th class="text-left py-2 px-3">Location</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-t"><td class="py-2 px-3">Page Title/Subtitle</td><td class="py-2 px-3 text-green-600">Yes</td><td class="py-2 px-3">Admin - Page Settings</td></tr>
-          <tr class="border-t"><td class="py-2 px-3">Topic Cards + Images</td><td class="py-2 px-3 text-green-600">Yes</td><td class="py-2 px-3">Admin - Categories</td></tr>
-          <tr class="border-t"><td class="py-2 px-3">Ask Mira Placeholder</td><td class="py-2 px-3 text-green-600">Yes</td><td class="py-2 px-3">Admin - Ask Mira Bar</td></tr>
-          <tr class="border-t"><td class="py-2 px-3">Featured Products</td><td class="py-2 px-3 text-green-600">Yes</td><td class="py-2 px-3">Admin - Products</td></tr>
-          <tr class="border-t bg-green-50"><td class="py-2 px-3">Help Buckets</td><td class="py-2 px-3 text-green-600">Yes (NEW)</td><td class="py-2 px-3">Admin - Help Buckets tab</td></tr>
-          <tr class="border-t bg-green-50"><td class="py-2 px-3">Daily Tips</td><td class="py-2 px-3 text-green-600">Yes (NEW)</td><td class="py-2 px-3">Admin - Daily Tips tab</td></tr>
-          <tr class="border-t bg-green-50"><td class="py-2 px-3">Guided Paths</td><td class="py-2 px-3 text-green-600">Yes (NEW)</td><td class="py-2 px-3">Admin - Guided Paths tab</td></tr>
-        </tbody>
-      </table>
-      <div class="mt-4 p-3 bg-blue-50 rounded-lg">
-        <p class="text-sm"><a href="/admin-guide.html" class="text-blue-600 underline">View Full Admin Guide</a> for detailed editing instructions</p>
-      </div>
-    </section>
-
-    <!-- API REFERENCE -->
-    <section class="bg-white rounded-xl p-6 shadow-sm border mb-6">
-      <h2 class="text-xl font-bold mb-4">API Reference</h2>
-      <pre>// CMS Config
-GET  /api/{pillar}/page-config
-POST /api/{pillar}/page-config
-
-// Products & Bundles  
-GET /api/products?pillar={pillar}&limit={n}
-GET /api/bundles?pillar={pillar}
-
-// Services
-GET /api/services?pillar={pillar}&limit={n}
-
-// Admin Image Fix
-POST /api/admin/fix-service-images?password=lola4304</pre>
-    </section>
-
-    <!-- CREDENTIALS -->
-    <section class="bg-white rounded-xl p-6 shadow-sm border mb-6">
-      <h2 class="text-xl font-bold mb-4">Test Credentials</h2>
-      <div class="grid md:grid-cols-2 gap-4">
-        <div class="bg-gray-50 p-4 rounded-lg">
-          <h3 class="font-semibold">Admin</h3>
-          <p class="text-sm">Username: <code>aditya</code></p>
-          <p class="text-sm">Password: <code>lola4304</code></p>
-        </div>
-        <div class="bg-gray-50 p-4 rounded-lg">
-          <h3 class="font-semibold">User</h3>
-          <p class="text-sm">Email: <code>dipali@clubconcierge.in</code></p>
-          <p class="text-sm">Password: <code>test123</code></p>
-        </div>
-      </div>
-    </section>
-
-    <!-- NEXT TASKS -->
-    <section class="bg-white rounded-xl p-6 shadow-sm border">
-      <h2 class="text-xl font-bold mb-4">Priority Task List (March 12, 2026)</h2>
-      <ol class="space-y-2 text-sm">
-        <li class="flex items-center gap-2"><span class="bg-green-500 text-white px-2 py-0.5 rounded text-xs">DONE</span> Make Help Buckets, Daily Tips, Guided Paths CMS-editable</li>
-        <li class="flex items-center gap-2"><span class="bg-green-500 text-white px-2 py-0.5 rounded text-xs">DONE</span> Create Admin Guide document for content editors</li>
-        <li class="flex items-center gap-2"><span class="bg-green-500 text-white px-2 py-0.5 rounded text-xs">DONE</span> All 209 products now have AI-generated watercolor images</li>
-        <li class="flex items-center gap-2"><span class="bg-green-500 text-white px-2 py-0.5 rounded text-xs">DONE</span> ALL 14 PILLAR PAGES NOW MEET GOLD STANDARD ✅ (March 12, 2026)</li>
-        <li class="flex items-center gap-2"><span class="bg-green-500 text-white px-2 py-0.5 rounded text-xs">DONE</span> PillarGoldSections.jsx shared component created</li>
-        <li class="flex items-center gap-2"><span class="bg-yellow-500 text-white px-2 py-0.5 rounded text-xs">P1</span> Fix 'Stay' pillar service images (generic stock photos)</li>
-        <li class="flex items-center gap-2"><span class="bg-yellow-500 text-white px-2 py-0.5 rounded text-xs">P2</span> Fix Razorpay checkout</li>
-        <li class="flex items-center gap-2"><span class="bg-gray-500 text-white px-2 py-0.5 rounded text-xs">P3</span> Fix mobile pet dashboard</li>
-        <li class="flex items-center gap-2"><span class="bg-gray-500 text-white px-2 py-0.5 rounded text-xs">P3</span> Persistent background task queue (replace BackgroundTasks with Celery)</li>
-      </ol>
-    </section>
-  </main>
-
-  <footer class="bg-gray-900 text-white py-6 mt-6">
-    <div class="max-w-6xl mx-auto px-6 text-center">
-      <p class="text-gray-400">The Doggy Company - Gold Standard Architecture</p>
-      <p class="text-sm text-gray-500">v13.0.0 | March 12, 2026</p>
+    <div class="soul-quote">
+      "We are not a commerce platform. We are a Pet Operating System. The Soul comes first. Mira knows your pet. Every recommendation, every interaction, every moment — powered by the soul we've built for your dog."
     </div>
-  </footer>
+
+    <div class="stat-row">
+      <div class="stat"><div class="num">200+</div><div class="label">Days Built</div></div>
+      <div class="stat"><div class="num">22,232</div><div class="label">Lines — server.py</div></div>
+      <div class="stat"><div class="num">221</div><div class="label">API Endpoints</div></div>
+      <div class="stat"><div class="num">51</div><div class="label">Soul Questions (8 Folders)</div></div>
+      <div class="stat"><div class="num">14</div><div class="label">Life Pillars</div></div>
+      <div class="stat"><div class="num">2,409</div><div class="label">Products (Shopify Synced)</div></div>
+    </div>
+
+    <p>The Doggy Company is built on a radical premise: that every dog has a soul — a unique personality, lifestyle, health story, and emotional world. The platform captures this soul progressively, then uses it to power every recommendation, every Mira response, and every concierge interaction.</p>
+
+    <div class="grid-3">
+      <div class="card highlight">
+        <h4>The Soul First</h4>
+        <p>51 questions across 8 soul folders build a living profile for each pet. Auto-enriched from orders, bookings, and conversations.</p>
+      </div>
+      <div class="card highlight">
+        <h4>Mira — The OS Voice</h4>
+        <p>6+ versions of Mira, each soul-aware. Streaming, persistent memory, voice ordering, creates service tickets, escalates to humans.</p>
+      </div>
+      <div class="card highlight">
+        <h4>14 Life Pillars</h4>
+        <p>Complete lifecycle coverage: Learn → Care → Dine → Fit → Travel → Stay → Enjoy → Celebrate → Emergency → Advisory → Farewell → Adopt → Shop → Paperwork.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PET SOUL SYSTEM -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="soul">
+  <div class="container">
+    <h2>The Pet Soul System</h2>
+    <p>The soul system is the heart of everything. Every interaction enriches the soul. Every recommendation comes from the soul.</p>
+
+    <div class="module-header">
+      <h3>Soul Completeness</h3>
+      <span class="status live">LIVE</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:70%"></div></div>
+    <p style="margin-top:6px; font-size:0.85rem; color:#64748b">Core architecture complete. Drip questioning, scoring, and enrichment working. Some UI flows partially built.</p>
+
+    <h3>8 Soul Folders (51 Questions Total)</h3>
+    <div class="grid-4">
+      <div class="card">
+        <h4>1. Identity & Temperament</h4>
+        <p>Personality archetype, energy level, social style, fears, quirks. The foundation of the soul.</p>
+        <span class="tag">Personality</span> <span class="tag">Archetype</span>
+      </div>
+      <div class="card">
+        <h4>2. Family & Pack</h4>
+        <p>Human family composition, other pets, lifestyle, activity level of the household.</p>
+        <span class="tag">Family</span> <span class="tag">Pack</span>
+      </div>
+      <div class="card">
+        <h4>3. Rhythm & Routine</h4>
+        <p>Daily schedule, feeding times, walk times, bedtime rituals, training schedule.</p>
+        <span class="tag">Routine</span> <span class="tag">Schedule</span>
+      </div>
+      <div class="card">
+        <h4>4. Home Comforts</h4>
+        <p>Sleeping preferences, favourite spots, comfort items, separation anxiety indicators.</p>
+        <span class="tag">Home</span> <span class="tag">Comfort</span>
+      </div>
+      <div class="card">
+        <h4>5. Travel Style</h4>
+        <p>Travel experience, anxiety level, carrier preference, destinations visited.</p>
+        <span class="tag">Travel</span> <span class="tag">Mobility</span>
+      </div>
+      <div class="card">
+        <h4>6. Taste & Treats</h4>
+        <p>Food preferences, allergies, favourite treats, dietary restrictions, meal patterns.</p>
+        <span class="tag">Food</span> <span class="tag">Allergies</span>
+      </div>
+      <div class="card">
+        <h4>7. Training & Behaviour</h4>
+        <p>Training level, commands mastered, behavioural challenges, reactive triggers.</p>
+        <span class="tag">Training</span> <span class="tag">Behaviour</span>
+      </div>
+      <div class="card">
+        <h4>8. Long Horizon</h4>
+        <p>Senior care preferences, end-of-life wishes, legacy intentions, long-term health goals.</p>
+        <span class="tag">Future</span> <span class="tag">Legacy</span>
+      </div>
+    </div>
+
+    <h3>Soul Engine Features</h3>
+    <div class="grid-2">
+      <div class="card">
+        <h4>Soul Score Calculation</h4>
+        <ul>
+          <li>Weighted score per folder (0–100)</li>
+          <li>Overall soul completeness percentage</li>
+          <li>SoulScoreArc visual component</li>
+          <li>Per-folder progress tracking</li>
+          <li>Displayed prominently on hero sections when logged in</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Auto-Enrichment</h4>
+        <ul>
+          <li>Learns from every order placed</li>
+          <li>Learns from Mira conversation topics</li>
+          <li>Learns from bookings and service requests</li>
+          <li>Drip questioning — asks 1 question at a time, never overwhelming</li>
+          <li>Smart next-question selection based on what's missing</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Soul-Powered Recommendations</h4>
+        <ul>
+          <li>BreedSmartRecommendations — breed-specific products</li>
+          <li>ArchetypeProducts — products matched to soul archetype</li>
+          <li>SoulMadePicksSection — "Made for [Pet Name]" products</li>
+          <li>Mira pillar context — knows you're on Travel vs Emergency</li>
+          <li>PersonalizedPicks — soul-aware product recommendations</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Soul Intelligence Service</h4>
+        <ul>
+          <li>calculate_soul_completeness()</li>
+          <li>get_known_fields() — prevents re-asking known info</li>
+          <li>8-pillar soul summary per pet</li>
+          <li>Soul-based Mira context assembly</li>
+          <li>Environment profile (home type, yard, neighbours)</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Key Backend Files</h3>
+    <code class="api-endpoint">/app/backend/pet_soul_routes.py — Soul questionnaire, scoring, enrichment</code>
+    <code class="api-endpoint">/app/backend/soul_intelligence.py — Soul data processing, completeness calc</code>
+    <code class="api-endpoint">/app/backend/mira_soulful_brain.py — Soul-aware Mira prompt assembly</code>
+    <code class="api-endpoint">/app/backend/pet_score_logic.py — Soul score calculation engine</code>
+
+    <h3>Soul API Endpoints</h3>
+    <code class="api-endpoint"><span class="method get">GET</span> /api/pet-soul/questions — Full 51-question bank</code>
+    <code class="api-endpoint"><span class="method get">GET</span> /api/pet-soul/questions/{folder_key} — Questions for one folder</code>
+    <code class="api-endpoint"><span class="method get">GET</span> /api/pet-soul/profile/{pet_id} — Full soul profile</code>
+    <code class="api-endpoint"><span class="method get">GET</span> /api/pet-soul/profile/{pet_id}/progress — Completeness %</code>
+    <code class="api-endpoint"><span class="method get">GET</span> /api/pet-soul/profile/{pet_id}/quick-questions — 3 next questions</code>
+    <code class="api-endpoint"><span class="method get">GET</span> /api/pet-soul/profile/{pet_id}/8-pillars — Full 8-folder summary</code>
+    <code class="api-endpoint"><span class="method post">POST</span> /api/pet-soul/answer — Submit a soul answer</code>
+    <code class="api-endpoint"><span class="method post">POST</span> /api/pet-soul/profile/{pet_id}/answer — Answer for specific pet</code>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- MIRA AI -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="mira">
+  <div class="container">
+    <h2>Mira — The Pet OS Voice</h2>
+    <blockquote>"I'll move at your pace here. Mira knows Mojo." — Soul-aware AI that knows your pet personally.</blockquote>
+
+    <div class="grid-2">
+      <div>
+        <h3>Mira Variants</h3>
+        <div class="card" style="margin-bottom:10px">
+          <h4>/mira-os <span class="status live">LIVE · Members Only</span></h4>
+          <p>The flagship Mira experience. Full soul-aware chat, streaming responses, session history, voice (ElevenLabs TTS), pet context loaded. Protected by membership gate.</p>
+        </div>
+        <div class="card" style="margin-bottom:10px">
+          <h4>/mira-pure <span class="status live">LIVE · Public</span></h4>
+          <p>Lightweight Mira for public/demo access. Full AI but no membership requirement.</p>
+        </div>
+        <div class="card" style="margin-bottom:10px">
+          <h4>/mira-pure-os <span class="status live">LIVE</span></h4>
+          <p>Pure OS variant — clean slate, full capabilities.</p>
+        </div>
+        <div class="card" style="margin-bottom:10px">
+          <h4>Ask Mira Bar (Pillar Pages) <span class="status live">LIVE · All 14 Pillars</span></h4>
+          <p>Embedded search/chat bar at the top of every pillar page. Context-aware (knows which pillar you're on). Triggers full Mira chat.</p>
+        </div>
+        <div class="card">
+          <h4>Mira Floating Widget <span class="status live">LIVE · All Pages</span></h4>
+          <p>Bottom-right floating Mira button on every page. Opens full AI chat. Animated spark icon.</p>
+        </div>
+      </div>
+      <div>
+        <h3>Mira Capabilities</h3>
+        <div class="card" style="margin-bottom:10px">
+          <h4>Soul-Aware Responses</h4>
+          <p>Mira reads the pet's soul before every response. Knows allergies, personality, routine, travel style, food preferences. Never asks what it already knows.</p>
+        </div>
+        <div class="card" style="margin-bottom:10px">
+          <h4>Streaming Responses</h4>
+          <p>Real-time token streaming. Responses feel instant and alive.</p>
+        </div>
+        <div class="card" style="margin-bottom:10px">
+          <h4>Session Persistence</h4>
+          <p>Remembers conversation history within and across sessions. Soul memory assembly.</p>
+        </div>
+        <div class="card" style="margin-bottom:10px">
+          <h4>Voice Ordering (/voice-order)</h4>
+          <p>ElevenLabs TTS reads product recommendations. Voice-based shopping experience.</p>
+        </div>
+        <div class="card">
+          <h4>Concierge Handoff</h4>
+          <p>When Mira identifies a service need, it creates a service desk ticket and escalates to a human concierge. Full ticket lifecycle.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Mira Backend Architecture</h3>
+    <div class="grid-3">
+      <div class="card">
+        <h4>mira_os.py</h4>
+        <p>Core Mira intelligence. understand_with_llm(), mira_understand(), mira_suggestions(). Pillar context, pet context assembly.</p>
+      </div>
+      <div class="card">
+        <h4>mira_pure.py</h4>
+        <p>Lightweight Mira for public access. get_pet_context(), pure_chat(). Full AI without membership requirement.</p>
+      </div>
+      <div class="card">
+        <h4>mira_soulful_brain.py</h4>
+        <p>Soul-to-prompt translator. Builds rich pet context from soul profile for injection into every Mira response.</p>
+      </div>
+      <div class="card">
+        <h4>mira_service_desk.py</h4>
+        <p>Ticket creation from Mira conversations. classify_intent(), attach_or_create_ticket(), handoff_to_concierge().</p>
+      </div>
+      <div class="card">
+        <h4>mira_retention.py</h4>
+        <p>Retention session tracking. Mira-driven proactive re-engagement. Session analytics.</p>
+      </div>
+      <div class="card">
+        <h4>mira_concierge_handoff.py</h4>
+        <p>Seamless AI-to-human transition. Preserves conversation context when a human agent takes over.</p>
+      </div>
+    </div>
+
+    <h3>Mira API Endpoints</h3>
+    <code class="api-endpoint"><span class="method post">POST</span> /api/mira/understand — Core intent understanding</code>
+    <code class="api-endpoint"><span class="method post">POST</span> /api/mira/chat — Full Mira chat (soul-aware)</code>
+    <code class="api-endpoint"><span class="method post">POST</span> /api/mira/pure/chat — Public Mira chat</code>
+    <code class="api-endpoint"><span class="method get">GET</span>  /api/mira/suggestions — Context-aware suggestions</code>
+    <code class="api-endpoint"><span class="method get">GET</span>  /api/mira/top-picks — Soul-powered product picks</code>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 14 PILLARS -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="pillars">
+  <div class="container">
+    <h2>14 Life Pillars — All Gold Standard ✅</h2>
+    <p>Every pillar follows the Gold Standard template established by LearnPage.jsx. As of March 2026, all 14 pillars are fully compliant.</p>
+
+    <h3>Gold Standard Section Order (Every Page)</h3>
+    <ol style="color:#94a3b8; padding-left:20px; line-height:2">
+      <li><strong style="color:#a78bfa">Ask Mira Bar</strong> — Soul-aware search/chat at top, personalized with pet name</li>
+      <li><strong style="color:#a78bfa">Topic Cards Grid</strong> — 4 category quick-access cards with AI watercolor images</li>
+      <li><strong style="color:#a78bfa">Daily Tip</strong> — Rotating pillar-specific tip, changes daily</li>
+      <li><strong style="color:#a78bfa">How Can We Help?</strong> — 3 help bucket cards, each triggers Mira with context</li>
+      <li><strong style="color:#a78bfa">Personalized For Pet</strong> — Soul-matched products with pet photo, archetype, breed</li>
+      <li><strong style="color:#a78bfa">Guided Paths</strong> — Step-by-step journeys (First Flight, Birthday Party, etc.)</li>
+      <li><strong style="color:#a78bfa">Curated Bundles</strong> — Shopify bundles, pillar-specific</li>
+      <li><strong style="color:#a78bfa">Products Grid</strong> — Soul-matched products</li>
+      <li><strong style="color:#a78bfa">Mira Curated Layer</strong> — AI-selected product highlights</li>
+      <li><strong style="color:#a78bfa">Services</strong> — Concierge services for that pillar</li>
+    </ol>
+
+    <h3>Pillar Status (March 2026)</h3>
+    <table class="table">
+      <thead>
+        <tr><th>Pillar</th><th>Route</th><th>Ask Mira</th><th>Topics</th><th>Daily Tip</th><th>Help Buckets</th><th>Guided Paths</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Learn</td><td>/learn</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Gold Standard</span></td></tr>
+        <tr><td>Care</td><td>/care</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
+        <tr><td>Dine</td><td>/dine</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
+        <tr><td>Fit</td><td>/fit</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
+        <tr><td>Travel</td><td>/travel</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
+        <tr><td>Stay</td><td>/stay</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
+        <tr><td>Enjoy</td><td>/enjoy</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
+        <tr><td>Celebrate</td><td>/celebrate</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
+        <tr><td>Emergency</td><td>/emergency</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
+        <tr><td>Advisory</td><td>/advisory</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
+        <tr><td>Farewell</td><td>/farewell</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
+        <tr><td>Adopt</td><td>/adopt</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
+        <tr><td>Shop</td><td>/shop</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
+        <tr><td>Paperwork</td><td>/paperwork</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Shared Components (PillarGoldSections.jsx)</h3>
+    <p>Created March 2026. Provides <code>PillarDailyTip</code>, <code>PillarHelpBuckets</code>, <code>PillarGuidedPaths</code> as reusable components used across all 14 pillars.</p>
+
+    <h3>CMS-Editable Pillar Sections</h3>
+    <p>All pillar pages have Admin CMS support via <code>/admin → Pillar CMS</code>. Editable sections per pillar:</p>
+    <div class="grid-3">
+      <div class="card"><h4>Page Config</h4><p>Title, subtitle, Ask Mira placeholder, hero image, enable/disable sections.</p></div>
+      <div class="card"><h4>Topic Cards</h4><p>4 category cards with icon, image, title, subtitle, link.</p></div>
+      <div class="card"><h4>Daily Tips</h4><p>Rotating tip bank — add/edit/remove tips per pillar.</p></div>
+      <div class="card"><h4>Help Buckets</h4><p>3 action buckets — title, icon, color, items list.</p></div>
+      <div class="card"><h4>Guided Paths</h4><p>Journey cards — title, steps, color, topic link.</p></div>
+      <div class="card"><h4>Mira Prompts</h4><p>Pre-built Ask Mira suggestions for each pillar.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SERVICE DESK -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="servicedesk">
+  <div class="container">
+    <h2>Service Desk — Concierge Engine</h2>
+    <p>A complete concierge management system purpose-built for pet services. More specialised than Zendesk or Zoho for this use case.</p>
+
+    <div class="grid-2">
+      <div>
+        <h3>Concierge Features <span class="status live">LIVE</span></h3>
+        <ul>
+          <li>Full ticket lifecycle (create → assign → resolve)</li>
+          <li>Priority scoring (urgency × impact × complexity)</li>
+          <li>SLA breach detection and alerts</li>
+          <li>Ticket claiming by agents</li>
+          <li>Ticket merging (duplicate requests)</li>
+          <li>Add notes, internal and member-visible</li>
+          <li>Escalation to senior agents</li>
+          <li>AI-generated draft replies</li>
+          <li>Canned response library</li>
+          <li>NPS feedback collection post-resolution</li>
+          <li>Sentiment analysis on member messages</li>
+          <li>WhatsApp notification on status changes</li>
+          <li>Multi-queue management (dining, travel, stay, shop, etc.)</li>
+          <li>Real-time concierge dashboard (/admin/concierge-realtime)</li>
+          <li>Mira-to-human handoff with context preservation</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Admin Portals</h3>
+        <div class="card" style="margin-bottom:10px">
+          <h4>/agent — Agent Portal</h4>
+          <p>Full agent workspace. View queue, claim tickets, respond, resolve, escalate.</p>
+          <span class="status live">LIVE · Admin Protected</span>
+        </div>
+        <div class="card" style="margin-bottom:10px">
+          <h4>/admin/service-desk — Service Desk Admin</h4>
+          <p>Full service desk management. All tickets, filters, bulk actions, analytics.</p>
+          <span class="status live">LIVE · Admin Protected</span>
+        </div>
+        <div class="card" style="margin-bottom:10px">
+          <h4>/admin/concierge — Concierge Dashboard</h4>
+          <p>Request overview, stats, queue management.</p>
+        </div>
+        <div class="card">
+          <h4>/admin/concierge-realtime — Live Queue</h4>
+          <p>Real-time queue view. Live updates as requests come in.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Concierge Backend Files</h3>
+    <code class="api-endpoint">/app/backend/concierge_routes.py — Core concierge engine (2,500+ lines)</code>
+    <code class="api-endpoint">/app/backend/mira_service_desk.py — Mira→ticket flow</code>
+    <code class="api-endpoint">/app/backend/mira_concierge_handoff.py — AI-to-human handoff</code>
+    <code class="api-endpoint">/app/backend/concierge_engine.py — Priority, SLA, routing logic</code>
+    <code class="api-endpoint">/app/backend/concierge_order_queue.py — Order queue management</code>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- MEMBER DASHBOARD -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="dashboard">
+  <div class="container">
+    <h2>Member Dashboard — /dashboard</h2>
+    <p>A comprehensive member portal with 15+ lazy-loaded tabs. The central hub for the pet parent's journey.</p>
+
+    <div class="grid-3">
+      <div class="card"><h4>Overview Tab</h4><p>Soul score, quick actions, upcoming reminders, recent activity, pet health summary.</p><span class="status live">LIVE</span></div>
+      <div class="card"><h4>My Pets Tab</h4><p>All pet profiles, add pet, edit profiles, soul scores per pet, Rainbow Bridge marking.</p><span class="status live">LIVE</span></div>
+      <div class="card"><h4>Services Tab</h4><p>Active and past service requests, ticket status, re-order.</p><span class="status live">LIVE</span></div>
+      <div class="card"><h4>Orders Tab</h4><p>Order history, track orders, reorder, Shopify order sync.</p><span class="status live">LIVE</span></div>
+      <div class="card"><h4>Requests Tab</h4><p>Concierge requests, chat history, ticket threads.</p><span class="status live">LIVE</span></div>
+      <div class="card"><h4>Dining Tab</h4><p>Meal plans, dining service bookings, food order history.</p><span class="status live">LIVE</span></div>
+      <div class="card"><h4>Celebrations Tab</h4><p>Birthday tracking, upcoming celebrations, past parties, memories.</p><span class="status live">LIVE</span></div>
+      <div class="card"><h4>Stay Tab</h4><p>Boarding bookings, hotel stays, check-in history.</p><span class="status live">LIVE</span></div>
+      <div class="card"><h4>Travel Tab</h4><p>Travel bookings, trip history, travel documents.</p><span class="status live">LIVE</span></div>
+      <div class="card"><h4>Autoship Tab</h4><p>Recurring order management, modify, pause, cancel autoship.</p><span class="status live">LIVE</span></div>
+      <div class="card"><h4>Reviews Tab</h4><p>Write and view reviews for services and products.</p><span class="status live">LIVE</span></div>
+      <div class="card"><h4>Addresses Tab</h4><p>Saved delivery addresses, default address, map view.</p><span class="status live">LIVE</span></div>
+      <div class="card"><h4>Rewards Tab</h4><p>Paw Points balance, transaction history, redeem rewards, tier status.</p><span class="status live">LIVE</span></div>
+      <div class="card"><h4>Settings Tab</h4><p>Profile settings, notification preferences, password change, account management.</p><span class="status live">LIVE</span></div>
+      <div class="card"><h4>Pet Vault Tab</h4><p>Health documents, vaccination records, insurance policies, vet contacts.</p><span class="status live">LIVE</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- COMMERCE -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="commerce">
+  <div class="container">
+    <h2>Commerce Layer</h2>
+
+    <div class="grid-2">
+      <div>
+        <h3>Products & Catalog <span class="status live">LIVE</span></h3>
+        <ul>
+          <li><strong>2,409 products</strong> synced from Shopify</li>
+          <li>All products have AI-generated watercolor images</li>
+          <li>Soul-based product recommendations</li>
+          <li>Breed-tagged products (BreedSmartRecommendations)</li>
+          <li>Archetype-matched products</li>
+          <li>Pillar-specific product sections</li>
+          <li>Bundle configurations (CuratedBundles)</li>
+          <li>Autoship products (subscribe and save)</li>
+          <li>Meal plan products</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Checkout & Payments</h3>
+        <div class="card" style="margin-bottom:10px">
+          <h4>Cart <span class="status live">LIVE</span></h4>
+          <p>CartSidebar component. Add/remove items, quantity, saved for later.</p>
+        </div>
+        <div class="card" style="margin-bottom:10px">
+          <h4>Razorpay Checkout <span class="status broken">BROKEN — P2</span></h4>
+          <p>Unified checkout built but currently failing with a body error. Needs debug.</p>
+        </div>
+        <div class="card">
+          <h4>Membership Payment <span class="status live">LIVE</span></h4>
+          <p>Membership plan payment flow with Razorpay.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Special Commerce Features</h3>
+    <div class="grid-3">
+      <div class="card">
+        <h4>Custom Cake Designer <span class="status live">LIVE</span></h4>
+        <p>(/custom-cake) Step-by-step birthday cake customizer. Flavour, decoration, message, size, delivery date.</p>
+      </div>
+      <div class="card">
+        <h4>Occasion Box Builder <span class="status live">LIVE</span></h4>
+        <p>Custom gift box builder for celebrations. Product selection, box size, ribbon, message card.</p>
+      </div>
+      <div class="card">
+        <h4>Autoship <span class="status live">LIVE</span></h4>
+        <p>(/autoship) Recurring orders with adjustable frequency. Pause/resume/cancel.</p>
+      </div>
+      <div class="card">
+        <h4>Meal Plan <span class="status live">LIVE</span></h4>
+        <p>(/meal-plan) Personalised meal planning based on pet's soul nutrition data.</p>
+      </div>
+      <div class="card">
+        <h4>Voice Order <span class="status live">LIVE</span></h4>
+        <p>(/voice-order) ElevenLabs TTS reads product recommendations. Voice-based ordering.</p>
+      </div>
+      <div class="card">
+        <h4>Shopify Sync <span class="status live">LIVE</span></h4>
+        <p>(/api/mockups/sync-to-production) Full bidirectional sync. 2,409 products. 25 batches.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- GAMIFICATION -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="gamification">
+  <div class="container">
+    <h2>Gamification & Loyalty</h2>
+
+    <div class="grid-3">
+      <div class="card highlight">
+        <h4>Paw Points <span class="status live">LIVE</span></h4>
+        <p>Earn points for: soul questions answered, orders placed, services booked, reviews written, referrals. Displayed in dashboard Rewards tab.</p>
+        <p>Points awarded automatically via backend triggers on key actions.</p>
+      </div>
+      <div class="card highlight">
+        <h4>Soul Score / PawMeter <span class="status live">LIVE</span></h4>
+        <p>Visual soul completeness displayed on every pillar hero when logged in. SoulScoreArc component. Shown as "89% discovered" with animated arc.</p>
+      </div>
+      <div class="card highlight">
+        <h4>Membership Tiers <span class="status partial">PARTIAL</span></h4>
+        <p>Silver, Gold, Platinum tiers defined. Tiers stored in DB. But tier-based access gating and tier upgrade flows not fully implemented.</p>
+      </div>
+      <div class="card">
+        <h4>Pet Wrapped <span class="status live">LIVE · /pet-wrapped</span></h4>
+        <p>Spotify Wrapped-style yearly summary for your pet. Soul highlights, top products, service stats, memorable moments. Shareable card.</p>
+      </div>
+      <div class="card">
+        <h4>Achievements <span class="status partial">PARTIAL</span></h4>
+        <p>Achievement definitions exist. UI partially built. Full achievement unlock/display flow needs completion.</p>
+      </div>
+      <div class="card">
+        <h4>Birthday Engine <span class="status live">LIVE</span></h4>
+        <p>Auto-detects pet birthdays. Triggers celebration prompts, special offers, birthday reminders. Integrated with Celebrate pillar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- COMMUNITY -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="community">
+  <div class="container">
+    <h2>Community Features</h2>
+
+    <div class="grid-2">
+      <div class="card highlight">
+        <h4>Rainbow Bridge Memorial 💜 <span class="status live">LIVE</span></h4>
+        <p>Built in loving memory of Mystique. Features:</p>
+        <ul>
+          <li>Mark pets as "crossed the Rainbow Bridge"</li>
+          <li>Memorial creation with tribute message, favourite memory, legacy quote</li>
+          <li>Legacy view — the pet's complete soul journey preserved forever</li>
+          <li>Public Memorial Wall — community tributes, "Forever Loved" cards</li>
+          <li>Leave tributes on other pets' memorials</li>
+          <li>AI grief support ("You're Not Alone" — Mira is here)</li>
+          <li>1 memorial currently live (Mystique — Shih Tzu, loved by Dipali)</li>
+        </ul>
+        <p><em>Location: /farewell — scroll to dark purple section ~2200px</em></p>
+      </div>
+      <div class="card">
+        <h4>Notifications System <span class="status live">LIVE</span></h4>
+        <ul>
+          <li>iOS Mail-style Notifications Inbox (/notifications)</li>
+          <li>Push notifications (PWA badge count)</li>
+          <li>Ticket thread notifications</li>
+          <li>Birthday and vaccination reminders</li>
+          <li>Mark as read, mark all read, clear old</li>
+          <li>Admin notification management</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Pet Vault <span class="status live">LIVE</span></h4>
+        <p>(/pet-vault/:petId) Secure pet health document storage:</p>
+        <ul>
+          <li>Vaccination records upload and management</li>
+          <li>Insurance policy documents</li>
+          <li>Medical history documents</li>
+          <li>Vet contact directory</li>
+          <li>Reminder system for renewals</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Social & Sharing <span class="status partial">PARTIAL</span></h4>
+        <ul>
+          <li>Pet Pass Card — shareable digital pet card</li>
+          <li>Pet Wrapped — shareable yearly summary</li>
+          <li>Rainbow Bridge tributes — community shares</li>
+          <li>Instagram Feed integration — planned, not complete</li>
+          <li>Celebration Wall — planned</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- ADMIN PANEL -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="admin">
+  <div class="container">
+    <h2>Admin Panel — /admin</h2>
+    <p>Comprehensive admin interface with 40+ functional sections. Protected by admin credentials.</p>
+    <p><em>Login: username <code>aditya</code> / password <code>lola4304</code></em></p>
+
+    <div class="grid-3">
+      <div class="card"><h4>Product Management</h4><p>Add/edit/delete products, bulk import CSV, upload images, seed pillar products, manage tags, breed tags, bundles.</p></div>
+      <div class="card"><h4>Service Management</h4><p>CRUD services by pillar, pricing, images, bulk import.</p></div>
+      <div class="card"><h4>Pillar Page CMS</h4><p>Edit all 14 pillars: page config, topics, daily tips, help buckets, guided paths, Mira prompts.</p></div>
+      <div class="card"><h4>Member Management</h4><p>View all members, manage points, subscription status, pet profiles.</p></div>
+      <div class="card"><h4>Orders & Analytics</h4><p>Order overview, reports, MIS export (CSV/Excel), scheduled reports.</p></div>
+      <div class="card"><h4>AI Image Generation</h4><p>Generate watercolor product images. Seed AI images for all pillars. Currently 2,409 products with AI images.</p></div>
+      <div class="card"><h4>Sync to Production</h4><p>One-click sync of all products to production database. Verified working — 2,409 products in 25 batches.</p></div>
+      <div class="card"><h4>Service Desk Admin</h4><p>/admin/service-desk — Full ticket management, agent assignment, SLA monitoring.</p></div>
+      <div class="card"><h4>Concierge Dashboard</h4><p>/admin/concierge-realtime — Live queue, real-time request management.</p></div>
+      <div class="card"><h4>Rainbow Bridge Admin</h4><p>Fix memorials, seed Mystique's memorial, manage public wall.</p></div>
+      <div class="card"><h4>Documentation</h4><p>/admin/docs — Admin guide and system documentation.</p></div>
+      <div class="card"><h4>Notifications</h4><p>Send admin notifications, manage notification history, clear old.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- INTEGRATIONS -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="integrations">
+  <div class="container">
+    <h2>Integrations & External Services</h2>
+
+    <div class="grid-3">
+      <div class="card"><h4>Shopify <span class="status live">LIVE</span></h4><p>Full product catalog sync. 2,409 products. Bidirectional sync. Order management. Webhook integration.</p></div>
+      <div class="card"><h4>OpenAI GPT-4o <span class="status live">LIVE</span></h4><p>Powers Mira AI. Used for all chat, soul analysis, product recommendations, concierge replies. Via Emergent Universal Key.</p></div>
+      <div class="card"><h4>Cloudinary <span class="status live">LIVE</span></h4><p>All AI-generated watercolor images stored. Pet photos. Product images. Document uploads.</p></div>
+      <div class="card"><h4>Google Places API <span class="status live">LIVE</span></h4><p>Nearby pet services — vets, groomers, pet shops, boarding. Used in multiple pillars.</p></div>
+      <div class="card"><h4>OpenWeatherMap <span class="status live">LIVE</span></h4><p>Weather-aware product recommendations. "It's raining in Bangalore — here's a raincoat for Mojo."</p></div>
+      <div class="card"><h4>YouTube Data API <span class="status live">LIVE</span></h4><p>Dog training and care videos embedded in Learn pillar. Contextual video recommendations.</p></div>
+      <div class="card"><h4>ElevenLabs TTS <span class="status live">LIVE</span></h4><p>Voice reading of product recommendations. Voice order experience (/voice-order).</p></div>
+      <div class="card"><h4>WhatsApp Business <span class="status live">LIVE</span></h4><p>Service desk notifications. Ticket status updates. Birthday reminders. Renewal alerts.</p></div>
+      <div class="card"><h4>MongoDB Atlas <span class="status live">LIVE</span></h4><p>Primary database. 20+ collections. Pet souls, products, services, tickets, memorials, members.</p></div>
+      <div class="card"><h4>Razorpay <span class="status broken">BROKEN — P2</span></h4><p>Payment gateway. Integrated but checkout fails with body error. Needs debug.</p></div>
+      <div class="card"><h4>@react-pdf/renderer <span class="status live">LIVE</span></h4><p>PDF generation for pet documents, reports, vaccination cards.</p></div>
+      <div class="card"><h4>Instagram <span class="status todo">PLANNED</span></h4><p>Instagram feed integration for Celebration Wall. Not yet complete.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- ALL ROUTES -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="routes">
+  <div class="container">
+    <h2>Complete Route Map</h2>
+
+    <h3>Public Routes</h3>
+    <div class="grid-3">
+      <div><code class="api-endpoint">/ — Home</code><code class="api-endpoint">/about — About</code><code class="api-endpoint">/mira — Mira Chat (public)</code></div>
+      <div><code class="api-endpoint">/login — Login</code><code class="api-endpoint">/register — Register</code><code class="api-endpoint">/mira-pure — Mira Pure (public)</code></div>
+      <div><code class="api-endpoint">/policies — Privacy/Terms</code><code class="api-endpoint">/search — Search</code><code class="api-endpoint">/feedback — NPS</code></div>
+    </div>
+
+    <h3>Member Routes (Protected)</h3>
+    <div class="grid-3">
+      <div>
+        <code class="api-endpoint">/dashboard — Member Dashboard</code>
+        <code class="api-endpoint">/pet-soul/:petId — Pet Soul Profile</code>
+        <code class="api-endpoint">/pet-vault/:petId — Pet Health Vault</code>
+        <code class="api-endpoint">/my-pets — All Pets</code>
+        <code class="api-endpoint">/my-tickets — My Service Tickets</code>
+      </div>
+      <div>
+        <code class="api-endpoint">/notifications — Notifications Inbox</code>
+        <code class="api-endpoint">/checkout — Unified Checkout</code>
+        <code class="api-endpoint">/custom-cake — Cake Designer</code>
+        <code class="api-endpoint">/voice-order — Voice Order</code>
+        <code class="api-endpoint">/mira-os — Mira OS (Members Only)</code>
+      </div>
+      <div>
+        <code class="api-endpoint">/pet-soul-onboard — Soul Onboarding</code>
+        <code class="api-endpoint">/soul-builder — Soul Builder Wizard</code>
+        <code class="api-endpoint">/join — Membership Join</code>
+        <code class="api-endpoint">/membership — Membership Plans</code>
+        <code class="api-endpoint">/pet-wrapped — Pet Wrapped Summary</code>
+      </div>
+    </div>
+
+    <h3>14 Pillar Routes</h3>
+    <div class="grid-4">
+      <code class="api-endpoint">/learn</code>
+      <code class="api-endpoint">/care</code>
+      <code class="api-endpoint">/dine</code>
+      <code class="api-endpoint">/fit</code>
+      <code class="api-endpoint">/travel</code>
+      <code class="api-endpoint">/stay</code>
+      <code class="api-endpoint">/enjoy</code>
+      <code class="api-endpoint">/celebrate</code>
+      <code class="api-endpoint">/emergency</code>
+      <code class="api-endpoint">/advisory</code>
+      <code class="api-endpoint">/farewell</code>
+      <code class="api-endpoint">/adopt</code>
+      <code class="api-endpoint">/shop</code>
+      <code class="api-endpoint">/paperwork</code>
+    </div>
+
+    <h3>Admin Routes (Admin Protected)</h3>
+    <div class="grid-2">
+      <div>
+        <code class="api-endpoint">/admin — Main Admin Panel</code>
+        <code class="api-endpoint">/admin/service-desk — Service Desk</code>
+        <code class="api-endpoint">/admin/services — Service CRUD</code>
+        <code class="api-endpoint">/admin/concierge — Concierge Requests</code>
+        <code class="api-endpoint">/admin/concierge-realtime — Live Queue</code>
+        <code class="api-endpoint">/admin/mira-concierge — Mira Concierge</code>
+        <code class="api-endpoint">/admin/docs — Admin Documentation</code>
+      </div>
+      <div>
+        <code class="api-endpoint">/agent — Agent Portal</code>
+        <code class="api-endpoint">/concierge-dashboard — Concierge Dashboard</code>
+        <code class="api-endpoint">/demo/dreamfolks — B2B Demo</code>
+        <code class="api-endpoint">/mira-os-original — Mira OS Original</code>
+        <code class="api-endpoint">/mira-pure-os — Mira Pure OS</code>
+        <code class="api-endpoint">/mira-pillar-sandbox — Pillar Test</code>
+      </div>
+    </div>
+
+    <h3>Embed Routes (For B2B)</h3>
+    <code class="api-endpoint">/pet-soul-embed — Pet Soul (Embeddable)</code>
+    <code class="api-endpoint">/mira-embed — Mira (Embeddable)</code>
+    <code class="api-endpoint">/mira-landing-embed — Mira Landing (Embeddable)</code>
+    <code class="api-endpoint">/concierge-embed — Concierge (Embeddable)</code>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- KNOWN ISSUES -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="issues">
+  <div class="container">
+    <h2>Known Issues</h2>
+
+    <div class="issue-row">
+      <div class="issue-priority p1">P1</div>
+      <div><strong style="color:#c4b5fd">Stay Pillar: Service Images show stock photos</strong><br>
+      <span style="color:#64748b; font-size:0.88rem">The /api/mira/top-picks endpoint for the Stay pillar returns generic stock photos instead of watercolor illustrations. Caused by empty db.services collection forcing fallback logic in top_picks_routes.py.</span></div>
+    </div>
+    <div class="issue-row">
+      <div class="issue-priority p2">P2</div>
+      <div><strong style="color:#c4b5fd">Razorpay Checkout — Body Error</strong><br>
+      <span style="color:#64748b; font-size:0.88rem">UnifiedCheckout fails at payment step. Revenue-blocking bug. Razorpay integration needs debug.</span></div>
+    </div>
+    <div class="issue-row">
+      <div class="issue-priority p2">P2</div>
+      <div><strong style="color:#c4b5fd">Mobile Pet Dashboard — Scrambled UI</strong><br>
+      <span style="color:#64748b; font-size:0.88rem">The member dashboard is not responsive on mobile. Grid layout breaks. Needs mobile-first CSS fix.</span></div>
+    </div>
+    <div class="issue-row">
+      <div class="issue-priority p3">P3</div>
+      <div><strong style="color:#c4b5fd">AI Image Generation — Non-Persistent Background Tasks</strong><br>
+      <span style="color:#64748b; font-size:0.88rem">Currently uses FastAPI BackgroundTasks which are lost on server restart. Should migrate to Celery or a persistent queue.</span></div>
+    </div>
+    <div class="issue-row">
+      <div class="issue-priority p3">P3</div>
+      <div><strong style="color:#c4b5fd">Membership Tier Gating — Not Enforced</strong><br>
+      <span style="color:#64748b; font-size:0.88rem">Silver/Gold/Platinum tiers are in the DB but tier-based access restrictions and upgrade prompts are not fully implemented.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- ROADMAP -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="roadmap">
+  <div class="container">
+    <h2>Roadmap</h2>
+
+    <h3>Immediate (P1)</h3>
+    <ul>
+      <li>Fix Stay pillar service images (trace top_picks_routes.py fallback)</li>
+      <li>Fix Razorpay checkout body error</li>
+    </ul>
+
+    <h3>Near Term (P2)</h3>
+    <ul>
+      <li>Fix mobile member dashboard responsiveness</li>
+      <li>Complete membership tier enforcement (gates, upgrade prompts, perks)</li>
+      <li>Paw Points redemption at checkout</li>
+      <li>Soul 8-folder questionnaire completion UI (guided onboarding wizard)</li>
+    </ul>
+
+    <h3>Future (P3)</h3>
+    <ul>
+      <li>Instagram integration — Celebration Wall feed</li>
+      <li>Celery/Redis for persistent background tasks</li>
+      <li>Partner/Franchise portal</li>
+      <li>Advanced service desk — role management, time-based automations</li>
+      <li>Pet Wrapped — auto-trigger at year end</li>
+      <li>Complete NPS dashboard with trend charts</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div>
+    <strong style="color:#a78bfa">The Doggy Company®</strong> &nbsp;·&nbsp; Pet Concierge®
+    &nbsp;·&nbsp; Les Concierges® (1998) &nbsp;·&nbsp; Club Concierge® &nbsp;·&nbsp; The Doggy Bakery® (2020) &nbsp;·&nbsp; Mira®
+  </div>
+  <div style="margin-top:8px">Version 13.0.0 &nbsp;|&nbsp; March 12, 2026 &nbsp;|&nbsp; Built with 200+ days of love</div>
+  <div style="margin-top:8px; font-style:italic; color:#4338ca">In loving memory of Mystique 💜 and Kouros — who taught us what unconditional love truly means.</div>
+</footer>
+
 </body>
 </html>
