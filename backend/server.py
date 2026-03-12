@@ -6492,6 +6492,102 @@ async def bulk_import_products(products: List[dict], username: str = Depends(ver
     return {"message": f"Imported {len(products)} products"}
 
 
+# ==================== GENERIC PILLAR PAGE CMS ====================
+# Universal endpoints for ALL pillar page configurations
+# Works with: care, fit, travel, stay, dine, enjoy, celebrate, emergency, advisory, farewell, adopt, shop
+
+VALID_CMS_PILLARS = ['care', 'fit', 'travel', 'stay', 'dine', 'enjoy', 'celebrate', 'emergency', 'advisory', 'farewell', 'adopt', 'shop']
+
+@api_router.get("/{pillar}/page-config")
+async def get_pillar_page_config(pillar: str):
+    """Get the complete page configuration for any pillar"""
+    # Skip pillars that have their own dedicated routes (learn, paperwork)
+    if pillar not in VALID_CMS_PILLARS:
+        raise HTTPException(status_code=404, detail=f"Use dedicated route for {pillar}")
+    
+    # Get page config
+    config = await db.page_configs.find_one({"pillar": pillar}, {"_id": 0})
+    
+    # Get categories for this pillar
+    categories = await db.pillar_cms_categories.find({"pillar": pillar}, {"_id": 0}).to_list(50)
+    
+    # Get CMS content (concierge services, mira prompts, etc.)
+    cms_content = await db.pillar_cms_content.find_one({"pillar": pillar}, {"_id": 0})
+    
+    # Get selections
+    selections = await db.page_selections.find_one({"pillar": pillar}, {"_id": 0})
+    
+    return {
+        "config": config or {},
+        "categories": categories if categories else [],
+        "conciergeServices": (cms_content or {}).get("conciergeServices", []),
+        "miraPrompts": (cms_content or {}).get("miraPrompts", []),
+        "selectedProducts": (selections or {}).get("products", []),
+        "selectedBundles": (selections or {}).get("bundles", []),
+        "selectedServices": (selections or {}).get("services", []),
+        "personalizationConfig": (cms_content or {}).get("personalizationConfig", {
+            "breedSmart": {"enabled": True},
+            "lifeStage": {"enabled": True},
+            "archetypePicks": {"enabled": True},
+            "soulCollection": {"enabled": True}
+        })
+    }
+
+
+@api_router.post("/{pillar}/page-config")
+async def save_pillar_page_config(pillar: str, data: dict):
+    """Save the complete page configuration for any pillar"""
+    if pillar not in VALID_CMS_PILLARS:
+        raise HTTPException(status_code=404, detail=f"Use dedicated route for {pillar}")
+    
+    # Save page config
+    config = data.get("config", {})
+    config["pillar"] = pillar
+    config["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.page_configs.update_one(
+        {"pillar": pillar},
+        {"$set": config},
+        upsert=True
+    )
+    
+    # Save categories
+    categories = data.get("categories", [])
+    if categories:
+        await db.pillar_cms_categories.delete_many({"pillar": pillar})
+        for cat in categories:
+            cat["pillar"] = pillar
+            await db.pillar_cms_categories.insert_one(cat)
+    
+    # Save CMS content
+    cms_content = {
+        "pillar": pillar,
+        "conciergeServices": data.get("conciergeServices", []),
+        "miraPrompts": data.get("miraPrompts", []),
+        "personalizationConfig": data.get("personalizationConfig", {}),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.pillar_cms_content.update_one(
+        {"pillar": pillar},
+        {"$set": cms_content},
+        upsert=True
+    )
+    
+    # Save selections
+    selections = {
+        "pillar": pillar,
+        "products": data.get("selectedProducts", []),
+        "bundles": data.get("selectedBundles", []),
+        "services": data.get("selectedServices", [])
+    }
+    await db.page_selections.update_one(
+        {"pillar": pillar},
+        {"$set": selections},
+        upsert=True
+    )
+    
+    return {"success": True, "message": f"{pillar.title()} page configuration saved"}
+
+
 # ==================== SERVICES CRUD ROUTES ====================
 
 @admin_router.get("/services")
