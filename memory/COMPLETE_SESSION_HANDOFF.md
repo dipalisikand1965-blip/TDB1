@@ -1,12 +1,53 @@
 # 🚨 COMPLETE SESSION HANDOFF - FEBRUARY 21, 2026 🚨
 ## READ THIS ENTIRE DOCUMENT BEFORE MAKING ANY CHANGES
 
+> **March 12, 2026 Recovery Addendum:** This older handoff is no longer sufficient on its own. The next agent must read `/app/memory/AGENT_START_HERE.md` and `/app/memory/PRD.md` first because they now contain the current Pet OS recovery state, image-style rules, documentation process, and pillar gold-standard priorities.
+
 ---
 
 # PART 1: WHAT WAS DONE THIS SESSION
 
 ## Summary
 This session fixed critical bugs in the `/mira-demo` page to achieve parity with the `Mira OS BETA` widget. The user (Dipali, founder) was frustrated that the demo wasn't matching the quality of other implementations.
+
+---
+
+# MARCH 12, 2026 RECOVERY ADDENDUM (CURRENT WORK)
+
+## What changed after this older handoff
+
+### 1. Documentation recovery
+- `complete-documentation.html` is now rebuilt from the full `/app/memory` set
+- The live-served file is `/app/frontend/public/complete-documentation.html`
+
+### 2. Pillar Pet OS rollout
+- Soul / personalized layers were expanded on Adopt, Emergency, Advisory, Farewell, Learn, and Shop
+- Fit and Dine were corrected to better follow the Learn-page gold-standard section order
+
+### 3. Admin image persistence fixes
+- Product image upload now persists correctly to `products_master`
+- Product and service drafts can upload before save
+- Service Box now reads `image_url || watercolor_image || image`
+
+### 4. Current image-style doctrine
+- Products = realistic photography
+- Services = watercolor illustrations
+- Bundles = watercolor illustrated compositions
+
+### 5. Selective service cleanup already completed
+Watercolor regeneration was completed for:
+- Celebrate services
+- Care services with generic stock images
+- Fit services with generic stock images
+
+### 6. Remaining visual review pillars
+- Stay
+- Travel
+- Farewell
+- Adopt
+- Paperwork
+
+Review before replacing. Preserve good generated art where present.
 
 ---
 
