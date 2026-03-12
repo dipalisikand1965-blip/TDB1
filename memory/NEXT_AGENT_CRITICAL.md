@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://dynamic-cms-platform.preview.emergentagent.com
+https://cms-architecture-lab.preview.emergentagent.com
 
 ---
 

@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://dynamic-cms-platform.preview.emergentagent.com
+**Preview URL:** https://cms-architecture-lab.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

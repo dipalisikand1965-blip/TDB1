@@ -25,7 +25,7 @@ def get_base_url():
                     return line.strip().split('=', 1)[1].rstrip('/')
     except Exception:
         pass
-    return "https://dynamic-cms-platform.preview.emergentagent.com"
+    return "https://cms-architecture-lab.preview.emergentagent.com"
 
 BASE_URL = get_base_url()
 

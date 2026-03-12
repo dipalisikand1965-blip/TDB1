@@ -11,7 +11,7 @@ from datetime import datetime
 from typing import Dict, Any
 
 class DoggyCompanyAPITester:
-    def __init__(self, base_url="https://dynamic-cms-platform.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cms-architecture-lab.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.tests_run = 0

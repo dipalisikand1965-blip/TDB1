@@ -26,6 +26,7 @@ import SoulMadeCollection from '../components/SoulMadeCollection'; // ADDED: Sou
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
+import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import PillarPageLayout from '../components/PillarPageLayout';
@@ -747,6 +748,29 @@ ${stayRequestForm.special_requests || 'None'}
           </div>
         </div>
       )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          3. TOPIC CARDS GRID - Like Learn page's category cards
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      <PillarTopicsGrid
+        pillar="stay"
+        topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.stay}
+        onTopicClick={(topic) => {
+          // Handle topic click - scroll to relevant section or filter
+          const sectionMap = {
+            'boarding': 'boarding',
+            'daycare': 'boarding',
+            'hotels': 'stays',
+            'sitting': 'boarding'
+          };
+          const tabToSet = sectionMap[topic.slug] || 'stays';
+          setActiveTab(tabToSet === 'boarding' ? 'boarding' : 'stays');
+          if (servicesSectionRef.current) {
+            servicesSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }}
+        columns={4}
+      />
 
       {/* ==================== MIRA'S CURATED LAYER - Gold Standard - ALWAYS FIRST ==================== */}
       <section className="py-6 bg-gradient-to-b from-white to-emerald-50/30 border-b border-gray-100">
