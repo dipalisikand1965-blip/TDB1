@@ -22,6 +22,106 @@ def get_db():
     return db
 
 
+
+# ==================== TOPIC PRODUCTS MANAGEMENT ====================
+
+@router.post("/topic-products/seed")
+async def seed_topic_products():
+    """Seed initial topic products - run this once to create the collection"""
+    db = get_db()
+    
+    topics = [
+        {"slug": "puppy-basics", "title": "Puppy Basics", "products": []},
+        {"slug": "breed-guides", "title": "Breed Guides", "products": []},
+        {"slug": "food-feeding", "title": "Food & Feeding", "products": []},
+        {"slug": "grooming", "title": "Grooming", "products": []},
+        {"slug": "behavior", "title": "Behavior", "products": []},
+        {"slug": "training-basics", "title": "Training Basics", "products": []},
+        {"slug": "travel-with-dogs", "title": "Travel with Dogs", "products": []},
+        {"slug": "senior-dog-care", "title": "Senior Dog Care", "products": []},
+        {"slug": "health-basics", "title": "Health Basics", "products": []},
+        {"slug": "rescue-indie-care", "title": "Rescue / Indie Care", "products": []},
+        {"slug": "seasonal-care", "title": "Seasonal Care", "products": []},
+        {"slug": "new-pet-parent-guide", "title": "New Pet Parent Guide", "products": []}
+    ]
+    
+    count = 0
+    for topic in topics:
+        result = await db.topic_products.update_one(
+            {"slug": topic["slug"]},
+            {"$setOnInsert": topic},
+            upsert=True
+        )
+        if result.upserted_id:
+            count += 1
+    
+    return {"seeded": count, "total": len(topics)}
+
+
+@router.get("/topic-products/{topic_slug}")
+async def get_topic_products(topic_slug: str):
+    """Get products assigned to a specific topic"""
+    db = get_db()
+    
+    # Get topic with its products
+    topic = await db.topic_products.find_one({"slug": topic_slug}, {"_id": 0})
+    
+    if not topic:
+        return {"products": [], "topic": topic_slug}
+    
+    product_ids = topic.get("products", [])
+    
+    # Fetch full product details
+    products = []
+    if product_ids:
+        # Get from unified_products or learn products
+        for pid in product_ids:
+            prod = await db.unified_products.find_one({"id": pid}, {"_id": 0})
+            if prod:
+                products.append(prod)
+    
+    # If no products assigned, return curated defaults
+    if not products:
+        # Fallback to learn products
+        res = await db.unified_products.find(
+            {"pillar": "learn", "is_active": {"$ne": False}},
+            {"_id": 0}
+        ).limit(8).to_list(8)
+        products = res if res else []
+    
+    return {"products": products, "topic": topic_slug, "title": topic.get("title", topic_slug)}
+
+
+@router.get("/topics/all")
+async def get_all_topics():
+    """Get all topics for admin management"""
+    db = get_db()
+    topics = await db.topic_products.find({}, {"_id": 0}).to_list(50)
+    return {"topics": topics}
+
+
+@router.post("/topic-products/{topic_slug}")
+async def assign_products_to_topic(topic_slug: str, data: dict):
+    """Assign products to a topic - ADMIN"""
+    db = get_db()
+    
+    product_ids = data.get("product_ids", [])
+    
+    result = await db.topic_products.update_one(
+        {"slug": topic_slug},
+        {
+            "$set": {
+                "products": product_ids,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        },
+        upsert=True
+    )
+    
+    return {"success": True, "topic": topic_slug, "product_count": len(product_ids)}
+
+
+
 # ==================== TRAINING REQUESTS ====================
 
 @router.post("/request")
