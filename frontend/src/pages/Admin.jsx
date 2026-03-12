@@ -200,11 +200,52 @@ const Admin = () => {
   const [syncingShopify, setSyncingShopify] = useState(false);
   const [fixingImages, setFixingImages] = useState(false);
   
+  // AI Image Generation Status
+  const [aiGenStatus, setAiGenStatus] = useState({ 
+    running: false, 
+    completed: 0, 
+    total: 0, 
+    progress: 0, 
+    failed: 0,
+    current_item: '',
+    type: null
+  });
+  const [showAiProgress, setShowAiProgress] = useState(false);
+  
   // Refresh counter for forcing data re-fetch
   const [refreshCounter, setRefreshCounter] = useState(0);
   
   // Collapsible sidebar state for mobile
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+
+  // Check AI Image Generation Status
+  const checkAiGenStatus = async () => {
+    try {
+      const statusRes = await fetch(`${API_URL}/api/ai-images/status`);
+      const status = await statusRes.json();
+      setAiGenStatus(status);
+      return status;
+    } catch (e) {
+      console.error('Failed to check AI status:', e);
+      return null;
+    }
+  };
+  
+  // Poll AI status every 5 seconds when generation is running
+  useEffect(() => {
+    let interval;
+    if (aiGenStatus.running) {
+      interval = setInterval(checkAiGenStatus, 5000);
+    }
+    return () => clearInterval(interval);
+  }, [aiGenStatus.running]);
+  
+  // Check AI status on mount
+  useEffect(() => {
+    if (isAuthenticated) {
+      checkAiGenStatus();
+    }
+  }, [isAuthenticated]);
 
   // Seed All function - uses UPSERT so existing data is preserved
   const seedAllPillars = async () => {
@@ -3191,23 +3232,13 @@ const Admin = () => {
                     const data = await res.json();
                     
                     if (data.status === 'running') {
-                      btn.innerHTML = `🎨 Generating ${type}s...`;
+                      setShowAiProgress(true);
+                      btn.innerHTML = `🎨 Generating...`;
                       
-                      // Poll for status
-                      const pollInterval = setInterval(async () => {
-                        const statusRes = await fetch(`${API_URL}/api/ai-images/status`);
-                        const status = await statusRes.json();
-                        
-                        btn.innerHTML = `🎨 ${status.completed}/${status.total} (${status.progress}%)`;
-                        
-                        if (!status.running) {
-                          clearInterval(pollInterval);
-                          btn.disabled = false;
-                          btn.innerHTML = '🎨 AI IMAGES';
-                          alert(`✅ Done! Generated ${status.completed - status.failed} images.\nFailed: ${status.failed}`);
-                        }
-                      }, 5000);
+                      // Use state-based polling
+                      checkAiGenStatus();
                     }
+                    btn.disabled = false;
                   } catch (e) {
                     console.error(e);
                     alert('Error: ' + e.message);
@@ -3218,8 +3249,94 @@ const Admin = () => {
                 data-testid="ai-gen-btn"
               >
                 <Wand2 className="w-4 h-4 mr-2" />
-                🎨 AI IMAGES
+                {aiGenStatus.running ? `🎨 ${aiGenStatus.completed}/${aiGenStatus.total}` : '🎨 AI IMAGES'}
               </Button>
+              
+              {/* AI Generation Progress Panel */}
+              {(aiGenStatus.running || showAiProgress) && (
+                <div className="fixed bottom-4 right-4 bg-white rounded-xl shadow-2xl border-2 border-purple-300 p-4 w-80 z-50">
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="font-bold text-purple-700 flex items-center gap-2">
+                      <Wand2 className="w-4 h-4" />
+                      AI Image Generation
+                    </h4>
+                    <button 
+                      onClick={async () => {
+                        if (aiGenStatus.running) {
+                          await fetch(`${API_URL}/api/ai-images/stop`, { method: 'POST' });
+                          checkAiGenStatus();
+                        }
+                        setShowAiProgress(false);
+                      }}
+                      className="text-gray-400 hover:text-gray-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  {aiGenStatus.running ? (
+                    <>
+                      <div className="mb-2">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Progress</span>
+                          <span className="font-mono">{aiGenStatus.completed}/{aiGenStatus.total} ({aiGenStatus.progress?.toFixed(1)}%)</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                          <div 
+                            className="bg-gradient-to-r from-pink-500 to-purple-500 h-full rounded-full transition-all duration-500"
+                            style={{ width: `${aiGenStatus.progress || 0}%` }}
+                          />
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-600 mb-2">
+                        <p><strong>Type:</strong> {aiGenStatus.type || 'Products'}</p>
+                        <p className="truncate"><strong>Current:</strong> {aiGenStatus.current_item || 'Starting...'}</p>
+                        <p><strong>Failed:</strong> {aiGenStatus.failed || 0}</p>
+                      </div>
+                      <Button 
+                        size="sm" 
+                        variant="destructive"
+                        onClick={async () => {
+                          await fetch(`${API_URL}/api/ai-images/stop`, { method: 'POST' });
+                          checkAiGenStatus();
+                        }}
+                        className="w-full"
+                      >
+                        Stop Generation
+                      </Button>
+                    </>
+                  ) : (
+                    <div className="text-center py-4">
+                      <Check className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                      <p className="text-sm text-gray-600">Generation complete!</p>
+                      <p className="text-xs text-gray-500">Generated: {aiGenStatus.completed} | Failed: {aiGenStatus.failed}</p>
+                    </div>
+                  )}
+                  
+                  <button 
+                    onClick={checkAiGenStatus}
+                    className="mt-2 text-xs text-purple-600 hover:text-purple-800 w-full text-center"
+                  >
+                    🔄 Refresh Status
+                  </button>
+                </div>
+              )}
+              
+              {/* Check Status Button (when not visible) */}
+              {!showAiProgress && !aiGenStatus.running && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="ml-1 text-xs"
+                  onClick={async () => {
+                    await checkAiGenStatus();
+                    setShowAiProgress(true);
+                  }}
+                  title="Check AI generation status"
+                >
+                  📊
+                </Button>
+              )}
               
               {/* ☁️ SYNC SOUL MADE TO PRODUCTION Button */}
               <Button
