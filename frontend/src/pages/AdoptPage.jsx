@@ -226,6 +226,59 @@ const AdoptPage = () => {
     'Star': Sparkles,
     'CheckCircle': CheckCircle
   };
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // CMS STATE - Loaded from /api/adopt/page-config
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const [cmsConfig, setCmsConfig] = useState({
+    title: "Find your perfect companion",
+    subtitle: 'Adoption, fostering, rescue support & new pet prep',
+    askMira: {
+      enabled: true,
+      placeholder: "Adopt a dog near me... rescue shelters",
+      buttonColor: 'bg-amber-500'
+    },
+    sections: {
+      askMira: { enabled: true },
+      miraPrompts: { enabled: true },
+      adoption: { enabled: true },
+      bundles: { enabled: true },
+      products: { enabled: true },
+      personalized: { enabled: true }
+    }
+  });
+  const [cmsCategories, setCmsCategories] = useState([]);
+  const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  
+  // Personalize title with pet name
+  const pageTitle = cmsConfig.title;
+  
+  const fetchCMSConfig = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/adopt/page-config`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.config && Object.keys(data.config).length > 0) {
+          setCmsConfig(prev => ({ ...prev, ...data.config }));
+        }
+        if (data.categories?.length > 0) {
+          setCmsCategories(data.categories);
+        }
+        if (data.miraPrompts?.length > 0) {
+          setCmsMiraPrompts(data.miraPrompts);
+        }
+        console.log('[AdoptPage] CMS config loaded');
+      }
+    } catch (error) {
+      console.error('[AdoptPage] Failed to fetch CMS config:', error);
+    }
+  };
+
+  // Scroll to top and load CMS on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    fetchCMSConfig();
+  }, []);
 
   // Fetch guided paths from database
   useEffect(() => {

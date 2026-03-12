@@ -552,10 +552,31 @@ const ShopPage = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   
-  // Scroll to top when page loads
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // CMS STATE - Loaded from /api/shop/page-config
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const [cmsConfig, setCmsConfig] = useState({
+    title: "Everything for {petName}",
+    subtitle: 'Essentials, toys, accessories & curated collections',
+    askMira: {
+      enabled: true,
+      placeholder: "Best toys for puppies... essential gear",
+      buttonColor: 'bg-blue-500'
+    },
+    sections: {
+      askMira: { enabled: true },
+      miraPrompts: { enabled: true },
+      categories: { enabled: true },
+      bundles: { enabled: true },
+      products: { enabled: true },
+      conciergeServices: { enabled: true },
+      personalized: { enabled: true }
+    }
+  });
+  const [cmsCategories, setCmsCategories] = useState([]);
+  const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
+  const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
   
   // State
   const [allProducts, setAllProducts] = useState([]);
@@ -570,6 +591,44 @@ const ShopPage = () => {
   const [selectedPet, setSelectedPet] = useState(null);
   const [petSoulData, setPetSoulData] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Personalize title with pet name (use selectedPet which is defined above)
+  const pageTitle = cmsConfig.title?.replace('{petName}', selectedPet?.name || 'your pet') || 
+    `Everything for ${selectedPet?.name || "your pet"}`;
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // FETCH CMS CONFIGURATION
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const fetchCMSConfig = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/shop/page-config`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.config && Object.keys(data.config).length > 0) {
+          setCmsConfig(prev => ({ ...prev, ...data.config }));
+        }
+        if (data.categories?.length > 0) {
+          setCmsCategories(data.categories);
+        }
+        if (data.conciergeServices?.length > 0) {
+          setCmsConciergeServices(data.conciergeServices);
+        }
+        if (data.miraPrompts?.length > 0) {
+          setCmsMiraPrompts(data.miraPrompts);
+        }
+        console.log('[ShopPage] CMS config loaded');
+      }
+    } catch (error) {
+      console.error('[ShopPage] Failed to fetch CMS config:', error);
+    }
+  };
+
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    fetchCMSConfig(); // Load CMS config
+  }, []);
+  
   const [miraChatOpen, setMiraChatOpen] = useState(false);
   
   // Update pillar when URL changes
