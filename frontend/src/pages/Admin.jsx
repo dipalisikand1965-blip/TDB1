@@ -68,6 +68,7 @@ import BundlesManager from '../components/admin/BundlesManager';
 import TopicProductsManager from '../components/admin/TopicProductsManager';
 import LearnPageCMS from '../components/admin/LearnPageCMS';
 import PaperworkPageCMS from '../components/admin/PaperworkPageCMS';
+import PillarPageCMS from '../components/admin/PillarPageCMS';
 import { testimonials as mockTestimonials, faqs as mockFaqs } from '../mockData';
 import { API_URL } from '../utils/api';
 import { getPetPhotoUrl } from '../utils/petAvatar';
@@ -2969,12 +2970,24 @@ const Admin = () => {
             ))}
           </div>
           
-          {/* Page CMS - Full control over pillar pages */}
+          {/* Page CMS - Full control over ALL pillar pages */}
           <div className="flex gap-2 flex-wrap items-center mb-4">
             <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-amber-100 rounded">📄 Page CMS</span>
             {[
-              { id: 'learn-cms', label: 'Learn Page', icon: GraduationCap },
-              { id: 'paperwork-cms', label: 'Paperwork Page', icon: FileText },
+              { id: 'learn-cms', label: 'Learn', icon: GraduationCap },
+              { id: 'paperwork-cms', label: 'Paperwork', icon: FileText },
+              { id: 'care-cms', label: 'Care', icon: Heart },
+              { id: 'fit-cms', label: 'Fit', icon: Dumbbell },
+              { id: 'travel-cms', label: 'Travel', icon: Plane },
+              { id: 'stay-cms', label: 'Stay', icon: Home },
+              { id: 'dine-cms', label: 'Dine', icon: Utensils },
+              { id: 'enjoy-cms', label: 'Enjoy', icon: Sparkles },
+              { id: 'celebrate-cms', label: 'Celebrate', icon: PartyPopper },
+              { id: 'emergency-cms', label: 'Emergency', icon: AlertTriangle },
+              { id: 'advisory-cms', label: 'Advisory', icon: BookOpen },
+              { id: 'farewell-cms', label: 'Farewell', icon: Heart },
+              { id: 'adopt-cms', label: 'Adopt', icon: PawPrint },
+              { id: 'shop-cms', label: 'Shop', icon: ShoppingBag },
             ].map((tab) => (
               <Button
                 key={tab.id}
@@ -3662,6 +3675,20 @@ const Admin = () => {
         {activeTab === 'paperwork-cms' && (
           <PaperworkPageCMS />
         )}
+
+        {/* Universal Pillar CMS Tabs - All 12 remaining pillars */}
+        {activeTab === 'care-cms' && <PillarPageCMS pillar="care" />}
+        {activeTab === 'fit-cms' && <PillarPageCMS pillar="fit" />}
+        {activeTab === 'travel-cms' && <PillarPageCMS pillar="travel" />}
+        {activeTab === 'stay-cms' && <PillarPageCMS pillar="stay" />}
+        {activeTab === 'dine-cms' && <PillarPageCMS pillar="dine" />}
+        {activeTab === 'enjoy-cms' && <PillarPageCMS pillar="enjoy" />}
+        {activeTab === 'celebrate-cms' && <PillarPageCMS pillar="celebrate" />}
+        {activeTab === 'emergency-cms' && <PillarPageCMS pillar="emergency" />}
+        {activeTab === 'advisory-cms' && <PillarPageCMS pillar="advisory" />}
+        {activeTab === 'farewell-cms' && <PillarPageCMS pillar="farewell" />}
+        {activeTab === 'adopt-cms' && <PillarPageCMS pillar="adopt" />}
+        {activeTab === 'shop-cms' && <PillarPageCMS pillar="shop" />}
 
         {/* Service Box Tab */}
         {activeTab === 'service-box' && (
