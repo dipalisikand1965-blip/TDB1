@@ -1167,6 +1167,31 @@ async def update_paperwork_product(product_id: str, product_data: dict):
     return {"message": "Product updated"}
 
 
+@router.post("/admin/products/bulk-update-images")
+async def bulk_update_paperwork_product_images(updates: dict):
+    """Bulk update product images - expects {product_id: image_url, ...}"""
+    db = get_db()
+    
+    image_updates = updates.get("images", {})
+    updated_count = 0
+    
+    for product_id, image_url in image_updates.items():
+        # Update in paperwork_products
+        result1 = await db.paperwork_products.update_one(
+            {"id": product_id}, 
+            {"$set": {"image": image_url, "image_url": image_url, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        # Update in products_master
+        result2 = await db.products_master.update_one(
+            {"id": product_id}, 
+            {"$set": {"image": image_url, "image_url": image_url, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        if result1.matched_count > 0 or result2.matched_count > 0:
+            updated_count += 1
+    
+    return {"message": f"Updated images for {updated_count} products", "updated": updated_count}
+
+
 @router.delete("/admin/products/{product_id}")
 async def delete_paperwork_product(product_id: str):
     """Delete a paperwork product"""
@@ -1324,6 +1349,25 @@ async def update_paperwork_bundle(bundle_id: str, bundle_data: dict):
         raise HTTPException(status_code=404, detail="Bundle not found")
     
     return {"message": "Bundle updated"}
+
+
+@router.post("/admin/bundles/bulk-update-images")
+async def bulk_update_paperwork_bundle_images(updates: dict):
+    """Bulk update bundle images - expects {bundle_id: image_url, ...}"""
+    db = get_db()
+    
+    image_updates = updates.get("images", {})
+    updated_count = 0
+    
+    for bundle_id, image_url in image_updates.items():
+        result = await db.paperwork_bundles.update_one(
+            {"id": bundle_id}, 
+            {"$set": {"image": image_url, "image_url": image_url, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        if result.matched_count > 0:
+            updated_count += 1
+    
+    return {"message": f"Updated images for {updated_count} bundles", "updated": updated_count}
 
 
 @router.delete("/admin/bundles/{bundle_id}")
