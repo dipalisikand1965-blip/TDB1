@@ -396,7 +396,7 @@ const LearnPage = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              What would you like to learn about your dog today?
+              What would you like to learn about {activePet?.name || 'your dog'} today?
             </h1>
           </div>
           
@@ -860,11 +860,9 @@ const LearnPage = () => {
           <div className="text-center mb-8">
             <h2 className="text-xl font-bold text-gray-900 flex items-center justify-center gap-2">
               <Sparkles className="w-5 h-5 text-pink-500" />
-              {typeof selectedPet?.soul_archetype === 'object' 
-                ? (selectedPet?.soul_archetype?.archetype_name || 'Learning')
-                : (selectedPet?.soul_archetype || 'Learning')} Bundles
+              {activePet?.name ? `${activePet.name}'s Training` : 'Training'} Bundles
             </h2>
-            <p className="text-gray-600 mt-1">Complete solutions for your {selectedPet?.breed || 'pet'}</p>
+            <p className="text-gray-600 mt-1">Complete training solutions for {activePet?.name || 'your pet'}</p>
           </div>
           <CuratedBundles pillar="learn" maxBundles={3} showTitle={false} />
         </div>
@@ -873,39 +871,39 @@ const LearnPage = () => {
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* RECOMMENDED FOR PET - Personalized Tags Section (Like Advisory) */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {selectedPet && (
+      {activePet && (
         <div className="py-8 bg-gradient-to-b from-amber-50/50 to-white">
           <div className="max-w-6xl mx-auto px-4 text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
               <img 
-                src={getPetPhotoUrl(selectedPet)} 
-                alt={selectedPet.name}
+                src={getPetPhotoUrl(activePet)} 
+                alt={activePet.name}
                 className="w-12 h-12 rounded-full object-cover border-2 border-amber-300 shadow-md"
               />
               <h2 className="text-2xl font-bold text-gray-900">
-                Recommended for {selectedPet.name}
+                Recommended for {activePet.name}
               </h2>
               <Sparkles className="w-6 h-6 text-amber-500" />
             </div>
-            <p className="text-gray-600 mb-6">Items chosen with {selectedPet.name} in mind</p>
+            <p className="text-gray-600 mb-6">Items chosen with {activePet.name} in mind</p>
             
             {/* Pet Tags - breed, age, archetype */}
             <div className="flex flex-wrap justify-center gap-3">
-              {selectedPet.breed && (
+              {activePet.breed && (
                 <Badge className="bg-white border-2 border-amber-200 text-amber-700 px-4 py-2 text-sm font-medium shadow-sm">
-                  {selectedPet.breed}
+                  {activePet.breed}
                 </Badge>
               )}
-              {selectedPet.age && (
+              {activePet.age && (
                 <Badge className="bg-white border-2 border-amber-200 text-gray-700 px-4 py-2 text-sm font-medium shadow-sm">
-                  {selectedPet.age} years old
+                  {activePet.age} years old
                 </Badge>
               )}
-              {selectedPet.soul_archetype && (
+              {activePet.soul_archetype && (
                 <Badge className="bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-300 text-amber-800 px-4 py-2 text-sm font-semibold shadow-sm">
-                  {typeof selectedPet.soul_archetype === 'object' 
-                    ? (selectedPet.soul_archetype.archetype_name || selectedPet.soul_archetype.primary_archetype || 'Soul')
-                    : selectedPet.soul_archetype}
+                  {typeof activePet.soul_archetype === 'object' 
+                    ? (activePet.soul_archetype.archetype_name || activePet.soul_archetype.primary_archetype || 'Soul')
+                    : activePet.soul_archetype}
                 </Badge>
               )}
             </div>
@@ -921,9 +919,9 @@ const LearnPage = () => {
           <div className="flex items-center gap-2 mb-6">
             <Award className="w-6 h-6 text-amber-600" />
             <h2 className="text-xl font-bold text-gray-900">
-              {selectedPet?.breed 
-                ? `${selectedPet.breed} Training Products for ${selectedPet.name}` 
-                : `Products for ${selectedPet?.name || 'Your Pet'}'s Learning`}
+              {activePet?.breed 
+                ? `${activePet.breed} Training Products for ${activePet.name}` 
+                : `Training Products for ${activePet?.name || 'Your Pet'}`}
             </h2>
           </div>
           
