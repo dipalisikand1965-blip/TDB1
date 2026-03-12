@@ -622,147 +622,397 @@ const CarePage = () => {
     document.getElementById('care-products')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Ask Mira state
+  const [askMiraQuestion, setAskMiraQuestion] = useState('');
+  const [askMiraLoading, setAskMiraLoading] = useState(false);
+  
+  // Handle Ask Mira
+  const handleAskMira = () => {
+    if (!askMiraQuestion.trim()) return;
+    setAskMiraLoading(true);
+    window.dispatchEvent(new CustomEvent('openMiraAI', {
+      detail: { message: askMiraQuestion, context: 'care', pillar: 'care' }
+    }));
+    setTimeout(() => {
+      setAskMiraLoading(false);
+      setAskMiraQuestion('');
+    }, 500);
+  };
+
+  // Care help buckets - like Learn's "How can we help?"
+  const helpBuckets = [
+    {
+      id: 'grooming',
+      title: 'Grooming Help',
+      icon: 'Sparkles',
+      color: 'pink',
+      items: ['Coat brushing tips', 'Bath frequency guide', 'Professional grooming', 'At-home grooming']
+    },
+    {
+      id: 'health',
+      title: 'Health & Wellness',
+      icon: 'Heart',
+      color: 'teal',
+      items: ['Vaccination schedules', 'Preventive care', 'Signs of illness', 'When to see a vet']
+    },
+    {
+      id: 'daily',
+      title: 'Daily Care',
+      icon: 'PawPrint',
+      color: 'amber',
+      items: ['Dental hygiene', 'Nail trimming', 'Ear cleaning', 'Eye care basics']
+    }
+  ];
+
+  // Care guided paths - like Learn's "Guided Learning Paths"
+  const guidedPaths = [
+    { title: 'New Pet Parent Path', topicSlug: 'grooming', steps: ['Basic grooming', 'First vet visit', 'Daily care routine', 'Nutrition basics', 'Exercise needs'], color: 'pink' },
+    { title: 'Grooming Mastery Path', topicSlug: 'grooming', steps: ['Coat type guide', 'Brushing basics', 'Bath routine', 'Nail care', 'Professional tips'], color: 'amber' },
+    { title: 'Senior Pet Care Path', topicSlug: 'health', steps: ['Senior checkups', 'Joint care', 'Diet adjustments', 'Comfort needs', 'Quality of life'], color: 'purple' },
+    { title: 'Preventive Health Path', topicSlug: 'health', steps: ['Vaccination schedule', 'Parasite prevention', 'Dental care', 'Weight management', 'Annual checkups'], color: 'blue' },
+    { title: 'Skin & Coat Path', topicSlug: 'skin', steps: ['Identify skin type', 'Allergy signs', 'Diet for skin', 'Supplements', 'When to see dermatologist'], color: 'green' },
+    { title: 'Emergency Prep Path', topicSlug: 'health', steps: ['First aid kit', 'Emergency contacts', 'Warning signs', 'CPR basics', 'Poison control'], color: 'red' }
+  ];
+
+  // Daily care tips - rotates based on day
+  const dailyCareTips = [
+    { category: 'Grooming', tip: 'Brush your dog\'s coat 2-3 times a week to prevent matting and distribute natural oils. Double-coated breeds need daily brushing during shedding season.', icon: Scissors },
+    { category: 'Dental', tip: 'Brush your dog\'s teeth daily with dog-specific toothpaste. If daily isn\'t possible, aim for at least 3 times a week. Dental chews help but don\'t replace brushing.', icon: Heart },
+    { category: 'Ears', tip: 'Check ears weekly for redness, odor, or discharge. Clean with a vet-approved ear cleaner. Floppy-eared dogs need more frequent checks.', icon: Stethoscope },
+    { category: 'Nails', tip: 'Trim nails every 2-4 weeks. If you hear clicking on the floor, they\'re too long. Use treats to make nail trimming a positive experience.', icon: PawPrint },
+    { category: 'Skin', tip: 'Check your dog\'s skin during brushing for lumps, bumps, or irritation. Early detection of skin issues leads to better outcomes.', icon: Shield },
+    { category: 'Eyes', tip: 'Wipe away eye discharge daily with a damp cloth. Excessive tearing, redness, or cloudiness warrants a vet visit.', icon: AlertCircle },
+    { category: 'Paws', tip: 'Check paws regularly for cuts, cracks, or foreign objects. In winter, wipe paws after walks to remove salt. In summer, avoid hot pavement.', icon: PawPrint }
+  ];
+  
+  const todaysTip = dailyCareTips[new Date().getDay() % dailyCareTips.length];
+
   return (
     <PillarPageLayout
       pillar="care"
       title="Care - Pet Grooming & Wellness | The Doggy Company"
       description="From grooming to training, walks to wellness — we understand your pet's unique needs."
     >
-      {/* Staggered Animation Styles */}
-      <style>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes scaleIn {
-          from {
-            opacity: 0;
-            transform: scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        
-        .animate-fade-in-up {
-          animation: fadeInUp 0.6s ease-out forwards;
-          opacity: 0;
-        }
-        
-        .animate-scale-in {
-          animation: scaleIn 0.5s ease-out forwards;
-          opacity: 0;
-        }
-        
-        .stagger-1 { animation-delay: 0.1s; }
-        .stagger-2 { animation-delay: 0.2s; }
-        .stagger-3 { animation-delay: 0.3s; }
-        .stagger-4 { animation-delay: 0.4s; }
-        .stagger-5 { animation-delay: 0.5s; }
-        .stagger-6 { animation-delay: 0.6s; }
-      `}</style>
-
       {/* ═══════════════════════════════════════════════════════════════════════════════
-          MIRA'S CARE PLAN - THE MAIN SECTION
-          Mira KNOWS what the pet needs. She doesn't ask - she TELLS.
+          1. HERO SECTION: ASK MIRA BAR - CMS DRIVEN (Like Learn)
           ═══════════════════════════════════════════════════════════════════════════════ */}
-      <MiraCarePlan
-        petId={selectedPet?._id || selectedPet?.id}
-        petName={selectedPet?.name}
-        pet={selectedPet}
-        user={user}
-        token={token}
-      />
-
-      {/* ═══════════════════════════════════════════════════════════════════════════════
-          CARE TOPIC CARDS - Quick access to care categories
-          Grooming, Health & Wellness, Dental Care, Skin & Coat
-          ═══════════════════════════════════════════════════════════════════════════════ */}
-      <PillarTopicsGrid
-        pillar="care"
-        topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.care}
-        columns={4}
-      />
-
-      {/* ═══════════════════════════════════════════════════════════════════════════════
-          HANDPICKED FOR [PET] - Curated Concierge Products & Services
-          "Gold Standard" - These are the intelligent picks Mira creates
-          ═══════════════════════════════════════════════════════════════════════════════ */}
-      <div className="py-10 bg-gradient-to-b from-white to-teal-50/30">
-        {/* ═══════════════════════════════════════════════════════════════════════
-            SOUL MADE COLLECTION - Breed-specific personalized products
-            Shows care products with breed artwork (Towel, Robe, Grooming Apron, etc.)
-            ADDED: March 10, 2026
-            ═══════════════════════════════════════════════════════════════════════ */}
-        {selectedPet && (
-          <div className="max-w-6xl mx-auto px-4 mb-8">
-            <SoulMadeCollection
-              pillar="care"
-              maxItems={8}
-              showTitle={true}
-            />
+      {cmsConfig.sections?.askMira?.enabled !== false && (
+        <section className="py-8 px-4 bg-gradient-to-b from-rose-50 to-white">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-6">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900" data-testid="care-page-title">
+                {pageTitle}
+              </h1>
+              <p className="text-gray-600 mt-2">{cmsConfig.subtitle || 'Grooming, health, wellness & daily care essentials'}</p>
+            </div>
+            
+            <div className="max-w-2xl mx-auto">
+              <div className="flex gap-2 items-center bg-white rounded-full border border-gray-200 shadow-sm p-1.5 pl-5">
+                <MessageCircle className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <Input
+                  value={askMiraQuestion}
+                  onChange={(e) => setAskMiraQuestion(e.target.value)}
+                  placeholder={cmsConfig.askMira?.placeholder || "Grooming tips for double coats · when to see a vet · dental care"}
+                  className="flex-1 border-0 focus-visible:ring-0 text-sm placeholder:text-gray-400"
+                  onKeyDown={(e) => e.key === 'Enter' && handleAskMira()}
+                  data-testid="ask-care-input"
+                />
+                <Button
+                  onClick={handleAskMira}
+                  disabled={askMiraLoading || !askMiraQuestion.trim()}
+                  className={`rounded-full ${cmsConfig.askMira?.buttonColor || 'bg-rose-500'} hover:opacity-90 h-10 w-10 p-0`}
+                >
+                  {askMiraLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                </Button>
+              </div>
+            </div>
           </div>
-        )}
+        </section>
+      )}
 
-        {/* ═══════════════════════════════════════════════════════════════════════ */}
-        {/* BREED-SMART RECOMMENDATIONS - Based on breed_matrix */}
-        {/* ═══════════════════════════════════════════════════════════════════════ */}
-        {selectedPet && (
-          <div className="max-w-6xl mx-auto px-4 mb-8">
-            <BreedSmartRecommendations pillar="care" />
-          </div>
-        )}
-
-        {/* ═══════════════════════════════════════════════════════════════════════ */}
-        {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
-        {/* ═══════════════════════════════════════════════════════════════════════ */}
-        <div className="max-w-6xl mx-auto px-4 mb-8">
-          <ArchetypeProducts pillar="care" maxProducts={8} showTitle={true} />
-        </div>
-
-        {/* ═══════════════════════════════════════════════════════════════════════ */}
-        {/* CURATED BUNDLES - Save with handpicked combinations */}
-        {/* ═══════════════════════════════════════════════════════════════════════ */}
-        <div className="max-w-6xl mx-auto px-4 mb-8">
-          <CuratedBundles pillar="care" showTitle={true} />
-        </div>
-        
-        {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
-        <MiraCuratedLayer
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          2. TOPIC BOXES - CMS DRIVEN (Like Learn's 12 topic cards)
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      {cmsConfig.sections?.topics?.enabled !== false && (
+        <PillarTopicsGrid
           pillar="care"
-          activePet={selectedPet}
-          token={token}
-          userEmail={user?.email}
-          isLoading={!userPets.length && !!token}
+          topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.care}
+          columns={4}
         />
-        
-        {/* Personalized Picks Section */}
-        <PersonalizedPicks pillar="care" />
-        
-        {/* Mira's Pillar Picks for Pet */}
-        {selectedPet && (
-          <div className="max-w-6xl mx-auto px-4 mt-6">
-            <PillarPicksSection pillar="care" pet={selectedPet} />
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          3. DAILY CARE TIP - Rotates based on day (Like Learn's Daily Learning Tip)
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-6 px-4 bg-gradient-to-r from-rose-50 to-pink-50">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-start gap-4 bg-white rounded-2xl p-5 border border-rose-100 shadow-sm">
+            <div className="w-12 h-12 rounded-xl bg-rose-100 flex items-center justify-center flex-shrink-0">
+              <todaysTip.icon className="w-6 h-6 text-rose-600" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Badge className="bg-rose-100 text-rose-700 text-xs">Today's Care Tip</Badge>
+                <span className="text-xs text-gray-500">{todaysTip.category}</span>
+              </div>
+              <p className="text-sm text-gray-700 leading-relaxed">{todaysTip.tip}</p>
+            </div>
           </div>
-        )}
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          4. HOW CAN WE HELP? - Action Buckets (Like Learn)
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      {cmsConfig.sections?.helpBuckets?.enabled !== false && (
+        <section className="py-10 px-4 bg-stone-50">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-900">How can we help?</h2>
+              <p className="text-gray-600 mt-1">Choose what matters most to you right now</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {helpBuckets.map((bucket, idx) => {
+                const iconMap = { Sparkles, Heart, PawPrint, Shield, Star, GraduationCap };
+                const BucketIcon = iconMap[bucket.icon] || Heart;
+                const colorMap = {
+                  'pink': { bg: 'bg-gradient-to-br from-pink-50 to-rose-50', border: 'border-pink-100', icon: 'bg-pink-100', iconColor: 'text-pink-600', dot: 'bg-pink-400' },
+                  'teal': { bg: 'bg-gradient-to-br from-teal-50 to-emerald-50', border: 'border-teal-100', icon: 'bg-teal-100', iconColor: 'text-teal-600', dot: 'bg-teal-400' },
+                  'amber': { bg: 'bg-gradient-to-br from-amber-50 to-orange-50', border: 'border-amber-100', icon: 'bg-amber-100', iconColor: 'text-amber-600', dot: 'bg-amber-400' }
+                };
+                const colors = colorMap[bucket.color] || colorMap.teal;
+                
+                return (
+                  <Card 
+                    key={bucket.id || idx}
+                    className={`p-5 ${colors.bg} ${colors.border} rounded-2xl cursor-pointer hover:shadow-md transition-shadow`}
+                    onClick={() => {
+                      window.dispatchEvent(new CustomEvent('openMiraAI', {
+                        detail: { message: bucket.items?.join(', ') || bucket.title, context: 'care', pillar: 'care' }
+                      }));
+                    }}
+                    data-testid={`help-bucket-${idx}`}
+                  >
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className={`w-10 h-10 rounded-xl ${colors.icon} flex items-center justify-center`}>
+                        <BucketIcon className={`w-5 h-5 ${colors.iconColor}`} />
+                      </div>
+                      <h3 className="font-semibold text-gray-900">{bucket.title}</h3>
+                    </div>
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      {(bucket.items || []).map((item, itemIdx) => (
+                        <li key={itemIdx} className="flex items-center gap-2">
+                          <span className={`w-1 h-1 ${colors.dot} rounded-full`} />{item}
+                        </li>
+                      ))}
+                    </ul>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          5. CARE FOR MY DOG - Personalized Section (Like Learn's "Learn for My Dog")
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      {selectedPet && (
+        <div id="my-dog" className="py-12 bg-gradient-to-br from-pink-50/50 via-white to-rose-50/50">
+          <div className="max-w-6xl mx-auto px-4">
+            <Card className="p-6 md:p-8 bg-white/95 backdrop-blur rounded-3xl border-0 shadow-xl overflow-hidden">
+              <div className="flex flex-col md:flex-row gap-6 items-start">
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-1" data-testid="care-for-pet-heading">
+                    Care for {selectedPet.name}
+                  </h2>
+                  <p className="text-gray-500 text-sm mb-6">
+                    Personalized care advice for your {selectedPet.breed || 'pet'}
+                  </p>
+                  
+                  <MiraCarePlan
+                    petId={selectedPet?._id || selectedPet?.id}
+                    petName={selectedPet?.name}
+                    pet={selectedPet}
+                    user={user}
+                    token={token}
+                    compact={true}
+                  />
+                </div>
+                
+                <div className="w-full md:w-72 flex-shrink-0">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-pink-200 via-rose-200 to-orange-200 rounded-full blur-3xl opacity-40" />
+                    <img 
+                      src={getPetPhotoUrl(selectedPet)}
+                      alt={selectedPet.name}
+                      className="relative w-full aspect-square object-cover rounded-full border-4 border-white shadow-lg"
+                      style={{ filter: 'saturate(0.9) contrast(1.05)' }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          6. GUIDED CARE PATHS - Step-by-step journeys (Like Learn's Guided Learning Paths)
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <div id="guided-paths" className="py-12 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-rose-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <ClipboardList className="w-4 h-4" />
+              Step-by-Step Journeys
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Guided Care Paths</h2>
+            <p className="text-gray-600 mt-2">Follow a structured journey tailored to your needs</p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {guidedPaths.map((path, idx) => (
+              <Card 
+                key={idx}
+                className="p-5 cursor-pointer hover:shadow-lg transition-all group"
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('openMiraAI', {
+                    detail: { message: `Guide me through ${path.title}`, context: 'care', pillar: 'care' }
+                  }));
+                }}
+                data-testid={`guided-path-${idx}`}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-${path.color}-100`}>
+                    <ClipboardList className={`w-5 h-5 text-${path.color}-600`} />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base">{path.title}</h3>
+                </div>
+                <ul className="space-y-1.5">
+                  {path.steps.slice(0, 4).map((step, stepIdx) => (
+                    <li key={stepIdx} className="flex items-center gap-2 text-xs text-gray-600">
+                      <div className={`w-1.5 h-1.5 rounded-full bg-${path.color}-400`}></div>
+                      {step}
+                    </li>
+                  ))}
+                  {path.steps.length > 4 && (
+                    <li className="text-xs text-rose-600">+{path.steps.length - 4} more steps</li>
+                  )}
+                </ul>
+                <div className="mt-3 pt-3 border-t flex items-center justify-between">
+                  <span className="text-xs text-gray-500">{path.steps.length} steps</span>
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-rose-600 transition-colors" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
-          ALL CARE SERVICES - For browsing (secondary to Mira's recommendations)
+          7. CURATED BUNDLES - Save with handpicked combinations (Like Learn)
           ═══════════════════════════════════════════════════════════════════════════════ */}
-      <div ref={servicesSectionRef} id="services" className="py-10 sm:py-12 bg-white">
+      <div className="py-12 bg-gradient-to-br from-rose-50 via-white to-pink-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">All Care Services</h2>
-            <p className="text-gray-600">Browse all services or let Mira guide you above</p>
+            <h2 className="text-xl font-bold text-gray-900 flex items-center justify-center gap-2">
+              <Sparkles className="w-5 h-5 text-rose-500" />
+              {selectedPet?.name ? `${selectedPet.name}'s Care` : 'Care'} Bundles
+            </h2>
+            <p className="text-gray-600 mt-1">Complete care solutions for {selectedPet?.name || 'your pet'}</p>
+          </div>
+          <CuratedBundles pillar="care" maxBundles={3} showTitle={false} />
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          8. CARE PRODUCTS SECTION - Like Learn's Training Products
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <section id="care-products" className="py-8 px-4 bg-gradient-to-b from-pink-50 to-white" data-testid="care-products-section">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-2 mb-6">
+            <Package className="w-6 h-6 text-rose-600" />
+            <h2 className="text-xl font-bold text-gray-900">
+              {selectedPet?.breed 
+                ? `${selectedPet.breed} Care Products for ${selectedPet.name}` 
+                : `Care Products for ${selectedPet?.name || 'Your Pet'}`}
+            </h2>
+          </div>
+          
+          {/* Soul Made Collection */}
+          {selectedPet && (
+            <div className="mb-8">
+              <SoulMadeCollection pillar="care" maxItems={8} showTitle={true} />
+            </div>
+          )}
+          
+          {/* Breed-Smart Recommendations */}
+          {selectedPet && (
+            <div className="mb-8">
+              <BreedSmartRecommendations pillar="care" />
+            </div>
+          )}
+          
+          {/* Archetype Products */}
+          <div className="mb-8">
+            <ArchetypeProducts pillar="care" maxProducts={8} showTitle={true} />
+          </div>
+          
+          <div className="mt-6 text-center">
+            <Button 
+              onClick={() => navigate('/shop?pillar=care')}
+              variant="outline"
+              className="border-rose-300 text-rose-700 hover:bg-rose-50"
+            >
+              View All Care Products <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          9. PERSONALIZED PICKS - Fun Picks for {Pet} (Like Learn)
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      {cmsConfig.sections?.personalized?.enabled !== false && (
+        <section className="py-8 px-4 bg-gradient-to-b from-white to-rose-50/30" data-testid="care-personalized-picks">
+          <div className="max-w-6xl mx-auto">
+            <PersonalizedPicks pillar="care" maxProducts={8} />
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          10. MIRA CURATED LAYER - Unified Concierge Recommendations
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <MiraCuratedLayer
+        pillar="care"
+        activePet={selectedPet}
+        token={token}
+        userEmail={user?.email}
+        isLoading={!userPets.length && !!token}
+      />
+      
+      {/* Pillar Picks Section */}
+      {selectedPet && (
+        <div className="max-w-6xl mx-auto px-4 py-6">
+          <PillarPicksSection pillar="care" pet={selectedPet} />
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          11. ALL CARE SERVICES - Services That Help (Like Learn)
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <div ref={servicesSectionRef} id="services" className="py-10 sm:py-12 bg-gradient-to-br from-indigo-50 to-blue-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-rose-100 text-rose-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <Heart className="w-4 h-4" />
+              Services That Help
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Expert Care Support</h2>
+            <p className="text-gray-600 mt-2">Professional groomers, vets, and care specialists</p>
           </div>
           
           {/* Clean 4x2 Grid of Care Services */}
@@ -796,7 +1046,7 @@ const CarePage = () => {
                         setShowBookingModal(true);
                     }
                   }}
-                  className={`group p-4 sm:p-5 bg-white rounded-2xl border-2 border-gray-100 hover:border-teal-200 hover:shadow-lg active:scale-[0.98] transition-all duration-300 text-left`}
+                  className={`group p-4 sm:p-5 bg-white/70 hover:bg-white rounded-2xl border-2 border-gray-100 hover:border-rose-200 hover:shadow-lg active:scale-[0.98] transition-all duration-300 text-left`}
                   data-testid={`care-service-${type.id}`}
                 >
                   <div className={`w-10 h-10 sm:w-12 sm:h-12 mb-3 rounded-xl bg-gradient-to-br ${type.color} flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
