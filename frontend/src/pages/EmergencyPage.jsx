@@ -19,6 +19,7 @@ import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
+import { PillarDailyTip, PillarHelpBuckets, PillarGuidedPaths } from '../components/PillarGoldSections';
 import { ChecklistDownloadButton } from '../components/checklists';
 // Emergency Components
 import { 
@@ -165,6 +166,20 @@ const EmergencyPage = () => {
   });
   const [cmsCategories, setCmsCategories] = useState([]);
   const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  const [cmsHelpBuckets, setCmsHelpBuckets] = useState([]);
+  const [cmsDailyTips, setCmsDailyTips] = useState([]);
+  const [cmsGuidedPaths, setCmsGuidedPaths] = useState([]);
+  const [askMiraQuestion, setAskMiraQuestion] = useState('');
+  const [askMiraLoading, setAskMiraLoading] = useState(false);
+
+  const handleAskMira = () => {
+    if (!askMiraQuestion.trim()) return;
+    setAskMiraLoading(true);
+    window.dispatchEvent(new CustomEvent('openMiraAI', {
+      detail: { message: askMiraQuestion, context: 'emergency', pillar: 'emergency' }
+    }));
+    setTimeout(() => { setAskMiraLoading(false); setAskMiraQuestion(''); }, 500);
+  };
   
   // Personalize title with pet name
   const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet') || 
@@ -183,6 +198,15 @@ const EmergencyPage = () => {
         }
         if (data.miraPrompts?.length > 0) {
           setCmsMiraPrompts(data.miraPrompts);
+        }
+        if (data.helpBuckets?.length > 0) {
+          setCmsHelpBuckets(data.helpBuckets);
+        }
+        if (data.dailyTips?.length > 0) {
+          setCmsDailyTips(data.dailyTips);
+        }
+        if (data.guidedPaths?.length > 0) {
+          setCmsGuidedPaths(data.guidedPaths);
         }
         console.log('[EmergencyPage] CMS config loaded');
       }
@@ -387,14 +411,87 @@ const EmergencyPage = () => {
       title="Emergency - 24/7 Pet Support | The Doggy Company"
       description="Immediate help for lost pets, medical emergencies, accidents, and more. Our team and partner network are ready to respond 24/7."
     >
+      {/* ══════════════════════════════════════════════════════════════════
+          1. ASK MIRA BAR - GOLD STANDARD (Must be first!)
+          ══════════════════════════════════════════════════════════════════ */}
+      {cmsConfig.sections?.askMira?.enabled !== false && (
+        <section className="py-8 px-4 bg-gradient-to-b from-red-50 to-white">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-6">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900" data-testid="emergency-page-title">
+                {pageTitle}
+              </h1>
+              <p className="text-gray-600 mt-2">{cmsConfig.subtitle || '24/7 emergency vets, first aid & urgent care resources'}</p>
+            </div>
+            <div className="max-w-2xl mx-auto">
+              <div className="flex gap-2 items-center bg-white rounded-full border border-red-200 shadow-sm p-1.5 pl-5">
+                <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <Input
+                  value={askMiraQuestion}
+                  onChange={(e) => setAskMiraQuestion(e.target.value)}
+                  placeholder={cmsConfig.askMira?.placeholder || "Emergency vet near me... poison control... first aid for dogs"}
+                  className="flex-1 border-0 focus-visible:ring-0 text-sm placeholder:text-gray-400"
+                  onKeyDown={(e) => e.key === 'Enter' && handleAskMira()}
+                  data-testid="ask-emergency-input"
+                />
+                <Button
+                  onClick={handleAskMira}
+                  disabled={askMiraLoading || !askMiraQuestion.trim()}
+                  className="rounded-full bg-red-500 hover:opacity-90 h-10 w-10 p-0"
+                >
+                  {askMiraLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ═══════════════════════════════════════════════════════════════════════════════
-          EMERGENCY TOPIC CARDS - Quick access to emergency categories
+          2. EMERGENCY TOPIC CARDS - Quick access to emergency categories
           Emergency Vet, First Aid, Poison Control, Lost Pet
           ═══════════════════════════════════════════════════════════════════════════════ */}
       <PillarTopicsGrid
         pillar="emergency"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.emergency}
         columns={4}
+      />
+
+      {/* ════════════════════════════════════════════════════════════════════
+          3. DAILY EMERGENCY TIP + 4. HOW CAN WE HELP + 5. GUIDED PATHS
+          Gold Standard sections
+          ════════════════════════════════════════════════════════════════════ */}
+      <PillarDailyTip
+        tips={cmsDailyTips.length > 0 ? cmsDailyTips : [
+          { category: 'Preparedness', tip: 'Save your nearest emergency vet\'s number in your phone RIGHT NOW. In a crisis, you won\'t have time to search for it.', icon: 'Phone', color: 'from-red-500 to-rose-600' },
+          { category: 'First Aid', tip: 'Keep a pet first aid kit at home. It should include gauze, hydrogen peroxide, a muzzle, and your vet\'s number.', icon: 'Shield', color: 'from-rose-500 to-red-600' },
+          { category: 'Toxins', tip: 'The most common household toxins for dogs: grapes, chocolate, xylitol (gum), onions, and certain plants. Know your risk.', icon: 'AlertCircle', color: 'from-red-600 to-red-700' },
+          { category: 'Lost Pet', tip: 'A microchip is the single most effective way to be reunited with a lost pet. Ensure the registration is current with your address.', icon: 'MapPin', color: 'from-orange-500 to-red-500' },
+          { category: 'Choking', tip: 'If your dog is choking but conscious, do NOT reach into its mouth. Keep it calm and rush to the emergency vet immediately.', icon: 'Heart', color: 'from-red-500 to-pink-600' },
+          { category: 'Heatstroke', tip: 'Signs of heatstroke: excessive panting, glazed eyes, collapse. Cool with water (not ice!) and rush to vet. Never leave pets in cars.', icon: 'AlertCircle', color: 'from-amber-500 to-red-500' },
+          { category: 'Plan Ahead', tip: 'Create a pet emergency plan for natural disasters. Know the nearest pet-friendly shelter and keep 3 days of food in your emergency kit.', icon: 'Clipboard', color: 'from-red-400 to-rose-500' },
+        ]}
+        tipLabel="Emergency Preparedness Tip"
+      />
+
+      <PillarHelpBuckets
+        pillar="emergency"
+        buckets={cmsHelpBuckets.length > 0 ? cmsHelpBuckets : [
+          { id: 'find_vet', title: 'Find Emergency Vet', icon: 'MapPin', color: 'red', items: ['24/7 vet clinics', 'Nearest vet finder', 'Poison control hotline', 'After-hours care'] },
+          { id: 'first_aid', title: 'First Aid Help', icon: 'Heart', color: 'rose', items: ['Injury assessment', 'First aid steps', 'Choking response', 'CPR guide'] },
+          { id: 'lost_pet', title: 'Lost Pet Alert', icon: 'Search', color: 'orange', items: ['Post a lost notice', 'Notify shelters', 'Social media alert', 'Microchip trace'] },
+        ]}
+      />
+
+      <PillarGuidedPaths
+        pillar="emergency"
+        heading="Emergency Response Paths"
+        paths={cmsGuidedPaths.length > 0 ? cmsGuidedPaths : [
+          { title: 'Injury Response', topicSlug: 'injury', steps: ['Stay calm', 'Assess injury', 'Control bleeding', 'Stabilise pet', 'Rush to vet'], color: 'red' },
+          { title: 'Poisoning Response', topicSlug: 'poison', steps: ['Identify toxin', 'Call poison control', 'Do NOT induce vomit (without guidance)', 'Collect evidence', 'Rush to vet'], color: 'rose' },
+          { title: 'Lost Pet Response', topicSlug: 'lost', steps: ['Search immediate area', 'Post online', 'Contact shelters', 'Put up posters', 'Check microchip'], color: 'orange' },
+          { title: 'Build Emergency Kit', topicSlug: 'prep', steps: ['Vet contacts', 'First aid supplies', '3-day food supply', 'Pet ID & records', 'Emergency carrier'], color: 'amber' },
+        ]}
       />
 
       {/* ═══════════════════════════════════════════════════════════════════════════

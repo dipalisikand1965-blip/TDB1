@@ -296,4 +296,4 @@ Password: test123
 
 **Audit Status:** COMPLETE
 **Generated:** February 9, 2026
-**Preview URL:** https://watercolor-makeover.preview.emergentagent.com
+**Preview URL:** https://pillar-audit-1.preview.emergentagent.com

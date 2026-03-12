@@ -41,6 +41,7 @@ import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
+import { PillarDailyTip, PillarHelpBuckets } from '../components/PillarGoldSections';
 import NearbyAdvisoryServices from '../components/advisory/NearbyAdvisoryServices';
 import AdvisoryProductsGrid from '../components/advisory/AdvisoryProductsGrid';
 import {
@@ -353,6 +354,8 @@ const AdvisoryPage = () => {
   });
   const [cmsCategories, setCmsCategories] = useState([]);
   const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  const [cmsHelpBuckets, setCmsHelpBuckets] = useState([]);
+  const [cmsDailyTips, setCmsDailyTips] = useState([]);
   
   // Personalize title with pet name
   const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet') || 
@@ -371,6 +374,12 @@ const AdvisoryPage = () => {
         }
         if (data.miraPrompts?.length > 0) {
           setCmsMiraPrompts(data.miraPrompts);
+        }
+        if (data.helpBuckets?.length > 0) {
+          setCmsHelpBuckets(data.helpBuckets);
+        }
+        if (data.dailyTips?.length > 0) {
+          setCmsDailyTips(data.dailyTips);
         }
         console.log('[AdvisoryPage] CMS config loaded');
       }
@@ -793,6 +802,32 @@ const AdvisoryPage = () => {
         pillar="advisory"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.advisory}
         columns={4}
+      />
+
+      {/* ════════════════════════════════════════════════════════════════════
+          3. DAILY ADVISORY TIP + 4. HOW CAN WE HELP
+          Gold Standard sections (Guided Paths already implemented below)
+          ════════════════════════════════════════════════════════════════════ */}
+      <PillarDailyTip
+        tips={cmsDailyTips.length > 0 ? cmsDailyTips : [
+          { category: 'Nutrition', tip: 'Reading dog food labels is a skill. Meat should be the first ingredient. Avoid foods where corn, wheat, or by-products are listed first.', icon: 'Heart', color: 'from-teal-500 to-cyan-500' },
+          { category: 'Behaviour', tip: 'Reactive behaviour on a leash is usually fear-based, not aggression. The fix is desensitisation and counter-conditioning, not punishment.', icon: 'Brain', color: 'from-violet-500 to-teal-500' },
+          { category: 'Training', tip: 'Consistency beats intensity in dog training. 5 minutes every day produces better results than 1 hour once a week.', icon: 'Award', color: 'from-teal-600 to-emerald-500' },
+          { category: 'Senior Care', tip: 'Cognitive decline in older dogs is real. Mental stimulation — sniff walks, puzzle feeders — can slow the progression significantly.', icon: 'Star', color: 'from-cyan-500 to-teal-500' },
+          { category: 'Health Screening', tip: 'Annual bloodwork for dogs over 7 years old is one of the best investments you can make. It catches hidden issues before they become crises.', icon: 'Shield', color: 'from-emerald-500 to-teal-600' },
+          { category: 'Grooming', tip: 'The skin is the largest organ. Regular grooming isn\'t vanity — it\'s health monitoring. You\'ll notice lumps, rashes, and parasites early.', icon: 'Sparkles', color: 'from-teal-400 to-cyan-500' },
+          { category: 'Vet Visits', tip: 'Prepare questions before every vet visit. Write them down. You\'ll forget 40% of your concerns once you\'re in the room.', icon: 'Clipboard', color: 'from-cyan-600 to-teal-600' },
+        ]}
+        tipLabel="Today's Advisory Tip"
+      />
+
+      <PillarHelpBuckets
+        pillar="advisory"
+        buckets={cmsHelpBuckets.length > 0 ? cmsHelpBuckets : [
+          { id: 'nutrition', title: 'Nutrition Advice', icon: 'Heart', color: 'teal', items: ['Diet assessment', 'Food label reading', 'Allergy guidance', 'Weight management'] },
+          { id: 'behaviour', title: 'Behaviour Help', icon: 'Brain', color: 'violet', items: ['Anxiety support', 'Aggression advice', 'Training methods', 'Fear assessment'] },
+          { id: 'health', title: 'Health Guidance', icon: 'Shield', color: 'cyan', items: ['Symptom checking', 'Preventive care', 'Senior health', 'Breed-specific risks'] },
+        ]}
       />
 
       {/* ═══════════════════════════════════════════════════════════════════════════
