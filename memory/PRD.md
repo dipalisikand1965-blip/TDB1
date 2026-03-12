@@ -1,9 +1,17 @@
 # The Doggy Company - MASTER DOCUMENTATION
-## Last Updated: December 12, 2025 | Version 12.0.0
+## Last Updated: December 12, 2025 | Version 12.1.0
 
 ---
 
 # CRITICAL: READ THIS ENTIRE DOCUMENT BEFORE MAKING ANY CHANGES
+
+---
+
+## RECENT CHANGES (Dec 12, 2025)
+- **ArchetypeProducts component now has product modals** - "Party picks for {pet}" section now opens full product detail modal on click
+- **Paperwork products updated** - 14 unique AI-generated watercolor images for all products
+- **Paperwork bundles updated** - 9 unique contextual images for all bundles
+- **Added bulk image update endpoints** - POST `/api/paperwork/admin/products/bulk-update-images` and `/api/paperwork/admin/bundles/bulk-update-images`
 
 ---
 
@@ -561,11 +569,11 @@ curl -X POST "https://yourapp.com/api/care/page-config" \
 ```
 /app/frontend/src/pages/
 ├── LearnPage.jsx              # DONE - CMS-driven
-├── PaperworkPage.jsx          # IN PROGRESS
+├── PaperworkPage.jsx          # DONE - CMS-driven with product modals
+├── StayPage.jsx               # DONE - CMS-driven
 ├── CarePage.jsx               # TODO
 ├── FitPage.jsx                # TODO
 ├── TravelPage.jsx             # TODO
-├── StayPage.jsx               # TODO
 ├── DinePage.jsx               # TODO
 ├── EnjoyPage.jsx              # TODO
 ├── CelebratePage.jsx          # TODO
@@ -574,6 +582,18 @@ curl -X POST "https://yourapp.com/api/care/page-config" \
 ├── FarewellPage.jsx           # TODO
 ├── AdoptPage.jsx              # TODO
 └── ShopPage.jsx               # TODO
+```
+
+## 7.3 Key Product Display Components (All have Product Modals)
+
+```
+/app/frontend/src/components/
+├── PersonalizedPicks.jsx      # "Fun picks for {pet}" - HAS product modal
+├── ArchetypeProducts.jsx      # "Party picks for {pet}" - HAS product modal (FIXED)
+├── SoulMadeCollection.jsx     # Soul-based products - HAS product modal
+├── BreedSmartRecommendations.jsx # Breed-specific products
+├── CuratedBundles.jsx         # Bundle cards
+└── ProductCard.jsx            # Contains ProductDetailModal (shared)
 ```
 
 ## 7.3 Backend
