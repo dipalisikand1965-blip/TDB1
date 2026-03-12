@@ -904,25 +904,6 @@ ${stayRequestForm.special_requests || 'None'}
         </div>
       </div>
 
-      {/* ==================== CONVERSATIONAL ENTRY + QUICK WIN ==================== */}
-      <div className="py-10 bg-gradient-to-b from-gray-50/50 to-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-6 items-stretch">
-            <ConversationalEntry 
-              pillar="stay"
-              petName={userPets[0]?.name}
-            />
-            <QuickWinTip
-              pillar="stay"
-              petName={userPets[0]?.name}
-              petBreed={userPets[0]?.breed}
-              petAge={userPets[0]?.age}
-              onActionClick={handleChecklistAction}
-            />
-          </div>
-        </div>
-      </div>
-
       {/* ==================== CONCIERGE® STAY EXPERIENCES - COMPACT ==================== */}
       <div className="py-10 bg-gradient-to-b from-white to-emerald-50/30">
         <div className="max-w-7xl mx-auto px-4">
