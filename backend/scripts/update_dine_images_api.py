@@ -5,7 +5,7 @@ Update Dine products with generated images via API
 import requests
 import json
 
-API_URL = "https://learn-page-studio.preview.emergentagent.com"
+API_URL = "https://dynamic-cms-platform.preview.emergentagent.com"
 AUTH = ("aditya", "lola4304")
 
 # Generated images

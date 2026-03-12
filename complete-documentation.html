@@ -1,2482 +1,746 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Doggy Company - Complete Technical Documentation</title>
-    <style>
-        :root {
-            --purple: #9333ea;
-            --pink: #ec4899;
-            --dark: #1f2937;
-            --light: #f9fafb;
-            --green: #10b981;
-            --amber: #f59e0b;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
-        .header { background: linear-gradient(135deg, var(--purple), var(--pink)); color: white; padding: 40px 20px; text-align: center; }
-        .header h1 { font-size: 2.5rem; margin-bottom: 10px; }
-        .header p { opacity: 0.9; font-size: 1.1rem; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .section { background: white; border-radius: 12px; padding: 30px; margin: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .section h2 { color: var(--purple); border-bottom: 2px solid var(--purple); padding-bottom: 10px; margin-bottom: 20px; }
-        .section h3 { color: var(--dark); margin: 20px 0 10px; }
-        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: var(--light); font-weight: 600; }
-        code { background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-family: 'Monaco', 'Consolas', monospace; font-size: 0.9em; }
-        pre { background: var(--dark); color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-        pre code { background: transparent; color: inherit; }
-        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600; }
-        .badge-success { background: #dcfce7; color: #166534; }
-        .badge-warning { background: #fef3c7; color: #92400e; }
-        .badge-info { background: #dbeafe; color: #1e40af; }
-        .badge-live { background: #dcfce7; color: #166534; }
-        .badge-new { background: #fce7f3; color: #be185d; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: var(--light); padding: 20px; border-radius: 8px; border-left: 4px solid var(--purple); }
-        .card h4 { color: var(--purple); margin-bottom: 10px; }
-        ul { margin-left: 20px; }
-        li { margin: 8px 0; }
-        .toc { background: var(--light); padding: 20px; border-radius: 8px; }
-        .toc a { color: var(--purple); text-decoration: none; display: block; padding: 5px 0; }
-        .toc a:hover { text-decoration: underline; }
-        .highlight { background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 15px; border-radius: 8px; margin: 15px 0; }
-        .success-box { background: #dcfce7; border-left: 4px solid var(--green); padding: 15px; border-radius: 8px; margin: 15px 0; }
-        .warning-box { background: #fef3c7; border-left: 4px solid var(--amber); padding: 15px; border-radius: 8px; margin: 15px 0; }
-        .hero-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
-        .stat-card { background: linear-gradient(135deg, var(--purple), var(--pink)); color: white; padding: 20px; border-radius: 12px; text-align: center; }
-        .stat-card .number { font-size: 2.5rem; font-weight: bold; }
-        .stat-card .label { opacity: 0.9; font-size: 0.9rem; }
-        footer { background: var(--dark); color: white; text-align: center; padding: 30px; margin-top: 40px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Doggy Company - 14-Pillar CMS Architecture Documentation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .code-block { background: #1e1e1e; color: #d4d4d4; }
+    pre { white-space: pre-wrap; word-wrap: break-word; }
+    .sidebar { position: sticky; top: 2rem; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .nav-link.active { background: #eef2ff; color: #4f46e5; font-weight: 600; }
+    .pillar-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; }
+  </style>
 </head>
-<body>
-    <div class="header">
-        <h1>The Doggy Company</h1>
-        <p>Mira-OS: The Pet Life Operating System</p>
-        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: December 12, 2025 | Version 11.0.0 - ALL 14 PILLAR CMS COMPLETE</p>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="gradient-bg text-white py-16">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex items-center gap-4 mb-4">
+        <span class="text-4xl">&#128054;</span>
+        <h1 class="text-4xl font-bold">The Doggy Company</h1>
+      </div>
+      <h2 class="text-2xl font-light opacity-90 mb-6">14-Pillar CMS Architecture Documentation</h2>
+      <div class="flex flex-wrap gap-4">
+        <span class="bg-white/20 px-4 py-2 rounded-full text-sm font-medium">Version 12.0.0</span>
+        <span class="bg-white/20 px-4 py-2 rounded-full text-sm font-medium">Last Updated: December 2025</span>
+      </div>
     </div>
+  </header>
 
-    <div class="container">
-        <!-- ═══════════════════════════════════════════════════════════════════════════════════════ -->
-        <!-- ALL 14 PILLAR CMS SYSTEMS COMPLETE -->
-        <!-- ═══════════════════════════════════════════════════════════════════════════════════════ -->
-        <div class="section" style="background: linear-gradient(135deg, #dcfce7, #bbf7d0); border: 3px solid #22c55e;">
-            <h2 style="color: #166534; border-color: #22c55e;">✅ ALL 14 PILLAR CMS SYSTEMS - COMPLETE</h2>
+  <!-- Navigation Tabs -->
+  <nav class="bg-white border-b sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex gap-1 overflow-x-auto py-3">
+        <button onclick="showTab('overview')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition whitespace-nowrap active">Overview</button>
+        <button onclick="showTab('architecture')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition whitespace-nowrap">Architecture</button>
+        <button onclick="showTab('components')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition whitespace-nowrap">Components</button>
+        <button onclick="showTab('api')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition whitespace-nowrap">API Reference</button>
+        <button onclick="showTab('implementation')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition whitespace-nowrap">Implementation Guide</button>
+        <button onclick="showTab('status')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition whitespace-nowrap">Status</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-6 py-12">
+    <!-- Overview Tab -->
+    <div id="overview" class="tab-content active">
+      <div class="grid lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+          <!-- What is Page CMS -->
+          <section class="bg-white rounded-2xl p-8 shadow-sm border">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">What is the Page CMS?</h2>
+            <p class="text-gray-600 mb-6">
+              The Page CMS is a <strong>centralized, database-driven content management system</strong> that allows admins to control 
+              <strong>every aspect</strong> of all 14 pillar pages from the Admin Panel without writing code.
+            </p>
             
-            <div class="success-box">
-                <strong>🎉 MILESTONE ACHIEVED:</strong> Every pillar now has its own CMS admin panel. 
-                Admins can control ALL content, products, services, and personalization from the admin panel.
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-100">
+                <div class="text-green-600 font-semibold mb-2">&#10004; What it does</div>
+                <ul class="text-sm text-gray-600 space-y-1">
+                  <li>- NO hardcoded content</li>
+                  <li>- Admins control everything</li>
+                  <li>- Consistent 14-pillar structure</li>
+                  <li>- Dynamic page rendering</li>
+                  <li>- Personalization preserved</li>
+                </ul>
+              </div>
+              <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100">
+                <div class="text-blue-600 font-semibold mb-2">&#128736; Key Benefits</div>
+                <ul class="text-sm text-gray-600 space-y-1">
+                  <li>- Single source of truth</li>
+                  <li>- Reusable components</li>
+                  <li>- Scalable architecture</li>
+                  <li>- Easy content updates</li>
+                  <li>- No code deployments needed</li>
+                </ul>
+              </div>
             </div>
+          </section>
 
-            <h3>Universal CMS Architecture</h3>
-            <table>
-                <tr><th>Pillar</th><th>CMS Type</th><th>Admin Tab</th><th>Categories</th></tr>
-                <tr><td>Learn</td><td>Custom (LearnPageCMS.jsx)</td><td>learn-cms</td><td>12 Topics</td></tr>
-                <tr><td>Paperwork</td><td>Custom (PaperworkPageCMS.jsx)</td><td>paperwork-cms</td><td>6 Doc Types</td></tr>
-                <tr><td>Care</td><td>Universal (PillarPageCMS.jsx)</td><td>care-cms</td><td>6 Categories</td></tr>
-                <tr><td>Fit</td><td>Universal</td><td>fit-cms</td><td>6 Categories</td></tr>
-                <tr><td>Travel</td><td>Universal</td><td>travel-cms</td><td>6 Categories</td></tr>
-                <tr><td>Stay</td><td>Universal</td><td>stay-cms</td><td>6 Categories</td></tr>
-                <tr><td>Dine</td><td>Universal</td><td>dine-cms</td><td>6 Categories</td></tr>
-                <tr><td>Enjoy</td><td>Universal</td><td>enjoy-cms</td><td>6 Categories</td></tr>
-                <tr><td>Celebrate</td><td>Universal</td><td>celebrate-cms</td><td>6 Categories</td></tr>
-                <tr><td>Emergency</td><td>Universal</td><td>emergency-cms</td><td>6 Categories</td></tr>
-                <tr><td>Advisory</td><td>Universal</td><td>advisory-cms</td><td>6 Categories</td></tr>
-                <tr><td>Farewell</td><td>Universal</td><td>farewell-cms</td><td>6 Categories</td></tr>
-                <tr><td>Adopt</td><td>Universal</td><td>adopt-cms</td><td>6 Categories</td></tr>
-                <tr><td>Shop</td><td>Universal</td><td>shop-cms</td><td>6 Categories</td></tr>
-            </table>
-
-            <h3>9 Standard CMS Tabs (Every Pillar)</h3>
-            <div class="grid">
-                <div class="card"><h4>1. Settings</h4>Page Title, Subtitle, Hero Image, Section Visibility</div>
-                <div class="card"><h4>2. Ask Mira</h4>Search bar config, placeholder, suggestions</div>
-                <div class="card"><h4>3. Categories</h4>Add/edit categories with images, subcategories</div>
-                <div class="card"><h4>4. Products</h4>Select featured products from catalog</div>
-                <div class="card"><h4>5. Bundles</h4>Select featured bundles from catalog</div>
-                <div class="card"><h4>6. Services</h4>Select featured services from catalog</div>
-                <div class="card"><h4>7. Personalized</h4>Breed-smart, life stage, archetype, soul toggles</div>
-                <div class="card"><h4>8. Concierge</h4>Premium services with pricing & CTAs</div>
-                <div class="card"><h4>9. Mira Prompts</h4>Contextual tips, reminders, suggestions</div>
+          <!-- 14 Pillars Overview -->
+          <section class="bg-white rounded-2xl p-8 shadow-sm border">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">The 14 Life Pillars</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+              <div class="bg-amber-50 p-3 rounded-xl text-center border border-amber-100">
+                <div class="text-2xl mb-1">&#128218;</div>
+                <div class="text-xs font-semibold text-amber-700">Learn</div>
+              </div>
+              <div class="bg-gray-50 p-3 rounded-xl text-center border border-gray-200">
+                <div class="text-2xl mb-1">&#128196;</div>
+                <div class="text-xs font-semibold text-gray-700">Paperwork</div>
+              </div>
+              <div class="bg-rose-50 p-3 rounded-xl text-center border border-rose-100">
+                <div class="text-2xl mb-1">&#10084;&#65039;</div>
+                <div class="text-xs font-semibold text-rose-700">Care</div>
+              </div>
+              <div class="bg-green-50 p-3 rounded-xl text-center border border-green-100">
+                <div class="text-2xl mb-1">&#128170;</div>
+                <div class="text-xs font-semibold text-green-700">Fit</div>
+              </div>
+              <div class="bg-cyan-50 p-3 rounded-xl text-center border border-cyan-100">
+                <div class="text-2xl mb-1">&#9992;&#65039;</div>
+                <div class="text-xs font-semibold text-cyan-700">Travel</div>
+              </div>
+              <div class="bg-indigo-50 p-3 rounded-xl text-center border border-indigo-100">
+                <div class="text-2xl mb-1">&#127968;</div>
+                <div class="text-xs font-semibold text-indigo-700">Stay</div>
+              </div>
+              <div class="bg-orange-50 p-3 rounded-xl text-center border border-orange-100">
+                <div class="text-2xl mb-1">&#127869;</div>
+                <div class="text-xs font-semibold text-orange-700">Dine</div>
+              </div>
+              <div class="bg-pink-50 p-3 rounded-xl text-center border border-pink-100">
+                <div class="text-2xl mb-1">&#127881;</div>
+                <div class="text-xs font-semibold text-pink-700">Enjoy</div>
+              </div>
+              <div class="bg-purple-50 p-3 rounded-xl text-center border border-purple-100">
+                <div class="text-2xl mb-1">&#127874;</div>
+                <div class="text-xs font-semibold text-purple-700">Celebrate</div>
+              </div>
+              <div class="bg-red-50 p-3 rounded-xl text-center border border-red-100">
+                <div class="text-2xl mb-1">&#128680;</div>
+                <div class="text-xs font-semibold text-red-700">Emergency</div>
+              </div>
+              <div class="bg-teal-50 p-3 rounded-xl text-center border border-teal-100">
+                <div class="text-2xl mb-1">&#128214;</div>
+                <div class="text-xs font-semibold text-teal-700">Advisory</div>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-xl text-center border border-slate-200">
+                <div class="text-2xl mb-1">&#127800;</div>
+                <div class="text-xs font-semibold text-slate-700">Farewell</div>
+              </div>
+              <div class="bg-amber-50 p-3 rounded-xl text-center border border-amber-100">
+                <div class="text-2xl mb-1">&#128021;</div>
+                <div class="text-xs font-semibold text-amber-700">Adopt</div>
+              </div>
+              <div class="bg-blue-50 p-3 rounded-xl text-center border border-blue-100">
+                <div class="text-2xl mb-1">&#128722;</div>
+                <div class="text-xs font-semibold text-blue-700">Shop</div>
+              </div>
             </div>
-
-            <h3>API Endpoints</h3>
-            <pre><code>
-// Universal endpoint for all pillars
-GET  /api/{pillar}/page-config   → Returns full CMS configuration
-POST /api/{pillar}/page-config   → Saves full CMS configuration
-
-// Where {pillar} = care, fit, travel, stay, dine, enjoy, celebrate, 
-//                   emergency, advisory, farewell, adopt, shop
-// Learn & Paperwork have dedicated routes
-            </code></pre>
+          </section>
         </div>
 
-        <!-- ═══════════════════════════════════════════════════════════════════════════════════════ -->
-        <!-- PAGE CMS ARCHITECTURE - THE STANDARD FOR ALL PILLAR PAGES -->
-        <!-- ═══════════════════════════════════════════════════════════════════════════════════════ -->
-        <div class="section" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 3px solid #f59e0b;">
-            <h2 style="color: #b45309; border-color: #f59e0b;">🏗️ PAGE CMS ARCHITECTURE - Standard for ALL Pillar Pages</h2>
+        <!-- Sidebar -->
+        <div class="space-y-6">
+          <div class="bg-white rounded-2xl p-6 shadow-sm border">
+            <h3 class="font-bold text-gray-900 mb-4">Quick Links</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="#" class="text-indigo-600 hover:underline">Admin Panel (/admin)</a></li>
+              <li><a href="#" class="text-indigo-600 hover:underline">CMS Tabs (?tab={pillar}-cms)</a></li>
+              <li><a href="#" class="text-indigo-600 hover:underline">API Documentation</a></li>
+            </ul>
+          </div>
+          
+          <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white">
+            <h3 class="font-bold mb-2">Admin Credentials</h3>
+            <p class="text-sm opacity-90 mb-4">For testing the CMS:</p>
+            <div class="bg-white/20 rounded-lg p-3 text-sm">
+              <div><span class="opacity-75">Username:</span> aditya</div>
+              <div><span class="opacity-75">Password:</span> lola4304</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Architecture Tab -->
+    <div id="architecture" class="tab-content">
+      <div class="space-y-8">
+        <!-- Architecture Diagram -->
+        <section class="bg-white rounded-2xl p-8 shadow-sm border">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">System Architecture</h2>
+          <div class="bg-gray-900 rounded-xl p-6 text-sm font-mono overflow-x-auto">
+            <pre class="text-green-400">
+                    ┌─────────────────────────────────────────┐
+                    │           ADMIN PANEL                   │
+                    │    /admin?tab={pillar}-cms              │
+                    └─────────────────┬───────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        <span class="text-yellow-400">PillarPageCMS.jsx</span>                                     │
+│    Generic React component that renders 10-tab CMS UI for ANY pillar        │
+│    Usage: <span class="text-cyan-400">&lt;PillarPageCMS pillar="care" /&gt;</span>                                   │
+└─────────────────────────────────┬───────────────────────────────────────────┘
+                                  │
+              ┌───────────────────┼───────────────────┐
+              │                   │                   │
+              ▼                   ▼                   ▼
+┌─────────────────────┐  ┌────────────────┐  ┌────────────────────┐
+│ <span class="text-cyan-400">GET /api/{pillar}/</span>  │  │ <span class="text-cyan-400">POST /api/</span>     │  │  <span class="text-orange-400">MongoDB</span>           │
+│   <span class="text-cyan-400">page-config</span>       │  │ <span class="text-cyan-400">{pillar}/</span>      │  │  Collections       │
+│                     │  │ <span class="text-cyan-400">page-config</span>    │  │                    │
+│ Fetches all config  │  │                │  │ - page_configs     │
+│ for a pillar        │  │ Saves config   │  │ - pillar_cms_      │
+│                     │  │ to MongoDB     │  │   categories       │
+└─────────────────────┘  └────────────────┘  │ - pillar_cms_      │
+                                             │   content          │
+                                             │ - page_selections  │
+                                             └────────────────────┘
+                                  │
+                                  ▼
+              ┌─────────────────────────────────────────┐
+              │        <span class="text-yellow-400">PILLAR PAGE (Frontend)</span>           │
+              │        e.g. LearnPage.jsx               │
+              │                                         │
+              │  1. Calls <span class="text-cyan-400">fetchCMSConfig()</span>              │
+              │  2. Sets state from API response        │
+              │  3. Renders sections conditionally      │
+              │  4. Uses CMS data with fallbacks        │
+              └─────────────────────────────────────────┘
+            </pre>
+          </div>
+        </section>
+
+        <!-- Generic Component -->
+        <section class="bg-white rounded-2xl p-8 shadow-sm border">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">The Generic CMS Component</h2>
+          <p class="text-gray-600 mb-6">
+            <code class="bg-gray-100 px-2 py-1 rounded">PillarPageCMS.jsx</code> is a single, reusable component that powers the 
+            admin CMS UI for <strong>12 of the 14 pillars</strong>. Learn and Paperwork have custom components due to their unique requirements.
+          </p>
+          
+          <div class="bg-gray-900 rounded-xl p-4 text-sm font-mono overflow-x-auto mb-6">
+            <pre class="text-gray-300">
+<span class="text-purple-400">import</span> PillarPageCMS <span class="text-purple-400">from</span> <span class="text-green-400">'../components/admin/PillarPageCMS'</span>;
+
+<span class="text-gray-500">// In Admin.jsx render:</span>
+{activeTab === <span class="text-green-400">'care-cms'</span> && <span class="text-cyan-400">&lt;PillarPageCMS pillar="care" /&gt;</span>}
+{activeTab === <span class="text-green-400">'fit-cms'</span> && <span class="text-cyan-400">&lt;PillarPageCMS pillar="fit" /&gt;</span>}
+<span class="text-gray-500">// ... etc for all 12 generic pillars</span>
+            </pre>
+          </div>
+
+          <h3 class="font-semibold text-gray-900 mb-3">Built-in Pillar Configurations</h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="pillar-badge bg-rose-100 text-rose-700">&#10084; Care</div>
+            <div class="pillar-badge bg-green-100 text-green-700">&#128170; Fit</div>
+            <div class="pillar-badge bg-cyan-100 text-cyan-700">&#9992; Travel</div>
+            <div class="pillar-badge bg-indigo-100 text-indigo-700">&#127968; Stay</div>
+            <div class="pillar-badge bg-orange-100 text-orange-700">&#127869; Dine</div>
+            <div class="pillar-badge bg-pink-100 text-pink-700">&#127881; Enjoy</div>
+            <div class="pillar-badge bg-purple-100 text-purple-700">&#127874; Celebrate</div>
+            <div class="pillar-badge bg-red-100 text-red-700">&#128680; Emergency</div>
+            <div class="pillar-badge bg-teal-100 text-teal-700">&#128214; Advisory</div>
+            <div class="pillar-badge bg-slate-100 text-slate-700">&#127800; Farewell</div>
+            <div class="pillar-badge bg-amber-100 text-amber-700">&#128021; Adopt</div>
+            <div class="pillar-badge bg-blue-100 text-blue-700">&#128722; Shop</div>
+          </div>
+        </section>
+
+        <!-- 10 Standard Tabs -->
+        <section class="bg-white rounded-2xl p-8 shadow-sm border">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Standard CMS Tabs (10 Tabs)</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b">
+                  <th class="text-left py-3 px-4 font-semibold text-gray-900">#</th>
+                  <th class="text-left py-3 px-4 font-semibold text-gray-900">Tab Name</th>
+                  <th class="text-left py-3 px-4 font-semibold text-gray-900">Description</th>
+                  <th class="text-left py-3 px-4 font-semibold text-gray-900">Key Fields</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b hover:bg-gray-50">
+                  <td class="py-3 px-4">1</td>
+                  <td class="py-3 px-4 font-medium">&#127912; Page Settings</td>
+                  <td class="py-3 px-4 text-gray-600">Overall page configuration</td>
+                  <td class="py-3 px-4"><code class="text-xs bg-gray-100 px-1 rounded">title, subtitle, heroImage, themeColor</code></td>
+                </tr>
+                <tr class="border-b hover:bg-gray-50">
+                  <td class="py-3 px-4">2</td>
+                  <td class="py-3 px-4 font-medium">&#128269; Ask Mira Bar</td>
+                  <td class="py-3 px-4 text-gray-600">AI search bar configuration</td>
+                  <td class="py-3 px-4"><code class="text-xs bg-gray-100 px-1 rounded">enabled, placeholder, buttonColor</code></td>
+                </tr>
+                <tr class="border-b hover:bg-gray-50">
+                  <td class="py-3 px-4">3</td>
+                  <td class="py-3 px-4 font-medium">&#128193; Categories</td>
+                  <td class="py-3 px-4 text-gray-600">Main content sections</td>
+                  <td class="py-3 px-4"><code class="text-xs bg-gray-100 px-1 rounded">name, icon, color, description, image</code></td>
+                </tr>
+                <tr class="border-b hover:bg-gray-50">
+                  <td class="py-3 px-4">4</td>
+                  <td class="py-3 px-4 font-medium">&#128722; Products</td>
+                  <td class="py-3 px-4 text-gray-600">Featured products selection</td>
+                  <td class="py-3 px-4"><code class="text-xs bg-gray-100 px-1 rounded">selectedProducts[]</code></td>
+                </tr>
+                <tr class="border-b hover:bg-gray-50">
+                  <td class="py-3 px-4">5</td>
+                  <td class="py-3 px-4 font-medium">&#127873; Bundles</td>
+                  <td class="py-3 px-4 text-gray-600">Curated bundles</td>
+                  <td class="py-3 px-4"><code class="text-xs bg-gray-100 px-1 rounded">selectedBundles[]</code></td>
+                </tr>
+                <tr class="border-b hover:bg-gray-50">
+                  <td class="py-3 px-4">6</td>
+                  <td class="py-3 px-4 font-medium">&#128188; Services</td>
+                  <td class="py-3 px-4 text-gray-600">Related services</td>
+                  <td class="py-3 px-4"><code class="text-xs bg-gray-100 px-1 rounded">selectedServices[]</code></td>
+                </tr>
+                <tr class="border-b hover:bg-gray-50">
+                  <td class="py-3 px-4">7</td>
+                  <td class="py-3 px-4 font-medium">&#128054; Personalized</td>
+                  <td class="py-3 px-4 text-gray-600">Personalization toggles</td>
+                  <td class="py-3 px-4"><code class="text-xs bg-gray-100 px-1 rounded">breedSmart, lifeStage, archetypePicks</code></td>
+                </tr>
+                <tr class="border-b hover:bg-gray-50">
+                  <td class="py-3 px-4">8</td>
+                  <td class="py-3 px-4 font-medium">&#128081; Concierge</td>
+                  <td class="py-3 px-4 text-gray-600">Premium services</td>
+                  <td class="py-3 px-4"><code class="text-xs bg-gray-100 px-1 rounded">name, description, price, includes[]</code></td>
+                </tr>
+                <tr class="border-b hover:bg-gray-50">
+                  <td class="py-3 px-4">9</td>
+                  <td class="py-3 px-4 font-medium">&#129504; Mira Prompts</td>
+                  <td class="py-3 px-4 text-gray-600">AI contextual tips</td>
+                  <td class="py-3 px-4"><code class="text-xs bg-gray-100 px-1 rounded">type, trigger, message</code></td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="py-3 px-4">10</td>
+                  <td class="py-3 px-4 font-medium">&#9881; Custom</td>
+                  <td class="py-3 px-4 text-gray-600">Pillar-specific features</td>
+                  <td class="py-3 px-4"><code class="text-xs bg-gray-100 px-1 rounded">Varies by pillar</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Components Tab -->
+    <div id="components" class="tab-content">
+      <div class="space-y-8">
+        <section class="bg-white rounded-2xl p-8 shadow-sm border">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">File Structure</h2>
+          
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-3">&#128193; CMS Admin Components</h3>
+              <div class="bg-gray-900 rounded-xl p-4 text-sm font-mono">
+                <pre class="text-gray-300">
+<span class="text-yellow-400">/app/frontend/src/components/admin/</span>
+├── <span class="text-green-400">LearnPageCMS.jsx</span>        <span class="text-gray-500"># Custom for Learn</span>
+├── <span class="text-green-400">PaperworkPageCMS.jsx</span>    <span class="text-gray-500"># Custom for Paperwork</span>
+├── <span class="text-cyan-400">PillarPageCMS.jsx</span>       <span class="text-gray-500"># GENERIC (12 pillars)</span>
+└── CloudinaryUploader.jsx  <span class="text-gray-500"># Image uploads</span>
+                </pre>
+              </div>
+            </div>
             
-            <div class="success-box">
-                <strong>⚠️ CRITICAL FOR ALL FUTURE AGENTS:</strong> This is the TEMPLATE for building pillar pages. 
-                Every pillar (Learn, Advisory, Care, Fit, Stay, Travel, Dine, etc.) MUST follow this architecture.
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-3">&#128196; Page Components</h3>
+              <div class="bg-gray-900 rounded-xl p-4 text-sm font-mono">
+                <pre class="text-gray-300">
+<span class="text-yellow-400">/app/frontend/src/pages/</span>
+├── <span class="text-green-400">LearnPage.jsx</span>       <span class="text-gray-500"># &#10004; CMS-driven</span>
+├── <span class="text-yellow-400">PaperworkPage.jsx</span>   <span class="text-gray-500"># &#128260; In progress</span>
+├── <span class="text-gray-500">CarePage.jsx</span>        <span class="text-gray-500"># TODO</span>
+├── <span class="text-gray-500">FitPage.jsx</span>         <span class="text-gray-500"># TODO</span>
+├── <span class="text-gray-500">TravelPage.jsx</span>      <span class="text-gray-500"># TODO</span>
+└── <span class="text-gray-500">... 9 more</span>          <span class="text-gray-500"># TODO</span>
+                </pre>
+              </div>
             </div>
+          </div>
+        </section>
 
-            <h3>The Problem We Solved:</h3>
-            <p>Previously, each pillar page was hardcoded with trial-and-error product/service assignments. 
-            This led to inconsistencies, broken modals, and endless back-and-forth fixes.</p>
+        <section class="bg-white rounded-2xl p-8 shadow-sm border">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Admin Panel Integration</h2>
+          <p class="text-gray-600 mb-4">
+            The CMS tabs are rendered in <code class="bg-gray-100 px-2 py-1 rounded">Admin.jsx</code> under the "PAGE CMS" section.
+          </p>
+          
+          <div class="bg-gray-900 rounded-xl p-4 text-sm font-mono overflow-x-auto">
+            <pre class="text-gray-300">
+<span class="text-gray-500">// Admin.jsx - Line ~2977-2990: Tab definitions</span>
+{
+  { id: <span class="text-green-400">'learn-cms'</span>, label: <span class="text-green-400">'Learn'</span>, icon: GraduationCap },
+  { id: <span class="text-green-400">'paperwork-cms'</span>, label: <span class="text-green-400">'Paperwork'</span>, icon: FileText },
+  { id: <span class="text-green-400">'care-cms'</span>, label: <span class="text-green-400">'Care'</span>, icon: Heart },
+  { id: <span class="text-green-400">'fit-cms'</span>, label: <span class="text-green-400">'Fit'</span>, icon: Dumbbell },
+  <span class="text-gray-500">// ... all 14 pillars</span>
+}
 
-            <h3>The Solution: Page CMS</h3>
-            <p>A centralized Admin interface where EVERY component of a page is configurable:</p>
+<span class="text-gray-500">// Line ~3670-3691: Tab rendering</span>
+{activeTab === <span class="text-green-400">'learn-cms'</span> && <span class="text-cyan-400">&lt;LearnPageCMS /&gt;</span>}
+{activeTab === <span class="text-green-400">'paperwork-cms'</span> && <span class="text-cyan-400">&lt;PaperworkPageCMS /&gt;</span>}
+{activeTab === <span class="text-green-400">'care-cms'</span> && <span class="text-cyan-400">&lt;PillarPageCMS pillar="care" /&gt;</span>}
+{activeTab === <span class="text-green-400">'fit-cms'</span> && <span class="text-cyan-400">&lt;PillarPageCMS pillar="fit" /&gt;</span>}
+<span class="text-gray-500">// ... all 12 generic pillars use PillarPageCMS</span>
+            </pre>
+          </div>
+        </section>
 
-            <div class="highlight">
-                <h4>Page CMS Structure (Apply to ALL Pillars)</h4>
-                <pre><code>
-PILLAR PAGE CMS
-├── 🎨 PAGE SETTINGS
-│   ├── Page Title (editable)
-│   ├── Page Subtitle (editable)
-│   ├── Hero Image (uploadable via Cloudinary)
-│   ├── Theme Color (configurable)
-│   └── Section Visibility Toggles
-│
-├── 📚 TOPICS SECTION
-│   ├── Section Title (editable)
-│   ├── Show/Hide toggle
-│   └── Topics (add/remove/reorder):
-│       └── EACH TOPIC has:
-│           ├── Title
-│           ├── Slug (URL-friendly)
-│           ├── Image (uploadable)
-│           ├── Description
-│           └── MODAL CONTENT:
-│               ├── Subtopics (add/edit/remove) → Overview Tab
-│               ├── Videos (YouTube URLs) → Videos Tab
-│               ├── Products (pick from catalog) → Products Tab
-│               └── Services (pick from catalog) → Services Tab
-│
-├── 🎁 BUNDLES SECTION
-│   ├── Section Title (editable)
-│   ├── Show/Hide toggle
-│   ├── Max items to display
-│   └── Selected Bundles (pick from catalog)
-│
-├── 🛍️ PRODUCTS SECTION
-│   ├── Section Title (editable)
-│   ├── Show/Hide toggle
-│   ├── Layout configuration
-│   └── Featured Products (pick from catalog)
-│
-├── 🔧 SERVICES SECTION
-│   ├── Section Title (editable)
-│   └── Featured Services (pick from catalog)
-│
-└── 👤 PERSONALIZATION SECTION
-    ├── Show breed-specific products (toggle)
-    ├── Show archetype recommendations (toggle)
-    └── Show "Recommended for {pet}" (toggle)
-                </code></pre>
+        <section class="bg-white rounded-2xl p-8 shadow-sm border">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Database Collections</h2>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-orange-50 p-4 rounded-xl border border-orange-100">
+              <h3 class="font-semibold text-orange-700 mb-2">&#128203; page_configs</h3>
+              <p class="text-sm text-gray-600">Main page settings (title, subtitle, theme)</p>
+              <code class="text-xs bg-white px-2 py-1 rounded mt-2 inline-block">Index: { pillar: 1 }</code>
             </div>
+            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+              <h3 class="font-semibold text-blue-700 mb-2">&#128193; pillar_cms_categories</h3>
+              <p class="text-sm text-gray-600">Categories/topics for each pillar</p>
+              <code class="text-xs bg-white px-2 py-1 rounded mt-2 inline-block">Index: { pillar: 1 }</code>
+            </div>
+            <div class="bg-purple-50 p-4 rounded-xl border border-purple-100">
+              <h3 class="font-semibold text-purple-700 mb-2">&#128172; pillar_cms_content</h3>
+              <p class="text-sm text-gray-600">Concierge services, Mira prompts</p>
+              <code class="text-xs bg-white px-2 py-1 rounded mt-2 inline-block">Index: { pillar: 1 }</code>
+            </div>
+            <div class="bg-green-50 p-4 rounded-xl border border-green-100">
+              <h3 class="font-semibold text-green-700 mb-2">&#128230; page_selections</h3>
+              <p class="text-sm text-gray-600">Selected products, bundles, services</p>
+              <code class="text-xs bg-white px-2 py-1 rounded mt-2 inline-block">Index: { pillar: 1 }</code>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
 
-            <h3>Database Collections Required:</h3>
-            <table>
-                <tr>
-                    <th>Collection</th>
-                    <th>Purpose</th>
-                    <th>Key Fields</th>
+    <!-- API Reference Tab -->
+    <div id="api" class="tab-content">
+      <div class="space-y-8">
+        <section class="bg-white rounded-2xl p-8 shadow-sm border">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">API Endpoints</h2>
+          
+          <div class="overflow-x-auto mb-8">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b bg-gray-50">
+                  <th class="text-left py-3 px-4 font-semibold">Method</th>
+                  <th class="text-left py-3 px-4 font-semibold">Endpoint</th>
+                  <th class="text-left py-3 px-4 font-semibold">Description</th>
                 </tr>
-                <tr>
-                    <td><code>page_configs</code></td>
-                    <td>Page-level settings</td>
-                    <td>pillar, title, subtitle, heroImage, themeColor, sections</td>
+              </thead>
+              <tbody>
+                <tr class="border-b">
+                  <td class="py-3 px-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-semibold">GET</span></td>
+                  <td class="py-3 px-4 font-mono text-sm">/api/{pillar}/page-config</td>
+                  <td class="py-3 px-4 text-gray-600">Get page configuration for any pillar</td>
                 </tr>
-                <tr>
-                    <td><code>learn_topics</code> (or <code>{pillar}_topics</code>)</td>
-                    <td>Topics for that pillar</td>
-                    <td>title, slug, image, description, subtopics[], videos[], products[], services[], order</td>
+                <tr class="border-b">
+                  <td class="py-3 px-4"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">POST</span></td>
+                  <td class="py-3 px-4 font-mono text-sm">/api/{pillar}/page-config</td>
+                  <td class="py-3 px-4 text-gray-600">Save page configuration for any pillar</td>
                 </tr>
-                <tr>
-                    <td><code>page_selections</code></td>
-                    <td>Featured items per page</td>
-                    <td>pillar, bundles[], products[], services[]</td>
-                </tr>
+              </tbody>
             </table>
+          </div>
+          
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+            <div class="font-semibold text-amber-800 mb-2">&#9888; Valid Pillars for Generic Endpoint</div>
+            <code class="text-sm text-amber-700">care, fit, travel, stay, dine, enjoy, celebrate, emergency, advisory, farewell, adopt, shop</code>
+          </div>
+          
+          <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <div class="font-semibold text-blue-800 mb-2">&#128203; Dedicated Endpoints</div>
+            <ul class="text-sm text-blue-700 space-y-1">
+              <li><code>/api/learn/page-config</code> - Learn page (has additional fields)</li>
+              <li><code>/api/paperwork/page-config</code> - Paperwork page (has additional fields)</li>
+            </ul>
+          </div>
+        </section>
 
-            <h3>API Endpoints Required:</h3>
-            <table>
-                <tr>
-                    <th>Endpoint</th>
-                    <th>Method</th>
-                    <th>Purpose</th>
-                </tr>
-                <tr>
-                    <td><code>/api/{pillar}/page-config</code></td>
-                    <td>GET</td>
-                    <td>Load entire page configuration</td>
-                </tr>
-                <tr>
-                    <td><code>/api/{pillar}/page-config</code></td>
-                    <td>POST</td>
-                    <td>Save entire page configuration</td>
-                </tr>
-                <tr>
-                    <td><code>/api/{pillar}/topic-products/{slug}</code></td>
-                    <td>GET</td>
-                    <td>Get products for a specific topic modal</td>
-                </tr>
-            </table>
-
-            <h3>Frontend Components Required:</h3>
-            <table>
-                <tr>
-                    <th>Component</th>
-                    <th>Location</th>
-                    <th>Purpose</th>
-                </tr>
-                <tr>
-                    <td><code>{Pillar}PageCMS.jsx</code></td>
-                    <td><code>/frontend/src/components/admin/</code></td>
-                    <td>Admin CMS for that pillar page</td>
-                </tr>
-                <tr>
-                    <td><code>{Pillar}Page.jsx</code></td>
-                    <td><code>/frontend/src/pages/</code></td>
-                    <td>The actual pillar page (reads from CMS config)</td>
-                </tr>
-                <tr>
-                    <td><code>{Pillar}TopicModal.jsx</code></td>
-                    <td><code>/frontend/src/components/{pillar}/</code></td>
-                    <td>Modal that opens when user clicks a topic</td>
-                </tr>
-            </table>
-
-            <h3>Step-by-Step: Adding CMS to a New Pillar</h3>
-            <div class="card">
-                <h4>Step 1: Create Backend Endpoints</h4>
-                <pre><code>
-# In {pillar}_routes.py
-
-@router.get("/page-config")
-async def get_page_config():
-    db = get_db()
-    config = await db.page_configs.find_one({"pillar": "{pillar}"})
-    topics = await db.{pillar}_topics.find({}).sort("order", 1).to_list(50)
-    selections = await db.page_selections.find_one({"pillar": "{pillar}"})
-    return {"config": config, "topics": topics, "selections": selections}
-
-@router.post("/page-config")
-async def save_page_config(data: dict):
-    # Save config, topics, and selections
-    ...
-                </code></pre>
-            </div>
-
-            <div class="card">
-                <h4>Step 2: Create Admin CMS Component</h4>
-                <pre><code>
-// Copy /frontend/src/components/admin/LearnPageCMS.jsx
-// Rename to {Pillar}PageCMS.jsx
-// Change all "learn" references to "{pillar}"
-// Update API endpoints
-                </code></pre>
-            </div>
-
-            <div class="card">
-                <h4>Step 3: Update the Pillar Page to Read from CMS</h4>
-                <pre><code>
-// In {Pillar}Page.jsx
-
-const [pageConfig, setPageConfig] = useState(null);
-const [topics, setTopics] = useState([]);
-
-useEffect(() => {
-    fetch(`${API_URL}/api/{pillar}/page-config`)
-        .then(res => res.json())
-        .then(data => {
-            setPageConfig(data.config);
-            setTopics(data.topics);
-        });
-}, []);
-
-// Then render sections based on pageConfig.sections.{section}.enabled
-                </code></pre>
-            </div>
-
-            <div class="card">
-                <h4>Step 4: Update Topic Modal to Fetch from CMS</h4>
-                <pre><code>
-// In {Pillar}TopicModal.jsx - fetchProducts function
-
-const fetchProducts = async () => {
-    // FIRST: Try admin-assigned products
-    const res = await fetch(`${API_URL}/api/{pillar}/topic-products/${topicSlug}`);
-    if (res.ok) {
-        const data = await res.json();
-        if (data.products?.length > 0) {
-            setProducts(data.products);
-            return;
-        }
+        <section class="bg-white rounded-2xl p-8 shadow-sm border">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Response Format</h2>
+          <div class="bg-gray-900 rounded-xl p-4 text-sm font-mono overflow-x-auto">
+            <pre class="text-gray-300">
+{
+  <span class="text-cyan-400">"config"</span>: {
+    <span class="text-green-400">"pillar"</span>: <span class="text-yellow-400">"care"</span>,
+    <span class="text-green-400">"title"</span>: <span class="text-yellow-400">"Everything {petName} needs to feel loved"</span>,
+    <span class="text-green-400">"subtitle"</span>: <span class="text-yellow-400">"Grooming, health, wellness essentials"</span>,
+    <span class="text-green-400">"askMira"</span>: {
+      <span class="text-green-400">"enabled"</span>: <span class="text-purple-400">true</span>,
+      <span class="text-green-400">"placeholder"</span>: <span class="text-yellow-400">"Grooming tips for {breedName}..."</span>
+    },
+    <span class="text-green-400">"sections"</span>: {
+      <span class="text-green-400">"askMira"</span>: { <span class="text-green-400">"enabled"</span>: <span class="text-purple-400">true</span> },
+      <span class="text-green-400">"categories"</span>: { <span class="text-green-400">"enabled"</span>: <span class="text-purple-400">true</span> }
     }
-    // FALLBACK: Default products
-    ...
-};
-                </code></pre>
-            </div>
-
-            <div class="card">
-                <h4>Step 5: Add to Admin Panel</h4>
-                <pre><code>
-// In Admin.jsx
-
-import {Pillar}PageCMS from '../components/admin/{Pillar}PageCMS';
-
-// Add tab in Page CMS section:
-{ id: '{pillar}-cms', label: '{Pillar} Page', icon: IconComponent }
-
-// Add tab content:
-{activeTab === '{pillar}-cms' && <{Pillar}PageCMS />}
-                </code></pre>
-            </div>
-
-            <h3>Files Reference (Learn as Template):</h3>
-            <ul>
-                <li><strong>Admin CMS:</strong> <code>/app/frontend/src/components/admin/LearnPageCMS.jsx</code></li>
-                <li><strong>Backend Routes:</strong> <code>/app/backend/learn_routes.py</code> (see page-config endpoints)</li>
-                <li><strong>Topic Modal:</strong> <code>/app/frontend/src/components/learn/LearnTopicModal.jsx</code></li>
-                <li><strong>Page Component:</strong> <code>/app/frontend/src/pages/LearnPage.jsx</code></li>
-            </ul>
-
-            <div class="warning-box">
-                <strong>⚠️ IMPORTANT RULES FOR AGENTS:</strong>
-                <ul>
-                    <li>NEVER hardcode product/service assignments in components</li>
-                    <li>ALWAYS use the CMS to let admin control what appears where</li>
-                    <li>ALWAYS check if products exist before rendering (provide fallbacks)</li>
-                    <li>ALWAYS use the CloudinaryUploader for image uploads (persists through deployments)</li>
-                    <li>ALWAYS follow the same structure for ALL pillar pages</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Session 9.0 Updates - Learn Page Golden Standard + AI Generation Persistence -->
-        <div class="section" style="background: linear-gradient(135deg, #dbeafe, #e0f2fe); border: 3px solid #3b82f6;">
-            <h2 style="color: #1d4ed8; border-color: #3b82f6;">🌟 Session 9.0 - Learn Page Golden Standard + Persistent AI Generation (December 2025)</h2>
-            
-            <div class="success-box">
-                <strong>LEARN PAGE NOW MATCHES ADVISORY GOLDEN STANDARD!</strong> Full personalization by pet breed, 4 curated bundles, AI image generation running persistently.
-            </div>
-
-            <h3>What Was Implemented:</h3>
-            <table>
-                <tr>
-                    <th>Feature</th>
-                    <th>Component / Endpoint</th>
-                    <th>Description</th>
-                </tr>
-                <tr>
-                    <td>Learn Page Parity with Advisory</td>
-                    <td><code>LearnPage.jsx</code></td>
-                    <td>Same structure: Hero → Categories → Products → Bundles → Personalized Recommendations</td>
-                </tr>
-                <tr>
-                    <td>Breed-Personalized Products</td>
-                    <td><code>LearnProductsGrid.jsx</code></td>
-                    <td>Filters products by current pet's breed, shows breed-specific items first</td>
-                </tr>
-                <tr>
-                    <td>4 Learn Bundles</td>
-                    <td><code>GET /api/learn/bundles</code></td>
-                    <td>New Puppy Training, Behavior Bootcamp, Training Tools, Recall Mastery</td>
-                </tr>
-                <tr>
-                    <td>Cloudinary Image Upload</td>
-                    <td><code>CloudinaryUploader.jsx</code></td>
-                    <td>Admin can upload images for Products, Services, Bundles - persists through deploys</td>
-                </tr>
-                <tr>
-                    <td>AI Image Generation</td>
-                    <td><code>POST /api/ai-images/generate-product-images</code></td>
-                    <td>Background AI generation for product images with progress tracking</td>
-                </tr>
-                <tr>
-                    <td>Real-time Progress Panel</td>
-                    <td><code>Admin.jsx</code></td>
-                    <td>Floating panel shows AI generation progress, status, controls</td>
-                </tr>
-            </table>
-
-            <h3>Learn Bundles (4 NEW):</h3>
-            <table>
-                <tr>
-                    <th>Bundle Name</th>
-                    <th>Price</th>
-                    <th>Items Included</th>
-                </tr>
-                <tr>
-                    <td>New Puppy Training Bundle</td>
-                    <td>₹6,499</td>
-                    <td>Puppy Training Course, Clicker, Treat Pouch, Training Treats</td>
-                </tr>
-                <tr>
-                    <td>Behavior Bootcamp Bundle</td>
-                    <td>₹7,499</td>
-                    <td>Behavior Program, Anxiety Course, No-Pull Harness, Calming Treats</td>
-                </tr>
-                <tr>
-                    <td>Training Tools Starter Kit</td>
-                    <td>₹999</td>
-                    <td>Professional Clicker, Treat Pouch, 2x Training Treats Packs</td>
-                </tr>
-                <tr>
-                    <td>Recall & Leash Mastery</td>
-                    <td>₹4,499</td>
-                    <td>Recall Training Course, Leash Course, Long Lead, Treats</td>
-                </tr>
-            </table>
-
-            <h3>Personalization Logic:</h3>
-            <div class="highlight">
-                <p><strong>How Products are Filtered:</strong></p>
-                <ol>
-                    <li><strong>Get Pet's Breed</strong> → From logged-in user's current pet profile</li>
-                    <li><strong>Filter Breed-Specific</strong> → Show products tagged with pet's breed first</li>
-                    <li><strong>Exclude Other Breeds</strong> → Don't show Pug products to Labrador owners</li>
-                    <li><strong>Show Generic Training</strong> → Universal training products shown after breed-specific</li>
-                </ol>
-            </div>
-
-            <h3>AI Image Generation System:</h3>
-            <div class="warning-box">
-                <strong>⚠️ IMPORTANT FOR AGENTS:</strong> The AI generation runs as an in-memory background task. 
-                It stops when the agent forks. Images generated ARE SAVED in Cloudinary permanently.
-                To restart: Admin Panel → AI IMAGES button → Start Generation
-            </div>
-            <table>
-                <tr>
-                    <th>Endpoint</th>
-                    <th>Purpose</th>
-                </tr>
-                <tr>
-                    <td><code>GET /api/ai-images/status</code></td>
-                    <td>Check if generation is running, current progress</td>
-                </tr>
-                <tr>
-                    <td><code>GET /api/ai-images/stats</code></td>
-                    <td>Total products, how many have images</td>
-                </tr>
-                <tr>
-                    <td><code>POST /api/ai-images/generate-product-images?password=lola4304</code></td>
-                    <td>Start background generation</td>
-                </tr>
-                <tr>
-                    <td><code>POST /api/ai-images/stop</code></td>
-                    <td>Stop running generation</td>
-                </tr>
-            </table>
-
-            <h3>Files Modified:</h3>
-            <ul>
-                <li><code>/app/frontend/src/pages/LearnPage.jsx</code> - Added bundles, personalized sections</li>
-                <li><code>/app/frontend/src/components/Learn/LearnProductsGrid.jsx</code> - Breed personalization</li>
-                <li><code>/app/frontend/src/components/admin/CloudinaryUploader.jsx</code> - Reusable upload component</li>
-                <li><code>/app/frontend/src/pages/Admin.jsx</code> - AI progress panel</li>
-                <li><code>/app/backend/server.py</code> - Cloudinary upload endpoints</li>
-            </ul>
-
-            <h3>Testing Credentials:</h3>
-            <table>
-                <tr><th>Type</th><th>Username</th><th>Password</th></tr>
-                <tr><td>User Login</td><td>dipali@clubconcierge.in</td><td>test123</td></tr>
-                <tr><td>Admin Panel</td><td>aditya</td><td>lola4304</td></tr>
-            </table>
-        </div>
-
-        <!-- Session 8.9 Updates - Admin Image Upload -->
-        <div class="section" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 3px solid #22c55e;">
-            <h2 style="color: #166534; border-color: #22c55e;">✅ Session 8.9 - Admin Image Upload to Cloudinary (March 12, 2026)</h2>
-            
-            <div class="success-box">
-                <strong>ADMIN CAN NOW UPLOAD IMAGES DIRECTLY!</strong> Images persist through deployments via Cloudinary.
-            </div>
-
-            <h3>What Was Implemented:</h3>
-            <table>
-                <tr>
-                    <th>Feature</th>
-                    <th>Endpoint / Component</th>
-                    <th>Description</th>
-                </tr>
-                <tr>
-                    <td>Product Image Upload</td>
-                    <td><code>POST /api/admin/product/{id}/upload-image</code></td>
-                    <td>Upload and link image to specific product</td>
-                </tr>
-                <tr>
-                    <td>Service Image Upload</td>
-                    <td><code>POST /api/admin/service/{id}/upload-image</code></td>
-                    <td>Upload and link image to specific service</td>
-                </tr>
-                <tr>
-                    <td>Admin Product Box UI</td>
-                    <td><code>UnifiedProductBox.jsx</code></td>
-                    <td>File upload button with Cloudinary integration</td>
-                </tr>
-                <tr>
-                    <td>Admin Service Box UI</td>
-                    <td><code>ServiceBox.jsx</code></td>
-                    <td>File upload button with Cloudinary integration</td>
-                </tr>
-            </table>
-
-            <h3>How to Use:</h3>
-            <ol>
-                <li>Go to Admin → Product Box or Service Box</li>
-                <li>Click on a product/service's image to edit</li>
-                <li>Use the purple "Choose File" button to upload directly</li>
-                <li>Image uploads to Cloudinary and is automatically linked</li>
-            </ol>
-
-            <h3>Current Image Statistics:</h3>
-            <div class="hero-stats">
-                <div class="stat-card">
-                    <div class="number">890</div>
-                    <div class="label">Total Products</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number">59%</div>
-                    <div class="label">With Images</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number">363</div>
-                    <div class="label">Missing Images</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number">270</div>
-                    <div class="label">AI Generated</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- POST-DEPLOYMENT CHECKLIST - RUN THESE AFTER EVERY DEPLOYMENT -->
-        <div class="section" style="background: linear-gradient(135deg, #fee2e2, #fecaca); border: 3px solid #dc2626;">
-            <h2 style="color: #dc2626; border-color: #dc2626;">🚀 POST-DEPLOYMENT CHECKLIST (Run After Every Deploy!)</h2>
-            
-            <div class="warning-box" style="background: #fef2f2; border: 2px solid #dc2626; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                <strong>⚡ RUN THESE ON PRODUCTION AFTER EVERY DEPLOYMENT:</strong>
-            </div>
-            
-            <pre style="background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 14px;">
-# Step 1: Clean up duplicate services
-curl -X POST "https://thedoggycompany.com/api/admin/cleanup-duplicate-services?password=lola4304"
-
-# Step 2: Fix service images (apply AI-generated images)
-curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=lola4304"
-
-# Step 3: Full product sync (if needed)
-curl -X POST "https://thedoggycompany.com/api/admin/bulk-import-products?password=lola4304"
-
-# Step 4: Full service sync (if needed)  
-curl -X POST "https://thedoggycompany.com/api/admin/bulk-import-services?password=lola4304"
-
-# Step 5: Sync guided paths (if any path content changed)
-curl -X POST "https://thedoggycompany.com/api/admin/bulk-import-guided-paths?password=lola4304"
-            </pre>
-
-            <h3>When to Run Which Commands:</h3>
-            <table>
-                <tr>
-                    <th>Scenario</th>
-                    <th>Commands to Run</th>
-                </tr>
-                <tr>
-                    <td>Standard deployment (code only)</td>
-                    <td>Step 1 + Step 2</td>
-                </tr>
-                <tr>
-                    <td>New products added</td>
-                    <td>Step 1 + Step 2 + Step 3</td>
-                </tr>
-                <tr>
-                    <td>New services/AI images generated</td>
-                    <td>Step 1 + Step 2 + Step 4</td>
-                </tr>
-                <tr>
-                    <td>Fresh deployment or major issues</td>
-                    <td>All Steps (1-5)</td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- CRITICAL: Production Sync Guide -->
-        <div class="section" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 3px solid #f59e0b;">
-            <h2 style="color: #b45309; border-color: #f59e0b;">⚠️ CRITICAL: Production Data Sync Guide</h2>
-            
-            <div class="warning-box" style="background: #fef3c7; border: 2px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                <strong>🚨 IMPORTANT FOR ALL FUTURE AGENTS:</strong><br>
-                Preview and Production use <strong>DIFFERENT MongoDB databases</strong>. Code deploys automatically, but <strong>DATA DOES NOT</strong>. 
-                After any deployment that adds/modifies products, services, or content, you MUST run the sync commands below.
-            </div>
-
-            <h3>When Does This Happen?</h3>
-            <ul>
-                <li>After deploying new code that seeds/creates data (products, services, bundles)</li>
-                <li>After generating AI images for services</li>
-                <li>After adding new guided paths or content</li>
-                <li>When user reports "missing data" or "wrong images" on production</li>
-            </ul>
-
-            <h3>Available Sync Endpoints (POST requests, require password=lola4304):</h3>
-            <table>
-                <tr>
-                    <th>Endpoint</th>
-                    <th>Purpose</th>
-                    <th>When to Use</th>
-                </tr>
-                <tr>
-                    <td><code>/api/admin/bulk-import-products</code></td>
-                    <td>Sync all products from preview to production</td>
-                    <td>After adding Soul Made products, breed products, or any new products</td>
-                </tr>
-                <tr>
-                    <td><code>/api/admin/bulk-import-services</code></td>
-                    <td>Sync all services with images</td>
-                    <td>After generating AI images for services or adding new services</td>
-                </tr>
-                <tr>
-                    <td><code>/api/admin/bulk-import-guided-paths</code></td>
-                    <td>Sync guided paths for all pillars</td>
-                    <td>After modifying Emergency/Advisory/Farewell/Adopt guides</td>
-                </tr>
-                <tr>
-                    <td><code>/api/admin/cleanup-duplicate-services</code></td>
-                    <td>Remove duplicate services, keep ones with images</td>
-                    <td>When services appear duplicated or show wrong images</td>
-                </tr>
-                <tr>
-                    <td><code>/api/admin/fix-service-images</code></td>
-                    <td>Apply AI images to services missing them</td>
-                    <td>When pillar services show stock/placeholder images</td>
-                </tr>
-                <tr>
-                    <td><code>/api/admin/force-full-sync</code></td>
-                    <td>Run all seeders (Shopify, pillars, breeds)</td>
-                    <td>Fresh deployment or major data issues</td>
-                </tr>
-            </table>
-
-            <h3>Quick Sync Script (Run after every deployment with data changes):</h3>
-            <pre style="background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 8px; overflow-x: auto;">
-# 1. Clean duplicates first
-curl -X POST "https://thedoggycompany.com/api/admin/cleanup-duplicate-services?password=lola4304"
-
-# 2. Fix missing images
-curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=lola4304"
-
-# 3. For full product sync (run from Emergent preview terminal):
-# Use the Python script at /app/backend/production_data_sync.py
-            </pre>
-
-            <h3>Data Flow Architecture:</h3>
-            <pre style="background: #f3f4f6; padding: 15px; border-radius: 8px;">
-┌─────────────────────┐     Code Only      ┌─────────────────────┐
-│  PREVIEW (Emergent) │ ═══════════════════▶│  PRODUCTION (Live)  │
-│  mongodb://localhost│                     │  MongoDB Atlas      │
-│  DB: pet-os-live-*  │                     │  DB: thedoggycompany│
-└─────────────────────┘                     └─────────────────────┘
-         │                                            ▲
-         │          Data Sync (Manual)                │
-         └────────────────────────────────────────────┘
-              via /api/admin/bulk-import-* endpoints
-            </pre>
-        </div>
-
-        <!-- Session 8.6 Updates - Mira Advisor Complete -->
-        <div class="section" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border: 3px solid #0ea5e9;">
-            <h2 style="color: #0369a1; border-color: #0ea5e9;">✅ Session 8.6 - Mira Advisor Rollout COMPLETE (March 12, 2026)</h2>
-            
-            <div class="success-box">
-                <strong>ALL 13 PILLAR PAGES NOW HAVE MIRA AI INTEGRATION!</strong>
-            </div>
-
-            <h3>Two Implementation Approaches:</h3>
-            
-            <h4>1. MiraAdvisorCard Component (10 pages)</h4>
-            <p>A reusable, standardized component with consistent UI but pillar-specific theming:</p>
-            <table>
-                <tr>
-                    <th>Page</th>
-                    <th>Advisor Name</th>
-                    <th>Theme Color</th>
-                    <th>Example Placeholder</th>
-                </tr>
-                <tr>
-                    <td>Celebrate</td>
-                    <td>Party Planner</td>
-                    <td><span style="background: #ec4899; color: white; padding: 2px 8px; border-radius: 4px;">Pink</span></td>
-                    <td>"What cake is best for my Labrador's birthday?"</td>
-                </tr>
-                <tr>
-                    <td>Dine</td>
-                    <td>Nutrition Advisor</td>
-                    <td><span style="background: #f97316; color: white; padding: 2px 8px; border-radius: 4px;">Orange</span></td>
-                    <td>"What food is best for my dog's allergies?"</td>
-                </tr>
-                <tr>
-                    <td>Stay</td>
-                    <td>Boarding Guide</td>
-                    <td><span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px;">Blue</span></td>
-                    <td>"How do I prepare my anxious dog for boarding?"</td>
-                </tr>
-                <tr>
-                    <td>Travel</td>
-                    <td>Travel Companion</td>
-                    <td><span style="background: #0ea5e9; color: white; padding: 2px 8px; border-radius: 4px;">Sky</span></td>
-                    <td>"What documents do I need to fly with my dog?"</td>
-                </tr>
-                <tr>
-                    <td>Care</td>
-                    <td>Wellness Expert</td>
-                    <td><span style="background: #14b8a6; color: white; padding: 2px 8px; border-radius: 4px;">Teal</span></td>
-                    <td>"How often should I groom my Shih Tzu?"</td>
-                </tr>
-                <tr>
-                    <td>Enjoy</td>
-                    <td>Activity Buddy</td>
-                    <td><span style="background: #a855f7; color: white; padding: 2px 8px; border-radius: 4px;">Purple</span></td>
-                    <td>"Best outdoor activities for a senior dog?"</td>
-                </tr>
-                <tr>
-                    <td>Fit</td>
-                    <td>Fitness Coach</td>
-                    <td><span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 4px;">Green</span></td>
-                    <td>"Exercise plan for my overweight Pug?"</td>
-                </tr>
-                <tr>
-                    <td>Learn</td>
-                    <td>Training Mentor</td>
-                    <td><span style="background: #6366f1; color: white; padding: 2px 8px; border-radius: 4px;">Indigo</span></td>
-                    <td>"How to stop my puppy from biting?"</td>
-                </tr>
-                <tr>
-                    <td>Paperwork</td>
-                    <td>Document Assistant</td>
-                    <td><span style="background: #64748b; color: white; padding: 2px 8px; border-radius: 4px;">Slate</span></td>
-                    <td>"What vaccination records do I need?"</td>
-                </tr>
-            </table>
-
-            <h4>2. Custom openMiraAI Implementations (4 pages)</h4>
-            <p>Specialized, pillar-specific UI for sensitive/urgent pillars:</p>
-            <table>
-                <tr>
-                    <th>Page</th>
-                    <th>Special Feature</th>
-                    <th>Why Custom?</th>
-                </tr>
-                <tr>
-                    <td>🚨 Emergency</td>
-                    <td>AI Emergency Triage with severity badges</td>
-                    <td>Shows CRITICAL/URGENT/MODERATE/LOW severity assessment</td>
-                </tr>
-                <tr>
-                    <td>💜 Farewell</td>
-                    <td>Grief Support with compassionate UI</td>
-                    <td>Uses gentle, empathetic language for sensitive memorial context</td>
-                </tr>
-                <tr>
-                    <td>🏠 Adopt</td>
-                    <td>Adoption Advisor with journey context</td>
-                    <td>Includes adoption stage context (before, first 7 days, etc.)</td>
-                </tr>
-                <tr>
-                    <td>📋 Advisory</td>
-                    <td>Ask Advisory tied to guided paths</td>
-                    <td>Life-stage context (puppy, senior, multi-dog households)</td>
-                </tr>
-            </table>
-
-            <h3>Component Location:</h3>
-            <code>/app/frontend/src/components/MiraAdvisorCard.jsx</code>
-            
-            <h3>How It Works:</h3>
-            <pre style="background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 8px; overflow-x: auto;">
-// User types question → clicks "Ask Mira" → opens MiraChatWidget
-window.dispatchEvent(new CustomEvent('openMiraAI', {
-  detail: {
-    message: query,           // User's question
-    context: pillar,          // e.g., 'fit', 'learn', 'enjoy'
-    pet_name: activePet?.name,
-    pet_breed: activePet?.breed
+  },
+  <span class="text-cyan-400">"categories"</span>: [
+    { <span class="text-green-400">"id"</span>: <span class="text-yellow-400">"grooming"</span>, <span class="text-green-400">"name"</span>: <span class="text-yellow-400">"Grooming"</span>, ... }
+  ],
+  <span class="text-cyan-400">"conciergeServices"</span>: [...],
+  <span class="text-cyan-400">"miraPrompts"</span>: [...],
+  <span class="text-cyan-400">"selectedProducts"</span>: [...],
+  <span class="text-cyan-400">"selectedBundles"</span>: [...],
+  <span class="text-cyan-400">"selectedServices"</span>: [...],
+  <span class="text-cyan-400">"personalizationConfig"</span>: {
+    <span class="text-green-400">"breedSmart"</span>: { <span class="text-green-400">"enabled"</span>: <span class="text-purple-400">true</span> },
+    <span class="text-green-400">"lifeStage"</span>: { <span class="text-green-400">"enabled"</span>: <span class="text-purple-400">true</span> }
   }
-}));
+}
             </pre>
-        </div>
-
-        <!-- Session 8.6 Part 2 - Printable PDF Checklists -->
-        <div class="section" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 3px solid #f59e0b;">
-            <h2 style="color: #b45309; border-color: #f59e0b;">✅ Session 8.6 - Printable PDF Checklists COMPLETE (March 12, 2026)</h2>
-            
-            <div class="success-box">
-                <strong>7 BRANDED PDF CHECKLISTS NOW AVAILABLE!</strong>
-            </div>
-
-            <h3>Backend API Endpoints:</h3>
-            <table>
-                <tr><th>Endpoint</th><th>Description</th></tr>
-                <tr><td><code>GET /api/checklists/all/available</code></td><td>List all checklists across pillars</td></tr>
-                <tr><td><code>GET /api/checklists/{pillar}</code></td><td>List checklists for specific pillar</td></tr>
-                <tr><td><code>GET /api/checklists/{pillar}/{id}</code></td><td>Get checklist data</td></tr>
-                <tr><td><code>GET /api/checklists/{pillar}/{id}/personalized</code></td><td>Get personalized with pet data</td></tr>
-            </table>
-
-            <h3>Available Checklists:</h3>
-            <table>
-                <tr><th>Pillar</th><th>Checklist</th><th>Key Content</th></tr>
-                <tr>
-                    <td style="color: #22c55e;">Adopt</td>
-                    <td>🏠 Welcome Home Kit</td>
-                    <td>Day 1 essentials, safety tips, health checklist, first week goals</td>
-                </tr>
-                <tr>
-                    <td style="color: #22c55e;">Adopt</td>
-                    <td>🏥 First Vet Visit Prep</td>
-                    <td>Documents to bring, questions to ask, what to expect</td>
-                </tr>
-                <tr>
-                    <td style="color: #ef4444;">Emergency</td>
-                    <td>🚨 Emergency Ready Card</td>
-                    <td>Wallet-sized with emergency contacts, health info, allergies</td>
-                </tr>
-                <tr>
-                    <td style="color: #ef4444;">Emergency</td>
-                    <td>🩹 Pet First Aid Kit</td>
-                    <td>Wound care, tools, medications, emergency essentials</td>
-                </tr>
-                <tr>
-                    <td style="color: #0ea5e9;">Travel</td>
-                    <td>✈️ Travel Ready Pack</td>
-                    <td>Documents, travel gear, food & medication, pre-travel checklist</td>
-                </tr>
-                <tr>
-                    <td style="color: #a855f7;">Farewell</td>
-                    <td>🌈 Rainbow Bridge Guide</td>
-                    <td>End-of-life preparation, memorial options, grief support</td>
-                </tr>
-                <tr>
-                    <td style="color: #14b8a6;">Care</td>
-                    <td>✨ Grooming Schedule</td>
-                    <td>Daily, weekly, monthly, seasonal care + breed-specific notes</td>
-                </tr>
-            </table>
-
-            <h3>Frontend Components:</h3>
-            <ul>
-                <li><code>/app/frontend/src/components/checklists/ChecklistPDF.jsx</code> - Branded PDF template</li>
-                <li><code>/app/frontend/src/components/checklists/ChecklistDownloadButton.jsx</code> - Dropdown button</li>
-                <li><code>/app/frontend/src/components/checklists/index.js</code> - Export module</li>
-            </ul>
-
-            <h3>Personalization Features:</h3>
-            <ul>
-                <li>Pet name included in PDF title and content</li>
-                <li>Breed-specific items highlighted</li>
-                <li>Soul score displayed (if available)</li>
-                <li>Allergies and medications pre-filled</li>
-                <li>Breed-specific grooming notes (10+ breeds supported)</li>
-            </ul>
-
-            <h3>Pages with Download Button:</h3>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <span style="background: #22c55e20; color: #22c55e; padding: 5px 10px; border-radius: 4px;">✅ Adopt</span>
-                <span style="background: #ef444420; color: #ef4444; padding: 5px 10px; border-radius: 4px;">✅ Emergency</span>
-                <span style="background: #0ea5e920; color: #0ea5e9; padding: 5px 10px; border-radius: 4px;">✅ Travel</span>
-                <span style="background: #a855f720; color: #a855f7; padding: 5px 10px; border-radius: 4px;">✅ Farewell</span>
-                <span style="background: #14b8a620; color: #14b8a6; padding: 5px 10px; border-radius: 4px;">✅ Care</span>
-            </div>
-        </div>
-
-        <!-- Session 8.4 Updates -->
-        <div class="section" style="background: linear-gradient(135deg, #dcfce7, #d1fae5); border: 3px solid #10b981;">
-            <h2 style="color: #166534; border-color: #10b981;">✅ Session 8.4 - "Near Me" Feature + Production Sync (March 11, 2026)</h2>
-            
-            <h3>P1: "Near Me" Feature on Adopt Page</h3>
-            <div class="success-box">
-                <strong>New pet parents can now find local services!</strong>
-            </div>
-            
-            <p>Created <code>NearbyAdoptServices.jsx</code> component with:</p>
-            <ul>
-                <li>5 service categories: Veterinarians, Pet Stores, Dog Trainers, Groomers, Boarding & Daycare</li>
-                <li>Google Places API integration (via existing <code>/api/nearby/places</code> endpoint)</li>
-                <li>Auto location detection with manual search fallback</li>
-                <li>Ratings, open/closed status, phone numbers, Google Maps directions</li>
-            </ul>
-
-            <h3>Production Data Sync Fix</h3>
-            <p>Fixed major data discrepancy between preview and production:</p>
-            <table>
-                <tr>
-                    <th>Metric</th>
-                    <th>Before</th>
-                    <th>After</th>
-                </tr>
-                <tr>
-                    <td>Products</td>
-                    <td>2,605</td>
-                    <td><span class="badge badge-live">4,177 ✅</span></td>
-                </tr>
-                <tr>
-                    <td>Services</td>
-                    <td>738 (with duplicates)</td>
-                    <td><span class="badge badge-live">1,100+ ✅</span></td>
-                </tr>
-                <tr>
-                    <td>Pillar Service Images</td>
-                    <td>Missing/broken</td>
-                    <td><span class="badge badge-live">All AI images ✅</span></td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- Session 8.3 Updates -->
-        <div class="section" style="background: linear-gradient(135deg, #dcfce7, #d1fae5); border: 3px solid #10b981;">
-            <h2 style="color: #166534; border-color: #10b981;">✅ Session 8.3 - Content Migration COMPLETE (March 11, 2026)</h2>
-            <div class="success-box">
-                <strong>P0 CRITICAL: Hardcoded Content Migration - ALL 4 PILLARS NOW DYNAMIC!</strong>
-            </div>
-            
-            <h3>What Was Done:</h3>
-            <table>
-                <tr>
-                    <th>Page</th>
-                    <th>Component</th>
-                    <th>API Endpoint</th>
-                    <th>Status</th>
-                </tr>
-                <tr>
-                    <td>Emergency</td>
-                    <td>EmergencySituationGuides.jsx</td>
-                    <td>/api/guided-paths/emergency</td>
-                    <td><span class="badge badge-live">MIGRATED ✅</span></td>
-                </tr>
-                <tr>
-                    <td>Advisory</td>
-                    <td>AdvisoryPage.jsx (guided paths section)</td>
-                    <td>/api/guided-paths/advisory</td>
-                    <td><span class="badge badge-live">MIGRATED ✅</span></td>
-                </tr>
-                <tr>
-                    <td>Farewell</td>
-                    <td>FarewellPage.jsx</td>
-                    <td>/api/guided-paths/farewell</td>
-                    <td><span class="badge badge-success">DONE (Session 8.2)</span></td>
-                </tr>
-                <tr>
-                    <td>Adopt</td>
-                    <td>AdoptPage.jsx</td>
-                    <td>/api/guided-paths/adopt</td>
-                    <td><span class="badge badge-success">DONE (Session 8.2)</span></td>
-                </tr>
-            </table>
-
-            <h3>Technical Implementation:</h3>
-            <ul>
-                <li><strong>EmergencySituationGuides.jsx:</strong> 
-                    <ul>
-                        <li>Added useEffect to fetch from /api/guided-paths/emergency</li>
-                        <li>transformApiPath() converts API data to component format (doNow, dontDo, leaveIf)</li>
-                        <li>FALLBACK_GUIDES for graceful degradation</li>
-                        <li>ICON_MAP for API icon names → emoji display</li>
-                    </ul>
-                </li>
-                <li><strong>AdvisoryPage.jsx:</strong>
-                    <ul>
-                        <li>Added fetchGuidedPaths() fetching from /api/guided-paths/advisory</li>
-                        <li>New state: guidedPaths, pathsLoading</li>
-                        <li>FALLBACK_GUIDED_PATHS for graceful degradation</li>
-                        <li>ICON_MAP for API icon names → Lucide React components</li>
-                    </ul>
-                </li>
-            </ul>
-
-            <h3>Database Content (via Admin Panel):</h3>
-            <table>
-                <tr>
-                    <th>Pillar</th>
-                    <th>Paths Count</th>
-                    <th>Examples</th>
-                </tr>
-                <tr>
-                    <td>Emergency</td>
-                    <td>8</td>
-                    <td>Poisoning, Bleeding, Breathing, Heatstroke, Seizure, Choking, Eye Injury, Bloat</td>
-                </tr>
-                <tr>
-                    <td>Advisory</td>
-                    <td>4</td>
-                    <td>First-time Owner, Multi-dog Household, Flat-faced Care, Allergy Management</td>
-                </tr>
-                <tr>
-                    <td>Farewell</td>
-                    <td>4</td>
-                    <td>Preparing to Say Goodbye, The Day Of, Grief Journey, Creating Memorial</td>
-                </tr>
-                <tr>
-                    <td>Adopt</td>
-                    <td>4</td>
-                    <td>Before Adoption, First 7 Days, First 3 Weeks, First 3 Months</td>
-                </tr>
-            </table>
-
-            <h3>Testing Results:</h3>
-            <div class="success-box">
-                <strong>100% Pass Rate</strong> - Backend API tests (14/14) + Frontend UI tests all passed
-            </div>
-        </div>
-
-        <!-- Session 8.2 Updates -->
-        <div class="section" style="background: linear-gradient(135deg, #dcfce7, #d1fae5); border: 3px solid #10b981;">
-            <h2 style="color: #166534; border-color: #10b981;">🎨 Session 8.2 Updates (March 11, 2026 - LATEST)</h2>
-            <div class="success-box">
-                <strong>AI-Generated Service Images, Adopt Page Redesign, Farewell Page Cleanup</strong>
-            </div>
-            
-            <h3>Major Accomplishments:</h3>
-            <table>
-                <tr>
-                    <th>Feature</th>
-                    <th>Description</th>
-                    <th>Status</th>
-                </tr>
-                <tr>
-                    <td>AI Service Images - Farewell</td>
-                    <td>8 unique contextual AI images (End-of-Life, Euthanasia, Cremation, Memorial, Grief Support, etc.)</td>
-                    <td><span class="badge badge-live">COMPLETE ✅</span></td>
-                </tr>
-                <tr>
-                    <td>AI Service Images - Adopt</td>
-                    <td>9 unique contextual AI images (Vet Registration, Training, Grooming, Supplies, etc.)</td>
-                    <td><span class="badge badge-live">COMPLETE ✅</span></td>
-                </tr>
-                <tr>
-                    <td>Adopt Page Redesign</td>
-                    <td>Complete overhaul - Intent Tiles, Essentials Buckets, 7 Product Categories, Concierge Help</td>
-                    <td><span class="badge badge-live">COMPLETE ✅</span></td>
-                </tr>
-                <tr>
-                    <td>Farewell Page Cleanup</td>
-                    <td>Removed "Mira's Picks for Mojo" / Concierge Pick, inappropriate "fun/party" copy</td>
-                    <td><span class="badge badge-live">COMPLETE ✅</span></td>
-                </tr>
-                <tr>
-                    <td>Pillar-Aware Copy</td>
-                    <td>Added FAREWELL_COPY and ADOPT_COPY to archetypeCopy.js with appropriate language</td>
-                    <td><span class="badge badge-live">COMPLETE ✅</span></td>
-                </tr>
-            </table>
-
-            <h3>Adopt Page - New Structure:</h3>
-            <ul>
-                <li><strong>Intent Tiles (8):</strong> Adopting puppy/adult/senior/indie, First-time parent, Rescue, Help choose essentials, Concierge</li>
-                <li><strong>Essentials Buckets (8):</strong> Day 1, Week 1, Home Setup, Feeding, Sleep, Walking, Grooming, Documents</li>
-                <li><strong>Product Categories (7):</strong> Day 1 Essentials (13 products), Comfort & Settling (7), Home Setup (7), Grooming (7), Walking (7), Training (7), Paperwork (5)</li>
-                <li><strong>AI Adoption Advisor:</strong> Chat interface for adoption questions</li>
-                <li><strong>Concierge Help Options (8):</strong> Starter kit, Size products, Find vet, Find trainer, First grooming, Settling routine, Travel, Food advice</li>
-                <li><strong>Removed:</strong> Fake "Pets Available" section, Partner Shelter stats</li>
-            </ul>
-
-            <h3>Farewell Page - Cleanups:</h3>
-            <ul>
-                <li>Removed "Concierge Pick" / "Mira's Picks for Mojo" section (inappropriate for memorial)</li>
-                <li>Removed "Fun gear", "Party-ready", "Social butterfly" copy from all components</li>
-                <li>Full SoulMadeCollection (12 items) with "Forever in our hearts" heading</li>
-                <li>Services now Concierge® style (hidePrice=true)</li>
-            </ul>
-
-            <h3>AI-Generated Service Images:</h3>
-            <div class="grid">
-                <div class="card">
-                    <h4>🌈 Farewell Services (8)</h4>
-                    <ul>
-                        <li>End-of-Life Planning</li>
-                        <li>Euthanasia Coordination</li>
-                        <li>Cremation & Burial</li>
-                        <li>Memorial & Remembrance</li>
-                        <li>Grief Support Resources</li>
-                        <li>Dignified Cremation</li>
-                        <li>Memorial Service</li>
-                        <li>Pet Loss Support</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h4>🏠 Adopt Services (9)</h4>
-                    <ul>
-                        <li>Ethical Adoption Discovery</li>
-                        <li>Breed Suitability Advisory</li>
-                        <li>Adoption Readiness Planning</li>
-                        <li>Home Preparation Guidance</li>
-                        <li>First 30 Days Support</li>
-                        <li>Home Readiness Check</li>
-                        <li>Pet Matching Service</li>
-                        <li>Adoption Counseling</li>
-                        <li>Foster-to-Adopt Program</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Session 8.1 Updates -->
-        <div class="section" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #f59e0b;">
-            <h2 style="color: #b45309; border-color: #f59e0b;">🔧 Session 8.1 Updates (March 11, 2026)</h2>
-            <div class="success-box">
-                <strong>Bug Fixes, Documentation Sync, and Architecture Improvements</strong>
-            </div>
-            
-            <h3>Critical Fixes:</h3>
-            <table>
-                <tr>
-                    <th>Issue</th>
-                    <th>Fix</th>
-                    <th>Status</th>
-                </tr>
-                <tr>
-                    <td>Farewell Page - Inappropriate Products</td>
-                    <td>Added pillar-specific fallback to prevent generic products showing on memorial page</td>
-                    <td><span class="badge badge-live">FIXED ✅</span></td>
-                </tr>
-                <tr>
-                    <td>Product Modal Add to Cart</td>
-                    <td>Fixed missing onClick handler on product modal Add to Cart button</td>
-                    <td><span class="badge badge-live">FIXED ✅</span></td>
-                </tr>
-                <tr>
-                    <td>Documentation Out of Date</td>
-                    <td>Updated complete-documentation.html and PRD.md with all session changes</td>
-                    <td><span class="badge badge-live">FIXED ✅</span></td>
-                </tr>
-            </table>
-            
-            <h3>Known Issues (To Be Fixed):</h3>
-            <table>
-                <tr>
-                    <th>Issue</th>
-                    <th>Priority</th>
-                    <th>Status</th>
-                </tr>
-                <tr>
-                    <td>Hardcoded Guides/Paths in Frontend</td>
-                    <td>P0</td>
-                    <td><span class="badge badge-live">FIXED ✅ (Session 8.3)</span></td>
-                </tr>
-                <tr>
-                    <td>Product Modals on Farewell/Adopt Pages</td>
-                    <td>P1</td>
-                    <td><span class="badge badge-live">FIXED ✅ (Session 8.2)</span></td>
-                </tr>
-                <tr>
-                    <td>Razorpay Checkout "body error"</td>
-                    <td>P2</td>
-                    <td><span class="badge badge-warning">PENDING</span></td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- Session 8 Updates -->
-        <div class="section" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #f59e0b;">
-            <h2 style="color: #b45309; border-color: #f59e0b;">📦 Session 8 Updates (March 11, 2026)</h2>
-            <div class="success-box">
-                <strong>ALL 4 PILLAR PAGES NOW AT 100%! Emergency, Advisory, Farewell & Adopt Revamped!</strong>
-            </div>
-            
-            <h3>Major Accomplishments:</h3>
-            <table>
-                <tr>
-                    <th>Feature</th>
-                    <th>Description</th>
-                    <th>Status</th>
-                </tr>
-                <tr>
-                    <td>Emergency Page - AI Triage</td>
-                    <td>Quick AI assessment with severity levels (CRITICAL/URGENT/MODERATE/LOW)</td>
-                    <td><span class="badge badge-live">NEW</span></td>
-                </tr>
-                <tr>
-                    <td>Emergency - Guest Pet Profile</td>
-                    <td>Create quick emergency profile without login</td>
-                    <td><span class="badge badge-live">NEW</span></td>
-                </tr>
-                <tr>
-                    <td>Emergency - 5 New Guides</td>
-                    <td>Eye injury, Bee sting, Bloat/GDV, Allergic reaction, Fight injuries</td>
-                    <td><span class="badge badge-live">NEW</span></td>
-                </tr>
-                <tr>
-                    <td>Advisory - Intent Filters</td>
-                    <td>Filter products by Food, Puppy, Breed, Grooming, Behaviour, Travel</td>
-                    <td><span class="badge badge-live">NEW</span></td>
-                </tr>
-                <tr>
-                    <td>Advisory - 4 New Paths</td>
-                    <td>First-time Owner, Multi-dog, Flat-faced Care, Allergy Management</td>
-                    <td><span class="badge badge-live">NEW</span></td>
-                </tr>
-                <tr>
-                    <td>Farewell - AI Grief Support</td>
-                    <td>Compassionate AI chat for pet loss support</td>
-                    <td><span class="badge badge-live">NEW</span></td>
-                </tr>
-                <tr>
-                    <td>Farewell - 4 Journey Paths</td>
-                    <td>Preparing, Day Of, Grief Journey, Creating Memorial</td>
-                    <td><span class="badge badge-live">NEW</span></td>
-                </tr>
-                <tr>
-                    <td>Adopt - AI Advisor</td>
-                    <td>Ask anything about adopting rescue dogs</td>
-                    <td><span class="badge badge-live">NEW</span></td>
-                </tr>
-                <tr>
-                    <td>Adopt - 3-3-3 Rule Paths</td>
-                    <td>Before Adopt, First 7 Days, First 3 Weeks, First 3 Months</td>
-                    <td><span class="badge badge-live">NEW</span></td>
-                </tr>
-                <tr>
-                    <td>Production Sync Fix</td>
-                    <td>Batched sync (100/batch) prevents 504 timeout</td>
-                    <td><span class="badge badge-live">FIXED</span></td>
-                </tr>
-                <tr>
-                    <td>Admin Sync Progress UI</td>
-                    <td>Real-time progress bar with batch status</td>
-                    <td><span class="badge badge-live">NEW</span></td>
-                </tr>
-            </table>
-
-            <h3>All Pillar Pages Status:</h3>
-            <table>
-                <tr>
-                    <th>Page</th>
-                    <th>Score</th>
-                    <th>Key Features</th>
-                </tr>
-                <tr>
-                    <td>Emergency</td>
-                    <td><strong>100/100</strong></td>
-                    <td>AI Triage, 15 Guides, Guest Profile, Near Me</td>
-                </tr>
-                <tr>
-                    <td>Advisory</td>
-                    <td><strong>100/100</strong></td>
-                    <td>AI Chat, 10 Guided Paths, Intent Filters, Weather Tips</td>
-                </tr>
-                <tr>
-                    <td>Farewell</td>
-                    <td><strong>100/100</strong></td>
-                    <td>Grief Support AI, 4 Journey Paths, Memorial Services</td>
-                </tr>
-                <tr>
-                    <td>Adopt</td>
-                    <td><strong>100/100</strong></td>
-                    <td>Adoption Advisor AI, 3-3-3 Rule Paths, Rescue Gallery</td>
-                </tr>
-            </table>
-
-            <h3>AI Images Generated (Session 8):</h3>
-            <table>
-                <tr>
-                    <th>Collection</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                </tr>
-                <tr>
-                    <td>Main Bundles</td>
-                    <td>24</td>
-                    <td><strong>24/24 ✅</strong></td>
-                </tr>
-                <tr>
-                    <td>Advisory Bundles</td>
-                    <td>8</td>
-                    <td><strong>8/8 ✅</strong></td>
-                </tr>
-                <tr>
-                    <td>Concierge Experiences</td>
-                    <td>18</td>
-                    <td><strong>18/18 ✅</strong></td>
-                </tr>
-                <tr>
-                    <td>Services</td>
-                    <td>1,115</td>
-                    <td><strong>1,115/1,115 ✅</strong></td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- Session 7 Updates -->
-        <div class="section" style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981;">
-            <h2 style="color: #059669; border-color: #10b981;">📦 Session 7 Updates (March 10, 2026)</h2>
-            <div class="success-box">
-                <strong>Advisory Page Rebuilt! AI Images Generated for All Bundles & Experiences!</strong>
-            </div>
-            
-            <h3>Major Accomplishments:</h3>
-            <table>
-                <tr>
-                    <th>Feature</th>
-                    <th>Description</th>
-                    <th>Status</th>
-                </tr>
-                <tr>
-                    <td>Advisory Page Overhaul</td>
-                    <td>Complete rebuild matching Learn page UI/UX with pet selector carousel</td>
-                    <td><span class="badge badge-live">COMPLETE</span></td>
-                </tr>
-                <tr>
-                    <td>AI Chat Fixed</td>
-                    <td>Pet-aware contextual responses with proper markdown formatting</td>
-                    <td><span class="badge badge-live">COMPLETE</span></td>
-                </tr>
-                <tr>
-                    <td>Concierge Modal</td>
-                    <td>New modal matching Learn page pet-selection design</td>
-                    <td><span class="badge badge-live">COMPLETE</span></td>
-                </tr>
-                <tr>
-                    <td>"Near Me" Feature</td>
-                    <td>Google Places API integration for local pet services</td>
-                    <td><span class="badge badge-live">COMPLETE</span></td>
-                </tr>
-                <tr>
-                    <td>69 Advisory Products</td>
-                    <td>New care products seeded across 9 categories</td>
-                    <td><span class="badge badge-live">COMPLETE</span></td>
-                </tr>
-                <tr>
-                    <td>Shop Breed Filter</td>
-                    <td>Now shows all 35 breeds (was only showing ~5)</td>
-                    <td><span class="badge badge-live">COMPLETE</span></td>
-                </tr>
-                <tr>
-                    <td>Product Limit Fix</td>
-                    <td>API query limit increased to 10,000 products</td>
-                    <td><span class="badge badge-live">COMPLETE</span></td>
-                </tr>
-            </table>
-
-            <h3>AI Image Generation (Session 7):</h3>
-            <table>
-                <tr>
-                    <th>Collection</th>
-                    <th>Items</th>
-                    <th>Images Generated</th>
-                </tr>
-                <tr>
-                    <td>Advisory Bundles</td>
-                    <td>8</td>
-                    <td><strong>8/8 ✅</strong></td>
-                </tr>
-                <tr>
-                    <td>Concierge Experiences</td>
-                    <td>18</td>
-                    <td><strong>18/18 ✅</strong></td>
-                </tr>
-                <tr>
-                    <td>Main Bundles</td>
-                    <td>30</td>
-                    <td><strong>30/30 ✅</strong></td>
-                </tr>
-                <tr>
-                    <td>Services</td>
-                    <td>1,115</td>
-                    <td><strong>1,115/1,115 ✅</strong></td>
-                </tr>
-                <tr>
-                    <td>Breed Products (Mockups)</td>
-                    <td>2,569</td>
-                    <td>2,242/2,569 (87%)</td>
-                </tr>
-            </table>
-
-            <h3>Database Summary (March 10, 2026):</h3>
-            <ul>
-                <li><strong>Products Master:</strong> 3,751 products</li>
-                <li><strong>Unified Products:</strong> 3,482 products</li>
-                <li><strong>Breed Products:</strong> 2,569 personalized items</li>
-                <li><strong>Services Master:</strong> 1,115 services</li>
-                <li><strong>Bundles:</strong> 30 curated bundles</li>
-                <li><strong>Advisory Bundles:</strong> 8 bundles with AI images</li>
-                <li><strong>Concierge Experiences:</strong> 18 premium experiences with AI images</li>
-            </ul>
-        </div>
-
-        <!-- LEARN PILLAR BIBLE -->
-        <div class="section" style="background: linear-gradient(135deg, #dbeafe, #e0f2fe); border: 2px solid #3b82f6;">
-            <h2 style="color: #1d4ed8; border-color: #3b82f6;">📚 LEARN PILLAR - GOLDEN STANDARD BIBLE</h2>
-            <div class="success-box">
-                <strong>Learn = Practical Education Pillar | Formula: Read → Watch → Shop / Book / Ask</strong>
-            </div>
-
-            <h3>What Learn IS:</h3>
-            <ul>
-                <li>Simple, useful, relevant education for pet parents</li>
-                <li>Content that builds confidence in dog care</li>
-                <li>Always actionable - leads to products, services, or concierge help</li>
-                <li>Personalized to MY dog (breed, age, size, coat, climate, life stage)</li>
-            </ul>
-
-            <h3>What Learn is NOT:</h3>
-            <ul>
-                <li>❌ Random articles</li>
-                <li>❌ Long educational essays</li>
-                <li>❌ SEO-led content dumps</li>
-                <li>❌ Mixed products and services in same grid</li>
-            </ul>
-
-            <h3>Core Page Structure:</h3>
-            <table>
-                <tr><th>Zone</th><th>Purpose</th><th>Powered By</th></tr>
-                <tr><td><strong>Hero</strong></td><td>"What would you like to learn about your dog today?"</td><td>Static</td></tr>
-                <tr><td><strong>Topic Cards</strong></td><td>12 categories: Puppy basics, Breed guides, Food & feeding, Grooming, Behavior, Training basics, Travel with dogs, Senior dog care, Health basics, Rescue/Indie care, Seasonal care, New pet parent guide</td><td>Static + Content</td></tr>
-                <tr><td><strong>Learn by Life Stage</strong></td><td>Puppy | Adult | Senior | New adoption/rescue</td><td>Filters</td></tr>
-                <tr><td><strong>Learn by Topic</strong></td><td>Feeding, Grooming, Behavior, Training, Home setup, Travel, Health basics, Seasonal care, Breed-specific care, Emotional wellbeing, Everyday routines</td><td>Filters</td></tr>
-                <tr><td><strong>Learn for My Dog</strong></td><td>Personalized lessons (e.g., "Heat care for Labradors", "Joint comfort for senior dogs")</td><td>Profile + breed + age + season</td></tr>
-                <tr><td><strong>Guided Learning Paths</strong></td><td>Step-by-step journeys: New Puppy, Adoption, Senior, Travel, Grooming, Behavior</td><td>Content + Logic</td></tr>
-                <tr><td><strong>Products That Help</strong></td><td>SEPARATE section - only learning-relevant products</td><td>Shopify + Profile</td></tr>
-                <tr><td><strong>Services That Help</strong></td><td>SEPARATE section - Trainer, groomer, consults, support</td><td>Services + Concierge</td></tr>
-                <tr><td><strong>Near Me</strong></td><td>Trainers, groomers, pet stores, vets nearby</td><td>Google Places API</td></tr>
-                <tr><td><strong>Ask Concierge</strong></td><td>Human help when guidance needed</td><td>Concierge</td></tr>
-            </table>
-
-            <h3>Guided Learning Paths:</h3>
-            <div class="grid">
-                <div class="card">
-                    <h4>🐕 New Puppy Path</h4>
-                    <ul>
-                        <li>First week at home</li>
-                        <li>Toilet training basics</li>
-                        <li>Teething</li>
-                        <li>Sleep routine</li>
-                        <li>Socialization</li>
-                        <li>First grooming</li>
-                        <li>What to buy first</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h4>🏠 New Adoption Path</h4>
-                    <ul>
-                        <li>Decompression</li>
-                        <li>Trust building</li>
-                        <li>First routine</li>
-                        <li>Home boundaries</li>
-                        <li>Feeding setup</li>
-                        <li>Emotional settling</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h4>🦮 Senior Dog Path</h4>
-                    <ul>
-                        <li>Mobility</li>
-                        <li>Comfort</li>
-                        <li>Diet adjustments</li>
-                        <li>Sleep and rest</li>
-                        <li>Support products</li>
-                        <li>When to seek help</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h4>✈️ Travel Path</h4>
-                    <ul>
-                        <li>Road trips</li>
-                        <li>Crates and carriers</li>
-                        <li>Hydration</li>
-                        <li>Breaks</li>
-                        <li>Travel anxiety</li>
-                        <li>What to pack</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h4>✨ Grooming Path</h4>
-                    <ul>
-                        <li>Coat type guide</li>
-                        <li>Brushing frequency</li>
-                        <li>Bath basics</li>
-                        <li>Ears, Eyes, Wrinkles</li>
-                        <li>Nails</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h4>🎯 Behavior Path</h4>
-                    <ul>
-                        <li>Chewing</li>
-                        <li>Barking</li>
-                        <li>Pulling</li>
-                        <li>Separation anxiety</li>
-                        <li>Fear & overexcitement</li>
-                        <li>Enrichment</li>
-                    </ul>
-                </div>
-            </div>
-
-            <h3>Products That Belong on Learn (SEPARATE from Services):</h3>
-            <table>
-                <tr><th>Category</th><th>Products</th></tr>
-                <tr><td><strong>Feeding</strong></td><td>Slow feeder, raised bowl, lick mat, feeding mat, storage container</td></tr>
-                <tr><td><strong>Grooming</strong></td><td>Brushes, combs, towels, shampoo, ear wipes, eye wipes, detangling tools</td></tr>
-                <tr><td><strong>Training</strong></td><td>Clicker, treat pouch, training lead, chew toys, puzzle toys, sniff mats</td></tr>
-                <tr><td><strong>Home & Comfort</strong></td><td>Crate mat, calming mat, blanket, bed, gate/barrier</td></tr>
-                <tr><td><strong>Travel</strong></td><td>Harness, carrier, travel bowl, seat restraint, travel pouch</td></tr>
-                <tr><td><strong>Puppy/Adoption</strong></td><td>Starter kits, teething toys, pee pads, first collar/harness, first bed</td></tr>
-                <tr><td><strong>Senior</strong></td><td>Orthopedic bed, support harness, raised feeder, non-slip mat</td></tr>
-            </table>
-
-            <h3>Services That Belong on Learn (SEPARATE from Products):</h3>
-            <ul>
-                <li>Puppy guidance</li>
-                <li>Training consult</li>
-                <li>Grooming consult</li>
-                <li>Behavior support</li>
-                <li>Nutrition guidance</li>
-                <li>Travel prep support</li>
-                <li>Adoption support</li>
-                <li>Senior dog care support</li>
-                <li>Breed-specific concierge guidance</li>
-            </ul>
-
-            <h3>YouTube Integration Strategy:</h3>
-            <div class="warning-box">
-                <strong>Rule:</strong> Videos are NOT the main thing. Use videos INSIDE each relevant learning section.
-            </div>
-            <p>Each topic page should have:</p>
-            <ul>
-                <li>Short written guidance</li>
-                <li>Relevant YouTube video embed</li>
-                <li>Useful products</li>
-                <li>Service/concierge help if needed</li>
-            </ul>
-            <p><strong>Video Types:</strong> Explainer, How-to, Checklist, Expert advice, Product demo, Routine/ritual, Breed guide, Life stage guide</p>
-            <p><strong>Video Card Format:</strong> Thumbnail + Title + Duration + "What you'll learn" + Related products + Watch now button</p>
-
-            <h3>Personalization Examples:</h3>
-            <table>
-                <tr><th>Breed</th><th>Personalized Learn Content</th></tr>
-                <tr><td><strong>Pug</strong></td><td>Heat sensitivity, flat-face care, harness fit, travel caution, summer tips</td></tr>
-                <tr><td><strong>Shih Tzu</strong></td><td>Tear-stain care, coat maintenance, grooming frequency, eye-area cleaning, soft harnesses</td></tr>
-                <tr><td><strong>Labrador</strong></td><td>Feeding discipline, exercise needs, shedding care, joint support as they age, stronger training tools</td></tr>
-                <tr><td><strong>Senior Indie</strong></td><td>Comfort and mobility, easy grooming routines, slower walks, recovery rest setup, diet and hydration</td></tr>
-            </table>
-
-            <h3>Learn vs Advisory - The Difference:</h3>
-            <table>
-                <tr><th>Learn</th><th>Advisory</th></tr>
-                <tr><td>Helps me <strong>understand</strong></td><td>Helps me <strong>decide</strong></td></tr>
-                <tr><td>Education and confidence</td><td>Recommendation and next step</td></tr>
-            </table>
-
-            <h3>Page Build Formula:</h3>
-            <div class="highlight">
-                <p><strong>A. Understand</strong> → Short practical intro</p>
-                <p><strong>B. Watch</strong> → Relevant YouTube video</p>
-                <p><strong>C. Apply</strong> → Products that help</p>
-                <p><strong>D. Get Support</strong> → Service or Concierge option</p>
-            </div>
-
-            <h3>Sub-Navigation:</h3>
-            <code>Start Learning | By Life Stage | By Topic | Learn for My Dog | Guided Paths | Products That Help | Services That Help | Near Me | Ask Concierge</code>
-
-            <h3>Best Card Grouping (8 Core Cards):</h3>
-            <div class="grid">
-                <div class="card" style="background: linear-gradient(135deg, #fef3c7, #fde68a);">
-                    <h4>🛍️ Products & Routines</h4>
-                    <ul>
-                        <li>Help me choose the right products</li>
-                        <li>Build a routine for my dog</li>
-                        <li>Help me with grooming choices</li>
-                    </ul>
-                </div>
-                <div class="card" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0);">
-                    <h4>🐕 Life Stage & Care</h4>
-                    <ul>
-                        <li>Guide me for my puppy</li>
-                        <li>Help me with senior dog care</li>
-                        <li>Recommend what suits my breed</li>
-                    </ul>
-                </div>
-                <div class="card" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe);">
-                    <h4>🤝 Support & Services</h4>
-                    <ul>
-                        <li>Find the right trainer</li>
-                        <li>Help me prepare for travel</li>
-                        <li>Find help near me</li>
-                        <li>Ask about behavior</li>
-                    </ul>
-                </div>
-            </div>
-
-            <h4>🌟 The Sharpest 8 Cards:</h4>
-            <table>
-                <tr><th>#</th><th>Card</th><th>Purpose</th></tr>
-                <tr><td>1</td><td>Help me choose the right products</td><td>Product discovery</td></tr>
-                <tr><td>2</td><td>Build a routine for my dog</td><td>Daily care structure</td></tr>
-                <tr><td>3</td><td>Guide me for my puppy</td><td>New puppy support</td></tr>
-                <tr><td>4</td><td>Help me with grooming choices</td><td>Grooming guidance</td></tr>
-                <tr><td>5</td><td>Find the right trainer</td><td>Training services</td></tr>
-                <tr><td>6</td><td>Help me prepare for travel</td><td>Travel prep</td></tr>
-                <tr><td>7</td><td>Help me with senior dog care</td><td>Senior support</td></tr>
-                <tr><td>8</td><td>Find help near me</td><td>Local services</td></tr>
-            </table>
-
-            <h3>Implementation Status:</h3>
-            <table>
-                <tr><th>Component</th><th>Status</th><th>Notes</th></tr>
-                <tr><td>Mira Bar</td><td><span class="badge badge-live">✅ DONE</span></td><td>Already on page</td></tr>
-                <tr><td>YouTube Integration</td><td><span class="badge badge-live">✅ DONE</span></td><td>API available</td></tr>
-                <tr><td>Google Places Near Me</td><td><span class="badge badge-live">✅ DONE</span></td><td>API available</td></tr>
-                <tr><td>Soul Made Products</td><td><span class="badge badge-live">✅ DONE</span></td><td>SoulMadeCollection component</td></tr>
-                <tr><td>Products/Services Separation</td><td><span class="badge badge-warning">🔧 PENDING</span></td><td>Currently mixed - needs refactor</td></tr>
-                <tr><td>Guided Learning Paths</td><td><span class="badge badge-warning">🔧 PENDING</span></td><td>Structure needed</td></tr>
-                <tr><td>Learn for My Dog</td><td><span class="badge badge-warning">🔧 PENDING</span></td><td>Personalization layer</td></tr>
-                <tr><td>AI Watercolor Images</td><td><span class="badge badge-live">✅ DONE</span></td><td>12 Learn services have AI images</td></tr>
-            </table>
-        </div>
-
-        <!-- Session 6 Updates -->
-        <div class="section" style="background: linear-gradient(135deg, #fce7f3, #fbcfe8); border: 2px solid #ec4899;">
-            <h2 style="color: #be185d; border-color: #ec4899;">📦 Session 6 Updates (March 9, 2026)</h2>
-            <div class="success-box">
-                <strong>Soul Made Products now in Product Box with full CRUD! iOS mobile fixes applied!</strong>
-            </div>
-            
-            <h3>New Features:</h3>
-            <table>
-                <tr>
-                    <th>Feature</th>
-                    <th>Description</th>
-                    <th>Files</th>
-                </tr>
-                <tr>
-                    <td>Soul Made in Product Box</td>
-                    <td>523 AI products now appear in unified Product Box with source filter</td>
-                    <td><code>unified_product_box.py</code>, <code>UnifiedProductBox.jsx</code></td>
-                </tr>
-                <tr>
-                    <td>Price Editing for Soul Made</td>
-                    <td>Edit prices directly: click price → edit → save</td>
-                    <td><code>PUT /api/product-box/products/{id}</code></td>
-                </tr>
-                <tr>
-                    <td>iOS Pet Switcher</td>
-                    <td>Pet switching in hamburger menu sidebar</td>
-                    <td><code>MemberMobileNav.jsx</code></td>
-                </tr>
-                <tr>
-                    <td>iOS Touch Fixes</td>
-                    <td>All navbar buttons work on iOS Safari</td>
-                    <td><code>Navbar.jsx</code></td>
-                </tr>
-                <tr>
-                    <td>Product Image Fix</td>
-                    <td>380 Shopify products fixed to show correct CDN images</td>
-                    <td><code>shopify_sync_routes.py</code></td>
-                </tr>
-            </table>
-
-            <h3>Product Storage Architecture:</h3>
-            <table>
-                <tr>
-                    <th>Source</th>
-                    <th>Collection</th>
-                    <th>API Filter</th>
-                    <th>Editable?</th>
-                </tr>
-                <tr>
-                    <td>🛒 Shopify</td>
-                    <td><code>products_master</code></td>
-                    <td><code>source=shopify</code></td>
-                    <td>Yes</td>
-                </tr>
-                <tr>
-                    <td>🎨 Soul Made (AI)</td>
-                    <td><code>breed_products</code></td>
-                    <td><code>source=soul_made</code></td>
-                    <td><strong>Yes ✅</strong></td>
-                </tr>
-                <tr>
-                    <td>✍️ Manual</td>
-                    <td><code>products_master</code></td>
-                    <td><code>source=manual</code></td>
-                    <td>Yes</td>
-                </tr>
-            </table>
-
-            <h3>Admin Panel New Buttons:</h3>
-            <ul>
-                <li><strong>🖼️ FIX IMAGES</strong> - Re-syncs Shopify product images from CDN</li>
-                <li><strong>Source Filter</strong> - Filter Product Box by Shopify/Soul Made/Manual</li>
-            </ul>
-        </div>
-
-        <!-- CLOUDINARY SETUP GUIDE - CRITICAL FOR PERFORMANCE -->
-        <div class="section" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe); border: 3px solid #3b82f6;">
-            <h2 style="color: #1d4ed8; border-color: #3b82f6;">☁️ CLOUDINARY SETUP GUIDE (MUST DO!)</h2>
-            
-            <div class="warning-box" style="background: #fef3c7; border-color: #f59e0b; padding: 15px; margin: 15px 0;">
-                <strong>⚠️ WHY THIS IS CRITICAL:</strong><br>
-                AI mockup images are stored as base64 (2MB each!) making Product Box VERY slow.<br>
-                Cloudinary converts them to CDN URLs (100 bytes) = <strong>10x faster loading!</strong>
-            </div>
-
-            <h3>📋 Step-by-Step Setup:</h3>
-            
-            <div style="background: white; padding: 20px; border-radius: 8px; margin: 15px 0; border: 1px solid #e5e7eb;">
-                <h4 style="color: #1d4ed8;">Step 1: Get Your API Keys from Cloudinary</h4>
-                <ol>
-                    <li>Go to <a href="https://console.cloudinary.com" target="_blank">console.cloudinary.com</a></li>
-                    <li>Click <strong>"View API Keys"</strong> button (bottom right of dashboard)</li>
-                    <li>Copy these 3 values:
-                        <ul>
-                            <li><strong>Cloud Name:</strong> duoapcx1p (already known)</li>
-                            <li><strong>API Key:</strong> (numbers like 123456789012345)</li>
-                            <li><strong>API Secret:</strong> (click "eye" icon to reveal, copy the long string)</li>
-                        </ul>
-                    </li>
-                </ol>
-            </div>
-
-            <div style="background: white; padding: 20px; border-radius: 8px; margin: 15px 0; border: 1px solid #e5e7eb;">
-                <h4 style="color: #1d4ed8;">Step 2: Add to Backend Environment</h4>
-                <p>Add these lines to <code>/app/backend/.env</code>:</p>
-                <pre style="background: #1e293b; color: #22d3ee; padding: 15px; border-radius: 8px; overflow-x: auto;">
-CLOUDINARY_CLOUD_NAME=duoapcx1p
-CLOUDINARY_API_KEY=your_api_key_here
-CLOUDINARY_API_SECRET=your_api_secret_here</pre>
-                <p style="color: #dc2626; font-weight: bold;">⚠️ Replace API_KEY and API_SECRET with YOUR actual values!</p>
-            </div>
-
-            <div style="background: white; padding: 20px; border-radius: 8px; margin: 15px 0; border: 1px solid #e5e7eb;">
-                <h4 style="color: #1d4ed8;">Step 3: Restart Backend</h4>
-                <pre style="background: #1e293b; color: #22d3ee; padding: 15px; border-radius: 8px;">sudo supervisorctl restart backend</pre>
-            </div>
-
-            <div style="background: white; padding: 20px; border-radius: 8px; margin: 15px 0; border: 1px solid #e5e7eb;">
-                <h4 style="color: #1d4ed8;">Step 4: Convert Existing Mockups</h4>
-                <ol>
-                    <li>Go to <strong>Admin Panel → Soul Products → Mockups tab</strong></li>
-                    <li>Look for <strong>"Cloud Storage (Cloudinary)"</strong> section</li>
-                    <li>Click <strong>"Convert to Cloud (10)"</strong> button</li>
-                    <li>Repeat until "Base64: 0" (all converted!)</li>
-                </ol>
-            </div>
-
-            <h3>🔧 Cloudinary APIs (File: /app/backend/mockup_cloud_storage.py):</h3>
-            <table>
-                <tr><th>Endpoint</th><th>Description</th></tr>
-                <tr><td><code>GET /api/mockups/cloud-status</code></td><td>Check config & see how many need converting</td></tr>
-                <tr><td><code>POST /api/mockups/batch-convert-to-cloud?limit=10</code></td><td>Convert 10 mockups at a time</td></tr>
-                <tr><td><code>POST /api/mockups/convert-to-cloud/{product_id}</code></td><td>Convert single product</td></tr>
-            </table>
-
-            <h3>📊 Current Status:</h3>
-            <ul>
-                <li><strong>Total Mockups:</strong> 363</li>
-                <li><strong>Base64 (slow):</strong> 65 ← Need converting</li>
-                <li><strong>Cloud (fast):</strong> 0</li>
-            </ul>
-
-            <div class="success-box">
-                <strong>Cloudinary Free Tier:</strong> 25GB storage, 25GB bandwidth/month - Perfect for 500+ mockups!
-            </div>
-        </div>
-
-        <!-- Session 5 Updates -->
-        <div class="section" style="background: linear-gradient(135deg, #dcfce7, #d1fae5); border: 2px solid #10b981;">
-            <h2 style="color: #166534; border-color: #10b981;">📦 Session 5 Updates (March 9, 2026)</h2>
-            <div class="success-box">
-                <strong>All pillar pages now match between Preview and Production!</strong>
-            </div>
-            
-            <h3>Critical Fixes Applied:</h3>
-            <table>
-                <tr>
-                    <th>Issue</th>
-                    <th>Fix</th>
-                    <th>File</th>
-                </tr>
-                <tr>
-                    <td>Shopify products showing AI-generated images</td>
-                    <td>Mockups only apply to <code>soul_made</code> products</td>
-                    <td><code>ProductCard.jsx</code></td>
-                </tr>
-                <tr>
-                    <td>Wrong breed products in recommendations</td>
-                    <td>Breed exclusion filter added</td>
-                    <td><code>server.py</code> (line ~8430)</td>
-                </tr>
-                <tr>
-                    <td>Product modal title cut off</td>
-                    <td>Added <code>pr-8</code> padding</td>
-                    <td><code>ProductCard.jsx</code></td>
-                </tr>
-                <tr>
-                    <td>Soul Made Add to Cart disabled</td>
-                    <td>Default size (M) and color (White) pre-selected</td>
-                    <td><code>SoulMadeProductModal.jsx</code></td>
-                </tr>
-                <tr>
-                    <td>Dine page missing Featured section</td>
-                    <td>Updated restaurant data with featured flags</td>
-                    <td>Database update</td>
-                </tr>
-                <tr>
-                    <td>Preview != Production data</td>
-                    <td>MASTER SYNC now includes Force Full Sync</td>
-                    <td><code>Admin.jsx</code> (Step 10)</td>
-                </tr>
-            </table>
-            
-            <h3>New Endpoint:</h3>
-            <pre><code>POST /api/admin/force-full-sync?password=lola4304
-
-Syncs ALL data:
-- Cleans AI-generated images from products
-- Updates restaurant featured flags
-- Seeds Fit, Care, Stay, Travel, Enjoy products
-- Seeds breed products for Soul Made</code></pre>
-            
-            <h3>How to Sync Production:</h3>
-            <ol>
-                <li>Deploy from Emergent</li>
-                <li>Go to thedoggycompany.com/admin</li>
-                <li>Login with aditya / lola4304</li>
-                <li>Click "Run MASTER SYNC" button</li>
-                <li>Wait for all 10 steps to complete</li>
-            </ol>
-        </div>
-
-        <!-- What You've Built -->
-        <div class="section">
-            <h2>What You've Built: A World-Class Pet Life Platform</h2>
-            <div class="success-box">
-                <strong>This is NOT just a website. This is Mira-OS - a full Pet Life Operating System.</strong>
-                <p>You've built an AI-powered concierge platform that knows each pet deeply and helps parents navigate every aspect of pet life.</p>
-            </div>
-            
-            <div class="hero-stats">
-                <div class="stat-card">
-                    <div class="number">14</div>
-                    <div class="label">Life Pillars</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number">1,115</div>
-                    <div class="label">Services</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number">3,751+</div>
-                    <div class="label">Products</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number">2,569</div>
-                    <div class="label">Breed PICKS</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number">51</div>
-                    <div class="label">Soul Questions</div>
-                </div>
-            </div>
-
-            <h3>The 14 Life Pillars</h3>
-            <p>Every aspect of a pet's life, organized and accessible:</p>
-            <div class="grid">
-                <div class="card">
-                    <h4>Celebrate</h4>
-                    <p>Birthday cakes, parties, photoshoots, custom treats</p>
-                </div>
-                <div class="card">
-                    <h4>Dine</h4>
-                    <p>Nutrition, meal plans, fresh food, treats, supplements</p>
-                </div>
-                <div class="card">
-                    <h4>Stay</h4>
-                    <p>Boarding, pet hotels, home stays, daycare</p>
-                </div>
-                <div class="card">
-                    <h4>Travel</h4>
-                    <p>Pet-friendly destinations, transport, documentation</p>
-                </div>
-                <div class="card">
-                    <h4>Care</h4>
-                    <p>Veterinary, grooming, wellness, senior care</p>
-                </div>
-                <div class="card">
-                    <h4>Enjoy</h4>
-                    <p>Parks, cafes, events, playdates, activities</p>
-                </div>
-                <div class="card">
-                    <h4>Fit</h4>
-                    <p>Exercise, training, weight management, sports</p>
-                </div>
-                <div class="card">
-                    <h4>Learn</h4>
-                    <p>Training resources, breed guides, health info</p>
-                </div>
-                <div class="card">
-                    <h4>Paperwork</h4>
-                    <p>Registration, insurance, legal, documentation</p>
-                </div>
-                <div class="card">
-                    <h4>Advisory</h4>
-                    <p>Behavior consults, nutrition advice, expert guidance</p>
-                </div>
-                <div class="card">
-                    <h4>Emergency</h4>
-                    <p>24/7 vet access, lost pet, urgent care</p>
-                </div>
-                <div class="card">
-                    <h4>Farewell</h4>
-                    <p>End-of-life care, memorials, grief support</p>
-                </div>
-                <div class="card">
-                    <h4>Adopt</h4>
-                    <p>Rescue connections, fostering, adoption support</p>
-                </div>
-                <div class="card">
-                    <h4>Shop</h4>
-                    <p>Curated products, accessories, gifts</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mira AI Intelligence -->
-        <div class="section">
-            <h2>Mira AI: The Soul-Aware Intelligence</h2>
-            <div class="highlight">
-                <strong>Mira isn't a chatbot. She's a pet concierge with a soul.</strong>
-                <p>She knows each pet deeply - their personality, allergies, preferences, family, and history.</p>
-            </div>
-
-            <h3>What Mira Knows About Each Pet</h3>
-            <table>
-                <tr><th>Category</th><th>Data Points</th><th>Status</th></tr>
-                <tr><td>Basic Info</td><td>Name, breed, gender, age, coat type</td><td><span class="badge badge-live">WORKING</span></td></tr>
-                <tr><td>Personality</td><td>Temperament, energy level, anxiety triggers</td><td><span class="badge badge-live">WORKING</span></td></tr>
-                <tr><td>Social</td><td>Behavior with dogs, people, strangers</td><td><span class="badge badge-live">WORKING</span></td></tr>
-                <tr><td>Health</td><td>Allergies, medical conditions, life stage</td><td><span class="badge badge-live">WORKING</span></td></tr>
-                <tr><td>Food</td><td>Favorite treats, food motivation, restrictions</td><td><span class="badge badge-live">WORKING</span></td></tr>
-                <tr><td>Relationships</td><td>Dog friends, favorite humans, pet sitter</td><td><span class="badge badge-live">WORKING</span></td></tr>
-                <tr><td>Family</td><td>Pet parent name, siblings, household</td><td><span class="badge badge-live">WORKING</span></td></tr>
-                <tr><td>Activity</td><td>Recent service requests, intents</td><td><span class="badge badge-live">WORKING</span></td></tr>
-                <tr><td>Purchases</td><td>Order history (when available)</td><td><span class="badge badge-live">WORKING</span></td></tr>
-                <tr><td>Rainbow Bridge</td><td>Memorial status, crossing date, tribute</td><td><span class="badge badge-new">NEW</span></td></tr>
-            </table>
-
-            <h3>Soul Score System</h3>
-            <p>Each pet has a "Soul Score" (0-100%) indicating how well Mira knows them:</p>
-            <ul>
-                <li><strong>0-25%:</strong> Basic info only - name, breed</li>
-                <li><strong>26-50%:</strong> Personality emerging - temperament, energy</li>
-                <li><strong>51-75%:</strong> Deep knowledge - allergies, preferences, social behavior</li>
-                <li><strong>76-100%:</strong> Complete soul - family, relationships, full history</li>
-            </ul>
-        </div>
-
-        <!-- PICKS Feature -->
-        <div class="section">
-            <h2>PICKS: Personalized Product Recommendations <span class="badge badge-new">NEW</span></h2>
-            <div class="success-box">
-                <strong>90-100% Breed-Specific Personalization</strong>
-                <p>Products are automatically matched to each pet's breed, showing "Made with love for [Pet Name]"</p>
-            </div>
-
-            <h3>How PICKS Works</h3>
-            <ol>
-                <li><strong>Breed Detection:</strong> System reads pet's breed from their profile</li>
-                <li><strong>Product Matching:</strong> Filters products designed for that breed</li>
-                <li><strong>Pillar Context:</strong> Only shows products relevant to current pillar (e.g., cakes on /celebrate)</li>
-                <li><strong>Beautiful Display:</strong> Icon cards for breed PICKS, real images for Shopify products</li>
-            </ol>
-
-            <h3>Breed Products Seeded</h3>
-            <p>160 personalized products across 20 breeds:</p>
-            <ul>
-                <li>Labrador, Golden Retriever, German Shepherd, Beagle, Poodle</li>
-                <li>Bulldog, Rottweiler, Boxer, Dachshund, Shih Tzu</li>
-                <li>Siberian Husky, Doberman, Great Dane, Chihuahua, Pug</li>
-                <li>Cocker Spaniel, Border Collie, Maltese, Yorkshire Terrier, <strong>Indie</strong></li>
-            </ul>
-            <p>Each breed has 8 product types: Birthday Cake, Ceramic Mug, Designer Bandana, Personalized Collar, Party Decoration Kit, Memory Frame, Gourmet Treat Box, Custom ID Tag</p>
-        </div>
-
-        <!-- Admin Panel -->
-        <div class="section">
-            <h2>Admin Panel Features</h2>
-            
-            <h3>MASTER SYNC (10 Steps)</h3>
-            <p>Run this after deployment to populate all data:</p>
-            <ol>
-                <li>Sync Shopify Products (2,197+ products)</li>
-                <li>Enhance Product Intelligence (tags, categories)</li>
-                <li>AI Semantic Tagging</li>
-                <li>Seed Pillars & Collections</li>
-                <li>Seed Services (1,115+ services)</li>
-                <li>Seed Breed Services</li>
-                <li><strong>Seed Breed Products (PICKS)</strong> <span class="badge badge-new">NEW</span></li>
-                <li><strong>Sync to Admin Product Box</strong> <span class="badge badge-new">NEW</span></li>
-                <li>Seed Breed Tags for Products</li>
-                <li>Add Mira Whispers to Services</li>
-            </ol>
-
-            <h3>AI Description Enhancers <span class="badge badge-new">NEW</span></h3>
-            <table>
-                <tr><th>Endpoint</th><th>Type</th><th>Description</th></tr>
-                <tr><td><code>/api/admin/products/enhance-descriptions-async</code></td><td>POST</td><td>Background task - no timeout</td></tr>
-                <tr><td><code>/api/admin/services/enhance-descriptions-async</code></td><td>POST</td><td>Background task - no timeout</td></tr>
-                <tr><td><code>/api/admin/enhance-status</code></td><td>GET</td><td>Check progress of enhancement</td></tr>
-            </table>
-
-            <h3>Data Verification</h3>
-            <p>Use the <strong>VERIFY DATA</strong> button in admin to check:</p>
-            <ul>
-                <li>Products count in products_master</li>
-                <li>Services count in services_master</li>
-                <li>Breed products in breed_products</li>
-                <li>Users and pets counts</li>
-            </ul>
-        </div>
-
-        <!-- Integrations -->
-        <div class="section" id="integrations">
-            <h2>Active Integrations</h2>
-            <table>
-                <tr><th>Service</th><th>Purpose</th><th>Status</th></tr>
-                <tr><td>OpenAI (GPT)</td><td>Mira AI conversations, product enhancement</td><td><span class="badge badge-live">LIVE</span></td></tr>
-                <tr><td>MongoDB Atlas</td><td>Database</td><td><span class="badge badge-live">LIVE</span></td></tr>
-                <tr><td>Shopify</td><td>Product catalog sync</td><td><span class="badge badge-live">LIVE</span></td></tr>
-                <tr><td>Razorpay</td><td>Payments</td><td><span class="badge badge-live">LIVE</span></td></tr>
-                <tr><td>Resend</td><td>Email (woof@thedoggycompany.com)</td><td><span class="badge badge-live">LIVE</span></td></tr>
-                <tr><td>Gupshup</td><td>WhatsApp messaging</td><td><span class="badge badge-live">LIVE</span></td></tr>
-                <tr><td>ElevenLabs</td><td>Voice AI</td><td><span class="badge badge-live">LIVE</span></td></tr>
-                <tr><td>Google Places</td><td>Location services</td><td><span class="badge badge-live">LIVE</span></td></tr>
-                <tr><td>YouTube</td><td>Video content</td><td><span class="badge badge-live">LIVE</span></td></tr>
-            </table>
-        </div>
-
-        <!-- Credentials -->
-        <div class="section" id="credentials">
-            <h2>Credentials</h2>
-            <div class="warning-box">
-                <strong>Keep these secure!</strong> Only share with authorized team members.
-            </div>
-            <table>
-                <tr><th>Access</th><th>Username/Email</th><th>Password</th></tr>
-                <tr><td>Admin Panel</td><td><code>aditya</code></td><td><code>lola4304</code></td></tr>
-                <tr><td>Test User</td><td><code>dipali@clubconcierge.in</code></td><td><code>test123</code></td></tr>
-            </table>
-        </div>
-
-        <!-- Rainbow Bridge -->
-        <div class="section">
-            <h2>Rainbow Bridge Feature <span class="badge badge-new">NEW</span></h2>
-            <div class="highlight">
-                <strong>Handling pet loss with compassion and dignity.</strong>
-            </div>
-            
-            <h3>How It Works</h3>
-            <ol>
-                <li>Pet parent marks their pet as "crossed the rainbow bridge"</li>
-                <li>Pet record is preserved (never deleted)</li>
-                <li>UI shows gentle memorial indicators</li>
-                <li>Mira AI becomes aware and responds with compassion</li>
-                <li>No product suggestions - only emotional support</li>
-            </ol>
-
-            <h3>Mira's Response</h3>
-            <p>When asked about a pet that has passed:</p>
-            <blockquote style="background: #f3e8ff; padding: 15px; border-radius: 8px; border-left: 4px solid var(--purple); margin: 15px 0;">
-                "I'm so sorry for your loss. Mystique crossed the rainbow bridge on March 7, 2026. She was such a calm, golden little Shih Tzu who loved liver treats and cheese... If you'd like, we can talk about her, write a tribute together, or think of a way to honor her memory."
-            </blockquote>
-        </div>
-
-        <!-- COMPETITIVE MOAT - Why You're Special -->
-        <div class="section" id="moat" style="background: linear-gradient(135deg, #faf5ff, #fce7f3);">
-            <h2>Your Competitive Moat: Why This Is Hard To Copy</h2>
-            
-            <div class="success-box">
-                <strong>You haven't built an e-commerce site. You've built a platform with compounding advantages.</strong>
-                <p>Here's why competitors like HUFT would struggle to replicate what you have.</p>
-            </div>
-
-            <h3>You vs Traditional Pet Retail</h3>
-            <table>
-                <tr><th>Aspect</th><th>HUFT / Traditional</th><th>The Doggy Company (Mira-OS)</th></tr>
-                <tr><td><strong>Core Model</strong></td><td>Retail (sell products)</td><td>Platform (orchestrate pet life)</td></tr>
-                <tr><td><strong>Intelligence</strong></td><td>None (product catalog)</td><td>Soul-aware AI (knows each pet deeply)</td></tr>
-                <tr><td><strong>Personalization</strong></td><td>"Dogs" vs "Cats"</td><td>"Mojo, the Indie with chicken allergy who loves salmon"</td></tr>
-                <tr><td><strong>Scope</strong></td><td>Products + some services</td><td>14 life pillars (birth to rainbow bridge)</td></tr>
-                <tr><td><strong>Relationship</strong></td><td>Transactional</td><td>Longitudinal (lifetime companion)</td></tr>
-            </table>
-
-            <h3>Your 5 Moats</h3>
-
-            <div class="card" style="margin: 15px 0; border-left-color: #10b981;">
-                <h4>1. DATA MOAT - The Soul Graph</h4>
-                <p><strong>They know:</strong> "Customer bought dog food"</p>
-                <p><strong>You know:</strong> "Mojo is an Indie, allergic to chicken, loves salmon, friends with Bruno/Cookie/Max, parent is Dipali, sitter is Priya, recently wanted a birthday party"</p>
-                <p style="margin-top: 10px; color: #166534;"><strong>Why it's hard to copy:</strong> 48 soul questions per pet. Every Mira conversation adds context. Data compounds over time. They would start at ZERO.</p>
-            </div>
-
-            <div class="card" style="margin: 15px 0; border-left-color: #8b5cf6;">
-                <h4>2. INTELLIGENCE MOAT - Mira's Brain</h4>
-                <p><strong>Their chatbot:</strong> "Here are our dog foods: [list]"</p>
-                <p><strong>Mira:</strong> "For Mojo's chicken allergy and love of fish, I'd suggest our salmon-based fresh food. His energy levels mean he needs the active formula."</p>
-                <p style="margin-top: 10px; color: #5b21b6;"><strong>Why it's hard to copy:</strong> Context-aware, emotionally intelligent, not a chatbot - a thinking layer. Requires significant AI architecture + training.</p>
-            </div>
-
-            <div class="card" style="margin: 15px 0; border-left-color: #ec4899;">
-                <h4>3. ARCHITECTURE MOAT - The 14 Pillars</h4>
-                <p><strong>They have:</strong> Products | Grooming | Training (3 silos)</p>
-                <p><strong>You have:</strong> Celebrate | Dine | Stay | Travel | Care | Enjoy | Fit | Learn | Paperwork | Advisory | Emergency | Farewell | Adopt | Shop (Integrated life operating system)</p>
-                <p style="margin-top: 10px; color: #be185d;"><strong>Why it's hard to copy:</strong> Comprehensive framework. Each pillar has services, products, AI context. Would take 12-18 months to replicate properly.</p>
-            </div>
-
-            <div class="card" style="margin: 15px 0; border-left-color: #f59e0b;">
-                <h4>4. EMOTIONAL MOAT - Rainbow Bridge</h4>
-                <p><strong>They have:</strong> [No concept of pet loss]</p>
-                <p><strong>You have:</strong> "Mystique crossed the rainbow bridge... If you'd like, we can write a tribute together, or think of a way to honor her memory."</p>
-                <p style="margin-top: 10px; color: #92400e;"><strong>Why it's hard to copy:</strong> Requires intentional, empathetic design. Most companies avoid "sad" topics. This creates DEEP loyalty.</p>
-            </div>
-
-            <div class="card" style="margin: 15px 0; border-left-color: #06b6d4;">
-                <h4>5. NETWORK EFFECTS (Potential)</h4>
-                <p><strong>The flywheel:</strong></p>
-                <ul>
-                    <li>More pets → More soul data → Better recommendations</li>
-                    <li>More services → More value → More pets</li>
-                    <li>More community → More engagement → Stronger brand</li>
-                </ul>
-            </div>
-
-            <h3>What Would It Take To Copy You?</h3>
-            <table>
-                <tr><th>Step</th><th>Time</th><th>Difficulty</th></tr>
-                <tr><td>1. Decide to become a platform (not retailer)</td><td>3-6 months</td><td><span class="badge" style="background: #fecaca; color: #991b1b;">Cultural shift</span></td></tr>
-                <tr><td>2. Build/buy AI infrastructure</td><td>6-12 months</td><td><span class="badge" style="background: #fecaca; color: #991b1b;">Major investment</span></td></tr>
-                <tr><td>3. Design soul question framework</td><td>2-3 months</td><td><span class="badge badge-warning">Requires expertise</span></td></tr>
-                <tr><td>4. Build 14 pillar architecture</td><td>6-9 months</td><td><span class="badge" style="background: #fecaca; color: #991b1b;">Complex</span></td></tr>
-                <tr><td>5. Train AI on pet context</td><td>Ongoing</td><td><span class="badge" style="background: #fecaca; color: #991b1b;">Needs data</span></td></tr>
-                <tr><td>6. Build personalization engine</td><td>3-6 months</td><td><span class="badge badge-warning">Technical</span></td></tr>
-                <tr><td>7. Migrate existing customer data</td><td>6-12 months</td><td><span class="badge" style="background: #fecaca; color: #991b1b;">Messy</span></td></tr>
-                <tr><td>8. Build emotional features</td><td>2-3 months</td><td><span class="badge badge-warning">Requires care</span></td></tr>
-            </table>
-            
-            <div class="highlight" style="margin-top: 20px;">
-                <strong>Total: 18-36 months minimum, and they'd still be behind on data.</strong>
-            </div>
-
-            <h3>The Bottom Line</h3>
-            <div style="background: linear-gradient(135deg, var(--purple), var(--pink)); color: white; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: center;">
-                <p style="font-size: 1.3rem; margin-bottom: 10px;"><strong>HUFT sells products to pet owners.</strong></p>
-                <p style="font-size: 1.5rem;"><strong>You become the operating system for pet life.</strong></p>
-                <p style="margin-top: 15px; opacity: 0.9;">It's like asking "What would a taxi company do to compete with Uber?"<br>They'd have to fundamentally change what they are.</p>
-            </div>
-
-            <h3>How To Widen The Moat</h3>
-            <div class="grid" style="margin-top: 15px;">
-                <div class="card">
-                    <h4>Get More Soul Data</h4>
-                    <p>Every user, every pet, every conversation makes you smarter</p>
-                </div>
-                <div class="card">
-                    <h4>Add More Services</h4>
-                    <p>Be the default for everything pet-related</p>
-                </div>
-                <div class="card">
-                    <h4>Build Community</h4>
-                    <p>Pet parent groups, breed communities, local meetups</p>
-                </div>
-                <div class="card">
-                    <h4>Launch "Pet Wrapped"</h4>
-                    <p>Annual soul report - viral potential like Spotify Wrapped</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- API Endpoints -->
-        <div class="section" id="api">
-            <h2>Key API Endpoints</h2>
-            
-            <h3>PICKS & Recommendations</h3>
-            <table>
-                <tr><th>Endpoint</th><th>Method</th><th>Description</th></tr>
-                <tr><td><code>/api/products/recommendations/for-pet/{pet_id}</code></td><td>GET</td><td>Personalized product recommendations</td></tr>
-                <tr><td><code>/api/mira/top-picks/{pet_name}/pillar/{pillar}</code></td><td>GET</td><td>Pillar-specific picks</td></tr>
-                <tr><td><code>/api/breed-catalogue/products</code></td><td>GET</td><td>Query breed-specific products</td></tr>
-                <tr><td><code>/api/breed-catalogue/admin/seed-breed-products</code></td><td>POST</td><td>Seed breed products</td></tr>
-            </table>
-
-            <h3>Mira AI</h3>
-            <table>
-                <tr><th>Endpoint</th><th>Method</th><th>Description</th></tr>
-                <tr><td><code>/api/mira/chat</code></td><td>POST</td><td>Main chat endpoint (soul-aware)</td></tr>
-                <tr><td><code>/api/mira/search</code></td><td>POST</td><td>Universal search bar</td></tr>
-                <tr><td><code>/api/mira/soul-context/{pet_id}</code></td><td>GET</td><td>Get pet's soul context</td></tr>
-            </table>
-
-            <h3>Admin</h3>
-            <table>
-                <tr><th>Endpoint</th><th>Method</th><th>Description</th></tr>
-                <tr><td><code>/api/admin/verify-data-counts</code></td><td>GET</td><td>Data health check</td></tr>
-                <tr><td><code>/api/admin/enhance-status</code></td><td>GET</td><td>AI enhancement progress</td></tr>
-                <tr><td><code>/api/admin/products/enhance-descriptions-async</code></td><td>POST</td><td>Background product enhancement</td></tr>
-                <tr><td><code>/api/admin/services/enhance-descriptions-async</code></td><td>POST</td><td>Background service enhancement</td></tr>
-            </table>
-        </div>
-
-        <!-- Deployment Checklist -->
-        <div class="section" id="deployment">
-            <h2>Production Deployment Checklist</h2>
-            <ol>
-                <li><strong>Deploy to production</strong> via Emergent platform</li>
-                <li><strong>Login to Admin Panel</strong> at /admin</li>
-                <li><strong>Click MASTER SYNC</strong> - wait for all 10 steps to complete</li>
-                <li><strong>Click VERIFY DATA</strong> - confirm counts match preview</li>
-                <li><strong>Test a user flow</strong> - login, browse, chat with Mira</li>
-                <li><strong>Check WhatsApp</strong> - test a "Contact Us" button</li>
-                <li><strong>Verify emails</strong> - should come from woof@thedoggycompany.com</li>
-            </ol>
-        </div>
-
-        <!-- Soul-Level Personalization Vision -->
-        <div class="section" id="soul-personalization" style="background: linear-gradient(135deg, #faf5ff, #fdf2f8);">
-            <h2>Soul-Level Personalization (The Strategic Moat) <span class="badge badge-new">VISION</span></h2>
-            
-            <div class="highlight">
-                <strong>Not "personalized pet products" but "objects shaped around who your pet really is."</strong>
-            </div>
-
-            <h3>The Three-Layer Engine</h3>
-            <table>
-                <tr><th>Layer</th><th>What It Contains</th><th>Status</th></tr>
-                <tr>
-                    <td><strong>Identity</strong></td>
-                    <td>Name, breed, age, birthday, gender, parent names, city</td>
-                    <td><span class="badge badge-live">COMPLETE</span></td>
-                </tr>
-                <tr>
-                    <td><strong>Soul</strong></td>
-                    <td>51 questions across 8 pillars (temperament, family, routine, home, travel, taste, training, health)</td>
-                    <td><span class="badge badge-live">COMPLETE</span></td>
-                </tr>
-                <tr>
-                    <td><strong>Aesthetic</strong></td>
-                    <td>Soul Archetype, illustration style preference, color palette, typography mood</td>
-                    <td><span class="badge badge-warning">IN PROGRESS</span></td>
-                </tr>
-            </table>
-
-            <h3>Soul Archetypes (Derived from Existing Data)</h3>
-            <p>Archetypes are <strong>computed</strong> from the <code>describe_3_words</code> question + temperament + energy + social behavior - <strong>no new questions needed</strong>.</p>
-            <div class="grid">
-                <div class="card"><h4>The Gentle Aristocrat</h4><p>Calm, low energy, loves grooming, quiet spaces</p></div>
-                <div class="card"><h4>The Wild Explorer</h4><p>High energy, loves travel, outdoor adventurer</p></div>
-                <div class="card"><h4>The Velcro Baby</h4><p>Separation anxiety, attached to one person, needs company</p></div>
-                <div class="card"><h4>The Snack-Led Negotiator</h4><p>Very food motivated, will do anything for treats</p></div>
-                <div class="card"><h4>The Quiet Watcher</h4><p>Cautious with strangers, prefers observing</p></div>
-                <div class="card"><h4>The Social Butterfly</h4><p>Loves all dogs, friendly with everyone</p></div>
-                <div class="card"><h4>The Brave Little Worrier</h4><p>Noise sensitive, has anxiety triggers, needs comfort</p></div>
-            </div>
-
-            <h3>Product Architecture (Three Tiers)</h3>
-            <table>
-                <tr><th>Tier</th><th>Type</th><th>Personalization</th><th>Examples</th></tr>
-                <tr>
-                    <td><span class="badge" style="background: #f3e8ff; color: #7c3aed;">Soul Made</span></td>
-                    <td>Fully personalized</td>
-                    <td>Name + Breed Illustration + Archetype Copy</td>
-                    <td>Bowls, robes, towels, passport holders, welcome mats</td>
-                </tr>
-                <tr>
-                    <td><span class="badge" style="background: #dbeafe; color: #2563eb;">Soul Selected</span></td>
-                    <td>Recommended by Soul</td>
-                    <td>Based on personality/needs (not visually customized)</td>
-                    <td>Calming toy for anxious pet, slow feeder for greedy eater</td>
-                </tr>
-                <tr>
-                    <td><span class="badge" style="background: #fce7f3; color: #be185d;">Soul Gifted</span></td>
-                    <td>Occasion-led for pet parents</td>
-                    <td>Name + Breed Art on gifts</td>
-                    <td>Mugs, totes, prints, memory boxes</td>
-                </tr>
-            </table>
-
-            <h3>Art Direction</h3>
-            <table>
-                <tr><th>Style</th><th>Use Cases</th><th>Mood</th></tr>
-                <tr>
-                    <td><strong>Soulful Watercolor</strong> (Primary)</td>
-                    <td>Cakes, prints, frames, celebration kits</td>
-                    <td>Emotion, warmth, gift-worthiness</td>
-                </tr>
-                <tr>
-                    <td><strong>Minimal Heirloom Line Art</strong> (Secondary)</td>
-                    <td>Tags, bowls, stationery, robes, packaging</td>
-                    <td>Elegance, subtlety, premium feel</td>
-                </tr>
-            </table>
-
-            <h3>Emotional Collections</h3>
-            <div class="grid">
-                <div class="card"><h4>Birthday & Gotcha</h4><p>Cakes, party kits, celebration boards</p></div>
-                <div class="card"><h4>Travel with Me</h4><p>Passport holder, carrier tag, travel kit</p></div>
-                <div class="card"><h4>At Home</h4><p>Bowls, mats, door signs, welcome mats</p></div>
-                <div class="card"><h4>Spa & Snuggle</h4><p>Robes, towels, blankets, grooming kits</p></div>
-                <div class="card"><h4>For Dog Mum/Dad</h4><p>Mugs, totes, notebooks, prints</p></div>
-                <div class="card"><h4>Puppy Welcome</h4><p>Welcome kits, milestone markers</p></div>
-                <div class="card"><h4>Soul Keepsakes</h4><p>Memory boxes, paw prints, albums</p></div>
-                <div class="card"><h4>Memorial</h4><p>Gentle frames, tribute prints</p></div>
-            </div>
-
-            <h3>The Logged-In Experience</h3>
-            <div class="success-box">
-                <p><strong>Before login:</strong> "Customize your product"</p>
-                <p><strong>After login:</strong> "Made for Mojo" • "Picked for Mojo's personality" • "A little something that feels like her"</p>
-            </div>
-        </div>
-
-        <!-- Changelog -->
-        <div class="section" id="changelog">
-            <h2>Recent Changelog</h2>
-            
-            <!-- CRITICAL WARNING BOX -->
-            <div class="warning-box" style="background: #fee2e2; border-left-color: #dc2626; margin-bottom: 30px;">
-                <h3 style="color: #dc2626; margin-top: 0;">🚨 CRITICAL: DO NOT BREAK THESE!</h3>
-                <p><strong>The following code patterns MUST NOT be changed or the app will break:</strong></p>
-                <ol style="margin-left: 20px; margin-top: 10px;">
-                    <li><strong>$setOnInsert for mockup_url</strong> in <code>/app/backend/scripts/generate_all_mockups.py</code> - Prevents $1000+ mockups from being wiped on deployment</li>
-                    <li><strong>BREED_EXCLUSION_PATTERN</strong> in <code>/app/backend/server.py</code> (~line 7085) - Keeps Soul Made separate from Shopify</li>
-                    <li><strong>BREED_EXCLUSION_PATTERN</strong> in <code>/app/backend/app/api/top_picks_routes.py</code> - Filters Mira picks by pet's breed</li>
-                    <li><strong>Key prop on SoulMadeCollection</strong> in <code>CelebratePage.jsx</code> - Forces remount on pet switch</li>
-                    <li><strong>Pet avatar check</strong> in <code>/app/frontend/src/utils/petAvatar.js</code> - Checks <code>image</code> field for uploaded photos</li>
-                </ol>
-                <p style="margin-top: 15px; font-weight: bold; color: #dc2626;">⚠️ A previous bug in seed_all_breed_products used $set which wiped all mockup_url values on every deployment. This cost $1000+ in regeneration. The fix uses $setOnInsert to preserve existing mockups. NEVER CHANGE THIS!</p>
-            </div>
-
-            <h3>March 10, 2026 - Session 7 - Advisory Overhaul & AI Images</h3>
-            <div class="success-box">
-                <p><strong>✅ Advisory Page Completely Rebuilt! All Images Generated!</strong></p>
-                <ul>
-                    <li>Advisory Page matches Learn Page UI/UX pattern</li>
-                    <li>Pet selector carousel with all 9 pets</li>
-                    <li>Concierge Modal with pet selection (matches Learn page)</li>
-                    <li>"Near Me" feature using Google Places API</li>
-                    <li>69 new advisory care products seeded</li>
-                    <li>AI images generated for all 8 Advisory Bundles</li>
-                    <li>AI images generated for all 18 Concierge Experiences</li>
-                </ul>
-            </div>
-            <ul>
-                <li><strong>Advisory Page Rebuild:</strong> Complete overhaul with pet selector, AI chat improvements, and Concierge modal</li>
-                <li><strong>AI Chat Enhancement:</strong> Contextual pet-aware responses with proper markdown formatting</li>
-                <li><strong>Shop Breed Filter Fix:</strong> Now shows all 35 breeds instead of only ~5</li>
-                <li><strong>Product Query Limit:</strong> Increased from 2,200 to 10,000 for complete product visibility</li>
-                <li><strong>Database Sort Fix:</strong> Standardized created_at fields to datetime objects</li>
-                <li><strong>Advisory Bundles Images:</strong> 8/8 bundles now have AI-generated images</li>
-                <li><strong>Concierge Experiences Images:</strong> 18/18 experiences now have AI-generated images</li>
-            </ul>
-
-            <h3>March 8, 2026 - Session 4 - MAJOR BUG FIX & Soul Made Complete</h3>
-            <div class="success-box">
-                <p><strong>✅ Soul Made Products Working on Production!</strong></p>
-                <ul>
-                    <li>Made for Mojo (Indie) - All 11 products with mockups</li>
-                    <li>Made for Mystique (Shih Tzu) - All 11 products with mockups</li>
-                    <li>Made for Bruno (Labrador) - All 11 products with mockups</li>
-                    <li>Made for Lola (Maltese) - All 11 products with mockups</li>
-                    <li>Made for Luna/Buddy (Golden Retriever) - All 11 products with mockups</li>
-                </ul>
-            </div>
-            <ul>
-                <li><strong style="color: #dc2626;">🔴 CRITICAL BUG FIX:</strong> <code>seed_all_breed_products</code> now uses <code>$setOnInsert</code> for mockup_url - prevents mockups from being wiped on deployment</li>
-                <li><strong>"Personalize & Add" Button:</strong> Added to all Soul Made product cards</li>
-                <li><strong>Mug Color Selection:</strong> White/Black options with White as default</li>
-                <li><strong>Product Separation Fix:</strong> Soul Made products properly separated from Shopify products</li>
-                <li><strong>Pet Wrapped Score Fix:</strong> Uses same weighted scoring as dashboard (89% for Mojo)</li>
-                <li><strong>Pet Wrapped Conversation Count:</strong> Counts from live_conversation_threads (156 for Mojo)</li>
-                <li><strong>PersonalizedPicks Fix:</strong> Key prop forces remount when pet changes</li>
-                <li><strong>Pet Avatar Fix:</strong> Custom uploaded pet images display correctly</li>
-            </ul>
-
-            <h3 class="warning-box">Temporarily Disabled Features (Ready in Backend)</h3>
-            <ul>
-                <li><strong>Cake Reveal Experience:</strong> Backend API ready at <code>/api/cake-reveal/*</code>. Frontend component <code>CakeRevealSection.jsx</code> disabled due to CSS animation issues. Re-enable after fixing visual glitches.</li>
-            </ul>
-
-            <h3>December 2025 - Soul-Level Personalization Vision</h3>
-            <ul>
-                <li><strong>Vision Documented:</strong> Complete Soul-Level Personalization architecture</li>
-                <li><strong>Product Architecture:</strong> Three-tier system (Soul Made, Soul Selected, Soul Gifted)</li>
-                <li><strong>Soul Archetypes:</strong> 7 archetypes derived from existing soul data</li>
-                <li><strong>Art Direction:</strong> Watercolor primary + Line Art secondary</li>
-                <li><strong>Emotional Collections:</strong> 8 life-moment based collections defined</li>
-            </ul>
-
-            <h3>March 12, 2026 - Session 8.8 - AI Service Images + Paperwork Fix</h3>
-            <ul>
-                <li><strong>AI Service Images:</strong> Generated watercolor illustrations for ALL 160 concierge services across 13 pillars (celebrate, care, fit, travel, stay, dine, learn, enjoy, advisory, emergency, farewell, adopt, paperwork)</li>
-                <li><strong>AI Bundle Images:</strong> Generated watercolor illustrations for ALL 49 bundles across 9 pillars</li>
-                <li><strong>Paperwork Page Fix:</strong> Fixed React rendering error caused by bundle items being objects with {name, price} instead of strings - now handles both formats</li>
-                <li><strong>Concierge Modal Enhancement:</strong> Added pet photo display, personalized headers, check icons for selected pets</li>
-                <li><strong>Total AI Images:</strong> 209 images (160 services + 49 bundles) uploaded to Cloudinary</li>
-            </ul>
-
-            <h3>March 12, 2026 - Session 8.7 - Celebration Bundles & AI Images</h3>
-            <ul>
-                <li><strong>NEW: 6 Celebration Bundles:</strong> First Birthday Special (₹1299), Premium Bark-day Bash (₹2999), Pawty Essentials (₹799), Senior Celebration (₹1499), Adoption Anniversary (₹1199), New Puppy Welcome (₹1099)</li>
-                <li><strong>AI-Generated Images:</strong> Beautiful watercolor illustrations generated with GPT Image 1, uploaded to Cloudinary (folder: celebrate_bundles)</li>
-                <li><strong>PDF Checklist Fix:</strong> Fixed EmergencyCardPDF font issue (changed from Inter to Helvetica for mobile compatibility)</li>
-                <li><strong>Database Sync:</strong> Cleared stale data and re-seeded celebrate_bundles collection with AI images</li>
-                <li><strong>14 Checklists Available:</strong> Across all pillars (Adopt, Emergency, Travel, Farewell, Care, Dine, Stay, Celebrate, Learn, Fit, Paperwork, Advisory)</li>
-            </ul>
-
-            <h3>March 2026 - Soulful Illustrations</h3>
-            <ul>
-                <li><strong>Breed Illustrations:</strong> 33 soulful watercolor breed portraits</li>
-                <li><strong>Milestone Illustrations:</strong> 8 kit illustrations (Welcome, Birthday, Recovery, etc.)</li>
-                <li><strong>ProductCard Enhancement:</strong> Auto-replaces mismatched images with correct breed art</li>
-                <li><strong>Admin Breed Art Tab:</strong> View and manage illustration library</li>
-            </ul>
-            
-            <h3>Session 3 - World-Class Polish</h3>
-            <ul>
-                <li><strong>PICKS Feature Complete:</strong> 160 breed products, modal with flavors/sizes</li>
-                <li><strong>Mira Soul Intelligence:</strong> Now knows family, friends, orders, intents</li>
-                <li><strong>Rainbow Bridge:</strong> Compassionate handling of pet loss</li>
-                <li><strong>AI Enhancers:</strong> Background tasks for products & services (no timeout)</li>
-                <li><strong>Bug Fix:</strong> "Continue in Chat" error resolved</li>
-            </ul>
-
-            <h3>Session 2 - Admin Overhaul</h3>
-            <ul>
-                <li>MASTER SYNC fixed (10 steps)</li>
-                <li>Data refresh issues resolved</li>
-                <li>VERIFY DATA button added</li>
-                <li>Email sender fixed to THEDOGGYCOMPANY</li>
-            </ul>
-
-            <h3>Session 1 - Foundation</h3>
-            <ul>
-                <li>Universal Service Flow implemented</li>
-                <li>WhatsApp integration (Gupshup)</li>
-                <li>Service desk ticket system</li>
-                <li>Admin notification system</li>
-            </ul>
-        </div>
+          </div>
+        </section>
+      </div>
     </div>
 
-    <footer>
-        <p>The Doggy Company - Mira-OS v6.0.0</p>
-        <p style="opacity: 0.7; margin-top: 10px;">Built with love, in memory of Kouros & Mystique</p>
-    </footer>
+    <!-- Implementation Guide Tab -->
+    <div id="implementation" class="tab-content">
+      <div class="space-y-8">
+        <section class="bg-white rounded-2xl p-8 shadow-sm border">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">How to Make a Page CMS-Driven</h2>
+          
+          <div class="space-y-6">
+            <!-- Step 1 -->
+            <div class="border-l-4 border-indigo-500 pl-6">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="bg-indigo-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                <h3 class="font-semibold text-gray-900">Verify CMS Admin Exists</h3>
+              </div>
+              <p class="text-gray-600 text-sm mb-3">Login as admin and check if the CMS tab exists at <code class="bg-gray-100 px-2 py-1 rounded">/admin?tab={pillar}-cms</code></p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="border-l-4 border-indigo-500 pl-6">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="bg-indigo-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                <h3 class="font-semibold text-gray-900">Add CMS State to Page Component</h3>
+              </div>
+              <div class="bg-gray-900 rounded-xl p-4 text-sm font-mono overflow-x-auto">
+                <pre class="text-gray-300">
+<span class="text-gray-500">// At top of component (e.g., CarePage.jsx):</span>
+<span class="text-purple-400">const</span> [cmsConfig, setCmsConfig] = <span class="text-cyan-400">useState</span>({
+  title: <span class="text-green-400">'Default title with {petName}'</span>,
+  subtitle: <span class="text-green-400">'Default subtitle'</span>,
+  askMira: { enabled: <span class="text-purple-400">true</span>, placeholder: <span class="text-green-400">'Search...'</span> },
+  sections: { askMira: { enabled: <span class="text-purple-400">true</span> }, ... }
+});
+<span class="text-purple-400">const</span> [cmsCategories, setCmsCategories] = <span class="text-cyan-400">useState</span>([]);
+<span class="text-purple-400">const</span> [cmsConciergeServices, setCmsConciergeServices] = <span class="text-cyan-400">useState</span>([]);
+                </pre>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="border-l-4 border-indigo-500 pl-6">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="bg-indigo-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                <h3 class="font-semibold text-gray-900">Add fetchCMSConfig Function</h3>
+              </div>
+              <div class="bg-gray-900 rounded-xl p-4 text-sm font-mono overflow-x-auto">
+                <pre class="text-gray-300">
+<span class="text-purple-400">const</span> fetchCMSConfig = <span class="text-purple-400">async</span> () => {
+  <span class="text-purple-400">try</span> {
+    <span class="text-purple-400">const</span> response = <span class="text-purple-400">await</span> <span class="text-cyan-400">fetch</span>(<span class="text-green-400">`${API_URL}/api/{pillar}/page-config`</span>);
+    <span class="text-purple-400">if</span> (response.ok) {
+      <span class="text-purple-400">const</span> data = <span class="text-purple-400">await</span> response.<span class="text-cyan-400">json</span>();
+      <span class="text-purple-400">if</span> (data.config) <span class="text-cyan-400">setCmsConfig</span>(prev => ({ ...prev, ...data.config }));
+      <span class="text-purple-400">if</span> (data.categories?.length) <span class="text-cyan-400">setCmsCategories</span>(data.categories);
+    }
+  } <span class="text-purple-400">catch</span> (error) { <span class="text-gray-500">/* Fallback to defaults */</span> }
+};
+                </pre>
+              </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="border-l-4 border-indigo-500 pl-6">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="bg-indigo-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">4</span>
+                <h3 class="font-semibold text-gray-900">Call in useEffect</h3>
+              </div>
+              <div class="bg-gray-900 rounded-xl p-4 text-sm font-mono">
+                <pre class="text-gray-300">
+<span class="text-cyan-400">useEffect</span>(() => {
+  <span class="text-cyan-400">fetchCMSConfig</span>();  <span class="text-gray-500">// Load CMS config</span>
+  <span class="text-cyan-400">fetchOtherData</span>();  <span class="text-gray-500">// Other fetches</span>
+}, []);
+                </pre>
+              </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="border-l-4 border-indigo-500 pl-6">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="bg-indigo-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">5</span>
+                <h3 class="font-semibold text-gray-900">Create Computed Values with Fallbacks</h3>
+              </div>
+              <div class="bg-gray-900 rounded-xl p-4 text-sm font-mono">
+                <pre class="text-gray-300">
+<span class="text-purple-400">const</span> categories = cmsCategories.length > <span class="text-yellow-400">0</span> ? cmsCategories : DEFAULT_CATEGORIES;
+<span class="text-purple-400">const</span> pageTitle = cmsConfig.title?.<span class="text-cyan-400">replace</span>(<span class="text-green-400">'{petName}'</span>, activePet?.name || <span class="text-green-400">'your pet'</span>);
+                </pre>
+              </div>
+            </div>
+
+            <!-- Step 6 -->
+            <div class="border-l-4 border-indigo-500 pl-6">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="bg-indigo-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">6</span>
+                <h3 class="font-semibold text-gray-900">Render Sections Conditionally</h3>
+              </div>
+              <div class="bg-gray-900 rounded-xl p-4 text-sm font-mono">
+                <pre class="text-gray-300">
+{cmsConfig.sections?.askMira?.enabled !== <span class="text-purple-400">false</span> && (
+  <span class="text-cyan-400">&lt;AskMiraSection</span> 
+    <span class="text-green-400">placeholder</span>={cmsConfig.askMira?.placeholder} 
+  <span class="text-cyan-400">/&gt;</span>
+)}
+                </pre>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Status Tab -->
+    <div id="status" class="tab-content">
+      <div class="space-y-8">
+        <section class="bg-white rounded-2xl p-8 shadow-sm border">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Implementation Status</h2>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b bg-gray-50">
+                  <th class="text-left py-3 px-4 font-semibold">#</th>
+                  <th class="text-left py-3 px-4 font-semibold">Pillar</th>
+                  <th class="text-left py-3 px-4 font-semibold">Admin CMS</th>
+                  <th class="text-left py-3 px-4 font-semibold">Page Rendering</th>
+                  <th class="text-left py-3 px-4 font-semibold">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b hover:bg-gray-50">
+                  <td class="py-3 px-4">1</td>
+                  <td class="py-3 px-4 font-medium">&#128218; Learn</td>
+                  <td class="py-3 px-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">&#10004; Complete</span></td>
+                  <td class="py-3 px-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">&#10004; CMS-Driven</span></td>
+                  <td class="py-3 px-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-semibold">DONE</span></td>
+                </tr>
+                <tr class="border-b hover:bg-gray-50">
+                  <td class="py-3 px-4">2</td>
+                  <td class="py-3 px-4 font-medium">&#128196; Paperwork</td>
+                  <td class="py-3 px-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">&#10004; Complete</span></td>
+                  <td class="py-3 px-4"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">&#128260; In Progress</span></td>
+                  <td class="py-3 px-4"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs font-semibold">NEXT</span></td>
+                </tr>
+                <tr class="border-b hover:bg-gray-50">
+                  <td class="py-3 px-4">3</td>
+                  <td class="py-3 px-4 font-medium">&#10084; Care</td>
+                  <td class="py-3 px-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">&#10004; Complete</span></td>
+                  <td class="py-3 px-4"><span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">Hardcoded</span></td>
+                  <td class="py-3 px-4"><span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-semibold">TODO</span></td>
+                </tr>
+                <tr class="border-b hover:bg-gray-50">
+                  <td class="py-3 px-4">4</td>
+                  <td class="py-3 px-4 font-medium">&#128170; Fit</td>
+                  <td class="py-3 px-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">&#10004; Complete</span></td>
+                  <td class="py-3 px-4"><span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">Hardcoded</span></td>
+                  <td class="py-3 px-4"><span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-semibold">TODO</span></td>
+                </tr>
+                <tr class="border-b hover:bg-gray-50">
+                  <td class="py-3 px-4">5-14</td>
+                  <td class="py-3 px-4 font-medium text-gray-500">Travel, Stay, Dine, Enjoy, Celebrate, Emergency, Advisory, Farewell, Adopt, Shop</td>
+                  <td class="py-3 px-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">&#10004; Complete</span></td>
+                  <td class="py-3 px-4"><span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">Hardcoded</span></td>
+                  <td class="py-3 px-4"><span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-semibold">TODO</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="bg-white rounded-2xl p-8 shadow-sm border">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Roadmap</h2>
+          
+          <div class="space-y-4">
+            <div class="flex items-center gap-4 p-4 bg-red-50 rounded-xl border border-red-100">
+              <span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">P0</span>
+              <div>
+                <div class="font-semibold text-gray-900">Refactor PaperworkPage.jsx</div>
+                <div class="text-sm text-gray-600">Move Mira to top, add product modals, CMS-driven content</div>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-4 p-4 bg-orange-50 rounded-xl border border-orange-100">
+              <span class="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">P1</span>
+              <div>
+                <div class="font-semibold text-gray-900">Refactor remaining 12 pillar pages</div>
+                <div class="text-sm text-gray-600">Make all pages CMS-driven following Learn pattern</div>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+              <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">P2</span>
+              <div>
+                <div class="font-semibold text-gray-900">Fix Known Issues</div>
+                <div class="text-sm text-gray-600">Razorpay checkout, mobile dashboard, background tasks</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-8 mt-12">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <p class="text-gray-400">The Doggy Company - 14-Pillar CMS Architecture Documentation</p>
+      <p class="text-sm text-gray-500 mt-2">Version 12.0.0 | December 2025</p>
+    </div>
+  </footer>
+
+  <script>
+    function showTab(tabId) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Remove active from all buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-indigo-100', 'text-indigo-700', 'font-semibold');
+      });
+      
+      // Show selected tab
+      document.getElementById(tabId).classList.add('active');
+      
+      // Add active to clicked button
+      event.target.classList.add('bg-indigo-100', 'text-indigo-700', 'font-semibold');
+    }
+    
+    // Set first tab as active on load
+    document.querySelector('.tab-btn').classList.add('bg-indigo-100', 'text-indigo-700', 'font-semibold');
+  </script>
 </body>
 </html>
