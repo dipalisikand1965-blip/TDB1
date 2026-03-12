@@ -353,11 +353,11 @@ Collections for CMS:
 | # | Pillar | Page File | CMS-Driven? | Personalization? | Status |
 |---|--------|-----------|-------------|------------------|--------|
 | 1 | Learn | `LearnPage.jsx` | YES | YES | COMPLETE |
-| 2 | Paperwork | `PaperworkPage.jsx` | IN PROGRESS | YES | REFACTORING |
-| 3 | Care | `CarePage.jsx` | NO | Partial | TODO |
-| 4 | Fit | `FitPage.jsx` | NO | Partial | TODO |
-| 5 | Travel | `TravelPage.jsx` | NO | Partial | TODO |
-| 6 | Stay | `StayPage.jsx` | NO | Partial | TODO |
+| 2 | Paperwork | `PaperworkPage.jsx` | YES | YES | COMPLETE |
+| 3 | Stay | `StayPage.jsx` | YES | Partial | COMPLETE |
+| 4 | Care | `CarePage.jsx` | NO | Partial | TODO |
+| 5 | Fit | `FitPage.jsx` | NO | Partial | TODO |
+| 6 | Travel | `TravelPage.jsx` | NO | Partial | TODO |
 | 7 | Dine | `DinePage.jsx` | NO | Partial | TODO |
 | 8 | Enjoy | `EnjoyPage.jsx` | NO | Partial | TODO |
 | 9 | Celebrate | `CelebratePage.jsx` | NO | Partial | TODO |
@@ -680,19 +680,25 @@ Line ~3670-3691: Tab rendering
 
 ## 11.1 Immediate (P0)
 
-1. **Refactor PaperworkPage.jsx** - Complete CMS-driven implementation
-   - Move Mira assistant to top
-   - Add product modals for Document Organisation Kits
-   - Use beautiful illustrations
+1. **Refactor PaperworkPage.jsx** - COMPLETE
+   - Moved Mira assistant to top
+   - Added product modals for Document Organisation Kits
+   - CMS-driven content
+
+2. **Refactor StayPage.jsx** - COMPLETE
+   - Added CMS integration
+   - Ask Mira section at top
+   - Page fetches config from /api/stay/page-config
 
 ## 11.2 Next Phase (P1)
 
-2. **Refactor remaining 12 pillar pages** - Make them CMS-driven
-   - Follow the pattern established in LearnPage.jsx
+3. **Refactor remaining 11 pillar pages** - Make them CMS-driven
+   - Care, Fit, Travel, Dine, Enjoy, Celebrate, Emergency, Advisory, Farewell, Adopt, Shop
+   - Follow the pattern established in LearnPage.jsx, PaperworkPage.jsx, StayPage.jsx
    - Ensure all personalization works
    - Test with logged-in user
 
-3. **Implement persistent background tasks** - Replace FastAPI BackgroundTasks with Celery
+4. **Implement persistent background tasks** - Replace FastAPI BackgroundTasks with Celery
 
 ## 11.3 Later (P2)
 
