@@ -99,6 +99,38 @@ def get_product_image_prompt(product: dict) -> str:
     return f"Premium pet product, {product.get('name')}, high quality, attractive packaging, clean white background, professional product photography, realistic"
 
 
+def get_bundle_image_prompt(bundle: dict) -> str:
+    """Generate a watercolor illustration prompt for a bundle - GOLDEN RULE: Bundles = Watercolor Illustrated Compositions"""
+    name = (bundle.get("name") or "").lower()
+    pillar = (bundle.get("pillar") or bundle.get("care_type") or "").lower()
+    
+    base_style = "soft watercolor illustrated composition, warm pastel colors, gentle brushstrokes, elegant arrangement of pet care items, artistic illustration style, whimsical and playful, cream or soft white background"
+    
+    if "grooming" in name or "grooming" in pillar:
+        return f"Watercolor illustration composition of pet grooming items: soft brushes, gentle shampoo bottles, fluffy towel, with a happy calm dog silhouette, {bundle.get('name')}, {base_style}"
+    
+    if "vet" in name or "clinic" in name or "health" in pillar:
+        return f"Watercolor illustration composition of pet health items: gentle first aid kit, calming treats, soft carrier blanket, with caring veterinary symbols, {bundle.get('name')}, {base_style}"
+    
+    if "boarding" in name or "daycare" in name:
+        return f"Watercolor illustration composition of pet boarding essentials: cozy bed, favorite toy, comfort blanket, food bowl, {bundle.get('name')}, {base_style}"
+    
+    if "puppy" in name or "starter" in name:
+        return f"Watercolor illustration composition of puppy starter items: tiny collar, soft toys, training treats, puppy bed, {bundle.get('name')}, {base_style}"
+    
+    if "senior" in name or "comfort" in name:
+        return f"Watercolor illustration composition of senior dog comfort items: orthopedic bed, gentle supplements, soft blanket, {bundle.get('name')}, {base_style}"
+    
+    if "recovery" in name or "support" in name:
+        return f"Watercolor illustration composition of pet recovery items: soft cone alternative, healing treats, comfort mat, {bundle.get('name')}, {base_style}"
+    
+    if "coat" in name or "shed" in name or "brush" in name:
+        return f"Watercolor illustration composition of coat care items: de-shedding tools, conditioning sprays, gentle brushes, {bundle.get('name')}, {base_style}"
+    
+    # Default bundle illustration
+    return f"Watercolor illustrated composition of premium pet care bundle items arranged artistically, {bundle.get('name')}, soft pastel colors, gentle brushstrokes, whimsical pet care collection, {base_style}"
+
+
 def get_service_image_prompt(service: dict) -> str:
     """Generate a watercolor illustration prompt for a service"""
     name = (service.get("name") or "").lower()
@@ -309,6 +341,122 @@ async def process_products_batch(pillar: Optional[str] = None):
         generation_status["running"] = False
 
 
+async def process_bundles_batch(pillar: Optional[str] = None, force_regenerate: bool = False):
+    """Process bundles with stock photos, replacing with watercolor illustrations - GOLDEN RULE: Bundles = Watercolor"""
+    global generation_status
+    
+    if db is None:
+        logger.error("Database not connected")
+        return
+    
+    try:
+        # Build query for bundles with stock photos (Unsplash) or missing images
+        if force_regenerate:
+            # Force regenerate: process ALL bundles with stock images
+            query = {
+                "$or": [
+                    {"image": {"$regex": "unsplash", "$options": "i"}},
+                    {"image_url": {"$regex": "unsplash", "$options": "i"}},
+                    {"image_url": {"$exists": False}},
+                    {"image_url": None},
+                    {"image_url": ""},
+                    {"image": {"$exists": False}},
+                    {"image": None},
+                    {"image": ""}
+                ]
+            }
+        else:
+            query = {
+                "$or": [
+                    {"image_url": {"$exists": False}},
+                    {"image_url": None},
+                    {"image_url": ""},
+                    {"image": {"$exists": False}},
+                    {"image": None},
+                    {"image": ""}
+                ]
+            }
+        
+        if pillar:
+            query["$and"] = [{"$or": [{"pillar": pillar}, {"care_type": pillar}]}]
+        
+        # Get bundles from multiple collections - including pillar-specific bundles and product_bundles
+        bundles = []
+        bundle_collections = ["bundles", "care_bundles", "celebrate_bundles", "fit_bundles", "stay_bundles", "travel_bundles", "dine_bundles", "adopt_bundles", "farewell_bundles", "advisory_bundles", "product_bundles"]
+        for collection_name in bundle_collections:
+            try:
+                collection = db[collection_name]
+                items = await collection.find(query, {"_id": 0}).to_list(length=100)
+                for item in items:
+                    item["_collection"] = collection_name
+                bundles.extend(items)
+            except Exception as e:
+                logger.warning(f"Could not query {collection_name}: {e}")
+        
+        generation_status["total"] = len(bundles)
+        generation_status["type"] = "bundles"
+        generation_status["pillar"] = pillar
+        
+        for idx, bundle in enumerate(bundles):
+            if not generation_status["running"]:
+                break
+            
+            bundle_id = bundle.get("id")
+            bundle_name = bundle.get("name", "Unknown")
+            collection_name = bundle.get("_collection", "bundles")
+            
+            generation_status["current_item"] = bundle_name
+            generation_status["completed"] = idx
+            generation_status["last_update"] = datetime.now(timezone.utc).isoformat()
+            
+            try:
+                # Generate watercolor prompt and image
+                prompt = get_bundle_image_prompt(bundle)
+                cloudinary_url = await generate_ai_image(prompt)
+                
+                if cloudinary_url:
+                    # Update bundle in database
+                    await db[collection_name].update_one(
+                        {"id": bundle_id},
+                        {
+                            "$set": {
+                                "image_url": cloudinary_url,
+                                "image": cloudinary_url,
+                                "watercolor_image": cloudinary_url,
+                                "ai_generated_image": True,
+                                "image_style": "watercolor",
+                                "image_updated_at": datetime.now(timezone.utc).isoformat()
+                            }
+                        }
+                    )
+                    
+                    generation_status["results"].append({
+                        "id": bundle_id,
+                        "name": bundle_name,
+                        "collection": collection_name,
+                        "status": "success",
+                        "url": cloudinary_url
+                    })
+                    logger.info(f"Generated watercolor for bundle: {bundle_name}")
+                else:
+                    generation_status["failed"] += 1
+                    logger.warning(f"Failed to generate watercolor for bundle: {bundle_name}")
+                    
+            except Exception as e:
+                logger.error(f"Failed to process bundle {bundle_id}: {str(e)}")
+                generation_status["failed"] += 1
+            
+            # Small delay to avoid rate limits
+            await asyncio.sleep(3)
+        
+        generation_status["completed"] = len(bundles)
+        
+    except Exception as e:
+        logger.error(f"Bundle batch processing failed: {str(e)}")
+    finally:
+        generation_status["running"] = False
+
+
 async def process_services_batch(pillar: Optional[str] = None):
     """Process services without watercolor illustrations in background"""
     global generation_status
@@ -480,6 +628,43 @@ async def start_service_image_generation(
     return {
         "message": "Service watercolor generation started",
         "pillar": pillar or "all",
+        "status": "running"
+    }
+
+
+@ai_image_router.post("/generate-bundle-images")
+async def start_bundle_image_generation(
+    background_tasks: BackgroundTasks,
+    pillar: Optional[str] = None,
+    force_regenerate: bool = False
+):
+    """Start background watercolor illustration generation for bundles - GOLDEN RULE: Bundles = Watercolor"""
+    global generation_status
+    
+    if generation_status["running"]:
+        raise HTTPException(status_code=400, detail="Generation already in progress")
+    
+    # Reset status
+    generation_status = {
+        "running": True,
+        "type": "bundles",
+        "pillar": pillar,
+        "total": 0,
+        "completed": 0,
+        "failed": 0,
+        "current_item": None,
+        "started_at": datetime.now(timezone.utc).isoformat(),
+        "last_update": None,
+        "results": []
+    }
+    
+    # Start background task
+    background_tasks.add_task(process_bundles_batch, pillar, force_regenerate)
+    
+    return {
+        "message": "Bundle watercolor generation started",
+        "pillar": pillar or "all",
+        "force_regenerate": force_regenerate,
         "status": "running"
     }
 
