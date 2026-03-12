@@ -352,7 +352,7 @@ const LearnProductsGrid = ({ maxProducts = 8, showCategories = true, categoryFil
             variant="outline" 
             onClick={() => window.location.href = '/shop?pillar=learn'}
           >
-            View All {filteredProducts.length} Products
+            View All Learning Products
             <ChevronRight className="w-4 h-4 ml-1" />
           </Button>
         </div>
