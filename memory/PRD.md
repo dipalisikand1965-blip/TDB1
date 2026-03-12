@@ -1,5 +1,5 @@
 # The Doggy Company - MASTER PRD & ARCHITECTURE
-## Last Updated: December 12, 2025 | Version 12.5.0
+## Last Updated: December 14, 2025 | Version 12.6.0
 
 ---
 
@@ -77,24 +77,24 @@ SECTION ORDER (Every Pillar Page MUST Follow):
 
 | # | Pillar | Gold Standard? | Unique AI Images? | Status |
 |---|--------|----------------|-------------------|--------|
-| 1 | Learn | ✅ REFERENCE | ✅ YES (12 topics) | COMPLETE |
-| 2 | Care | ✅ YES | ✅ YES (4 topics) | COMPLETE |
-| 3 | Dine | ✅ YES | ✅ YES (4 topics) | COMPLETE |
-| 4 | Paperwork | ⚠️ Partial | ✅ YES | NEEDS REFACTOR |
-| 5 | Fit | ⚠️ Partial | ✅ YES (4 topics) | NEEDS REFACTOR |
-| 6 | Travel | ⚠️ Partial | ✅ YES (4 topics) | NEEDS REFACTOR |
-| 7 | Stay | ⚠️ Partial | ✅ YES (4 topics) | NEEDS REFACTOR |
-| 8 | Enjoy | ⚠️ Partial | ✅ YES (4 topics) | NEEDS REFACTOR |
-| 9 | Celebrate | ⚠️ Partial | ✅ YES (4 topics) | NEEDS REFACTOR |
-| 10 | Emergency | ⚠️ Partial | ✅ YES (4 topics) | NEEDS REFACTOR |
-| 11 | Advisory | ⚠️ Partial | ✅ YES (4 topics) | NEEDS REFACTOR |
-| 12 | Farewell | ⚠️ Partial | ✅ YES (4 topics) | NEEDS REFACTOR |
-| 13 | Adopt | ⚠️ Partial | ✅ YES (4 topics) | NEEDS REFACTOR |
-| 14 | Shop | ⚠️ Partial | ✅ YES (4 topics) | NEEDS REFACTOR |
+| 1 | Learn | REFERENCE | YES (12 topics) | COMPLETE |
+| 2 | Care | YES | YES (4 topics) | COMPLETE |
+| 3 | Dine | YES | YES (4 topics) | COMPLETE |
+| 4 | Paperwork | Partial | YES | NEEDS REFACTOR |
+| 5 | Fit | Partial | YES (4 topics) | NEEDS REFACTOR |
+| 6 | Travel | Partial | YES (4 topics) | NEEDS REFACTOR |
+| 7 | Stay | Partial | YES (4 topics) | NEEDS REFACTOR |
+| 8 | Enjoy | Partial | YES (4 topics) | NEEDS REFACTOR |
+| 9 | Celebrate | Partial | YES (4 topics) | NEEDS REFACTOR |
+| 10 | Emergency | Partial | YES (4 topics) | NEEDS REFACTOR |
+| 11 | Advisory | Partial | YES (4 topics) | NEEDS REFACTOR |
+| 12 | Farewell | Partial | YES (4 topics) | NEEDS REFACTOR |
+| 13 | Adopt | Partial | YES (4 topics) | NEEDS REFACTOR |
+| 14 | Shop | Partial | YES (4 topics) | NEEDS REFACTOR |
 
 ---
 
-## AI WATERCOLOR IMAGES - ALL 48 GENERATED ✅
+## AI WATERCOLOR IMAGES - ALL 48 TOPIC IMAGES GENERATED
 
 ### Care Topics (COMPLETE)
 - Grooming: Golden retriever being brushed
@@ -148,14 +148,14 @@ SECTION ORDER (Every Pillar Page MUST Follow):
 
 ## PRODUCT/SERVICE IMAGE STATUS
 
-### Current State (December 12, 2025):
-- **Total Products:** 1,500
-- **Products with AI images:** 620
-- **Products needing images:** 880
-  - unknown pillar: 500 (need pillar assignment)
-  - celebrate: 211
-  - shop: 166
-  - care: 3
+### Current State (December 14, 2025):
+- **Total Products:** ~1,500
+- **Products with AI images:** ~620
+- **Products needing images:** ~880
+  - unknown pillar: ~500 (need pillar assignment)
+  - celebrate: ~211
+  - shop: ~166
+  - care: ~3
 
 ### Services:
 - **Total Services:** ~1,100
@@ -167,7 +167,15 @@ SECTION ORDER (Every Pillar Page MUST Follow):
 ## CMS ARCHITECTURE
 
 ### Admin Panel Location
-`/admin` → Select pillar tab (e.g., `care-cms`, `dine-cms`)
+`/admin` -> Select pillar tab (e.g., `care-cms`, `dine-cms`)
+
+### CMS Components Location
+```
+/app/frontend/src/components/admin/
+  PillarPageCMS.jsx       # Generic CMS (12 pillars)
+  LearnPageCMS.jsx        # Custom Learn CMS
+  PaperworkPageCMS.jsx    # Custom Paperwork CMS
+```
 
 ### CMS Tabs (Standard for all pillars):
 1. **Page Settings** - Title, Subtitle, Hero Image, Theme Color
@@ -181,10 +189,16 @@ SECTION ORDER (Every Pillar Page MUST Follow):
 9. **Mira Prompts** - AI suggestion triggers
 10. **Custom** - Pillar-specific features
 
-### CMS-Editable (PLANNED):
-- [ ] Help Buckets (3 action buckets)
-- [ ] Daily Tips (rotating tips)
-- [ ] Guided Paths (step-by-step journeys)
+### CMS-Editable Status:
+- [x] Page Settings (Title, Subtitle)
+- [x] Ask Mira Bar
+- [x] Topics/Categories
+- [x] Products
+- [x] Bundles
+- [x] Services
+- [x] Help Buckets (3 action buckets) - **IMPLEMENTED DEC 14**
+- [x] Daily Tips (rotating tips) - **IMPLEMENTED DEC 14**
+- [x] Guided Paths (step-by-step journeys) - **IMPLEMENTED DEC 14**
 
 ---
 
@@ -193,24 +207,35 @@ SECTION ORDER (Every Pillar Page MUST Follow):
 ### Page Components
 ```
 /app/frontend/src/components/
-├── PillarTopicsGrid.jsx       # Topic cards + modal (48 AI images)
-├── PillarTopicModal.jsx       # Modal: Overview | Products | Services
-├── PersonalizedPicks.jsx      # "Fun picks for {pet}"
-├── ArchetypeProducts.jsx      # "Party picks for {pet}"
-├── SoulMadeCollection.jsx     # Breed-specific products
-├── BreedSmartRecommendations.jsx
-├── CuratedBundles.jsx
-└── Mira/
-    ├── MiraCuratedLayer.jsx   # Unified concierge
-    └── MiraCarePlan.jsx       # Care-specific plan
+  PillarTopicsGrid.jsx       # Topic cards + modal (48 AI images)
+  PillarTopicModal.jsx       # Modal: Overview | Products | Services
+  PersonalizedPicks.jsx      # "Fun picks for {pet}"
+  ArchetypeProducts.jsx      # "Party picks for {pet}"
+  SoulMadeCollection.jsx     # Breed-specific products
+  BreedSmartRecommendations.jsx
+  CuratedBundles.jsx
+  Mira/
+    MiraCuratedLayer.jsx   # Unified concierge
+    MiraCarePlan.jsx       # Care-specific plan
 ```
 
-### Admin CMS Components
+### Page Files
 ```
-/app/frontend/src/components/admin/
-├── PillarPageCMS.jsx          # Generic CMS (12 pillars)
-├── LearnPageCMS.jsx           # Custom Learn CMS
-└── PaperworkPageCMS.jsx       # Custom Paperwork CMS
+/app/frontend/src/pages/
+  LearnPage.jsx       # GOLD STANDARD - Reference for all pages
+  CarePage.jsx        # REFACTORED to Gold Standard
+  DinePage.jsx        # REFACTORED to Gold Standard
+  PaperworkPage.jsx   # Needs refactor
+  FitPage.jsx         # Needs refactor
+  TravelPage.jsx      # Needs refactor
+  StayPage.jsx        # Needs refactor
+  EnjoyPage.jsx       # Needs refactor
+  CelebratePage.jsx   # Needs refactor
+  EmergencyPage.jsx   # Needs refactor
+  AdvisoryPage.jsx    # Needs refactor
+  FarewellPage.jsx    # Needs refactor
+  AdoptPage.jsx       # Needs refactor
+  ShopPage.jsx        # Needs refactor
 ```
 
 ---
@@ -258,9 +283,8 @@ Test pet: **Mojo** (Shih Tzu)
 
 | Issue | Priority | Status |
 |-------|----------|--------|
-| 880 products missing images | P0 | IDENTIFIED |
-| 10 pillars need Gold Standard refactor | P0 | IN PROGRESS |
-| Help Buckets/Daily Tips not CMS-editable | P1 | PLANNED |
+| ~880 products missing images | P0 | IDENTIFIED - NOT STARTED |
+| 11 pillars need Gold Standard refactor | P0 | IN PROGRESS |
 | Razorpay checkout failure | P2 | NOT STARTED |
 | Mobile pet dashboard scrambled | P3 | NOT STARTED |
 
@@ -276,12 +300,12 @@ curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=
 
 ---
 
-## NEXT TASKS (Priority Order)
+## PRIORITY TASK LIST (December 14, 2025)
 
-1. **P0**: Make Help Buckets, Daily Tips, Guided Paths CMS-editable
-2. **P0**: Create Admin Guide document
-3. **P0**: Fix 880 products missing images
-4. **P0**: Refactor remaining 10 pillars to Gold Standard
+1. ~~**P0**: Make Help Buckets, Daily Tips, Guided Paths CMS-editable~~ **DONE**
+2. ~~**P0**: Create Admin Guide document for content editors~~ **DONE**
+3. **P0**: Fix ~880 products missing images (comprehensive makeover)
+4. **P0**: Refactor remaining 11 pillars to Gold Standard
 5. **P2**: Fix Razorpay checkout
 6. **P3**: Fix mobile pet dashboard
 
@@ -289,20 +313,27 @@ curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=
 
 ## CHANGELOG
 
+### December 14, 2025
+- CMS-editable sections implemented: Help Buckets, Daily Tips, Guided Paths
+- Updated PillarPageCMS.jsx with 3 new tabs for editing page sections
+- Updated backend API to save/load helpBuckets, dailyTips, guidedPaths
+- Updated CarePage.jsx to use CMS data when available (falls back to defaults)
+- Documentation updated proactively
+
 ### December 12, 2025
-- ✅ Care page refactored to Gold Standard
-- ✅ Dine page refactored to Gold Standard
-- ✅ Generated 48 unique AI watercolor images (4 per pillar × 12 pillars)
-- ✅ Updated PillarTopicsGrid with all new images
-- ✅ Created PillarTopicModal for consistent modal experience
-- ✅ Identified 880 products needing images
+- Care page refactored to Gold Standard
+- Dine page refactored to Gold Standard
+- Generated 48 unique AI watercolor images (4 per pillar x 12 pillars)
+- Updated PillarTopicsGrid with all new images
+- Created PillarTopicModal for consistent modal experience
+- Identified ~880 products needing images
 
 ### Previous Sessions
-- ✅ All 14 pillar pages have CMS integration
-- ✅ Product modals fixed (ArchetypeProducts, PersonalizedPicks)
-- ✅ Paperwork page images complete
-- ✅ Stay/Insurance service images updated
+- All 14 pillar pages have CMS integration
+- Product modals fixed (ArchetypeProducts, PersonalizedPicks)
+- Paperwork page images complete
+- Stay/Insurance service images updated
 
 ---
 
-**END OF PRD - Version 12.5.0**
+**END OF PRD - Version 12.6.0**

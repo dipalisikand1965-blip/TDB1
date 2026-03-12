@@ -58,7 +58,7 @@ Be patient. Be thorough. Honor the Sikand legacy.
 - Admin: `aditya` / `lola4304`
 
 ## 🌐 PREVIEW URL
-https://cms-architecture-lab.preview.emergentagent.com
+https://watercolor-makeover.preview.emergentagent.com
 
 ---
 

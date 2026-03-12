@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://cms-architecture-lab.preview.emergentagent.com/mira-demo**
+**https://watercolor-makeover.preview.emergentagent.com/mira-demo**
 
 ---
 
