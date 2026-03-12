@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
+import CloudinaryUploader from './CloudinaryUploader';
 
 const PILLARS = [
   { id: 'celebrate', name: 'Celebrate', icon: '🎂' },
@@ -668,6 +669,16 @@ const BundlesManager = () => {
                 <span className="text-sm">Active</span>
               </label>
             </div>
+            
+            {/* Image Upload */}
+            <CloudinaryUploader
+              entityType="bundle"
+              entityId={editingBundle?.id}
+              currentImageUrl={formData.image_url || editingBundle?.image_url}
+              onUploadSuccess={(url) => setFormData({...formData, image_url: url})}
+              label="Bundle Image"
+              showPreview={true}
+            />
           </div>
           
           <DialogFooter>
