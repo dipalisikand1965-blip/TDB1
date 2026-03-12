@@ -1,43 +1,44 @@
 /**
  * PetDailyRoutine.jsx
- * Bruno's Daily Routine Suggestions - personalized routine based on pet profile
- * Shows Morning, Midday, Evening, Night with activities and supporting products
+ * Personalized daily routine suggestions based on pet profile
+ * Uses watercolor-themed cards instead of stock photos
  */
 
 import React from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
-import { Edit2, ChevronRight } from 'lucide-react';
+import { Sun, Cloud, Sunset, Moon, ChevronRight, ShoppingBag } from 'lucide-react';
 
-// Routine suggestions based on pet characteristics
 const getRoutineSuggestions = (pet) => {
-  const issenior = pet?.age_months > 84;
+  const isSenior = pet?.age_months > 84;
   const isPuppy = pet?.age_months < 12;
-  const isLargeDog = pet?.size === 'large' || pet?.size === 'giant';
   const breed = pet?.breed?.toLowerCase() || '';
   
-  // Senior dog routine
-  if (issenior) {
+  if (isSenior) {
     return {
       morning: {
-        icon: '🌅',
+        icon: Sun,
+        color: 'from-amber-100 to-orange-100',
+        iconColor: 'text-amber-600',
         activities: ['20-30 min gentle walk', 'Hydration check', 'Joint supplement'],
-        image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80'
       },
       midday: {
-        icon: '☀️',
+        icon: Cloud,
+        color: 'from-sky-100 to-blue-100',
+        iconColor: 'text-sky-600',
         activities: ['Cool resting area', 'Short movement break', 'Light play'],
-        image: 'https://images.unsplash.com/photo-1534361960057-19889db9621e?w=400&q=80'
       },
       evening: {
-        icon: '🌆',
+        icon: Sunset,
+        color: 'from-rose-100 to-pink-100',
+        iconColor: 'text-rose-600',
         activities: ['Long relaxed walk', 'Light stretching', 'Slow feeder dinner'],
-        image: 'https://images.unsplash.com/photo-1558929996-da64ba858215?w=400&q=80'
       },
       night: {
-        icon: '🌙',
+        icon: Moon,
+        color: 'from-indigo-100 to-purple-100',
+        iconColor: 'text-indigo-600',
         activities: ['Orthopedic bed', 'Calm environment', 'Comfort check'],
-        image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&q=80'
       },
       products: [
         { name: 'Orthopedic Bed', price: '₹2,499' },
@@ -48,28 +49,31 @@ const getRoutineSuggestions = (pet) => {
     };
   }
   
-  // Puppy routine
   if (isPuppy) {
     return {
       morning: {
-        icon: '🌅',
+        icon: Sun,
+        color: 'from-amber-100 to-orange-100',
+        iconColor: 'text-amber-600',
         activities: ['Potty break', 'Breakfast', 'Short play session'],
-        image: 'https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=400&q=80'
       },
       midday: {
-        icon: '☀️',
+        icon: Cloud,
+        color: 'from-sky-100 to-blue-100',
+        iconColor: 'text-sky-600',
         activities: ['Training session (10 min)', 'Nap time', 'Socialization'],
-        image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80'
       },
       evening: {
-        icon: '🌆',
+        icon: Sunset,
+        color: 'from-rose-100 to-pink-100',
+        iconColor: 'text-rose-600',
         activities: ['Active play', 'Dinner', 'Calm bonding time'],
-        image: 'https://images.unsplash.com/photo-1534361960057-19889db9621e?w=400&q=80'
       },
       night: {
-        icon: '🌙',
+        icon: Moon,
+        color: 'from-indigo-100 to-purple-100',
+        iconColor: 'text-indigo-600',
         activities: ['Last potty break', 'Crate time', 'Quiet sleep'],
-        image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&q=80'
       },
       products: [
         { name: 'Puppy Crate', price: '₹1,999' },
@@ -80,27 +84,30 @@ const getRoutineSuggestions = (pet) => {
     };
   }
   
-  // Adult dog routine (default)
   return {
     morning: {
-      icon: '🌅',
+      icon: Sun,
+      color: 'from-amber-100 to-orange-100',
+      iconColor: 'text-amber-600',
       activities: ['30-45 min walk', 'Breakfast', 'Mental stimulation'],
-      image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80'
     },
     midday: {
-      icon: '☀️',
+      icon: Cloud,
+      color: 'from-sky-100 to-blue-100',
+      iconColor: 'text-sky-600',
       activities: ['Rest time', 'Short training', 'Puzzle toy'],
-      image: 'https://images.unsplash.com/photo-1534361960057-19889db9621e?w=400&q=80'
     },
     evening: {
-      icon: '🌆',
+      icon: Sunset,
+      color: 'from-rose-100 to-pink-100',
+      iconColor: 'text-rose-600',
       activities: ['Active exercise', 'Dinner', 'Play session'],
-      image: 'https://images.unsplash.com/photo-1558929996-da64ba858215?w=400&q=80'
     },
     night: {
-      icon: '🌙',
+      icon: Moon,
+      color: 'from-indigo-100 to-purple-100',
+      iconColor: 'text-indigo-600',
       activities: ['Evening walk', 'Grooming', 'Settle for sleep'],
-      image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&q=80'
     },
     products: [
       { name: 'Puzzle Feeder', price: '₹799' },
@@ -111,96 +118,77 @@ const getRoutineSuggestions = (pet) => {
   };
 };
 
-const PetDailyRoutine = ({ pet, onEditRoutine, onProductClick }) => {
+const PetDailyRoutine = ({ pet, onProductClick }) => {
   if (!pet) return null;
   
   const routine = getRoutineSuggestions(pet);
   const petName = pet.name || 'Your Pet';
   
   return (
-    <div className="py-12 bg-gradient-to-br from-amber-50 to-orange-50">
+    <div className="py-12 bg-gradient-to-br from-amber-50/50 to-orange-50/50" data-testid="pet-daily-routine">
       <div className="max-w-6xl mx-auto px-4">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              {petName}'s Daily Routine
-            </h2>
-            <p className="text-gray-600 mt-1">Suggested schedule based on {petName}'s needs</p>
-          </div>
-          {onEditRoutine && (
-            <Button 
-              variant="outline" 
-              onClick={onEditRoutine}
-              className="gap-2"
-            >
-              <Edit2 className="w-4 h-4" />
-              Edit Routine
-            </Button>
-          )}
+        <div className="mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            {petName}'s Daily Routine
+          </h2>
+          <p className="text-gray-600 mt-1">A suggested schedule based on {petName}'s needs</p>
         </div>
         
-        {/* Routine Timeline */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {['morning', 'midday', 'evening', 'night'].map((time) => (
-            <Card 
-              key={time}
-              className="overflow-hidden hover:shadow-lg transition-all"
-            >
-              <div className="relative h-32">
-                <img 
-                  src={routine[time].image}
-                  alt={time}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">{routine[time].icon}</span>
-                    <span className="font-semibold capitalize">{time}</span>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
+          {['morning', 'midday', 'evening', 'night'].map((time) => {
+            const TimeIcon = routine[time].icon;
+            return (
+              <Card 
+                key={time}
+                className="overflow-hidden hover:shadow-lg transition-all"
+                data-testid={`routine-${time}`}
+              >
+                <div className={`relative h-24 sm:h-28 bg-gradient-to-br ${routine[time].color} flex items-center justify-center`}>
+                  <TimeIcon className={`w-10 h-10 sm:w-12 sm:h-12 ${routine[time].iconColor} opacity-80`} />
+                  <div className="absolute bottom-2 left-3">
+                    <span className="font-semibold capitalize text-sm text-gray-800">{time}</span>
                   </div>
                 </div>
-              </div>
-              <div className="p-3">
-                {routine[time].activities.map((activity, idx) => (
-                  <p key={idx} className="text-xs text-gray-600 flex items-center gap-1 mb-1">
-                    <span className="w-1 h-1 rounded-full bg-amber-400" />
-                    {activity}
-                  </p>
-                ))}
-              </div>
-            </Card>
+                <div className="p-3">
+                  {routine[time].activities.map((activity, idx) => (
+                    <p key={idx} className="text-xs text-gray-600 flex items-center gap-1.5 mb-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" />
+                      {activity}
+                    </p>
+                  ))}
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+        
+        <div className="flex justify-center gap-2 mb-8">
+          {['amber', 'sky', 'rose', 'indigo'].map((color, i) => (
+            <React.Fragment key={i}>
+              <span className={`w-2.5 h-2.5 rounded-full bg-${color}-400`} />
+              {i < 3 && <span className={`w-8 h-0.5 bg-gradient-to-r from-${color}-300 to-${['sky','rose','indigo','indigo'][i]}-300 self-center`} />}
+            </React.Fragment>
           ))}
         </div>
         
-        {/* Progress dots */}
-        <div className="flex justify-center gap-3 mb-8">
-          <span className="w-3 h-3 rounded-full bg-amber-400" />
-          <span className="w-12 h-0.5 bg-gradient-to-r from-amber-400 to-green-400 self-center" />
-          <span className="w-3 h-3 rounded-full bg-green-400" />
-          <span className="w-12 h-0.5 bg-gradient-to-r from-green-400 to-blue-400 self-center" />
-          <span className="w-3 h-3 rounded-full bg-blue-400" />
-          <span className="w-12 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 self-center" />
-          <span className="w-3 h-3 rounded-full bg-purple-400" />
-        </div>
-        
-        {/* Products that support this routine */}
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Products that support this routine
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {routine.products.map((product, idx) => (
               <Card 
                 key={idx}
-                className="p-4 cursor-pointer hover:shadow-lg transition-all bg-white"
+                className="p-4 cursor-pointer hover:shadow-lg transition-all bg-white group"
                 onClick={() => onProductClick?.(product.name)}
+                data-testid={`routine-product-${idx}`}
               >
-                <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
-                  <span className="text-4xl opacity-50">🛍️</span>
+                <div className="aspect-square bg-gradient-to-br from-stone-50 to-gray-100 rounded-xl mb-3 flex items-center justify-center">
+                  <ShoppingBag className="w-8 h-8 text-gray-300 group-hover:text-amber-400 transition-colors" />
                 </div>
                 <h4 className="font-medium text-gray-900 text-sm">{product.name}</h4>
                 <p className="text-sm text-amber-600 font-semibold mt-1">From {product.price}</p>
+                <ChevronRight className="w-4 h-4 text-gray-300 mt-2 group-hover:text-amber-500 transition-colors" />
               </Card>
             ))}
           </div>
