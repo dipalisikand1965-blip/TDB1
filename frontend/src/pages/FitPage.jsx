@@ -882,7 +882,20 @@ const FitPage = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
-          5. GUIDED FITNESS PATHS - Step-by-step journeys
+          5. PERSONALIZED FOR PET - Core Gold Standard layer
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-8 px-4 bg-gradient-to-b from-white to-teal-50/30" data-testid="fit-personalized-picks-top">
+        <div className="max-w-6xl mx-auto">
+          <PersonalizedPicks 
+            key={`fit-picks-top-${activePet?.id || 'guest'}`}
+            pillar="fit" 
+            maxProducts={6} 
+          />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          6. GUIDED FITNESS PATHS - Step-by-step journeys
           ═══════════════════════════════════════════════════════════════════════════════ */}
       <div id="guided-paths" className="py-12 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4">
@@ -927,18 +940,6 @@ const FitPage = () => {
             ))}
           </div>
         </div>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════════════════════════════════
-          6. PERSONALIZED FOR PET - If logged in with pet
-          ═══════════════════════════════════════════════════════════════════════════════ */}
-      {/* Personalized Picks for User's Pet */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <PersonalizedPicks 
-          key={`fit-picks-${activePet?.id || 'guest'}`}
-          pillar="fit" 
-          maxProducts={6} 
-        />
       </div>
 
       {/* ═══════════════════════════════════════════════════════════

@@ -15,14 +15,25 @@ const NearbyPlacesCarousel = ({
   petId,
   petName = 'your pet',
   token,
+  places: externalPlaces,
+  title,
+  subtitle,
+  loading: externalLoading = false,
   onReserveClick,
   className = ''
 }) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+  const usingExternalPlaces = Array.isArray(externalPlaces);
 
   useEffect(() => {
+    if (usingExternalPlaces) {
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     const fetchNearbyPlaces = async () => {
       if (!token) return;
       
@@ -54,7 +65,7 @@ const NearbyPlacesCarousel = ({
     };
 
     fetchNearbyPlaces();
-  }, [pillar, petId, token]);
+  }, [pillar, petId, token, usingExternalPlaces]);
 
   const handleReserve = (place) => {
     if (onReserveClick) {
@@ -65,12 +76,19 @@ const NearbyPlacesCarousel = ({
     }
   };
 
-  if (loading) {
+  const resolvedLoading = usingExternalPlaces ? externalLoading : loading;
+  const places = usingExternalPlaces
+    ? externalPlaces
+    : (pillar === 'dine' 
+      ? [...(data?.nearby_restaurants || []), ...(data?.nearby_parks || [])]
+      : [...(data?.nearby_bakeries || []), ...(data?.nearby_parks || [])]);
+
+  if (resolvedLoading) {
     return (
       <div className={`${className}`}>
         <div className="flex items-center gap-2 mb-4">
           <MapPin className="w-5 h-5 text-emerald-500" />
-          <h3 className="text-lg font-semibold text-gray-900">Nearby Pet-Friendly Spots</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{title || 'Nearby Pet-Friendly Spots'}</h3>
         </div>
         <div className="flex gap-4 overflow-x-auto pb-2">
           {[1, 2, 3].map((i) => (
@@ -85,13 +103,9 @@ const NearbyPlacesCarousel = ({
     );
   }
 
-  if (error || !data) {
+  if (!usingExternalPlaces && (error || !data)) {
     return null; // Silently fail - don't show if no location
   }
-
-  const places = pillar === 'dine' 
-    ? [...(data.nearby_restaurants || []), ...(data.nearby_parks || [])]
-    : [...(data.nearby_bakeries || []), ...(data.nearby_parks || [])];
 
   if (places.length === 0) {
     return null;
@@ -107,10 +121,10 @@ const NearbyPlacesCarousel = ({
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-900">
-              Nearby in {data.city || 'Your Area'}
+              {title || `Nearby in ${data?.city || 'Your Area'}`}
             </h3>
             <p className="text-xs text-gray-500">
-              Pet-friendly spots within {data.search_radius_km || 5}km
+              {subtitle || `Pet-friendly spots within ${data?.search_radius_km || 5}km`}
             </p>
           </div>
         </div>
@@ -194,7 +208,7 @@ const NearbyPlacesCarousel = ({
       </div>
 
       {/* Suggestions */}
-      {data.suggestions && data.suggestions.length > 0 && (
+      {!usingExternalPlaces && data?.suggestions && data.suggestions.length > 0 && (
         <div className="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-100">
           <p className="text-sm text-purple-800">
             💡 <strong>Mira's tip:</strong> {data.suggestions[0]?.description || data.suggestions[0]?.why}
