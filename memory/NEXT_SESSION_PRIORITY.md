@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://ai-watercolor.preview.emergentagent.com
+**Preview URL:** https://learn-golden-1.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

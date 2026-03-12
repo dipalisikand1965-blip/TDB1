@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://ai-watercolor.preview.emergentagent.com
+https://learn-golden-1.preview.emergentagent.com
 
 ---
 

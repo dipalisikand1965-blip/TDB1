@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://ai-watercolor.preview.emergentagent.com/mira-demo**
+**https://learn-golden-1.preview.emergentagent.com/mira-demo**
 
 ---
 

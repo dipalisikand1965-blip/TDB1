@@ -32,6 +32,17 @@ from fastapi.encoders import jsonable_encoder
 # Documentation generator
 from documentation_generator import regenerate_all_documentation
 import razorpay
+import cloudinary
+import cloudinary.uploader
+from cloudinary.utils import cloudinary_url
+
+# Configure Cloudinary
+cloudinary.config(
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+    secure=True
+)
 
 # Import models from models.py
 from models import (
@@ -4092,56 +4103,226 @@ async def upload_about_image(file: UploadFile = File(...)):
 
 @api_router.post("/upload/service-image")
 async def upload_service_image(file: UploadFile = File(...)):
-    """Upload an image for a service"""
+    """Upload an image for a service to Cloudinary (persists through deployment)"""
     allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
     if file.content_type not in allowed_types:
         raise HTTPException(status_code=400, detail="Invalid file type. Please upload JPG, PNG, or WebP images.")
     
-    os.makedirs("uploads/services", exist_ok=True)
-    
-    file_extension = os.path.splitext(file.filename)[1] or '.jpg'
-    unique_filename = f"service-{uuid.uuid4().hex[:12]}{file_extension}"
-    file_path = f"uploads/services/{unique_filename}"
-    
     try:
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        # Read file content
+        file_content = await file.read()
+        
+        # Upload to Cloudinary for persistent storage
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+        public_id = f"doggy/services/admin_upload_{timestamp}"
+        
+        result = cloudinary.uploader.upload(
+            file_content,
+            public_id=public_id,
+            overwrite=True,
+            resource_type="image",
+            format="webp",
+            quality="auto:good",
+            transformation=[
+                {"width": 800, "height": 800, "crop": "limit"},
+                {"quality": "auto:good"}
+            ]
+        )
+        
+        cloudinary_url = result.get("secure_url")
         
         return {
-            "message": "Image uploaded successfully",
-            "url": f"/uploads/services/{unique_filename}",
-            "filename": unique_filename
+            "message": "Image uploaded successfully to Cloudinary",
+            "url": cloudinary_url,
+            "public_id": public_id,
+            "filename": file.filename
         }
     except Exception as e:
-        logger.error(f"Failed to save service image: {e}")
-        raise HTTPException(status_code=500, detail="Failed to save image")
+        logger.error(f"Failed to upload service image to Cloudinary: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
 
 
 @api_router.post("/upload/product-image")
 async def upload_product_image(file: UploadFile = File(...)):
-    """Upload an image for a product"""
+    """Upload an image for a product to Cloudinary (persists through deployment)"""
     allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
     if file.content_type not in allowed_types:
         raise HTTPException(status_code=400, detail="Invalid file type. Please upload JPG, PNG, or WebP images.")
     
-    os.makedirs("uploads/products", exist_ok=True)
-    
-    file_extension = os.path.splitext(file.filename)[1] or '.jpg'
-    unique_filename = f"product-{uuid.uuid4().hex[:12]}{file_extension}"
-    file_path = f"uploads/products/{unique_filename}"
-    
     try:
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        # Read file content
+        file_content = await file.read()
+        
+        # Upload to Cloudinary for persistent storage
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+        public_id = f"doggy/products/admin_upload_{timestamp}"
+        
+        result = cloudinary.uploader.upload(
+            file_content,
+            public_id=public_id,
+            overwrite=True,
+            resource_type="image",
+            format="webp",
+            quality="auto:good",
+            transformation=[
+                {"width": 800, "height": 800, "crop": "limit"},
+                {"quality": "auto:good"}
+            ]
+        )
+        
+        cloudinary_url = result.get("secure_url")
         
         return {
-            "message": "Image uploaded successfully",
-            "url": f"/uploads/products/{unique_filename}",
-            "filename": unique_filename
+            "message": "Image uploaded successfully to Cloudinary",
+            "url": cloudinary_url,
+            "public_id": public_id,
+            "filename": file.filename
         }
     except Exception as e:
-        logger.error(f"Failed to save product image: {e}")
-        raise HTTPException(status_code=500, detail="Failed to save image")
+        logger.error(f"Failed to upload product image to Cloudinary: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
+
+
+@api_router.post("/admin/product/{product_id}/upload-image")
+async def upload_product_image_by_id(
+    product_id: str,
+    file: UploadFile = File(...)
+):
+    """Upload and set image for a specific product (persists to Cloudinary)"""
+    allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type. Please upload JPG, PNG, or WebP images.")
+    
+    try:
+        # Read file content
+        file_content = await file.read()
+        
+        # Upload to Cloudinary
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+        public_id = f"doggy/products/{product_id}_{timestamp}"
+        
+        result = cloudinary.uploader.upload(
+            file_content,
+            public_id=public_id,
+            overwrite=True,
+            resource_type="image",
+            format="webp",
+            quality="auto:good",
+            transformation=[
+                {"width": 800, "height": 800, "crop": "limit"},
+                {"quality": "auto:good"}
+            ]
+        )
+        
+        cloudinary_url = result.get("secure_url")
+        
+        # Update product in database
+        update_result = await db.products.update_one(
+            {"id": product_id},
+            {
+                "$set": {
+                    "image_url": cloudinary_url,
+                    "image": cloudinary_url,
+                    "images": [cloudinary_url],
+                    "admin_uploaded_image": True,
+                    "image_updated_at": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        if update_result.modified_count == 0:
+            # Try unified_products collection
+            await db.unified_products.update_one(
+                {"id": product_id},
+                {
+                    "$set": {
+                        "image_url": cloudinary_url,
+                        "image": cloudinary_url,
+                        "images": [cloudinary_url],
+                        "admin_uploaded_image": True,
+                        "image_updated_at": datetime.now(timezone.utc).isoformat()
+                    }
+                }
+            )
+        
+        return {
+            "message": "Product image uploaded and linked successfully",
+            "product_id": product_id,
+            "url": cloudinary_url
+        }
+    except Exception as e:
+        logger.error(f"Failed to upload product image: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
+
+
+@api_router.post("/admin/service/{service_id}/upload-image")
+async def upload_service_image_by_id(
+    service_id: str,
+    file: UploadFile = File(...)
+):
+    """Upload and set image for a specific service (persists to Cloudinary)"""
+    allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type. Please upload JPG, PNG, or WebP images.")
+    
+    try:
+        # Read file content
+        file_content = await file.read()
+        
+        # Upload to Cloudinary
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+        public_id = f"doggy/services/{service_id}_{timestamp}"
+        
+        result = cloudinary.uploader.upload(
+            file_content,
+            public_id=public_id,
+            overwrite=True,
+            resource_type="image",
+            format="webp",
+            quality="auto:good",
+            transformation=[
+                {"width": 800, "height": 800, "crop": "limit"},
+                {"quality": "auto:good"}
+            ]
+        )
+        
+        cloudinary_url = result.get("secure_url")
+        
+        # Update service in database
+        update_result = await db.services.update_one(
+            {"id": service_id},
+            {
+                "$set": {
+                    "image_url": cloudinary_url,
+                    "watercolor_image": cloudinary_url,
+                    "admin_uploaded_image": True,
+                    "image_updated_at": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        if update_result.modified_count == 0:
+            # Try services_master collection
+            await db.services_master.update_one(
+                {"id": service_id},
+                {
+                    "$set": {
+                        "image_url": cloudinary_url,
+                        "watercolor_image": cloudinary_url,
+                        "admin_uploaded_image": True,
+                        "image_updated_at": datetime.now(timezone.utc).isoformat()
+                    }
+                }
+            )
+        
+        return {
+            "message": "Service image uploaded and linked successfully",
+            "service_id": service_id,
+            "url": cloudinary_url
+        }
+    except Exception as e:
+        logger.error(f"Failed to upload service image: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
 
 
 # ==================== ADMIN ROUTES ====================

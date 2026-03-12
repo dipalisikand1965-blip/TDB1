@@ -56,10 +56,126 @@
     <div class="header">
         <h1>The Doggy Company</h1>
         <p>Mira-OS: The Pet Life Operating System</p>
-        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: March 12, 2026 13:30 IST | Version 8.8.0 - AI Services Images + Paperwork Fix</p>
+        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: March 12, 2026 15:30 IST | Version 8.9.0 - Admin Cloudinary Image Upload</p>
     </div>
 
     <div class="container">
+        <!-- Session 8.9 Updates - Admin Image Upload -->
+        <div class="section" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 3px solid #22c55e;">
+            <h2 style="color: #166534; border-color: #22c55e;">✅ Session 8.9 - Admin Image Upload to Cloudinary (March 12, 2026)</h2>
+            
+            <div class="success-box">
+                <strong>ADMIN CAN NOW UPLOAD IMAGES DIRECTLY!</strong> Images persist through deployments via Cloudinary.
+            </div>
+
+            <h3>What Was Implemented:</h3>
+            <table>
+                <tr>
+                    <th>Feature</th>
+                    <th>Endpoint / Component</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>Product Image Upload</td>
+                    <td><code>POST /api/admin/product/{id}/upload-image</code></td>
+                    <td>Upload and link image to specific product</td>
+                </tr>
+                <tr>
+                    <td>Service Image Upload</td>
+                    <td><code>POST /api/admin/service/{id}/upload-image</code></td>
+                    <td>Upload and link image to specific service</td>
+                </tr>
+                <tr>
+                    <td>Admin Product Box UI</td>
+                    <td><code>UnifiedProductBox.jsx</code></td>
+                    <td>File upload button with Cloudinary integration</td>
+                </tr>
+                <tr>
+                    <td>Admin Service Box UI</td>
+                    <td><code>ServiceBox.jsx</code></td>
+                    <td>File upload button with Cloudinary integration</td>
+                </tr>
+            </table>
+
+            <h3>How to Use:</h3>
+            <ol>
+                <li>Go to Admin → Product Box or Service Box</li>
+                <li>Click on a product/service's image to edit</li>
+                <li>Use the purple "Choose File" button to upload directly</li>
+                <li>Image uploads to Cloudinary and is automatically linked</li>
+            </ol>
+
+            <h3>Current Image Statistics:</h3>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <div class="number">890</div>
+                    <div class="label">Total Products</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">59%</div>
+                    <div class="label">With Images</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">363</div>
+                    <div class="label">Missing Images</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">270</div>
+                    <div class="label">AI Generated</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- POST-DEPLOYMENT CHECKLIST - RUN THESE AFTER EVERY DEPLOYMENT -->
+        <div class="section" style="background: linear-gradient(135deg, #fee2e2, #fecaca); border: 3px solid #dc2626;">
+            <h2 style="color: #dc2626; border-color: #dc2626;">🚀 POST-DEPLOYMENT CHECKLIST (Run After Every Deploy!)</h2>
+            
+            <div class="warning-box" style="background: #fef2f2; border: 2px solid #dc2626; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <strong>⚡ RUN THESE ON PRODUCTION AFTER EVERY DEPLOYMENT:</strong>
+            </div>
+            
+            <pre style="background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 14px;">
+# Step 1: Clean up duplicate services
+curl -X POST "https://thedoggycompany.com/api/admin/cleanup-duplicate-services?password=lola4304"
+
+# Step 2: Fix service images (apply AI-generated images)
+curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=lola4304"
+
+# Step 3: Full product sync (if needed)
+curl -X POST "https://thedoggycompany.com/api/admin/bulk-import-products?password=lola4304"
+
+# Step 4: Full service sync (if needed)  
+curl -X POST "https://thedoggycompany.com/api/admin/bulk-import-services?password=lola4304"
+
+# Step 5: Sync guided paths (if any path content changed)
+curl -X POST "https://thedoggycompany.com/api/admin/bulk-import-guided-paths?password=lola4304"
+            </pre>
+
+            <h3>When to Run Which Commands:</h3>
+            <table>
+                <tr>
+                    <th>Scenario</th>
+                    <th>Commands to Run</th>
+                </tr>
+                <tr>
+                    <td>Standard deployment (code only)</td>
+                    <td>Step 1 + Step 2</td>
+                </tr>
+                <tr>
+                    <td>New products added</td>
+                    <td>Step 1 + Step 2 + Step 3</td>
+                </tr>
+                <tr>
+                    <td>New services/AI images generated</td>
+                    <td>Step 1 + Step 2 + Step 4</td>
+                </tr>
+                <tr>
+                    <td>Fresh deployment or major issues</td>
+                    <td>All Steps (1-5)</td>
+                </tr>
+            </table>
+        </div>
+
         <!-- CRITICAL: Production Sync Guide -->
         <div class="section" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 3px solid #f59e0b;">
             <h2 style="color: #b45309; border-color: #f59e0b;">⚠️ CRITICAL: Production Data Sync Guide</h2>
