@@ -56,10 +56,257 @@
     <div class="header">
         <h1>The Doggy Company</h1>
         <p>Mira-OS: The Pet Life Operating System</p>
-        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: December 2025 | Version 9.0.0 - Learn Page Golden Standard + Persistent AI Generation</p>
+        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: December 2025 | Version 10.0.0 - Page CMS Architecture</p>
     </div>
 
     <div class="container">
+        <!-- ═══════════════════════════════════════════════════════════════════════════════════════ -->
+        <!-- PAGE CMS ARCHITECTURE - THE STANDARD FOR ALL PILLAR PAGES -->
+        <!-- ═══════════════════════════════════════════════════════════════════════════════════════ -->
+        <div class="section" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 3px solid #f59e0b;">
+            <h2 style="color: #b45309; border-color: #f59e0b;">🏗️ PAGE CMS ARCHITECTURE - Standard for ALL Pillar Pages</h2>
+            
+            <div class="success-box">
+                <strong>⚠️ CRITICAL FOR ALL FUTURE AGENTS:</strong> This is the TEMPLATE for building pillar pages. 
+                Every pillar (Learn, Advisory, Care, Fit, Stay, Travel, Dine, etc.) MUST follow this architecture.
+            </div>
+
+            <h3>The Problem We Solved:</h3>
+            <p>Previously, each pillar page was hardcoded with trial-and-error product/service assignments. 
+            This led to inconsistencies, broken modals, and endless back-and-forth fixes.</p>
+
+            <h3>The Solution: Page CMS</h3>
+            <p>A centralized Admin interface where EVERY component of a page is configurable:</p>
+
+            <div class="highlight">
+                <h4>Page CMS Structure (Apply to ALL Pillars)</h4>
+                <pre><code>
+PILLAR PAGE CMS
+├── 🎨 PAGE SETTINGS
+│   ├── Page Title (editable)
+│   ├── Page Subtitle (editable)
+│   ├── Hero Image (uploadable via Cloudinary)
+│   ├── Theme Color (configurable)
+│   └── Section Visibility Toggles
+│
+├── 📚 TOPICS SECTION
+│   ├── Section Title (editable)
+│   ├── Show/Hide toggle
+│   └── Topics (add/remove/reorder):
+│       └── EACH TOPIC has:
+│           ├── Title
+│           ├── Slug (URL-friendly)
+│           ├── Image (uploadable)
+│           ├── Description
+│           └── MODAL CONTENT:
+│               ├── Subtopics (add/edit/remove) → Overview Tab
+│               ├── Videos (YouTube URLs) → Videos Tab
+│               ├── Products (pick from catalog) → Products Tab
+│               └── Services (pick from catalog) → Services Tab
+│
+├── 🎁 BUNDLES SECTION
+│   ├── Section Title (editable)
+│   ├── Show/Hide toggle
+│   ├── Max items to display
+│   └── Selected Bundles (pick from catalog)
+│
+├── 🛍️ PRODUCTS SECTION
+│   ├── Section Title (editable)
+│   ├── Show/Hide toggle
+│   ├── Layout configuration
+│   └── Featured Products (pick from catalog)
+│
+├── 🔧 SERVICES SECTION
+│   ├── Section Title (editable)
+│   └── Featured Services (pick from catalog)
+│
+└── 👤 PERSONALIZATION SECTION
+    ├── Show breed-specific products (toggle)
+    ├── Show archetype recommendations (toggle)
+    └── Show "Recommended for {pet}" (toggle)
+                </code></pre>
+            </div>
+
+            <h3>Database Collections Required:</h3>
+            <table>
+                <tr>
+                    <th>Collection</th>
+                    <th>Purpose</th>
+                    <th>Key Fields</th>
+                </tr>
+                <tr>
+                    <td><code>page_configs</code></td>
+                    <td>Page-level settings</td>
+                    <td>pillar, title, subtitle, heroImage, themeColor, sections</td>
+                </tr>
+                <tr>
+                    <td><code>learn_topics</code> (or <code>{pillar}_topics</code>)</td>
+                    <td>Topics for that pillar</td>
+                    <td>title, slug, image, description, subtopics[], videos[], products[], services[], order</td>
+                </tr>
+                <tr>
+                    <td><code>page_selections</code></td>
+                    <td>Featured items per page</td>
+                    <td>pillar, bundles[], products[], services[]</td>
+                </tr>
+            </table>
+
+            <h3>API Endpoints Required:</h3>
+            <table>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Method</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td><code>/api/{pillar}/page-config</code></td>
+                    <td>GET</td>
+                    <td>Load entire page configuration</td>
+                </tr>
+                <tr>
+                    <td><code>/api/{pillar}/page-config</code></td>
+                    <td>POST</td>
+                    <td>Save entire page configuration</td>
+                </tr>
+                <tr>
+                    <td><code>/api/{pillar}/topic-products/{slug}</code></td>
+                    <td>GET</td>
+                    <td>Get products for a specific topic modal</td>
+                </tr>
+            </table>
+
+            <h3>Frontend Components Required:</h3>
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Location</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td><code>{Pillar}PageCMS.jsx</code></td>
+                    <td><code>/frontend/src/components/admin/</code></td>
+                    <td>Admin CMS for that pillar page</td>
+                </tr>
+                <tr>
+                    <td><code>{Pillar}Page.jsx</code></td>
+                    <td><code>/frontend/src/pages/</code></td>
+                    <td>The actual pillar page (reads from CMS config)</td>
+                </tr>
+                <tr>
+                    <td><code>{Pillar}TopicModal.jsx</code></td>
+                    <td><code>/frontend/src/components/{pillar}/</code></td>
+                    <td>Modal that opens when user clicks a topic</td>
+                </tr>
+            </table>
+
+            <h3>Step-by-Step: Adding CMS to a New Pillar</h3>
+            <div class="card">
+                <h4>Step 1: Create Backend Endpoints</h4>
+                <pre><code>
+# In {pillar}_routes.py
+
+@router.get("/page-config")
+async def get_page_config():
+    db = get_db()
+    config = await db.page_configs.find_one({"pillar": "{pillar}"})
+    topics = await db.{pillar}_topics.find({}).sort("order", 1).to_list(50)
+    selections = await db.page_selections.find_one({"pillar": "{pillar}"})
+    return {"config": config, "topics": topics, "selections": selections}
+
+@router.post("/page-config")
+async def save_page_config(data: dict):
+    # Save config, topics, and selections
+    ...
+                </code></pre>
+            </div>
+
+            <div class="card">
+                <h4>Step 2: Create Admin CMS Component</h4>
+                <pre><code>
+// Copy /frontend/src/components/admin/LearnPageCMS.jsx
+// Rename to {Pillar}PageCMS.jsx
+// Change all "learn" references to "{pillar}"
+// Update API endpoints
+                </code></pre>
+            </div>
+
+            <div class="card">
+                <h4>Step 3: Update the Pillar Page to Read from CMS</h4>
+                <pre><code>
+// In {Pillar}Page.jsx
+
+const [pageConfig, setPageConfig] = useState(null);
+const [topics, setTopics] = useState([]);
+
+useEffect(() => {
+    fetch(`${API_URL}/api/{pillar}/page-config`)
+        .then(res => res.json())
+        .then(data => {
+            setPageConfig(data.config);
+            setTopics(data.topics);
+        });
+}, []);
+
+// Then render sections based on pageConfig.sections.{section}.enabled
+                </code></pre>
+            </div>
+
+            <div class="card">
+                <h4>Step 4: Update Topic Modal to Fetch from CMS</h4>
+                <pre><code>
+// In {Pillar}TopicModal.jsx - fetchProducts function
+
+const fetchProducts = async () => {
+    // FIRST: Try admin-assigned products
+    const res = await fetch(`${API_URL}/api/{pillar}/topic-products/${topicSlug}`);
+    if (res.ok) {
+        const data = await res.json();
+        if (data.products?.length > 0) {
+            setProducts(data.products);
+            return;
+        }
+    }
+    // FALLBACK: Default products
+    ...
+};
+                </code></pre>
+            </div>
+
+            <div class="card">
+                <h4>Step 5: Add to Admin Panel</h4>
+                <pre><code>
+// In Admin.jsx
+
+import {Pillar}PageCMS from '../components/admin/{Pillar}PageCMS';
+
+// Add tab in Page CMS section:
+{ id: '{pillar}-cms', label: '{Pillar} Page', icon: IconComponent }
+
+// Add tab content:
+{activeTab === '{pillar}-cms' && <{Pillar}PageCMS />}
+                </code></pre>
+            </div>
+
+            <h3>Files Reference (Learn as Template):</h3>
+            <ul>
+                <li><strong>Admin CMS:</strong> <code>/app/frontend/src/components/admin/LearnPageCMS.jsx</code></li>
+                <li><strong>Backend Routes:</strong> <code>/app/backend/learn_routes.py</code> (see page-config endpoints)</li>
+                <li><strong>Topic Modal:</strong> <code>/app/frontend/src/components/learn/LearnTopicModal.jsx</code></li>
+                <li><strong>Page Component:</strong> <code>/app/frontend/src/pages/LearnPage.jsx</code></li>
+            </ul>
+
+            <div class="warning-box">
+                <strong>⚠️ IMPORTANT RULES FOR AGENTS:</strong>
+                <ul>
+                    <li>NEVER hardcode product/service assignments in components</li>
+                    <li>ALWAYS use the CMS to let admin control what appears where</li>
+                    <li>ALWAYS check if products exist before rendering (provide fallbacks)</li>
+                    <li>ALWAYS use the CloudinaryUploader for image uploads (persists through deployments)</li>
+                    <li>ALWAYS follow the same structure for ALL pillar pages</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- Session 9.0 Updates - Learn Page Golden Standard + AI Generation Persistence -->
         <div class="section" style="background: linear-gradient(135deg, #dbeafe, #e0f2fe); border: 3px solid #3b82f6;">
             <h2 style="color: #1d4ed8; border-color: #3b82f6;">🌟 Session 9.0 - Learn Page Golden Standard + Persistent AI Generation (December 2025)</h2>

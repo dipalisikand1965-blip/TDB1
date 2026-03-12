@@ -1,5 +1,5 @@
 # The Doggy Company — Complete Product Requirements Document
-## Last Updated: December 2025 (Session 9.0 - Learn Golden Standard + Persistent AI)
+## Last Updated: December 2025 (Version 10.0 - Page CMS Architecture)
 
 ---
 
@@ -16,7 +16,141 @@ Build **"The World's First Pet Life Operating System"** — a comprehensive plat
 
 ---
 
-## 2. Platform Architecture
+## 2. PAGE CMS ARCHITECTURE (⚠️ CRITICAL - READ THIS FIRST)
+
+### 2.1 Overview
+
+**ALL pillar pages MUST use the Page CMS architecture.** This ensures:
+- Admins control ALL content from the Admin Panel
+- No hardcoded product/service assignments
+- Consistent structure across all pillars
+- Easy maintenance and updates
+
+### 2.2 Page CMS Structure
+
+```
+PILLAR PAGE CMS (Template for ALL Pillars)
+│
+├── 🎨 PAGE SETTINGS
+│   ├── Page Title (editable)
+│   ├── Page Subtitle (editable)
+│   ├── Hero Image (Cloudinary upload)
+│   ├── Theme Color
+│   └── Section Visibility Toggles
+│
+├── 📚 TOPICS SECTION
+│   ├── Section Title
+│   └── Topics (add/remove/reorder):
+│       └── EACH TOPIC:
+│           ├── Title, Slug, Description
+│           ├── Image (Cloudinary upload)
+│           └── MODAL CONTENT:
+│               ├── Subtopics → Overview Tab
+│               ├── Videos (YouTube URLs) → Videos Tab
+│               ├── Products (pick from catalog) → Products Tab
+│               └── Services (pick from catalog) → Services Tab
+│
+├── 🎁 BUNDLES SECTION
+│   └── Selected Bundles (pick from catalog)
+│
+├── 🛍️ PRODUCTS SECTION
+│   └── Featured Products (pick from catalog)
+│
+├── 🔧 SERVICES SECTION
+│   └── Featured Services (pick from catalog)
+│
+└── 👤 PERSONALIZATION
+    ├── Show breed-specific products
+    ├── Show archetype recommendations
+    └── Show "Recommended for {pet}"
+```
+
+### 2.3 Database Collections
+
+| Collection | Purpose |
+|------------|---------|
+| `page_configs` | Page-level settings (title, hero, sections) |
+| `{pillar}_topics` | Topics for each pillar page |
+| `page_selections` | Featured bundles/products/services per page |
+
+### 2.4 API Endpoints Pattern
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/{pillar}/page-config` | GET | Load page configuration |
+| `/api/{pillar}/page-config` | POST | Save page configuration |
+| `/api/{pillar}/topic-products/{slug}` | GET | Get products for topic modal |
+
+### 2.5 Frontend Files Pattern
+
+| File | Purpose |
+|------|---------|
+| `/components/admin/{Pillar}PageCMS.jsx` | Admin CMS interface |
+| `/pages/{Pillar}Page.jsx` | The pillar page (reads from CMS) |
+| `/components/{pillar}/{Pillar}TopicModal.jsx` | Topic modal component |
+
+### 2.6 How to Add CMS to a New Pillar
+
+**Step 1: Copy Learn as Template**
+```bash
+# Copy these files and rename:
+cp LearnPageCMS.jsx {Pillar}PageCMS.jsx
+cp LearnTopicModal.jsx {Pillar}TopicModal.jsx
+```
+
+**Step 2: Create Backend Endpoints**
+```python
+# In {pillar}_routes.py
+
+@router.get("/page-config")
+async def get_page_config():
+    db = get_db()
+    config = await db.page_configs.find_one({"pillar": "{pillar}"})
+    topics = await db.{pillar}_topics.find({}).sort("order", 1).to_list(50)
+    return {"config": config, "topics": topics}
+
+@router.post("/page-config")
+async def save_page_config(data: dict):
+    # Save config and topics
+    ...
+```
+
+**Step 3: Add to Admin Panel**
+```jsx
+// In Admin.jsx
+import {Pillar}PageCMS from '../components/admin/{Pillar}PageCMS';
+
+// Add tab
+{ id: '{pillar}-cms', label: '{Pillar} Page', icon: Icon }
+
+// Add content
+{activeTab === '{pillar}-cms' && <{Pillar}PageCMS />}
+```
+
+**Step 4: Update Pillar Page to Read from CMS**
+```jsx
+// In {Pillar}Page.jsx
+useEffect(() => {
+    fetch(`${API_URL}/api/{pillar}/page-config`)
+        .then(res => res.json())
+        .then(data => {
+            setPageConfig(data.config);
+            setTopics(data.topics);
+        });
+}, []);
+```
+
+### 2.7 ⚠️ RULES FOR ALL AGENTS
+
+1. **NEVER hardcode product/service assignments**
+2. **ALWAYS use CMS for admin-controlled content**
+3. **ALWAYS provide fallbacks when no products assigned**
+4. **ALWAYS use CloudinaryUploader for images**
+5. **ALWAYS follow the same structure for ALL pillars**
+
+---
+
+## 3. Platform Architecture
 
 ### Tech Stack
 | Layer | Technology |
@@ -40,24 +174,126 @@ Build **"The World's First Pet Life Operating System"** — a comprehensive plat
 
 ---
 
-## 3. Session 9.0 Complete Work Summary (December 2025)
+## 4. Learn Page CMS (REFERENCE IMPLEMENTATION)
 
-### 3.1 Learn Page Elevated to Golden Standard (MATCHES ADVISORY)
+### 4.1 Files
 
-**What Was Achieved:**
-- Learn page now has EXACT same structure as Advisory page
-- Products personalized by pet's breed (breed-specific first, generic after)
-- 4 curated Learn bundles with Cloudinary watercolor images
-- Real-time AI image generation progress panel in admin
+| File | Path | Purpose |
+|------|------|---------|
+| LearnPageCMS.jsx | `/frontend/src/components/admin/LearnPageCMS.jsx` | Admin CMS |
+| LearnTopicModal.jsx | `/frontend/src/components/learn/LearnTopicModal.jsx` | Topic modal |
+| LearnPage.jsx | `/frontend/src/pages/LearnPage.jsx` | The page |
+| learn_routes.py | `/backend/learn_routes.py` | API endpoints |
 
-**Learn Page Structure:**
-1. Hero with watercolor gradient
-2. Category tabs (All Learn, Training Aids, Puzzles, Books)
-3. Topic cards with watercolor images
-4. "{Pet Name}'s Bundles" section with 4 curated bundles
-5. "Recommended for {Pet Name}" with breed/age/archetype tags
-6. "Products for {Pet}'s Learning" - breed-filtered products (24 max)
-7. BreedSmartRecommendations
+### 4.2 Admin Location
+
+Admin Panel → **Page CMS** → **Learn Page**
+
+### 4.3 What Admin Can Control
+
+- Page title and subtitle
+- Hero image
+- Topics (add/remove/reorder)
+- For each topic: subtopics, videos, products, services
+- Featured bundles
+- Featured products
+- Featured services
+- Section visibility
+
+---
+
+## 5. Pillar Implementation Status
+
+| Pillar | CMS Implemented | Status |
+|--------|-----------------|--------|
+| Learn | ✅ YES | Golden Standard |
+| Advisory | ❌ Hardcoded | Needs CMS |
+| Care | ❌ Hardcoded | Needs CMS |
+| Fit | ❌ Hardcoded | Needs CMS |
+| Stay | ❌ Hardcoded | Needs CMS |
+| Travel | ❌ Hardcoded | Needs CMS |
+| Dine | ❌ Hardcoded | Needs CMS |
+| Enjoy | ❌ Hardcoded | Needs CMS |
+| Celebrate | ❌ Hardcoded | Needs CMS |
+| Paperwork | ❌ Hardcoded | Needs CMS |
+| Emergency | ❌ Hardcoded | Needs CMS |
+| Farewell | ❌ Hardcoded | Needs CMS |
+| Adopt | ❌ Hardcoded | Needs CMS |
+| Shop | N/A | Different structure |
+
+---
+
+## 6. AI Image Generation System
+
+### Status
+- Running in background
+- Generates watercolor images for breed-specific products
+- Progress visible in Admin Panel
+
+### Endpoints
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /api/ai-images/status` | Check if running |
+| `GET /api/ai-images/stats` | Coverage stats |
+| `POST /api/ai-images/generate-product-images?password=lola4304` | Start generation |
+| `POST /api/ai-images/stop` | Stop generation |
+
+### ⚠️ Note for Agents
+AI generation is an in-memory process. It STOPS when the backend restarts or agent forks. Restart it with:
+```bash
+curl -X POST "https://URL/api/ai-images/generate-product-images?password=lola4304"
+```
+
+---
+
+## 7. Current Issues (Prioritized)
+
+### P0 - Critical
+- [ ] Apply CMS pattern to remaining pillars
+
+### P1 - High
+- [ ] Fix Razorpay checkout
+- [ ] Make AI generation persistent (survives restarts)
+
+### P2 - Medium
+- [ ] Fix mobile pet dashboard
+- [ ] Instagram integration
+
+### P3 - Low
+- [ ] YouTube API quota upgrade
+
+---
+
+## 8. Testing Credentials
+
+| Type | Username | Password |
+|------|----------|----------|
+| User | dipali@clubconcierge.in | test123 |
+| Admin | aditya | lola4304 |
+
+---
+
+## 9. Post-Deployment Checklist
+
+```bash
+# 1. Restart AI image generation
+curl -X POST "https://URL/api/ai-images/generate-product-images?password=lola4304"
+
+# 2. Seed topic products
+curl -X POST "https://URL/api/learn/topic-products/seed"
+
+# 3. Check page config API
+curl "https://URL/api/learn/page-config"
+```
+
+---
+
+## 10. Next Agent Instructions
+
+1. **Check AI generation status** - Restart if not running
+2. **Use Learn Page CMS as template** for other pillars
+3. **Follow the CMS architecture** - No hardcoding!
+4. **Test modals** - Products tab should show admin-assigned products
 8. ArchetypeProducts
 
 ### 3.2 Learn Bundles (4 NEW - in `learn_bundles` collection)
