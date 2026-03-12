@@ -412,11 +412,11 @@ const CuratedBundles = ({ pillar, showTitle = true, className = '', maxBundles }
               <div className="p-6">
                 {/* Bundle Image (if available) */}
                 {bundle.image_url && (
-                  <div className="mb-4 -mx-6 -mt-6">
+                  <div className="mb-4 -mx-6 -mt-6 bg-gradient-to-br from-amber-50/50 to-orange-50/50">
                     <img 
                       src={bundle.image_url} 
                       alt={bundle.name}
-                      className="w-full h-40 object-cover"
+                      className="w-full h-48 object-contain"
                     />
                   </div>
                 )}
