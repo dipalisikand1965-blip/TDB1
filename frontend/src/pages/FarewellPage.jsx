@@ -435,10 +435,9 @@ const FarewellPage = () => {
         pillar="farewell"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.farewell}
         onTopicClick={(topic) => {
-          const packagesSection = document.getElementById('packages');
-          if (packagesSection) {
-            packagesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+          // Navigate to services page filtered by this farewell category
+          const searchTerm = topic.title || topic.name;
+          window.location.href = `/services?pillar=farewell&search=${encodeURIComponent(searchTerm)}`;
         }}
         columns={4}
       />
