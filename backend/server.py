@@ -4325,6 +4325,209 @@ async def upload_service_image_by_id(
         raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
 
 
+@api_router.post("/admin/bundle/{bundle_id}/upload-image")
+async def upload_bundle_image_by_id(
+    bundle_id: str,
+    file: UploadFile = File(...)
+):
+    """Upload and set image for a specific bundle (persists to Cloudinary)"""
+    allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type. Please upload JPG, PNG, or WebP images.")
+    
+    try:
+        file_content = await file.read()
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+        public_id = f"doggy/bundles/{bundle_id}_{timestamp}"
+        
+        result = cloudinary.uploader.upload(
+            file_content,
+            public_id=public_id,
+            overwrite=True,
+            resource_type="image",
+            format="webp",
+            quality="auto:good"
+        )
+        
+        cloudinary_url = result.get("secure_url")
+        
+        # Update bundle in database
+        await db.bundles.update_one(
+            {"id": bundle_id},
+            {
+                "$set": {
+                    "image_url": cloudinary_url,
+                    "image": cloudinary_url,
+                    "admin_uploaded_image": True,
+                    "image_updated_at": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        return {
+            "message": "Bundle image uploaded successfully",
+            "bundle_id": bundle_id,
+            "url": cloudinary_url
+        }
+    except Exception as e:
+        logger.error(f"Failed to upload bundle image: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
+
+
+@api_router.post("/admin/experience/{experience_id}/upload-image")
+async def upload_experience_image_by_id(
+    experience_id: str,
+    file: UploadFile = File(...)
+):
+    """Upload and set image for a specific experience (persists to Cloudinary)"""
+    allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type. Please upload JPG, PNG, or WebP images.")
+    
+    try:
+        file_content = await file.read()
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+        public_id = f"doggy/experiences/{experience_id}_{timestamp}"
+        
+        result = cloudinary.uploader.upload(
+            file_content,
+            public_id=public_id,
+            overwrite=True,
+            resource_type="image",
+            format="webp",
+            quality="auto:good"
+        )
+        
+        cloudinary_url = result.get("secure_url")
+        
+        # Update experience in database
+        await db.experiences.update_one(
+            {"id": experience_id},
+            {
+                "$set": {
+                    "image_url": cloudinary_url,
+                    "image": cloudinary_url,
+                    "admin_uploaded_image": True,
+                    "image_updated_at": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        return {
+            "message": "Experience image uploaded successfully",
+            "experience_id": experience_id,
+            "url": cloudinary_url
+        }
+    except Exception as e:
+        logger.error(f"Failed to upload experience image: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
+
+
+# ==================== BIDIRECTIONAL SYNC (Production ↔ Preview) ====================
+
+@api_router.post("/admin/sync-from-production")
+async def sync_from_production(password: str = None):
+    """
+    Pull data FROM production TO preview to preserve admin edits made on production.
+    This ensures deployments don't overwrite production changes.
+    """
+    if password != "lola4304":
+        raise HTTPException(status_code=401, detail="Invalid password")
+    
+    try:
+        # Production MongoDB connection string
+        PROD_MONGO = os.environ.get("PRODUCTION_MONGO_URL")
+        if not PROD_MONGO:
+            return {
+                "success": False,
+                "message": "PRODUCTION_MONGO_URL not configured. Add it to .env to enable bidirectional sync."
+            }
+        
+        from motor.motor_asyncio import AsyncIOMotorClient
+        prod_client = AsyncIOMotorClient(PROD_MONGO)
+        prod_db = prod_client.get_database("thedoggycompany")
+        
+        sync_results = {
+            "products_synced": 0,
+            "services_synced": 0,
+            "bundles_synced": 0,
+            "admin_uploads_preserved": 0
+        }
+        
+        # Sync products with admin_uploaded_image flag (preserve admin edits)
+        prod_products = await prod_db.products.find({"admin_uploaded_image": True}).to_list(None)
+        for prod in prod_products:
+            prod.pop("_id", None)
+            await db.products.update_one(
+                {"id": prod.get("id")},
+                {"$set": prod},
+                upsert=True
+            )
+            sync_results["products_synced"] += 1
+            sync_results["admin_uploads_preserved"] += 1
+        
+        # Sync services with admin_uploaded_image flag
+        prod_services = await prod_db.services.find({"admin_uploaded_image": True}).to_list(None)
+        for svc in prod_services:
+            svc.pop("_id", None)
+            await db.services.update_one(
+                {"id": svc.get("id")},
+                {"$set": svc},
+                upsert=True
+            )
+            sync_results["services_synced"] += 1
+            sync_results["admin_uploads_preserved"] += 1
+        
+        # Sync bundles with admin_uploaded_image flag
+        prod_bundles = await prod_db.bundles.find({"admin_uploaded_image": True}).to_list(None)
+        for bundle in prod_bundles:
+            bundle.pop("_id", None)
+            await db.bundles.update_one(
+                {"id": bundle.get("id")},
+                {"$set": bundle},
+                upsert=True
+            )
+            sync_results["bundles_synced"] += 1
+            sync_results["admin_uploads_preserved"] += 1
+        
+        prod_client.close()
+        
+        return {
+            "success": True,
+            "message": "Synced admin-uploaded data from production",
+            "results": sync_results
+        }
+        
+    except Exception as e:
+        logger.error(f"Sync from production failed: {e}")
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+
+@api_router.get("/admin/production-sync-status")
+async def get_production_sync_status():
+    """Check what items have admin uploads that need to be preserved"""
+    try:
+        # Count items with admin uploads in preview
+        products_with_admin_uploads = await db.products.count_documents({"admin_uploaded_image": True})
+        services_with_admin_uploads = await db.services.count_documents({"admin_uploaded_image": True})
+        bundles_with_admin_uploads = await db.bundles.count_documents({"admin_uploaded_image": True})
+        
+        return {
+            "preview_admin_uploads": {
+                "products": products_with_admin_uploads,
+                "services": services_with_admin_uploads,
+                "bundles": bundles_with_admin_uploads,
+                "total": products_with_admin_uploads + services_with_admin_uploads + bundles_with_admin_uploads
+            },
+            "sync_recommendation": "Run /api/admin/sync-from-production after each deployment to preserve production edits"
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
 # ==================== ADMIN ROUTES ====================
 
 # Admin email for password reset
