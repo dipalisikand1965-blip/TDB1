@@ -351,9 +351,67 @@ const FitPage = () => {
   // Get fitness category from URL query params
   const urlCategory = searchParams.get('type') || searchParams.get('category');
   
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // CMS STATE - Loaded from /api/fit/page-config
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const [cmsConfig, setCmsConfig] = useState({
+    title: "Keep {petName} fit and active",
+    subtitle: 'Exercise, activities, fitness goals & wellness routines',
+    askMira: {
+      enabled: true,
+      placeholder: "Exercise ideas for my breed... weight loss tips",
+      buttonColor: 'bg-green-500'
+    },
+    sections: {
+      askMira: { enabled: true },
+      miraPrompts: { enabled: true },
+      categories: { enabled: true },
+      bundles: { enabled: true },
+      products: { enabled: true },
+      conciergeServices: { enabled: true },
+      personalized: { enabled: true }
+    }
+  });
+  const [cmsCategories, setCmsCategories] = useState([]);
+  const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
+  const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  
+  // Personalize title with pet name
+  const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet') || 
+    `Keep ${activePet?.name || "your pet"} fit and active`;
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // FETCH CMS CONFIGURATION
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const fetchCMSConfig = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/fit/page-config`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.config && Object.keys(data.config).length > 0) {
+          setCmsConfig(prev => ({ ...prev, ...data.config }));
+        }
+        if (data.categories?.length > 0) {
+          setCmsCategories(data.categories);
+        }
+        if (data.conciergeServices?.length > 0) {
+          setCmsConciergeServices(data.conciergeServices);
+        }
+        if (data.miraPrompts?.length > 0) {
+          setCmsMiraPrompts(data.miraPrompts);
+        }
+        console.log('[FitPage] CMS config loaded');
+      }
+    } catch (error) {
+      console.error('[FitPage] Failed to fetch CMS config:', error);
+    }
+  };
+
   // Scroll to top when page loads
   useEffect(() => {
     window.scrollTo(0, 0);
+    fetchCMSConfig(); // Load CMS config
   }, []);
   
   // Handle URL type parameter - scroll to services section

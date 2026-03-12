@@ -141,9 +141,58 @@ const EmergencyPage = () => {
   const petFileRef = useRef(null);
   const guidesRef = useRef(null);
   const productsRef = useRef(null);
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // CMS STATE - Loaded from /api/emergency/page-config
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const [cmsConfig, setCmsConfig] = useState({
+    title: "Emergency help for {petName}",
+    subtitle: '24/7 emergency vets, first aid & urgent care resources',
+    askMira: {
+      enabled: true,
+      placeholder: "Emergency vet near me... poison control",
+      buttonColor: 'bg-red-500'
+    },
+    sections: {
+      askMira: { enabled: true },
+      miraPrompts: { enabled: true },
+      emergency: { enabled: true },
+      bundles: { enabled: true },
+      products: { enabled: true },
+      personalized: { enabled: true }
+    }
+  });
+  const [cmsCategories, setCmsCategories] = useState([]);
+  const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  
+  // Personalize title with pet name
+  const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet') || 
+    `Emergency help for ${activePet?.name || 'your pet'}`;
+  
+  const fetchCMSConfig = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/emergency/page-config`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.config && Object.keys(data.config).length > 0) {
+          setCmsConfig(prev => ({ ...prev, ...data.config }));
+        }
+        if (data.categories?.length > 0) {
+          setCmsCategories(data.categories);
+        }
+        if (data.miraPrompts?.length > 0) {
+          setCmsMiraPrompts(data.miraPrompts);
+        }
+        console.log('[EmergencyPage] CMS config loaded');
+      }
+    } catch (error) {
+      console.error('[EmergencyPage] Failed to fetch CMS config:', error);
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    fetchCMSConfig(); // Load CMS config
     fetchData();
     if (user && token) {
       fetchUserPets();

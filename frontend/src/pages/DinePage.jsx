@@ -170,14 +170,72 @@ const DinePage = () => {
   const [heroIndex, setHeroIndex] = useState(0);
   const [essentialsFilter, setEssentialsFilter] = useState('all'); // Filter for Dine Essentials section
   
-  // Scroll to top when page loads
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // CMS STATE - Loaded from /api/dine/page-config
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const [cmsConfig, setCmsConfig] = useState({
+    title: "Meals {petName} will love",
+    subtitle: 'Fresh food, treats, nutrition plans & dietary guidance',
+    askMira: {
+      enabled: true,
+      placeholder: "Best food for puppies... homemade treats recipe",
+      buttonColor: 'bg-orange-500'
+    },
+    sections: {
+      askMira: { enabled: true },
+      miraPrompts: { enabled: true },
+      categories: { enabled: true },
+      bundles: { enabled: true },
+      products: { enabled: true },
+      conciergeServices: { enabled: true },
+      personalized: { enabled: true }
+    }
+  });
+  const [cmsCategories, setCmsCategories] = useState([]);
+  const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
+  const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
   
   // Get pet from PillarContext (syncs with global pet selector)
   const { currentPet, pets: contextPets } = usePillarContext();
   const activePet = currentPet;
+  
+  // Personalize title with pet name
+  const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet') || 
+    `Meals ${activePet?.name || "your pet"} will love`;
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // FETCH CMS CONFIGURATION
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const fetchCMSConfig = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/dine/page-config`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.config && Object.keys(data.config).length > 0) {
+          setCmsConfig(prev => ({ ...prev, ...data.config }));
+        }
+        if (data.categories?.length > 0) {
+          setCmsCategories(data.categories);
+        }
+        if (data.conciergeServices?.length > 0) {
+          setCmsConciergeServices(data.conciergeServices);
+        }
+        if (data.miraPrompts?.length > 0) {
+          setCmsMiraPrompts(data.miraPrompts);
+        }
+        console.log('[DinePage] CMS config loaded');
+      }
+    } catch (error) {
+      console.error('[DinePage] Failed to fetch CMS config:', error);
+    }
+  };
+
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    fetchCMSConfig(); // Load CMS config
+  }, []);
   const [userPets, setUserPets] = useState([]);
   
   // Nearby Pet Cafes & Places state (Foursquare + Google Places)
@@ -218,11 +276,6 @@ const DinePage = () => {
       setCurrentUser(authUser);
     }
   }, [authUser]);
-
-  // Scroll to top on mount
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   // Detect user's location using geolocation API
   useEffect(() => {

@@ -19932,6 +19932,21 @@ async def fix_service_images(password: str = Query(...)):
     
     # Map of pillar service images 
     PILLAR_SERVICE_IMAGES = {
+        "insure": {
+            "Free Insurance Quote Comparison": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/927cb368e3f561742892f5f94c5b97265e18d219bdc369692ae6afc898c866de.png",
+            "Pet Insurance Quote Comparison": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/927cb368e3f561742892f5f94c5b97265e18d219bdc369692ae6afc898c866de.png",
+            "Policy Review & Optimization": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/4abc1cb0ec76f0090d54eb9680093b325c2c9f1a63bd624ca7eb9430a9aff988.png",
+            "Claim Filing Assistance": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/e87aaf65a6199f7ef0fc3b6c7f6b7b2e0e1291b75a3f9e4e9048fd5bf953eb2a.png",
+            "Renewal Management Service": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/5b426aa91ed07ac70f7c6a84ec1cc8b3446027214d46ffd8372cf3a1ae2a6adb.png",
+            "Complete Insurance Package": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/000036739ce0bcc2d216656fe2fb02b77dace43365b1648f19738aa07992c16b.png",
+        },
+        "paperwork": {
+            "Free Insurance Quote Comparison": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/927cb368e3f561742892f5f94c5b97265e18d219bdc369692ae6afc898c866de.png",
+            "Policy Review & Optimization": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/4abc1cb0ec76f0090d54eb9680093b325c2c9f1a63bd624ca7eb9430a9aff988.png",
+            "Claim Filing Assistance": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/e87aaf65a6199f7ef0fc3b6c7f6b7b2e0e1291b75a3f9e4e9048fd5bf953eb2a.png",
+            "Renewal Management Service": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/5b426aa91ed07ac70f7c6a84ec1cc8b3446027214d46ffd8372cf3a1ae2a6adb.png",
+            "Complete Insurance Package": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/000036739ce0bcc2d216656fe2fb02b77dace43365b1648f19738aa07992c16b.png",
+        },
         "farewell": {
             "End-of-Life Planning": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_end_of_life_planning.png",
             "Euthanasia Coordination": "https://static.prod-images.emergentagent.com/jobs/d38f34a3-0c42-40aa-96c7-9cfd3362d08c/images/farewell_euthanasia.png",
@@ -19952,13 +19967,40 @@ async def fix_service_images(password: str = Query(...)):
     }
     
     updated = 0
+    # Generic images that should be replaced
+    GENERIC_IMAGES = [
+        "https://images.unsplash.com/photo-1587300003388-59208cc962cb",  # Generic dog
+        "https://images.unsplash.com/photo-1583511655826-05700d52f4d9",  # Another generic
+        "https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993",  # Rope toy
+    ]
+    
     for pillar, services in PILLAR_SERVICE_IMAGES.items():
         for name, image_url in services.items():
+            # Update if image is missing OR if it's a generic placeholder
             result = await db.services_master.update_many(
-                {"name": name, "pillar": pillar, "$or": [{"image": None}, {"image": ""}, {"image": {"$exists": False}}]},
-                {"$set": {"image": image_url}}
+                {"name": name, "$or": [
+                    {"pillar": pillar},
+                    {"category": pillar},
+                    {"tags": pillar.capitalize()}
+                ], "$or": [
+                    {"image": None}, 
+                    {"image": ""}, 
+                    {"image": {"$exists": False}},
+                    {"image": {"$regex": "unsplash.com"}},
+                    {"image_url": {"$regex": "unsplash.com"}}
+                ]},
+                {"$set": {"image": image_url, "image_url": image_url}}
             )
             updated += result.modified_count
+            
+            # Also update products_master if these exist there
+            await db.products_master.update_many(
+                {"name": name, "$or": [
+                    {"pillar": pillar},
+                    {"category": pillar}
+                ]},
+                {"$set": {"image": image_url, "image_url": image_url}}
+            )
     
     return {
         "success": True,
