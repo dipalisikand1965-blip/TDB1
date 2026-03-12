@@ -373,22 +373,53 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
     if (!config) return;
     setLoadingProducts(true);
     try {
-      // Search within learn pillar for relevant products - not the full catalog
-      const primaryKeyword = config.productKeywords[0];
-      const res = await fetch(`${API_URL}/api/products?search=${encodeURIComponent(primaryKeyword)}&pillar=learn&limit=8`);
+      // Get pet's breed for personalization
+      const petBreed = selectedPet?.breed?.toLowerCase() || '';
+      
+      // Fetch from Product Box with learn pillar
+      const res = await fetch(`${API_URL}/api/product-box/products?pillar=learn&limit=50`);
       if (res.ok) {
         const data = await res.json();
-        // If learn pillar has results, use those. Otherwise try broader search
-        if (data.products && data.products.length > 0) {
-          setProducts(data.products);
-        } else {
-          // Fallback: broader search but still relevant
-          const fallbackRes = await fetch(`${API_URL}/api/products?search=${encodeURIComponent(primaryKeyword)}&limit=8`);
-          if (fallbackRes.ok) {
-            const fallbackData = await fallbackRes.json();
-            setProducts(fallbackData.products || []);
-          }
-        }
+        let allProducts = data.products || [];
+        
+        // Filter by topic keywords
+        const keywords = config.productKeywords || [];
+        
+        // Score and filter products
+        const scoredProducts = allProducts.map(p => {
+          let score = 0;
+          const name = (p.name || '').toLowerCase();
+          const description = (p.description || '').toLowerCase();
+          const tags = (p.tags || []).map(t => t.toLowerCase());
+          
+          // Check keyword matches
+          keywords.forEach(kw => {
+            if (name.includes(kw.toLowerCase())) score += 3;
+            if (description.includes(kw.toLowerCase())) score += 1;
+            if (tags.some(t => t.includes(kw.toLowerCase()))) score += 2;
+          });
+          
+          // Bonus for pet's breed match
+          if (petBreed && name.includes(petBreed)) score += 5;
+          
+          // Must have an image
+          const hasImage = p.image_url || p.image || (p.images && p.images[0]);
+          if (!hasImage) score -= 10;
+          
+          // Exclude products for OTHER breeds
+          const otherBreeds = ['chihuahua', 'pug', 'shih tzu', 'scottish', 'labrador', 'golden', 'poodle', 'beagle', 'bulldog', 'husky', 'german shepherd', 'schnoodle', 'dachshund'];
+          const isOtherBreed = otherBreeds.some(b => name.includes(b) && b !== petBreed);
+          if (isOtherBreed && petBreed) score -= 20;
+          
+          return { ...p, score };
+        });
+        
+        // Sort by score and take top 8
+        const topProducts = scoredProducts
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 8);
+        
+        setProducts(topProducts);
       }
     } catch (err) {
       console.error('Failed to fetch products:', err);
@@ -689,8 +720,13 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
                         data-testid={`product-card-${idx}`}
                       >
                         <div className="aspect-square bg-gray-100 rounded-lg mb-2 overflow-hidden">
-                          {product.image ? (
-                            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                          {(product.image_url || product.image || product.images?.[0]) ? (
+                            <img 
+                              src={product.image_url || product.image || product.images?.[0]} 
+                              alt={product.name} 
+                              className="w-full h-full object-cover"
+                              onError={(e) => { e.target.style.display = 'none'; }}
+                            />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
                               <ShoppingBag className="w-8 h-8 text-gray-300" />
@@ -698,8 +734,8 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
                           )}
                         </div>
                         <h4 className="font-medium text-gray-900 text-xs line-clamp-2">{product.name}</h4>
-                        {product.price && (
-                          <p className="text-sm font-semibold text-teal-600 mt-1">₹{product.price}</p>
+                        {(product.price || product.pricing?.selling_price) && (
+                          <p className="text-sm font-semibold text-teal-600 mt-1">₹{product.price || product.pricing?.selling_price}</p>
                         )}
                       </Card>
                     ))}
