@@ -1,5 +1,5 @@
 # The Doggy Company - MASTER PRD & ARCHITECTURE
-## Last Updated: December 12, 2025 | Version 12.4.0
+## Last Updated: December 12, 2025 | Version 12.5.0
 
 ---
 
@@ -77,10 +77,10 @@ SECTION ORDER (Every Pillar Page MUST Follow):
 
 | # | Pillar | Gold Standard? | Unique AI Images? | Status |
 |---|--------|----------------|-------------------|--------|
-| 1 | Learn | ✅ REFERENCE | ✅ YES | COMPLETE |
+| 1 | Learn | ✅ REFERENCE | ✅ YES (12 topics) | COMPLETE |
 | 2 | Care | ✅ YES | ✅ YES (4 topics) | COMPLETE |
-| 3 | Paperwork | ⚠️ Partial | ✅ YES | NEEDS REFACTOR |
-| 4 | Dine | ✅ YES | ✅ YES (4 topics) | COMPLETE |
+| 3 | Dine | ✅ YES | ✅ YES (4 topics) | COMPLETE |
+| 4 | Paperwork | ⚠️ Partial | ✅ YES | NEEDS REFACTOR |
 | 5 | Fit | ⚠️ Partial | ✅ YES (4 topics) | NEEDS REFACTOR |
 | 6 | Travel | ⚠️ Partial | ✅ YES (4 topics) | NEEDS REFACTOR |
 | 7 | Stay | ⚠️ Partial | ✅ YES (4 topics) | NEEDS REFACTOR |
@@ -94,77 +94,123 @@ SECTION ORDER (Every Pillar Page MUST Follow):
 
 ---
 
-## AI WATERCOLOR IMAGE REQUIREMENTS
-
-**Every pillar needs:**
-1. **4 Topic Card Images** - Unique watercolor illustration for each topic
-2. **Bundle Images** - Watercolor style product bundles
-3. **Service Images** - Contextual watercolor for services
-
-**Image Style Guide:**
-- Soft watercolor brush strokes
-- Pastel/muted color palettes
-- Dogs as main subjects (matching pillar theme)
-- Warm, inviting, professional feel
-- No text in images
-
-**Generated Images So Far:**
+## AI WATERCOLOR IMAGES - ALL 48 GENERATED ✅
 
 ### Care Topics (COMPLETE)
-- Grooming: `ac244e936762d5167e08003826cc212675edb4681160ab0e623ac427b2eab48b.png`
-- Health: `ca83e28df7d4b5d0a20b026170ebdf5877e4e4af30c34b3d51d24eb3be141afc.png`
-- Dental: `de501f8bdf811377aeea9412f9b7ff6fb5e443ab900da010dd6a687f2fc0c816.png`
-- Skin & Coat: `ce13cb96affa028566a1a81358f797d00b0ccd1536b26b6e8c38e18d8cf415d2.png`
+- Grooming: Golden retriever being brushed
+- Health & Wellness: Puppy with veterinarian
+- Dental Care: Dog with sparkling teeth
+- Skin & Coat: Fluffy dog with healthy coat
+
+### Dine Topics (COMPLETE)
+- Fresh Food: Dog with homemade food bowl
+- Dry Food: Dog with premium kibble
+- Treats: Dog with healthy treats
+- Special Diets: Dog with hypoallergenic meal
+
+### Fit Topics (COMPLETE)
+- Exercise Plans: Athletic dog running
+- Weight Management: Dog being weighed
+- Agility Training: Dog jumping obstacles
+- Swimming: Happy dog in water
+
+### Travel Topics (COMPLETE)
+- Air Travel: Dog in carrier at airport
+- Road Trips: Dog looking out car window
+- Destinations: Dog at beach paradise
+- Travel Gear: Organized pet travel supplies
 
 ### Stay Topics (COMPLETE)
-- Boarding, Daycare, Hotels, Sitting - All have unique images
+- Boarding, Daycare, Hotels, Sitting
 
-### Paperwork (COMPLETE)
-- 14 products, 9 bundles - All have unique watercolor images
+### Enjoy Topics (COMPLETE)
+- Pet Events, Playdates, Toys & Games, Enrichment
 
----
+### Celebrate Topics (COMPLETE)
+- Birthdays, Gotcha Day, Gifts, Photoshoots
 
-## CMS CONDITIONAL RENDERING PATTERN
+### Emergency Topics (COMPLETE)
+- Emergency Vet, First Aid, Poison Control, Lost Pet
 
-```jsx
-// EVERY section must be wrapped with CMS conditional
-{cmsConfig.sections?.askMira?.enabled !== false && (
-  <AskMiraSection />
-)}
+### Advisory Topics (COMPLETE)
+- Behavior, Nutrition, Training, Health
 
-{cmsConfig.sections?.topics?.enabled !== false && (
-  <PillarTopicsGrid pillar="care" />
-)}
+### Farewell Topics (COMPLETE)
+- End-of-Life Care, Cremation, Memorials, Grief Support
 
-{cmsConfig.sections?.dailyTip?.enabled !== false && (
-  <DailyTipSection />
-)}
+### Adopt Topics (COMPLETE)
+- Adopt a Dog, Foster, Shelters, Adoption Prep
 
-{cmsConfig.sections?.helpBuckets?.enabled !== false && (
-  <HelpBucketsSection />
-)}
-```
+### Shop Topics (COMPLETE)
+- Essentials, New Arrivals, Bestsellers, Deals
 
 ---
 
-## COMPONENT LOCATIONS
+## PRODUCT/SERVICE IMAGE STATUS
 
+### Current State (December 12, 2025):
+- **Total Products:** 1,500
+- **Products with AI images:** 620
+- **Products needing images:** 880
+  - unknown pillar: 500 (need pillar assignment)
+  - celebrate: 211
+  - shop: 166
+  - care: 3
+
+### Services:
+- **Total Services:** ~1,100
+- **With AI watercolor images:** ~70%
+- **With generic placeholders:** ~30%
+
+---
+
+## CMS ARCHITECTURE
+
+### Admin Panel Location
+`/admin` → Select pillar tab (e.g., `care-cms`, `dine-cms`)
+
+### CMS Tabs (Standard for all pillars):
+1. **Page Settings** - Title, Subtitle, Hero Image, Theme Color
+2. **Ask Mira Bar** - Enabled, Placeholder, Button Color
+3. **Topics/Categories** - Name, Icon, Color, Description, Image
+4. **Products** - Selected products for pillar
+5. **Bundles** - Curated bundles
+6. **Services** - Related services
+7. **Personalized** - Breed/archetype/soul picks toggles
+8. **Concierge** - Premium assistance options
+9. **Mira Prompts** - AI suggestion triggers
+10. **Custom** - Pillar-specific features
+
+### CMS-Editable (PLANNED):
+- [ ] Help Buckets (3 action buckets)
+- [ ] Daily Tips (rotating tips)
+- [ ] Guided Paths (step-by-step journeys)
+
+---
+
+## KEY COMPONENTS
+
+### Page Components
 ```
 /app/frontend/src/components/
-├── PillarTopicsGrid.jsx       # Topic cards + modal
-├── PillarTopicModal.jsx       # Modal for topic details
+├── PillarTopicsGrid.jsx       # Topic cards + modal (48 AI images)
+├── PillarTopicModal.jsx       # Modal: Overview | Products | Services
 ├── PersonalizedPicks.jsx      # "Fun picks for {pet}"
 ├── ArchetypeProducts.jsx      # "Party picks for {pet}"
 ├── SoulMadeCollection.jsx     # Breed-specific products
 ├── BreedSmartRecommendations.jsx
 ├── CuratedBundles.jsx
-├── Mira/
-│   ├── MiraCuratedLayer.jsx   # Unified concierge layer
-│   └── MiraCarePlan.jsx       # Care-specific Mira plan
-└── admin/
-    ├── PillarPageCMS.jsx      # Generic CMS (12 pillars)
-    ├── LearnPageCMS.jsx       # Custom Learn CMS
-    └── PaperworkPageCMS.jsx   # Custom Paperwork CMS
+└── Mira/
+    ├── MiraCuratedLayer.jsx   # Unified concierge
+    └── MiraCarePlan.jsx       # Care-specific plan
+```
+
+### Admin CMS Components
+```
+/app/frontend/src/components/admin/
+├── PillarPageCMS.jsx          # Generic CMS (12 pillars)
+├── LearnPageCMS.jsx           # Custom Learn CMS
+└── PaperworkPageCMS.jsx       # Custom Paperwork CMS
 ```
 
 ---
@@ -179,13 +225,13 @@ POST /api/{pillar}/page-config
 
 ### Products & Bundles
 ```
-GET /api/products?pillar={pillar}&search={term}
+GET /api/products?pillar={pillar}&search={term}&limit={n}
 GET /api/bundles?pillar={pillar}
 ```
 
 ### Services
 ```
-GET /api/services?pillar={pillar}&search={term}
+GET /api/services?pillar={pillar}&search={term}&limit={n}
 ```
 
 ### Image Updates (Admin)
@@ -204,6 +250,20 @@ POST /api/paperwork/admin/bundles/bulk-update-images
 | Admin | `aditya` | `lola4304` |
 | User | `dipali@clubconcierge.in` | `test123` |
 
+Test pet: **Mojo** (Shih Tzu)
+
+---
+
+## KNOWN ISSUES
+
+| Issue | Priority | Status |
+|-------|----------|--------|
+| 880 products missing images | P0 | IDENTIFIED |
+| 10 pillars need Gold Standard refactor | P0 | IN PROGRESS |
+| Help Buckets/Daily Tips not CMS-editable | P1 | PLANNED |
+| Razorpay checkout failure | P2 | NOT STARTED |
+| Mobile pet dashboard scrambled | P3 | NOT STARTED |
+
 ---
 
 ## PRODUCTION SYNC COMMANDS
@@ -216,23 +276,33 @@ curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=
 
 ---
 
-## KNOWN ISSUES
-
-| Issue | Priority | Status |
-|-------|----------|--------|
-| Razorpay checkout failure | P2 | NOT STARTED |
-| Mobile pet dashboard scrambled | P3 | NOT STARTED |
-
----
-
 ## NEXT TASKS (Priority Order)
 
-1. **P0**: Refactor ALL remaining 11 pillars to Gold Standard
-2. **P1**: Generate unique AI watercolor images for each pillar's topics
-3. **P1**: Update bundle images to watercolor style
-4. **P2**: Fix Razorpay checkout
-5. **P3**: Fix mobile pet dashboard
+1. **P0**: Make Help Buckets, Daily Tips, Guided Paths CMS-editable
+2. **P0**: Create Admin Guide document
+3. **P0**: Fix 880 products missing images
+4. **P0**: Refactor remaining 10 pillars to Gold Standard
+5. **P2**: Fix Razorpay checkout
+6. **P3**: Fix mobile pet dashboard
 
 ---
 
-**END OF PRD - Version 12.4.0**
+## CHANGELOG
+
+### December 12, 2025
+- ✅ Care page refactored to Gold Standard
+- ✅ Dine page refactored to Gold Standard
+- ✅ Generated 48 unique AI watercolor images (4 per pillar × 12 pillars)
+- ✅ Updated PillarTopicsGrid with all new images
+- ✅ Created PillarTopicModal for consistent modal experience
+- ✅ Identified 880 products needing images
+
+### Previous Sessions
+- ✅ All 14 pillar pages have CMS integration
+- ✅ Product modals fixed (ArchetypeProducts, PersonalizedPicks)
+- ✅ Paperwork page images complete
+- ✅ Stay/Insurance service images updated
+
+---
+
+**END OF PRD - Version 12.5.0**
