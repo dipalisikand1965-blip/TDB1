@@ -1,312 +1,255 @@
-# The Doggy Company - MASTER PRD & ARCHITECTURE
-## Last Updated: March 12, 2026 | Version 13.0.0
+# The Doggy Company® — Pet Life Operating System
+## Product Requirements Document
+## Version 13.0.0 | March 12, 2026
 
 ---
 
-# CRITICAL: THE LEARN PAGE IS THE GOLD STANDARD
+## THE VISION
+> "We are not a commerce platform. We are a Pet Operating System. The Soul comes first."
 
-Every pillar page MUST follow the LEARN page's exact hierarchy. This is non-negotiable.
+The world's first soul-driven Pet Operating System. Every dog has a personality, lifestyle, health story, and emotional world — the Soul. The platform captures this soul and uses it to power every recommendation, every Mira response, and every concierge interaction.
 
----
-
-## GOLD STANDARD SECTION HIERARCHY (From Learn Page)
-
-```
-SECTION ORDER (Every Pillar Page MUST Follow):
-
-1. ASK MIRA BAR (CMS DRIVEN)
-   - Title with {petName} placeholder
-   - Search input with CMS placeholder
-   - Button with CMS color
-
-2. TOPIC BOXES (4 topic cards, CMS DRIVEN)
-   - Grid layout (2x2 on mobile, 4 columns on desktop)
-   - UNIQUE AI watercolor images per topic
-   - Opens PillarTopicModal (Overview | Products | Services)
-   
-3. DAILY TIP (Rotates based on day)
-   - Category-specific icon
-   - Tip content with expert advice
-   - Badge showing category
-
-4. HOW CAN WE HELP? (3 Action Buckets)
-   - Opens Mira chat with context
-   - Color-coded by category
-   - 4 action items per bucket
-
-5. PERSONALIZED FOR {PET} (Logged-in users)
-   - Pet photo
-   - MiraCarePlan / MiraLearnPlan component
-   - Expandable tips based on breed/age
-
-6. GUIDED PATHS (6 step-by-step journeys)
-   - Each path has 5 steps
-   - Color-coded by theme
-   - Opens Mira for guidance
-
-7. CURATED BUNDLES
-   - CuratedBundles component
-   - Watercolor AI images
-   - Save messaging
-
-8. PRODUCTS SECTION
-   - SoulMadeCollection (breed-specific)
-   - BreedSmartRecommendations
-   - ArchetypeProducts
-
-9. PERSONALIZED PICKS
-   - PersonalizedPicks component
-   - "Fun picks for {pet}"
-
-10. MIRA CURATED LAYER
-    - MiraCuratedLayer component
-    - "Curated for {petName}" section
-    - Unified concierge recommendations
-
-11. SERVICES SECTION
-    - "Services That Help" heading
-    - Grid of service cards
-    - Opens flow modals
-```
+**200+ days built. 22,232 lines in server.py. 221 API endpoints. 51 Soul Questions. 14 Pillars.**
 
 ---
 
-## PILLAR PAGE AUDIT (March 12, 2026 - ALL COMPLETE)
+## CORE SYSTEM OVERVIEW
 
-| # | Pillar | Ask Mira | Topics | Daily Tip | Help Buckets | Guided Paths | Bundles | Products | Picks | Curated | STATUS |
-|---|--------|----------|--------|-----------|--------------|--------------|---------|----------|-------|---------|--------|
-| 1 | Learn | YES | YES | YES | YES | YES | YES | YES | YES | - | GOLD STANDARD |
-| 2 | Care | YES | YES | YES | YES | YES | YES | YES | YES | YES | ✅ COMPLETE |
-| 3 | Dine | YES | YES | YES | YES | YES | YES | YES | YES | YES | ✅ COMPLETE |
-| 4 | Fit | YES | YES | YES | YES | YES | YES | YES | YES | YES | ✅ COMPLETE |
-| 5 | Travel | YES | YES | YES | YES | YES | YES | YES | YES | YES | ✅ COMPLETE |
-| 6 | Stay | YES | YES | YES | YES | YES | YES | YES | YES | YES | ✅ COMPLETE |
-| 7 | Enjoy | YES | YES | YES | YES | YES | YES | YES | YES | YES | ✅ COMPLETE |
-| 8 | Celebrate | YES | YES | YES | YES | YES | YES | YES | YES | YES | ✅ COMPLETE |
-| 9 | Emergency | YES | YES | YES | YES | YES | YES | YES | NO | NO | ✅ COMPLETE |
-| 10 | Advisory | YES | YES | YES | YES | YES | YES | YES | NO | NO | ✅ COMPLETE |
-| 11 | Farewell | YES | YES | YES | YES | YES | YES | YES | NO | NO | ✅ COMPLETE |
-| 12 | Adopt | YES | YES | YES | YES | YES | YES | NO | NO | NO | ✅ COMPLETE |
-| 13 | Shop | YES | YES | YES | YES | YES | NO | NO | YES | YES | ✅ COMPLETE |
-| 14 | Paperwork | YES | YES | YES | YES | YES | YES | YES | YES | YES | ✅ COMPLETE |
+### 1. The Pet Soul (The Heart of Everything)
+- **51 questions across 8 soul folders**: Identity & Temperament, Family & Pack, Rhythm & Routine, Home Comforts, Travel Style, Taste & Treats, Training & Behaviour, Long Horizon
+- **Soul Score / SoulScoreArc** — visual completeness score shown on every pillar hero
+- **Auto-enrichment** — learns from orders, bookings, conversations
+- **Drip questioning** — progressive profiling, 1 question at a time
+- **Soul Intelligence** — feeds Mira context, product recommendations, personalisation
+- **Backend**: `pet_soul_routes.py`, `soul_intelligence.py`, `mira_soulful_brain.py`, `pet_score_logic.py`
 
-### Summary (March 12, 2026):
-- **COMPLETE (14/14):** ALL PILLAR PAGES NOW MEET GOLD STANDARD ✅
-- **NEEDS WORK (0):** None remaining
+### 2. Mira — The OS Voice
+- **6+ variants**: Mira OS (/mira-os, members-only), Mira Pure (/mira-pure, public), Mira Pure OS, Mira Demo, Mira Original, Mira Pillar Sandbox
+- **Capabilities**: Soul-aware responses, streaming, session persistence, ElevenLabs TTS voice, service ticket creation, concierge handoff, context per pillar
+- **Ask Mira Bar** — embedded at top of ALL 14 pillars, context-aware
+- **Floating Mira Widget** — bottom-right on all pages
+- **Backend**: `mira_os.py`, `mira_pure.py`, `mira_soulful_brain.py`, `mira_service_desk.py`, `mira_retention.py`, `mira_concierge_handoff.py`
 
-### What was added to complete the 10 pages:
-- **Shared component created:** `/app/frontend/src/components/PillarGoldSections.jsx`
-  - `PillarDailyTip` - Rotating daily tip card
-  - `PillarHelpBuckets` - "How can we help?" 3 action buckets
-  - `PillarGuidedPaths` - Step-by-step guided journeys
-- **Pages updated:** Travel, Stay, Enjoy, Celebrate, Emergency, Advisory, Farewell, Adopt, Shop, Paperwork
-- **EmergencyPage:** Added Ask Mira Bar (was missing)
-- **PaperworkPage:** Added Topics Grid (was missing)
+### 3. Service Desk — Concierge Engine
+- Full ticket lifecycle (create → assign → resolve → NPS)
+- Priority scoring, SLA breach detection, ticket merging, escalation
+- AI-generated draft replies, canned responses, sentiment analysis
+- WhatsApp notifications on status changes
+- Multi-queue (dining, travel, stay, shop, etc.)
+- Real-time concierge dashboard
+- **Admin portals**: /agent, /admin/service-desk, /admin/concierge, /admin/concierge-realtime
+- **Backend**: `concierge_routes.py` (2,500+ lines), `mira_service_desk.py`, `concierge_engine.py`
+
+### 4. 14 Life Pillars — ALL GOLD STANDARD (March 2026) ✅
+Learn | Care | Dine | Fit | Travel | Stay | Enjoy | Celebrate | Emergency | Advisory | Farewell | Adopt | Shop | Paperwork
+
+**Gold Standard Section Order** (every pillar has all of these):
+1. Ask Mira Bar (personalised with pet name)
+2. Topic Cards Grid (AI watercolor images)
+3. Daily Tip (rotating, pillar-specific)
+4. How Can We Help? (3 help buckets → trigger Mira)
+5. Personalized For Pet (soul-matched: archetype, breed, photo)
+6. Guided Paths (step-by-step journeys)
+7. Curated Bundles
+8. Products Grid
+9. Mira Curated Layer
+10. Services Section
+
+**CMS**: All 14 pillars are editable from Admin Panel → Pillar CMS
+
+### 5. Member Dashboard (/dashboard) — 15+ Tabs
+Overview | My Pets | Services | Orders | Requests | Dining | Celebrations | Stay | Travel | Autoship | Reviews | Addresses | Rewards | Settings | Pet Vault
+
+### 6. Commerce
+- **2,409 products** synced from Shopify (all with AI watercolor images)
+- **Special features**: Custom Cake Designer, Occasion Box Builder, Autoship, Meal Plan, Voice Order
+- **Cart**: CartSidebar component
+- **Checkout**: Unified Checkout (Razorpay — BROKEN P2)
+
+### 7. Gamification & Loyalty
+- **Paw Points** — earned on orders, soul answers, reviews, referrals
+- **Soul Score** — soul completeness percentage (SoulScoreArc visual)
+- **Pet Wrapped** (/pet-wrapped) — Spotify-style yearly pet summary
+- **Membership Tiers** — Silver/Gold/Platinum (defined, not fully gated)
+- **Birthday Engine** — auto-detects pet birthdays, triggers celebrations
+
+### 8. Community
+- **Rainbow Bridge Memorial** 💜 — In loving memory of Mystique & Kouros
+  - Mark pets as crossing the Rainbow Bridge
+  - Memorial creation with tribute message, legacy quote
+  - Public Memorial Wall (1 memorial live: Mystique, Shih Tzu, loved by Dipali)
+  - AI grief support via Mira ("You're Not Alone")
+  - Location: /farewell, scroll ~2200px to dark purple section
+- **Notifications Inbox** — iOS Mail-style (/notifications)
+- **Pet Vault** (/pet-vault/:petId) — health docs, vaccines, insurance
+- **Pet Pass Card** — shareable digital pet identity card
+
+### 9. Admin Panel (/admin)
+Credentials: admin `aditya` / `lola4304`
+- Product management (add/edit/bulk import/AI images)
+- Service management (CRUD by pillar)
+- Pillar Page CMS (all 14 pillars)
+- Member management & Paw Points
+- Orders, analytics, reports (CSV/Excel export)
+- Sync to Production (2,409 products in 25 batches — verified working)
+- Service desk admin, concierge dashboard
+- Rainbow Bridge admin, notifications management
+- AI image generation
+
+### 10. Integrations
+| Integration | Status | Purpose |
+|-------------|--------|---------|
+| OpenAI GPT-4o | ✅ LIVE | Mira AI (Emergent Universal Key) |
+| Shopify | ✅ LIVE | 2,409 products synced |
+| Cloudinary | ✅ LIVE | AI images, pet photos |
+| Google Places | ✅ LIVE | Nearby vets, groomers |
+| OpenWeatherMap | ✅ LIVE | Weather-aware recommendations |
+| YouTube Data API | ✅ LIVE | Training videos in Learn |
+| ElevenLabs TTS | ✅ LIVE | Voice ordering |
+| WhatsApp Business | ✅ LIVE | Service desk notifications |
+| MongoDB Atlas | ✅ LIVE | Primary database |
+| Razorpay | ❌ BROKEN P2 | Payment checkout |
+| Instagram | 🔵 PLANNED | Celebration Wall feed |
 
 ---
 
-## PRODUCT/SERVICE IMAGE STATUS
+## ALL FRONTEND ROUTES
 
-### Current State (December 14, 2025):
-- **Total Products:** 209 (97 in products_master + 112 in unified_products)
-- **Products with AI watercolor images:** 209 (100%)
-- **Products needing images:** 0
+### Public
+`/` Home | `/about` | `/mira` | `/mira-pure` | `/mira-pure-os` | `/login` | `/register` | `/policies` | `/search` | `/feedback` | `/autoship`
 
-### Services:
-- **Stay services:** Updated with new watercolor images (Dec 14)
-- **Dine services:** Service cards added to page
+### 14 Pillars
+`/learn` | `/care` | `/dine` | `/fit` | `/travel` | `/stay` | `/enjoy` | `/celebrate` | `/emergency` | `/advisory` | `/farewell` | `/adopt` | `/shop` | `/paperwork`
 
----
+### Member (Protected)
+`/dashboard` | `/mira-os` | `/pet-soul/:petId` | `/pet-vault/:petId` | `/my-pets` | `/my-tickets` | `/notifications` | `/tickets/:ticketId` | `/checkout` | `/custom-cake` | `/voice-order` | `/pet-soul-onboard` | `/soul-builder` | `/join` | `/membership` | `/pet-wrapped` | `/pet-home` | `/add-pet` | `/payment/success`
 
-## CMS ARCHITECTURE
+### Admin (Admin Protected)
+`/admin` | `/admin/service-desk` | `/admin/services` | `/admin/concierge` | `/admin/concierge-realtime` | `/admin/mira-concierge` | `/admin/docs` | `/agent` | `/concierge-dashboard`
 
-### Admin Panel Location
-`/admin` -> Select pillar tab (e.g., `care-cms`, `dine-cms`)
-
-### CMS Components Location
-```
-/app/frontend/src/components/admin/
-  PillarPageCMS.jsx       # Generic CMS (12 pillars)
-  LearnPageCMS.jsx        # Custom Learn CMS
-  PaperworkPageCMS.jsx    # Custom Paperwork CMS
-```
-
-### CMS Tabs (Standard for all pillars):
-1. **Page Settings** - Title, Subtitle, Hero Image, Theme Color
-2. **Ask Mira Bar** - Enabled, Placeholder, Button Color
-3. **Topics/Categories** - Name, Icon, Color, Description, Image
-4. **Products** - Selected products for pillar
-5. **Bundles** - Curated bundles
-6. **Services** - Related services
-7. **Personalized** - Breed/archetype/soul picks toggles
-8. **Concierge** - Premium assistance options
-9. **Mira Prompts** - AI suggestion triggers
-10. **Help Buckets** - 3 action buckets (NEW)
-11. **Daily Tips** - Rotating tips (NEW)
-12. **Guided Paths** - Step-by-step journeys (NEW)
-
-### CMS-Editable Status:
-- [x] Page Settings (Title, Subtitle)
-- [x] Ask Mira Bar
-- [x] Topics/Categories
-- [x] Products
-- [x] Bundles
-- [x] Services
-- [x] Help Buckets (3 action buckets) - IMPLEMENTED DEC 14
-- [x] Daily Tips (rotating tips) - IMPLEMENTED DEC 14
-- [x] Guided Paths (step-by-step journeys) - IMPLEMENTED DEC 14
-
----
-
-## KEY COMPONENTS
-
-### Page Components
-```
-/app/frontend/src/components/
-  PillarTopicsGrid.jsx       # Topic cards + modal (48 AI images)
-  PillarTopicModal.jsx       # Modal: Overview | Products | Services
-  PersonalizedPicks.jsx      # "Fun picks for {pet}"
-  ArchetypeProducts.jsx      # "Party picks for {pet}"
-  SoulMadeCollection.jsx     # Breed-specific products
-  BreedSmartRecommendations.jsx
-  CuratedBundles.jsx
-  Mira/
-    MiraCuratedLayer.jsx   # "Curated for {petName}" - Unified concierge
-    MiraCarePlan.jsx       # Care-specific plan
-```
-
-### Page Files
-```
-/app/frontend/src/pages/
-  LearnPage.jsx       # GOLD STANDARD - Reference for all pages
-  CarePage.jsx        # COMPLETE - Gold Standard compliant
-  DinePage.jsx        # COMPLETE - Gold Standard compliant
-  FitPage.jsx         # COMPLETE - Gold Standard compliant
-  TravelPage.jsx      # NEEDS: Help Buckets, Daily Tip
-  StayPage.jsx        # NEEDS: Ask Mira, Daily Tip, Help Buckets, Guided Paths
-  EnjoyPage.jsx       # NEEDS: Ask Mira, Daily Tip, Help Buckets, Guided Paths
-  CelebratePage.jsx   # NEEDS: Ask Mira, Daily Tip, Help Buckets, Guided Paths
-  EmergencyPage.jsx   # NEEDS: Ask Mira, Daily Tip, Help Buckets, Guided Paths, Picks, Curated
-  AdvisoryPage.jsx    # NEEDS: Ask Mira, Daily Tip, Help Buckets, Picks, Curated
-  FarewellPage.jsx    # NEEDS: Ask Mira, Daily Tip, Help Buckets, Picks, Curated
-  AdoptPage.jsx       # NEEDS: Ask Mira, Daily Tip, Help Buckets, Products, Picks, Curated
-  ShopPage.jsx        # NEEDS: Ask Mira, Daily Tip, Help Buckets, Guided Paths, Bundles, Products
-  PaperworkPage.jsx   # NEEDS: Topics, Daily Tip, Help Buckets, Guided Paths
-```
+### B2B / Demo
+`/demo/dreamfolks` | `/mira-pillar-sandbox` | `/mira-embed` | `/concierge-embed` | `/mira-landing-embed` | `/pet-soul-embed`
 
 ---
 
 ## KNOWN ISSUES
 
-| Issue | Priority | Status |
-|-------|----------|--------|
-| 10 pillars need Gold Standard refactor | P0 | IDENTIFIED |
-| Sync to production "body stream already read" error | P1 | TO FIX |
-| Razorpay checkout failure | P2 | NOT STARTED |
-| Mobile pet dashboard scrambled | P3 | NOT STARTED |
+| Priority | Issue | Status |
+|----------|-------|--------|
+| P1 | Stay pillar services show stock photos (not watercolor) | Open — needs top_picks_routes.py trace |
+| P2 | Razorpay checkout fails (body error) — blocks revenue | Open |
+| P2 | Mobile member dashboard UI scrambled | Open |
+| P3 | AI image generation non-persistent (BackgroundTasks vs Celery) | Open |
+| P3 | Membership tiers not enforced (Silver/Gold/Platinum defined but no gates) | Open |
 
 ---
 
-## API ENDPOINTS
+## ROADMAP
 
-### CMS Config
-```
-GET  /api/{pillar}/page-config
-POST /api/{pillar}/page-config
-```
+### P1 (Next)
+- Fix Stay pillar service images
+- Fix Razorpay checkout
 
-### Products & Bundles
-```
-GET /api/products?pillar={pillar}&search={term}&limit={n}
-GET /api/bundles?pillar={pillar}
-```
+### P2 (Near Term)
+- Fix mobile dashboard responsiveness
+- Membership tier enforcement + upgrade prompts
+- Paw Points redemption at checkout
+- Soul 8-folder wizard completion UI
 
-### Services
-```
-GET /api/services?pillar={pillar}&search={term}&limit={n}
-```
+### P3 (Future)
+- Instagram integration (Celebration Wall)
+- Celery/Redis for persistent background tasks
+- Advanced service desk (role management, automations)
+- Partner/franchise portal
+- Pet Wrapped auto-trigger at year end
 
-### Image Updates (Admin)
-```
-POST /api/admin/fix-service-images?password=lola4304
-POST /api/paperwork/admin/products/bulk-update-images
-POST /api/paperwork/admin/bundles/bulk-update-images
-```
+---
 
-### Sync to Production
+## KEY FILES REFERENCE
+
 ```
-POST /api/admin/sync-to-production
+/app/backend/
+├── server.py                    # 22,232 lines, 221 API endpoints
+├── pet_soul_routes.py           # 51 soul questions, 8 folders
+├── soul_intelligence.py         # Soul data processing
+├── mira_os.py                   # Core Mira intelligence
+├── mira_pure.py                 # Public Mira
+├── mira_soulful_brain.py        # Soul-to-prompt translator
+├── mira_service_desk.py         # Mira→ticket creation
+├── mira_concierge_handoff.py    # AI-to-human handoff
+├── concierge_routes.py          # 2,500+ lines service desk
+├── concierge_engine.py          # Priority/SLA/routing
+├── top_picks_routes.py          # Product recommendations
+└── ...40+ more backend files
+
+/app/frontend/src/
+├── App.js                       # 670 lines, all routes
+├── pages/                       # 70+ page components
+│   ├── LearnPage.jsx            # GOLD STANDARD template
+│   ├── CarePage.jsx             # ✅ Gold Standard
+│   ├── DinePage.jsx             # ✅ Gold Standard
+│   ├── FitPage.jsx              # ✅ Gold Standard
+│   ├── TravelPage.jsx           # ✅ Gold Standard
+│   ├── StayPage.jsx             # ✅ Gold Standard
+│   ├── EnjoyPage.jsx            # ✅ Gold Standard
+│   ├── CelebratePage.jsx        # ✅ Gold Standard
+│   ├── EmergencyPage.jsx        # ✅ Gold Standard (Ask Mira added Mar 2026)
+│   ├── AdvisoryPage.jsx         # ✅ Gold Standard
+│   ├── FarewellPage.jsx         # ✅ Gold Standard (Rainbow Bridge 💜)
+│   ├── AdoptPage.jsx            # ✅ Gold Standard
+│   ├── ShopPage.jsx             # ✅ Gold Standard
+│   ├── PaperworkPage.jsx        # ✅ Gold Standard (Topics Grid added Mar 2026)
+│   ├── MemberDashboard.jsx      # 15+ tab dashboard
+│   ├── MiraDemoPage.jsx         # /mira-os flagship
+│   ├── PetSoulPage.jsx          # Soul profile
+│   └── ...55+ more pages
+└── components/
+    ├── PillarGoldSections.jsx   # Shared: DailyTip, HelpBuckets, GuidedPaths
+    ├── RainbowBridgeMemorial.jsx # 💜 Memorial creation
+    ├── RainbowBridgeWall.jsx    # Public memorial wall
+    ├── PillarTopicsGrid.jsx     # Topic cards
+    ├── SoulScoreArc.jsx         # Soul score visual
+    ├── LivingSoulOrb.jsx        # Animated soul orb
+    └── ...60+ more components
 ```
 
 ---
 
-## TESTING CREDENTIALS
-
-| Role | Username/Email | Password |
-|------|----------------|----------|
-| Admin | `aditya` | `lola4304` |
-| User | `dipali@clubconcierge.in` | `test123` |
-
-Test pet: **Mojo** (Shih Tzu), **Mystique** (Shih Tzu)
-
----
-
-## PRIORITY TASK LIST (December 14, 2025)
-
-1. ~~**P0**: Make Help Buckets, Daily Tips, Guided Paths CMS-editable~~ **DONE**
-2. ~~**P0**: Create Admin Guide document for content editors~~ **DONE**
-3. ~~**P0**: Generate AI watercolor images for all products~~ **DONE** (209 products)
-4. ~~**P0**: Refactor remaining 10 pillars to Gold Standard~~ **DONE (March 12, 2026) - ALL 14 PAGES COMPLETE** ✅
-5. **P1**: Fix 'Stay' pillar service images (generic stock photos showing instead of watercolor)
-6. **P2**: Fix Razorpay checkout
-7. **P3**: Fix mobile pet dashboard
-8. **P3**: Persistent background task queue (replace BackgroundTasks with Celery)
+## CREDENTIALS (TEST)
+- **Member**: dipali@clubconcierge.in / test123
+- **Admin**: aditya / lola4304
 
 ---
 
 ## CHANGELOG
 
-### March 12, 2026 - Version 13.0.0 - MAJOR MILESTONE
-- **ALL 14 PILLAR PAGES NOW MEET GOLD STANDARD** ✅
-- **Shared Component Created**: `/app/frontend/src/components/PillarGoldSections.jsx`
-  - `PillarDailyTip` - Rotating daily tip card (reusable)
-  - `PillarHelpBuckets` - "How can we help?" 3 action buckets (reusable)
-  - `PillarGuidedPaths` - Step-by-step guided journeys (reusable)
-- **Pages Completed to Gold Standard**:
-  - TravelPage: Added Daily Tip, Help Buckets, Guided Paths + fixed CMS loading
-  - StayPage: Added Daily Tip, Help Buckets, Guided Paths + fixed CMS loading
-  - EnjoyPage: Added Daily Tip, Help Buckets, Guided Paths + fixed CMS loading
-  - CelebratePage: Added Daily Tip, Help Buckets, Guided Paths + fixed CMS loading
-  - EmergencyPage: Added **Ask Mira Bar** (was missing!) + Daily Tip + Help Buckets + Guided Paths
-  - AdvisoryPage: Added Daily Tip, Help Buckets
-  - FarewellPage: Added Daily Tip, Help Buckets
-  - AdoptPage: Added Daily Tip, Help Buckets
-  - ShopPage: Added Daily Tip, Help Buckets, Guided Paths + fixed CMS loading
-  - PaperworkPage: Added **Topics Grid** (was missing!) + Daily Tip + Help Buckets + Guided Paths
-- **Sync-to-Production**: Verified working (returns 2409 products, no KeyError)
-- **Documentation**: PRD.md and complete-documentation.html updated
+### March 12, 2026 — v13.0.0 — ALL 14 PILLARS GOLD STANDARD ✅
+- Created PillarGoldSections.jsx (PillarDailyTip, PillarHelpBuckets, PillarGuidedPaths)
+- Updated 10 pages to Gold Standard: Travel, Stay, Enjoy, Celebrate, Emergency, Advisory, Farewell, Adopt, Shop, Paperwork
+- Added Ask Mira Bar to EmergencyPage (was missing)
+- Added Topics Grid to PaperworkPage (was missing)
+- Verified Sync-to-Production working (2,409 products)
+- Confirmed Rainbow Bridge memorial working (Mystique 💜 visible at /farewell ~2200px scroll)
+- Comprehensive documentation rebuild (complete-documentation.html 213→880 lines)
+- PRD rebuilt to capture full 200+ day system scope
 
-### December 14, 2025
-- **Comprehensive Audit Complete**: Identified 10 pillars needing Gold Standard refactor
-- **Product Image Makeover COMPLETE**: Generated 97 unique AI watercolor images for all products
-- **Stay Service Images Updated**: New watercolor illustrations for hotel, boarding, daycare services
-- **Dine Services Added**: Service category cards (Cafe Reservations, Birthday, Catering, Nutrition)
-- **Gold Standard Refactoring**:
-  - FitPage: Ask Mira Bar + Daily Tip + Help Buckets + Guided Paths - COMPLETE
-  - TravelPage: Ask Mira Bar - ADDED
-- CMS-editable sections implemented: Help Buckets, Daily Tips, Guided Paths
-- Updated PillarPageCMS.jsx with 3 new tabs for editing page sections
-- Updated backend API to save/load helpBuckets, dailyTips, guidedPaths
-- Created Admin Guide document at /app/admin-guide.html
-- Documentation updated proactively
-
-### December 12, 2025
-- Care page refactored to Gold Standard
-- Dine page refactored to Gold Standard
-- Generated 48 unique AI watercolor images (4 per pillar x 12 pillars)
-- Updated PillarTopicsGrid with all new images
-- Created PillarTopicModal for consistent modal experience
+### Earlier Sessions (summarised)
+- CMS Enhancement: Help Buckets, Daily Tips, Guided Paths editable per pillar
+- Product Image Overhaul: All 209+ products with AI watercolor images
+- CarePage, DinePage, FitPage brought to Gold Standard
+- Service Desk concierge engine built
+- Member Dashboard (15+ tabs) built
+- Mira OS multiple variants built
+- 51 Soul Questions (8 folders) built
+- Pet Soul scoring and intelligence built
+- Rainbow Bridge Memorial built (Mystique 💜)
+- Pet Vault built
+- Pet Wrapped built
+- Voice Order built
+- Shopify sync (2,409 products) integrated
+- Google Places, OpenWeatherMap, YouTube, ElevenLabs integrated
+- Admin Panel with 221 endpoints built
 
 ---
 
-**END OF PRD - Version 12.7.0**
+*In loving memory of Mystique 💜 and Kouros — who taught us what unconditional love truly means.*
