@@ -184,6 +184,7 @@ const FALLBACK_GUIDED_PATHS = [
     description: 'Everything new dog parents need',
     icon: Heart,
     color: 'from-blue-500 to-cyan-600',
+    illustration: 'https://static.prod-images.emergentagent.com/jobs/9413ca9c-7e0a-4da4-9228-aacbd043076e/images/483d20beda8abdeaad9776dcb1d0490524e6b06dee38a9da41fa6a97acd9b088.png',
     steps: [
       { title: 'Getting started', items: ['Essential supplies', 'Vet registration', 'Basic training', 'Feeding schedule'] },
       { title: 'Building routine', items: ['Exercise needs', 'Grooming basics', 'Socialization', 'House rules'] },
@@ -196,6 +197,7 @@ const FALLBACK_GUIDED_PATHS = [
     description: 'Managing multiple dogs',
     icon: Users,
     color: 'from-purple-500 to-violet-600',
+    illustration: 'https://static.prod-images.emergentagent.com/jobs/9413ca9c-7e0a-4da4-9228-aacbd043076e/images/58225f4c2aad7eb41871f19241cfacd2326f4c8729749bc97a83de911b797250.png',
     steps: [
       { title: 'Introduction protocol', items: ['Neutral territory meet', 'Supervised interactions', 'Separate feeding', 'Individual attention'] },
       { title: 'Harmony at home', items: ['Resource management', 'Pack dynamics', 'Conflict prevention', 'Equal love'] },
@@ -208,6 +210,7 @@ const FALLBACK_GUIDED_PATHS = [
     description: 'Special care for Pugs, Bulldogs, etc.',
     icon: Heart,
     color: 'from-amber-500 to-orange-600',
+    illustration: 'https://static.prod-images.emergentagent.com/jobs/9413ca9c-7e0a-4da4-9228-aacbd043076e/images/fba97b169d538c4959a219aeb783a263ae38b031c19ce1bb35bed5a4523ac161.png',
     steps: [
       { title: 'Breathing care', items: ['Temperature monitoring', 'Exercise limits', 'Air quality', 'Weight management'] },
       { title: 'Skin & wrinkle care', items: ['Daily cleaning', 'Moisture control', 'Yeast prevention', 'Gentle products'] },
@@ -220,6 +223,7 @@ const FALLBACK_GUIDED_PATHS = [
     description: 'Control and manage pet allergies',
     icon: Shield,
     color: 'from-green-500 to-emerald-600',
+    illustration: 'https://static.prod-images.emergentagent.com/jobs/9413ca9c-7e0a-4da4-9228-aacbd043076e/images/2f90bc09d0780080e51b8d238ceb36abc0d33af250b7919ac6502ec612bfef60.png',
     steps: [
       { title: 'Identification', items: ['Allergy testing', 'Elimination diet', 'Environmental triggers', 'Symptom tracking'] },
       { title: 'Management', items: ['Hypoallergenic food', 'Air purifiers', 'Frequent bathing', 'Medication if needed'] },
@@ -344,13 +348,20 @@ const AdvisoryPage = () => {
       if (response.ok) {
         const data = await response.json();
         if (data.paths && data.paths.length > 0) {
-          // Transform API paths to component format
+          // Map of illustrations for known path types
+          const pathIllustrations = {
+            'advisory-first-time-owner': 'https://static.prod-images.emergentagent.com/jobs/9413ca9c-7e0a-4da4-9228-aacbd043076e/images/483d20beda8abdeaad9776dcb1d0490524e6b06dee38a9da41fa6a97acd9b088.png',
+            'advisory-multi-dog': 'https://static.prod-images.emergentagent.com/jobs/9413ca9c-7e0a-4da4-9228-aacbd043076e/images/58225f4c2aad7eb41871f19241cfacd2326f4c8729749bc97a83de911b797250.png',
+            'advisory-flat-faced': 'https://static.prod-images.emergentagent.com/jobs/9413ca9c-7e0a-4da4-9228-aacbd043076e/images/fba97b169d538c4959a219aeb783a263ae38b031c19ce1bb35bed5a4523ac161.png',
+            'advisory-allergy': 'https://static.prod-images.emergentagent.com/jobs/9413ca9c-7e0a-4da4-9228-aacbd043076e/images/2f90bc09d0780080e51b8d238ceb36abc0d33af250b7919ac6502ec612bfef60.png',
+          };
           const transformedPaths = data.paths.map(path => ({
             id: path.id,
             title: path.title,
             description: path.description,
             icon: ICON_MAP[path.icon] || ICON_MAP['default'],
             color: path.color || 'from-purple-500 to-violet-600',
+            illustration: pathIllustrations[path.id] || path.illustration,
             steps: path.steps || []
           }));
           setGuidedPaths(transformedPaths);
@@ -1034,20 +1045,27 @@ const AdvisoryPage = () => {
                 <div key={path.id}>
                   <button
                     onClick={() => setSelectedPath(isExpanded ? null : path.id)}
-                    className={`w-full p-4 rounded-xl text-left transition-all ${
+                    className={`w-full rounded-xl text-left transition-all overflow-hidden ${
                       isExpanded 
                         ? `bg-gradient-to-br ${path.color} text-white shadow-lg` 
                         : 'bg-gray-50 hover:shadow-md border border-gray-200'
                     }`}
                     data-testid={`path-${path.id}`}
                   >
-                    <Icon className={`w-6 h-6 mb-2 ${isExpanded ? 'text-white' : 'text-violet-600'}`} />
-                    <h3 className={`font-semibold text-sm ${isExpanded ? 'text-white' : 'text-gray-900'}`}>
-                      {path.title}
-                    </h3>
-                    <p className={`text-xs mt-1 ${isExpanded ? 'text-white/80' : 'text-gray-500'}`}>
-                      {path.description}
-                    </p>
+                    {path.illustration && (
+                      <div className="h-28 overflow-hidden">
+                        <img src={path.illustration} alt={path.title} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <div className="p-4">
+                      <Icon className={`w-6 h-6 mb-2 ${isExpanded ? 'text-white' : 'text-violet-600'}`} />
+                      <h3 className={`font-semibold text-sm ${isExpanded ? 'text-white' : 'text-gray-900'}`}>
+                        {path.title}
+                      </h3>
+                      <p className={`text-xs mt-1 ${isExpanded ? 'text-white/80' : 'text-gray-500'}`}>
+                        {path.description}
+                      </p>
+                    </div>
                   </button>
                   
                   {isExpanded && (

@@ -849,6 +849,15 @@ const LearnPage = () => {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* CURATED BUNDLES - Save with handpicked combinations (Advisory-style) */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="py-12 bg-gradient-to-br from-rose-50 via-white to-orange-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <CuratedBundles pillar="learn" maxBundles={3} showTitle={true} />
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* PRODUCTS THAT HELP (SEPARATE SECTION) */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <div id="products" className="py-12 bg-white">
@@ -1018,13 +1027,7 @@ const LearnPage = () => {
         />
       )}
 
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* CURATED BUNDLES - Save with handpicked combinations */}
-      {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 mb-8">
-        <CuratedBundles pillar="learn" showTitle={true} />
-      </div>
-      
+
       {/* Training Request Modal */}
       <Dialog open={showRequestModal} onOpenChange={(open) => {
         setShowRequestModal(open);
