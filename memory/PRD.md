@@ -1,5 +1,5 @@
 # The Doggy Company — Complete Product Requirements Document
-## Last Updated: March 12, 2026 (Session 8.9)
+## Last Updated: March 12, 2026 (Session 8.9 - Deep Handover)
 
 ---
 
@@ -13,8 +13,6 @@ Build **"The World's First Pet Life Operating System"** — a comprehensive plat
 - **Deep personalization** based on pet profile, breed, age, health conditions
 - **AI watercolor aesthetic** for all visual assets
 - **Concierge-grade service desk** with ticket system, SLA tracking, escalation
-
-The current focus was elevating the **Learn page** to a "10/10 golden standard" and fixing issues across the platform.
 
 ---
 
@@ -42,388 +40,250 @@ The current focus was elevating the **Learn page** to a "10/10 golden standard" 
 
 ---
 
-## 2.5 Session 8.9 Comprehensive Audit Results
+## 3. Session 8.9 Complete Work Summary
 
-### User Intent → Ticket Flow Audit (PASSED ✅)
+### 3.1 Admin Image Upload to Cloudinary (PERSISTS THROUGH DEPLOYMENTS)
 
-| Step | Endpoint | Status |
-|------|----------|--------|
-| 1. Search/Ask Mira | `/api/mira/quick-ask` | ✅ WORKING |
-| 2. Concierge Requests | `/api/concierge/requests` | ✅ WORKING (Found tickets) |
-| 3. Service Desk Tickets | `/api/service-desk/tickets` | ✅ WORKING |
-| 4. Admin Notifications | `/api/admin/notifications` | ✅ WORKING (561 unread) |
-| 5. Member Notifications | `/api/member/notifications` | ⚠️ Needs auth token |
-| 6. Pillar Request Creation | `/api/concierge/pillar-request` | ✅ WORKING |
-
-### Desktop & Mobile Verification
-
-| Feature | Desktop | Mobile |
-|---------|---------|--------|
-| Homepage | ✅ | ✅ |
-| Learn Page | ✅ | ✅ |
-| Advisory Page | ✅ | ✅ |
-| Product Grid | ✅ | ✅ |
-| Mira Chat | ✅ | ✅ |
-| Admin Panel | ✅ | N/A |
-
-### Admin Image Upload Audit
-
-| Component | Upload Button | Cloudinary | Persists |
-|-----------|--------------|------------|----------|
-| ProductBoxEditor.jsx | ✅ ADDED | ✅ | ✅ |
-| ServiceBox.jsx | ✅ ADDED | ✅ | ✅ |
-| BundlesManager.jsx | ✅ ADDED | ✅ | ✅ |
-| ShopManager.jsx | ✅ ADDED | ✅ | ✅ |
-| CloudinaryUploader.jsx | ✅ REUSABLE COMPONENT | ✅ | ✅ |
-
----
-
-## 3. What Has Been Implemented (This Session)
-
-### Learn Page — GOLDEN STANDARD ✅ (1,458 lines)
-
-**Page Flow (top to bottom):**
-1. **Hero + Ask Bar** — "What would you like to learn about your dog today?" with Mira AI integration
-2. **12 Topic Hub Boxes** — Watercolor illustrations, click to open dynamic modal
-3. **Today's Learning Tip** — Rotating daily banner (7 tips, changes by date)
-4. **How Can We Help** — 3 clickable action cards (Products & Routines, Life Stage & Care, Support & Services) with lucide-react icons, open Mira AI with context
-5. **Learn for [Pet Name]** — Personalized section with 4 expandable tips that show inline "Mira's Advice" (breed-specific, age-aware: puppy/adult/senior)
-6. **Breed Spotlight** — Dynamic breed fact card (pink-to-orange gradient), rotates daily
-7. **Today's Weather Tip** — LIVE OpenWeatherMap API, shows temperature-based advice ("It's 31° — avoid walks between 11am-4pm")
-8. **Guided Learning Paths** — 6 paths (Puppy, Adoption, Senior, Travel, Grooming, Behavior) that open corresponding topic modals
-9. **Curated Bundles** — 3 bundles (Training Success, Puppy Starter, Mental Enrichment)
-10. **Products That Help** — Category filter tabs + PersonalizedPicks grid
-11. **Services That Help** — 4 service cards with lucide-react icons
-12. **Near Me** — Location-based service finder (trainers, groomers, vets)
-13. **Support That Might Help [Pet]** — 6 service cards, click opens context-aware modal
-14. **[Pet]'s Daily Routine** — 4 time-of-day cards (Morning/Midday/Evening/Night) with watercolor gradients
-15. **Ask Concierge** — Direct concierge access
-16. **Service Catalog** — Full service listing with pricing
-
-**Key Components:**
-- `LearnPage.jsx` — Main page (1,458 lines)
-- `LearnTopicModal.jsx` — Dynamic tabbed modal (790 lines): Overview, Videos, Products, Services
-- `SupportForPet.jsx` — 6 service cards with lucide-react icons (103 lines)
-- `PetDailyRoutine.jsx` — Watercolor time-of-day routine (201 lines)
-- `AskConciergeForPet.jsx` — Concierge access (98 lines)
-- `NearbyLearnServices.jsx` — Location services (493 lines)
-- `LearnTopicIcons.jsx` — Watercolor topic illustrations (203 lines)
-
-**Bugs Fixed:**
-- Products tab in modal showed cakes instead of training products → Fixed: uses `pillar=learn` filter
-- YouTube videos broken (API quota exceeded) → Fixed: curated fallback + "Browse on YouTube" button
-- "Learn for Mojo" tips didn't give advice → Fixed: inline expandable advice with breed-specific content
-- Guided Learning Paths did nothing when clicked → Fixed: open corresponding topic modals
-- "Edit Routine" button confused users → Removed
-- Support modal showed generic "Request Training" → Fixed: shows specific title (e.g., "Behavior Consultation")
-- All emojis replaced with lucide-react icons across entire page
-- ~400 lines of boilerplate removed (Why Choose Us, CTA, duplicate bundles, old YouTube section, etc.)
-
-### Advisory Page — Watercolor Illustrations Added ✅
-- Generated 4 watercolor illustrations for Guided Decision Paths:
-  - First-time Owner Path
-  - Multi-dog Household
-  - Flat-faced Dog Care
-  - Allergy Management Path
-- Illustrations added to both fallback data and API-transformed paths
-
-### AI Image Generation System ✅
-- Background task generates watercolor product images via OpenAI GPT-4o
-- Uploads to Cloudinary automatically
-- **Status: 270/890 products processed (~30%), 363 missing images**
-- Triggered from Admin panel "AI IMAGES" button
-- Backend: `ai_image_service.py` (565 lines)
-
-### Session 8.9 - Admin Image Upload to Cloudinary ✅ (March 12, 2026)
-
-**Problem:** Admin could only set images via URL input, which:
-1. Required external hosting
-2. Would NOT persist through deployments (local uploads lost)
-3. Was inconvenient for admin workflows
+**Problem Solved:** Admin could only paste URLs, images lost on deployment.
 
 **Solution Implemented:**
-1. **Backend Cloudinary Upload Endpoints:**
-   - `POST /api/upload/product-image` - Direct file upload to Cloudinary
-   - `POST /api/upload/service-image` - Direct file upload to Cloudinary
-   - `POST /api/admin/product/{id}/upload-image` - Upload and link to specific product
-   - `POST /api/admin/service/{id}/upload-image` - Upload and link to specific service
+| Component | File | Feature |
+|-----------|------|---------|
+| ProductBoxEditor.jsx | `/app/frontend/src/components/admin/ProductBoxEditor.jsx` | Purple "Choose File" button in Media tab |
+| ServiceBox.jsx | `/app/frontend/src/components/admin/ServiceBox.jsx` | File upload with Cloudinary integration |
+| BundlesManager.jsx | `/app/frontend/src/components/admin/BundlesManager.jsx` | CloudinaryUploader component |
+| ShopManager.jsx | `/app/frontend/src/components/admin/ShopManager.jsx` | CloudinaryUploader component |
+| CloudinaryUploader.jsx | `/app/frontend/src/components/admin/CloudinaryUploader.jsx` | **REUSABLE** component for any admin editor |
 
-2. **Admin UI Enhancements:**
-   - **UnifiedProductBox.jsx**: Added file upload button with preview, Cloudinary integration
-   - **ServiceBox.jsx**: Added file upload button with preview, Cloudinary integration
-   - Both components now show:
-     - Primary "Upload File" button (recommended, green highlight)
-     - Secondary URL paste option
-     - Real-time upload progress indicator
-     - "Persists through deployments!" confirmation message
+**Backend Endpoints Created:**
+```
+POST /api/admin/product/{id}/upload-image
+POST /api/admin/service/{id}/upload-image
+POST /api/admin/bundle/{id}/upload-image
+POST /api/admin/experience/{id}/upload-image
+POST /api/admin/sync-from-production (bidirectional sync)
+```
 
-**Key Files Modified:**
-- `/app/backend/server.py` - Added Cloudinary upload endpoints (lines 4104-4299)
-- `/app/frontend/src/components/admin/UnifiedProductBox.jsx` - Added handleImageUpload function
-- `/app/frontend/src/components/admin/ServiceBox.jsx` - Added handleServiceImageUpload function
+### 3.2 Learn Page Elevated to Golden Standard
 
-**Image Statistics (Current):**
-- Products: 890 total, 527 with images (59.2% coverage)
-- Services: 34 total, 0 with images (need generation)
-- AI Generated Images: 270 products
+**Components Updated:**
+| Component | Changes |
+|-----------|---------|
+| LearnPage.jsx | Added 3 Advisory-style sections: Bundles, Recommended for Pet, Products |
+| LearnProductsGrid.jsx | Now fetches from Product Box, filters by pet breed, 24 products max |
+| LearnTopicModal.jsx | Fixed product images (image_url), breed-based filtering |
+| PetDailyRoutine.jsx | **COMPLETE REWRITE** - Now fetches REAL products from Product Box API |
 
-### Care Page Crash Fix ✅
-- Fixed `TypeError` in `CuratedBundles.jsx` — added safety check for `bundle.items`
+**Learn Page Structure (Matches Advisory):**
+1. Hero with watercolor gradient
+2. Category tabs (All Learn, Training Aids, Puzzles, Books)
+3. Topic cards with watercolor images (8 topics)
+4. "{Soul Archetype} Bundles" section
+5. "Recommended for {Pet Name}" with breed/age/archetype tags
+6. "Products for {Pet}'s Learning" - breed-filtered products
+7. BreedSmartRecommendations
+8. ArchetypeProducts
+
+### 3.3 Learn Bundles Created (4 NEW)
+
+| Bundle | Price | Items | Image |
+|--------|-------|-------|-------|
+| New Puppy Training Bundle | ₹6,499 | Puppy Training Course, Clicker, Treat Pouch, Treats | ✅ Cloudinary |
+| Behavior Bootcamp Bundle | ₹7,499 | Behavior Program, Anxiety Course, Harness, Calming | ✅ Cloudinary |
+| Training Tools Starter Kit | ₹999 | Clicker, Treat Pouch, 2x Training Treats | ✅ Cloudinary |
+| Recall & Leash Mastery Bundle | ₹4,499 | Recall Course, Leash Course, Lead, Treats | ✅ Cloudinary |
+
+**Database:** `learn_bundles` collection (not `bundles`)
+
+### 3.4 AI Image Generation System
+
+**Current Status:** RUNNING - 133/412 complete (32%)
+**Total AI Generated:** 612 products have AI images
+**Coverage:** 612/890 products (69%)
+
+**Admin UI:** 
+- AI IMAGES button shows real-time progress
+- Floating progress panel (bottom-right)
+- 📊 button to check status anytime
+
+### 3.5 Personalization Fixes
+
+**Products now filtered by pet's breed:**
+- Breed-specific products shown FIRST
+- Products for OTHER breeds EXCLUDED
+- Generic training products shown after breed-specific
+
+**soul_archetype crash fixed:**
+- Now handles both string and object formats
+- Extracts `archetype_name` from object if needed
 
 ---
 
-## 4. Pillar Page Status
+## 4. Current System Status
 
-| Pillar | Status | Notes |
-|--------|--------|-------|
-| **Learn** | **95%** | **Golden standard. All sections working. Weather + Breed dynamic.** |
-| Emergency | 100% | AI Triage, 15 Guides, Guest Profile, Near Me |
-| Advisory | 95% | AI Chat, Guided Paths with watercolor illustrations, Products |
+### Pillar Completion Status
+| Pillar | Status | Key Features |
+|--------|--------|--------------|
+| Learn | 95% | Bundles, Products, Topics, Personalization |
+| Advisory | 95% | AI Chat, Guided Paths, Watercolor illustrations |
 | Farewell | 100% | Grief Support AI, Memorial Services |
 | Adopt | 100% | Adoption Advisor, 3-3-3 Rule Paths |
-| Celebrate | ~90% | Working, bundles, Soul Made products |
+| Celebrate | ~90% | Bundles, Soul Made products |
+| Shop | ~85% | Products, filters |
+| Care | ~85% | Grooming, wellness |
 | Dine | ~85% | Restaurants, meal plans |
 | Stay | ~80% | Boarding, daycare |
 | Travel | ~80% | Pet-friendly destinations |
-| Care | ~85% | Grooming, wellness (crash fixed) |
 | Enjoy | ~75% | Parks, activities |
 | Fit | ~75% | Exercise, weight management |
-| Shop | ~85% | Products display, filters |
-| Paperwork | ~70% | Was crashing, fix pending verification |
-| Learn | 95% | Products now match Advisory style (LearnProductsGrid) |
+| Paperwork | ~70% | Crash fix pending verification |
+
+### Known Issues
+
+**BROKEN:**
+- Razorpay Checkout — Fails with "body error" (recurring 5+ sessions)
+- YouTube Videos — Links to unavailable videos (need to update video IDs)
+
+**DEGRADED:**
+- YouTube API — Quota exceeded, using static fallback
+
+**UI BUGS:**
+- Mobile Pet Dashboard — Scrambled layout (not addressed)
+- Soul Made Products — All show same breed portrait
 
 ---
 
-## 5. Known Issues & Broken Features
+## 5. Files Modified This Session
 
-### BROKEN
-- **Razorpay Checkout** — Fails with "body error". Recurring 5+ sessions. Not addressed.
+### Frontend
+```
+/app/frontend/src/pages/LearnPage.jsx
+/app/frontend/src/components/Learn/LearnProductsGrid.jsx
+/app/frontend/src/components/learn/LearnTopicModal.jsx
+/app/frontend/src/components/learn/PetDailyRoutine.jsx
+/app/frontend/src/components/admin/ProductBoxEditor.jsx
+/app/frontend/src/components/admin/ServiceBox.jsx
+/app/frontend/src/components/admin/BundlesManager.jsx
+/app/frontend/src/components/admin/ShopManager.jsx
+/app/frontend/src/components/admin/CloudinaryUploader.jsx (NEW)
+/app/frontend/src/pages/Admin.jsx (AI progress panel)
+```
 
-### DEGRADED
-- **YouTube Video Features** — API quota exceeded daily. Using static fallback with YouTube search links.
-- **Instagram Feed** — API mocked/non-functional.
-- **Admin Auth** — Basic authentication, not production-grade.
-
-### UI BUGS
-- **Mobile Pet Dashboard** — Scrambled layout. Recurring, not addressed.
-- **Soul Made Products** — All show same breed portrait instead of unique product-specific images.
-
-### PENDING VERIFICATION
-- **Paperwork Page** — Previous crash fix needs user testing.
-
-### ✅ RESOLVED THIS SESSION
-- **Admin Image Upload** — Now uploads to Cloudinary (persists through deployments!)
-- **Learn Products Style** — Now matches Advisory page with LearnProductsGrid component
+### Backend
+```
+/app/backend/server.py (Cloudinary upload endpoints, bidirectional sync)
+```
 
 ---
 
-## 6. Prioritized Backlog
+## 6. Post-Deployment Commands
+
+**RUN THESE AFTER EVERY DEPLOYMENT:**
+```bash
+# Step 1: Clean up duplicate services
+curl -X POST "https://thedoggycompany.com/api/admin/cleanup-duplicate-services?password=lola4304"
+
+# Step 2: Fix service images
+curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=lola4304"
+
+# Step 3: Sync from production (preserve admin edits)
+curl -X POST "https://thedoggycompany.com/api/admin/sync-from-production?password=lola4304"
+```
+
+---
+
+## 7. Prioritized Backlog
 
 ### P0 — Critical
-- [x] **Add admin image upload to Cloudinary** (COMPLETED Session 8.9)
-- [ ] Complete AI image generation (270/890 done, 363 remaining)
-- [ ] Generate unique images for Soul Made products (not same portrait)
-- [ ] Sync generated images to production via admin API
-- [ ] Replicate Advisory-style product/bundle display on Learn page
+- [ ] Fix YouTube video links (videos unavailable)
+- [ ] Complete AI image generation (133/412 in progress)
+- [ ] Sync generated images to production
 
 ### P1 — High
-- [ ] Quick Quiz using unanswered soul questions (gamification)
-- [ ] Background generation for service watercolor illustrations (34 services need images)
-- [ ] Enhance remaining pillar pages (Fit, Stay, Travel, Dine) to golden standard
+- [ ] Generate images for 34 services
 - [ ] Fix Razorpay checkout
+- [ ] Enhance remaining pillar pages to golden standard
 
 ### P2 — Medium
-- [ ] "Continue Learning" progress tracking
-- [ ] "Trending This Week" social proof section
+- [ ] Fix mobile pet dashboard scramble
+- [ ] Unique images for Soul Made products
 - [ ] Instagram integration for Celebration Wall
-- [ ] Fix scrambled mobile pet dashboard
 
-### P3 — Future
-- [ ] Seasonal Alert content (monsoon care, summer heat)
-- [ ] More pillar pages to golden standard
-- [ ] Advanced personalization features
-- [ ] Production deployment hardening
+### P3 — Low
+- [ ] Paperwork page verification
+- [ ] YouTube API quota upgrade
 
 ---
 
-## 7. Database Schema (Key Collections)
+## 8. API Endpoints Reference
 
-### products
-- `shopify_id`, `name`, `description`, `category`, `pillar`
-- `image` (Shopify CDN), `image_url` (AI-generated/Cloudinary)
-- `price`, `compare_at_price`, `available`
-- `tags[]`, `breed_tags[]`, `life_stage_tags[]`
-- Total: **4,174 products** (3,763 with images, 411 without)
-
-### services
-- `name`, `description`, `category`, `pillar`
-- `price`, `duration`, `availability`
-- Total: **1,115 services**
-
-### pets
-- `name`, `breed`, `age_months`, `weight_kg`
-- `soul_score`, `archetype`, `personality_traits[]`
-- `allergies[]`, `health_conditions[]`
-- `owner_id` (references users)
-
-### users
-- `email`, `name`, `membership_tier`
-- `pets[]` (referenced)
-
-### tickets
-- `ticket_id`, `user_id`, `pet_id`
-- `type`, `pillar`, `status`, `priority`
-- `messages[]`, `sla_deadline`
-
----
-
-## 8. API Endpoints (Key)
-
-### Auth
-- `POST /api/auth/login` — Returns `access_token`
-- `POST /api/auth/register`
-
-### Products
-- `GET /api/products?pillar=learn&search=training&limit=8`
-- `GET /api/products?limit=500` — Full catalog
-
-### Services
-- `GET /api/services?pillar=learn`
-
-### Pets
-- `GET /api/pets/my-pets` — Requires auth token
-
-### Weather
-- `GET /api/weather?lat=19.076&lon=72.8777` — Returns `{feels_like, description, humidity, city}`
-
-### AI Images
-- `POST /api/ai-images/generate-product-images` — Start background generation
-- `GET /api/ai-images/status` — Check progress
-
-### Admin
-- `POST /api/admin/login` — Admin auth
-- Various CRUD endpoints for products, services, tickets
-
----
-
-## 9. 3rd Party Integrations
-
-| Service | Status | Key Location |
-|---------|--------|-------------|
-| OpenAI GPT-4o | ✅ Working | Via Emergent LLM Key |
-| Cloudinary | ✅ Working | `backend/.env` (CLOUDINARY_*) |
-| OpenWeatherMap | ✅ Working | `backend/.env` (OPENWEATHER_API_KEY) |
-| Google Places | ✅ Working | `backend/.env` (GOOGLE_PLACES_API_KEY) |
-| YouTube Data API | ⚠️ Quota exceeded | `backend/.env` (YOUTUBE_API_KEY) |
-| Shopify | ✅ Sync working | `backend/.env` (SHOPIFY_*) |
-| MongoDB Atlas | ✅ Working | `backend/.env` (MONGO_URL) |
-| Razorpay | ❌ Broken | `backend/.env` (RAZORPAY_*) |
-| Instagram | ⚠️ Mocked | Not functional |
-
----
-
-## 10. Testing Summary
-
-| Test Run | Tests | Pass Rate | Scope |
-|----------|-------|-----------|-------|
-| iteration_89 | 16/16 | 100% | Learn page cleanup, topic modals |
-| iteration_90 | 10/10 | 100% | Inline advice, guided paths, products, videos |
-| iteration_91 | 17/17 | 100% | Emoji→icon replacement, mobile, support verification |
-| iteration_92 | 100% | 100% | Breed spotlight, weather tip, modal title fix |
-
----
-
-## 11. File Reference Map
-
-### Frontend — Pages (Key)
+### Image Upload (NEW)
 ```
-/app/frontend/src/pages/
-├── LearnPage.jsx          # 1,458 lines — GOLDEN STANDARD
-├── AdvisoryPage.jsx       # 1,344 lines — Watercolor paths added
-├── EmergencyPage.jsx      # Reference for golden standard
-├── CarePage.jsx           # Crash fixed
-├── Admin.jsx              # AI Images button added
-├── Home.jsx               # Landing page
-├── ShopPage.jsx           # Product catalog
-└── [60+ other pages]
+POST /api/admin/product/{id}/upload-image
+POST /api/admin/service/{id}/upload-image
+POST /api/admin/bundle/{id}/upload-image
+POST /api/admin/experience/{id}/upload-image
+POST /api/upload/product-image (generic)
+POST /api/upload/service-image (generic)
 ```
 
-### Frontend — Learn Components
+### AI Image Generation
 ```
-/app/frontend/src/components/learn/
-├── LearnTopicModal.jsx    # 790 lines — Dynamic tabbed modal
-├── NearbyLearnServices.jsx # 493 lines — Location services
-├── LearnTopicIcons.jsx    # 203 lines — Watercolor illustrations
-├── PetDailyRoutine.jsx    # 201 lines — Time-of-day routine
-├── SupportForPet.jsx      # 103 lines — Service cards
-└── AskConciergeForPet.jsx # 98 lines — Concierge access
+GET  /api/ai-images/status
+GET  /api/ai-images/stats
+POST /api/ai-images/generate-product-images
+POST /api/ai-images/generate-service-images
+POST /api/ai-images/stop
 ```
 
-### Frontend — Shared Components
+### Learn Pillar
 ```
-/app/frontend/src/components/
-├── CuratedBundles.jsx     # Bundle display (learn has 3 bundles)
-├── PersonalizedPicks.jsx  # Product grid with images/prices
-├── ProductCard.jsx        # Individual product card
-├── PillarPageLayout.jsx   # Wrapper for all pillar pages
-├── MiraAdvisorCard.jsx    # Mira AI advisor
-├── ServiceCatalogSection.jsx # Service listing
-└── [100+ other components]
+GET  /api/learn/bundles (from learn_bundles collection)
+GET  /api/learn/products
+GET  /api/product-box/products?pillar=learn
 ```
 
-### Backend — Key Files
+### Sync
 ```
-/app/backend/
-├── server.py              # Main FastAPI server (16,000+ lines)
-├── ai_image_service.py    # AI image generation + Cloudinary upload
-├── product_routes.py      # Product CRUD + search
-├── services_routes.py     # Services CRUD
-├── mira_routes.py         # Mira AI chat
-├── auth_routes.py         # Authentication
-├── learn_routes.py        # Learn pillar API
-├── advisory_routes.py     # Advisory pillar API
-└── [200+ other files]
+POST /api/admin/sync-from-production?password=lola4304
+GET  /api/admin/production-sync-status
 ```
 
 ---
 
-## 12. Brand Identity
+## 9. Database Collections
 
-### Colors (from Mira OS)
-- **Primary Magenta:** #E91E8C
-- **Orange Accent:** #FF6B35
-- **Yellow Accent:** #FFD166
-- **Purple:** #7C3AED
-- **Dark Navy:** #1E1B4B
-- **Light Background:** #F8FAFC
-
-### Design Principles
-- AI watercolor aesthetic for all illustrations
-- lucide-react icons (NO emojis)
-- Soft gradients, rounded corners (pill shapes)
-- Warm, inviting, premium but approachable
-- Shadcn/UI components as base
+| Collection | Purpose |
+|------------|---------|
+| products | Main product catalog |
+| unified_products | Product Box unified view |
+| services | Service catalog |
+| bundles | Generic bundles (all pillars) |
+| learn_bundles | **Learn-specific bundles** |
+| learn_content | Learn topic content |
+| pets | User pets with soul data |
+| users | User accounts |
 
 ---
 
-## 13. Critical Notes for Next Agent
+## 10. Testing Credentials
 
-1. **AI Image Generation is RUNNING** — Check status: `curl $API_URL/api/ai-images/status`. Currently 181/500, 0 failures. Don't restart unless it stops.
+| Type | Username | Password |
+|------|----------|----------|
+| User | dipali@clubconcierge.in | test123 |
+| Admin | aditya | lola4304 |
 
-2. **YouTube API quota resets daily** at midnight Pacific Time. Videos tab uses fallback with YouTube search links.
+---
 
-3. **Login flow in Playwright** — Use `input[placeholder="you@example.com"]` and `input[placeholder="Enter your password"]`, then press Enter. Button click is unreliable.
+## 11. Next Agent Instructions
 
-4. **Weather API returns `feels_like`** not `temp`. Code already handles this fallback.
+1. **FIRST:** Check AI image generation status (should be ~133/412)
+2. **PRIORITY:** Fix YouTube video IDs in LearnTopicModal.jsx (CURATED_VIDEOS)
+3. **VERIFY:** Learn bundles display correctly (4 bundles with watercolor images)
+4. **TEST:** Product personalization when logged in (should filter by pet breed)
+5. **MONITOR:** AI image generation progress via Admin → 📊
 
-5. **The user is very specific** about their vision. They reference the Bible (`complete-documentation.html`) constantly. Read it thoroughly.
-
-6. **No emojis anywhere** — Every icon must be lucide-react. This was a major cleanup effort.
-
-7. **Advisory page has a pre-existing `<ReactMarkdown>` build issue** that appears intermittently during hot reload. A frontend restart (`sudo supervisorctl restart frontend`) fixes it.
-
-8. **Soul Made products** all share the same breed portrait. User wants unique per-product images via AI generation.
-
-9. **Razorpay** has been broken for 5+ sessions. Nobody has fixed it.
-
-10. **The user wants Advisory-style product/bundle display replicated on Learn page** — this is the immediate next task.
+**DO NOT:**
+- Restart AI image generation (it's running)
+- Change learn_bundles collection name
+- Remove Cloudinary upload endpoints
