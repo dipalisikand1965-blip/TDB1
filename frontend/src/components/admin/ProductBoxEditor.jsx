@@ -182,8 +182,7 @@ const ProductBoxEditor = ({
   // Handle image upload to Cloudinary
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
-    if (!file || !product?.id) {
-      alert('Please save the product first before uploading an image');
+    if (!file) {
       return;
     }
     
@@ -198,7 +197,12 @@ const ProductBoxEditor = ({
       const formData = new FormData();
       formData.append('file', file);
       
-      const response = await fetch(`${API_URL}/api/admin/product/${product.id}/upload-image`, {
+      const isExistingProduct = product?.id && !product.id.startsWith('NEW-');
+      const uploadUrl = isExistingProduct
+        ? `${API_URL}/api/admin/product/${product.id}/upload-image`
+        : `${API_URL}/api/upload/product-image`;
+
+      const response = await fetch(uploadUrl, {
         method: 'POST',
         body: formData
       });
@@ -207,9 +211,14 @@ const ProductBoxEditor = ({
         const data = await response.json();
         // Update the product with the new Cloudinary URL
         updateField('media.primary_image', data.url);
+        updateField('media.images', [data.url]);
         updateField('image', data.url);
         updateField('image_url', data.url);
-        alert('Image uploaded to Cloudinary successfully! Image will persist through deployments.');
+        updateField('images', [data.url]);
+        updateField('thumbnail', data.url);
+        alert(isExistingProduct
+          ? 'Image uploaded to Cloudinary successfully! Image is now linked to this product and will persist.'
+          : 'Image uploaded to Cloudinary successfully! Save the product to keep this image linked.');
       } else {
         const err = await response.json();
         alert('Upload failed: ' + (err.detail || 'Unknown error'));
@@ -1300,12 +1309,12 @@ const ProductBoxEditor = ({
                     onChange={handleImageUpload}
                     className="hidden"
                     id="product-editor-image-upload"
-                    disabled={uploadingImage || !product?.id}
+                    disabled={uploadingImage}
                   />
                   <label
                     htmlFor="product-editor-image-upload"
                     className={`flex items-center gap-2 px-6 py-3 rounded-lg cursor-pointer transition-all text-white font-medium ${
-                      uploadingImage || !product?.id
+                      uploadingImage
                         ? 'bg-gray-400 cursor-not-allowed' 
                         : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-md hover:shadow-lg'
                     }`}
@@ -1324,9 +1333,9 @@ const ProductBoxEditor = ({
                   </label>
                   <span className="text-sm text-gray-500">JPG, PNG, WebP (max 10MB)</span>
                 </div>
-                {!product?.id && (
+                {(!product?.id || product?.id?.startsWith('NEW-')) && (
                   <p className="text-amber-600 text-sm mt-2 font-medium">
-                    ⚠️ Save the product first before uploading an image
+                    Upload now if you want — just save the product afterwards to keep the new image linked
                   </p>
                 )}
               </div>
@@ -1335,16 +1344,18 @@ const ProductBoxEditor = ({
                 <div>
                   <Label>Primary Image URL (or paste URL manually)</Label>
                   <Input 
-                    value={getValue('media.primary_image', '') || getValue('image', '')}
+                    value={getValue('media.primary_image', '') || getValue('image', '') || getValue('image_url', '')}
                     onChange={(e) => {
                       updateField('media.primary_image', e.target.value);
                       updateField('image', e.target.value);
+                      updateField('image_url', e.target.value);
+                      updateField('thumbnail', e.target.value);
                     }}
                     placeholder="https://..."
                   />
-                  {(getValue('media.primary_image') || getValue('image')) && (
+                  {(getValue('media.primary_image') || getValue('image') || getValue('image_url')) && (
                     <img 
-                      src={getValue('media.primary_image') || getValue('image')} 
+                      src={getValue('media.primary_image') || getValue('image') || getValue('image_url')} 
                       alt="Primary"
                       className="mt-2 w-32 h-32 object-cover rounded border"
                       onError={(e) => e.target.style.display = 'none'}

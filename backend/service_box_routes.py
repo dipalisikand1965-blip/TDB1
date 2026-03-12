@@ -770,7 +770,7 @@ DEFAULT_SERVICE_PROMPT = "Professional pet service in modern setting, happy dog 
 
 @router.post("/services/{service_id}/generate-image")
 async def generate_service_image(service_id: str, x_admin_user: Optional[str] = Header(None)):
-    """Generate AI image for a specific service"""
+    """Generate watercolor AI image for a specific service"""
     import os
     import cloudinary
     import cloudinary.uploader
@@ -805,7 +805,11 @@ async def generate_service_image(service_id: str, x_admin_user: Optional[str] = 
         "paperwork": "documents, legal, administration"
     }
     
-    enhanced_prompt = f"{prompt}. Context: {pillar_context.get(pillar, 'premium pet service')}. Style: professional photography, warm lighting, high quality, no text overlay."
+    enhanced_prompt = (
+        f"{prompt}. Context: {pillar_context.get(pillar, 'premium pet service')}. "
+        "Style: soulful watercolor illustration, elegant brushwork, soft layered pigments, premium editorial composition, "
+        "warm emotional palette, no text overlay, not photorealistic, suitable for a premium pet concierge service card."
+    )
     
     logger.info(f"Generating image for service: {service_name} with prompt: {enhanced_prompt[:100]}...")
     
@@ -853,13 +857,14 @@ async def generate_service_image(service_id: str, x_admin_user: Optional[str] = 
         
         cloudinary_url = upload_result.get("secure_url")
         
-        # Update service with new image
+        # Update service with new watercolor image
         await db.services_master.update_one(
             {"id": service_id},
             {
                 "$set": {
                     "image_url": cloudinary_url,
                     "image": cloudinary_url,
+                    "watercolor_image": cloudinary_url,
                     "image_generated_at": datetime.now(timezone.utc).isoformat(),
                     "updated_at": datetime.now(timezone.utc).isoformat()
                 }

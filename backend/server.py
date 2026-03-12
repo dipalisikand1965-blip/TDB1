@@ -4185,6 +4185,80 @@ async def upload_product_image(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
 
 
+@api_router.post("/upload/bundle-image")
+async def upload_bundle_image(file: UploadFile = File(...)):
+    """Upload an image for a bundle to Cloudinary before the bundle is saved"""
+    allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type. Please upload JPG, PNG, or WebP images.")
+
+    try:
+        file_content = await file.read()
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+        public_id = f"doggy/bundles/admin_upload_{timestamp}"
+
+        result = cloudinary.uploader.upload(
+            file_content,
+            public_id=public_id,
+            overwrite=True,
+            resource_type="image",
+            format="webp",
+            quality="auto:good",
+            transformation=[
+                {"width": 1200, "height": 1200, "crop": "limit"},
+                {"quality": "auto:good"}
+            ]
+        )
+
+        cloudinary_url = result.get("secure_url")
+        return {
+            "message": "Bundle image uploaded successfully to Cloudinary",
+            "url": cloudinary_url,
+            "public_id": public_id,
+            "filename": file.filename
+        }
+    except Exception as e:
+        logger.error(f"Failed to upload bundle image to Cloudinary: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
+
+
+@api_router.post("/upload/experience-image")
+async def upload_experience_image(file: UploadFile = File(...)):
+    """Upload an image for an experience to Cloudinary before the experience is saved"""
+    allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type. Please upload JPG, PNG, or WebP images.")
+
+    try:
+        file_content = await file.read()
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+        public_id = f"doggy/experiences/admin_upload_{timestamp}"
+
+        result = cloudinary.uploader.upload(
+            file_content,
+            public_id=public_id,
+            overwrite=True,
+            resource_type="image",
+            format="webp",
+            quality="auto:good",
+            transformation=[
+                {"width": 1200, "height": 1200, "crop": "limit"},
+                {"quality": "auto:good"}
+            ]
+        )
+
+        cloudinary_url = result.get("secure_url")
+        return {
+            "message": "Experience image uploaded successfully to Cloudinary",
+            "url": cloudinary_url,
+            "public_id": public_id,
+            "filename": file.filename
+        }
+    except Exception as e:
+        logger.error(f"Failed to upload experience image to Cloudinary: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
+
+
 @api_router.post("/admin/product/{product_id}/upload-image")
 async def upload_product_image_by_id(
     product_id: str,
@@ -4218,34 +4292,23 @@ async def upload_product_image_by_id(
         
         cloudinary_url = result.get("secure_url")
         
-        # Update product in database
-        update_result = await db.products.update_one(
-            {"id": product_id},
-            {
-                "$set": {
-                    "image_url": cloudinary_url,
-                    "image": cloudinary_url,
-                    "images": [cloudinary_url],
-                    "admin_uploaded_image": True,
-                    "image_updated_at": datetime.now(timezone.utc).isoformat()
-                }
-            }
-        )
-        
-        if update_result.modified_count == 0:
-            # Try unified_products collection
-            await db.unified_products.update_one(
-                {"id": product_id},
-                {
-                    "$set": {
-                        "image_url": cloudinary_url,
-                        "image": cloudinary_url,
-                        "images": [cloudinary_url],
-                        "admin_uploaded_image": True,
-                        "image_updated_at": datetime.now(timezone.utc).isoformat()
-                    }
-                }
-            )
+        update_payload = {
+            "image_url": cloudinary_url,
+            "image": cloudinary_url,
+            "images": [cloudinary_url],
+            "thumbnail": cloudinary_url,
+            "media.primary_image": cloudinary_url,
+            "media.images": [cloudinary_url],
+            "admin_uploaded_image": True,
+            "locally_edited": True,
+            "image_updated_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+
+        # Update all relevant product stores so admin edits persist everywhere
+        await db.products_master.update_one({"id": product_id}, {"$set": update_payload})
+        await db.products.update_one({"id": product_id}, {"$set": update_payload})
+        await db.unified_products.update_one({"id": product_id}, {"$set": update_payload})
         
         return {
             "message": "Product image uploaded and linked successfully",
@@ -4296,6 +4359,7 @@ async def upload_service_image_by_id(
             {
                 "$set": {
                     "image_url": cloudinary_url,
+                    "image": cloudinary_url,
                     "watercolor_image": cloudinary_url,
                     "admin_uploaded_image": True,
                     "image_updated_at": datetime.now(timezone.utc).isoformat()
@@ -4310,6 +4374,7 @@ async def upload_service_image_by_id(
                 {
                     "$set": {
                         "image_url": cloudinary_url,
+                        "image": cloudinary_url,
                         "watercolor_image": cloudinary_url,
                         "admin_uploaded_image": True,
                         "image_updated_at": datetime.now(timezone.utc).isoformat()
