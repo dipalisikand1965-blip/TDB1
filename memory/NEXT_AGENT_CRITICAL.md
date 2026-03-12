@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://cms-architecture-lab.preview.emergentagent.com
+https://watercolor-makeover.preview.emergentagent.com
 
 ---
 
