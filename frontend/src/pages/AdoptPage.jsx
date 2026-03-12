@@ -22,11 +22,18 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { ConciergeButton } from '../components/mira-os';
 import CuratedBundles from '../components/CuratedBundles';
+import PersonalizedPicks from '../components/PersonalizedPicks';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { PillarDailyTip, PillarHelpBuckets } from '../components/PillarGoldSections';
 import NearbyAdoptServices from '../components/adopt/NearbyAdoptServices';
 import { usePillarContext } from '../context/PillarContext';
 import { ChecklistDownloadButton } from '../components/checklists';
+import SoulScoreArc from '../components/SoulScoreArc';
+import MiraLoveNote from '../components/MiraLoveNote';
+import SoulMadeCollection from '../components/SoulMadeCollection';
+import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
+import PillarPicksSection from '../components/PillarPicksSection';
+import { getPetPhotoUrl } from '../utils/petAvatar';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Users,
   ChevronRight, Sparkles, CheckCircle, Package, Utensils,
@@ -193,10 +200,43 @@ const CONCIERGE_HELP = [
   { id: 'food-advice', title: 'Food & nutrition advice', icon: Utensils, description: 'Get diet recommendations based on age, breed & health' }
 ];
 
+const getAdoptionSoulNotes = (pet, soulScore = 0) => {
+  if (!pet) return [];
+
+  const petName = pet.name || 'your pet';
+  const breed = pet.breed || 'your dog';
+  const ageMonths = Number(pet.age_months || pet.age_in_months || 0);
+  const lifeStage = ageMonths > 0 && ageMonths < 12 ? 'puppy' : ageMonths >= 96 ? 'senior' : 'adult';
+
+  return [
+    {
+      title: `${petName}'s settling rhythm`,
+      body: lifeStage === 'puppy'
+        ? `${petName} will benefit from very short, reassuring routines in the first week. Keep sleep, meals, and potty timing gentle and predictable.`
+        : lifeStage === 'senior'
+          ? `A quieter entry matters more for ${petName}. Build in soft bedding, easy-to-reach water, and a low-stimulation corner from day one.`
+          : `${petName} is likely to settle best with a calm decompression zone, one trusted routine, and a slower introduction to the whole home.`
+    },
+    {
+      title: `Home setup for a ${breed}`,
+      body: `${breed} needs a welcome setup that matches real temperament, not just looks — comfort, safe walking gear, chew outlets, and a retreat space matter most.`
+    },
+    {
+      title: soulScore > 0 ? `Grow ${petName}'s soul profile` : `Start ${petName}'s soul profile`,
+      body: soulScore > 0
+        ? `Mira already knows ${petName} at ${Math.round(soulScore)}%. A few more answers will sharpen food, comfort, training, and transition recommendations.`
+        : `Answer a few soul questions and this page becomes far more personal — from the first-week checklist to product picks matched to ${petName}.`
+    }
+  ];
+};
+
 const AdoptPage = () => {
   const navigate = useNavigate();
   const { token, user } = useAuth();
-  const { currentPet, userPets } = usePillarContext();
+  const { currentPet, pets: contextPets, soulData } = usePillarContext();
+  const activePet = currentPet || contextPets?.[0] || null;
+  const soulScore = activePet?.overall_score || activePet?.soul_score || soulData?.overall_score || 0;
+  const adoptionSoulNotes = getAdoptionSoulNotes(activePet, soulScore);
   
   // State
   const [selectedIntent, setSelectedIntent] = useState(null);
@@ -255,7 +295,7 @@ const AdoptPage = () => {
   const [cmsDailyTips, setCmsDailyTips] = useState([]);
   
   // Personalize title with pet name
-  const pageTitle = cmsConfig.title;
+  const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your companion') || 'Find your perfect companion';
   
   const fetchCMSConfig = async () => {
     try {
@@ -505,6 +545,121 @@ const AdoptPage = () => {
           { id: 'first_week', title: 'First Week Guide', icon: 'Calendar', color: 'yellow', items: ['3-3-3 rule guide', 'Vet appointment', 'Routine building', 'Introduction tips'] },
         ]}
       />
+
+      {activePet && (
+        <section className="py-10 px-4 bg-gradient-to-b from-orange-50/80 to-white" data-testid="adopt-pet-os-section">
+          <div className="max-w-6xl mx-auto">
+            <Card className="overflow-hidden border-orange-100 shadow-lg">
+              <div className="grid gap-8 lg:grid-cols-[320px_1fr] p-6 md:p-8">
+                <div className="space-y-5">
+                  <div className="flex items-center gap-3">
+                    <Badge className="bg-orange-100 text-orange-700" data-testid="adopt-pet-os-badge">
+                      Made for {activePet.name}
+                    </Badge>
+                    <Badge variant="outline" className="border-orange-200 text-orange-700" data-testid="adopt-pet-os-soul-badge">
+                      Pet Soul™ {Math.round(soulScore)}%
+                    </Badge>
+                  </div>
+
+                  <div className="flex flex-col items-center rounded-3xl bg-gradient-to-br from-slate-900 via-orange-950 to-amber-900 p-6 text-center text-white">
+                    <SoulScoreArc
+                      score={soulScore}
+                      petId={activePet.id}
+                      petName={activePet.name}
+                      size={140}
+                      strokeWidth={6}
+                      showLabel={false}
+                      showCTA={false}
+                      className="mb-4"
+                    >
+                      <div className="h-28 w-28 overflow-hidden rounded-full border-4 border-white/15 shadow-2xl">
+                        <img
+                          src={getPetPhotoUrl(activePet)}
+                          alt={activePet.name}
+                          className="h-full w-full object-cover"
+                          data-testid="adopt-active-pet-photo"
+                        />
+                      </div>
+                    </SoulScoreArc>
+
+                    <h2 className="text-2xl font-semibold" data-testid="adopt-active-pet-name">{activePet.name}</h2>
+                    <p className="mt-1 text-sm text-white/70" data-testid="adopt-active-pet-breed">
+                      {activePet.breed || 'Beloved companion'}
+                    </p>
+
+                    <div className="mt-4 flex flex-wrap justify-center gap-2">
+                      <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/85" data-testid="adopt-pet-trait-breed">
+                        {activePet.breed || 'Unique soul'}
+                      </span>
+                      <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/85" data-testid="adopt-pet-trait-stage">
+                        {activePet.age_months < 12 ? 'Puppy energy' : activePet.age_months >= 96 ? 'Senior comfort' : 'Adult rhythm'}
+                      </span>
+                      <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/85" data-testid="adopt-pet-trait-soul">
+                        Soul-first matching
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-3xl font-bold text-slate-900" data-testid="adopt-personalized-heading">
+                      A better adoption plan for {activePet.name}
+                    </h2>
+                    <p className="mt-2 max-w-3xl text-sm text-slate-600 md:text-base" data-testid="adopt-personalized-subheading">
+                      This is the Pet Operating System layer: not generic adoption advice, but a calmer transition plan shaped around {activePet.name}&rsquo;s breed, life stage, and soul profile.
+                    </p>
+                  </div>
+
+                  <MiraLoveNote pet={activePet} variant="card" />
+
+                  <div className="grid gap-4 md:grid-cols-3">
+                    {adoptionSoulNotes.map((note, index) => (
+                      <Card key={note.title} className="border-orange-100 bg-gradient-to-br from-white to-orange-50/70 p-4" data-testid={`adopt-soul-note-${index}`}>
+                        <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-100 text-orange-700">
+                          {index === 0 ? <Home className="h-5 w-5" /> : index === 1 ? <Package className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}
+                        </div>
+                        <h3 className="text-sm font-semibold text-slate-900">{note.title}</h3>
+                        <p className="mt-2 text-sm leading-6 text-slate-600">{note.body}</p>
+                      </Card>
+                    ))}
+                  </div>
+
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <Button
+                      className="bg-orange-600 hover:bg-orange-700"
+                      data-testid="adopt-personalized-ask-mira-button"
+                      onClick={() => {
+                        window.dispatchEvent(new CustomEvent('openMiraAI', {
+                          detail: {
+                            message: `Help me prepare a gentle adoption plan for ${activePet.name}${activePet.breed ? `, a ${activePet.breed}` : ''}.`,
+                            context: 'adopt',
+                            pillar: 'adopt',
+                            pet_name: activePet.name,
+                            pet_breed: activePet.breed
+                          }
+                        }));
+                      }}
+                    >
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Ask Mira about {activePet.name}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                      data-testid="adopt-personalized-soul-button"
+                      onClick={() => navigate(`/pet-soul/${activePet.id}`)}
+                    >
+                      <Heart className="mr-2 h-4 w-4" />
+                      Continue {activePet.name}'s Soul Journey
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </section>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════════════════
           HERO SECTION - "I am bringing a dog home. Help me do it properly."
@@ -855,6 +1010,34 @@ const AdoptPage = () => {
           )}
         </div>
       </section>
+
+      {activePet && (
+        <section className="py-12 bg-gradient-to-b from-white to-orange-50/60" data-testid="adopt-personalized-commerce-section">
+          <div className="max-w-6xl mx-auto px-4 space-y-8">
+            <div className="text-center">
+              <Badge className="bg-orange-100 text-orange-700" data-testid="adopt-personalized-commerce-badge">
+                Soul-aware recommendations
+              </Badge>
+              <h2 className="mt-3 text-3xl font-bold text-slate-900" data-testid="adopt-personalized-commerce-title">
+                Personalized for {activePet.name}
+              </h2>
+              <p className="mt-2 text-sm text-slate-600 md:text-base" data-testid="adopt-personalized-commerce-copy">
+                These picks are shaped around {activePet.name}&rsquo;s breed, comfort needs, and transition into home — the part that makes this feel like a Pet OS, not a generic adoption page.
+              </p>
+            </div>
+
+            <PersonalizedPicks pillar="adopt" maxProducts={6} />
+
+            <div className="rounded-3xl border border-orange-100 bg-white p-4 sm:p-6">
+              <SoulMadeCollection pillar="adopt" maxItems={8} showTitle={true} />
+            </div>
+
+            <BreedSmartRecommendations pillar="adopt" />
+
+            <PillarPicksSection pillar="adopt" pet={activePet} />
+          </div>
+        </section>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════════════════
           CONCIERGE® SERVICES - No pricing, just helpful guidance

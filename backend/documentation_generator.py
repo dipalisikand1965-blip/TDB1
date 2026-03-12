@@ -105,7 +105,6 @@ def generate_owners_guide():
 def generate_complete_documentation():
     """Generate complete documentation from all markdown files"""
     try:
-        sections = []
         total_files = 0
         total_lines = 0
         
@@ -161,7 +160,9 @@ def generate_complete_documentation():
                         if filepath not in priority_files:
                             memory_files.append(filepath)
         
-        for filepath in memory_files[:100]:
+        memory_files = sorted(memory_files, key=lambda path: os.path.relpath(path, ROOT_DIR).lower())
+
+        for filepath in memory_files:
             try:
                 with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
