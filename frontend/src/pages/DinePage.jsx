@@ -440,10 +440,12 @@ const DinePage = () => {
     }
   };
   
-  // Fetch nearby places on mount
+  // Fetch nearby places whenever we have a resolved city
   useEffect(() => {
-    fetchNearbyPlaces('mumbai');
-  }, []);
+    if (selectedNearbyCity) {
+      fetchNearbyPlaces(selectedNearbyCity);
+    }
+  }, [selectedNearbyCity]);
 
   // ═══════════════════════════════════════════════════════════════════════════════
   // GOLD STANDARD: ASK MIRA STATE
@@ -669,6 +671,10 @@ const DinePage = () => {
                 onEditProfile={() => window.location.href = `/soul-builder/${activePet.id}`}
               />
             </Card>
+
+            <div className="mt-8" data-testid="dine-personalized-picks-top">
+              <PersonalizedPicks pillar="dine" maxProducts={8} />
+            </div>
           </div>
         </div>
       )}
@@ -788,17 +794,6 @@ const DinePage = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
-          9. PERSONALIZED PICKS - Fun Picks for {Pet} (Gold Standard)
-          ═══════════════════════════════════════════════════════════════════════════════ */}
-      {cmsConfig.sections?.personalized?.enabled !== false && (
-        <section className="py-8 px-4 bg-gradient-to-b from-white to-orange-50/30" data-testid="dine-personalized-picks">
-          <div className="max-w-6xl mx-auto">
-            <PersonalizedPicks pillar="dine" maxProducts={8} />
-          </div>
-        </section>
-      )}
-
-      {/* ═══════════════════════════════════════════════════════════════════════════════
           10. MIRA CURATED LAYER - Unified Concierge (Gold Standard)
           ═══════════════════════════════════════════════════════════════════════════════ */}
       <MiraCuratedLayer
@@ -857,10 +852,18 @@ const DinePage = () => {
           
           <NearbyPlacesCarousel
             places={nearbyCafes}
-            title="Pet-Friendly Cafes"
-            subtitle="Nearby spots that welcome your furry friend"
+            title={selectedNearbyCity ? `Nearby Pet-Friendly Spots in ${selectedNearbyCity}` : 'Nearby Pet-Friendly Spots'}
+            subtitle="Live cafes and dining spots that welcome your pet"
             loading={nearbyLoading}
-            onViewAll={() => setShowMapModal(true)}
+            onReserveClick={(place) => {
+              window.dispatchEvent(new CustomEvent('openMiraAI', {
+                detail: {
+                  message: `Help me reserve ${place.name} for pet-friendly dining${activePet?.name ? ` for ${activePet.name}` : ''}.`,
+                  context: 'dine',
+                  pillar: 'dine'
+                }
+              }));
+            }}
           />
         </div>
       </section>
