@@ -301,6 +301,40 @@ const TrainingProductsSection = () => {
   );
 };
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// DEFAULT CMS CONFIG - Used as fallback if CMS returns empty
+// ═══════════════════════════════════════════════════════════════════════════════
+const DEFAULT_TOPICS = [
+  { id: '1', slug: 'puppy-basics', title: 'Puppy Basics', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/93c239031e6456380de0efe5eb0dc4f6c5b0c024dd4773902b6e0c573190b1d8.png', description: 'New puppy checklists, routines, and training guides' },
+  { id: '2', slug: 'breed-guides', title: 'Breed Guides', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/b19ce463f91811f725efcf22558df9a370147e238e79f810d6f6f25776b03144.png', description: 'Understand the unique traits of different dog breeds' },
+  { id: '3', slug: 'food-feeding', title: 'Food & Feeding', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/5b1a4488a31b3aba09ebc15dd55c6155cee07f252d937530af9763ce6122ed48.png', description: 'Nutrition advice, feeding schedules, and diet tips' },
+  { id: '4', slug: 'grooming', title: 'Grooming', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/2aeee0fe285e7f4bf9b0695c92778e425922cb62c68d06f1fe8fdc33715f7aac.png', description: 'Grooming tips, coat care, and brushing guides' },
+  { id: '5', slug: 'behavior', title: 'Behavior', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/22b2a63c7ce6c1bf271784616d997150b922e72b42f23b0b0dea6354151c556b.png', description: 'Behavioral issues, training tips, and calming advice' },
+  { id: '6', slug: 'training-basics', title: 'Training Basics', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/3e9d2387a56550d68b8a4694f20654d13cb537ecee01b51b0f2cd396ecc09efd.png', description: 'Training fundamentals, tips, and obedience guides' },
+  { id: '7', slug: 'travel-with-dogs', title: 'Travel with Dogs', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/9b35a1a9ed5767659671cda04fc117a5abeafb2693411704164c5b37a1062ffe.png', description: 'Travel tips, safety advice, and gear recommendations' },
+  { id: '8', slug: 'senior-dog-care', title: 'Senior Dog Care', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/d9d9ebf8fe66ddcef4c455dbe5001f6143ef5b0c6ddf6e61689713ea03d13ec2.png', description: 'Senior dog health, comfort, and activity tips' },
+  { id: '9', slug: 'health-basics', title: 'Health Basics', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/c693f115f02adac326f5e6bb07378e3636c4a2774096c30b532317a65464632d.png', description: 'General health care, first aid, and wellness advice' },
+  { id: '10', slug: 'rescue-indie-care', title: 'Rescue / Indie Care', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/87e1b52ec6d6ab336a68adcea43c4a143f8de59d3cd2824e64e2c3fd9614441a.png', description: 'Adoption, indie-breed tips, and rehabilitation guides' },
+  { id: '11', slug: 'seasonal-care', title: 'Seasonal Care', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/1e5c1f02a009891fbcef1a3e1004e6f1dfe7201bafd892ee8c1d026697842455.png', description: 'Weather care tips for summer, winter, and beyond' },
+  { id: '12', slug: 'new-pet-parent-guide', title: 'New Pet Parent Guide', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/484b7ec0a72919db7f6137f25033184bea6787c2ccb296ffb23544249b6ae7a4.png', description: 'Starting out with a new dog or puppy in your home' }
+];
+
+const DEFAULT_DAILY_TIPS = [
+  { tip: "Dogs learn best in short 5-minute sessions. Three short sessions beat one long one every time.", category: "Training", color: "from-blue-500 to-indigo-500" },
+  { tip: "A tired dog is a well-behaved dog. Mental stimulation (puzzle toys, nose work) tires them faster than physical exercise.", category: "Behavior", color: "from-purple-500 to-pink-500" },
+  { tip: "Consistency matters more than intensity. Use the same words, same tone, same rewards every single time.", category: "Training", color: "from-teal-500 to-emerald-500" },
+  { tip: "Your dog's breed affects how they learn. Hounds follow their nose, herders want a job, terriers need variety.", category: "Breed Tips", color: "from-amber-500 to-orange-500" },
+  { tip: "Socialization window closes at 14 weeks. Expose puppies to different sounds, surfaces, people, and gentle dogs early.", category: "Puppy", color: "from-pink-500 to-rose-500" },
+  { tip: "If your dog is pulling on leash, stop walking. They learn that pulling = no movement. Loose leash = we go.", category: "Walking", color: "from-green-500 to-teal-500" },
+  { tip: "Never punish a dog who comes to you — even if they just did something wrong. Coming to you should always be positive.", category: "Recall", color: "from-indigo-500 to-blue-500" },
+];
+
+const DEFAULT_HELP_BUCKETS = [
+  { id: '1', title: 'Products & Routines', icon: 'Award', color: 'amber', items: ['Help me choose the right products', 'Build a routine for my dog', 'Help me with grooming choices'] },
+  { id: '2', title: 'Life Stage & Care', icon: 'PawPrint', color: 'teal', items: ['Guide me for my puppy', 'Help me with senior dog care', 'Recommend what suits my breed'] },
+  { id: '3', title: 'Support & Services', icon: 'Users', color: 'violet', items: ['Find the right trainer', 'Help me prepare for travel', 'Find help near me'] }
+];
+
 const LearnPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
@@ -310,6 +344,32 @@ const LearnPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // CMS STATE - Loaded from /api/learn/page-config
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const [cmsConfig, setCmsConfig] = useState({
+    title: 'What would you like to learn about {petName} today?',
+    subtitle: 'Expert guides, training tips, and resources',
+    askMira: {
+      enabled: true,
+      placeholder: 'Grooming guide for double coats · tips to stop barking',
+      buttonColor: 'bg-teal-500'
+    },
+    sections: {
+      askMira: { enabled: true },
+      topics: { enabled: true },
+      dailyTip: { enabled: true },
+      helpBuckets: { enabled: true },
+      learnForPet: { enabled: true },
+      bundles: { enabled: true },
+      products: { enabled: true },
+      services: { enabled: true }
+    }
+  });
+  const [cmsTopics, setCmsTopics] = useState([]);
+  const [cmsDailyTips, setCmsDailyTips] = useState([]);
+  const [cmsHelpBuckets, setCmsHelpBuckets] = useState([]);
   
   const [programs, setPrograms] = useState([]);
   const [featuredPrograms, setFeaturedPrograms] = useState([]);
@@ -341,6 +401,17 @@ const LearnPage = () => {
   const [askMiraLoading, setAskMiraLoading] = useState(false);
   const [showAskMira, setShowAskMira] = useState(false);
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // COMPUTED VALUES - Topics, Daily Tips with fallback to defaults
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const topics = cmsTopics.length > 0 ? cmsTopics : DEFAULT_TOPICS;
+  const dailyTips = cmsDailyTips.length > 0 ? cmsDailyTips : DEFAULT_DAILY_TIPS;
+  const helpBuckets = cmsHelpBuckets.length > 0 ? cmsHelpBuckets : DEFAULT_HELP_BUCKETS;
+  
+  // Personalize title with pet name
+  const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your dog') || 
+    `What would you like to learn about ${activePet?.name || 'your dog'} today?`;
+  
   const [requestForm, setRequestForm] = useState({
     learn_type: 'basic_obedience',
     training_goals: [],
@@ -356,10 +427,47 @@ const LearnPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchData();
+    fetchCMSConfig(); // Load CMS configuration
     if (user && token) {
       fetchUserPets();
     }
   }, [user, token]);
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // FETCH CMS CONFIGURATION
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const fetchCMSConfig = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/learn/page-config`);
+      if (response.ok) {
+        const data = await response.json();
+        // Set config if it exists and has content
+        if (data.config && Object.keys(data.config).length > 0) {
+          setCmsConfig(prev => ({ ...prev, ...data.config }));
+        }
+        // Set topics if they exist
+        if (data.topics && data.topics.length > 0) {
+          setCmsTopics(data.topics);
+        }
+        // Set daily tips if they exist
+        if (data.dailyTips && data.dailyTips.length > 0) {
+          setCmsDailyTips(data.dailyTips);
+        }
+        // Set help buckets if they exist
+        if (data.helpBuckets && data.helpBuckets.length > 0) {
+          setCmsHelpBuckets(data.helpBuckets);
+        }
+        console.log('[LearnPage] CMS config loaded:', { 
+          hasConfig: !!data.config, 
+          topicsCount: data.topics?.length || 0,
+          dailyTipsCount: data.dailyTips?.length || 0 
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch CMS config:', error);
+      // Fallback to defaults is automatic via useState defaults
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -623,103 +731,95 @@ const LearnPage = () => {
       description="Training and guidance that respects personality. Expert-led training programs for dogs of all ages."
     >
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* HERO SECTION: Clean Ask Bar (like Emergency page style) */}
+      {/* HERO SECTION: Ask Mira Bar - CMS DRIVEN */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4 bg-gradient-to-b from-stone-50 to-white">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              What would you like to learn about {activePet?.name || 'your dog'} today?
-            </h1>
-          </div>
-          
-          <div className="max-w-2xl mx-auto">
-            <div className="flex gap-2 items-center bg-white rounded-full border border-gray-200 shadow-sm p-1.5 pl-5">
-              <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
-              <Input
-                value={askMiraQuestion}
-                onChange={(e) => setAskMiraQuestion(e.target.value)}
-                placeholder="Grooming guide for double coats · tips to stop barking"
-                className="flex-1 border-0 focus-visible:ring-0 text-sm placeholder:text-gray-400"
-                onKeyDown={(e) => e.key === 'Enter' && handleAskMira()}
-                data-testid="ask-learn-input"
-              />
-              <Button
-                onClick={handleAskMira}
-                disabled={askMiraLoading || !askMiraQuestion.trim()}
-                className="rounded-full bg-teal-500 hover:bg-teal-600 h-10 w-10 p-0"
-              >
-                {askMiraLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-              </Button>
+      {cmsConfig.sections?.askMira?.enabled !== false && (
+        <section className="py-8 px-4 bg-gradient-to-b from-stone-50 to-white">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-6">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900" data-testid="learn-page-title">
+                {pageTitle}
+              </h1>
+            </div>
+            
+            <div className="max-w-2xl mx-auto">
+              <div className="flex gap-2 items-center bg-white rounded-full border border-gray-200 shadow-sm p-1.5 pl-5">
+                <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <Input
+                  value={askMiraQuestion}
+                  onChange={(e) => setAskMiraQuestion(e.target.value)}
+                  placeholder={cmsConfig.askMira?.placeholder || "Grooming guide for double coats · tips to stop barking"}
+                  className="flex-1 border-0 focus-visible:ring-0 text-sm placeholder:text-gray-400"
+                  onKeyDown={(e) => e.key === 'Enter' && handleAskMira()}
+                  data-testid="ask-learn-input"
+                />
+                <Button
+                  onClick={handleAskMira}
+                  disabled={askMiraLoading || !askMiraQuestion.trim()}
+                  className={`rounded-full ${cmsConfig.askMira?.buttonColor || 'bg-teal-500'} hover:opacity-90 h-10 w-10 p-0`}
+                >
+                  {askMiraLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* 12 TOPIC BOXES - Each opens a topic hub page at /learn/[topic] */}
+      {/* TOPIC BOXES - CMS DRIVEN (loads from cmsTopics or defaults) */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-4 bg-white">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { slug: 'puppy-basics', title: 'Puppy Basics', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/93c239031e6456380de0efe5eb0dc4f6c5b0c024dd4773902b6e0c573190b1d8.png', desc: 'New puppy checklists, routines, and training guides' },
-              { slug: 'breed-guides', title: 'Breed Guides', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/b19ce463f91811f725efcf22558df9a370147e238e79f810d6f6f25776b03144.png', desc: 'Understand the unique traits of different dog breeds' },
-              { slug: 'food-feeding', title: 'Food & Feeding', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/5b1a4488a31b3aba09ebc15dd55c6155cee07f252d937530af9763ce6122ed48.png', desc: 'Nutrition advice, feeding schedules, and diet tips' },
-              { slug: 'grooming', title: 'Grooming', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/2aeee0fe285e7f4bf9b0695c92778e425922cb62c68d06f1fe8fdc33715f7aac.png', desc: 'Grooming tips, coat care, and brushing guides' },
-              { slug: 'behavior', title: 'Behavior', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/22b2a63c7ce6c1bf271784616d997150b922e72b42f23b0b0dea6354151c556b.png', desc: 'Behavioral issues, training tips, and calming advice' },
-              { slug: 'training-basics', title: 'Training Basics', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/3e9d2387a56550d68b8a4694f20654d13cb537ecee01b51b0f2cd396ecc09efd.png', desc: 'Training fundamentals, tips, and obedience guides' },
-              { slug: 'travel-with-dogs', title: 'Travel with Dogs', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/9b35a1a9ed5767659671cda04fc117a5abeafb2693411704164c5b37a1062ffe.png', desc: 'Travel tips, safety advice, and gear recommendations' },
-              { slug: 'senior-dog-care', title: 'Senior Dog Care', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/d9d9ebf8fe66ddcef4c455dbe5001f6143ef5b0c6ddf6e61689713ea03d13ec2.png', desc: 'Senior dog health, comfort, and activity tips' },
-              { slug: 'health-basics', title: 'Health Basics', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/c693f115f02adac326f5e6bb07378e3636c4a2774096c30b532317a65464632d.png', desc: 'General health care, first aid, and wellness advice' },
-              { slug: 'rescue-indie-care', title: 'Rescue / Indie Care', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/87e1b52ec6d6ab336a68adcea43c4a143f8de59d3cd2824e64e2c3fd9614441a.png', desc: 'Adoption, indie-breed tips, and rehabilitation guides' },
-              { slug: 'seasonal-care', title: 'Seasonal Care', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/1e5c1f02a009891fbcef1a3e1004e6f1dfe7201bafd892ee8c1d026697842455.png', desc: 'Weather care tips for summer, winter, and beyond' },
-              { slug: 'new-pet-parent-guide', title: 'New Pet Parent Guide', image: 'https://static.prod-images.emergentagent.com/jobs/cc753d4b-8b64-48e8-aae2-bb0326d8de1c/images/484b7ec0a72919db7f6137f25033184bea6787c2ccb296ffb23544249b6ae7a4.png', desc: 'Starting out with a new dog or puppy in your home' }
-            ].map((topic) => (
-              <Card
-                key={topic.slug}
-                className="p-4 bg-white border border-gray-100 rounded-2xl hover:shadow-lg hover:border-gray-200 transition-all cursor-pointer group"
-                onClick={() => setSelectedTopic(topic.slug)}
-                data-testid={`topic-${topic.slug}`}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-base font-semibold text-gray-900 leading-tight">{topic.title}</h3>
-                  <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 ml-2">
-                    <img src={topic.image} alt={topic.title} className="w-full h-full object-cover" />
+      {cmsConfig.sections?.topics?.enabled !== false && (
+        <section className="py-8 px-4 bg-white">
+          <div className="max-w-5xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {topics.map((topic) => (
+                <Card
+                  key={topic.slug || topic.id}
+                  className="p-4 bg-white border border-gray-100 rounded-2xl hover:shadow-lg hover:border-gray-200 transition-all cursor-pointer group"
+                  onClick={() => setSelectedTopic(topic.slug)}
+                  data-testid={`topic-${topic.slug}`}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="text-base font-semibold text-gray-900 leading-tight">{topic.title}</h3>
+                    <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 ml-2">
+                      <img src={topic.image} alt={topic.title} className="w-full h-full object-cover" />
+                    </div>
                   </div>
-                </div>
-                <p className="text-xs text-gray-500 mb-3 line-clamp-2">{topic.desc}</p>
-                <button className="flex items-center gap-1 text-sm font-medium text-gray-600 group-hover:text-teal-600 transition-colors">
-                  Explore <ChevronRight className="w-4 h-4" />
-                </button>
-              </Card>
-            ))}
+                  <p className="text-xs text-gray-500 mb-3 line-clamp-2">{topic.description || topic.desc}</p>
+                  <button className="flex items-center gap-1 text-sm font-medium text-gray-600 group-hover:text-teal-600 transition-colors">
+                    Explore <ChevronRight className="w-4 h-4" />
+                  </button>
+                </Card>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* DAILY LEARNING TIP - Dynamic content that changes every day */}
+      {/* DAILY LEARNING TIP - CMS DRIVEN - Dynamic content that changes every day */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {(() => {
-        const dailyTips = [
-          { tip: "Dogs learn best in short 5-minute sessions. Three short sessions beat one long one every time.", category: "Training", color: "from-blue-500 to-indigo-500", icon: GraduationCap },
-          { tip: "A tired dog is a well-behaved dog. Mental stimulation (puzzle toys, nose work) tires them faster than physical exercise.", category: "Behavior", color: "from-purple-500 to-pink-500", icon: Brain },
-          { tip: "Consistency matters more than intensity. Use the same words, same tone, same rewards every single time.", category: "Training", color: "from-teal-500 to-emerald-500", icon: Target },
-          { tip: "Your dog's breed affects how they learn. Hounds follow their nose, herders want a job, terriers need variety.", category: "Breed Tips", color: "from-amber-500 to-orange-500", icon: Star },
-          { tip: "Socialization window closes at 14 weeks. Expose puppies to different sounds, surfaces, people, and gentle dogs early.", category: "Puppy", color: "from-pink-500 to-rose-500", icon: Heart },
-          { tip: "If your dog is pulling on leash, stop walking. They learn that pulling = no movement. Loose leash = we go.", category: "Walking", color: "from-green-500 to-teal-500", icon: Activity },
-          { tip: "Never punish a dog who comes to you — even if they just did something wrong. Coming to you should always be positive.", category: "Recall", color: "from-indigo-500 to-blue-500", icon: Shield },
-        ];
+      {cmsConfig.sections?.dailyTip?.enabled !== false && (() => {
         const today = new Date();
         const dayIndex = today.getDate() % dailyTips.length;
         const todaysTip = dailyTips[dayIndex];
-        const TipIcon = todaysTip.icon;
+        // Map category to icon
+        const categoryIcons = {
+          'Training': GraduationCap,
+          'Behavior': Brain,
+          'Breed Tips': Star,
+          'Puppy': Heart,
+          'Walking': Activity,
+          'Recall': Shield,
+          'default': Sparkles
+        };
+        const TipIcon = categoryIcons[todaysTip.category] || categoryIcons.default;
         
         return (
           <div className="py-6 px-4">
             <div className="max-w-5xl mx-auto">
-              <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-r ${todaysTip.color} p-5 md:p-6 text-white`}>
+              <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-r ${todaysTip.color || 'from-blue-500 to-indigo-500'} p-5 md:p-6 text-white`}>
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-8 translate-x-8" />
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-6 -translate-x-6" />
                 <div className="relative flex items-start gap-4">
@@ -744,81 +844,61 @@ const LearnPage = () => {
       })()}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* HOW CAN WE HELP? - 3 Action Buckets */}
+      {/* HOW CAN WE HELP? - CMS DRIVEN - 3 Action Buckets */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-10 px-4 bg-stone-50">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">How can we help?</h2>
-            <p className="text-gray-600 mt-1">Choose what matters most to you right now</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="p-5 bg-gradient-to-br from-amber-50 to-orange-50 border-amber-100 rounded-2xl cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => {
-                window.dispatchEvent(new CustomEvent('openMiraAI', {
-                  detail: { message: 'Help me choose the right products and build a routine for my dog', context: 'learn', pillar: 'learn' }
-                }));
-              }}
-              data-testid="help-products-routines"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
-                  <Award className="w-5 h-5 text-amber-600" />
-                </div>
-                <h3 className="font-semibold text-gray-900">Products & Routines</h3>
-              </div>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-amber-400 rounded-full" />Help me choose the right products</li>
-                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-amber-400 rounded-full" />Build a routine for my dog</li>
-                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-amber-400 rounded-full" />Help me with grooming choices</li>
-              </ul>
-            </Card>
+      {cmsConfig.sections?.helpBuckets?.enabled !== false && (
+        <section className="py-10 px-4 bg-stone-50">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-900">How can we help?</h2>
+              <p className="text-gray-600 mt-1">Choose what matters most to you right now</p>
+            </div>
             
-            <Card className="p-5 bg-gradient-to-br from-teal-50 to-emerald-50 border-teal-100 rounded-2xl cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => {
-                window.dispatchEvent(new CustomEvent('openMiraAI', {
-                  detail: { message: 'Guide me based on my dog\'s life stage and breed', context: 'learn', pillar: 'learn' }
-                }));
-              }}
-              data-testid="help-life-stage"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center">
-                  <PawPrint className="w-5 h-5 text-teal-600" />
-                </div>
-                <h3 className="font-semibold text-gray-900">Life Stage & Care</h3>
-              </div>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-teal-400 rounded-full" />Guide me for my puppy</li>
-                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-teal-400 rounded-full" />Help me with senior dog care</li>
-                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-teal-400 rounded-full" />Recommend what suits my breed</li>
-              </ul>
-            </Card>
-            
-            <Card className="p-5 bg-gradient-to-br from-violet-50 to-purple-50 border-violet-100 rounded-2xl cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => {
-                window.dispatchEvent(new CustomEvent('openMiraAI', {
-                  detail: { message: 'Help me find the right trainer and services near me', context: 'learn', pillar: 'learn' }
-                }));
-              }}
-              data-testid="help-support-services"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-violet-600" />
-                </div>
-                <h3 className="font-semibold text-gray-900">Support & Services</h3>
-              </div>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-violet-400 rounded-full" />Find the right trainer</li>
-                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-violet-400 rounded-full" />Help me prepare for travel</li>
-                <li className="flex items-center gap-2"><span className="w-1 h-1 bg-violet-400 rounded-full" />Find help near me</li>
-              </ul>
-            </Card>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {helpBuckets.map((bucket, idx) => {
+                // Map icon names to components
+                const iconMap = { Award, PawPrint, Users, Heart, Star, GraduationCap, Shield, Brain };
+                const BucketIcon = iconMap[bucket.icon] || Award;
+                const colorMap = {
+                  'amber': { bg: 'bg-gradient-to-br from-amber-50 to-orange-50', border: 'border-amber-100', icon: 'bg-amber-100', iconColor: 'text-amber-600', dot: 'bg-amber-400' },
+                  'teal': { bg: 'bg-gradient-to-br from-teal-50 to-emerald-50', border: 'border-teal-100', icon: 'bg-teal-100', iconColor: 'text-teal-600', dot: 'bg-teal-400' },
+                  'violet': { bg: 'bg-gradient-to-br from-violet-50 to-purple-50', border: 'border-violet-100', icon: 'bg-violet-100', iconColor: 'text-violet-600', dot: 'bg-violet-400' },
+                  'blue': { bg: 'bg-gradient-to-br from-blue-50 to-indigo-50', border: 'border-blue-100', icon: 'bg-blue-100', iconColor: 'text-blue-600', dot: 'bg-blue-400' },
+                  'pink': { bg: 'bg-gradient-to-br from-pink-50 to-rose-50', border: 'border-pink-100', icon: 'bg-pink-100', iconColor: 'text-pink-600', dot: 'bg-pink-400' }
+                };
+                const colors = colorMap[bucket.color] || colorMap.amber;
+                
+                return (
+                  <Card 
+                    key={bucket.id || idx}
+                    className={`p-5 ${colors.bg} ${colors.border} rounded-2xl cursor-pointer hover:shadow-md transition-shadow`}
+                    onClick={() => {
+                      window.dispatchEvent(new CustomEvent('openMiraAI', {
+                        detail: { message: bucket.items?.join(', ') || bucket.title, context: 'learn', pillar: 'learn' }
+                      }));
+                    }}
+                    data-testid={`help-bucket-${idx}`}
+                  >
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className={`w-10 h-10 rounded-xl ${colors.icon} flex items-center justify-center`}>
+                        <BucketIcon className={`w-5 h-5 ${colors.iconColor}`} />
+                      </div>
+                      <h3 className="font-semibold text-gray-900">{bucket.title}</h3>
+                    </div>
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      {(bucket.items || []).map((item, itemIdx) => (
+                        <li key={itemIdx} className="flex items-center gap-2">
+                          <span className={`w-1 h-1 ${colors.dot} rounded-full`} />{item}
+                        </li>
+                      ))}
+                    </ul>
+                  </Card>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Old sections removed - using new 12 Topic Boxes above */}
 
