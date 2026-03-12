@@ -33,6 +33,7 @@ import MiraLoveNote from '../components/MiraLoveNote';
 import SoulMadeCollection from '../components/SoulMadeCollection';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import PillarPicksSection from '../components/PillarPicksSection';
+import { PillarAskMiraHero } from '../components/PillarAskMiraHero';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Users,
@@ -485,7 +486,10 @@ const AdoptPage = () => {
         message: adoptQuery,
         initialQuery: adoptQuery,
         context: 'adoption_advisor',
-        pillar: 'adopt'
+        pillar: 'adopt',
+        source: 'pillar_top_bar',
+        pet_name: activePet?.name,
+        pet_breed: activePet?.breed
       }
     }));
     
@@ -510,6 +514,24 @@ const AdoptPage = () => {
       title="Adopt - Bringing a Dog Home | The Doggy Company"
       description="Everything you need to bring a dog home properly. Guidance, checklists, products, and concierge help."
     >
+      {cmsConfig.sections?.askMira?.enabled !== false && (
+        <PillarAskMiraHero
+          theme="amber"
+          sectionTestId="adopt-top-ask-mira"
+          badgeTestId="adopt-ask-mira-badge"
+          titleTestId="adopt-page-title"
+          inputTestId="ask-adopt-input"
+          submitTestId="ask-adopt-submit"
+          title={pageTitle}
+          description="Start with Mira for a thoughtful adoption plan and continue in the same chat below — no duplicate assistant, no lost context."
+          value={adoptQuery}
+          onChange={(e) => setAdoptQuery(e.target.value)}
+          onSubmit={handleAdoptionAdvice}
+          loading={false}
+          placeholder={cmsConfig.askMira?.placeholder || 'Adopt a dog near me... rescue shelters... what do I need first?'}
+        />
+      )}
+
       {/* ═══════════════════════════════════════════════════════════════════════════════
           ADOPT TOPIC CARDS - Quick access to adoption categories
           Adopt a Dog, Foster, Shelters, Adoption Prep

@@ -751,15 +751,61 @@ const CarePage = () => {
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
-          2. TOPIC BOXES - CMS DRIVEN (Like Learn's 12 topic cards)
+          2. EXPERT CARE SUPPORT - Brought up per UX direction
           ═══════════════════════════════════════════════════════════════════════════════ */}
-      {cmsConfig.sections?.topics?.enabled !== false && (
-        <PillarTopicsGrid
-          pillar="care"
-          topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.care}
-          columns={4}
-        />
-      )}
+      <div ref={servicesSectionRef} id="services" className="py-10 sm:py-12 bg-gradient-to-br from-indigo-50 to-blue-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-rose-100 text-rose-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <Heart className="w-4 h-4" />
+              Services That Help
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Expert Care Support</h2>
+            <p className="text-gray-600 mt-2">Professional groomers, vets, and care specialists</p>
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+            {Object.values(CARE_TYPES).map((type) => {
+              const Icon = type.icon;
+              return (
+                <button
+                  key={type.id}
+                  onClick={() => {
+                    switch(type.id) {
+                      case 'grooming':
+                        setShowGroomingFlowModal(true);
+                        break;
+                      case 'vet_clinic_booking':
+                        setShowVetVisitFlowModal(true);
+                        break;
+                      case 'boarding_daycare':
+                        setShowBoardingFlowModal(true);
+                        break;
+                      case 'pet_sitting':
+                        setShowPetSittingFlowModal(true);
+                        break;
+                      case 'emergency_help':
+                        setShowEmergencyFlowModal(true);
+                        break;
+                      default:
+                        setBookingServiceType(type.id);
+                        setShowBookingModal(true);
+                    }
+                  }}
+                  className="group p-4 sm:p-5 bg-white/70 hover:bg-white rounded-2xl border-2 border-gray-100 hover:border-rose-200 hover:shadow-lg active:scale-[0.98] transition-all duration-300 text-left"
+                  data-testid={`care-service-${type.id}`}
+                >
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 mb-3 rounded-xl bg-gradient-to-br ${type.color} flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base leading-tight">{type.name}</h3>
+                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">{type.description}</p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
           3. DAILY CARE TIP - Rotates based on day (Like Learn's Daily Learning Tip)
@@ -932,22 +978,6 @@ const CarePage = () => {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
-          7. CURATED BUNDLES - Save with handpicked combinations (Like Learn)
-          ═══════════════════════════════════════════════════════════════════════════════ */}
-      <div className="py-12 bg-gradient-to-br from-rose-50 via-white to-pink-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-xl font-bold text-gray-900 flex items-center justify-center gap-2">
-              <Sparkles className="w-5 h-5 text-rose-500" />
-              {selectedPet?.name ? `${selectedPet.name}'s Care` : 'Care'} Bundles
-            </h2>
-            <p className="text-gray-600 mt-1">Complete care solutions for {selectedPet?.name || 'your pet'}</p>
-          </div>
-          <CuratedBundles pillar="care" maxBundles={3} showTitle={false} />
-        </div>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════════════════════════════════
           8. CARE PRODUCTS SECTION - Like Learn's Training Products
           ═══════════════════════════════════════════════════════════════════════════════ */}
       <section id="care-products" className="py-8 px-4 bg-gradient-to-b from-pink-50 to-white" data-testid="care-products-section">
@@ -1020,66 +1050,6 @@ const CarePage = () => {
           <PillarPicksSection pillar="care" pet={selectedPet} />
         </div>
       )}
-
-      {/* ═══════════════════════════════════════════════════════════════════════════════
-          11. ALL CARE SERVICES - Services That Help (Like Learn)
-          ═══════════════════════════════════════════════════════════════════════════════ */}
-      <div ref={servicesSectionRef} id="services" className="py-10 sm:py-12 bg-gradient-to-br from-indigo-50 to-blue-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 bg-rose-100 text-rose-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
-              <Heart className="w-4 h-4" />
-              Services That Help
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Expert Care Support</h2>
-            <p className="text-gray-600 mt-2">Professional groomers, vets, and care specialists</p>
-          </div>
-          
-          {/* Clean 4x2 Grid of Care Services */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            {Object.values(CARE_TYPES).map((type, idx) => {
-              const Icon = type.icon;
-              return (
-                <button
-                  key={type.id}
-                  onClick={() => {
-                    // Open dedicated FlowModal for each Care service
-                    switch(type.id) {
-                      case 'grooming':
-                        setShowGroomingFlowModal(true);
-                        break;
-                      case 'vet_clinic_booking':
-                        setShowVetVisitFlowModal(true);
-                        break;
-                      case 'boarding_daycare':
-                        setShowBoardingFlowModal(true);
-                        break;
-                      case 'pet_sitting':
-                        setShowPetSittingFlowModal(true);
-                        break;
-                      case 'emergency_help':
-                        setShowEmergencyFlowModal(true);
-                        break;
-                      default:
-                        // Use legacy CareServiceFlowModal for other services
-                        setBookingServiceType(type.id);
-                        setShowBookingModal(true);
-                    }
-                  }}
-                  className={`group p-4 sm:p-5 bg-white/70 hover:bg-white rounded-2xl border-2 border-gray-100 hover:border-rose-200 hover:shadow-lg active:scale-[0.98] transition-all duration-300 text-left`}
-                  data-testid={`care-service-${type.id}`}
-                >
-                  <div className={`w-10 h-10 sm:w-12 sm:h-12 mb-3 rounded-xl bg-gradient-to-br ${type.color} flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base leading-tight">{type.name}</h3>
-                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">{type.description}</p>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
           HOW IT WORKS - Explains the Mira + Concierge model
