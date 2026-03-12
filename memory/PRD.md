@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document
-## Version 13.0.0 | March 12, 2026
+## Version 13.1.0 | March 12, 2026
 
 ---
 
@@ -147,7 +147,9 @@ Credentials: admin `aditya` / `lola4304`
 ## ROADMAP
 
 ### P1 (Next)
+- Finish the soul/personalization audit on remaining pillar pages after Adopt
 - Fix Stay pillar service images
+- Investigate Sync to Production `db_name` failure thoroughly
 - Fix Razorpay checkout
 
 ### P2 (Near Term)
@@ -222,6 +224,12 @@ Credentials: admin `aditya` / `lola4304`
 ---
 
 ## CHANGELOG
+
+### March 12, 2026 — v13.1.0 — FULL DOCS + ADOPT SOUL LAYER ✅
+- `complete-documentation.html` now regenerates from the full `/app/memory` markdown set (296 docs / 88,362 lines), not a truncated subset
+- Adopt pillar now shows a real Pet OS layer for logged-in users: Soul Score, pet photo, Mira love note, soul-aware adoption guidance, personalized picks, Soul Made products, breed-smart picks, and Mira picks
+- AdoptPage fixed to use the shared Pillar pet context correctly (`pets` from `PillarContext`), restoring logged-in personalization flow
+- Verified on preview: `/complete-documentation.html` serves correctly and `/adopt` shows personalized Mojo content after login
 
 ### March 12, 2026 — v13.0.0 — ALL 14 PILLARS GOLD STANDARD ✅
 - Created PillarGoldSections.jsx (PillarDailyTip, PillarHelpBuckets, PillarGuidedPaths)
