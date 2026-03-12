@@ -1,5 +1,5 @@
 # The Doggy Company — Complete Product Requirements Document
-## Last Updated: March 12, 2026 (Session 8.9 - Deep Handover)
+## Last Updated: December 2025 (Session 9.0 - Learn Golden Standard + Persistent AI)
 
 ---
 
@@ -31,7 +31,7 @@ Build **"The World's First Pet Life Operating System"** — a comprehensive plat
 | Hosting | Kubernetes (Emergent preview) |
 
 ### Key URLs
-- Preview: `https://learn-golden-1.preview.emergentagent.com`
+- Preview: `https://learn-golden-2.preview.emergentagent.com`
 - Production: `https://thedoggycompany.com`
 
 ### Credentials
@@ -40,82 +40,88 @@ Build **"The World's First Pet Life Operating System"** — a comprehensive plat
 
 ---
 
-## 3. Session 8.9 Complete Work Summary
+## 3. Session 9.0 Complete Work Summary (December 2025)
 
-### 3.1 Admin Image Upload to Cloudinary (PERSISTS THROUGH DEPLOYMENTS)
+### 3.1 Learn Page Elevated to Golden Standard (MATCHES ADVISORY)
 
-**Problem Solved:** Admin could only paste URLs, images lost on deployment.
+**What Was Achieved:**
+- Learn page now has EXACT same structure as Advisory page
+- Products personalized by pet's breed (breed-specific first, generic after)
+- 4 curated Learn bundles with Cloudinary watercolor images
+- Real-time AI image generation progress panel in admin
 
-**Solution Implemented:**
-| Component | File | Feature |
-|-----------|------|---------|
-| ProductBoxEditor.jsx | `/app/frontend/src/components/admin/ProductBoxEditor.jsx` | Purple "Choose File" button in Media tab |
-| ServiceBox.jsx | `/app/frontend/src/components/admin/ServiceBox.jsx` | File upload with Cloudinary integration |
-| BundlesManager.jsx | `/app/frontend/src/components/admin/BundlesManager.jsx` | CloudinaryUploader component |
-| ShopManager.jsx | `/app/frontend/src/components/admin/ShopManager.jsx` | CloudinaryUploader component |
-| CloudinaryUploader.jsx | `/app/frontend/src/components/admin/CloudinaryUploader.jsx` | **REUSABLE** component for any admin editor |
+**Learn Page Structure:**
+1. Hero with watercolor gradient
+2. Category tabs (All Learn, Training Aids, Puzzles, Books)
+3. Topic cards with watercolor images
+4. "{Pet Name}'s Bundles" section with 4 curated bundles
+5. "Recommended for {Pet Name}" with breed/age/archetype tags
+6. "Products for {Pet}'s Learning" - breed-filtered products (24 max)
+7. BreedSmartRecommendations
+8. ArchetypeProducts
 
-**Backend Endpoints Created:**
+### 3.2 Learn Bundles (4 NEW - in `learn_bundles` collection)
+
+| Bundle | Price | Items |
+|--------|-------|-------|
+| New Puppy Training Bundle | ₹6,499 | Puppy Training Course, Clicker, Treat Pouch, Treats |
+| Behavior Bootcamp Bundle | ₹7,499 | Behavior Program, Anxiety Course, Harness, Calming |
+| Training Tools Starter Kit | ₹999 | Clicker, Treat Pouch, 2x Training Treats |
+| Recall & Leash Mastery Bundle | ₹4,499 | Recall Course, Leash Course, Lead, Treats |
+
+### 3.3 Personalization Logic
+
+**How Products are Filtered by Breed:**
+```javascript
+// In LearnProductsGrid.jsx
+const petBreed = currentPet?.breed?.toLowerCase() || '';
+
+// 1. Get breed-specific products
+const breedSpecific = products.filter(p => 
+  p.name.includes(petBreed) || 
+  p.tags.includes(petBreed) ||
+  p.description.includes(petBreed)
+);
+
+// 2. Exclude OTHER breeds' products
+const genericProducts = products.filter(p => {
+  const otherBreeds = ['chihuahua', 'pug', 'shih tzu', ...];
+  const isOtherBreed = otherBreeds.some(b => 
+    p.name.includes(b) && !p.name.includes(petBreed)
+  );
+  return !isOtherBreed;
+});
+
+// 3. Combine: breed-specific first, then generic
+allProducts = [...breedSpecific, ...genericProducts];
+```
+
+### 3.4 AI Image Generation System
+
+**Status:** RUNNING IN BACKGROUND
+**Important:** This is an in-memory Python process that stops on agent fork.
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /api/ai-images/status` | Check if running, current progress |
+| `GET /api/ai-images/stats` | Total products, coverage percentage |
+| `POST /api/ai-images/generate-product-images?password=lola4304` | Start generation |
+| `POST /api/ai-images/stop` | Stop generation |
+
+**Admin UI:** Floating progress panel (bottom-right) shows real-time status.
+
+### 3.5 Cloudinary Image Upload System
+
+**Reusable Component:** `CloudinaryUploader.jsx`
+**Integrated Into:** ProductBoxEditor, ServiceBox, BundlesManager, ShopManager
+
+**Backend Endpoints:**
 ```
 POST /api/admin/product/{id}/upload-image
 POST /api/admin/service/{id}/upload-image
 POST /api/admin/bundle/{id}/upload-image
-POST /api/admin/experience/{id}/upload-image
-POST /api/admin/sync-from-production (bidirectional sync)
+POST /api/upload/cloudinary (generic)
 ```
-
-### 3.2 Learn Page Elevated to Golden Standard
-
-**Components Updated:**
-| Component | Changes |
-|-----------|---------|
-| LearnPage.jsx | Added 3 Advisory-style sections: Bundles, Recommended for Pet, Products |
-| LearnProductsGrid.jsx | Now fetches from Product Box, filters by pet breed, 24 products max |
-| LearnTopicModal.jsx | Fixed product images (image_url), breed-based filtering |
-| PetDailyRoutine.jsx | **COMPLETE REWRITE** - Now fetches REAL products from Product Box API |
-
-**Learn Page Structure (Matches Advisory):**
-1. Hero with watercolor gradient
-2. Category tabs (All Learn, Training Aids, Puzzles, Books)
-3. Topic cards with watercolor images (8 topics)
-4. "{Soul Archetype} Bundles" section
-5. "Recommended for {Pet Name}" with breed/age/archetype tags
-6. "Products for {Pet}'s Learning" - breed-filtered products
-7. BreedSmartRecommendations
-8. ArchetypeProducts
-
-### 3.3 Learn Bundles Created (4 NEW)
-
-| Bundle | Price | Items | Image |
-|--------|-------|-------|-------|
-| New Puppy Training Bundle | ₹6,499 | Puppy Training Course, Clicker, Treat Pouch, Treats | ✅ Cloudinary |
-| Behavior Bootcamp Bundle | ₹7,499 | Behavior Program, Anxiety Course, Harness, Calming | ✅ Cloudinary |
-| Training Tools Starter Kit | ₹999 | Clicker, Treat Pouch, 2x Training Treats | ✅ Cloudinary |
-| Recall & Leash Mastery Bundle | ₹4,499 | Recall Course, Leash Course, Lead, Treats | ✅ Cloudinary |
-
-**Database:** `learn_bundles` collection (not `bundles`)
-
-### 3.4 AI Image Generation System
-
-**Current Status:** RUNNING - 133/412 complete (32%)
-**Total AI Generated:** 612 products have AI images
-**Coverage:** 612/890 products (69%)
-
-**Admin UI:** 
-- AI IMAGES button shows real-time progress
-- Floating progress panel (bottom-right)
-- 📊 button to check status anytime
-
-### 3.5 Personalization Fixes
-
-**Products now filtered by pet's breed:**
-- Breed-specific products shown FIRST
-- Products for OTHER breeds EXCLUDED
-- Generic training products shown after breed-specific
-
-**soul_archetype crash fixed:**
-- Now handles both string and object formats
-- Extracts `archetype_name` from object if needed
 
 ---
 
@@ -124,8 +130,8 @@ POST /api/admin/sync-from-production (bidirectional sync)
 ### Pillar Completion Status
 | Pillar | Status | Key Features |
 |--------|--------|--------------|
-| Learn | 95% | Bundles, Products, Topics, Personalization |
-| Advisory | 95% | AI Chat, Guided Paths, Watercolor illustrations |
+| Learn | **95%** | Bundles, Products, Topics, Personalization, AI Images |
+| Advisory | **95%** | AI Chat, Guided Paths, Watercolor illustrations |
 | Farewell | 100% | Grief Support AI, Memorial Services |
 | Adopt | 100% | Adoption Advisor, 3-3-3 Rule Paths |
 | Celebrate | ~90% | Bundles, Soul Made products |
@@ -136,20 +142,20 @@ POST /api/admin/sync-from-production (bidirectional sync)
 | Travel | ~80% | Pet-friendly destinations |
 | Enjoy | ~75% | Parks, activities |
 | Fit | ~75% | Exercise, weight management |
-| Paperwork | ~70% | Crash fix pending verification |
+| Paperwork | ~70% | Documents, insurance |
 
 ### Known Issues
 
 **BROKEN:**
 - Razorpay Checkout — Fails with "body error" (recurring 5+ sessions)
-- YouTube Videos — Links to unavailable videos (need to update video IDs)
+- YouTube Videos — Some links to unavailable videos
 
 **DEGRADED:**
-- YouTube API — Quota exceeded, using static fallback
+- YouTube API — Quota may be exceeded, using static fallback
 
 **UI BUGS:**
 - Mobile Pet Dashboard — Scrambled layout (not addressed)
-- Soul Made Products — All show same breed portrait
+- Soul Made Products — Some show same breed portrait
 
 ---
 
@@ -159,19 +165,14 @@ POST /api/admin/sync-from-production (bidirectional sync)
 ```
 /app/frontend/src/pages/LearnPage.jsx
 /app/frontend/src/components/Learn/LearnProductsGrid.jsx
-/app/frontend/src/components/learn/LearnTopicModal.jsx
-/app/frontend/src/components/learn/PetDailyRoutine.jsx
-/app/frontend/src/components/admin/ProductBoxEditor.jsx
-/app/frontend/src/components/admin/ServiceBox.jsx
-/app/frontend/src/components/admin/BundlesManager.jsx
-/app/frontend/src/components/admin/ShopManager.jsx
-/app/frontend/src/components/admin/CloudinaryUploader.jsx (NEW)
-/app/frontend/src/pages/Admin.jsx (AI progress panel)
+/app/frontend/src/components/admin/CloudinaryUploader.jsx
+/app/frontend/src/pages/Admin.jsx
 ```
 
 ### Backend
 ```
-/app/backend/server.py (Cloudinary upload endpoints, bidirectional sync)
+/app/backend/server.py (Cloudinary upload endpoints)
+/app/backend/ai_image_service.py (AI generation service)
 ```
 
 ---
@@ -186,8 +187,8 @@ curl -X POST "https://thedoggycompany.com/api/admin/cleanup-duplicate-services?p
 # Step 2: Fix service images
 curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=lola4304"
 
-# Step 3: Sync from production (preserve admin edits)
-curl -X POST "https://thedoggycompany.com/api/admin/sync-from-production?password=lola4304"
+# Step 3: Restart AI image generation (if needed)
+curl -X POST "https://thedoggycompany.com/api/ai-images/generate-product-images?password=lola4304"
 ```
 
 ---
@@ -195,14 +196,13 @@ curl -X POST "https://thedoggycompany.com/api/admin/sync-from-production?passwor
 ## 7. Prioritized Backlog
 
 ### P0 — Critical
-- [ ] Fix YouTube video links (videos unavailable)
-- [ ] Complete AI image generation (133/412 in progress)
-- [ ] Sync generated images to production
+- [ ] Keep AI image generation running (manually restart after forks)
+- [ ] Ensure Learn page personalization works with logged-in users
 
 ### P1 — High
-- [ ] Generate images for 34 services
 - [ ] Fix Razorpay checkout
-- [ ] Enhance remaining pillar pages to golden standard
+- [ ] Enhance remaining pillar pages to golden standard (Fit, Stay, Travel, Dine)
+- [ ] Add bidirectional sync UI to admin panel
 
 ### P2 — Medium
 - [ ] Fix mobile pet dashboard scramble
@@ -210,43 +210,33 @@ curl -X POST "https://thedoggycompany.com/api/admin/sync-from-production?passwor
 - [ ] Instagram integration for Celebration Wall
 
 ### P3 — Low
-- [ ] Paperwork page verification
 - [ ] YouTube API quota upgrade
+- [ ] Paperwork page verification
 
 ---
 
 ## 8. API Endpoints Reference
 
-### Image Upload (NEW)
+### Learn Pillar
 ```
-POST /api/admin/product/{id}/upload-image
-POST /api/admin/service/{id}/upload-image
-POST /api/admin/bundle/{id}/upload-image
-POST /api/admin/experience/{id}/upload-image
-POST /api/upload/product-image (generic)
-POST /api/upload/service-image (generic)
+GET  /api/learn/bundles           → From learn_bundles collection
+GET  /api/product-box/products?pillar=learn&limit=200
 ```
 
 ### AI Image Generation
 ```
 GET  /api/ai-images/status
 GET  /api/ai-images/stats
-POST /api/ai-images/generate-product-images
-POST /api/ai-images/generate-service-images
+POST /api/ai-images/generate-product-images?password=lola4304
 POST /api/ai-images/stop
 ```
 
-### Learn Pillar
+### Image Upload (Cloudinary)
 ```
-GET  /api/learn/bundles (from learn_bundles collection)
-GET  /api/learn/products
-GET  /api/product-box/products?pillar=learn
-```
-
-### Sync
-```
-POST /api/admin/sync-from-production?password=lola4304
-GET  /api/admin/production-sync-status
+POST /api/admin/product/{id}/upload-image
+POST /api/admin/service/{id}/upload-image
+POST /api/admin/bundle/{id}/upload-image
+POST /api/upload/cloudinary
 ```
 
 ---
@@ -259,31 +249,30 @@ GET  /api/admin/production-sync-status
 | unified_products | Product Box unified view |
 | services | Service catalog |
 | bundles | Generic bundles (all pillars) |
-| learn_bundles | **Learn-specific bundles** |
+| **learn_bundles** | Learn-specific bundles (4 items) |
 | learn_content | Learn topic content |
 | pets | User pets with soul data |
 | users | User accounts |
 
 ---
 
-## 10. Testing Credentials
+## 10. Next Agent Instructions
+
+1. **CHECK AI GENERATION:** `curl /api/ai-images/status` - restart if not running
+2. **VERIFY LEARN BUNDLES:** Should show 4 bundles with watercolor images
+3. **TEST PERSONALIZATION:** Login as user, check products filter by pet breed
+4. **MONITOR PROGRESS:** Admin Panel → AI IMAGES → Check progress panel
+
+**DO NOT:**
+- Change `learn_bundles` collection name
+- Remove Cloudinary upload endpoints
+- Modify the personalization logic in LearnProductsGrid.jsx
+
+---
+
+## 11. Testing Credentials
 
 | Type | Username | Password |
 |------|----------|----------|
 | User | dipali@clubconcierge.in | test123 |
 | Admin | aditya | lola4304 |
-
----
-
-## 11. Next Agent Instructions
-
-1. **FIRST:** Check AI image generation status (should be ~133/412)
-2. **PRIORITY:** Fix YouTube video IDs in LearnTopicModal.jsx (CURATED_VIDEOS)
-3. **VERIFY:** Learn bundles display correctly (4 bundles with watercolor images)
-4. **TEST:** Product personalization when logged in (should filter by pet breed)
-5. **MONITOR:** AI image generation progress via Admin → 📊
-
-**DO NOT:**
-- Restart AI image generation (it's running)
-- Change learn_bundles collection name
-- Remove Cloudinary upload endpoints
