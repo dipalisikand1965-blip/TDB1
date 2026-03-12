@@ -176,21 +176,48 @@ const PetDailyRoutine = ({ pet, onProductClick }) => {
             Products that support this routine
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {routine.products.map((product, idx) => (
-              <Card 
-                key={idx}
-                className="p-4 cursor-pointer hover:shadow-lg transition-all bg-white group"
-                onClick={() => onProductClick?.(product.name)}
-                data-testid={`routine-product-${idx}`}
-              >
-                <div className="aspect-square bg-gradient-to-br from-stone-50 to-gray-100 rounded-xl mb-3 flex items-center justify-center">
-                  <ShoppingBag className="w-8 h-8 text-gray-300 group-hover:text-amber-400 transition-colors" />
-                </div>
-                <h4 className="font-medium text-gray-900 text-sm">{product.name}</h4>
-                <p className="text-sm text-amber-600 font-semibold mt-1">From {product.price}</p>
-                <ChevronRight className="w-4 h-4 text-gray-300 mt-2 group-hover:text-amber-500 transition-colors" />
-              </Card>
-            ))}
+            {routine.products.map((product, idx) => {
+              // Product images for common routine products (Cloudinary URLs)
+              const productImages = {
+                'Orthopedic Bed': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293718/doggy/products/orthopedic_bed.webp',
+                'Slow Feeder Bowl': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293718/doggy/products/slow_feeder.webp',
+                'Cooling Mat': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293718/doggy/products/orthopedic_bed.webp',
+                'Joint Supplement': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293718/doggy/products/slow_feeder.webp',
+                'Puppy Pad Set': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293720/doggy/products/puzzle_toys.webp',
+                'Training Clicker': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293719/doggy/products/training_clicker.webp',
+                'Puzzle Toy Set': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293720/doggy/products/puzzle_toys.webp',
+                'Crate Mat': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293718/doggy/products/orthopedic_bed.webp',
+                'Food Puzzle': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293720/doggy/products/puzzle_toys.webp',
+                'Training Treats': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293719/doggy/products/training_clicker.webp',
+                'LED Collar': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293719/doggy/products/training_clicker.webp',
+                'Comfort Bed': 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293718/doggy/products/orthopedic_bed.webp',
+              };
+              const imageUrl = productImages[product.name] || 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293720/doggy/products/puzzle_toys.webp';
+              
+              return (
+                <Card 
+                  key={idx}
+                  className="p-4 cursor-pointer hover:shadow-lg transition-all bg-white group overflow-hidden"
+                  onClick={() => onProductClick?.(product.name)}
+                  data-testid={`routine-product-${idx}`}
+                >
+                  <div className="aspect-square rounded-xl mb-3 overflow-hidden bg-gradient-to-br from-stone-50 to-gray-100">
+                    <img 
+                      src={imageUrl}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center"><svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg></div>';
+                      }}
+                    />
+                  </div>
+                  <h4 className="font-medium text-gray-900 text-sm">{product.name}</h4>
+                  <p className="text-sm text-amber-600 font-semibold mt-1">From {product.price}</p>
+                  <ChevronRight className="w-4 h-4 text-gray-300 mt-2 group-hover:text-amber-500 transition-colors" />
+                </Card>
+              );
+            })}
           </div>
         </div>
       </div>
