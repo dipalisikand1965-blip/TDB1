@@ -2,13 +2,153 @@
  * PetDailyRoutine.jsx
  * Personalized daily routine suggestions based on pet profile
  * NOW FETCHES REAL PRODUCTS from Product Box with actual images
+ * INCLUDES PRODUCT MODAL for add-to-cart
  */
 
 import React, { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
-import { Sun, Cloud, Sunset, Moon, ChevronRight, ShoppingBag, Loader2 } from 'lucide-react';
+import { Badge } from '../ui/badge';
+import { Sun, Cloud, Sunset, Moon, ChevronRight, ShoppingBag, Loader2, X, Plus, Minus, ShoppingCart, Truck, Check, Package, PawPrint } from 'lucide-react';
 import { API_URL } from '../../utils/api';
+import { useCart } from '../../context/CartContext';
+import { toast } from '../../hooks/use-toast';
+
+// Product Detail Modal for Routine Products
+const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, currentBreed }) => {
+  const [quantity, setQuantity] = useState(1);
+  
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+  
+  if (!isOpen || !product) return null;
+  
+  const productImage = product.image_url || product.image || product.images?.[0];
+  const productName = (product.name || '').toLowerCase();
+  const isForCurrentBreed = currentBreed && productName.includes(currentBreed.toLowerCase());
+  
+  // Detect if product is for another breed
+  const allBreeds = ['indie', 'labrador', 'golden retriever', 'pug', 'beagle', 'shih tzu', 
+    'german shepherd', 'maltese', 'poodle', 'bulldog', 'husky', 'chihuahua', 'cavalier'];
+  const productBreed = allBreeds.find(b => productName.includes(b));
+  const isOtherBreed = productBreed && currentBreed && !productName.includes(currentBreed.toLowerCase());
+  
+  return (
+    <div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+    >
+      <div 
+        className="bg-white rounded-2xl max-w-lg w-full max-h-[85vh] overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header with Image */}
+        <div className="relative">
+          {productImage ? (
+            <img 
+              src={productImage} 
+              alt={product.name}
+              className="w-full h-56 object-cover"
+              onError={(e) => {
+                e.target.src = 'https://res.cloudinary.com/duoapcx1p/image/upload/v1773293720/doggy/products/puzzle_toys.webp';
+              }}
+            />
+          ) : (
+            <div className="w-full h-56 bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
+              <Package className="w-16 h-16 text-amber-300" />
+            </div>
+          )}
+          <button 
+            onClick={onClose}
+            className="absolute top-3 right-3 bg-white rounded-full p-2 hover:bg-gray-100 shadow-md transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          
+          {/* Breed badge */}
+          {isOtherBreed && (
+            <div className="absolute bottom-3 left-3">
+              <Badge className="bg-violet-100 text-violet-700 shadow-sm">
+                <PawPrint className="w-3 h-3 mr-1" />
+                {productBreed.charAt(0).toUpperCase() + productBreed.slice(1)} Product
+              </Badge>
+            </div>
+          )}
+        </div>
+        
+        {/* Content */}
+        <div className="p-5 overflow-y-auto max-h-[50vh]">
+          <h2 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h2>
+          <p className="text-gray-600 text-sm mb-4">{product.description || 'Quality training product for your pet.'}</p>
+          
+          {/* Price */}
+          <div className="flex items-baseline gap-2 mb-4">
+            <span className="text-2xl font-bold text-amber-600">₹{product.price || 999}</span>
+            {product.original_price && product.original_price > product.price && (
+              <>
+                <span className="text-gray-400 line-through">₹{product.original_price}</span>
+                <Badge className="bg-green-100 text-green-700">
+                  {Math.round((1 - product.price / product.original_price) * 100)}% off
+                </Badge>
+              </>
+            )}
+          </div>
+          
+          {/* Stock & Delivery */}
+          <div className="flex items-center gap-2 mb-4 text-sm">
+            <span className="flex items-center text-green-600">
+              <Check className="w-4 h-4 mr-1" /> In Stock
+            </span>
+            <span className="text-gray-400">•</span>
+            <span className="flex items-center text-gray-500">
+              <Truck className="w-4 h-4 mr-1" /> Free delivery over ₹999
+            </span>
+          </div>
+          
+          {/* Quantity selector */}
+          <div className="flex items-center gap-4 mb-5">
+            <span className="text-sm text-gray-600">Quantity:</span>
+            <div className="flex items-center border rounded-lg">
+              <button 
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="p-2 hover:bg-gray-100"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <span className="px-4 font-medium">{quantity}</span>
+              <button 
+                onClick={() => setQuantity(quantity + 1)}
+                className="p-2 hover:bg-gray-100"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          
+          {/* Add to cart button */}
+          <Button 
+            onClick={() => {
+              onAddToCart({ ...product, quantity });
+              onClose();
+            }}
+            className="w-full bg-amber-500 hover:bg-amber-600"
+            size="lg"
+          >
+            <ShoppingCart className="w-5 h-5 mr-2" />
+            Add to Cart - ₹{(product.price || 999) * quantity}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const getRoutineSuggestions = (pet) => {
   const isSenior = pet?.age_months > 84;
@@ -107,8 +247,32 @@ const getRoutineSuggestions = (pet) => {
 const PetDailyRoutine = ({ pet, onProductClick }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const { addToCart } = useCart();
   
   const routine = getRoutineSuggestions(pet);
+  const petBreed = (pet?.breed || '').toLowerCase();
+  
+  // List of all breeds for detecting "other breed" products
+  const allBreeds = ['indie', 'labrador', 'golden retriever', 'pug', 'beagle', 'shih tzu', 
+    'german shepherd', 'maltese', 'poodle', 'bulldog', 'husky', 'chihuahua', 'cavalier',
+    'dachshund', 'great dane', 'corgi', 'pomeranian', 'schnoodle', 'yorkshire'];
+  
+  const handleAddToCart = (product) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price || 999,
+      quantity: product.quantity || 1,
+      image_url: product.image_url || product.image,
+      pillar: 'learn'
+    });
+    
+    toast({
+      title: "Added to cart",
+      description: `${product.name} x${product.quantity || 1}`,
+    });
+  };
   
   // Fetch REAL products from Product Box based on routine keywords
   useEffect(() => {
@@ -226,14 +390,27 @@ const PetDailyRoutine = ({ pet, onProductClick }) => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {products.map((product, idx) => {
               const imageUrl = product.image_url || product.image || product.images?.[0];
+              const productName = (product.name || '').toLowerCase();
+              
+              // Check if this product is for another breed
+              const productBreed = allBreeds.find(b => productName.includes(b));
+              const isOtherBreed = productBreed && petBreed && !productName.includes(petBreed);
               
               return (
                 <Card 
                   key={product.id || idx}
-                  className="p-3 cursor-pointer hover:shadow-lg transition-all bg-white group overflow-hidden"
-                  onClick={() => onProductClick?.(product)}
+                  className="p-3 cursor-pointer hover:shadow-lg transition-all bg-white group overflow-hidden relative"
+                  onClick={() => setSelectedProduct(product)}
                   data-testid={`routine-product-${idx}`}
                 >
+                  {/* Other Breed Badge */}
+                  {isOtherBreed && (
+                    <Badge className="absolute top-2 right-2 z-10 bg-violet-100 text-violet-700 text-xs">
+                      <PawPrint className="w-3 h-3 mr-1" />
+                      For {productBreed.charAt(0).toUpperCase() + productBreed.slice(1)}
+                    </Badge>
+                  )}
+                  
                   <div className="aspect-square rounded-xl mb-3 overflow-hidden bg-gradient-to-br from-stone-50 to-gray-100">
                     {imageUrl ? (
                       <img 
@@ -254,13 +431,25 @@ const PetDailyRoutine = ({ pet, onProductClick }) => {
                   <p className="text-sm text-amber-600 font-semibold mt-1">
                     ₹{product.price || product.pricing?.selling_price || '999'}
                   </p>
-                  <ChevronRight className="w-4 h-4 text-gray-300 mt-2 group-hover:text-amber-500 transition-colors" />
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-xs text-gray-500">Click to view</span>
+                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-amber-500 transition-colors" />
+                  </div>
                 </Card>
               );
             })}
           </div>
         )}
       </div>
+      
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        onAddToCart={handleAddToCart}
+        currentBreed={pet?.breed}
+      />
     </Card>
   );
 };
