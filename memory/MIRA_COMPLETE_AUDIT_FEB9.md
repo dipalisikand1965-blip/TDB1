@@ -296,4 +296,4 @@ Password: test123
 
 **Audit Status:** COMPLETE
 **Generated:** February 9, 2026
-**Preview URL:** https://pet-os-refactor.preview.emergentagent.com
+**Preview URL:** https://image-asset-audit.preview.emergentagent.com

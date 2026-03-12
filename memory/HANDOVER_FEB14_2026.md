@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://pet-os-refactor.preview.emergentagent.com` |
+| **Preview** | `https://image-asset-audit.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |

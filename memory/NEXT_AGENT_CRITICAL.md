@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://pet-os-refactor.preview.emergentagent.com
+https://image-asset-audit.preview.emergentagent.com
 
 ---
 

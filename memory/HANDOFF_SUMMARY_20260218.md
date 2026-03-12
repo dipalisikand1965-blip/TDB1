@@ -15,7 +15,7 @@
 - **User:** `dipali@clubconcierge.in` / `test123`
 - **Admin:** `aditya` / `lola4304`
 - **Test URL:** `/mira-demo?debug=1`
-- **API URL:** `https://pet-os-refactor.preview.emergentagent.com`
+- **API URL:** `https://image-asset-audit.preview.emergentagent.com`
 
 ---
 
