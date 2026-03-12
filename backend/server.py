@@ -1387,8 +1387,10 @@ async def lifespan(app: FastAPI):
                     "care_vet": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/dd0cdc28d614a0034ad32c4d09e224d2413b93c628d9fd6a5b5061d2e24514ed.png",
                     "care_grooming_service": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/ac3db8f7c61ede3febe302a7ebbd6d6937338233b38e3d7adcf7bd7ad945a72a.png",
                     # STAY
-                    "stay_hotel": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/97c4f83d56ebd420fd846a017d640e35b3e4f6b1703dbc9dca686b60841cfa7a.png",
-                    "stay_cottage": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/f885696fa1e64fa8288c2f420ec83ea4d141375d1775478cc6510ea46eafa768.png",
+                    "stay_hotel": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/5dd610d6fd25f39711693ec237ae1e2015b64c6072807bbb3b4567b6b8e56d6a.png",
+                    "stay_cottage": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/4b457c33a4f3b3eaaa934bff92f4bd130aeaf35751fef16e215694e04a616075.png",
+                    "stay_boarding": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/e6610e067706ace2402c810b096129f717c8e81b7ab452eb55fc619504b3303b.png",
+                    "stay_daycare": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/1b1c1fcad2ad0dec745b30804d345eb480ce778948682bf43ae2a16854201afc.png",
                     # TRAVEL
                     "travel_carrier": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/4f4f1790e186221e62d900c20a6bd6275f59351c7aaff61fcad6b036286c4723.png",
                     "travel_car": "https://static.prod-images.emergentagent.com/jobs/f8fcb8e7-1e5e-4376-99c7-472b9035c75b/images/e221aecc740f5e95f35965b06d19d8a07a3c96345c87354926bf2e91bbc8c411.png",
@@ -19941,16 +19943,16 @@ async def fix_service_images(password: str = Query(...)):
     # Map of pillar service images 
     PILLAR_SERVICE_IMAGES = {
         "stay": {
-            "Pet-Friendly Hotel Discovery": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/f58c26edc49f7e458711f3fff7c2b7b771b5799824403c7ebec826219778dabc.png",
-            "Room Suitability Advisory": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/9dd7638b1485ee54d023b900952c67f7bcd5580e46d511de54e449907e6f8e7e.png",
-            "Long-Stay Assistance": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/f9839687506630b2114f96ef8c020a2658baaf732d7229f9dee5aac10c583c97.png",
-            "Boarding Alternatives": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/f501f55ff171e2c8007a7031efb33821453d8aa9d5580a6cfe7e10956c7e26c8.png",
-            "Premium Pet Boarding": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/faa9cf36547278a15c4068db6e8adf380e3fb9bd1b259d97d96bc15a4e37251d.png",
-            "Daycare": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/560f7256acace0a73e3ed3a1b8d0a8f8c9d8d665dfab6b884e76f4012f8bf650.png",
-            "Standard Boarding": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/223dae71d548b1c78aa3beb69557fabde32ed86192d64c0c6a246a7b67ac6776.png",
-            "Luxury Suite Boarding": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/0f0c68a7c002dbf95ca4453e4533cd48960aba9ff63e897be4b7a9cf96271109.png",
-            "In-Home Pet Sitting": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/d14ab16504e86c1cf3ed6566416bb0be20888775823ce2395a45ec03a72ceb3c.png",
-            "Property Rule Verification": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/8c6157ea51160f921fa8d90d28cfe06a25e1958a2b342834eaf45a570a3460e0.png",
+            "Pet-Friendly Hotel Discovery": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/e9d3407a2852a5f43d770d93b6ebe7655b71d81deb29a7252ab7cb9fd60e789b.png",
+            "Room Suitability Advisory": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/004c8ce94a48c431735f22fe2e9a2ef6be63637b0ca3b0dd4c3165df09ea3e72.png",
+            "Long-Stay Assistance": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/451c55d58eb2acc3795b5a49fb65993e221362cf1dfb9fdde61fb7c5361d5a9d.png",
+            "Boarding Alternatives": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/e4c350f803a568ad15ef419c83abf45ef67f4c0fca7d95ba72e613604675eedf.png",
+            "Premium Pet Boarding": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/e6610e067706ace2402c810b096129f717c8e81b7ab452eb55fc619504b3303b.png",
+            "Daycare": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/1b1c1fcad2ad0dec745b30804d345eb480ce778948682bf43ae2a16854201afc.png",
+            "Standard Boarding": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/e6610e067706ace2402c810b096129f717c8e81b7ab452eb55fc619504b3303b.png",
+            "Luxury Suite Boarding": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/5dd610d6fd25f39711693ec237ae1e2015b64c6072807bbb3b4567b6b8e56d6a.png",
+            "In-Home Pet Sitting": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/4b457c33a4f3b3eaaa934bff92f4bd130aeaf35751fef16e215694e04a616075.png",
+            "Property Rule Verification": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/004c8ce94a48c431735f22fe2e9a2ef6be63637b0ca3b0dd4c3165df09ea3e72.png",
         },
         "insure": {
             "Free Insurance Quote Comparison": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/927cb368e3f561742892f5f94c5b97265e18d219bdc369692ae6afc898c866de.png",

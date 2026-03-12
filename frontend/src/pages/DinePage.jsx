@@ -6,7 +6,7 @@ import {
   Utensils, Coffee, Pizza, Leaf, Heart, Check, X, AlertCircle,
   Sparkles, ShoppingBag, Truck, Users, Calendar, MessageCircle, Send,
   Bell, Gift, Cake, User, Mail, Package, Percent, PartyPopper,
-  Crown, Wine, ChefHat, Trees, Loader2, Navigation
+  Crown, Wine, ChefHat, Trees, Loader2, Navigation, Apple
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -821,6 +821,38 @@ const DinePage = () => {
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Pet-Friendly Dining</h2>
             <p className="text-gray-600 mt-2">Restaurants, cafes, and experiences that welcome your pet</p>
+          </div>
+          
+          {/* Service Category Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {[
+              { label: 'Pet Cafe Reservations', icon: Coffee, iconColor: 'text-amber-600', desc: 'Book ahead at pet-friendly spots' },
+              { label: 'Birthday Celebrations', icon: Cake, iconColor: 'text-pink-600', desc: 'Special pet party venues' },
+              { label: 'Pet Event Catering', icon: PartyPopper, iconColor: 'text-purple-600', desc: 'Food for pet parties' },
+              { label: 'Nutrition Consult', icon: Apple, iconColor: 'text-green-600', desc: 'Diet & meal planning' }
+            ].map((service, idx) => (
+              <Card 
+                key={idx}
+                className="p-4 cursor-pointer hover:shadow-lg transition-all bg-white/70 hover:bg-white"
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('openMiraAI', {
+                    detail: { message: `I need help with ${service.label}`, context: 'dine', pillar: 'dine' }
+                  }));
+                }}
+                data-testid={`dine-service-card-${idx}`}
+              >
+                <div className="text-center">
+                  <service.icon className={`w-8 h-8 mx-auto mb-2 ${service.iconColor}`} />
+                  <h3 className="font-semibold text-gray-900 text-sm">{service.label}</h3>
+                  <p className="text-xs text-gray-500 mt-1">{service.desc}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* Nearby Pet-Friendly Spots Section */}
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Nearby Pet-Friendly Spots</h3>
           </div>
           
           <NearbyPlacesCarousel
