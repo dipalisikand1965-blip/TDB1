@@ -758,7 +758,7 @@ const LearnPage = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
-              <span>🛍️</span>
+              <Award className="w-4 h-4" />
               Products That Help
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Training & Learning Products</h2>
@@ -768,12 +768,12 @@ const LearnPage = () => {
           {/* Product Categories */}
           <div className="flex flex-wrap justify-center gap-2 mb-8">
             {[
-              { id: 'all', label: 'All Products', icon: '🛒' },
-              { id: 'training', label: 'Training Tools', icon: '🎯' },
-              { id: 'grooming', label: 'Grooming', icon: '✨' },
-              { id: 'feeding', label: 'Feeding', icon: '🍽️' },
-              { id: 'travel', label: 'Travel', icon: '✈️' },
-              { id: 'comfort', label: 'Comfort', icon: '🛋️' }
+              { id: 'all', label: 'All Products', icon: PawPrint },
+              { id: 'training', label: 'Training Tools', icon: Target },
+              { id: 'grooming', label: 'Grooming', icon: Sparkles },
+              { id: 'feeding', label: 'Feeding', icon: Heart },
+              { id: 'travel', label: 'Travel', icon: MapPin },
+              { id: 'comfort', label: 'Comfort', icon: Shield }
             ].map((cat) => (
               <Button
                 key={cat.id}
@@ -783,7 +783,7 @@ const LearnPage = () => {
                 className="hover:bg-amber-50 hover:border-amber-300"
                 data-testid={`product-category-${cat.id}`}
               >
-                {cat.icon} {cat.label}
+                <cat.icon className="w-3.5 h-3.5 mr-1.5" /> {cat.label}
               </Button>
             ))}
           </div>
@@ -810,7 +810,7 @@ const LearnPage = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
-              <span>🎓</span>
+              <GraduationCap className="w-4 h-4" />
               Services That Help
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Expert Support & Training</h2>
@@ -820,10 +820,10 @@ const LearnPage = () => {
           {/* Service Category Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[
-              { label: 'Training Consult', icon: '🎯', desc: 'One-on-one guidance' },
-              { label: 'Grooming Consult', icon: '✨', desc: 'Coat care advice' },
-              { label: 'Behavior Support', icon: '🧠', desc: 'Issue resolution' },
-              { label: 'Puppy Guidance', icon: '🐶', desc: 'First year support' }
+              { label: 'Training Consult', icon: Target, iconColor: 'text-blue-600', desc: 'One-on-one guidance' },
+              { label: 'Grooming Consult', icon: Sparkles, iconColor: 'text-pink-600', desc: 'Coat care advice' },
+              { label: 'Behavior Support', icon: Brain, iconColor: 'text-purple-600', desc: 'Issue resolution' },
+              { label: 'Puppy Guidance', icon: PawPrint, iconColor: 'text-amber-600', desc: 'First year support' }
             ].map((service, idx) => (
               <Card 
                 key={idx}
@@ -832,7 +832,7 @@ const LearnPage = () => {
                 data-testid={`service-card-${idx}`}
               >
                 <div className="text-center">
-                  <span className="text-3xl mb-2 block">{service.icon}</span>
+                  <service.icon className={`w-8 h-8 mb-2 ${service.iconColor}`} />
                   <h3 className="font-semibold text-gray-900 text-sm">{service.label}</h3>
                   <p className="text-xs text-gray-500 mt-1">{service.desc}</p>
                 </div>
@@ -868,10 +868,6 @@ const LearnPage = () => {
       {(activePet || userPets?.[0]) && (
         <PetDailyRoutine 
           pet={activePet || userPets?.[0]}
-          onEditRoutine={() => {
-            setRequestForm(prev => ({ ...prev, learn_type: 'routine' }));
-            setShowRequestModal(true);
-          }}
           onProductClick={(productName) => navigate(`/shop?search=${encodeURIComponent(productName)}`)}
         />
       )}

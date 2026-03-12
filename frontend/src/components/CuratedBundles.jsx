@@ -108,13 +108,34 @@ const PILLAR_BUNDLES = {
     {
       id: 'learn-training-bundle',
       name: 'Training Success Bundle',
-      description: 'Everything for effective training',
-      items: ['Training Treat Pouch', 'Training Log', 'Reward Jar'],
+      description: 'Everything for effective positive-reinforcement training',
+      items: ['Training Treat Pouch', 'Clicker', 'Training Treats', 'Reward Jar'],
       original_price: 1547,
       bundle_price: 1199,
       discount: 22,
       icon: '🎓',
       popular: true
+    },
+    {
+      id: 'learn-puppy-starter-bundle',
+      name: 'Puppy Learning Starter',
+      description: 'The essentials for first-time puppy parents',
+      items: ['Puppy Training Guide', 'Teething Ring', 'Potty Training Pads', 'Bite Inhibition Toy'],
+      original_price: 1899,
+      bundle_price: 1449,
+      discount: 24,
+      icon: '🐶',
+      popular: false
+    },
+    {
+      id: 'learn-mental-enrichment-bundle',
+      name: 'Mental Enrichment Bundle',
+      description: 'Keep your dog mentally stimulated and happy',
+      items: ['Puzzle Feeder', 'Snuffle Mat', 'Lick Mat', 'Interactive Treat Ball'],
+      original_price: 2196,
+      bundle_price: 1699,
+      discount: 23,
+      icon: '🧩'
     }
   ],
   farewell: [
