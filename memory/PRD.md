@@ -1,5 +1,5 @@
 # The Doggy Company - MASTER DOCUMENTATION
-## Last Updated: December 12, 2025 | Version 12.2.0
+## Last Updated: December 12, 2025 | Version 12.3.0
 
 ---
 
@@ -24,11 +24,16 @@
    - 14 Paperwork products with unique images
    - 9 Paperwork bundles with unique images
    - 29+ services updated with contextual images (Stay, Insurance, etc.)
-   - Topic card images for Care, Fit, Travel, Dine pillars
+   - Topic card images for Care, Fit, Travel, Dine, Stay pillars
 
 4. **NEW COMPONENTS CREATED**
    - `PillarTopicsGrid.jsx` - Reusable topic cards component for any pillar
    - Default topics with AI images for Stay, Care, Fit, Travel, Dine
+
+5. **SERVICE IMAGES FIXED**
+   - All Stay, Insurance services now have AI-generated watercolor images
+   - Backend endpoint `/api/admin/fix-service-images` updates all generic placeholders
+   - Services API confirmed returning new images
 
 ---
 
@@ -44,6 +49,7 @@
 9. [Testing Credentials](#9-testing-credentials)
 10. [Known Issues](#10-known-issues)
 11. [Future Tasks & Roadmap](#11-future-tasks--roadmap)
+12. [PillarTopicsGrid Component](#12-pillartopicsgrid-component)
 
 ---
 
@@ -98,7 +104,7 @@ Build **"The World's First Pet Life Operating System"** - **The Doggy Company**
 | ArchetypeProducts | `/components/ArchetypeProducts.jsx` | ✅ HAS MODAL (FIXED) |
 | SoulMadeCollection | `/components/SoulMadeCollection.jsx` | ✅ HAS MODAL |
 | LearnProductsGrid | `/components/Learn/LearnProductsGrid.jsx` | ✅ HAS MODAL |
-| PillarTopicsGrid | `/components/PillarTopicsGrid.jsx` | ✅ NEW - Topic cards |
+| PillarTopicsGrid | `/components/PillarTopicsGrid.jsx` | ✅ Topic cards |
 | ProductCard | `/components/ProductCard.jsx` | ✅ Contains ProductDetailModal |
 
 ## 2.3 Standard CMS Tabs (10 Tabs)
@@ -187,18 +193,18 @@ Body: { "images": { "bundle_id": "image_url", ... } }
 |---|--------|-------------|-----------------|--------------|
 | 1 | Learn | ✅ YES | ✅ YES | ✅ YES (12 topics) |
 | 2 | Paperwork | ✅ YES | ✅ YES | ✅ YES (6 categories) |
-| 3 | Care | ✅ YES | ✅ YES | 🔄 Ready (needs integration) |
-| 4 | Fit | ✅ YES | ✅ YES | 🔄 Ready (needs integration) |
-| 5 | Travel | ✅ YES | ✅ YES | 🔄 Ready (needs integration) |
-| 6 | Stay | ✅ YES | ✅ YES | 🔄 Ready (needs integration) |
-| 7 | Dine | ✅ YES | ✅ YES | 🔄 Ready (needs integration) |
-| 8 | Enjoy | ✅ YES | ✅ YES | Pending |
-| 9 | Celebrate | ✅ YES | ✅ YES | Pending |
-| 10 | Emergency | ✅ YES | ✅ YES | Pending |
-| 11 | Advisory | ✅ YES | ✅ YES | Pending |
-| 12 | Farewell | ✅ YES | ✅ YES | Pending |
-| 13 | Adopt | ✅ YES | ✅ YES | Pending |
-| 14 | Shop | ✅ YES | ✅ YES | Pending |
+| 3 | Care | ✅ YES | ✅ YES | ✅ Ready (AI images) |
+| 4 | Fit | ✅ YES | ✅ YES | ✅ Ready (AI images) |
+| 5 | Travel | ✅ YES | ✅ YES | ✅ Ready (AI images) |
+| 6 | Stay | ✅ YES | ✅ YES | ✅ Ready (AI images) |
+| 7 | Dine | ✅ YES | ✅ YES | ✅ Ready (AI images) |
+| 8 | Enjoy | ✅ YES | ✅ YES | Pending images |
+| 9 | Celebrate | ✅ YES | ✅ YES | Pending images |
+| 10 | Emergency | ✅ YES | ✅ YES | Pending images |
+| 11 | Advisory | ✅ YES | ✅ YES | Pending images |
+| 12 | Farewell | ✅ YES | ✅ YES | Pending images |
+| 13 | Adopt | ✅ YES | ✅ YES | Pending images |
+| 14 | Shop | ✅ YES | ✅ YES | Pending images |
 
 ---
 
@@ -206,12 +212,12 @@ Body: { "images": { "bundle_id": "image_url", ... } }
 
 ## Step-by-Step Checklist
 
-- [ ] 1. Add CMS state variables (cmsConfig, cmsCategories, etc.)
-- [ ] 2. Add `fetchCMSConfig()` function
-- [ ] 3. Call `fetchCMSConfig()` in useEffect
-- [ ] 4. Create computed values with fallbacks
-- [ ] 5. Render sections conditionally based on `cmsConfig.sections`
-- [ ] 6. Use `{petName}` placeholders in titles
+- [x] 1. Add CMS state variables (cmsConfig, cmsCategories, etc.)
+- [x] 2. Add `fetchCMSConfig()` function
+- [x] 3. Call `fetchCMSConfig()` in useEffect
+- [x] 4. Create computed values with fallbacks
+- [x] 5. Render sections conditionally based on `cmsConfig.sections`
+- [x] 6. Use `{petName}` placeholders in titles
 - [ ] 7. Add PillarTopicsGrid component for topic cards
 - [ ] 8. Test with admin CMS changes
 
@@ -286,7 +292,7 @@ curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=
 ├── SoulMadeCollection.jsx     # Soul-based products ✅
 ├── BreedSmartRecommendations.jsx
 ├── CuratedBundles.jsx
-├── PillarTopicsGrid.jsx       # NEW - Topic cards ✅
+├── PillarTopicsGrid.jsx       # Topic cards ✅
 └── ProductCard.jsx            # ProductDetailModal
 ```
 
@@ -328,8 +334,7 @@ Test pet: **Mojo** (Shih Tzu)
 
 | Issue | Priority | Status |
 |-------|----------|--------|
-| Some services still have generic images | P1 | IN PROGRESS |
-| Topic cards not added to all pages yet | P2 | Ready to integrate |
+| Topic cards not added to all pages yet | P1 | Ready to integrate |
 | Razorpay checkout failure | P2 | NOT STARTED |
 | Mobile pet dashboard scrambled | P3 | NOT STARTED |
 
@@ -344,18 +349,53 @@ Test pet: **Mojo** (Shih Tzu)
 3. AI images for Paperwork products/bundles
 4. AI images for Stay/Insurance services
 5. PillarTopicsGrid component created with AI images
+6. Service images updated in backend
 
 ## 11.2 NEXT (P1)
 
 1. Add PillarTopicsGrid to all pages (like Learn's topic cards)
 2. Generate remaining topic images for Enjoy, Celebrate, Emergency, etc.
-3. Fix remaining generic service images
 
 ## 11.3 LATER (P2)
 
 1. Fix Razorpay checkout
 2. Mobile pet dashboard
-3. Instagram integration
+3. Instagram integration for Celebration Wall
+
+---
+
+# 12. PILLARTOPICSGRID COMPONENT
+
+## 12.1 Location
+`/app/frontend/src/components/PillarTopicsGrid.jsx`
+
+## 12.2 Usage
+
+```jsx
+import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
+
+// In your page component:
+<PillarTopicsGrid
+  pillar="stay"
+  topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.stay}
+  onTopicClick={(topic) => handleTopicClick(topic)}
+  columns={4}
+/>
+```
+
+## 12.3 Pillars with AI Images
+
+| Pillar | Topics with Images |
+|--------|-------------------|
+| Stay | Boarding, Daycare, Hotels, Sitting |
+| Care | Grooming, Health, Dental, Skin |
+| Fit | Exercise, Weight, Agility, Swimming |
+| Travel | Flights, Road, Destinations, Gear |
+| Dine | Fresh, Dry, Treats, Special |
+
+## 12.4 Pillars Pending Images
+
+Enjoy, Celebrate, Emergency, Advisory, Farewell, Adopt, Shop
 
 ---
 
@@ -369,4 +409,4 @@ curl -X POST "https://thedoggycompany.com/api/admin/fix-service-images?password=
 
 ---
 
-**END OF DOCUMENTATION - Version 12.2.0**
+**END OF DOCUMENTATION - Version 12.3.0**

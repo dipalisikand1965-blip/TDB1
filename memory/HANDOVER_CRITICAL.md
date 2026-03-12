@@ -257,7 +257,7 @@ PATH 2: "Let Mira know more"
 # URLs (VERIFIED)
 
 ## Frontend
-- **Base URL**: https://dynamic-cms-platform.preview.emergentagent.com
+- **Base URL**: https://cms-architecture-lab.preview.emergentagent.com
 - **Login**: /login
 - **Join (Onboarding)**: /join
 - **Pet Home**: /pet-home
@@ -268,7 +268,7 @@ PATH 2: "Let Mira know more"
 - **Admin Service Desk**: /admin/service-desk
 
 ## Backend API
-- **Base**: https://dynamic-cms-platform.preview.emergentagent.com/api
+- **Base**: https://cms-architecture-lab.preview.emergentagent.com/api
 
 ---
 
@@ -345,7 +345,7 @@ asyncio.run(check())
 "
 
 # Create test user via API
-curl -s -X POST "https://dynamic-cms-platform.preview.emergentagent.com/api/membership/onboard" \
+curl -s -X POST "https://cms-architecture-lab.preview.emergentagent.com/api/membership/onboard" \
   -H "Content-Type: application/json" \
   -d '{"parent":{"name":"Test","email":"test@test.com","password":"test123",...},"pets":[{...}]}'
 ```

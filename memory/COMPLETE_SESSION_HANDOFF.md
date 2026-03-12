@@ -246,7 +246,7 @@ Everything rendered together regardless of mode.
 
 | Environment | URL |
 |-------------|-----|
-| **Preview** | https://dynamic-cms-platform.preview.emergentagent.com |
+| **Preview** | https://cms-architecture-lab.preview.emergentagent.com |
 | **Production** | https://thedoggycompany.in |
 
 ---
@@ -255,11 +255,11 @@ Everything rendered together regardless of mode.
 
 ## Quick Reply Test
 ```bash
-TOKEN=$(curl -s -X POST 'https://dynamic-cms-platform.preview.emergentagent.com/api/auth/login' \
+TOKEN=$(curl -s -X POST 'https://cms-architecture-lab.preview.emergentagent.com/api/auth/login' \
   -H 'Content-Type: application/json' \
   -d '{"email":"dipali@clubconcierge.in","password":"test123"}' | python3 -c 'import sys,json;print(json.load(sys.stdin).get("access_token",""))')
 
-curl -s -X POST "https://dynamic-cms-platform.preview.emergentagent.com/api/mira/chat" \
+curl -s -X POST "https://cms-architecture-lab.preview.emergentagent.com/api/mira/chat" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TOKEN" \
   -d '{"message": "What treats for Lola?", "session_id": "test-123", "pet_name": "Lola"}' | python3 -c "

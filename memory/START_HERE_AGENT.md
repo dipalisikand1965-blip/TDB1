@@ -179,7 +179,7 @@ curl "$API_URL/api/pet-soul/profile/pet-99a708f1722a/quick-questions"
 
 ## 🚀 PREVIEW URL
 ```
-https://dynamic-cms-platform.preview.emergentagent.com
+https://cms-architecture-lab.preview.emergentagent.com
 ```
 
 Key pages:
