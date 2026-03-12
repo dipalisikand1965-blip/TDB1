@@ -30,6 +30,7 @@ import {
 import RainbowBridgeMemorial from '../components/RainbowBridgeMemorial';
 import RainbowBridgeWall from '../components/RainbowBridgeWall';
 import SoulMadeCollection from '../components/SoulMadeCollection';
+import { PillarSoulLayer } from '../components/PillarSoulLayer';
 import CuratedBundles from '../components/CuratedBundles';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { PillarDailyTip, PillarHelpBuckets } from '../components/PillarGoldSections';
@@ -646,6 +647,14 @@ const FarewellPage = () => {
           )}
         </div>
       </section>
+
+      <PillarSoulLayer
+        pillar="farewell"
+        activePet={activePet}
+        title={`In memory of ${activePet?.name || 'your pet'}`}
+        subtitle={`A gentler memorial layer for ${activePet?.name || 'your pet'} — soul-aware support and recommendations that honour memory with care.`}
+        maxProducts={4}
+      />
 
       {/* Service Categories - 2x2 on mobile, 4 cols on desktop */}
       <section className="py-12 px-4 relative z-10">

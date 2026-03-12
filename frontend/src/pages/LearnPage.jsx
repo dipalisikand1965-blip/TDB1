@@ -26,6 +26,8 @@ import LearnTopicModal from '../components/learn/LearnTopicModal';
 import CuratedBundles from '../components/CuratedBundles';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
+import SoulMadeCollection from '../components/SoulMadeCollection';
+import PillarPicksSection from '../components/PillarPicksSection';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -1276,6 +1278,30 @@ const LearnPage = () => {
         <section className="py-8 px-4 bg-gradient-to-b from-white to-teal-50/30" data-testid="learn-personalized-picks">
           <div className="max-w-6xl mx-auto">
             <PersonalizedPicks pillar="learn" maxProducts={8} />
+          </div>
+        </section>
+      )}
+
+      {activePet && (
+        <section className="py-10 bg-gradient-to-b from-white to-indigo-50/30" data-testid="learn-soul-layer">
+          <div className="max-w-6xl mx-auto px-4 space-y-8">
+            <div className="text-center">
+              <Badge className="bg-indigo-100 text-indigo-700" data-testid="learn-soul-layer-badge">
+                Made for {activePet.name}
+              </Badge>
+              <h2 className="mt-3 text-3xl font-bold text-slate-900" data-testid="learn-soul-layer-title">
+                Training picks shaped for {activePet.name}
+              </h2>
+              <p className="mt-2 text-sm text-slate-600 md:text-base" data-testid="learn-soul-layer-subtitle">
+                This learning layer now carries more of the Pet OS feeling — not just training content, but picks and products tuned to {activePet.name}&rsquo;s breed, soul, and learning rhythm.
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-indigo-100 bg-white p-4 sm:p-6">
+              <SoulMadeCollection pillar="learn" maxItems={8} showTitle={true} />
+            </div>
+
+            <PillarPicksSection pillar="learn" pet={activePet} />
           </div>
         </section>
       )}
