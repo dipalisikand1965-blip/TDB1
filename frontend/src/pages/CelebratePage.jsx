@@ -52,6 +52,7 @@ import PillarPicksSection from '../components/PillarPicksSection';
 import MiraAdvisorCard from '../components/MiraAdvisorCard';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
+import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 
 // Lazy load Soul Explainer for footer link
 const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
@@ -671,6 +672,28 @@ const CelebratePage = () => {
     >
       {/* Main Content with iOS Safe Area Bottom Padding */}
       <div className="pb-24 theme-celebrate" data-testid="celebrate-page">
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          CELEBRATE TOPIC CARDS - Quick access to celebration categories
+          Birthdays, Gotcha Day, Gifts, Photoshoots
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <PillarTopicsGrid
+        pillar="celebrate"
+        topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.celebrate}
+        onTopicClick={(topic) => {
+          // Map topic to category filter
+          const categoryMap = {
+            'birthdays': 'cakes',
+            'gotcha': 'hampers',
+            'gifts': 'treats',
+            'photoshoots': 'accessories'
+          };
+          const category = categoryMap[topic.slug] || topic.slug;
+          setSearchParams({ category });
+          document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
+        }}
+        columns={4}
+      />
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* BIRTHDAY COUNTDOWN - Emotional anticipation builder */}

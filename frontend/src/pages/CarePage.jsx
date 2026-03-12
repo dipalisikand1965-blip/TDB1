@@ -29,6 +29,7 @@ import SoulMadeCollection from '../components/SoulMadeCollection'; // ADDED: Sou
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
+import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import TransformationStories from '../components/TransformationStories';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
@@ -679,6 +680,23 @@ const CarePage = () => {
         pet={selectedPet}
         user={user}
         token={token}
+      />
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          CARE TOPIC CARDS - Quick access to care categories
+          Grooming, Health & Wellness, Dental Care, Skin & Coat
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <PillarTopicsGrid
+        pillar="care"
+        topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.care}
+        onTopicClick={(topic) => {
+          // Scroll to services section when topic is clicked
+          const servicesSection = document.getElementById('care-services');
+          if (servicesSection) {
+            servicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }}
+        columns={4}
       />
 
       {/* ═══════════════════════════════════════════════════════════════════════════════

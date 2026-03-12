@@ -187,24 +187,24 @@ Body: { "images": { "bundle_id": "image_url", ... } }
 | 2 | Paperwork | `paperwork-cms` | PaperworkPageCMS.jsx |
 | 3-14 | Others | `{pillar}-cms` | PillarPageCMS.jsx (generic) |
 
-## 4.2 Page Dynamic Rendering Status - ALL COMPLETE ✅
+## 4.2 Page Dynamic Rendering Status - ALL COMPLETE
 
 | # | Pillar | CMS-Driven? | Product Modals? | Topic Cards? |
 |---|--------|-------------|-----------------|--------------|
-| 1 | Learn | ✅ YES | ✅ YES | ✅ YES (12 topics) |
-| 2 | Paperwork | ✅ YES | ✅ YES | ✅ YES (6 categories) |
-| 3 | Care | ✅ YES | ✅ YES | ✅ Ready (AI images) |
-| 4 | Fit | ✅ YES | ✅ YES | ✅ Ready (AI images) |
-| 5 | Travel | ✅ YES | ✅ YES | ✅ Ready (AI images) |
-| 6 | Stay | ✅ YES | ✅ YES | ✅ Ready (AI images) |
-| 7 | Dine | ✅ YES | ✅ YES | ✅ Ready (AI images) |
-| 8 | Enjoy | ✅ YES | ✅ YES | Pending images |
-| 9 | Celebrate | ✅ YES | ✅ YES | Pending images |
-| 10 | Emergency | ✅ YES | ✅ YES | Pending images |
-| 11 | Advisory | ✅ YES | ✅ YES | Pending images |
-| 12 | Farewell | ✅ YES | ✅ YES | Pending images |
-| 13 | Adopt | ✅ YES | ✅ YES | Pending images |
-| 14 | Shop | ✅ YES | ✅ YES | Pending images |
+| 1 | Learn | YES | YES | YES (12 topics) |
+| 2 | Paperwork | YES | YES | YES (6 categories) |
+| 3 | Care | YES | YES | YES (4 cards) |
+| 4 | Fit | YES | YES | YES (4 cards) |
+| 5 | Travel | YES | YES | YES (4 cards) |
+| 6 | Stay | YES | YES | YES (4 cards) |
+| 7 | Dine | YES | YES | YES (4 cards) |
+| 8 | Enjoy | YES | YES | YES (4 cards) |
+| 9 | Celebrate | YES | YES | YES (4 cards) |
+| 10 | Emergency | YES | YES | YES (4 cards) |
+| 11 | Advisory | YES | YES | YES (4 cards) |
+| 12 | Farewell | YES | YES | YES (4 cards) |
+| 13 | Adopt | YES | YES | YES (4 cards) |
+| 14 | Shop | YES | YES | YES (4 cards) |
 
 ---
 
@@ -334,7 +334,6 @@ Test pet: **Mojo** (Shih Tzu)
 
 | Issue | Priority | Status |
 |-------|----------|--------|
-| Topic cards not added to all pages yet | P1 | Ready to integrate |
 | Razorpay checkout failure | P2 | NOT STARTED |
 | Mobile pet dashboard scrambled | P3 | NOT STARTED |
 
@@ -353,8 +352,7 @@ Test pet: **Mojo** (Shih Tzu)
 
 ## 11.2 NEXT (P1)
 
-1. Add PillarTopicsGrid to all pages (like Learn's topic cards)
-2. Generate remaining topic images for Enjoy, Celebrate, Emergency, etc.
+1. Generate remaining AI topic images for Enjoy, Celebrate, Emergency, Advisory, Farewell, Adopt, Shop pillars (using default gradient placeholders currently)
 
 ## 11.3 LATER (P2)
 

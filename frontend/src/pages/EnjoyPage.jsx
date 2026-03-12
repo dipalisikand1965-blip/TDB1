@@ -36,6 +36,7 @@ import { FitnessJourneyCounter, RotatingSocialProof } from '../components/Social
 import ConversationalEntry from '../components/ConversationalEntry';
 import QuickWinTip from '../components/QuickWinTip';
 import LocalPlacesSection from '../components/LocalPlacesSection';
+import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import {
   PartyPopper, Calendar, MapPin, Users, Clock, PawPrint,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
@@ -501,6 +502,22 @@ const EnjoyPage = () => {
           </div>
         </div>
       </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          ENJOY TOPIC CARDS - Quick access to activity categories
+          Pet Events, Playdates, Toys & Games, Enrichment
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <PillarTopicsGrid
+        pillar="enjoy"
+        topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.enjoy}
+        onTopicClick={(topic) => {
+          const experienceSection = document.getElementById('experiences-list');
+          if (experienceSection) {
+            experienceSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }}
+        columns={4}
+      />
 
       {/* ==================== CONVERSATIONAL ENTRY + QUICK WIN ==================== */}
       <div className="py-8 sm:py-12 bg-gradient-to-b from-slate-50 to-white">

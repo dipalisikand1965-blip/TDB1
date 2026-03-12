@@ -30,6 +30,7 @@ import SoulMadeCollection from '../components/SoulMadeCollection'; // ADDED: Sou
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
+import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
 import {
@@ -485,6 +486,22 @@ const TravelPage = () => {
       title="Travel - Pet Travel Gear & Services | The Doggy Company"
       description="Everything you need for adventures with your furry companion."
     >
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          TRAVEL TOPIC CARDS - Quick access to travel categories
+          Air Travel, Road Trips, Pet-Friendly Destinations, Travel Gear
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <PillarTopicsGrid
+        pillar="travel"
+        topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.travel}
+        onTopicClick={(topic) => {
+          const servicesSection = document.getElementById('travel-services');
+          if (servicesSection) {
+            servicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }}
+        columns={4}
+      />
 
       {/* ==================== PERSONALIZED PICKS - ALWAYS FIRST ==================== */}
       <div className="py-10 bg-gradient-to-b from-white to-cyan-50/30">
