@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Doggy Company - Admin CMS Guide</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .gradient-header { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+    pre { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.85rem; }
+    code { background: #f3f4f6; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.85rem; color: #d97706; }
+    .step-number { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <header class="gradient-header text-white py-8">
+    <div class="max-w-4xl mx-auto px-6">
+      <h1 class="text-3xl font-bold mb-2">Admin CMS Guide</h1>
+      <p class="opacity-90">How to manage content on The Doggy Company website</p>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-8">
+    
+    <!-- Quick Start -->
+    <section class="bg-white rounded-xl p-6 shadow-sm border mb-6">
+      <h2 class="text-2xl font-bold mb-4 text-gray-900">Quick Start</h2>
+      <div class="space-y-4">
+        <div class="flex gap-4 items-start">
+          <div class="step-number bg-amber-500 text-white">1</div>
+          <div>
+            <h3 class="font-semibold">Go to Admin Panel</h3>
+            <p class="text-gray-600">Navigate to <code>/admin</code> and login with your credentials</p>
+          </div>
+        </div>
+        <div class="flex gap-4 items-start">
+          <div class="step-number bg-amber-500 text-white">2</div>
+          <div>
+            <h3 class="font-semibold">Select a Pillar</h3>
+            <p class="text-gray-600">Click on the pillar tab you want to edit (e.g., "Care CMS", "Dine CMS")</p>
+          </div>
+        </div>
+        <div class="flex gap-4 items-start">
+          <div class="step-number bg-amber-500 text-white">3</div>
+          <div>
+            <h3 class="font-semibold">Edit Content</h3>
+            <p class="text-gray-600">Use the tabs to modify different sections of the page</p>
+          </div>
+        </div>
+        <div class="flex gap-4 items-start">
+          <div class="step-number bg-amber-500 text-white">4</div>
+          <div>
+            <h3 class="font-semibold">Save Changes</h3>
+            <p class="text-gray-600">Click "Save All Changes" - changes appear on the website immediately</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CMS Tabs Explained -->
+    <section class="bg-white rounded-xl p-6 shadow-sm border mb-6">
+      <h2 class="text-2xl font-bold mb-4 text-gray-900">Understanding the CMS Tabs</h2>
+      
+      <div class="space-y-4">
+        <!-- Row 1: Basic Settings -->
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h3 class="font-bold text-lg mb-3 text-gray-800">Row 1: Basic Settings</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-white p-3 rounded border">
+              <h4 class="font-semibold text-gray-900">Settings</h4>
+              <p class="text-sm text-gray-600">Page title, subtitle, hero image. Use <code>{petName}</code> for personalization.</p>
+            </div>
+            <div class="bg-white p-3 rounded border">
+              <h4 class="font-semibold text-gray-900">Ask Mira</h4>
+              <p class="text-sm text-gray-600">The search bar at the top. Set placeholder text and button color.</p>
+            </div>
+            <div class="bg-white p-3 rounded border">
+              <h4 class="font-semibold text-gray-900">Categories</h4>
+              <p class="text-sm text-gray-600">Topic cards (like "Grooming", "Health"). Edit names, colors, images.</p>
+            </div>
+            <div class="bg-white p-3 rounded border">
+              <h4 class="font-semibold text-gray-900">Products & Bundles</h4>
+              <p class="text-sm text-gray-600">Select which products/bundles appear on this page.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: Advanced Settings -->
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h3 class="font-bold text-lg mb-3 text-gray-800">Row 2: Advanced Settings</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-white p-3 rounded border">
+              <h4 class="font-semibold text-gray-900">Services</h4>
+              <p class="text-sm text-gray-600">Select which services appear in the services section.</p>
+            </div>
+            <div class="bg-white p-3 rounded border">
+              <h4 class="font-semibold text-gray-900">Personalized</h4>
+              <p class="text-sm text-gray-600">Toggle breed-smart, life-stage, and archetype recommendations.</p>
+            </div>
+            <div class="bg-white p-3 rounded border">
+              <h4 class="font-semibold text-gray-900">Concierge</h4>
+              <p class="text-sm text-gray-600">Premium concierge services with pricing and descriptions.</p>
+            </div>
+            <div class="bg-white p-3 rounded border">
+              <h4 class="font-semibold text-gray-900">Mira Prompts</h4>
+              <p class="text-sm text-gray-600">AI suggestions that appear proactively on the page.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3: Content Sections (NEW!) -->
+        <div class="bg-amber-50 rounded-lg p-4 border-2 border-amber-200">
+          <h3 class="font-bold text-lg mb-3 text-amber-800">Row 3: Content Sections (NEW!)</h3>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="bg-white p-3 rounded border border-amber-200">
+              <h4 class="font-semibold text-amber-700">Help Buckets</h4>
+              <p class="text-sm text-gray-600">"How can we help?" cards. 3 buckets with action items.</p>
+            </div>
+            <div class="bg-white p-3 rounded border border-amber-200">
+              <h4 class="font-semibold text-teal-700">Daily Tips</h4>
+              <p class="text-sm text-gray-600">Rotating tips. Add 7 for a full week rotation.</p>
+            </div>
+            <div class="bg-white p-3 rounded border border-amber-200">
+              <h4 class="font-semibold text-purple-700">Guided Paths</h4>
+              <p class="text-sm text-gray-600">Step-by-step journeys. Each path has 5 steps.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Editing Help Buckets -->
+    <section class="bg-white rounded-xl p-6 shadow-sm border mb-6">
+      <h2 class="text-xl font-bold mb-4 text-gray-900">How to Edit Help Buckets</h2>
+      <p class="text-gray-600 mb-4">Help Buckets are the "How can we help?" cards on each page. Each bucket has:</p>
+      <ul class="list-disc list-inside text-gray-600 space-y-2 mb-4">
+        <li><strong>Title:</strong> The bucket heading (e.g., "Grooming Help")</li>
+        <li><strong>Icon:</strong> Choose from Sparkles, Heart, PawPrint, Award, etc.</li>
+        <li><strong>Color:</strong> Pink, Teal, Amber, Blue, Purple, Green</li>
+        <li><strong>Items:</strong> Clickable action items that open Mira chat</li>
+      </ul>
+      <div class="bg-amber-50 rounded-lg p-4 border border-amber-200">
+        <p class="text-sm text-amber-800">Tip: Most pages have 3 help buckets with 3-4 items each.</p>
+      </div>
+    </section>
+
+    <!-- Editing Daily Tips -->
+    <section class="bg-white rounded-xl p-6 shadow-sm border mb-6">
+      <h2 class="text-xl font-bold mb-4 text-gray-900">How to Edit Daily Tips</h2>
+      <p class="text-gray-600 mb-4">Daily Tips rotate based on the day. Users see a different tip each day.</p>
+      <ul class="list-disc list-inside text-gray-600 space-y-2 mb-4">
+        <li><strong>Category:</strong> Grooming, Health, Training, Behavior, etc.</li>
+        <li><strong>Tip Content:</strong> The actual tip text (keep it actionable and useful)</li>
+        <li><strong>Color:</strong> Gradient color for the tip card</li>
+      </ul>
+      <div class="bg-teal-50 rounded-lg p-4 border border-teal-200">
+        <p class="text-sm text-teal-800">Tip: Add 7 tips for a full week rotation. The tip shown depends on the current day.</p>
+      </div>
+    </section>
+
+    <!-- Editing Guided Paths -->
+    <section class="bg-white rounded-xl p-6 shadow-sm border mb-6">
+      <h2 class="text-xl font-bold mb-4 text-gray-900">How to Edit Guided Paths</h2>
+      <p class="text-gray-600 mb-4">Guided Paths are step-by-step learning journeys for users.</p>
+      <ul class="list-disc list-inside text-gray-600 space-y-2 mb-4">
+        <li><strong>Title:</strong> Path name (e.g., "New Pet Parent Path")</li>
+        <li><strong>Topic Slug:</strong> Which topic the path relates to (for navigation)</li>
+        <li><strong>Color:</strong> Pink, Amber, Purple, Blue, Green, Red, Teal</li>
+        <li><strong>Steps:</strong> The journey milestones (add 5 steps per path)</li>
+      </ul>
+      <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+        <p class="text-sm text-purple-800">Tip: Most pages have 6 guided paths with 5 steps each.</p>
+      </div>
+    </section>
+
+    <!-- Personalization Variables -->
+    <section class="bg-white rounded-xl p-6 shadow-sm border mb-6">
+      <h2 class="text-xl font-bold mb-4 text-gray-900">Using Personalization Variables</h2>
+      <p class="text-gray-600 mb-4">Use these placeholders in titles and text - they'll be replaced with actual values:</p>
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="text-left py-2 px-3">Variable</th>
+            <th class="text-left py-2 px-3">What it becomes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-t"><td class="py-2 px-3"><code>{petName}</code></td><td class="py-2 px-3">The user's pet name (e.g., "Mojo")</td></tr>
+          <tr class="border-t"><td class="py-2 px-3"><code>{breedName}</code></td><td class="py-2 px-3">The pet's breed (e.g., "Shih Tzu")</td></tr>
+        </tbody>
+      </table>
+      <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+        <p class="text-sm"><strong>Example:</strong> "Caring for {petName} made simple" becomes "Caring for Mojo made simple"</p>
+      </div>
+    </section>
+
+    <!-- Best Practices -->
+    <section class="bg-white rounded-xl p-6 shadow-sm border mb-6">
+      <h2 class="text-xl font-bold mb-4 text-gray-900">Best Practices</h2>
+      <ul class="space-y-3">
+        <li class="flex gap-3 items-start">
+          <span class="text-green-500 font-bold">DO:</span>
+          <span class="text-gray-600">Save frequently while editing to avoid losing work</span>
+        </li>
+        <li class="flex gap-3 items-start">
+          <span class="text-green-500 font-bold">DO:</span>
+          <span class="text-gray-600">Test your changes on the live page after saving</span>
+        </li>
+        <li class="flex gap-3 items-start">
+          <span class="text-green-500 font-bold">DO:</span>
+          <span class="text-gray-600">Keep tips actionable and specific</span>
+        </li>
+        <li class="flex gap-3 items-start">
+          <span class="text-red-500 font-bold">DON'T:</span>
+          <span class="text-gray-600">Leave fields empty - use defaults if unsure</span>
+        </li>
+        <li class="flex gap-3 items-start">
+          <span class="text-red-500 font-bold">DON'T:</span>
+          <span class="text-gray-600">Use very long text in tip cards (keep under 200 characters)</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Need Help? -->
+    <section class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-200">
+      <h2 class="text-xl font-bold mb-2 text-amber-800">Need Help?</h2>
+      <p class="text-gray-600">Contact the development team for:</p>
+      <ul class="list-disc list-inside text-gray-600 mt-2 space-y-1">
+        <li>Adding new sections to pages</li>
+        <li>Changing page structure</li>
+        <li>Technical issues with the CMS</li>
+        <li>Bulk image updates</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="bg-gray-900 text-white py-6 mt-8">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <p class="text-gray-400">The Doggy Company - Admin CMS Guide</p>
+      <p class="text-sm text-gray-500">Last Updated: December 14, 2025</p>
+    </div>
+  </footer>
+</body>
+</html>

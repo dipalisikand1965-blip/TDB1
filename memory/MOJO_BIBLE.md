@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://cms-architecture-lab.preview.emergentagent.com
+https://watercolor-makeover.preview.emergentagent.com
 ```
 
 ---

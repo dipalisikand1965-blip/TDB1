@@ -41,7 +41,7 @@ import {
   Search, Check, X, ArrowUp, ArrowDown, Bell, Calendar,
   MessageCircle, Star, Users, Clock, DollarSign, Tag,
   Folder, CheckCircle, AlertCircle, Brain, PawPrint,
-  RefreshCw, Zap, Award, Gift, Crown, HelpCircle,
+  RefreshCw, Zap, Award, Gift, Crown, HelpCircle, Target,
   Home, Utensils, Car, Bed, Dumbbell, PartyPopper,
   AlertTriangle, BookOpen, Flower2, Dog, ShoppingBag
 } from 'lucide-react';
@@ -479,6 +479,347 @@ const ConciergeServiceEditor = ({ service, onUpdate, onDelete }) => {
   );
 };
 
+// ============== HELP BUCKET EDITOR ==============
+const HelpBucketEditor = ({ bucket, onUpdate, onDelete }) => {
+  const [expanded, setExpanded] = useState(false);
+  const [newItem, setNewItem] = useState('');
+
+  const colorOptions = [
+    { value: 'pink', label: 'Pink' },
+    { value: 'teal', label: 'Teal' },
+    { value: 'amber', label: 'Amber' },
+    { value: 'blue', label: 'Blue' },
+    { value: 'purple', label: 'Purple' },
+    { value: 'green', label: 'Green' },
+    { value: 'rose', label: 'Rose' },
+    { value: 'indigo', label: 'Indigo' },
+  ];
+
+  const iconOptions = [
+    { value: 'Sparkles', label: 'Sparkles' },
+    { value: 'Heart', label: 'Heart' },
+    { value: 'PawPrint', label: 'Paw Print' },
+    { value: 'Award', label: 'Award' },
+    { value: 'Users', label: 'Users' },
+    { value: 'Star', label: 'Star' },
+    { value: 'Shield', label: 'Shield' },
+    { value: 'Brain', label: 'Brain' },
+    { value: 'GraduationCap', label: 'Graduation Cap' },
+  ];
+
+  const addItem = () => {
+    if (!newItem.trim()) return;
+    const items = [...(bucket.items || []), newItem];
+    onUpdate({ ...bucket, items });
+    setNewItem('');
+  };
+
+  return (
+    <Card className="p-4 mb-3 border-2 border-gray-200 hover:border-amber-300 transition-all">
+      <Collapsible open={expanded} onOpenChange={setExpanded}>
+        <CollapsibleTrigger className="w-full">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-lg bg-${bucket.color || 'amber'}-100 flex items-center justify-center`}>
+                <HelpCircle className={`w-5 h-5 text-${bucket.color || 'amber'}-600`} />
+              </div>
+              <div className="text-left">
+                <p className="font-semibold text-gray-900">{bucket.title || 'New Bucket'}</p>
+                <p className="text-xs text-gray-500">{(bucket.items || []).length} items</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); onDelete(); }}>
+                <Trash2 className="w-4 h-4 text-red-400" />
+              </Button>
+              {expanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+            </div>
+          </div>
+        </CollapsibleTrigger>
+
+        <CollapsibleContent className="mt-4 space-y-3">
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <Label className="text-xs">Bucket Title</Label>
+              <Input 
+                value={bucket.title || ''}
+                onChange={(e) => onUpdate({ ...bucket, title: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Icon</Label>
+              <Select value={bucket.icon || 'Sparkles'} onValueChange={(v) => onUpdate({ ...bucket, icon: v })}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {iconOptions.map(i => (
+                    <SelectItem key={i.value} value={i.value}>{i.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">Color</Label>
+              <Select value={bucket.color || 'amber'} onValueChange={(v) => onUpdate({ ...bucket, color: v })}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {colorOptions.map(c => (
+                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Items */}
+          <div className="bg-gray-50 rounded-lg p-3">
+            <Label className="text-xs mb-2 block">Action Items (click Mira suggestions)</Label>
+            <div className="space-y-1 max-h-32 overflow-y-auto">
+              {(bucket.items || []).map((item, idx) => (
+                <div key={idx} className="flex items-center gap-2 bg-white p-2 rounded border text-sm">
+                  <span className="flex-1">{item}</span>
+                  <Button variant="ghost" size="sm" onClick={() => {
+                    const items = (bucket.items || []).filter((_, i) => i !== idx);
+                    onUpdate({ ...bucket, items });
+                  }}>
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <Input 
+                value={newItem}
+                onChange={(e) => setNewItem(e.target.value)}
+                placeholder="Add action item..."
+                className="flex-1"
+                onKeyPress={(e) => e.key === 'Enter' && addItem()}
+              />
+              <Button onClick={addItem} size="sm">
+                <Plus className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+    </Card>
+  );
+};
+
+// ============== DAILY TIP EDITOR ==============
+const DailyTipEditor = ({ tip, onUpdate, onDelete, index }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  const categoryOptions = [
+    { value: 'Grooming', label: 'Grooming' },
+    { value: 'Health', label: 'Health' },
+    { value: 'Training', label: 'Training' },
+    { value: 'Behavior', label: 'Behavior' },
+    { value: 'Nutrition', label: 'Nutrition' },
+    { value: 'Exercise', label: 'Exercise' },
+    { value: 'Safety', label: 'Safety' },
+    { value: 'General', label: 'General' },
+  ];
+
+  const colorOptions = [
+    { value: 'from-blue-500 to-indigo-500', label: 'Blue' },
+    { value: 'from-rose-500 to-pink-500', label: 'Rose' },
+    { value: 'from-teal-500 to-emerald-500', label: 'Teal' },
+    { value: 'from-amber-500 to-orange-500', label: 'Amber' },
+    { value: 'from-purple-500 to-violet-500', label: 'Purple' },
+    { value: 'from-green-500 to-teal-500', label: 'Green' },
+  ];
+
+  return (
+    <Card className="p-4 mb-3 border-2 border-gray-200 hover:border-teal-300 transition-all">
+      <Collapsible open={expanded} onOpenChange={setExpanded}>
+        <CollapsibleTrigger className="w-full">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${tip.color || 'from-teal-500 to-emerald-500'} flex items-center justify-center`}>
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-left">
+                <p className="font-semibold text-gray-900">Day {index + 1}: {tip.category || 'Tip'}</p>
+                <p className="text-xs text-gray-500 truncate max-w-xs">{tip.tip?.substring(0, 50)}...</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); onDelete(); }}>
+                <Trash2 className="w-4 h-4 text-red-400" />
+              </Button>
+              {expanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+            </div>
+          </div>
+        </CollapsibleTrigger>
+
+        <CollapsibleContent className="mt-4 space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs">Category</Label>
+              <Select value={tip.category || 'General'} onValueChange={(v) => onUpdate({ ...tip, category: v })}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {categoryOptions.map(c => (
+                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">Color Theme</Label>
+              <Select value={tip.color || 'from-teal-500 to-emerald-500'} onValueChange={(v) => onUpdate({ ...tip, color: v })}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {colorOptions.map(c => (
+                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div>
+            <Label className="text-xs">Tip Content</Label>
+            <Textarea 
+              value={tip.tip || ''}
+              onChange={(e) => onUpdate({ ...tip, tip: e.target.value })}
+              rows={3}
+              className="mt-1"
+              placeholder="Enter the daily tip content..."
+            />
+            <p className="text-xs text-gray-500 mt-1">This tip will show on day {index + 1} of the rotation cycle</p>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+    </Card>
+  );
+};
+
+// ============== GUIDED PATH EDITOR ==============
+const GuidedPathEditor = ({ path, onUpdate, onDelete }) => {
+  const [expanded, setExpanded] = useState(false);
+  const [newStep, setNewStep] = useState('');
+
+  const colorOptions = [
+    { value: 'pink', label: 'Pink' },
+    { value: 'amber', label: 'Amber' },
+    { value: 'purple', label: 'Purple' },
+    { value: 'blue', label: 'Blue' },
+    { value: 'green', label: 'Green' },
+    { value: 'red', label: 'Red' },
+    { value: 'teal', label: 'Teal' },
+    { value: 'indigo', label: 'Indigo' },
+  ];
+
+  const addStep = () => {
+    if (!newStep.trim()) return;
+    const steps = [...(path.steps || []), newStep];
+    onUpdate({ ...path, steps });
+    setNewStep('');
+  };
+
+  return (
+    <Card className="p-4 mb-3 border-2 border-gray-200 hover:border-purple-300 transition-all">
+      <Collapsible open={expanded} onOpenChange={setExpanded}>
+        <CollapsibleTrigger className="w-full">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-lg bg-${path.color || 'purple'}-100 flex items-center justify-center`}>
+                <Target className="w-5 h-5 text-${path.color || 'purple'}-600" />
+              </div>
+              <div className="text-left">
+                <p className="font-semibold text-gray-900">{path.title || 'New Path'}</p>
+                <p className="text-xs text-gray-500">{(path.steps || []).length} steps</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); onDelete(); }}>
+                <Trash2 className="w-4 h-4 text-red-400" />
+              </Button>
+              {expanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+            </div>
+          </div>
+        </CollapsibleTrigger>
+
+        <CollapsibleContent className="mt-4 space-y-3">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="col-span-2">
+              <Label className="text-xs">Path Title</Label>
+              <Input 
+                value={path.title || ''}
+                onChange={(e) => onUpdate({ ...path, title: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Color</Label>
+              <Select value={path.color || 'purple'} onValueChange={(v) => onUpdate({ ...path, color: v })}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {colorOptions.map(c => (
+                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div>
+            <Label className="text-xs">Topic Slug (for navigation)</Label>
+            <Input 
+              value={path.topicSlug || ''}
+              onChange={(e) => onUpdate({ ...path, topicSlug: e.target.value })}
+              className="mt-1"
+              placeholder="e.g., grooming, health, training"
+            />
+          </div>
+
+          {/* Steps */}
+          <div className="bg-gray-50 rounded-lg p-3">
+            <Label className="text-xs mb-2 block">Path Steps (journey milestones)</Label>
+            <div className="space-y-1 max-h-40 overflow-y-auto">
+              {(path.steps || []).map((step, idx) => (
+                <div key={idx} className="flex items-center gap-2 bg-white p-2 rounded border text-sm">
+                  <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium">{idx + 1}</span>
+                  <span className="flex-1">{step}</span>
+                  <Button variant="ghost" size="sm" onClick={() => {
+                    const steps = (path.steps || []).filter((_, i) => i !== idx);
+                    onUpdate({ ...path, steps });
+                  }}>
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <Input 
+                value={newStep}
+                onChange={(e) => setNewStep(e.target.value)}
+                placeholder="Add step..."
+                className="flex-1"
+                onKeyPress={(e) => e.key === 'Enter' && addStep()}
+              />
+              <Button onClick={addStep} size="sm">
+                <Plus className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+    </Card>
+  );
+};
+
 // ============== MIRA PROMPT EDITOR ==============
 const MiraPromptEditor = ({ prompts, onUpdate }) => {
   const [newPrompt, setNewPrompt] = useState({ trigger: '', message: '', type: 'tip' });
@@ -597,6 +938,15 @@ const PillarPageCMS = ({ pillar }) => {
   // Mira prompts
   const [miraPrompts, setMiraPrompts] = useState([]);
   
+  // NEW: Help Buckets
+  const [helpBuckets, setHelpBuckets] = useState([]);
+  
+  // NEW: Daily Tips
+  const [dailyTips, setDailyTips] = useState([]);
+  
+  // NEW: Guided Paths
+  const [guidedPaths, setGuidedPaths] = useState([]);
+  
   // Selected items
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [selectedBundles, setSelectedBundles] = useState([]);
@@ -642,6 +992,10 @@ const PillarPageCMS = ({ pillar }) => {
         if (data.selectedBundles) setSelectedBundles(data.selectedBundles);
         if (data.selectedServices) setSelectedServices(data.selectedServices);
         if (data.personalizationConfig) setPersonalizationConfig(data.personalizationConfig);
+        // NEW: Load Help Buckets, Daily Tips, Guided Paths
+        if (data.helpBuckets?.length > 0) setHelpBuckets(data.helpBuckets);
+        if (data.dailyTips?.length > 0) setDailyTips(data.dailyTips);
+        if (data.guidedPaths?.length > 0) setGuidedPaths(data.guidedPaths);
       }
     } catch (err) {
       console.error('Failed to load page config:', err);
@@ -691,7 +1045,11 @@ const PillarPageCMS = ({ pillar }) => {
           selectedProducts,
           selectedBundles,
           selectedServices,
-          personalizationConfig
+          personalizationConfig,
+          // NEW: Include Help Buckets, Daily Tips, Guided Paths
+          helpBuckets,
+          dailyTips,
+          guidedPaths
         })
       });
       
@@ -726,6 +1084,38 @@ const PillarPageCMS = ({ pillar }) => {
       price: null,
       turnaround: '',
       cta_text: 'Learn More'
+    }]);
+  };
+
+  // NEW: Add Help Bucket
+  const addHelpBucket = () => {
+    setHelpBuckets(prev => [...prev, {
+      id: Date.now().toString(),
+      title: 'New Help Bucket',
+      icon: 'Sparkles',
+      color: 'amber',
+      items: []
+    }]);
+  };
+
+  // NEW: Add Daily Tip
+  const addDailyTip = () => {
+    setDailyTips(prev => [...prev, {
+      id: Date.now().toString(),
+      category: 'General',
+      tip: '',
+      color: 'from-teal-500 to-emerald-500'
+    }]);
+  };
+
+  // NEW: Add Guided Path
+  const addGuidedPath = () => {
+    setGuidedPaths(prev => [...prev, {
+      id: Date.now().toString(),
+      title: 'New Path',
+      topicSlug: '',
+      color: 'purple',
+      steps: []
     }]);
   };
 
@@ -778,11 +1168,17 @@ const PillarPageCMS = ({ pillar }) => {
           <TabsTrigger value="products" className="text-xs"><Package className="w-3.5 h-3.5 mr-1" /> Products</TabsTrigger>
           <TabsTrigger value="bundles" className="text-xs"><Gift className="w-3.5 h-3.5 mr-1" /> Bundles</TabsTrigger>
         </TabsList>
-        <TabsList className="grid grid-cols-4 w-full bg-gray-100 p-1 rounded-lg">
+        <TabsList className="grid grid-cols-4 w-full bg-gray-100 p-1 rounded-lg mb-2">
           <TabsTrigger value="services" className="text-xs"><Briefcase className="w-3.5 h-3.5 mr-1" /> Services</TabsTrigger>
           <TabsTrigger value="personalized" className="text-xs"><PawPrint className="w-3.5 h-3.5 mr-1" /> Personalized</TabsTrigger>
           <TabsTrigger value="concierge" className="text-xs"><Crown className="w-3.5 h-3.5 mr-1" /> Concierge</TabsTrigger>
           <TabsTrigger value="miraprompts" className="text-xs"><Brain className="w-3.5 h-3.5 mr-1" /> Mira Prompts</TabsTrigger>
+        </TabsList>
+        {/* NEW: Third row of tabs for Help Buckets, Daily Tips, Guided Paths */}
+        <TabsList className="grid grid-cols-3 w-full bg-amber-50 p-1 rounded-lg border border-amber-200">
+          <TabsTrigger value="helpbuckets" className="text-xs"><HelpCircle className="w-3.5 h-3.5 mr-1" /> Help Buckets</TabsTrigger>
+          <TabsTrigger value="dailytips" className="text-xs"><Sparkles className="w-3.5 h-3.5 mr-1" /> Daily Tips</TabsTrigger>
+          <TabsTrigger value="guidedpaths" className="text-xs"><Target className="w-3.5 h-3.5 mr-1" /> Guided Paths</TabsTrigger>
         </TabsList>
 
         {/* Settings Tab */}
@@ -1087,6 +1483,130 @@ const PillarPageCMS = ({ pillar }) => {
               prompts={miraPrompts}
               onUpdate={setMiraPrompts}
             />
+          </Card>
+        </TabsContent>
+
+        {/* ═══════════════════════════════════════════════════════════════════════════════
+            NEW: HELP BUCKETS TAB - "How can we help?" section
+            ═══════════════════════════════════════════════════════════════════════════════ */}
+        <TabsContent value="helpbuckets" className="mt-6">
+          <Card className="p-6 bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-semibold flex items-center gap-2">
+                  <HelpCircle className="w-5 h-5 text-amber-600" /> Help Buckets ({helpBuckets.length})
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  These are the "How can we help?" action cards on the page. Each bucket has a title and clickable items that open Mira.
+                </p>
+              </div>
+              <Button onClick={addHelpBucket} className="bg-amber-500 hover:bg-amber-600">
+                <Plus className="w-4 h-4 mr-2" /> Add Bucket
+              </Button>
+            </div>
+            {helpBuckets.length === 0 ? (
+              <div className="text-center py-8 bg-white rounded-lg border-2 border-dashed border-amber-200">
+                <HelpCircle className="w-12 h-12 text-amber-300 mx-auto mb-3" />
+                <p className="text-gray-500">No help buckets yet. Add your first bucket to get started.</p>
+                <p className="text-xs text-gray-400 mt-1">Tip: Most pages have 3 help buckets</p>
+              </div>
+            ) : (
+              helpBuckets.map((bucket, idx) => (
+                <HelpBucketEditor
+                  key={bucket.id || idx}
+                  bucket={bucket}
+                  onUpdate={(updated) => {
+                    const newBuckets = [...helpBuckets];
+                    newBuckets[idx] = updated;
+                    setHelpBuckets(newBuckets);
+                  }}
+                  onDelete={() => setHelpBuckets(helpBuckets.filter((_, i) => i !== idx))}
+                />
+              ))
+            )}
+          </Card>
+        </TabsContent>
+
+        {/* ═══════════════════════════════════════════════════════════════════════════════
+            NEW: DAILY TIPS TAB - Rotating daily tips section
+            ═══════════════════════════════════════════════════════════════════════════════ */}
+        <TabsContent value="dailytips" className="mt-6">
+          <Card className="p-6 bg-gradient-to-br from-teal-50 to-emerald-50 border-teal-200">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-semibold flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-teal-600" /> Daily Tips ({dailyTips.length})
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  These tips rotate based on the day of the week. Users see a different tip each day.
+                </p>
+              </div>
+              <Button onClick={addDailyTip} className="bg-teal-500 hover:bg-teal-600">
+                <Plus className="w-4 h-4 mr-2" /> Add Tip
+              </Button>
+            </div>
+            {dailyTips.length === 0 ? (
+              <div className="text-center py-8 bg-white rounded-lg border-2 border-dashed border-teal-200">
+                <Sparkles className="w-12 h-12 text-teal-300 mx-auto mb-3" />
+                <p className="text-gray-500">No daily tips yet. Add tips that will rotate throughout the week.</p>
+                <p className="text-xs text-gray-400 mt-1">Tip: Add 7 tips for a full week rotation</p>
+              </div>
+            ) : (
+              dailyTips.map((tip, idx) => (
+                <DailyTipEditor
+                  key={tip.id || idx}
+                  tip={tip}
+                  index={idx}
+                  onUpdate={(updated) => {
+                    const newTips = [...dailyTips];
+                    newTips[idx] = updated;
+                    setDailyTips(newTips);
+                  }}
+                  onDelete={() => setDailyTips(dailyTips.filter((_, i) => i !== idx))}
+                />
+              ))
+            )}
+          </Card>
+        </TabsContent>
+
+        {/* ═══════════════════════════════════════════════════════════════════════════════
+            NEW: GUIDED PATHS TAB - Step-by-step journey cards
+            ═══════════════════════════════════════════════════════════════════════════════ */}
+        <TabsContent value="guidedpaths" className="mt-6">
+          <Card className="p-6 bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-semibold flex items-center gap-2">
+                  <Target className="w-5 h-5 text-purple-600" /> Guided Paths ({guidedPaths.length})
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  Step-by-step learning journeys. Each path has multiple steps that guide users through a topic.
+                </p>
+              </div>
+              <Button onClick={addGuidedPath} className="bg-purple-500 hover:bg-purple-600">
+                <Plus className="w-4 h-4 mr-2" /> Add Path
+              </Button>
+            </div>
+            {guidedPaths.length === 0 ? (
+              <div className="text-center py-8 bg-white rounded-lg border-2 border-dashed border-purple-200">
+                <Target className="w-12 h-12 text-purple-300 mx-auto mb-3" />
+                <p className="text-gray-500">No guided paths yet. Create step-by-step journeys for your users.</p>
+                <p className="text-xs text-gray-400 mt-1">Tip: Most pages have 6 guided paths with 5 steps each</p>
+              </div>
+            ) : (
+              guidedPaths.map((path, idx) => (
+                <GuidedPathEditor
+                  key={path.id || idx}
+                  path={path}
+                  onUpdate={(updated) => {
+                    const newPaths = [...guidedPaths];
+                    newPaths[idx] = updated;
+                    setGuidedPaths(newPaths);
+                  }}
+                  onDelete={() => setGuidedPaths(guidedPaths.filter((_, i) => i !== idx))}
+                />
+              ))
+            )}
           </Card>
         </TabsContent>
       </Tabs>

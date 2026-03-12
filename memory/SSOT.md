@@ -18,7 +18,7 @@ Production site `thedoggycompany.com` showed "No pets found" for ALL users despi
 **Root Cause:**
 The frontend was deployed with `REACT_APP_BACKEND_URL` pointing to a **dead preview URL**:
 ```
-❌ WRONG: REACT_APP_BACKEND_URL=https://cms-architecture-lab.preview.emergentagent.com  (DEAD!)
+❌ WRONG: REACT_APP_BACKEND_URL=https://watercolor-makeover.preview.emergentagent.com  (DEAD!)
 ✅ CORRECT: REACT_APP_BACKEND_URL=https://thedoggycompany.com
 ```
 

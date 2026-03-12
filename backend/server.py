@@ -6530,7 +6530,11 @@ async def get_pillar_page_config(pillar: str):
             "lifeStage": {"enabled": True},
             "archetypePicks": {"enabled": True},
             "soulCollection": {"enabled": True}
-        })
+        }),
+        # NEW: Help Buckets, Daily Tips, Guided Paths
+        "helpBuckets": (cms_content or {}).get("helpBuckets", []),
+        "dailyTips": (cms_content or {}).get("dailyTips", []),
+        "guidedPaths": (cms_content or {}).get("guidedPaths", [])
     }
 
 
@@ -6564,6 +6568,10 @@ async def save_pillar_page_config(pillar: str, data: dict):
         "conciergeServices": data.get("conciergeServices", []),
         "miraPrompts": data.get("miraPrompts", []),
         "personalizationConfig": data.get("personalizationConfig", {}),
+        # NEW: Help Buckets, Daily Tips, Guided Paths
+        "helpBuckets": data.get("helpBuckets", []),
+        "dailyTips": data.get("dailyTips", []),
+        "guidedPaths": data.get("guidedPaths", []),
         "updated_at": datetime.now(timezone.utc).isoformat()
     }
     await db.pillar_cms_content.update_one(

@@ -291,6 +291,10 @@ const CarePage = () => {
   const [cmsCategories, setCmsCategories] = useState([]);
   const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
   const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  // NEW: CMS-driven Help Buckets, Daily Tips, Guided Paths
+  const [cmsHelpBuckets, setCmsHelpBuckets] = useState([]);
+  const [cmsDailyTips, setCmsDailyTips] = useState([]);
+  const [cmsGuidedPaths, setCmsGuidedPaths] = useState([]);
   
   // Personalize title with pet name
   const pageTitle = cmsConfig.title?.replace('{petName}', selectedPet?.name || 'your pet') || 
@@ -315,6 +319,16 @@ const CarePage = () => {
         }
         if (data.miraPrompts?.length > 0) {
           setCmsMiraPrompts(data.miraPrompts);
+        }
+        // NEW: Load Help Buckets, Daily Tips, Guided Paths from CMS
+        if (data.helpBuckets?.length > 0) {
+          setCmsHelpBuckets(data.helpBuckets);
+        }
+        if (data.dailyTips?.length > 0) {
+          setCmsDailyTips(data.dailyTips);
+        }
+        if (data.guidedPaths?.length > 0) {
+          setCmsGuidedPaths(data.guidedPaths);
         }
         console.log('[CarePage] CMS config loaded');
       }
@@ -639,8 +653,8 @@ const CarePage = () => {
     }, 500);
   };
 
-  // Care help buckets - like Learn's "How can we help?"
-  const helpBuckets = [
+  // Care help buckets - DEFAULTS (used when no CMS data)
+  const defaultHelpBuckets = [
     {
       id: 'grooming',
       title: 'Grooming Help',
@@ -663,9 +677,11 @@ const CarePage = () => {
       items: ['Dental hygiene', 'Nail trimming', 'Ear cleaning', 'Eye care basics']
     }
   ];
+  // Use CMS data if available, otherwise use defaults
+  const helpBuckets = cmsHelpBuckets.length > 0 ? cmsHelpBuckets : defaultHelpBuckets;
 
-  // Care guided paths - like Learn's "Guided Learning Paths"
-  const guidedPaths = [
+  // Care guided paths - DEFAULTS (used when no CMS data)
+  const defaultGuidedPaths = [
     { title: 'New Pet Parent Path', topicSlug: 'grooming', steps: ['Basic grooming', 'First vet visit', 'Daily care routine', 'Nutrition basics', 'Exercise needs'], color: 'pink' },
     { title: 'Grooming Mastery Path', topicSlug: 'grooming', steps: ['Coat type guide', 'Brushing basics', 'Bath routine', 'Nail care', 'Professional tips'], color: 'amber' },
     { title: 'Senior Pet Care Path', topicSlug: 'health', steps: ['Senior checkups', 'Joint care', 'Diet adjustments', 'Comfort needs', 'Quality of life'], color: 'purple' },
@@ -673,9 +689,11 @@ const CarePage = () => {
     { title: 'Skin & Coat Path', topicSlug: 'skin', steps: ['Identify skin type', 'Allergy signs', 'Diet for skin', 'Supplements', 'When to see dermatologist'], color: 'green' },
     { title: 'Emergency Prep Path', topicSlug: 'health', steps: ['First aid kit', 'Emergency contacts', 'Warning signs', 'CPR basics', 'Poison control'], color: 'red' }
   ];
+  // Use CMS data if available, otherwise use defaults
+  const guidedPaths = cmsGuidedPaths.length > 0 ? cmsGuidedPaths : defaultGuidedPaths;
 
-  // Daily care tips - rotates based on day
-  const dailyCareTips = [
+  // Daily care tips - DEFAULTS (used when no CMS data)
+  const defaultDailyCareTips = [
     { category: 'Grooming', tip: 'Brush your dog\'s coat 2-3 times a week to prevent matting and distribute natural oils. Double-coated breeds need daily brushing during shedding season.', icon: Scissors },
     { category: 'Dental', tip: 'Brush your dog\'s teeth daily with dog-specific toothpaste. If daily isn\'t possible, aim for at least 3 times a week. Dental chews help but don\'t replace brushing.', icon: Heart },
     { category: 'Ears', tip: 'Check ears weekly for redness, odor, or discharge. Clean with a vet-approved ear cleaner. Floppy-eared dogs need more frequent checks.', icon: Stethoscope },
@@ -684,6 +702,8 @@ const CarePage = () => {
     { category: 'Eyes', tip: 'Wipe away eye discharge daily with a damp cloth. Excessive tearing, redness, or cloudiness warrants a vet visit.', icon: AlertCircle },
     { category: 'Paws', tip: 'Check paws regularly for cuts, cracks, or foreign objects. In winter, wipe paws after walks to remove salt. In summer, avoid hot pavement.', icon: PawPrint }
   ];
+  // Use CMS data if available, otherwise use defaults
+  const dailyCareTips = cmsDailyTips.length > 0 ? cmsDailyTips : defaultDailyCareTips;
   
   const todaysTip = dailyCareTips[new Date().getDay() % dailyCareTips.length];
 
