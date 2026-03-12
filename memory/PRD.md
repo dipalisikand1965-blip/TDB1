@@ -33,7 +33,7 @@ The current focus was elevating the **Learn page** to a "10/10 golden standard" 
 | Hosting | Kubernetes (Emergent preview) |
 
 ### Key URLs
-- Preview: `https://ai-watercolor.preview.emergentagent.com`
+- Preview: `https://learn-golden-1.preview.emergentagent.com`
 - Production: `https://thedoggycompany.com`
 
 ### Credentials
@@ -94,9 +94,42 @@ The current focus was elevating the **Learn page** to a "10/10 golden standard" 
 ### AI Image Generation System ✅
 - Background task generates watercolor product images via OpenAI GPT-4o
 - Uploads to Cloudinary automatically
-- **Status: 181/500 products processed, 0 failures**
+- **Status: 270/890 products processed (~30%), 363 missing images**
 - Triggered from Admin panel "AI IMAGES" button
 - Backend: `ai_image_service.py` (565 lines)
+
+### Session 8.9 - Admin Image Upload to Cloudinary ✅ (March 12, 2026)
+
+**Problem:** Admin could only set images via URL input, which:
+1. Required external hosting
+2. Would NOT persist through deployments (local uploads lost)
+3. Was inconvenient for admin workflows
+
+**Solution Implemented:**
+1. **Backend Cloudinary Upload Endpoints:**
+   - `POST /api/upload/product-image` - Direct file upload to Cloudinary
+   - `POST /api/upload/service-image` - Direct file upload to Cloudinary
+   - `POST /api/admin/product/{id}/upload-image` - Upload and link to specific product
+   - `POST /api/admin/service/{id}/upload-image` - Upload and link to specific service
+
+2. **Admin UI Enhancements:**
+   - **UnifiedProductBox.jsx**: Added file upload button with preview, Cloudinary integration
+   - **ServiceBox.jsx**: Added file upload button with preview, Cloudinary integration
+   - Both components now show:
+     - Primary "Upload File" button (recommended, green highlight)
+     - Secondary URL paste option
+     - Real-time upload progress indicator
+     - "Persists through deployments!" confirmation message
+
+**Key Files Modified:**
+- `/app/backend/server.py` - Added Cloudinary upload endpoints (lines 4104-4299)
+- `/app/frontend/src/components/admin/UnifiedProductBox.jsx` - Added handleImageUpload function
+- `/app/frontend/src/components/admin/ServiceBox.jsx` - Added handleServiceImageUpload function
+
+**Image Statistics (Current):**
+- Products: 890 total, 527 with images (59.2% coverage)
+- Services: 34 total, 0 with images (need generation)
+- AI Generated Images: 270 products
 
 ### Care Page Crash Fix ✅
 - Fixed `TypeError` in `CuratedBundles.jsx` — added safety check for `bundle.items`
@@ -146,14 +179,15 @@ The current focus was elevating the **Learn page** to a "10/10 golden standard" 
 ## 6. Prioritized Backlog
 
 ### P0 — Critical
-- [ ] Complete AI image generation (181/500 in progress, 0 failures)
+- [x] **Add admin image upload to Cloudinary** (COMPLETED Session 8.9)
+- [ ] Complete AI image generation (270/890 done, 363 remaining)
 - [ ] Generate unique images for Soul Made products (not same portrait)
 - [ ] Sync generated images to production via admin API
 - [ ] Replicate Advisory-style product/bundle display on Learn page
 
 ### P1 — High
 - [ ] Quick Quiz using unanswered soul questions (gamification)
-- [ ] Background generation for service watercolor illustrations
+- [ ] Background generation for service watercolor illustrations (34 services need images)
 - [ ] Enhance remaining pillar pages (Fit, Stay, Travel, Dine) to golden standard
 - [ ] Fix Razorpay checkout
 

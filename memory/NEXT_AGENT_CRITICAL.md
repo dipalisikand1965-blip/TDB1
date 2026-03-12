@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://ai-watercolor.preview.emergentagent.com
+https://learn-golden-1.preview.emergentagent.com
 
 ---
 

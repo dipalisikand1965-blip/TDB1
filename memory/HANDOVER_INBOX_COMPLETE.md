@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://ai-watercolor.preview.emergentagent.com
+https://learn-golden-1.preview.emergentagent.com
 ```
 
 ---

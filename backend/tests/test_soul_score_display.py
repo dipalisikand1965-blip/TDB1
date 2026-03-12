@@ -14,7 +14,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://ai-watercolor.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://learn-golden-1.preview.emergentagent.com')
 
 class TestSoulScoreAPI:
     """Test backend API for soul score"""
