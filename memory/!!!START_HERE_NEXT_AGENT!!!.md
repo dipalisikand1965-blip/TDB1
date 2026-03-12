@@ -84,7 +84,7 @@ Products appear on production site
 Test User: dipali@clubconcierge.in / test123
 Admin: aditya / lola4304
 Production: https://thedoggycompany.com
-Preview: https://pillar-audit-1.preview.emergentagent.com
+Preview: https://pet-os-refactor.preview.emergentagent.com
 Database: pet-os-live-test_database
 ```
 
@@ -106,7 +106,7 @@ New mockups AUTO-UPLOAD to Cloudinary. No manual conversion needed!
 # API CHEAT SHEET
 
 ```bash
-API_URL="https://pillar-audit-1.preview.emergentagent.com"
+API_URL="https://pet-os-refactor.preview.emergentagent.com"
 
 # Check generation status
 curl -s "$API_URL/api/mockups/status" | python3 -m json.tool

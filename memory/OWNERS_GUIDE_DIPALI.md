@@ -189,7 +189,7 @@ A percentage (0-100%) showing how well Mira "knows" a pet.
 ## 📱 HOW TO TEST
 
 ### On Preview (Safe to experiment):
-- URL: `https://pillar-audit-1.preview.emergentagent.com`
+- URL: `https://pet-os-refactor.preview.emergentagent.com`
 - Test user: `dipali@clubconcierge.in` / `test123`
 - Admin: `aditya` / `lola4304`
 
