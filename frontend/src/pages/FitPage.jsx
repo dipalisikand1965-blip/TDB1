@@ -687,11 +687,6 @@ const FitPage = () => {
       <PillarTopicsGrid
         pillar="fit"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.fit}
-        onTopicClick={(topic) => {
-          // Navigate to services page filtered by this topic/category
-          const searchTerm = topic.title || topic.name;
-          window.location.href = `/services?pillar=fit&search=${encodeURIComponent(searchTerm)}`;
-        }}
         columns={4}
       />
 

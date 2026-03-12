@@ -468,11 +468,6 @@ const AdoptPage = () => {
       <PillarTopicsGrid
         pillar="adopt"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.adopt}
-        onTopicClick={(topic) => {
-          // Navigate to services page filtered by this adoption category
-          const searchTerm = topic.title || topic.name;
-          window.location.href = `/services?pillar=adopt&search=${encodeURIComponent(searchTerm)}`;
-        }}
         columns={4}
       />
 

@@ -886,11 +886,6 @@ const ShopPage = () => {
       <PillarTopicsGrid
         pillar="shop"
         topics={DEFAULT_PILLAR_TOPICS.shop}
-        onTopicClick={(topic) => {
-          // Navigate to shop with search filter
-          const searchTerm = topic.title || topic.name;
-          window.location.href = `/shop?search=${encodeURIComponent(searchTerm)}`;
-        }}
         columns={4}
       />
       
