@@ -15,6 +15,8 @@ import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
 import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
+import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
+import { PillarDailyTip, PillarHelpBuckets, PillarGuidedPaths } from '../components/PillarGoldSections';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import ProductCard from '../components/ProductCard';
 import { ConciergeButton } from '../components/mira-os';
@@ -98,6 +100,9 @@ const PaperworkPage = () => {
   const [cmsCategories, setCmsCategories] = useState([]);
   const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
   const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  const [cmsHelpBuckets, setCmsHelpBuckets] = useState([]);
+  const [cmsDailyTips, setCmsDailyTips] = useState([]);
+  const [cmsGuidedPaths, setCmsGuidedPaths] = useState([]);
   
   const [loading, setLoading] = useState(true);
   const [userPets, setUserPets] = useState([]);
@@ -202,6 +207,15 @@ const PaperworkPage = () => {
         }
         if (data.miraPrompts?.length > 0) {
           setCmsMiraPrompts(data.miraPrompts);
+        }
+        if (data.helpBuckets?.length > 0) {
+          setCmsHelpBuckets(data.helpBuckets);
+        }
+        if (data.dailyTips?.length > 0) {
+          setCmsDailyTips(data.dailyTips);
+        }
+        if (data.guidedPaths?.length > 0) {
+          setCmsGuidedPaths(data.guidedPaths);
         }
         console.log('[PaperworkPage] CMS config loaded');
       }
@@ -539,6 +553,52 @@ const PaperworkPage = () => {
           </div>
         </div>
       )}
+
+      {/* ════════════════════════════════════════════════════════════════════
+          2b. PAPERWORK TOPIC CARDS GRID (Gold Standard)
+          ════════════════════════════════════════════════════════════════════ */}
+      <PillarTopicsGrid
+        pillar="paperwork"
+        topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.paperwork}
+        columns={4}
+      />
+
+      {/* ════════════════════════════════════════════════════════════════════
+          3. DAILY PAPERWORK TIP + 4. HOW CAN WE HELP + 5. GUIDED PATHS
+          Gold Standard sections
+          ════════════════════════════════════════════════════════════════════ */}
+      <PillarDailyTip
+        tips={cmsDailyTips.length > 0 ? cmsDailyTips : [
+          { category: 'Document Safety', tip: 'Store a digital backup of all pet documents in the cloud. If you ever need them at a vet or border control, you\'ll have instant access.', icon: 'Shield', color: 'from-blue-500 to-indigo-500' },
+          { category: 'Vaccination Records', tip: 'Set a calendar reminder 1 month before each vaccination is due. Staying ahead of renewals means no last-minute scramble before boarding or travel.', icon: 'Calendar', color: 'from-indigo-500 to-blue-600' },
+          { category: 'Insurance Tips', tip: 'Read your pet insurance policy thoroughly before you need it. Knowing your coverage limits and exclusions prevents surprises at the worst moment.', icon: 'Clipboard', color: 'from-blue-600 to-sky-600' },
+          { category: 'Microchip', tip: 'Update your microchip registration every time you move or change phone numbers. This is the most commonly overlooked step in pet ID management.', icon: 'CheckCircle', color: 'from-sky-500 to-blue-500' },
+          { category: 'Travel Documents', tip: 'If you plan to travel internationally with your pet, start the health certificate process at least 90 days in advance. Requirements are strict and time-sensitive.', icon: 'MapPin', color: 'from-blue-500 to-cyan-500' },
+          { category: 'Medical History', tip: 'Keep a running medical history document that you take to every vet visit. It prevents repeating tests and helps new vets understand your pet\'s full picture.', icon: 'Clipboard', color: 'from-cyan-500 to-blue-500' },
+          { category: 'Identity Documents', tip: 'A current, clear photo of your pet is a document. Update it every 6 months. In the event of loss or theft, you\'ll need it immediately.', icon: 'BookOpen', color: 'from-indigo-400 to-blue-500' },
+        ]}
+        tipLabel="Today's Document Tip"
+      />
+
+      <PillarHelpBuckets
+        pillar="paperwork"
+        buckets={cmsHelpBuckets.length > 0 ? cmsHelpBuckets : [
+          { id: 'records', title: 'Update Records', icon: 'Clipboard', color: 'blue', items: ['Vaccination records', 'Medical history', 'Vet contact details', 'Insurance documents'] },
+          { id: 'insurance', title: 'Find Insurance', icon: 'Shield', color: 'indigo', items: ['Compare policies', 'Understand coverage', 'File a claim', 'Annual review'] },
+          { id: 'vault', title: 'Health Vault', icon: 'BookOpen', color: 'cyan', items: ['Upload documents', 'Set reminders', 'Share with vets', 'Travel document prep'] },
+        ]}
+      />
+
+      <PillarGuidedPaths
+        pillar="paperwork"
+        heading="Guided Document Paths"
+        paths={cmsGuidedPaths.length > 0 ? cmsGuidedPaths : [
+          { title: 'New Puppy Documents', topicSlug: 'identity', steps: ['Microchip registration', 'First vet records', 'Vaccination schedule', 'Pet insurance signup', 'Digital backup'], color: 'blue' },
+          { title: 'Annual Document Review', topicSlug: 'renewal', steps: ['Check vaccination dates', 'Review insurance', 'Update microchip', 'Photo update', 'Vet contact update'], color: 'indigo' },
+          { title: 'Travel Document Prep', topicSlug: 'travel', steps: ['Health certificate', 'Import permits', 'Vaccination certificates', 'Microchip check', 'Airline paperwork'], color: 'cyan' },
+          { title: 'Insurance Management', topicSlug: 'insurance', steps: ['Compare policies', 'Document pre-conditions', 'Submit application', 'Store policy docs', 'Set renewal reminder'], color: 'sky' },
+        ]}
+      />
 
       {/* Quick Action Banner */}
       <div className="bg-gradient-to-r from-slate-700 to-slate-800 text-white py-4">

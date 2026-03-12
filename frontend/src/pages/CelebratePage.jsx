@@ -53,6 +53,7 @@ import MiraAdvisorCard from '../components/MiraAdvisorCard';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
+import { PillarDailyTip, PillarHelpBuckets, PillarGuidedPaths } from '../components/PillarGoldSections';
 
 // Lazy load Soul Explainer for footer link
 const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
@@ -194,6 +195,9 @@ const CelebratePage = () => {
   const [cmsCategories, setCmsCategories] = useState([]);
   const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
   const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  const [cmsHelpBuckets, setCmsHelpBuckets] = useState([]);
+  const [cmsDailyTips, setCmsDailyTips] = useState([]);
+  const [cmsGuidedPaths, setCmsGuidedPaths] = useState([]);
   
   // Personalize title with pet name
   const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet') || 
@@ -218,6 +222,15 @@ const CelebratePage = () => {
         }
         if (data.miraPrompts?.length > 0) {
           setCmsMiraPrompts(data.miraPrompts);
+        }
+        if (data.helpBuckets?.length > 0) {
+          setCmsHelpBuckets(data.helpBuckets);
+        }
+        if (data.dailyTips?.length > 0) {
+          setCmsDailyTips(data.dailyTips);
+        }
+        if (data.guidedPaths?.length > 0) {
+          setCmsGuidedPaths(data.guidedPaths);
         }
         console.log('[CelebratePage] CMS config loaded');
       }
@@ -681,6 +694,44 @@ const CelebratePage = () => {
         pillar="celebrate"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.celebrate}
         columns={4}
+      />
+
+      {/* ════════════════════════════════════════════════════════════════════
+          3. DAILY CELEBRATE TIP + 4. HOW CAN WE HELP + 5. GUIDED PATHS
+          Gold Standard sections
+          ════════════════════════════════════════════════════════════════════ */}
+      <PillarDailyTip
+        tips={cmsDailyTips.length > 0 ? cmsDailyTips : [
+          { category: 'Birthday Ideas', tip: 'A pupcake with a single candle for your dog\'s birthday is one of those small rituals that creates a lifetime of memories.', icon: 'Award', color: 'from-purple-500 to-pink-500' },
+          { category: 'Gotcha Day', tip: 'Your pet\'s "Gotcha Day" — the anniversary of their adoption — is worth celebrating as much as a birthday. Start the tradition!', icon: 'Heart', color: 'from-pink-500 to-rose-500' },
+          { category: 'Photography Tips', tip: 'Capture the best pet photos at their eye level. Natural light in the morning gives warm, beautiful tones without a flash.', icon: 'Camera', color: 'from-violet-500 to-purple-500' },
+          { category: 'Gift Ideas', tip: 'The best gift for your dog isn\'t the most expensive — it\'s something that matches their personality. A scent trail for a sniffer, a tug toy for a tugger.', icon: 'Star', color: 'from-rose-500 to-pink-500' },
+          { category: 'Party Planning', tip: 'Keep dog parties small. 3-4 dogs who know each other is the sweet spot. Large groups can create anxiety even in social dogs.', icon: 'Users', color: 'from-fuchsia-500 to-purple-500' },
+          { category: 'Milestones', tip: 'Mark your pet\'s milestones: first year anniversary, first training graduation, first travel trip. These memories matter.', icon: 'Award', color: 'from-pink-400 to-violet-500' },
+          { category: 'Cake Safety', tip: 'Only use dog-safe "pupcakes" for your pet\'s birthday. Human cakes with xylitol, raisins, or chocolate can be toxic to dogs.', icon: 'Shield', color: 'from-purple-400 to-pink-500' },
+        ]}
+        tipLabel="Today's Celebration Tip"
+      />
+
+      <PillarHelpBuckets
+        pillar="celebrate"
+        buckets={cmsHelpBuckets.length > 0 ? cmsHelpBuckets : [
+          { id: 'party', title: 'Plan a Party', icon: 'Award', color: 'purple', items: ['Birthday packages', 'Dog party supplies', 'Venue booking', 'Guest list help'] },
+          { id: 'gifts', title: 'Find Perfect Gifts', icon: 'Star', color: 'pink', items: ['Personalised gifts', 'Birthday cakes', 'Gift boxes', 'Memory keepsakes'] },
+          { id: 'memories', title: 'Capture Memories', icon: 'Calendar', color: 'violet', items: ['Pet photography', 'Birthday cards', 'Video reels', 'Anniversary gifts'] },
+        ]}
+      />
+
+      <PillarGuidedPaths
+        pillar="celebrate"
+        heading="Guided Celebration Paths"
+        paths={cmsGuidedPaths.length > 0 ? cmsGuidedPaths : [
+          { title: 'Birthday Party Path', topicSlug: 'birthday', steps: ['Choose theme', 'Guest list', 'Order cake', 'Decorate space', 'Capture moments'], color: 'purple' },
+          { title: 'Gotcha Day Path', topicSlug: 'gotcha', steps: ['Find adoption date', 'Choose celebration', 'Special outing', 'Photo session', 'Share the story'], color: 'pink' },
+          { title: 'Pet Photoshoot', topicSlug: 'photo', steps: ['Choose location', 'Plan outfit/props', 'Book photographer', 'Morning golden hour', 'Edit & frame'], color: 'violet' },
+          { title: 'Gift Curation', topicSlug: 'gifts', steps: ['Know personality', 'Set budget', 'Choose personalised item', 'Gift wrap', 'Delivery'], color: 'rose' },
+          { title: 'Graduation Party', topicSlug: 'training', steps: ['Training complete', 'Invite family', 'Get certificate', 'Special treat', 'Share achievement'], color: 'fuchsia' },
+        ]}
       />
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}

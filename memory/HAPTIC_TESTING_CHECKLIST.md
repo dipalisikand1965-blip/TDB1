@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://watercolor-makeover.preview.emergentagent.com/mira-demo**
+**https://pillar-audit-1.preview.emergentagent.com/mira-demo**
 
 ---
 

@@ -28,6 +28,7 @@ import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
+import { PillarDailyTip, PillarHelpBuckets, PillarGuidedPaths } from '../components/PillarGoldSections';
 import ProductCard from '../components/ProductCard';
 import {
   Search, Heart, ArrowRight, X, Package, Mic,
@@ -578,6 +579,9 @@ const ShopPage = () => {
   const [cmsCategories, setCmsCategories] = useState([]);
   const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
   const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  const [cmsHelpBuckets, setCmsHelpBuckets] = useState([]);
+  const [cmsDailyTips, setCmsDailyTips] = useState([]);
+  const [cmsGuidedPaths, setCmsGuidedPaths] = useState([]);
   
   // State
   const [allProducts, setAllProducts] = useState([]);
@@ -616,6 +620,15 @@ const ShopPage = () => {
         }
         if (data.miraPrompts?.length > 0) {
           setCmsMiraPrompts(data.miraPrompts);
+        }
+        if (data.helpBuckets?.length > 0) {
+          setCmsHelpBuckets(data.helpBuckets);
+        }
+        if (data.dailyTips?.length > 0) {
+          setCmsDailyTips(data.dailyTips);
+        }
+        if (data.guidedPaths?.length > 0) {
+          setCmsGuidedPaths(data.guidedPaths);
         }
         console.log('[ShopPage] CMS config loaded');
       }
@@ -888,8 +901,45 @@ const ShopPage = () => {
         topics={DEFAULT_PILLAR_TOPICS.shop}
         columns={4}
       />
-      
-      {/* Products Section */}
+
+      {/* ════════════════════════════════════════════════════════════════════
+          3. DAILY SHOP TIP + 4. HOW CAN WE HELP + 5. GUIDED PATHS
+          Gold Standard sections
+          ════════════════════════════════════════════════════════════════════ */}
+      <PillarDailyTip
+        tips={cmsDailyTips.length > 0 ? cmsDailyTips : [
+          { category: 'Shopping Tip', tip: 'Buy kibble in smaller bags until you know your dog likes it. Buying in bulk before knowing is a common (and expensive) beginner mistake.', icon: 'Package', color: 'from-blue-500 to-indigo-500' },
+          { category: 'Product Quality', tip: 'Always check the ingredient list on dog food. AAFCO certification means the food meets minimum nutritional standards. Look for it on every bag.', icon: 'CheckCircle', color: 'from-indigo-500 to-blue-500' },
+          { category: 'Toy Safety', tip: 'Remove price tags and packaging from toys before giving them to your dog. Many dogs will chew and swallow non-food materials within minutes.', icon: 'Shield', color: 'from-blue-600 to-sky-500' },
+          { category: 'Deals', tip: 'Subscribe-and-save programs for food and flea treatment can save 15-30% annually. Set a reminder to reassess needs every 6 months.', icon: 'Star', color: 'from-sky-500 to-blue-500' },
+          { category: 'Sizing', tip: 'When buying a harness, bring your dog or use a soft tape measure. Sizing varies widely across brands, and returns on pet gear can be difficult.', icon: 'Award', color: 'from-blue-500 to-cyan-500' },
+          { category: 'Essentials', tip: 'The true essentials for a new dog: quality food, a comfortable bed, a fitting collar with ID tag, a 6-foot leash, and a vet relationship. Everything else is bonus.', icon: 'Clipboard', color: 'from-cyan-500 to-blue-500' },
+          { category: 'Eco Shopping', tip: 'Look for sustainably sourced pet products. Many eco-friendly options perform just as well as conventional products and reduce your environmental footprint.', icon: 'PawPrint', color: 'from-blue-400 to-indigo-500' },
+        ]}
+        tipLabel="Today's Shopping Tip"
+      />
+
+      <PillarHelpBuckets
+        pillar="shop"
+        buckets={cmsHelpBuckets.length > 0 ? cmsHelpBuckets : [
+          { id: 'essentials', title: 'Find Essentials', icon: 'Package', color: 'blue', items: ['New pet starter kit', 'Food & treats', 'Beds & crates', 'Grooming supplies'] },
+          { id: 'deals', title: 'Best Deals', icon: 'Award', color: 'indigo', items: ['Subscribe & save', 'Bundle discounts', 'Clearance items', 'Seasonal sales'] },
+          { id: 'breed_specific', title: 'Breed-Specific', icon: 'PawPrint', color: 'cyan', items: ['Breed-fit products', 'Size-appropriate toys', 'Breed nutrition', 'Specialist gear'] },
+        ]}
+      />
+
+      <PillarGuidedPaths
+        pillar="shop"
+        heading="Guided Shopping Paths"
+        paths={cmsGuidedPaths.length > 0 ? cmsGuidedPaths : [
+          { title: 'New Puppy Kit', topicSlug: 'puppy', steps: ['Food & bowl', 'Crate & bed', 'Collar & leash', 'Toys', 'Grooming starter'], color: 'blue' },
+          { title: 'Senior Dog Essentials', topicSlug: 'senior', steps: ['Orthopedic bed', 'Joint supplements', 'Senior food', 'Non-slip mat', 'Easy-access bowl'], color: 'indigo' },
+          { title: 'Travel Gear Shop', topicSlug: 'travel', steps: ['IATA carrier', 'Collapsible bowl', 'Seat belt harness', 'Travel first aid', 'ID tag update'], color: 'cyan' },
+          { title: 'Anxious Dog Pack', topicSlug: 'anxiety', steps: ['Calming treats', 'Compression wrap', 'Lick mat', 'Puzzle feeder', 'Aromatherapy spray'], color: 'violet' },
+          { title: 'Active Dog Kit', topicSlug: 'active', steps: ['High-protein food', 'Durable toys', 'Cooling mat', 'Long leash', 'Paw balm'], color: 'green' },
+          { title: 'Seasonal Essentials', topicSlug: 'seasonal', steps: ['Summer cooling gear', 'Winter protection', 'Rainy day toys', 'Tick prevention', 'Flea treatment'], color: 'amber' },
+        ]}
+      />
       <section className="py-6 sm:py-8 bg-white pb-24 sm:pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between mb-4 sm:mb-6">

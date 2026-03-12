@@ -37,6 +37,7 @@ import ConversationalEntry from '../components/ConversationalEntry';
 import QuickWinTip from '../components/QuickWinTip';
 import LocalPlacesSection from '../components/LocalPlacesSection';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
+import { PillarDailyTip, PillarHelpBuckets, PillarGuidedPaths } from '../components/PillarGoldSections';
 import {
   PartyPopper, Calendar, MapPin, Users, Clock, PawPrint,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
@@ -159,6 +160,9 @@ const EnjoyPage = () => {
   const [cmsCategories, setCmsCategories] = useState([]);
   const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
   const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  const [cmsHelpBuckets, setCmsHelpBuckets] = useState([]);
+  const [cmsDailyTips, setCmsDailyTips] = useState([]);
+  const [cmsGuidedPaths, setCmsGuidedPaths] = useState([]);
   
   // Personalize title with pet name
   const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet') || 
@@ -183,6 +187,15 @@ const EnjoyPage = () => {
         }
         if (data.miraPrompts?.length > 0) {
           setCmsMiraPrompts(data.miraPrompts);
+        }
+        if (data.helpBuckets?.length > 0) {
+          setCmsHelpBuckets(data.helpBuckets);
+        }
+        if (data.dailyTips?.length > 0) {
+          setCmsDailyTips(data.dailyTips);
+        }
+        if (data.guidedPaths?.length > 0) {
+          setCmsGuidedPaths(data.guidedPaths);
         }
         console.log('[EnjoyPage] CMS config loaded');
       }
@@ -511,6 +524,45 @@ const EnjoyPage = () => {
         pillar="enjoy"
         topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.enjoy}
         columns={4}
+      />
+
+      {/* ════════════════════════════════════════════════════════════════════
+          3. DAILY ENJOY TIP + 4. HOW CAN WE HELP + 5. GUIDED PATHS
+          Gold Standard sections
+          ════════════════════════════════════════════════════════════════════ */}
+      <PillarDailyTip
+        tips={cmsDailyTips.length > 0 ? cmsDailyTips : [
+          { category: 'Mental Enrichment', tip: 'Dogs need mental exercise as much as physical. A 15-minute sniff walk does more for their mood than a 30-minute power walk.', icon: 'Brain', color: 'from-amber-500 to-orange-500' },
+          { category: 'Playtime', tip: 'Rotate your dog\'s toys every 3 days. Dogs lose interest in familiar toys but show excitement when old toys are "new" again.', icon: 'Sparkles', color: 'from-orange-500 to-amber-500' },
+          { category: 'Socialization', tip: 'Dog parks aren\'t for every dog. If your dog gets anxious, a one-on-one playdate with a familiar friend is far more enriching.', icon: 'Users', color: 'from-yellow-500 to-amber-500' },
+          { category: 'Indoor Fun', tip: 'Hide small treats around the house for a sniff hunt. This taps into your dog\'s strongest sense and leaves them genuinely satisfied.', icon: 'Star', color: 'from-amber-400 to-yellow-500' },
+          { category: 'Enrichment', tip: 'DIY enrichment: freeze chicken broth in a Kong or lick mat. The licking motion releases endorphins and calms anxious dogs.', icon: 'Heart', color: 'from-orange-400 to-amber-500' },
+          { category: 'Events', tip: 'Regular social exposure — even just watching people at a café — keeps dogs cognitively sharp and emotionally stable.', icon: 'Calendar', color: 'from-amber-600 to-orange-600' },
+          { category: 'Training', tip: 'Learning new tricks at any age keeps dogs sharp. Even "old" dogs love the mental challenge and the bonding time with you.', icon: 'Award', color: 'from-yellow-600 to-amber-600' },
+        ]}
+        tipLabel="Today's Enjoy Tip"
+      />
+
+      <PillarHelpBuckets
+        pillar="enjoy"
+        buckets={cmsHelpBuckets.length > 0 ? cmsHelpBuckets : [
+          { id: 'events', title: 'Find Events', icon: 'Calendar', color: 'amber', items: ['Local dog meetups', 'Pet-friendly cafés', 'Sports & agility events', 'Community walks'] },
+          { id: 'enrichment', title: 'Enrichment Ideas', icon: 'Brain', color: 'orange', items: ['Puzzle toys', 'Sniff games', 'DIY enrichment', 'Mental challenges'] },
+          { id: 'playdate', title: 'Plan a Playdate', icon: 'Users', color: 'yellow', items: ['Find dog friends', 'Playdate etiquette', 'Safe socialisation', 'Activity planning'] },
+        ]}
+      />
+
+      <PillarGuidedPaths
+        pillar="enjoy"
+        heading="Guided Enjoy Paths"
+        paths={cmsGuidedPaths.length > 0 ? cmsGuidedPaths : [
+          { title: 'Enrichment Starter', topicSlug: 'enrichment', steps: ['Assess interests', 'Start with sniff games', 'Add puzzle toys', 'Try DIY projects', 'Track engagement'], color: 'amber' },
+          { title: 'First Dog Park Visit', topicSlug: 'social', steps: ['Basic commands check', 'Choose quiet hours', 'Off-leash intro', 'Monitor body language', 'Gradual increase'], color: 'orange' },
+          { title: 'Playdate Planning', topicSlug: 'playdate', steps: ['Find a dog match', 'Neutral venue first', 'Supervised play', 'Build friendship', 'Regular meetup'], color: 'yellow' },
+          { title: 'Events & Activities', topicSlug: 'events', steps: ['Find local events', 'Prepare your dog', 'First attendance', 'Post-event debrief', 'Regular participation'], color: 'green' },
+          { title: 'Trick Training Fun', topicSlug: 'training', steps: ['Pick one trick', 'Short daily sessions', 'Reward-based learning', 'Add complexity', 'Show off!'], color: 'teal' },
+          { title: 'Outdoor Adventure', topicSlug: 'outdoor', steps: ['Choose trail level', 'Pack essentials', 'Warm-up walk', 'Main adventure', 'Cool-down & hydrate'], color: 'blue' },
+        ]}
       />
 
       {/* ==================== CONVERSATIONAL ENTRY + QUICK WIN ==================== */}
