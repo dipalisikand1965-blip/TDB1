@@ -1,0 +1,73 @@
+{
+  "summary": "Pillar CMS Pages refactoring tested successfully. Both Paperwork and Stay pages now load CMS-driven configuration with Ask Mira section at top. All backend API endpoints return valid data. Product modals work correctly on Paperwork page.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Paperwork bundles grid",
+        "issues": ["Some bundles show 'Save NaN' badge indicating missing original_price calculation"]
+      }
+    ]
+  },
+  "test_results": {
+    "backend_tests": {
+      "GET /api/paperwork/page-config": "PASSED - Returns config with title '{petName}', askMira, sections, documentCategories (6)",
+      "GET /api/paperwork/products": "PASSED - Returns products array",
+      "GET /api/paperwork/bundles": "PASSED - Returns bundles array",
+      "GET /api/stay/page-config": "PASSED - Returns config (uses generic CMS endpoint)",
+      "GET /api/stay/properties": "PASSED - Returns properties array",
+      "GET /api/stay/boarding": "PASSED - Returns boarding facilities array",
+      "total_backend_tests": "9 passed"
+    },
+    "frontend_tests": {
+      "paperwork_page_loads": "PASSED - Page loads with CMS-driven title 'Keep your pet's world in order'",
+      "paperwork_ask_mira_section": "PASSED - Ask Mira search bar visible at top with placeholder 'Find vaccination records...'",
+      "paperwork_document_kits": "PASSED - Document Organisation Kits section visible with bundles",
+      "paperwork_product_modals": "PASSED - Clicking product opens modal with name, description, price, Add to Cart",
+      "stay_page_loads": "PASSED - Page loads with title 'Find the perfect stay for your pet'",
+      "stay_ask_mira_section": "PASSED - Ask Mira search bar visible at top",
+      "stay_filters": "PASSED - Filter dropdowns visible (city, property type, rating)"
+    }
+  },
+  "verified_features": [
+    "Paperwork page CMS-driven title with {petName} template",
+    "Paperwork page Ask Mira section at top with search input",
+    "Paperwork page Document Organisation Kits section with bundles",
+    "Paperwork page Individual Products section with product cards",
+    "Paperwork page product modal opens on click with Add to Cart button",
+    "Stay page CMS integration added with Ask Mira at top",
+    "Stay page generic CMS endpoint /api/stay/page-config working",
+    "API routes registered correctly - pillar-specific before generic"
+  ],
+  "test_report_links": [
+    "/app/backend/tests/test_pillar_cms_pages.py",
+    "/app/test_reports/pytest/pillar_cms_pages_results.xml"
+  ],
+  "action_items": [
+    "Consider seeding default CMS config for Stay page (currently returns empty config)",
+    "Fix 'Save NaN' badge on some paperwork bundles - missing original_price calculation"
+  ],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_pillar_cms_pages.py"
+  ],
+  "success_rate": {
+    "backend": "100% (9/9 tests passed)",
+    "frontend": "100%"
+  },
+  "test_credentials": {
+    "user_email": "dipali@clubconcierge.in",
+    "user_password": "test123",
+    "admin_username": "aditya",
+    "admin_password": "lola4304"
+  },
+  "seed_data_creation": "None required - existing CMS data used",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Paperwork and Stay pillar pages have been refactored to be CMS-driven. Paperwork uses dedicated /api/paperwork/page-config route with document categories. Stay uses generic /api/{pillar}/page-config route. Both have Ask Mira section at top. Product modals work on Paperwork page. Minor issue: some bundles show 'Save NaN' badge."
+}

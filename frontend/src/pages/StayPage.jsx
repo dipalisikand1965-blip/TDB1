@@ -130,9 +130,68 @@ const StayPage = () => {
   const [userPets, setUserPets] = useState([]);
   const [selectedPets, setSelectedPets] = useState([]);
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // CMS STATE - Loaded from /api/stay/page-config
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const [cmsConfig, setCmsConfig] = useState({
+    title: "Find the perfect stay for {petName}",
+    subtitle: 'Pet-friendly hotels, boarding facilities & vacation spots',
+    askMira: {
+      enabled: true,
+      placeholder: "Search pet-friendly hotels near...",
+      buttonColor: 'bg-indigo-500'
+    },
+    sections: {
+      askMira: { enabled: true },
+      miraPrompts: { enabled: true },
+      stayCategories: { enabled: true },
+      properties: { enabled: true },
+      boarding: { enabled: true },
+      bundles: { enabled: true },
+      products: { enabled: true },
+      conciergeServices: { enabled: true },
+      personalized: { enabled: true }
+    }
+  });
+  const [cmsCategories, setCmsCategories] = useState([]);
+  const [cmsConciergeServices, setCmsConciergeServices] = useState([]);
+  const [cmsMiraPrompts, setCmsMiraPrompts] = useState([]);
+  
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // FETCH CMS CONFIGURATION
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const fetchCMSConfig = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/stay/page-config`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.config && Object.keys(data.config).length > 0) {
+          setCmsConfig(prev => ({ ...prev, ...data.config }));
+        }
+        if (data.categories?.length > 0) {
+          setCmsCategories(data.categories);
+        }
+        if (data.conciergeServices?.length > 0) {
+          setCmsConciergeServices(data.conciergeServices);
+        }
+        if (data.miraPrompts?.length > 0) {
+          setCmsMiraPrompts(data.miraPrompts);
+        }
+        console.log('[StayPage] CMS config loaded');
+      }
+    } catch (error) {
+      console.error('[StayPage] Failed to fetch CMS config:', error);
+    }
+  };
+  
+  // Personalize title with pet name
+  const pageTitle = cmsConfig.title?.replace('{petName}', activePet?.name || 'your pet') || 
+    `Find the perfect stay for ${activePet?.name || 'your pet'}`;
+  
   // Scroll to top when page loads
   useEffect(() => {
     window.scrollTo(0, 0);
+    fetchCMSConfig(); // Load CMS config
   }, []);
   
   // Handle URL type parameter - switch tab and scroll to section
@@ -606,6 +665,89 @@ ${stayRequestForm.special_requests || 'None'}
       title="Places Your Pet Feels at Home"
       description="Stays where your pet is welcome and comfortable"
     >
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* 1. ASK MIRA BAR - CMS DRIVEN (at TOP as per CMS standard) */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {cmsConfig.sections?.askMira?.enabled !== false && (
+        <section className="py-8 px-4 bg-gradient-to-b from-indigo-50 to-white" data-testid="stay-ask-mira">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-6">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900" data-testid="stay-page-title">
+                {pageTitle}
+              </h1>
+              <p className="text-gray-600 mt-2">{cmsConfig.subtitle}</p>
+            </div>
+            
+            <div className="max-w-2xl mx-auto">
+              <div className="flex gap-2 items-center bg-white rounded-full border border-gray-200 shadow-sm p-1.5 pl-5">
+                <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <Input
+                  placeholder={cmsConfig.askMira?.placeholder || "Search pet-friendly hotels near..."}
+                  className="flex-1 border-0 focus-visible:ring-0 text-sm placeholder:text-gray-400"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && e.target.value.trim()) {
+                      window.dispatchEvent(new CustomEvent('openMiraAI', {
+                        detail: { 
+                          message: e.target.value, 
+                          context: 'stay', 
+                          pillar: 'stay',
+                          pet_name: activePet?.name,
+                          pet_breed: activePet?.breed
+                        }
+                      }));
+                      e.target.value = '';
+                    }
+                  }}
+                  data-testid="ask-stay-input"
+                />
+                <Button
+                  onClick={(e) => {
+                    const input = e.target.closest('.flex').querySelector('input');
+                    if (input?.value.trim()) {
+                      window.dispatchEvent(new CustomEvent('openMiraAI', {
+                        detail: { message: input.value, context: 'stay', pillar: 'stay' }
+                      }));
+                      input.value = '';
+                    }
+                  }}
+                  className={`rounded-full ${cmsConfig.askMira?.buttonColor || 'bg-indigo-500'} hover:opacity-90 h-10 w-10 p-0`}
+                >
+                  <Search className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* 2. MIRA'S CONTEXTUAL PROMPT - CMS DRIVEN */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {cmsConfig.sections?.miraPrompts?.enabled !== false && cmsMiraPrompts.length > 0 && activePet && (
+        <div className="px-4 pb-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 p-5 text-white">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-8 translate-x-8" />
+              <div className="relative flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-medium text-white/80 uppercase tracking-wider">
+                      Mira's Tip
+                    </span>
+                  </div>
+                  <p className="text-sm md:text-base font-medium leading-relaxed" data-testid="mira-contextual-prompt">
+                    {cmsMiraPrompts[0]?.message?.replace('{petName}', activePet?.name || 'your pet').replace('{breedName}', activePet?.breed || 'your pet')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ==================== MIRA'S CURATED LAYER - Gold Standard - ALWAYS FIRST ==================== */}
       <section className="py-6 bg-gradient-to-b from-white to-emerald-50/30 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 mb-6">
