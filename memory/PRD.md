@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document
-## Version 13.2.0 | March 12, 2026
+## Version 13.3.0 | March 12, 2026
 
 ---
 
@@ -224,6 +224,13 @@ Credentials: admin `aditya` / `lola4304`
 ---
 
 ## CHANGELOG
+
+### March 12, 2026 — v13.3.0 — ADMIN MEDIA + IMAGE STYLE FIXES ✅
+- Fixed **product image upload persistence** so admin uploads now save back to `products_master` correctly (not just side collections)
+- Product and Service editors now allow image upload even on **new unsaved drafts**; user can upload first and then save the record
+- Added generic **bundle** and **experience** Cloudinary upload endpoints to support admin media workflows consistently
+- Corrected AI style direction so **Services** generate as illustrative watercolor and **Bundles** generate as watercolor compositions, while product image flows remain realistic/product-photography oriented
+- Verified backend upload flows end-to-end for products/services/bundles and verified `/api/nearby/places` returns live results for Stay / Dine / Advisory-style queries
 
 ### March 12, 2026 — v13.2.0 — SOUL LAYER ROLLOUT CONTINUED ✅
 - Added a reusable `PillarSoulLayer` component to speed up Pet OS rollout without bloating page files
