@@ -56,10 +56,143 @@
     <div class="header">
         <h1>The Doggy Company</h1>
         <p>Mira-OS: The Pet Life Operating System</p>
-        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: March 12, 2026 15:30 IST | Version 8.9.0 - Admin Cloudinary Image Upload</p>
+        <p style="margin-top: 10px; opacity: 0.8;">Last Updated: December 2025 | Version 9.0.0 - Learn Page Golden Standard + Persistent AI Generation</p>
     </div>
 
     <div class="container">
+        <!-- Session 9.0 Updates - Learn Page Golden Standard + AI Generation Persistence -->
+        <div class="section" style="background: linear-gradient(135deg, #dbeafe, #e0f2fe); border: 3px solid #3b82f6;">
+            <h2 style="color: #1d4ed8; border-color: #3b82f6;">🌟 Session 9.0 - Learn Page Golden Standard + Persistent AI Generation (December 2025)</h2>
+            
+            <div class="success-box">
+                <strong>LEARN PAGE NOW MATCHES ADVISORY GOLDEN STANDARD!</strong> Full personalization by pet breed, 4 curated bundles, AI image generation running persistently.
+            </div>
+
+            <h3>What Was Implemented:</h3>
+            <table>
+                <tr>
+                    <th>Feature</th>
+                    <th>Component / Endpoint</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>Learn Page Parity with Advisory</td>
+                    <td><code>LearnPage.jsx</code></td>
+                    <td>Same structure: Hero → Categories → Products → Bundles → Personalized Recommendations</td>
+                </tr>
+                <tr>
+                    <td>Breed-Personalized Products</td>
+                    <td><code>LearnProductsGrid.jsx</code></td>
+                    <td>Filters products by current pet's breed, shows breed-specific items first</td>
+                </tr>
+                <tr>
+                    <td>4 Learn Bundles</td>
+                    <td><code>GET /api/learn/bundles</code></td>
+                    <td>New Puppy Training, Behavior Bootcamp, Training Tools, Recall Mastery</td>
+                </tr>
+                <tr>
+                    <td>Cloudinary Image Upload</td>
+                    <td><code>CloudinaryUploader.jsx</code></td>
+                    <td>Admin can upload images for Products, Services, Bundles - persists through deploys</td>
+                </tr>
+                <tr>
+                    <td>AI Image Generation</td>
+                    <td><code>POST /api/ai-images/generate-product-images</code></td>
+                    <td>Background AI generation for product images with progress tracking</td>
+                </tr>
+                <tr>
+                    <td>Real-time Progress Panel</td>
+                    <td><code>Admin.jsx</code></td>
+                    <td>Floating panel shows AI generation progress, status, controls</td>
+                </tr>
+            </table>
+
+            <h3>Learn Bundles (4 NEW):</h3>
+            <table>
+                <tr>
+                    <th>Bundle Name</th>
+                    <th>Price</th>
+                    <th>Items Included</th>
+                </tr>
+                <tr>
+                    <td>New Puppy Training Bundle</td>
+                    <td>₹6,499</td>
+                    <td>Puppy Training Course, Clicker, Treat Pouch, Training Treats</td>
+                </tr>
+                <tr>
+                    <td>Behavior Bootcamp Bundle</td>
+                    <td>₹7,499</td>
+                    <td>Behavior Program, Anxiety Course, No-Pull Harness, Calming Treats</td>
+                </tr>
+                <tr>
+                    <td>Training Tools Starter Kit</td>
+                    <td>₹999</td>
+                    <td>Professional Clicker, Treat Pouch, 2x Training Treats Packs</td>
+                </tr>
+                <tr>
+                    <td>Recall & Leash Mastery</td>
+                    <td>₹4,499</td>
+                    <td>Recall Training Course, Leash Course, Long Lead, Treats</td>
+                </tr>
+            </table>
+
+            <h3>Personalization Logic:</h3>
+            <div class="highlight">
+                <p><strong>How Products are Filtered:</strong></p>
+                <ol>
+                    <li><strong>Get Pet's Breed</strong> → From logged-in user's current pet profile</li>
+                    <li><strong>Filter Breed-Specific</strong> → Show products tagged with pet's breed first</li>
+                    <li><strong>Exclude Other Breeds</strong> → Don't show Pug products to Labrador owners</li>
+                    <li><strong>Show Generic Training</strong> → Universal training products shown after breed-specific</li>
+                </ol>
+            </div>
+
+            <h3>AI Image Generation System:</h3>
+            <div class="warning-box">
+                <strong>⚠️ IMPORTANT FOR AGENTS:</strong> The AI generation runs as an in-memory background task. 
+                It stops when the agent forks. Images generated ARE SAVED in Cloudinary permanently.
+                To restart: Admin Panel → AI IMAGES button → Start Generation
+            </div>
+            <table>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td><code>GET /api/ai-images/status</code></td>
+                    <td>Check if generation is running, current progress</td>
+                </tr>
+                <tr>
+                    <td><code>GET /api/ai-images/stats</code></td>
+                    <td>Total products, how many have images</td>
+                </tr>
+                <tr>
+                    <td><code>POST /api/ai-images/generate-product-images?password=lola4304</code></td>
+                    <td>Start background generation</td>
+                </tr>
+                <tr>
+                    <td><code>POST /api/ai-images/stop</code></td>
+                    <td>Stop running generation</td>
+                </tr>
+            </table>
+
+            <h3>Files Modified:</h3>
+            <ul>
+                <li><code>/app/frontend/src/pages/LearnPage.jsx</code> - Added bundles, personalized sections</li>
+                <li><code>/app/frontend/src/components/Learn/LearnProductsGrid.jsx</code> - Breed personalization</li>
+                <li><code>/app/frontend/src/components/admin/CloudinaryUploader.jsx</code> - Reusable upload component</li>
+                <li><code>/app/frontend/src/pages/Admin.jsx</code> - AI progress panel</li>
+                <li><code>/app/backend/server.py</code> - Cloudinary upload endpoints</li>
+            </ul>
+
+            <h3>Testing Credentials:</h3>
+            <table>
+                <tr><th>Type</th><th>Username</th><th>Password</th></tr>
+                <tr><td>User Login</td><td>dipali@clubconcierge.in</td><td>test123</td></tr>
+                <tr><td>Admin Panel</td><td>aditya</td><td>lola4304</td></tr>
+            </table>
+        </div>
+
         <!-- Session 8.9 Updates - Admin Image Upload -->
         <div class="section" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 3px solid #22c55e;">
             <h2 style="color: #166534; border-color: #22c55e;">✅ Session 8.9 - Admin Image Upload to Cloudinary (March 12, 2026)</h2>
