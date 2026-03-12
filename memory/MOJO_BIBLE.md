@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://dynamic-cms-platform.preview.emergentagent.com
+https://cms-architecture-lab.preview.emergentagent.com
 ```
 
 ---

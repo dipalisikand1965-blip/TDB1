@@ -229,7 +229,7 @@ useSession: sessionId, setSessionId, sessionRecovered, setSessionRecovered
 
 - **Email**: `dipali@clubconcierge.in`
 - **Password**: `lola4304`
-- **Preview URL**: `https://dynamic-cms-platform.preview.emergentagent.com`
+- **Preview URL**: `https://cms-architecture-lab.preview.emergentagent.com`
 
 ---
 

@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://dynamic-cms-platform.preview.emergentagent.com/mira-demo**
+**https://cms-architecture-lab.preview.emergentagent.com/mira-demo**
 
 ---
 
