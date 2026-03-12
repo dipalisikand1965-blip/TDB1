@@ -27,6 +27,7 @@ import PillarPicksSection from '../components/PillarPicksSection';
 import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import { getSoulBasedReason } from '../utils/petSoulInference';
+import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import ProductCard from '../components/ProductCard';
 import {
   Search, Heart, ArrowRight, X, Package, Mic,
@@ -876,6 +877,26 @@ const ShopPage = () => {
         petName={petName}
         shoppingForOther={shoppingForOther}
         onShoppingForOtherClick={() => setShoppingForOther(!shoppingForOther)}
+      />
+      
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          SHOP TOPIC CARDS - Quick access to shopping categories
+          Essentials, New Arrivals, Bestsellers, Deals
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <PillarTopicsGrid
+        pillar="shop"
+        topics={DEFAULT_PILLAR_TOPICS.shop}
+        onTopicClick={(topic) => {
+          // Map topic to pillar filter
+          const filterMap = {
+            'essentials': 'care',
+            'new': 'all',
+            'bestsellers': 'celebrate',
+            'deals': 'all'
+          };
+          setSelectedPillar(filterMap[topic.slug] || 'all');
+        }}
+        columns={4}
       />
       
       {/* Products Section */}

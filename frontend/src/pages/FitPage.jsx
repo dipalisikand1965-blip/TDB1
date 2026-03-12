@@ -37,6 +37,7 @@ import SoulMadeCollection from '../components/SoulMadeCollection'; // ADDED: Sou
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
+import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 // New engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
@@ -678,6 +679,22 @@ const FitPage = () => {
           />
         </div>
       </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          FIT TOPIC CARDS - Quick access to fitness categories
+          Exercise Plans, Weight Management, Agility Training, Swimming
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <PillarTopicsGrid
+        pillar="fit"
+        topics={cmsCategories.length > 0 ? cmsCategories : DEFAULT_PILLAR_TOPICS.fit}
+        onTopicClick={(topic) => {
+          const servicesSection = document.getElementById('fit-services');
+          if (servicesSection) {
+            servicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }}
+        columns={4}
+      />
 
       {/* Personalized Picks for User's Pet */}
       <div className="max-w-7xl mx-auto px-4 py-8">
