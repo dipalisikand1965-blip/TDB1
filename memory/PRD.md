@@ -69,8 +69,9 @@ Learn | Care | Dine | Fit | Travel | Stay | Enjoy | Celebrate | Emergency | Advi
 10. Services Section
 
 **Soul Personalization Section** (Position 5 - THE CENTERPIECE):
-- Appears on: Celebrate, Care, Dine, Stay, Fit, Learn, Enjoy, Travel, Shop, Advisory (Adopt has custom)
+- Appears on: Care, Dine, Stay, Fit, Learn, Enjoy, Travel, Shop, Advisory (Adopt has custom)
 - Excluded from: Farewell, Emergency, Paperwork
+- **CELEBRATE has custom Soul Celebration architecture** (see below)
 - Component: `/app/frontend/src/components/SoulPersonalizationSection.jsx`
 - Shows: Pet photo with SoulScoreArc, archetype badge, breed tags, Mira love note
 - 3 Soul Insight Cards per pillar with pillar-specific personalized content
@@ -85,6 +86,51 @@ Learn | Care | Dine | Fit | Travel | Stay | Enjoy | Celebrate | Emergency | Advi
 - Data Sources: `unified_products`, `products_master`, `services_master`
 
 **CMS**: All 14 pillars are editable from Admin Panel → Pillar CMS
+
+---
+
+### 4.1 CELEBRATE PILLAR — SOUL-FIRST ARCHITECTURE (NEW - March 2026) 🎉
+
+**The Vision**: Not a product catalog where the pet happens to be logged in. A celebration built FROM the pet's soul, where products live inside meaning.
+
+**Complete Spec**: `/app/memory/docs/CELEBRATE_SPEC.md`
+
+**Page Spine** (7 sections, top to bottom):
+```
+1. THE ARRIVAL (Hero) → Mojo, Soul 89%, Soul Chips, Mira's Voice
+2. CATEGORY STRIP → For direct shoppers who know what they want
+3. 8 SOUL PILLARS → "How would Mojo love to celebrate?"
+4. MIRA'S BIRTHDAY BOX → Build it yourself
+5. CELEBRATE CONCIERGE® → Hand it over (100% handled)
+6. GUIDED PATHS → Birthday Party | Gotcha Day | Photoshoot
+7. CELEBRATION WALL → Community moments
+```
+
+**The 8 Soul Celebration Pillars**:
+| Pillar | Color | Glow When |
+|--------|-------|-----------|
+| 🍰 Food & Flavour | Yellow | Pet has food preferences defined |
+| 🎾 Play & Joy | Green | Pet energy is high or has favourite toys |
+| 🦋 Social & Friends | Pink | Pet is Social Butterfly or loves dogs |
+| 🌅 Adventure & Move | Blue | Pet loves walks/car rides/outdoors |
+| ✨ Grooming & Beauty | Lavender | Pet has grooming preferences |
+| 🧠 Learning & Mind | Rose | Pet intelligence is high or is trained |
+| 💚 Health & Wellness | Mint | Pet has health conditions or is senior |
+| 📸 Love & Memory | Blush | Pet has birthday or gotcha day set |
+
+**Pillar States** (3 states):
+- **GLOW** → Full opacity, coloured dot, personality badge (e.g., "Social Butterfly")
+- **DIM** → 60% opacity, "Explore" badge
+- **INCOMPLETE** → 50% opacity, lock icon, "Tell Mira more" badge (soul-building moment)
+
+**New Components**:
+- `components/celebrate/CelebrateHero.jsx`
+- `components/celebrate/SoulCelebrationPillars.jsx`
+- `components/celebrate/SoulPillarExpanded.jsx`
+- `components/celebrate/MiraCuratedBox.jsx`
+- `components/celebrate/CelebrateConcierge.jsx`
+
+**Key Principle**: The 18 original sections don't disappear — they move INSIDE the 8 soul pillars as tabs. The page goes from a shopping mall to a journey.
 
 ### 5. Member Dashboard (/dashboard) — 15+ Tabs
 Overview | My Pets | Services | Orders | Requests | Dining | Celebrations | Stay | Travel | Autoship | Reviews | Addresses | Rewards | Settings | Pet Vault
