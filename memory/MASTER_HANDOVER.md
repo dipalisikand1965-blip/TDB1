@@ -58,7 +58,7 @@ Be patient. Be thorough. Honor the Sikand legacy.
 - Admin: `aditya` / `lola4304`
 
 ## 🌐 PREVIEW URL
-https://pet-data-heal.preview.emergentagent.com
+https://pillar-personalize.preview.emergentagent.com
 
 ---
 

@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://pet-data-heal.preview.emergentagent.com/mira-demo**
+**https://pillar-personalize.preview.emergentagent.com/mira-demo**
 
 ---
 
