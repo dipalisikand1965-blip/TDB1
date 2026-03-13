@@ -29,6 +29,7 @@ import ArchetypeProducts from '../components/ArchetypeProducts';
 import SoulMadeCollection from '../components/SoulMadeCollection';
 import PillarPicksSection from '../components/PillarPicksSection';
 import { getPetPhotoUrl } from '../utils/petAvatar';
+import SoulPersonalizationSection from '../components/SoulPersonalizationSection';
 import { useNavigate } from 'react-router-dom';
 import {
   GraduationCap, Brain, Star, Award, Trophy,
@@ -1183,6 +1184,11 @@ const LearnPage = () => {
           <CuratedBundles pillar="learn" maxBundles={3} showTitle={false} />
         </div>
       </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SOUL PERSONALIZATION SECTION - THE CENTERPIECE */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <SoulPersonalizationSection pillar="learn" />
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* TRAINING PRODUCTS - Like Advisory's "Care Products" Section */}

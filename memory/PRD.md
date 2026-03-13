@@ -61,20 +61,28 @@ Learn | Care | Dine | Fit | Travel | Stay | Enjoy | Celebrate | Emergency | Advi
 2. Topic Cards Grid (AI watercolor images)
 3. Daily Tip (rotating, pillar-specific)
 4. How Can We Help? (3 help buckets → trigger Mira)
-5. **Soul Personalization Section** ⭐ NEW - THE CENTERPIECE
+5. **Soul Personalization Section** ⭐ THE CENTERPIECE
 6. Guided Paths (step-by-step journeys)
 7. Curated Bundles
 8. Products Grid
-9. Mira Curated Layer
+9. Mira Curated Layer (Mira's Picks)
 10. Services Section
 
 **Soul Personalization Section** (Position 5 - THE CENTERPIECE):
-- Appears on: Celebrate, Care, Dine, Stay, Fit, Learn, Enjoy, Travel, Shop, Advisory, Adopt
+- Appears on: Celebrate, Care, Dine, Stay, Fit, Learn, Enjoy, Travel, Shop, Advisory (Adopt has custom)
 - Excluded from: Farewell, Emergency, Paperwork
+- Component: `/app/frontend/src/components/SoulPersonalizationSection.jsx`
 - Shows: Pet photo with SoulScoreArc, archetype badge, breed tags, Mira love note
 - 3 Soul Insight Cards per pillar with pillar-specific personalized content
+- Button links to `/my-pets` for pet dashboard
 - Uses ALL soul data: personality, preferences, health, relationships, learned_facts
-- Example: "Mojo's a social butterfly 🦋 who loves salmon treats - let's plan a fetch party with Bruno, Cookie & Max!"
+
+**Mira's Picks (Mira Curated Layer)**:
+- Component: `/app/frontend/src/components/PillarPicksSection.jsx`
+- API Endpoint: `/api/mira/top-picks/{pet_id}/pillar/{pillar}`
+- Route File: `/app/backend/app/api/top_picks_routes.py`
+- Returns: Soul-matched products, services, and concierge suggestions for the pillar
+- Data Sources: `unified_products`, `products_master`, `services_master`
 
 **CMS**: All 14 pillars are editable from Admin Panel → Pillar CMS
 
@@ -245,6 +253,17 @@ Credentials: admin `aditya` / `lola4304`
 ---
 
 ## CHANGELOG
+
+### March 13, 2026 — v13.11.0 — SOUL PERSONALIZATION ROLLOUT TO ALL PILLARS ✅
+- **Added SoulPersonalizationSection** to: Stay, Fit, Learn, Enjoy, Travel, Shop, Advisory (8 more pillars)
+- **Total 10 pillars now have Soul Personalization**: Celebrate, Care, Dine, Stay, Fit, Learn, Enjoy, Travel, Shop, Advisory
+- **Fixed button link**: "Continue Soul Journey" now goes to `/my-pets` (pet dashboard) instead of pet-soul
+- **AdoptPage**: Kept existing custom implementation (was the original template)
+- **Excluded**: Farewell, Emergency, Paperwork (as designed)
+- **Documented Mira's Picks source**:
+  - Component: `/app/frontend/src/components/PillarPicksSection.jsx`
+  - API: `/api/mira/top-picks/{pet_id}/pillar/{pillar}`
+  - Route: `/app/backend/app/api/top_picks_routes.py`
 
 ### March 13, 2026 — v13.10.0 — MIRA'S PICKS IMAGE FIX ✅
 - **Fixed 100 products with duplicate/bad images** in unified_products and products_master
