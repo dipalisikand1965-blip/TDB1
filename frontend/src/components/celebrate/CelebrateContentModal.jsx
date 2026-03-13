@@ -295,6 +295,13 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
   const [breedProducts, setBreedProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
+
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= 768);
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   const config = CATEGORY_CONFIG[category] || {
     emoji: '🛒', label: category || 'Products',
@@ -347,6 +354,8 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
       // ── Normal categories ─────────────────────────────────────────────
       const apis = CATEGORY_API[category] || [];
       let allProducts = [];
+      // For multi-source categories, fetch all endpoints; for single source, break on first success
+      const fetchAll = ['party', 'miras-picks'].includes(category);
       for (const api of apis) {
         const r = await fetch(`${apiUrl}${api.url}`);
         if (r.ok) {
@@ -354,10 +363,10 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
           const items = d[api.key] || [];
           allProducts = [...allProducts, ...items];
         }
-        if (allProducts.length > 0) break;
+        if (!fetchAll && allProducts.length > 0) break;
       }
 
-      // Fallback: if no products found, fetch general cakes
+      // Fallback: if no products found, fetch general celebration
       if (allProducts.length === 0) {
         const r = await fetch(`${apiUrl}${FALLBACK_API}`);
         if (r.ok) {
@@ -365,6 +374,14 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
           allProducts = d.products || [];
         }
       }
+      // Deduplicate by id
+      const seenIds = new Set();
+      allProducts = allProducts.filter(p => {
+        const pid = p.id || p.shopify_id;
+        if (!pid || seenIds.has(pid)) return false;
+        seenIds.add(pid);
+        return true;
+      });
       setProducts(allProducts);
 
       // ── Breed-specific top row ────────────────────────────────────────
@@ -403,235 +420,234 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
 
   if (!isOpen) return null;
 
-  return (
-    <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-        style={{ zIndex: 55 }}
-        onClick={onClose}
-      />
-
-      {/* Modal — bottom sheet on mobile, centered on desktop */}
-      <motion.div
-        initial={{ opacity: 0, y: 60 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 60 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="fixed left-0 right-0 bg-white overflow-hidden"
-        style={{
-          zIndex: 56,
-          bottom: 0,
-          maxHeight: '93vh',
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-          display: 'flex',
-          flexDirection: 'column'
-        }}
-        data-testid={`celebrate-modal-${category}`}
-      >
-        {/* Drag handle (mobile) */}
+  const ModalContent = (
+    <motion.div
+      initial={{ opacity: 0, y: isDesktop ? 0 : 60, scale: isDesktop ? 0.97 : 1 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: isDesktop ? 0 : 60, scale: isDesktop ? 0.97 : 1 }}
+      transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+      className="bg-white overflow-hidden"
+      style={isDesktop ? {
+        width: '92vw',
+        maxWidth: 1140,
+        maxHeight: '90vh',
+        borderRadius: 20,
+        display: 'flex',
+        flexDirection: 'column',
+        boxShadow: '0 24px 64px rgba(0,0,0,0.20)',
+      } : {
+        position: 'fixed',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        maxHeight: '93vh',
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        display: 'flex',
+        flexDirection: 'column',
+        zIndex: 56,
+      }}
+      data-testid={`celebrate-modal-${category}`}
+    >
+      {/* Drag handle (mobile only) */}
+      {!isDesktop && (
         <div className="flex justify-center pt-3 flex-shrink-0">
           <div className="rounded-full bg-gray-200" style={{ width: 40, height: 4 }} />
         </div>
+      )}
 
-        {/* Header */}
-        <div
-          className="flex items-center justify-between px-5 py-3 flex-shrink-0"
-          style={{ borderBottom: '1px solid #F0E8E0' }}
-        >
-          <div>
-            <h2 className="font-extrabold text-xl flex items-center gap-2" style={{ color: '#1A0A00' }}>
-              <span>{config.emoji}</span> {config.label}
-            </h2>
-            <p className="text-sm" style={{ color: '#888' }}>
-              For <span style={{ color: '#C44DFF', fontWeight: 600 }}>{petName}</span>
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="rounded-full p-2 hover:bg-gray-100 transition-colors"
-            style={{ border: 'none', cursor: 'pointer', background: 'transparent' }}
-          >
-            <X className="w-5 h-5 text-gray-500" />
-          </button>
+      {/* Header */}
+      <div
+        className="flex items-center justify-between px-5 py-3 flex-shrink-0"
+        style={{ borderBottom: '1px solid #F0E8E0' }}
+      >
+        <div>
+          <h2 className="font-extrabold text-xl flex items-center gap-2" style={{ color: '#1A0A00' }}>
+            <span>{config.emoji}</span> {config.label}
+          </h2>
+          <p className="text-sm" style={{ color: '#888' }}>
+            For <span style={{ color: '#C44DFF', fontWeight: 600 }}>{petName}</span>
+          </p>
         </div>
+        <button
+          onClick={onClose}
+          className="rounded-full p-2 hover:bg-gray-100 transition-colors"
+          style={{ border: 'none', cursor: 'pointer', background: 'transparent' }}
+          data-testid="celebrate-modal-close"
+        >
+          <X className="w-5 h-5 text-gray-500" />
+        </button>
+      </div>
 
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto">
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto">
 
-          {/* Loading State */}
-          {loading && (
-            <div className="flex items-center justify-center py-16">
-              <Loader2 className="w-7 h-7 animate-spin text-purple-400" />
-              <span className="ml-3 text-gray-500 text-sm">Fetching for {petName}...</span>
-            </div>
-          )}
+        {/* Loading State */}
+        {loading && (
+          <div className="flex items-center justify-center py-16">
+            <Loader2 className="w-7 h-7 animate-spin text-purple-400" />
+            <span className="ml-3 text-gray-500 text-sm">Fetching for {petName}...</span>
+          </div>
+        )}
 
-          {!loading && (
-            <div className="px-4 pt-4 pb-6">
+        {!loading && (
+          <div className="px-4 pt-4 pb-6">
 
-              {/* ── BUNDLES layout ──────────────────────────────────────── */}
-              {category === 'bundles' && (
-                bundles.length > 0 ? (
-                  <>
-                    <div className="mb-4">
-                      <p className="text-xs font-bold uppercase tracking-wider mb-3"
-                        style={{ color: '#C44DFF', letterSpacing: '0.06em' }}>
-                        ✦ Complete Celebration Packages
-                      </p>
-                    </div>
-                    <div className="grid gap-4"
+            {/* ── BUNDLES layout ──────────────────────────────────────── */}
+            {category === 'bundles' && (
+              bundles.length > 0 ? (
+                <>
+                  <div className="mb-4">
+                    <p className="text-xs font-bold uppercase tracking-wider mb-3"
+                      style={{ color: '#C44DFF', letterSpacing: '0.06em' }}>
+                      ✦ Complete Celebration Packages
+                    </p>
+                  </div>
+                  <div className="grid gap-4"
+                    style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))' }}>
+                    {bundles.map((bundle, idx) => (
+                      <BundleCard key={bundle.id || idx} bundle={bundle} pet={pet} />
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <EmptyState config={config} onAskMira={() => {
+                  window.dispatchEvent(new CustomEvent('openMiraAI', {
+                    detail: { message: `Show me celebration bundle ideas for ${petName}`, context: 'celebrate' }
+                  }));
+                  onClose();
+                }} />
+              )
+            )}
+
+            {/* ── SOUL PICKS layout ───────────────────────────────────── */}
+            {category === 'soul-picks' && (
+              <>
+                {breedProducts.length > 0 && (
+                  <div className="mb-6">
+                    <p className="text-xs font-bold uppercase tracking-wider mb-3"
+                      style={{ color: '#FF8C42', letterSpacing: '0.06em' }}>
+                      ✦ Made for {petName} — {pet?.breed || 'your breed'}
+                    </p>
+                    <div className="grid gap-3"
                       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
-                      {bundles.map((bundle, idx) => (
-                        <BundleCard key={bundle.id || idx} bundle={bundle} pet={pet} />
+                      {breedProducts.map((p, idx) => (
+                        <BreedProductCard key={p.id || idx} product={p} pet={pet} />
                       ))}
                     </div>
-                  </>
-                ) : (
+                  </div>
+                )}
+                {products.length > 0 && (
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wider mb-3"
+                      style={{ color: '#C44DFF', letterSpacing: '0.06em' }}>
+                      ✦ Mira's Soul Picks for {petName}
+                    </p>
+                    <div className="grid gap-3"
+                      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
+                      {products.slice(0, 8).map((p, idx) => (
+                        <ProductCard key={p.id || idx} product={p} pillar="celebrate" selectedPet={pet} size="small" />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {breedProducts.length === 0 && products.length === 0 && (
                   <EmptyState config={config} onAskMira={() => {
                     window.dispatchEvent(new CustomEvent('openMiraAI', {
-                      detail: { message: `Show me celebration bundle ideas for ${petName}`, context: 'celebrate' }
+                      detail: { message: `What soul picks would you recommend for ${petName}?`, context: 'celebrate' }
                     }));
                     onClose();
                   }} />
-                )
-              )}
+                )}
+              </>
+            )}
 
-              {/* ── SOUL PICKS layout ───────────────────────────────────── */}
-              {category === 'soul-picks' && (
-                <>
-                  {breedProducts.length > 0 && (
-                    <div className="mb-6">
-                      <p className="text-xs font-bold uppercase tracking-wider mb-3"
+            {/* ── NORMAL CATEGORIES layout ────────────────────────────── */}
+            {category !== 'bundles' && category !== 'soul-picks' && (
+              <>
+                {breedProducts.length > 0 && (
+                  <div className="mb-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xs font-bold uppercase tracking-wider"
                         style={{ color: '#FF8C42', letterSpacing: '0.06em' }}>
-                        ✦ Made for {petName} — {pet?.breed || 'your breed'}
-                      </p>
-                      <div className="grid gap-3"
-                        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(148px, 100%), 1fr))' }}>
-                        {breedProducts.map((p, idx) => (
-                          <BreedProductCard key={p.id || idx} product={p} pet={pet} />
-                        ))}
-                      </div>
+                        ✦ {config.miraLabel}
+                      </span>
+                      <span className="rounded-full text-xs font-bold text-white px-2 py-0.5"
+                        style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)' }}>
+                        For {petName}
+                      </span>
                     </div>
-                  )}
-                  {products.length > 0 && (
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-wider mb-3"
-                        style={{ color: '#C44DFF', letterSpacing: '0.06em' }}>
-                        ✦ Mira's Soul Picks for {petName}
-                      </p>
-                      <div className="grid gap-3"
-                        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(148px, 100%), 1fr))' }}>
-                        {products.slice(0, 8).map((p, idx) => (
-                          <ProductCard
-                            key={p.id || idx}
-                            product={p}
-                            pillar="celebrate"
-                            selectedPet={pet}
-                            size="small"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {breedProducts.length === 0 && products.length === 0 && (
-                    <EmptyState config={config} onAskMira={() => {
-                      window.dispatchEvent(new CustomEvent('openMiraAI', {
-                        detail: { message: `What soul picks would you recommend for ${petName}?`, context: 'celebrate' }
-                      }));
-                      onClose();
-                    }} />
-                  )}
-                </>
-              )}
-
-              {/* ── NORMAL CATEGORIES layout ────────────────────────────── */}
-              {category !== 'bundles' && category !== 'soul-picks' && (
-                <>
-                  {/* Breed-specific top row */}
-                  {breedProducts.length > 0 && (
-                    <div className="mb-6">
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-xs font-bold uppercase tracking-wider"
-                          style={{ color: '#FF8C42', letterSpacing: '0.06em' }}>
-                          ✦ {config.miraLabel}
-                        </span>
-                        <span className="rounded-full text-xs font-bold text-white px-2 py-0.5"
-                          style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)' }}>
-                          For {petName}
-                        </span>
-                      </div>
-                      <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
-                        {breedProducts.slice(0, 6).map((p, idx) => (
-                          <div key={p.id || idx} className="flex-shrink-0" style={{ width: 160 }}>
-                            <ProductCard
-                              product={p}
-                              pillar="celebrate"
-                              selectedPet={pet}
-                              size="small"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                      <hr style={{ borderColor: '#F0E8E0', margin: '20px 0 16px' }} />
-                    </div>
-                  )}
-
-                  {/* All products section label */}
-                  {filteredProducts.length > 0 && (
-                    <p className="text-xs font-bold uppercase tracking-wider mb-3"
-                      style={{ color: '#888', letterSpacing: '0.06em' }}>
-                      All {config.label} — {filteredProducts.length} items
-                    </p>
-                  )}
-
-                  {/* Product grid */}
-                  {filteredProducts.length > 0 ? (
-                    <div className="grid gap-3"
-                      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(148px, 100%), 1fr))' }}>
-                      {filteredProducts.map((product, idx) => (
-                        <ProductCard
-                          key={product.id || idx}
-                          product={product}
-                          pillar="celebrate"
-                          selectedPet={pet}
-                          size="small"
-                        />
+                    <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
+                      {breedProducts.slice(0, 6).map((p, idx) => (
+                        <div key={p.id || idx} className="flex-shrink-0" style={{ width: 160 }}>
+                          <ProductCard product={p} pillar="celebrate" selectedPet={pet} size="small" />
+                        </div>
                       ))}
                     </div>
-                  ) : (
-                    <EmptyState config={config} onAskMira={() => {
-                      window.dispatchEvent(new CustomEvent('openMiraAI', {
-                        detail: { message: `Show me ${config.label} for ${petName}`, context: 'celebrate' }
-                      }));
-                      onClose();
-                    }} />
-                  )}
-                </>
-              )}
+                    <hr style={{ borderColor: '#F0E8E0', margin: '20px 0 16px' }} />
+                  </div>
+                )}
 
-            </div>
-          )}
-        </div>
+                {filteredProducts.length > 0 && (
+                  <p className="text-xs font-bold uppercase tracking-wider mb-3"
+                    style={{ color: '#888', letterSpacing: '0.06em' }}>
+                    All {config.label} — {filteredProducts.length} items
+                  </p>
+                )}
 
-        {/* Footer — Continue Shopping */}
-        <div
-          className="flex-shrink-0 px-5 py-4"
-          style={{ borderTop: '1px solid #F0E8E0', background: 'white' }}
+                {filteredProducts.length > 0 ? (
+                  <div className="grid gap-3"
+                    style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
+                    {filteredProducts.map((product, idx) => (
+                      <ProductCard
+                        key={product.id || idx}
+                        product={product}
+                        pillar="celebrate"
+                        selectedPet={pet}
+                        size="small"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState config={config} onAskMira={() => {
+                    window.dispatchEvent(new CustomEvent('openMiraAI', {
+                      detail: { message: `Show me ${config.label} for ${petName}`, context: 'celebrate' }
+                    }));
+                    onClose();
+                  }} />
+                )}
+              </>
+            )}
+
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="flex-shrink-0 px-5 py-4" style={{ borderTop: '1px solid #F0E8E0', background: 'white' }}>
+        <button
+          onClick={onClose}
+          className="w-full rounded-xl font-bold text-white py-3"
+          style={{ background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)', border: 'none', cursor: 'pointer', fontSize: 15 }}
         >
-          <button
-            onClick={onClose}
-            className="w-full rounded-xl font-bold text-white py-3"
-            style={{
-              background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)',
-              border: 'none', cursor: 'pointer', fontSize: 15
-            }}
-          >
-            Continue Shopping
-          </button>
+          Continue Shopping
+        </button>
+      </div>
+    </motion.div>
+  );
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" style={{ zIndex: 55 }} onClick={onClose} />
+      {/* Desktop: use flex centering wrapper so Framer Motion scale doesn't fight transform */}
+      {isDesktop ? (
+        <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 56, pointerEvents: 'none' }}>
+          <div style={{ pointerEvents: 'auto' }}>{ModalContent}</div>
         </div>
-      </motion.div>
+      ) : (
+        ModalContent
+      )}
     </>
   );
 };
