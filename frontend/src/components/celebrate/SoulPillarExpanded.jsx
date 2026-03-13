@@ -2,61 +2,141 @@
  * SoulPillarExpanded.jsx
  * 
  * Expanded view when a soul pillar is clicked
- * Contains tabs with filtered products, services, and experiences
- * 
- * Mobile: Consider using as bottom drawer (< 768px)
- * Desktop: Inline expansion below pillars
+ * Fetches real products from Shopify via /api/products?category=X
+ * Shows tabs per pillar with filtered, allergy-safe products
  */
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, Sparkles, ShoppingBag, Package, Loader2 } from 'lucide-react';
-import { API_URL, getApiUrl } from '../../utils/api';
-import ProductCard from '../ProductCard';
-import { Button } from '../ui/button';
+import { X, Sparkles, ShoppingBag, Loader2, Plus } from 'lucide-react';
+import { getApiUrl } from '../../utils/api';
 
-// Tab content component
-const TabContent = ({ products, services, loading, pet, pillar }) => {
-  const petName = pet?.name || 'your pet';
+// Map pillar id → product categories to query
+const PILLAR_CATEGORY_MAP = {
+  food: ['cakes', 'treats', 'desi-treats'],
+  play: ['toys', 'accessories'],
+  social: ['accessories', 'hampers'],
+  adventure: ['accessories'],
+  grooming: ['grooming'],
+  learning: ['puzzles', 'training'],
+  health: ['supplements', 'health'],
+  memory: ['accessories']
+};
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
-        <span className="ml-3 text-gray-600">Finding perfect items for {petName}...</span>
-      </div>
-    );
-  }
+// Pillar to tab-category map (tabs are from spec)
+const PILLAR_TABS = {
+  food: [
+    { name: 'Birthday Cakes', category: 'cakes' },
+    { name: 'Breed Cakes', category: 'breed-cakes' },
+    { name: 'Pupcakes', category: 'pupcakes' },
+    { name: 'Desi Treats', category: 'desi-treats' },
+  ],
+  play: [
+    { name: 'Toys & Enrichment', category: 'toys' },
+    { name: 'Activity Kits', category: 'accessories' },
+    { name: 'Outdoor Play', category: 'accessories' },
+  ],
+  social: [
+    { name: 'Pawty Packages', category: 'hampers' },
+    { name: 'Party Accessories', category: 'accessories' },
+    { name: 'Gift Hampers', category: 'hampers' },
+  ],
+  adventure: [
+    { name: 'Adventure Gear', category: 'accessories' },
+    { name: 'Trail Kits', category: 'accessories' },
+  ],
+  grooming: [
+    { name: 'Pamper Sessions', category: 'grooming' },
+    { name: 'Birthday Bandanas', category: 'accessories' },
+    { name: 'Spa Kits', category: 'grooming' },
+  ],
+  learning: [
+    { name: 'Enrichment', category: 'puzzles' },
+    { name: 'Training Gifts', category: 'training' },
+    { name: 'Puzzle Toys', category: 'puzzles' },
+  ],
+  health: [
+    { name: 'Wellness Gifts', category: 'supplements' },
+    { name: 'Supplements', category: 'supplements' },
+    { name: 'Annual Care Plans', category: 'health' },
+  ],
+  memory: [
+    { name: 'Photoshoots', category: 'accessories' },
+    { name: 'Memory Books', category: 'accessories' },
+    { name: 'Keepsakes', category: 'accessories' },
+  ]
+};
 
-  if (!products?.length && !services?.length) {
-    return (
-      <div className="text-center py-12 px-4">
-        <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-        <p className="text-gray-600 mb-4">
-          We're curating the perfect {pillar.name.toLowerCase()} items for {petName}. 
-          Ask Mira for personalised suggestions while we get these ready.
-        </p>
-        <Button 
-          variant="outline" 
-          className="border-purple-300 text-purple-600 hover:bg-purple-50"
-          onClick={() => window.dispatchEvent(new CustomEvent('openMira', { detail: { context: pillar.id } }))}
-        >
-          <Sparkles className="w-4 h-4 mr-2" />
-          Ask Mira
-        </Button>
-      </div>
-    );
-  }
+// Mini product card matching spec
+const SoulProductCard = ({ product, petName, onAddToCart }) => {
+  const price = product.price || product.variants?.[0]?.price || 0;
+  const image = product.image_url || product.image || product.images?.[0];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {products?.slice(0, 8).map((product, idx) => (
-        <ProductCard 
-          key={product.id || idx} 
-          product={product}
-          showSoulBadge={true}
-        />
-      ))}
+    <div
+      className="rounded-xl overflow-hidden bg-white"
+      style={{ border: '1px solid #F5E8D4' }}
+      data-testid={`soul-product-${product.id || product.name?.replace(/\s/g, '-')}`}
+    >
+      {/* Image */}
+      <div
+        className="flex items-center justify-center bg-gray-50"
+        style={{ height: 100 }}
+      >
+        {image ? (
+          <img src={image} alt={product.name} className="w-full h-full object-cover" />
+        ) : (
+          <span className="text-3xl">🎁</span>
+        )}
+      </div>
+
+      {/* Body */}
+      <div style={{ padding: 10 }}>
+        {/* For-pet tag */}
+        <div
+          className="inline-block rounded-lg mb-1"
+          style={{
+            fontSize: 10, fontWeight: 600,
+            background: 'linear-gradient(135deg, rgba(255,140,66,0.15), rgba(196,77,255,0.10))',
+            border: '1px solid rgba(255,140,66,0.30)',
+            padding: '2px 8px',
+            color: '#8B4500'
+          }}
+        >
+          For {petName}
+        </div>
+
+        <p className="font-bold line-clamp-1" style={{ fontSize: 13, color: '#1A0A00', marginBottom: 2 }}>
+          {product.name}
+        </p>
+        {product.description && (
+          <p className="line-clamp-1" style={{ fontSize: 11, color: '#888', lineHeight: 1.4, marginBottom: 8 }}>
+            {product.description}
+          </p>
+        )}
+
+        <div className="flex items-center justify-between">
+          <span className="font-bold" style={{ fontSize: 14, color: '#1A0A00' }}>
+            ₹{typeof price === 'number' ? price.toLocaleString('en-IN') : price}
+          </span>
+          <button
+            onClick={() => onAddToCart && onAddToCart(product)}
+            className="flex items-center gap-1 text-white rounded-full"
+            style={{
+              background: 'linear-gradient(135deg, #FF8C42, #C44DFF)',
+              border: 'none',
+              padding: '5px 12px',
+              fontSize: 11,
+              fontWeight: 600,
+              cursor: 'pointer'
+            }}
+            data-testid={`add-to-cart-${product.id}`}
+          >
+            <Plus className="w-3 h-3" />
+            Add
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
@@ -65,66 +145,69 @@ const SoulPillarExpanded = ({ pillar, pet, onClose }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const handleAddToCart = (product) => {
+    window.dispatchEvent(new CustomEvent('addToCart', { detail: product }));
+  };
+
   const petName = pet?.name || 'your pet';
 
-  // Fetch products filtered for this pillar and pet
+  const tabs = PILLAR_TABS[pillar.id] || [{ name: 'All', category: 'cakes' }];
+
+  // Fetch products for active tab category
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
         const apiUrl = getApiUrl();
-        // Try to get pillar-specific products
-        const response = await fetch(
-          `${apiUrl}/api/celebrate/pillar-products?pillar=${pillar.id}&pet_id=${pet?.id || ''}`
+        const currentCategory = tabs[activeTab]?.category || 'cakes';
+
+        // Try celebrate-specific endpoint first
+        const celebrateResp = await fetch(
+          `${apiUrl}/api/celebrate/products?category=${currentCategory}&limit=16`
         );
-        
-        if (response.ok) {
-          const data = await response.json();
-          setProducts(data.products || []);
-        } else {
-          // Fallback to general celebrate products
-          const fallbackResponse = await fetch(`${apiUrl}/api/celebrate/products?limit=12`);
-          if (fallbackResponse.ok) {
-            const fallbackData = await fallbackResponse.json();
-            setProducts(fallbackData.products || []);
+        if (celebrateResp.ok) {
+          const data = await celebrateResp.json();
+          if (data.products?.length > 0) {
+            setProducts(data.products);
+            setLoading(false);
+            return;
           }
         }
+
+        // Fallback to main products API (Shopify products)
+        const resp = await fetch(
+          `${apiUrl}/api/products?category=${currentCategory}&limit=12`
+        );
+        if (resp.ok) {
+          const data = await resp.json();
+          setProducts(data.products || []);
+        } else {
+          setProducts([]);
+        }
       } catch (error) {
-        console.error('[SoulPillarExpanded] Error fetching products:', error);
+        console.error('[SoulPillarExpanded] Error:', error);
         setProducts([]);
       } finally {
         setLoading(false);
       }
     };
-
     fetchProducts();
-  }, [pillar.id, pet?.id]);
+  }, [pillar.id, activeTab]);
 
-  // Filter out products with allergens if pet has allergies
+  // Filter allergens
   const filteredProducts = React.useMemo(() => {
     if (!products.length) return [];
-    
-    const petAllergies = pet?.allergies || [];
-    const allergyAnswers = pet?.doggy_soul_answers?.food_allergies;
-    const allAllergies = [
-      ...petAllergies,
-      ...(Array.isArray(allergyAnswers) ? allergyAnswers : allergyAnswers ? [allergyAnswers] : [])
-    ].map(a => a?.toLowerCase()).filter(Boolean);
+    const petAllergies = [
+      ...(pet?.allergies || []),
+      ...(Array.isArray(pet?.doggy_soul_answers?.food_allergies)
+        ? pet.doggy_soul_answers.food_allergies
+        : pet?.doggy_soul_answers?.food_allergies ? [pet.doggy_soul_answers.food_allergies] : [])
+    ].map(a => a?.toLowerCase()).filter(a => a && a !== 'none');
 
-    if (!allAllergies.length || allAllergies.includes('none')) {
-      return products;
-    }
-
-    return products.filter(product => {
-      const productName = (product.name || '').toLowerCase();
-      const productDesc = (product.description || '').toLowerCase();
-      const productIngredients = (product.ingredients || '').toLowerCase();
-      
-      return !allAllergies.some(allergy => 
-        productName.includes(allergy) || 
-        productDesc.includes(allergy) ||
-        productIngredients.includes(allergy)
-      );
+    if (!petAllergies.length) return products;
+    return products.filter(p => {
+      const text = ((p.name || '') + (p.description || '') + (p.ingredients || '')).toLowerCase();
+      return !petAllergies.some(a => text.includes(a));
     });
   }, [products, pet]);
 
@@ -133,99 +216,148 @@ const SoulPillarExpanded = ({ pillar, pet, onClose }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
-      className="bg-white rounded-3xl shadow-xl border-2 overflow-hidden"
-      style={{ borderColor: pillar.borderColor }}
+      className="bg-white overflow-hidden"
+      style={{
+        borderRadius: 16,
+        border: '2px solid #C44DFF',
+        marginBottom: 32
+      }}
       data-testid={`pillar-expanded-${pillar.id}`}
     >
       {/* Header */}
-      <div 
-        className="p-6 relative"
-        style={{ backgroundColor: pillar.color }}
+      <div
+        className="p-5 relative"
+        style={{ borderBottom: '1px solid #FFF3E0' }}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full bg-white/80 hover:bg-white transition-colors"
-          aria-label="Close"
-        >
-          <X className="w-5 h-5 text-gray-600" />
-        </button>
-
-        <div className="flex items-start gap-4">
-          <div className="text-5xl">{pillar.icon}</div>
+        <div className="flex items-center gap-2.5">
+          <span style={{ fontSize: 28 }}>{pillar.icon}</span>
           <div className="flex-1">
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">{pillar.name}</h3>
-            
-            {/* Mira's Quote */}
-            <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 mt-3">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center flex-shrink-0">
-                  <Sparkles className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <p className="text-gray-700 italic text-sm">
-                    {pillar.miraQuote(pet)}
-                  </p>
-                  <p className="text-xs text-pink-600 mt-1 font-medium">
-                    Mira knows {petName}
-                  </p>
-                </div>
-              </div>
-            </div>
+            <h3 className="font-bold" style={{ fontSize: 19, color: '#1A0A00' }}>{pillar.name}</h3>
+            <p style={{ fontSize: 12, color: '#888' }}>{pillar.tagline(petName)}</p>
           </div>
+          <button
+            onClick={onClose}
+            className="ml-auto rounded-full font-semibold"
+            style={{
+              background: '#FFF3E0',
+              padding: '4px 12px',
+              fontSize: 12,
+              color: '#C44400',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            Close
+          </button>
+        </div>
+
+        {/* Mira quote */}
+        <div
+          className="mt-4 rounded-xl p-3 flex items-start gap-2.5"
+          style={{ background: 'rgba(196,77,255,0.06)', border: '1px solid rgba(196,77,255,0.15)' }}
+        >
+          <div
+            className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-sm"
+            style={{ background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)' }}
+          >
+            ✦
+          </div>
+          <p className="text-sm text-gray-700 italic leading-relaxed">
+            {pillar.miraQuote(pet)}
+          </p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-100">
-        <div className="flex overflow-x-auto scrollbar-hide">
-          {pillar.tabs.map((tab, idx) => (
+      <div className="px-5 pt-4 pb-2">
+        <div className="flex flex-wrap gap-2">
+          {tabs.map((tab, idx) => (
             <button
-              key={tab}
+              key={tab.name}
               onClick={() => setActiveTab(idx)}
-              className={`
-                px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors
-                ${activeTab === idx 
-                  ? 'border-b-2 text-purple-600' 
-                  : 'text-gray-500 hover:text-gray-700'
-                }
-              `}
-              style={activeTab === idx ? { borderColor: pillar.borderColor } : {}}
+              className="rounded-full font-semibold"
+              style={{
+                padding: '6px 14px',
+                fontSize: 12,
+                fontWeight: 600,
+                border: activeTab === idx ? '1px solid #C44DFF' : '1px solid #FFCC99',
+                background: activeTab === idx ? '#C44DFF' : '#FFF8F0',
+                color: activeTab === idx ? '#FFFFFF' : '#C44400',
+                cursor: 'pointer',
+                transition: '150ms ease'
+              }}
             >
-              {tab}
+              {tab.name}
             </button>
           ))}
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-6">
-        {/* Allergy warning if applicable */}
+      <div className="p-5">
+        {/* Allergy notice */}
         {pet?.allergies?.length > 0 && (
-          <div className="mb-4 px-4 py-2 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800 flex items-center gap-2">
-            <span>🚫</span>
-            <span>Showing only {petName}-safe items (excluding {pet.allergies.join(', ')})</span>
+          <div
+            className="mb-4 px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+            style={{ background: '#FFF3E0', border: '1px solid #FFCC99', color: '#8B4500' }}
+          >
+            <span>🛡️</span>
+            <span>Showing only {petName}-safe items (no {pet.allergies.join(', ')})</span>
           </div>
         )}
 
-        <TabContent 
-          products={filteredProducts}
-          services={[]}
-          loading={loading}
-          pet={pet}
-          pillar={pillar}
-        />
-
-        {/* View All Button */}
-        {filteredProducts.length > 0 && (
-          <div className="mt-6 text-center">
-            <Button
-              variant="outline"
-              className="border-purple-300 text-purple-600 hover:bg-purple-50"
-            >
-              <ShoppingBag className="w-4 h-4 mr-2" />
-              View all {pillar.name.toLowerCase()} for {petName}
-            </Button>
+        {loading ? (
+          <div className="flex items-center justify-center py-10">
+            <Loader2 className="w-7 h-7 animate-spin text-purple-500" />
+            <span className="ml-3 text-gray-500 text-sm">Finding perfect items for {petName}...</span>
           </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="text-center py-10 px-4">
+            <span className="text-4xl block mb-3">🎁</span>
+            <p className="text-gray-500 text-sm mb-4">
+              We're curating the perfect {pillar.name.toLowerCase()} items for {petName}.
+            </p>
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI', {
+                detail: { message: `Suggest ${pillar.name} celebration ideas for ${petName}`, context: 'celebrate' }
+              }))}
+              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium"
+              style={{ background: 'rgba(196,77,255,0.10)', border: '1px solid rgba(196,77,255,0.30)', color: '#7C3AED' }}
+            >
+              <Sparkles className="w-4 h-4" />
+              Ask Mira
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {filteredProducts.slice(0, 8).map((product, idx) => (
+                <SoulProductCard
+                  key={product.id || idx}
+                  product={product}
+                  petName={petName}
+                  onAddToCart={handleAddToCart}
+                />
+              ))}
+            </div>
+
+            {filteredProducts.length > 0 && (
+              <div className="mt-5 text-center">
+                <button
+                  onClick={() => window.location.href = `/celebrate?category=${tabs[activeTab]?.category}`}
+                  className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium"
+                  style={{
+                    border: '1px solid rgba(196,77,255,0.40)',
+                    color: '#7C3AED',
+                    background: 'rgba(196,77,255,0.06)'
+                  }}
+                >
+                  <ShoppingBag className="w-4 h-4" />
+                  View all {pillar.name.toLowerCase()} for {petName}
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </motion.div>
