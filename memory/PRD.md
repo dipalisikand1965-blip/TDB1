@@ -74,7 +74,7 @@ Learn | Care | Dine | Fit | Travel | Stay | Enjoy | Celebrate | Emergency | Advi
 - Component: `/app/frontend/src/components/SoulPersonalizationSection.jsx`
 - Shows: Pet photo with SoulScoreArc, archetype badge, breed tags, Mira love note
 - 3 Soul Insight Cards per pillar with pillar-specific personalized content
-- Button links to `/my-pets` for pet dashboard
+- Button links to `/pet-soul/{petId}` for individual pet's soul journey page
 - Uses ALL soul data: personality, preferences, health, relationships, learned_facts
 
 **Mira's Picks (Mira Curated Layer)**:
@@ -253,6 +253,18 @@ Credentials: admin `aditya` / `lola4304`
 ---
 
 ## CHANGELOG
+
+### March 13, 2026 — v13.12.0 — IMAGE SOURCE DOCUMENTATION ✅
+- **Created comprehensive IMAGE_SOURCES.md** documentation (341 lines)
+- **Fixed Soul Journey button**: Now links to `/pet-soul/{petId}` for individual pet pages
+- **Documentation includes**:
+  - Image Golden Rules (Products=realistic, Services/Bundles=watercolor)
+  - All image source collections and fields
+  - Generation methods and endpoints
+  - Storage locations (Cloudinary, Emergent CDN)
+  - Fix scripts and troubleshooting guides
+  - Mira's Picks data flow
+- **Regenerated complete-documentation.html**: 297 files, 88,921 lines
 
 ### March 13, 2026 — v13.11.0 — SOUL PERSONALIZATION ROLLOUT TO ALL PILLARS ✅
 - **Added SoulPersonalizationSection** to: Stay, Fit, Learn, Enjoy, Travel, Shop, Advisory (8 more pillars)
