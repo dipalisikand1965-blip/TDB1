@@ -123,12 +123,16 @@ Learn | Care | Dine | Fit | Travel | Stay | Enjoy | Celebrate | Emergency | Advi
 - **DIM** → 60% opacity, "Explore" badge
 - **INCOMPLETE** → 50% opacity, lock icon, "Tell Mira more" badge (soul-building moment)
 
-**New Components**:
-- `components/celebrate/CelebrateHero.jsx`
-- `components/celebrate/SoulCelebrationPillars.jsx`
-- `components/celebrate/SoulPillarExpanded.jsx`
-- `components/celebrate/MiraCuratedBox.jsx`
-- `components/celebrate/CelebrateConcierge.jsx`
+**New Components** (ALL IMPLEMENTED - March 13, 2026):
+- ✅ `components/celebrate/CelebrateHero.jsx` - Soul chips, Mira quote, avatar with Soul Score arc
+- ✅ `components/celebrate/SoulCelebrationPillars.jsx` - 8 pillar cards with glow/dim/incomplete states
+- ✅ `components/celebrate/SoulPillarExpanded.jsx` - Expanded view with tabs and filtered products
+- ✅ `components/celebrate/MiraCuratedBox.jsx` - Personalized birthday box
+- ✅ `components/celebrate/CelebrateConcierge.jsx` - Gold/purple Concierge section
+- ✅ `components/celebrate/GuidedCelebrationPaths.jsx` - 3 guided paths
+- ✅ `pages/CelebratePageNew.jsx` - Full page using new architecture
+
+**LIVE ROUTE:** `/celebrate-soul` (testing) - ready to replace `/celebrate` when approved
 
 **Key Principle**: The 18 original sections don't disappear — they move INSIDE the 8 soul pillars as tabs. The page goes from a shopping mall to a journey.
 
