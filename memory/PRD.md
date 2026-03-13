@@ -225,6 +225,21 @@ Credentials: admin `aditya` / `lola4304`
 
 ## CHANGELOG
 
+### March 13, 2026 — v13.7.0 — FULL IMAGE AUDIT + PILLAR SWEEP ✅
+- **Image Audit Complete**: All stock photos replaced with AI-generated images across ALL pillars
+  - Fixed 12 Care bundles → watercolor illustrations
+  - Fixed 3 Paperwork bundles → watercolor illustrations  
+  - Fixed 8 services → watercolor illustrations
+  - Fixed 2 products → realistic photography
+- **Golden Rules Enforced Application-Wide**:
+  - ✅ Products = Realistic product photography
+  - ✅ Services = Watercolor illustrations  
+  - ✅ Bundles = Watercolor illustrated compositions
+- **Pillar Structure Sweep**: Verified Gold Standard compliance for Stay, Travel, Celebrate, Paperwork, Enjoy
+  - All 5 pages have correct section order matching LearnPage template
+  - Topic Cards, Ask Mira bar, and category navigation working correctly
+- Added `/api/ai-images/generate-bundle-images` endpoint for batch bundle image generation
+
 ### March 12, 2026 — v13.6.0 — CARE PAGE IMAGE FIX ✅
 - **Fixed Care Bundles Images**: All 12 Care bundles now have AI-generated watercolor illustrations instead of stock photos
 - **Golden Rules Enforced**:
