@@ -520,3 +520,37 @@ async def update_farewell_settings(settings: dict):
     )
     
     return {"success": True}
+
+
+# ============ BUNDLES ENDPOINTS ============
+
+@router.get("/bundles")
+async def get_farewell_bundles(
+    category: Optional[str] = None,
+    limit: int = Query(50, ge=1, le=100)
+):
+    """Get farewell bundles - memorial packages and service bundles"""
+    db = get_db()
+    
+    query = {}
+    if category:
+        query["category"] = category
+    
+    bundles = await db.farewell_bundles.find(query, {"_id": 0}).sort("featured", -1).to_list(limit)
+    
+    return {
+        "bundles": bundles,
+        "total": len(bundles)
+    }
+
+
+@router.get("/bundles/{bundle_id}")
+async def get_farewell_bundle(bundle_id: str):
+    """Get a specific farewell bundle by ID"""
+    db = get_db()
+    
+    bundle = await db.farewell_bundles.find_one({"id": bundle_id}, {"_id": 0})
+    if not bundle:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    
+    return bundle

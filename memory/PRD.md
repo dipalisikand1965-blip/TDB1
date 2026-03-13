@@ -225,6 +225,13 @@ Credentials: admin `aditya` / `lola4304`
 
 ## CHANGELOG
 
+### March 13, 2026 — v13.8.0 — BUNDLES ENDPOINTS + SYNC FIX ✅
+- **Bundle API Endpoints Fixed**: Added missing `/api/{pillar}/bundles` endpoints for Stay, Farewell, and Adopt
+- **Bundle Data Synced**: Copied bundles from `bundles` collection to pillar-specific collections (dine, travel, farewell, adopt)
+- **Sync to Production Fixed**: Added `/api/bundles/sync-to-production` endpoint - no more KeyError
+- **All 13 pillars now have working bundle endpoints** with proper watercolor images
+- Total bundles available: 136 across all collections
+
 ### March 13, 2026 — v13.7.0 — FULL IMAGE AUDIT + PILLAR SWEEP ✅
 - **Image Audit Complete**: All stock photos replaced with AI-generated images across ALL pillars
   - Fixed 12 Care bundles → watercolor illustrations
