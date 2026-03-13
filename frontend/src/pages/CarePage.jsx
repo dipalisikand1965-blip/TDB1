@@ -33,6 +33,7 @@ import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTop
 import TransformationStories from '../components/TransformationStories';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
+import SoulPersonalizationSection from '../components/SoulPersonalizationSection'; // NEW: Soul Personalization Centerpiece
 // NEW: Mira Care Plan - Proactive soul-driven recommendations
 import MiraCarePlan from '../components/MiraCarePlan';
 // NEW: Care Service Flow Modal - Full options for each service (legacy)
@@ -880,6 +881,12 @@ const CarePage = () => {
           </div>
         </section>
       )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          SOUL PERSONALIZATION SECTION - THE CENTERPIECE
+          The Pet Operating System layer - deeply personalized to the pet's soul
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <SoulPersonalizationSection pillar="care" />
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
           5. CARE FOR MY DOG - Personalized Section (Like Learn's "Learn for My Dog")

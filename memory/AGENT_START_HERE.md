@@ -1,6 +1,6 @@
 # 🚨 AGENT START HERE - READ THIS FIRST 🚨
 
-> **Last Updated:** March 12, 2026 16:15 IST
+> **Last Updated:** March 13, 2026 12:30 IST
 > **Purpose:** Fast, current recovery guide for the next agent
 
 ---
@@ -53,7 +53,7 @@ Every pillar should follow this order:
 2. Topic Cards
 3. Daily Tip
 4. Help Buckets
-5. Personalized Section
+5. **Soul Personalization Section** ⭐ (THE CENTERPIECE - see below)
 6. Guided Paths
 7. Bundles
 8. Products
@@ -61,17 +61,43 @@ Every pillar should follow this order:
 10. Services
 
 Use `LearnPage.jsx` as the structural source of truth.
+Use `AdoptPage.jsx` as the Soul Personalization Section template.
+
+### 4. SOUL PERSONALIZATION SECTION - THE CENTERPIECE
+
+**What it is:** The deeply personalized "Pet Operating System layer" that shows pillar-specific insights based on the pet's full soul profile.
+
+**Where it appears:** Celebrate, Care, Dine, Stay, Fit, Learn, Enjoy, Travel, Shop, Advisory, Adopt
+**Excluded from:** Farewell, Emergency, Paperwork
+
+**Component:** `<SoulPersonalizationSection pillar="celebrate" />`
+
+**Data sources for personalization:**
+- `soul_archetype`: primary_archetype, archetype_name, archetype_emoji, celebration_style
+- `personality`: describe_3_words, general_nature, behavior_with_dogs
+- `preferences`: favorite_treats, dislikes, activity_level
+- `health_data`: allergies, sensitivities, chronic_conditions
+- `relationships`: dog_friends, human_favorites
+- `learned_facts`: loves, prefers (from Mira conversations)
+- `service_history`: grooming_preference, travel_history
+- `milestones`: achievements, gotcha_day
+- `travel`: crate_trained, preferred_transport
+
+**Example personalization:**
+- Celebrate: "Mojo's a social butterfly 🦋 who loves salmon treats - let's plan a fetch party with Bruno, Cookie & Max!"
+- Care: "Mojo has sensitive skin and is a drama-queen - grooming should be calm & reassuring"
+- Dine: "Food-motivated Mojo ❤️ salmon but avoid chicken (allergy)"
 
 ---
 
-## ✅ CURRENT STATE (MARCH 12, 2026)
+## ✅ CURRENT STATE (MARCH 13, 2026)
 
 ### Documentation
 - `complete-documentation.html` is now generated from the **full** `/app/memory` corpus
 - Current served scale is roughly **296 docs / 88k+ lines**
 
 ### Soul / Pet OS rollout completed on visible pillars
-- Adopt
+- Adopt ✅ (has full Soul Personalization Section - use as template)
 - Emergency
 - Advisory
 - Farewell

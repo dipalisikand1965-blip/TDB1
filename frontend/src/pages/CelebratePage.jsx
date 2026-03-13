@@ -41,6 +41,7 @@ import MiraBirthdayBoxCard from '../components/celebrate/MiraBirthdayBoxCard';
 import PersonalizedItemsSection from '../components/celebrate/PersonalizedItemsSection';
 import BirthdayCountdown from '../components/celebrate/BirthdayCountdown';
 import PlanMyPartyWizard from '../components/celebrate/PlanMyPartyWizard';
+import SoulPersonalizationSection from '../components/SoulPersonalizationSection';
 import CelebrationMemoryWall from '../components/celebrate/CelebrationMemoryWall';
 import ShareCelebrationModal from '../components/celebrate/ShareCelebrationModal';
 import CakeRevealSection from '../components/celebrate/CakeRevealSection';
@@ -848,6 +849,12 @@ const CelebratePage = () => {
           </div>
         </div>
       </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SOUL PERSONALIZATION SECTION - THE CENTERPIECE */}
+      {/* This is the Pet Operating System layer - deeply personalized to the pet */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <SoulPersonalizationSection pillar="celebrate" />
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 2: SOUL-BASED CAKE PICKS (Personalized by pet's soul) */}
