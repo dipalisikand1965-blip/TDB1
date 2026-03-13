@@ -243,6 +243,7 @@ const PaperworkPage = lazy(() => import("./pages/PaperworkPage"));
 const EmergencyPage = lazy(() => import("./pages/EmergencyPage"));
 const CelebratePage = lazy(() => import("./pages/CelebratePage"));
 const CelebrateNewPage = lazy(() => import("./pages/CelebrateNewPage"));
+const CelebrateSoulPage = lazy(() => import("./pages/CelebratePageNew")); // Soul-First Architecture
 const FarewellPage = lazy(() => import("./pages/FarewellPage"));
 const AdoptPage = lazy(() => import("./pages/AdoptPage"));
 const PillarPage = lazy(() => import("./pages/PillarPage"));
@@ -536,6 +537,8 @@ function MainLayout() {
         <Route path="/celebrate" element={<CelebratePage />} />
         {/* GOLD STANDARD Celebrate - Sandbox for new design */}
         <Route path="/celebrate-new" element={<CelebrateNewPage />} />
+        {/* SOUL-FIRST Celebrate - New Architecture March 2026 */}
+        <Route path="/celebrate-soul" element={<CelebrateSoulPage />} />
         <Route path="/occasion-box/:type" element={<OccasionBoxPage />} />
         <Route path="/occasion-box" element={<OccasionBoxPage />} />
         <Route path="/build-box" element={<OccasionBoxPage />} />
