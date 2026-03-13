@@ -120,6 +120,8 @@ const PILLAR_SUBCATEGORIES = {
  * @param {boolean} useTabNavigation - If true, tabs update state instead of navigating (default: false)
  * @param {function} onSubcategoryChange - Callback when subcategory changes (for tab mode)
  * @param {boolean} hideMiraWidget - Hide the MiraChatWidget (use when page has MiraOSTrigger)
+ * @param {boolean} hideHero - Hide the UnifiedHero (use when page has custom hero like Soul-First Celebrate)
+ * @param {boolean} hideNavigation - Hide the subcategory navigation bar
  */
 const PillarPageLayout = ({
   pillar,
@@ -130,7 +132,9 @@ const PillarPageLayout = ({
   showSubcategories = true,
   useTabNavigation = false,
   onSubcategoryChange,
-  hideMiraWidget = false
+  hideMiraWidget = false,
+  hideHero = false,
+  hideNavigation = false
 }) => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
@@ -260,18 +264,22 @@ const PillarPageLayout = ({
       
       {/* Unified Hero - Pet is the HERO! */}
       {/* MIRA OS DOCTRINE: hideSearchBar=true because Mira already knows what pet needs */}
-      <UnifiedHero
-        pet={activePet}
-        soulData={petSoulData}
-        pillar={pillar}
-        viewMode={viewMode}
-        searchQuery={searchQuery}
-        onSearchChange={handleSearchChange}
-        onSearchSubmit={handleSearchSubmit}
-        hideSearchBar={true}
-      />
+      {/* Skip if hideHero=true (for pages with custom hero like Soul-First Celebrate) */}
+      {!hideHero && (
+        <UnifiedHero
+          pet={activePet}
+          soulData={petSoulData}
+          pillar={pillar}
+          viewMode={viewMode}
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
+          onSearchSubmit={handleSearchSubmit}
+          hideSearchBar={true}
+        />
+      )}
       
       {/* Navigation Bar - Subcategories Only (Removed clinical Products/Services toggle) */}
+      {!hideNavigation && (
       <div className="bg-white border-b border-gray-100 sticky top-0 z-40 overflow-hidden">
         <div className="max-w-6xl mx-auto overflow-hidden">
           {/* Subcategories Row - Now the primary navigation */}
@@ -391,6 +399,7 @@ const PillarPageLayout = ({
           )}
         </div>
       </div>
+      )}
       
       {/* Pillar-specific content */}
       <main>

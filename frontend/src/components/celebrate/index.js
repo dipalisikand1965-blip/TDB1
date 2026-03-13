@@ -6,6 +6,10 @@
 // Hero
 export { default as CelebrateHero } from './CelebrateHero';
 
+// Category Strip with Modal
+export { default as CelebrateCategoryStrip, CELEBRATE_CATEGORIES } from './CelebrateCategoryStrip';
+export { default as CelebrateContentModal, CATEGORY_CONFIG } from './CelebrateContentModal';
+
 // Soul Pillars
 export { default as SoulCelebrationPillars, SOUL_PILLARS, getPillarState } from './SoulCelebrationPillars';
 export { default as SoulPillarExpanded } from './SoulPillarExpanded';
