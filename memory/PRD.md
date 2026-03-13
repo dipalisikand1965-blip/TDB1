@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document
-## Version 13.5.0 | March 12, 2026
+## Version 13.9.0 | March 13, 2026
 
 ---
 
@@ -22,6 +22,19 @@ The world's first soul-driven Pet Operating System. Every dog has a personality,
 - **Drip questioning** — progressive profiling, 1 question at a time
 - **Soul Intelligence** — feeds Mira context, product recommendations, personalisation
 - **Backend**: `pet_soul_routes.py`, `soul_intelligence.py`, `mira_soulful_brain.py`, `pet_score_logic.py`
+
+#### COMPLETE PET SOUL DATA STRUCTURE (for personalization):
+```
+Identity: name, species, breed, sex, size_class, coat_type, birth_date, gotcha_date
+Soul Profile: soul_score, overall_score, score_tier, soul_archetype (primary_archetype, archetype_name, archetype_emoji, celebration_style, product_affinity), folder_scores, category_scores
+Personality: doggy_soul_answers (describe_3_words, general_nature, stranger_reaction, loud_sounds, social_preference, handling_comfort, behavior_with_dogs)
+Preferences: favorite_treats, favorite_flavors, dislikes, diet_type, activity_level, favorites, soul_knowledge
+Health: allergies, sensitivities, chronic_conditions, current_medications, vaccination_status, vet_name, vet_clinic
+Social: relationships (dog_friends, human_favorites, pet_sitter)
+History: service_history (last_grooming, grooming_preference, travel_history), milestones (gotcha_day, achievements), celebrations, pillar_interactions
+Mira Knowledge: conversation_memories, conversation_insights, learned_facts (loves, prefers, allergies)
+Travel: preferred_transport, crate_trained
+```
 
 ### 2. Mira — The OS Voice
 - **6+ variants**: Mira OS (/mira-os, members-only), Mira Pure (/mira-pure, public), Mira Pure OS, Mira Demo, Mira Original, Mira Pillar Sandbox
@@ -48,12 +61,20 @@ Learn | Care | Dine | Fit | Travel | Stay | Enjoy | Celebrate | Emergency | Advi
 2. Topic Cards Grid (AI watercolor images)
 3. Daily Tip (rotating, pillar-specific)
 4. How Can We Help? (3 help buckets → trigger Mira)
-5. Personalized For Pet (soul-matched: archetype, breed, photo)
+5. **Soul Personalization Section** ⭐ NEW - THE CENTERPIECE
 6. Guided Paths (step-by-step journeys)
 7. Curated Bundles
 8. Products Grid
 9. Mira Curated Layer
 10. Services Section
+
+**Soul Personalization Section** (Position 5 - THE CENTERPIECE):
+- Appears on: Celebrate, Care, Dine, Stay, Fit, Learn, Enjoy, Travel, Shop, Advisory, Adopt
+- Excluded from: Farewell, Emergency, Paperwork
+- Shows: Pet photo with SoulScoreArc, archetype badge, breed tags, Mira love note
+- 3 Soul Insight Cards per pillar with pillar-specific personalized content
+- Uses ALL soul data: personality, preferences, health, relationships, learned_facts
+- Example: "Mojo's a social butterfly 🦋 who loves salmon treats - let's plan a fetch party with Bruno, Cookie & Max!"
 
 **CMS**: All 14 pillars are editable from Admin Panel → Pillar CMS
 
@@ -224,6 +245,20 @@ Credentials: admin `aditya` / `lola4304`
 ---
 
 ## CHANGELOG
+
+### March 13, 2026 — v13.9.0 — SOUL PERSONALIZATION SECTION - THE CENTERPIECE ✅
+- **Created `SoulPersonalizationSection.jsx`**: Reusable component for deep pet personalization
+- **Pillar-specific configurations** for all 11 pillars: Celebrate, Care, Dine, Stay, Fit, Learn, Enjoy, Travel, Shop, Advisory, Adopt
+- **Full soul data integration**: Uses personality, preferences, health, relationships, learned_facts
+- **3 Dynamic Soul Insight Cards** per pillar with contextual, personalized content
+- **Added to pages**: CelebratePage, CarePage, DinePage
+- **Component features**:
+  - Pet photo with SoulScoreArc
+  - Archetype badge and breed tags
+  - MiraLoveNote integration
+  - "Ask Mira" and "Continue Soul Journey" CTAs
+- **Excluded from**: Farewell, Emergency, Paperwork (as designed)
+- **Documentation updated**: PRD.md, AGENT_START_HERE.md with full soul data structure
 
 ### March 13, 2026 — v13.8.0 — BUNDLES ENDPOINTS + SYNC FIX ✅
 - **Bundle API Endpoints Fixed**: Added missing `/api/{pillar}/bundles` endpoints for Stay, Farewell, and Adopt

@@ -43,6 +43,7 @@ import MiraCuratedLayer from '../components/Mira/MiraCuratedLayer';
 import ArchetypeProducts from '../components/ArchetypeProducts';
 import CuratedBundles from '../components/CuratedBundles';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
+import SoulPersonalizationSection from '../components/SoulPersonalizationSection';
 
 // Get user from AuthContext or localStorage
 const getUser = () => {
@@ -649,6 +650,12 @@ const DinePage = () => {
           </div>
         </section>
       )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════════════
+          SOUL PERSONALIZATION SECTION - THE CENTERPIECE
+          The Pet Operating System layer - deeply personalized to the pet's soul
+          ═══════════════════════════════════════════════════════════════════════════════ */}
+      <SoulPersonalizationSection pillar="dine" />
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
           5. DINE FOR MY DOG - Personalized Section (Gold Standard)
