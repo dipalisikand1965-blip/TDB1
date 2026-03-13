@@ -44,12 +44,10 @@ const getBreedSlug = (pet) => {
 };
 
 // ── Category → API mapping ────────────────────────────────────────────────
-// NOTE: DB uses 'celebration' for birthday cakes, 'dognuts' for pupcakes
+// `cakes` = actual TDB bakery cakes (111 products)
+// `celebration` = celebration kits/packages (NOT cakes — don't use for Birthday Cakes)
 const CATEGORY_API = {
-  'birthday-cakes':  [
-    { url: '/api/products?category=celebration&limit=60', key: 'products' },
-    { url: '/api/products?category=cakes&limit=20', key: 'products' },
-  ],
+  'birthday-cakes':  [{ url: '/api/products?category=cakes&limit=60', key: 'products' }],
   'breed-cakes':     [{ url: '/api/products?category=breed-cakes&limit=60', key: 'products' }],
   'pupcakes':        [
     { url: '/api/products?category=dognuts&limit=40', key: 'products' },
@@ -66,20 +64,46 @@ const CATEGORY_API = {
   'nut-butters':     [{ url: '/api/products?category=nut-butters&limit=20', key: 'products' }],
   'hampers':         [{ url: '/api/products?category=hampers&limit=50', key: 'products' }],
   'bundles':         [{ url: '/api/celebrate/bundles', key: 'bundles' }],
-  'soul-picks':      [],
-  'miras-picks':     [
-    { url: '/api/products?category=celebration&limit=20', key: 'products' },
-    { url: '/api/products?category=hampers&limit=10', key: 'products' },
-  ],
+  'soul-picks':      [],  // handled separately with breed endpoint
+  'miras-picks':     [{ url: '/api/products?category=cakes&limit=60', key: 'products' }], // breed-filtered client-side
 };
 
 // Fallback if primary category yields nothing
-const FALLBACK_API = '/api/products?category=celebration&limit=20';
+const FALLBACK_API = '/api/products?category=cakes&limit=20';
+
+// ── Mira whisper text per category ───────────────────────────────────────
+const MIRA_WHISPERS = {
+  'birthday-cakes': (n) => `🎂 Cake explored — ${n}'s birthday is taking shape`,
+  'breed-cakes':    (n) => `🐕 Breed cake found — made just for ${n}`,
+  'pupcakes':       (n) => `🧁 Treats explored — ${n} is going to love these`,
+  'desi-treats':    (n) => `🪔 Desi flavours explored for ${n}`,
+  'frozen-treats':  (n) => `🧊 Cool treats explored — ${n} approved!`,
+  'hampers':        (n) => `🎁 Hamper explored — ${n}'s gift is looking beautiful`,
+  'bundles':        (n) => `🎀 Bundle explored — complete package for ${n}`,
+  'party':          (n) => `🎉 Party decor explored for ${n}'s big day`,
+  'nut-butters':    (n) => `🥜 Nut butter found — ${n}'s lick of the day`,
+  'soul-picks':     (n) => `✨ Soul picks — made just for ${n}`,
+  'miras-picks':    (n) => `🌟 Mira curated these just for ${n}`,
+};
+
+const CTA_LABELS = {
+  'birthday-cakes': (n) => `Build ${n}'s Birthday Plan →`,
+  'breed-cakes':    (n) => `Plan ${n}'s Breed Celebration →`,
+  'pupcakes':       (n) => `Add to ${n}'s Treat List →`,
+  'desi-treats':    (n) => `Plan ${n}'s Desi Spread →`,
+  'frozen-treats':  (n) => `Plan ${n}'s Cool Treats →`,
+  'hampers':        (n) => `Create ${n}'s Gift Hamper →`,
+  'bundles':        (n) => `Customise ${n}'s Bundle →`,
+  'party':          (n) => `Plan ${n}'s Pawty Setup →`,
+  'nut-butters':    (n) => `Add to ${n}'s Pantry →`,
+  'soul-picks':     (n) => `Build ${n}'s Soul Box →`,
+  'miras-picks':    (n) => `Start ${n}'s Celebration →`,
+};
 
 // ── BundleCard + BundleDetailSheet ────────────────────────────────────────
 const BundleDetailSheet = ({ bundle, pet, onClose }) => {
   const petName = pet?.name || 'your pet';
-  const img = bundle.image_url || bundle.image || bundle.images?.[0];
+  const img = bundle.image_url || bundle.image || (Array.isArray(bundle.images) ? bundle.images[0] : bundle.images);
 
   return (
     <>
@@ -90,14 +114,29 @@ const BundleDetailSheet = ({ bundle, pet, onClose }) => {
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         className="fixed bottom-0 left-0 right-0 bg-white"
-        style={{ zIndex: 71, borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '80vh', overflowY: 'auto' }}
+        style={{ zIndex: 71, borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '85vh', overflowY: 'auto' }}
       >
-        <div className="flex justify-center pt-3 pb-1">
-          <div className="rounded-full bg-gray-200" style={{ width: 40, height: 4 }} />
+        {/* Header with drag handle + X */}
+        <div className="sticky top-0 bg-white flex items-center justify-between px-4 pt-3 pb-2"
+          style={{ zIndex: 1, borderBottom: '1px solid #F5F0FF' }}>
+          <div className="flex-1 flex justify-center">
+            <div className="rounded-full bg-gray-200" style={{ width: 40, height: 4 }} />
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-full p-2 hover:bg-gray-100 transition-colors"
+            style={{ border: 'none', cursor: 'pointer', background: 'transparent' }}
+            data-testid="bundle-detail-close"
+          >
+            <X className="w-5 h-5 text-gray-500" />
+          </button>
         </div>
+        {/* Bundle image - full display, no crop */}
         {img && (
-          <img src={img} alt={bundle.name} className="w-full object-cover"
-            style={{ height: 220, objectFit: 'cover' }} />
+          <div className="w-full bg-gray-50" style={{ minHeight: 200 }}>
+            <img src={img} alt={bundle.name} className="w-full"
+              style={{ maxHeight: 320, objectFit: 'contain', display: 'block', margin: '0 auto' }} />
+          </div>
         )}
         <div className="p-6">
           <div className="inline-block rounded-full text-white text-xs font-bold mb-3"
@@ -163,9 +202,9 @@ const BundleCard = ({ bundle, pet }) => {
         data-testid={`bundle-card-${bundle.id}`}
       >
         {img ? (
-          <div className="relative" style={{ paddingBottom: '75%' }}>
+          <div className="relative bg-gray-50" style={{ paddingBottom: '75%' }}>
             <img src={img} alt={bundle.name}
-              className="absolute inset-0 w-full h-full object-cover" />
+              className="absolute inset-0 w-full h-full" style={{ objectFit: 'contain' }} />
           </div>
         ) : (
           <div className="flex items-center justify-center bg-purple-50" style={{ height: 140 }}>
@@ -205,53 +244,18 @@ const BundleCard = ({ bundle, pet }) => {
   );
 };
 
-// ── Breed Product card (Soul Picks / Made for Mojo) ───────────────────────
-const BreedProductCard = ({ product, pet }) => {
-  const [detailOpen, setDetailOpen] = useState(false);
-  const img = product.mockup_url || product.image_url || product.image;
+// ── Soul Picks Product Card — wraps ProductCard with "For {petName}" badge ─
+const SoulPickCard = ({ product, pet }) => {
   const petName = pet?.name || 'your pet';
-
   return (
-    <>
-      <div
-        className="rounded-2xl overflow-hidden cursor-pointer bg-white hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
-        style={{ border: '1px solid #FEE0D2' }}
-        onClick={() => setDetailOpen(true)}
-        data-testid={`breed-product-${product.id}`}
-      >
-        <div className="relative" style={{ paddingBottom: '80%', background: '#FFF5F0' }}>
-          {img ? (
-            <img src={img} alt={product.name}
-              className="absolute inset-0 w-full h-full" style={{ objectFit: 'contain' }} />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-4xl">🐕</div>
-          )}
-          <span className="absolute top-2 right-2 text-white text-xs font-bold rounded-full px-2 py-0.5"
-            style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)' }}>
-            For {petName}
-          </span>
-        </div>
-        <div className="p-3">
-          <p className="font-bold text-sm mb-1 line-clamp-2" style={{ color: '#1A0A00' }}>{product.name}</p>
-          <div className="flex items-center justify-between">
-            <span className="font-extrabold text-sm">
-              ₹{(product.price || 299).toLocaleString('en-IN')}
-            </span>
-            <button
-              onClick={(e) => { e.stopPropagation(); setDetailOpen(true); }}
-              className="text-xs rounded-full px-2 py-0.5 font-semibold"
-              style={{ background: 'rgba(255,107,61,0.12)', color: '#C44400', border: 'none', cursor: 'pointer' }}>
-              View
-            </button>
-          </div>
-        </div>
-      </div>
-      <AnimatePresence>
-        {detailOpen && (
-          <BundleDetailSheet bundle={product} pet={pet} onClose={() => setDetailOpen(false)} />
-        )}
-      </AnimatePresence>
-    </>
+    <div className="relative">
+      <ProductCard product={product} pillar="celebrate" selectedPet={pet} size="small" />
+      <span
+        className="absolute top-2 left-2 text-white text-xs font-bold rounded-full px-2 py-0.5 pointer-events-none"
+        style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)', fontSize: 10, zIndex: 1 }}>
+        For {petName}
+      </span>
+    </div>
   );
 };
 
@@ -377,11 +381,32 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
         return;
       }
 
+      // ── Mira's Picks: breed-filtered from cakes ────────────────────
+      if (category === 'miras-picks') {
+        const r = await fetch(`${apiUrl}/api/products?category=cakes&limit=80`);
+        if (r.ok) {
+          const d = await r.json();
+          const allCakes = d.products || [];
+          const breedName = (pet?.breed || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+          // Filter by breed name if available
+          let breedPicks = breedName
+            ? allCakes.filter(p => {
+                const name = (p.name || p.title || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+                return name.includes(breedName);
+              })
+            : [];
+          // Fall back to top cakes if no breed match
+          setProducts(breedPicks.length >= 4 ? breedPicks : allCakes.slice(0, 24));
+        }
+        setLoading(false);
+        return;
+      }
+
       // ── Normal categories ─────────────────────────────────────────────
       const apis = CATEGORY_API[category] || [];
       let allProducts = [];
       // For multi-source categories, fetch all endpoints; for single source, break on first success
-      const fetchAll = ['party', 'miras-picks'].includes(category);
+      const fetchAll = ['party'].includes(category);
       for (const api of apis) {
         const r = await fetch(`${apiUrl}${api.url}`);
         if (r.ok) {
@@ -558,7 +583,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                     <div className="grid gap-3"
                       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
                       {breedProducts.map((p, idx) => (
-                        <BreedProductCard key={p.id || idx} product={p} pet={pet} />
+                        <SoulPickCard key={p.id || idx} product={p} pet={pet} />
                       ))}
                     </div>
                   </div>
@@ -649,15 +674,31 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
         )}
       </div>
 
-      {/* Footer */}
-      <div className="flex-shrink-0 px-5 py-4" style={{ borderTop: '1px solid #F0E8E0', background: 'white' }}>
-        <button
-          onClick={onClose}
-          className="w-full rounded-xl font-bold text-white py-3"
-          style={{ background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)', border: 'none', cursor: 'pointer', fontSize: 15 }}
-        >
-          Continue Shopping
-        </button>
+      {/* Footer — Mira whisper + dynamic CTA */}
+      <div className="flex-shrink-0 px-5 py-3" style={{ borderTop: '1px solid #F0E8E0', background: 'white' }}>
+        <div className="flex items-center justify-between gap-3">
+          {/* Left: Mira whisper */}
+          <p className="text-xs flex-1 min-w-0" style={{ color: '#888', fontStyle: 'italic', lineHeight: 1.4 }}>
+            {(MIRA_WHISPERS[category] || ((n) => `✨ Exploring for ${n}`))(petName)}
+          </p>
+          {/* Right: CTA */}
+          <button
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent('openMiraAI', {
+                detail: { message: `Help me build a celebration plan for ${petName}`, context: 'celebrate' }
+              }));
+              onClose();
+            }}
+            className="flex-shrink-0 rounded-xl font-bold text-white px-4 py-2.5 whitespace-nowrap"
+            style={{
+              background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)',
+              border: 'none', cursor: 'pointer', fontSize: 13
+            }}
+            data-testid="celebrate-modal-cta"
+          >
+            {(CTA_LABELS[category] || ((n) => `Plan ${n}'s Celebration →`))(petName)}
+          </button>
+        </div>
       </div>
     </motion.div>
   );

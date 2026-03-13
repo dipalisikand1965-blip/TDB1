@@ -17,26 +17,45 @@ The world's first soul-driven Pet Operating System. Every dog has a personality,
 
 ### Route: `/celebrate-soul` (must replace `/celebrate` once Aditya approves)
 
-### COMPLETED ✅
-1. **CelebrateHero** — Pet photo via `pet?.photo_url || pet?.image_url`, gradient avatar ring, Soul % chip, soul chips, Mira quote, spec-compliant layout
-2. **CelebrateCategoryStrip** — **11 categories** (updated Mar 13): Birthday Cakes, Breed Cakes, Pupcakes & Dognuts, Desi Treats, **Frozen Treats (NEW)**, Gift Hampers, Bundles, **Party & Decor (NEW)**, **Nut Butters (NEW)**, Soul Picks, Mira's Picks
-3. **SoulCelebrationPillars** — 8 pillar cards, spec-compliant
-4. **MiraAskBar** — Below soul pillars, opens Mira widget
-5. **CelebrateContentModal** — Fully rebuilt, responsive:
-   - **Desktop**: Large centered dialog (max-w-5xl, 90vh) — Framer Motion centering bug FIXED (wrapper div pattern)
+### COMPLETED ✅ (Updated Mar 13, 2026 — Session 4 Round 2)
+1. **CelebrateHero** — Pet photo, gradient avatar ring, Soul % chip, soul chips, Mira quote
+2. **CelebrateCategoryStrip** — **11 categories**: Birthday Cakes, Breed Cakes, Pupcakes, Desi Treats, **Frozen Treats**, Gift Hampers, Bundles, **Party & Decor**, **Nut Butters**, Soul Picks, Mira's Picks
+3. **SoulCelebrationPillars**, **MiraAskBar**, **GuidedCelebrationPaths**, **CelebrationMemoryWall** — spec-compliant
+4. **CelebrateContentModal** — Fully rebuilt, responsive:
+   - **Desktop**: Large centered dialog (max-w-5xl wrapper div, NOT transform — Framer Motion safe)
    - **Mobile**: Bottom sheet (93vh, drag handle)
-   - Birthday Cakes → `celebration` category (106 products) — FIXED (was pointing to empty `cakes`)
-   - Frozen Treats → `frozen-treats` category (24 products) — NEW
-   - Party & Decor → `party_accessories` + `party_kits` + `celebration_addons` — NEW
-   - Nut Butters → `nut-butters` category (6 products) — NEW
-   - Bundles → 6 bundles, uncropped images (object-contain)
-   - All product images: `object-contain` (no cropping) — FIXED
-   - Close button (X) with data-testid="celebrate-modal-close"
-6. **Admin CelebrateManager**:
-   - Loads **308+ products** from products_master (limit=2000, comprehensive filter) — FIXED (was only 4)
-   - Category dropdown FIXED (native select, no z-index issues)
-   - CATEGORY_OPTIONS includes `celebration`, `frozen-treats`, `party_accessories` — UPDATED
-7. **ProductCard** — `object-contain` for both thumbnail AND modal image — FIXED
+   - `birthday-cakes` → `cakes` (111 actual TDB bakery cakes ✅ was wrongly pointing to `celebration`)
+   - `miras-picks` → `cakes` fetched then **breed-filtered client-side** (Indie dog gets Indie cakes) ✅
+   - `frozen-treats` → 24 products ✅ NEW
+   - `party` → party_accessories + party_kits + celebration_addons ✅ NEW
+   - `nut-butters` → 6 products ✅ NEW
+   - **BundleDetailSheet**: X close button added, image uses `object-contain` (max 320px, no crop) ✅
+   - **Soul Picks**: Now uses `SoulPickCard` (wraps ProductCard with "For {pet}" badge) — proper modal with X ✅
+   - **Footer bar**: Replaced "Continue Shopping" with Mira whisper + "Build {Pet}'s Birthday Plan →" CTA ✅
+   - All product images: `object-contain` — no cropping ✅
+5. **Admin CelebrateManager** — loads 308+ products, category dropdown has celebration/frozen-treats/party_accessories
+
+### PRODUCT COUNTS — CELEBRATE UNIVERSE
+| Category | DB Name | Count |
+|----------|---------|-------|
+| Birthday / Celebration Cakes (actual TDB cakes) | **cakes** | 111 |
+| Celebration packages/kits (NOT in birthday-cakes tab) | celebration | 106 |
+| Breed Cakes | breed-cakes | 42 |
+| Gift Hampers | hampers | 37 |
+| Pupcakes & Dognuts | dognuts | 30 |
+| Frozen Treats | frozen-treats | 24 |
+| Desi Treats | desi-treats | 7 |
+| Nut Butters | nut-butters | 6 |
+| Party Accessories | party_accessories | 6 |
+| Celebration Add-ons | celebration_addons | 6 |
+| Party Kits | party_kits | 4 |
+| **Total in strip tabs** | | **~279 products** |
+| Celebrate Bundles (separate collection) | celebrate_bundles | 6 |
+
+### KEY DATA INSIGHT ⚠️
+`cakes` (111) = actual TDB bakery cake products (beautiful illustrated cakes)
+`celebration` (106) = celebration packages/kits/bundles by breed — NOT birthday cakes
+NEVER use `celebration` for the Birthday Cakes tab. Use `cakes`.
 
 ### PRODUCT COUNTS — CELEBRATE UNIVERSE
 | Category | Count |
