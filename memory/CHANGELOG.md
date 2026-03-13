@@ -3,6 +3,22 @@
 
 ---
 
+## [Mar 13, 2026] Session 4 — CelebrateContentModal Complete Fix (Round 2)
+### 5 Critical Issues Fixed (100% test pass):
+1. **Birthday Cakes** — reverted to `cakes` category (111 actual TDB bakery cakes). `celebration` (celebration kits) was wrong.
+2. **Mira's Picks** — breed-aware: fetches cakes, filters by pet breed. Indie dog → Indie cakes.  
+3. **BundleDetailSheet** — X close button added, image uses `objectFit: contain` (no crop).
+4. **Soul Picks** — uses ProductCard modal (proper X button), not BundleDetailSheet.
+5. **Footer** — Mira whisper (left) + dynamic CTA "Build {Pet}'s Birthday Plan →" (right). No more "Continue Shopping".
+
+## [Mar 13, 2026] Session 4 Round 1 — CelebrateContentModal + CategoryStrip
+- 11 categories in strip (added Frozen Treats, Party & Decor, Nut Butters)
+- Desktop modal: centered via wrapper div (Framer Motion safe)
+- Admin: 308+ products load, CATEGORY_OPTIONS updated
+- ProductCard images: object-contain (no cropping)
+
+---
+
 ## March 13, 2026 — Session 2: Celebrate Page Full Functionality
 
 ### Celebrate Page (Route: `/celebrate-soul`) — Full Functionality Completed
