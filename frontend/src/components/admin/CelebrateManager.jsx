@@ -29,13 +29,17 @@ import {
 const CATEGORY_OPTIONS = [
   { value: 'cakes', label: '🎂 Birthday Cakes' },
   { value: 'breed-cakes', label: '🐕 Breed Cakes' },
-  { value: 'treats', label: '🍪 Treats' },
+  { value: 'mini-cakes', label: '🍰 Mini Cakes' },
   { value: 'pupcakes', label: '🧁 Pupcakes' },
+  { value: 'dognuts', label: '🍩 Pupcakes & Dognuts' },
+  { value: 'treats', label: '🍪 Treats' },
   { value: 'desi-treats', label: '🪔 Desi Treats' },
-  { value: 'hampers', label: '🎁 Hampers' },
+  { value: 'nut-butters', label: '🥜 Nut Butters' },
+  { value: 'hampers', label: '🎁 Gift Hampers' },
   { value: 'frozen', label: '🧊 Frozen Treats' },
   { value: 'meals', label: '🍕 Fresh Meals' },
-  { value: 'accessories', label: '🎀 Accessories' }
+  { value: 'accessories', label: '🎀 Accessories' },
+  { value: 'soul-picks', label: '✨ Soul Picks' },
 ];
 
 const STATUS_BADGES = {
@@ -756,17 +760,17 @@ const CelebrateManager = ({ getAuthHeader }) => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="max-w-xs"
               />
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-[150px]">
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  {CATEGORY_OPTIONS.map(cat => (
-                    <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                style={{ width: 160, cursor: 'pointer' }}
+              >
+                <option value="all">All Categories</option>
+                {CATEGORY_OPTIONS.map(cat => (
+                  <option key={cat.value} value={cat.value}>{cat.label}</option>
+                ))}
+              </select>
             </div>
             <div className="flex gap-2 flex-wrap">
               <Button variant="outline" onClick={fetchAllData}>
@@ -1137,16 +1141,16 @@ const CelebrateManager = ({ getAuthHeader }) => {
               </div>
               <div>
                 <Label>Category</Label>
-                <Select value={productForm.category} onValueChange={(val) => setProductForm({...productForm, category: val})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CATEGORY_OPTIONS.map(cat => (
-                      <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <select
+                  value={productForm.category}
+                  onChange={(e) => setProductForm({...productForm, category: e.target.value})}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  style={{ cursor: 'pointer' }}
+                >
+                  {CATEGORY_OPTIONS.map(cat => (
+                    <option key={cat.value} value={cat.value}>{cat.label}</option>
+                  ))}
+                </select>
               </div>
             </div>
             <div>
