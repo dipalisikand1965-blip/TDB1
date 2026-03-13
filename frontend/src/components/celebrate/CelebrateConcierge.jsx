@@ -256,6 +256,19 @@ const ConciergeCatalogueDrawer = ({ isOpen, onClose, pet }) => {
           )}
         </div>
 
+        {/* Allergy notice for celebrate tab */}
+        {activeTab === 'celebrate' && pet?.allergies?.length > 0 && (
+          <div className="px-5 mb-3">
+            <div
+              className="px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+              style={{ background: '#FFF3E0', border: '1px solid #FFCC99', color: '#8B4500' }}
+            >
+              <span>🛡️</span>
+              <span>Always check with your vet. {petName} has a {pet.allergies.slice(0, 2).join(', ')} allergy — our bakers can customise any cake for {petName}!</span>
+            </div>
+          </div>
+        )}
+
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-5 pb-6">
           {loading ? (
