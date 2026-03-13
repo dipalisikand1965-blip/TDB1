@@ -927,6 +927,36 @@ async def get_trip_planner_options():
     }
 
 
+# ==================== STAY BUNDLES ====================
+
+@stay_router.get("/bundles")
+async def get_stay_bundles(
+    trip_type: Optional[str] = None,
+    limit: int = 50
+):
+    """Get stay/travel bundles - travel kits and trip essentials"""
+    query = {}
+    if trip_type:
+        query["for_trip_type"] = trip_type
+    
+    bundles = await db.stay_bundles.find(query, {"_id": 0}).sort("featured", -1).to_list(limit)
+    
+    return {
+        "bundles": bundles,
+        "total": len(bundles)
+    }
+
+
+@stay_router.get("/bundles/{bundle_id}")
+async def get_stay_bundle(bundle_id: str):
+    """Get a specific stay bundle by ID"""
+    bundle = await db.stay_bundles.find_one({"id": bundle_id}, {"_id": 0})
+    if not bundle:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    
+    return bundle
+
+
 # ==================== PAW REWARD SYSTEM ====================
 
 async def get_random_reward_product():
