@@ -246,6 +246,13 @@ Credentials: admin `aditya` / `lola4304`
 
 ## CHANGELOG
 
+### March 13, 2026 — v13.10.0 — MIRA'S PICKS IMAGE FIX ✅
+- **Fixed 100 products with duplicate/bad images** in unified_products and products_master
+- **All service-type products** now have unique watercolor illustrations
+- **Mira's Picks** sections on all pillars now show proper images instead of duplicates
+- Background AI regeneration of images using OpenAI GPT-Image-1 + Cloudinary
+- **ArchetypeProducts component** verified on 11 pillar pages (beautiful product cards)
+
 ### March 13, 2026 — v13.9.0 — SOUL PERSONALIZATION SECTION - THE CENTERPIECE ✅
 - **Created `SoulPersonalizationSection.jsx`**: Reusable component for deep pet personalization
 - **Pillar-specific configurations** for all 11 pillars: Celebrate, Care, Dine, Stay, Fit, Learn, Enjoy, Travel, Shop, Advisory, Adopt
