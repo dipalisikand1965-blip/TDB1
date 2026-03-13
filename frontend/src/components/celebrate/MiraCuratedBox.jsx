@@ -8,8 +8,7 @@
 
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Gift, PartyPopper } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Sparkles, Gift, PartyPopper, ChevronRight } from 'lucide-react';
 
 // Generate curated items based on pet's soul data
 const generateCuratedItems = (pet) => {
@@ -93,91 +92,130 @@ const MiraCuratedBox = ({ pet, onBuildBox }) => {
   const handleBuildBox = () => {
     if (onBuildBox) {
       onBuildBox(curatedItems);
-    } else {
-      // Fallback: dispatch event
-      window.dispatchEvent(new CustomEvent('openBoxBuilder', { 
-        detail: { items: curatedItems, petName } 
-      }));
     }
+    // Navigate to occasion box builder
+    window.location.href = `/occasion-box?occasion=birthday&pet=${encodeURIComponent(petName)}`;
   };
 
   return (
-    <section className="py-12 px-4" data-testid="mira-curated-box">
-      <div className="max-w-4xl mx-auto">
+    <section className="px-6 mb-8" data-testid="mira-curated-box">
+      <div className="max-w-5xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="relative overflow-hidden rounded-3xl"
+          className="relative overflow-hidden rounded-2xl"
           style={{
-            background: 'linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 50%, #1a0a2e 100%)'
+            background: 'linear-gradient(135deg, #1a0020, #3d0060)',
+            padding: 28
           }}
         >
-          {/* Gradient overlay */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl" />
+          {/* Glow orbs */}
+          <div className="absolute top-0 right-0 w-64 h-64 pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(255,107,157,0.15) 0%, transparent 60%)', zIndex: 1 }} />
           
-          <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row gap-8">
+          <div className="relative flex flex-col md:flex-row gap-6" style={{ zIndex: 2 }}>
             {/* Left: Content */}
             <div className="flex-1">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/30 to-pink-500/30 backdrop-blur-sm text-white text-sm mb-4 border border-purple-400/30">
-                <Sparkles className="w-4 h-4" />
-                <span>Mira's pick for {petName}'s birthday</span>
+              <div
+                className="inline-flex items-center gap-1.5 rounded-full mb-3"
+                style={{
+                  background: 'rgba(196,77,255,0.20)',
+                  border: '1px solid rgba(196,77,255,0.40)',
+                  padding: '4px 12px',
+                  color: '#E0AAFF',
+                  fontSize: 11,
+                  fontWeight: 600
+                }}
+              >
+                <Sparkles className="w-3 h-3" />
+                Mira's pick for {petName}'s birthday
               </div>
 
               {/* Title */}
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                The <span className="text-pink-400">{petName}</span> Birthday Box
+              <h2 className="font-extrabold text-white mb-1.5" style={{ fontSize: '1.375rem' }}>
+                The <span style={{ color: '#FFAAD4' }}>{petName}</span> Birthday Box
               </h2>
 
               {/* Description */}
-              <p className="text-white/70 text-lg leading-relaxed mb-6">
+              <p className="mb-4 leading-relaxed" style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)' }}>
                 {description}
               </p>
 
               {/* Item Tags */}
-              <div className="flex flex-wrap gap-3 mb-6">
+              <div className="flex flex-wrap gap-2 mb-5">
                 {visibleItems.map((item, idx) => (
                   <ItemTag key={idx} {...item} />
                 ))}
                 {extraCount > 0 && (
-                  <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-white/70 text-sm border border-white/20">
+                  <div
+                    className="inline-flex items-center rounded-full font-bold"
+                    style={{
+                      padding: '5px 12px',
+                      background: 'rgba(255,255,255,0.10)',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      color: 'rgba(255,255,255,0.70)',
+                      fontSize: 12
+                    }}
+                  >
                     + {extraCount} more
                   </div>
                 )}
               </div>
 
-              {/* CTA Button */}
-              <Button
-                onClick={handleBuildBox}
-                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white px-6 py-3 rounded-full text-lg font-medium shadow-lg shadow-purple-500/30"
-                data-testid="build-box-cta"
-              >
-                <PartyPopper className="w-5 h-5 mr-2" />
-                Build {petName}'s Box
-              </Button>
+              {/* CTA Buttons */}
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={handleBuildBox}
+                  className="rounded-xl font-bold text-white"
+                  style={{
+                    background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)',
+                    border: 'none',
+                    padding: '12px 24px',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                  data-testid="build-box-cta"
+                >
+                  <PartyPopper className="w-4 h-4 inline mr-2" />
+                  Build {petName}'s Box
+                </button>
+                <button
+                  onClick={() => window.location.href = '/occasion-box?occasion=birthday'}
+                  className="rounded-xl font-medium"
+                  style={{
+                    background: 'rgba(255,255,255,0.10)',
+                    border: '1px solid rgba(255,255,255,0.20)',
+                    padding: '12px 24px',
+                    fontSize: 14,
+                    color: 'white',
+                    cursor: 'pointer'
+                  }}
+                  data-testid="birthday-box-cta"
+                >
+                  Birthday Box
+                </button>
+              </div>
             </div>
 
-            {/* Right: Mira Icon */}
-            <div className="hidden md:flex flex-col items-center justify-center">
-              {/* Mira Avatar */}
+            {/* Right: Mira icon */}
+            <div className="hidden md:flex flex-col items-center justify-center flex-shrink-0">
               <motion.div
-                animate={{ 
-                  scale: [1, 1.05, 1],
-                  rotate: [0, 5, -5, 0]
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                className="rounded-full flex items-center justify-center"
+                style={{
+                  width: 90, height: 90,
+                  background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)',
+                  fontSize: 40,
+                  marginBottom: 8
                 }}
-                transition={{ 
-                  duration: 4, 
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                className="w-32 h-32 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center shadow-2xl shadow-purple-500/50"
               >
-                <Sparkles className="w-12 h-12 text-white" />
+                🎂
               </motion.div>
-              <p className="text-white/60 text-sm mt-4 text-center">
-                Mira knows {petName}
+              <p style={{ color: 'rgba(255,255,255,0.60)', fontSize: 12, textAlign: 'center' }}>
+                Curated by Mira
               </p>
             </div>
           </div>
