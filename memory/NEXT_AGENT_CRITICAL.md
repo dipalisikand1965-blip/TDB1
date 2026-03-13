@@ -1,240 +1,106 @@
-# 🚨 NEXT AGENT CRITICAL HANDOFF
-## MIRA OS - February 8, 2026
+# 🚨 CRITICAL HANDOVER - March 13, 2026 🚨
 
----
+## URGENT: SITE HAS DUPLICATE IMAGE PROBLEM
 
-## ⚡ WHAT WAS ACCOMPLISHED THIS SESSION
+### THE PROBLEM
+**569 products across the site have DUPLICATE/SAME images** - the same stock photo appears on completely different products. This affects:
+- shop: 351 products
+- stay: 58 products  
+- care: 49 products
+- travel: 33 products
+- fit: 16 products
+- And more...
 
-### ✅ COMPLETED
+### FIX IN PROGRESS
+A background script is running to regenerate ALL bad images:
+- **Script**: `/app/backend/scripts/fix_all_product_images.py`
+- **Log**: `/tmp/fix_all_images.log`
+- **Progress**: ~33 fixed so far, 500+ remaining
+- **ETA**: Several hours (rate limited)
 
-1. **CSS Build Error Fixed** - Production build now works
-2. **Unified Service Desk Flow** - Member notifications added
-3. **9-Mode System Implemented:**
-   - DOING modes (PLAN, BOOK, EXECUTE) → Clarify-first, no products
-   - THINKING modes (EXPLORE, FIND, ADVISE, REMEMBER) → Answer-first
-   - EMOTIONAL modes (COMFORT, EMERGENCY) → Presence-first, no products ever
-4. **Topic Shift Detection** - Auto-detects when conversation changes pillar
-5. **Travel/Hotel Clarify-First** - No more instant hotels
-6. **EXPLORE Mode Fixed** - "How do I train" now answers, not routes to Concierge
-7. **Voice ON by Default** - Eloise speaks automatically
-8. **Voice Personalities** - 8 emotion profiles configured
-9. **Birthday Breed Prioritization** - Golden Retriever cakes show first
-10. **Celebration Flow** - Party Planning vs Cake Shopping intents
-
-### ⚠️ PARTIALLY DONE
-
-1. **Voice Speed per Mode** - Personalities configured but WPM not implemented
-2. **Topic Shift UI** - Backend works, frontend indicator added but needs testing
-
-### ❌ NOT DONE (CRITICAL)
-
-1. **Typing Animation** - Text appears instantly, should stream
-2. **Skeleton Loader** - No "Mira is thinking..." feedback
-3. **Voice-Text Sync** - Voice starts before text finishes
-4. **Voice Interrupt** - Doesn't stop when user types
-5. **Concierge Whisper** - Missing on product tiles
-
----
-
-## 🔴 IMMEDIATE PRIORITIES FOR NEXT AGENT
-
-### P0 - CRITICAL (Do First)
-
-#### 1. Typing Animation (30 min)
-**File:** `/app/frontend/src/pages/MiraDemoPage.jsx`
-
-```javascript
-// Need to implement character-by-character streaming
-// Speed varies by mode:
-const TYPING_SPEEDS = {
-  default: 40,      // 40 chars/sec
-  celebration: 45,  // Faster, upbeat
-  comfort: 20,      // Slow, gentle
-  emergency: 30,    // Clear, not frantic
-};
-
-// Stream text instead of instant render
-const streamText = async (text, speed) => {
-  for (let i = 0; i < text.length; i++) {
-    setDisplayedText(text.substring(0, i + 1));
-    await new Promise(r => setTimeout(r, 1000 / speed));
-  }
-};
+**Check progress:**
+```bash
+tail -f /tmp/fix_all_images.log
+grep -c "Fixed:" /tmp/fix_all_images.log
 ```
 
-#### 2. Skeleton Loader (20 min)
-**File:** `/app/frontend/src/pages/MiraDemoPage.jsx`
-
-Show within 800ms if no response:
-```javascript
-// When sending message:
-setIsThinking(true);
-setTimeout(() => {
-  if (isThinking) setShowSkeleton(true);
-}, 800);
-
-// Skeleton UI:
-<div className="mp-skeleton">
-  <Sparkles className="pulse" />
-  <span>Mira is thinking about {pet.name}...</span>
-</div>
+**If script stopped, restart:**
+```bash
+cd /app/backend && set -a && source .env && set +a && nohup python3 scripts/fix_all_product_images.py 50 2.5 > /tmp/fix_all_images.log 2>&1 &
 ```
 
-#### 3. Voice-Text Sync (15 min)
-**File:** `/app/frontend/src/pages/MiraDemoPage.jsx`
+### IMAGE SOURCES - WHERE IMAGES COME FROM
 
-```javascript
-// Only speak AFTER text animation completes
-const handleMiraResponse = async (response) => {
-  await streamText(response.message); // Wait for text
-  if (voiceEnabled) {
-    speakResponse(response.message);  // Then speak
-  }
-};
-```
+| Content Type | Style | Primary Collection | Image Field |
+|-------------|-------|-------------------|-------------|
+| Products | Realistic photos | `products_master`, `unified_products` | `image_url` or `image` |
+| Services | Watercolor | `services_master` | `image_url` or `watercolor_image` |
+| Bundles | Watercolor | `{pillar}_bundles`, `product_bundles` | `image_url` or `image` |
 
-#### 4. Voice Interrupt (15 min)
-**File:** `/app/frontend/src/pages/MiraDemoPage.jsx`
+**Bad Image Patterns (to be replaced):**
+- `static.prod-images.emergentagent.com/jobs` - Duplicate AI images
+- `images.unsplash.com` - Stock photos
 
-```javascript
-// Stop voice when user starts typing
-const handleInputChange = (e) => {
-  setInput(e.target.value);
-  if (isSpeaking) {
-    stopSpeaking(); // Stop TTS immediately
-  }
-};
-```
+**Good Image Patterns:**
+- `res.cloudinary.com/duoapcx1p/` - Cloudinary (correct)
 
----
+### KEY FILES
 
-## 📁 KEY FILES
+**Image Generation Service:**
+- `/app/backend/ai_image_service.py` - Main AI image generation
+- `/app/backend/scripts/fix_all_product_images.py` - Comprehensive fix script
+- `/app/backend/scripts/fix_care_bundle_images.py` - Bundle-specific fix
 
-### Backend
-- `/app/backend/mira_routes.py` - Main Mira logic (13,000+ lines)
-- `/app/backend/tts_routes.py` - Voice/TTS with personalities
-- `/app/backend/services/` - Amadeus, Viator, YouTube, Foursquare
+**Mira's Picks (where those duplicate images showed):**
+- Component: `/app/frontend/src/components/PillarPicksSection.jsx`
+- API: `/api/mira/top-picks/{pet_id}/pillar/{pillar}`
+- Route: `/app/backend/app/api/top_picks_routes.py`
 
-### Frontend
-- `/app/frontend/src/pages/MiraDemoPage.jsx` - Main chat UI (4,800+ lines)
-- `/app/frontend/src/styles/mira-prod.css` - Mira styling
+**Soul Personalization Section (just added to all pillars):**
+- Component: `/app/frontend/src/components/SoulPersonalizationSection.jsx`
+- Added to: Celebrate, Care, Dine, Stay, Fit, Learn, Enjoy, Travel, Shop, Advisory
+- Button links to: `/pet-soul/{petId}` (individual pet soul page)
 
-### Documentation
-- `/app/memory/MIRA_DOCTRINE.md` - Core philosophy
-- `/app/memory/MIRA_MODE_SYSTEM.md` - 9 modes explained
-- `/app/memory/MIRA_SPEED_DOCTRINE.md` - Timing specs
-- `/app/memory/MIRA_UIUX_AUDIT.md` - Current audit scores
+### WHAT WAS DONE THIS SESSION
 
----
+1. ✅ Fixed Mira's Picks duplicate images (100 products)
+2. ✅ Added Soul Personalization Section to 10 pillar pages
+3. ✅ Fixed bundle endpoints for Stay, Farewell, Adopt
+4. ✅ Added `/api/bundles/sync-to-production` endpoint
+5. ✅ Created comprehensive IMAGE_SOURCES.md documentation
+6. 🔄 Started comprehensive image fix for remaining 569 products (IN PROGRESS)
 
-## 🔧 BACKEND FLAGS (Already Working)
+### WHAT STILL NEEDS TO BE DONE
 
-Response from `/api/mira/os/understand-with-products`:
+1. **🔴 P0: Monitor/Complete Image Fix** - Let the script finish, verify images
+2. **🟡 P1: Visual QA** - Check all pillars after images are fixed
+3. **🟡 P2: Fix Razorpay Checkout** - Payment flow broken
+4. **🟡 P2: Fix Mobile Dashboard** - Scrambled UI
+5. **🟢 P3: Sync to Production** - After everything is verified
 
-```json
-{
-  "mode": "PLAN|BOOK|EXECUTE|EXPLORE|FIND|ADVISE|REMEMBER|COMFORT|EMERGENCY|GENERAL",
-  "clarify_only": true|false,
-  "show_products": true|false,
-  "show_services": true|false,
-  "show_concierge": true|false,
-  "topic_shift": true|false,
-  "current_pillar": "travel|health|care|celebrate|...",
-  "previous_pillar": "..."
-}
-```
+### GOLDEN RULES (NON-NEGOTIABLE)
 
-Frontend should use these flags to control UI.
+- **Products** = Realistic photography
+- **Services** = Watercolor illustrations
+- **Bundles** = Watercolor illustrated compositions
+- **LearnPage.jsx** = Gold Standard template for all pillars
 
----
+### TEST CREDENTIALS
 
-## 🎯 SPEED REQUIREMENTS
+- User: `dipali@clubconcierge.in` / `test123`
+- Admin: `aditya` / `lola4304`
 
-### Typing Animation
-| Mode | Speed | Feel |
-|------|-------|------|
-| Normal | 30-45 chars/sec | Natural |
-| Comfort | 15-25 chars/sec | Gentle |
-| Emergency | 25-35 chars/sec | Clear |
-| Celebration | 35-45 chars/sec | Upbeat |
+### KEY DOCUMENTATION
 
-### Voice (Eloise TTS)
-| Mode | WPM | Notes |
-|------|-----|-------|
-| Normal | 160-180 | Conversational |
-| Comfort | 130-150 | Slow, soft |
-| Emergency | 150-165 | Clear, steady |
-| Celebration | 170-190 | Warm, not shrill |
-
-### Response Timing
-- First visual: <800ms (skeleton if needed)
-- Loader text: Show at 2s if nothing yet
-- Full paragraph: Render in 3-4s
+- `/app/memory/AGENT_START_HERE.md`
+- `/app/memory/PRD.md`
+- `/app/memory/docs/IMAGE_SOURCES.md`
+- `/app/frontend/public/complete-documentation.html`
 
 ---
 
-## 🧪 TEST CREDENTIALS
-
-- **Email:** `dipali@clubconcierge.in`
-- **Password:** `test123`
-- **Pets:** Buddy (Golden Retriever), Mojo (Indie)
-
----
-
-## 🔗 PREVIEW URL
-
-https://image-asset-audit.preview.emergentagent.com
-
----
-
-## 📋 TEST SCENARIOS
-
-### Mode System
-1. "Plan a birthday party for Buddy" → Mode: PLAN, clarify_only: true
-2. "Find hotels in Mumbai" → Mode: BOOK, clarify_only: true
-3. "Why does my dog snore?" → Mode: EXPLORE, execution_type: INSTANT
-4. "Show me treats for Buddy" → Mode: FIND, products shown
-5. "We lost Buddy yesterday" → Mode: COMFORT, NO products
-
-### Topic Shift
-1. Send travel query
-2. Then send health query
-3. Should see "🔄 New Topic" indicator
-
-### Voice
-1. Ensure voice is ON by default
-2. Send message, verify Mira speaks
-3. Type while speaking → should stop (NOT IMPLEMENTED YET)
-
----
-
-## 🚫 KNOWN ISSUES
-
-1. **Foursquare API** - Key invalid, using mock data
-2. **Large Files** - MiraDemoPage.jsx is 4,800+ lines, needs refactor eventually
-3. **Mobile** - Not fully tested this session
-
----
-
-## 📚 DOCTRINE FILES TO READ
-
-1. `/app/memory/MIRA_DOCTRINE.md` - Philosophy
-2. `/app/memory/MIRA_MODE_SYSTEM.md` - 9 modes
-3. `/app/memory/MIRA_SPEED_DOCTRINE.md` - Timing
-4. `/app/memory/MIRA_UIUX_AUDIT.md` - Current scores
-
----
-
-## 🎯 SUCCESS CRITERIA
-
-After completing P0 tasks, the audit score should improve:
-
-| Area | Current | Target |
-|------|---------|--------|
-| Response Timing | 3.5/10 | 8/10 |
-| Voice | 5.5/10 | 8/10 |
-| **Overall** | **6.6/10** | **8.0/10** |
-
----
-
-*Handoff Date: February 8, 2026*
+**IMMEDIATE ACTION FOR NEXT AGENT:**
+1. Check if image fix script is still running: `ps aux | grep fix_all`
+2. If not running, restart it
+3. Monitor progress with `tail -f /tmp/fix_all_images.log`
+4. After images are fixed, do visual QA on pillar pages
