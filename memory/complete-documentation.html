@@ -114,10 +114,15 @@
                     <p>Training courses, behavior guides, breed education</p>
                     <span class="pill pill-green">COMPLETE</span>
                 </div>
-                <div class="card">
-                    <div class="card-title">🎂 Celebrate</div>
-                    <p>Birthday cakes, party supplies, custom celebrations</p>
-                    <span class="pill pill-green">COMPLETE</span>
+                <div class="card" style="border-left: 4px solid #C44DFF;">
+                    <div class="card-title">🎂 Celebrate — Soul-First (/celebrate-soul)</div>
+                    <p><strong>Route:</strong> /celebrate-soul | <strong>Status:</strong> REDESIGNED March 2026</p>
+                    <p><strong>Architecture:</strong> 8 Soul Celebration Pillars with 3 states (Glow/Dim/Incomplete) + Concierge Catalogue Drawer</p>
+                    <p><strong>Components:</strong> CelebrateHero (pet photo + soul chips), CategoryStrip, SoulCelebrationPillars (8 cards), SoulPillarExpanded (tabbed + real products), MiraAskBar, MiraCuratedBox (Birthday Box), CelebrateConcierge (drawer with Celebrate/Personalised tabs), GuidedCelebrationPaths, CelebrationWall</p>
+                    <p><strong>Data Sources:</strong> Pet photo: pet.photo_url | Cakes: /api/products?category=cakes (Shopify/TDB) | Bundles: /api/celebrate/bundles (Cloudinary) | Products per pillar: /api/products?category={pillar-category}</p>
+                    <p><strong>Design Tokens:</strong> Hero bg: linear-gradient(135deg, #1a0020, #3d0060, #6b0099, #9b0cbf) | Birthday Box bg: linear-gradient(135deg, #1a0020, #3d0060) | Concierge bg: #0E0620 (FLAT — no gradient) | CTA gold: linear-gradient(135deg, #C9973A, #F0C060)</p>
+                    <p><strong>Mira Ask Bar:</strong> Below soul pillars, no label, input opens Mira widget via openMiraAI CustomEvent with context:'celebrate'</p>
+                    <span class="pill" style="background:#C44DFF; color:white;">SOUL-FIRST REDESIGN COMPLETE</span>
                 </div>
                 <div class="card">
                     <div class="card-title">🏨 Stay</div>

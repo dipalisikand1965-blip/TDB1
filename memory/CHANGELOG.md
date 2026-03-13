@@ -3,7 +3,36 @@
 
 ---
 
-## March 13, 2026
+## March 13, 2026 — Session 2: Celebrate Page Full Functionality
+
+### Celebrate Page (Route: `/celebrate-soul`) — Full Functionality Completed
+
+**P0 Bug Fixes:**
+- ✅ Fixed pet photo in Hero: Changed `pet?.image` → `pet?.photo_url || pet?.image_url` — Mojo's actual photo now shows
+- ✅ Fixed `[object Object]` in Food Pillar Mira quote: Safely extracts string from pet.favorites array of objects
+
+**P0 Feature Implementations:**
+- ✅ **Mira Ask Bar**: Added below Soul Pillars section (no text label, just the input). Click/submit opens Mira widget via `openMiraAI` custom event with celebrate context. Placeholder: "Ask Mira about {petName}'s celebrations..."
+- ✅ **Concierge Catalogue Drawer**: "Browse Celebrate Catalogue" button opens bottom sheet with two tabs:
+  - **Celebrate tab**: Real Shopify products from The Doggy Bakery (cakes, hampers with beautiful illustrations from cdn.shopify.com)
+  - **Personalised tab**: Celebrate bundles from /api/celebrate/bundles (Cloudinary illustrations)
+  - Allergy notice banner for pets with allergies
+- ✅ **Build Box CTAs**: "Build Mojo's Box" → `/occasion-box?occasion=birthday&pet=Mojo`. "Birthday Box" → `/occasion-box?occasion=birthday`
+- ✅ **Soul Pillar Expanded**: Wired to real API data (tabs per pillar, fetches from /api/products?category=X and /api/celebrate/products?category=X, allergen filtering)
+
+**UI Spec Compliance:**
+- ✅ Updated all 8 pillar card colors to match exact spec: Food=`linear-gradient(135deg, #FFF3E0, #FFE0B2)`, Play=pink, Social=purple, etc.
+- ✅ Hero layout: flex row desktop (avatar left, content right), stacked centered mobile
+- ✅ Concierge background: FLAT `#0E0620` (not gradient — spec requirement)
+- ✅ Birthday Box background: `linear-gradient(135deg, #1a0020, #3d0060)` (gradient)
+- ✅ Hero title: "Celebrations" `#FFD080`, "for {petName}" `#FFAAD4`
+
+**Documentation Updated:**
+- ✅ `/app/memory/docs/CELEBRATE_UI_SPEC.md` — Complete rewrite with all 9 components, exact values, data sources
+
+**Testing:** 95% pass rate (30/32). All critical features working.
+
+---
 
 ### Session - Celebrate Pillar Soul-First Architecture Design & Implementation
 
