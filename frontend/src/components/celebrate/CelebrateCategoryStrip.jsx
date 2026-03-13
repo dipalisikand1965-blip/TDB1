@@ -37,6 +37,12 @@ const CELEBRATE_CATEGORIES = [
     iconBg: 'linear-gradient(135deg, #FFF3E0, #FFE0B2)'
   },
   {
+    id: 'frozen-treats',
+    name: 'Frozen Treats',
+    icon: '🧊',
+    iconBg: 'linear-gradient(135deg, #E3F2FD, #B3E5FC)'
+  },
+  {
     id: 'hampers',
     name: 'Gift Hampers',
     icon: '🎁',
@@ -47,6 +53,18 @@ const CELEBRATE_CATEGORIES = [
     name: 'Bundles',
     icon: '🎀',
     iconBg: 'linear-gradient(135deg, #F3E5F5, #CE93D8)'
+  },
+  {
+    id: 'party',
+    name: 'Party & Decor',
+    icon: '🎉',
+    iconBg: 'linear-gradient(135deg, #FFF9C4, #FFEB3B)'
+  },
+  {
+    id: 'nut-butters',
+    name: 'Nut Butters',
+    icon: '🥜',
+    iconBg: 'linear-gradient(135deg, #FFF3E0, #FFCC80)'
   },
   {
     id: 'soul-picks',

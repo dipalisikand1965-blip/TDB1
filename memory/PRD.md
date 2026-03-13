@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: March 13, 2026 (Session 3 — Critical Handoff)
+## Last Updated: March 13, 2026 (Session 4 — Celebrate Modal Fixes)
 
 ---
 
@@ -18,46 +18,48 @@ The world's first soul-driven Pet Operating System. Every dog has a personality,
 ### Route: `/celebrate-soul` (must replace `/celebrate` once Aditya approves)
 
 ### COMPLETED ✅
-1. **CelebrateHero** — Pet photo via `pet?.photo_url || pet?.image_url`, gradient avatar ring (green→purple), Soul % chip, soul chips (Allergy/Loves/Personality), Mira quote, spec-compliant layout (avatar left / content right desktop, stacked mobile)
-2. **CelebrateCategoryStrip** — 8 categories: Birthday Cakes, Breed Cakes, Pupcakes & Dognuts, Desi Treats, Gift Hampers, Bundles, Soul Picks, Mira's Picks. Each opens CelebrateContentModal.
-3. **SoulCelebrationPillars** — 8 pillar cards (4-col grid), spec-compliant colors (glow/dim/incomplete states), badge text, glow dot
-4. **MiraAskBar** — Below soul pillars, no label, input opens Mira widget via `openMiraAI` custom event
-5. **CelebrateContentModal** — Fully rebuilt, responsive bottom sheet:
-   - Birthday Cakes → 40+ real Shopify/TDB products with "View Details" (opens ProductCard modal)
-   - Bundles → 6 illustrated bundles (Cloudinary images), each opens BundleDetailSheet
-   - Soul Picks → breed products from `/api/mockups/breed-products`
-   - Breed cakes, Desi Treats, Hampers, Pupcakes → real Shopify data
-6. **MiraCuratedBox** — "The {PetName} Birthday Box" with CTAs to `/occasion-box?occasion=birthday`
-7. **CelebrateConcierge** — FLAT `#0E0620` bg (not gradient). CTA opens drawer with Celebrate tab (TDB cakes) + Personalised tab (bundles)
-8. **SoulPillarExpanded** — Real API products per pillar (tabs, allergy filtering)
-9. **GuidedCelebrationPaths** — 3 paths (Birthday, Gotcha Day, Photoshoot)
-10. **CelebrationMemoryWall** — Community gallery
-11. **Admin CelebrateManager** — Category dropdown FIXED (was ShadCN Select with z-index bug inside Dialog → replaced with native `<select>`). Added all categories.
+1. **CelebrateHero** — Pet photo via `pet?.photo_url || pet?.image_url`, gradient avatar ring, Soul % chip, soul chips, Mira quote, spec-compliant layout
+2. **CelebrateCategoryStrip** — **11 categories** (updated Mar 13): Birthday Cakes, Breed Cakes, Pupcakes & Dognuts, Desi Treats, **Frozen Treats (NEW)**, Gift Hampers, Bundles, **Party & Decor (NEW)**, **Nut Butters (NEW)**, Soul Picks, Mira's Picks
+3. **SoulCelebrationPillars** — 8 pillar cards, spec-compliant
+4. **MiraAskBar** — Below soul pillars, opens Mira widget
+5. **CelebrateContentModal** — Fully rebuilt, responsive:
+   - **Desktop**: Large centered dialog (max-w-5xl, 90vh) — Framer Motion centering bug FIXED (wrapper div pattern)
+   - **Mobile**: Bottom sheet (93vh, drag handle)
+   - Birthday Cakes → `celebration` category (106 products) — FIXED (was pointing to empty `cakes`)
+   - Frozen Treats → `frozen-treats` category (24 products) — NEW
+   - Party & Decor → `party_accessories` + `party_kits` + `celebration_addons` — NEW
+   - Nut Butters → `nut-butters` category (6 products) — NEW
+   - Bundles → 6 bundles, uncropped images (object-contain)
+   - All product images: `object-contain` (no cropping) — FIXED
+   - Close button (X) with data-testid="celebrate-modal-close"
+6. **Admin CelebrateManager**:
+   - Loads **308+ products** from products_master (limit=2000, comprehensive filter) — FIXED (was only 4)
+   - Category dropdown FIXED (native select, no z-index issues)
+   - CATEGORY_OPTIONS includes `celebration`, `frozen-treats`, `party_accessories` — UPDATED
+7. **ProductCard** — `object-contain` for both thumbnail AND modal image — FIXED
 
-### IN PROGRESS 🚧 — NEXT AGENT MUST FINISH
-1. **Category Strip Icon Size** — Icons look circular/clipped on mobile. Need larger round icons (62x62px or bigger) with proper image rendering. Current: 34x34px icon box with emoji. Should match spec (38x38 icon box, visible label, not truncated)
-2. **Missing Categories** — Current strip has 8. The following TDB categories have products and need strip tabs:
-   - `mini-cakes` (10 products) → "Mini Cakes" tab
-   - `frozen-treats` (24 products) → "Frozen Treats" tab
-   - `fresh-meals` (15 products) → "Fresh Meals" tab
-   - `nut-butters` (6 products) → "Nut Butters" tab
-   - `treats` (39 products) → "Treats & Biscuits" tab
-   - `merchandise` (6 products) → potentially "Merch" tab
-3. **500 Uncategorized Products** — DB has 500 products with `category: ""`. These need to be categorized. Admin needs to provide categorization OR we need an AI auto-categorization script.
-4. **Product Modal Improvements:**
-   - Make modal BIGGER on desktop (currently takes full width, should be max ~80% width centered, or keep bottom sheet but increase height)
-   - Images should NOT be cut — use aspect-ratio preserved images (not `object-cover` cutting)
-   - X button to close the PRODUCT DETAIL MODAL (the one that opens from ProductCard "View Details" — this is the ProductDetailModal in ProductCard.jsx)
-   - Product grid should be scrollable smoothly on mobile
-5. **All 390 Shopify products in correct categories** — many products are in wrong pillars or uncategorized
-6. **Admin sync** — User wants to see the admin celebrate section and manage/reassign products
+### PRODUCT COUNTS — CELEBRATE UNIVERSE
+| Category | Count |
+|----------|-------|
+| celebration (Birthday Cakes) | 106 |
+| breed-cakes | 42 |
+| hampers | 37 |
+| dognuts (Pupcakes) | 30 |
+| frozen-treats | 24 |
+| desi-treats | 7 |
+| nut-butters | 6 |
+| party_accessories | 6 |
+| celebration_addons | 6 |
+| party_kits | 4 |
+| **Total celebrate products** | **~279** |
+| celebrate_bundles | 6 |
 
----
+### IN PROGRESS 🚧 — NEXT TASKS
+1. **Replace `/celebrate` with `/celebrate-soul`** — once Aditya approves
+2. **Standardize other pillar pages** — `/dine`, `/stay`, `/learn` using celebrate as template
+3. **500 uncategorized products** — Admin needs to categorize or use AI
 
-## PRODUCT CATEGORIES IN DATABASE (as of March 13, 2026)
 
-| Category | Count | Notes |
-|----------|-------|-------|
 | (empty/uncategorized) | 500 | NEEDS FIXING |
 | cakes | 104 | Birthday cakes ✅ showing |
 | accessories | 67 | Various |
