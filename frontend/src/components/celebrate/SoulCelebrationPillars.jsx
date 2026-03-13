@@ -15,14 +15,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import SoulPillarExpanded from './SoulPillarExpanded';
 
-// Pillar definitions with all copy from spec
+// Pillar definitions with spec-compliant colors
 const SOUL_PILLARS = [
   {
     id: 'food',
     icon: '🍰',
     name: 'Food & Flavour',
-    color: '#FEF3C7',
-    borderColor: '#F59E0B',
+    color: 'linear-gradient(135deg, #FFF3E0, #FFE0B2)',
+    dotColor: '#FF8C42',
+    borderColor: '#FF8C42',
     tagline: (petName) => `Salmon cake, allergy-safe treats, birthday feast`,
     glowBadge: (petName) => `${petName} loves this`,
     dimBadge: 'Explore',
@@ -43,8 +44,9 @@ const SOUL_PILLARS = [
     id: 'play',
     icon: '🎾',
     name: 'Play & Joy',
-    color: '#D1FAE5',
-    borderColor: '#10B981',
+    color: 'linear-gradient(135deg, #FCE4EC, #F8BBD0)',
+    dotColor: '#E91E63',
+    borderColor: '#E91E63',
     tagline: (petName) => `Toys, enrichment, activity kits — the language ${petName} speaks`,
     glowBadge: () => 'Top soul pillar',
     dimBadge: 'Explore',
@@ -66,8 +68,9 @@ const SOUL_PILLARS = [
     id: 'social',
     icon: '🦋',
     name: 'Social & Friends',
-    color: '#FCE7F3',
-    borderColor: '#EC4899',
+    color: 'linear-gradient(135deg, #F3E5F5, #E1BEE7)',
+    dotColor: '#9C27B0',
+    borderColor: '#9C27B0',
     tagline: () => `Pawty planning, playdate magic, the full celebration`,
     glowBadge: (petName, pet) => pet?.soul_archetype?.archetype_name || 'Social Butterfly',
     dimBadge: 'Explore',
@@ -88,8 +91,9 @@ const SOUL_PILLARS = [
     id: 'adventure',
     icon: '🌅',
     name: 'Adventure & Move',
-    color: '#DBEAFE',
-    borderColor: '#3B82F6',
+    color: 'linear-gradient(135deg, #E3F2FD, #BBDEFB)',
+    dotColor: '#2196F3',
+    borderColor: '#2196F3',
     tagline: () => `Sunrise walks, trail outings, the celebrations that move`,
     glowBadge: (petName) => `${petName}'s happy place`,
     dimBadge: 'Explore',
@@ -110,8 +114,9 @@ const SOUL_PILLARS = [
     id: 'grooming',
     icon: '✨',
     name: 'Grooming & Beauty',
-    color: '#EDE9FE',
-    borderColor: '#8B5CF6',
+    color: 'linear-gradient(135deg, #FFF9C4, #FFF176)',
+    dotColor: '#F9A825',
+    borderColor: '#F9A825',
     tagline: () => `Birthday pamper, bandanas, spa — looking the part`,
     glowBadge: () => 'Pamper day',
     dimBadge: 'Explore',
@@ -131,8 +136,9 @@ const SOUL_PILLARS = [
     id: 'learning',
     icon: '🧠',
     name: 'Learning & Mind',
-    color: '#FECDD3',
-    borderColor: '#F43F5E',
+    color: 'linear-gradient(135deg, #E8F5E9, #C8E6C9)',
+    dotColor: '#4CAF50',
+    borderColor: '#4CAF50',
     tagline: (petName) => `New skills, puzzle toys, the celebration that grows ${petName}`,
     glowBadge: () => 'Bright mind',
     dimBadge: 'Explore',
@@ -153,8 +159,9 @@ const SOUL_PILLARS = [
     id: 'health',
     icon: '💚',
     name: 'Health & Wellness',
-    color: '#D1FAE5',
-    borderColor: '#059669',
+    color: 'linear-gradient(135deg, #E0F7FA, #B2EBF2)',
+    dotColor: '#00BCD4',
+    borderColor: '#00BCD4',
     tagline: () => `Wellness gifts, supplements, the most loving thing you can give`,
     glowBadge: () => 'Long healthy life',
     dimBadge: 'Explore',
@@ -178,8 +185,9 @@ const SOUL_PILLARS = [
     id: 'memory',
     icon: '📸',
     name: 'Love & Memory',
-    color: '#FECDD3',
-    borderColor: '#DB2777',
+    color: 'linear-gradient(135deg, #FFF3E0, #FFCCBC)',
+    dotColor: '#FF5722',
+    borderColor: '#FF5722',
     tagline: () => `Photoshoots, portraits, the birthday that lives forever`,
     glowBadge: () => 'Keep them forever',
     dimBadge: 'Explore',
@@ -212,26 +220,10 @@ const getPillarState = (pillar, pet) => {
   return 'dim';
 };
 
-// Single Pillar Card Component
+// Single Pillar Card Component — matches spec exactly
 const PillarCard = ({ pillar, pet, isExpanded, onToggle, onTellMiraMore }) => {
   const state = getPillarState(pillar, pet);
   const petName = pet?.name || 'your pet';
-  
-  const stateStyles = {
-    glow: {
-      opacity: 1,
-      transform: 'scale(1)',
-      boxShadow: `0 0 20px ${pillar.borderColor}40`
-    },
-    dim: {
-      opacity: 0.7,
-      transform: 'scale(1)'
-    },
-    incomplete: {
-      opacity: 0.5,
-      transform: 'scale(1)'
-    }
-  };
 
   const handleClick = () => {
     if (state === 'incomplete') {
@@ -241,94 +233,114 @@ const PillarCard = ({ pillar, pet, isExpanded, onToggle, onTellMiraMore }) => {
     }
   };
 
+  const cardStyle = {
+    background: pillar.color,
+    borderRadius: 12,
+    padding: '18px 14px',
+    cursor: 'pointer',
+    position: 'relative',
+    opacity: state === 'glow' ? 1.0 : state === 'dim' ? 0.60 : 0.50,
+    boxShadow: state === 'glow' ? '0 0 20px rgba(196,77,255,0.25)' : 'none',
+    border: isExpanded ? `2px solid #C44DFF` : '2px solid transparent',
+    transition: 'transform 200ms ease, box-shadow 400ms ease'
+  };
+
+  const badgeStyle = {
+    glow: {
+      background: `rgba(${hexToRgb(pillar.dotColor)}, 0.15)`,
+      color: darken(pillar.dotColor)
+    },
+    dim: { background: 'rgba(0,0,0,0.08)', color: '#555555' },
+    incomplete: { background: 'rgba(196,77,255,0.15)', color: '#4B0082' }
+  };
+
   return (
     <motion.div
       layout
       initial={{ opacity: 0, y: 20 }}
-      animate={{ 
-        opacity: stateStyles[state].opacity,
-        y: 0,
-        boxShadow: stateStyles[state].boxShadow || 'none'
-      }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="relative"
     >
       <div
         onClick={handleClick}
-        className={`
-          relative rounded-2xl p-5 cursor-pointer transition-all duration-300
-          border-2 hover:shadow-lg
-          ${isExpanded ? 'ring-2 ring-offset-2' : ''}
-        `}
-        style={{
-          backgroundColor: pillar.color,
-          borderColor: state === 'glow' ? pillar.borderColor : 'transparent',
-          ringColor: pillar.borderColor
-        }}
+        style={cardStyle}
+        className="hover:-translate-y-0.5"
         data-testid={`pillar-card-${pillar.id}`}
       >
-        {/* Glow indicator dot */}
+        {/* Glow dot */}
         {state === 'glow' && (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute top-3 right-3 w-3 h-3 rounded-full"
-            style={{ backgroundColor: pillar.borderColor }}
+          <span
+            className="absolute"
+            style={{
+              width: 8, height: 8, borderRadius: '50%',
+              top: 8, right: 8,
+              backgroundColor: pillar.dotColor
+            }}
           />
         )}
-
-        {/* Lock icon for incomplete */}
+        {/* Lock icon */}
         {state === 'incomplete' && (
-          <div className="absolute top-3 right-3">
-            <Lock className="w-4 h-4 text-gray-400" />
+          <div className="absolute" style={{ top: 8, right: 8 }}>
+            <Lock className="w-3.5 h-3.5 text-gray-400" />
+          </div>
+        )}
+        {/* Expand chevron */}
+        {state !== 'incomplete' && (
+          <div className="absolute" style={{ bottom: 8, right: 8 }}>
+            {isExpanded
+              ? <ChevronUp className="w-4 h-4 text-gray-400" />
+              : <ChevronDown className="w-4 h-4 text-gray-400" />
+            }
           </div>
         )}
 
         {/* Icon */}
-        <div className="text-4xl mb-3">{pillar.icon}</div>
+        <span className="block mb-2" style={{ fontSize: 26 }}>{pillar.icon}</span>
 
         {/* Name */}
-        <h3 className="font-bold text-gray-900 text-lg mb-1">{pillar.name}</h3>
+        <p className="font-bold mb-0.5" style={{ fontSize: 13, color: '#1A0A00' }}>
+          {pillar.name}
+        </p>
 
         {/* Tagline */}
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+        <p className="mb-2 leading-snug" style={{ fontSize: 11, color: '#666', lineHeight: 1.4 }}>
           {pillar.tagline(petName)}
         </p>
 
         {/* Badge */}
-        <div 
-          className={`
-            inline-block px-3 py-1 rounded-full text-xs font-medium
-            ${state === 'glow' ? 'text-white' : state === 'incomplete' ? 'text-purple-700 bg-purple-100' : 'text-gray-600 bg-white/50'}
-          `}
-          style={state === 'glow' ? { backgroundColor: pillar.borderColor } : {}}
+        <span
+          className="rounded-full font-bold"
+          style={{
+            fontSize: 10, fontWeight: 700,
+            padding: '2px 8px',
+            ...badgeStyle[state]
+          }}
         >
-          {state === 'glow' && (
-            typeof pillar.glowBadge === 'function' ? pillar.glowBadge(petName, pet) : pillar.glowBadge
-          )}
+          {state === 'glow' && (typeof pillar.glowBadge === 'function' ? pillar.glowBadge(petName, pet) : pillar.glowBadge)}
           {state === 'dim' && pillar.dimBadge}
-          {state === 'incomplete' && (
-            <span className="flex items-center gap-1">
-              <Sparkles className="w-3 h-3" />
-              Tell Mira more
-            </span>
-          )}
-        </div>
-
-        {/* Expand indicator */}
-        {state !== 'incomplete' && (
-          <div className="absolute bottom-3 right-3">
-            {isExpanded ? (
-              <ChevronUp className="w-5 h-5 text-gray-400" />
-            ) : (
-              <ChevronDown className="w-5 h-5 text-gray-400" />
-            )}
-          </div>
-        )}
+          {state === 'incomplete' && `🔒 Tell Mira more`}
+        </span>
       </div>
     </motion.div>
   );
 };
+
+// Color helpers
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `${r},${g},${b}`;
+}
+function darken(hex) {
+  // Return a darker shade for badge text
+  const map = {
+    '#FF8C42': '#8B4500', '#E91E63': '#880E4F', '#9C27B0': '#4A148C',
+    '#2196F3': '#0D47A1', '#F9A825': '#E65100', '#4CAF50': '#1B5E20',
+    '#00BCD4': '#006064', '#FF5722': '#BF360C'
+  };
+  return map[hex] || '#333';
+}
 
 // Main Component
 const SoulCelebrationPillars = ({ pet, onOpenSoulBuilder }) => {
@@ -354,21 +366,21 @@ const SoulCelebrationPillars = ({ pet, onOpenSoulBuilder }) => {
   const expandedPillarData = SOUL_PILLARS.find(p => p.id === expandedPillar);
 
   return (
-    <section className="py-12 px-4 bg-gradient-to-b from-pink-50/50 to-white" data-testid="soul-celebration-pillars">
+    <section className="py-8 px-6 bg-white" data-testid="soul-celebration-pillars">
       {/* Section Header */}
-      <div className="max-w-6xl mx-auto mb-8">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-          How would <span className="text-pink-500">{petName}</span> love to celebrate?
+      <div className="max-w-6xl mx-auto mb-5">
+        <h2 className="font-bold" style={{ fontSize: '1.5rem', color: '#0E0620', marginBottom: 4 }}>
+          How would <span style={{ color: '#C44DFF' }}>{petName}</span> love to celebrate?
         </h2>
-        <p className="text-gray-600 text-lg">
-          Choose a pillar — everything inside is personalised to {petName}'s soul profile. 
-          <span className="text-purple-600 font-medium"> Glowing ones match who {petName} is.</span>
+        <p style={{ fontSize: 13, color: '#888888' }}>
+          Choose a pillar — everything inside is personalised to {petName}'s soul profile.{' '}
+          <span style={{ color: '#7C3AED', fontWeight: 600 }}>Glowing ones match who {petName} is.</span>
         </p>
       </div>
 
       {/* Pillars Grid */}
       <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
           {SOUL_PILLARS.map((pillar) => (
             <PillarCard
               key={pillar.id}

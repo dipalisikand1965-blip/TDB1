@@ -16,10 +16,10 @@
  * IMPORTANT: Mira widget and Concierge button remain visible throughout
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, SendHorizonal } from 'lucide-react';
 
 // Context
 import { useAuth } from '../context/AuthContext';
@@ -86,6 +86,73 @@ const LoadingState = () => (
     </div>
   </div>
 );
+
+// Mira Ask Bar — minimal, just the input (no extra text)
+const MiraAskBar = ({ petName }) => {
+  const [query, setQuery] = useState('');
+  const inputRef = useRef(null);
+
+  const openMira = (message) => {
+    window.dispatchEvent(new CustomEvent('openMiraAI', {
+      detail: {
+        message: message || `Tell me how to celebrate ${petName}`,
+        context: 'celebrate'
+      }
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const q = query.trim();
+    if (q) {
+      openMira(q);
+      setQuery('');
+    } else {
+      openMira();
+    }
+  };
+
+  return (
+    <div className="px-6 mb-8" data-testid="celebrate-mira-ask-bar">
+      <div className="max-w-2xl mx-auto">
+        <form
+          onSubmit={handleSubmit}
+          className="flex items-center gap-2 rounded-full overflow-hidden"
+          style={{
+            background: 'rgba(196,77,255,0.06)',
+            border: '1.5px solid rgba(196,77,255,0.25)',
+            padding: '4px 4px 4px 18px',
+            boxShadow: '0 2px 8px rgba(196,77,255,0.10)'
+          }}
+        >
+          <span className="text-base flex-shrink-0" style={{ color: '#C44DFF' }}>✦</span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={`Ask Mira about ${petName}'s celebrations...`}
+            className="flex-1 bg-transparent outline-none"
+            style={{ fontSize: 14, color: '#1A0A00', padding: '8px 0' }}
+            onClick={() => !query.trim() && openMira()}
+          />
+          <button
+            type="submit"
+            className="rounded-full flex items-center justify-center text-white flex-shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)',
+              border: 'none',
+              width: 36, height: 36,
+              cursor: 'pointer'
+            }}
+          >
+            <SendHorizonal className="w-4 h-4" />
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 const CelebratePageNew = () => {
   const navigate = useNavigate();
@@ -221,40 +288,46 @@ const CelebratePageNew = () => {
         soulScore={soulScore}
       />
 
-      {/* 2. CATEGORY STRIP - Opens modals on click */}
-      <CelebrateCategoryStrip 
-        pet={selectedPet}
-        onCategorySelect={handleCategorySelect}
-      />
+      {/* Main content area with consistent max-width */}
+      <div className="max-w-5xl mx-auto w-full">
+        {/* 2. CATEGORY STRIP - Opens modals on click */}
+        <CelebrateCategoryStrip 
+          pet={selectedPet}
+          onCategorySelect={handleCategorySelect}
+        />
 
-      {/* 3. SOUL CELEBRATION PILLARS */}
-      <SoulCelebrationPillars 
-        pet={selectedPet}
-        onOpenSoulBuilder={handleOpenSoulBuilder}
-      />
+        {/* 3. SOUL CELEBRATION PILLARS */}
+        <SoulCelebrationPillars 
+          pet={selectedPet}
+          onOpenSoulBuilder={handleOpenSoulBuilder}
+        />
 
-      {/* 4. MIRA'S BIRTHDAY BOX */}
-      <MiraCuratedBox 
-        pet={selectedPet}
-        onBuildBox={handleBuildBox}
-      />
+        {/* Mira Ask Bar — appears right below the pillars section */}
+        <MiraAskBar petName={selectedPet?.name} />
 
-      {/* 5. CELEBRATE CONCIERGE® */}
-      <CelebrateConcierge 
-        pet={selectedPet}
-        onTalkToConcierge={handleTalkToConcierge}
-      />
+        {/* 4. MIRA'S BIRTHDAY BOX */}
+        <MiraCuratedBox 
+          pet={selectedPet}
+          onBuildBox={handleBuildBox}
+        />
 
-      {/* 6. GUIDED CELEBRATION PATHS */}
-      <GuidedCelebrationPaths 
-        pet={selectedPet}
-        onSelectPath={handleSelectPath}
-      />
+        {/* 5. CELEBRATE CONCIERGE® */}
+        <CelebrateConcierge 
+          pet={selectedPet}
+          onTalkToConcierge={handleTalkToConcierge}
+        />
 
-      {/* 7. CELEBRATION WALL */}
-      <CelebrationMemoryWall 
-        petName={selectedPet?.name}
-      />
+        {/* 6. GUIDED CELEBRATION PATHS */}
+        <GuidedCelebrationPaths 
+          pet={selectedPet}
+          onSelectPath={handleSelectPath}
+        />
+
+        {/* 7. CELEBRATION WALL */}
+        <CelebrationMemoryWall 
+          petName={selectedPet?.name}
+        />
+      </div>
     </PillarPageLayout>
   );
 };
