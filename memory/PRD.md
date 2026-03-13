@@ -254,6 +254,13 @@ Credentials: admin `aditya` / `lola4304`
 
 ## CHANGELOG
 
+### March 13, 2026 — v13.13.0 — COMPREHENSIVE IMAGE FIX (IN PROGRESS) 🔄
+- **Identified 569 products with duplicate/bad images** across all collections
+- **Created fix_all_product_images.py** script to regenerate ALL bad images
+- **Collections being fixed**: products, products_master, unified_products
+- **Breakdown by pillar**: shop(351), stay(58), care(49), travel(33), fit(16), emergency(15), enjoy(11), celebrate(11), dine(8), adopt(8), paperwork(5), learn(3), farewell(1)
+- **Running in background** - generates realistic product photography for each
+
 ### March 13, 2026 — v13.12.0 — IMAGE SOURCE DOCUMENTATION ✅
 - **Created comprehensive IMAGE_SOURCES.md** documentation (341 lines)
 - **Fixed Soul Journey button**: Now links to `/pet-soul/{petId}` for individual pet pages
