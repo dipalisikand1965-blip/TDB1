@@ -36,6 +36,7 @@ import { FitnessJourneyCounter, RotatingSocialProof } from '../components/Social
 import TransformationStories from '../components/TransformationStories';
 import ConversationalEntry from '../components/ConversationalEntry';
 import QuickWinTip from '../components/QuickWinTip';
+import SoulPersonalizationSection from '../components/SoulPersonalizationSection';
 import {
   Search, Filter, MapPin, Star, Heart, Dog, Calendar, Phone, Globe, 
   ChevronRight, Sparkles, Shield, TreePine, Sun, Waves, Mountain,
@@ -839,6 +840,11 @@ ${stayRequestForm.special_requests || 'None'}
             <BreedSmartRecommendations pillar="stay" />
           </div>
         )}
+
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {/* SOUL PERSONALIZATION SECTION - THE CENTERPIECE */}
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        <SoulPersonalizationSection pillar="stay" />
 
         {/* ═══════════════════════════════════════════════════════════════════════ */}
         {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
