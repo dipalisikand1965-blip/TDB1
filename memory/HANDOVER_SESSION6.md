@@ -17,7 +17,7 @@ New Test User: audit_test_1771750532@test.com / test123
 
 ### URLs
 ```
-Preview: https://pet-data-heal.preview.emergentagent.com
+Preview: https://pillar-personalize.preview.emergentagent.com
 Production: https://thedoggycompany.com
 Admin: /admin (login required)
 ```
