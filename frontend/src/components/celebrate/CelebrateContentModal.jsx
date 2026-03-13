@@ -44,26 +44,37 @@ const getBreedSlug = (pet) => {
 };
 
 // ── Category → API mapping ────────────────────────────────────────────────
+// NOTE: DB uses 'celebration' for birthday cakes, 'dognuts' for pupcakes
 const CATEGORY_API = {
-  'birthday-cakes':  [{ url: '/api/products?category=cakes&limit=40', key: 'products' }],
-  'breed-cakes':     [{ url: '/api/products?category=breed-cakes&limit=40', key: 'products' }],
+  'birthday-cakes':  [
+    { url: '/api/products?category=celebration&limit=60', key: 'products' },
+    { url: '/api/products?category=cakes&limit=20', key: 'products' },
+  ],
+  'breed-cakes':     [{ url: '/api/products?category=breed-cakes&limit=60', key: 'products' }],
   'pupcakes':        [
-    { url: '/api/products?category=dognuts&limit=30', key: 'products' },
+    { url: '/api/products?category=dognuts&limit=40', key: 'products' },
     { url: '/api/products?category=pupcakes&limit=20', key: 'products' },
-    { url: '/api/celebrate/products?category=pupcakes&limit=20', key: 'products' },
   ],
-  'desi-treats':     [
-    { url: '/api/products?category=desi-treats&limit=30', key: 'products' },
-    { url: '/api/celebrate/products?category=desi-treats&limit=20', key: 'products' },
+  'desi-treats':     [{ url: '/api/products?category=desi-treats&limit=30', key: 'products' }],
+  'frozen-treats':   [{ url: '/api/products?category=frozen-treats&limit=40', key: 'products' }],
+  'party':           [
+    { url: '/api/products?category=party_accessories&limit=20', key: 'products' },
+    { url: '/api/products?category=party_kits&limit=20', key: 'products' },
+    { url: '/api/products?category=celebration_addons&limit=20', key: 'products' },
+    { url: '/api/products?category=party_supplies&limit=10', key: 'products' },
   ],
-  'hampers':         [{ url: '/api/products?category=hampers&limit=30', key: 'products' }],
+  'nut-butters':     [{ url: '/api/products?category=nut-butters&limit=20', key: 'products' }],
+  'hampers':         [{ url: '/api/products?category=hampers&limit=50', key: 'products' }],
   'bundles':         [{ url: '/api/celebrate/bundles', key: 'bundles' }],
-  'soul-picks':      [],  // special: uses breed products endpoint
-  'miras-picks':     [{ url: '/api/celebrate/products?limit=20', key: 'products' }],
+  'soul-picks':      [],
+  'miras-picks':     [
+    { url: '/api/products?category=celebration&limit=20', key: 'products' },
+    { url: '/api/products?category=hampers&limit=10', key: 'products' },
+  ],
 };
 
 // Fallback if primary category yields nothing
-const FALLBACK_API = '/api/products?category=cakes&limit=20';
+const FALLBACK_API = '/api/products?category=celebration&limit=20';
 
 // ── BundleCard + BundleDetailSheet ────────────────────────────────────────
 const BundleDetailSheet = ({ bundle, pet, onClose }) => {
@@ -211,7 +222,7 @@ const BreedProductCard = ({ product, pet }) => {
         <div className="relative" style={{ paddingBottom: '80%', background: '#FFF5F0' }}>
           {img ? (
             <img src={img} alt={product.name}
-              className="absolute inset-0 w-full h-full object-cover" />
+              className="absolute inset-0 w-full h-full" style={{ objectFit: 'contain' }} />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-4xl">🐕</div>
           )}
@@ -265,6 +276,21 @@ export const CATEGORY_CONFIG = {
     emoji: '🪔', label: 'Desi Treats',
     miraLabel: 'Indian flavours your pup loves',
     emptyText: 'Desi treats coming soon!'
+  },
+  'frozen-treats': {
+    emoji: '🧊', label: 'Frozen Treats',
+    miraLabel: 'Cool & delicious',
+    emptyText: 'Frozen treats coming soon!'
+  },
+  'party': {
+    emoji: '🎉', label: 'Party & Decor',
+    miraLabel: 'Dress up the pawty!',
+    emptyText: 'Party supplies coming soon!'
+  },
+  'nut-butters': {
+    emoji: '🥜', label: 'Nut Butters',
+    miraLabel: 'Lick-worthy spreads',
+    emptyText: 'Nut butters coming soon!'
   },
   'hampers': {
     emoji: '🎁', label: 'Gift Hampers',
