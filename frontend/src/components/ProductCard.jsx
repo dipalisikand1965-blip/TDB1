@@ -435,7 +435,8 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
               <img
                 src={displayImage}
                 alt={product.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                style={{ background: '#fafafa' }}
                 onError={(e) => { e.target.src = productImage || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop'; }}
               />
             );
@@ -1108,11 +1109,11 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
         </button>
 
         <div className="grid md:grid-cols-2">
-          <div className="relative aspect-square bg-gray-100">
+          <div className="relative aspect-square bg-gray-50">
             <img
               src={productImage}
               alt={product.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               onError={(e) => { e.target.src = PLACEHOLDER_IMAGE; }}
             />
             {/* Soul Tier Badge + Standard Badges */}
