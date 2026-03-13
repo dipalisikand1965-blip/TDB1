@@ -1643,3 +1643,37 @@ async def seed_adopt_data():
         logger.error(f"Error seeding adopt data: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ============ BUNDLES ENDPOINTS ============
+
+@router.get("/bundles")
+async def get_adopt_bundles(
+    category: Optional[str] = None,
+    limit: int = Query(50, ge=1, le=100)
+):
+    """Get adopt bundles - new pet starter kits and adoption packages"""
+    db = get_db()
+    
+    query = {}
+    if category:
+        query["category"] = category
+    
+    bundles = await db.adopt_bundles.find(query, {"_id": 0}).sort("featured", -1).to_list(limit)
+    
+    return {
+        "bundles": bundles,
+        "total": len(bundles)
+    }
+
+
+@router.get("/bundles/{bundle_id}")
+async def get_adopt_bundle(bundle_id: str):
+    """Get a specific adopt bundle by ID"""
+    db = get_db()
+    
+    bundle = await db.adopt_bundles.find_one({"id": bundle_id}, {"_id": 0})
+    if not bundle:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    
+    return bundle
+
