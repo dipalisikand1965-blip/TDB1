@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://image-asset-audit.preview.emergentagent.com
+https://pet-data-heal.preview.emergentagent.com
 ```
 
 ---
