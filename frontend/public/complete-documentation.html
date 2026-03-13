@@ -146949,6 +146949,79 @@ Her fears, her joys, her health, her personality.</p>
 
 <p><strong>Full Specification:</strong> <code>/app/memory/docs/CELEBRATE_SPEC.md</code></p>
 
+<hr />
+<h2>CELEBRATE UI SPECIFICATION — Design Tokens & Visual Standards</h2>
+<p><strong>Full UI Spec:</strong> <code>/app/memory/docs/CELEBRATE_UI_SPEC.md</code></p>
+
+<h3>Design Tokens (Shared Across All Pages)</h3>
+
+<h4>Brand Colours</h4>
+<table>
+<thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
+<tbody>
+<tr><td>--brand-purple</td><td>#4B0082</td><td>headings, primary actions</td></tr>
+<tr><td>--brand-purpleMid</td><td>#7C3AED</td><td>hover states</td></tr>
+<tr><td>--brand-gold</td><td>#C9973A</td><td>concierge, premium</td></tr>
+<tr><td>--brand-rose</td><td>#C4607A</td><td>celebrate, love</td></tr>
+<tr><td>--brand-amber</td><td>#FF8C42</td><td>dine, food, warm CTAs</td></tr>
+</tbody>
+</table>
+
+<h4>Hero Background</h4>
+<pre>linear-gradient(135deg, #1a0020 0%, #3d0060 40%, #6b0099 75%, #9b0cbf 100%)</pre>
+
+<h4>Avatar Ring (Green Soul Arc)</h4>
+<pre>border: 3px solid transparent;
+background: linear-gradient(#1a0020, #1a0020) padding-box, 
+            linear-gradient(135deg, #00E676, #C44DFF) border-box;</pre>
+
+<h4>Hero Title Colors</h4>
+<ul>
+<li>"Celebrations" → <code>#FFD080</code> (amber/gold)</li>
+<li>"for" → <code>#FFFFFF</code></li>
+<li>{petName} → <code>#FFAAD4</code> (pink)</li>
+</ul>
+
+<h4>Soul Chip Styling</h4>
+<ul>
+<li><strong>Allergy:</strong> bg <code>rgba(255,107,157,0.12)</code>, border <code>rgba(255,107,157,0.50)</code></li>
+<li><strong>Loves:</strong> bg <code>rgba(255,208,128,0.10)</code>, border <code>rgba(255,208,128,0.50)</code></li>
+<li><strong>Personality:</strong> bg <code>rgba(196,77,255,0.10)</code>, border <code>rgba(196,77,255,0.50)</code></li>
+</ul>
+
+<h4>Pillar Colour Map (NEW GRADIENTS)</h4>
+<table>
+<thead><tr><th>Pillar</th><th>Background Gradient</th><th>Dot Color</th></tr></thead>
+<tbody>
+<tr><td>🍰 Food & Flavour</td><td>linear-gradient(135deg, #FFF3E0, #FFE0B2)</td><td>#FF8C42</td></tr>
+<tr><td>🎾 Play & Joy</td><td>linear-gradient(135deg, #FCE4EC, #F8BBD0)</td><td>#E91E63</td></tr>
+<tr><td>🦋 Social & Friends</td><td>linear-gradient(135deg, #F3E5F5, #E1BEE7)</td><td>#9C27B0</td></tr>
+<tr><td>🌅 Adventure & Move</td><td>linear-gradient(135deg, #E3F2FD, #BBDEFB)</td><td>#2196F3</td></tr>
+<tr><td>✨ Grooming & Beauty</td><td>linear-gradient(135deg, #FFF9C4, #FFF176)</td><td>#F9A825</td></tr>
+<tr><td>🧠 Learning & Mind</td><td>linear-gradient(135deg, #E8F5E9, #C8E6C9)</td><td>#4CAF50</td></tr>
+<tr><td>💚 Health & Wellness</td><td>linear-gradient(135deg, #E0F7FA, #B2EBF2)</td><td>#00BCD4</td></tr>
+<tr><td>📸 Love & Memory</td><td>linear-gradient(135deg, #FFF3E0, #FFCCBC)</td><td>#FF5722</td></tr>
+</tbody>
+</table>
+
+<h4>MiraBirthdayBox vs CelebrateConcierge</h4>
+<ul>
+<li><strong>MiraBirthdayBox:</strong> <code>linear-gradient(135deg, #1a0020, #3d0060)</code> (dark purple GRADIENT)</li>
+<li><strong>CelebrateConcierge:</strong> <code>#0E0620</code> (flat deep purple - NO GRADIENT - must be distinct)</li>
+</ul>
+
+<h4>Shadows</h4>
+<ul>
+<li><code>--shadow-glow</code>: <code>0 0 20px rgba(196,77,255,0.25)</code> (glowing pillars)</li>
+<li><code>--shadow-goldGlow</code>: <code>0 0 16px rgba(201,151,58,0.30)</code> (concierge hover)</li>
+</ul>
+
+<h4>Typography</h4>
+<ul>
+<li><code>--font-display</code>: Georgia, 'Times New Roman', serif (hero titles, Mira quotes)</li>
+<li><code>--font-body</code>: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif</li>
+</ul>
+
 <p><em>Last updated: March 13, 2026</em></p>
                     </div>
                 
