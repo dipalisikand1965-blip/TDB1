@@ -27,7 +27,8 @@ import {
 } from 'lucide-react';
 
 const CATEGORY_OPTIONS = [
-  { value: 'cakes', label: '🎂 Birthday Cakes' },
+  { value: 'celebration', label: '🎂 Birthday / Celebration Cakes' },
+  { value: 'cakes', label: '🎂 Cakes (legacy)' },
   { value: 'breed-cakes', label: '🐕 Breed Cakes' },
   { value: 'mini-cakes', label: '🍰 Mini Cakes' },
   { value: 'pupcakes', label: '🧁 Pupcakes' },
@@ -35,8 +36,12 @@ const CATEGORY_OPTIONS = [
   { value: 'treats', label: '🍪 Treats' },
   { value: 'desi-treats', label: '🪔 Desi Treats' },
   { value: 'nut-butters', label: '🥜 Nut Butters' },
+  { value: 'frozen-treats', label: '🧊 Frozen Treats' },
+  { value: 'frozen', label: '🧊 Frozen (legacy)' },
   { value: 'hampers', label: '🎁 Gift Hampers' },
-  { value: 'frozen', label: '🧊 Frozen Treats' },
+  { value: 'party_accessories', label: '🎉 Party Accessories' },
+  { value: 'party_kits', label: '🎊 Party Kits' },
+  { value: 'celebration_addons', label: '✨ Celebration Add-ons' },
   { value: 'meals', label: '🍕 Fresh Meals' },
   { value: 'accessories', label: '🎀 Accessories' },
   { value: 'soul-picks', label: '✨ Soul Picks' },

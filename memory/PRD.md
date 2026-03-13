@@ -52,28 +52,27 @@ The world's first soul-driven Pet Operating System. Every dog has a personality,
 | celebration_addons | 6 |
 | party_kits | 4 |
 | **Total celebrate products** | **~279** |
-| celebrate_bundles | 6 |
+### PRODUCT COUNTS — CELEBRATE UNIVERSE (Confirmed Mar 13, 2026)
+| Category | DB Name | Count | Status |
+|----------|---------|-------|--------|
+| Birthday / Celebration Cakes | celebration | 106 | ✅ Strip tab "Birthday Cakes" |
+| Breed Cakes | breed-cakes | 42 | ✅ Strip tab "Breed Cakes" |
+| Gift Hampers | hampers | 37 | ✅ Strip tab "Gift Hampers" |
+| Pupcakes & Dognuts | dognuts | 30 | ✅ Strip tab "Pupcakes" |
+| Frozen Treats | frozen-treats | 24 | ✅ NEW Strip tab |
+| Desi Treats | desi-treats | 7 | ✅ Strip tab |
+| Nut Butters | nut-butters | 6 | ✅ NEW Strip tab |
+| Party Accessories | party_accessories | 6 | ✅ NEW "Party & Decor" tab |
+| Celebration Add-ons | celebration_addons | 6 | ✅ Part of "Party & Decor" |
+| Party Kits | party_kits | 4 | ✅ Part of "Party & Decor" |
+| Celebrate Bundles | (separate collection) | 6 | ✅ "Bundles" tab |
+| **Total Celebrate Products** | | **~279** | |
+| Admin Panel Shows | (filtered) | 308 | includes some extras |
 
 ### IN PROGRESS 🚧 — NEXT TASKS
 1. **Replace `/celebrate` with `/celebrate-soul`** — once Aditya approves
 2. **Standardize other pillar pages** — `/dine`, `/stay`, `/learn` using celebrate as template
-3. **500 uncategorized products** — Admin needs to categorize or use AI
-
-
-| (empty/uncategorized) | 500 | NEEDS FIXING |
-| cakes | 104 | Birthday cakes ✅ showing |
-| accessories | 67 | Various |
-| breed-cakes | 40 | ✅ showing |
-| treats | 39 | NOT in strip yet |
-| hampers | 33 | ✅ showing |
-| dognuts | 30 | ✅ showing (pupcakes category) |
-| frozen-treats | 24 | NOT in strip |
-| fresh-meals | 15 | NOT in strip |
-| paperwork | 14 | Ignore |
-| mini-cakes | 10 | NOT in strip |
-| desi-treats | 7 | ✅ showing |
-| nut-butters | 6 | NOT in strip |
-| merchandise | 6 | Could be soul picks |
+3. **500 uncategorized products** — Admin needs to categorize or AI auto-categorize
 
 ---
 
