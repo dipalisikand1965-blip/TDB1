@@ -34,6 +34,7 @@ import SoulMadeCollection from '../components/SoulMadeCollection';
 import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import PillarPicksSection from '../components/PillarPicksSection';
 import { PillarAskMiraHero } from '../components/PillarAskMiraHero';
+import SoulPersonalizationSection from '../components/SoulPersonalizationSection';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Users,

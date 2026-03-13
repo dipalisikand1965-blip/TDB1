@@ -622,10 +622,10 @@ const SoulPersonalizationSection = ({ pillar, className = '' }) => {
                   variant="outline"
                   className={`${config.borderColor} ${config.badgeColor.replace('bg-', 'text-').replace('-100', '-700')} hover:bg-${config.color}-50`}
                   data-testid={`${pillar}-personalized-soul-button`}
-                  onClick={() => navigate(`/pet-soul/${activePet.id}`)}
+                  onClick={() => navigate('/my-pets')}
                 >
                   <Heart className="mr-2 h-4 w-4" />
-                  Continue {activePet.name}'s Soul Journey
+                  {activePet.name}'s Dashboard
                 </Button>
               </div>
             </div>

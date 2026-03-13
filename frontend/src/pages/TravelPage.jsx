@@ -34,6 +34,7 @@ import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTop
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarPageLayout from '../components/PillarPageLayout';
 import { PillarDailyTip, PillarHelpBuckets, PillarGuidedPaths } from '../components/PillarGoldSections';
+import SoulPersonalizationSection from '../components/SoulPersonalizationSection';
 import {
   Car, Train, Plane, Truck, MapPin, Calendar, Clock, PawPrint,
   Shield, Heart, CheckCircle, AlertTriangle, MessageCircle, Phone,
@@ -630,6 +631,11 @@ const TravelPage = () => {
             <BreedSmartRecommendations pillar="travel" />
           </div>
         )}
+
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {/* SOUL PERSONALIZATION SECTION - THE CENTERPIECE */}
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        <SoulPersonalizationSection pillar="travel" />
 
         {/* ═══════════════════════════════════════════════════════════════════════ */}
         {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}

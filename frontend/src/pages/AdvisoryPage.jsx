@@ -44,6 +44,7 @@ import { PillarAskMiraHero } from '../components/PillarAskMiraHero';
 import CuratedBundles from '../components/CuratedBundles';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { PillarDailyTip, PillarHelpBuckets } from '../components/PillarGoldSections';
+import SoulPersonalizationSection from '../components/SoulPersonalizationSection';
 import NearbyAdvisoryServices from '../components/advisory/NearbyAdvisoryServices';
 import AdvisoryProductsGrid from '../components/advisory/AdvisoryProductsGrid';
 import {
@@ -1286,6 +1287,11 @@ const AdvisoryPage = () => {
         subtitle={`A Pet OS advisory layer for ${activePet?.name || 'your pet'} — recommendations grounded in breed, soul context, and the decisions you are trying to make right now.`}
         maxProducts={6}
       />
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SOUL PERSONALIZATION SECTION - THE CENTERPIECE */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <SoulPersonalizationSection pillar="advisory" />
 
       {/* ═══════════════════════════════════════════════════════════════════════════
           LAYER 6: ADVISORY PRODUCTS & BUNDLES - Soul-created structure

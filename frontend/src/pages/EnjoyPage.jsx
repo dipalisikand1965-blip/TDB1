@@ -39,6 +39,7 @@ import LocalPlacesSection from '../components/LocalPlacesSection';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { PillarDailyTip, PillarHelpBuckets, PillarGuidedPaths } from '../components/PillarGoldSections';
 import { PillarAskMiraHero } from '../components/PillarAskMiraHero';
+import SoulPersonalizationSection from '../components/SoulPersonalizationSection';
 import {
   PartyPopper, Calendar, MapPin, Users, Clock, PawPrint,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
@@ -665,6 +666,11 @@ const EnjoyPage = () => {
             <BreedSmartRecommendations pillar="enjoy" />
           </div>
         )}
+
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        {/* SOUL PERSONALIZATION SECTION - THE CENTERPIECE */}
+        {/* ═══════════════════════════════════════════════════════════════════════ */}
+        <SoulPersonalizationSection pillar="enjoy" />
 
         {/* ═══════════════════════════════════════════════════════════════════════ */}
         {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}

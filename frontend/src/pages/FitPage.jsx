@@ -45,6 +45,7 @@ import { FitnessJourneyCounter, RotatingSocialProof } from '../components/Social
 import TransformationStories from '../components/TransformationStories';
 import ConversationalEntry from '../components/ConversationalEntry';
 import QuickWinTip from '../components/QuickWinTip';
+import SoulPersonalizationSection from '../components/SoulPersonalizationSection';
 import {
   Dumbbell, Heart, TrendingUp, Scale, Activity, Trophy,
   CheckCircle, ChevronRight, ChevronLeft, Sparkles, Star, Loader2, Send,
@@ -966,6 +967,11 @@ const FitPage = () => {
           <BreedSmartRecommendations pillar="fit" />
         </div>
       )}
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SOUL PERSONALIZATION SECTION - THE CENTERPIECE */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <SoulPersonalizationSection pillar="fit" />
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}

@@ -31,6 +31,7 @@ import BreedSmartRecommendations from '../components/BreedSmartRecommendations';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import PillarTopicsGrid, { DEFAULT_PILLAR_TOPICS } from '../components/PillarTopicsGrid';
 import { PillarDailyTip, PillarHelpBuckets, PillarGuidedPaths } from '../components/PillarGoldSections';
+import SoulPersonalizationSection from '../components/SoulPersonalizationSection';
 import ProductCard from '../components/ProductCard';
 import {
   Search, Heart, ArrowRight, X, Package, Mic,
@@ -903,6 +904,11 @@ const ShopPage = () => {
         topics={DEFAULT_PILLAR_TOPICS.shop}
         columns={4}
       />
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* SOUL PERSONALIZATION SECTION - THE CENTERPIECE */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <SoulPersonalizationSection pillar="shop" />
 
       {/* ════════════════════════════════════════════════════════════════════
           3. DAILY SHOP TIP + 4. HOW CAN WE HELP + 5. GUIDED PATHS
