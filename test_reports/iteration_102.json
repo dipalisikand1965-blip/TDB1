@@ -1,0 +1,60 @@
+{
+  "summary": "Tested /celebrate-soul CelebrateCategoryStrip and CelebrateContentModal fixes. All backend APIs pass. Frontend: all 11 categories found, modal opens, products load with object-contain. Critical bug: desktop modal centering broken (Framer Motion overrides CSS transform). Admin panel: 415 products load, native category select with 19+ options works.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "CelebrateContentModal",
+        "issue": "Desktop modal NOT centered. Modal appears on the right half of the screen starting at x=960 (left: 50% of 1920px viewport) instead of being centered. getBoundingClientRect shows rectLeft=960, center_x=1530 vs expected 960. Computed CSS transform is 'matrix(1, 0, 0, 1, 0, 54.9)' - only Y-translation, no X-centering.",
+        "selector": "[data-testid='celebrate-modal-birthday-cakes']",
+        "priority": "HIGH",
+        "root_cause": "Framer Motion's scale animation (initial={scale:0.96} → animate={scale:1}) generates its own CSS transform matrix that REPLACES the inline style transform:'translate(-50%, -50%)'. Framer Motion takes ownership of the CSS transform property, discarding the centering transform.",
+        "fix": "Option A (recommended): Wrap desktop motion.div in a centering wrapper: <div className='fixed inset-0 flex items-center justify-center' style={{zIndex:56}}><motion.div style={{maxWidth:1140, width:'92vw'...}}>...</motion.div></div>. Option B: Use Framer Motion's x/y with percentage strings: initial={{scale:0.96, x:'-50%', y:'-50%'}} animate={{scale:1, x:'-50%', y:'-50%'}} and remove transform from inline style."
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "/celebrate-soul category strip",
+        "issues": ["Mobile: category strip click on Birthday Cakes did not open modal in mobile viewport test (possibly scroll-position issue in test, needs further verification)"]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_celebrate_category_modal.py",
+    "/app/test_reports/pytest/celebrate_modal_results.xml"
+  ],
+  "action_items": [
+    "FIX (HIGH): CelebrateContentModal desktop centering broken - Framer Motion scale animation overrides transform:translate(-50%,-50%). Fix by using wrapper div flexbox centering OR Framer Motion x/y percentage values. See ui_bugs[0].fix for exact fix.",
+    "VERIFY: Test mobile category strip click - modal may not open on mobile (could be scroll-related in automated test, manual verification recommended)"
+  ],
+  "critical_code_review_comments": [
+    "CelebrateContentModal.jsx lines 452-473: modal centering uses CSS transform which Framer Motion overrides. Known Framer Motion issue. Use wrapper div pattern (same as ProductDetailModal at ProductCard.jsx:1097 which uses 'fixed inset-0 flex items-center justify-center' correctly).",
+    "CelebrateContentModal.jsx: Mobile modal renders ALL products from desktop rendering path (category !== 'bundles' && category !== 'soul-picks') but mobile modal doesn't have full product grid rendering. However this is acceptable since mobile gets bottom-sheet with products via the same component (the isDesktop check handles this).",
+    "ProductCard.jsx line 438: object-contain confirmed ✅, line 1116: object-contain confirmed ✅",
+    "CelebrateManager.jsx: limit=2000 returns 415 celebrate products ✅, native select category dropdown ✅"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "100% (14/14 tests pass)",
+    "frontend": "85% (11/11 categories shown, modal opens, products load, images contain - only desktop centering broken)"
+  },
+  "test_credentials": {
+    "user": "dipali@clubconcierge.in / test123",
+    "admin": "aditya / lola4304",
+    "auth_key": "tdb_auth_token in localStorage"
+  },
+  "seed_data_creation": "None - tested with existing data",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "CelebrateCategoryStrip (11 categories) and CelebrateContentModal are working. Main remaining bug: desktop modal centering (transform conflict with Framer Motion scale animation). Admin panel works at /admin (login: aditya/lola4304), click '14 PILLARS > Celebrate' (data-testid='admin-tab-products') to access CelebrateManager. Backend APIs all working. After fixing modal centering, verify with data-testid='celebrate-modal-birthday-cakes' and check getBoundingClientRect().left is ~390px (not 960px) in 1920px viewport.",
+  "rca_of_issue": {
+    "bug": "CelebrateContentModal desktop modal NOT centered",
+    "reproduction": "1. Login as dipali@clubconcierge.in, 2. Navigate to /celebrate-soul, 3. Click 'Birthday Cakes' category, 4. Modal opens at x=960 (right half of 1920px viewport) instead of centered at x=390. getBoundingClientRect shows left=960, width=1140, center_x=1530 vs expected 960.",
+    "root_cause": "CelebrateContentModal.jsx line 456: style includes transform:'translate(-50%,-50%)' for centering. motion.div uses Framer Motion animate={scale:0.96→scale:1}. Framer Motion's animation system computes its own CSS transform matrix for the scale animation, which REPLACES the inline style transform property. Computed CSS: 'matrix(1,0,0,1,0,54.9)' - only Y offset from spring animation, no X translation.",
+    "fix": "Remove transform from inline style. Use wrapper div approach: <div className='fixed inset-0 flex items-center justify-center' style={{zIndex:56, pointerEvents:'none'}}><motion.div style={{maxWidth:1140, width:'92vw', maxHeight:'90vh', borderRadius:20, pointerEvents:'auto'}} initial={{opacity:0,scale:0.96}} animate={{opacity:1,scale:1}} data-testid={...}>content</motion.div></div>. This is the same pattern as ProductDetailModal (ProductCard.jsx line 1097) which works correctly."
+  }
+}
