@@ -22,7 +22,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-API_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://image-asset-audit.preview.emergentagent.com')
+API_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pet-data-heal.preview.emergentagent.com')
 BATCH_SIZE = 50
 CHECK_INTERVAL = 60  # seconds
 

@@ -16,7 +16,7 @@ import json
 import uuid
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://image-asset-audit.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pet-data-heal.preview.emergentagent.com')
 
 # Test credentials from requirements
 TEST_USER_EMAIL = "dipali@clubconcierge.in"

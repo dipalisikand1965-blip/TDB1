@@ -179,7 +179,7 @@ curl "$API_URL/api/pet-soul/profile/pet-99a708f1722a/quick-questions"
 
 ## 🚀 PREVIEW URL
 ```
-https://image-asset-audit.preview.emergentagent.com
+https://pet-data-heal.preview.emergentagent.com
 ```
 
 Key pages:
