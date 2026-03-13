@@ -28,7 +28,11 @@ const SOUL_PILLARS = [
     glowBadge: (petName) => `${petName} loves this`,
     dimBadge: 'Explore',
     incompleteBadge: (petName) => `Complete ${petName}'s food preferences to unlock`,
-    miraQuote: (pet) => `"We know ${pet.name} loves ${pet.favorites?.[0] || 'treats'} and can't have ${pet.allergies?.[0] || 'nothing specific'}. Every item here is checked. Nothing that would hurt them, everything that makes them happy."`,
+    miraQuote: (pet) => {
+      const fav = typeof pet?.favorites?.[0] === 'string' ? pet.favorites[0] : (pet?.favorites?.[0]?.name || pet?.favorites?.[0]?.value || 'treats');
+      const allergy = pet?.allergies?.[0] || (Array.isArray(pet?.doggy_soul_answers?.food_allergies) ? pet.doggy_soul_answers.food_allergies[0] : pet?.doggy_soul_answers?.food_allergies) || 'nothing specific';
+      return `"We know ${pet?.name || 'your pet'} loves ${fav} and can't have ${allergy}. Every item here is checked. Nothing that would hurt them, everything that makes them happy."`;
+    },
     tabs: ['Birthday Cakes', 'Breed Cakes', 'Pupcakes', 'Desi Treats', 'Gift Hampers', 'Treat Boxes'],
     glowCondition: (pet) => {
       const hasAllergies = pet?.allergies?.length > 0 || pet?.doggy_soul_answers?.food_allergies;
