@@ -17,7 +17,7 @@ New Test User: audit_test_1771750532@test.com / test123
 
 ### URLs
 ```
-Preview: https://image-asset-audit.preview.emergentagent.com
+Preview: https://pet-data-heal.preview.emergentagent.com
 Production: https://thedoggycompany.com
 Admin: /admin (login required)
 ```

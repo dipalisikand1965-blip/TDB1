@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://image-asset-audit.preview.emergentagent.com
+**Preview URL:** https://pet-data-heal.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
