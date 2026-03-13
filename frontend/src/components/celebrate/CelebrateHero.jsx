@@ -76,13 +76,45 @@ const SoulChip = ({ icon, label, value, variant = 'default' }) => {
 const MiraQuoteCard = ({ pet, daysUntilBirthday, isBirthdayToday }) => {
   const petName = pet?.name || 'your pet';
   
-  // Get favorites for quote
+  // Get favorites for quote - ensure we extract string values
   const favorites = useMemo(() => {
     const faves = [];
-    if (pet?.doggy_soul_answers?.favorite_treats) faves.push(pet.doggy_soul_answers.favorite_treats);
-    if (pet?.favorites?.length) faves.push(...pet.favorites.slice(0, 2));
-    if (pet?.favorite_treats?.length) faves.push(...pet.favorite_treats.slice(0, 2));
-    return [...new Set(faves)].slice(0, 2);
+    
+    // Helper to extract string from various data formats
+    const extractString = (item) => {
+      if (typeof item === 'string') return item;
+      if (typeof item === 'object' && item !== null) {
+        // Try common property names
+        return item.name || item.value || item.label || item.text || null;
+      }
+      return null;
+    };
+    
+    if (pet?.doggy_soul_answers?.favorite_treats) {
+      const val = extractString(pet.doggy_soul_answers.favorite_treats);
+      if (val) faves.push(val);
+    }
+    if (pet?.doggy_soul_answers?.favorite_protein) {
+      const val = extractString(pet.doggy_soul_answers.favorite_protein);
+      if (val) faves.push(val);
+    }
+    if (pet?.favorites?.length) {
+      pet.favorites.slice(0, 2).forEach(f => {
+        const val = extractString(f);
+        if (val) faves.push(val);
+      });
+    }
+    if (pet?.favorite_treats?.length) {
+      pet.favorite_treats.slice(0, 2).forEach(f => {
+        const val = extractString(f);
+        if (val) faves.push(val);
+      });
+    }
+    
+    // Filter out test data and duplicates, keep only clean values
+    return [...new Set(faves)]
+      .filter(f => f && !f.includes('Persistence Test') && !f.includes('c6be919d'))
+      .slice(0, 2);
   }, [pet]);
 
   // Determine quote based on context
@@ -164,9 +196,19 @@ const CelebrateHero = ({ pet, soulScore }) => {
 
     // 2. Loves chip
     const loves = [];
-    if (pet?.doggy_soul_answers?.favorite_treats) loves.push(pet.doggy_soul_answers.favorite_treats);
-    if (pet?.doggy_soul_answers?.favorite_protein) loves.push(pet.doggy_soul_answers.favorite_protein);
-    if (pet?.favorite_toys?.length) loves.push(pet.favorite_toys[0]);
+    
+    // Helper to extract string value and filter test data
+    const addLove = (item) => {
+      if (!item) return;
+      const value = typeof item === 'string' ? item : (item?.name || item?.value || null);
+      if (value && !value.includes('Persistence Test') && !value.includes('c6be919d')) {
+        loves.push(value);
+      }
+    };
+    
+    addLove(pet?.doggy_soul_answers?.favorite_treats);
+    addLove(pet?.doggy_soul_answers?.favorite_protein);
+    if (pet?.favorite_toys?.length) addLove(pet.favorite_toys[0]);
     if (pet?.doggy_soul_answers?.car_rides?.toLowerCase()?.includes('love')) loves.push('car rides');
     if (pet?.doggy_soul_answers?.walks_per_day) loves.push('walks');
     

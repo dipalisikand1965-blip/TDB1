@@ -2,31 +2,36 @@
  * CelebratePageNew.jsx
  * 
  * SOUL-FIRST CELEBRATION ARCHITECTURE
+ * Mobile-first, iOS/Android responsive
  * 
- * Page Spine:
+ * Page Spine (SINGLE HERO, NO DUPLICATES):
  * 1. THE ARRIVAL (Hero) → Pet, Soul Score, Soul Chips, Mira's Voice
- * 2. CATEGORY STRIP → For direct shoppers
+ * 2. CATEGORY STRIP → Opens modals with products/bundles/services
  * 3. SOUL PILLARS → "How would {petName} love to celebrate?"
  * 4. MIRA'S BIRTHDAY BOX → Build it yourself
  * 5. CELEBRATE CONCIERGE® → Hand it over
  * 6. GUIDED PATHS → Birthday Party | Gotcha Day | Photoshoot
  * 7. CELEBRATION WALL → Community moments
+ * 
+ * IMPORTANT: Mira widget and Concierge button remain visible throughout
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 // Context
 import { useAuth } from '../context/AuthContext';
 import { usePillarContext } from '../context/PillarContext';
 
-// Layout
+// Layout - This includes the Mira widget
 import PillarPageLayout from '../components/PillarPageLayout';
 
 // New Soul-First Components
 import {
   CelebrateHero,
+  CelebrateCategoryStrip,
   SoulCelebrationPillars,
   MiraCuratedBox,
   CelebrateConcierge,
@@ -34,49 +39,8 @@ import {
   CelebrationMemoryWall
 } from '../components/celebrate';
 
-// Existing Components (kept for category strip)
-import { API_URL, getApiUrl } from '../utils/api';
-
-// Category Strip Component (extracted from existing)
-const CategoryStrip = ({ activeCategory, onCategoryChange }) => {
-  const categories = [
-    { id: 'all', name: 'All', icon: '✦', active: true },
-    { id: 'birthday-cakes', name: 'Birthday Cakes', icon: '🎂' },
-    { id: 'breed-cakes', name: 'Breed Cakes', icon: '🐾' },
-    { id: 'pupcakes', name: 'Pupcakes & Dognuts', icon: '🧁' },
-    { id: 'desi-treats', name: 'Desi Treats', icon: '🍖' },
-    { id: 'gift-hampers', name: 'Gift Hampers', icon: '🎁' },
-    { id: 'party-items', name: 'Party Items', icon: '🎀' },
-    { id: 'premium', name: 'Premium', icon: '👑' },
-  ];
-
-  return (
-    <section className="bg-pink-50/50 border-b border-pink-100">
-      <div className="max-w-6xl mx-auto px-4 py-4">
-        <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide pb-2">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => onCategoryChange && onCategoryChange(cat.id)}
-              className={`
-                flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap
-                transition-all duration-200 text-sm font-medium
-                ${activeCategory === cat.id
-                  ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg shadow-purple-500/30'
-                  : 'bg-white text-gray-600 hover:bg-pink-100 border border-pink-200'
-                }
-              `}
-              data-testid={`category-${cat.id}`}
-            >
-              <span>{cat.icon}</span>
-              <span>{cat.name}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
+// API utilities
+import { getApiUrl } from '../utils/api';
 
 // Empty State when no pet
 const NoPetState = ({ onAddPet }) => (
@@ -85,6 +49,7 @@ const NoPetState = ({ onAddPet }) => (
     style={{
       background: 'linear-gradient(135deg, #1a0a2e 0%, #16082a 50%, #2d1b4e 100%)'
     }}
+    data-testid="no-pet-state"
   >
     <div className="text-center max-w-md">
       <div className="text-6xl mb-6">🎉</div>
@@ -106,6 +71,22 @@ const NoPetState = ({ onAddPet }) => (
   </section>
 );
 
+// Loading State
+const LoadingState = () => (
+  <div 
+    className="min-h-[60vh] flex items-center justify-center" 
+    style={{
+      background: 'linear-gradient(135deg, #1a0a2e 0%, #16082a 50%, #2d1b4e 100%)'
+    }}
+    data-testid="loading-state"
+  >
+    <div className="text-center text-white">
+      <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-pink-400" />
+      <p className="text-white/70">Loading celebrations...</p>
+    </div>
+  </div>
+);
+
 const CelebratePageNew = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
@@ -114,7 +95,6 @@ const CelebratePageNew = () => {
   // Use currentPet from context
   const selectedPet = currentPet;
   
-  const [activeCategory, setActiveCategory] = useState('all');
   const [soulScore, setSoulScore] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -130,12 +110,10 @@ const CelebratePageNew = () => {
     }
   }, [contextPets, currentPet, setCurrentPet]);
 
-  // Fetch soul score
+  // Fetch soul score when pet changes
   useEffect(() => {
     const fetchSoulScore = async () => {
-      if (!selectedPet?.id) {
-        return;
-      }
+      if (!selectedPet?.id) return;
 
       try {
         const apiUrl = getApiUrl();
@@ -143,6 +121,8 @@ const CelebratePageNew = () => {
         if (response.ok) {
           const data = await response.json();
           setSoulScore(data.soul_score || data.overall_score || selectedPet.soul_score || 0);
+        } else {
+          setSoulScore(selectedPet?.soul_score || selectedPet?.overall_score || 0);
         }
       } catch (error) {
         console.error('[CelebratePageNew] Error fetching soul score:', error);
@@ -154,27 +134,26 @@ const CelebratePageNew = () => {
   }, [selectedPet?.id]);
 
   // Handle add pet
-  const handleAddPet = () => {
+  const handleAddPet = useCallback(() => {
     if (isAuthenticated) {
       navigate('/dashboard/pets?action=add');
     } else {
-      navigate('/login?redirect=/celebrate');
+      navigate('/login?redirect=/celebrate-soul');
     }
-  };
+  }, [isAuthenticated, navigate]);
 
-  // Handle open soul builder
+  // Handle open soul builder for incomplete pillars
   const handleOpenSoulBuilder = useCallback((pillarId) => {
     if (selectedPet?.id) {
-      navigate(`/pet-soul/${selectedPet.id}?pillar=${pillarId}`);
+      navigate(`/pet-soul/${selectedPet.id}?section=${pillarId}`);
     } else {
       toast.info('Please add a pet first to build their soul profile');
       handleAddPet();
     }
-  }, [selectedPet?.id, navigate]);
+  }, [selectedPet?.id, navigate, handleAddPet]);
 
-  // Handle build box
+  // Handle build box from Mira's curated box
   const handleBuildBox = useCallback((items) => {
-    // Open box builder modal or navigate
     window.dispatchEvent(new CustomEvent('openOccasionBoxBuilder', {
       detail: { 
         preset: items,
@@ -194,9 +173,8 @@ const CelebratePageNew = () => {
     }));
   }, [selectedPet?.name]);
 
-  // Handle select path
+  // Handle select guided path
   const handleSelectPath = useCallback((path) => {
-    // Open path wizard or navigate
     window.dispatchEvent(new CustomEvent('openCelebrationPath', {
       detail: {
         path: path.id,
@@ -205,47 +183,48 @@ const CelebratePageNew = () => {
     }));
   }, [selectedPet?.name]);
 
+  // Handle category selection from strip
+  const handleCategorySelect = useCallback((categoryId) => {
+    console.log('[CelebratePageNew] Category selected:', categoryId);
+    // The modal is handled inside CelebrateCategoryStrip
+  }, []);
+
   // Show loading state
   if (loading) {
     return (
-      <PillarPageLayout pillar="celebrate" hideMiraBar={true}>
-        <div className="min-h-[60vh] flex items-center justify-center" style={{
-          background: 'linear-gradient(135deg, #1a0a2e 0%, #16082a 50%, #2d1b4e 100%)'
-        }}>
-          <div className="text-center text-white">
-            <div className="text-4xl mb-4 animate-bounce">🎉</div>
-            <p className="text-white/70">Loading celebrations...</p>
-          </div>
-        </div>
+      <PillarPageLayout pillar="celebrate" hideMiraWidget={false} hideHero={true} hideNavigation={true}>
+        <LoadingState />
       </PillarPageLayout>
     );
   }
 
   // If no pet, show empty state
-  if (!selectedPet && !loading) {
+  if (!selectedPet) {
     return (
-      <PillarPageLayout pillar="celebrate" hideMiraBar={true}>
+      <PillarPageLayout pillar="celebrate" hideMiraWidget={false} hideHero={true} hideNavigation={true}>
         <NoPetState onAddPet={handleAddPet} />
       </PillarPageLayout>
     );
   }
 
+  // Main page with pet
   return (
     <PillarPageLayout 
       pillar="celebrate" 
-      hideMiraBar={true}
-      className="bg-white"
+      hideMiraWidget={false}  // Keep Mira chat visible
+      hideHero={true}         // Use our custom CelebrateHero instead of UnifiedHero
+      hideNavigation={true}   // Use our custom CelebrateCategoryStrip instead
     >
-      {/* 1. THE ARRIVAL - Hero */}
+      {/* 1. THE ARRIVAL - Hero (SINGLE INSTANCE) */}
       <CelebrateHero 
         pet={selectedPet} 
         soulScore={soulScore}
       />
 
-      {/* 2. CATEGORY STRIP */}
-      <CategoryStrip 
-        activeCategory={activeCategory}
-        onCategoryChange={setActiveCategory}
+      {/* 2. CATEGORY STRIP - Opens modals on click */}
+      <CelebrateCategoryStrip 
+        pet={selectedPet}
+        onCategorySelect={handleCategorySelect}
       />
 
       {/* 3. SOUL CELEBRATION PILLARS */}
