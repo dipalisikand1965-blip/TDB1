@@ -80,17 +80,22 @@ async def get_celebration_photos(
     featured_only: bool = True,
     limit: int = 20
 ):
-    """Get celebration photos for the wall"""
+    """Get celebration photos for the wall — uses aggregation to return proper id field."""
     db = get_db()
     
     query = {}
     if featured_only:
         query["is_featured"] = True
     
-    photos = await db.celebration_photos.find(
-        query,
-        {"_id": 0, "id": {"$toString": "$_id"}}
-    ).sort("display_order", 1).limit(limit).to_list(limit)
+    # Use aggregation pipeline so $toString works (can't use aggregation operators in find() projection)
+    pipeline = [
+        {"$match": query},
+        {"$sort": {"display_order": 1, "created_at": -1}},
+        {"$limit": limit},
+        {"$addFields": {"id": {"$toString": "$_id"}}},
+        {"$project": {"_id": 0}}
+    ]
+    photos = await db.celebration_photos.aggregate(pipeline).to_list(limit)
     
     # If no photos in DB, return default TheDoggyBakery photos
     if not photos:
@@ -185,18 +190,26 @@ async def toggle_like(photo_id: str):
     db = get_db()
 
     try:
-        photo = await db.celebration_photos.find_one({"id": photo_id})
+        # Try ObjectId lookup first (DB photos)
+        from bson import ObjectId
+        try:
+            photo = await db.celebration_photos.find_one({"_id": ObjectId(photo_id)})
+        except Exception:
+            photo = await db.celebration_photos.find_one({"id": photo_id})
+
         if not photo:
-            # Try by numeric id (default photos)
             return {"success": True, "likes": 0}
 
         current_likes = photo.get("likes", 0)
         new_likes = current_likes + 1
 
-        await db.celebration_photos.update_one(
-            {"id": photo_id},
-            {"$set": {"likes": new_likes, "updated_at": datetime.now(timezone.utc)}}
-        )
+        try:
+            await db.celebration_photos.update_one(
+                {"_id": ObjectId(photo_id)},
+                {"$set": {"likes": new_likes, "updated_at": datetime.now(timezone.utc)}}
+            )
+        except Exception:
+            pass
         return {"success": True, "likes": new_likes}
     except Exception:
         return {"success": True, "likes": 0}
@@ -282,70 +295,63 @@ async def clear_all_photos():
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def get_default_photos():
-    """Return default celebration photos from TheDoggyBakery"""
-    return [
+    """Return default celebration photos from TheDoggyBakery (with stable IDs for like/lightbox)."""
+    photos = [
         {
+            "id": "default-1",
             "image_url": "https://thedoggybakery.com/cdn/shop/files/the_doggy_bakery_do_checkout_for_more_variety_in_cakes_and_treats_._Euro_love_it_._birthdayc.jpg?v=1759753685&width=800",
-            "pet_name": "Euro",
-            "occasion": "Birthday",
+            "pet_name": "Euro", "occasion": "Birthday",
             "caption": "Euro loved his birthday cake! The best day ever 🎂",
-            "likes": 234,
-            "location": "Mumbai"
+            "likes": 234, "location": "Mumbai", "date": "2 days ago"
         },
         {
+            "id": "default-2",
             "image_url": "https://thedoggybakery.com/cdn/shop/files/If_Love_had_a_profile_picture_you_re_looking_at_it_..Glad_you_enjoyed_your_birthday_Simba_.._dogfood_dogs_doggygoals_celebratingpets_cakesfordogs_doggydesserts_dogtreats_dogfoodie_pet.jpg?v=1759753273&width=800",
-            "pet_name": "Simba",
-            "occasion": "Birthday",
+            "pet_name": "Simba", "occasion": "Birthday",
             "caption": "If love had a profile picture, you're looking at it 💕",
-            "likes": 389,
-            "location": "Bangalore"
+            "likes": 389, "location": "Bangalore", "date": "5 days ago"
         },
         {
+            "id": "default-3",
             "image_url": "https://thedoggybakery.com/cdn/shop/files/zippy-april-4-1024x1024.png?v=1759752249&width=800",
-            "pet_name": "Zippy",
-            "occasion": "Birthday",
+            "pet_name": "Zippy", "occasion": "Birthday",
             "caption": "Birthday celebrations with the whole cake! 🎉",
-            "likes": 312,
-            "location": "Delhi"
+            "likes": 312, "location": "Delhi", "date": "Last week"
         },
         {
+            "id": "default-4",
             "image_url": "https://thedoggybakery.com/cdn/shop/files/BOBA_MILK_TEA_7_f31d3215-5971-4b5b-bf65-da4157fed6d9.jpg?v=1759752285&width=800",
-            "pet_name": "Boba",
-            "occasion": "First Birthday",
+            "pet_name": "Boba", "occasion": "First Birthday",
             "caption": "Our little one turns 1! Time flies so fast 🥺",
-            "likes": 445,
-            "location": "Pune"
+            "likes": 445, "location": "Pune", "date": "Last week"
         },
         {
+            "id": "default-5",
             "image_url": "https://thedoggybakery.com/cdn/shop/files/438102159_450377974383140_7930303494133678708_n_78132051-77d9-455c-8a9c-3050abdeef81.jpg?v=1725448195&width=800",
-            "pet_name": "Muffin",
-            "occasion": "Birthday",
+            "pet_name": "Muffin", "occasion": "Birthday",
             "caption": "Best birthday party ever with all my friends! 💪",
-            "likes": 892,
-            "location": "Chennai"
+            "likes": 892, "location": "Chennai", "date": "14 Mar"
         },
         {
+            "id": "default-6",
             "image_url": "https://thedoggybakery.com/cdn/shop/files/Breed_Birthday_Cake_Hamper_Toy.png?v=1723637829&width=800",
-            "pet_name": "Luna",
-            "occasion": "Gotcha Day",
+            "pet_name": "Luna", "occasion": "Gotcha Day",
             "caption": "Celebrating 3 years since Luna joined our family!",
-            "likes": 267,
-            "location": "Hyderabad"
+            "likes": 267, "location": "Hyderabad", "date": "7 Mar"
         },
         {
+            "id": "default-7",
             "image_url": "https://thedoggybakery.com/cdn/shop/files/Breed_Cake_Party_Box.png?v=1723638074&width=800",
-            "pet_name": "Rocky",
-            "occasion": "Birthday",
+            "pet_name": "Rocky", "occasion": "Birthday",
             "caption": "The breed cake looked exactly like me! 🐕",
-            "likes": 523,
-            "location": "Gurgaon"
+            "likes": 523, "location": "Gurgaon", "date": "28 Feb"
         },
         {
+            "id": "default-8",
             "image_url": "https://thedoggybakery.com/cdn/shop/files/Untitled_design_16.png?v=1723638287&width=800",
-            "pet_name": "Charlie",
-            "occasion": "First Birthday",
+            "pet_name": "Charlie", "occasion": "First Birthday",
             "caption": "The pawfect party box for Charlie's big day!",
-            "likes": 678,
-            "location": "Kolkata"
+            "likes": 678, "location": "Kolkata", "date": "21 Feb"
         }
     ]
+    return photos

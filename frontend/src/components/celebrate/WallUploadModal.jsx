@@ -82,20 +82,24 @@ const WallUploadModal = ({ isOpen, onClose, petName, petId, onSubmitted }) => {
         source: 'ugc'
       };
 
+      let uploadedPhotoId = null;
       const res = await fetch(`${apiUrl}/api/celebration-wall/photos/ugc`, {
         method: 'POST', headers, body: JSON.stringify(payload)
       });
-
       if (res.ok) {
         const data = await res.json();
-        onSubmitted && onSubmitted(data.photo_id || data.id);
+        uploadedPhotoId = data.photo_id || data.id;
       }
-    } catch (err) {
-      console.error('[WallUploadModal] Submit error:', err);
-      onSubmitted && onSubmitted('local'); // graceful fallback
-    } finally {
+
+      // Show confirmation FIRST, then notify parent from the "See your photo" button
       setSubmitting(false);
       setStep(3);
+      // Store uploadedPhotoId for the confirmation button to use
+      window.__lastUploadedWallPhotoId = uploadedPhotoId;
+    } catch (err) {
+      console.error('[WallUploadModal] Submit error:', err);
+      setSubmitting(false);
+      setStep(3); // graceful fallback — show confirmation anyway
     }
   };
 
@@ -293,7 +297,12 @@ const WallUploadModal = ({ isOpen, onClose, petName, petId, onSubmitted }) => {
               Mira has seen it. The community will love it.
             </p>
             <button
-              onClick={handleClose}
+              onClick={() => {
+                // Notify parent AFTER user sees confirmation (not before)
+                const photoId = window.__lastUploadedWallPhotoId || 'local';
+                onSubmitted && onSubmitted(photoId);
+                handleClose();
+              }}
               style={{
                 width: '100%',
                 background: 'linear-gradient(135deg, #E91E8C, #C44DFF)',
