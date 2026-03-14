@@ -187,7 +187,7 @@ const CelebratePageNew = () => {
         const response = await fetch(`${apiUrl}/api/pet-soul/profile/${selectedPet.id}`);
         if (response.ok) {
           const data = await response.json();
-          setSoulScore(data.soul_score || data.overall_score || selectedPet.soul_score || 0);
+          setSoulScore(data.soul_score || data.overall_score || data.scores?.overall || selectedPet.soul_score || 0);
         } else {
           setSoulScore(selectedPet?.soul_score || selectedPet?.overall_score || 0);
         }
@@ -198,6 +198,15 @@ const CelebratePageNew = () => {
     };
 
     fetchSoulScore();
+
+    // Listen for live soul score updates from inline soul questions (in modals)
+    const handleSoulScoreUpdated = (e) => {
+      if (e.detail?.petId === selectedPet?.id && e.detail?.score !== undefined) {
+        setSoulScore(e.detail.score);
+      }
+    };
+    window.addEventListener('soulScoreUpdated', handleSoulScoreUpdated);
+    return () => window.removeEventListener('soulScoreUpdated', handleSoulScoreUpdated);
   }, [selectedPet?.id]);
 
   // Handle add pet

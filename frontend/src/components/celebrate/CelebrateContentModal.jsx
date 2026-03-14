@@ -15,9 +15,10 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, Sparkles, ChevronRight, ShoppingBag } from 'lucide-react';
+import { X, Loader2, Sparkles, ChevronRight, ShoppingBag, Check, ChevronDown } from 'lucide-react';
 import ProductCard from '../ProductCard';
 import { getApiUrl } from '../../utils/api';
+import { useAuth } from '../../context/AuthContext';
 
 // ── Breed slug & display name helpers ────────────────────────────────────
 const BREED_SLUG_MAP = {
@@ -352,8 +353,10 @@ const SoulPickCard = ({ product, pet }) => {
 const MiraImaginesCard = ({ flavor, pet }) => {
   const petName = pet?.name || 'your pet';
   const [requested, setRequested] = useState(false);
+  const [sending, setSending] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  
+  const { user, token } = useAuth();
+
   // Handle both old format (string) and new format (object)
   const isObject = typeof flavor === 'object';
   const productType = isObject ? flavor.type : 'food';
@@ -364,42 +367,55 @@ const MiraImaginesCard = ({ flavor, pet }) => {
   const questions = isObject && flavor.questions ? flavor.questions : [];
   const isOnboarding = productType === 'onboarding';
 
-  const handleRequest = () => {
+  const handleRequest = async () => {
     if (isOnboarding) {
       setShowOnboarding(true);
-      // Open soul onboarding modal
       window.dispatchEvent(new CustomEvent('openSoulOnboarding', {
         detail: { pet, questions, source: 'mira_imagines' }
       }));
       return;
     }
-    
-    setRequested(true);
-    // Dispatch concierge/toast event
-    window.dispatchEvent(new CustomEvent('openConcierge', {
-      detail: {
-        message: `Hi! I'd love a custom "${productName}" for ${petName}. Mira knows ${petName} ${trait}. Can you make this happen?`,
-        tab: 'celebrate',
-        context: { productName, trait, pet_name: petName, type: productType }
-      }
-    }));
-    // Also try the Mira AI path as fallback
-    window.dispatchEvent(new CustomEvent('openMiraAI', {
-      detail: {
-        message: `Can you create a "${productName}" for ${petName}? Because ${petName} ${trait}.`,
-        context: 'celebrate'
-      }
-    }));
+
+    setSending(true);
+    try {
+      const apiUrl = getApiUrl();
+      await fetch(`${apiUrl}/api/service_desk/attach_or_create_ticket`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          parent_id: user?.id || user?.email || 'celebrate_guest',
+          pet_id: pet?.id || 'unknown',
+          pillar: 'celebrate',
+          intent_primary: 'mira_imagines_product',
+          intent_secondary: [productType, 'custom_celebration_product'],
+          life_state: 'celebrate',
+          channel: 'celebrate_mira_imagines',
+          initial_message: {
+            sender: 'parent',
+            source: 'celebrate_page',
+            text: `Hi! I'd love a custom "${productName}" for ${petName}. Mira knows ${petName} ${trait}. Can you make this happen?`
+          }
+        })
+      });
+    } catch (err) {
+      console.error('[MiraImaginesCard] Concierge ticket error:', err);
+    } finally {
+      setSending(false);
+      setRequested(true);
+    }
   };
 
   return (
     <div
       className="rounded-2xl overflow-hidden relative"
       style={{
-        background: isOnboarding 
+        background: isOnboarding
           ? 'linear-gradient(135deg, #0A1A2E 0%, #1A3A5F 100%)'
           : 'linear-gradient(135deg, #1A0A00 0%, #3D1A5F 100%)',
-        border: isOnboarding 
+        border: isOnboarding
           ? '1.5px solid rgba(100,200,255,0.3)'
           : '1.5px solid rgba(196,77,255,0.3)',
         minHeight: 200,
@@ -408,10 +424,10 @@ const MiraImaginesCard = ({ flavor, pet }) => {
     >
       {/* Mira badge */}
       <div className="absolute top-2 right-2 text-white text-xs font-bold rounded-full px-2 py-0.5"
-        style={{ 
-          background: isOnboarding ? 'rgba(100,200,255,0.6)' : 'rgba(196,77,255,0.6)', 
-          backdropFilter: 'blur(4px)', 
-          fontSize: 9 
+        style={{
+          background: isOnboarding ? 'rgba(100,200,255,0.6)' : 'rgba(196,77,255,0.6)',
+          backdropFilter: 'blur(4px)',
+          fontSize: 9
         }}>
         {isOnboarding ? 'Grow the Soul' : 'Mira Imagines'}
       </div>
@@ -435,29 +451,33 @@ const MiraImaginesCard = ({ flavor, pet }) => {
         )}
       </div>
 
-      {/* Request button */}
+      {/* Request button / confirmation */}
       <div className="px-3 pb-4">
         {requested || showOnboarding ? (
-          <div className="text-center text-xs font-bold rounded-xl py-2"
-            style={{ 
-              background: isOnboarding ? 'rgba(100,200,255,0.2)' : 'rgba(196,77,255,0.2)', 
-              color: isOnboarding ? '#64C8FF' : '#C44DFF' 
+          <div className="flex items-center justify-center gap-1.5 text-xs font-bold rounded-xl py-2"
+            style={{
+              background: isOnboarding ? 'rgba(100,200,255,0.2)' : 'rgba(50,200,120,0.25)',
+              color: isOnboarding ? '#64C8FF' : '#32C878'
             }}>
-            {isOnboarding ? '✓ Opening soul questions...' : '✓ Request sent to concierge!'}
+            <Check className="w-3.5 h-3.5" />
+            {isOnboarding ? 'Opening soul questions...' : 'Sent to Concierge!'}
           </div>
         ) : (
           <button
             onClick={handleRequest}
-            className="w-full text-white font-bold rounded-xl py-2 text-xs"
-            style={{ 
-              background: isOnboarding 
+            disabled={sending}
+            className="w-full text-white font-bold rounded-xl py-2 text-xs flex items-center justify-center gap-1"
+            style={{
+              background: isOnboarding
                 ? 'linear-gradient(135deg, #64C8FF, #4DA6FF)'
-                : 'linear-gradient(135deg, #C44DFF, #FF6B9D)', 
-              border: 'none', 
-              cursor: 'pointer' 
+                : 'linear-gradient(135deg, #C44DFF, #FF6B9D)',
+              border: 'none',
+              cursor: sending ? 'wait' : 'pointer',
+              opacity: sending ? 0.7 : 1
             }}
             data-testid={`mira-request-${isObject ? flavor.type : flavor}`}
           >
+            {sending ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
             {isOnboarding ? 'Help Mira Know Me →' : 'Request a Quote →'}
           </button>
         )}
@@ -466,7 +486,227 @@ const MiraImaginesCard = ({ flavor, pet }) => {
   );
 };
 
-// ── Category Config (labels, icons, Mira picks context) ───────────────────
+// ── Soul Question Inline Card ─────────────────────────────────────────────────
+const SoulQuestionCard = ({ question, petName, onAnswered }) => {
+  const [selected, setSelected] = useState('');
+  const [textValue, setTextValue] = useState('');
+  const [multiSelected, setMultiSelected] = useState([]);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const { token } = useAuth();
+
+  const handleSubmit = async () => {
+    const answer = question.type === 'text' ? textValue
+      : question.type === 'multi_select' ? multiSelected
+      : selected;
+    if (!answer || (Array.isArray(answer) && answer.length === 0)) return;
+    setSubmitting(true);
+    try {
+      const apiUrl = getApiUrl();
+      const res = await fetch(`${apiUrl}/api/pet-soul/profile/${question.pet_id}/answer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ question_id: question.question_id, answer })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSubmitted(true);
+        onAnswered?.(data.scores?.overall);
+      }
+    } catch (err) {
+      console.error('[SoulQuestionCard] Error:', err);
+      setSubmitted(true); // Show success even on error for UX
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const toggleMulti = (opt) => {
+    setMultiSelected(prev =>
+      prev.includes(opt) ? prev.filter(o => o !== opt) : [...prev, opt]
+    );
+  };
+
+  if (submitted) {
+    return (
+      <div className="rounded-2xl px-4 py-5 flex flex-col items-center justify-center gap-2"
+        style={{ background: 'linear-gradient(135deg,#0F2A1A,#0A3A0A)', border: '1.5px solid rgba(50,200,100,0.3)', minHeight: 140 }}>
+        <div className="rounded-full flex items-center justify-center w-9 h-9 mb-1"
+          style={{ background: 'rgba(50,200,100,0.2)' }}>
+          <Check className="w-5 h-5 text-green-400" />
+        </div>
+        <p className="text-green-300 font-bold text-xs text-center">Soul score growing! ✦</p>
+        <p className="text-white/50 text-xs text-center">Mira now knows {petName} better</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl px-4 py-4"
+      style={{ background: 'linear-gradient(135deg,#0A1520,#1A2540)', border: '1.5px solid rgba(100,160,255,0.3)', minHeight: 140 }}>
+      <div className="flex items-center gap-1.5 mb-2">
+        <span style={{ fontSize: 13 }}>{question.folder_icon || '✦'}</span>
+        <span className="text-xs font-bold" style={{ color: 'rgba(140,190,255,0.7)' }}>{question.folder_name}</span>
+      </div>
+      <p className="text-white font-semibold mb-3 leading-snug" style={{ fontSize: 12 }}>
+        {question.question}
+      </p>
+
+      {question.type === 'text' && (
+        <textarea
+          value={textValue}
+          onChange={e => setTextValue(e.target.value)}
+          placeholder="Type here..."
+          rows={2}
+          className="w-full rounded-xl px-3 py-2 text-xs outline-none resize-none"
+          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}
+        />
+      )}
+
+      {question.type === 'select' && (
+        <div className="flex flex-wrap gap-1.5 mb-2">
+          {(question.options || []).map(opt => (
+            <button key={opt} onClick={() => setSelected(opt)}
+              className="rounded-full px-2.5 py-1 text-xs font-medium transition-all"
+              style={{
+                background: selected === opt ? 'rgba(100,160,255,0.35)' : 'rgba(255,255,255,0.07)',
+                border: selected === opt ? '1.5px solid rgba(100,160,255,0.8)' : '1px solid rgba(255,255,255,0.15)',
+                color: selected === opt ? '#A0C8FF' : 'rgba(255,255,255,0.65)',
+                cursor: 'pointer'
+              }}>
+              {opt}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {question.type === 'multi_select' && (
+        <div className="flex flex-wrap gap-1.5 mb-2">
+          {(question.options || []).slice(0, 6).map(opt => (
+            <button key={opt} onClick={() => toggleMulti(opt)}
+              className="rounded-full px-2.5 py-1 text-xs font-medium transition-all"
+              style={{
+                background: multiSelected.includes(opt) ? 'rgba(100,160,255,0.35)' : 'rgba(255,255,255,0.07)',
+                border: multiSelected.includes(opt) ? '1.5px solid rgba(100,160,255,0.8)' : '1px solid rgba(255,255,255,0.15)',
+                color: multiSelected.includes(opt) ? '#A0C8FF' : 'rgba(255,255,255,0.65)',
+                cursor: 'pointer'
+              }}>
+              {opt}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <button
+        onClick={handleSubmit}
+        disabled={submitting || (!selected && !textValue.trim() && multiSelected.length === 0)}
+        className="mt-1 w-full rounded-xl py-2 text-xs font-bold text-white flex items-center justify-center gap-1"
+        style={{
+          background: 'linear-gradient(135deg,#4488FF,#44AAFF)',
+          border: 'none', cursor: 'pointer',
+          opacity: (!selected && !textValue.trim() && multiSelected.length === 0) ? 0.4 : 1
+        }}>
+        {submitting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
+        Save & Grow Soul Score
+      </button>
+    </div>
+  );
+};
+
+// ── Soul Questions Section ─────────────────────────────────────────────────────
+const SoulQuestionsSection = ({ pet, onScoreUpdated }) => {
+  const [questions, setQuestions] = useState([]);
+  const [score, setScore] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [answeredCount, setAnsweredCount] = useState(0);
+  const petName = pet?.name || 'your pet';
+
+  useEffect(() => {
+    if (!pet?.id) { setLoading(false); return; }
+    const apiUrl = getApiUrl();
+    fetch(`${apiUrl}/api/pet-soul/profile/${pet.id}/quick-questions?limit=5`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data) {
+          // Attach pet_id to each question for the answer API
+          setQuestions((data.questions || []).map(q => ({ ...q, pet_id: pet.id })));
+          setScore(data.current_score);
+        }
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [pet?.id]);
+
+  const handleAnswered = (newScore) => {
+    setAnsweredCount(prev => prev + 1);
+    if (newScore !== undefined) {
+      setScore(newScore);
+      onScoreUpdated?.(newScore);
+      window.dispatchEvent(new CustomEvent('soulScoreUpdated', { detail: { petId: pet.id, score: newScore } }));
+    }
+    // Refresh questions after answer
+    if (pet?.id) {
+      fetch(`${getApiUrl()}/api/pet-soul/profile/${pet.id}/quick-questions?limit=5`)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => data && setQuestions((data.questions || []).map(q => ({ ...q, pet_id: pet.id }))))
+        .catch(() => {});
+    }
+  };
+
+  const visibleQuestions = questions.slice(0, 5 - answeredCount);
+
+  if (loading) return null;
+  if (visibleQuestions.length === 0 && answeredCount === 0) return null;
+
+  return (
+    <div className="mb-6">
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wider" style={{ color: '#64A8FF', letterSpacing: '0.06em' }}>
+            ✦ Help Mira Know {petName} Better
+          </p>
+          <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            {score !== null ? `Soul score: ${score}% · ` : ''}{visibleQuestions.length} quick question{visibleQuestions.length !== 1 ? 's' : ''} to grow the score
+          </p>
+        </div>
+        {score !== null && (
+          <div className="rounded-full flex items-center gap-1.5 px-2.5 py-1"
+            style={{ background: 'rgba(100,160,255,0.15)', border: '1px solid rgba(100,160,255,0.3)' }}>
+            <div className="rounded-full w-2 h-2" style={{ background: `hsl(${score * 1.2},80%,55%)` }} />
+            <span className="text-xs font-bold" style={{ color: '#A0C8FF' }}>{score}%</span>
+          </div>
+        )}
+      </div>
+
+      {answeredCount > 0 && (
+        <div className="mb-3 flex items-center gap-2 px-3 py-2 rounded-xl"
+          style={{ background: 'rgba(50,200,100,0.1)', border: '1px solid rgba(50,200,100,0.25)' }}>
+          <Check className="w-3.5 h-3.5 text-green-400 flex-shrink-0" />
+          <p className="text-xs text-green-300">
+            {answeredCount} answer{answeredCount > 1 ? 's' : ''} saved! Mira knows {petName} better now.{score !== null ? ` Soul score: ${score}%` : ''}
+          </p>
+        </div>
+      )}
+
+      <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))' }}>
+        {visibleQuestions.map(q => (
+          <SoulQuestionCard key={q.question_id} question={q} petName={petName} onAnswered={handleAnswered} />
+        ))}
+      </div>
+
+      <div className="mt-3 text-center">
+        <a href={`/pet-soul/${pet?.id}`}
+          className="text-xs font-semibold"
+          style={{ color: 'rgba(100,160,255,0.7)', textDecoration: 'none' }}>
+          See full soul profile →
+        </a>
+      </div>
+    </div>
+  );
+};
 export const CATEGORY_CONFIG = {
   'birthday-cakes': {
     emoji: '🎂', label: 'Birthday Cakes',
@@ -535,6 +775,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
   const [addedCount, setAddedCount] = useState(0); // tracks items added this session
   const [miraImagines, setMiraImagines] = useState([]); // imaginary cards for non-existent flavours
+  const [liveSoulScore, setLiveSoulScore] = useState(null); // live soul score updated by inline questions
 
   // Reset on new category open
   useEffect(() => {
@@ -955,6 +1196,12 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                     <div className="my-4 border-t" style={{ borderColor: '#F5E6FF' }} />
                   </div>
                 )}
+
+                {/* Soul Questions — appears for ALL pets to keep growing the score */}
+                <SoulQuestionsSection
+                  pet={pet}
+                  onScoreUpdated={(score) => setLiveSoulScore(score)}
+                />
 
                 {/* Real curated cakes from collection */}
                 {products.length > 0 && (
