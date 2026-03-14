@@ -29,7 +29,51 @@
 
 ---
 
-## ✅ SESSION 24 COMPLETE — P1/P2 useResizeMobile + /celebrate Redirect (Mar 2026)
+## ✅ SESSION 25 COMPLETE — /dine Soul Page Phase 1 (Mar 2026)
+
+**90% pass rate (iteration_129). PATCH→PUT critical fix applied. All visual/UX features pass.**
+
+### Build Order Followed (as specified)
+1. TummyProfile (data spine) → 2. DineDimensions → 3. MiraMealPick → 4. GuidedNutritionPaths → 5. PetFriendlySpots → 6. DiningConciergeServices
+
+### New Files Created
+| File | Purpose |
+|---|---|
+| `components/dine/DineHero.jsx` | Amber/terracotta gradient hero, soul chips, Mira quote |
+| `components/dine/DineTabBar.jsx` | Eat & Nourish / Dine Out tabs |
+| `components/dine/TummyProfile.jsx` | Data spine: Loves/Avoid/Goal/Health cells, editable nutrition_goal |
+| `components/dine/DineDimensions.jsx` | 5 dimension cards with glow/dim/incomplete states |
+| `components/dine/DineDimensionExpanded.jsx` | Portal expansion panel, replicates SoulPillarExpanded |
+| `components/dine/MiraMealPick.jsx` | Templated rules engine (breed+age+weight+allergies+goal) |
+| `components/dine/GuidedNutritionPaths.jsx` | 6 paths, 3 surfaced by Mira scoring |
+| `components/dine/PetFriendlySpots.jsx` | Google Places via /api/nearby/places |
+| `components/dine/DiningConciergeServices.jsx` | 4 concierge cards + dark CTA |
+| `pages/DineSoulPage.jsx` | Main page, wired to /dine route directly |
+
+### Backend Changes
+- `models.py`: Added `nutrition_goal: Optional[str]` to `PetProfileCreate` + `PetProfileUpdate`
+
+### Key Technical Decisions
+- `nutrition_goal` defaults to `'maintenance'` when `null/undefined`
+- `age_years == null` → defaults to `adult` life stage (not puppy)
+- `weight == null` → defaults to `medium` size
+- Health conditions handled as arrays or strings safely
+- All fixed overlays use `useResizeMobile()` hook (bottom-sheet on mobile)
+- `/dine` route replaced immediately (no `/dine-soul` detour — clean URL from day one)
+
+### Pre-deploy Checklist (celebrate cleanup)
+- [ ] Delete CelebratePage.jsx, update sub-category redirects to /celebrate-soul
+- [ ] Add canonical tag to /celebrate-soul: `<link rel="canonical" href="https://thedoggycompany.com/celebrate" />`
+- [ ] Update nav links from /celebrate-soul → /celebrate
+- [ ] Sitemap: remove /celebrate-soul, confirm /celebrate is listed
+
+### Upcoming
+- (P1) Add Mira widget page-aware context for /dine (opening lines + chips)
+- (P1) Seed dine product catalog (daily-meals, treats, supplements, fresh-frozen, homemade categories)
+- (P1) /stay pillar — same architecture
+- (P2) Soul builder steps — add useResizeMobile
+
+---
 
 **95% pass rate from testing agent (iteration_128). All components verified except PillarSoulModal UI (test pet has 100% soul score — code confirmed correct).**
 
