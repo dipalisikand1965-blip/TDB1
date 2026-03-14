@@ -16,7 +16,7 @@ import json
 import time
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://celebrate-fix.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pet-soul-journey.preview.emergentagent.com').rstrip('/')
 TEST_USER = "dipali@clubconcierge.in"
 TEST_PASSWORD = "test123"
 TEST_PET_ID = "pet-3661ae55d2e2"  # Mystique

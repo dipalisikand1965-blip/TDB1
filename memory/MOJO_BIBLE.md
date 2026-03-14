@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://celebrate-fix.preview.emergentagent.com
+https://pet-soul-journey.preview.emergentagent.com
 ```
 
 ---
