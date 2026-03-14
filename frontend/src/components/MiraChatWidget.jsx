@@ -19,6 +19,7 @@ import { Badge } from './ui/badge';
 import { getApiUrl } from '../utils/api';
 import { toast } from 'sonner';
 import { useMiraSignal } from '../hooks/useMiraSignal';
+import { useViewportMobile } from '../hooks/useResizeMobile';
 import MiraOrb from './MiraOrb';
 import CinematicKitAssembly from './CinematicKitAssembly';
 import MiraConciergeCards, { parseMiraRecommendations } from './MiraConciergeCard';
@@ -160,6 +161,10 @@ const MiraChatWidget = ({
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
+
+  // Viewport-level mobile detection — ResizeObserver on document.documentElement
+  // Debounced at 150ms, handles device rotation and Chrome DevTools resize
+  const isMobile = useViewportMobile(640);
   
   // Widget state
   const [isOpen, setIsOpen] = useState(false);
@@ -328,39 +333,39 @@ const MiraChatWidget = ({
   
   // Track pillar visit and fetch personalized context
   useEffect(() => {
+    let cancelled = false;
     trackPillarVisit(pillar);
-    
-    // Fetch pillar-specific quick prompts
+
     const fetchQuickPrompts = async () => {
       try {
         const response = await fetch(`${getApiUrl()}/api/mira/quick-prompts/${pillar}`);
-        if (response.ok) {
+        if (!cancelled && response.ok) {
           const data = await response.json();
           setDynamicPrompts(data.prompts || []);
         }
       } catch (error) {
-        console.debug('Quick prompts fetch failed:', error);
+        if (!cancelled) console.debug('Quick prompts fetch failed:', error);
       }
     };
-    
-    // Fetch personalized Mira context
+
     const fetchMiraContext = async () => {
       if (!token) return;
       try {
         const response = await fetch(`${getApiUrl()}/api/mira/context/${pillar}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (response.ok) {
+        if (!cancelled && response.ok) {
           const data = await response.json();
           setMiraContext(data);
         }
       } catch (error) {
-        console.debug('Mira context fetch failed:', error);
+        if (!cancelled) console.debug('Mira context fetch failed:', error);
       }
     };
-    
+
     fetchQuickPrompts();
     fetchMiraContext();
+    return () => { cancelled = true; };
   }, [pillar, trackPillarVisit, token]);
   
   // Set pillar-specific quick chips immediately (no auth required)
@@ -372,28 +377,29 @@ const MiraChatWidget = ({
   // Fetch user's pets and sync with navbar selection
   useEffect(() => {
     if (!user || !token) return;
-    
+    let cancelled = false;
+
     const fetchPets = async () => {
       try {
         const response = await fetch(`${getApiUrl()}/api/pets`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (response.ok) {
+        if (!cancelled && response.ok) {
           const data = await response.json();
           setPets(data.pets || []);
           if (data.pets?.length > 0) {
-            // Sync with navbar's selected pet from localStorage
             const savedPetId = localStorage.getItem('selectedPetId');
             const savedPet = savedPetId ? data.pets.find(p => p.id === savedPetId) : null;
             setSelectedPet(savedPet || data.pets[0]);
           }
         }
       } catch (error) {
-        console.debug('Failed to fetch pets:', error);
+        if (!cancelled) console.debug('Failed to fetch pets:', error);
       }
     };
-    
+
     fetchPets();
+    return () => { cancelled = true; };
   }, [user, token]);
   
   // Listen for pet selection changes from navbar
@@ -460,38 +466,34 @@ const MiraChatWidget = ({
   // Fetch pet-specific recommendations and soul insights when pet changes
   useEffect(() => {
     if (!selectedPet?.id) return;
-    
+    let cancelled = false;
+
     const fetchPetIntelligence = async () => {
       try {
-        // Fetch product recommendations for this pet + pillar
         const recsResponse = await fetch(
           `${getApiUrl()}/api/mira/pet-recommendations/${selectedPet.id}?pillar=${pillar}`,
           { headers: token ? { 'Authorization': `Bearer ${token}` } : {} }
         );
-        if (recsResponse.ok) {
+        if (!cancelled && recsResponse.ok) {
           const recsData = await recsResponse.json();
           setPetRecommendations(recsData.recommendations || []);
         }
-        
-        // Fetch pet soul insights
+
         const soulResponse = await fetch(
           `${getApiUrl()}/api/pets/${selectedPet.id}/soul`,
           { headers: token ? { 'Authorization': `Bearer ${token}` } : {} }
         );
-        if (soulResponse.ok) {
+        if (!cancelled && soulResponse.ok) {
           const soulData = await soulResponse.json();
           setPetSoulInsights(soulData);
         }
-        
       } catch (error) {
-        console.debug('Failed to fetch pet intelligence:', error);
+        if (!cancelled) console.debug('Failed to fetch pet intelligence:', error);
       }
     };
-    
+
     fetchPetIntelligence();
-    
-    // NOTE: Removed message clearing - messages should persist across sessions
-    // Users expect their conversation to remain when switching pillars or pets
+    return () => { cancelled = true; };
   }, [selectedPet?.id, pillar, token]);
   
   // Lock body scroll when widget is open on mobile
