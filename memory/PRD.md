@@ -260,12 +260,9 @@ const BREED_SLUG_MAP = {
 ## KNOWN ISSUES / BUGS (Not Fixed)
 | Issue | Priority | Notes |
 |-------|----------|-------|
-| Category strip icons clipped/small | P0 | 34px icon box → need 52-62px, image bleeding outside circle |
-| Product modal needs to be bigger | P0 | Increase from full-width bottom sheet to 90vh |
-| 500 uncategorized products | P0 | Need to query by tags/handle and auto-assign categories |
-| X button on ProductCard detail modal | P0 | ProductCard.jsx already has X, but check visibility |
-| Images in product cards clipped | P1 | Use aspect-ratio: 1/1 with object-contain not object-cover |
-| Treats (39), Mini Cakes (10), Frozen Treats (24), Fresh Meals (15) not in strip | P1 | Need to add tabs |
+| Birthday Cakes shows 80 of 111 (limit) | P3 | Intentional page limit. Consider infinite scroll or "Show More" |
+| Category strip icons clipped/small | P2 | 34px icon box → need 52-62px |
+| 500 uncategorized products | P2 | Need to query by tags/handle and auto-assign categories |
 | Razorpay checkout failure | P3 | Legacy bug |
 | Scrambled mobile pet dashboard | P3 | Layout bug |
 | Admin Product Editor Image Upload Bug | P3 | File upload component |
@@ -273,7 +270,9 @@ const BREED_SLUG_MAP = {
 ---
 
 ## UPCOMING TASKS (Post Celebrate)
-1. Make `/celebrate-soul` the live `/celebrate` (swap route in App.js)
+1. Make `/celebrate-soul` the live `/celebrate` (swap route in App.js) — awaiting Aditya approval
 2. Apply soul-first template to `/dine` pillar
 3. Standardize all 14 pillars
-4. CMS audit for new celebrate sections
+4. Add more Soul Products categories to Celebrate (blankets, plush toys, pet robes)
+5. "Build a box" functionality — high value revenue feature
+6. CMS audit for new celebrate sections
