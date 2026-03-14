@@ -6,7 +6,18 @@
 
 ---
 
-## ✅ SESSION 20 COMPLETE — Full Mobile Audit + Fixes (Mar 2026)
+## ✅ SESSION 21 COMPLETE — Real iPhone Mobile Bug Fixes (Mar 2026)
+
+**User reported 4 issues on their Apple phone. All fixed, 100% verified.**
+
+| # | Issue | Fix | Verified |
+|---|---|---|---|
+| 1 | Guided Paths "stuck" — close button scrolls out of view on mobile | `createPortal` renders close pill at `document.body` (escapes framer-motion CSS transform containment). Button appears at `bottom: 90px` above mobile nav bar | ✅ 375px + 390px |
+| 2 | Service cards: 4 cramped columns on mobile | `.service-grid-responsive` on mobile → `display:flex, overflow-x:auto, min-width:220px` (horizontal scroll carousel) | ✅ 375px + 390px |
+| 3 | Mira widget hidden behind sticky header | Widget: `top: var(--mira-top-offset, 105px)` + `bottom: 70px` on mobile (was `h-[85dvh] bottom-0`) | ✅ 375px + 390px |
+| 4 | Fonts too small | SoulCelebrationPillars: name 13→14px, tagline 11→12px, badge 10→11px; section headings use `clamp()` | ✅ 390px |
+
+---
 
 **Audit: 6 issues found, all fixed. 100% pass rate on re-test (10/10).**
 
