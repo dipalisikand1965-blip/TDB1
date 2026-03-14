@@ -35,6 +35,7 @@ import {
   SoulCelebrationPillars,
   MiraCuratedBox,
   CelebrateConcierge,
+  CelebrateServiceGrid,
   GuidedCelebrationPaths,
   CelebrationMemoryWall
 } from '../components/celebrate';
@@ -341,6 +342,11 @@ const CelebratePageNew = () => {
           pet={selectedPet}
           onTalkToConcierge={handleTalkToConcierge}
         />
+
+        {/* 5b. SERVICE GRID — 8 illustrated service cards */}
+        <div style={{ marginTop: 32, marginBottom: 8 }}>
+          <CelebrateServiceGrid pet={selectedPet} />
+        </div>
 
         {/* 6. GUIDED CELEBRATION PATHS */}
         <GuidedCelebrationPaths 
