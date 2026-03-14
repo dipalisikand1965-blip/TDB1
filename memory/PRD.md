@@ -91,10 +91,64 @@ NEVER use `celebration` for the Birthday Cakes tab. Use `cakes`.
 | **Total Celebrate Products** | | **~279** | |
 | Admin Panel Shows | (filtered) | 308 | includes some extras |
 
-### IN PROGRESS 🚧 — NEXT TASKS
+### IN PROGRESS 🚧 — CURRENT TASK
+1. **AI Image Generation for Party & Accessories** — Generate realistic product images using Cloudinary AI engine (GPT Image 1)
+   - **Script:** `/app/backend/scripts/generate_party_accessory_images.py` (NEW)
+   - **Products:** Generic party items (hats, banners, balloons, bowties, photo props, party kits)
+   - **Storage:** `products_master` collection, accessible via Admin & Celebrate page
+   - **Note:** These are GENERIC products applicable across ALL breeds (not breed-specific)
+
+### UPCOMING TASKS
 1. **Replace `/celebrate` with `/celebrate-soul`** — once Aditya approves
 2. **Standardize other pillar pages** — `/dine`, `/stay`, `/learn` using celebrate as template
 3. **500 uncategorized products** — Admin needs to categorize or AI auto-categorize
+
+---
+
+## 🌟 MIRA IMAGINES CARD — FUTURE VISION (Product Research Engine)
+> The MiraImaginesCard is a hidden gem — it's essentially a "dream item" that doesn't exist yet but Mira can will into existence.
+
+### Current State
+- Shows hypothetical products based on pet's loved foods (e.g., "Salmon Delight Cake")
+- "Request a Quote" button → Concierge toast notification
+- Max 3 imaginary cards per session
+
+### Future Extension (P1)
+**Extend MiraImaginesCard to ALL categories based on pet's soul profile:**
+- If Mojo's soul mentions "loves swimming" → Mira imagines "Pool Day Party Kit"
+- If pet loves car rides → Mira imagines "Road Trip Celebration Box"
+- Every "Request a Quote" click creates a feedback loop → tells us exactly what products to build next
+- **Mira becomes a product research engine** — user demand data for new product development
+
+### Technical Implementation (Future)
+```javascript
+// In CelebrateContentModal.jsx - extend imaginedProducts generation
+const generateSoulBasedImagines = (pet) => {
+  const preferences = pet?.soul?.preferences || [];
+  const activities = pet?.learned_facts?.filter(f => f.type === 'activity') || [];
+  
+  // Map soul data to imaginary products
+  // "loves swimming" → "Pool Day Party Kit", "Pool Party Bandana Set"
+  // "loves fetch" → "Ultimate Fetch Birthday Box"
+  // This is the PRODUCT RESEARCH ENGINE
+};
+```
+
+### Data Collection for Product Development
+```javascript
+// Track "Request a Quote" clicks
+const trackImaginaryProductRequest = async (product, pet) => {
+  await fetch('/api/mira/imaginary-requests', {
+    method: 'POST',
+    body: JSON.stringify({
+      product_name: product.name,
+      pet_breed: pet.breed,
+      pet_soul_traits: pet.soul?.preferences,
+      requested_at: new Date().toISOString()
+    })
+  });
+  // This data tells us what to build next!
+};
 
 ---
 

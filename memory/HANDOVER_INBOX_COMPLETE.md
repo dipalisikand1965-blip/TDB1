@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://pillar-personalize.preview.emergentagent.com
+https://celebrate-showcase.preview.emergentagent.com
 ```
 
 ---
