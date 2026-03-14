@@ -43,9 +43,32 @@
 
 ---
 
-## 🔄 SESSION 17 — Guided Celebration Paths (Mar 2026)
+## ✅ SESSION 17 COMPLETE — Guided Celebration Paths (Mar 2026)
 
-**Source:** GuidedCelebrationPaths_MASTER.docx
+**Source:** GuidedCelebrationPaths_MASTER.docx | **Tested:** 17/17 passing
+
+### Files built:
+| File | Status |
+|---|---|
+| `GuidedCelebrationPaths.jsx` (rewrite) | ✅ DONE |
+| `celebrationPaths.js` (NEW) | ✅ DONE |
+| `GuidedPathCard.jsx` (NEW) | ✅ DONE |
+| `GuidedPathExpansion.jsx` (NEW) | ✅ DONE |
+| `GuidedPathStep.jsx` (NEW) | ✅ DONE |
+| `PathDeliverableScreen.jsx` (NEW) | ✅ DONE |
+
+### What works (LOCKED):
+- 3 cards: Birthday (yellow) · Gotcha Day (green) · Photoshoot (pink) — exact pastel colours
+- Section header NEW subtitle: "Mira walks you through every step. Each path ends with a plan you can keep."
+- Expansion panel: spans all 3 columns, one-at-a-time, click-to-close, scrollIntoView
+- Mira bar: path-specific italic voice + coloured bg gradient per path
+- 5 sequential steps: step 1 active on open, steps 2-5 greyed until previous complete
+- Each step CTA reveals an inline picker/input (themes, cakes, guests, timeline, etc.)
+- Deliverable screen (dark bg) appears after all 4 interactive steps
+- "Hand to Concierge 👑" → POST /api/concierge/intake (full unified flow)
+- All card colours, chips, copy, step descriptions FINAL per master spec
+
+---
 
 ### Core Principle:
 Every path ends with a deliverable — not just steps. The Birthday Plan. The Gotcha Day Memory Card. The Shoot Day Brief. Something the pet parent can hold, save, share, or hand to the Concierge to execute entirely.
