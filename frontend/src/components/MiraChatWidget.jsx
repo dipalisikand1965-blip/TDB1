@@ -1316,9 +1316,12 @@ const MiraChatWidget = ({
   return (
     <div 
       className={`fixed z-[9999] ${className}
-        bottom-0 right-0 left-0 
+        left-0 right-0 bottom-[70px]
         sm:bottom-0 sm:right-0 sm:left-auto sm:top-0
       `}
+      style={{
+        top: 'var(--mira-top-offset, 105px)',
+      }}
       data-testid="mira-chat-widget"
     >
       {/* Chat container - 3-zone flexbox layout */}
@@ -1327,7 +1330,7 @@ const MiraChatWidget = ({
           w-full sm:w-[400px] lg:w-[420px]
           bg-white shadow-2xl flex flex-col
           rounded-t-2xl sm:rounded-none sm:border-l sm:border-gray-200
-          ${isMinimized ? 'h-16 sm:h-full' : 'h-[85dvh] sm:h-[100dvh]'}
+          ${isMinimized ? 'h-16 sm:h-full' : 'h-full sm:h-[100dvh]'}
         `}
         style={{ 
           maxHeight: '100dvh',

@@ -1338,3 +1338,37 @@ a[href*="emergent"][class*="badge"] {
 
 /* World-class UI polish */
 @import './styles/world-class-polish.css';
+
+/* ── Mobile: service grid → horizontal scroll carousel ── */
+@media (max-width: 767px) {
+  .service-grid-responsive {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    gap: 12px !important;
+    padding-bottom: 12px !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+  }
+  .service-grid-responsive::-webkit-scrollbar { display: none; }
+  .service-grid-responsive > * {
+    flex: 0 0 220px !important;
+    min-width: 220px !important;
+    scroll-snap-align: start;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .service-grid-responsive {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* ── Mira widget offset: tracks below sticky header on mobile ── */
+:root {
+  --mira-top-offset: 105px;
+}
+@media (min-width: 640px) {
+  :root { --mira-top-offset: 0px; }
+}
