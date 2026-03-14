@@ -8,7 +8,36 @@
 
 ---
 
-## 🔄 SESSION 15 STATUS — In Progress (Feb 2026)
+## ✅ SESSION 15 COMPLETE (Mar 2026)
+- Service Desk Birthday Box Orders tab — wired, 3-column layout, WhatsApp contact, slot assembly, allergy gate, notes, audit log
+- Fixed "Confirm & Send to Concierge" button (stale closure + petId fallback)
+- Removed redundant MiraAskBar from /celebrate-soul
+
+---
+
+## 🔄 SESSION 16 IN PROGRESS — Celebrate Concierge® Redesign
+
+**Source:** Celebrate_Concierge_MASTER.docx (ALL COPY IS FINAL)
+
+### What to build:
+
+| Task | File | Status |
+|---|---|---|
+| Update CTA card (title, description, stat, chips, button) | CelebrateConcierge.jsx | TODO |
+| 8-card service grid | CelebrateServiceGrid.jsx (NEW) | TODO |
+| Individual card component | CelebrateServiceCard.jsx (NEW) | TODO |
+| 3-question Concierge Intake Modal | ConciergeIntakeModal.jsx (NEW) | TODO |
+| Backend intake endpoint | POST /api/concierge/intake | TODO |
+
+### Key copy rules (from spec):
+- Title: "Celebrate {petName} the way only you know how."
+- Description: "45,000+ meals. Hundreds of birthdays. Every celebration we have ever planned has started the same way — with us listening to who your dog actually is."
+- CTA: "Plan {petName}'s Celebration →"
+- Stat: 45,000+ / "meals made with love"
+- NEVER use: Browse, package, amazing, incredible, seamless
+- Intake modal: 3 questions (service type pre-selected, date, notes) → POST /api/concierge/intake
+
+---
 
 ### WHAT IS IN PROGRESS:
 **P0: Wire BirthdayBoxOrdersAdmin into AgentPortal.jsx — ✅ COMPLETE (Session 15)**
