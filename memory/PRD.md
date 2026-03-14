@@ -91,14 +91,14 @@ NEVER use `celebration` for the Birthday Cakes tab. Use `cakes`.
 | **Total Celebrate Products** | | **~279** | |
 | Admin Panel Shows | (filtered) | 308 | includes some extras |
 
-### IN PROGRESS 🚧 — CURRENT TASK
-1. **AI Image Generation for Party & Accessories** — Generate realistic product images using Cloudinary AI engine (GPT Image 1)
-   - **Script:** `/app/backend/scripts/generate_party_accessory_images.py` (NEW)
-   - **Products:** Generic party items (hats, banners, balloons, bowties, photo props, party kits)
-   - **Storage:** `products_master` collection, accessible via Admin & Celebrate page
-   - **Note:** These are GENERIC products applicable across ALL breeds (not breed-specific)
+### ✅ COMPLETED — AI Image Generation for Party & Accessories (Mar 14, 2026)
+1. **AI Image Generation** — 15 realistic product images generated using Cloudinary AI engine (GPT Image 1)
+   - **Script:** `/app/backend/scripts/generate_party_accessory_images.py`
+   - **Products:** Generic party items applicable across ALL breeds
+   - **Storage:** `products_master` collection
+   - **Visibility:** Party & Decor category tab shows 33 items with AI images first
 
-### UPCOMING TASKS
+### IN PROGRESS 🚧 — NEXT TASKS
 1. **Replace `/celebrate` with `/celebrate-soul`** — once Aditya approves
 2. **Standardize other pillar pages** — `/dine`, `/stay`, `/learn` using celebrate as template
 3. **500 uncategorized products** — Admin needs to categorize or AI auto-categorize
