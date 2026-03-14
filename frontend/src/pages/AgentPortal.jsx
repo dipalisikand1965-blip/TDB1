@@ -21,7 +21,8 @@ const FEATURE_COMPONENTS = {
     name: 'Birthday Box Orders',
     icon: Package,
     color: 'text-pink-600',
-    bgColor: 'bg-pink-50'
+    bgColor: 'bg-pink-50',
+    badge: 'new_count',  // will be populated from API
   },
   notifications: {
     name: 'Notifications',
@@ -121,6 +122,24 @@ const AgentPortal = () => {
     if (isAuthenticated && agentInfo?.permissions?.includes('orders')) {
       fetchOrders();
     }
+  }, [isAuthenticated, agentInfo]);
+
+  // Birthday box new order count for nav badge
+  const [birthdayBoxNewCount, setBirthdayBoxNewCount] = useState(0);
+  useEffect(() => {
+    if (!isAuthenticated || !agentInfo?.permissions?.includes('birthday_box_orders')) return;
+    const fetchCount = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/admin/birthday-box-orders?limit=200`);
+        if (res.ok) {
+          const data = await res.json();
+          setBirthdayBoxNewCount((data.counts?.new || 0) + (data.counts?.pending_concierge || 0));
+        }
+      } catch {}
+    };
+    fetchCount();
+    const t = setInterval(fetchCount, 60000);
+    return () => clearInterval(t);
   }, [isAuthenticated, agentInfo]);
 
   const fetchOrders = async () => {
@@ -331,15 +350,24 @@ const AgentPortal = () => {
               <div className="hidden md:flex items-center gap-2 ml-6">
                 {permittedFeatures.map(feature => {
                   const Icon = feature.icon;
+                  const isBirthdayBox = feature.id === 'birthday_box_orders';
+                  const badgeCount = isBirthdayBox ? birthdayBoxNewCount : 0;
                   return (
                     <Button
                       key={feature.id}
                       variant={activeTab === feature.id ? 'default' : 'ghost'}
-                      className={activeTab === feature.id ? 'bg-purple-600' : ''}
+                      className={`relative ${activeTab === feature.id ? 'bg-purple-600' : ''}`}
                       onClick={() => setActiveTab(feature.id)}
                     >
                       <Icon className="w-4 h-4 mr-2" />
                       {feature.name}
+                      {badgeCount > 0 && (
+                        <span className="absolute -top-1 -right-1 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
+                          style={{ background: '#DC2626', fontSize: 9 }}
+                          data-testid="birthday-box-nav-badge">
+                          {badgeCount > 9 ? '9+' : badgeCount}
+                        </span>
+                      )}
                     </Button>
                   );
                 })}

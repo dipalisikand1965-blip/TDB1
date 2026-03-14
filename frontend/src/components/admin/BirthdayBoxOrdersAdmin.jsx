@@ -170,6 +170,9 @@ const SlotManifest = ({ orderId, slots, allergies, slotAssembly, onAssembled }) 
   const [assemblyState, setAssemblyState] = useState(slotAssembly || {});
   const [saving, setSaving] = useState({});
 
+  // Sync with prop changes when order is reloaded
+  useEffect(() => { setAssemblyState(slotAssembly || {}); }, [slotAssembly]);
+
   const assembledCount = Object.values(assemblyState).filter(v => v?.assembled).length;
   const totalSlots = slots?.length || 6;
 
@@ -586,20 +589,31 @@ const StatusTransition = ({ orderId, currentStatus, order, assembledCount, total
 const NotesPanel = ({ orderId, notes = [], auditTrail = [], agentName }) => {
   const [newNote, setNewNote] = useState('');
   const [saving, setSaving] = useState(false);
+  const [localNotes, setLocalNotes] = useState(notes);
   const [showLog, setShowLog] = useState(false);
+
+  // Sync when prop changes (order reload)
+  useEffect(() => { setLocalNotes(notes); }, [notes]);
 
   const sendNote = async () => {
     if (!newNote.trim()) return;
     setSaving(true);
+    const noteText = newNote.trim();
     try {
       const res = await fetch(`${API_BASE}/api/admin/birthday-box-orders/${orderId}/note`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ note: newNote.trim(), concierge_name: agentName || 'concierge' })
+        body: JSON.stringify({ note: noteText, concierge_name: agentName || 'concierge' })
       });
       if (res.ok) {
         toast.success('Note saved');
         setNewNote('');
+        // Append to local state immediately for instant feedback
+        setLocalNotes(prev => [...prev, {
+          note: noteText,
+          concierge_name: agentName || 'concierge',
+          timestamp: new Date().toISOString()
+        }]);
       }
     } catch { toast.error('Failed to save note'); }
     finally { setSaving(false); }
@@ -614,7 +628,7 @@ const NotesPanel = ({ orderId, notes = [], auditTrail = [], agentName }) => {
         </p>
       </div>
       <div className="p-3 space-y-3">
-        {notes.slice(-3).map((n, i) => (
+        {localNotes.slice(-3).map((n, i) => (
           <div key={i} className="text-xs" style={{ borderLeft: '2px solid #e2e8f0', paddingLeft: 8 }}>
             <p className="text-gray-700">{n.note}</p>
             <p className="text-gray-400 mt-0.5">{n.concierge_name} · {timeAgo(n.timestamp)}</p>
