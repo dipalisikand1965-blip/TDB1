@@ -1,0 +1,65 @@
+{
+  "summary": "Tested the new /dine page (DineSoulPage) with all core components. Page loads correctly with amber/terracotta hero, TummyProfile, tab bar, MiraMealPick, DineDimensions, GuidedNutritionPaths, and Dine Out tab. One critical backend bug found: Nutrition Goal PATCH endpoint missing. All other features pass.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "PATCH /api/pets/{pet_id}",
+        "issue": "405 Method Not Allowed - Backend only has PUT /api/pets/{pet_id}, not PATCH. TummyProfile.jsx sends PATCH with {nutrition_goal} but endpoint doesn't exist. Fix: Either add PATCH endpoint in server.py or change TummyProfile.jsx to use PUT method.",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "TummyProfile Nutrition Goal Update",
+        "issue": "Toast shows 'Could not save. Try again.' because backend returns 405 (PATCH not supported). Frontend code in TummyProfile.jsx line 101 uses method: 'PATCH' but backend only exposes PUT for pets endpoint.",
+        "affected_selectors": ["[data-testid='tummy-profile-save']", "[data-testid='nutrition-goal-select']"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/test_reports/iteration_129.json"],
+  "action_items": [
+    "CRITICAL: Fix TummyProfile nutrition_goal update - change method from PATCH to PUT in TummyProfile.jsx line 101, OR add @api_router.patch('/pets/{pet_id}') endpoint in server.py that accepts partial updates including nutrition_goal",
+    "INFO: Mojo's DB data has health_conditions=['none'] not lymphoma, so vet warning in MiraMealPick correctly does NOT show. The review context's lymphoma note refers to intended test data not actual data. Main agent may want to update Mojo's health data in DB to test vet warning.",
+    "INFO: Health Note cell in TummyProfile shows 'No health notes added yet' because health.medical_conditions is not set for Mojo, and doggy_soul_answers.health_conditions=['none'] is filtered to null by getHealthNote(). Expected behavior.",
+    "PRE-EXISTING: 'key prop' warning in PetHomePage (noted in previous iterations), 404 errors for some static assets - not related to /dine"
+  ],
+  "critical_code_review_comments": [
+    "TummyProfile.jsx line 101: method: 'PATCH' should be 'PUT' since /api/pets/{pet_id} only supports PUT. The PetProfileUpdate model in models.py includes nutrition_goal field, so PUT will work.",
+    "GuidedNutritionPaths scoring for Health Nutrition path: Returns 95 when health_conditions is truthy array (even ['none']). Consider checking if the array contains actual conditions, not just 'none'.",
+    "DineDimensionExpanded.jsx line 16: API_BASE uses process.env.REACT_APP_BACKEND_URL directly (redundant alongside getApiUrl() used on line 41). Minor inconsistency.",
+    "MiraMealPick teaser is Salmon-based (correct - age_years=null defaults to adult, medium, salmon from dsa.favorite_treats)"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A - frontend only",
+    "frontend": "90% (1 critical integration bug, all visual/UX features pass)"
+  },
+  "test_credentials": {
+    "user": "dipali@clubconcierge.in / test123"
+  },
+  "seed_data_creation": "No seed data created. Mojo's data: preferences.favorite_treats=['salmon'], doggy_soul_answers.favorite_treats=['Salmon','Peanut Butter'], health.allergies=['chicken'], doggy_soul_answers.food_allergies=['chicken'], doggy_soul_answers.health_conditions=['none'], age_years=None, nutrition_goal=None.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "All /dine components tested. Key facts: (1) Nutrition goal PATCH fix needed - change to PUT in TummyProfile.jsx. (2) Page loads correctly with MOJO pet, amber/terracotta hero, all 5 dimension cards, 3 nutrition paths, dine out tab. (3) Mobile 390px: 1-col TummyProfile grid, 2-col DineDimensions grid - all correct. (4) DineDimensionExpanded portal opens/closes via X button - PASS. (5) GuidedNutritionPaths surfaces Allergy Navigation (score=100, chicken allergy) + Health Nutrition (score=95, truthy health array) + Homemade Cooking (score=20) as top 3. (6) Vet warning NOT showing - correct behavior since DB has health_conditions=['none']. (7) Pre-existing: key prop warning for PetHomePage, 404 for some assets.",
+  "test_results_detail": {
+    "hero_amber_gradient": { "result": "PASS", "detail": "linear-gradient(135deg, #3d1200 → #7a2800 → #c44400 → #e86a00)" },
+    "hero_mojo_name": { "result": "PASS", "detail": "DINE · MOJO eyebrow text visible, 'Everything Mojo eats. Filtered by Mira.'" },
+    "tummy_profile_collapsed_chips": { "result": "PASS", "detail": "Loves Salmon, Loves Peanut Butter, No chicken, Healthy maintenance all visible" },
+    "tummy_profile_expand": { "result": "PASS", "detail": "Expanded 4 cells: Loves (Salmon, Peanut Butter), Avoid (chicken), Nutrition Goal (editable), Health Note (no notes)" },
+    "nutrition_goal_update": { "result": "FAIL", "detail": "405 Method Not Allowed - PATCH endpoint not implemented in backend. Toast: 'Could not save. Try again.'" },
+    "mira_meal_pick_teaser": { "result": "PASS", "detail": "Salmon-based pick for adult (age=null→adult, medium, salmon protein): 'Balanced Salmon Kibble for mornings, Salmon Training Treats as rewards'" },
+    "see_pick_toggle": { "result": "PASS", "detail": "Expands to 4 cards: Morning Meal, Evening Meal, Treat Pick, Supplement" },
+    "vet_warning": { "result": "INFO", "detail": "Not showing - DB health_conditions=['none'] so isHealthSensitive() correctly returns false. Data doesn't have lymphoma in this env." },
+    "dine_dimensions_5_cards": { "result": "PASS", "detail": "All 5: Daily Meals, Treats & Rewards, Supplements, Frozen & Fresh, Homemade & Recipes visible" },
+    "dimension_expanded_panel": { "result": "PASS", "detail": "Daily Meals expanded with portal, shows tabs: Morning Meal, Evening Meal, Meal Toppers, Portion Guide. 'Coming soon' empty state shown (no products). Close button works." },
+    "guided_nutrition_paths": { "result": "PASS", "detail": "3 paths shown: Allergy Navigation (Mira Pick - score 100), Health Nutrition (Mira Pick - score 95), Homemade Cooking (Mira Pick - score 20). Allergy Navigation expanded with 4 steps + Start with Mira button." },
+    "dine_out_tab": { "result": "PASS", "detail": "Switches to PetFriendlySpots view with 'Find spots near me' CTA, 'Or we'll use Mojo's city: Goa' hint visible" },
+    "dining_concierge_services": { "result": "PASS", "detail": "All 4 service cards: Restaurant Discovery, Reservation Assistance, Dining Etiquette Guide, Venue Suitability Check" },
+    "mobile_viewport_390px": { "result": "PASS", "detail": "Hero readable, TummyProfile 1-col grid (322px), DineDimensions 2-col grid (173px 173px), no JS errors specific to /dine" }
+  }
+}
