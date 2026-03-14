@@ -70,6 +70,51 @@ const getLovedFoods = (pet) => {
     .filter(Boolean);
 };
 
+// Helper to extract ALL soul traits from pet data (activities, likes, personality)
+const extractSoulTraits = (pet) => {
+  const traits = [];
+  
+  // From learned_facts
+  if (pet?.learned_facts && Array.isArray(pet.learned_facts)) {
+    const factValues = pet.learned_facts
+      .filter(f => f.type === 'activity' || f.type === 'preference' || f.type === 'likes' || f.type === 'loves')
+      .map(f => f.value || f.fact || '');
+    traits.push(...factValues);
+  }
+  
+  // From soul object
+  if (pet?.soul) {
+    if (pet.soul.loves) traits.push(...(Array.isArray(pet.soul.loves) ? pet.soul.loves : [pet.soul.loves]));
+    if (pet.soul.likes) traits.push(...(Array.isArray(pet.soul.likes) ? pet.soul.likes : [pet.soul.likes]));
+    if (pet.soul.activities) traits.push(...pet.soul.activities);
+    if (pet.soul.preferences) traits.push(...pet.soul.preferences);
+    if (pet.soul.personality_traits) traits.push(...pet.soul.personality_traits);
+    if (pet.soul.play_style) traits.push(...pet.soul.play_style);
+    if (pet.soul.favorite_activities) traits.push(...pet.soul.favorite_activities);
+  }
+  
+  // From preferences object
+  if (pet?.preferences) {
+    if (pet.preferences.activities) traits.push(...pet.preferences.activities);
+    if (pet.preferences.play_style) traits.push(...pet.preferences.play_style);
+    if (pet.preferences.favorite_things) traits.push(...pet.preferences.favorite_things);
+  }
+  
+  // From direct fields
+  if (pet?.likes) traits.push(...(Array.isArray(pet.likes) ? pet.likes : [pet.likes]));
+  if (pet?.loves) traits.push(...(Array.isArray(pet.loves) ? pet.loves : [pet.loves]));
+  if (pet?.favorite_activities) traits.push(...pet.favorite_activities);
+  if (pet?.play_preferences) traits.push(...pet.play_preferences);
+  
+  // Flatten and dedupe
+  return [...new Set(
+    traits
+      .flat()
+      .map(t => typeof t === 'string' ? t : (t?.name || t?.value || ''))
+      .filter(Boolean)
+  )];
+};
+
 // ── Category → API mapping ────────────────────────────────────────────────
 // `cakes` = actual TDB bakery cakes (111 products)
 // `celebration` = celebration kits/packages (NOT cakes — don't use for Birthday Cakes)
@@ -290,24 +335,42 @@ const SoulPickCard = ({ product, pet }) => {
 // ── Mira Imagines Card — custom request card for non-existent flavours ────
 const MiraImaginesCard = ({ flavor, pet }) => {
   const petName = pet?.name || 'your pet';
-  const emoji = getFoodEmoji(flavor);
-  const label = flavor.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   const [requested, setRequested] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  
+  // Handle both old format (string) and new format (object)
+  const isObject = typeof flavor === 'object';
+  const productType = isObject ? flavor.type : 'food';
+  const productName = isObject ? flavor.name : `${flavor.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')} Birthday Cake`;
+  const trait = isObject ? flavor.trait : `loves ${flavor}`;
+  const description = isObject ? flavor.description : `Not in our collection yet — we can make it for ${petName}`;
+  const emoji = isObject ? flavor.emoji : getFoodEmoji(flavor);
+  const questions = isObject && flavor.questions ? flavor.questions : [];
+  const isOnboarding = productType === 'onboarding';
 
   const handleRequest = () => {
+    if (isOnboarding) {
+      setShowOnboarding(true);
+      // Open soul onboarding modal
+      window.dispatchEvent(new CustomEvent('openSoulOnboarding', {
+        detail: { pet, questions, source: 'mira_imagines' }
+      }));
+      return;
+    }
+    
     setRequested(true);
     // Dispatch concierge/toast event
     window.dispatchEvent(new CustomEvent('openConcierge', {
       detail: {
-        message: `Hi! I'd love a custom ${label} Birthday Cake for ${petName}. Can you make this happen?`,
+        message: `Hi! I'd love a custom "${productName}" for ${petName}. Mira knows ${petName} ${trait}. Can you make this happen?`,
         tab: 'celebrate',
-        context: { flavor, pet_name: petName }
+        context: { productName, trait, pet_name: petName, type: productType }
       }
     }));
     // Also try the Mira AI path as fallback
     window.dispatchEvent(new CustomEvent('openMiraAI', {
       detail: {
-        message: `Can you create a ${label} Birthday Cake for ${petName}? I couldn't find one in the collection.`,
+        message: `Can you create a "${productName}" for ${petName}? Because ${petName} ${trait}.`,
         context: 'celebrate'
       }
     }));
@@ -317,16 +380,24 @@ const MiraImaginesCard = ({ flavor, pet }) => {
     <div
       className="rounded-2xl overflow-hidden relative"
       style={{
-        background: 'linear-gradient(135deg, #1A0A00 0%, #3D1A5F 100%)',
-        border: '1.5px solid rgba(196,77,255,0.3)',
+        background: isOnboarding 
+          ? 'linear-gradient(135deg, #0A1A2E 0%, #1A3A5F 100%)'
+          : 'linear-gradient(135deg, #1A0A00 0%, #3D1A5F 100%)',
+        border: isOnboarding 
+          ? '1.5px solid rgba(100,200,255,0.3)'
+          : '1.5px solid rgba(196,77,255,0.3)',
         minHeight: 200,
       }}
-      data-testid={`mira-imagines-${flavor}`}
+      data-testid={`mira-imagines-${isObject ? flavor.type : flavor}`}
     >
       {/* Mira badge */}
       <div className="absolute top-2 right-2 text-white text-xs font-bold rounded-full px-2 py-0.5"
-        style={{ background: 'rgba(196,77,255,0.6)', backdropFilter: 'blur(4px)', fontSize: 9 }}>
-        Mira Imagines
+        style={{ 
+          background: isOnboarding ? 'rgba(100,200,255,0.6)' : 'rgba(196,77,255,0.6)', 
+          backdropFilter: 'blur(4px)', 
+          fontSize: 9 
+        }}>
+        {isOnboarding ? 'Grow the Soul' : 'Mira Imagines'}
       </div>
 
       {/* Icon + sparkle */}
@@ -336,28 +407,42 @@ const MiraImaginesCard = ({ flavor, pet }) => {
           <span className="absolute -top-1 -right-1" style={{ fontSize: 14 }}>✨</span>
         </div>
         <p className="font-extrabold text-center text-white leading-tight" style={{ fontSize: 13 }}>
-          {label} Birthday Cake
+          {productName}
         </p>
         <p className="text-center mt-1" style={{ color: 'rgba(255,255,255,0.55)', fontSize: 10 }}>
-          Not in our collection yet —<br />we can make it for {petName}
+          {description}
         </p>
+        {!isOnboarding && trait && (
+          <p className="text-center mt-1 italic" style={{ color: 'rgba(196,77,255,0.8)', fontSize: 9 }}>
+            Because {petName} {trait}
+          </p>
+        )}
       </div>
 
       {/* Request button */}
       <div className="px-3 pb-4">
-        {requested ? (
+        {requested || showOnboarding ? (
           <div className="text-center text-xs font-bold rounded-xl py-2"
-            style={{ background: 'rgba(196,77,255,0.2)', color: '#C44DFF' }}>
-            ✓ Request sent to concierge!
+            style={{ 
+              background: isOnboarding ? 'rgba(100,200,255,0.2)' : 'rgba(196,77,255,0.2)', 
+              color: isOnboarding ? '#64C8FF' : '#C44DFF' 
+            }}>
+            {isOnboarding ? '✓ Opening soul questions...' : '✓ Request sent to concierge!'}
           </div>
         ) : (
           <button
             onClick={handleRequest}
             className="w-full text-white font-bold rounded-xl py-2 text-xs"
-            style={{ background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)', border: 'none', cursor: 'pointer' }}
-            data-testid={`mira-request-${flavor}`}
+            style={{ 
+              background: isOnboarding 
+                ? 'linear-gradient(135deg, #64C8FF, #4DA6FF)'
+                : 'linear-gradient(135deg, #C44DFF, #FF6B9D)', 
+              border: 'none', 
+              cursor: 'pointer' 
+            }}
+            data-testid={`mira-request-${isObject ? flavor.type : flavor}`}
           >
-            Request a Quote →
+            {isOnboarding ? 'Help Mira Know Me →' : 'Request a Quote →'}
           </button>
         )}
       </div>
@@ -479,10 +564,14 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
       if (category === 'soul-picks') {
         const breedDisplay = getBreedDisplay(pet);
         const breedSearch = breedDisplay.toLowerCase();
-        // Fetch from all breed merchandise categories in parallel
+        // Fetch from ALL breed merchandise categories relevant for Celebrate
         const breedCats = [
           'breed-mugs', 'breed-bandanas', 'breed-frames',
-          'breed-keychains', 'breed-party_hats', 'breed-tote_bags'
+          'breed-keychains', 'breed-party_hats', 'breed-tote_bags',
+          // NEW: More celebrate-relevant categories
+          'breed-blankets', 'breed-bowls', 'breed-paw_print_frames',
+          'breed-pet_robes', 'breed-pet_towels', 'breed-placemats',
+          'breed-treat_jars', 'breed-cushion_covers'
         ];
         const responses = await Promise.all(
           breedCats.map(cat => fetch(`${apiUrl}/api/products?category=${cat}&limit=50`))
@@ -511,8 +600,9 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
         return;
       }
 
-      // ── Mira's Picks: breed-aware + imaginary flavor cards ───────────
+      // ── Mira's Picks: breed-aware + imaginary soul-based cards ───────────
       if (category === 'miras-picks') {
+        const petName = pet?.name || 'your pet';
         const r = await fetch(`${apiUrl}/api/products?category=cakes&limit=80`);
         if (r.ok) {
           const d = await r.json();
@@ -525,23 +615,80 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
             ? allCakes.filter(p => (p.name || '').toLowerCase().includes(breedSearch))
             : [];
 
-          // 2. Mira Imagines: find loved foods not present in cake collection
+          // 2. Mira Imagines: Create cards based on soul data
           const lovedFoods = getLovedFoods(pet);
           const allergies = (pet?.allergies || []).map(a => a.toLowerCase());
-          const imaginary = lovedFoods.filter(food => {
+          const soulTraits = extractSoulTraits(pet);
+          const imaginaryProducts = [];
+          
+          // A) Food-based imaginary (ORIGINAL WORKING LOGIC)
+          const foodImaginary = lovedFoods.filter(food => {
             const f = food.toLowerCase().replace(/\s*(treat|cake|food)s?\b/g, '').trim();
             if (!f || f.length < 3) return false;
-            // Skip if allergy
             if (allergies.some(a => f.includes(a))) return false;
-            // Check if any cake contains this flavor
             return !allCakes.some(c => (c.name || '').toLowerCase().includes(f));
           });
-          setMiraImagines(imaginary.slice(0, 3)); // max 3 imaginary cards
+          
+          // Add food cards with proper formatting
+          for (const food of foodImaginary.slice(0, 2)) {
+            const cleanFood = food.replace(/\s*(treat|cake|food)s?\b/gi, '').trim();
+            const label = cleanFood.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            imaginaryProducts.push({
+              type: 'food',
+              name: `${label} Delight Cake`,
+              trait: `loves ${food}`,
+              description: `Mira imagines a delicious ${cleanFood} cake just for ${petName}`,
+              emoji: getFoodEmoji(cleanFood)
+            });
+          }
+          
+          // B) Activity-based imaginary products (NEW)
+          const activityMap = {
+            'tennis ball': { name: 'Tennis Ball Birthday Box', emoji: '🎾', desc: 'A celebration kit for the tennis ball champion' },
+            'fetch': { name: 'Ultimate Fetch Party Kit', emoji: '🎯', desc: 'Party gear for the fetch-obsessed pup' },
+            'swimming': { name: 'Pool Party Celebration Kit', emoji: '🏊', desc: 'Splash-ready birthday celebration' },
+            'car rides': { name: 'Road Trip Birthday Adventure', emoji: '🚗', desc: 'Celebration on wheels' },
+            'walks': { name: 'Adventure Walk Party Pack', emoji: '🚶', desc: 'Celebration for the explorer' },
+            'cuddles': { name: 'Cozy Cuddle Birthday Box', emoji: '🥰', desc: 'Extra snuggly celebration' },
+            'naps': { name: 'Nap Time Birthday Bundle', emoji: '😴', desc: 'Peaceful celebration package' },
+            'running': { name: 'Zoomies Party Kit', emoji: '🏃', desc: 'High-energy celebration' },
+            'squeaky toys': { name: 'Squeaky Toy Birthday Box', emoji: '🧸', desc: 'Musical celebration kit' },
+          };
+          
+          for (const trait of soulTraits) {
+            const traitLower = trait.toLowerCase();
+            for (const [key, product] of Object.entries(activityMap)) {
+              if (traitLower.includes(key) && imaginaryProducts.length < 4) {
+                imaginaryProducts.push({
+                  type: 'activity',
+                  name: product.name,
+                  trait: trait,
+                  description: product.desc + ` for ${petName}`,
+                  emoji: product.emoji
+                });
+                break;
+              }
+            }
+          }
+          
+          // C) Soul Onboarding card if no data
+          if (imaginaryProducts.length === 0) {
+            imaginaryProducts.push({
+              type: 'onboarding',
+              name: `Help Mira know ${petName} better`,
+              trait: 'soul_incomplete',
+              description: 'Answer a few questions so Mira can imagine perfect celebrations',
+              emoji: '✨'
+            });
+          }
+          
+          setMiraImagines(imaginaryProducts.slice(0, 4));
 
-          // 3. Show breed-specific cakes + fallback to all cakes
-          const finalCakes = breedCakes.length >= 4
-            ? breedCakes.slice(0, 10)
-            : allCakes.slice(0, 10);
+          // 3. IMPORTANT: Show breed-specific cakes FIRST, then others
+          // This was working before - breed cakes on top!
+          const finalCakes = breedCakes.length > 0
+            ? [...breedCakes.slice(0, 6), ...allCakes.filter(c => !breedCakes.includes(c)).slice(0, 6)]
+            : allCakes.slice(0, 12);
           setProducts(finalCakes);
         }
         setLoading(false);
