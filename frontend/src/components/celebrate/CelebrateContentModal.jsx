@@ -13,9 +13,9 @@
  * 5. "Continue Shopping" footer
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, Sparkles, ChevronRight, ShoppingBag, Check, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { motion, AnimatePresence, useAnimation } from 'framer-motion';
+import { X, Loader2, Sparkles, ChevronRight, ShoppingBag, Check, ChevronDown, Share2, Calendar } from 'lucide-react';
 import ProductCard from '../ProductCard';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
@@ -669,6 +669,189 @@ const SoulQuestionCard = ({ question, petName, onAnswered }) => {
 };
 
 // ── Soul Questions Section ─────────────────────────────────────────────────────
+// ── OccasionCountdownCard — shows upcoming birthday/gotcha/festival ─────
+const OccasionCountdownCard = ({ pet, petName }) => {
+  const [occasion, setOccasion] = useState(null);
+
+  useEffect(() => {
+    if (!pet) return;
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const checkDate = (dateStr, label, emoji) => {
+      if (!dateStr) return null;
+      const d = new Date(dateStr);
+      if (isNaN(d)) return null;
+      // Set to this year or next
+      d.setFullYear(today.getFullYear());
+      if (d < today) d.setFullYear(today.getFullYear() + 1);
+      const diff = Math.round((d - today) / 86400000);
+      if (diff <= 45) return { label, emoji, daysLeft: diff, date: d };
+      return null;
+    };
+    // Check birthday and gotcha_date
+    const events = [
+      checkDate(pet.birthday, `${petName}'s Birthday`, '🎂'),
+      checkDate(pet.gotcha_date, `${petName}'s Gotcha Day`, '🐾'),
+    ].filter(Boolean);
+    // Also check celebration_preferences for custom occasions
+    const prefs = pet?.doggy_soul_answers?.celebration_preferences;
+    if (Array.isArray(prefs)) {
+      // Map festival names to approximate dates (India-focused)
+      const festivalDates = {
+        'Diwali': `${today.getFullYear()}-10-20`,
+        'Holi': `${today.getFullYear()}-03-14`,
+        'Christmas': `${today.getFullYear()}-12-25`,
+        'New Year': `${today.getFullYear()}-01-01`,
+      };
+      for (const pref of prefs) {
+        if (festivalDates[pref]) {
+          const ev = checkDate(festivalDates[pref], `${pref} with ${petName}`, '✨');
+          if (ev) events.push(ev);
+        }
+      }
+    }
+    // Pick the nearest upcoming event
+    events.sort((a, b) => a.daysLeft - b.daysLeft);
+    setOccasion(events[0] || null);
+  }, [pet, petName]);
+
+  if (!occasion) return null;
+
+  const { label, emoji, daysLeft } = occasion;
+  const isToday = daysLeft === 0;
+  const isSoon = daysLeft <= 7;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="rounded-2xl px-4 py-4 mb-4"
+      style={{
+        background: 'linear-gradient(135deg, #1A0020 0%, #3D0060 100%)',
+        border: `1.5px solid ${isSoon ? 'rgba(240,192,96,0.6)' : 'rgba(196,77,255,0.45)'}`,
+        boxShadow: isSoon ? '0 0 24px rgba(240,192,96,0.2)' : '0 0 18px rgba(196,77,255,0.15)',
+      }}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <span style={{ fontSize: 28 }}>{emoji}</span>
+          <div>
+            <p className="font-extrabold" style={{ color: isSoon ? '#F0C060' : 'rgba(255,255,255,0.92)', fontSize: 11, fontFamily: 'Manrope, sans-serif' }}>
+              {isToday ? `Today is ${label}!` : `${label} in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`}
+            </p>
+            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 9, fontFamily: 'Inter, sans-serif' }}>
+              Mira has prepared something special ✦
+            </p>
+          </div>
+        </div>
+        <span className="rounded-full px-2 py-1 font-black"
+          style={{
+            background: isSoon ? 'rgba(240,192,96,0.2)' : 'rgba(196,77,255,0.2)',
+            color: isSoon ? '#F0C060' : '#D47FFF',
+            fontSize: 10, border: `1px solid ${isSoon ? 'rgba(240,192,96,0.4)' : 'rgba(196,77,255,0.3)'}`,
+            fontFamily: 'Manrope, sans-serif',
+          }}>
+          {isToday ? '🎉 TODAY' : `${daysLeft}d`}
+        </span>
+      </div>
+    </motion.div>
+  );
+};
+
+// ── PetWrap Teaser Card ─────────────────────────────────────────────────
+const PetWrapTeaser = ({ pet }) => {
+  const [wrapData, setWrapData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [shared, setShared] = useState(false);
+  const petId = pet?.id;
+
+  useEffect(() => {
+    if (!petId) { setLoading(false); return; }
+    fetch(`${getApiUrl()}/api/wrapped/generate/${petId}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d) setWrapData(d); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [petId]);
+
+  const handleShare = async () => {
+    const url = `${window.location.origin}/wrapped/${petId}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: `${pet?.name}'s PetWrap`, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        setShared(true);
+        setTimeout(() => setShared(false), 2000);
+      }
+    } catch {}
+  };
+
+  if (loading || !wrapData) return null;
+  
+  const score = wrapData?.soul_score || wrapData?.cards?.soul_score?.score || pet?.soul_score || 0;
+  const archetype = wrapData?.archetype_name || wrapData?.cards?.cover?.archetype_name || '';
+  const archetypeEmoji = wrapData?.archetype_emoji || wrapData?.cards?.cover?.archetype_emoji || '✦';
+  const year = wrapData?.year || new Date().getFullYear();
+  const petName = pet?.name || 'Your Pet';
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="rounded-2xl px-4 py-4 mb-4"
+      style={{
+        background: 'linear-gradient(135deg, #0D0020 0%, #1A0040 50%, #3D0060 100%)',
+        border: '1.5px solid rgba(196,77,255,0.4)',
+        boxShadow: '0 0 28px rgba(196,77,255,0.12)',
+      }}>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <span style={{ fontSize: 18 }}>{archetypeEmoji}</span>
+          <div>
+            <p className="font-extrabold" style={{ color: 'rgba(255,255,255,0.92)', fontSize: 11, fontFamily: 'Manrope, sans-serif' }}>
+              {petName}'s {year} PetWrap
+            </p>
+            {archetype && (
+              <p style={{ color: 'rgba(196,77,255,0.8)', fontSize: 9, fontFamily: 'Inter, sans-serif' }}>
+                Soul Archetype: {archetype}
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="font-black" style={{ color: '#C44DFF', fontSize: 20, fontFamily: 'Manrope, sans-serif' }}>
+            {Math.round(score)}
+          </span>
+          <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10 }}>%</span>
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <a href={`/wrapped/${petId}`} target="_blank" rel="noreferrer"
+          className="flex-1 rounded-xl py-1.5 text-xs font-bold text-center"
+          style={{
+            background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)',
+            color: '#fff', textDecoration: 'none',
+            fontFamily: 'Manrope, sans-serif',
+            boxShadow: '0 4px 12px rgba(196,77,255,0.35)',
+          }}>
+          View Full Wrap ✦
+        </a>
+        <button onClick={handleShare}
+          className="rounded-xl px-3 py-1.5 text-xs font-bold flex items-center gap-1"
+          style={{
+            background: 'rgba(196,77,255,0.15)',
+            border: '1px solid rgba(196,77,255,0.35)',
+            color: shared ? '#50DC78' : '#D47FFF',
+            cursor: 'pointer', fontFamily: 'Manrope, sans-serif',
+          }}>
+          {shared ? <Check className="w-3 h-3" /> : <Share2 className="w-3 h-3" />}
+          {shared ? 'Copied!' : 'Share'}
+        </button>
+      </div>
+    </motion.div>
+  );
+};
+
 const SoulQuestionsSection = ({ pet, onScoreUpdated, onRefreshMiraCards }) => {
   const [questions, setQuestions] = useState([]);
   const [score, setScore] = useState(null);
@@ -677,10 +860,21 @@ const SoulQuestionsSection = ({ pet, onScoreUpdated, onRefreshMiraCards }) => {
   const [answeredCount, setAnsweredCount] = useState(0);
   const [totalPtsGained, setTotalPtsGained] = useState(0);
   const petName = pet?.name || 'your pet';
+  // Imperative animation controls for score pop (no remount/bounce)
+  const scoreControls = useAnimation();
+  const prevScoreRef = useRef(null);
+
+  // Trigger gentle pop when score changes (no key-remount bounce)
+  useEffect(() => {
+    if (score !== null && prevScoreRef.current !== null && score !== prevScoreRef.current) {
+      scoreControls.start({ scale: [1, 1.12, 1], transition: { duration: 0.4, ease: 'easeOut' } });
+    }
+    prevScoreRef.current = score;
+  }, [score, scoreControls]);
 
   const loadQuestions = useCallback(() => {
     if (!pet?.id) { setLoading(false); return; }
-    fetch(`${getApiUrl()}/api/pet-soul/profile/${pet.id}/quick-questions?limit=5`)
+    fetch(`${getApiUrl()}/api/pet-soul/profile/${pet.id}/quick-questions?limit=5&context=celebrate`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (data) {
@@ -719,10 +913,11 @@ const SoulQuestionsSection = ({ pet, onScoreUpdated, onRefreshMiraCards }) => {
   if (visibleQuestions.length === 0 && answeredCount === 0) return null;
 
   const scoreDelta = (score !== null && prevScore !== null) ? score - prevScore : null;
+  const isGold = score >= 80;
 
   return (
     <div className="mb-6">
-      {/* Big Soul Score Header — deep purple theme */}
+      {/* Big Soul Score Header — deep purple, constant glow */}
       <div className="rounded-2xl px-5 py-5 mb-4"
         style={{
           background: 'linear-gradient(135deg, #1A0020 0%, #3D0060 100%)',
@@ -740,25 +935,24 @@ const SoulQuestionsSection = ({ pet, onScoreUpdated, onRefreshMiraCards }) => {
             </p>
           </div>
 
-          {/* Big score counter */}
+          {/* Score — constant infinite glow pulse, no bounce/remount */}
           <div className="flex flex-col items-end">
             <div className="relative flex items-end gap-0.5">
               <motion.div
-                key={score}
-                initial={{ scale: 1.4, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: 'spring', damping: 14, stiffness: 200 }}
+                animate={scoreControls}
                 className="font-black"
-                style={{
-                  fontSize: 64,
-                  lineHeight: 1,
-                  color: score >= 80 ? '#F0C060' : '#C44DFF',
-                  fontFamily: 'Manrope, sans-serif',
-                  textShadow: score >= 80
-                    ? '0 0 24px rgba(240,192,96,0.5)'
-                    : '0 0 24px rgba(196,77,255,0.55)',
-                }}>
-                {score ?? '--'}
+                style={{ fontSize: 64, lineHeight: 1, fontFamily: 'Manrope, sans-serif', color: isGold ? '#F0C060' : '#C44DFF' }}>
+                {/* Constant glow overlay pulse — never stops */}
+                <motion.span
+                  animate={{
+                    textShadow: isGold
+                      ? ['0 0 16px rgba(240,192,96,0.45)', '0 0 48px rgba(240,192,96,0.9)', '0 0 16px rgba(240,192,96,0.45)']
+                      : ['0 0 16px rgba(196,77,255,0.45)', '0 0 48px rgba(196,77,255,0.9)', '0 0 16px rgba(196,77,255,0.45)'],
+                  }}
+                  transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+                  style={{ color: isGold ? '#F0C060' : '#C44DFF', fontFamily: 'Manrope, sans-serif', fontWeight: 900, fontSize: 64, lineHeight: 1 }}>
+                  {score ?? '--'}
+                </motion.span>
               </motion.div>
               <span className="font-bold mb-2"
                 style={{ color: 'rgba(255,255,255,0.45)', fontSize: 16, fontFamily: 'Inter, sans-serif' }}>
@@ -784,7 +978,7 @@ const SoulQuestionsSection = ({ pet, onScoreUpdated, onRefreshMiraCards }) => {
                 animate={{ width: `${score}%` }}
                 transition={{ duration: 0.9, ease: 'easeOut' }}
                 className="h-full rounded-full"
-                style={{ background: score >= 80 ? 'linear-gradient(90deg, #C44DFF, #F0C060)' : 'linear-gradient(90deg, #C44DFF, #FF6B9D)' }}
+                style={{ background: isGold ? 'linear-gradient(90deg, #C44DFF, #F0C060)' : 'linear-gradient(90deg, #C44DFF, #FF6B9D)' }}
               />
             </div>
           </div>
@@ -1000,67 +1194,111 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
             ? allCakes.filter(p => (p.name || '').toLowerCase().includes(breedSearch))
             : [];
 
-          // 2. Mira Imagines: Create cards based on soul data
+          // 2. Mira Imagines: Create cards based on soul data + archetype
           const lovedFoods = getLovedFoods(pet);
           const allergies = (pet?.allergies || []).map(a => a.toLowerCase());
           const soulTraits = extractSoulTraits(pet);
+          const soulAnswers = pet?.doggy_soul_answers || {};
+          const archetype = (pet?.soul_archetype?.primary_archetype || pet?.soul_archetype || '').toLowerCase();
           const imaginaryProducts = [];
           
-          // A) Food-based imaginary (ORIGINAL WORKING LOGIC)
-          // Deduplicate by cleaned name (salmon treats + salmon → same key 'salmon')
+          // A) Food-based imaginary cakes + treat hampers from learned_facts & soul answers
+          const favProtein = soulAnswers.favorite_protein || soulAnswers.fav_protein;
+          const favTreat = soulAnswers.treat_preference;
+          const allFoodSources = [...lovedFoods];
+          if (favProtein && !allFoodSources.includes(favProtein)) allFoodSources.unshift(favProtein);
+          
           const seenFoodKeys = new Set();
-          const foodImaginary = lovedFoods.filter(food => {
+          const foodImaginary = allFoodSources.filter(food => {
             const f = food.toLowerCase().replace(/\s*(treat|cake|food)s?\b/g, '').trim();
             if (!f || f.length < 3) return false;
-            if (seenFoodKeys.has(f)) return false; // dedupe salmon treats vs salmon
+            if (seenFoodKeys.has(f)) return false;
             seenFoodKeys.add(f);
             if (allergies.some(a => f.includes(a))) return false;
             return !allCakes.some(c => (c.name || '').toLowerCase().includes(f));
           });
           
-          // Add food cards with proper formatting
           for (const food of foodImaginary.slice(0, 2)) {
             const cleanFood = food.replace(/\s*(treat|cake|food)s?\b/gi, '').trim();
             const label = cleanFood.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
             imaginaryProducts.push({
               type: 'food',
-              name: `${label} Delight Cake`,
+              name: `${label} Celebration Cake`,
               trait: `loves ${food}`,
               description: `Mira imagines a delicious ${cleanFood} cake just for ${petName}`,
               emoji: getFoodEmoji(cleanFood)
             });
+            // Also suggest a treat hamper if crunchy or soft preference
+            if (favTreat && imaginaryProducts.length < 4) {
+              imaginaryProducts.push({
+                type: 'food',
+                name: `${label} Treat Hamper`,
+                trait: `loves ${food} treats`,
+                description: `A curated hamper of ${cleanFood} treats for ${petName}'s celebration`,
+                emoji: '🎁'
+              });
+            }
           }
           
-          // B) Activity-based imaginary products (NEW)
-          const activityMap = {
-            'tennis ball': { name: 'Tennis Ball Birthday Box', emoji: '🎾', desc: 'A celebration kit for the tennis ball champion' },
-            'fetch': { name: 'Ultimate Fetch Party Kit', emoji: '🎯', desc: 'Party gear for the fetch-obsessed pup' },
-            'swimming': { name: 'Pool Party Celebration Kit', emoji: '🏊', desc: 'Splash-ready birthday celebration' },
-            'car rides': { name: 'Road Trip Birthday Adventure', emoji: '🚗', desc: 'Celebration on wheels' },
-            'walks': { name: 'Adventure Walk Party Pack', emoji: '🚶', desc: 'Celebration for the explorer' },
-            'cuddles': { name: 'Cozy Cuddle Birthday Box', emoji: '🥰', desc: 'Extra snuggly celebration' },
-            'naps': { name: 'Nap Time Birthday Bundle', emoji: '😴', desc: 'Peaceful celebration package' },
-            'running': { name: 'Zoomies Party Kit', emoji: '🏃', desc: 'High-energy celebration' },
-            'squeaky toys': { name: 'Squeaky Toy Birthday Box', emoji: '🧸', desc: 'Musical celebration kit' },
+          // B) Archetype-based imaginary products
+          const ARCHETYPE_IMAGINATIONS = {
+            'gentle_aristocrat':  [
+              { name: 'Luxury Birthday Hamper', emoji: '👑', desc: 'A premium, elegant celebration for the refined soul' },
+              { name: 'Velvet Bow Tie & Crown Set', emoji: '✨', desc: 'The ultimate elegant birthday accessory' },
+            ],
+            'wild_explorer': [
+              { name: 'Adventure Birthday Kit', emoji: '🏕️', desc: 'Outdoor-ready celebration for the explorer' },
+              { name: 'Durable Rope Tug Gift Set', emoji: '🌿', desc: 'Built for the wild one\'s celebrations' },
+            ],
+            'velcro_baby': [
+              { name: 'Comfort Snuggle Birthday Pack', emoji: '🤗', desc: 'A cozy, warm celebration for your velcro baby' },
+              { name: 'Mom\'s Scent Comfort Toy', emoji: '🧸', desc: 'The ultimate comfort gift' },
+            ],
+            'social_butterfly': [
+              { name: 'Pawty Decoration Kit', emoji: '🎉', desc: 'Everything for a big, joyful pawty' },
+              { name: 'Group Treat Bag for Friends', emoji: '🦋', desc: 'Share the joy with all the pals' },
+            ],
+            'foodie_gourmet': [
+              { name: 'Gourmet Birthday Tasting Kit', emoji: '🍴', desc: 'A curated tasting experience for the foodie' },
+              { name: 'Custom Recipe Celebration Cake', emoji: '👨‍🍳', desc: 'Chef-designed just for the palate of your pup' },
+            ],
+            'zen_philosopher': [
+              { name: 'Calm Birthday Wellness Box', emoji: '🧘', desc: 'A mindful, peaceful celebration' },
+              { name: 'Aromatherapy Treat Bundle', emoji: '🌿', desc: 'Gentle, soothing celebration essentials' },
+            ],
           };
           
-          for (const trait of soulTraits) {
-            const traitLower = trait.toLowerCase();
+          const archetypeCards = ARCHETYPE_IMAGINATIONS[archetype] || [];
+          for (const card of archetypeCards.slice(0, 2 - Math.min(imaginaryProducts.length, 2))) {
+            if (imaginaryProducts.length >= 4) break;
+            imaginaryProducts.push({ type: 'archetype', name: card.name, trait: archetype, description: card.desc + ` for ${petName}`, emoji: card.emoji });
+          }
+          
+          // C) Activity-based imaginary products (toys, kits)
+          const motivationType = soulAnswers.motivation_type || '';
+          const activityMap = {
+            'toys': { name: 'Birthday Toy Surprise Box', emoji: '🎁', desc: 'A whole box of new toys to unwrap' },
+            'fetch': { name: 'Ultimate Fetch Party Kit', emoji: '🎯', desc: 'Party gear for the fetch-obsessed pup' },
+            'swimming': { name: 'Pool Party Celebration Kit', emoji: '🏊', desc: 'Splash-ready birthday celebration' },
+            'cuddles': { name: 'Cozy Cuddle Birthday Box', emoji: '🥰', desc: 'Extra snuggly celebration' },
+            'squeaky': { name: 'Squeaky Toy Birthday Box', emoji: '🧸', desc: 'Musical celebration kit' },
+            'running': { name: 'Zoomies Party Kit', emoji: '🏃', desc: 'High-energy celebration' },
+          };
+          const allSoulSources = [...soulTraits, motivationType];
+          for (const trait of allSoulSources) {
+            const tl = trait.toLowerCase();
             for (const [key, product] of Object.entries(activityMap)) {
-              if (traitLower.includes(key) && imaginaryProducts.length < 4) {
+              if (tl.includes(key) && imaginaryProducts.length < 4) {
                 imaginaryProducts.push({
-                  type: 'activity',
-                  name: product.name,
-                  trait: trait,
-                  description: product.desc + ` for ${petName}`,
-                  emoji: product.emoji
+                  type: 'activity', name: product.name, trait: trait,
+                  description: product.desc + ` for ${petName}`, emoji: product.emoji
                 });
                 break;
               }
             }
           }
           
-          // C) Soul Onboarding card if no data
+          // D) Soul Onboarding card if no data at all
           if (imaginaryProducts.length === 0) {
             imaginaryProducts.push({
               type: 'onboarding',
@@ -1074,7 +1312,6 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
           setMiraImagines(imaginaryProducts.slice(0, 4));
 
           // 3. IMPORTANT: Show breed-specific cakes FIRST, then others
-          // This was working before - breed cakes on top!
           const finalCakes = breedCakes.length > 0
             ? [...breedCakes.slice(0, 6), ...allCakes.filter(c => !breedCakes.includes(c)).slice(0, 6)]
             : allCakes.slice(0, 12);
@@ -1302,6 +1539,12 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
             {/* ── MIRA'S PICKS layout — imaginary cards + breed cakes ──── */}
             {category === 'miras-picks' && (
               <>
+                {/* Occasion Countdown Card — shows upcoming birthday/gotcha/festival */}
+                <OccasionCountdownCard pet={pet} petName={petName} />
+
+                {/* PetWrap Teaser — next to soul, always visible */}
+                <PetWrapTeaser pet={pet} />
+
                 {/* Mira Imagines section — custom request cards */}
                 {miraImagines.length > 0 && (
                   <div className="mb-6">
@@ -1312,8 +1555,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                       </span>
                     </div>
                     <p className="text-xs mb-3" style={{ color: '#888' }}>
-                      {petName} loves these flavours — they're not in our range yet,
-                      but Mira can request them specially.
+                      Based on {petName}'s soul profile — not in range yet, but Mira can request these specially.
                     </p>
                     <div className="grid gap-3"
                       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
@@ -1325,14 +1567,14 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                   </div>
                 )}
 
-                {/* Soul Questions — appears for ALL pets to keep growing the score */}
+                {/* Soul Questions — celebrate-context prioritized (taste_treat + celebration_preferences first) */}
                 <SoulQuestionsSection
                   pet={pet}
                   onScoreUpdated={(score) => setLiveSoulScore(score)}
                   onRefreshMiraCards={() => {
                     // Re-fetch mira imagines after soul data grows
                     if (pet?.id) {
-                      setMiraImagines([]); // clear to trigger re-compute
+                      setMiraImagines([]);
                       setTimeout(() => fetchData(), 300);
                     }
                   }}

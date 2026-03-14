@@ -227,6 +227,25 @@ async def create_celebrate_request(request: CelebrateRequestCreate):
     
     await db.celebrate_requests.insert_one(request_doc)
     
+    # ── Write to pet.learned_facts so Mira remembers this request ──────────
+    if request.pet_id:
+        try:
+            product_hint = request.details or request_type.replace("_", " ")
+            await db.pets.update_one(
+                {"id": request.pet_id},
+                {"$push": {"learned_facts": {
+                    "type": "concierge_request",
+                    "category": "celebrate",
+                    "product_name": product_hint,
+                    "request_type": request_type,
+                    "request_id": request_id,
+                    "date": now_iso
+                }}}
+            )
+            logger.info(f"[MIRA MEMORY] Wrote concierge_request to pet {request.pet_id} learned_facts")
+        except Exception as e:
+            logger.warning(f"[MIRA MEMORY] Failed to write learned_fact: {e}")
+    
     # ==================== STEP 1: NOTIFICATION (MANDATORY) ====================
     await db.admin_notifications.insert_one({
         "id": notification_id,

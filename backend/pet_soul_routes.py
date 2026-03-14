@@ -508,11 +508,15 @@ async def get_profile_progress(pet_id: str):
 
 
 @pet_soul_router.get("/profile/{pet_id}/quick-questions")
-async def get_quick_questions(pet_id: str, limit: int = Query(default=3, le=5)):
+async def get_quick_questions(
+    pet_id: str,
+    limit: int = Query(default=3, le=5),
+    context: Optional[str] = Query(default=None, description="Context for priority: 'celebrate', 'dine', 'learn', etc.")
+):
     """
     Get the next N unanswered questions for quick prompts in Mira.
     MAX 3 per session by default to prevent overwhelming the user.
-    Prioritizes high-weight questions from diverse folders.
+    When context=celebrate: Prioritizes celebration_preferences + taste_treat folder first.
     """
     pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "doggy_soul_answers": 1, "name": 1})
     if not pet:
@@ -538,14 +542,29 @@ async def get_quick_questions(pet_id: str, limit: int = Query(default=3, le=5)):
                     "folder_icon": folder["icon"]
                 })
     
-    # Sort by weight (highest first) to prioritize impactful questions
-    unanswered.sort(key=lambda x: x["weight"], reverse=True)
+    # ── Celebrate context: bubble up celebration_preferences + taste_treat ──
+    if context == "celebrate":
+        CELEBRATE_PRIORITY_FOLDERS = ["taste_treat"]
+        CELEBRATE_PRIORITY_IDS = ["celebration_preferences", "favorite_protein", "treat_preference", "toy_preference", "motivation_type"]
+        
+        def celebrate_sort_key(q):
+            # 1 = highest priority (celebration_preferences first)
+            if q["question_id"] in CELEBRATE_PRIORITY_IDS[:2]:
+                return 0
+            if q["folder"] in CELEBRATE_PRIORITY_FOLDERS or q["question_id"] in CELEBRATE_PRIORITY_IDS:
+                return 1
+            return 2 + (100 - q.get("weight", 1))  # descending weight after priorities
+        
+        unanswered.sort(key=celebrate_sort_key)
+    else:
+        # Default: sort by weight (highest first) to prioritize impactful questions
+        unanswered.sort(key=lambda x: x["weight"], reverse=True)
     
     # Ensure diversity: pick from different folders when possible
     selected = []
     folders_used = set()
     
-    # First pass: one from each folder
+    # First pass: one from each folder (respects the priority sort)
     for q in unanswered:
         if q["folder"] not in folders_used and len(selected) < limit:
             selected.append(q)
