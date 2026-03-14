@@ -3,6 +3,29 @@
 
 ---
 
+## [Mar 13, 2026] Session 4 Round 3 — Soul Picks Real Merchandise + Mira Imagines
+### Changes:
+1. **Soul Picks** → Real breed merchandise (mugs, bandanas, frames, keychains, party hats, tote bags). Source: `breed-mugs`/`breed-bandanas`/`breed-frames`/`breed-keychains`/`breed-party_hats`/`breed-tote_bags` filtered by breed display name.
+2. **Mira's Picks** → `MiraImaginesCard` for loved foods not in collection. Dark gradient card, food emoji, "Request a Quote →" button → concierge toast. Max 3 imaginary cards per session. Followed by 8-10 real breed-filtered cakes.
+3. **Helpers added**: `getBreedDisplay()`, `getFoodEmoji()`, `getLovedFoods()`
+4. ⚠️ NEVER use `/api/mockups/breed-products` on the celebrate page — AI illustrations are NOT desired
+
+## [Mar 13, 2026] Session 4 Round 2 — 5 Critical Issues Fixed (100% pass)
+1. Birthday Cakes → `cakes` category (111 real TDB bakery cakes). Was wrongly using `celebration` (kits).
+2. Mira's Picks → breed-aware filter. Indie → Indie cakes.
+3. BundleDetailSheet → X close button + object-contain image.
+4. Soul Picks → ProductCard modal with X (replaced BundleDetailSheet).
+5. Footer → Mira whisper + "Build {Pet}'s Birthday Plan →" CTA. No "Continue Shopping".
+
+## [Mar 13, 2026] Session 4 Round 1 — CelebrateContentModal + CategoryStrip
+- 11 categories in strip (added Frozen Treats, Party & Decor, Nut Butters)
+- Desktop modal: centered via wrapper div (Framer Motion safe)
+- Admin: 308+ products load, CATEGORY_OPTIONS updated
+- ProductCard images: object-contain (no cropping)
+- Dynamic footer: browsing state vs active (items added)
+
+---
+
 ## [Mar 13, 2026] Session 4 — CelebrateContentModal Complete Fix (Round 2)
 ### 5 Critical Issues Fixed (100% test pass):
 1. **Birthday Cakes** — reverted to `cakes` category (111 actual TDB bakery cakes). `celebration` (celebration kits) was wrong.

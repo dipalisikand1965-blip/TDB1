@@ -19,28 +19,55 @@ import { X, Loader2, Sparkles, ChevronRight, ShoppingBag } from 'lucide-react';
 import ProductCard from '../ProductCard';
 import { getApiUrl } from '../../utils/api';
 
-// ── Breed slug helper ──────────────────────────────────────────────────────
+// ── Breed slug & display name helpers ────────────────────────────────────
 const BREED_SLUG_MAP = {
   'indian pariah': 'indie', 'indie': 'indie', 'pariah': 'indie',
   'labrador retriever': 'labrador', 'labrador': 'labrador',
-  'golden retriever': 'golden', 'golden': 'golden',
-  'beagle': 'beagle',
-  'pug': 'pug',
-  'german shepherd': 'german-shepherd', 'gsd': 'german-shepherd',
-  'shih tzu': 'shih-tzu',
-  'dachshund': 'dachshund',
-  'pomeranian': 'pomeranian',
-  'husky': 'husky', 'siberian husky': 'husky',
-  'doberman': 'doberman', 'dobermann': 'doberman',
-  'rottweiler': 'rottweiler',
-  'cocker spaniel': 'cocker-spaniel',
-  'border collie': 'border-collie',
+  'golden retriever': 'golden_retriever', 'golden': 'golden_retriever',
+  'beagle': 'beagle', 'pug': 'pug',
+  'german shepherd': 'german_shepherd', 'gsd': 'german_shepherd',
+  'shih tzu': 'shih_tzu', 'dachshund': 'dachshund',
+  'pomeranian': 'pomeranian', 'husky': 'husky', 'siberian husky': 'husky',
+  'doberman': 'doberman', 'dobermann': 'doberman', 'rottweiler': 'rottweiler',
+  'cocker spaniel': 'cocker_spaniel', 'border collie': 'border_collie',
 };
 
 const getBreedSlug = (pet) => {
   if (!pet) return null;
   const breed = (pet.breed || '').toLowerCase().trim();
-  return BREED_SLUG_MAP[breed] || breed.split(/\s+/)[0] || null;
+  return BREED_SLUG_MAP[breed] || breed.replace(/\s+/g, '_') || null;
+};
+
+// Convert breed to display name: 'golden_retriever' → 'Golden Retriever', 'indie' → 'Indie'
+const getBreedDisplay = (pet) => {
+  const breed = (pet?.breed || '').trim();
+  if (!breed) return '';
+  return breed.split(/[\s_-]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+};
+
+// Food emoji lookup for Mira Imagines cards
+const FOOD_EMOJIS = {
+  salmon: '🐟', fish: '🐠', tuna: '🐡', chicken: '🍗', beef: '🥩',
+  lamb: '🐑', duck: '🦆', cheese: '🧀', peanut: '🥜', banana: '🍌',
+  carrot: '🥕', blueberry: '🫐', strawberry: '🍓', mango: '🥭',
+  vanilla: '🍦', coconut: '🥥', pumpkin: '🎃', sweet: '🍠',
+};
+const getFoodEmoji = (food) => {
+  const f = (food || '').toLowerCase();
+  for (const [key, emoji] of Object.entries(FOOD_EMOJIS)) {
+    if (f.includes(key)) return emoji;
+  }
+  return '✨';
+};
+
+// Extract loved foods from pet.learned_facts
+const getLovedFoods = (pet) => {
+  const facts = pet?.learned_facts || [];
+  if (!Array.isArray(facts)) return [];
+  return facts
+    .filter(f => (f.type === 'loves' || f.type === 'likes') && f.category === 'preferences')
+    .map(f => f.value || '')
+    .filter(Boolean);
 };
 
 // ── Category → API mapping ────────────────────────────────────────────────
@@ -259,6 +286,84 @@ const SoulPickCard = ({ product, pet }) => {
   );
 };
 
+// ── Mira Imagines Card — custom request card for non-existent flavours ────
+const MiraImaginesCard = ({ flavor, pet }) => {
+  const petName = pet?.name || 'your pet';
+  const emoji = getFoodEmoji(flavor);
+  const label = flavor.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  const [requested, setRequested] = useState(false);
+
+  const handleRequest = () => {
+    setRequested(true);
+    // Dispatch concierge/toast event
+    window.dispatchEvent(new CustomEvent('openConcierge', {
+      detail: {
+        message: `Hi! I'd love a custom ${label} Birthday Cake for ${petName}. Can you make this happen?`,
+        tab: 'celebrate',
+        context: { flavor, pet_name: petName }
+      }
+    }));
+    // Also try the Mira AI path as fallback
+    window.dispatchEvent(new CustomEvent('openMiraAI', {
+      detail: {
+        message: `Can you create a ${label} Birthday Cake for ${petName}? I couldn't find one in the collection.`,
+        context: 'celebrate'
+      }
+    }));
+  };
+
+  return (
+    <div
+      className="rounded-2xl overflow-hidden relative"
+      style={{
+        background: 'linear-gradient(135deg, #1A0A00 0%, #3D1A5F 100%)',
+        border: '1.5px solid rgba(196,77,255,0.3)',
+        minHeight: 200,
+      }}
+      data-testid={`mira-imagines-${flavor}`}
+    >
+      {/* Mira badge */}
+      <div className="absolute top-2 right-2 text-white text-xs font-bold rounded-full px-2 py-0.5"
+        style={{ background: 'rgba(196,77,255,0.6)', backdropFilter: 'blur(4px)', fontSize: 9 }}>
+        Mira Imagines
+      </div>
+
+      {/* Icon + sparkle */}
+      <div className="flex flex-col items-center justify-center pt-8 pb-4 px-4">
+        <div className="mb-2 relative">
+          <span style={{ fontSize: 44 }}>{emoji}</span>
+          <span className="absolute -top-1 -right-1" style={{ fontSize: 14 }}>✨</span>
+        </div>
+        <p className="font-extrabold text-center text-white leading-tight" style={{ fontSize: 13 }}>
+          {label} Birthday Cake
+        </p>
+        <p className="text-center mt-1" style={{ color: 'rgba(255,255,255,0.55)', fontSize: 10 }}>
+          Not in our collection yet —<br />we can make it for {petName}
+        </p>
+      </div>
+
+      {/* Request button */}
+      <div className="px-3 pb-4">
+        {requested ? (
+          <div className="text-center text-xs font-bold rounded-xl py-2"
+            style={{ background: 'rgba(196,77,255,0.2)', color: '#C44DFF' }}>
+            ✓ Request sent to concierge!
+          </div>
+        ) : (
+          <button
+            onClick={handleRequest}
+            className="w-full text-white font-bold rounded-xl py-2 text-xs"
+            style={{ background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)', border: 'none', cursor: 'pointer' }}
+            data-testid={`mira-request-${flavor}`}
+          >
+            Request a Quote →
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // ── Category Config (labels, icons, Mira picks context) ───────────────────
 export const CATEGORY_CONFIG = {
   'birthday-cakes': {
@@ -327,10 +432,14 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
   const [addedCount, setAddedCount] = useState(0); // tracks items added this session
+  const [miraImagines, setMiraImagines] = useState([]); // imaginary cards for non-existent flavours
 
-  // Reset counter whenever a new category opens
+  // Reset on new category open
   useEffect(() => {
-    if (isOpen) setAddedCount(0);
+    if (isOpen) {
+      setAddedCount(0);
+      setMiraImagines([]);
+    }
   }, [isOpen, category]);
 
   // Listen for addToCart events to update the Mira whisper state
@@ -365,21 +474,27 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
     try {
       const apiUrl = getApiUrl();
 
-      // ── Soul Picks: breed products only ──────────────────────────────
+      // ── Soul Picks: real celebrate merchandise filtered by breed ─────
       if (category === 'soul-picks') {
-        if (breedSlug) {
-          const r = await fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedSlug}&pillar=celebrate&limit=20`);
-          if (r.ok) {
-            const d = await r.json();
-            setBreedProducts(d.products || []);
-          }
-        }
-        // Also get archetype/celebrate products as secondary
-        const r2 = await fetch(`${apiUrl}/api/celebrate/products?limit=16`);
-        if (r2.ok) {
-          const d2 = await r2.json();
-          setProducts(d2.products || []);
-        }
+        const breedDisplay = getBreedDisplay(pet);
+        const breedSearch = breedDisplay.toLowerCase();
+        // Fetch from all breed merchandise categories in parallel
+        const breedCats = [
+          'breed-mugs', 'breed-bandanas', 'breed-frames',
+          'breed-keychains', 'breed-party_hats', 'breed-tote_bags'
+        ];
+        const responses = await Promise.all(
+          breedCats.map(cat => fetch(`${apiUrl}/api/products?category=${cat}&limit=50`))
+        );
+        const datasets = await Promise.all(
+          responses.map(r => r.ok ? r.json() : Promise.resolve({ products: [] }))
+        );
+        const allMerch = datasets.flatMap(d => d.products || []);
+        // Filter by breed name
+        const breedMerch = breedSearch
+          ? allMerch.filter(p => (p.name || p.title || '').toLowerCase().includes(breedSearch))
+          : allMerch;
+        setBreedProducts(breedMerch.length > 0 ? breedMerch : allMerch.slice(0, 12));
         setLoading(false);
         return;
       }
@@ -395,22 +510,38 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
         return;
       }
 
-      // ── Mira's Picks: breed-filtered from cakes ────────────────────
+      // ── Mira's Picks: breed-aware + imaginary flavor cards ───────────
       if (category === 'miras-picks') {
         const r = await fetch(`${apiUrl}/api/products?category=cakes&limit=80`);
         if (r.ok) {
           const d = await r.json();
           const allCakes = d.products || [];
-          const breedName = (pet?.breed || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-          // Filter by breed name if available
-          let breedPicks = breedName
-            ? allCakes.filter(p => {
-                const name = (p.name || p.title || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-                return name.includes(breedName);
-              })
+          const breedDisplay = getBreedDisplay(pet);
+          const breedSearch = breedDisplay.toLowerCase();
+
+          // 1. Get breed-specific picks (Indie cakes, Golden cakes, etc.)
+          let breedCakes = breedSearch
+            ? allCakes.filter(p => (p.name || '').toLowerCase().includes(breedSearch))
             : [];
-          // Fall back to top cakes if no breed match
-          setProducts(breedPicks.length >= 4 ? breedPicks : allCakes.slice(0, 24));
+
+          // 2. Mira Imagines: find loved foods not present in cake collection
+          const lovedFoods = getLovedFoods(pet);
+          const allergies = (pet?.allergies || []).map(a => a.toLowerCase());
+          const imaginary = lovedFoods.filter(food => {
+            const f = food.toLowerCase().replace(/\s*(treat|cake|food)s?\b/g, '').trim();
+            if (!f || f.length < 3) return false;
+            // Skip if allergy
+            if (allergies.some(a => f.includes(a))) return false;
+            // Check if any cake contains this flavor
+            return !allCakes.some(c => (c.name || '').toLowerCase().includes(f));
+          });
+          setMiraImagines(imaginary.slice(0, 3)); // max 3 imaginary cards
+
+          // 3. Show breed-specific cakes + fallback to all cakes
+          const finalCakes = breedCakes.length >= 4
+            ? breedCakes.slice(0, 10)
+            : allCakes.slice(0, 10);
+          setProducts(finalCakes);
         }
         setLoading(false);
         return;
@@ -449,23 +580,13 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
       });
       setProducts(allProducts);
 
-      // ── Breed-specific top row ────────────────────────────────────────
+      // ── Breed-specific top row for cakes categories ──────────────────
       if (breedSlug && ['birthday-cakes', 'breed-cakes'].includes(category)) {
-        // Filter existing products by breed
         const breedFiltered = allProducts.filter(p => {
           const text = ((p.name || '') + ' ' + (p.description || '')).toLowerCase();
-          return text.includes(breedSlug) || text.includes(pet?.breed?.toLowerCase() || '___');
+          return text.includes(breedSlug.replace(/_/g, ' ')) || text.includes(pet?.breed?.toLowerCase() || '___');
         });
-        if (breedFiltered.length > 0) {
-          setBreedProducts(breedFiltered);
-        } else if (category === 'breed-cakes') {
-          // For breed cakes, also try dedicated breed endpoint
-          const r = await fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedSlug}&limit=6`);
-          if (r.ok) {
-            const d = await r.json();
-            setBreedProducts(d.products || []);
-          }
-        }
+        if (breedFiltered.length > 0) setBreedProducts(breedFiltered);
       }
 
     } catch (err) {
@@ -585,15 +706,21 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
               )
             )}
 
-            {/* ── SOUL PICKS layout ───────────────────────────────────── */}
+            {/* ── SOUL PICKS layout — real celebrate merchandise by breed ─ */}
             {category === 'soul-picks' && (
               <>
-                {breedProducts.length > 0 && (
-                  <div className="mb-6">
-                    <p className="text-xs font-bold uppercase tracking-wider mb-3"
-                      style={{ color: '#FF8C42', letterSpacing: '0.06em' }}>
-                      ✦ Made for {petName} — {pet?.breed || 'your breed'}
-                    </p>
+                {breedProducts.length > 0 ? (
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <p className="text-xs font-bold uppercase tracking-wider"
+                        style={{ color: '#FF8C42', letterSpacing: '0.06em' }}>
+                        ✦ Made for {petName} — {getBreedDisplay(pet) || pet?.breed || 'your breed'}
+                      </p>
+                      <span className="text-xs rounded-full px-2 py-0.5 font-semibold"
+                        style={{ background: 'rgba(255,140,66,0.12)', color: '#FF8C42' }}>
+                        {breedProducts.length} items
+                      </span>
+                    </div>
                     <div className="grid gap-3"
                       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
                       {breedProducts.map((p, idx) => (
@@ -601,22 +728,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                       ))}
                     </div>
                   </div>
-                )}
-                {products.length > 0 && (
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider mb-3"
-                      style={{ color: '#C44DFF', letterSpacing: '0.06em' }}>
-                      ✦ Mira's Soul Picks for {petName}
-                    </p>
-                    <div className="grid gap-3"
-                      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
-                      {products.slice(0, 8).map((p, idx) => (
-                        <ProductCard key={p.id || idx} product={p} pillar="celebrate" selectedPet={pet} size="small" />
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {breedProducts.length === 0 && products.length === 0 && (
+                ) : (
                   <EmptyState config={config} onAskMira={() => {
                     window.dispatchEvent(new CustomEvent('openMiraAI', {
                       detail: { message: `What soul picks would you recommend for ${petName}?`, context: 'celebrate' }
@@ -627,8 +739,61 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
               </>
             )}
 
+            {/* ── MIRA'S PICKS layout — imaginary cards + breed cakes ──── */}
+            {category === 'miras-picks' && (
+              <>
+                {/* Mira Imagines section — custom request cards */}
+                {miraImagines.length > 0 && (
+                  <div className="mb-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xs font-bold uppercase tracking-wider"
+                        style={{ color: '#C44DFF', letterSpacing: '0.06em' }}>
+                        ✦ Mira Imagines — Just for {petName}
+                      </span>
+                    </div>
+                    <p className="text-xs mb-3" style={{ color: '#888' }}>
+                      {petName} loves these flavours — they're not in our range yet,
+                      but Mira can request them specially.
+                    </p>
+                    <div className="grid gap-3"
+                      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
+                      {miraImagines.map((flavor, idx) => (
+                        <MiraImaginesCard key={idx} flavor={flavor} pet={pet} />
+                      ))}
+                    </div>
+                    <div className="my-4 border-t" style={{ borderColor: '#F5E6FF' }} />
+                  </div>
+                )}
+
+                {/* Real curated cakes from collection */}
+                {products.length > 0 && (
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wider mb-3"
+                      style={{ color: '#C44DFF', letterSpacing: '0.06em' }}>
+                      🌟 Mira's picks — cakes {petName} would love
+                    </p>
+                    <div className="grid gap-3"
+                      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
+                      {products.map((p, idx) => (
+                        <ProductCard key={p.id || idx} product={p} pillar="celebrate" selectedPet={pet} size="small" />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {miraImagines.length === 0 && products.length === 0 && (
+                  <EmptyState config={config} onAskMira={() => {
+                    window.dispatchEvent(new CustomEvent('openMiraAI', {
+                      detail: { message: `What cakes would you pick for ${petName}?`, context: 'celebrate' }
+                    }));
+                    onClose();
+                  }} />
+                )}
+              </>
+            )}
+
             {/* ── NORMAL CATEGORIES layout ────────────────────────────── */}
-            {category !== 'bundles' && category !== 'soul-picks' && (
+            {category !== 'bundles' && category !== 'soul-picks' && category !== 'miras-picks' && (
               <>
                 {breedProducts.length > 0 && (
                   <div className="mb-6">
