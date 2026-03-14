@@ -152,9 +152,12 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies }) => {
   // Current swap for this tab
   const currentSwap = swaps[tab.id];
 
-  // Filter out allergens from wellness tab
-  const filteredProducts = tab.id === 'wellness' && allergies?.length > 0
-    ? products.filter(p => !allergies.some(a => p.name?.toLowerCase().includes(a)))
+  // Filter products by allergy on ALL tabs (safety-first for allergic pets)
+  const filteredProducts = allergies?.length > 0
+    ? products.filter(p => {
+        const productText = `${p.name || ''} ${p.description || ''} ${p.tags?.join(' ') || ''}`.toLowerCase();
+        return !allergies.some(a => productText.includes(a.toLowerCase()));
+      })
     : products;
 
   const selectedProductId = currentSwap?.newProduct?.id;
