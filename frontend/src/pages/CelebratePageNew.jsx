@@ -240,10 +240,12 @@ const CelebratePageNew = () => {
         preset: boxPreview,
         petName: selectedPet?.name,
         petId: selectedPet?.id,
+        userEmail: user?.email || '',
+        userName: user?.name || user?.full_name || '',
         occasion: 'birthday'
       }
     }));
-  }, [selectedPet?.name, selectedPet?.id]);
+  }, [selectedPet?.name, selectedPet?.id, user]);
 
   // Handle open browse drawer from Birthday Box secondary button
   const handleOpenBrowseDrawer = useCallback((boxPreview) => {

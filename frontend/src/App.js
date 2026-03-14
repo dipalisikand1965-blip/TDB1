@@ -6,6 +6,7 @@ import { PillarProvider } from "./context/PillarContext";
 import { LayerProvider } from "./context/LayerContext";
 import { GlobalNotificationProvider } from "./context/GlobalNotificationContext";
 import { Toaster } from "./components/ui/toaster";
+import { Toaster as SonnerToaster } from "./components/ui/sonner";
 import { useEffect, useCallback, Suspense, lazy } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import FloatingContactButton from "./components/FloatingContactButton";
@@ -665,6 +666,7 @@ function MainLayout() {
       {/* Mobile Bottom Navigation - Only shows on mobile */}
       <ConditionalMobileNav />
       <Toaster />
+      <SonnerToaster richColors position="top-right" />
     </div>
   );
 }

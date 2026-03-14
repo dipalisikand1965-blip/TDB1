@@ -1,78 +1,72 @@
 /**
  * BirthdayBoxBuilder.jsx
- * Multi-step Birthday Box builder modal.
+ * Multi-step Birthday Box builder modal — Concierge fulfilment flow.
  *
- * Opens after the 1.5s reveal animation on MiraBirthdayBox card.
- * Listens to custom event: openOccasionBoxBuilder
+ * Listens for custom event: openOccasionBoxBuilder
+ * Detail: { preset, petName, petId, userEmail, userName }
  *
  * Steps:
  *  1. Review all 6 revealed slots
  *  2. Health / Allergy confirmation (only if pet has allergies)
- *  3. Order confirmed
+ *  3. Concierge Handoff screen — NOT an order confirmation
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { X, Check, AlertTriangle, Sparkles, Gift, ChevronRight, Loader2, ShieldCheck } from 'lucide-react';
+import {
+  X, Check, AlertTriangle, Sparkles, Gift, ChevronRight,
+  Loader2, ShieldCheck, Phone, Clock, Star
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
 /* ─────────────────────────────────────────────────────────────────
-   SLOT ROW
+   SLOT ROW — compact, mobile-friendly
    ───────────────────────────────────────────────────────────────── */
-const SlotRow = ({ slot, index, onBrowse }) => {
-  const slotLabels = ['Hero', 'Joy', 'Style', 'Memory', 'Health', 'Surprise'];
-  const label = slotLabels[index] || `Slot ${index + 1}`;
+const SlotRow = ({ slot, index }) => {
+  const slotLabels = ['HERO', 'JOY', 'STYLE', 'MEMORY', 'HEALTH', 'SURPRISE'];
+  const label = slotLabels[index] || `SLOT ${index + 1}`;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: index * 0.07 }}
+      transition={{ duration: 0.28, delay: index * 0.06 }}
       className="flex items-center gap-3 rounded-xl p-3"
       style={{
         background: 'rgba(255,255,255,0.06)',
-        border: '1px solid rgba(255,255,255,0.12)',
+        border: '1px solid rgba(255,255,255,0.10)',
       }}
     >
-      {/* Emoji bubble */}
       <div
-        className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-lg"
+        className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-base"
         style={{ background: 'rgba(196,77,255,0.18)' }}
       >
         {slot.emoji}
       </div>
 
-      {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'rgba(196,77,255,0.85)' }}>
+        <p className="text-xs font-bold tracking-wide" style={{ color: 'rgba(196,77,255,0.75)', fontSize: '10px' }}>
           {label}
         </p>
         <p className="text-sm font-semibold text-white leading-tight truncate">
           {slot.itemName || slot.chipLabel}
         </p>
         {slot.description && (
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.55)' }}>{slot.description}</p>
+          <p className="text-xs leading-tight" style={{ color: 'rgba(255,255,255,0.50)' }}>{slot.description}</p>
         )}
       </div>
 
-      {/* Allergy safe badge */}
       {slot.isAllergySafe && (
-        <span
-          className="flex-shrink-0 text-xs px-2 py-0.5 rounded-full font-semibold"
-          style={{ background: 'rgba(34,197,94,0.18)', color: '#86efac' }}
-        >
+        <span className="flex-shrink-0 text-xs px-2 py-0.5 rounded-full font-semibold"
+          style={{ background: 'rgba(34,197,94,0.18)', color: '#86efac', fontSize: '10px' }}>
           Safe
         </span>
       )}
-
-      {/* Surprise badge */}
       {slot.hiddenUntilDelivery && (
-        <span
-          className="flex-shrink-0 text-xs px-2 py-0.5 rounded-full font-semibold"
-          style={{ background: 'rgba(196,77,255,0.18)', color: '#E0AAFF' }}
-        >
+        <span className="flex-shrink-0 text-xs px-2 py-0.5 rounded-full font-semibold"
+          style={{ background: 'rgba(196,77,255,0.18)', color: '#E0AAFF', fontSize: '10px' }}>
           Surprise
         </span>
       )}
@@ -91,15 +85,11 @@ const StepReview = ({ boxData, petName, onNext, onOpenBrowse }) => {
 
   return (
     <div>
-      {/* Mira header strip */}
-      <div
-        className="flex items-center gap-2 rounded-xl px-4 py-3 mb-5"
-        style={{ background: 'rgba(196,77,255,0.12)', border: '1px solid rgba(196,77,255,0.25)' }}
-      >
-        <div
-          className="w-7 h-7 rounded-full flex items-center justify-center text-sm flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg, #FF2D87, #C44DFF)' }}
-        >
+      {/* Mira header */}
+      <div className="flex items-center gap-2 rounded-xl px-4 py-3 mb-4"
+        style={{ background: 'rgba(196,77,255,0.12)', border: '1px solid rgba(196,77,255,0.25)' }}>
+        <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm flex-shrink-0"
+          style={{ background: 'linear-gradient(135deg, #FF2D87, #C44DFF)' }}>
           ✦
         </div>
         <p className="text-sm" style={{ color: 'rgba(255,255,255,0.85)' }}>
@@ -109,10 +99,8 @@ const StepReview = ({ boxData, petName, onNext, onOpenBrowse }) => {
 
       {/* Allergy notice */}
       {boxData?.hasAllergies && (
-        <div
-          className="flex items-start gap-2 rounded-xl px-4 py-3 mb-4"
-          style={{ background: 'rgba(34,197,94,0.10)', border: '1px solid rgba(34,197,94,0.25)' }}
-        >
+        <div className="flex items-start gap-2 rounded-xl px-4 py-3 mb-4"
+          style={{ background: 'rgba(34,197,94,0.10)', border: '1px solid rgba(34,197,94,0.25)' }}>
           <ShieldCheck className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#86efac' }} />
           <p className="text-xs" style={{ color: '#86efac' }}>
             All items filtered for {petName}'s allergies: no{' '}
@@ -122,34 +110,24 @@ const StepReview = ({ boxData, petName, onNext, onOpenBrowse }) => {
       )}
 
       {/* Slot rows */}
-      <div className="space-y-2 mb-6">
+      <div className="space-y-2 mb-5">
         {allSlots.map((slot, i) => (
-          <SlotRow key={i} slot={slot} index={i} onBrowse={onOpenBrowse} />
+          <SlotRow key={i} slot={slot} index={i} />
         ))}
       </div>
 
       {/* Browse link */}
-      <p
-        className="text-xs text-center mb-5 cursor-pointer hover:underline"
-        style={{ color: 'rgba(196,77,255,0.80)' }}
-        onClick={onOpenBrowse}
-      >
+      <p className="text-xs text-center mb-4 cursor-pointer hover:underline"
+        style={{ color: 'rgba(196,77,255,0.80)' }} onClick={onOpenBrowse}>
         Want to swap something? Browse all options →
       </p>
 
-      {/* CTA */}
-      <button
-        onClick={onNext}
-        className="w-full flex items-center justify-center gap-2 rounded-xl py-3.5 font-bold text-white transition-all hover:opacity-90 hover:-translate-y-0.5"
-        style={{
-          background: 'linear-gradient(135deg, #FF2D87, #C44DFF)',
-          fontSize: '16px',
-          boxShadow: '0 4px 20px rgba(196,77,255,0.35)',
-        }}
-        data-testid="builder-next-btn"
-      >
+      <button onClick={onNext}
+        className="w-full flex items-center justify-center gap-2 rounded-xl py-3.5 font-bold text-white transition-all hover:opacity-90 active:scale-95"
+        style={{ background: 'linear-gradient(135deg, #FF2D87, #C44DFF)', fontSize: '15px', boxShadow: '0 4px 20px rgba(196,77,255,0.35)' }}
+        data-testid="builder-next-btn">
         <Gift className="w-5 h-5" />
-        {boxData?.hasAllergies ? `Review Health & Safety` : `Confirm ${petName}'s Box`}
+        {boxData?.hasAllergies ? 'Review Health & Safety' : `Send to Concierge`}
         <ChevronRight className="w-4 h-4" />
       </button>
     </div>
@@ -161,18 +139,12 @@ const StepReview = ({ boxData, petName, onNext, onOpenBrowse }) => {
    ───────────────────────────────────────────────────────────────── */
 const StepAllergyCheck = ({ boxData, petName, onBack, onConfirm, isOrdering }) => {
   const [confirmed, setConfirmed] = useState(false);
-
-  const healthSlot = [...(boxData?.visibleSlots || []), ...(boxData?.hiddenSlots || [])].find(
-    s => s.slotNumber === 5
-  );
+  const healthSlot = [...(boxData?.visibleSlots || []), ...(boxData?.hiddenSlots || [])].find(s => s.slotNumber === 5);
 
   return (
     <div>
-      {/* Warning header */}
-      <div
-        className="flex items-start gap-3 rounded-xl px-4 py-3 mb-5"
-        style={{ background: 'rgba(251,191,36,0.10)', border: '1px solid rgba(251,191,36,0.30)' }}
-      >
+      <div className="flex items-start gap-3 rounded-xl px-4 py-3 mb-4"
+        style={{ background: 'rgba(251,191,36,0.10)', border: '1px solid rgba(251,191,36,0.30)' }}>
         <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#fbbf24' }} />
         <div>
           <p className="text-sm font-semibold text-white mb-0.5">{petName}'s Allergy Profile</p>
@@ -183,50 +155,41 @@ const StepAllergyCheck = ({ boxData, petName, onBack, onConfirm, isOrdering }) =
         </div>
       </div>
 
-      {/* Health slot detail */}
       {healthSlot && (
-        <div className="rounded-xl p-4 mb-5" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>
-          <p className="text-xs uppercase font-bold tracking-wide mb-2" style={{ color: 'rgba(196,77,255,0.80)' }}>
+        <div className="rounded-xl p-4 mb-4"
+          style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>
+          <p className="text-xs uppercase font-bold tracking-wide mb-2" style={{ color: 'rgba(196,77,255,0.80)', fontSize: '10px' }}>
             Slot 5 — Health Item
           </p>
           <div className="flex items-center gap-3">
             <span className="text-2xl">{healthSlot.emoji}</span>
-            <div>
+            <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white">{healthSlot.itemName || healthSlot.chipLabel}</p>
               <p className="text-xs" style={{ color: 'rgba(255,255,255,0.55)' }}>{healthSlot.description}</p>
             </div>
-            <span
-              className="ml-auto text-xs px-2 py-0.5 rounded-full font-semibold"
-              style={{ background: 'rgba(34,197,94,0.18)', color: '#86efac' }}
-            >
+            <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
+              style={{ background: 'rgba(34,197,94,0.18)', color: '#86efac' }}>
               Allergy-safe
             </span>
           </div>
         </div>
       )}
 
-      {/* Mira's note */}
-      <div
-        className="rounded-xl px-4 py-3 mb-5"
-        style={{ background: 'rgba(196,77,255,0.10)', border: '1px solid rgba(196,77,255,0.22)' }}
-      >
+      <div className="rounded-xl px-4 py-3 mb-4"
+        style={{ background: 'rgba(196,77,255,0.10)', border: '1px solid rgba(196,77,255,0.22)' }}>
         <p className="text-sm" style={{ color: 'rgba(255,255,255,0.80)' }}>
-          Every item in {petName}'s box has been checked against their allergy profile.
-          Nothing harmful has been included. Please confirm you've reviewed this.
+          Every item in {petName}'s box has been checked against their allergy profile. Please confirm you've reviewed this before sending to Concierge.
         </p>
       </div>
 
-      {/* Checkbox */}
-      <label className="flex items-start gap-3 cursor-pointer mb-6">
-        <div
-          onClick={() => setConfirmed(c => !c)}
+      <label className="flex items-start gap-3 cursor-pointer mb-5">
+        <div onClick={() => setConfirmed(c => !c)}
           className="flex-shrink-0 w-5 h-5 rounded flex items-center justify-center mt-0.5 transition-all"
           style={{
             background: confirmed ? 'linear-gradient(135deg, #FF2D87, #C44DFF)' : 'rgba(255,255,255,0.10)',
             border: confirmed ? 'none' : '1.5px solid rgba(255,255,255,0.30)',
           }}
-          data-testid="allergy-confirm-checkbox"
-        >
+          data-testid="allergy-confirm-checkbox">
           {confirmed && <Check className="w-3 h-3 text-white" />}
         </div>
         <p className="text-sm" style={{ color: 'rgba(255,255,255,0.80)' }}>
@@ -235,14 +198,11 @@ const StepAllergyCheck = ({ boxData, petName, onBack, onConfirm, isOrdering }) =
         </p>
       </label>
 
-      {/* Actions */}
       <div className="flex gap-3">
-        <button
-          onClick={onBack}
+        <button onClick={onBack}
           className="flex-1 py-3 rounded-xl font-semibold text-sm transition-all hover:bg-white/10"
           style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.80)' }}
-          data-testid="builder-back-btn"
-        >
+          data-testid="builder-back-btn">
           ← Back
         </button>
         <button
@@ -253,12 +213,11 @@ const StepAllergyCheck = ({ boxData, petName, onBack, onConfirm, isOrdering }) =
             background: confirmed ? 'linear-gradient(135deg, #FF2D87, #C44DFF)' : 'rgba(255,255,255,0.12)',
             color: confirmed ? '#fff' : 'rgba(255,255,255,0.40)',
             cursor: confirmed ? 'pointer' : 'not-allowed',
-            fontSize: '15px',
+            fontSize: '14px',
           }}
-          data-testid="builder-confirm-order-btn"
-        >
+          data-testid="builder-confirm-order-btn">
           {isOrdering ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-          Confirm & Build
+          {isOrdering ? 'Sending...' : 'Confirm & Send to Concierge'}
         </button>
       </div>
     </div>
@@ -266,47 +225,124 @@ const StepAllergyCheck = ({ boxData, petName, onBack, onConfirm, isOrdering }) =
 };
 
 /* ─────────────────────────────────────────────────────────────────
-   STEP 3 — SUCCESS
+   SLOT SUMMARY ROW (compact — for Step 3 left column)
    ───────────────────────────────────────────────────────────────── */
-const StepSuccess = ({ petName, orderId, onClose }) => (
-  <motion.div
-    initial={{ opacity: 0, scale: 0.95 }}
-    animate={{ opacity: 1, scale: 1 }}
-    className="text-center py-6"
-  >
-    <div
-      className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"
-      style={{ background: 'linear-gradient(135deg, #FF2D87, #C44DFF)' }}
-    >
-      🎁
+const SlotSummaryRow = ({ slot, index }) => {
+  const slotLabels = ['Hero', 'Joy', 'Style', 'Memory', 'Health', 'Surprise'];
+  return (
+    <div className="flex items-center gap-2.5 py-2"
+      style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+      <span className="text-base w-6 text-center flex-shrink-0">{slot.emoji}</span>
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-bold" style={{ color: 'rgba(196,77,255,0.70)', fontSize: '10px' }}>
+          {slotLabels[index] || `Slot ${index+1}`}
+        </p>
+        <p className="text-xs font-semibold text-white truncate leading-tight">
+          {slot.itemName || slot.chipLabel}
+        </p>
+      </div>
+      {slot.isAllergySafe && (
+        <span style={{ color: '#86efac', fontSize: '10px' }}>✓ Safe</span>
+      )}
+      {slot.hiddenUntilDelivery && (
+        <span style={{ color: '#E0AAFF', fontSize: '10px' }}>🎁</span>
+      )}
     </div>
-    <h3 className="text-xl font-bold text-white mb-2">
-      {petName}'s Box is Ready!
-    </h3>
-    <p className="text-sm mb-1" style={{ color: 'rgba(255,255,255,0.65)' }}>
-      Mira has finalised the box.
-    </p>
-    {orderId && (
-      <p className="text-xs mb-6" style={{ color: 'rgba(196,77,255,0.80)' }}>
-        Order ID: <code style={{ color: '#E0AAFF' }}>{orderId}</code>
-      </p>
-    )}
-    <div
-      className="rounded-xl px-4 py-3 mb-6 text-sm"
-      style={{ background: 'rgba(196,77,255,0.12)', border: '1px solid rgba(196,77,255,0.25)', color: 'rgba(255,255,255,0.80)' }}
+  );
+};
+
+/* ─────────────────────────────────────────────────────────────────
+   STEP 3 — CONCIERGE HANDOFF
+   ───────────────────────────────────────────────────────────────── */
+const StepConciergeHandoff = ({ petName, ticketId, boxData, onClose }) => {
+  const allSlots = [
+    ...(boxData?.visibleSlots || []),
+    ...(boxData?.hiddenSlots || []),
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
     >
-      Our concierge team will reach out to confirm delivery details for {petName}'s celebration.
-    </div>
-    <button
-      onClick={onClose}
-      className="w-full py-3.5 rounded-xl font-bold text-white"
-      style={{ background: 'linear-gradient(135deg, #FF2D87, #C44DFF)', fontSize: '15px' }}
-      data-testid="builder-done-btn"
-    >
-      Done
-    </button>
-  </motion.div>
-);
+      {/* Hero */}
+      <div className="text-center mb-5">
+        <div
+          className="w-14 h-14 rounded-full flex items-center justify-center text-2xl mx-auto mb-3"
+          style={{ background: 'linear-gradient(135deg, #FF2D87, #C44DFF)' }}
+        >
+          🎉
+        </div>
+        <h3 className="text-lg font-bold text-white mb-1">
+          {petName}'s Birthday Box is confirmed.
+        </h3>
+        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>
+          Your Concierge has everything they need to build it.
+        </p>
+        {ticketId && (
+          <div className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full"
+            style={{ background: 'rgba(196,77,255,0.18)', border: '1px solid rgba(196,77,255,0.30)' }}>
+            <span className="text-xs font-bold" style={{ color: '#E0AAFF' }}>{ticketId}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Two-column: slots + what happens next */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+
+        {/* Left — confirmed slots */}
+        <div className="rounded-xl p-4"
+          style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)' }}>
+          <p className="text-xs font-bold uppercase tracking-wide mb-3"
+            style={{ color: 'rgba(196,77,255,0.80)', fontSize: '10px' }}>
+            6 Slots Confirmed
+          </p>
+          {allSlots.map((slot, i) => (
+            <SlotSummaryRow key={i} slot={slot} index={i} />
+          ))}
+        </div>
+
+        {/* Right — what happens next */}
+        <div className="rounded-xl p-4"
+          style={{ background: 'rgba(196,77,255,0.10)', border: '1px solid rgba(196,77,255,0.22)' }}>
+          <p className="text-xs font-bold uppercase tracking-wide mb-3"
+            style={{ color: '#E0AAFF', fontSize: '10px' }}>
+            What happens next
+          </p>
+          <div className="space-y-3">
+            {[
+              { icon: <Clock className="w-3.5 h-3.5" />, text: `Your Concierge will contact you within 24 hours` },
+              { icon: <Star className="w-3.5 h-3.5" />, text: `Confirm ${petName}'s name on the bandana` },
+              { icon: <Gift className="w-3.5 h-3.5" />, text: `Confirm the cake message` },
+              { icon: <Phone className="w-3.5 h-3.5" />, text: `Delivery address and date` },
+            ].map((item, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <span className="flex-shrink-0 mt-0.5" style={{ color: '#C44DFF' }}>{item.icon}</span>
+                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 }}>{item.text}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(196,77,255,0.20)' }}>
+            <p className="text-xs italic" style={{ color: 'rgba(255,255,255,0.50)' }}>
+              This is not an e-commerce order. Your Birthday Box is assembled, personalised, and delivered as a single concierge service.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <button
+        onClick={onClose}
+        className="w-full py-3.5 rounded-xl font-bold text-white transition-all hover:opacity-90 active:scale-95"
+        style={{ background: 'linear-gradient(135deg, #FF2D87, #C44DFF)', fontSize: '15px' }}
+        data-testid="builder-done-btn"
+      >
+        Done
+      </button>
+    </motion.div>
+  );
+};
 
 /* ─────────────────────────────────────────────────────────────────
    MAIN COMPONENT
@@ -316,22 +352,25 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
   const [boxData, setBoxData] = useState(null);
   const [petName, setPetName] = useState('');
   const [petId, setPetId] = useState(null);
-  const [step, setStep] = useState(1); // 1: review, 2: allergy check (optional), 3: success
+  const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState('');
+  const [step, setStep] = useState(1);
   const [isOrdering, setIsOrdering] = useState(false);
-  const [orderId, setOrderId] = useState(null);
+  const [ticketId, setTicketId] = useState(null);
 
-  // Listen for the open event from CelebratePageNew
+  // Listen for open event
   useEffect(() => {
     const handleOpen = (e) => {
-      const { preset, petName: name, petId: id } = e.detail || {};
+      const { preset, petName: name, petId: id, userEmail: email, userName: uname } = e.detail || {};
       setBoxData(preset);
       setPetName(name || 'your pet');
       setPetId(id);
+      setUserEmail(email || '');
+      setUserName(uname || '');
       setStep(1);
       setIsOpen(true);
-      setOrderId(null);
+      setTicketId(null);
     };
-
     window.addEventListener('openOccasionBoxBuilder', handleOpen);
     return () => window.removeEventListener('openOccasionBoxBuilder', handleOpen);
   }, []);
@@ -339,19 +378,18 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
   const handleClose = useCallback(() => {
     setIsOpen(false);
     setStep(1);
-    setOrderId(null);
+    setTicketId(null);
   }, []);
 
   const handleNext = useCallback(() => {
     if (boxData?.hasAllergies) {
       setStep(2);
     } else {
-      // No allergies — go directly to confirm
-      handleConfirmOrder(false);
+      handleSendToConcierge(false);
     }
   }, [boxData]);
 
-  const handleConfirmOrder = useCallback(async (allergyConfirmed) => {
+  const handleSendToConcierge = useCallback(async (allergyConfirmed) => {
     if (!petId || !boxData) {
       toast.error('Missing pet data. Please try again.');
       return;
@@ -360,21 +398,23 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
     setIsOrdering(true);
     try {
       const allSlots = [...(boxData.visibleSlots || []), ...(boxData.hiddenSlots || [])];
-      const response = await fetch(`${API_BASE}/api/birthday-box/${petId}/build`, {
+      const response = await fetch(`${API_BASE}/api/birthday-box/${petId}/concierge-handoff`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           slots: allSlots,
           allergyConfirmed: allergyConfirmed || !boxData.hasAllergies,
+          userEmail,
+          userName,
         }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        setOrderId(data.orderId);
+        setTicketId(data.ticketId);
         setStep(3);
-        toast.success(`${petName}'s birthday box is ready!`);
+        toast.success(`${petName}'s Birthday Box sent to Concierge!`, { duration: 4000 });
       } else if (data.error === 'allergy_confirmation_required') {
         setStep(2);
         toast.warning('Please confirm allergy safety first.');
@@ -382,15 +422,21 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
         toast.error(data.message || 'Something went wrong. Please try again.');
       }
     } catch (err) {
-      console.error('[BirthdayBoxBuilder] Order error:', err);
-      toast.error('Failed to build box. Please try again.');
+      console.error('[BirthdayBoxBuilder] Concierge handoff error:', err);
+      toast.error('Failed to send to Concierge. Please try again.');
     } finally {
       setIsOrdering(false);
     }
-  }, [petId, boxData, petName]);
+  }, [petId, boxData, petName, userEmail, userName]);
 
   const stepCount = boxData?.hasAllergies ? 2 : 1;
   const stepLabel = step < 3 ? `Step ${step} of ${stepCount}` : '';
+
+  const stepTitle = {
+    1: `The ${petName} Birthday Box`,
+    2: 'Health & Allergy Check',
+    3: 'Sent to Concierge',
+  }[step] || '';
 
   if (!isOpen) return null;
 
@@ -408,38 +454,42 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
         data-testid="builder-backdrop"
       />
 
-      {/* Modal */}
+      {/* Modal — full screen on mobile, centered card on desktop */}
       <motion.div
         key="modal"
         initial={{ opacity: 0, scale: 0.94, y: 24 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.94, y: 24 }}
         transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed inset-0 z-[201] flex items-center justify-center p-4"
+        className="fixed z-[201] flex items-end sm:items-center justify-center"
+        style={{ inset: 0, padding: '0' }}
         data-testid="birthday-box-builder"
       >
         <div
-          className="relative w-full max-w-md rounded-2xl overflow-hidden"
+          className="relative w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl overflow-hidden"
           style={{
             background: 'linear-gradient(145deg, #140028 0%, #2D0060 60%, #1A0030 100%)',
             border: '1px solid rgba(196,77,255,0.30)',
-            boxShadow: '0 24px 64px rgba(196,77,255,0.20)',
-            maxHeight: '90vh',
+            boxShadow: '0 -8px 48px rgba(196,77,255,0.25)',
+            maxHeight: '92vh',
             overflowY: 'auto',
           }}
           onClick={e => e.stopPropagation()}
         >
+          {/* Drag handle on mobile */}
+          <div className="flex justify-center pt-3 pb-0 sm:hidden">
+            <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.20)' }} />
+          </div>
+
           {/* Header */}
           <div
             className="sticky top-0 z-10 flex items-center justify-between px-5 py-4"
-            style={{ background: 'rgba(20,0,40,0.95)', borderBottom: '1px solid rgba(196,77,255,0.20)' }}
+            style={{ background: 'rgba(20,0,40,0.96)', borderBottom: '1px solid rgba(196,77,255,0.18)' }}
           >
             <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
+              <h2 className="text-sm font-bold text-white flex items-center gap-2">
                 <Sparkles className="w-4 h-4" style={{ color: '#C44DFF' }} />
-                {step === 1 && `The ${petName} Birthday Box`}
-                {step === 2 && 'Health & Allergy Check'}
-                {step === 3 && 'Box Confirmed!'}
+                {stepTitle}
               </h2>
               {stepLabel && (
                 <p className="text-xs mt-0.5" style={{ color: 'rgba(196,77,255,0.70)' }}>
@@ -479,14 +529,19 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
                     boxData={boxData}
                     petName={petName}
                     onBack={() => setStep(1)}
-                    onConfirm={handleConfirmOrder}
+                    onConfirm={handleSendToConcierge}
                     isOrdering={isOrdering}
                   />
                 </motion.div>
               )}
               {step === 3 && (
                 <motion.div key="step3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                  <StepSuccess petName={petName} orderId={orderId} onClose={handleClose} />
+                  <StepConciergeHandoff
+                    petName={petName}
+                    ticketId={ticketId}
+                    boxData={boxData}
+                    onClose={handleClose}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
