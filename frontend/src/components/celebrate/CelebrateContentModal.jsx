@@ -87,6 +87,7 @@ const CATEGORY_API = {
     { url: '/api/products?category=party_kits&limit=20', key: 'products' },
     { url: '/api/products?category=celebration_addons&limit=20', key: 'products' },
     { url: '/api/products?category=party_supplies&limit=10', key: 'products' },
+    { url: '/api/products?category=breed-party_hats&limit=40', key: 'products' },  // Breed-specific party hats
   ],
   'nut-butters':     [{ url: '/api/products?category=nut-butters&limit=20', key: 'products' }],
   'hampers':         [{ url: '/api/products?category=hampers&limit=50', key: 'products' }],
@@ -587,6 +588,29 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
           return text.includes(breedSlug.replace(/_/g, ' ')) || text.includes(pet?.breed?.toLowerCase() || '___');
         });
         if (breedFiltered.length > 0) setBreedProducts(breedFiltered);
+      }
+      
+      // ── Breed-specific filtering for party category ──────────────────
+      // Show breed-specific party items (like "Indie Party Hat") for matching pet breed
+      if (breedSlug && category === 'party') {
+        const petBreedLower = (pet?.breed || '').toLowerCase().replace(/[_\s]+/g, ' ');
+        const breedFilteredParty = allProducts.filter(p => {
+          const nameLower = (p.name || '').toLowerCase();
+          const breedField = (p.breed || '').toLowerCase().replace(/[_\s]+/g, ' ');
+          const catLower = (p.category || '').toLowerCase();
+          
+          // Include if:
+          // 1. Not a breed-specific product (generic party items)
+          // 2. OR matches the pet's breed
+          const isBreedSpecific = catLower.includes('breed-') || breedField;
+          if (!isBreedSpecific) return true; // Generic items always shown
+          
+          // For breed-specific, only show matching breed
+          return nameLower.includes(petBreedLower) || 
+                 breedField.includes(petBreedLower) ||
+                 breedField === breedSlug.replace(/_/g, ' ');
+        });
+        setProducts(breedFilteredParty);
       }
 
     } catch (err) {

@@ -42,6 +42,7 @@ const CATEGORY_OPTIONS = [
   { value: 'party_accessories', label: '🎉 Party Accessories' },
   { value: 'party_kits', label: '🎊 Party Kits' },
   { value: 'celebration_addons', label: '✨ Celebration Add-ons' },
+  { value: 'breed-party_hats', label: '🎩 Breed Party Hats' },  // Breed-specific party hats
   { value: 'meals', label: '🍕 Fresh Meals' },
   { value: 'accessories', label: '🎀 Accessories' },
   { value: 'soul-picks', label: '✨ Soul Picks' },
