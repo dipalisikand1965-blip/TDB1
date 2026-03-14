@@ -515,3 +515,9 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* Mira product card delayed fade-in */
+@keyframes miraProductFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
