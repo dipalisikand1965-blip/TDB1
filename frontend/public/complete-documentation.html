@@ -42,7 +42,7 @@
             <h2 style="border: none; margin-top: 0; padding-top: 0;">Complete Documentation</h2>
         </div>
         <div class="timestamp">
-            📅 Last Updated: March 14, 2026 at 11:46 | 🔄 Auto-generated
+            📅 Last Updated: March 14, 2026 at 11:51 | 🔄 Auto-generated
         </div>
         <div class="stats">
             <strong>📊 Statistics:</strong> 299 documents | 90,527 lines | Everything you've built!
@@ -816,7 +816,7 @@ grep -c &quot;Fixed:&quot; /tmp/fix_all_images.log
 <tbody>
 <tr>
 <td><strong>Preview</strong></td>
-<td>https://mira-gift-generator.preview.emergentagent.com</td>
+<td>https://mira-orders.preview.emergentagent.com</td>
 </tr>
 <tr>
 <td><strong>Production</strong></td>
@@ -827,11 +827,11 @@ grep -c &quot;Fixed:&quot; /tmp/fix_all_images.log
 <hr />
 <h1>PART 7: HOW TO TEST</h1>
 <h2>Quick Reply Test</h2>
-<pre><code class="language-bash">TOKEN=$(curl -s -X POST 'https://mira-gift-generator.preview.emergentagent.com/api/auth/login' \
+<pre><code class="language-bash">TOKEN=$(curl -s -X POST 'https://mira-orders.preview.emergentagent.com/api/auth/login' \
   -H 'Content-Type: application/json' \
   -d '{&quot;email&quot;:&quot;dipali@clubconcierge.in&quot;,&quot;password&quot;:&quot;test123&quot;}' | python3 -c 'import sys,json;print(json.load(sys.stdin).get(&quot;access_token&quot;,&quot;&quot;))')
 
-curl -s -X POST &quot;https://mira-gift-generator.preview.emergentagent.com/api/mira/chat&quot; \
+curl -s -X POST &quot;https://mira-orders.preview.emergentagent.com/api/mira/chat&quot; \
   -H &quot;Content-Type: application/json&quot; \
   -H &quot;Authorization: Bearer $TOKEN&quot; \
   -d '{&quot;message&quot;: &quot;What treats for Lola?&quot;, &quot;session_id&quot;: &quot;test-123&quot;, &quot;pet_name&quot;: &quot;Lola&quot;}' | python3 -c &quot;
@@ -1234,7 +1234,7 @@ A percentage (0-100%) showing how well Mira "knows" a pet.</p>
 <h2>📱 HOW TO TEST</h2>
 <h3>On Preview (Safe to experiment):</h3>
 <ul>
-<li>URL: <code>https://mira-gift-generator.preview.emergentagent.com</code></li>
+<li>URL: <code>https://mira-orders.preview.emergentagent.com</code></li>
 <li>Test user: <code>dipali@clubconcierge.in</code> / <code>test123</code></li>
 <li>Admin: <code>aditya</code> / <code>lola4304</code></li>
 </ul>
@@ -4923,7 +4923,7 @@ The human heart itself.</p>
 <pre><code>Test User: dipali@clubconcierge.in / test123
 Admin: aditya / lola4304
 Production: https://thedoggycompany.com
-Preview: https://mira-gift-generator.preview.emergentagent.com
+Preview: https://mira-orders.preview.emergentagent.com
 Database: pet-os-live-test_database
 </code></pre>
 <hr />
@@ -4936,7 +4936,7 @@ CLOUDINARY_API_SECRET=uwvyt1zf8vPF62SMeHGFn3k3O_A
 <p>New mockups AUTO-UPLOAD to Cloudinary. No manual conversion needed!</p>
 <hr />
 <h1>API CHEAT SHEET</h1>
-<pre><code class="language-bash">API_URL=&quot;https://mira-gift-generator.preview.emergentagent.com&quot;
+<pre><code class="language-bash">API_URL=&quot;https://mira-orders.preview.emergentagent.com&quot;
 
 # Check generation status
 curl -s &quot;$API_URL/api/mockups/status&quot; | python3 -m json.tool
@@ -10137,7 +10137,7 @@ MONGO_URL=...                   # Already in .env
 DB_NAME=doggyconcierge
 
 # Frontend  
-REACT_APP_BACKEND_URL=https://mira-gift-generator.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://mira-orders.preview.emergentagent.com
 
 # Services
 Backend: port 8001 (supervisor-managed)
@@ -10146,15 +10146,15 @@ Frontend: port 3000 (supervisor-managed)
 <hr />
 <h2>🧪 QUICK TESTS</h2>
 <pre><code class="language-bash"># Test Voice
-curl -s &quot;https://mira-gift-generator.preview.emergentagent.com/api/mira/voice/test&quot;
+curl -s &quot;https://mira-orders.preview.emergentagent.com/api/mira/voice/test&quot;
 
 # Test Remember
-curl -s -X POST &quot;https://mira-gift-generator.preview.emergentagent.com/api/mira/memory/remember&quot; \
+curl -s -X POST &quot;https://mira-orders.preview.emergentagent.com/api/mira/memory/remember&quot; \
   -H &quot;Content-Type: application/json&quot; \
   -d '{&quot;pet_id&quot;: &quot;test&quot;, &quot;memory_text&quot;: &quot;Buddy is scared of thunder&quot;}'
 
 # Test Concierge Summarize
-curl -s -X POST &quot;https://mira-gift-generator.preview.emergentagent.com/api/mira/concierge/summarize&quot; \
+curl -s -X POST &quot;https://mira-orders.preview.emergentagent.com/api/mira/concierge/summarize&quot; \
   -H &quot;Content-Type: application/json&quot; \
   -d '{&quot;session_id&quot;:&quot;x&quot;,&quot;pet_id&quot;:&quot;x&quot;,&quot;pet_name&quot;:&quot;Buddy&quot;,&quot;pet_breed&quot;:&quot;Golden Retriever&quot;,&quot;conversation_history&quot;:[{&quot;role&quot;:&quot;user&quot;,&quot;content&quot;:&quot;I need boarding for Buddy&quot;}],&quot;category&quot;:&quot;boarding&quot;,&quot;urgency&quot;:&quot;normal&quot;}'
 </code></pre>
@@ -10749,12 +10749,12 @@ asyncio.run(check())
 </ul>
 <h2>Test Commands</h2>
 <pre><code class="language-bash"># Test pillar-first search
-curl -s -X POST &quot;https://mira-gift-generator.preview.emergentagent.com/api/mira/os/understand-with-products&quot; \
+curl -s -X POST &quot;https://mira-orders.preview.emergentagent.com/api/mira/os/understand-with-products&quot; \
   -H &quot;Content-Type: application/json&quot; \
   -d '{&quot;input&quot;: &quot;I need a dog walker&quot;, &quot;pet_context&quot;: {&quot;name&quot;: &quot;Mojo&quot;, &quot;breed&quot;: &quot;Indie&quot;}}' | python3 -c &quot;import sys,json; r=json.load(sys.stdin); print('Products:', len(r.get('response',{}).get('products',[])))&quot;
 
 # Test concierge confirmation
-curl -s -X POST &quot;https://mira-gift-generator.preview.emergentagent.com/api/mira/os/understand-with-products&quot; \
+curl -s -X POST &quot;https://mira-orders.preview.emergentagent.com/api/mira/os/understand-with-products&quot; \
   -H &quot;Content-Type: application/json&quot; \
   -d '{&quot;input&quot;: &quot;Send this to my concierge please&quot;, &quot;pet_context&quot;: {&quot;name&quot;: &quot;Mojo&quot;}}' | python3 -c &quot;import sys,json; r=json.load(sys.stdin); print('Banner:', r.get('concierge_confirmation') is not None)&quot;
 </code></pre>
@@ -12273,19 +12273,19 @@ Debug URL: /mira-demo?debug=1
 <hr />
 <h2>🧪 HOW TO TEST</h2>
 <pre><code class="language-bash"># 1. Login and get token
-TOKEN=$(curl -s -X POST 'https://mira-gift-generator.preview.emergentagent.com/api/auth/login' \
+TOKEN=$(curl -s -X POST 'https://mira-orders.preview.emergentagent.com/api/auth/login' \
   -H 'Content-Type: application/json' \
   -d '{&quot;email&quot;:&quot;dipali@clubconcierge.in&quot;,&quot;password&quot;:&quot;test123&quot;}' | \
   python3 -c 'import sys,json;print(json.load(sys.stdin).get(&quot;access_token&quot;,&quot;&quot;))')
 
 # 2. Test chat (should mention allergies without asking)
-curl -X POST &quot;https://mira-gift-generator.preview.emergentagent.com/api/mira/chat&quot; \
+curl -X POST &quot;https://mira-orders.preview.emergentagent.com/api/mira/chat&quot; \
   -H &quot;Content-Type: application/json&quot; \
   -H &quot;Authorization: Bearer $TOKEN&quot; \
   -d '{&quot;message&quot;: &quot;What food for Lola?&quot;, &quot;session_id&quot;: &quot;test-123&quot;}'
 
 # 3. Test pets API (Lola should show ~62% score)
-curl &quot;https://mira-gift-generator.preview.emergentagent.com/api/pets/my-pets&quot; \
+curl &quot;https://mira-orders.preview.emergentagent.com/api/pets/my-pets&quot; \
   -H &quot;Authorization: Bearer $TOKEN&quot;
 </code></pre>
 <hr />
@@ -12306,7 +12306,7 @@ curl &quot;https://mira-gift-generator.preview.emergentagent.com/api/pets/my-pet
 <hr />
 <h2>🔗 URLS</h2>
 <ul>
-<li><strong>Preview</strong>: https://mira-gift-generator.preview.emergentagent.com</li>
+<li><strong>Preview</strong>: https://mira-orders.preview.emergentagent.com</li>
 <li><strong>Production</strong>: https://thedoggycompany.in</li>
 <li><strong>To deploy</strong>: Click "Replace deployment" on Emergent platform</li>
 </ul>
@@ -18767,7 +18767,7 @@ mira_context = get_mira_context(canonical)  # All Mira-relevant fields
 </table>
 <h2>URLs</h2>
 <ul>
-<li>Preview: https://mira-gift-generator.preview.emergentagent.com</li>
+<li>Preview: https://mira-orders.preview.emergentagent.com</li>
 <li>Production: https://thedoggycompany.com (currently down - Nginx issue)</li>
 </ul>
 <hr />
@@ -33363,7 +33363,7 @@ CLOUDINARY_API_SECRET=uwvyt1zf8vPF62SMeHGFn3k3O_A
 </tbody>
 </table>
 <p><strong>URLs:</strong>
-- Preview: https://mira-gift-generator.preview.emergentagent.com
+- Preview: https://mira-orders.preview.emergentagent.com
 - Production: https://thedoggycompany.com
 - Database: pet-os-live-test_database</p>
 <hr />
@@ -33570,14 +33570,14 @@ ARCHIVE AFTER 5 MIN INACTIVITY
 <hr />
 <h1>🧪 HOW TO TEST</h1>
 <h2>Test 1: Meal Plan (No Products)</h2>
-<pre><code class="language-bash">curl -s -X POST &quot;https://mira-gift-generator.preview.emergentagent.com/api/mira/os/understand-with-products&quot; \
+<pre><code class="language-bash">curl -s -X POST &quot;https://mira-orders.preview.emergentagent.com/api/mira/os/understand-with-products&quot; \
   -H &quot;Content-Type: application/json&quot; \
   -d '{&quot;input&quot;: &quot;Create a healthy meal plan for Mojo&quot;, &quot;pet_context&quot;: {&quot;name&quot;: &quot;Mojo&quot;, &quot;breed&quot;: &quot;Indie&quot;}}' \
   | python3 -c &quot;import sys,json; r=json.load(sys.stdin); print('Products:', len(r.get('response',{}).get('products',[]))); print('Tip Card:', r.get('response',{}).get('tip_card',{}).get('title'))&quot;
 </code></pre>
 <p><strong>Expected</strong>: Products: 0, Tip Card: Mojo's Meal Plan</p>
 <h2>Test 2: Birthday Cake (Products)</h2>
-<pre><code class="language-bash">curl -s -X POST &quot;https://mira-gift-generator.preview.emergentagent.com/api/mira/os/understand-with-products&quot; \
+<pre><code class="language-bash">curl -s -X POST &quot;https://mira-orders.preview.emergentagent.com/api/mira/os/understand-with-products&quot; \
   -H &quot;Content-Type: application/json&quot; \
   -d '{&quot;input&quot;: &quot;Birthday cake for Mojo&quot;, &quot;pet_context&quot;: {&quot;name&quot;: &quot;Mojo&quot;, &quot;breed&quot;: &quot;Indie&quot;}}' \
   | python3 -c &quot;import sys,json; r=json.load(sys.stdin); print('Products:', len(r.get('response',{}).get('products',[])))&quot;
@@ -34421,12 +34421,12 @@ import sys,json; print('Login:', 'OK' if json.load(sys.stdin).get('token') else 
 User lost access to all 8 pets including Mystique (recently passed pet - emotionally devastating).</p>
 <h3>Root Cause</h3>
 <p><code>REACT_APP_BACKEND_URL</code> was set to a <strong>DEAD preview URL</strong> that returned 404:</p>
-<pre><code>❌ DEPLOYED WITH: https://mira-gift-generator.preview.emergentagent.com (DOESN'T EXIST!)
+<pre><code>❌ DEPLOYED WITH: https://mira-orders.preview.emergentagent.com (DOESN'T EXIST!)
 ✅ SHOULD BE: https://thedoggycompany.com
 </code></pre>
 <h3>How We Found It</h3>
 <p>Browser console showed:</p>
-<pre><code>Failed to load resource: 404 at https://mira-gift-generator.preview.emergentagent.com/api/auth/me
+<pre><code>Failed to load resource: 404 at https://mira-orders.preview.emergentagent.com/api/auth/me
 </code></pre>
 <h3>LESSON LEARNED</h3>
 <p><strong>ALWAYS verify the frontend calls the RIGHT backend before deploying!</strong></p>
@@ -34445,7 +34445,7 @@ Your production site will show OLD content because it's calling the WRONG backen
 <pre><code class="language-bash"># 1. Check current URL
 cat /app/frontend/.env | grep REACT_APP_BACKEND_URL
 
-# 2. If it shows preview URL (like https://mira-gift-generator.preview.emergentagent.com), FIX IT:
+# 2. If it shows preview URL (like https://mira-orders.preview.emergentagent.com), FIX IT:
 sed -i 's|REACT_APP_BACKEND_URL=.*|REACT_APP_BACKEND_URL=https://thedoggycompany.com|' /app/frontend/.env
 
 # 3. Restart frontend to pick up changes
@@ -34464,7 +34464,7 @@ sudo supervisorctl restart frontend
 <tbody>
 <tr>
 <td>Preview</td>
-<td><code>https://mira-gift-generator.preview.emergentagent.com</code> (varies)</td>
+<td><code>https://mira-orders.preview.emergentagent.com</code> (varies)</td>
 </tr>
 <tr>
 <td><strong>PRODUCTION</strong></td>
@@ -40453,7 +40453,7 @@ curl -X POST &quot;https://thedoggycompany.in/api/admin/env-sync/full-sync?token
   -u &quot;aditya:lola4304&quot; \
   -H &quot;Content-Type: application/json&quot; \
   -d '{
-    &quot;source_url&quot;: &quot;https://mira-gift-generator.preview.emergentagent.com&quot;,
+    &quot;source_url&quot;: &quot;https://mira-orders.preview.emergentagent.com&quot;,
     &quot;user_email&quot;: &quot;dipali@clubconcierge.in&quot;,
     &quot;user_password&quot;: &quot;test123&quot;,
     &quot;sync_soul_data&quot;: true
@@ -40461,7 +40461,7 @@ curl -X POST &quot;https://thedoggycompany.in/api/admin/env-sync/full-sync?token
 </code></pre>
 <h3>Example: Sync Production → Preview</h3>
 <pre><code class="language-bash"># Full sync from Production to Preview
-curl -X POST &quot;https://mira-gift-generator.preview.emergentagent.com/api/admin/env-sync/full-sync?token=sync-preview-to-prod-2026&amp;overwrite=true&quot; \
+curl -X POST &quot;https://mira-orders.preview.emergentagent.com/api/admin/env-sync/full-sync?token=sync-preview-to-prod-2026&amp;overwrite=true&quot; \
   -u &quot;aditya:lola4304&quot; \
   -H &quot;Content-Type: application/json&quot; \
   -d '{
@@ -41922,7 +41922,7 @@ curl -X GET /api/member/notifications/inbox/{email}
 <tbody>
 <tr>
 <td><strong>Preview</strong></td>
-<td>https://mira-gift-generator.preview.emergentagent.com</td>
+<td>https://mira-orders.preview.emergentagent.com</td>
 </tr>
 <tr>
 <td><strong>Main Demo Page</strong></td>
@@ -41994,7 +41994,7 @@ curl -X GET /api/member/notifications/inbox/{email}
 </tbody>
 </table>
 <h2>2.4 API Base URL</h2>
-<pre><code>REACT_APP_BACKEND_URL=https://mira-gift-generator.preview.emergentagent.com
+<pre><code>REACT_APP_BACKEND_URL=https://mira-orders.preview.emergentagent.com
 </code></pre>
 <hr />
 <h1>PART 3: THE 7 OS LAYERS (NAVIGATION TABS)</h1>
@@ -43946,7 +43946,7 @@ Mira Memories: 121 stored
 <hr />
 <h2>🛠️ TECHNICAL QUICK REFERENCE</h2>
 <h3>To Test API:</h3>
-<pre><code class="language-bash">API_URL=&quot;https://mira-gift-generator.preview.emergentagent.com&quot;
+<pre><code class="language-bash">API_URL=&quot;https://mira-orders.preview.emergentagent.com&quot;
 TOKEN=$(curl -s -X POST &quot;$API_URL/api/auth/login&quot; -H &quot;Content-Type: application/json&quot; -d '{&quot;email&quot;:&quot;dipali@clubconcierge.in&quot;,&quot;password&quot;:&quot;test123&quot;}' | python3 -c &quot;import sys,json;print(json.load(sys.stdin).get('token',''))&quot;)
 
 # Test /api/mira/chat
@@ -49607,7 +49607,7 @@ Test Pets:
 <ul>
 <li>Backend: Running on port 8001</li>
 <li>Frontend: Running on port 3000</li>
-<li>Preview URL: https://mira-gift-generator.preview.emergentagent.com</li>
+<li>Preview URL: https://mira-orders.preview.emergentagent.com</li>
 </ul>
 <hr />
 <h1>KNOWN ISSUES</h1>
@@ -50159,7 +50159,7 @@ Test Pets:
 </tr>
 <tr>
 <td>Preview URL</td>
-<td>https://mira-gift-generator.preview.emergentagent.com/mira-demo</td>
+<td>https://mira-orders.preview.emergentagent.com/mira-demo</td>
 </tr>
 <tr>
 <td>Production</td>
@@ -50384,7 +50384,7 @@ Step 4: Welcome!
 </ul>
 <hr />
 <h2>PREVIEW URL</h2>
-<p><code>https://mira-gift-generator.preview.emergentagent.com</code></p>
+<p><code>https://mira-orders.preview.emergentagent.com</code></p>
 <h2>SERVICES</h2>
 <ul>
 <li>Frontend: Running on port 3000 (hot reload)</li>
@@ -50575,7 +50575,7 @@ User Message → Intent Detection → Pillar Bonus + Learning Bonus
 <li><strong>User:</strong> <code>dipali@clubconcierge.in</code> / <code>test123</code></li>
 <li><strong>Admin:</strong> <code>aditya</code> / <code>lola4304</code></li>
 <li><strong>Test URL:</strong> <code>/mira-demo?debug=1</code></li>
-<li><strong>API URL:</strong> <code>https://mira-gift-generator.preview.emergentagent.com</code></li>
+<li><strong>API URL:</strong> <code>https://mira-orders.preview.emergentagent.com</code></li>
 </ul>
 <hr />
 <h1>WHAT WAS ACCOMPLISHED THIS SESSION</h1>
@@ -51394,7 +51394,7 @@ Check how Emergency page handles "Talk to Concierge" - it might use a different 
 <h2>📞 SUPPORT CONTACTS</h2>
 <ul>
 <li><strong>Production Site:</strong> https://thedoggycompany.com</li>
-<li><strong>Preview Environment:</strong> https://mira-gift-generator.preview.emergentagent.com</li>
+<li><strong>Preview Environment:</strong> https://mira-orders.preview.emergentagent.com</li>
 <li><strong>MongoDB:</strong> Configured via MONGO_URL in backend/.env</li>
 <li><strong>LLM:</strong> OpenAI via Emergent LLM Key</li>
 </ul>
@@ -52189,7 +52189,7 @@ soul_score_history      - Soul score over time
 <tbody>
 <tr>
 <td>Preview</td>
-<td>https://mira-gift-generator.preview.emergentagent.com</td>
+<td>https://mira-orders.preview.emergentagent.com</td>
 </tr>
 <tr>
 <td>Complete Docs</td>
@@ -52634,7 +52634,7 @@ PATH 2: &quot;Let Mira know more&quot;
 <h1>URLs (VERIFIED)</h1>
 <h2>Frontend</h2>
 <ul>
-<li><strong>Base URL</strong>: https://mira-gift-generator.preview.emergentagent.com</li>
+<li><strong>Base URL</strong>: https://mira-orders.preview.emergentagent.com</li>
 <li><strong>Login</strong>: /login</li>
 <li><strong>Join (Onboarding)</strong>: /join</li>
 <li><strong>Pet Home</strong>: /pet-home</li>
@@ -52646,7 +52646,7 @@ PATH 2: &quot;Let Mira know more&quot;
 </ul>
 <h2>Backend API</h2>
 <ul>
-<li><strong>Base</strong>: https://mira-gift-generator.preview.emergentagent.com/api</li>
+<li><strong>Base</strong>: https://mira-orders.preview.emergentagent.com/api</li>
 </ul>
 <hr />
 <h1>TESTING CHECKLIST</h1>
@@ -52718,7 +52718,7 @@ asyncio.run(check())
 &quot;
 
 # Create test user via API
-curl -s -X POST &quot;https://mira-gift-generator.preview.emergentagent.com/api/membership/onboard&quot; \
+curl -s -X POST &quot;https://mira-orders.preview.emergentagent.com/api/membership/onboard&quot; \
   -H &quot;Content-Type: application/json&quot; \
   -d '{&quot;parent&quot;:{&quot;name&quot;:&quot;Test&quot;,&quot;email&quot;:&quot;test@test.com&quot;,&quot;password&quot;:&quot;test123&quot;,...},&quot;pets&quot;:[{...}]}'
 </code></pre>
@@ -52776,7 +52776,7 @@ curl -s -X POST &quot;https://mira-gift-generator.preview.emergentagent.com/api/
 </tr>
 <tr>
 <td><strong>Preview</strong></td>
-<td><code>https://mira-gift-generator.preview.emergentagent.com</code></td>
+<td><code>https://mira-orders.preview.emergentagent.com</code></td>
 </tr>
 </tbody>
 </table>
@@ -53545,7 +53545,7 @@ const response = await fetch(`${apiUrl}/api/pet-soul/profile/${petId}/answers/bu
 </tr>
 <tr>
 <td><strong>Preview</strong></td>
-<td><code>https://mira-gift-generator.preview.emergentagent.com</code></td>
+<td><code>https://mira-orders.preview.emergentagent.com</code></td>
 </tr>
 </tbody>
 </table>
@@ -54296,7 +54296,7 @@ curl -s &quot;https://thedoggycompany.com/api/products?search=birthday%20cake&am
 <ul>
 <li><strong>Member:</strong> dipali@clubconcierge.in / test123</li>
 <li><strong>Admin:</strong> aditya / lola4304</li>
-<li><strong>URL:</strong> https://mira-gift-generator.preview.emergentagent.com</li>
+<li><strong>URL:</strong> https://mira-orders.preview.emergentagent.com</li>
 </ul>
 <h3>Production Environment</h3>
 <ul>
@@ -54792,7 +54792,7 @@ Returns: { success: boolean, message_id: string }
 </ul>
 <hr />
 <h2>PREVIEW URL</h2>
-<pre><code>https://mira-gift-generator.preview.emergentagent.com
+<pre><code>https://mira-orders.preview.emergentagent.com
 </code></pre>
 <hr />
 <h2>KEY SCREENSHOTS TAKEN</h2>
@@ -54947,8 +54947,8 @@ await db.concierge_threads.insert_one(concierge_thread)
 <hr />
 <h2>TEST URLS</h2>
 <ul>
-<li><strong>Main Demo</strong>: https://mira-gift-generator.preview.emergentagent.com/mira-demo</li>
-<li><strong>Pure OS Test</strong>: https://mira-gift-generator.preview.emergentagent.com/mira-pure-os</li>
+<li><strong>Main Demo</strong>: https://mira-orders.preview.emergentagent.com/mira-demo</li>
+<li><strong>Pure OS Test</strong>: https://mira-orders.preview.emergentagent.com/mira-pure-os</li>
 <li><strong>Login</strong>: <code>dipali@clubconcierge.in</code> / <code>test123</code></li>
 </ul>
 <h2>TEST SCENARIOS</h2>
@@ -55028,7 +55028,7 @@ Admin Login: aditya / lola4304
 New Test User: audit_test_1771750532@test.com / test123
 </code></pre>
 <h3>URLs</h3>
-<pre><code>Preview: https://mira-gift-generator.preview.emergentagent.com
+<pre><code>Preview: https://mira-orders.preview.emergentagent.com
 Production: https://thedoggycompany.com
 Admin: /admin (login required)
 </code></pre>
@@ -55670,13 +55670,13 @@ tail -50 /var/log/supervisor/backend.err.log
 sudo supervisorctl restart frontend backend
 
 # Test admin notifications
-curl -s -u &quot;aditya:lola4304&quot; &quot;https://mira-gift-generator.preview.emergentagent.com/api/admin/notifications?limit=5&quot;
+curl -s -u &quot;aditya:lola4304&quot; &quot;https://mira-orders.preview.emergentagent.com/api/admin/notifications?limit=5&quot;
 
 # Test ticket enrichment
-curl -s -X POST &quot;https://mira-gift-generator.preview.emergentagent.com/api/service_desk/resolve_ticket/TCK-XXX&quot;
+curl -s -X POST &quot;https://mira-orders.preview.emergentagent.com/api/service_desk/resolve_ticket/TCK-XXX&quot;
 
 # Check pet soul data
-curl -s &quot;https://mira-gift-generator.preview.emergentagent.com/api/pets/pet-3661ae55d2e2&quot;
+curl -s &quot;https://mira-orders.preview.emergentagent.com/api/pets/pet-3661ae55d2e2&quot;
 </code></pre>
 <hr />
 <h2>WARNINGS</h2>
@@ -55883,7 +55883,7 @@ Member gets notification
 </ul>
 <hr />
 <h2>PREVIEW URL</h2>
-<p>https://mira-gift-generator.preview.emergentagent.com</p>
+<p>https://mira-orders.preview.emergentagent.com</p>
 <hr />
 <p><em>This document is dedicated to Mira Sikand - The Guiding Angel</em>
 <em>"No is never an answer for a concierge"</em></p>
@@ -55898,7 +55898,7 @@ Agent: E1 (Emergent Labs)</p>
                         <p class="meta">Path: memory/HAPTIC_TESTING_CHECKLIST.md | Lines: 136</p>
                         <h1>📱 HAPTIC FEEDBACK TESTING CHECKLIST</h1>
 <h2>Test URL</h2>
-<p><strong>https://mira-gift-generator.preview.emergentagent.com/mira-demo</strong></p>
+<p><strong>https://mira-orders.preview.emergentagent.com/mira-demo</strong></p>
 <hr />
 <h2>Pre-Test Setup</h2>
 <h3>iOS (iPhone/iPad)</h3>
@@ -60653,7 +60653,7 @@ python3 -c &quot;...&quot; # See memory check script
 </code></pre>
 <hr />
 <p><strong>REMEMBER: MIRA IS THE BRAIN. EVERYTHING SHE LEARNS MUST BE STORED.</strong></p>
-<p>Preview URL: https://mira-gift-generator.preview.emergentagent.com</p>
+<p>Preview URL: https://mira-orders.preview.emergentagent.com</p>
                     </div>
                 
                     <div class="doc-section" id="memory-master-features-md">
@@ -61425,7 +61425,7 @@ Be patient. Be thorough. Honor the Sikand legacy.</p>
 <li>Admin: <code>aditya</code> / <code>lola4304</code></li>
 </ul>
 <h2>🌐 PREVIEW URL</h2>
-<p>https://mira-gift-generator.preview.emergentagent.com</p>
+<p>https://mira-orders.preview.emergentagent.com</p>
 <hr />
 <h2>📁 KEY FILES</h2>
 <pre><code>NEW:
@@ -66342,7 +66342,7 @@ Password: test123
 <hr />
 <p><strong>Audit Status:</strong> COMPLETE
 <strong>Generated:</strong> February 9, 2026
-<strong>Preview URL:</strong> https://mira-gift-generator.preview.emergentagent.com</p>
+<strong>Preview URL:</strong> https://mira-orders.preview.emergentagent.com</p>
                     </div>
                 
                     <div class="doc-section" id="memory-mira-complete-gap-analysis-feb21-md">
@@ -70479,7 +70479,7 @@ If no → Reconsider</p>
 <li><strong>Customer Login:</strong> dipali@clubconcierge.in / test123</li>
 <li><strong>Admin:</strong> aditya / lola4304</li>
 <li><strong>Database:</strong> test_database (MongoDB)</li>
-<li><strong>Preview URL:</strong> https://mira-gift-generator.preview.emergentagent.com/mira-demo</li>
+<li><strong>Preview URL:</strong> https://mira-orders.preview.emergentagent.com/mira-demo</li>
 <li><strong>Production:</strong> https://thedoggycompany.in/mira-demo</li>
 </ul>
 <hr />
@@ -89682,7 +89682,7 @@ Basic Auth Username: aditya
 Basic Auth Password: lola4304
 </code></pre>
 <h2>Preview URL</h2>
-<pre><code>https://mira-gift-generator.preview.emergentagent.com
+<pre><code>https://mira-orders.preview.emergentagent.com
 </code></pre>
 <hr />
 <p><em>MOJO Bible - Single Source of Truth</em>
@@ -94553,7 +94553,7 @@ GET /api/pet-soul/profile/{pet_id}/quick-questions?limit=5
 3. C° dock button → opens header Concierge panel
 4. Pet avatar image alignment</p>
 <hr />
-<p><strong>Preview URL:</strong> https://mira-gift-generator.preview.emergentagent.com</p>
+<p><strong>Preview URL:</strong> https://mira-orders.preview.emergentagent.com</p>
 <p><em>Handoff created: February 16, 2026</em></p>
                     </div>
                 
@@ -97421,7 +97421,7 @@ Main Component: MiraMeetsYourPet
 <ul>
 <li>Test User: <code>dipali@clubconcierge.in</code> / <code>test123</code></li>
 <li>Admin: <code>aditya</code> / <code>lola4304</code></li>
-<li>Preview URL: <code>https://mira-gift-generator.preview.emergentagent.com</code></li>
+<li>Preview URL: <code>https://mira-orders.preview.emergentagent.com</code></li>
 <li>Production URL: <code>https://thedoggycompany.com</code></li>
 </ul>
 <hr />
@@ -111006,7 +111006,7 @@ Response:
 <hr />
 <h2>PREVIEW vs PRODUCTION</h2>
 <ul>
-<li><strong>Preview:</strong> https://mira-gift-generator.preview.emergentagent.com</li>
+<li><strong>Preview:</strong> https://mira-orders.preview.emergentagent.com</li>
 <li><strong>Production:</strong> https://thedoggycompany.com</li>
 </ul>
 <p>Changes are made to preview first, then deployed to production.</p>
@@ -115838,7 +115838,7 @@ useSession: sessionId, setSessionId, sessionRecovered, setSessionRecovered
 <ul>
 <li><strong>Email</strong>: <code>dipali@clubconcierge.in</code></li>
 <li><strong>Password</strong>: <code>lola4304</code></li>
-<li><strong>Preview URL</strong>: <code>https://mira-gift-generator.preview.emergentagent.com</code></li>
+<li><strong>Preview URL</strong>: <code>https://mira-orders.preview.emergentagent.com</code></li>
 </ul>
 <hr />
 <h1>📈 PROGRESS VISUALIZATION</h1>
@@ -131067,7 +131067,7 @@ soulReason={getSoulBasedReason(activePet, 'celebrate')}  // or 'stay', 'dine', e
 </ul>
 <hr />
 <h2>PREVIEW URL</h2>
-<p>https://mira-gift-generator.preview.emergentagent.com</p>
+<p>https://mira-orders.preview.emergentagent.com</p>
 <hr />
 <h2>THE SIKAND LEGACY - NEVER FORGET</h2>
 <ul>
@@ -131951,7 +131951,7 @@ Picks = Bridge (connects Mira's suggestions to Concierge's actions)
 <h1>🔑 CREDENTIALS</h1>
 <ul>
 <li><strong>Emergent LLM Key</strong>: <code>sk-emergent-cEb0eF956Fa6741A31</code></li>
-<li><strong>Preview URL</strong>: <code>https://mira-gift-generator.preview.emergentagent.com</code></li>
+<li><strong>Preview URL</strong>: <code>https://mira-orders.preview.emergentagent.com</code></li>
 </ul>
 <hr />
 <h1>📁 KEY FILES</h1>
@@ -136280,7 +136280,7 @@ async def write_soul_data_to_pet(db, pet_id, extracted):
 Production site <code>thedoggycompany.com</code> showed "No pets found" for ALL users despite backend working perfectly.</p>
 <p><strong>Root Cause:</strong>
 The frontend was deployed with <code>REACT_APP_BACKEND_URL</code> pointing to a <strong>dead preview URL</strong>:</p>
-<pre><code>❌ WRONG: REACT_APP_BACKEND_URL=https://mira-gift-generator.preview.emergentagent.com  (DEAD!)
+<pre><code>❌ WRONG: REACT_APP_BACKEND_URL=https://mira-orders.preview.emergentagent.com  (DEAD!)
 ✅ CORRECT: REACT_APP_BACKEND_URL=https://thedoggycompany.com
 </code></pre>
 <p><strong>Why This Breaks Everything:</strong>
@@ -138004,7 +138004,7 @@ curl &quot;$API_URL/api/pet-soul/profile/pet-99a708f1722a/quick-questions&quot;
 </ul>
 <hr />
 <h2>🚀 PREVIEW URL</h2>
-<pre><code>https://mira-gift-generator.preview.emergentagent.com
+<pre><code>https://mira-orders.preview.emergentagent.com
 </code></pre>
 <p>Key pages:
 - <code>/celebrate-new</code> - Has Mira OS (BETA) button
@@ -138048,7 +138048,7 @@ curl &quot;$API_URL/api/pet-soul/profile/pet-99a708f1722a/quick-questions&quot;
 <hr />
 <h2>TEST BEFORE CHANGING ANYTHING</h2>
 <pre><code class="language-bash"># Test meal plan returns NO products
-curl -s -X POST &quot;https://mira-gift-generator.preview.emergentagent.com/api/mira/os/understand-with-products&quot; \
+curl -s -X POST &quot;https://mira-orders.preview.emergentagent.com/api/mira/os/understand-with-products&quot; \
   -H &quot;Content-Type: application/json&quot; \
   -d '{&quot;input&quot;: &quot;Create a healthy meal plan for Mojo&quot;, &quot;pet_context&quot;: {&quot;name&quot;: &quot;Mojo&quot;, &quot;breed&quot;: &quot;Indie&quot;}}' \
   | python3 -c &quot;import sys,json; r=json.load(sys.stdin); print('Products:', len(r.get('response',{}).get('products',[])))&quot;
@@ -141381,7 +141381,7 @@ await db.channel_intakes.insert_one({...})
 </tr>
 <tr>
 <td>Preview URL</td>
-<td><code>https://mira-gift-generator.preview.emergentagent.com</code></td>
+<td><code>https://mira-orders.preview.emergentagent.com</code></td>
 </tr>
 </tbody>
 </table>
@@ -143146,7 +143146,7 @@ curl -s &quot;$API_URL/api/mira/tickets?pet_id=pet-3661ae55d2e2&quot; -H &quot;A
 <tbody>
 <tr>
 <td><strong>Emergent Preview</strong></td>
-<td><code>https://mira-gift-generator.preview.emergentagent.com</code></td>
+<td><code>https://mira-orders.preview.emergentagent.com</code></td>
 </tr>
 <tr>
 <td><strong>Production</strong></td>
@@ -147539,11 +147539,11 @@ RAZORPAY_KEY_SECRET=test_secret_key
 FOURSQUARE_API_KEY=fsq3UISTe99WBkl+2of3Gyp3mylGaXByON+Vud59SZSl450=
 </code></pre>
 <h2>1.4 Frontend Environment (/app/frontend/.env)</h2>
-<pre><code>REACT_APP_BACKEND_URL=https://mira-gift-generator.preview.emergentagent.com
+<pre><code>REACT_APP_BACKEND_URL=https://mira-orders.preview.emergentagent.com
 REACT_APP_RAZORPAY_KEY_ID=rzp_test_1234567890abcdef
 </code></pre>
 <h2>1.5 Preview URL</h2>
-<pre><code>https://mira-gift-generator.preview.emergentagent.com
+<pre><code>https://mira-orders.preview.emergentagent.com
 </code></pre>
 <h2>1.6 Test Pets</h2>
 <table>
@@ -148318,16 +148318,16 @@ curl -X POST &quot;$API_URL/api/pet-soul/profile/pet-99a708f1722a/answers/bulk&q
 </ol>
 <h2>Step 2: Test Credentials</h2>
 <pre><code class="language-bash"># Verify backend
-curl https://mira-gift-generator.preview.emergentagent.com/api/health
+curl https://mira-orders.preview.emergentagent.com/api/health
 
 # Login
-curl -X POST &quot;https://mira-gift-generator.preview.emergentagent.com/api/auth/login&quot; \
+curl -X POST &quot;https://mira-orders.preview.emergentagent.com/api/auth/login&quot; \
   -H &quot;Content-Type: application/json&quot; \
   -d '{&quot;email&quot;:&quot;dipali@clubconcierge.in&quot;,&quot;password&quot;:&quot;test123&quot;}'
 </code></pre>
 <h2>Step 3: Explore the App</h2>
 <ol>
-<li>Go to: https://mira-gift-generator.preview.emergentagent.com</li>
+<li>Go to: https://mira-orders.preview.emergentagent.com</li>
 <li>Login with test credentials</li>
 <li>Navigate to <code>/mira-demo</code></li>
 <li>Click pet avatar → Open MOJO modal</li>

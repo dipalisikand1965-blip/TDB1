@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://mira-gift-generator.preview.emergentagent.com
+**Preview URL:** https://mira-orders.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
