@@ -99,7 +99,7 @@ const TummyProfile = ({ pet, token, onUpdate }) => {
     setSaving(true);
     try {
       const res = await fetch(`${getApiUrl()}/api/pets/${pet.id}`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ nutrition_goal: nutritionGoal }),
       });
