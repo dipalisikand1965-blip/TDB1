@@ -11,6 +11,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, ChevronRight, Loader2 } from 'lucide-react';
 import { PILLAR_QUESTIONS, buildLearnedFact, transformAnswer } from './pillarQuestions';
+import { useResizeMobile } from '../../hooks/useResizeMobile';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
@@ -112,6 +113,7 @@ const TextInput = ({ question, value = '', onChange, petName }) => {
 // ── Main Modal ────────────────────────────────────────────────────────────────
 
 const PillarSoulModal = ({ pillar, pet, token, isOpen, onClose, onComplete }) => {
+  const isMobile = useResizeMobile();
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -210,12 +212,18 @@ const PillarSoulModal = ({ pillar, pet, token, isOpen, onClose, onComplete }) =>
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 24 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="fixed inset-0 z-50 flex items-center justify-center px-4"
+            className={`fixed inset-0 z-50 flex ${isMobile ? 'items-start pt-20' : 'items-center justify-center px-4'}`}
             style={{ pointerEvents: 'none' }}
           >
             <div
-              className="w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl"
-              style={{ pointerEvents: 'all', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
+              className="w-full max-w-lg overflow-hidden shadow-2xl"
+              style={{
+                pointerEvents: 'all',
+                maxHeight: isMobile ? 'none' : '90vh',
+                display: 'flex',
+                flexDirection: 'column',
+                borderRadius: isMobile ? '20px 20px 0 0' : 16,
+              }}
             >
               {/* ── Header ── */}
               <div className="relative px-6 pt-6 pb-5"

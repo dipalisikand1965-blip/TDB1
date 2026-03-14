@@ -74,7 +74,7 @@ function ConditionalFloatingButton() {
   // Hide on /mira, /admin, and ALL pillar pages (they have their own Ask Concierge buttons)
   const hiddenPaths = [
     '/mira', '/admin', '/demo',
-    '/care', '/celebrate', '/advisory', '/dine', '/stay', '/travel', 
+    '/care', '/celebrate', '/celebrate-soul', '/advisory', '/dine', '/stay', '/travel', 
     '/emergency', '/enjoy', '/fit', '/learn', '/farewell', '/adopt', 
     '/paperwork', '/shop', '/cakes', '/breed-cakes', '/mini-cakes'
   ];
@@ -535,7 +535,7 @@ function MainLayout() {
         
         {/* ALL Life Pillars - Open for browsing (login required only at checkout) */}
         {/* Celebrate Pillar - Single consolidated page */}
-        <Route path="/celebrate" element={<CelebratePage />} />
+        <Route path="/celebrate" element={<Navigate to="/celebrate-soul" replace />} />
         {/* GOLD STANDARD Celebrate - Sandbox for new design */}
         <Route path="/celebrate-new" element={<CelebrateNewPage />} />
         {/* SOUL-FIRST Celebrate - New Architecture March 2026 */}

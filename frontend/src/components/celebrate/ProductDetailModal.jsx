@@ -7,6 +7,7 @@
 
 import React, { useState } from 'react';
 import { X, Plus, Minus, ShoppingCart, Sparkles, Heart, Check, Star } from 'lucide-react';
+import { useResizeMobile } from '../../hooks/useResizeMobile';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
@@ -40,6 +41,7 @@ const ProductDetailModal = ({
   isConcierge = false,
   pillarColor = '#C44DFF'
 }) => {
+  const isMobile = useResizeMobile();
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [isAdding, setIsAdding] = useState(false);
@@ -121,6 +123,14 @@ const ProductDetailModal = ({
   return (
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{
+        alignItems: isMobile ? 'flex-start' : 'center',
+        paddingTop: isMobile ? '88px' : '16px',
+        paddingLeft: isMobile ? 0 : '16px',
+        paddingRight: isMobile ? 0 : '16px',
+        paddingBottom: isMobile ? 0 : '16px',
+        overflowY: isMobile ? 'auto' : 'visible',
+      }}
       onClick={onClose}
       data-testid="product-detail-modal"
     >
@@ -129,9 +139,12 @@ const ProductDetailModal = ({
       
       {/* Modal */}
       <div 
-        className="relative w-full max-w-md bg-white rounded-3xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-md bg-white overflow-hidden shadow-2xl"
         onClick={e => e.stopPropagation()}
-        style={{ maxHeight: '90vh' }}
+        style={{
+          maxHeight: isMobile ? 'none' : '90vh',
+          borderRadius: isMobile ? '20px 20px 0 0' : 24,
+        }}
       >
         {/* Close button */}
         <button 
