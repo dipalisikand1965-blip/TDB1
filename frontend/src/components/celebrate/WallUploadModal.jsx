@@ -94,8 +94,15 @@ const WallUploadModal = ({ isOpen, onClose, petName, petId, onSubmitted }) => {
       // Show confirmation FIRST, then notify parent from the "See your photo" button
       setSubmitting(false);
       setStep(3);
-      // Store uploadedPhotoId for the confirmation button to use
+      // Store uploadedPhotoId + photo data for confirmation button to pass to parent
       window.__lastUploadedWallPhotoId = uploadedPhotoId;
+      window.__lastUploadedWallPhotoData = {
+        previewUrl,
+        caption: caption.trim(),
+        celebType: celebType || 'Birthday',
+        city: city.trim() || null,
+        miraComment: (MIRA_COMMENTS[celebType] || MIRA_COMMENTS['default']).replace(/\{petName\}/g, displayName)
+      };
     } catch (err) {
       console.error('[WallUploadModal] Submit error:', err);
       setSubmitting(false);
@@ -300,7 +307,8 @@ const WallUploadModal = ({ isOpen, onClose, petName, petId, onSubmitted }) => {
               onClick={() => {
                 // Notify parent AFTER user sees confirmation (not before)
                 const photoId = window.__lastUploadedWallPhotoId || 'local';
-                onSubmitted && onSubmitted(photoId);
+                const photoData = window.__lastUploadedWallPhotoData || null;
+                onSubmitted && onSubmitted(photoId, photoData);
                 handleClose();
               }}
               style={{

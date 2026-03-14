@@ -113,6 +113,8 @@ const CelebrationMemoryWall = ({ pet }) => {
   const [canScrollRight, setCanScrollRight] = useState(true);
   const scrollRef = useRef(null);
 
+  const [submittedPhoto, setSubmittedPhoto] = useState(null); // shown immediately after upload
+
   const petName = pet?.name || null;
 
   // Fetch from API
@@ -186,10 +188,28 @@ const CelebrationMemoryWall = ({ pet }) => {
     }
   };
 
-  const handleSubmitted = (photoId) => {
+  const handleSubmitted = (photoId, photoData) => {
     setHasSubmitted(true);
     setSubmittedPhotoId(photoId);
     setUploadModalOpen(false);
+
+    // Add user's photo to local state immediately at position 2 (after upload card)
+    if (photoData) {
+      const ownPhoto = {
+        id: photoId || 'own-' + Date.now(),
+        petName: petName || 'Mojo',
+        imageUrl: photoData.previewUrl,
+        occasion: photoData.celebType || 'Birthday',
+        caption: photoData.caption,
+        likes: 0,
+        location: photoData.city || 'India',
+        date: 'Today',
+        miraComment: photoData.miraComment,
+        isOwn: true,
+        isPendingReview: true
+      };
+      setSubmittedPhoto(ownPhoto);
+    }
   };
 
   // Subtitle: 4 states
@@ -299,6 +319,17 @@ const CelebrationMemoryWall = ({ pet }) => {
           hasSubmitted={hasSubmitted}
           onAddPhoto={() => setUploadModalOpen(true)}
         />
+
+        {/* User's own submitted photo — always position 2 (immediately after upload card) */}
+        {submittedPhoto && (
+          <WallCard
+            photo={submittedPhoto}
+            isOwn={true}
+            liked={likedPhotos.has(submittedPhoto.id)}
+            onLike={handleLike}
+            onClick={() => openLightbox(submittedPhoto)}
+          />
+        )}
 
         {/* Photo cards */}
         {photos.map((photo, idx) => (
