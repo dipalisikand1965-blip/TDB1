@@ -6,7 +6,27 @@
 
 ---
 
-## ✅ SESSION 19 COMPLETE — Mira Widget Improvements (Mar 2026)
+## ✅ SESSION 20 COMPLETE — Full Mobile Audit + Fixes (Mar 2026)
+
+**Audit: 6 issues found, all fixed. 100% pass rate on re-test (10/10).**
+
+### Issues Fixed:
+| Issue | Severity | Fix |
+|---|---|---|
+| Pet home trait chips wrapping to 3 lines at 360-375px | CRITICAL | overflow-x-auto + whitespace-nowrap + shrink-0 on traits; photo w-16 sm:w-24; compact SoulRing 48px on mobile |
+| CelebrateCategoryStrip labels at 10px (below 12px min) | MEDIUM | fontSize 10 → 11, maxWidth 72 → 80 |
+| Pet selector strip no scroll hint | MEDIUM | Right-edge fade gradient (bg-gradient-to-l from-slate-900) when pets.length > 2 |
+| 'Social Butterfly' badge wrapping to 2 lines | MINOR | whitespace-nowrap + text-ellipsis on badge |
+| '♥ Mira knows' text at 11px | MINOR | text-[12px] |
+| Marquee ticker (SoulScoreBanner 11px) | MINOR | Noted, not text-critical |
+
+### Mobile Verified Passing:
+- No horizontal overflow on any page at 360px ✅
+- Touch targets all ≥44px ✅
+- Mira widget works at all mobile sizes ✅
+- All pages load correctly at 375px, 390px, 412px, 430px, 768px ✅
+
+---
 
 **Per Mira_Widget_MASTER.docx spec. All 10/10 tests passed (100%).**
 
