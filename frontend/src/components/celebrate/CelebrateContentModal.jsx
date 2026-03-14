@@ -788,9 +788,9 @@ const PetWrapTeaser = ({ pet }) => {
 
   if (loading || !wrapData) return null;
   
-  const score = wrapData?.soul_score || wrapData?.cards?.soul_score?.score || pet?.soul_score || 0;
-  const archetype = wrapData?.archetype_name || wrapData?.cards?.cover?.archetype_name || '';
-  const archetypeEmoji = wrapData?.archetype_emoji || wrapData?.cards?.cover?.archetype_emoji || '✦';
+  const score = wrapData?.cards?.soul_score?.current_score ?? wrapData?.soul_score ?? pet?.overall_score ?? pet?.soul_score ?? 0;
+  const archetype = wrapData?.archetype_name || wrapData?.cards?.cover?.archetype_name || pet?.soul_archetype?.archetype_name || '';
+  const archetypeEmoji = wrapData?.archetype_emoji || wrapData?.cards?.cover?.archetype_emoji || pet?.soul_archetype?.archetype_emoji || '✦';
   const year = wrapData?.year || new Date().getFullYear();
   const petName = pet?.name || 'Your Pet';
 
@@ -1219,6 +1219,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
           });
           
           for (const food of foodImaginary.slice(0, 2)) {
+            // Remove redundant 'treats/cake/food' suffixes from the raw food string for clean labels
             const cleanFood = food.replace(/\s*(treat|cake|food)s?\b/gi, '').trim();
             const label = cleanFood.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
             imaginaryProducts.push({
@@ -1269,8 +1270,9 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
           };
           
           const archetypeCards = ARCHETYPE_IMAGINATIONS[archetype] || [];
-          for (const card of archetypeCards.slice(0, 2 - Math.min(imaginaryProducts.length, 2))) {
-            if (imaginaryProducts.length >= 4) break;
+          // Always include at least 1 archetype card, regardless of how many food items
+          const archetypeSlots = Math.max(1, Math.min(2, 5 - imaginaryProducts.length));
+          for (const card of archetypeCards.slice(0, archetypeSlots)) {
             imaginaryProducts.push({ type: 'archetype', name: card.name, trait: archetype, description: card.desc + ` for ${petName}`, emoji: card.emoji });
           }
           

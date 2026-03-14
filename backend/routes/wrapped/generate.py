@@ -81,6 +81,11 @@ async def generate_pet_wrapped(pet_id: str, year: Optional[int] = None):
     # ============================================
     # CARD 1: COVER DATA
     # ============================================
+    # Get soul archetype for this pet
+    soul_archetype = pet.get("soul_archetype", {}) or {}
+    archetype_name = (soul_archetype.get("archetype_name") or soul_archetype.get("primary_archetype") or "").replace("_", " ").title() if isinstance(soul_archetype, dict) else str(soul_archetype).replace("_", " ").title()
+    archetype_emoji = soul_archetype.get("archetype_emoji", "✦") if isinstance(soul_archetype, dict) else "✦"
+    
     cover_data = {
         "pet_name": pet_name,
         "breed": pet.get("breed", "Beloved Companion"),
@@ -88,7 +93,9 @@ async def generate_pet_wrapped(pet_id: str, year: Optional[int] = None):
         "gotcha_day": pet.get("gotcha_day"),
         "year": year,
         "rainbow_bridge": pet.get("rainbow_bridge", False),
-        "tagline": generate_cover_tagline(pet)
+        "tagline": generate_cover_tagline(pet),
+        "archetype_name": archetype_name,
+        "archetype_emoji": archetype_emoji,
     }
     
     # ============================================
@@ -304,6 +311,9 @@ async def generate_pet_wrapped(pet_id: str, year: Optional[int] = None):
         "pet_name": pet_name,
         "year": year,
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "soul_score": current_score,
+        "archetype_name": archetype_name,
+        "archetype_emoji": archetype_emoji,
         "cards": {
             "cover": cover_data,
             "soul_score": soul_score_data,

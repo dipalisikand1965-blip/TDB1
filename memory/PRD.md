@@ -13,7 +13,45 @@ The world's first soul-driven Pet Operating System. Every dog has a personality,
 
 ---
 
-## ✅ SESSION 8 PLAN (March 14, 2026)
+## ✅ SESSION 8 COMPLETED (March 14, 2026) — TESTED ✅
+
+### FEATURE 1 — Soul Score Constant Glow (COMPLETED ✅)
+- Replaced `key={score}` spring-remount with `useAnimation()` imperative control + `useEffect` trigger
+- Added `motion.span` with `textShadow` cycling `16px→48px→16px` glow, `repeat: Infinity` — NEVER stops
+- Score changes: smooth tween pop via `scoreControls.start({ scale: [1,1.12,1] })` — no bounce
+
+### FEATURE 2 — PetWrap Teaser in Mira's Picks (COMPLETED ✅)
+- `PetWrapTeaser` component renders in `miras-picks` section of `CelebrateContentModal`
+- Loads from `GET /api/wrapped/generate/{petId}` (API now exposes `archetype_name`, `archetype_emoji`, `soul_score` at top level)
+- Shows: pet name, year, soul score %, archetype, "View Full Wrap" CTA + Share button
+
+### FEATURE 3 — Celebrate-Context Soul Questions (COMPLETED ✅)
+- Backend: `GET /api/pet-soul/profile/{petId}/quick-questions?context=celebrate` added
+- Priority order: `celebration_preferences` (if unanswered) → `taste_treat` folder → motivation/activity → others
+- Frontend: CelebrateContentModal passes `?context=celebrate&limit=5` to soul questions
+
+### FEATURE 4 — Occasion Countdown Card (COMPLETED ✅)
+- `OccasionCountdownCard` renders at TOP of Mira's Picks
+- Checks `pet.birthday`, `pet.gotcha_date`, and soul-answered celebration_preferences (Diwali, Holi, Christmas etc.)
+- Gold styling when within 7 days, purple when 8-45 days, shows "TODAY" badge
+- Holi/festival dates mapped to approximate annual dates
+
+### FEATURE 5 — Archetype-Based Imagined Products (COMPLETED ✅)
+- 6 archetypes mapped: gentle_aristocrat, wild_explorer, velcro_baby, social_butterfly, foodie_gourmet, zen_philosopher
+- Always includes at least 1 archetype card: `archetypeSlots = Math.max(1, Math.min(2, 5 - imaginaryProducts.length))`
+- Total limit expanded to 5 imagined products
+
+### FEATURE 6 — Mira Memory Loop (COMPLETED ✅)
+- `celebrate_routes.py`: When concierge request created with `pet_id`, writes to `pets.learned_facts`
+- Format: `{type, category, product_name, request_type, request_id, date}`
+- Mira chat backend already reads `learned_facts` in system prompt via `get_pet_context_pack`
+
+### BUG FIX — Text Duplication (COMPLETED ✅)
+- "salmon treats treats" text duplication fixed: `cleanFood` properly strips "treats/cake/food" suffixes
+
+---
+
+## ✅ SESSION 7 FIXES (March 14, 2026) — TESTED ✅
 
 ### FEATURE 1 — Soul Score Constant Glow (P0)
 **Problem:** The `key={score}` on the score number causes it to re-mount and re-animate with `scale: 1.4` on every update — creating a "bounce" effect. After answering, the score jumps forward and back.
