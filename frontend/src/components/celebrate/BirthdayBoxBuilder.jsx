@@ -19,11 +19,9 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { useResizeMobile } from '../../hooks/useResizeMobile';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
-
-// Mobile: pin below header + above nav bar. Desktop: centre.
-const isMobile = () => typeof window !== 'undefined' && window.innerWidth < 640;
 
 /* ─────────────────────────────────────────────────────────────────
    SLOT ROW — compact, mobile-friendly
@@ -392,6 +390,9 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
   const [isOrdering, setIsOrdering] = useState(false);
   const [ticketId, setTicketId] = useState(null);
 
+  // ResizeObserver on the modal backdrop container — 150ms debounce
+  const [containerRef, isMobile] = useResizeMobile(640);
+
   // Listen for open event
   useEffect(() => {
     const handleOpen = (e) => {
@@ -479,13 +480,12 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
 
   if (!isOpen) return null;
 
-  const mobile = isMobile();
-
   const modalContent = (
     <AnimatePresence>
-      {/* Backdrop */}
+      {/* Backdrop — containerRef here so ResizeObserver tracks full viewport */}
       <motion.div
         key="backdrop"
+        ref={containerRef}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -517,11 +517,11 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
           zIndex: 9201,
           display: 'flex',
           // Mobile: pin to top so X button clears the sticky header
-          alignItems: mobile ? 'flex-start' : 'center',
+          alignItems: isMobile ? 'flex-start' : 'center',
           justifyContent: 'center',
-          padding: mobile ? '110px 12px 80px' : '16px',
+          padding: isMobile ? '110px 12px 80px' : '16px',
           pointerEvents: 'none',
-          overflowY: mobile ? 'auto' : 'visible',
+          overflowY: isMobile ? 'auto' : 'visible',
         }}
       >
         <div
@@ -536,7 +536,7 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
             background: 'linear-gradient(145deg, #140028 0%, #2D0060 60%, #1A0030 100%)',
             border: '1px solid rgba(196,77,255,0.30)',
             boxShadow: '0 8px 64px rgba(196,77,255,0.30)',
-            maxHeight: mobile ? 'none' : '88vh',
+            maxHeight: isMobile ? 'none' : '88vh',
             pointerEvents: 'all',
           }}
         >

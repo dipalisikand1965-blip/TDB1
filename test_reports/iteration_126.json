@@ -1,0 +1,62 @@
+{
+  "summary": "Resize/Rotation tests for BirthdayBoxBuilder, BirthdayBoxBrowseDrawer, and MiraChatWidget. CRITICAL BUG found and fixed: both BirthdayBoxBuilder and BirthdayBoxBrowseDrawer used undefined variable `mobile` instead of `isMobile` (typo — `mobile` is never declared). This meant layout NEVER switched to mobile mode despite ResizeObserver firing. Fixed by renaming `mobile` → `isMobile` in both files. After fix, ALL resize tests pass.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "PASSED_tests": [
+    "RESIZE TEST 1 [1024px] — BirthdayBoxBuilder: alignItems=center, paddingTop=16px, X btn visible at top:66px ✅",
+    "RESIZE TEST 2 [375px] — BirthdayBoxBuilder resize: alignItems=flex-start, paddingTop=110px, X btn at top:127px ✅",
+    "RESIZE TEST 3 [768px] — BirthdayBoxBuilder resize back: alignItems=center ✅ (re-open also centered ✅)",
+    "RESIZE TEST 4a [1024px] — BirthdayBoxBrowseDrawer: alignItems=center, zIndex=9199 ✅",
+    "RESIZE TEST 4b [390px] — BirthdayBoxBrowseDrawer resize: alignItems=flex-start, paddingTop=110px ✅",
+    "ZINDEX — BirthdayBoxBuilder modal=9201, backdrop=9200 ✅",
+    "ZINDEX — BirthdayBoxBrowseDrawer modal=9199 ✅",
+    "MIRA WIDGET [1024px] — Desktop right-side panel: width=420px, x=604 (right-aligned) ✅",
+    "MIRA WIDGET [375px] — Mobile full-width: width=375px, y=105px (top:105px) ✅",
+    "MIRA WIDGET ROTATE BACK [1024px] — Desktop panel restored: width=420px, x=604 ✅",
+    "CLEANUP TEST — 5x rapid open/close: No setState-on-unmounted errors, no memory leaks ✅",
+    "IPAD ROTATION [768px→1024px] — Modal stays centered, not frozen, X btn accessible ✅"
+  ],
+  "FAILED_tests": [],
+  "bug_fixed": {
+    "file1": "/app/frontend/src/components/celebrate/BirthdayBoxBuilder.jsx",
+    "file2": "/app/frontend/src/components/celebrate/BirthdayBoxBrowseDrawer.jsx",
+    "bug": "Lines 520-539 (Builder) and 469-481 (Browse): used undefined `mobile` variable instead of `isMobile` declared on line 394/366",
+    "impact": "Layout NEVER switched to mobile mode — alignItems was always 'center' (desktop) at any viewport width, because undefined is falsy",
+    "fix": "Renamed `mobile` → `isMobile` in both files (4 occurrences each)"
+  },
+  "test_report_links": ["/app/test_reports/test_resize_resize126.py"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "FIXED: BirthdayBoxBuilder.jsx lines 520,522,524,539 — `mobile` → `isMobile` (typo: variable was named isMobile from useResizeMobile but referenced as mobile in JSX)",
+    "FIXED: BirthdayBoxBrowseDrawer.jsx lines 469,471,473,481 — same `mobile` → `isMobile` typo fix",
+    "NOTE: MiraChatWidget correctly uses `isMobile` from `useViewportMobile` (declared on line 167) and layout is driven by Tailwind CSS responsive classes (sm: prefix) — works correctly without isMobile needing to be directly used in style props"
+  ],
+  "updated_files": [
+    "/app/frontend/src/components/celebrate/BirthdayBoxBuilder.jsx",
+    "/app/frontend/src/components/celebrate/BirthdayBoxBrowseDrawer.jsx"
+  ],
+  "success_rate": {
+    "backend": "N/A (frontend only)",
+    "frontend": "100% — All 12 resize/rotation tests passing after typo fix"
+  },
+  "test_credentials": {
+    "user": "dipali@clubconcierge.in / test123"
+  },
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All resize/rotation tests PASS after fixing `mobile` → `isMobile` typo in BirthdayBoxBuilder.jsx and BirthdayBoxBrowseDrawer.jsx. The fix was: at 1024px modal is centered (alignItems:center, padding:16px); at 375-640px modal uses mobile layout (alignItems:flex-start, padding:110px 12px 80px). MiraChatWidget resize works via Tailwind CSS sm: breakpoints — desktop=right panel (width=420px, x=604), mobile=full-width top:105px. All zIndexes correct: Builder=9201/9200, Browse=9199/9198. Cleanup: no setState-on-unmounted errors. iPad rotation (768→1024) works correctly.",
+  "rca_of_issue": {
+    "bug": "BirthdayBoxBuilder and BirthdayBoxBrowseDrawer never switched to mobile layout on resize",
+    "root_cause": "Variable name typo: `const [containerRef, isMobile] = useResizeMobile(640)` declares `isMobile`, but JSX conditionals used `mobile` (undeclared variable = undefined = always falsy). So layout was always desktop-mode regardless of viewport width. The ResizeObserver was firing correctly and updating `isMobile` state, but the JSX was reading the wrong variable name.",
+    "fix": "Replaced all 4 occurrences of `mobile` with `isMobile` in both BirthdayBoxBuilder.jsx and BirthdayBoxBrowseDrawer.jsx",
+    "reproduction": "Set viewport to 375px, open builder, check alignItems — was 'center' (wrong), now 'flex-start' (correct)"
+  }
+}
