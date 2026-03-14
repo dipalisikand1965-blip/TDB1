@@ -53,46 +53,46 @@
 
         <!-- COMPLETED TASK: AI Image Generation -->
         <div class="section" style="border: 3px solid #38a169;">
-            <h2 class="section-title"><span class="emoji">✅</span> COMPLETED: AI Image Generation for Party & Accessories</h2>
+            <h2 class="section-title"><span class="emoji">✅</span> COMPLETED: AI Image Generation + Product Activation System</h2>
             
             <div class="success-box">
                 <strong>STATUS:</strong> ✅ COMPLETE — March 14, 2026<br>
-                <strong>Script:</strong> <code>/app/backend/scripts/generate_party_accessory_images.py</code><br>
-                <strong>Products Created:</strong> 15 products with AI-generated Cloudinary images<br>
-                <strong>Visible at:</strong> <code>/celebrate-soul</code> → Party & Decor tab (33 total items)
+                <strong>Party Products:</strong> 14 products with realistic AI images (NOT dog photos!)<br>
+                <strong>Deactivated:</strong> 205 illustration-only and zero-price products<br>
+                <strong>Admin Control:</strong> Activate/Deactivate toggle in ProductBoxEditor and CelebrateManager
             </div>
 
             <div class="card">
-                <div class="card-title">Products Generated (Generic, All Breeds)</div>
+                <div class="card-title">⚠️ CRITICAL: Product Image Standards</div>
                 <table>
-                    <tr><th>Product</th><th>Category</th><th>Price</th><th>Status</th></tr>
-                    <tr><td>Classic Birthday Party Hat</td><td>party_accessories</td><td>₹249</td><td class="verified">✓ Live</td></tr>
-                    <tr><td>Glitter Birthday Crown</td><td>party_accessories</td><td>₹299</td><td class="verified">✓ Live</td></tr>
-                    <tr><td>Mini Birthday Tiara</td><td>party_accessories</td><td>₹199</td><td class="verified">✓ Live</td></tr>
-                    <tr><td>"Happy Barkday" Banner</td><td>party_accessories</td><td>₹349</td><td class="verified">✓ Live</td></tr>
-                    <tr><td>"Paw-ty Time" Banner Set</td><td>party_accessories</td><td>₹399</td><td class="verified">✓ Live</td></tr>
-                    <tr><td>Paw Print Balloon Bundle</td><td>party_accessories</td><td>₹399</td><td class="verified">✓ Live</td></tr>
-                    <tr><td>Foil Bone & Paw Balloon Set</td><td>party_accessories</td><td>₹499</td><td class="verified">✓ Live</td></tr>
-                    <tr><td>Celebration Bow Tie Set</td><td>party_accessories</td><td>₹299</td><td class="verified">✓ Live</td></tr>
-                    <tr><td>Party Glasses & Hat Combo</td><td>party_accessories</td><td>₹349</td><td class="verified">✓ Live</td></tr>
-                    <tr><td>Birthday Headband Collection</td><td>party_accessories</td><td>₹379</td><td class="verified">✓ Live</td></tr>
-                    <tr><td>Photo Backdrop Kit</td><td>party_kits</td><td>₹799</td><td class="verified">✓ Live</td></tr>
-                    <tr><td>Pet-Safe Paper Confetti Pack</td><td>celebration_addons</td><td>₹199</td><td class="verified">✓ Live</td></tr>
-                    <tr><td>Table Decoration Set</td><td>celebration_addons</td><td>₹599</td><td class="verified">✓ Live</td></tr>
-                    <tr><td>Complete Paw-ty Bundle</td><td>party_kits</td><td>₹1499</td><td class="verified">✓ Live</td></tr>
-                    <tr><td>Deluxe Photo Session Kit</td><td>party_kits</td><td>₹1299</td><td class="verified">✓ Live</td></tr>
+                    <tr><th>Type</th><th>Example</th><th>Action</th></tr>
+                    <tr class="bad-row" style="background:#fee2e2;">
+                        <td><strong>❌ BAD - Illustration Only</strong></td>
+                        <td>Dog face drawing, no product visible, "Price on request"</td>
+                        <td>DEACTIVATE</td>
+                    </tr>
+                    <tr class="good-row" style="background:#dcfce7;">
+                        <td><strong>✓ GOOD - Real Mockup</strong></td>
+                        <td>Actual mug/bandana/frame with dog face PRINTED ON IT, actual price (₹499)</td>
+                        <td>KEEP ACTIVE</td>
+                    </tr>
                 </table>
             </div>
 
             <div class="card">
-                <div class="card-title">Technical Implementation</div>
+                <div class="card-title">Admin Activate/Deactivate Controls</div>
                 <ul>
-                    <li><strong>Image Generation:</strong> GPT Image 1 via Emergent Integrations</li>
-                    <li><strong>Storage:</strong> Cloudinary (folder: celebrate_party_products)</li>
-                    <li><strong>Database:</strong> products_master collection</li>
-                    <li><strong>API Enhancement:</strong> Products sorted by <code>ai_image_generated</code> (AI images first)</li>
-                    <li><strong>Frontend Display:</strong> CelebrateContentModal.jsx → "Party & Decor" tab</li>
+                    <li><strong>ProductBoxEditor:</strong> Purple toggle in "Inventory" tab → "Product Active Status"</li>
+                    <li><strong>CelebrateManager:</strong> Purple toggle in product edit modal</li>
+                    <li><strong>Effect:</strong> Inactive products don't appear on website (is_active filter in API)</li>
                 </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">API Endpoints for Activation</div>
+                <code>PATCH /api/admin/products/{id}/toggle-active</code><br>
+                <code>PATCH /api/admin/breed-products/{id}/toggle-active</code><br>
+                <code>POST /api/admin/breed-products/bulk-toggle</code> → { product_ids: [], is_active: true/false }
             </div>
         </div>
 
