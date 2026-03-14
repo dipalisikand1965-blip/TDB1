@@ -1,6 +1,71 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: March 14, 2026 (Session 9 — Celebrate Pillars Master Build: Special Panels + DrawerBottomBar)
+## Last Updated: March 14, 2026 (Session 11 — PillarSoulModal + Master Sync)
+
+---
+
+## 🔄 SESSION 11 SPEC — PillarSoulModal + Master Sync (March 14, 2026)
+
+### WHAT WAS BUILT:
+
+#### 1. **PillarSoulModal Implementation** (COMPLETED ✅)
+When a pillar is clicked and the pet's profile is **missing information** for that specific pillar, a modal appears with **4-6 contextual questions** to help enrich the pet's soul data.
+
+**Flow:**
+1. User clicks a pillar → System checks if pet has enough data for that pillar
+2. If data is incomplete → Show `PillarSoulModal` with pillar-specific questions
+3. User answers questions → Backend updates `doggy_soul_answers` + recalculates soul score
+4. Updates Mira's memory (`learned_facts` array) → She now "knows" more about the pet
+5. **OUTCOME:** Immediately able to generate dynamic concierge suggestions with the new data
+
+**New Backend Endpoint:**
+| Endpoint | Method | Auth | Purpose |
+|---|---|---|---|
+| `/api/pets/{pet_id}/pillar-soul-update` | PATCH | JWT | Update soul answers from pillar questions |
+
+**Request Payload:**
+```json
+{
+  "pillar": "food",
+  "answers": {"favorite_treats": ["Salmon", "Chicken"]},
+  "learned_facts": ["[Food & Flavour] What flavours does Mojo love? → Salmon, Chicken"],
+  "summary": "Mojo food preferences updated via soul modal"
+}
+```
+
+**Response:**
+```json
+{
+  "pet": {...updated pet object...},
+  "new_score": 100.0,
+  "score_tier": "soul_master",
+  "pillar": "food",
+  "facts_added": 1
+}
+```
+
+#### 2. **Master Sync for AI Products** (COMPLETED ✅)
+On backend startup, automatically seeds celebrate products ensuring all 8 pillars have items in "Shop" tab.
+
+**Implementation:** Added Step 12/12 to `master_sync_on_startup()`:
+- Imports `seed_celebrate_products` from `celebrate_product_generator.py`
+- Checks if < 50 celebrate products exist → seeds new ones
+- Syncs with Cloudinary for proper images
+- **Result:** 379 celebrate products now in system
+
+**Files Modified:**
+- `/app/backend/server.py` — Added endpoint + Master Sync step
+- `/app/frontend/src/components/celebrate/SoulCelebrationPillars.jsx` — Rendered PillarSoulModal
+
+### TESTING RESULTS (Session 11):
+| Test | Status |
+|---|---|
+| 8-pillar grid display | ✅ PASS |
+| Pillar expansion with tabs | ✅ PASS |
+| All special panel cards | ✅ PASS |
+| PATCH /api/pets/{pet_id}/pillar-soul-update | ✅ PASS |
+| Products API for all pillar tabs | ✅ PASS |
+| Master Sync (379 products) | ✅ PASS |
 
 ---
 

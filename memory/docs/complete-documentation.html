@@ -26,7 +26,42 @@
 <body>
 
 <h1>🐾 The Doggy Company — Platform Documentation</h1>
-<p style="color:#888; font-size:13px">Last updated: March 2026 — Session 9 (Celebrate Pillars Master Build)</p>
+<p style="color:#888; font-size:13px">Last updated: March 2026 — Session 11 (PillarSoulModal + Master Sync)</p>
+
+<!-- ============================= -->
+<div class="section">
+<h2>0. Session 11 Updates — PillarSoulModal + Master Sync</h2>
+<table>
+  <tr><th>Feature</th><th>Status</th><th>Details</th></tr>
+  <tr><td>PillarSoulModal</td><td><span class="badge done">DONE</span></td><td>Modal with 4-6 pillar-specific questions. Updates soul answers + recalculates score.</td></tr>
+  <tr><td>Pillar Soul Update API</td><td><span class="badge done">DONE</span></td><td><code>PATCH /api/pets/{pet_id}/pillar-soul-update</code></td></tr>
+  <tr><td>Master Sync Step 12</td><td><span class="badge done">DONE</span></td><td>Celebrate products seeded on startup (379 products)</td></tr>
+  <tr><td>Mira Memory Integration</td><td><span class="badge done">DONE</span></td><td>learned_facts stored on pet object for AI personalization</td></tr>
+</table>
+
+<h3>PillarSoulModal Flow</h3>
+<pre>
+User clicks pillar → Check pillar completeness
+                   → If INCOMPLETE: Show PillarSoulModal
+                   → User answers 4-6 questions
+                   → PATCH /api/pets/{pet_id}/pillar-soul-update
+                   → Soul score recalculated
+                   → Mira's learned_facts updated
+                   → Dynamic concierge suggestions generated
+</pre>
+
+<h3>New API Endpoint</h3>
+<table>
+  <tr><th>Endpoint</th><th>Method</th><th>Auth</th><th>Request Body</th></tr>
+  <tr>
+    <td><code>/api/pets/{pet_id}/pillar-soul-update</code></td>
+    <td>PATCH</td>
+    <td>JWT</td>
+    <td><code>{ pillar, answers, learned_facts, summary }</code></td>
+  </tr>
+</table>
+<p><strong>Response:</strong> <code>{ pet, new_score, score_tier, pillar, facts_added }</code></p>
+</div>
 
 <!-- ============================= -->
 <div class="section">
@@ -49,14 +84,15 @@
 CelebratePageNew.jsx
 ├── CelebrateHero.jsx              ← Pet photo, soul score, chips, Mira quote
 ├── CelebrateCategoryStrip.jsx     ← 11 product categories strip
-├── SoulCelebrationPillars.jsx     ← 8-pillar grid (MAIN FEATURE — Session 9)
+├── SoulCelebrationPillars.jsx     ← 8-pillar grid (MAIN FEATURE)
 │   ├── PillarCard                 ← Individual clickable card (GLOW/DIM/INCOMPLETE)
-│   └── SoulPillarExpanded.jsx     ← Inline expanded view (Session 9 built)
-│       ├── FeastMenuCard          ← Pillar 1 (Food) special panel
-│       ├── PawtyPlannerCard       ← Pillar 3 (Social) special panel
-│       ├── WellnessHeroCard       ← Pillar 7 (Health) special panel
-│       ├── MemoryInvitationCard   ← Pillar 8 (Memory) special panel
-│       └── DrawerBottomBar.jsx    ← Sticky bottom bar (Session 9 built)
+│   ├── SoulPillarExpanded.jsx     ← Inline expanded view with 3 tabs
+│   │   ├── FeastMenuCard          ← Pillar 1 (Food) special panel
+│   │   ├── PawtyPlannerCard       ← Pillar 3 (Social) special panel
+│   │   ├── WellnessHeroCard       ← Pillar 7 (Health) special panel
+│   │   ├── MemoryInvitationCard   ← Pillar 8 (Memory) special panel
+│   │   └── DrawerBottomBar.jsx    ← Sticky bottom bar (3 states)
+│   └── PillarSoulModal.jsx        ← NEW (Session 11) — Soul questions modal
 ├── MiraCuratedBox.jsx             ← Birthday box builder
 ├── CelebrateConcierge.jsx         ← Concierge drawer
 ├── GuidedCelebrationPaths.jsx     ← Guided celebration paths
