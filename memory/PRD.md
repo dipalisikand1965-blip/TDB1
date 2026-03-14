@@ -31,7 +31,10 @@ The world's first soul-driven Pet Operating System. Every dog has a personality,
    - `nut-butters` → 6 products ✅ NEW
    - **BundleDetailSheet**: X close button added, image uses `object-contain` (max 320px, no crop) ✅
    - **Soul Picks**: Now uses `SoulPickCard` (wraps ProductCard with "For {pet}" badge) — proper modal with X ✅
-   - **Footer bar**: Replaced "Continue Shopping" with Mira whisper + "Build {Pet}'s Birthday Plan →" CTA ✅
+   - **Footer bar (2-state dynamic)**: 
+     - Browsing (nothing added): `✦ Everything here is personalised for {pet}` | `Explore More for {pet}` (closes modal)
+     - Active (items added): `{emoji} + N things — {pet}'s plan is growing` | `Keep Building →` (opens Mira AI with context)
+     - `addedCount` increments on every `addToCart` custom event while modal is open; resets on category switch
    - All product images: `object-contain` — no cropping ✅
 5. **Admin CelebrateManager** — loads 308+ products, category dropdown has celebration/frozen-treats/party_accessories
 

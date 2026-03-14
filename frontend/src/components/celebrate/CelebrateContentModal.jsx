@@ -326,6 +326,20 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
   const [loading, setLoading] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
+  const [addedCount, setAddedCount] = useState(0); // tracks items added this session
+
+  // Reset counter whenever a new category opens
+  useEffect(() => {
+    if (isOpen) setAddedCount(0);
+  }, [isOpen, category]);
+
+  // Listen for addToCart events to update the Mira whisper state
+  useEffect(() => {
+    if (!isOpen) return;
+    const onAdd = () => setAddedCount(prev => prev + 1);
+    window.addEventListener('addToCart', onAdd);
+    return () => window.removeEventListener('addToCart', onAdd);
+  }, [isOpen]);
 
   useEffect(() => {
     const check = () => setIsDesktop(window.innerWidth >= 768);
@@ -674,31 +688,62 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
         )}
       </div>
 
-      {/* Footer — Mira whisper + dynamic CTA */}
-      <div className="flex-shrink-0 px-5 py-3" style={{ borderTop: '1px solid #F0E8E0', background: 'white' }}>
-        <div className="flex items-center justify-between gap-3">
-          {/* Left: Mira whisper */}
-          <p className="text-xs flex-1 min-w-0" style={{ color: '#888', fontStyle: 'italic', lineHeight: 1.4 }}>
-            {(MIRA_WHISPERS[category] || ((n) => `✨ Exploring for ${n}`))(petName)}
-          </p>
-          {/* Right: CTA */}
-          <button
-            onClick={() => {
-              window.dispatchEvent(new CustomEvent('openMiraAI', {
-                detail: { message: `Help me build a celebration plan for ${petName}`, context: 'celebrate' }
-              }));
-              onClose();
-            }}
-            className="flex-shrink-0 rounded-xl font-bold text-white px-4 py-2.5 whitespace-nowrap"
-            style={{
-              background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)',
-              border: 'none', cursor: 'pointer', fontSize: 13
-            }}
-            data-testid="celebrate-modal-cta"
-          >
-            {(CTA_LABELS[category] || ((n) => `Plan ${n}'s Celebration →`))(petName)}
-          </button>
-        </div>
+      {/* Footer — Mira live narrative */}
+      <div
+        className="flex-shrink-0 px-4 py-3"
+        style={{ borderTop: '1px solid #F0E8E0', background: 'white' }}
+      >
+        {addedCount === 0 ? (
+          /* ── Browsing state: nothing added yet ─────────────────────── */
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs flex-1 min-w-0" style={{ color: '#9B7FA0', lineHeight: 1.4 }}>
+              <span style={{ color: '#C44DFF', fontWeight: 600 }}>✦</span> Everything here is personalised for{' '}
+              <span style={{ fontWeight: 700, color: '#1A0A00' }}>{petName}</span>
+            </p>
+            <button
+              onClick={onClose}
+              className="flex-shrink-0 rounded-xl font-bold px-4 py-2.5 whitespace-nowrap"
+              style={{
+                background: 'rgba(196,77,255,0.08)',
+                border: '1.5px solid rgba(196,77,255,0.25)',
+                color: '#7C3AED', cursor: 'pointer', fontSize: 13
+              }}
+              data-testid="celebrate-modal-cta"
+            >
+              Explore More for {petName}
+            </button>
+          </div>
+        ) : (
+          /* ── Active state: items have been added ────────────────────── */
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs flex-1 min-w-0" style={{ color: '#1A0A00', lineHeight: 1.4, fontWeight: 500 }}>
+              <span style={{ fontSize: 15 }}>{config.emoji}</span>{' '}
+              <span style={{ color: '#C44DFF', fontWeight: 700 }}>
+                + {addedCount} {addedCount === 1 ? 'thing' : 'things'}
+              </span>{' '}
+              — <span style={{ fontStyle: 'italic' }}>{petName}'s plan is growing</span>
+            </p>
+            <button
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('openMiraAI', {
+                  detail: {
+                    message: `I've added ${addedCount} item${addedCount > 1 ? 's' : ''} for ${petName}. Help me build their complete celebration plan.`,
+                    context: 'celebrate'
+                  }
+                }));
+                onClose();
+              }}
+              className="flex-shrink-0 rounded-xl font-bold text-white px-4 py-2.5 whitespace-nowrap"
+              style={{
+                background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)',
+                border: 'none', cursor: 'pointer', fontSize: 13
+              }}
+              data-testid="celebrate-modal-cta"
+            >
+              Keep Building →
+            </button>
+          </div>
+        )}
       </div>
     </motion.div>
   );
