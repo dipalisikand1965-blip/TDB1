@@ -1,0 +1,89 @@
+{
+  "summary": "Comprehensive testing of BirthdayBoxBuilder concierge handoff flow (Step1→Step2→Step3) and POST /api/birthday-box/{petId}/concierge-handoff endpoint. All 14 backend tests and all frontend UI tests PASSED. Fixed: Sonner Toaster not mounted in App.js — toast notifications were silently failing across the entire app.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Step 3 Concierge Handoff - Left column",
+        "issues": [
+          "Minor: Slot names in the '6 Slots Confirmed' left column are truncated ('Salmon Birthday ...' instead of full name). This is expected in the two-column compact layout but could be improved with better truncation handling or tooltip on hover."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_concierge_handoff.py",
+    "/app/test_reports/pytest/concierge_handoff_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "FIXED: App.js was missing Sonner's <Toaster /> component mount. Added SonnerToaster from components/ui/sonner.jsx to App.js. Without this fix, ALL toast notifications from 'sonner' across the entire app were silently failing (BirthdayBoxBuilder, PetHomePage, CelebratePage, DineNewPage, etc. all use toast from 'sonner' but the Toaster was never mounted).",
+    "birthday_box_routes.py line 474: ticket_doc is inserted into BOTH service_desk_tickets AND tickets collections — intentional for compatibility but creates duplicate documents.",
+    "birthday_box_routes.py: member_notifications insert (line 534) only happens when user_email is truthy — correct design for optional email but worth noting in docs.",
+    "BirthdayBoxBuilder.jsx: handleNext (line 384-389) — when pet has no allergies, calls handleSendToConcierge(false) directly from Step 1, bypassing Step 2. allergyConfirmed passed as 'false' but the endpoint correctly handles this (since no allergies, the allergy check is skipped server-side)."
+  ],
+  "updated_files": [
+    "/app/frontend/src/App.js",
+    "/app/backend/tests/test_concierge_handoff.py"
+  ],
+  "success_rate": {
+    "backend": "100% (14/14 tests passed)",
+    "frontend": "100% (all test points verified)"
+  },
+  "test_credentials": {
+    "member_email": "dipali@clubconcierge.in",
+    "member_password": "test123",
+    "pet_id": "pet-mojo-7327ad56"
+  },
+  "seed_data_creation": "Multiple concierge-handoff records created in service_desk_tickets, admin_notifications, pillar_requests, channel_intakes, member_notifications, birthday_box_orders during testing.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "BirthdayBoxBuilder concierge handoff flow fully working: Step1 (6 slots review) → Step2 (allergy check for Mojo) → Step3 (concierge handoff screen with TKT-XXXXXXXX ticket ID, 6-slot left column, 'What happens next' right column, 'not an e-commerce order' disclaimer). POST /api/birthday-box/{petId}/concierge-handoff endpoint fully tested. Mobile bottom sheet confirmed working. Toast notification fixed (Sonner Toaster now mounted in App.js). Backend test file: /app/backend/tests/test_concierge_handoff.py.",
+  "features_verified": {
+    "full_builder_flow_step1_to_step3": {
+      "status": "WORKING",
+      "evidence": "Clicked build-box-btn → Step 1 shows all 6 slots → Click 'Review Health & Safety' → Step 2 shows allergy check for Mojo (soy, chicken) → Check allergy-confirm-checkbox → Click builder-confirm-order-btn → Step 3 concierge handoff screen appears"
+    },
+    "step3_confirmation_text": {
+      "status": "WORKING",
+      "evidence": "Step 3 shows: 'Mojo's Birthday Box is confirmed.' and 'Your Concierge has everything they need to build it.'"
+    },
+    "step3_ticket_id_format": {
+      "status": "WORKING",
+      "evidence": "TKT-305097F1, TKT-170C217A, TKT-02D33878 — all match TKT-[A-F0-9]{8} pattern"
+    },
+    "step3_6_slots_confirmed": {
+      "status": "WORKING",
+      "evidence": "Left column shows '6 SLOTS CONFIRMED' with Hero/Joy/Style/Memory/Health/Surprise labels and Safe/Surprise badges"
+    },
+    "step3_what_happens_next": {
+      "status": "WORKING",
+      "evidence": "Right column shows 4 items: 'within 24 hours', 'Mojo's name on the bandana', 'cake message', 'Delivery address and date'"
+    },
+    "step3_not_ecommerce_disclaimer": {
+      "status": "WORKING",
+      "evidence": "Visible in screenshot: 'This is not an e-commerce order. Your Birthday Box is assembled, personalised, and delivered as a single concierge service.'"
+    },
+    "concierge_handoff_endpoint": {
+      "status": "WORKING",
+      "evidence": "POST /api/birthday-box/pet-mojo-7327ad56/concierge-handoff returns success=True, ticketId (TKT-format), requestId (BBOX-format), message with '24 hours'. Creates records in service_desk_tickets, admin_notifications, pillar_requests, channel_intakes, member_notifications, birthday_box_orders."
+    },
+    "allergy_check_required_error": {
+      "status": "WORKING",
+      "evidence": "POST with allergyConfirmed=False returns {success: false, error: 'allergy_confirmation_required'}"
+    },
+    "toast_notification": {
+      "status": "WORKING (after fix)",
+      "evidence": "Toast text: 'Mojo's Birthday Box sent to Concierge!' confirmed visible via [data-sonner-toaster]. Root cause: Sonner Toaster not mounted in App.js — FIXED by adding SonnerToaster import and JSX render."
+    },
+    "mobile_bottom_sheet": {
+      "status": "WORKING",
+      "evidence": "On 390px viewport: modal has 'items-end sm:items-center' (bottom positioning on mobile), drag handle present ('flex justify-center pt-3 pb-0 sm:hidden'), 'rounded-t-2xl sm:rounded-2xl' (rounded top on mobile)"
+    }
+  }
+}
