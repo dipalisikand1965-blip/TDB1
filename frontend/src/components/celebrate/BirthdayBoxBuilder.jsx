@@ -484,33 +484,27 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
         data-testid="builder-backdrop"
       />
 
-      {/* Modal — full screen on mobile, centered card on desktop */}
+      {/* Modal — always centered pop-up */}
       <motion.div
         key="modal"
-        initial={{ opacity: 0, scale: 0.94, y: 24 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.94, y: 24 }}
-        transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed z-[201] flex items-end sm:items-center justify-center"
-        style={{ inset: 0, padding: '0' }}
+        initial={{ opacity: 0, scale: 0.92 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.92 }}
+        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed z-[201] inset-0 flex items-center justify-center p-4"
         data-testid="birthday-box-builder"
       >
         <div
-          className="relative w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl overflow-hidden"
+          className="relative w-full max-w-lg rounded-2xl overflow-hidden"
           style={{
             background: 'linear-gradient(145deg, #140028 0%, #2D0060 60%, #1A0030 100%)',
             border: '1px solid rgba(196,77,255,0.30)',
-            boxShadow: '0 -8px 48px rgba(196,77,255,0.25)',
-            maxHeight: '92vh',
+            boxShadow: '0 8px 64px rgba(196,77,255,0.30)',
+            maxHeight: '88vh',
             overflowY: 'auto',
           }}
           onClick={e => e.stopPropagation()}
         >
-          {/* Drag handle on mobile */}
-          <div className="flex justify-center pt-3 pb-0 sm:hidden">
-            <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.20)' }} />
-          </div>
-
           {/* Header */}
           <div
             className="sticky top-0 z-10 flex items-center justify-between px-5 py-4"
