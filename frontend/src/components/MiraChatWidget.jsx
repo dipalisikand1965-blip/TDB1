@@ -24,6 +24,7 @@ import CinematicKitAssembly from './CinematicKitAssembly';
 import MiraConciergeCards, { parseMiraRecommendations } from './MiraConciergeCard';
 import PersonalizedPicksPanel from './Mira/PersonalizedPicksPanel';
 import ReactMarkdown from 'react-markdown';
+import '../styles/mira-universal.css';
 import { 
   X, Send, Loader2, Mic, MicOff, Volume2, VolumeX, 
   ChevronDown, Sparkles, PawPrint, MessageCircle, Zap,
@@ -101,6 +102,56 @@ const storeMessages = (messages, pillar) => {
   }
 };
 
+// ── Page-specific Mira opening lines (Mira_Widget_MASTER.docx Section 4) ─────
+const PILLAR_OPENING_LINES = {
+  celebrate: (pn, gr) => `${gr}. I see you're thinking about celebrating ${pn} today. What kind of moment are we planning?`,
+  dine:      (pn, gr) => `${gr}. I'm thinking about ${pn}'s food today too. What can I help with — a meal, a treat, or somewhere to take them?`,
+  stay:      (pn, gr) => `${gr}. Planning somewhere to take ${pn}? I know what they need to feel comfortable away from home.`,
+  learn:     (pn, gr) => `${gr}. ${pn} has a bright mind. What are we working on together?`,
+  care:      (pn, gr) => `${gr}. Let's make sure ${pn} is well looked after. What does ${pn} need today?`,
+  travel:    (pn, gr) => `${gr}. Planning a trip with ${pn}? Tell me where you're headed and I'll make sure they're ready.`,
+  enjoy:     (pn, gr) => `${gr}. ${pn} deserves a great day. What are we doing together?`,
+  fit:       (pn, gr) => `${gr}. Ready to work on ${pn}'s fitness? What are we training today?`,
+  advisory:  (pn, gr) => `${gr}. I'm here for all things ${pn}. Ask me anything.`,
+  emergency: (pn, gr) => `${gr}. I'm here. Tell me what's happening with ${pn} right now.`,
+  farewell:  (pn, gr) => `${gr}. This is one of the hardest times. I'm here with you and ${pn}.`,
+  adopt:     (pn, gr) => `${gr}. Thinking about bringing a new friend home? I can help you find the right match.`,
+  shop:      (pn, gr) => `${gr}. Looking for something for ${pn}? I'll point you to the best.`,
+  general:   (pn, gr) => `${gr}! How can I help${pn ? ` with ${pn}` : ''} today? 🐾`,
+};
+
+// ── Page-specific quick chips (Mira_Widget_MASTER.docx + user spec) ───────────
+// {petName} is replaced at render time
+const PILLAR_CHIPS = {
+  celebrate: ['🎂 Plan {petName}\'s birthday', '✦ Surprise me, Mira'],
+  dine:      ['🐟 What should {petName} eat today?', '🍽️ Find {petName} a restaurant'],
+  stay:      ['🏡 Where can {petName} stay?', '✦ Plan a trip for {petName}'],
+  learn:     ['🧠 What should {petName} learn next?', '✦ Make {petName} smarter'],
+  care:      ['🐾 What does {petName} need today?', '✦ Book something for {petName}'],
+  travel:    ['✈️ Plan a trip with {petName}', '🐾 What does {petName} need to travel?'],
+  enjoy:     ['🎾 What should {petName} do today?', '📍 Find dog-friendly spots near me'],
+  fit:       ['🏃 What\'s {petName}\'s workout today?', '✦ Build a fitness plan for {petName}'],
+  advisory:  ['❓ Ask Mira anything about {petName}', '✦ Get Mira\'s advice'],
+  emergency: ['🚨 Find emergency vet near me', '❓ Is this an emergency?'],
+  farewell:  ['💕 Help me plan {petName}\'s farewell', '✦ Talk to Mira'],
+  adopt:     ['🐾 Help me find the right pet', '✦ Are we ready to adopt?'],
+  shop:      ['🛒 What does {petName} need from the shop?', '✦ Best sellers for {petName}'],
+  general:   ['✦ How is {petName} today?', '📋 What\'s on {petName}\'s plan?'],
+};
+
+// ── Product card suppress logic (Mira_Widget_MASTER.docx Section 3) ──────────
+const SUPPRESS_PRODUCT_KEYWORDS = [
+  'lymphoma', 'treatment', 'illness', 'diagnosis', 'medication',
+  'happy', 'happiness', 'feel', 'feeling', 'mind', 'anxiety',
+  'separation', 'gentle', 'comfortable', 'cuddle', 'close',
+  'miss', 'grief', 'loss', 'passing', 'heaven', 'remember'
+];
+const shouldShowProducts = (responseText) => {
+  if (!responseText || typeof responseText !== 'string') return false;
+  const lower = responseText.toLowerCase();
+  return !SUPPRESS_PRODUCT_KEYWORDS.some(kw => lower.includes(kw));
+};
+
 const MiraChatWidget = ({ 
   pillar = 'general',
   onProductClick = null,
@@ -141,6 +192,9 @@ const MiraChatWidget = ({
   
   // Support filters state (Mira-driven personalization)
   const [activeSupportFilters, setActiveSupportFilters] = useState([]);
+
+  // Product card visibility — delay 800ms after response, suppress for health/emotion
+  const [visibleProducts, setVisibleProducts] = useState(new Set());
   
   // Voice state
   const [isListening, setIsListening] = useState(false);
@@ -309,25 +363,10 @@ const MiraChatWidget = ({
     fetchMiraContext();
   }, [pillar, trackPillarVisit, token]);
   
-  // Set pillar-specific quick actions immediately (no auth required)
+  // Set pillar-specific quick chips immediately (no auth required)
   useEffect(() => {
-    const pillarActions = {
-      stay: ['Book Stay', 'Find Hotels', 'Pet-Friendly Resorts'],
-      care: ['Build Care Kit', 'Book Grooming', 'Vet Consult', 'Wellness Check'],
-      fit: ['Build Fitness Kit', 'Start Workout', 'Track Activity'],
-      travel: ['Build Travel Kit', 'Plan Trip', 'Pet Passport'],
-      celebrate: ['Build Birthday Kit', 'Order Cake', 'Party Planning'],
-      dine: ['Compare Meal Plans', 'Ask about ingredients', 'Transitioning to fresh'],
-      enjoy: ['Find Playdate', 'Dog Park', 'Social Events'],
-      learn: ['Build Training Kit', 'Start Training', 'Book Class'],
-      paperwork: ['Get Insurance', 'Registration', 'Health Records'],
-      advisory: ['Expert Consult', 'Nutrition Plan', 'Behavior Help'],
-      emergency: ['24/7 Vet', 'First Aid', 'Emergency Contacts'],
-      farewell: ['Memorial', 'Support', 'Rainbow Bridge'],
-      adopt: ['Browse Pets', 'Apply', 'Foster'],
-      shop: ['Best Sellers', 'Deals', 'New Arrivals']
-    };
-    setQuickActions(pillarActions[pillar] || ['Help', 'Browse', 'Book']);
+    const chips = PILLAR_CHIPS[pillar] || PILLAR_CHIPS.general;
+    setQuickActions(chips);
   }, [pillar]);
   
   // Fetch user's pets and sync with navbar selection
@@ -484,31 +523,30 @@ const MiraChatWidget = ({
     };
   }, [isOpen]);
 
-  // Generate pillar-specific welcome message
+  // Generate pillar-specific welcome message (Mira_Widget_MASTER.docx Section 4)
   const generateWelcomeMessage = useCallback(() => {
     const greeting = getTimeBasedGreeting();
     const petName = selectedPet?.name;
     const petBreed = selectedPet?.breed;
-    const pillarName = config.name;
-    
-    let welcomeMsg = `${greeting}!`;
-    
-    // Safely get pillar note - ensure it's a string
+
+    // Prefer pillar_note from API context (already personalised)
     const pillarNote = typeof miraContext?.pillar_note === 'string' ? miraContext.pillar_note : null;
-    
-    if (pillarNote) {
-      welcomeMsg = pillarNote;
-    } else if (petName && petBreed) {
-      welcomeMsg += ` I see you're browsing ${pillarName} for ${petName}, your lovely ${petBreed}. How can I help today?`;
-    } else if (petName) {
-      welcomeMsg += ` How can I help you with ${petName}'s ${pillarName.toLowerCase()} needs today?`;
-    } else {
-      welcomeMsg += ` I'm here to help with all your ${pillarName.toLowerCase()} needs. What can I do for you?`;
+    if (pillarNote) return pillarNote;
+
+    // Use page-specific opening line if pet is known
+    if (petName) {
+      const lineFn = PILLAR_OPENING_LINES[pillar] || PILLAR_OPENING_LINES.general;
+      let line = lineFn(petName, greeting);
+      // Append breed detail for celebrate/dine where it adds warmth
+      if (petBreed && (pillar === 'celebrate' || pillar === 'dine')) {
+        // Already embedded in line — no extra appending needed
+      }
+      return line;
     }
-    
-    welcomeMsg += ' 🐾';
-    return welcomeMsg;
-  }, [selectedPet?.name, selectedPet?.breed, config.name, miraContext?.pillar_note]);
+
+    // No pet — generic greeting
+    return `${greeting}! I'm here to help with all your ${(pillarConfig[pillar]?.name || 'pet').toLowerCase()} needs. What can I do for you? 🐾`;
+  }, [selectedPet?.name, selectedPet?.breed, pillar, miraContext?.pillar_note]);
 
   // Add welcome message when widget opens
   useEffect(() => {
@@ -983,8 +1021,7 @@ const MiraChatWidget = ({
         }
         
         let displayContent = data.response;
-        
-        // Handle concierge_action for navigation
+        const assistantMsgId = (Date.now() + 1).toString(); // pre-compute for product timing
         if (data.concierge_action) {
           const action = data.concierge_action;
           
@@ -1060,7 +1097,7 @@ const MiraChatWidget = ({
         }
         
         setMessages(prev => [...prev, {
-          id: (Date.now() + 1).toString(),
+          id: assistantMsgId,
           role: 'assistant',
           content: displayContent,
           products: data.products,
@@ -1070,6 +1107,13 @@ const MiraChatWidget = ({
           serviceConfirmation: data.service_confirmation,
           nearbyPlaces: data.nearby_places // Restaurant, vet, park results from Mira
         }]);
+        
+        // Schedule product card reveal — 800ms after response renders, only if safe
+        if (shouldShowProducts(displayContent)) {
+          setTimeout(() => {
+            setVisibleProducts(prev => new Set([...prev, assistantMsgId]));
+          }, 800);
+        }
         
         if (voiceEnabled) {
           speakText(data.response);
@@ -1402,22 +1446,19 @@ const MiraChatWidget = ({
                   </button>
                 )}
                 
-                {/* Quick Actions - remaining space */}
-                {(quickActions || []).slice(0, 3).map((action, idx) => {
+                {/* Quick Actions — page-specific chips, petName substituted */}
+                {(quickActions || []).slice(0, 2).map((action, idx) => {
                   if (!action || typeof action !== 'string') return null;
-                  const isKitAction = action.toLowerCase().includes('build');
+                  const petName = selectedPet?.name || 'your pet';
+                  const resolved = action.replace(/\{petName\}/g, petName);
                   return (
                     <button
                       key={idx}
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); sendMessage(action); }}
-                      className={`px-4 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap min-h-[44px] touch-manipulation shrink-0 ${
-                        isKitAction 
-                          ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white active:from-purple-700 active:to-pink-700' 
-                          : 'bg-gray-100 text-gray-700 active:bg-gray-200'
-                      }`}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); sendMessage(resolved); }}
+                      className="px-4 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap min-h-[44px] touch-manipulation shrink-0 bg-gray-100 text-gray-700 active:bg-gray-200 hover:bg-gray-200"
                       data-testid={`quick-action-${idx}`}
                     >
-                      {isKitAction && '🎒 '}{action}
+                      {resolved}
                     </button>
                   );
                 })}
@@ -1443,8 +1484,9 @@ const MiraChatWidget = ({
                 return (
                 <div
                   key={msg.id}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
                 >
+                  {/* ── Text bubble ── */}
                   <div
                     className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
                       msg.role === 'user'
@@ -1458,126 +1500,7 @@ const MiraChatWidget = ({
                       </SafeMarkdownRenderer>
                     </div>
                     
-                    {/* MIRA CONCIERGE CARDS - Mira's actual recommendations */}
-                    {/* Parse Mira's text for recommendations and show as actionable cards */}
-                    {msg.role === 'assistant' && (() => {
-                      const miraRecs = parseMiraRecommendations(
-                        typeof msg.content === 'string' ? msg.content : '', 
-                        selectedPet?.name || 'your pet'
-                      );
-                      if (miraRecs.length > 0) {
-                        return (
-                          <MiraConciergeCards
-                            recommendations={miraRecs}
-                            petName={selectedPet?.name || 'your pet'}
-                            petId={selectedPet?.id}
-                            token={token}
-                            onRequestCreated={(data) => {
-                              // Add a confirmation message
-                              const confirmMsg = {
-                                id: `confirm-${Date.now()}`,
-                                role: 'assistant',
-                                content: `✅ Got it! I've sent your request to our Concierge team. They'll source exactly what ${selectedPet?.name || 'your pet'} needs and reach out with details. Request #${data.request_id || 'created'}`,
-                                timestamp: new Date().toISOString()
-                              };
-                              setMessages(prev => [...prev, confirmMsg]);
-                            }}
-                          />
-                        );
-                      }
-                      return null;
-                    })()}
-                    
-                    {/* LEGACY: Product Cards from catalog search (keep for fallback) */}
-                    {/* Only show if no concierge cards were rendered AND products exist */}
-                    {msg.products && Array.isArray(msg.products) && msg.products.length > 0 && 
-                     parseMiraRecommendations(typeof msg.content === 'string' ? msg.content : '', selectedPet?.name).length === 0 && (
-                      <div className="mt-3 space-y-2">
-                        <p className="text-xs font-bold text-gray-500 uppercase">📦 From our catalog:</p>
-                        {msg.products.slice(0, 4).map((product, pIdx) => {
-                          if (!product || !product.id) return null;
-                          // Use fallback image if product image is a local path or missing
-                          const imageUrl = product.image && product.image.startsWith('http') 
-                            ? product.image 
-                            : product.images?.[0] || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop`;
-                          
-                          return (
-                            <div 
-                              key={product.id || pIdx}
-                              className="bg-white rounded-lg p-2.5 flex items-center gap-3 border border-gray-200 cursor-pointer active:bg-gray-50"
-                              onClick={() => handleProductClick(product)}
-                            >
-                              <img 
-                                src={imageUrl} 
-                                alt={product.name || 'Product'} 
-                                className="w-16 h-16 rounded object-cover flex-shrink-0"
-                                onError={(e) => {
-                                  e.target.onerror = null;
-                                  e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop';
-                                }}
-                              />
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-bold text-gray-800 line-clamp-2">{product.name || 'Product'}</p>
-                                <p className="text-sm text-purple-600 font-bold">₹{product.price || 0}</p>
-                                {product.original_price && product.original_price > product.price && (
-                                  <p className="text-xs text-gray-400 line-through">₹{product.original_price}</p>
-                                )}
-                              </div>
-                              <div className="flex flex-col gap-1.5">
-                                <button
-                                  onClick={() => handleProductClick(product)}
-                                  className="px-3 py-2 min-h-[36px] bg-purple-100 text-purple-700 rounded text-xs font-medium hover:bg-purple-200 touch-manipulation active:scale-95"
-                                >
-                                  View
-                                </button>
-                                <button
-                                  onClick={() => { addToCart(product); toast.success('Added!'); }}
-                                  className="px-3 py-2 min-h-[36px] bg-purple-600 text-white rounded text-xs font-medium hover:bg-purple-700 touch-manipulation active:scale-95"
-                                >
-                                  Add
-                                </button>
-                              </div>
-                            </div>
-                          );
-                        })}
-                        
-                        {/* Add All to Cart button for kit assembly */}
-                        {msg.kitAssembly?.can_add_all_to_cart && msg.products.length > 1 && (
-                          <div className="mt-2 space-y-2">
-                            {/* Cinematic Kit Experience Button */}
-                            <button
-                              onClick={() => {
-                                setCinematicKitData({
-                                  name: msg.kitAssembly?.kit_name || `${pillar.charAt(0).toUpperCase() + pillar.slice(1)} Kit`,
-                                  items: msg.products
-                                });
-                                setShowCinematicKit(true);
-                              }}
-                              className="w-full px-4 py-3 bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600 text-white rounded-lg text-sm font-bold hover:from-violet-700 hover:via-purple-700 hover:to-pink-700 transition-all flex items-center justify-center gap-2 shadow-lg"
-                            >
-                              <Play className="w-4 h-4" />
-                              View Kit Experience
-                              <Badge className="bg-white/20 text-white text-[10px] ml-2">✨ New</Badge>
-                            </button>
-                            {/* Quick Add All */}
-                            <button
-                              onClick={() => {
-                                msg.products.forEach(p => addToCart(p));
-                                toast.success(`Added ${msg.products.length} items to cart!`, {
-                                  description: 'Your kit is ready to checkout'
-                                });
-                              }}
-                              className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
-                            >
-                              <ShoppingBag className="w-4 h-4" />
-                              Quick Add All {msg.products.length} Items
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    
-                    {/* NEARBY PLACES - Restaurants, Vets, Parks from Mira */}
+                    {/* NEARBY PLACES stay inside bubble */}
                     {msg.nearbyPlaces && msg.nearbyPlaces.places && msg.nearbyPlaces.places.length > 0 && (
                       <div className="mt-3 space-y-2">
                         <p className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1">
@@ -1834,6 +1757,85 @@ const MiraChatWidget = ({
                       </div>
                     )}
                   </div>
+
+                  {/* ── Product cards — BELOW bubble, 800ms delay, health/emotion suppressed ── */}
+                  {msg.role === 'assistant' && visibleProducts.has(msg.id) && (
+                    <div style={{
+                      marginTop: 8, width: '85%', maxWidth: 420,
+                      animation: 'miraProductFadeIn 300ms ease forwards',
+                      opacity: 0
+                    }}>
+                      <p style={{ fontSize: 11, color: '#C9973A', marginBottom: 6, fontWeight: 600 }}>
+                        ✦ Mira thought of this for {selectedPet?.name || 'your pet'}
+                      </p>
+                      {/* Concierge recommendations (max 2) */}
+                      {(() => {
+                        const miraRecs = parseMiraRecommendations(
+                          typeof msg.content === 'string' ? msg.content : '',
+                          selectedPet?.name || 'your pet'
+                        );
+                        if (miraRecs.length > 0) {
+                          return (
+                            <MiraConciergeCards
+                              recommendations={miraRecs.slice(0, 2)}
+                              petName={selectedPet?.name || 'your pet'}
+                              petId={selectedPet?.id}
+                              token={token}
+                              onRequestCreated={(data) => {
+                                setMessages(prev => [...prev, {
+                                  id: `confirm-${Date.now()}`,
+                                  role: 'assistant',
+                                  content: `✅ Got it! Request #${data.request_id || 'created'} sent to our Concierge team.`,
+                                }]);
+                              }}
+                            />
+                          );
+                        }
+                        return null;
+                      })()}
+                      {/* Legacy catalog products (max 2, only if no concierge cards) */}
+                      {msg.products && Array.isArray(msg.products) && msg.products.length > 0 &&
+                       parseMiraRecommendations(typeof msg.content === 'string' ? msg.content : '', selectedPet?.name).length === 0 && (
+                        <div className="space-y-2">
+                          {msg.products.slice(0, 2).map((product, pIdx) => {
+                            if (!product || !product.id) return null;
+                            const imageUrl = product.image && product.image.startsWith('http')
+                              ? product.image
+                              : product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop';
+                            return (
+                              <div key={product.id || pIdx}
+                                className="bg-white rounded-xl p-2.5 flex items-center gap-3 border border-purple-100 cursor-pointer"
+                                onClick={() => handleProductClick(product)}>
+                                <img src={imageUrl} alt={product.name || 'Product'}
+                                  className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                                  onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop'; }} />
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-bold text-gray-800 line-clamp-2">{product.name || 'Product'}</p>
+                                  <p className="text-sm text-purple-600 font-bold">₹{product.price || 0}</p>
+                                </div>
+                                <button onClick={(e) => { e.stopPropagation(); addToCart(product); toast.success('Added!'); }}
+                                  className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg text-xs font-bold shrink-0">
+                                  Add
+                                </button>
+                              </div>
+                            );
+                          })}
+                          {msg.kitAssembly?.can_add_all_to_cart && msg.products.length > 1 && (
+                            <div className="space-y-1.5">
+                              <button onClick={() => { setCinematicKitData({ name: msg.kitAssembly?.kit_name || 'Kit', items: msg.products }); setShowCinematicKit(true); }}
+                                className="w-full py-2.5 bg-gradient-to-r from-violet-600 to-pink-600 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2">
+                                <Play className="w-3.5 h-3.5" /> View Kit Experience
+                              </button>
+                              <button onClick={() => { msg.products.forEach(p => addToCart(p)); toast.success(`Added ${msg.products.length} items!`); }}
+                                className="w-full py-2 bg-gray-100 text-gray-700 rounded-xl text-xs font-medium flex items-center justify-center gap-2">
+                                <ShoppingBag className="w-3.5 h-3.5" /> Add All {msg.products.length} Items
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
               })}
