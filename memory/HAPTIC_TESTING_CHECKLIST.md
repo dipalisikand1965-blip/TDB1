@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://mira-orders.preview.emergentagent.com/mira-demo**
+**https://birthday-box-1.preview.emergentagent.com/mira-demo**
 
 ---
 
