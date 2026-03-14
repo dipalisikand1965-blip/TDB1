@@ -21192,6 +21192,7 @@ AGENT_PERMISSIONS = [
     "service_desk",
     "unified_inbox",
     "fulfilment",
+    "birthday_box_orders",  # Birthday Box concierge fulfilment
     # Pillar-specific permissions
     "pillar_celebrate",  # Bakery
     "pillar_dine",       # Restaurants

@@ -408,6 +408,11 @@ const AgentPortal = () => {
           </Card>
         )}
         
+        {/* Birthday Box Orders */}
+        {activeTab === 'birthday_box_orders' && agentInfo?.permissions?.includes('birthday_box_orders') && (
+          <BirthdayBoxOrdersAdmin agentName={agentInfo?.name || agentInfo?.username} />
+        )}
+        
         {/* Service Desk */}
         {activeTab === 'service_desk' && agentInfo?.permissions?.includes('service_desk') && (
           <ServiceDesk credentials={{ username: agentInfo.username, password: '' }} />
