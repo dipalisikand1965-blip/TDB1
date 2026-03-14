@@ -540,22 +540,21 @@ const SoulQuestionCard = ({ question, petName, onAnswered }) => {
         animate={{ scale: 1, opacity: 1 }}
         className="rounded-2xl px-4 py-5 flex flex-col items-center justify-center gap-2"
         style={{
-          background: 'linear-gradient(135deg, rgba(20,180,80,0.25), rgba(0,120,50,0.25))',
-          border: '2px solid rgba(40,220,100,0.6)',
+          background: 'linear-gradient(135deg, rgba(20,180,80,0.12), rgba(0,120,50,0.08))',
+          border: '2px solid rgba(40,200,100,0.5)',
           minHeight: 160,
-          backdropFilter: 'blur(8px)'
         }}>
         <div className="rounded-full flex items-center justify-center w-10 h-10 mb-1"
-          style={{ background: 'rgba(40,220,100,0.3)', border: '2px solid rgba(40,220,100,0.8)' }}>
-          <Check className="w-5 h-5" style={{ color: '#3DF07A' }} />
+          style={{ background: 'rgba(40,200,100,0.15)', border: '2px solid rgba(40,200,100,0.5)' }}>
+          <Check className="w-5 h-5" style={{ color: '#16A34A' }} />
         </div>
-        <p className="font-extrabold text-center" style={{ color: '#3DF07A', fontSize: 15 }}>Soul score growing!</p>
+        <p className="font-extrabold text-center" style={{ color: '#15803D', fontSize: 14 }}>Soul score growing!</p>
         {pointsGained && (
-          <div className="rounded-full px-3 py-1 font-bold" style={{ background: 'rgba(40,220,100,0.2)', color: '#8FFFC0', fontSize: 12 }}>
+          <div className="rounded-full px-3 py-1 font-bold" style={{ background: 'rgba(40,200,100,0.12)', color: '#166534', fontSize: 11 }}>
             +{pointsGained} pts added
           </div>
         )}
-        <p className="text-center" style={{ color: 'rgba(255,255,255,0.5)', fontSize: 10 }}>
+        <p className="text-center" style={{ color: 'rgba(0,0,0,0.4)', fontSize: 10 }}>
           Mira now knows {petName} better ✦
         </p>
       </motion.div>
@@ -565,28 +564,27 @@ const SoulQuestionCard = ({ question, petName, onAnswered }) => {
   return (
     <div className="rounded-2xl px-4 py-4"
       style={{
-        background: 'rgba(255,255,255,0.09)',
-        border: '1.5px solid rgba(120,180,255,0.4)',
-        backdropFilter: 'blur(12px)',
+        background: 'rgba(68,136,255,0.06)',
+        border: '1.5px solid rgba(68,136,255,0.28)',
         minHeight: 160,
-        boxShadow: '0 2px 16px rgba(80,140,255,0.1)'
+        boxShadow: '0 2px 12px rgba(68,136,255,0.08)'
       }}>
       {/* Folder label + weight */}
       <div className="flex items-center justify-between mb-2.5">
         <div className="flex items-center gap-1.5">
           <span style={{ fontSize: 12 }}>{question.folder_icon || '✦'}</span>
-          <span className="text-xs font-semibold" style={{ color: 'rgba(180,210,255,0.85)' }}>
+          <span className="text-xs font-semibold" style={{ color: '#4488FF' }}>
             {question.folder_name}
           </span>
         </div>
         <span className="rounded-full px-2 py-0.5 text-xs font-bold"
-          style={{ background: 'rgba(100,180,255,0.2)', color: '#64B4FF', fontSize: 9 }}>
+          style={{ background: 'rgba(68,136,255,0.12)', color: '#2255CC', fontSize: 9 }}>
           +{question.weight || 3} pts
         </span>
       </div>
 
       {/* Question */}
-      <p className="font-bold leading-snug mb-3" style={{ color: '#FFFFFF', fontSize: 12 }}>
+      <p className="font-bold leading-snug mb-3" style={{ color: '#0F172A', fontSize: 12 }}>
         {question.question}
       </p>
 
@@ -597,7 +595,7 @@ const SoulQuestionCard = ({ question, petName, onAnswered }) => {
           placeholder="Type here..."
           rows={2}
           className="w-full rounded-xl px-3 py-2 text-xs outline-none resize-none"
-          style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff' }}
+          style={{ background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(68,136,255,0.3)', color: '#1A1A2E' }}
         />
       )}
 
@@ -607,11 +605,11 @@ const SoulQuestionCard = ({ question, petName, onAnswered }) => {
             <button key={opt} onClick={() => setSelected(opt)}
               className="rounded-full px-2.5 py-1 text-xs font-semibold transition-all"
               style={{
-                background: selected === opt ? 'rgba(100,160,255,0.5)' : 'rgba(255,255,255,0.08)',
-                border: selected === opt ? '1.5px solid #64A0FF' : '1px solid rgba(255,255,255,0.2)',
-                color: selected === opt ? '#FFFFFF' : 'rgba(255,255,255,0.75)',
+                background: selected === opt ? 'rgba(68,136,255,0.2)' : 'rgba(0,0,0,0.04)',
+                border: selected === opt ? '1.5px solid #4488FF' : '1px solid rgba(0,0,0,0.15)',
+                color: selected === opt ? '#1A44AA' : '#374151',
                 cursor: 'pointer',
-                transform: selected === opt ? 'scale(1.05)' : 'scale(1)',
+                transform: selected === opt ? 'scale(1.04)' : 'scale(1)',
                 transition: 'all 0.15s ease'
               }}>
               {opt}
@@ -626,9 +624,9 @@ const SoulQuestionCard = ({ question, petName, onAnswered }) => {
             <button key={opt} onClick={() => toggleMulti(opt)}
               className="rounded-full px-2.5 py-1 text-xs font-semibold transition-all"
               style={{
-                background: multiSelected.includes(opt) ? 'rgba(100,160,255,0.5)' : 'rgba(255,255,255,0.08)',
-                border: multiSelected.includes(opt) ? '1.5px solid #64A0FF' : '1px solid rgba(255,255,255,0.2)',
-                color: multiSelected.includes(opt) ? '#FFFFFF' : 'rgba(255,255,255,0.75)',
+                background: multiSelected.includes(opt) ? 'rgba(68,136,255,0.2)' : 'rgba(0,0,0,0.04)',
+                border: multiSelected.includes(opt) ? '1.5px solid #4488FF' : '1px solid rgba(0,0,0,0.15)',
+                color: multiSelected.includes(opt) ? '#1A44AA' : '#374151',
                 cursor: 'pointer'
               }}>
               {opt}
@@ -643,10 +641,10 @@ const SoulQuestionCard = ({ question, petName, onAnswered }) => {
         className="mt-2 w-full rounded-xl py-2 text-xs font-bold text-white flex items-center justify-center gap-1.5 transition-all"
         style={{
           background: (!selected && !textValue.trim() && multiSelected.length === 0)
-            ? 'rgba(80,120,200,0.3)'
-            : 'linear-gradient(135deg,#4488FF,#6644FF)',
+            ? 'rgba(68,136,255,0.3)'
+            : 'linear-gradient(135deg,#3366EE,#5544DD)',
           border: 'none', cursor: submitting ? 'wait' : 'pointer',
-          boxShadow: (!selected && !textValue.trim() && multiSelected.length === 0) ? 'none' : '0 4px 12px rgba(68,136,255,0.4)'
+          boxShadow: (!selected && !textValue.trim() && multiSelected.length === 0) ? 'none' : '0 4px 12px rgba(51,102,238,0.35)'
         }}>
         {submitting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
         Save +{question.weight || 3} pts
@@ -712,15 +710,14 @@ const SoulQuestionsSection = ({ pet, onScoreUpdated, onRefreshMiraCards }) => {
       {/* Big Soul Score Header */}
       <div className="rounded-2xl px-5 py-4 mb-4 flex items-center justify-between"
         style={{
-          background: 'rgba(255,255,255,0.05)',
-          border: '1.5px solid rgba(120,180,255,0.25)',
-          backdropFilter: 'blur(8px)'
+          background: 'rgba(68,136,255,0.05)',
+          border: '1.5px solid rgba(68,136,255,0.2)',
         }}>
         <div>
-          <p className="font-extrabold uppercase tracking-widest mb-0.5" style={{ color: '#64A8FF', fontSize: 10, letterSpacing: '0.1em' }}>
+          <p className="font-extrabold uppercase tracking-widest mb-0.5" style={{ color: '#3366EE', fontSize: 10, letterSpacing: '0.1em' }}>
             ✦ GROW {petName.toUpperCase()}'S SOUL
           </p>
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 10 }}>
+          <p style={{ color: 'rgba(0,0,0,0.45)', fontSize: 10 }}>
             Answer quick questions • {visibleQuestions.length} remaining
           </p>
         </div>
@@ -733,27 +730,27 @@ const SoulQuestionsSection = ({ pet, onScoreUpdated, onRefreshMiraCards }) => {
               initial={{ scale: 1.3, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               className="font-black"
-              style={{ fontSize: 38, lineHeight: 1, color: score >= 80 ? '#FFD700' : score >= 50 ? '#64D4FF' : '#A0C8FF' }}>
+              style={{ fontSize: 38, lineHeight: 1, color: score >= 80 ? '#C47F00' : '#2255CC' }}>
               {score ?? '--'}
             </motion.div>
-            <span className="font-bold" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, marginLeft: 2, alignSelf: 'flex-end', marginBottom: 4 }}>%</span>
+            <span className="font-bold" style={{ color: 'rgba(0,0,0,0.3)', fontSize: 14, marginLeft: 2, alignSelf: 'flex-end', marginBottom: 4 }}>%</span>
           </div>
           {scoreDelta !== null && scoreDelta > 0 && (
             <motion.div
               initial={{ y: 6, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               className="rounded-full px-2 py-0.5 font-bold"
-              style={{ background: 'rgba(40,220,100,0.25)', color: '#3DF07A', fontSize: 9 }}>
+              style={{ background: 'rgba(22,163,74,0.15)', color: '#15803D', fontSize: 9 }}>
               +{scoreDelta.toFixed(1)}%
             </motion.div>
           )}
-          <div className="w-12 rounded-full mt-1 overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)', height: 4 }}>
+          <div className="w-12 rounded-full mt-1 overflow-hidden" style={{ background: 'rgba(0,0,0,0.08)', height: 4 }}>
             <motion.div
               initial={{ width: `${prevScore ?? score}%` }}
               animate={{ width: `${score}%` }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
               className="h-full rounded-full"
-              style={{ background: `linear-gradient(90deg, #4488FF, ${score >= 80 ? '#FFD700' : '#44CCFF'})` }}
+              style={{ background: `linear-gradient(90deg, #4488FF, ${score >= 80 ? '#F59E0B' : '#3366EE'})` }}
             />
           </div>
         </div>
@@ -765,9 +762,9 @@ const SoulQuestionsSection = ({ pet, onScoreUpdated, onRefreshMiraCards }) => {
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-3 flex items-center gap-2 px-3 py-2 rounded-xl"
-          style={{ background: 'rgba(40,220,100,0.12)', border: '1px solid rgba(40,220,100,0.3)' }}>
-          <Check className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#3DF07A' }} />
-          <p className="text-xs font-semibold" style={{ color: '#3DF07A' }}>
+          style={{ background: 'rgba(22,163,74,0.08)', border: '1px solid rgba(22,163,74,0.25)' }}>
+          <Check className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#16A34A' }} />
+          <p className="text-xs font-semibold" style={{ color: '#15803D' }}>
             {answeredCount} answer{answeredCount > 1 ? 's' : ''} saved! +{totalPtsGained} pts — Soul score: {score}%
           </p>
         </motion.div>
