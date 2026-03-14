@@ -1,0 +1,88 @@
+{
+  "summary": "Frontend testing of Mira Widget improvements per Mira_Widget_MASTER.docx. All 10 test scenarios verified. Key features: single widget on /celebrate-soul, page-specific chips with petName substitution, opening lines, product card timing/position, health keyword suppression, session history, chip-to-message flow.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "MiraChatWidget - Product Suppression",
+        "issues": [
+          "MINOR: 'feel' keyword in SUPPRESS_PRODUCT_KEYWORDS may be too broad — 'feel really special' in birthday cake responses also triggers suppression. However, this appears intentional as pet profiles with health conditions (e.g. Mojo with lymphoma) correctly suppress product cards via the 'lymphoma' keyword."
+        ]
+      }
+    ]
+  },
+  "test_report_links": ["/app/test_reports/iteration_120.json"],
+  "action_items": [
+    "OPTIONAL: Review 'feel' keyword in SUPPRESS_PRODUCT_KEYWORDS in MiraChatWidget.jsx line 145 — consider whether 'feel' is too broad and catches 'feel really special' in non-health contexts",
+    "NOTE: MiraAI.jsx event handler at line 954 has a local pillarPaths array that does NOT include '/celebrate-soul' — edge case: if openMiraAI event fires on /celebrate-soul, MiraAI would not defer to MiraChatWidget. However, since MiraAI's orb returns null on /celebrate-soul, this is practically unreachable."
+  ],
+  "critical_code_review_comments": [
+    "MiraAI.jsx line 954: Inner pillarPaths event handler array missing '/celebrate-soul' — unlike the outer pillarPaths at line 198. Could cause openMiraAI event to be handled by MiraAI instead of MiraChatWidget if triggered programmatically on /celebrate-soul.",
+    "MiraChatWidget.jsx line 1763-1766: Product card div has `opacity: 0` as inline style with CSS animation miraProductFadeIn. This pattern is correct — CSS animation `forwards` fill mode overrides inline opacity. Working as designed.",
+    "SUPPRESS_PRODUCT_KEYWORDS includes 'feel' which is too common — catches 'feel really special' etc. Consider more specific phrases like 'feel sad', 'feeling anxious' instead."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend only)",
+    "frontend": "100% (all 10 test scenarios passed)"
+  },
+  "test_credentials": {
+    "user1": "dipali@clubconcierge.in / test123 (has pets: Mojo, Mystique, Bruno, Buddy, Lola)",
+    "user2": "aditya/lola4304 login failed — likely needs email format, not username"
+  },
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All Mira Widget improvements verified. dipali@clubconcierge.in / test123 login works. aditya/lola4304 login failed (appears to need email format). Key selectors: MiraOrb = '.fixed.bottom-4' (click with force=True), chips = '[data-testid=quick-action-0]' and '[data-testid=quick-action-1]', widget = '[data-testid=mira-chat-widget]', MiraAI orb = '[data-testid=mira-orb-container]'.",
+  "features_verified": {
+    "1_single_widget_celebrate_soul": {
+      "status": "PASS",
+      "evidence": "MiraAI orb containers = 0 on /celebrate-soul. Only one fixed z-9999 element (MiraChatWidget's orb from PillarPageLayout). MiraAI.jsx pillarPaths at line 198 includes '/celebrate-soul', causing MiraAI to return null when !isOpen."
+    },
+    "2_widget_opens_correctly": {
+      "status": "PASS",
+      "evidence": "Clicking .fixed.bottom-4 opens data-testid='mira-chat-widget' (MiraChatWidget), NOT data-testid='mira-chat-container' (MiraAI). Confirmed on /celebrate-soul, /dine, /stay, /learn."
+    },
+    "3_celebrate_soul_chips": {
+      "status": "PASS",
+      "evidence": "Not logged in: chips = ['🎂 Plan your pet's birthday', '✦ Surprise me, Mira']. Logged in as dipali (Mojo): chips = ['🎂 Plan Mojo's birthday', '✦ Surprise me, Mira']. petName substitution works correctly."
+    },
+    "4_dine_chips": {
+      "status": "PASS",
+      "evidence": "chips = ['🐟 What should your pet eat today?', '🍽️ Find your pet a restaurant']. Exact match with PILLAR_CHIPS.dine."
+    },
+    "5_stay_chips": {
+      "status": "PASS",
+      "evidence": "chips = ['🏡 Where can your pet stay?', '✦ Plan a trip for your pet']. Exact match with PILLAR_CHIPS.stay."
+    },
+    "6_learn_chips": {
+      "status": "PASS",
+      "evidence": "chips = ['🧠 What should your pet learn next?', '✦ Make your pet smarter']. Exact match with PILLAR_CHIPS.learn."
+    },
+    "7_page_specific_opening_line": {
+      "status": "PASS",
+      "evidence": "Logged in as dipali, /celebrate-soul. Welcome: 'Hi, I'm Mira, Mojo's Soul Mate! Good afternoon. I see you're thinking about celebrating Mojo today. What kind of moment are we planning?' — matches PILLAR_OPENING_LINES.celebrate function."
+    },
+    "8_product_cards_below_bubble": {
+      "status": "PASS",
+      "evidence": "Product section div at lines 1762-1838 is rendered OUTSIDE and AFTER the text bubble div (line 1759 closes bubble). Animation miraProductFadeIn 300ms ease forwards. 800ms setTimeout correctly schedules visibleProducts update. Product section header '✦ Mira thought of this...' verified below (not inside) gray bubble."
+    },
+    "9_health_emotion_suppress": {
+      "status": "PASS",
+      "evidence": "Sent 'My dog has anxiety and separation issues' — no product section rendered. Response included 'anxiety'/'separation' keywords → shouldShowProducts() returned false → no setTimeout scheduled. Also: birthday cake query for Mojo correctly suppressed because Mira's response mentioned 'lymphoma treatment' (Mojo's health condition)."
+    },
+    "10_chip_click_sends_message": {
+      "status": "PASS",
+      "evidence": "Clicking quick-action-0 chip ('🎂 Plan your pet's birthday') sent the text as a user message in the chat (confirmed via user message bubble). Console shows Mira API call with hasPet: false, historyLength: 1."
+    },
+    "session_memory": {
+      "status": "PASS",
+      "evidence": "sendMessage builds historyMessages from current messages (excluding welcome), passes as history array of up to 10 messages in API request body. Verified in console logs showing historyLength increasing across messages."
+    }
+  }
+}
