@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://pillar-personalize.preview.emergentagent.com
+https://celebrate-showcase.preview.emergentagent.com
 ```
 
 ---

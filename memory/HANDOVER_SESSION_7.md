@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://pillar-personalize.preview.emergentagent.com
+https://celebrate-showcase.preview.emergentagent.com
 
 ---
 
