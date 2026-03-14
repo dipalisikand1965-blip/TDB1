@@ -951,7 +951,7 @@ const MiraAI = () => {
     const handleOpenMira = (event) => {
       // If we're on a pillar page and this event has a pillar context,
       // let MiraChatWidget handle it (it's embedded in the pillar page)
-      const pillarPaths = ['/care', '/celebrate', '/advisory', '/dine', '/stay', '/travel', '/emergency', '/enjoy', '/fit', '/learn', '/farewell', '/adopt', '/paperwork', '/shop'];
+      const pillarPaths = ['/care', '/celebrate', '/celebrate-soul', '/advisory', '/dine', '/stay', '/travel', '/emergency', '/enjoy', '/fit', '/learn', '/farewell', '/adopt', '/paperwork', '/shop'];
       const isOnPillarPage = pillarPaths.some(path => 
         location.pathname === path || location.pathname.startsWith(path + '/')
       );
