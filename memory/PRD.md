@@ -13,8 +13,54 @@ The world's first soul-driven Pet Operating System. Every dog has a personality,
 
 ---
 
-## 🔄 SESSION 9 SPEC — Celebrate Pillars Master Build (March 14, 2026)
-### SOURCE: Celebrate_Pillars_MASTER.docx — CANONICAL, EVERY VALUE IS FINAL
+## 🔄 SESSION 10 SPEC — Pet-Dependent Pillars + AI Product Generator (March 14, 2026)
+
+### WHAT WAS BUILT:
+1. **FeastMenuCard** — pet-dependent items derived from `pet.doggy_soul_answers.favorite_treats`
+   - Mojo (salmon pref) → Salmon Birthday Cake, Salmon Biscuit Platter, Salmon Paw Cupcakes
+   - Bruno (chicken pref) → Chicken Birthday Cake, Chicken Treat Platter, Chicken Paw Cupcakes
+   - NO prices — each item has "Request via Concierge" button → creates service desk ticket
+   - Toast shown with Ticket ID on success
+
+2. **PawtyPlannerCard** — ALL 4 step buttons → Concierge (unified service flow)
+   - Step 1: Find a venue → `POST /api/concierge/pillar-request` with request_type: venue_finder
+   - Step 2: Order invites → request_type: order_invitations
+   - Step 3: Order pawty kit → request_type: pawty_kit_order
+   - Step 4: Full Concierge → request_type: full_concierge_pawty
+   - Tick state (✓) shown after successful send
+   - Works on BOTH mobile and desktop
+
+3. **MemoryInvitationCard** — Complete 4-option dark cinematic card
+   - Photoshoot, Custom Portrait, Memory Book, Soul Story Book
+   - Each option has "Book via Concierge 👑" button → concierge ticket
+   - Dark background: `linear-gradient(135deg, #1A0030, #3D0060)`
+
+4. **PILLAR_TABS update** — `puzzles` (0 products) → `puzzle_toys` (now 9 products)
+
+5. **AI Product Generator** (`celebrate_product_generator.py`)
+   - 59 new authentic products across 8 celebrate pillars
+   - New sub-categories: puzzle_toys(9), party_kits(10), memory_books(6), portraits(3)
+   - Expanded: supplements(11+), party_accessories(12)
+   - Background AI image generation via Cloudinary
+   - Admin UI: "Generate" tab in Celebrate Manager with live progress
+
+### AI PRODUCT GENERATOR ENDPOINTS:
+| Endpoint | Method | Auth | Purpose |
+|---|---|---|---|
+| /api/admin/celebrate/seed-and-generate | POST | JWT admin | Seed 59 products + start image gen |
+| /api/admin/celebrate/generation-status | GET | JWT admin | Live status (poll every 3s) |
+| /api/admin/products/{id}/regenerate-image | POST | JWT admin | Regen specific product image |
+
+### CONCIERGE REQUEST PATTERN (used across all pillar special panels):
+```js
+const result = await sendToConcierge({
+  requestType: 'feast_item',        // one of: feast_item, venue_finder, order_invitations, pawty_kit_order, full_concierge_pawty, birthday_photoshoot, custom_portrait, memory_book, soul_story_book
+  label: 'Request item for petName',
+  message: 'Full request details',
+  petName: 'Mojo',
+});
+// result: { success: true, ticketId: 'TKT-XXXXXXXX' }
+```
 
 ### PILLAR SYSTEM STATUS:
 | Feature | Status |

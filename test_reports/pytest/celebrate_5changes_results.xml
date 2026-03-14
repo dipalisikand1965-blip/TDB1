@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="12" skipped="0" tests="21" time="766.280" timestamp="2026-03-14T07:52:03.522200+00:00" hostname="agent-env-84aa87d1-230c-47b0-9009-cb531d31dcf4"><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestAdminLogin" name="test_admin_login_success" time="10.253" /><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestAdminLogin" name="test_admin_login_invalid_creds" time="60.120"><failure message="assert 502 == 401&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_celebrate_pillars_5changes.py:57: in test_admin_login_invalid_creds
+    assert resp.status_code == 401
+E   assert 502 == 401
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestConciergeRequest" name="test_feast_item_concierge_request" time="60.251"><failure message="AssertionError: Concierge request failed: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_celebrate_pillars_5changes.py:76: in test_feast_item_concierge_request
+    assert resp.status_code == 200, f"Concierge request failed: {resp.text}"
+E   AssertionError: Concierge request failed: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestConciergeRequest" name="test_pawty_venue_concierge_request" time="60.248"><failure message="AssertionError: Venue concierge request failed: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_celebrate_pillars_5changes.py:91: in test_pawty_venue_concierge_request
+    assert resp.status_code == 200, f"Venue concierge request failed: {resp.text}"
+E   AssertionError: Venue concierge request failed: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestConciergeRequest" name="test_pawty_invites_concierge_request" time="60.254"><failure message="AssertionError: Invites concierge request failed: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_celebrate_pillars_5changes.py:105: in test_pawty_invites_concierge_request
+    assert resp.status_code == 200, f"Invites concierge request failed: {resp.text}"
+E   AssertionError: Invites concierge request failed: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestConciergeRequest" name="test_full_concierge_pawty_request" time="60.260"><failure message="AssertionError: Full concierge request failed: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_celebrate_pillars_5changes.py:119: in test_full_concierge_pawty_request
+    assert resp.status_code == 200, f"Full concierge request failed: {resp.text}"
+E   AssertionError: Full concierge request failed: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestConciergeRequest" name="test_memory_photoshoot_concierge_request" time="60.180"><failure message="AssertionError: Photoshoot request failed: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_celebrate_pillars_5changes.py:133: in test_memory_photoshoot_concierge_request
+    assert resp.status_code == 200, f"Photoshoot request failed: {resp.text}"
+E   AssertionError: Photoshoot request failed: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestConciergeRequest" name="test_memory_portrait_concierge_request" time="60.156"><failure message="assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_celebrate_pillars_5changes.py:147: in test_memory_portrait_concierge_request
+    assert resp.status_code == 200
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestConciergeRequest" name="test_memory_book_concierge_request" time="60.152"><failure message="assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_celebrate_pillars_5changes.py:161: in test_memory_book_concierge_request
+    assert resp.status_code == 200
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestConciergeRequest" name="test_soul_story_book_concierge_request" time="60.170"><failure message="assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_celebrate_pillars_5changes.py:175: in test_soul_story_book_concierge_request
+    assert resp.status_code == 200
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestProductCategories" name="test_puzzle_toys_products_exist" time="60.519"><failure message="AssertionError: Products API failed: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_celebrate_pillars_5changes.py:189: in test_puzzle_toys_products_exist
+    assert resp.status_code == 200, f"Products API failed: {resp.text}"
+E   AssertionError: Products API failed: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestProductCategories" name="test_party_kits_products_exist" time="60.157"><failure message="AssertionError: Products API failed: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_celebrate_pillars_5changes.py:198: in test_party_kits_products_exist
+    assert resp.status_code == 200, f"Products API failed: {resp.text}"
+E   AssertionError: Products API failed: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestProductCategories" name="test_memory_books_products_exist" time="60.144"><failure message="assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_celebrate_pillars_5changes.py:207: in test_memory_books_products_exist
+    assert resp.status_code == 200
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestProductCategories" name="test_portraits_products_exist" time="31.980" /><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestProductCategories" name="test_supplements_products_exist" time="0.141" /><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestProductCategories" name="test_puzzle_toys_product_data_structure" time="0.143" /><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestAdminCelebrateGeneration" name="test_generation_status_endpoint" time="0.312" /><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestAdminCelebrateGeneration" name="test_generation_status_has_category_counts" time="0.201" /><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestAdminCelebrateGeneration" name="test_generation_status_requires_auth" time="0.175" /><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestFeastMenuProducts" name="test_cakes_products_exist" time="0.141" /><testcase classname="backend.tests.test_celebrate_pillars_5changes.TestFeastMenuProducts" name="test_treats_products_exist" time="0.143" /></testsuite></testsuites>
