@@ -6,7 +6,7 @@ Iteration 126 - Follow-up to iteration_125.
 
 import asyncio
 
-BASE_URL = "https://memory-wall-debug.preview.emergentagent.com"
+BASE_URL = "https://mobile-drawer-fix.preview.emergentagent.com"
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 

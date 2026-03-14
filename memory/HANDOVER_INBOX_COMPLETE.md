@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://memory-wall-debug.preview.emergentagent.com
+https://mobile-drawer-fix.preview.emergentagent.com
 ```
 
 ---

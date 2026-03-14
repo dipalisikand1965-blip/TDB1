@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://memory-wall-debug.preview.emergentagent.com/mira-demo**
+**https://mobile-drawer-fix.preview.emergentagent.com/mira-demo**
 
 ---
 
