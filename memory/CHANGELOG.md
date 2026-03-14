@@ -3,28 +3,7 @@
 
 ---
 
-## [Mar 14, 2026] Session 5 — AI Image Generation for Party & Accessories ✅ COMPLETE
-
-### COMPLETED: Realistic AI Party Product Images
-1. **Script Created & Executed:** `/app/backend/scripts/generate_party_realistic.py`
-2. **14 Products Generated** with AI images using GPT Image 1 (Realistic product photography, NOT dog photos):
-   - Party Hats (3): Birthday Celebration Hat, Golden Crown of Joy, Princess Tiara
-   - Banners (2): Happy Barkday Banner, Pawty Time Letter Set
-   - Balloons (2): Paw Print Balloon Collection, Bone & Paw Foil Balloon Set
-   - Bow Ties (2): Dapper Bow Tie Collection, Celebration Bow Tie - Gold Sparkle
-   - Photo Props (2): Silly Photo Prop Kit, Birthday Star Headband Set
-   - Party Kits (3): Photo Moment Backdrop, Celebration Confetti Pack, Ultimate Celebration Bundle
-3. **Storage:** `products_master` collection → Admin Panel + Celebrate Page
-4. **Images folder:** `celebrate_party_realistic` on Cloudinary
-
-### COMPLETED: Admin Activate/Deactivate for Products
-1. **ProductBoxEditor:** Active status toggle in Inventory tab
-2. **CelebrateManager:** Active status toggle in Product edit modal
-3. **Backend APIs:**
-   - `PATCH /api/admin/products/{id}/toggle-active`
-   - `PATCH /api/admin/breed-products/{id}/toggle-active`
-   - `POST /api/admin/breed-products/bulk-toggle`
-4. **is_active filter** added to products API query - inactive products don't appear
+## [Mar 14, 2026] Session 5 — Party Products & Soul Picks Cleanup ✅ COMPLETE
 
 ### ✅ VERIFIED: Party & Decor Working Correctly
 - **47 total party products** available:
@@ -33,28 +12,30 @@
 - **For Mojo (Indie breed):** Shows 16 items (14 generic + 2 Indie-specific)
 - **Breed filtering:** Only shows breed-specific items matching pet's breed
 - All products have **unique realistic AI-generated Cloudinary images**
-- All products have **proper pricing** (₹199-₹499)
-- All products have **soul-driven Mira hints**
+
+### ✅ VERIFIED: Soul Picks Breed Merchandise Clean
+- **All breed merchandise categories now have ONLY Cloudinary images:**
+  - breed-mugs: 33 products (1 per breed)
+  - breed-bandanas: 33 products
+  - breed-frames: 33 products
+  - breed-keychains: 33 products
+  - breed-party_hats: 33 products
+  - breed-tote_bags: 33 products
+- **Indie-specific:** 1 product per category with real mockup
+- **Duplicates & placeholders deactivated:**
+  - 160 breed_products without Cloudinary mockups
+  - 532 breed duplicates in unified_products
+  - 543 breed products in unified_products without images
+  - 43 breed products in products_master without images
 
 ### Admin Access:
 - **CelebrateManager:** Categories include party_accessories, party_kits, celebration_addons, breed-party_hats
 - **ProductBoxEditor:** Products accessible via category filter
 - **Activate/Deactivate toggle** available in both editors
 
-### COMPLETED: Deactivated Products with Generic Placeholder Images
-1. **240+ products deactivated** with generic toy image + zero price
-   - Party accessories, kits, decorations with placeholder images
-   - Breed-specific celebration items (Birthday Party Hat, Gotcha Day Kit for all breeds)
-2. **These had:** Same dog toy image repeated for all + "Price on request"
-3. **Deactivation reason saved in DB:** `generic_placeholder_image_zero_price`
-4. **Active party products:** 14 (all with proper Cloudinary AI images)
-   - 11 party_accessories
-   - 2 party_kits
-   - 1 celebration_addons
-
-### KEY DISTINCTION:
-- **BAD (Illustration Only):** Just a dog face drawing, no product visible. Shows "Price on request"
-- **GOOD (Real Mockup):** Actual product (mug, bandana, frame) with dog face PRINTED ON IT. Shows actual price.
+### KEY DISTINCTION (Documented for Future):
+- **BAD (Illustration Only):** Just a dog face drawing, no product visible. DEACTIVATE.
+- **GOOD (Real Mockup):** Actual product (mug, bandana, frame) with dog face PRINTED ON IT. KEEP.
 
 ---
 
