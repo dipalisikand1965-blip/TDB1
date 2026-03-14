@@ -148,15 +148,16 @@ const PetSelector = ({ pets, selectedPet, onPetChange }) => {
   if (!pets || pets.length <= 1) return null;
   
   return (
-    <div 
-      className="flex gap-2 overflow-x-auto pb-2 px-4 -mx-4 scrollbar-hide"
-      style={{
-        WebkitOverflowScrolling: 'touch',
-        scrollSnapType: 'x mandatory',
-        msOverflowStyle: 'none',
-        scrollbarWidth: 'none'
-      }}
-    >
+    <div className="relative">
+      <div 
+        className="flex gap-2 overflow-x-auto pb-2 px-4 -mx-4 scrollbar-hide"
+        style={{
+          WebkitOverflowScrolling: 'touch',
+          scrollSnapType: 'x mandatory',
+          msOverflowStyle: 'none',
+          scrollbarWidth: 'none'
+        }}
+      >
       {pets.map(pet => {
         const isSelected = selectedPet?.id === pet.id;
         const petScore = Math.round(pet.overall_score || 0);
@@ -214,6 +215,11 @@ const PetSelector = ({ pets, selectedPet, onPetChange }) => {
         <span className="text-sm" style={{ pointerEvents: 'none' }}>Add</span>
       </div>
     </div>
+    {/* Right-edge fade hint — shows when there are more pets off-screen */}
+    {pets && pets.length > 2 && (
+      <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-900 to-transparent pointer-events-none rounded-r-lg" />
+    )}
+  </div>
   );
 };
 
@@ -613,41 +619,41 @@ const PetHomePage = () => {
           {/* Glow effect */}
           <div className="absolute inset-0 blur-3xl bg-gradient-to-r from-pink-500/20 to-purple-600/20 rounded-3xl" />
           
-          <div className="relative bg-slate-800/50 rounded-3xl border border-slate-700 p-6" data-testid="pet-hero">
-            <div className="flex items-start gap-4">
-              {/* Pet Photo */}
-              <div className="relative">
+          <div className="relative bg-slate-800/50 rounded-3xl border border-slate-700 p-4 sm:p-6" data-testid="pet-hero">
+            <div className="flex items-start gap-3 sm:gap-4">
+              {/* Pet Photo — responsive size to give traits more room */}
+              <div className="relative shrink-0">
                 <div className="absolute inset-0 blur-xl bg-gradient-to-r from-pink-500/30 to-purple-600/30 rounded-full" />
                 <div className="relative">
                   {pet?.photo ? (
                     <img
                       src={pet.photo}
                       alt={pet.name}
-                      className="w-24 h-24 rounded-full object-cover border-4 border-pink-500/50"
+                      className="w-16 h-16 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-pink-500/50"
                     />
                   ) : (
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
-                      <PawPrint className="w-10 h-10 text-white" />
+                    <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
+                      <PawPrint className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                     </div>
                   )}
                 </div>
               </div>
               
               {/* Pet Info */}
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <h1 className="text-2xl font-bold text-white">{pet?.name}</h1>
-                  {pet?.gender === 'boy' && <span className="text-blue-400">♂️</span>}
-                  {pet?.gender === 'girl' && <span className="text-pink-400">♀️</span>}
+                  <h1 className="text-xl sm:text-2xl font-bold text-white truncate">{pet?.name}</h1>
+                  {pet?.gender === 'boy' && <span className="text-blue-400 shrink-0">♂️</span>}
+                  {pet?.gender === 'girl' && <span className="text-pink-400 shrink-0">♀️</span>}
                 </div>
-                <p className="text-slate-400 text-sm mb-3">{pet?.breed || 'Good Boy/Girl'}</p>
+                <p className="text-slate-400 text-sm mb-3 truncate">{pet?.breed || 'Good Boy/Girl'}</p>
                 
-                {/* Traits */}
-                <div className="flex flex-wrap gap-2">
+                {/* Traits — single line with scroll on mobile */}
+                <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                   {traits.map((trait, i) => (
                     <span
                       key={i}
-                      className="px-2 py-1 bg-slate-700/50 rounded-full text-xs text-slate-300 capitalize"
+                      className="px-2 py-1 bg-slate-700/50 rounded-full text-xs text-slate-300 capitalize whitespace-nowrap shrink-0"
                     >
                       {trait}
                     </span>
@@ -655,8 +661,13 @@ const PetHomePage = () => {
                 </div>
               </div>
               
-              {/* Soul Ring */}
-              <SoulRing percentage={soulScore} size={70} strokeWidth={5} />
+              {/* Soul Ring — compact on all mobile, full size sm+ */}
+              <div className="shrink-0 sm:hidden">
+                <SoulRing percentage={soulScore} size={48} strokeWidth={4} />
+              </div>
+              <div className="shrink-0 hidden sm:block">
+                <SoulRing percentage={soulScore} size={70} strokeWidth={5} />
+              </div>
             </div>
             
             {/* Teach Mira More - ALWAYS show if soul score < 80 */}

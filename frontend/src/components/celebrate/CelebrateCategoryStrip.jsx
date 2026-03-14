@@ -149,11 +149,11 @@ const CelebrateCategoryStrip = ({ pet, onCategorySelect }) => {
                 <span
                   className="text-center leading-tight"
                   style={{
-                    fontSize: 10,
+                    fontSize: 11,
                     fontWeight: 500,
                     color: isActive ? '#C44400' : '#555',
                     whiteSpace: 'nowrap',
-                    maxWidth: 72,
+                    maxWidth: 80,
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'
                   }}

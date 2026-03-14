@@ -97,7 +97,7 @@ const MiraQuoteCard = ({ pet, daysUntilBirthday, isBirthdayToday }) => {
       </div>
       <div>
         <p className="text-sm text-white leading-relaxed">"{quote}"</p>
-        <span className="text-[11px] block mt-0.5" style={{ color: '#FFAAD4' }}>
+        <span className="text-[12px] block mt-0.5" style={{ color: '#FFAAD4' }}>
           ♥ Mira knows {petName}
         </span>
       </div>
