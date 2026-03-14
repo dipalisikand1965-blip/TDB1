@@ -574,11 +574,13 @@ Source: BirthdayBoxBuilder (celebrate-soul page)
 
 # ==================== ADMIN: BIRTHDAY BOX ORDERS ====================
 
-STATUS_PRIORITY = {"new": 0, "in_progress": 1, "assembled": 2, "dispatched": 3, "delivered": 4, "cancelled": 5}
+STATUS_PRIORITY = {"new": 0, "pending_concierge": 0, "in_progress": 1, "assembled": 2, "dispatched": 3, "delivered": 4, "cancelled": 5}
 
 class StatusUpdatePayload(BaseModel):
     status: str
     note: Optional[str] = None
+    concierge_name: Optional[str] = "concierge"
+    tracking_url: Optional[str] = None
 
 class PersonalisationPayload(BaseModel):
     bandana_name: Optional[str] = None
@@ -586,6 +588,17 @@ class PersonalisationPayload(BaseModel):
     delivery_date: Optional[str] = None
     special_requests: Optional[str] = None
     delivery_address: Optional[str] = None
+
+class SlotAssemblePayload(BaseModel):
+    assembled: bool
+    concierge_name: Optional[str] = "concierge"
+
+class AllergyConfirmPayload(BaseModel):
+    concierge_name: Optional[str] = "concierge"
+
+class NotePayload(BaseModel):
+    note: str
+    concierge_name: Optional[str] = "concierge"
 
 
 @birthday_box_router.get("/admin/birthday-box-orders")
@@ -660,20 +673,31 @@ async def update_order_status(order_id: str, payload: StatusUpdatePayload):
         raise HTTPException(status_code=404, detail="Order not found")
 
     now = get_utc_timestamp()
-    # Build audit trail entry
     audit_entry = {
         "action": f"status_changed_to_{payload.status}",
         "from_status": order.get("status"),
         "to_status": payload.status,
         "note": payload.note,
         "timestamp": now,
-        "performed_by": "concierge"
+        "performed_by": payload.concierge_name or "concierge"
     }
+
+    update_set = {"status": payload.status, "updated_at": now}
+    if payload.status == "assembled":
+        update_set["assembled_at"] = now
+    elif payload.status == "dispatched":
+        update_set["dispatched_at"] = now
+        if payload.tracking_url:
+            update_set["tracking_url"] = payload.tracking_url
+    elif payload.status == "delivered":
+        update_set["delivered_at"] = now
+    elif payload.status == "in_progress":
+        update_set["in_progress_at"] = now
 
     await db.birthday_box_orders.update_one(
         {"$or": [{"id": order_id}, {"ticket_id": order_id}]},
         {
-            "$set": {"status": payload.status, "updated_at": now},
+            "$set": update_set,
             "$push": {"audit_trail": audit_entry}
         }
     )
@@ -686,6 +710,123 @@ async def update_order_status(order_id: str, payload: StatusUpdatePayload):
         )
 
     return {"success": True, "status": payload.status, "orderId": order_id}
+
+
+@birthday_box_router.patch("/admin/birthday-box-orders/{order_id}/slot/{slot_number}/assemble")
+async def assemble_slot(order_id: str, slot_number: int, payload: SlotAssemblePayload):
+    """Mark an individual slot as assembled. Returns updated assembly count."""
+    order = await db.birthday_box_orders.find_one(
+        {"$or": [{"id": order_id}, {"ticket_id": order_id}]},
+        {"_id": 0}
+    )
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    now = get_utc_timestamp()
+    slot_key = f"slot_assembly.{slot_number}"
+
+    await db.birthday_box_orders.update_one(
+        {"$or": [{"id": order_id}, {"ticket_id": order_id}]},
+        {
+            "$set": {
+                slot_key: {
+                    "assembled": payload.assembled,
+                    "assembled_at": now if payload.assembled else None,
+                    "assembled_by": payload.concierge_name
+                },
+                "updated_at": now
+            }
+        }
+    )
+
+    # Return updated order to count assembled slots
+    updated = await db.birthday_box_orders.find_one(
+        {"$or": [{"id": order_id}, {"ticket_id": order_id}]},
+        {"_id": 0, "slot_assembly": 1}
+    )
+    slot_assembly = updated.get("slot_assembly", {}) if updated else {}
+    assembled_count = sum(1 for v in slot_assembly.values() if v.get("assembled"))
+    total_slots = len(order.get("slots", [])) or 6
+
+    return {
+        "success": True,
+        "slot_number": slot_number,
+        "assembled": payload.assembled,
+        "assembled_count": assembled_count,
+        "total_slots": total_slots,
+        "all_assembled": assembled_count >= total_slots
+    }
+
+
+@birthday_box_router.post("/admin/birthday-box-orders/{order_id}/allergy-confirm")
+async def confirm_allergy_check(order_id: str, payload: AllergyConfirmPayload):
+    """Log that Concierge has checked all items against pet's allergens. Required before IN PROGRESS."""
+    order = await db.birthday_box_orders.find_one(
+        {"$or": [{"id": order_id}, {"ticket_id": order_id}]},
+        {"_id": 0}
+    )
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    now = get_utc_timestamp()
+    audit_entry = {
+        "action": "allergy_check_confirmed",
+        "note": f"Allergy check confirmed by {payload.concierge_name}",
+        "timestamp": now,
+        "performed_by": payload.concierge_name
+    }
+
+    await db.birthday_box_orders.update_one(
+        {"$or": [{"id": order_id}, {"ticket_id": order_id}]},
+        {
+            "$set": {
+                "allergy_confirmed": True,
+                "allergy_confirmed_by": payload.concierge_name,
+                "allergy_confirmed_at": now,
+                "updated_at": now
+            },
+            "$push": {"audit_trail": audit_entry}
+        }
+    )
+
+    return {"success": True, "confirmed_by": payload.concierge_name, "confirmed_at": now}
+
+
+@birthday_box_router.post("/admin/birthday-box-orders/{order_id}/note")
+async def add_note(order_id: str, payload: NotePayload):
+    """Add an internal Concierge note to the order (not visible to pet parent)."""
+    order = await db.birthday_box_orders.find_one(
+        {"$or": [{"id": order_id}, {"ticket_id": order_id}]},
+        {"_id": 0}
+    )
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    now = get_utc_timestamp()
+    note_entry = {
+        "note": payload.note,
+        "timestamp": now,
+        "concierge_name": payload.concierge_name
+    }
+    audit_entry = {
+        "action": "note_added",
+        "note": payload.note,
+        "timestamp": now,
+        "performed_by": payload.concierge_name
+    }
+
+    await db.birthday_box_orders.update_one(
+        {"$or": [{"id": order_id}, {"ticket_id": order_id}]},
+        {
+            "$push": {
+                "notes": note_entry,
+                "audit_trail": audit_entry
+            },
+            "$set": {"updated_at": now}
+        }
+    )
+
+    return {"success": True, "note": payload.note, "timestamp": now}
 
 
 @birthday_box_router.patch("/admin/birthday-box-orders/{order_id}/personalisation")
