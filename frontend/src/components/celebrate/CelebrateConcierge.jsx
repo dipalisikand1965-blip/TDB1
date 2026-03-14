@@ -78,42 +78,33 @@ const CelebrateConcierge = ({ pet, onAddToCart }) => {
             45,000+ meals. Hundreds of birthdays. Every celebration we have ever planned has started the same way — with us listening to who your dog actually is.
           </p>
 
-          {/* Stat + chips row */}
-          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 28 }}>
-            {/* Stat */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              paddingRight: 16,
-              borderRight: '1px solid rgba(255,255,255,0.12)'
-            }}>
-              <span style={{ fontSize: 24, fontWeight: 900, color: '#F0C060', fontFamily: 'Georgia, serif', lineHeight: 1 }}>45,000+</span>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.50)', marginTop: 2 }}>meals made with love</span>
-            </div>
-
-            {/* Chips */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {['Birthday Celebrations', 'Pawty Planning', 'Memory & Portraits', 'Milestone Marking', 'Surprise Deliveries'].map(chip => (
-                <span
-                  key={chip}
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: 'rgba(255,255,255,0.72)',
-                    background: 'rgba(255,255,255,0.07)',
-                    border: '1px solid rgba(255,255,255,0.12)',
-                    borderRadius: 9999,
-                    padding: '4px 12px'
-                  }}
-                >
-                  {chip}
-                </span>
-              ))}
-            </div>
+          {/* Chips — below description, above CTA */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
+            {['Birthday Celebrations', 'Pawty Planning', 'Memory & Portraits', 'Milestone Marking', 'Surprise Deliveries'].map(chip => (
+              <span
+                key={chip}
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: 'rgba(255,255,255,0.72)',
+                  background: 'rgba(255,255,255,0.07)',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  borderRadius: 9999,
+                  padding: '4px 12px'
+                }}
+              >
+                {chip}
+              </span>
+            ))}
           </div>
 
-          {/* CTA row */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+          {/* Stat + CTA row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+            {/* Stat */}
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <span style={{ fontSize: 22, fontWeight: 900, color: '#F0C060', fontFamily: 'Georgia, serif', lineHeight: 1 }}>45,000+</span>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>meals made with love</span>
+            </div>
             <button
               onClick={() => setIntakeOpen(true)}
               style={{
