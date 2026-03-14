@@ -17,18 +17,37 @@
 3. **Storage:** `products_master` collection → Admin Panel + Celebrate Page
 4. **Images folder:** `celebrate_party_realistic` on Cloudinary
 
-### ADDED: Admin CRUD for Product Activation
-- `PATCH /api/admin/products/{id}/toggle-active` - Toggle product visibility
-- `PATCH /api/admin/breed-products/{id}/toggle-active` - Toggle breed product visibility
-- `POST /api/admin/breed-products/bulk-toggle` - Bulk activate/deactivate
-- `is_active` filter added to products API query
-- Admin ProductBoxEditor now has Active/Inactive toggle in Inventory tab
+### COMPLETED: Admin Activate/Deactivate for Products
+1. **ProductBoxEditor:** Active status toggle in Inventory tab
+2. **CelebrateManager:** Active status toggle in Product edit modal
+3. **Backend APIs:**
+   - `PATCH /api/admin/products/{id}/toggle-active`
+   - `PATCH /api/admin/breed-products/{id}/toggle-active`
+   - `POST /api/admin/breed-products/bulk-toggle`
+4. **is_active filter** added to products API query - inactive products don't appear
 
-### VERIFIED:
-- ✅ Products sorted by `ai_image_generated` (AI images first)
-- ✅ 14 unique Cloudinary image URLs generated
-- ✅ API returns realistic party products first
-- ✅ Admin can activate/deactivate products
+### ✅ VERIFIED: Party & Decor Working Correctly
+- **14 items displayed** in Party & Decor modal
+- All products have **unique realistic AI-generated Cloudinary images**
+- All products have **proper pricing** (₹199-₹499)
+- All products have **soul-driven Mira hints**
+- No more repeated generic dog toy images
+- No more "Price on request" products
+
+### COMPLETED: Deactivated Products with Generic Placeholder Images
+1. **240+ products deactivated** with generic toy image + zero price
+   - Party accessories, kits, decorations with placeholder images
+   - Breed-specific celebration items (Birthday Party Hat, Gotcha Day Kit for all breeds)
+2. **These had:** Same dog toy image repeated for all + "Price on request"
+3. **Deactivation reason saved in DB:** `generic_placeholder_image_zero_price`
+4. **Active party products:** 14 (all with proper Cloudinary AI images)
+   - 11 party_accessories
+   - 2 party_kits
+   - 1 celebration_addons
+
+### KEY DISTINCTION:
+- **BAD (Illustration Only):** Just a dog face drawing, no product visible. Shows "Price on request"
+- **GOOD (Real Mockup):** Actual product (mug, bandana, frame) with dog face PRINTED ON IT. Shows actual price.
 
 ---
 
