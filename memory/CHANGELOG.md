@@ -3,6 +3,29 @@
 
 ---
 
+## [Mar 15, 2026] Session 6b — Mira Imagines Concierge + Soul Questions + Admin Fix ✅ COMPLETE
+
+### Feature 1: Request a Quote → Service Desk Ticket (No Mira widget)
+- Clicking "Request a Quote →" on any MiraImaginesCard POSTs to `/api/service_desk/attach_or_create_ticket`
+- Pillar: `celebrate`, intent: `mira_imagines_product`, full context in message body
+- Button shows green **"✓ Sent to Concierge!"** — works mobile + desktop ✅
+
+### Feature 2: Soul Questions Inline in Mira's Picks
+- New `SoulQuestionsSection` + `SoulQuestionCard` components in `CelebrateContentModal.jsx`
+- Fetches unanswered questions from `/api/pet-soul/profile/{pet_id}/quick-questions?limit=5`
+- Shows for ALL pets (not just empty ones — keeps growing all 51 soul questions)
+- On answer → score updates live via `soulScoreUpdated` event → hero updates dynamically ✅
+
+### Feature 3: Admin Celebrate Products
+- `CelebrateManager.jsx` now uses `/api/admin/products?limit=1000` (Basic Auth)  
+- Category filter uses `includes()` → "Treats" matches desi-treats, frozen-treats etc.
+- Active/Inactive badge on each product card ✅
+- **Test result:** 459 products loaded, 435 Active + 24 Inactive visible ✅
+
+### Test Results: 23/24 passing (95% success rate)
+
+---
+
 ## [Mar 15, 2026] Session 6 — Critical Regression Fix + Mira Picks Enhancement ✅ COMPLETE
 
 ### ROOT CAUSE FOUND & FIXED
