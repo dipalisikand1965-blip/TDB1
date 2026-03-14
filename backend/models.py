@@ -280,7 +280,6 @@ class PetPreferences(BaseModel):
     treat_texture: Optional[str] = Field(default=None, description="crunchy, chewy, frozen, any")
     goals: Optional[str] = Field(default=None, description="Health/lifestyle goals")
 
-
 class PetHealthInfo(BaseModel):
     """Pet health information"""
     vet_name: Optional[str] = Field(default=None, description="Primary veterinarian name")
@@ -322,6 +321,8 @@ class PetProfileCreate(BaseModel):
     source: Optional[str] = Field(default="direct", description="Where the pet was created")
     # Soul answers from onboarding - canonical fields
     doggy_soul_answers: Optional[Dict[str, Any]] = Field(default=None, description="Soul answers in canonical format")
+    # Dine pillar — nutrition goal (maintenance / weight_loss / weight_gain / muscle / senior / puppy)
+    nutrition_goal: Optional[str] = Field(default=None, description="Pet's primary nutrition goal")
 
 
 class PetProfileUpdate(BaseModel):
@@ -346,6 +347,8 @@ class PetProfileUpdate(BaseModel):
     owner_name: Optional[str] = None
     whatsapp_reminders: Optional[bool] = None
     email_reminders: Optional[bool] = None
+    # Dine pillar — nutrition goal
+    nutrition_goal: Optional[str] = None
 
 
 class CelebrationReminder(BaseModel):
