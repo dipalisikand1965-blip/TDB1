@@ -11,7 +11,17 @@
 ## 🔄 SESSION 15 STATUS — In Progress (Feb 2026)
 
 ### WHAT IS IN PROGRESS:
-**P0: Wire BirthdayBoxOrdersAdmin into AgentPortal.jsx**
+**P0: Wire BirthdayBoxOrdersAdmin into AgentPortal.jsx — ✅ COMPLETE (Session 15)**
+- Full 3-column layout: Order List | 6-Slot Manifest (checkboxes) | Action Panel (WhatsApp + Status + Notes + Log)
+- Status transitions with server-side gates (allergy confirmation gate, slot assembly gate)
+- WhatsApp pre-filled contact button + Email contact button
+- Notes panel with instant append (no reload needed)
+- Nav tab shows red badge with count of NEW orders
+- 28 orders in DB, backend endpoints all verified
+- Allergy confirmation gate server-side enforced
+- Slot-by-slot assembly checkboxes with DB persistence
+- Order log (audit trail) collapsible panel
+- Personalisation panel (bandana name, cake message, delivery date, address)
 - `BirthdayBoxOrdersAdmin.jsx` — FULLY BUILT (3-panel layout, status transitions, allergy banner, personalisation editing) ✅
 - Backend endpoints — ALL BUILT (`GET/PATCH /api/admin/birthday-box-orders/*`) ✅
 - Import already in `AgentPortal.jsx` ✅
