@@ -14,6 +14,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, ChevronDown, ChevronUp } from 'lucide-react';
 import SoulPillarExpanded from './SoulPillarExpanded';
+import PillarSoulModal from './PillarSoulModal';
 
 // Pillar definitions with spec-compliant colors
 const SOUL_PILLARS = [
