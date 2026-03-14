@@ -110,7 +110,7 @@ Step 4: Welcome!
 ---
 
 ## PREVIEW URL
-`https://pet-soul-journey.preview.emergentagent.com`
+`https://pet-hub-grid.preview.emergentagent.com`
 
 ## SERVICES
 - Frontend: Running on port 3000 (hot reload)

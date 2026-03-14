@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://pet-soul-journey.preview.emergentagent.com/mira-demo**
+**https://pet-hub-grid.preview.emergentagent.com/mira-demo**
 
 ---
 

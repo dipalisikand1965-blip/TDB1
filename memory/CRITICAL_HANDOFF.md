@@ -257,7 +257,7 @@ CLOUDINARY_API_SECRET=uwvyt1zf8vPF62SMeHGFn3k3O_A
 | Admin | aditya | lola4304 |
 
 **URLs:**
-- Preview: https://pet-soul-journey.preview.emergentagent.com
+- Preview: https://pet-hub-grid.preview.emergentagent.com
 - Production: https://thedoggycompany.com
 - Database: pet-os-live-test_database
 

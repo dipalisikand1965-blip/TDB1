@@ -151,8 +151,8 @@ await db.concierge_threads.insert_one(concierge_thread)
 
 ## TEST URLS
 
-- **Main Demo**: https://pet-soul-journey.preview.emergentagent.com/mira-demo
-- **Pure OS Test**: https://pet-soul-journey.preview.emergentagent.com/mira-pure-os
+- **Main Demo**: https://pet-hub-grid.preview.emergentagent.com/mira-demo
+- **Pure OS Test**: https://pet-hub-grid.preview.emergentagent.com/mira-pure-os
 - **Login**: `dipali@clubconcierge.in` / `test123`
 
 ## TEST SCENARIOS

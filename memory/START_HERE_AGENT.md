@@ -179,7 +179,7 @@ curl "$API_URL/api/pet-soul/profile/pet-99a708f1722a/quick-questions"
 
 ## 🚀 PREVIEW URL
 ```
-https://pet-soul-journey.preview.emergentagent.com
+https://pet-hub-grid.preview.emergentagent.com
 ```
 
 Key pages:
