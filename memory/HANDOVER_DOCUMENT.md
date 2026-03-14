@@ -12,7 +12,7 @@
 | **Mira OS** | `/mira-demo` (THE MAIN OS - NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` or `/my-pets` |
-| **Preview** | `https://mira-orders.preview.emergentagent.com` |
+| **Preview** | `https://birthday-box-1.preview.emergentagent.com` |
 
 ## Test Credentials
 | Role | Email/Username | Password |
