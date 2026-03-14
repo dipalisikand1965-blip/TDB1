@@ -7,6 +7,7 @@ import { Textarea } from '../ui/textarea';
 import { toast } from '../../hooks/use-toast';
 import QuoteBuilder from './QuoteBuilder';
 import TicketFullPageModal from './TicketFullPageModal';
+import { useResizeMobile } from '../../hooks/useResizeMobile';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -198,20 +199,14 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [ticketsExpanded, setTicketsExpanded] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileView, setMobileView] = useState('list'); // 'sidebar', 'list', 'detail'
-  const [isMobile, setIsMobile] = useState(false);
-  
-  // Check for mobile screen
+
+  // Platform-standard mobile detection — ResizeObserver on document.body, 768px breakpoint
+  const isMobile = useResizeMobile(768);
+
+  // Collapse sidebar when switching to mobile
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth < 768) {
-        setSidebarCollapsed(true);
-      }
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+    if (isMobile) setSidebarCollapsed(true);
+  }, [isMobile]);
   
   // View state
   const [viewMode, setViewMode] = useState('list');

@@ -8,6 +8,7 @@
  */
 
 import React from 'react';
+import { useResizeMobile } from '../../hooks/useResizeMobile';
 
 const CELEBRATION_ICONS = {
   'Birthday': '🎂', 'First Birthday': '🎂', 'Gotcha Day': '🏠',
@@ -15,6 +16,7 @@ const CELEBRATION_ICONS = {
 };
 
 const WallLightbox = ({ photo, isOwn, liked, onLike, onClose, onPrev, onNext, hasPrev, hasNext }) => {
+  const isMobile = useResizeMobile();
   if (!photo) return null;
 
   const celebLabel = photo.occasion || photo.celebrationType || 'Birthday';
@@ -28,11 +30,15 @@ const WallLightbox = ({ photo, isOwn, liked, onLike, onClose, onPrev, onNext, ha
         position: 'fixed', inset: 0,
         background: 'rgba(0,0,0,0.90)',
         zIndex: 3000,
-        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px 16px'
+        display: 'flex',
+        alignItems: isMobile ? 'flex-start' : 'center',
+        justifyContent: 'center',
+        padding: isMobile ? '72px 0 0' : '48px 16px 16px',
+        overflowY: isMobile ? 'auto' : 'visible',
       }}
       data-testid="wall-lightbox-overlay"
     >
-      {/* Close button — fixed top-right of overlay, always visible */}
+      {/* Close button — fixed top-right, always visible */}
       <button
         onClick={onClose}
         style={{
@@ -64,8 +70,10 @@ const WallLightbox = ({ photo, isOwn, liked, onLike, onClose, onPrev, onNext, ha
         onClick={e => e.stopPropagation()}
         style={{
           maxWidth: 520, width: '100%', background: '#FFFFFF',
-          borderRadius: 20, overflow: 'hidden',
-          maxHeight: '85vh', overflowY: 'auto',
+          borderRadius: isMobile ? '20px 20px 0 0' : 20,
+          overflow: 'hidden',
+          maxHeight: isMobile ? 'none' : '85vh',
+          overflowY: isMobile ? 'visible' : 'auto',
           position: 'relative'
         }}
         data-testid="wall-lightbox-card"
