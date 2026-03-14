@@ -1,6 +1,48 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: March 14, 2026 (Session 11 — Birthday Box Spec Added)
+## Last Updated: Feb 2026 (Session 12 — Birthday Box Builder + Browse Drawer IMPLEMENTED)
+
+---
+
+## ✅ SESSION 12: Birthday Box Builder + Browse Drawer (Feb 2026)
+
+### WHAT WAS BUILT:
+
+#### 1. **BirthdayBoxBuilder.jsx** (NEW — COMPLETED ✅)
+Multi-step modal opened via `openOccasionBoxBuilder` custom event.
+- **Step 1:** All 6 slots displayed with Mira's picks, emoji, descriptions, allergy-safe/surprise badges
+- **Step 2 (conditional):** Explicit allergy confirmation step — shown only if pet has allergies
+  - Displays allergy profile, health slot detail, and confirmation checkbox
+  - CTA disabled until checkbox is ticked
+- **Step 3:** Success screen with Order ID and concierge handoff note
+- Calls `POST /api/birthday-box/{petId}/build` (updated to use `get_all_allergies()`)
+- "Browse all options" link → closes builder → opens Browse Drawer
+
+#### 2. **BirthdayBoxBrowseDrawer.jsx** (NEW — COMPLETED ✅)
+Right-side drawer per spec. Opened via `openBirthdayBoxBrowse` custom event.
+- 480px desktop / 100vw mobile, slides from right (320ms)
+- Mira bar with pulsating dot
+- 5 tabs: Cakes | Toys & Joy | Style | Memory | Wellness
+- Each tab: Mira's pick row + allergy banner + product grid (horizontal cards)
+- Swap tracking: pills with Undo, swap count in bottom bar
+- Bottom bar: whisper text + "Build {petName}'s Box →" (glows pink on swaps)
+- "Build Box →" → closes drawer → opens BirthdayBoxBuilder with swaps
+
+#### 3. **Backend Fix: build endpoint allergy check** (FIXED ✅)
+`POST /api/birthday-box/{pet_id}/build` now uses `get_all_allergies()` for the allergy guard,
+consistent with the preview endpoint.
+
+#### 4. **CelebratePageNew.jsx Wiring** (UPDATED ✅)
+- Both components mounted at bottom of page (event-driven)
+- `handleBuildBox` passes `petId` in event detail
+- `handleOpenBrowseDrawer` triggers browse with boxPreview context
+- MiraBirthdayBox secondary button passes live `boxPreview` to browse handler
+
+### Events Reference
+| Event | Trigger | Detail |
+|-------|---------|--------|
+| `openOccasionBoxBuilder` | "Build {pet}'s Box" primary button | `{preset, petName, petId}` |
+| `openBirthdayBoxBrowse` | "Birthday Box" secondary button | `{boxPreview, petName}` |
 
 ---
 

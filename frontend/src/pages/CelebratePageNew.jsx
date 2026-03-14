@@ -41,6 +41,8 @@ import {
 
 // Birthday Box
 import MiraBirthdayBox from '../components/celebrate/MiraBirthdayBox';
+import BirthdayBoxBuilder from '../components/celebrate/BirthdayBoxBuilder';
+import BirthdayBoxBrowseDrawer from '../components/celebrate/BirthdayBoxBrowseDrawer';
 
 // API utilities
 import { getApiUrl } from '../utils/api';
@@ -231,13 +233,24 @@ const CelebratePageNew = () => {
     }
   }, [selectedPet?.id, navigate, handleAddPet]);
 
-  // Handle build box from Mira's curated box
-  const handleBuildBox = useCallback((items) => {
+  // Handle build box from Mira's curated box — open BirthdayBoxBuilder modal
+  const handleBuildBox = useCallback((boxPreview) => {
     window.dispatchEvent(new CustomEvent('openOccasionBoxBuilder', {
-      detail: { 
-        preset: items,
+      detail: {
+        preset: boxPreview,
         petName: selectedPet?.name,
+        petId: selectedPet?.id,
         occasion: 'birthday'
+      }
+    }));
+  }, [selectedPet?.name, selectedPet?.id]);
+
+  // Handle open browse drawer from Birthday Box secondary button
+  const handleOpenBrowseDrawer = useCallback((boxPreview) => {
+    window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowse', {
+      detail: {
+        boxPreview,
+        petName: selectedPet?.name,
       }
     }));
   }, [selectedPet?.name]);
@@ -312,7 +325,7 @@ const CelebratePageNew = () => {
         <MiraBirthdayBox 
           pet={selectedPet}
           onBuildBox={handleBuildBox}
-          onBrowseProducts={() => handleCategorySelect('all')}
+          onBrowseProducts={(boxPreview) => handleOpenBrowseDrawer(boxPreview)}
         />
 
         {/* 4. SOUL CELEBRATION PILLARS */}
@@ -341,6 +354,14 @@ const CelebratePageNew = () => {
           petName={selectedPet?.name}
         />
       </div>
+
+      {/* BIRTHDAY BOX BUILDER MODAL — listens to openOccasionBoxBuilder event */}
+      <BirthdayBoxBuilder
+        onOpenBrowseDrawer={() => handleOpenBrowseDrawer(null)}
+      />
+
+      {/* BIRTHDAY BOX BROWSE DRAWER — listens to openBirthdayBoxBrowse event */}
+      <BirthdayBoxBrowseDrawer />
     </PillarPageLayout>
   );
 };

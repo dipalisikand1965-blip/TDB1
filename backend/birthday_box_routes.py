@@ -339,9 +339,9 @@ async def build_birthday_box(pet_id: str, payload: dict):
         raise HTTPException(status_code=404, detail="Pet not found")
     
     slots, allergy_confirmed = payload.get("slots", []), payload.get("allergyConfirmed", False)
-    allergies = pet.get("allergies", [])
-    allergy1, allergy2 = pet.get("allergy1", ""), pet.get("allergy2", "")
-    all_allergies = [a for a in (allergies or []) + [allergy1, allergy2] if a]
+    
+    # Use the comprehensive allergy check (same as preview endpoint)
+    all_allergies = get_all_allergies(pet)
     
     if all_allergies and not allergy_confirmed:
         return {"success": False, "error": "allergy_confirmation_required", "message": f"Please confirm allergy safety for {pet.get('name')}. Known allergies: {', '.join(all_allergies)}"}

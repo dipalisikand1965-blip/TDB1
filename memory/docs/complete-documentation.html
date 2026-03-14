@@ -26,7 +26,49 @@
 <body>
 
 <h1>🐾 The Doggy Company — Platform Documentation</h1>
-<p style="color:#888; font-size:13px">Last updated: March 2026 — Session 11 (Allergy Fix + Browse Drawer Spec)</p>
+<p style="color:#888; font-size:13px">Last updated: Feb 2026 — Session 12 (Birthday Box Builder + Browse Drawer IMPLEMENTED)</p>
+
+<!-- ============================= -->
+<div class="section" style="background: #dcfce7; border: 2px solid #16a34a; padding: 16px; border-radius: 12px; margin-bottom: 30px;">
+<h2 style="background: #16a34a; color: white;">✅ SESSION 12: Birthday Box Builder + Browse Drawer (Feb 2026)</h2>
+
+<h3>New Components Created</h3>
+<table>
+  <tr><th>Component</th><th>File</th><th>Status</th></tr>
+  <tr><td>BirthdayBoxBuilder.jsx</td><td>/frontend/src/components/celebrate/</td><td><span class="badge done">DONE</span></td></tr>
+  <tr><td>BirthdayBoxBrowseDrawer.jsx</td><td>/frontend/src/components/celebrate/</td><td><span class="badge done">DONE</span></td></tr>
+</table>
+
+<h3>Birthday Box Builder — Multi-step Modal</h3>
+<p>Opened by: <code>window.dispatchEvent(new CustomEvent('openOccasionBoxBuilder', {detail: {preset, petName, petId}}))</code></p>
+<table>
+  <tr><th>Step</th><th>Shown When</th><th>Content</th></tr>
+  <tr><td>Step 1</td><td>Always</td><td>All 6 slots with Mira's picks, descriptions, allergy-safe badges</td></tr>
+  <tr><td>Step 2</td><td>Pet has allergies</td><td>Explicit allergy confirmation checkbox, health slot detail</td></tr>
+  <tr><td>Step 3</td><td>After confirm</td><td>Success screen with Order ID, concierge note</td></tr>
+</table>
+<p><strong>Backend call:</strong> <code>POST /api/birthday-box/{petId}/build</code> — now uses <code>get_all_allergies()</code> in build endpoint too</p>
+
+<h3>Birthday Box Browse Drawer — Spec Compliant</h3>
+<p>Opened by: <code>window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowse', {detail: {boxPreview, petName}}))</code></p>
+<ul>
+  <li>Slides from right (320ms ease-in-out), 480px desktop / 100vw mobile</li>
+  <li>5 tabs: Cakes | Toys & Joy | Style | Memory | Wellness</li>
+  <li>Mira's pick row at top of each tab with "Swap →" link</li>
+  <li>Allergy banner when filters active</li>
+  <li>Swap tracking pills with Undo</li>
+  <li>Sticky bottom bar: whisper text + "Build {petName}'s Box →" with pink glow on swaps</li>
+  <li>"Build Box" in drawer → closes drawer → opens BirthdayBoxBuilder with swaps passed in</li>
+</ul>
+
+<h3>CelebratePageNew.jsx Updates</h3>
+<ul>
+  <li>Both new components rendered at bottom of page (event-driven, invisible when closed)</li>
+  <li><code>handleBuildBox</code> now passes <code>petId</code> to event detail</li>
+  <li><code>handleOpenBrowseDrawer</code> opens browse drawer with boxPreview context</li>
+  <li>MiraBirthdayBox secondary button passes <code>boxPreview</code> to browse handler</li>
+</ul>
+</div>
 
 <!-- ============================= -->
 <div class="section" style="background: #fee2e2; border: 2px solid #dc2626; padding: 16px; border-radius: 12px; margin-bottom: 30px;">
