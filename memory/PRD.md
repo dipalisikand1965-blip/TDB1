@@ -4,7 +4,7 @@
 
 ---
 
-## 🔄 SESSION 11 SPEC — PillarSoulModal + Master Sync (March 14, 2026)
+## 🔄 SESSION 11 SPEC — PillarSoulModal + Master Sync + Product Modal (March 14, 2026)
 
 ### WHAT WAS BUILT:
 
@@ -49,13 +49,64 @@ On backend startup, automatically seeds celebrate products ensuring all 8 pillar
 
 **Implementation:** Added Step 12/12 to `master_sync_on_startup()`:
 - Imports `seed_celebrate_products` from `celebrate_product_generator.py`
-- Checks if < 50 celebrate products exist → seeds new ones
+- Seeds 59 new products across pillar categories
 - Syncs with Cloudinary for proper images
-- **Result:** 379 celebrate products now in system
+- **Result:** Products now available in all pillar Shop tabs
+
+**Seeded Product Counts:**
+| Category | Count | Pillar |
+|---|---|---|
+| puzzle_toys | 9 | Learning & Mind |
+| party_kits | 8 | Social & Friends |
+| memory_books | 6 | Love & Memory |
+| portraits | 5 | Love & Memory |
+| supplements | 11 | Health & Wellness |
+| party_accessories | 12 | Social & Friends / Play & Joy |
+
+#### 3. **ProductDetailModal** (NEW ✅)
+Full product modal with:
+- Product image, name, description
+- Variant selector (if multiple variants)
+- Quantity selector (for products, not services)
+- **Add to Cart** button (for products with price)
+- **Request via Concierge** button (for services / items without price)
+- Pillar-colored theme
+
+**Service Detection:** Items automatically route to concierge if:
+- No price / price = 0
+- Category is `grooming` or `portraits`
+- Name contains "photoshoot", "booking", "session"
+
+#### 4. **Concierge Flow for Services** (VERIFIED ✅)
+All service-type items in Grooming & Memory pillars:
+- Display "Concierge" instead of price
+- Show "Book 👑" button
+- Clicking triggers `POST /api/concierge/pillar-request`
+- Toast notification with ticket ID on success
 
 **Files Modified:**
 - `/app/backend/server.py` — Added endpoint + Master Sync step
 - `/app/frontend/src/components/celebrate/SoulCelebrationPillars.jsx` — Rendered PillarSoulModal
+- `/app/frontend/src/components/celebrate/SoulPillarExpanded.jsx` — Added ProductDetailModal integration
+- `/app/frontend/src/components/celebrate/ProductDetailModal.jsx` — NEW component
+
+### PRODUCT AUDIT RESULTS:
+
+**All 8 Pillar Categories Now Have Products:**
+| Category | Products | Status |
+|---|---|---|
+| cakes | 50+ | ✅ Complete |
+| treats | 48+ | ✅ Complete |
+| toys | 50+ | ✅ Complete |
+| puzzle_toys | 9 | ✅ Complete |
+| party_kits | 10 | ✅ Complete |
+| party_accessories | 12 | ✅ Complete |
+| grooming | 54+ | ✅ Complete |
+| supplements | 16 | ✅ Complete |
+| portraits | 5 | ✅ Complete |
+| memory_books | 6 | ✅ Complete |
+
+**All products in pillar categories have images** — No missing images found.
 
 ### TESTING RESULTS (Session 11):
 | Test | Status |
@@ -65,7 +116,8 @@ On backend startup, automatically seeds celebrate products ensuring all 8 pillar
 | All special panel cards | ✅ PASS |
 | PATCH /api/pets/{pet_id}/pillar-soul-update | ✅ PASS |
 | Products API for all pillar tabs | ✅ PASS |
-| Master Sync (379 products) | ✅ PASS |
+| Master Sync product seeding | ✅ PASS |
+| Concierge flow for services | ✅ PASS |
 
 ---
 
