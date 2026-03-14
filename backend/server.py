@@ -7752,8 +7752,8 @@ async def get_public_products(
         else:
             query = shape_query
     
-    # Add is_active filter - only show active products (or products without is_active field set)
-    active_filter = {"$or": [{"is_active": True}, {"is_active": {"$exists": False}}]}
+    # Add is_active filter - only show active products (or products without is_active field set, or is_active=null)
+    active_filter = {"$or": [{"is_active": True}, {"is_active": {"$exists": False}}, {"is_active": None}]}
     if query:
         query = {"$and": [query, active_filter]}
     else:

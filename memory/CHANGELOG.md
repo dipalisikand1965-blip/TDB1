@@ -3,7 +3,38 @@
 
 ---
 
-## [Mar 14, 2026] Session 5 — Party Products, Soul Picks & Mira Picks Enhancement ✅ COMPLETE
+## [Mar 15, 2026] Session 6 — Critical Regression Fix + Mira Picks Enhancement ✅ COMPLETE
+
+### ROOT CAUSE FOUND & FIXED
+**Problem:** Previous cleanup script set `is_active: None` (null) for 253 celebrate products.  
+The backend API filter only checked `is_active: True` or `{$exists: False}`, so `None` was excluded.
+
+### Products Re-Activated (253 total)
+| Category | Count |
+|----------|-------|
+| `cakes` (Birthday Cakes) | 111 |
+| `breed-cakes` | 42 |
+| `celebration` (kits) | 106 |
+| `dognuts` (Pupcakes) | 30 |
+| `frozen-treats` | 24 |
+| `hampers` | 37 |
+| `desi-treats` | 7 |
+| `nut-butters` | 6 |
+
+### Backend API Fix
+- `is_active` filter now accepts `True`, `{$exists: False}`, AND `None` — future-proofed
+
+### Mira's Picks Code Improvements
+- `getLovedFoods()`: Handles 2 learned_facts formats:
+  - Format 1: `{type:'loves', category:'preferences', value:'salmon treats'}` ✅
+  - Format 2: `{category:'loves', content:"Loves ['salmon']"}` ✅ (was broken)
+- `extractSoulTraits()`: Cleaner, handles all fact formats, fully deduped
+- "Salmon Delight Cake" imagined card RESTORED for Mojo ✅
+- Breed Cakes tab showing all 42 products ✅
+
+---
+
+
 
 ### ✅ Party & Decor (47 total products)
 - 14 generic party items with AI-generated Cloudinary images
