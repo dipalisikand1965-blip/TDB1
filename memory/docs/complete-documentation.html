@@ -26,7 +26,7 @@
 <body>
 
 <h1>🐾 The Doggy Company — Platform Documentation</h1>
-<p style="color:#888; font-size:13px">Last updated: Feb 2026 — Session 15 (Full Service Desk Spec loaded + BirthdayBoxOrdersAdmin wiring in progress)</p>
+<p style="color:#888; font-size:13px">Last updated: Mar 2026 — Session 16 (Celebrate Concierge® MASTER spec loaded — full redesign in progress)</p>
 
 <!-- ================================================================== -->
 <!-- ⛔ NEXT AGENT — READ THIS FIRST BEFORE TOUCHING ANYTHING ⛔ -->
@@ -135,30 +135,122 @@
 <!-- ================================================================== -->
 <!-- CURRENT FOCUS -->
 <div style="background:#fff7ed; border:2px solid #ea580c; padding:20px; border-radius:12px; margin-bottom:30px;">
-<h2 style="background:#ea580c; color:white; padding:10px 16px; border-radius:8px; margin-top:0;">🚀 CURRENT TASK — Session 15 (IN PROGRESS)</h2>
+<h2 style="background:#ea580c; color:white; padding:10px 16px; border-radius:8px; margin-top:0;">🚀 SESSION 16 — Celebrate Concierge® Redesign (IN PROGRESS)</h2>
 
-<h3>P0 — Wire BirthdayBoxOrdersAdmin into AgentPortal.jsx</h3>
-<p><strong>STATUS: IN PROGRESS.</strong> <code>BirthdayBoxOrdersAdmin.jsx</code> is fully built. Missing: the render block in <code>AgentPortal.jsx</code> content area + <code>birthday_box_orders</code> permission in <code>AGENT_PERMISSIONS</code> + seed a test agent.</p>
+<h3>✅ Session 15 Completed</h3>
 <ul>
-  <li>Add <code>birthday_box_orders</code> to <code>AGENT_PERMISSIONS</code> in server.py</li>
-  <li>Add render block <code>{activeTab === 'birthday_box_orders' &amp;&amp; &lt;BirthdayBoxOrdersAdmin /&gt;}</code> in AgentPortal content area</li>
-  <li>Seed a concierge agent with <code>birthday_box_orders</code> permission in <code>agents</code> collection</li>
-  <li>Test: login → tab appears → 28 orders load → status transitions work</li>
+  <li>Service Desk Birthday Box Orders tab — fully wired + tested (3-column layout, WhatsApp contact, slot assembly, allergy gate, notes, audit log)</li>
+  <li>Fixed "Confirm &amp; Send to Concierge" button — stale closure + petId fallback</li>
+  <li>Removed redundant MiraAskBar from /celebrate-soul page</li>
 </ul>
 
-<h3>P1 — Love &amp; Memory Drawer (BLOCKED on user spec)</h3>
-<p>Recurring request. Ask user for spec before building.</p>
+<h3>P0 NOW — CelebrateConcierge® Section Full Redesign</h3>
+<p><strong>Source: Celebrate_Concierge_MASTER.docx — all copy is final. Do not change wording.</strong></p>
+<table>
+  <tr><th>Task</th><th>File</th><th>Status</th></tr>
+  <tr><td>Update CTA card copy, stat (45,000+), chips, button</td><td>CelebrateConcierge.jsx</td><td>TODO</td></tr>
+  <tr><td>Build 8-card service grid with exact copy</td><td>CelebrateServiceGrid.jsx (NEW)</td><td>TODO</td></tr>
+  <tr><td>Build individual card component</td><td>CelebrateServiceCard.jsx (NEW)</td><td>TODO</td></tr>
+  <tr><td>Build 3-question Concierge Intake Modal</td><td>ConciergeIntakeModal.jsx (NEW)</td><td>TODO</td></tr>
+  <tr><td>Backend intake endpoint</td><td>POST /api/concierge/intake</td><td>TODO</td></tr>
+  <tr><td>Wire into CelebratePageNew.jsx</td><td>CelebratePageNew.jsx</td><td>TODO</td></tr>
+</table>
+<p><strong>P1:</strong> Love &amp; Memory Drawer (BLOCKED — needs user spec)</p>
+<p><strong>P2:</strong> Standardize /dine, /stay, /learn to match /celebrate-soul</p>
+<p><strong>P3:</strong> Razorpay fix · Mobile dashboard scramble fix</p>
+</div>
 
-<h3>P2 — Upcoming</h3>
-<ul>
-  <li>Standardize /dine, /stay, /learn pillar pages to match /celebrate-soul template</li>
-</ul>
+<!-- ================================================================== -->
+<!-- 🎉 CELEBRATE CONCIERGE® MASTER SPEC (Celebrate_Concierge_MASTER.docx) -->
+<!-- ================================================================== -->
+<div style="background:#fdf8f0; border:2px solid #C9973A; padding:20px; border-radius:12px; margin-bottom:30px;">
+<h2 style="background:linear-gradient(135deg,#C9973A,#F0C060); color:#1A0A00; padding:10px 16px; border-radius:8px; margin-top:0;">★ CELEBRATE CONCIERGE® — MASTER SPEC (Aditya's Document, All Copy Final)</h2>
+<p style="color:#92400e; font-weight:600;">Source: Celebrate_Concierge_MASTER.docx — The Doggy Company Concierge® on /celebrate. Every word is final.</p>
 
-<h3>P3 — Known Bugs</h3>
+<blockquote style="border-left:4px solid #C9973A; padding-left:12px; color:#666; font-style:italic; margin:12px 0;">
+The Concierge does not sell. The Concierge listens, then acts.
+</blockquote>
+
+<h3>Section 1 — The Philosophy</h3>
+<p>The section should feel less like an e-commerce catalogue and more like a quiet, confident presence that says: <em>tell us what Mojo's celebration should feel like, and we will handle everything.</em> The service cards are conversation starters — not products with prices.</p>
+<p><strong>What is wrong with the current version:</strong></p>
 <ul>
-  <li>Razorpay checkout failure</li>
-  <li>Mobile pet dashboard layout scrambled</li>
+  <li><code>'2,000+ celebrations planned'</code> → Wrong. Real number: 45,000+ meals from The Doggy Bakery. Use it.</li>
+  <li><code>'Browse Celebrate Catalogue'</code> → Generic e-commerce language. The Concierge does not have a catalogue. Never use "Browse" here.</li>
+  <li><code>'Tap to book' / 'Learn more'</code> → Hollow CTAs. Each card needs a specific, inviting verb.</li>
+  <li>Never use the word "package". The Concierge delivers experiences, not packages.</li>
 </ul>
+<p><strong>What stays:</strong> dark card design · watercolour illustrations · "Mojo's Concierge" eyebrow chip · 8 service categories · 48h response promise.</p>
+
+<h3>Section 2 — CTA Card (CelebrateConcierge.jsx)</h3>
+<table>
+  <tr><th>Element</th><th>Old (remove)</th><th>New (final)</th></tr>
+  <tr><td>Title</td><td>Celebrate Personally — The Club Concierge Way</td><td><strong>Celebrate {petName} the way only you know how.</strong></td></tr>
+  <tr><td>Description</td><td>Our concierge team plans every celebration...</td><td><strong>45,000+ meals. Hundreds of birthdays. Every celebration we have ever planned has started the same way — with us listening to who your dog actually is.</strong></td></tr>
+  <tr><td>CTA button</td><td>Browse Celebrate Catalogue</td><td><strong>Plan {petName}'s Celebration →</strong></td></tr>
+  <tr><td>Stat number</td><td>2,000+</td><td><strong>45,000+</strong></td></tr>
+  <tr><td>Stat label</td><td>celebrations planned</td><td><strong>meals made with love</strong></td></tr>
+  <tr><td>Chip: Custom Merch</td><td>Custom Merch</td><td><strong>Custom Keepsakes</strong></td></tr>
+  <tr><td>Chip: Memory Books</td><td>Memory Books</td><td><strong>Memory &amp; Portraits</strong></td></tr>
+</table>
+<p><strong>CTA button on click:</strong> Opens ConciergeIntakeModal with no pre-selected service type.</p>
+<p><strong>Card visual spec:</strong> background: linear-gradient(135deg, #0E0620 0%, #1A0A00 50%, #2D1500 100%) · border: 1px solid rgba(201,151,58,0.25) · border-radius: 20px · padding: 28px · box-shadow: 0 8px 32px rgba(0,0,0,0.30)</p>
+<p><strong>Stat number typography:</strong> font-size: 2rem · font-weight: 900 · color: #F0C060</p>
+<p><strong>CTA button:</strong> background: linear-gradient(135deg, #C9973A, #F0C060) · color: #1A0A00 · border-radius: 12px · padding: 13px 26px · font-size: 15px · font-weight: 800</p>
+
+<h3>Section 3 — Service Card Grid Header</h3>
+<ul>
+  <li><strong>Title:</strong> Celebrate, Personally (Georgia · 2rem · font-weight: 800 · color: #1A0030)</li>
+  <li><strong>Subtitle (NEW):</strong> Tell us what you want {petName}'s day to feel like. We'll do the rest.</li>
+  <li><strong>Old subtitle (remove):</strong> "Let our concierge help you create the perfect celebration"</li>
+</ul>
+<p><strong>Grid:</strong> 4 columns desktop · 2 columns tablet · 1 column mobile · gap: 16px</p>
+<p><strong>Card:</strong> border-radius 16px · border: 1px solid #F0E8E0 · background: #FFFFFF · overflow: hidden · hover: translateY(-2px) + box-shadow</p>
+
+<h3>Section 4 — All 8 Cards (ALL COPY FINAL)</h3>
+<table>
+  <tr><th>#</th><th>Title</th><th>Sub-label</th><th>Description (exact)</th><th>CTA text</th><th>serviceType value</th></tr>
+  <tr><td>1</td><td>Birthday Party Planning</td><td>BIRTHDAY</td><td>From theme to table. Tell us the one word you want Mojo's birthday to feel like. We'll build the whole day around it.</td><td>Plan Mojo's birthday →</td><td>birthday_party</td></tr>
+  <tr><td>2</td><td>Professional Pet Photography</td><td>PHOTOSHOOT</td><td>Studio or outdoors. A photograph taken on the right day, in the right light, with the right person holding the lead.</td><td>Book a shoot →</td><td>photography</td></tr>
+  <tr><td>3</td><td>Custom Cake Consultation</td><td>CAKE</td><td>One-on-one with our baker. Mojo's allergies. Mojo's favourite flavour. A cake designed around who they actually are.</td><td>Start the consultation →</td><td>custom_cake</td></tr>
+  <tr><td>4</td><td>Pawty — The Full Day</td><td>PAWTY</td><td>Cake, treats, photoshoot, decorations, coordination — everything handled so you can just be there with Mojo.</td><td>Plan the pawty →</td><td>pawty</td></tr>
+  <tr><td>5</td><td>Gotcha Day Celebration</td><td>GOTCHA DAY</td><td>The day Mojo chose you. A quieter, more personal kind of celebration. For the anniversary that only you and Mojo know the meaning of.</td><td>Celebrate the day →</td><td>gotcha_day</td></tr>
+  <tr><td>6</td><td>Surprise Delivery</td><td>SURPRISE</td><td>They won't see it coming. A box arrives. Mojo doesn't know what's in it. Neither does anyone else — until the moment it opens.</td><td>Send a surprise →</td><td>surprise_delivery</td></tr>
+  <tr><td>7</td><td>Milestone Celebration</td><td>MILESTONE</td><td>First birthday. Tenth. Adoption anniversary. Some days deserve more than a cake. Tell us which milestone — we'll make it permanent.</td><td>Mark the milestone →</td><td>milestone</td></tr>
+  <tr><td>8</td><td>Pet-Friendly Venue Booking</td><td>VENUE</td><td>The right place for Mojo. We find venues that actually welcome dogs — not just allow them. There is a difference, and we know it.</td><td>Find the venue →</td><td>venue</td></tr>
+</table>
+<p style="background:#FEF9C3; padding:10px; border-radius:8px; color:#92400e; font-weight:600;">All 8 CTAs open the SAME ConciergeIntakeModal — but pre-populated with the card's serviceType. Card 1 pre-selects "Birthday Party". Card 2 pre-selects "Photography". Etc.</p>
+
+<h3>Section 5 — ConciergeIntakeModal (3-question, shared component)</h3>
+<ul>
+  <li>Opens from all 8 service cards AND the main CTA card button</li>
+  <li><strong>Eyebrow:</strong> ★ {petName}'s Concierge</li>
+  <li><strong>Title:</strong> What should {petName}'s celebration feel like?</li>
+  <li><strong>Subtitle:</strong> Three questions. Then your Concierge takes over.</li>
+</ul>
+<p><strong>Q1:</strong> What are we celebrating? — Options: Birthday · Gotcha Day · Milestone · Photoshoot · Surprise · Pawty · Just because — Pre-selected from card CTA</p>
+<p><strong>Q2:</strong> When? — Date picker + "Not sure yet" option</p>
+<p><strong>Q3 (optional):</strong> Anything else we should know about {petName}? — Free text · placeholder: "Allergies, favourite things, what makes their tail go fastest..."</p>
+<p><strong>Submit button:</strong> "Send to my Concierge →" — gold gradient · width: 100%</p>
+<p><strong>After submit:</strong> Confirmation screen: "{petName}'s celebration is in good hands. Your Concierge will be in touch within 48 hours. ♥"</p>
+<p><strong>Backend:</strong> POST /api/concierge/intake → saves intake + notifies Concierge team (WhatsApp + email)</p>
+<p style="background:#FEF2F2; padding:10px; border-radius:8px; color:#991B1B;">IMPORTANT: The intake form does NOT ask for contact details — the system already has them from the user's account. The Concierge reaches out.</p>
+
+<h3>Section 6 — Voice Guide (READ BEFORE WRITING ANY COPY)</h3>
+<p><strong>Never use:</strong> amazing · incredible · ultimate · seamless · best-in-class · one-stop · comprehensive · hassle-free · Browse · package</p>
+<p><strong>Always:</strong> Personal · considered · quiet · handled · we'll do the rest · permanent · yours · exactly · right</p>
+<p><strong>The feeling before the feature:</strong> "A cake designed around who they actually are" NOT "Custom cake with allergy-safe ingredients"</p>
+
+<h3>Section 7 — Files to Create/Modify</h3>
+<table>
+  <tr><th>Action</th><th>File</th><th>Note</th></tr>
+  <tr><td>MODIFY</td><td>components/celebrate/CelebrateConcierge.jsx</td><td>Update all copy, stat, chips, CTA text + onClick</td></tr>
+  <tr><td>CREATE</td><td>components/celebrate/CelebrateServiceGrid.jsx</td><td>8-card grid with section header. Replaces current card grid inside CelebrateConcierge.</td></tr>
+  <tr><td>CREATE</td><td>components/celebrate/CelebrateServiceCard.jsx</td><td>Individual card — illustration, sub-label, title, description, CTA</td></tr>
+  <tr><td>CREATE</td><td>components/celebrate/ConciergeIntakeModal.jsx</td><td>3-question modal, shared. serviceType prop pre-selects Q1.</td></tr>
+  <tr><td>MODIFY</td><td>pages/CelebratePageNew.jsx</td><td>Add CelebrateServiceGrid below CelebrateConcierge (or compose inside CelebrateConcierge)</td></tr>
+  <tr><td>BACKEND</td><td>POST /api/concierge/intake</td><td>Save intake to DB + notify team. Returns {success, message, intakeId}</td></tr>
+</table>
 </div>
 
 <!-- ================================================================== -->
