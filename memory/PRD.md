@@ -29,6 +29,26 @@
 
 ---
 
+## ✅ SESSION 24 COMPLETE — P1/P2 useResizeMobile + /celebrate Redirect (Mar 2026)
+
+**95% pass rate from testing agent (iteration_128). All components verified except PillarSoulModal UI (test pet has 100% soul score — code confirmed correct).**
+
+### /celebrate → /celebrate-soul Redirect (Step 1)
+- `<Navigate to="/celebrate-soul" replace />` added for `/celebrate` route in App.js
+- `/celebrate-soul` added to Mira `hiddenPaths` list (prevents duplicate widget)
+- Sub-category routes (`/celebrate/cakes` etc.) now route directly to `/celebrate-soul`
+- **Step 2 (48h later):** Delete `CelebratePage.jsx` and update sub-category redirects to point directly to `/celebrate-soul`
+
+### useResizeMobile Applied to P1/P2 Components
+| Component | Change |
+|---|---|
+| WallLightbox.jsx | Added hook + mobile top-anchor + `borderRadius: 20px 20px 0 0` |
+| PillarSoulModal.jsx | Added hook + `items-start pt-20` on mobile |
+| ProductDetailModal.jsx | Added hook + `paddingTop: 88px` + bottom-sheet corners |
+| DoggyServiceDesk.jsx | Migrated `window.addEventListener('resize')` → `useResizeMobile(768)` |
+
+---
+
 ---
 
 ---
