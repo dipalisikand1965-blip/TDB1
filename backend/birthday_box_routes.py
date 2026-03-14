@@ -72,18 +72,68 @@ ARCHETYPE_SURPRISES = {
 }
 
 
+def get_all_allergies(pet: dict) -> list:
+    """Extract ALL allergies from various pet data locations"""
+    all_allergies = set()
+    
+    # Check direct fields
+    if pet.get("allergies"):
+        all_allergies.update([a.lower() for a in pet["allergies"] if a])
+    if pet.get("allergy1"):
+        all_allergies.add(pet["allergy1"].lower())
+    if pet.get("allergy2"):
+        all_allergies.add(pet["allergy2"].lower())
+    
+    # Check health_data.allergies
+    health_data = pet.get("health_data", {})
+    if health_data.get("allergies"):
+        all_allergies.update([a.lower() for a in health_data["allergies"] if a])
+    
+    # Check health.allergies
+    health = pet.get("health", {})
+    if health.get("allergies"):
+        all_allergies.update([a.lower() for a in health["allergies"] if a])
+    
+    # Check doggy_soul_answers.food_allergies
+    soul_answers = pet.get("doggy_soul_answers", {})
+    if soul_answers.get("food_allergies"):
+        all_allergies.update([a.lower() for a in soul_answers["food_allergies"] if a])
+    if soul_answers.get("allergies"):
+        all_allergies.update([a.lower() for a in soul_answers["allergies"] if a])
+    
+    # Check insights.key_flags.allergy_list
+    insights = pet.get("insights", {})
+    key_flags = insights.get("key_flags", {})
+    if key_flags.get("allergy_list"):
+        all_allergies.update([a.lower() for a in key_flags["allergy_list"] if a])
+    
+    # Check learned_facts for allergy type
+    learned_facts = pet.get("learned_facts", [])
+    for fact in learned_facts:
+        if isinstance(fact, dict) and fact.get("type") == "allergy":
+            value = fact.get("value", "")
+            if value:
+                all_allergies.add(value.lower())
+    
+    return list(all_allergies)
+
+
 def get_slot_1_hero_cake(pet: dict) -> dict:
     """Slot 1 — Hero Item: Birthday Cake based on favorite food or breed"""
-    allergies = [a.lower() for a in (pet.get("allergies") or [])]
-    allergy1 = pet.get("allergy1", "").lower()
-    allergy2 = pet.get("allergy2", "").lower()
-    all_allergies = allergies + [a for a in [allergy1, allergy2] if a]
+    all_allergies = get_all_allergies(pet)
     
     soul_answers = pet.get("doggy_soul_answers", {})
     fav_food = soul_answers.get("favorite_protein") or soul_answers.get("favourite_food1") or ""
     fav_food = fav_food.lower() if isinstance(fav_food, str) else ""
     
+    # Get favorite treats for fallback
+    fav_treats = soul_answers.get("favorite_treats", [])
+    if isinstance(fav_treats, list):
+        fav_treats = [t.lower() for t in fav_treats if isinstance(t, str)]
+    
     breed = (pet.get("breed") or "").lower()
+    
+    # Check if favorite food is an allergen - CRITICAL CHECK
     is_fav_allergen = any(allergen in fav_food for allergen in all_allergies if allergen)
     
     if fav_food and not is_fav_allergen:
@@ -92,16 +142,35 @@ def get_slot_1_hero_cake(pet: dict) -> dict:
         if all_allergies:
             label += ", allergy-safe"
         return {"slotNumber": 1, "slotName": "Hero Item", "emoji": emoji, "chipLabel": label, "itemName": f"{fav_food.title()} Birthday Cake", "description": f"Their favorite {fav_food} flavor", "isAllergySafe": True, "signal": "favourite_food"}
-    else:
+    
+    # Favorite food is an allergen! Use safe alternative from treats
+    safe_flavor = None
+    for treat in fav_treats:
+        if not any(allergen in treat for allergen in all_allergies):
+            safe_flavor = treat
+            break
+    
+    # If no safe treat, use breed fallback with allergy check
+    if not safe_flavor:
         breed_data = BREED_CAKE_FLAVORS.get(breed, BREED_CAKE_FLAVORS["default"])
-        flavor, emoji = breed_data["flavor"], breed_data["emoji"]
-        if any(allergen in flavor for allergen in all_allergies if allergen):
-            flavor = "chicken" if "chicken" not in all_allergies else "salmon" if "salmon" not in all_allergies else "veggie"
-            emoji = "🍗" if flavor == "chicken" else "🐟" if flavor == "salmon" else "🥬"
-        label = f"{flavor.title()} birthday cake"
-        if all_allergies:
-            label += ", allergy-safe"
-        return {"slotNumber": 1, "slotName": "Hero Item", "emoji": emoji, "chipLabel": label, "itemName": f"{flavor.title()} Birthday Cake", "description": f"Breed-matched {flavor} flavor", "isAllergySafe": True, "signal": "breed_fallback"}
+        flavor = breed_data["flavor"]
+        
+        # Check if breed flavor is allergen
+        if any(allergen in flavor for allergen in all_allergies):
+            # Find first safe flavor
+            for fallback in ["salmon", "peanut butter", "beef", "veggie"]:
+                if not any(allergen in fallback for allergen in all_allergies):
+                    safe_flavor = fallback
+                    break
+            if not safe_flavor:
+                safe_flavor = "veggie"  # Ultimate fallback
+        else:
+            safe_flavor = flavor
+    
+    emoji = "🐟" if "salmon" in safe_flavor else "🥜" if "peanut" in safe_flavor else "🥩" if "beef" in safe_flavor else "🥬" if "veggie" in safe_flavor else "🎂"
+    label = f"{safe_flavor.title()} birthday cake, allergy-safe"
+    
+    return {"slotNumber": 1, "slotName": "Hero Item", "emoji": emoji, "chipLabel": label, "itemName": f"{safe_flavor.title()} Birthday Cake", "description": f"Safe alternative (no {', '.join(all_allergies)})", "isAllergySafe": True, "excludedAllergens": all_allergies, "signal": "allergy_safe_fallback"}
 
 
 def get_slot_2_joy_item(pet: dict) -> dict:
@@ -164,10 +233,8 @@ def get_slot_5_health_item(pet: dict) -> dict:
     pet_age = pet.get("age", 3)
     health_condition = pet.get("health_condition") or pet.get("healthCondition")
     
-    allergies = [a.lower() for a in (pet.get("allergies") or [])]
-    allergy1 = pet.get("allergy1", "").lower()
-    allergy2 = pet.get("allergy2", "").lower()
-    all_allergies = [a for a in allergies + [allergy1, allergy2] if a]
+    # Use the comprehensive allergy check
+    all_allergies = get_all_allergies(pet)
     
     allergy_note = ", allergy-safe" if all_allergies else ""
     requires_confirmation = len(all_allergies) > 0
@@ -211,7 +278,7 @@ def calculate_soul_percent(pet: dict) -> int:
 
 @birthday_box_router.get("/birthday-box/{pet_id}/preview")
 async def get_birthday_box_preview(pet_id: str):
-    """Lightweight endpoint for Birthday Box card display on /celebrate page."""
+    """Lightweight endpoint for Birthday Box card display on /celebrate-soul page."""
     pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
@@ -222,9 +289,8 @@ async def get_birthday_box_preview(pet_id: str):
     slot5, slot6 = get_slot_5_health_item(pet), get_slot_6_surprise_item(pet)
     soul_percent = calculate_soul_percent(pet)
     
-    allergies = pet.get("allergies", [])
-    allergy1, allergy2 = pet.get("allergy1", ""), pet.get("allergy2", "")
-    all_allergies = [a for a in (allergies or []) + [allergy1, allergy2] if a]
+    # Use comprehensive allergy check
+    all_allergies = get_all_allergies(pet)
     
     return {
         "petId": pet_id, "petName": pet_name,
