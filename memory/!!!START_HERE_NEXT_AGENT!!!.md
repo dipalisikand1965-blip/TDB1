@@ -2,52 +2,50 @@
 
 ## NEXT AGENT: DO NOT SKIP THIS FILE!
 
-**Date:** March 10, 2026
+**Date:** March 13, 2026 (Updated)
 **User:** Aditya (The Doggy Company)
-**User's Concern:** "The next agent won't understand a word"
 
 ---
 
-# WHAT YOU NEED TO KNOW IN 60 SECONDS
+# CURRENT WORKING STATE (March 13, 2026)
 
 ## THE PROJECT
-A hyper-personalized pet products platform with AI-generated mockups for 33 dog breeds.
+A hyper-personalized soul-first Pet Operating System. Route `/celebrate-soul` is the main page being developed.
 
-## WHAT'S RUNNING RIGHT NOW
-🔄 **Mockup generation is 47% complete** - running in background
-- Monitor: `tail -f /tmp/gen_remaining.log`
-- Status: `curl $API_URL/api/mockups/status`
+## CELEBRATE PAGE — CURRENT STATUS (/celebrate-soul)
+All active development is on `CelebrateContentModal.jsx` and related components.
 
-## WHAT THE USER WANTS DONE
+### What works:
+- 11 category strip tabs (Birthday Cakes, Breed Cakes, Pupcakes, Desi Treats, Frozen Treats, Gift Hampers, Bundles, Party & Decor, Nut Butters, Soul Picks, Mira's Picks)
+- Desktop modal: centered large dialog (wrapper div flex pattern, NOT transform)
+- Birthday Cakes → `cakes` category (111 real TDB bakery cakes)
+- Soul Picks → real breed merchandise (mugs, bandanas, frames, keychains from Cloudinary)
+- Mira's Picks → MiraImaginesCard for loved foods not in collection + breed-filtered real cakes
+- Footer: 2-state (browsing: "✦ Everything here is personalised for {pet}" | active: "N things — plan is growing")
+- Bundle expansion: X close button + object-contain image
+- Admin: 308+ products load with category dropdown working
 
-### IMMEDIATE (Do These First!)
-1. ✅ Let generation complete (currently running)
-2. ⚠️ Click "SYNC → PROD" button after generation (Admin Panel)
-3. 🐛 Fix Razorpay checkout "body error"
+### ⚠️ CRITICAL DATA RULES (NEVER BREAK):
+- `cakes` (111) = ACTUAL TDB bakery cakes → Birthday Cakes tab
+- `celebration` (106) = celebration kits/packages → NEVER for Birthday Cakes
+- `Soul Picks` = breed-mugs + breed-bandanas + breed-frames + breed-keychains + breed-party_hats + breed-tote_bags
+- NEVER use `/api/mockups/breed-products` on celebrate page (AI illustrations, not wanted)
 
-### THE PRODUCT SYSTEM FLOW
-```
-Products in DB → Mockups Generated → Uploaded to Cloudinary → 
-Show in Admin Product Box → User clicks "SYNC → PROD" → 
-Products appear on production site
-```
+## NEXT TASKS (Aditya will specify):
+- Replace `/celebrate` route with `/celebrate-soul` (needs approval)
+- Standardize `/dine`, `/stay`, `/learn` pillar pages
+
+## KEY FILES:
+- `/app/frontend/src/components/celebrate/CelebrateContentModal.jsx` — main modal
+- `/app/frontend/src/components/celebrate/CelebrateCategoryStrip.jsx` — 11 category strip
+- `/app/frontend/src/pages/CelebratePageNew.jsx` — the page itself
+- `/app/memory/PRD.md` — full product requirements
+- `/app/memory/CHANGELOG.md` — history of changes
+- `/app/memory/complete-documentation.html` — full HTML bible
+- `/app/memory/docs/CELEBRATE_UI_SPEC.md` — UI design bible
 
 ---
 
-# CRITICAL FILES (Only Read These 4)
-
-| Priority | File | What It Contains |
-|----------|------|------------------|
-| 1️⃣ | **THIS FILE** | Quick overview |
-| 2️⃣ | `/app/memory/CRITICAL_HANDOFF.md` | Complete technical details |
-| 3️⃣ | `/app/memory/PRODUCT_SYSTEM_ANALYSIS.md` | What's missing/improvements |
-| 4️⃣ | `/app/memory/complete-documentation.html` | Full HTML docs |
-
-**IGNORE all other .md files in /app/memory/** - they're old/outdated!
-
----
-
-# THE NUMBERS
 
 | What | Count |
 |------|-------|

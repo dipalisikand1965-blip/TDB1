@@ -414,11 +414,76 @@
             </div>
         </div>
 
+        <!-- CELEBRATE PAGE — LATEST SPEC (Mar 13, 2026) -->
+        <div class="section">
+            <div class="section-title">🎂 Celebrate Page — Soul-First Design Spec (Current)</div>
+            
+            <div class="success-box">Route: <strong>/celebrate-soul</strong> (will replace /celebrate once approved) | 11 Category Strip Tabs</div>
+
+            <div class="card">
+                <div class="card-title">Category Strip — 11 Tabs</div>
+                <ul>
+                    <li>🎂 Birthday Cakes → <code>cakes</code> category (111 real TDB bakery cakes)</li>
+                    <li>🐕 Breed Cakes → <code>breed-cakes</code> (42 products)</li>
+                    <li>🧁 Pupcakes & Dognuts → <code>dognuts</code> (30 products)</li>
+                    <li>🪔 Desi Treats → <code>desi-treats</code> (7 products)</li>
+                    <li>🧊 Frozen Treats → <code>frozen-treats</code> (24 products)</li>
+                    <li>🎁 Gift Hampers → <code>hampers</code> (37 products)</li>
+                    <li>🎀 Bundles → <code>/api/celebrate/bundles</code> (6 bundles)</li>
+                    <li>🎉 Party & Decor → <code>party_accessories + party_kits + celebration_addons</code></li>
+                    <li>🥜 Nut Butters → <code>nut-butters</code> (6 products)</li>
+                    <li>✨ Soul Picks → Real breed merchandise (mugs, bandanas, frames, keychains, party hats, tote bags) filtered by breed name</li>
+                    <li>🌟 Mira's Picks → MiraImaginesCard (loved foods not in collection) + breed-filtered cakes</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">⚠️ Critical Data Rules — Never Break These</div>
+                <ul>
+                    <li><strong>cakes</strong> (111) = actual TDB bakery products. Use for Birthday Cakes tab.</li>
+                    <li><strong>celebration</strong> (106) = celebration packages/kits. NEVER use for Birthday Cakes.</li>
+                    <li><strong>Soul Picks</strong> = breed-mugs, breed-bandanas, breed-frames, breed-keychains, breed-party_hats, breed-tote_bags (real Shopify products). NEVER use /api/mockups/breed-products (AI illustrations).</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Mira Imagines Card</div>
+                <p>For loved foods not in the cake collection. Dark gradient card with food emoji + "Request a Quote →" button.</p>
+                <ul>
+                    <li>Data source: <code>pet.learned_facts</code> filtered by type=loves/likes + category=preferences</li>
+                    <li>Logic: check food word against <code>cakes</code> collection names → if not found → show imaginary card</li>
+                    <li>Button click: fires <code>openConcierge</code> + <code>openMiraAI</code> events → concierge toast</li>
+                    <li>Max 3 imaginary cards per session</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Modal Footer — 2-State Live Narrative</div>
+                <ul>
+                    <li><strong>Browsing</strong>: "✦ Everything here is personalised for {pet}" | "Explore More for {pet}"</li>
+                    <li><strong>Active</strong> (items added): "{emoji} + N things — {pet}'s plan is growing" | "Keep Building →"</li>
+                    <li><code>addedCount</code> increments on <code>addToCart</code> events while modal open; resets on category change</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Key Files</div>
+                <ul>
+                    <li><code>/app/frontend/src/components/celebrate/CelebrateContentModal.jsx</code> — Main modal</li>
+                    <li><code>/app/frontend/src/components/celebrate/CelebrateCategoryStrip.jsx</code> — 11 categories</li>
+                    <li><code>/app/frontend/src/pages/CelebratePageNew.jsx</code> — Route: /celebrate-soul</li>
+                    <li><code>/app/frontend/src/components/admin/CelebrateManager.jsx</code> — Admin panel</li>
+                    <li><code>/app/memory/docs/CELEBRATE_UI_SPEC.md</code> — Design bible</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- FOOTER -->
         <div class="section" style="text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
             <h3>The Doggy Company - MIRA OS</h3>
             <p>Building the future of personalized pet care</p>
             <p style="margin-top: 15px; opacity: 0.8;">WhatsApp: +91 8971702582 | Email: hello@thedoggycompany.com</p>
+            <p style="margin-top: 8px; opacity: 0.6; font-size: 0.85em;">Last updated: March 13, 2026</p>
         </div>
 
     </div>
