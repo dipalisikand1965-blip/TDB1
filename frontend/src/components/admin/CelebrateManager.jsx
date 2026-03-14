@@ -19,6 +19,7 @@ import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
 import axios from 'axios';
 import PillarServicesTab from './PillarServicesTab';
+import ProductGeneratorPanel from './ProductGeneratorPanel';
 import {
   Cake, Gift, Heart, ShoppingBag, Settings, Search,
   Plus, Edit2, Trash2, RefreshCw, Upload, Download, ChevronRight,
@@ -69,6 +70,7 @@ const REQUEST_TYPES = {
 const CelebrateManager = ({ getAuthHeader }) => {
   // State
   const [activeSubTab, setActiveSubTab] = useState('requests');
+  const adminToken = localStorage.getItem('adminToken') || localStorage.getItem('token');
   const [requests, setRequests] = useState([]);
   const [partners, setPartners] = useState([]);
   const [products, setProducts] = useState([]);
@@ -675,6 +677,10 @@ const CelebrateManager = ({ getAuthHeader }) => {
           <TabsTrigger value="settings" data-testid="celebrate-tab-settings" className="data-[state=active]:bg-pink-600 data-[state=active]:text-white">
             <Settings className="w-4 h-4 mr-2" /> Settings
           </TabsTrigger>
+          <TabsTrigger value="generate" data-testid="celebrate-tab-generate"
+            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white">
+            <Sparkles className="w-4 h-4 mr-2" /> Generate
+          </TabsTrigger>
         </TabsList>
 
         {/* REQUESTS TAB */}
@@ -1193,6 +1199,11 @@ const CelebrateManager = ({ getAuthHeader }) => {
           <Button onClick={saveSettings} className="bg-pink-600 hover:bg-pink-700">
             Save Settings
           </Button>
+        </TabsContent>
+
+        {/* GENERATE TAB */}
+        <TabsContent value="generate" className="p-1">
+          <ProductGeneratorPanel token={adminToken} />
         </TabsContent>
       </Tabs>
 

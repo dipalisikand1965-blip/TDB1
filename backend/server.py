@@ -20276,6 +20276,69 @@ async def export_all_data(password: str = Query(...)):
     }
 
 
+# ── Celebrate Product Generator — endpoints (MUST be BEFORE include_router) ─
+from celebrate_product_generator import (
+    run_full_celebrate_generation,
+    celebrate_gen_status,
+    CELEBRATE_PRODUCTS,
+)
+
+@api_router.post("/admin/celebrate/seed-and-generate")
+async def start_celebrate_product_generation(
+    background_tasks: BackgroundTasks,
+    username: str = Depends(verify_admin_auth),
+):
+    """Seed all celebrate pillar products + start AI image generation in background."""
+    if celebrate_gen_status.get("running"):
+        return {"message": "Generation already running", "status": celebrate_gen_status}
+    background_tasks.add_task(run_full_celebrate_generation, db)
+    return {
+        "message": "Celebrate product generation started",
+        "total_products_to_seed": len(CELEBRATE_PRODUCTS),
+        "status": "starting",
+    }
+
+
+@api_router.get("/admin/celebrate/generation-status")
+async def get_celebrate_generation_status(username: str = Depends(verify_admin_auth)):
+    """Live status of celebrate product generator — poll every 3 seconds."""
+    category_counts = {}
+    for cat in ["puzzle_toys", "party_kits", "pawty_kits", "memory_books", "portraits",
+                "supplements", "wellness_birthday", "party_accessories"]:
+        count = await db.products_master.count_documents({"category": cat, "pillar": "celebrate"})
+        category_counts[cat] = count
+    return {**celebrate_gen_status, "category_counts": category_counts}
+
+
+@api_router.post("/admin/products/{product_id}/regenerate-image")
+async def regenerate_single_product_image(
+    product_id: str,
+    background_tasks: BackgroundTasks,
+    username: str = Depends(verify_admin_auth),
+):
+    """Regenerate AI image for a single product."""
+    product = await db.products_master.find_one({"id": product_id}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    async def _regen():
+        from ai_image_service import generate_ai_image
+        prompt = product.get("ai_image_prompt") or \
+            f"Premium dog product, {product['name']}, clean white background, professional product photography"
+        url = await generate_ai_image(prompt)
+        if url:
+            await db.products_master.update_one(
+                {"id": product_id},
+                {"$set": {
+                    "image_url": url, "image": url, "images": [url],
+                    "ai_image_generated": True,
+                    "image_updated_at": datetime.now(timezone.utc).isoformat(),
+                }}
+            )
+    background_tasks.add_task(_regen)
+    return {"message": f"Image regeneration started for {product['name']}", "product_id": product_id}
+
+
 # Include routers
 # NOTE: Pillar-specific routers must be registered BEFORE api_router
 # because api_router has a generic /{pillar}/page-config route that would

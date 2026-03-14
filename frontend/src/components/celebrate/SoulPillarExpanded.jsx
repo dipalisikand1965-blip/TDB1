@@ -9,6 +9,30 @@ import { Sparkles, Loader2, Plus } from 'lucide-react';
 import { getApiUrl } from '../../utils/api';
 import DrawerBottomBar from './DrawerBottomBar';
 
+/* ── Shared concierge-request helper ─────────────────────────────────────── */
+const API_BASE = process.env.REACT_APP_BACKEND_URL;
+
+const sendToConcierge = async ({ requestType, label, message, petName }) => {
+  try {
+    const resp = await fetch(`${API_BASE}/api/concierge/pillar-request`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pillar: 'celebrate',
+        request_type: requestType,
+        request_label: label,
+        pet_name: petName,
+        message,
+        source: 'soul_pillar_expanded',
+      }),
+    });
+    const data = await resp.json();
+    return { success: true, ticketId: data.ticket_id, requestId: data.request_id };
+  } catch {
+    return { success: false };
+  }
+};
+
 /* ── Tab definitions — EXACT from spec ─────────────────────────────────── */
 const PILLAR_TABS = {
   food:      [
@@ -42,10 +66,10 @@ const PILLAR_TABS = {
     { name: 'Photo-Ready',            category: 'accessories' },
   ],
   learning:  [
-    { name: 'Puzzle Toys',           category: 'puzzles' },
+    { name: 'Puzzle Toys',           category: 'puzzle_toys' },
     { name: 'Trick Kits',            category: 'training' },
     { name: 'Training Sessions',     category: 'training', concierge: true },
-    { name: 'Brain Games',           category: 'puzzles' },
+    { name: 'Brain Games',           category: 'puzzle_toys' },
   ],
   health:    [
     { name: 'Wellness Gifts',    category: 'supplements' },
@@ -54,10 +78,10 @@ const PILLAR_TABS = {
     { name: 'Longevity Plan',    category: 'supplements' },
   ],
   memory:    [
-    { name: 'Photoshoot',        category: 'accessories', concierge: true },
-    { name: 'Custom Portrait',   category: 'accessories' },
-    { name: 'Memory Book',       category: 'accessories' },
-    { name: 'Soul Story',        category: 'accessories' },
+    { name: 'Photoshoot',        category: 'portraits', concierge: true },
+    { name: 'Custom Portrait',   category: 'portraits' },
+    { name: 'Memory Book',       category: 'memory_books' },
+    { name: 'Soul Story',        category: 'memory_books', concierge: true },
   ],
 };
 
@@ -92,32 +116,114 @@ const PILLAR_TITLES = {
   memory:    { title: 'Love & Memory — Make This Birthday Permanent', sub: (p) => `${p?.name || 'your pet'}'s birthday happens once. This is how you keep it.` },
 };
 
+/* ── Pet-dependent feast item derivation ────────────────────────────────── */
+const FLAVOR_FEAST_ITEMS = {
+  salmon: [
+    { icon: '🎂', name: 'Salmon Birthday Cake', desc: 'The centrepiece — soy-free, no artificial colours' },
+    { icon: '🍪', name: 'Salmon Biscuit Platter', desc: 'Slow-baked × 12 biscuits' },
+    { icon: '🧁', name: 'Salmon Paw Cupcakes', desc: '6 frosted cups for the guests' },
+  ],
+  chicken: [
+    { icon: '🎂', name: 'Chicken Birthday Cake', desc: 'The centrepiece — grain-free option' },
+    { icon: '🍪', name: 'Chicken Treat Platter', desc: 'Mini bites × 12' },
+    { icon: '🧁', name: 'Chicken Paw Cupcakes', desc: '6 mini cakes for the guests' },
+  ],
+  beef: [
+    { icon: '🎂', name: 'Beef Birthday Cake', desc: 'The centrepiece — high protein' },
+    { icon: '🍪', name: 'Beef Jerky Platter', desc: 'Slow-dried bites × 12' },
+    { icon: '🧁', name: 'Beef Paw Cupcakes', desc: '6 meaty cups for the guests' },
+  ],
+  'peanut butter': [
+    { icon: '🎂', name: 'Peanut Butter Birthday Cake', desc: 'The centrepiece — naturally sweet' },
+    { icon: '🍪', name: 'PB Biscuit Platter', desc: 'Crunchy × 12 biscuits' },
+    { icon: '🧁', name: 'PB Paw Cupcakes', desc: '6 cups for the guests' },
+  ],
+  banana: [
+    { icon: '🎂', name: 'Banana & Coconut Birthday Cake', desc: 'Naturally sweet, grain-free' },
+    { icon: '🍪', name: 'Banana Biscuit Platter', desc: 'Baked × 12 biscuits' },
+    { icon: '🧁', name: 'Banana Paw Cupcakes', desc: '6 tropical cups for guests' },
+  ],
+  default: [
+    { icon: '🎂', name: 'Birthday Celebration Cake', desc: 'The centrepiece — made for {petName}' },
+    { icon: '🍪', name: 'Signature Treat Platter', desc: 'Handpicked × 12 biscuits' },
+    { icon: '🧁', name: 'Birthday Paw Cupcakes', desc: '6 celebration cups for the guests' },
+  ],
+};
+
+const deriveFeastItems = (pet) => {
+  const favTreats = (pet?.doggy_soul_answers?.favorite_treats || []).map(t => t.toLowerCase());
+  const allergies = (pet?.doggy_soul_answers?.food_allergies || pet?.allergies || []).map(a => a.toLowerCase());
+  const detectedFlavor = Object.keys(FLAVOR_FEAST_ITEMS).find(
+    f => f !== 'default' && favTreats.some(t => t.includes(f)) && !allergies.some(a => f.includes(a))
+  );
+  return FLAVOR_FEAST_ITEMS[detectedFlavor || 'default'];
+};
+
 /* ── Special Panel: FeastMenuCard (Pillar 1 only) ────────────────────────── */
-const FeastMenuCard = ({ petName }) => (
-  <div className="rounded-2xl p-5 mb-4" style={{ background: 'linear-gradient(135deg, #FFF8F0, #FEF3FF)' }}>
-    <p className="font-extrabold mb-3" style={{ fontSize: 15, color: '#1A0030' }}>
-      🍽️ {petName}'s Birthday Feast Menu
-    </p>
-    <div className="grid grid-cols-3 gap-3">
-      {[
-        { icon: '🎂', name: 'Salmon Birthday Cake', desc: 'The centrepiece', price: '₹899' },
-        { icon: '🍪', name: 'Treat Platter',         desc: 'Salmon biscuits × 12', price: '₹449' },
-        { icon: '🧁', name: 'Paw Cupcakes',          desc: '6 for the guests', price: '₹349' },
-      ].map(item => (
-        <div key={item.name} className="rounded-xl p-3 text-center"
-          style={{ background: '#FFF', border: '1px solid #F0E8F8' }}>
-          <div style={{ fontSize: 28, marginBottom: 6 }}>{item.icon}</div>
-          <p className="font-bold" style={{ fontSize: 12, color: '#1A0030', marginBottom: 2 }}>{item.name}</p>
-          <p style={{ fontSize: 11, color: '#888' }}>{item.desc}</p>
-          <p className="font-bold mt-1.5" style={{ fontSize: 12, color: '#C44DFF' }}>{item.price}</p>
-        </div>
-      ))}
+const FeastMenuCard = ({ pet }) => {
+  const petName = pet?.name || 'your pet';
+  const feastItems = deriveFeastItems(pet);
+  const [sentItems, setSentItems] = useState({});
+  const [sending, setSending] = useState({});
+
+  const requestFeastItem = async (item) => {
+    if (sentItems[item.name] || sending[item.name]) return;
+    setSending(prev => ({ ...prev, [item.name]: true }));
+    const result = await sendToConcierge({
+      requestType: 'feast_item',
+      label: `Request ${item.name} for ${petName}`,
+      message: `Please prepare ${item.name} (${item.desc}) for ${petName}'s birthday feast`,
+      petName,
+    });
+    setSending(prev => ({ ...prev, [item.name]: false }));
+    if (result.success) {
+      setSentItems(prev => ({ ...prev, [item.name]: result.ticketId }));
+    }
+  };
+
+  return (
+    <div className="rounded-2xl p-5 mb-4" style={{ background: 'linear-gradient(135deg, #FFF8F0, #FEF3FF)' }}>
+      <p className="font-extrabold mb-3" style={{ fontSize: 15, color: '#1A0030' }}>
+        🍽️ {petName}'s Birthday Feast Menu
+      </p>
+      <p style={{ fontSize: 11, color: '#999', marginBottom: 12 }}>
+        Mira curated this based on {petName}'s favourite flavours — generated on the fly for this birthday
+      </p>
+      <div className="grid grid-cols-3 gap-3">
+        {feastItems.map(item => {
+          const isSent = !!sentItems[item.name];
+          const isLoading = !!sending[item.name];
+          return (
+            <div key={item.name} className="rounded-xl p-3 text-center"
+              style={{ background: '#FFF', border: isSent ? '1.5px solid #C44DFF' : '1px solid #F0E8F8' }}>
+              <div style={{ fontSize: 28, marginBottom: 6 }}>{item.icon}</div>
+              <p className="font-bold" style={{ fontSize: 11, color: '#1A0030', marginBottom: 2 }}>
+                {item.name.replace('{petName}', petName)}
+              </p>
+              <p style={{ fontSize: 10, color: '#888', marginBottom: 10 }}>{item.desc}</p>
+              <button
+                onClick={() => requestFeastItem(item)}
+                disabled={isSent || isLoading}
+                className="w-full rounded-full font-bold"
+                style={{
+                  padding: '5px 8px', fontSize: 10, cursor: isSent ? 'default' : 'pointer',
+                  background: isSent ? '#F0FFF4' : 'rgba(196,77,255,0.10)',
+                  border: isSent ? '1px solid #86EFAC' : '1px solid rgba(196,77,255,0.25)',
+                  color: isSent ? '#166534' : '#7C3AED',
+                }}
+              >
+                {isSent ? '✓ Sent to Concierge' : isLoading ? '...' : 'Request via Concierge'}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      <p style={{ fontSize: 10, color: '#C44DFF', marginTop: 10, fontStyle: 'italic' }}>
+        ✦ These are prepared fresh on order — Mira has noted {petName}'s flavour preferences
+      </p>
     </div>
-    <p style={{ fontSize: 10, color: '#999', marginTop: 10 }}>
-      These items can be requested via concierge. Full products with ordering below.
-    </p>
-  </div>
-);
+  );
+};
 
 /* ── Special Panel: PawtyPlannerCard (Pillar 3 only) ─────────────────────── */
 const PawtyPlannerCard = ({ pet }) => {
@@ -125,40 +231,109 @@ const PawtyPlannerCard = ({ pet }) => {
   const friend1 = pet?.doggy_soul_answers?.pet_friends?.[0] || 'Bruno';
   const friend2 = pet?.doggy_soul_answers?.pet_friends?.[1] || 'Cookie';
   const city = pet?.city || 'your city';
+  const [sentSteps, setSentSteps] = useState({});
+  const [sendingSteps, setSendingSteps] = useState({});
+
   const steps = [
-    { num: 1, text: `Choose venue — Pet-friendly spot in ${city}`, action: 'Find a venue' },
-    { num: 2, text: `Send invites to ${friend1} & ${friend2} — 5-pack paw print invitations`, action: 'Order invites' },
-    { num: 3, text: 'Order the pawty kit — Bandanas for 3, treat bags, decorations', action: 'Add to cart' },
-    { num: 4, text: 'Let Concierge handle the rest — One call, everything arranged', action: '👑 Talk to Concierge', premium: true },
+    {
+      num: 1, icon: '📍',
+      text: `Choose venue — Pet-friendly spot in ${city}`,
+      action: 'Find a venue',
+      requestType: 'venue_finder',
+      label: `Find a pet-friendly venue in ${city} for ${petName}'s birthday`,
+      message: `Please find a pet-friendly birthday venue in ${city} for ${petName}'s pawty. Guest list includes ${friend1} and ${friend2}.`,
+    },
+    {
+      num: 2, icon: '💌',
+      text: `Send invites to ${friend1} & ${friend2} — 5-pack paw print invitations`,
+      action: 'Order invites',
+      requestType: 'order_invitations',
+      label: `Order paw print invitations for ${petName}'s birthday pawty`,
+      message: `Please prepare 5-pack paw print birthday invitations for ${petName}'s birthday. To be sent to ${friend1} and ${friend2}.`,
+    },
+    {
+      num: 3, icon: '🎊',
+      text: `Order the pawty kit — Bandanas for 3, treat bags, decorations`,
+      action: 'Order pawty kit',
+      requestType: 'pawty_kit_order',
+      label: `Order pawty kit for ${petName}'s birthday`,
+      message: `Please prepare a birthday pawty kit for ${petName}: 3 bandanas, 6 treat bags, paw print balloons, and streamers.`,
+    },
+    {
+      num: 4, icon: '👑',
+      text: `Let Concierge handle the rest — One call, everything arranged`,
+      action: '👑 Full Concierge',
+      requestType: 'full_concierge_pawty',
+      label: `Full concierge birthday pawty planning for ${petName}`,
+      message: `Please handle ${petName}'s full birthday pawty — venue, invites, pawty kit, and day-of coordination for ${petName}, ${friend1} and ${friend2} in ${city}.`,
+      premium: true,
+    },
   ];
+
+  const handleStepAction = async (step) => {
+    if (sentSteps[step.num] || sendingSteps[step.num]) return;
+    setSendingSteps(prev => ({ ...prev, [step.num]: true }));
+    const result = await sendToConcierge({
+      requestType: step.requestType,
+      label: step.label,
+      message: step.message,
+      petName,
+    });
+    setSendingSteps(prev => ({ ...prev, [step.num]: false }));
+    if (result.success) {
+      setSentSteps(prev => ({ ...prev, [step.num]: result.ticketId || 'sent' }));
+    }
+  };
+
   return (
     <div className="rounded-2xl p-5 mb-4" style={{ background: 'linear-gradient(135deg, #F3E5F5, #FCE4EC)' }}>
       <p className="font-extrabold mb-4" style={{ fontSize: 14, color: '#3D0060' }}>
         🦋 {petName}'s Pawty Plan — {friend1} & {friend2} invited
       </p>
       <div className="flex flex-col gap-3">
-        {steps.map(step => (
-          <div key={step.num} className="rounded-xl p-3 flex items-center gap-3 bg-white"
-            style={{ border: '1px solid rgba(196,77,255,0.15)' }}>
-            <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-white text-xs"
-              style={{ background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)' }}>
-              {step.num}
+        {steps.map(step => {
+          const isSent = !!sentSteps[step.num];
+          const isLoading = !!sendingSteps[step.num];
+          return (
+            <div key={step.num} className="rounded-xl p-3 flex items-center gap-3 bg-white"
+              style={{ border: isSent ? '1.5px solid #C44DFF' : '1px solid rgba(196,77,255,0.15)' }}>
+              <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-white text-xs"
+                style={{
+                  background: isSent
+                    ? 'linear-gradient(135deg, #22C55E, #16A34A)'
+                    : 'linear-gradient(135deg, #C44DFF, #FF6B9D)'
+                }}>
+                {isSent ? '✓' : step.num}
+              </div>
+              <p className="flex-1" style={{ fontSize: 12, color: '#3D0060', lineHeight: 1.45 }}>
+                {step.text}
+              </p>
+              <button
+                onClick={() => handleStepAction(step)}
+                disabled={isSent || isLoading}
+                className="rounded-full text-xs font-bold px-3 py-1 flex-shrink-0"
+                data-testid={`pawty-step-${step.num}-btn`}
+                style={{
+                  background: isSent
+                    ? '#F0FFF4'
+                    : step.premium
+                      ? 'linear-gradient(135deg, #C9973A, #F0C060)'
+                      : 'rgba(196,77,255,0.12)',
+                  color: isSent ? '#166534' : step.premium ? '#1A0A00' : '#7C3AED',
+                  border: isSent ? '1px solid #86EFAC' : 'none',
+                  cursor: isSent ? 'default' : 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {isSent ? '✓ Sent' : isLoading ? '...' : step.action}
+              </button>
             </div>
-            <p className="flex-1" style={{ fontSize: 12, color: '#3D0060', lineHeight: 1.45 }}>{step.text}</p>
-            <button className="rounded-full text-xs font-bold px-3 py-1 flex-shrink-0"
-              style={{
-                background: step.premium ? 'linear-gradient(135deg, #C9973A, #F0C060)' : 'rgba(196,77,255,0.12)',
-                color: step.premium ? '#1A0A00' : '#7C3AED',
-                border: 'none', cursor: 'pointer', whiteSpace: 'nowrap'
-              }}
-              onClick={() => step.premium && window.dispatchEvent(new CustomEvent('openMiraAI', {
-                detail: { message: `Help me plan ${petName}'s pawty with concierge`, context: 'celebrate' }
-              }))}>
-              {step.action}
-            </button>
-          </div>
-        ))}
+          );
+        })}
       </div>
+      <p style={{ fontSize: 10, color: '#C44DFF', marginTop: 10, fontStyle: 'italic' }}>
+        ✦ Each action creates a ticket in our concierge system — you'll get a confirmation within 24 hours
+      </p>
     </div>
   );
 };
@@ -186,32 +361,131 @@ const WellnessHeroCard = ({ pet }) => {
   );
 };
 
-/* ── Special Panel: MemoryInvitationCard (Pillar 8 only) ─────────────────── */
+/* ── Special Panel: MemoryInvitationCard (Pillar 8 only) — COMPLETE ─────── */
+const MEMORY_OPTIONS = [
+  {
+    id: 'photoshoot',
+    icon: '📸',
+    title: 'Birthday Photoshoot',
+    desc: 'A professional captures this exact day. You keep it forever.',
+    accent: 'linear-gradient(135deg, #FF6B9D, #C44DFF)',
+    requestType: 'birthday_photoshoot',
+    label: "{petName}'s Birthday Photoshoot",
+    message: "Please arrange a professional birthday photoshoot for {petName}",
+  },
+  {
+    id: 'portrait',
+    icon: '🎨',
+    title: 'Custom Portrait',
+    desc: 'Your pet, painted. Every detail, exactly as they are today.',
+    accent: 'linear-gradient(135deg, #C44DFF, #7C3AED)',
+    requestType: 'custom_portrait',
+    label: "Commission {petName}'s Custom Portrait",
+    message: "Please commission a custom illustrated portrait of {petName} for their birthday",
+  },
+  {
+    id: 'memory_book',
+    icon: '📖',
+    title: 'Memory Book',
+    desc: 'The whole story. This year. Every photo. Every memory.',
+    accent: 'linear-gradient(135deg, #7C3AED, #6366F1)',
+    requestType: 'memory_book',
+    label: "{petName}'s Birthday Memory Book",
+    message: "Please create a personalised birthday memory book for {petName}",
+  },
+  {
+    id: 'soul_story',
+    icon: '✨',
+    title: 'Soul Story Book',
+    desc: "Mira writes {petName}'s life story. You keep it.",
+    accent: 'linear-gradient(135deg, #F59E0B, #F97316)',
+    requestType: 'soul_story_book',
+    label: "{petName}'s Soul Story Book",
+    message: "Please have Mira write and print a Soul Story Book for {petName}'s birthday",
+  },
+];
+
 const MemoryInvitationCard = ({ pet }) => {
   const petName = pet?.name || 'your pet';
+  const [sentOptions, setSentOptions] = useState({});
+  const [sendingOptions, setSendingOptions] = useState({});
+
+  const handleMemoryRequest = async (option) => {
+    if (sentOptions[option.id] || sendingOptions[option.id]) return;
+    setSendingOptions(prev => ({ ...prev, [option.id]: true }));
+    const result = await sendToConcierge({
+      requestType: option.requestType,
+      label: option.label.replace('{petName}', petName),
+      message: option.message.replace(/{petName}/g, petName),
+      petName,
+    });
+    setSendingOptions(prev => ({ ...prev, [option.id]: false }));
+    if (result.success) {
+      setSentOptions(prev => ({ ...prev, [option.id]: result.ticketId || 'sent' }));
+    }
+  };
+
   return (
-    <div className="rounded-2xl p-5 text-center mb-4"
+    <div className="rounded-2xl p-5 mb-4"
       style={{ background: 'linear-gradient(135deg, #1A0030, #3D0060)' }}>
-      <span style={{ fontSize: 40, display: 'block', marginBottom: 10 }}>📸</span>
-      <p className="font-extrabold" style={{ fontSize: 17, color: '#FFF', marginBottom: 8 }}>
-        Make this birthday permanent
+      <div className="flex items-center gap-2 mb-4">
+        <span style={{ fontSize: 24 }}>📸</span>
+        <div>
+          <p className="font-extrabold" style={{ fontSize: 15, color: '#FFF' }}>
+            Make this birthday permanent
+          </p>
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.50)' }}>
+            {petName}'s birthday happens once. Choose how you keep it forever.
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        {MEMORY_OPTIONS.map(option => {
+          const isSent = !!sentOptions[option.id];
+          const isLoading = !!sendingOptions[option.id];
+          return (
+            <div key={option.id}
+              className="rounded-xl p-4"
+              style={{ background: 'rgba(255,255,255,0.07)', border: isSent ? '1.5px solid rgba(196,77,255,0.80)' : '1px solid rgba(255,255,255,0.12)' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center mb-3"
+                style={{ background: option.accent }}>
+                <span style={{ fontSize: 18 }}>{option.icon}</span>
+              </div>
+              <p className="font-bold" style={{ fontSize: 13, color: '#FFF', marginBottom: 4 }}>
+                {option.title}
+              </p>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', lineHeight: 1.4, marginBottom: 12 }}>
+                {option.desc.replace('{petName}', petName)}
+              </p>
+              <button
+                onClick={() => handleMemoryRequest(option)}
+                disabled={isSent || isLoading}
+                className="w-full rounded-full font-bold"
+                data-testid={`memory-${option.id}-btn`}
+                style={{
+                  padding: '7px 10px',
+                  fontSize: 11,
+                  cursor: isSent ? 'default' : 'pointer',
+                  background: isSent
+                    ? 'rgba(34,197,94,0.20)'
+                    : 'rgba(255,255,255,0.12)',
+                  border: isSent
+                    ? '1px solid rgba(134,239,172,0.60)'
+                    : '1px solid rgba(255,255,255,0.25)',
+                  color: isSent ? '#86EFAC' : '#FFF',
+                }}
+              >
+                {isSent ? '✓ Sent to Concierge' : isLoading ? '...' : `Book via Concierge 👑`}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      <p style={{ fontSize: 10, color: 'rgba(196,77,255,0.70)', marginTop: 12, textAlign: 'center', fontStyle: 'italic' }}>
+        ✦ Concierge will contact you within 24 hours to confirm details
       </p>
-      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, marginBottom: 16 }}>
-        A photoshoot. A portrait on the wall. A memory book that gets read for years.
-        {petName}'s birthday happens once. This is how you keep it forever.
-      </p>
-      <button
-        className="rounded-xl px-6 py-2.5 font-bold text-white"
-        style={{
-          background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)',
-          border: 'none', cursor: 'pointer', fontSize: 13
-        }}
-        onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI', {
-          detail: { message: `Book ${petName}'s birthday photoshoot via concierge`, context: 'celebrate' }
-        }))}
-      >
-        Book {petName}'s Photoshoot via Concierge 👑
-      </button>
     </div>
   );
 };
@@ -400,7 +674,7 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
 
         {/* 3 — Special panel (pillars food, social, health, memory only) */}
         <div className="mx-6">
-          {pillar.id === 'food'    && <FeastMenuCard petName={petName} />}
+          {pillar.id === 'food'    && <FeastMenuCard pet={pet} />}
           {pillar.id === 'social'  && <PawtyPlannerCard pet={pet} />}
           {pillar.id === 'health'  && <WellnessHeroCard pet={pet} />}
           {pillar.id === 'memory'  && <MemoryInvitationCard pet={pet} />}
