@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://birthday-box-1.preview.emergentagent.com` |
+| **Preview** | `https://memory-wall-debug.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |
