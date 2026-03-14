@@ -30,12 +30,14 @@
 
 <!-- ============================= -->
 <div class="section">
-<h2>0. Session 11 Updates — PillarSoulModal + Master Sync</h2>
+<h2>0. Session 11 Updates — PillarSoulModal + Master Sync + Product Modal</h2>
 <table>
   <tr><th>Feature</th><th>Status</th><th>Details</th></tr>
   <tr><td>PillarSoulModal</td><td><span class="badge done">DONE</span></td><td>Modal with 4-6 pillar-specific questions. Updates soul answers + recalculates score.</td></tr>
   <tr><td>Pillar Soul Update API</td><td><span class="badge done">DONE</span></td><td><code>PATCH /api/pets/{pet_id}/pillar-soul-update</code></td></tr>
-  <tr><td>Master Sync Step 12</td><td><span class="badge done">DONE</span></td><td>Celebrate products seeded on startup (379 products)</td></tr>
+  <tr><td>Master Sync Step 12</td><td><span class="badge done">DONE</span></td><td>59 celebrate products seeded across 8 pillar categories</td></tr>
+  <tr><td>ProductDetailModal</td><td><span class="badge done">DONE</span></td><td>Full product modal with Add to Cart / Concierge flow</td></tr>
+  <tr><td>Concierge Flow (Services)</td><td><span class="badge done">DONE</span></td><td>Grooming, Portraits, Photoshoots → auto-route to concierge</td></tr>
   <tr><td>Mira Memory Integration</td><td><span class="badge done">DONE</span></td><td>learned_facts stored on pet object for AI personalization</td></tr>
 </table>
 
@@ -50,7 +52,15 @@ User clicks pillar → Check pillar completeness
                    → Dynamic concierge suggestions generated
 </pre>
 
-<h3>New API Endpoint</h3>
+<h3>ProductDetailModal Flow</h3>
+<pre>
+User clicks product card → Open ProductDetailModal
+                        → If service (no price): Show "Request via Concierge" button
+                        → If product (has price): Show quantity selector + "Add to Cart"
+                        → Action triggers cart event or concierge request with toast
+</pre>
+
+<h3>New API Endpoints</h3>
 <table>
   <tr><th>Endpoint</th><th>Method</th><th>Auth</th><th>Request Body</th></tr>
   <tr>
@@ -59,8 +69,28 @@ User clicks pillar → Check pillar completeness
     <td>JWT</td>
     <td><code>{ pillar, answers, learned_facts, summary }</code></td>
   </tr>
+  <tr>
+    <td><code>/api/concierge/pillar-request</code></td>
+    <td>POST</td>
+    <td>None</td>
+    <td><code>{ pillar, request_type, request_label, pet_name, message }</code></td>
+  </tr>
 </table>
-<p><strong>Response:</strong> <code>{ pet, new_score, score_tier, pillar, facts_added }</code></p>
+
+<h3>Product Category Counts (All Pillars)</h3>
+<table>
+  <tr><th>Category</th><th>Count</th><th>Pillar</th><th>Status</th></tr>
+  <tr><td>cakes</td><td>50+</td><td>Food & Flavour</td><td><span class="badge done">✓</span></td></tr>
+  <tr><td>treats</td><td>48+</td><td>Food & Flavour</td><td><span class="badge done">✓</span></td></tr>
+  <tr><td>toys</td><td>50+</td><td>Play & Joy</td><td><span class="badge done">✓</span></td></tr>
+  <tr><td>puzzle_toys</td><td>9</td><td>Learning & Mind</td><td><span class="badge done">✓</span></td></tr>
+  <tr><td>party_kits</td><td>10</td><td>Social & Friends</td><td><span class="badge done">✓</span></td></tr>
+  <tr><td>party_accessories</td><td>12</td><td>Social / Play</td><td><span class="badge done">✓</span></td></tr>
+  <tr><td>grooming</td><td>54+</td><td>Grooming & Beauty</td><td><span class="badge done">✓</span></td></tr>
+  <tr><td>supplements</td><td>16</td><td>Health & Wellness</td><td><span class="badge done">✓</span></td></tr>
+  <tr><td>portraits</td><td>5</td><td>Love & Memory</td><td><span class="badge done">✓</span></td></tr>
+  <tr><td>memory_books</td><td>6</td><td>Love & Memory</td><td><span class="badge done">✓</span></td></tr>
+</table>
 </div>
 
 <!-- ============================= -->

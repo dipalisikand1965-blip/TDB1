@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { Sparkles, Loader2, Plus } from 'lucide-react';
 import { getApiUrl } from '../../utils/api';
 import DrawerBottomBar from './DrawerBottomBar';
+import ProductDetailModal from './ProductDetailModal';
 
 /* ── Shared concierge-request helper ─────────────────────────────────────── */
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
@@ -491,28 +492,49 @@ const MemoryInvitationCard = ({ pet }) => {
 };
 
 /* ── Product card ─────────────────────────────────────────────────────────── */
-const SoulProductCard = ({ product, petName, isFirst, isConcierge, onAddToCart }) => {
+const SoulProductCard = ({ product, petName, isFirst, isConcierge, onAddToCart, onOpenModal, pillarColor }) => {
   const price = product.price || product.variants?.[0]?.price || 0;
   const image = product.image_url || product.image || product.images?.[0];
-  const handleAction = () => {
-    if (isConcierge) {
-      window.dispatchEvent(new CustomEvent('openMiraAI', {
-        detail: { message: `Book "${product.name}" for ${petName} via concierge`, context: 'celebrate' }
-      }));
+  
+  // Determine if this is a service (should go to concierge)
+  const isService = isConcierge || !price || price === 0 || 
+    product.category === 'grooming' || 
+    product.category === 'portraits' ||
+    product.name?.toLowerCase().includes('photoshoot') ||
+    product.name?.toLowerCase().includes('booking') ||
+    product.name?.toLowerCase().includes('session');
+  
+  const handleClick = () => {
+    // Open full product modal
+    onOpenModal?.(product, isService);
+  };
+  
+  const handleQuickAdd = (e) => {
+    e.stopPropagation();
+    if (isService) {
+      // Open modal for concierge items
+      onOpenModal?.(product, true);
     } else {
-      // Notify parent to track itemCount, then dispatch global cart event
+      // Quick add to cart
       onAddToCart?.(product);
       window.dispatchEvent(new CustomEvent('addToCart', { detail: product }));
     }
   };
+  
   return (
-    <div className="rounded-xl overflow-hidden bg-white"
+    <div 
+      className="rounded-xl overflow-hidden bg-white cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
       style={{ border: '1px solid #F0E8F8' }}
+      onClick={handleClick}
       data-testid={`soul-product-${product.id || product.name?.replace(/\s/g,'')}`}>
-      <div className="flex items-center justify-center bg-gray-50" style={{ height: 80 }}>
+      <div className="flex items-center justify-center bg-gray-50 relative" style={{ height: 80 }}>
         {image
           ? <img src={image} alt={product.name} className="w-full h-full object-cover" />
           : <span style={{ fontSize: 32 }}>🎁</span>}
+        {/* Quick view indicator */}
+        <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 hover:opacity-100">
+          <span className="text-xs text-white bg-black/50 px-2 py-1 rounded-full">Click for details</span>
+        </div>
       </div>
       <div style={{ padding: '9px' }}>
         <div className="inline-block rounded-lg mb-1.5"
@@ -535,19 +557,19 @@ const SoulProductCard = ({ product, petName, isFirst, isConcierge, onAddToCart }
           </p>
         )}
         <div className="flex items-center justify-between gap-1">
-          <span className="font-bold" style={{ fontSize: 13, color: isConcierge ? '#C9973A' : '#1A0030' }}>
-            {isConcierge ? 'Concierge' : `₹${typeof price === 'number' ? price.toLocaleString('en-IN') : price}`}
+          <span className="font-bold" style={{ fontSize: 13, color: isService ? '#C9973A' : '#1A0030' }}>
+            {isService ? 'Concierge' : `₹${typeof price === 'number' ? price.toLocaleString('en-IN') : price}`}
           </span>
-          <button onClick={handleAction}
+          <button onClick={handleQuickAdd}
             className="rounded-full text-white flex items-center gap-1"
             style={{
-              background: isConcierge
+              background: isService
                 ? 'linear-gradient(135deg,#C9973A,#F0C060)'
                 : 'linear-gradient(135deg,#C44DFF,#FF6B9D)',
-              color: isConcierge ? '#1A0A00' : 'white',
+              color: isService ? '#1A0A00' : 'white',
               border: 'none', padding: '4px 10px', fontSize: 10, fontWeight: 700, cursor: 'pointer'
             }}>
-            {isConcierge ? 'Book 👑' : <><Plus className="w-3 h-3" /> Add</>}
+            {isService ? 'Book 👑' : <><Plus className="w-3 h-3" /> Add</>}
           </button>
         </div>
       </div>
@@ -561,10 +583,42 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [itemCount, setItemCount] = useState(0);
+  
+  // Product modal state
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [modalIsConcierge, setModalIsConcierge] = useState(false);
+  
   const petName = pet?.name || 'your pet';
   const tabs = PILLAR_TABS[pillar.id] || [{ name: 'All', category: 'cakes' }];
   const titleInfo = PILLAR_TITLES[pillar.id] || { title: pillar.name, sub: () => '' };
   const isConciergeTab = !!tabs[activeTab]?.concierge;
+  
+  // Get pillar color for modal
+  const pillarColors = {
+    food: '#FF8C42',
+    play: '#E91E63',
+    social: '#9C27B0',
+    adventure: '#2196F3',
+    grooming: '#F9A825',
+    learning: '#4CAF50',
+    health: '#22C55E',
+    memory: '#C44DFF'
+  };
+  const pillarColor = pillarColors[pillar.id] || '#C44DFF';
+
+  // Handle opening product modal
+  const handleOpenProductModal = (product, isConcierge = false) => {
+    setSelectedProduct(product);
+    setModalIsConcierge(isConcierge);
+    setIsProductModalOpen(true);
+  };
+  
+  // Handle closing product modal
+  const handleCloseProductModal = () => {
+    setIsProductModalOpen(false);
+    setSelectedProduct(null);
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -734,6 +788,8 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
                   isFirst={idx === 0}
                   isConcierge={isConciergeTab}
                   onAddToCart={handleAddToCart}
+                  onOpenModal={handleOpenProductModal}
+                  pillarColor={pillarColor}
                 />
               ))}
             </div>
@@ -747,6 +803,16 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
         drawerCategory={pillar.id}
         petName={petName}
         onAction={handleBottomBarAction}
+      />
+      
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={isProductModalOpen}
+        onClose={handleCloseProductModal}
+        petName={petName}
+        isConcierge={modalIsConcierge}
+        pillarColor={pillarColor}
       />
     </div>
   );
