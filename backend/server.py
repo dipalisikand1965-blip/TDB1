@@ -7752,6 +7752,13 @@ async def get_public_products(
         else:
             query = shape_query
     
+    # Add is_active filter - only show active products (or products without is_active field set)
+    active_filter = {"$or": [{"is_active": True}, {"is_active": {"$exists": False}}]}
+    if query:
+        query = {"$and": [query, active_filter]}
+    else:
+        query = active_filter
+    
     # Get total count first for pagination
     total_count = await db.products_master.count_documents(query if query else {})
     
@@ -11103,7 +11110,7 @@ async def update_admin_product(product_id: str, updates: dict):
         "bundle_type", "bundle_includes", "options", "available",
         "is_pan_india_shippable", "tags", "minPrice", "autoship_enabled",
         "collection_ids", "image", "status", "sizes", "flavors", "variants",
-        "mira_hint", "breed_metadata"
+        "mira_hint", "breed_metadata", "is_active", "image_url", "images", "thumbnail"
     ]
     
     sanitized = {k: v for k, v in updates.items() if k in allowed_fields}
@@ -11119,6 +11126,96 @@ async def update_admin_product(product_id: str, updates: dict):
         raise HTTPException(status_code=404, detail="Product not found")
     
     return {"success": True, "updated_fields": list(sanitized.keys())}
+
+# ── BREED PRODUCTS ADMIN CRUD ──────────────────────────────────────────────────
+
+@api_router.get("/admin/breed-products")
+async def get_admin_breed_products(
+    breed: Optional[str] = None,
+    category: Optional[str] = None,
+    is_active: Optional[bool] = None,
+    limit: int = 100,
+    skip: int = 0
+):
+    """Get breed products for admin management"""
+    query = {}
+    if breed:
+        query["breed"] = {"$regex": breed, "$options": "i"}
+    if category:
+        query["category"] = {"$regex": category, "$options": "i"}
+    if is_active is not None:
+        query["is_active"] = is_active
+    
+    products = await db.breed_products.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
+    total = await db.breed_products.count_documents(query)
+    
+    return {"products": products, "total": total}
+
+@api_router.put("/admin/breed-products/{product_id}")
+async def update_breed_product(product_id: str, updates: dict):
+    """Update a breed product from admin"""
+    allowed_fields = [
+        "is_active", "price", "mrp", "description", "mira_hint",
+        "mockup_url", "image_url", "status", "in_stock"
+    ]
+    
+    sanitized = {k: v for k, v in updates.items() if k in allowed_fields}
+    sanitized["updated_at"] = get_utc_timestamp()
+    
+    result = await db.breed_products.update_one(
+        {"id": product_id},
+        {"$set": sanitized}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Breed product not found")
+    
+    return {"success": True, "updated_fields": list(sanitized.keys())}
+
+@api_router.patch("/admin/breed-products/{product_id}/toggle-active")
+async def toggle_breed_product_active(product_id: str):
+    """Toggle is_active status for a breed product"""
+    product = await db.breed_products.find_one({"id": product_id})
+    if not product:
+        raise HTTPException(status_code=404, detail="Breed product not found")
+    
+    new_status = not product.get("is_active", True)
+    await db.breed_products.update_one(
+        {"id": product_id},
+        {"$set": {"is_active": new_status, "updated_at": get_utc_timestamp()}}
+    )
+    
+    return {"success": True, "is_active": new_status}
+
+@api_router.post("/admin/breed-products/bulk-toggle")
+async def bulk_toggle_breed_products(request: dict):
+    """Bulk toggle is_active for multiple breed products"""
+    product_ids = request.get("product_ids", [])
+    set_active = request.get("is_active", True)
+    
+    result = await db.breed_products.update_many(
+        {"id": {"$in": product_ids}},
+        {"$set": {"is_active": set_active, "updated_at": get_utc_timestamp()}}
+    )
+    
+    return {"success": True, "modified_count": result.modified_count}
+
+@api_router.patch("/admin/products/{product_id}/toggle-active")
+async def toggle_product_active(product_id: str):
+    """Toggle is_active status for a product in products_master"""
+    product = await db.products_master.find_one(
+        {"$or": [{"id": product_id}, {"shopify_id": product_id}]}
+    )
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    new_status = not product.get("is_active", True)
+    await db.products_master.update_one(
+        {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
+        {"$set": {"is_active": new_status, "updated_at": get_utc_timestamp()}}
+    )
+    
+    return {"success": True, "is_active": new_status}
 
 
 @api_router.post("/admin/products/import-csv")

@@ -5,30 +5,30 @@
 
 ## [Mar 14, 2026] Session 5 — AI Image Generation for Party & Accessories ✅ COMPLETE
 
-### COMPLETED: Party & Accessories Product Generation
-1. **Script Created & Executed:** `/app/backend/scripts/generate_party_accessory_images.py`
-2. **15 Products Generated** with AI images using Cloudinary + GPT Image 1:
-   - Party Hats (3): Classic cone, Glitter crown, Mini tiara
-   - Banners (2): "Happy Barkday", "Paw-ty Time"
-   - Balloons (2): Paw print bundle, Foil bone & paw set
-   - Photo Props (3): Bow tie set, Glasses & hat combo, Headband collection
-   - Party Kits (3): Photo backdrop kit, Complete paw-ty bundle, Deluxe photo session kit
-   - Celebration Add-ons (2): Pet-safe confetti, Table decoration set
+### COMPLETED: Realistic AI Party Product Images
+1. **Script Created & Executed:** `/app/backend/scripts/generate_party_realistic.py`
+2. **14 Products Generated** with AI images using GPT Image 1 (Realistic product photography, NOT dog photos):
+   - Party Hats (3): Birthday Celebration Hat, Golden Crown of Joy, Princess Tiara
+   - Banners (2): Happy Barkday Banner, Pawty Time Letter Set
+   - Balloons (2): Paw Print Balloon Collection, Bone & Paw Foil Balloon Set
+   - Bow Ties (2): Dapper Bow Tie Collection, Celebration Bow Tie - Gold Sparkle
+   - Photo Props (2): Silly Photo Prop Kit, Birthday Star Headband Set
+   - Party Kits (3): Photo Moment Backdrop, Celebration Confetti Pack, Ultimate Celebration Bundle
 3. **Storage:** `products_master` collection → Admin Panel + Celebrate Page
-4. **API Enhancement:** Products sorted by `ai_image_generated` (AI images first)
-5. **Visibility:** Party & Decor category tab shows 33 items with AI-generated images first
+4. **Images folder:** `celebrate_party_realistic` on Cloudinary
+
+### ADDED: Admin CRUD for Product Activation
+- `PATCH /api/admin/products/{id}/toggle-active` - Toggle product visibility
+- `PATCH /api/admin/breed-products/{id}/toggle-active` - Toggle breed product visibility
+- `POST /api/admin/breed-products/bulk-toggle` - Bulk activate/deactivate
+- `is_active` filter added to products API query
+- Admin ProductBoxEditor now has Active/Inactive toggle in Inventory tab
 
 ### VERIFIED:
-- ✅ Products appear in `/celebrate-soul` → Party & Decor modal
-- ✅ Cloudinary images loading correctly
-- ✅ API returns AI-generated products first
-- ✅ Admin panel has access via "Celebrate" pillar
-
-### DOCUMENTED: MiraImaginesCard Future Vision
-- Mira as "Product Research Engine" — extends to ALL categories
-- Soul-profile driven imaginary products (loves swimming → "Pool Day Party Kit")
-- Every "Request a Quote" = feedback loop for product development
-- Documented in PRD.md as P1 upcoming task
+- ✅ Products sorted by `ai_image_generated` (AI images first)
+- ✅ 14 unique Cloudinary image URLs generated
+- ✅ API returns realistic party products first
+- ✅ Admin can activate/deactivate products
 
 ---
 
