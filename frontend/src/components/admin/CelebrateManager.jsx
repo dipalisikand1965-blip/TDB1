@@ -146,14 +146,19 @@ const CelebrateManager = ({ getAuthHeader }) => {
       setRequests(requestsRes.data.requests || []);
       // Filter products for celebrate categories (cakes, treats, hampers, pupcakes, dognuts, frozen-treats, etc.)
       const allProducts = productsRes.data.products || [];
-      // Exact celebrate categories shown on the frontend
+      // Match EXACTLY all categories listed in CATEGORY_OPTIONS above — keeps admin in sync with the filter dropdown
       const CELEBRATE_CATS = new Set([
-        'cakes', 'breed-cakes', 'mini-cakes',
-        'dognuts', 'frozen-treats', 'desi-treats', 'nut-butters',
-        'celebration', 'celebration_addons', 'hampers',
-        'party_accessories', 'soul_picks', 'breed-party_hats',
+        'celebration', 'cakes', 'breed-cakes', 'mini-cakes',
+        'pupcakes', 'dognuts',
+        'treats', 'desi-treats', 'nut-butters', 'frozen-treats', 'frozen',
+        'hampers',
+        'party_accessories', 'party_kits', 'celebration_addons', 'celebration-addons',
+        'breed-party_hats', 'breed-party-hats',
+        'meals', 'fresh-meals', 'fresh_meals',
+        'accessories',
+        'soul_picks', 'soul-picks',   // both underscore and hyphen forms
       ]);
-      const celebrateProducts = allProducts.filter(p => CELEBRATE_CATS.has((p.category || '').toLowerCase()));
+      const celebrateProducts = allProducts.filter(p => CELEBRATE_CATS.has((p.category || '').toLowerCase().trim()));
       setProducts(celebrateProducts.length > 0 ? celebrateProducts : allProducts);
       setBundles(bundlesRes.data.bundles || []);
       // Calculate stats from actual data
@@ -536,20 +541,21 @@ const CelebrateManager = ({ getAuthHeader }) => {
     }
   };
 
-  // Filter functions — use includes() for grouped categories (treats → desi-treats, frozen-treats)
+  // Filter functions
   const GROUP_CATS = { treats: ['treat'], frozen: ['frozen'] };
   const filteredProducts = products.filter(p => {
     const matchesSearch = !searchQuery || (p.name || '').toLowerCase().includes(searchQuery.toLowerCase());
     if (!matchesSearch) return false;
-    // Active/inactive toggle — default shows active only (same as frontend)
+    // Active/inactive toggle
     if (!showInactive && p.is_active === false) return false;
     if (categoryFilter === 'all') return true;
-    const pCat = (p.category || '').toLowerCase();
-    // Grouped: 'treats' matches 'desi-treats', 'frozen-treats' etc.
-    if (GROUP_CATS[categoryFilter]) {
-      return GROUP_CATS[categoryFilter].some(k => pCat.includes(k));
+    const pCat = (p.category || '').toLowerCase().replace(/_/g, '-'); // normalize _ to - for matching
+    const filter = categoryFilter.toLowerCase().replace(/_/g, '-');
+    // Grouped categories
+    if (GROUP_CATS[filter]) {
+      return GROUP_CATS[filter].some(k => pCat.includes(k));
     }
-    return pCat === categoryFilter || pCat.includes(categoryFilter);
+    return pCat === filter || pCat.includes(filter);
   });
 
   const filteredRequests = requests.filter(r => {
