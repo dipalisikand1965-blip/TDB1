@@ -1,0 +1,105 @@
+{
+  "summary": "Comprehensive testing of Celebration Wall section on /celebrate-soul. Backend: 15/15 tests passing. Frontend: ~90% passing. 2 bugs found — Step 3 confirmation never shown (medium) and wall-card-undefined testids due to broken MongoDB ID projection (minor).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "GET /api/celebration-wall/photos",
+        "issue": "MongoDB projection `{\"_id\": 0, \"id\": {\"$toString\": \"$_id\"}}` is invalid in regular find() — aggregation operators can't be used in standard projections. As a result, photos returned have no `id` field. Fix: use aggregation pipeline with $project and $toString, or map IDs server-side in Python.",
+        "priority": "MEDIUM"
+      },
+      {
+        "endpoint": "POST /api/celebration-wall/photos/{photo_id}/like",
+        "issue": "Like toggle searches `{'id': photo_id}` but DB photos don't have an 'id' field (only '_id'). So likes are never actually persisted for DB photos. The frontend optimistically shows +1 but DB count is unchanged. Fix: `find_one({'_id': ObjectId(photo_id)})`",
+        "priority": "LOW"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "WallUploadModal - Step 3",
+        "issue": "Confirmation screen '🎉 Your story is on the wall ♥' is NEVER shown to user. The modal closes before step 3 renders. Root cause: `onSubmitted()` sets `uploadModalOpen=false` in the parent, and React batches this with `setStep(3)` from the modal's finally block. Since `isOpen=false` triggers `return null`, step 3 never renders. Fix: Move `setStep(3)` before calling `onSubmitted()`, or only call `onSubmitted()` from the 'See your photo →' button click in step 3.",
+        "selector": "[data-testid='wall-confirmation-close']",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "WallCard / WallLightbox — data-testid",
+        "issue": "All DB photo cards render `data-testid=\"wall-card-undefined\"` and `data-testid=\"wall-like-undefined\"` because photos from the API have no `id` field (broken backend projection). Causes React key warning: 'Each child in a list should have a unique key prop' from CelebrationMemoryWall. Fix: Fix backend to return `id` field OR map `_id` in frontend formatter.",
+        "selector": "[data-testid^='wall-card-']",
+        "priority": "MINOR"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Celebration Wall - all cards",
+        "issues": ["All cards show '2 days ago' because DB photos were recently created. This is correct behavior of formatTimeAgo() — not a bug, but worth noting that the seeded DB photos don't preserve the original dates (Last week, 5 days ago etc from DEFAULT_PHOTOS)."]
+      }
+    ]
+  },
+  "features_verified": {
+    "section_header": "✓ '📸 Celebration Wall' h2 present",
+    "subtitle_no_login": "✓ 'Real moments of joy from our pet parent community 💕' — shown when no pet",
+    "upload_card_first": "✓ 'Share Your Story' title + '✦ Add Photo' button — card is first in scroll row",
+    "real_photos": "✓ Euro (Mumbai ♥234), Simba (Bangalore ♥389), Zippy (Delhi ♥312) — real photos displayed",
+    "timestamps": "✓ No 'Recently' found — all timestamps use relative format ('2 days ago')",
+    "heart_counts": "✓ 234, 389, 312 shown correctly on Euro, Simba, Zippy",
+    "heart_button_animation": "✓ Heart fills pink (♥, rgb(233,30,140)) after click; count increments +1",
+    "frosted_glass_tag": "✓ 'Birthday' frosted glass tag at bottom-left of each photo image",
+    "share_btn_opens_modal": "✓ '📸 Share Your Story' button opens 3-step upload modal",
+    "add_photo_opens_modal": "✓ '✦ Add Photo' on upload card also opens modal",
+    "modal_step1": "✓ Dropzone with 'Drag photo here or tap to choose' + 'Next →' disabled until photo",
+    "modal_step2": "✓ Caption textarea (140 char limit enforced), chips (Birthday/Gotcha Day/Milestone/Photoshoot/Pawty/Just because), city input, 'Share on the Wall →' button",
+    "modal_step3": "✗ Confirmation screen '🎉 Your story is on the wall ♥' NOT shown — modal closes before step 3 renders",
+    "share_btn_after_submit": "✓ Share button changes to '✓ Your story is on the wall' (green, disabled) after submission",
+    "subtitle_after_submit": "✓ Subtitle updates to 'Your story is on the wall ♥'",
+    "upload_card_after_submit": "✓ Upload card CTA changes to '✓ Shared'",
+    "lightbox_opens": "✓ Clicking photo card opens lightbox",
+    "lightbox_content": "✓ Full photo, pet name, city, caption, heart count, 'Love this ♥' button, 'Share this moment' button",
+    "lightbox_prev_next": "✓ Next arrow navigates to next photo; prev arrow navigates back",
+    "lightbox_close": "✓ Close button (✕) closes lightbox correctly",
+    "scroll_arrows": "✓ Left/right scroll arrows navigate the wall (scroll position changed 0→234px)",
+    "backend_ugc_api": "✓ POST /api/celebration-wall/photos/ugc → {success: true, photo_id: '...', status: 'pending_review'}",
+    "backend_like_api": "✓ POST /api/celebration-wall/photos/{id}/like → {success: true, likes: 0}"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_celebration_wall_iteration_118.py",
+    "/app/test_reports/pytest/celebration_wall_results.xml"
+  ],
+  "action_items": [
+    "BUG FIX (MEDIUM): WallUploadModal step 3 never shows — move setStep(3) call to BEFORE onSubmitted(), not in finally block. Or only call onSubmitted() from the 'See your photo →' button in step 3.",
+    "BUG FIX (MINOR): Fix backend GET /api/celebration-wall/photos to return id field. Use aggregation pipeline: `db.celebration_photos.aggregate([{$match: query}, {$addFields: {id: {$toString: '$_id'}}}, {$project: {_id: 0}}])` or map IDs in Python after fetching.",
+    "BUG FIX (LOW): Fix like toggle endpoint to use `find_one({'_id': ObjectId(photo_id)})` so like counts persist to DB.",
+    "MINOR: CelebrationMemoryWall passes `key={photo.id}` but id is undefined for all DB photos — causes React key warning. Will be fixed once backend returns proper id."
+  ],
+  "critical_code_review_comments": [
+    "WallUploadModal.jsx line 63-99: handleSubmit calls onSubmitted() in try block (which closes the modal) and setStep(3) in finally. React batches these updates and since isOpen=false, step 3 never renders. Fix: setStep(3) first, then call onSubmitted() from the confirmation close button.",
+    "celebration_wall_routes.py line 91-93: MongoDB find() projection using aggregation operators is invalid. `{'id': {'$toString': '$_id'}}` in a find() projection does not compute $toString. Fix: use aggregate() pipeline or map IDs server-side.",
+    "celebration_wall_routes.py line 188: `find_one({'id': photo_id})` — no DB photo has a field named 'id'. Should be `find_one({'_id': ObjectId(photo_id)})`. Likes are never persisted.",
+    "CelebrationMemoryWall.jsx: React list key warning because all DB photo IDs are undefined. Will resolve when backend returns proper id field."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "100% (15/15 tests passing)",
+    "frontend": "90% (18/20 requirements passing — Step 3 confirmation not shown, testids undefined)"
+  },
+  "test_credentials": {
+    "email": "dipali@clubconcierge.in",
+    "password": "test123"
+  },
+  "seed_data_creation": "Multiple TEST_ UGC photos created during backend testing (in pending_review state, not featured)",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Celebration Wall section on /celebrate-soul at scroll y≈3000. Upload card (wall-upload-card) is always first. Real photos (Euro/Simba/Zippy) are rendered from DB (IDs are MongoDB ObjectIds). All wall-card-{id} and wall-like-{id} testids resolve to wall-card-undefined/wall-like-undefined because backend GET projection is broken. The lightbox, heart animation, scroll arrows, and modal steps 1-2 all work correctly. Step 3 confirmation screen has a bug — it never renders. Backend 15/15 passing.",
+  "rca_of_issue": {
+    "bug1_step3_not_shown": {
+      "root_cause": "WallUploadModal.handleSubmit() calls onSubmitted() in try block (line 91), which triggers setHasSubmitted(true)+setUploadModalOpen(false) in parent CelebrationMemoryWall. setStep(3) is called in finally block (line 98). React 18 batches these concurrent updates. When the component re-renders, isOpen=false causes WallUploadModal to return null before step 3 can render.",
+      "fix": "Move setStep(3) to before the onSubmitted() call in the try block, then have 'See your photo →' button in step 3 call a new onDone() prop that closes the modal AND calls the parent's onSubmitted handler."
+    },
+    "bug2_undefined_testids": {
+      "root_cause": "celebration_wall_routes.py get_celebration_photos() uses invalid MongoDB projection: `{'_id': 0, 'id': {'$toString': '$_id'}}`. In a standard find() query, aggregation expressions like $toString are not evaluated — this just returns a literal dict or is ignored. So photos returned have no 'id' field. Frontend maps p.id || p._id, both undefined.",
+      "fix": "Replace find() with aggregate(): `[{$match: query}, {$sort: {display_order: 1}}, {$limit: limit}, {$addFields: {id: {$toString: '$_id'}}}, {$project: {_id: 0}}]`"
+    }
+  }
+}

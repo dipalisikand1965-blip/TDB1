@@ -26,6 +26,12 @@ export { default as ConciergeIntakeModal } from './ConciergeIntakeModal';
 // Guided Paths
 export { default as GuidedCelebrationPaths } from './GuidedCelebrationPaths';
 
+// Celebration Wall
+export { default as WallCard } from './WallCard';
+export { default as WallUploadCard } from './WallUploadCard';
+export { default as WallUploadModal } from './WallUploadModal';
+export { default as WallLightbox } from './WallLightbox';
+
 // Existing components (kept for backwards compatibility)
 export { default as BirthdayCountdown } from './BirthdayCountdown';
 export { default as CakeRevealSection } from './CakeRevealSection';

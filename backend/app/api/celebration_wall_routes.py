@@ -15,7 +15,7 @@ router = APIRouter(prefix="/api/celebration-wall", tags=["celebration-wall"])
 # MongoDB connection
 from motor.motor_asyncio import AsyncIOMotorClient
 MONGO_URL = os.environ.get('MONGO_URL')
-DB_NAME = os.environ.get('DB_NAME', 'pet-os-live-test_database')
+DB_NAME = os.environ.get('DB_NAME')
 
 def get_db():
     client = AsyncIOMotorClient(MONGO_URL)
@@ -47,6 +47,18 @@ class CelebrationPhotoCreate(BaseModel):
     is_featured: bool = True
     display_order: int = 0
     source: str = "admin"
+
+
+class UGCPhotoCreate(BaseModel):
+    """UGC upload from the wall's 'Share Your Story' 3-step modal."""
+    image_url: str
+    pet_name: str
+    pet_id: Optional[str] = None
+    caption: str
+    celebration_type: str = "Birthday"
+    city: Optional[str] = None
+    mira_comment: Optional[str] = None
+    source: str = "ugc"
 
 class CelebrationPhotoUpdate(BaseModel):
     image_url: Optional[str] = None
@@ -135,6 +147,100 @@ async def delete_celebration_photo(photo_id: str):
         raise HTTPException(status_code=404, detail="Photo not found")
     
     return {"success": True, "message": "Photo deleted successfully"}
+
+
+@router.post("/photos/ugc")
+async def create_ugc_photo(photo: UGCPhotoCreate):
+    """
+    UGC upload from the Celebration Wall 'Share Your Story' modal.
+    Creates a pending-review photo with mira_comment pre-generated.
+    """
+    db = get_db()
+
+    photo_dict = photo.dict()
+    photo_dict["occasion"] = photo.celebration_type
+    photo_dict["location"] = photo.city or ""
+    photo_dict["likes"] = 0
+    photo_dict["is_pending_review"] = True
+    photo_dict["is_featured"] = False
+    photo_dict["is_approved"] = False
+    photo_dict["source"] = "ugc"
+    photo_dict["created_at"] = datetime.now(timezone.utc)
+    photo_dict["updated_at"] = datetime.now(timezone.utc)
+
+    result = await db.celebration_photos.insert_one(photo_dict)
+    photo_id = str(result.inserted_id)
+
+    return {
+        "success": True,
+        "message": "Your story is on the wall ♥",
+        "photo_id": photo_id,
+        "status": "pending_review"
+    }
+
+
+@router.post("/photos/{photo_id}/like")
+async def toggle_like(photo_id: str):
+    """Toggle like on a photo. Returns updated like count."""
+    db = get_db()
+
+    try:
+        photo = await db.celebration_photos.find_one({"id": photo_id})
+        if not photo:
+            # Try by numeric id (default photos)
+            return {"success": True, "likes": 0}
+
+        current_likes = photo.get("likes", 0)
+        new_likes = current_likes + 1
+
+        await db.celebration_photos.update_one(
+            {"id": photo_id},
+            {"$set": {"likes": new_likes, "updated_at": datetime.now(timezone.utc)}}
+        )
+        return {"success": True, "likes": new_likes}
+    except Exception:
+        return {"success": True, "likes": 0}
+
+
+# ── Admin moderation endpoints ────────────────────────────────────────────────
+
+@router.get("/admin/pending")
+async def get_pending_ugc():
+    """List UGC photos pending review for moderation."""
+    db = get_db()
+    photos = await db.celebration_photos.find(
+        {"is_pending_review": True, "source": "ugc"},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    return {"photos": photos, "total": len(photos)}
+
+
+@router.patch("/admin/photos/{photo_id}/approve")
+async def approve_ugc_photo(photo_id: str):
+    """Approve a UGC photo — makes it visible on the wall."""
+    db = get_db()
+    try:
+        await db.celebration_photos.update_one(
+            {"_id": ObjectId(photo_id)},
+            {"$set": {"is_pending_review": False, "is_approved": True, "is_featured": True, "updated_at": datetime.now(timezone.utc)}}
+        )
+        return {"success": True, "message": "Photo approved and visible on the wall."}
+    except Exception:
+        raise HTTPException(status_code=404, detail="Photo not found")
+
+
+@router.patch("/admin/photos/{photo_id}/reject")
+async def reject_ugc_photo(photo_id: str, reason: str = ""):
+    """Reject a UGC photo."""
+    db = get_db()
+    try:
+        await db.celebration_photos.update_one(
+            {"_id": ObjectId(photo_id)},
+            {"$set": {"is_pending_review": False, "is_approved": False, "rejected_reason": reason, "updated_at": datetime.now(timezone.utc)}}
+        )
+        return {"success": True, "message": "Photo rejected."}
+    except Exception:
+        raise HTTPException(status_code=404, detail="Photo not found")
 
 
 @router.post("/seed-defaults")
