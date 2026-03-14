@@ -433,31 +433,55 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="fixed inset-0 z-[198]"
-            style={{ background: 'rgba(0,0,0,0.55)' }}
+            style={{
+              position: 'fixed',
+              top: 0, left: 0, right: 0, bottom: 0,
+              zIndex: 198,
+              background: 'rgba(10,0,26,0.80)',
+              backdropFilter: 'blur(4px)',
+            }}
             data-testid="browse-drawer-backdrop"
           />
         )}
       </AnimatePresence>
 
-      {/* Drawer panel */}
+      {/* Centered modal — same content, no more side panel */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             key="drawer-panel"
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed top-0 right-0 bottom-0 z-[199] flex flex-col"
-            style={{
-              width: 'min(480px, 100vw)',
-              background: 'linear-gradient(180deg, #1A0030 0%, #0D001A 100%)',
-              borderLeft: '1px solid rgba(196,77,255,0.25)',
-              boxShadow: '-8px 0 48px rgba(196,77,255,0.15)',
-            }}
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.92 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
             data-testid="birthday-box-browse-drawer"
+            style={{
+              position: 'fixed',
+              top: 0, left: 0, right: 0, bottom: 0,
+              zIndex: 199,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '16px',
+              pointerEvents: 'none',
+            }}
           >
+            <div
+              style={{
+                position: 'relative',
+                width: '100%',
+                maxWidth: '560px',
+                maxHeight: '88vh',
+                display: 'flex',
+                flexDirection: 'column',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                background: 'linear-gradient(180deg, #1A0030 0%, #0D001A 100%)',
+                border: '1px solid rgba(196,77,255,0.30)',
+                boxShadow: '0 8px 64px rgba(196,77,255,0.25)',
+                pointerEvents: 'all',
+              }}
+            >
             {/* Header */}
             <div
               className="flex-shrink-0 px-5 pt-5 pb-3"
@@ -567,6 +591,7 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
               petName={petName}
               onBuild={handleBuild}
             />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
