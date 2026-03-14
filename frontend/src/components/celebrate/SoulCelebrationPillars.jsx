@@ -354,16 +354,18 @@ const ROW2 = SOUL_PILLARS.slice(4, 8); // Grooming, Learning, Health, Memory
 // Main Component
 const SoulCelebrationPillars = ({ pet, onOpenSoulBuilder }) => {
   const [expandedPillar, setExpandedPillar] = useState(null);
+  const [soulModalPillar, setSoulModalPillar] = useState(null);
+  const [localPet, setLocalPet] = useState(null);
   const row1ExpRef = useRef(null);
   const row2ExpRef = useRef(null);
-  const petName = pet?.name || 'your pet';
+  const petName = (localPet || pet)?.name || 'your pet';
+  const activePet = localPet || pet;
+  const token = localStorage.getItem('token') || localStorage.getItem('access_token');
 
   const handleToggle = (pillarId) => {
     const isClosing = expandedPillar === pillarId;
     setExpandedPillar(isClosing ? null : pillarId);
-
     if (!isClosing) {
-      // Scroll to the expansion after a brief delay for animation
       const isRow1 = ROW1.some(p => p.id === pillarId);
       setTimeout(() => {
         const ref = isRow1 ? row1ExpRef : row2ExpRef;
@@ -373,13 +375,12 @@ const SoulCelebrationPillars = ({ pet, onOpenSoulBuilder }) => {
   };
 
   const handleTellMiraMore = (pillar) => {
-    if (onOpenSoulBuilder) {
-      onOpenSoulBuilder(pillar.id);
-    } else {
-      window.dispatchEvent(new CustomEvent('openSoulBuilder', {
-        detail: { pillar: pillar.id }
-      }));
-    }
+    setSoulModalPillar(pillar);
+  };
+
+  const handleModalComplete = (updatedPet) => {
+    if (updatedPet) setLocalPet(updatedPet);
+    setSoulModalPillar(null);
   };
 
   const expandedPillarData = SOUL_PILLARS.find(p => p.id === expandedPillar);
