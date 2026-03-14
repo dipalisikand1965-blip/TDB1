@@ -22,7 +22,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-API_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://soul-concierge-1.preview.emergentagent.com')
+API_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-gift-generator.preview.emergentagent.com')
 BATCH_SIZE = 50
 CHECK_INTERVAL = 60  # seconds
 
