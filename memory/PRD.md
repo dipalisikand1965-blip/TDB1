@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: March 14, 2026 (Session 8 — Soul Score Glow + PetWrap in Celebrate + Context-Aware Soul Questions + Occasion Cards + Mira Memory Loop)
+## Last Updated: March 14, 2026 (Session 9 — Celebrate Pillars Master Build: Special Panels + DrawerBottomBar)
 
 ---
 
@@ -10,6 +10,36 @@
 The world's first soul-driven Pet Operating System. Every dog has a personality, lifestyle, health story — the Soul. The platform captures this and uses it to power every recommendation, every Mira response, and every concierge interaction.
 
 **3,777 products in DB. 221+ API endpoints. 51 Soul Questions. 14 Pillars.**
+
+---
+
+## 🔄 SESSION 9 SPEC — Celebrate Pillars Master Build (March 14, 2026)
+### SOURCE: Celebrate_Pillars_MASTER.docx — CANONICAL, EVERY VALUE IS FINAL
+
+### PILLAR SYSTEM STATUS:
+| Feature | Status |
+|---|---|
+| 8-pillar grid GLOW/DIM/INCOMPLETE | ✅ SoulCelebrationPillars.jsx |
+| Row-based inline expansion | ✅ Exists |
+| Special panels (4 pillars) | ❌ MISSING → BUILD |
+| DrawerBottomBar (3 states) | ❌ MISSING → BUILD |
+| Correct 4 tabs per pillar per spec | ❌ UPDATE |
+| Mira bar gradient styling | ❌ UPDATE |
+| Pet Wrapped download on PetHomePage | ✅ EXISTS |
+
+### SPECIAL PANELS (exact from doc):
+- **FeastMenuCard** (Pillar 1): `bg: linear-gradient(135deg,#FFF8F0,#FEF3FF)`, 3 items display-only, NO add buttons
+  - 🎂 Salmon Birthday Cake ₹899 · 🍪 Treat Platter ₹449 · 🧁 Paw Cupcakes ₹349
+- **PawtyPlannerCard** (Pillar 3): `bg: linear-gradient(135deg,#F3E5F5,#FCE4EC)`, 4 step cards with purple circles
+- **WellnessHeroCard** (Pillar 7): `bg: linear-gradient(135deg,#E0F7FA,#E8F5E9)`, NO CTA inside
+- **MemoryInvitationCard** (Pillar 8): `bg: linear-gradient(135deg,#1A0030,#3D0060)`, HAS CTA for Concierge photoshoot
+
+### DRAWER BOTTOM BAR (sticky bottom, 72px):
+- `bg: linear-gradient(135deg,#2D0050,#6B0099,#C44DFF)`
+- State 1 (0 items): whisper "✦ Everything personalised for {petName}" · btn "Explore More →"
+- State 2 (1 item): context-specific whisper · btn "Build {petName}'s Birthday Plan →"
+- State 3 (2+ items): count badge on pulse dot · btn "Keep Building →"
+- NEVER use: Continue Shopping, Back, Close, Done, Checkout
 
 ---
 
