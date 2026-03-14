@@ -133,10 +133,10 @@ const CelebrateManager = ({ getAuthHeader }) => {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      // Fetch from public products endpoint (Shopify synced) - no auth required
+      // Fetch from admin products endpoint (shows ALL products, including inactive)
       const [requestsRes, productsRes, bundlesRes, settingsRes, partnersRes] = await Promise.all([
         axios.get(`${API_URL}/api/celebrate/requests`),
-        axios.get(`${API_URL}/api/products?limit=1000`),
+        axios.get(`${API_URL}/api/admin/products?limit=1000`, { headers: getAuthHeader() }),
         axios.get(`${API_URL}/api/celebrate/admin/bundles`),
         axios.get(`${API_URL}/api/celebrate/admin/settings`),
         axios.get(`${API_URL}/api/celebrate/admin/partners`)
@@ -145,9 +145,10 @@ const CelebrateManager = ({ getAuthHeader }) => {
       setRequests(requestsRes.data.requests || []);
       // Filter products for celebrate categories (cakes, treats, hampers, pupcakes, dognuts, frozen-treats, etc.)
       const allProducts = productsRes.data.products || [];
-      const celebrateCategories = ['cakes', 'treats', 'hampers', 'pupcakes', 'dognuts', 'frozen', 'celebrate', 'breed-cakes', 'mini-cakes', 'desi-treats'];
-      const celebrateProducts = allProducts.filter(p => 
-        celebrateCategories.some(cat => 
+      // All celebrate-relevant categories (broad match)
+      const celebrateCategories = ['cake', 'treat', 'hamper', 'pupcake', 'dognut', 'frozen', 'celebrat', 'breed-', 'mini-cake', 'nut-butter', 'party', 'soul', 'meal', 'accessor'];
+      const celebrateProducts = allProducts.filter(p =>
+        celebrateCategories.some(cat =>
           (p.category || '').toLowerCase().includes(cat) ||
           (p.subcategory || '').toLowerCase().includes(cat)
         )
@@ -534,11 +535,18 @@ const CelebrateManager = ({ getAuthHeader }) => {
     }
   };
 
-  // Filter functions
+  // Filter functions — use includes() for grouped categories (treats → desi-treats, frozen-treats)
+  const GROUP_CATS = { treats: ['treat'], frozen: ['frozen'] };
   const filteredProducts = products.filter(p => {
-    const matchesSearch = p.name?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === 'all' || p.category === categoryFilter;
-    return matchesSearch && matchesCategory;
+    const matchesSearch = !searchQuery || (p.name || '').toLowerCase().includes(searchQuery.toLowerCase());
+    if (!matchesSearch) return false;
+    if (categoryFilter === 'all') return true;
+    const pCat = (p.category || '').toLowerCase();
+    // Grouped: 'treats' matches 'desi-treats', 'frozen-treats' etc.
+    if (GROUP_CATS[categoryFilter]) {
+      return GROUP_CATS[categoryFilter].some(k => pCat.includes(k));
+    }
+    return pCat === categoryFilter || pCat.includes(categoryFilter);
   });
 
   const filteredRequests = requests.filter(r => {
@@ -821,6 +829,9 @@ const CelebrateManager = ({ getAuthHeader }) => {
                     {product.is_bestseller && <Badge className="bg-yellow-500 text-white">Bestseller</Badge>}
                     {product.is_new && <Badge className="bg-green-500 text-white">New</Badge>}
                     {!product.in_stock && <Badge className="bg-red-500 text-white">Out of Stock</Badge>}
+                    <Badge className={product.is_active === false ? 'bg-gray-400 text-white' : 'bg-emerald-500 text-white'} style={{ fontSize: 10 }}>
+                      {product.is_active === false ? 'Inactive' : 'Active'}
+                    </Badge>
                   </div>
                 </div>
                 <div className="p-4">
