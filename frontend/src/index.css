@@ -14,6 +14,29 @@
 @import './styles/ios-premium.css';
 
 /* ============================================
+   SERVICE GRID RESPONSIVE (Celebrate Concierge)
+   ============================================ */
+.service-grid-responsive {
+  grid-template-columns: repeat(4, 1fr);
+}
+@media (max-width: 1024px) {
+  .service-grid-responsive {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .service-grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .service-grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px !important;
+  }
+}
+
+/* ============================================
    DRAWER BOTTOM BAR ANIMATIONS (Celebrate Pillars)
    ============================================ */
 

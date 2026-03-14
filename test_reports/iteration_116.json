@@ -1,0 +1,94 @@
+{
+  "summary": "Tested Celebrate Concierge® section on /celebrate-soul page including CelebrateConcierge CTA card, CelebrateServiceGrid (8 cards), ConciergeIntakeModal, and backend POST /api/concierge/intake endpoint. All core features work. One medium-priority bug found: service card pre-selection in modal not working.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "ConciergeIntakeModal (opened from CelebrateServiceGrid cards)",
+        "issue": "When clicking a service card (e.g., Gotcha Day, Birthday), the modal opens but the corresponding celebration type option is NOT pre-selected. useState initializes only once on mount; prop changes don't update state.",
+        "selector": "[data-testid='celebration-option-{serviceType}']",
+        "priority": "MEDIUM",
+        "root_cause": "ConciergeIntakeModal.jsx line 31: `const [selectedType, setSelectedType] = useState(serviceType || '');` — useState only runs once. When modal's serviceType prop changes (from different card clicks), state is not updated.",
+        "fix": "Add useEffect in ConciergeIntakeModal.jsx: `useEffect(() => { if (isOpen) { setSelectedType(serviceType || ''); } }, [isOpen, serviceType]);`"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "features_verified": {
+    "cta_card": {
+      "dark_background": "✓ rgb(14, 6, 32) = #0E0620",
+      "title": "✓ 'Celebrate Mojo the way only you know how.'",
+      "stat_45k": "✓ 45,000+ with 'meals made with love' label",
+      "chips": "✓ Birthday Celebrations, Pawty Planning, Memory & Portraits, Milestone Marking, Surprise Deliveries",
+      "cta_button": "✓ 'Plan Mojo's Celebration →' clickable, opens modal"
+    },
+    "intake_modal": {
+      "opens_on_cta": "✓ Modal opens when CTA button clicked",
+      "q1_celebration_type": "✓ All 9 celebration type chips present",
+      "q2_date_picker": "✓ Date input + 'Not sure yet' toggle working",
+      "not_sure_toggle": "✓ Toggles date input disabled state correctly (both ways)",
+      "q3_notes_textarea": "✓ Notes textarea present and fillable",
+      "submit_button": "✓ 'Send to my Concierge →' submits form",
+      "confirmation_screen": "✓ Shows 'Mojo's celebration is in good hands.' after submit",
+      "close_confirmation": "✓ Close button on confirmation works",
+      "pre_selection_from_card": "✗ NOT working — service type not pre-selected when opened from card"
+    },
+    "service_grid": {
+      "all_8_cards": "✓ BIRTHDAY, PHOTOSHOOT, CAKE, THE FULL DAY, GOTCHA DAY, SURPRISE, MILESTONE, VENUE",
+      "illustrations": "✓ All 8 have watercolour illustrations from Cloudinary",
+      "object_position": "✓ style='center top', computed='50% 0%' (correct CSS equivalent)",
+      "card_click_opens_modal": "✓ Modal opens on card click",
+      "grid_layout": "✓ 4-column layout on desktop"
+    },
+    "page_layout": {
+      "guided_paths_visible": "✓ 'Guided celebration paths' section visible below service grid",
+      "celebration_wall": "✓ Celebration Wall section visible",
+      "no_layout_breaks": "✓ All sections in correct order"
+    }
+  },
+  "backend_tests": {
+    "endpoint": "POST /api/concierge/intake",
+    "tests_passed": 8,
+    "tests_failed": 0,
+    "response_structure": "{ success: true, message: string, intakeId: 'INT-YYYYMMDD-XXXXXX' }",
+    "service_box_api": "✓ Returns celebrate pillar services with illustrations"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_concierge_intake_endpoint.py",
+    "/app/test_reports/pytest/concierge_intake_results.xml"
+  ],
+  "action_items": [
+    "FIX: ConciergeIntakeModal.jsx - Add useEffect to sync selectedType state when modal opens with new serviceType: `useEffect(() => { if (isOpen) { setSelectedType(serviceType || ''); } }, [isOpen, serviceType]);` This fixes pre-selection when clicking service cards."
+  ],
+  "critical_code_review_comments": [
+    "ConciergeIntakeModal.jsx: useState(serviceType || '') initializes state only once on mount. Since the modal is always mounted (returns null if !isOpen), changing the serviceType prop between card clicks does not update the selected state. Fix: add useEffect syncing selectedType when isOpen/serviceType changes.",
+    "CelebrateServiceCard.jsx: The card wrapper div has onClick=onCta, but the inner button also exists with no onClick (it relies on parent div click). This is fine but could cause double-click issues. No bug, just note.",
+    "CelebrateServiceGrid.jsx: Grid uses hardcoded `gridTemplateColumns: 'repeat(4, 1fr)'` for desktop. There is a `className='service-grid-responsive'` applied but no media query CSS for tablet/mobile in the component — responsiveness relies on external CSS class definition."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_concierge_intake_endpoint.py"
+  ],
+  "success_rate": {
+    "backend": "100% (8/8 tests passed)",
+    "frontend": "93% (13/14 requirements working; pre-selection bug)"
+  },
+  "test_credentials": {
+    "email": "dipali@clubconcierge.in",
+    "password": "test123",
+    "pet": "Mojo"
+  },
+  "seed_data_creation": "Several TEST_ concierge intake records created during backend testing",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Celebrate Concierge section on /celebrate-soul is fully implemented and mostly working. One bug: ConciergeIntakeModal pre-selection doesn't work when opened from service cards (useState not syncing with prop). Fix is a one-line useEffect addition. All 8 backend tests pass. All 8 service cards render with illustrations. GuidedCelebrationPaths section is visible below the service grid.",
+  "rca_of_issue": {
+    "bug": "Service card pre-selection not working in ConciergeIntakeModal",
+    "reproduction": "1. Login, go to /celebrate-soul. 2. Scroll to 'Celebrate, Personally' grid. 3. Click any service card (e.g., 'Gotcha Day Celebration'). 4. Modal opens but none of the celebration type chips is highlighted/selected.",
+    "root_cause": "ConciergeIntakeModal uses `useState(serviceType || '')`. The component is always mounted (returns null when !isOpen). On first mount, serviceType=''. When a card is clicked, serviceType prop changes but useState doesn't re-run. The modal shows with empty selection.",
+    "mitigation": "Add `useEffect(() => { if (isOpen) { setSelectedType(serviceType || ''); } }, [isOpen, serviceType]);` in ConciergeIntakeModal.jsx after line 36."
+  }
+}
