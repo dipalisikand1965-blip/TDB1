@@ -14,6 +14,23 @@
 @import './styles/ios-premium.css';
 
 /* ============================================
+   GUIDED PATHS GRID RESPONSIVE
+   ============================================ */
+.guided-paths-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+@media (max-width: 900px) {
+  .guided-paths-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .guided-paths-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================
    SERVICE GRID RESPONSIVE (Celebrate Concierge)
    ============================================ */
 .service-grid-responsive {
