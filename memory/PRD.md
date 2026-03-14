@@ -1,6 +1,26 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Feb 2026 (Session 12 — Birthday Box Builder + Browse Drawer IMPLEMENTED)
+## Last Updated: Mar 2026 (Session 18 — Celebration Wall Bug Fixes COMPLETE)
+
+---
+
+## ✅ SESSION 18 COMPLETE — Celebration Wall Bug Fixes (Mar 2026)
+
+**All 8 tests passed (100% pass rate)**
+
+### Bugs Fixed:
+| Bug | Fix | Status |
+|---|---|---|
+| Lightbox close (X) button invisible/unusable | WallLightbox.jsx: position:fixed, zIndex:9999, white background at top:20 right:20 | ✅ FIXED |
+| Uploaded photo not appearing instantly on wall | CelebrationMemoryWall.jsx: optimistic UI via submittedPhoto state | ✅ FIXED |
+| Prop mismatch (petName vs pet) | CelebratePageNew.jsx: passes pet={selectedPet} not petName | ✅ FIXED |
+
+### Components (LOCKED — do not change):
+- **WallLightbox.jsx**: Close button — `position:fixed, top:20, right:20, zIndex:9999, background:#FFFFFF`
+- **CelebrationMemoryWall.jsx**: `submittedPhoto` state shows user's photo at position 2 immediately
+- **WallUploadModal.jsx**: Passes `{previewUrl, caption, celebType, city, miraComment}` via `onSubmitted`
+
+---
 
 ---
 
