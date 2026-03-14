@@ -113,13 +113,12 @@ const CelebrateServiceCard = ({ illustration, subLabel, title, description, ctaT
           }}
           data-testid={`service-card-cta-${subLabel?.toLowerCase().replace(/\s+/g, '-')}`}
         >
-          <span>{ctaText}</span>
+          {/* ctaText already contains → — no extra arrow needed */}
           <span style={{
-            fontSize: 14,
             display: 'inline-block',
             transition: 'transform 150ms',
             transform: hovered ? 'translateX(3px)' : 'translateX(0)'
-          }}>→</span>
+          }}>{ctaText}</span>
         </button>
       </div>
     </div>
