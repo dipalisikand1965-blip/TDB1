@@ -10,9 +10,9 @@
  * - INCOMPLETE: 50% opacity, lock icon, "Tell Mira more" badge
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { Lock, ChevronDown, ChevronUp } from 'lucide-react';
 import SoulPillarExpanded from './SoulPillarExpanded';
 
 // Pillar definitions with spec-compliant colors
@@ -346,28 +346,44 @@ function darken(hex) {
   return map[hex] || '#333';
 }
 
+// Row groupings per spec (desktop 4-column layout)
+const ROW1 = SOUL_PILLARS.slice(0, 4); // Food, Play, Social, Adventure
+const ROW2 = SOUL_PILLARS.slice(4, 8); // Grooming, Learning, Health, Memory
+
 // Main Component
 const SoulCelebrationPillars = ({ pet, onOpenSoulBuilder }) => {
   const [expandedPillar, setExpandedPillar] = useState(null);
+  const row1ExpRef = useRef(null);
+  const row2ExpRef = useRef(null);
   const petName = pet?.name || 'your pet';
 
   const handleToggle = (pillarId) => {
-    setExpandedPillar(expandedPillar === pillarId ? null : pillarId);
+    const isClosing = expandedPillar === pillarId;
+    setExpandedPillar(isClosing ? null : pillarId);
+
+    if (!isClosing) {
+      // Scroll to the expansion after a brief delay for animation
+      const isRow1 = ROW1.some(p => p.id === pillarId);
+      setTimeout(() => {
+        const ref = isRow1 ? row1ExpRef : row2ExpRef;
+        ref.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
   };
 
   const handleTellMiraMore = (pillar) => {
-    // Open soul builder for that specific pillar
     if (onOpenSoulBuilder) {
       onOpenSoulBuilder(pillar.id);
     } else {
-      // Fallback: dispatch event
-      window.dispatchEvent(new CustomEvent('openSoulBuilder', { 
-        detail: { pillar: pillar.id } 
+      window.dispatchEvent(new CustomEvent('openSoulBuilder', {
+        detail: { pillar: pillar.id }
       }));
     }
   };
 
   const expandedPillarData = SOUL_PILLARS.find(p => p.id === expandedPillar);
+  const row1Expanded = expandedPillar && ROW1.some(p => p.id === expandedPillar);
+  const row2Expanded = expandedPillar && ROW2.some(p => p.id === expandedPillar);
 
   return (
     <section className="py-8 px-6 bg-white" data-testid="soul-celebration-pillars">
@@ -382,10 +398,10 @@ const SoulCelebrationPillars = ({ pet, onOpenSoulBuilder }) => {
         </p>
       </div>
 
-      {/* Pillars Grid */}
       <div className="max-w-6xl mx-auto">
+        {/* Row 1: Food, Play, Social, Adventure */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
-          {SOUL_PILLARS.map((pillar) => (
+          {ROW1.map((pillar) => (
             <PillarCard
               key={pillar.id}
               pillar={pillar}
@@ -397,15 +413,52 @@ const SoulCelebrationPillars = ({ pet, onOpenSoulBuilder }) => {
           ))}
         </div>
 
-        {/* Expanded Content */}
+        {/* Row 1 Expansion — appears below Row 1, above Row 2 */}
         <AnimatePresence>
-          {expandedPillar && expandedPillarData && (
+          {row1Expanded && expandedPillarData && (
             <motion.div
+              ref={row1ExpRef}
+              key={expandedPillar + '-row1'}
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="mt-6"
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              style={{ overflow: 'hidden' }}
+            >
+              <SoulPillarExpanded
+                pillar={expandedPillarData}
+                pet={pet}
+                onClose={() => setExpandedPillar(null)}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Row 2: Grooming, Learning, Health, Memory */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 mt-2.5">
+          {ROW2.map((pillar) => (
+            <PillarCard
+              key={pillar.id}
+              pillar={pillar}
+              pet={pet}
+              isExpanded={expandedPillar === pillar.id}
+              onToggle={handleToggle}
+              onTellMiraMore={handleTellMiraMore}
+            />
+          ))}
+        </div>
+
+        {/* Row 2 Expansion — appears below Row 2 */}
+        <AnimatePresence>
+          {row2Expanded && expandedPillarData && (
+            <motion.div
+              ref={row2ExpRef}
+              key={expandedPillar + '-row2'}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              style={{ overflow: 'hidden' }}
             >
               <SoulPillarExpanded
                 pillar={expandedPillarData}

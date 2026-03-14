@@ -5,7 +5,7 @@ Update Dine products with generated images via API
 import requests
 import json
 
-API_URL = "https://pet-soul-journey.preview.emergentagent.com"
+API_URL = "https://pet-hub-grid.preview.emergentagent.com"
 AUTH = ("aditya", "lola4304")
 
 # Generated images
