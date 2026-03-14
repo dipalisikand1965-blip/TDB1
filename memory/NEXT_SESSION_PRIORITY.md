@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://soul-concierge-1.preview.emergentagent.com
+**Preview URL:** https://mira-gift-generator.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
