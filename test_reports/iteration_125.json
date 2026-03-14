@@ -1,0 +1,47 @@
+{
+  "summary": "Tested both Birthday Box modal fixes (BirthdayBoxBuilder + BirthdayBoxBrowseDrawer) at 390px and 375px viewports. Both FIX 1 (BirthdayBoxBuilder) and FIX 2 (BirthdayBoxBrowseDrawer) verified PASSING — modals render via createPortal at document.body, mobile layout uses alignItems:flex-start + padding:110px so content starts well below sticky header (~100px). All X close buttons are visible and functional. Multi-step form scrollable and step advancement works.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "PASSED_tests": [
+    "FIX 1 (390px) — BirthdayBoxBuilder: is_portal=True, alignItems=flex-start, padding-top=110px, close-btn-top=127px (above 100px sticky header) ✅",
+    "FIX 1 (390px) — Builder X close button: visible, tappable, closes modal ✅",
+    "FIX 1 (390px) — Builder multi-step scroll: scrollHeight=1056 > clientHeight=844, scrollTop settable to 200 ✅",
+    "FIX 1 (390px) — Builder multi-step advance: Step 1 → Step 2 (Health & Allergy Check) via JS next-btn click ✅",
+    "FIX 2 (390px) — BirthdayBoxBrowseDrawer: is_portal=True, alignItems=flex-start, padding-top=110px, close-btn-top=131px ✅",
+    "FIX 2 (390px) — Browse drawer X close button (data-testid=browse-drawer-close-btn): visible, tappable, closes drawer ✅",
+    "FIX 2 (390px) — Browse drawer product list rendered, tabs visible ✅",
+    "FIX 1 (375px) — BirthdayBoxBuilder: is_portal=True, alignItems=flex-start, padding-top=110px, close-btn-top=127px ✅",
+    "FIX 1 (375px) — Builder modal closed via X button ✅",
+    "FIX 2 (375px) — BirthdayBoxBrowseDrawer: is_portal=True, alignItems=flex-start, padding-top=110px, close-btn-top=131px ✅",
+    "FIX 2 (375px) — Browse drawer X close button closes drawer ✅"
+  ],
+  "FAILED_tests": [],
+  "test_report_links": ["/app/test_reports/iteration_125.json"],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend only)",
+    "frontend": "100% — All Birthday Box modal fixes verified passing at 390px and 375px"
+  },
+  "test_credentials": {
+    "user": "dipali@clubconcierge.in / test123"
+  },
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "FIX 1 (BirthdayBoxBuilder) and FIX 2 (BirthdayBoxBrowseDrawer) both VERIFIED PASSING. createPortal renders both modals at document.body. On mobile (375px/390px): alignItems=flex-start, padding-top=110px, inner content starts at 110px, close buttons at ~127-131px (well above sticky header ~100px). Both X close buttons tappable and functional. Multi-step builder: scrollHeight=1056>clientHeight=844 (scrollable), step advancement (Step 1→Step 2) works. Browse drawer: product list loaded with tabs and product cards. All tests from iteration_124 (guided paths close button) remain unaffected.",
+  "rca_of_issue": {
+    "bug": "BirthdayBoxBuilder and BirthdayBoxBrowseDrawer modals vertically centred — sticky page header (~100px) covering modal top including X close button on mobile",
+    "root_cause": "Modal positioned with alignItems:center on mobile, causing modal content to overlap with sticky header area. Also CSS transform containment on ancestor elements can affect position:fixed",
+    "fix_applied": "createPortal renders both modals at document.body level. Mobile (width<640): alignItems:flex-start + padding:110px 12px 80px so content starts at 110px (below header). maxHeight:none for full scroll",
+    "verified_fix": "close-btn top=127px (builder) / 131px (browse) — both well below 100px sticky header. Padding-top=110px. is_portal=True. Both at 375px and 390px."
+  }
+}
