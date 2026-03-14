@@ -323,17 +323,17 @@ const CelebratePageNew = () => {
           onCategorySelect={handleCategorySelect}
         />
 
-        {/* 3. MIRA'S BIRTHDAY BOX — Below category strip, above pillars */}
+        {/* 3. SOUL CELEBRATION PILLARS — "How would Mojo love to celebrate?" */}
+        <SoulCelebrationPillars 
+          pet={selectedPet}
+          onOpenSoulBuilder={handleOpenSoulBuilder}
+        />
+
+        {/* 4. MIRA'S BIRTHDAY BOX — Below the pillars section */}
         <MiraBirthdayBox 
           pet={selectedPet}
           onBuildBox={handleBuildBox}
           onBrowseProducts={(boxPreview) => handleOpenBrowseDrawer(boxPreview)}
-        />
-
-        {/* 4. SOUL CELEBRATION PILLARS */}
-        <SoulCelebrationPillars 
-          pet={selectedPet}
-          onOpenSoulBuilder={handleOpenSoulBuilder}
         />
 
         {/* Mira Ask Bar — appears right below the pillars section */}
