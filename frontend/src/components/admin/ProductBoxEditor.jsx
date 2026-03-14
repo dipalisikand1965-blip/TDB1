@@ -1131,6 +1131,25 @@ const ProductBoxEditor = ({
             <Card className="p-4">
               <SectionHeader title="Inventory" subtitle="Stock management" />
               
+              {/* Active Status Toggle - PROMINENT */}
+              <div className="mb-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-purple-800 font-medium">Product Active Status</Label>
+                    <p className="text-xs text-purple-600">Inactive products won't appear on the site</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className={`text-sm font-medium ${getValue('is_active', true) ? 'text-green-600' : 'text-red-500'}`}>
+                      {getValue('is_active', true) ? '✓ Active' : '✗ Inactive'}
+                    </span>
+                    <Switch 
+                      checked={getValue('is_active', true)}
+                      onCheckedChange={(v) => updateField('is_active', v)}
+                    />
+                  </div>
+                </div>
+              </div>
+              
               <div className="grid grid-cols-4 gap-4">
                 <div>
                   <Label>Status</Label>
