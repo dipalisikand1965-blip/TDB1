@@ -20,12 +20,13 @@ The world's first soul-driven Pet Operating System. Every dog has a personality,
 | Feature | Status |
 |---|---|
 | 8-pillar grid GLOW/DIM/INCOMPLETE | ✅ SoulCelebrationPillars.jsx |
-| Row-based inline expansion (Row 1 below Row 1, Row 2 below Row 2) | ✅ IMPLEMENTED |
-| Special panels (4 pillars: food, social, health, memory) | ✅ IMPLEMENTED |
-| DrawerBottomBar (3 states, purple gradient, pillar-specific whispers) | ✅ IMPLEMENTED |
-| Correct 4 tabs per pillar per spec | ✅ IMPLEMENTED |
-| Mira bar gradient styling | ✅ IMPLEMENTED |
+| Row-based inline expansion (Row 1 below Row 1, Row 2 below Row 2) | ✅ IMPLEMENTED & TESTED |
+| Special panels (4 pillars: food, social, health, memory) | ✅ IMPLEMENTED & TESTED |
+| DrawerBottomBar (3 states, purple gradient, pillar-specific whispers) | ✅ IMPLEMENTED & TESTED |
+| Correct 4 tabs per pillar per spec | ✅ IMPLEMENTED & TESTED |
+| Mira bar gradient styling | ✅ IMPLEMENTED & TESTED |
 | Pet Wrapped download on PetHomePage | ✅ EXISTS |
+| Allergy filter banner in product grid | ✅ IMPLEMENTED & TESTED |
 
 ### SPECIAL PANELS (exact from doc):
 - **FeastMenuCard** (Pillar 1): `bg: linear-gradient(135deg,#FFF8F0,#FEF3FF)`, 3 items display-only, NO add buttons
