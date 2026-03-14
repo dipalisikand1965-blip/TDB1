@@ -1,12 +1,29 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 2026 (Session 23 — Platform-Standard useResizeMobile Hook COMPLETE)
+## Last Updated: Mar 2026 (Session 26 — Production Fix: Images + Crash + Services)
 
 ---
 
-## ✅ SESSION 23 COMPLETE — Platform-Standard useResizeMobile Hook (Mar 2026)
+## ✅ SESSION 26 COMPLETE — Production Celebrate Page Fixes (Mar 2026)
 
-**All 5 P0 components verified. 100% pass rate. No JS errors.**
+**Status: Partial (data fixes live; crash fix + sort order pending deployment)**
+
+### Fixes Applied (No Deployment Required - DB Fixes):
+1. **Service Illustrations Restored**: All 8/8 celebrate concierge services now have proper `static.prod-images` illustration URLs (previously showing Unsplash stock photos)
+2. **AI-generated rope/toy products deactivated**: Removed 3 AI-generated toy products (Birthday Rope Tug, Birthday Squeaky Balls, Hide & Seek Plush) from production listings
+3. **AI-generated cake products deactivated**: Removed 3 bad AI-generated cakes (Peanut Butter, Chicken, Salmon) - 104 real Shopify cakes now showing
+4. **fix-celebrate-data endpoint added**: New admin endpoint that bulk-fixes service illustrations + product image_url fields in one shot
+
+### Fixes In Preview Code (Needs Deployment to Production):
+1. **Food & Flavour crash fix**: `SoulPillarExpanded.jsx` — Added `toStrArray()` helper to handle string vs array for `favorite_treats` and `food_allergies` fields. Production pet data stores these as strings (`"liver, cheese"`) not arrays. This causes `TypeError: .map is not a function`.
+2. **Product sort order**: Changed from `ai_image_generated: -1` (AI first) to `shopify_id: -1` (Shopify first). Real products with real photos show at the top.
+3. **Master sync image_url fix**: Master sync step 8 now updates both `image` AND `image_url` for services.
+
+### Action Required:
+- **DEPLOY preview to production** to activate the crash fix and sort order change
+- After deployment, call: `curl -X POST "https://thedoggycompany.com/api/admin/fix-celebrate-data?password=lola4304"`
+
+---
 
 ### Hook Rewritten: `/app/frontend/src/hooks/useResizeMobile.js`
 - **Single export:** `useResizeMobile(breakpoint = 641)` — observes `document.body` via ResizeObserver, 150ms debounce, returns just `isMobile` (boolean)
