@@ -7823,6 +7823,10 @@ async def get_public_products(
     else:
         unified_query = {"visibility.status": {"$in": ["active", None]}}
     
+    # Add is_active filter to unified_products as well
+    unified_active_filter = {"$or": [{"is_active": True}, {"is_active": {"$exists": False}}]}
+    unified_query = {"$and": [unified_query, unified_active_filter]}
+    
     # IMPORTANT: Exclude breed-specific "Soul Made" products from unified_products
     # These have breed names in their titles (e.g., "German Shepherd · Birthday Cake")
     # Soul Made products should ONLY be shown in their dedicated section via /api/mockups/breed-products
