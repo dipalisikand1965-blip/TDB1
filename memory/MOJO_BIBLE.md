@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-orders.preview.emergentagent.com
+https://birthday-box-1.preview.emergentagent.com
 ```
 
 ---
