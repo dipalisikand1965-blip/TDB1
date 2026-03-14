@@ -1729,6 +1729,25 @@ async def lifespan(app: FastAPI):
             except Exception as e:
                 logger.warning(f"[MASTER SYNC 11/11] Service image fix skipped: {e}")
             
+            # Step 12: Seed Celebrate Products (AI-generated) — MASTER SYNC FOR PILLARS
+            logger.info("[MASTER SYNC 12/12] Seeding AI Celebrate Products for all 8 pillars...")
+            try:
+                from celebrate_product_generator import seed_celebrate_products
+                
+                # Check existing celebrate pillar products
+                existing_celebrate = await db.products_master.count_documents({
+                    "category": {"$in": ["puzzle_toys", "party_kits", "memory_books", "portraits", "supplements", "party_accessories"]}
+                })
+                
+                if existing_celebrate < 50:  # Less than expected
+                    new_ids = await seed_celebrate_products(db)
+                    logger.info(f"[MASTER SYNC 12/12] ✅ Seeded {len(new_ids)} celebrate pillar products")
+                else:
+                    logger.info(f"[MASTER SYNC 12/12] ✅ Celebrate products already exist: {existing_celebrate}")
+                    
+            except Exception as e:
+                logger.warning(f"[MASTER SYNC 12/12] Celebrate products seed skipped: {e}")
+            
             logger.info("=" * 60)
             logger.info("🎉 MASTER SYNC COMPLETE - ALL DATA READY")
             logger.info("=" * 60)
@@ -14917,6 +14936,84 @@ async def patch_pet_soul_answers(pet_id: str, answers: dict):
         "answers_count": score_data["answered_count"]
     }
 
+
+@api_router.patch("/pets/{pet_id}/pillar-soul-update")
+async def update_pet_pillar_soul(pet_id: str, payload: dict):
+    """
+    Updates pet soul answers from PillarSoulModal (pillar-specific questions).
+    
+    Input:
+      - pillar: str (e.g. "food", "play", "social")
+      - answers: dict of soul_field -> value
+      - learned_facts: list of Mira-readable facts
+      - summary: str description of the update
+    
+    Side effects:
+      - Merges answers into doggy_soul_answers
+      - Recalculates overall_score and tier
+      - Adds learned_facts to Mira's memory (pet.learned_facts array)
+    
+    Returns: updated pet object
+    """
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    pillar = payload.get("pillar", "unknown")
+    answers = payload.get("answers", {})
+    learned_facts = payload.get("learned_facts", [])
+    summary = payload.get("summary", "")
+    
+    # 1) Merge new answers into existing soul_answers
+    soul_answers = pet.get("doggy_soul_answers", {})
+    for key, value in answers.items():
+        if value is not None and value != '':
+            soul_answers[key] = value
+    
+    # 2) Recalculate score
+    score_data = calculate_pet_soul_score(soul_answers)
+    new_score = score_data["total_score"]
+    score_tier = score_data["tier"]["key"] if score_data.get("tier") else "newcomer"
+    
+    # 3) Build Mira memory facts (stored on pet.learned_facts)
+    existing_facts = pet.get("learned_facts", [])
+    now_iso = get_utc_timestamp()
+    new_facts = []
+    for fact in learned_facts:
+        new_facts.append({
+            "type": "pillar_soul_update",
+            "pillar": pillar,
+            "fact": fact,
+            "date": now_iso
+        })
+    
+    # 4) Update pet
+    await db.pets.update_one(
+        {"id": pet_id},
+        {"$set": {
+            "doggy_soul_answers": soul_answers,
+            "overall_score": new_score,
+            "score_tier": score_tier,
+            "updated_at": now_iso,
+            f"pillar_{pillar}_answered_at": now_iso
+        },
+        "$push": {
+            "learned_facts": {"$each": new_facts}
+        }}
+    )
+    
+    # 5) Return updated pet
+    updated_pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    
+    logger.info(f"[PillarSoulUpdate] {pet.get('name')} — {pillar} pillar updated, score: {new_score}%")
+    
+    return {
+        "pet": updated_pet,
+        "new_score": new_score,
+        "score_tier": score_tier,
+        "pillar": pillar,
+        "facts_added": len(new_facts)
+    }
 
 
 @api_router.post("/admin/pets/recalculate-all-scores")
