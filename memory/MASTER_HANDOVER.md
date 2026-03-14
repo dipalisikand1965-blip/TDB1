@@ -58,7 +58,7 @@ Be patient. Be thorough. Honor the Sikand legacy.
 - Admin: `aditya` / `lola4304`
 
 ## 🌐 PREVIEW URL
-https://mira-gift-generator.preview.emergentagent.com
+https://mira-orders.preview.emergentagent.com
 
 ---
 

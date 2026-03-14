@@ -9,7 +9,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-gift-generator.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-orders.preview.emergentagent.com').rstrip('/')
 
 class TestCelebrateBundlesAPI:
     """Test celebrate bundles API - P0 Fix verification"""

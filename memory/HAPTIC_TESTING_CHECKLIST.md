@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://mira-gift-generator.preview.emergentagent.com/mira-demo**
+**https://mira-orders.preview.emergentagent.com/mira-demo**
 
 ---
 
