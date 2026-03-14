@@ -6506,7 +6506,7 @@ async def admin_get_reminders_log(
 
 @admin_router.get("/products")
 async def get_all_products(
-    username: str = Depends(verify_admin),
+    username: str = Depends(verify_admin_auth),
     category: Optional[str] = None,
     pillar: Optional[str] = None,
     source: Optional[str] = Query(None, description="Source collection: 'unified' (default), 'legacy', or 'all'"),

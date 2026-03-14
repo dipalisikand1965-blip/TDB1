@@ -48,7 +48,40 @@
         <div class="header">
             <h1>The Doggy Company</h1>
             <p class="tagline">Complete Technical Documentation & Platform Bible</p>
-            <p class="date">Last Updated: March 15, 2026 | Critical Regression Fix + Mira Picks Enhancement</p>
+            <p class="date">Last Updated: March 14, 2026 | Soul Cards Deep Purple + Admin Panel Fix</p>
+        </div>
+
+        <!-- NEW FIX: Session 7 — Soul Cards Deep Purple + Admin Panel Auth Fix -->
+        <div class="section" style="border: 3px solid #C44DFF; margin-bottom: 20px;">
+            <h2 class="section-title"><span class="emoji">🔴→✅</span> FIXED: Session 7 — Soul Cards + Admin Panel (Mar 14, 2026)</h2>
+            
+            <div class="success-box">
+                <strong>FIX 1 — Soul Question Cards (P0 UI Regression):</strong><br>
+                SoulQuestionCard was using a light blue (<code>rgba(68,136,255,0.06)</code>) background with dark text — invisible on the white modal.<br>
+                <strong>Fix:</strong> Reverted to the correct <strong>deep purple dark theme</strong> matching the app's design system:<br>
+                <code>background: linear-gradient(135deg, #12003A 0%, #2D0060 100%)</code> · Purple border · White text · Purple/pink CTAs (<code>#C44DFF → #FF6B9D</code>)
+            </div>
+
+            <div class="success-box">
+                <strong>FIX 2 — Soul Score Display Enhancement:</strong><br>
+                Score counter grown from 38px → <strong>64px</strong> with glowing text shadow, animated spring entrance, a progress bar, and "+X% this session" delta badge. Section header uses deep purple gradient.
+            </div>
+
+            <div class="success-box">
+                <strong>FIX 3 — Admin Panel Auth &amp; Robustness:</strong><br>
+                <code>GET /api/admin/products</code> changed from <code>verify_admin</code> (Basic Auth only) → <code>verify_admin_auth</code> (accepts both Basic Auth AND JWT Bearer token).<br>
+                <code>Promise.all</code> changed to <code>Promise.allSettled</code> in <code>fetchAllData</code> — one failing endpoint no longer kills the entire data load.<br>
+                Default <code>showInactive</code> changed from <code>false</code> → <code>true</code> so ALL products (including party accessories) are shown by default in the admin.
+            </div>
+
+            <div class="card">
+                <div class="card-title">Files Changed</div>
+                <ul>
+                    <li><code>backend/server.py</code> — line ~6509: <code>verify_admin</code> → <code>verify_admin_auth</code></li>
+                    <li><code>frontend/src/components/celebrate/CelebrateContentModal.jsx</code> — SoulQuestionCard + SoulQuestionsSection deep purple theme</li>
+                    <li><code>frontend/src/components/admin/CelebrateManager.jsx</code> — Promise.allSettled, showInactive default true, fallback fetch</li>
+                </ul>
+            </div>
         </div>
 
         <!-- CRITICAL FIX: Session 6 Regression Resolution -->
