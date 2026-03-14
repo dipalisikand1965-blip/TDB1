@@ -44,23 +44,22 @@ consistent with the preview endpoint.
 | `openOccasionBoxBuilder` | "Build {pet}'s Box" primary button | `{preset, petName, petId}` |
 | `openBirthdayBoxBrowse` | "Birthday Box" secondary button | `{boxPreview, petName}` |
 
-### TESTING RESULTS (Session 12):
+### TESTING RESULTS (Session 12 Final):
 | Test | Status |
 |------|--------|
-| Birthday Box card — allergy fix (Salmon, not Chicken) | ✅ PASS |
-| Build Mojo's Box reveal animation (1.5s) | ✅ PASS |
-| BirthdayBoxBuilder Step 1 — all 6 slots displayed | ✅ PASS |
-| BirthdayBoxBuilder Step 2 — allergy confirmation (Mojo) | ✅ PASS |
-| BirthdayBoxBuilder Step 3 — success + Order ID | ✅ PASS |
-| Birthday Box secondary button → browse drawer opens | ✅ PASS |
-| Browse Drawer 5 tabs (Cakes/Toys/Style/Memory/Wellness) | ✅ PASS |
-| Browse Drawer Mira's pick row per tab | ✅ PASS |
-| Browse Drawer allergy banner (+ fixed all-tab filtering) | ✅ PASS |
-| Browse Drawer bottom bar build CTA | ✅ PASS |
-| POST /api/birthday-box/{petId}/build endpoint | ✅ PASS |
+| Builder Step 1 → Step 2 → Step 3 full flow | ✅ PASS |
+| Step 3 Concierge Handoff screen — ticket ID, 6-slot summary, "What happens next" | ✅ PASS |
+| "Not an e-commerce order" disclaimer | ✅ PASS |
+| POST /api/birthday-box/{petId}/concierge-handoff — all 5 unified collections | ✅ PASS |
+| Allergy guard (allergyConfirmed=False returns error) | ✅ PASS |
+| Toast notification (Sonner Toaster fixed in App.js) | ✅ PASS (critical fix) |
+| Mobile bottom sheet + drag handle | ✅ PASS |
 
-**Backend tests:** 16/16 passed  
-**Frontend tests:** 12/12 passed
+**Backend tests:** 14/14 passed  
+**Frontend tests:** 100% verified  
+
+### Critical Bug Fixed by Testing Agent:
+- **Sonner Toaster not mounted in App.js** — ALL toast notifications were silently failing across the entire app. Fixed by adding `<SonnerToaster />` to App.js.
 
 ---
 
