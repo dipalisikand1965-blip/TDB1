@@ -6,6 +6,7 @@ import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { ServiceDesk } from '../components/admin';
 import UnifiedInbox from '../components/admin/UnifiedInbox';
+import BirthdayBoxOrdersAdmin from '../components/admin/BirthdayBoxOrdersAdmin';
 import { API_URL } from '../utils/api';
 import { 
   LogOut, User, Headphones, Shield, Eye, EyeOff,
@@ -16,6 +17,12 @@ import axios from 'axios';
 
 // Feature components mapping
 const FEATURE_COMPONENTS = {
+  birthday_box_orders: {
+    name: 'Birthday Box Orders',
+    icon: Package,
+    color: 'text-pink-600',
+    bgColor: 'bg-pink-50'
+  },
   notifications: {
     name: 'Notifications',
     icon: Bell,
