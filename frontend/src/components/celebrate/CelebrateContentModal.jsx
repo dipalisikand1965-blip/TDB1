@@ -493,6 +493,7 @@ const SoulQuestionCard = ({ question, petName, onAnswered }) => {
   const [multiSelected, setMultiSelected] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [pointsGained, setPointsGained] = useState(null);
   const { token } = useAuth();
 
   const handleSubmit = async () => {
@@ -513,12 +514,14 @@ const SoulQuestionCard = ({ question, petName, onAnswered }) => {
       });
       if (res.ok) {
         const data = await res.json();
+        setPointsGained(question.weight || 3);
         setSubmitted(true);
-        onAnswered?.(data.scores?.overall);
+        onAnswered?.(data.scores?.overall, question.weight || 3);
       }
     } catch (err) {
       console.error('[SoulQuestionCard] Error:', err);
-      setSubmitted(true); // Show success even on error for UX
+      setPointsGained(question.weight || 3);
+      setSubmitted(true);
     } finally {
       setSubmitting(false);
     }
@@ -532,26 +535,58 @@ const SoulQuestionCard = ({ question, petName, onAnswered }) => {
 
   if (submitted) {
     return (
-      <div className="rounded-2xl px-4 py-5 flex flex-col items-center justify-center gap-2"
-        style={{ background: 'linear-gradient(135deg,#0F2A1A,#0A3A0A)', border: '1.5px solid rgba(50,200,100,0.3)', minHeight: 140 }}>
-        <div className="rounded-full flex items-center justify-center w-9 h-9 mb-1"
-          style={{ background: 'rgba(50,200,100,0.2)' }}>
-          <Check className="w-5 h-5 text-green-400" />
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="rounded-2xl px-4 py-5 flex flex-col items-center justify-center gap-2"
+        style={{
+          background: 'linear-gradient(135deg, rgba(20,180,80,0.25), rgba(0,120,50,0.25))',
+          border: '2px solid rgba(40,220,100,0.6)',
+          minHeight: 160,
+          backdropFilter: 'blur(8px)'
+        }}>
+        <div className="rounded-full flex items-center justify-center w-10 h-10 mb-1"
+          style={{ background: 'rgba(40,220,100,0.3)', border: '2px solid rgba(40,220,100,0.8)' }}>
+          <Check className="w-5 h-5" style={{ color: '#3DF07A' }} />
         </div>
-        <p className="text-green-300 font-bold text-xs text-center">Soul score growing! ✦</p>
-        <p className="text-white/50 text-xs text-center">Mira now knows {petName} better</p>
-      </div>
+        <p className="font-extrabold text-center" style={{ color: '#3DF07A', fontSize: 15 }}>Soul score growing!</p>
+        {pointsGained && (
+          <div className="rounded-full px-3 py-1 font-bold" style={{ background: 'rgba(40,220,100,0.2)', color: '#8FFFC0', fontSize: 12 }}>
+            +{pointsGained} pts added
+          </div>
+        )}
+        <p className="text-center" style={{ color: 'rgba(255,255,255,0.5)', fontSize: 10 }}>
+          Mira now knows {petName} better ✦
+        </p>
+      </motion.div>
     );
   }
 
   return (
     <div className="rounded-2xl px-4 py-4"
-      style={{ background: 'linear-gradient(135deg,#0A1520,#1A2540)', border: '1.5px solid rgba(100,160,255,0.3)', minHeight: 140 }}>
-      <div className="flex items-center gap-1.5 mb-2">
-        <span style={{ fontSize: 13 }}>{question.folder_icon || '✦'}</span>
-        <span className="text-xs font-bold" style={{ color: 'rgba(140,190,255,0.7)' }}>{question.folder_name}</span>
+      style={{
+        background: 'rgba(255,255,255,0.09)',
+        border: '1.5px solid rgba(120,180,255,0.4)',
+        backdropFilter: 'blur(12px)',
+        minHeight: 160,
+        boxShadow: '0 2px 16px rgba(80,140,255,0.1)'
+      }}>
+      {/* Folder label + weight */}
+      <div className="flex items-center justify-between mb-2.5">
+        <div className="flex items-center gap-1.5">
+          <span style={{ fontSize: 12 }}>{question.folder_icon || '✦'}</span>
+          <span className="text-xs font-semibold" style={{ color: 'rgba(180,210,255,0.85)' }}>
+            {question.folder_name}
+          </span>
+        </div>
+        <span className="rounded-full px-2 py-0.5 text-xs font-bold"
+          style={{ background: 'rgba(100,180,255,0.2)', color: '#64B4FF', fontSize: 9 }}>
+          +{question.weight || 3} pts
+        </span>
       </div>
-      <p className="text-white font-semibold mb-3 leading-snug" style={{ fontSize: 12 }}>
+
+      {/* Question */}
+      <p className="font-bold leading-snug mb-3" style={{ color: '#FFFFFF', fontSize: 12 }}>
         {question.question}
       </p>
 
@@ -562,7 +597,7 @@ const SoulQuestionCard = ({ question, petName, onAnswered }) => {
           placeholder="Type here..."
           rows={2}
           className="w-full rounded-xl px-3 py-2 text-xs outline-none resize-none"
-          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}
+          style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff' }}
         />
       )}
 
@@ -570,12 +605,14 @@ const SoulQuestionCard = ({ question, petName, onAnswered }) => {
         <div className="flex flex-wrap gap-1.5 mb-2">
           {(question.options || []).map(opt => (
             <button key={opt} onClick={() => setSelected(opt)}
-              className="rounded-full px-2.5 py-1 text-xs font-medium transition-all"
+              className="rounded-full px-2.5 py-1 text-xs font-semibold transition-all"
               style={{
-                background: selected === opt ? 'rgba(100,160,255,0.35)' : 'rgba(255,255,255,0.07)',
-                border: selected === opt ? '1.5px solid rgba(100,160,255,0.8)' : '1px solid rgba(255,255,255,0.15)',
-                color: selected === opt ? '#A0C8FF' : 'rgba(255,255,255,0.65)',
-                cursor: 'pointer'
+                background: selected === opt ? 'rgba(100,160,255,0.5)' : 'rgba(255,255,255,0.08)',
+                border: selected === opt ? '1.5px solid #64A0FF' : '1px solid rgba(255,255,255,0.2)',
+                color: selected === opt ? '#FFFFFF' : 'rgba(255,255,255,0.75)',
+                cursor: 'pointer',
+                transform: selected === opt ? 'scale(1.05)' : 'scale(1)',
+                transition: 'all 0.15s ease'
               }}>
               {opt}
             </button>
@@ -587,11 +624,11 @@ const SoulQuestionCard = ({ question, petName, onAnswered }) => {
         <div className="flex flex-wrap gap-1.5 mb-2">
           {(question.options || []).slice(0, 6).map(opt => (
             <button key={opt} onClick={() => toggleMulti(opt)}
-              className="rounded-full px-2.5 py-1 text-xs font-medium transition-all"
+              className="rounded-full px-2.5 py-1 text-xs font-semibold transition-all"
               style={{
-                background: multiSelected.includes(opt) ? 'rgba(100,160,255,0.35)' : 'rgba(255,255,255,0.07)',
-                border: multiSelected.includes(opt) ? '1.5px solid rgba(100,160,255,0.8)' : '1px solid rgba(255,255,255,0.15)',
-                color: multiSelected.includes(opt) ? '#A0C8FF' : 'rgba(255,255,255,0.65)',
+                background: multiSelected.includes(opt) ? 'rgba(100,160,255,0.5)' : 'rgba(255,255,255,0.08)',
+                border: multiSelected.includes(opt) ? '1.5px solid #64A0FF' : '1px solid rgba(255,255,255,0.2)',
+                color: multiSelected.includes(opt) ? '#FFFFFF' : 'rgba(255,255,255,0.75)',
                 cursor: 'pointer'
               }}>
               {opt}
@@ -603,104 +640,160 @@ const SoulQuestionCard = ({ question, petName, onAnswered }) => {
       <button
         onClick={handleSubmit}
         disabled={submitting || (!selected && !textValue.trim() && multiSelected.length === 0)}
-        className="mt-1 w-full rounded-xl py-2 text-xs font-bold text-white flex items-center justify-center gap-1"
+        className="mt-2 w-full rounded-xl py-2 text-xs font-bold text-white flex items-center justify-center gap-1.5 transition-all"
         style={{
-          background: 'linear-gradient(135deg,#4488FF,#44AAFF)',
-          border: 'none', cursor: 'pointer',
-          opacity: (!selected && !textValue.trim() && multiSelected.length === 0) ? 0.4 : 1
+          background: (!selected && !textValue.trim() && multiSelected.length === 0)
+            ? 'rgba(80,120,200,0.3)'
+            : 'linear-gradient(135deg,#4488FF,#6644FF)',
+          border: 'none', cursor: submitting ? 'wait' : 'pointer',
+          boxShadow: (!selected && !textValue.trim() && multiSelected.length === 0) ? 'none' : '0 4px 12px rgba(68,136,255,0.4)'
         }}>
         {submitting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
-        Save & Grow Soul Score
+        Save +{question.weight || 3} pts
       </button>
     </div>
   );
 };
 
 // ── Soul Questions Section ─────────────────────────────────────────────────────
-const SoulQuestionsSection = ({ pet, onScoreUpdated }) => {
+const SoulQuestionsSection = ({ pet, onScoreUpdated, onRefreshMiraCards }) => {
   const [questions, setQuestions] = useState([]);
   const [score, setScore] = useState(null);
+  const [prevScore, setPrevScore] = useState(null);
   const [loading, setLoading] = useState(true);
   const [answeredCount, setAnsweredCount] = useState(0);
+  const [totalPtsGained, setTotalPtsGained] = useState(0);
   const petName = pet?.name || 'your pet';
 
-  useEffect(() => {
+  const loadQuestions = useCallback(() => {
     if (!pet?.id) { setLoading(false); return; }
-    const apiUrl = getApiUrl();
-    fetch(`${apiUrl}/api/pet-soul/profile/${pet.id}/quick-questions?limit=5`)
+    fetch(`${getApiUrl()}/api/pet-soul/profile/${pet.id}/quick-questions?limit=5`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (data) {
-          // Attach pet_id to each question for the answer API
           setQuestions((data.questions || []).map(q => ({ ...q, pet_id: pet.id })));
-          setScore(data.current_score);
+          setScore(s => {
+            if (s === null) setPrevScore(data.current_score);
+            return data.current_score;
+          });
         }
       })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [pet?.id]);
 
-  const handleAnswered = (newScore) => {
+  useEffect(() => { loadQuestions(); }, [loadQuestions]);
+
+  const handleAnswered = useCallback((newScore, pts) => {
     setAnsweredCount(prev => prev + 1);
+    setTotalPtsGained(prev => prev + (pts || 0));
     if (newScore !== undefined) {
+      setPrevScore(score);
       setScore(newScore);
       onScoreUpdated?.(newScore);
       window.dispatchEvent(new CustomEvent('soulScoreUpdated', { detail: { petId: pet.id, score: newScore } }));
     }
-    // Refresh questions after answer
-    if (pet?.id) {
-      fetch(`${getApiUrl()}/api/pet-soul/profile/${pet.id}/quick-questions?limit=5`)
-        .then(r => r.ok ? r.json() : null)
-        .then(data => data && setQuestions((data.questions || []).map(q => ({ ...q, pet_id: pet.id }))))
-        .catch(() => {});
-    }
-  };
+    // Refresh questions AND Mira imagines after short delay
+    setTimeout(() => {
+      loadQuestions();
+      onRefreshMiraCards?.();
+    }, 800);
+  }, [score, pet?.id, onScoreUpdated, onRefreshMiraCards, loadQuestions]);
 
-  const visibleQuestions = questions.slice(0, 5 - answeredCount);
+  const visibleQuestions = questions.slice(0, Math.max(0, 5 - answeredCount));
 
   if (loading) return null;
   if (visibleQuestions.length === 0 && answeredCount === 0) return null;
 
+  const scoreDelta = (score !== null && prevScore !== null) ? score - prevScore : null;
+
   return (
     <div className="mb-6">
-      <div className="flex items-center justify-between mb-3">
+      {/* Big Soul Score Header */}
+      <div className="rounded-2xl px-5 py-4 mb-4 flex items-center justify-between"
+        style={{
+          background: 'rgba(255,255,255,0.05)',
+          border: '1.5px solid rgba(120,180,255,0.25)',
+          backdropFilter: 'blur(8px)'
+        }}>
         <div>
-          <p className="text-xs font-bold uppercase tracking-wider" style={{ color: '#64A8FF', letterSpacing: '0.06em' }}>
-            ✦ Help Mira Know {petName} Better
+          <p className="font-extrabold uppercase tracking-widest mb-0.5" style={{ color: '#64A8FF', fontSize: 10, letterSpacing: '0.1em' }}>
+            ✦ GROW {petName.toUpperCase()}'S SOUL
           </p>
-          <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            {score !== null ? `Soul score: ${score}% · ` : ''}{visibleQuestions.length} quick question{visibleQuestions.length !== 1 ? 's' : ''} to grow the score
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 10 }}>
+            Answer quick questions • {visibleQuestions.length} remaining
           </p>
         </div>
-        {score !== null && (
-          <div className="rounded-full flex items-center gap-1.5 px-2.5 py-1"
-            style={{ background: 'rgba(100,160,255,0.15)', border: '1px solid rgba(100,160,255,0.3)' }}>
-            <div className="rounded-full w-2 h-2" style={{ background: `hsl(${score * 1.2},80%,55%)` }} />
-            <span className="text-xs font-bold" style={{ color: '#A0C8FF' }}>{score}%</span>
+
+        {/* Big score counter */}
+        <div className="flex flex-col items-center">
+          <div className="relative flex items-center justify-center">
+            <motion.div
+              key={score}
+              initial={{ scale: 1.3, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="font-black"
+              style={{ fontSize: 38, lineHeight: 1, color: score >= 80 ? '#FFD700' : score >= 50 ? '#64D4FF' : '#A0C8FF' }}>
+              {score ?? '--'}
+            </motion.div>
+            <span className="font-bold" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, marginLeft: 2, alignSelf: 'flex-end', marginBottom: 4 }}>%</span>
           </div>
-        )}
+          {scoreDelta !== null && scoreDelta > 0 && (
+            <motion.div
+              initial={{ y: 6, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              className="rounded-full px-2 py-0.5 font-bold"
+              style={{ background: 'rgba(40,220,100,0.25)', color: '#3DF07A', fontSize: 9 }}>
+              +{scoreDelta.toFixed(1)}%
+            </motion.div>
+          )}
+          <div className="w-12 rounded-full mt-1 overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)', height: 4 }}>
+            <motion.div
+              initial={{ width: `${prevScore ?? score}%` }}
+              animate={{ width: `${score}%` }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+              className="h-full rounded-full"
+              style={{ background: `linear-gradient(90deg, #4488FF, ${score >= 80 ? '#FFD700' : '#44CCFF'})` }}
+            />
+          </div>
+        </div>
       </div>
 
+      {/* Answered banner */}
       {answeredCount > 0 && (
-        <div className="mb-3 flex items-center gap-2 px-3 py-2 rounded-xl"
-          style={{ background: 'rgba(50,200,100,0.1)', border: '1px solid rgba(50,200,100,0.25)' }}>
-          <Check className="w-3.5 h-3.5 text-green-400 flex-shrink-0" />
-          <p className="text-xs text-green-300">
-            {answeredCount} answer{answeredCount > 1 ? 's' : ''} saved! Mira knows {petName} better now.{score !== null ? ` Soul score: ${score}%` : ''}
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-3 flex items-center gap-2 px-3 py-2 rounded-xl"
+          style={{ background: 'rgba(40,220,100,0.12)', border: '1px solid rgba(40,220,100,0.3)' }}>
+          <Check className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#3DF07A' }} />
+          <p className="text-xs font-semibold" style={{ color: '#3DF07A' }}>
+            {answeredCount} answer{answeredCount > 1 ? 's' : ''} saved! +{totalPtsGained} pts — Soul score: {score}%
+          </p>
+        </motion.div>
+      )}
+
+      {/* Question Cards */}
+      {visibleQuestions.length > 0 && (
+        <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 100%), 1fr))' }}>
+          {visibleQuestions.map(q => (
+            <SoulQuestionCard key={q.question_id} question={q} petName={petName} onAnswered={handleAnswered} />
+          ))}
+        </div>
+      )}
+
+      {visibleQuestions.length === 0 && answeredCount > 0 && (
+        <div className="text-center py-4">
+          <p className="text-xs font-semibold" style={{ color: 'rgba(100,180,255,0.6)' }}>
+            Loading next questions...
           </p>
         </div>
       )}
 
-      <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))' }}>
-        {visibleQuestions.map(q => (
-          <SoulQuestionCard key={q.question_id} question={q} petName={petName} onAnswered={handleAnswered} />
-        ))}
-      </div>
-
       <div className="mt-3 text-center">
         <a href={`/pet-soul/${pet?.id}`}
           className="text-xs font-semibold"
-          style={{ color: 'rgba(100,160,255,0.7)', textDecoration: 'none' }}>
+          style={{ color: 'rgba(100,160,255,0.6)', textDecoration: 'none' }}>
           See full soul profile →
         </a>
       </div>
@@ -1201,6 +1294,13 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                 <SoulQuestionsSection
                   pet={pet}
                   onScoreUpdated={(score) => setLiveSoulScore(score)}
+                  onRefreshMiraCards={() => {
+                    // Re-fetch mira imagines after soul data grows
+                    if (pet?.id) {
+                      setMiraImagines([]); // clear to trigger re-compute
+                      setTimeout(() => fetchData(), 300);
+                    }
+                  }}
                 />
 
                 {/* Real curated cakes from collection */}
