@@ -1,0 +1,62 @@
+{
+  "summary": "Tested 4 mobile fixes on /celebrate-soul page at 390px (iPhone 14) and 375px (iPhone SE). FIX 2 (service grid horizontal scroll), FIX 3 (Mira widget positioning), and FIX 4 (font sizes) all PASS. FIX 1 (guided path close button) has a critical position bug — the floating pill renders relative to the parent section (transformed by framer-motion) instead of the viewport, causing it to be hidden behind the mobile nav bar at 375px.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "GuidedCelebrationPaths — floating close button",
+        "issue": "The '✕ Close guide' button has `position: fixed; bottom: 90px` but its parent <section data-testid='guided-celebration-paths'> has CSS `transform: matrix(1,0,0,1,0,0)` (set by framer-motion animation on sibling/parent), which creates a CSS containing block for fixed-position descendants. Result: button is positioned 90px from the SECTION's bottom, not the viewport bottom. At 375px (iPhone SE) the button is BEHIND the mobile nav bar (button bottom=623px, nav top≈597px, viewport=667px). At 390px it renders in the middle of screen (~244px from viewport bottom instead of 90px).",
+        "selector": "[data-testid='guided-path-mobile-close']",
+        "priority": "HIGH",
+        "reproduction": "Login → /celebrate-soul → scroll to 'Guided celebration paths' → click any path card → observe floating close pill at 375px. It appears overlapping the bottom nav bar.",
+        "root_cause": "CSS transform on parent <section> (transform: matrix(1,0,0,1,0,0)) creates a new containing block per CSS spec. Fixed descendants position relative to this section, not the viewport.",
+        "fix": "Use ReactDOM.createPortal() to render the close button at document.body level, outside any transformed ancestor. OR ensure no ancestor of the section has any CSS transform property set."
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "PASSED_tests": [
+    "FIX 4 (390px): Card name fontSize=14px ✓, tagline=12px ✓, badge=11px ✓ (verified for Food & Flavour, Play & Joy, Social & Friends cards)",
+    "FIX 2 (390px): service-grid-responsive → display:flex, flexDirection:row, overflowX:auto, cards 220px wide, scrollWidth=1844 > width=358. Horizontal scroll CONFIRMED",
+    "FIX 2 (375px): service-grid-responsive → display:flex, overflowX:auto, cards 220px wide. NOT 4 cramped columns. CONFIRMED",
+    "FIX 3 (390px): Mira widget top=105px exactly. Header 'Mira / Mojo's Soul Mate' visible at top=105px. Widget NOT behind header. CONFIRMED",
+    "FIX 3 (375px): Mira widget top=105px. Header clearly visible. Widget accessible and functional. CONFIRMED",
+    "FIX 1 (functional): Close button [data-testid=guided-path-mobile-close] EXISTS, IS VISIBLE, CLOSES the expansion on click, PERSISTS after page scroll down (confirmed fixed positioning works)"
+  ],
+  "FAILED_tests": [
+    "FIX 1 (position at 375px): Button bottom=624px in 667px viewport. Mobile nav bar top≈597px. Button is BEHIND nav bar. isAboveNav=False confirmed by JS check",
+    "FIX 1 (position at 390px): Button is 244px from viewport bottom (should be ~90px). Position relative to section not viewport due to CSS transform containment"
+  ],
+  "test_report_links": ["/app/test_reports/iteration_123.json"],
+  "action_items": [
+    "FIX 1 BUG - HIGH PRIORITY: The floating close button in GuidedCelebrationPaths must be moved outside the transformed <section> element using ReactDOM.createPortal() or by rendering it as a sibling to the main page content. The current position: fixed is being contained by the parent section's transform (identity matrix from framer-motion), causing it to be positioned relative to the section bottom, NOT the viewport. At 375px it's hidden behind the nav bar.",
+    "CODE REVIEW: Check all parent elements of guided-celebration-paths section for CSS transforms set by framer-motion. The <section> itself shows transform: matrix(1,0,0,1,0,0) in computed styles even though no explicit transform is set in JSX — this is likely from a parent animated wrapper."
+  ],
+  "critical_code_review_comments": [
+    "FIX 1 ROOT CAUSE: GuidedCelebrationPaths.jsx renders the floating close button inside the <section> element. Some ancestor of this section has CSS transform set (possibly a motion.div wrapper in the parent page component or from framer-motion AnimatePresence). Per CSS spec (CSS Transforms Module Level 1), any element with a transform other than 'none' creates a containing block for fixed-position descendants. Solution: ReactDOM.createPortal(closeButtonJSX, document.body)",
+    "Minor: 'Each child in a list should have a unique key prop' React warning in PetHomePage - ongoing from previous iterations"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend only)",
+    "frontend": "75% — 3 of 4 fixes verified passing, 1 fix (guided path close button position) has a CSS containment bug"
+  },
+  "test_credentials": {
+    "user": "dipali@clubconcierge.in / test123",
+    "default_pet": "Mojo (Soul 100%)"
+  },
+  "seed_data_creation": "",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "FIX 2 (service grid horizontal scroll), FIX 3 (Mira widget at 105px), FIX 4 (font sizes 14/12/11px) all verified PASSING at 390px and 375px. FIX 1 (guided path close button) — button exists and is functional (visible, clickable) but position is wrong. CSS transform on parent section (from framer-motion) causes position:fixed to be relative to section bottom instead of viewport. At 375px the button is HIDDEN behind the mobile nav bar. Main agent needs to use ReactDOM.createPortal to fix this. Test at both 375px and 390px with login dipali@clubconcierge.in / test123.",
+  "rca_of_issue": {
+    "bug": "FIX 1 — Guided Path floating close button position incorrect",
+    "reproduction": "Login as dipali, navigate /celebrate-soul at 375px, scroll to Guided celebration paths, click any path card → button appears but is hidden behind mobile nav bar",
+    "root_cause": "GuidedCelebrationPaths.jsx renders the floating close button inside <section data-testid='guided-celebration-paths'>. This section (or an ancestor) has CSS transform: matrix(1,0,0,1,0,0) in computed styles. Per CSS spec, any element with a non-none transform creates a containing block for position:fixed descendants. The button is thus positioned relative to section bottom (90px from section bottom) instead of viewport bottom (90px from viewport bottom). At 375px with viewport height 667px, the section bottom is at ~714px in viewport, button bottom is at ~624px, which is BELOW the mobile nav bar top (~597px).",
+    "mitigation": "Use ReactDOM.createPortal(floatingCloseButton, document.body) to render the close button outside any transformed ancestor. The close button JSX should be moved to a portal rendered at document.body level while keeping the React state (expandedId) in GuidedCelebrationPaths component."
+  }
+}
