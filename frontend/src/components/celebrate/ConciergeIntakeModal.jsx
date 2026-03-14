@@ -13,6 +13,7 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
+import { useResizeMobile } from '../../hooks/useResizeMobile';
 
 const CELEBRATION_OPTIONS = [
   { id: 'birthday_party', label: 'Birthday' },
@@ -28,6 +29,7 @@ const CELEBRATION_OPTIONS = [
 
 const ConciergeIntakeModal = ({ isOpen, onClose, serviceType, petName, petId }) => {
   const { user, token } = useAuth();
+  const isMobile = useResizeMobile();
   const [selectedType, setSelectedType] = useState(serviceType || '');
   const [celebrationDate, setCelebrationDate] = useState('');
   const [notSureDate, setNotSureDate] = useState(false);
@@ -107,9 +109,10 @@ const ConciergeIntakeModal = ({ isOpen, onClose, serviceType, petName, petId }) 
           background: 'rgba(0,0,0,0.50)',
           zIndex: 1000,
           display: 'flex',
-          alignItems: 'center',
+          alignItems: isMobile ? 'flex-start' : 'center',
           justifyContent: 'center',
-          padding: '16px'
+          padding: isMobile ? '88px 0 0' : '16px',
+          overflowY: isMobile ? 'auto' : 'visible',
         }}
         data-testid="concierge-intake-modal-overlay"
       >
@@ -118,11 +121,11 @@ const ConciergeIntakeModal = ({ isOpen, onClose, serviceType, petName, petId }) 
           onClick={e => e.stopPropagation()}
           style={{
             background: '#FFFFFF',
-            borderRadius: 20,
-            padding: 32,
+            borderRadius: isMobile ? '20px 20px 0 0' : 20,
+            padding: isMobile ? '24px 20px' : 32,
             maxWidth: 480,
             width: '100%',
-            maxHeight: '90vh',
+            maxHeight: isMobile ? 'none' : '90vh',
             overflowY: 'auto',
             position: 'relative',
             zIndex: 1001

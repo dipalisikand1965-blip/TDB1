@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://memory-wall-debug.preview.emergentagent.com
+https://mobile-drawer-fix.preview.emergentagent.com
 ```
 
 ---

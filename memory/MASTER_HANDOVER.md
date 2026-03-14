@@ -58,7 +58,7 @@ Be patient. Be thorough. Honor the Sikand legacy.
 - Admin: `aditya` / `lola4304`
 
 ## 🌐 PREVIEW URL
-https://memory-wall-debug.preview.emergentagent.com
+https://mobile-drawer-fix.preview.emergentagent.com
 
 ---
 

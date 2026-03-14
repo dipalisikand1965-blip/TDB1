@@ -134,7 +134,7 @@ soulReason={getSoulBasedReason(activePet, 'celebrate')}  // or 'stay', 'dine', e
 ---
 
 ## PREVIEW URL
-https://memory-wall-debug.preview.emergentagent.com
+https://mobile-drawer-fix.preview.emergentagent.com
 
 ---
 

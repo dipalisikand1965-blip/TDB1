@@ -362,8 +362,8 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
   const [activeTab, setActiveTab] = useState('cakes');
   const [swaps, setSwaps] = useState({}); // { tabId: { slotNumber, originalItem, newProduct } }
 
-  // ResizeObserver on the modal backdrop — 150ms debounce, cleanup included
-  const [containerRef, isMobile] = useResizeMobile(640);
+  // Platform-standard mobile detection — ResizeObserver on document.body
+  const isMobile = useResizeMobile();
 
   // Listen for open event
   useEffect(() => {
@@ -429,12 +429,11 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
 
   const drawerContent = (
     <>
-      {/* Backdrop — containerRef tracks viewport size via ResizeObserver */}
+      {/* Backdrop */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             key="drawer-backdrop"
-            ref={containerRef}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
