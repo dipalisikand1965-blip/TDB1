@@ -81,6 +81,7 @@ const CelebrateManager = ({ getAuthHeader }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [showInactive, setShowInactive] = useState(false); // default: active only (matches frontend)
   
   // Modals
   const [showProductModal, setShowProductModal] = useState(false);
@@ -136,7 +137,7 @@ const CelebrateManager = ({ getAuthHeader }) => {
       // Fetch from admin products endpoint (shows ALL products, including inactive)
       const [requestsRes, productsRes, bundlesRes, settingsRes, partnersRes] = await Promise.all([
         axios.get(`${API_URL}/api/celebrate/requests`),
-        axios.get(`${API_URL}/api/admin/products?limit=1000`, { headers: getAuthHeader() }),
+        axios.get(`${API_URL}/api/admin/products?limit=5000`, { headers: getAuthHeader() }),
         axios.get(`${API_URL}/api/celebrate/admin/bundles`),
         axios.get(`${API_URL}/api/celebrate/admin/settings`),
         axios.get(`${API_URL}/api/celebrate/admin/partners`)
@@ -145,14 +146,14 @@ const CelebrateManager = ({ getAuthHeader }) => {
       setRequests(requestsRes.data.requests || []);
       // Filter products for celebrate categories (cakes, treats, hampers, pupcakes, dognuts, frozen-treats, etc.)
       const allProducts = productsRes.data.products || [];
-      // All celebrate-relevant categories (broad match)
-      const celebrateCategories = ['cake', 'treat', 'hamper', 'pupcake', 'dognut', 'frozen', 'celebrat', 'breed-', 'mini-cake', 'nut-butter', 'party', 'soul', 'meal', 'accessor'];
-      const celebrateProducts = allProducts.filter(p =>
-        celebrateCategories.some(cat =>
-          (p.category || '').toLowerCase().includes(cat) ||
-          (p.subcategory || '').toLowerCase().includes(cat)
-        )
-      );
+      // Exact celebrate categories shown on the frontend
+      const CELEBRATE_CATS = new Set([
+        'cakes', 'breed-cakes', 'mini-cakes',
+        'dognuts', 'frozen-treats', 'desi-treats', 'nut-butters',
+        'celebration', 'celebration_addons', 'hampers',
+        'party_accessories', 'soul_picks', 'breed-party_hats',
+      ]);
+      const celebrateProducts = allProducts.filter(p => CELEBRATE_CATS.has((p.category || '').toLowerCase()));
       setProducts(celebrateProducts.length > 0 ? celebrateProducts : allProducts);
       setBundles(bundlesRes.data.bundles || []);
       // Calculate stats from actual data
@@ -540,6 +541,8 @@ const CelebrateManager = ({ getAuthHeader }) => {
   const filteredProducts = products.filter(p => {
     const matchesSearch = !searchQuery || (p.name || '').toLowerCase().includes(searchQuery.toLowerCase());
     if (!matchesSearch) return false;
+    // Active/inactive toggle — default shows active only (same as frontend)
+    if (!showInactive && p.is_active === false) return false;
     if (categoryFilter === 'all') return true;
     const pCat = (p.category || '').toLowerCase();
     // Grouped: 'treats' matches 'desi-treats', 'frozen-treats' etc.
@@ -790,7 +793,19 @@ const CelebrateManager = ({ getAuthHeader }) => {
                 ))}
               </select>
             </div>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 flex-wrap items-center">
+              {/* Active/Inactive toggle — key for admin vs frontend sync */}
+              <button
+                onClick={() => setShowInactive(prev => !prev)}
+                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium border transition-all"
+                style={{
+                  background: showInactive ? 'rgba(234,179,8,0.1)' : 'rgba(34,197,94,0.1)',
+                  border: showInactive ? '1px solid rgba(234,179,8,0.5)' : '1px solid rgba(34,197,94,0.5)',
+                  color: showInactive ? '#CA8A04' : '#16A34A'
+                }}
+                title={showInactive ? "Showing ALL products (incl. inactive)" : "Showing active only — toggle to see inactive"}>
+                {showInactive ? '⚡ All (incl. inactive)' : '✓ Active only'}
+              </button>
               <Button variant="outline" onClick={fetchAllData}>
                 <RefreshCw className="w-4 h-4 mr-2" /> Refresh
               </Button>
