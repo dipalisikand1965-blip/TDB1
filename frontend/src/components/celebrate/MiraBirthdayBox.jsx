@@ -446,7 +446,7 @@ const MiraBirthdayBox = ({ pet, onBuildBox, onBrowseProducts }) => {
 
               {/* Secondary CTA */}
               <button
-                onClick={() => onBrowseProducts?.()}
+                onClick={() => onBrowseProducts?.(boxPreview)}
                 className="inline-flex items-center gap-2 rounded-xl transition-all hover:bg-white/[0.18]"
                 style={{
                   background: 'rgba(255,255,255,0.10)',
