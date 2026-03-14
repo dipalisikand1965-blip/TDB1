@@ -336,9 +336,6 @@ const CelebratePageNew = () => {
           onBrowseProducts={(boxPreview) => handleOpenBrowseDrawer(boxPreview)}
         />
 
-        {/* Mira Ask Bar — appears right below the pillars section */}
-        <MiraAskBar petName={selectedPet?.name} />
-
         {/* 5. CELEBRATE CONCIERGE® */}
         <CelebrateConcierge 
           pet={selectedPet}
