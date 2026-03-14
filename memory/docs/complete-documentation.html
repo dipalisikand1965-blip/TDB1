@@ -26,7 +26,47 @@
 <body>
 
 <h1>🐾 The Doggy Company — Platform Documentation</h1>
-<p style="color:#888; font-size:13px">Last updated: March 2026 — Session 11 (Birthday Box Spec Added)</p>
+<p style="color:#888; font-size:13px">Last updated: March 2026 — Session 11 (Allergy Fix + Browse Drawer Spec)</p>
+
+<!-- ============================= -->
+<div class="section" style="background: #fee2e2; border: 2px solid #dc2626; padding: 16px; border-radius: 12px; margin-bottom: 30px;">
+<h2 style="background: #dc2626; color: white;">🚨 CRITICAL FIX: Allergy Data (Session 11)</h2>
+<p><strong>Problem:</strong> Mojo has chicken allergy but system showed "Chicken birthday cake"</p>
+<p><strong>Root Cause:</strong> Allergy data stored in multiple locations — code only checked one</p>
+<p><strong>Fix:</strong> Created <code>get_all_allergies(pet)</code> function checking ALL locations:</p>
+<ul>
+  <li><code>health_data.allergies</code></li>
+  <li><code>health.allergies</code></li>
+  <li><code>doggy_soul_answers.food_allergies</code></li>
+  <li><code>insights.key_flags.allergy_list</code></li>
+</ul>
+<p><strong>Result:</strong> Now showing "Salmon birthday cake, allergy-safe" ✅</p>
+</div>
+
+<!-- ============================= -->
+<div class="section">
+<h2>🛒 BIRTHDAY BOX BROWSE DRAWER</h2>
+<p><strong>Trigger:</strong> Secondary "Birthday Box" button on card</p>
+<p><strong>Width:</strong> 480px desktop / 100vw mobile — slides from right</p>
+
+<h3>5 Tabs</h3>
+<table>
+  <tr><th>Tab</th><th>Icon</th><th>Products</th></tr>
+  <tr><td>Cakes</td><td>🎂</td><td>Birthday cakes, allergy-filtered</td></tr>
+  <tr><td>Toys & Joy</td><td>🎁</td><td>Activity/pillar-matched toys</td></tr>
+  <tr><td>Style</td><td>🎀</td><td>Bandanas, bows, outfits</td></tr>
+  <tr><td>Memory</td><td>💌</td><td>Cards, photo items, keepsakes</td></tr>
+  <tr><td>Wellness</td><td>✨</td><td>Supplements (allergy-filtered ONLY)</td></tr>
+</table>
+
+<h3>Key Features</h3>
+<ul>
+  <li><strong>Mira's Pick Row</strong> — Her selection with "Swap →" link</li>
+  <li><strong>Swap Tracking</strong> — Pills show changes, each has "Undo"</li>
+  <li><strong>Allergy Banner</strong> — "Filtered for Mojo: no chicken, no soy"</li>
+  <li><strong>Bottom Bar</strong> — "Build {petName}'s Box →" button</li>
+</ul>
+</div>
 
 <!-- ============================= -->
 <div class="section">

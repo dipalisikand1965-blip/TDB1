@@ -174,6 +174,106 @@ Rule 4: No allergy data → Show builder notice
 
 ---
 
+## 🛒 BIRTHDAY BOX BROWSE DRAWER — SPECIFICATION
+
+### TRIGGER
+Secondary "Birthday Box" button on MiraBirthdayBox card
+
+### STRUCTURE
+- **Width:** 480px (desktop) / 100vw (mobile)
+- **Animation:** Slides from right
+- **Header:** Dark gradient (#1A0030 → #3D0060)
+
+### 5 TABS
+| Tab | Icon | Products |
+|-----|------|----------|
+| Cakes | 🎂 | Birthday cakes, allergy-filtered |
+| Toys & Joy | 🎁 | Activity/pillar-matched toys |
+| Style | 🎀 | Bandanas, bows, outfits |
+| Memory | 💌 | Cards, photo items, keepsakes |
+| Wellness | ✨ | Supplements, health treats |
+
+### KEY FEATURES
+
+#### 1. Mira's Pick Row
+Each tab shows Mira's pre-selected item at the top with "Swap →" link
+
+#### 2. Swap Tracking
+- Pills appear showing swaps: "🔄 Cake: Salmon → Peanut butter"
+- Each swap has "Undo" option
+- Multiple swaps tracked
+
+#### 3. Allergy Banner
+Shows filtered allergens: "Filtered for Mojo: no chicken, no soy"
+
+#### 4. Product Sorting by Tab
+| Tab | Sort Order |
+|-----|------------|
+| Cakes | Breed-matched → flavor-matched → alphabetical |
+| Toys | topActivity → topSoulPillar → breed |
+| Style | petSize → breed → popularity |
+| Memory | Love & Memory score descending |
+| Wellness | Condition-safe + allergy-filtered ONLY |
+
+### BOTTOM BAR
+- **Whisper text:** "Your box is ready" / "{n} swaps made"
+- **Primary CTA:** "Build {petName}'s Box →"
+- **State:** Neutral (no swaps) → Pink glow (1+ swaps)
+
+---
+
+## 🚨 CRITICAL: ALLERGY DATA FIX (Session 11)
+
+### THE PROBLEM
+Mojo has chicken allergy but system showed "Chicken birthday cake"
+
+### ROOT CAUSE
+Allergy data stored in MULTIPLE locations in pet document:
+- `health_data.allergies: ['chicken']`
+- `doggy_soul_answers.food_allergies: ['chicken']`
+- `health.allergies: ['chicken']`
+- `insights.key_flags.allergy_list: ['chicken']`
+
+But code only checked:
+- `pet.get("allergies")` → empty []
+- `pet.get("allergy1")` → None
+
+### THE FIX
+Created `get_all_allergies(pet)` function that checks ALL locations:
+```python
+def get_all_allergies(pet: dict) -> list:
+    all_allergies = set()
+    
+    # Direct fields
+    if pet.get("allergies"): all_allergies.update(...)
+    if pet.get("allergy1"): all_allergies.add(...)
+    
+    # health_data.allergies
+    health_data = pet.get("health_data", {})
+    if health_data.get("allergies"): all_allergies.update(...)
+    
+    # health.allergies
+    health = pet.get("health", {})
+    if health.get("allergies"): all_allergies.update(...)
+    
+    # doggy_soul_answers.food_allergies
+    soul_answers = pet.get("doggy_soul_answers", {})
+    if soul_answers.get("food_allergies"): all_allergies.update(...)
+    
+    # insights.key_flags.allergy_list
+    insights = pet.get("insights", {})
+    key_flags = insights.get("key_flags", {})
+    if key_flags.get("allergy_list"): all_allergies.update(...)
+    
+    return list(all_allergies)
+```
+
+### RESULT
+- **Before:** "Chicken birthday cake" ❌
+- **After:** "Salmon birthday cake, allergy-safe" ✅
+
+---
+
 ## 🔄 SESSION 11 SPEC — PillarSoulModal + Master Sync + Product Modal (March 14, 2026)
 
 ### WHAT WAS BUILT:
