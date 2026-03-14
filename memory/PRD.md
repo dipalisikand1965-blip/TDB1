@@ -1168,3 +1168,27 @@ const BREED_SLUG_MAP = {
 4. Add more Soul Products categories to Celebrate (blankets, plush toys, pet robes)
 5. "Build a box" functionality — high value revenue feature
 6. CMS audit for new celebrate sections
+
+---
+
+## 🔄 SESSION 18 — Celebration Wall (Mar 2026)
+
+**Source:** CelebrationWall_MASTER.docx | **Route:** bottom of /celebrate-soul
+
+### Files:
+| File | Status |
+|---|---|
+| REWRITE `CelebrationMemoryWall.jsx` | TODO |
+| CREATE `WallCard.jsx` | TODO |
+| CREATE `WallUploadCard.jsx` | TODO |
+| CREATE `WallUploadModal.jsx` | TODO |
+| CREATE `WallLightbox.jsx` | TODO |
+| MODIFY `celebration_wall_routes.py` | TODO |
+
+### Key rules (FINAL):
+- Real photos (Euro, Simba, Zippy) NEVER replaced with stock
+- Timestamp: NEVER "Recently" — use Today / N days ago / Last week / DD Mon
+- Subtitle: 4 states per login/submission status (see complete-documentation.html)
+- Mira comment: only on own photo, per celebration type  
+- Upload card always first · Own submission always position 2
+- Lightbox on card click · Like: heart fills pink with pop animation
