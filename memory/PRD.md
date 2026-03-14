@@ -1,6 +1,176 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: March 14, 2026 (Session 11 — PillarSoulModal + Master Sync)
+## Last Updated: March 14, 2026 (Session 11 — Birthday Box Spec Added)
+
+---
+
+## 🎁 MIRA'S BIRTHDAY BOX — MASTER SPECIFICATION
+
+### WHAT IS IT?
+A **curated 6-slot celebration box** built specifically for one pet, based on their individual soul profile. **No two boxes are the same.** Mira selects every item based on her knowledge of the pet.
+
+### WHERE IT APPEARS
+Single dark card on `/celebrate`, positioned **below the category strip** and **above the soul pillars**.
+
+### THE 6 SLOTS
+
+| Slot | Name | Primary Signal | Item Selected | Fallback |
+|------|------|----------------|---------------|----------|
+| 1 | **Hero Item** | `petFavouriteFood1` | `[flavour]` birthday cake | Breed-matched cake |
+| 2 | **Joy Item** | `topSoulPillar` | Activity-matched gift | Breed favourite toy |
+| 3 | **Style Item** | `birthday` registered | Custom birthday bandana | Standard bandana |
+| 4 | **Memory Item** | `Love & Memory` score > 60 | Memory card + photo envelope | Paw print card |
+| 5 | **Health Item** | `healthCondition` | Treatment-safe supplement | Age-appropriate treat |
+| 6 | **Surprise Item** | `petArchetype` | Archetype-matched surprise | Breed surprise gift |
+
+**Note:** Slots 5 & 6 are hidden → revealed when user clicks "Build {petName}'s Box"
+
+### UI COMPONENTS
+
+#### Card Container
+```css
+background: linear-gradient(135deg, #1A0030 0%, #3D0060 50%, #6B0099 100%);
+border-radius: 20px;
+padding: 28px;
+border: 1px solid rgba(196,77,255,0.30);
+box-shadow: 0 8px 32px rgba(196,77,255,0.15);
+```
+
+#### Eyebrow Chip States
+- **Default:** `✦ Mira's pick for {petName}'s birthday`
+- **Gotcha Day (within 7 days):** `✦ Mira's pick for {petName}'s gotcha day`
+- **No Birthday:** `✦ Curated by Mira for {petName}`
+
+#### Title
+- `The` + `{petName}` (pink #FF9FE5) + `Birthday Box` (white)
+
+#### Description Template
+```
+Mira has built one celebration that covers who {petName} actually is — 
+{slot1Name}, {slot2Description}, {slot3}, and {slot4}. 
+Everything {petName} loves. Nothing they can't have.
+```
+
+**Last Line Variations:**
+| Condition | Last Line |
+|-----------|-----------|
+| Healthy young pet | Everything {petName} loves. Nothing they can't have. |
+| Allergy present | Everything {petName} loves. Nothing they can't have. |
+| Health condition | Everything {petName} loves. Everything safe for their treatment. |
+| Senior (age > 7) | Everything {petName} loves. Everything kind to their body. |
+| Senior + condition | Everything {petName} loves. Everything gentle, everything safe. |
+| Puppy (age < 1) | Everything {petName} loves. Everything right for where they're growing. |
+| No profile data | Everything a dog loves on their birthday. Personalise it for yours. |
+
+#### Buttons
+| Button | Label | Style |
+|--------|-------|-------|
+| **Primary** | `🎉 Build {petName}'s Box` | Pink/purple gradient |
+| **Secondary** | `Birthday Box` | Transparent with border |
+
+### SLOT-BY-SLOT INTELLIGENCE
+
+#### Slot 1 — Hero Item (Birthday Cake)
+```
+IF favourite food known → [petFavouriteFood1] birthday cake
+   IF allergy → EXCLUDE allergen, label: "[flavour], allergy-safe"
+ELSE IF breed known → Breed-matched flavour
+   - Labradors → peanut butter
+   - Indies → chicken  
+   - Shih Tzu → salmon
+ELSE → Custom birthday cake (personalize in builder)
+```
+
+#### Slot 2 — Joy Item (Based on Top Soul Pillar)
+| Pillar | Item |
+|--------|------|
+| Play | Favourite toy (gift-wrapped) |
+| Adventure | Outdoor birthday kit (bandana + trail treats + water bowl) |
+| Social | Pawty kit (bandanas for multiple dogs) |
+| Learning | Puzzle toy (level matched) |
+| Food | Gourmet treat platter |
+| Grooming | Birthday spa kit |
+| Health | Wellness treat pack |
+| Love/Memory | Photo prop kit |
+| No data | Breed-matched toy |
+
+#### Slot 3 — Style Item (Wearable)
+```
+IF birthday registered → Custom birthday bandana with {petName} embroidered
+IF gotcha day → Custom gotcha day bandana
+IF Shih Tzu / small dog → Birthday bow set
+IF large breed → Wide bandana (large sizing)
+IF Grooming score > 70 → Birthday outfit set (bandana + bow + spray)
+ELSE → Standard birthday bandana
+```
+
+#### Slot 4 — Memory Item
+```
+IF Love & Memory score > 60 → Memory card + photo envelope
+IF birthday photoshoot booked → Digital memory card
+IF exact birthday date known → Personalised date card
+IF multiple pets → Family birthday card
+ELSE → Paw print birthday card
+```
+
+#### Slot 5 — Health Item (MUST BE ALLERGY-SAFE)
+```
+IF healthCondition present → Condition-specific supplement
+IF petAge > 7 (senior) → Joint support supplement
+IF petAge < 2 (puppy) → Puppy growth treat
+IF petWeight = overweight → Low-calorie birthday treat
+IF allergy present → ALL OPTIONS ALLERGY-FILTERED
+IF no allergy data → Show notice: "Let us know about allergies before ordering"
+ELSE → Age-appropriate wellness treat
+```
+
+#### Slot 6 — Surprise Item (Based on Archetype)
+| Archetype | Item |
+|-----------|------|
+| Social Butterfly | Friend gift set (for {petFriend1}) |
+| Adventurer | Trail map bandana (unique to {userCity}) |
+| Thinker | Hidden treat puzzle |
+| Nurturer | Comfort plush (sized for breed) |
+| Performer | Party hat + matching bow |
+| Protector | Calming treat |
+| Free Spirit | Surprise mystery toy (sealed box) |
+| No archetype | Breed surprise, chip: "A Mira surprise 🎁" |
+
+**Note:** Slot 6 item name NOT shown until box is opened on delivery.
+
+### SOUL DISCOVERY STATES
+
+| Soul % | Behavior |
+|--------|----------|
+| < 30% | Fallback items + banner: "Tell Mira more about {petName}..." |
+| 30-70% | Partial personalization, Mira notes confident slots |
+| > 70% | Full personalization, no caveats |
+| 89%+ | Mira speaks with full confidence, "exactly right" |
+
+### EDGE CASES
+
+1. **No Birthday:** Show box with eyebrow "Curated by Mira" + prompt to add birthday
+2. **Birthday < 7 days:** Urgency banner + "Order by [date] for delivery in time"
+3. **Gotcha Day:** Different copy — "the day {petName} chose you"
+4. **Multiple Pets:** One card per pet, scrollable/tabbed
+5. **Allergies:** ABSOLUTE rule — allergen cannot appear in ANY slot
+
+### ALLERGY RULES (CRITICAL)
+```
+Rule 1: If allergen in profile → EXCLUDE from ALL slots
+Rule 2: Slot 1 (cake) MUST confirm "allergy-safe" in chip
+Rule 3: Slot 5 (health) MUST be allergen-checked
+Rule 4: No allergy data → Show builder notice
+```
+
+### VARIABLES REFERENCE
+```
+{petName}, {petBreed}, {petAge}, {petFavouriteFood1}, {petFavouriteFood2}
+{petAllergy1}, {petAllergy2}, {topSoulPillar}, {topActivity}, {petFavouriteToy}
+{petArchetype}, {petFriend1}, {petBirthday}, {petGotchaDay}, {healthCondition}
+{petSize}, {soulDiscoveredPercent}, {userCity}
+{slot1Name}, {slot2Name}, {slot3Name}, {slot4Name}
+```
 
 ---
 
