@@ -26,11 +26,136 @@
 <body>
 
 <h1>🐾 The Doggy Company — Platform Documentation</h1>
-<p style="color:#888; font-size:13px">Last updated: Feb 2026 — Session 13 (Concierge Handoff + Service Desk Birthday Box Orders Spec)</p>
+<p style="color:#888; font-size:13px">Last updated: Feb 2026 — Session 14 (Order fix + Modal centering + Next Agent Instructions)</p>
 
-<!-- ============================= -->
-<div class="section" style="background: #fef3c7; border: 2px solid #d97706; padding: 16px; border-radius: 12px; margin-bottom: 30px;">
-<h2 style="background: #d97706; color: white;">📋 SERVICE DESK — Birthday Box Orders Spec (TO BUILD)</h2>
+<!-- ================================================================== -->
+<!-- ⛔ NEXT AGENT — READ THIS FIRST BEFORE TOUCHING ANYTHING ⛔ -->
+<!-- ================================================================== -->
+<div style="background:#1A0030; color:#fff; border:3px solid #FF2D87; padding:24px; border-radius:16px; margin-bottom:36px;">
+<h2 style="background:#FF2D87; color:white; padding:12px 16px; border-radius:8px; margin-top:0;">⛔ CRITICAL RULES — READ BEFORE WRITING ANY CODE</h2>
+
+<h3 style="color:#FF9FE5;">🔒 LOCKED: /celebrate-soul Page Section Order (DO NOT REORDER)</h3>
+<p style="color:#e2c8ff;">The sections in <code style="background:rgba(255,255,255,0.15); color:#FF9FE5;">CelebratePageNew.jsx</code> must stay in this exact order. Changing this order has been reported as a bug twice. Lock it.</p>
+<pre style="background:rgba(255,255,255,0.08); padding:16px; border-radius:8px; color:#e2c8ff; font-size:13px;">
+/celebrate-soul PAGE ORDER (FROZEN ❄️)
+========================================
+1.  &lt;CelebrateHero&gt;                  — Hero (pet avatar, soul score, Mira quote)
+     └── [Inside max-w-5xl px-4 sm:px-6 lg:px-8 wrapper]
+2.  &lt;CelebrateCategoryStrip&gt;         — Category icons (Birthday Cakes, Toys, etc.)
+3.  &lt;SoulCelebrationPillars&gt;         — "How would Mojo love to celebrate?" 8-pillar grid ← USER CARES ABOUT THIS
+4.  &lt;MiraAskBar&gt;                     — Ask Mira bar
+5.  &lt;MiraBirthdayBox&gt;               — Mira's Birthday Box card ← MUST BE BELOW PILLARS
+6.  &lt;CelebrateConcierge&gt;             — Celebrate Concierge®
+7.  &lt;GuidedCelebrationPaths&gt;         — Guided Celebration Paths
+8.  &lt;CelebrationMemoryWall&gt;          — Celebration Wall
+     └── [End of wrapper]
+9.  &lt;BirthdayBoxBuilder /&gt;           — Event-driven modal (invisible until triggered)
+10. &lt;BirthdayBoxBrowseDrawer /&gt;      — Event-driven drawer (invisible until triggered)
+</pre>
+
+<h3 style="color:#FF9FE5;">🔒 LOCKED: BirthdayBoxBuilder Modal Behaviour</h3>
+<ul style="color:#e2c8ff;">
+  <li><strong>ALWAYS pops up centered</strong> in the viewport — <code style="background:rgba(255,255,255,0.15);">flex items-center justify-center p-4</code></li>
+  <li><strong>NEVER slides from the right</strong> — that's the BrowseDrawer, not the Builder</li>
+  <li><strong>NEVER bottom-sheet / drawer</strong> — it's a dialog/modal, not a panel</li>
+  <li>Animation: scale (0.92 → 1) + opacity — no x or y translate on the outer wrapper</li>
+  <li>Max-width: <code style="background:rgba(255,255,255,0.15);">max-w-lg</code> (512px), centered with <code style="background:rgba(255,255,255,0.15);">rounded-2xl</code> on all sides</li>
+  <li>Opened by custom event: <code style="background:rgba(255,255,255,0.15);">openOccasionBoxBuilder</code></li>
+</ul>
+
+<h3 style="color:#FF9FE5;">🔒 LOCKED: BirthdayBoxBrowseDrawer Behaviour</h3>
+<ul style="color:#e2c8ff;">
+  <li><strong>ALWAYS slides from the RIGHT</strong> — this is the Browse Drawer, not the Builder</li>
+  <li>Width: 480px desktop / 100vw mobile</li>
+  <li>Opened by custom event: <code style="background:rgba(255,255,255,0.15);">openBirthdayBoxBrowse</code></li>
+  <li>Has 5 tabs: Cakes | Toys &amp; Joy | Style | Memory | Wellness</li>
+</ul>
+
+<h3 style="color:#FF9FE5;">🔒 LOCKED: Allergy Logic (SACROSANCT)</h3>
+<ul style="color:#e2c8ff;">
+  <li>ALL allergy checks use <code style="background:rgba(255,255,255,0.15);">get_all_allergies(pet)</code> in <code style="background:rgba(255,255,255,0.15);">birthday_box_routes.py</code></li>
+  <li>NEVER check only <code style="background:rgba(255,255,255,0.15);">pet["allergies"]</code> — it misses fields like <code style="background:rgba(255,255,255,0.15);">allergy1, allergy2, health_data.allergies, doggy_soul_answers.food_allergies</code></li>
+  <li>NO client-side allergy filtering — server decides everything</li>
+  <li>Mojo (pet-mojo-7327ad56) has: chicken + soy — always test with Mojo's account</li>
+</ul>
+
+<h3 style="color:#FF9FE5;">🔒 LOCKED: Concierge Handoff Flow</h3>
+<ul style="color:#e2c8ff;">
+  <li>"Confirm &amp; Build" → <code style="background:rgba(255,255,255,0.15);">POST /api/birthday-box/{petId}/concierge-handoff</code></li>
+  <li>NOT an e-commerce order — it writes to 5 unified collections</li>
+  <li>Returns <code style="background:rgba(255,255,255,0.15);">ticketId</code> (TKT-XXXXXXXX format) shown in Step 3</li>
+  <li>Step 3 shows: green "Sent to Concierge" banner + 6-slot summary + "What happens next"</li>
+</ul>
+
+<h3 style="color:#FF9FE5;">🔒 DO NOT: Common Mistakes From Previous Sessions</h3>
+<table style="background:rgba(255,255,255,0.05); width:100%; border-collapse:collapse;">
+  <tr><th style="background:rgba(255,45,135,0.30); color:white; padding:8px 12px; text-align:left;">❌ DON'T DO</th><th style="background:rgba(34,197,94,0.30); color:white; padding:8px 12px; text-align:left;">✅ DO THIS INSTEAD</th></tr>
+  <tr><td style="color:#fca5a5; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.1);">Reorder sections in CelebratePageNew.jsx</td><td style="color:#86efac; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.1);">Keep order frozen as documented above</td></tr>
+  <tr><td style="color:#fca5a5; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.1);">Make Birthday Box Builder slide from right</td><td style="color:#86efac; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.1);">Use scale animation, always center-aligned</td></tr>
+  <tr><td style="color:#fca5a5; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.1);">Use <code>items-end</code> (bottom-sheet) on the Builder</td><td style="color:#86efac; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.1);">Use <code>items-center justify-center p-4</code></td></tr>
+  <tr><td style="color:#fca5a5; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.1);">Check pet allergies from only one field</td><td style="color:#86efac; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.1);">Always call <code>get_all_allergies(pet)</code></td></tr>
+  <tr><td style="color:#fca5a5; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.1);">Add new features to server.py directly</td><td style="color:#86efac; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.1);">Create new route file in /backend/routes/</td></tr>
+  <tr><td style="color:#fca5a5; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.1);">Auto-select first product in Browse Drawer</td><td style="color:#86efac; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.1);">Show "Swap →" / "Current" / ✓ states explicitly</td></tr>
+  <tr><td style="color:#fca5a5; padding:8px 12px;">Hard-code pet name "Mojo" in toast messages</td><td style="color:#86efac; padding:8px 12px;">Use <code>petName</code> prop/state variable</td></tr>
+</table>
+</div>
+
+<!-- ================================================================== -->
+<!-- ✅ CURRENT STATE — WHAT'S DONE -->
+<!-- ================================================================== -->
+<div style="background:#f0fdf4; border:2px solid #16a34a; padding:20px; border-radius:12px; margin-bottom:30px;">
+<h2 style="background:#16a34a; color:white; padding:10px 16px; border-radius:8px; margin-top:0;">✅ CURRENT WORKING STATE (Feb 2026 — Fully Tested)</h2>
+
+<h3>Birthday Box Feature — 100% Complete &amp; Tested</h3>
+<table>
+  <tr><th>Component / Endpoint</th><th>File</th><th>Status</th></tr>
+  <tr><td>MiraBirthdayBox card</td><td>/components/celebrate/MiraBirthdayBox.jsx</td><td><span class="badge done">DONE ✅</span></td></tr>
+  <tr><td>BirthdayBoxBuilder modal (3-step concierge flow)</td><td>/components/celebrate/BirthdayBoxBuilder.jsx</td><td><span class="badge done">DONE ✅</span></td></tr>
+  <tr><td>BirthdayBoxBrowseDrawer (5-tab swap drawer)</td><td>/components/celebrate/BirthdayBoxBrowseDrawer.jsx</td><td><span class="badge done">DONE ✅</span></td></tr>
+  <tr><td>GET /api/birthday-box/{petId}/preview</td><td>birthday_box_routes.py</td><td><span class="badge done">DONE ✅</span></td></tr>
+  <tr><td>POST /api/birthday-box/{petId}/concierge-handoff</td><td>birthday_box_routes.py</td><td><span class="badge done">DONE ✅</span></td></tr>
+  <tr><td>Allergy fix: get_all_allergies(pet)</td><td>birthday_box_routes.py</td><td><span class="badge done">DONE ✅</span></td></tr>
+  <tr><td>Sonner toast mounted in App.js</td><td>App.js</td><td><span class="badge done">DONE ✅</span></td></tr>
+</table>
+
+<h3>Other Completed Features (earlier sessions)</h3>
+<table>
+  <tr><th>Feature</th><th>Status</th></tr>
+  <tr><td>8-pillar grid (SoulCelebrationPillars) on /celebrate-soul</td><td><span class="badge done">DONE ✅</span></td></tr>
+  <tr><td>PillarSoulModal — pet enrichment from pillar expand</td><td><span class="badge done">DONE ✅</span></td></tr>
+  <tr><td>ProductDetailModal — shop product detail view</td><td><span class="badge done">DONE ✅</span></td></tr>
+  <tr><td>CelebrateCategoryStrip — top category icons</td><td><span class="badge done">DONE ✅</span></td></tr>
+</table>
+</div>
+
+<!-- ================================================================== -->
+<!-- 🚀 NEXT AGENT: WHAT TO BUILD -->
+<!-- ================================================================== -->
+<div style="background:#fff7ed; border:2px solid #ea580c; padding:20px; border-radius:12px; margin-bottom:30px;">
+<h2 style="background:#ea580c; color:white; padding:10px 16px; border-radius:8px; margin-top:0;">🚀 NEXT AGENT: WHAT TO BUILD (Priority Order)</h2>
+
+<h3>P0 — Service Desk Birthday Box Orders Tab (Phase 1 MVP)</h3>
+<p><strong>This is the immediate priority.</strong> The birthday box fulfilment loop is open — orders reach the DB but the Concierge team has no UI to action them.</p>
+<ul>
+  <li>Add a <strong>"🎂 Birthday Box Orders"</strong> tab inside the existing Service Desk admin view</li>
+  <li>Phase 1 = read-only: order list (left) + 6-slot manifest detail (center)</li>
+  <li>Data source: <code>db.birthday_box_orders</code> collection (status=pending_concierge)</li>
+  <li>Full spec: See "📋 SERVICE DESK — Birthday Box Orders Spec" section below</li>
+  <li>Test account: <code>aditya / lola4304</code> (admin)</li>
+</ul>
+
+<h3>P1 — Browse Drawer Swap Wire-through</h3>
+<p>When user swaps items in the Browse Drawer and clicks "Build {petName}'s Box", the swapped slots should replace Mira's picks in the BirthdayBoxBuilder modal's Step 1 view and in the concierge-handoff payload.</p>
+
+<h3>P1 — Love &amp; Memory Drawer</h3>
+<p>Recurring user request. <strong>BLOCKED — needs spec from user (Dipali) before building.</strong> Ask before starting.</p>
+
+<h3>P3 — Known Bugs (low priority)</h3>
+<ul>
+  <li>Razorpay checkout failure (reported, not yet debugged)</li>
+  <li>Mobile pet dashboard layout scrambled</li>
+</ul>
+</div>
 
 <h3>Overview</h3>
 <p>A dedicated <strong>"🎂 Birthday Box Orders"</strong> tab in the Service Desk (Concierge team access only). Closes the fulfilment loop — every order is tracked from confirmation through delivery. This is <strong>Phase 1 priority</strong> for the next dev session.</p>
@@ -149,12 +274,13 @@
 </table>
 <p><strong>Ticket format:</strong> <code>TKT-{8 hex chars}</code> — shown to user in Step 3 for reference</p>
 
-<h3>Mobile Responsiveness</h3>
+<h3>Modal Responsiveness (Updated Session 14)</h3>
 <ul>
-  <li>Modal anchors to bottom on mobile (bottom sheet), centered on desktop</li>
-  <li>Drag handle shown on mobile</li>
+  <li><strong>Always centered pop-up</strong> — <code>flex items-center justify-center p-4</code> on ALL screen sizes</li>
+  <li><strong>NO bottom-sheet</strong> — previous bottom-sheet behaviour was removed per user request</li>
   <li>Step 3 two-column grid → single column on mobile (<code>sm:grid-cols-2</code>)</li>
-  <li>Max height 92vh, scrollable</li>
+  <li>Max height 88vh, scrollable, <code>max-w-lg</code> (512px), <code>rounded-2xl</code></li>
+  <li>Mira widget (bottom-right) stays visible — modal does NOT cover it</li>
 </ul>
 
 <h3>Birthday Box Browse Drawer — Spec Compliant</h3>
@@ -577,6 +703,59 @@ CelebratePageNew.jsx
   <tr><td>Scrambled mobile pet dashboard</td><td>P3</td><td>Layout bug on small screens</td></tr>
   <tr><td>Soul Score bouncing</td><td>P2 (pending user verification)</td><td>Constant glow implemented — awaiting confirmation</td></tr>
 </table>
+</div>
+
+<!-- ================================================================== -->
+<!-- 🔑 CREDENTIALS & TEST DATA -->
+<!-- ================================================================== -->
+<div style="background:#faf5ff; border:2px solid #7c3aed; padding:20px; border-radius:12px; margin-bottom:30px;">
+<h2 style="background:#7c3aed; color:white; padding:10px 16px; border-radius:8px; margin-top:0;">🔑 Credentials &amp; Test Data</h2>
+<table>
+  <tr><th>Account</th><th>Email</th><th>Password</th><th>Use For</th></tr>
+  <tr><td>Pet Parent (main test)</td><td>dipali@clubconcierge.in</td><td>test123</td><td>Birthday Box flow, celebrate page, pet Mojo</td></tr>
+  <tr><td>Admin / Concierge</td><td>aditya</td><td>lola4304</td><td>Service Desk, admin views, ticket management</td></tr>
+</table>
+<h3>Key Test Pets</h3>
+<table>
+  <tr><th>Pet</th><th>ID</th><th>Allergies</th><th>Notes</th></tr>
+  <tr><td>Mojo</td><td>pet-mojo-7327ad56</td><td>chicken, soy</td><td>Primary test pet — use for allergy flow testing</td></tr>
+  <tr><td>Mystique</td><td>pet-mystique-7327ad57</td><td>None known</td><td>Test non-allergic flow</td></tr>
+</table>
+<h3>App URL</h3>
+<p><code>https://mira-gift-generator.preview.emergentagent.com</code></p>
+</div>
+
+<!-- ================================================================== -->
+<!-- 🏗️ ARCHITECTURE REFERENCE -->
+<!-- ================================================================== -->
+<div style="background:#f8fafc; border:2px solid #64748b; padding:20px; border-radius:12px; margin-bottom:30px;">
+<h2 style="background:#64748b; color:white; padding:10px 16px; border-radius:8px; margin-top:0;">🏗️ Architecture Reference</h2>
+<h3>Custom Event Bus (Birthday Box)</h3>
+<table>
+  <tr><th>Event Name</th><th>Fired By</th><th>Listened By</th><th>Detail Payload</th></tr>
+  <tr><td><code>openOccasionBoxBuilder</code></td><td>MiraBirthdayBox "Build" button → CelebratePageNew.handleBuildBox</td><td>BirthdayBoxBuilder.jsx</td><td><code>{preset, petName, petId, userEmail, userName}</code></td></tr>
+  <tr><td><code>openBirthdayBoxBrowse</code></td><td>MiraBirthdayBox "Browse" button → CelebratePageNew.handleOpenBrowseDrawer</td><td>BirthdayBoxBrowseDrawer.jsx</td><td><code>{boxPreview, petName}</code></td></tr>
+</table>
+<h3>Key DB Collections</h3>
+<table>
+  <tr><th>Collection</th><th>Purpose</th></tr>
+  <tr><td>birthday_box_orders</td><td>All birthday box orders — status starts as pending_concierge</td></tr>
+  <tr><td>service_desk_tickets</td><td>Admin service desk — birthday box creates tickets here</td></tr>
+  <tr><td>admin_notifications</td><td>Admin notification bell</td></tr>
+  <tr><td>channel_intakes</td><td>Unified inbox for all inbound requests</td></tr>
+  <tr><td>member_notifications</td><td>Pet parent notification bell</td></tr>
+  <tr><td>pillar_requests</td><td>Per-pillar request tracking</td></tr>
+</table>
+<h3>Backend File Structure</h3>
+<pre>
+/app/backend/
+├── server.py                  — Main FastAPI app (large, avoid adding here)
+├── birthday_box_routes.py     — Birthday Box API (preview + concierge-handoff)
+├── concierge_routes.py        — Concierge service desk routes
+├── celebrate_routes.py        — Celebrate pillar routes
+└── ...other route files
+</pre>
+<p style="color:#ef4444; font-weight:600;">⚠️ server.py is already very large. For any new feature, create a new file in /backend/ (like birthday_box_routes.py) and register it in server.py. Do NOT add more code to server.py directly.</p>
 </div>
 
 </body>
