@@ -36,20 +36,24 @@ const SLOT_LABELS = ['Hero', 'Joy', 'Style', 'Memory', 'Health', 'Surprise'];
 /* ─────────────────────────────────────────────────────────────────
    PRODUCT CARD (horizontal, drawer variant)
    ───────────────────────────────────────────────────────────────── */
-const ProductCard = ({ product, isMiraPick, slotLabel, isSelected, onSelect }) => {
+const ProductCard = ({ product, isMiraPick, isCurrentSwap, onSelect }) => {
   const image = product.image_url || product.image || product.images?.[0];
   const price = product.price || 0;
 
   return (
     <div
-      className="flex items-center gap-3 rounded-xl p-3 transition-all cursor-pointer"
+      className="flex items-center gap-3 rounded-xl p-3 transition-all cursor-pointer active:scale-[0.98]"
       style={{
-        background: isSelected
+        background: isCurrentSwap
           ? 'rgba(196,77,255,0.18)'
-          : 'rgba(255,255,255,0.05)',
-        border: isSelected
-          ? '1.5px solid rgba(196,77,255,0.50)'
-          : '1px solid rgba(255,255,255,0.10)',
+          : isMiraPick
+          ? 'rgba(255,255,255,0.08)'
+          : 'rgba(255,255,255,0.04)',
+        border: isCurrentSwap
+          ? '1.5px solid rgba(196,77,255,0.55)'
+          : isMiraPick
+          ? '1px solid rgba(255,161,56,0.25)'
+          : '1px solid rgba(255,255,255,0.09)',
       }}
       onClick={onSelect}
       data-testid={`browse-product-${product.id || product._id}`}
@@ -63,7 +67,7 @@ const ProductCard = ({ product, isMiraPick, slotLabel, isSelected, onSelect }) =
           <img src={image} alt={product.name} className="w-full h-full object-contain" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-2xl">
-            {isMiraPick ? '🎂' : '🎁'}
+            {isMiraPick ? '✦' : '🎁'}
           </div>
         )}
       </div>
@@ -76,15 +80,7 @@ const ProductCard = ({ product, isMiraPick, slotLabel, isSelected, onSelect }) =
               className="text-xs px-1.5 py-0.5 rounded-full font-semibold"
               style={{ background: 'rgba(255,161,56,0.20)', color: '#fbbf24', fontSize: '10px' }}
             >
-              Mira's pick
-            </span>
-          )}
-          {slotLabel && (
-            <span
-              className="text-xs px-1.5 py-0.5 rounded-full"
-              style={{ background: 'rgba(196,77,255,0.18)', color: '#E0AAFF', fontSize: '10px' }}
-            >
-              {slotLabel}
+              ✦ Mira's pick
             </span>
           )}
         </div>
@@ -96,16 +92,23 @@ const ProductCard = ({ product, isMiraPick, slotLabel, isSelected, onSelect }) =
         )}
       </div>
 
-      {/* Select state */}
-      <div
-        className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all"
-        style={{
-          background: isSelected ? 'linear-gradient(135deg, #FF2D87, #C44DFF)' : 'rgba(255,255,255,0.10)',
-          border: isSelected ? 'none' : '1.5px solid rgba(255,255,255,0.25)',
-        }}
-      >
-        {isSelected && <span className="text-white text-xs font-bold">✓</span>}
-      </div>
+      {/* Action state */}
+      {isMiraPick ? (
+        <span className="flex-shrink-0 text-xs px-2 py-1 rounded-full"
+          style={{ background: 'rgba(255,161,56,0.15)', color: '#fbbf24' }}>
+          Current
+        </span>
+      ) : isCurrentSwap ? (
+        <div className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center"
+          style={{ background: 'linear-gradient(135deg, #FF2D87, #C44DFF)' }}>
+          <span className="text-white text-xs font-bold">✓</span>
+        </div>
+      ) : (
+        <span className="flex-shrink-0 text-xs px-2 py-1 rounded-lg font-semibold transition-all hover:bg-purple-600/40"
+          style={{ background: 'rgba(196,77,255,0.18)', color: '#E0AAFF', whiteSpace: 'nowrap' }}>
+          Swap →
+        </span>
+      )}
     </div>
   );
 };
@@ -233,24 +236,32 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies }) => {
           </div>
         ) : (
           filteredProducts.map((product, i) => {
-            const isMiraPick = i === 0 && !currentSwap;
-            const isSelected = selectedProductId
-              ? (product.id === selectedProductId || product._id === selectedProductId)
-              : i === 0;
+            const productId = product.id || product._id;
+            const swappedId = currentSwap?.newProduct?.id || currentSwap?.newProduct?._id;
+            const isMiraPick = i === 0; // First product in list is Mira's pick
+            const isCurrentSwap = !!swappedId && (productId === swappedId);
 
             return (
               <ProductCard
-                key={product.id || product._id || i}
+                key={productId || i}
                 product={product}
-                isMiraPick={isMiraPick}
-                slotLabel={`Slot ${tab.slotNumber}: ${SLOT_LABELS[tab.slotNumber - 1] || ''}`}
-                isSelected={isSelected && !currentSwap}
+                isMiraPick={isMiraPick && !currentSwap}
+                isCurrentSwap={isCurrentSwap}
                 onSelect={() => {
-                  if (i === 0 && !currentSwap) return; // already selected — Mira's pick
-                  const originalItem = miraPickSlot;
+                  if (isMiraPick && !currentSwap) {
+                    // Clicking Mira's pick when no swap — scroll to other options
+                    productGridRef.current?.children?.[1]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    return;
+                  }
+                  // If clicking the already-swapped item, undo
+                  if (isCurrentSwap) {
+                    onSwap(tab.id, null); // null = undo
+                    return;
+                  }
+                  // Swap with this product
                   onSwap(tab.id, {
                     slotNumber: tab.slotNumber,
-                    originalItem,
+                    originalItem: miraPickSlot,
                     newProduct: product,
                   });
                 }}
@@ -367,6 +378,17 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
   const handleClose = useCallback(() => setIsOpen(false), []);
 
   const handleSwap = useCallback((tabId, swapData) => {
+    if (!swapData) {
+      // null = undo swap
+      setSwaps(prev => {
+        const next = { ...prev };
+        delete next[tabId];
+        return next;
+      });
+      const tab = TABS.find(t => t.id === tabId);
+      toast.info(`Mira's pick restored for ${tab?.label || tabId}`, { duration: 2000 });
+      return;
+    }
     setSwaps(prev => ({ ...prev, [tabId]: swapData }));
     toast.success(`Swapped for ${swapData.newProduct?.name}`, { duration: 2000 });
   }, []);

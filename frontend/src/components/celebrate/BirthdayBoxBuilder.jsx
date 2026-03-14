@@ -260,18 +260,54 @@ const StepConciergeHandoff = ({ petName, ticketId, boxData, onClose }) => {
     ...(boxData?.hiddenSlots || []),
   ];
 
+  // Also fire toast (works when browser renders it above modal)
+  useEffect(() => {
+    toast.success(`Sent to Concierge!`, {
+      duration: 8000,
+      description: `${petName}'s Birthday Box confirmed — your Concierge will be in touch within 24 hours.`,
+    });
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
     >
+      {/* ── In-modal confirmation banner (always visible) ── */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="flex items-center gap-3 rounded-xl px-4 py-3 mb-4"
+        style={{
+          background: 'linear-gradient(135deg, rgba(34,197,94,0.18), rgba(21,128,61,0.12))',
+          border: '1.5px solid rgba(34,197,94,0.45)',
+          boxShadow: '0 0 20px rgba(34,197,94,0.15)',
+        }}
+      >
+        <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+          style={{ background: 'rgba(34,197,94,0.25)' }}>
+          <Check className="w-4 h-4" style={{ color: '#86efac' }} />
+        </div>
+        <div>
+          <p className="text-sm font-bold" style={{ color: '#86efac' }}>Sent to Concierge</p>
+          <p className="text-xs" style={{ color: 'rgba(134,239,172,0.75)' }}>
+            We'll be in touch within 24 hours
+          </p>
+        </div>
+        {ticketId && (
+          <span className="ml-auto text-xs font-mono px-2 py-0.5 rounded-full flex-shrink-0"
+            style={{ background: 'rgba(34,197,94,0.18)', color: '#86efac' }}>
+            {ticketId}
+          </span>
+        )}
+      </motion.div>
+
       {/* Hero */}
-      <div className="text-center mb-5">
-        <div
-          className="w-14 h-14 rounded-full flex items-center justify-center text-2xl mx-auto mb-3"
-          style={{ background: 'linear-gradient(135deg, #FF2D87, #C44DFF)' }}
-        >
+      <div className="text-center mb-4">
+        <div className="w-14 h-14 rounded-full flex items-center justify-center text-2xl mx-auto mb-3"
+          style={{ background: 'linear-gradient(135deg, #FF2D87, #C44DFF)' }}>
           🎉
         </div>
         <h3 className="text-lg font-bold text-white mb-1">
@@ -280,12 +316,6 @@ const StepConciergeHandoff = ({ petName, ticketId, boxData, onClose }) => {
         <p className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>
           Your Concierge has everything they need to build it.
         </p>
-        {ticketId && (
-          <div className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full"
-            style={{ background: 'rgba(196,77,255,0.18)', border: '1px solid rgba(196,77,255,0.30)' }}>
-            <span className="text-xs font-bold" style={{ color: '#E0AAFF' }}>{ticketId}</span>
-          </div>
-        )}
       </div>
 
       {/* Two-column: slots + what happens next */}
@@ -326,7 +356,7 @@ const StepConciergeHandoff = ({ petName, ticketId, boxData, onClose }) => {
 
           <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(196,77,255,0.20)' }}>
             <p className="text-xs italic" style={{ color: 'rgba(255,255,255,0.50)' }}>
-              This is not an e-commerce order. Your Birthday Box is assembled, personalised, and delivered as a single concierge service.
+              This is not an e-commerce order. Assembled, personalised, and delivered as a single concierge service.
             </p>
           </div>
         </div>
@@ -414,7 +444,7 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
       if (data.success) {
         setTicketId(data.ticketId);
         setStep(3);
-        toast.success(`${petName}'s Birthday Box sent to Concierge!`, { duration: 4000 });
+        // Toast fires in StepConciergeHandoff useEffect (above modal overlay)
       } else if (data.error === 'allergy_confirmation_required') {
         setStep(2);
         toast.warning('Please confirm allergy safety first.');
