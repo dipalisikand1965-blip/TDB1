@@ -151,9 +151,17 @@ const FLAVOR_FEAST_ITEMS = {
   ],
 };
 
+/* Safely convert a value that might be a string, array, or undefined to a lowercase string array */
+const toStrArray = (val) => {
+  if (!val) return [];
+  if (Array.isArray(val)) return val.map(v => String(v).toLowerCase());
+  if (typeof val === 'string') return val.split(/[,;]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
+  return [];
+};
+
 const deriveFeastItems = (pet) => {
-  const favTreats = (pet?.doggy_soul_answers?.favorite_treats || []).map(t => t.toLowerCase());
-  const allergies = (pet?.doggy_soul_answers?.food_allergies || pet?.allergies || []).map(a => a.toLowerCase());
+  const favTreats = toStrArray(pet?.doggy_soul_answers?.favorite_treats);
+  const allergies = toStrArray(pet?.doggy_soul_answers?.food_allergies || pet?.allergies);
   const detectedFlavor = Object.keys(FLAVOR_FEAST_ITEMS).find(
     f => f !== 'default' && favTreats.some(t => t.includes(f)) && !allergies.some(a => f.includes(a))
   );
