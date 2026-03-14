@@ -314,10 +314,11 @@ const PillarCard = ({ pillar, pet, isExpanded, onToggle, onTellMiraMore }) => {
 
         {/* Badge */}
         <span
-          className="rounded-full font-bold"
+          className="rounded-full font-bold whitespace-nowrap overflow-hidden text-ellipsis block"
           style={{
             fontSize: 10, fontWeight: 700,
             padding: '2px 8px',
+            maxWidth: '100%',
             ...badgeStyle[state]
           }}
         >

@@ -1,0 +1,47 @@
+{
+  "summary": "Re-test of 5 mobile audit fixes at 360px and 375px viewports. All fixes from iteration_121 have been verified as working. Tested: trait chip wrapping, photo size, soul ring compact size, pet selector fade hint, category strip labels, Social Butterfly badge, CelebrateHero text size, horizontal overflow. All 10 test checks passed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "SoulCelebrationPillars - Social & Friends card (375px)",
+        "issues": ["'The Social Butte...' shown with ellipsis truncation inside the card — this is ACCEPTABLE behavior (single line via whitespace-nowrap, truncated at card boundary via text-ellipsis). Not a bug, just noting for awareness."]
+      }
+    ]
+  },
+  "PASSED_tests": [
+    "TEST 1 (360px): Trait chips 'friendly', 'Very friendly with strangers', 'Light (15-30 mins) energy' — ALL on ONE horizontal line (all top=434). overflow-x-auto + whitespace-nowrap + shrink-0 working correctly",
+    "TEST 2 (375px): Trait chips — ALL on ONE line (top=434). Photo element is 64x64px (w-16 mobile size)",
+    "TEST 3 (360px): Pet selector right-edge fade gradient — div present and visible at x=312, w=32px (pets.length > 2 triggers condition, 9 pets)",
+    "TEST 4 (375px): CelebrateCategoryStrip labels — fontSize=11px (FIXED from 10px), maxWidth=80px (FIXED from 72px). Confirmed on Birthday Cakes, Breed Cakes, Pupcakes & Dognuts, Desi Treats, Frozen Treats",
+    "TEST 5 (375px): Mira widget at /celebrate-soul — opens correctly, 'Plan Mojo\\'s birthday →' chip found and accessible",
+    "TEST 6 (360px): No horizontal overflow on /pet-home — viewport=360, docScrollWidth=360 (exact match)",
+    "TEST 7 (768px iPad): Soul ring sm:block visible at 70x70px. Desktop soul ring correctly renders at 70px size. Mobile ring (sm:hidden) display=none at 768px",
+    "TEST 8 (375px): CelebrateHero '♥ Mira knows Mojo' text — fontSize=12px, className='text-[12px] block mt-0.5' (FIXED from 11px)",
+    "TEST 9 (375px): Social Butterfly badge — whitespace-nowrap applied, height=20px (single line). text-ellipsis handles overflow within card width",
+    "TEST 10 (360px): Photo fallback div = 64x64px (w-16). Compact soul ring = 48x48px (sm:hidden visible). Desktop ring display=none at 360px"
+  ],
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Minor: 'Each child in a list should have a unique key prop' React warning in PetHomePage render — non-breaking but should be fixed for cleanliness"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend only)",
+    "frontend": "100% — all 10 checks passed"
+  },
+  "test_credentials": {
+    "user": "dipali@clubconcierge.in / test123",
+    "pets": "9 pets: Mojo (100%), Mystique (94%), Bruno (81%), Buddy (10%), Lola (94%), Meister (87%), Luna (88%), TestScoring, TestScoringWeight"
+  },
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All 5 fixes from iteration_121 verified passing at 360px and 375px. Key fix details: (1) Trait chips use overflow-x-auto + whitespace-nowrap + shrink-0 — single scrollable row. (2) Photo is w-16/sm:w-24 — 64px on mobile. (3) Soul ring compact 48px on mobile via sm:hidden/hidden sm:block pattern. (4) Pet selector fade gradient (bg-gradient-to-l from-slate-900) shows when pets.length > 2. (5) CelebrateCategoryStrip fontSize=11px, maxWidth=80px. (6) CelebrateHero '♥ Mira knows' text-[12px]. (7) Social Butterfly badge whitespace-nowrap. Login: dipali@clubconcierge.in / test123."
+}
