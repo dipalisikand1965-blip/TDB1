@@ -63,12 +63,14 @@
   <li>Opened by custom event: <code style="background:rgba(255,255,255,0.15);">openOccasionBoxBuilder</code></li>
 </ul>
 
-<h3 style="color:#FF9FE5;">🔒 LOCKED: BirthdayBoxBrowseDrawer Behaviour</h3>
+<h3 style="color:#FF9FE5;">🔒 LOCKED: BirthdayBoxBrowseDrawer Behaviour (Updated — Centered Modal, Not Drawer)</h3>
 <ul style="color:#e2c8ff;">
-  <li><strong>ALWAYS slides from the RIGHT</strong> — this is the Browse Drawer, not the Builder</li>
-  <li>Width: 480px desktop / 100vw mobile</li>
+  <li><strong>CENTERED modal</strong> — same as Builder. Was a right-side drawer, converted to centered overlay per user request.</li>
+  <li>Width: <code>max-w-560px</code>, max-height 88vh, <code>border-radius: 16px</code></li>
+  <li>Animation: scale 0.92 → 1 + opacity (pure inline styles — no Tailwind on wrapper)</li>
   <li>Opened by custom event: <code style="background:rgba(255,255,255,0.15);">openBirthdayBoxBrowse</code></li>
   <li>Has 5 tabs: Cakes | Toys &amp; Joy | Style | Memory | Wellness</li>
+  <li><strong>DO NOT convert back to a side drawer</strong> — user explicitly asked for centered</li>
 </ul>
 
 <h3 style="color:#FF9FE5;">🔒 LOCKED: Allergy Logic (SACROSANCT)</h3>
@@ -238,7 +240,8 @@
 <h3>Fixes Applied</h3>
 <table>
   <tr><th>Issue</th><th>Fix</th><th>File</th></tr>
-  <tr><td>Birthday box card off-center on wide screens</td><td>Added <code>px-4 sm:px-6 lg:px-8</code> to main content wrapper</td><td>CelebratePageNew.jsx</td></tr>
+  <tr><td>BirthdayBoxBrowseDrawer behavior</td><td>Converted from right-side drawer to <strong>centered modal</strong> (same as Builder). Scale + opacity animation. Max-w-560px.</td></tr>
+  <tr><td>BirthdayBoxBuilder behavior</td><td><strong>Always centered</strong> pop-up. Pure inline styles (no Tailwind classes on the wrapper — avoids Framer Motion CSS conflicts). Scale animation only.</td></tr>
   <tr><td>"Sent to Concierge" toast not visible</td><td>Toast fired in <code>StepConciergeHandoff</code> <code>useEffect</code> mount — appears above modal overlay</td><td>BirthdayBoxBuilder.jsx</td></tr>
   <tr><td>Browse Drawer: confusing selection state (first product always showed ✓)</td><td>Replaced auto-selection with explicit "Swap →" / "Current" / ✓ states. Clicking current swap undoes it.</td><td>BirthdayBoxBrowseDrawer.jsx</td></tr>
 </table>
