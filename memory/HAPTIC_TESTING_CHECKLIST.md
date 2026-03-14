@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://mobile-drawer-fix.preview.emergentagent.com/mira-demo**
+**https://celebrate-hotfix.preview.emergentagent.com/mira-demo**
 
 ---
 

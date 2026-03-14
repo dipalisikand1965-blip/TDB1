@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://mobile-drawer-fix.preview.emergentagent.com
+https://celebrate-hotfix.preview.emergentagent.com
 ```
 
 ---

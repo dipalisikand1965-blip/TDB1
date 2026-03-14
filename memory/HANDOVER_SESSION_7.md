@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://mobile-drawer-fix.preview.emergentagent.com
+https://celebrate-hotfix.preview.emergentagent.com
 
 ---
 

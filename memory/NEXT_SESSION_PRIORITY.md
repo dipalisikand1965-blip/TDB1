@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://mobile-drawer-fix.preview.emergentagent.com
+**Preview URL:** https://celebrate-hotfix.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
