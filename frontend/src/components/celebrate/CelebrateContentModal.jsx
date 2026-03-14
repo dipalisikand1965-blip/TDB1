@@ -135,7 +135,7 @@ const extractSoulTraits = (pet) => {
 // `cakes` = actual TDB bakery cakes (111 products)
 // `celebration` = celebration kits/packages (NOT cakes — don't use for Birthday Cakes)
 const CATEGORY_API = {
-  'birthday-cakes':  [{ url: '/api/products?category=cakes&limit=60', key: 'products' }],
+  'birthday-cakes':  [{ url: '/api/products?category=cakes&limit=80', key: 'products' }],
   'breed-cakes':     [{ url: '/api/products?category=breed-cakes&limit=60', key: 'products' }],
   'pupcakes':        [
     { url: '/api/products?category=dognuts&limit=40', key: 'products' },
