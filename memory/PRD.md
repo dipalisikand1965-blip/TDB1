@@ -1171,24 +1171,27 @@ const BREED_SLUG_MAP = {
 
 ---
 
-## 🔄 SESSION 18 — Celebration Wall (Mar 2026)
+## ✅ SESSION 18 COMPLETE — Celebration Wall (Mar 2026)
 
-**Source:** CelebrationWall_MASTER.docx | **Route:** bottom of /celebrate-soul
+**Source:** CelebrationWall_MASTER.docx | **Tested:** all major flows working
 
-### Files:
+### Files built:
 | File | Status |
 |---|---|
-| REWRITE `CelebrationMemoryWall.jsx` | TODO |
-| CREATE `WallCard.jsx` | TODO |
-| CREATE `WallUploadCard.jsx` | TODO |
-| CREATE `WallUploadModal.jsx` | TODO |
-| CREATE `WallLightbox.jsx` | TODO |
-| MODIFY `celebration_wall_routes.py` | TODO |
+| REWRITE `CelebrationMemoryWall.jsx` | ✅ DONE |
+| CREATE `WallCard.jsx` | ✅ DONE |
+| CREATE `WallUploadCard.jsx` | ✅ DONE |
+| CREATE `WallUploadModal.jsx` | ✅ DONE |
+| CREATE `WallLightbox.jsx` | ✅ DONE |
+| MODIFY `celebration_wall_routes.py` | ✅ DONE |
 
-### Key rules (FINAL):
-- Real photos (Euro, Simba, Zippy) NEVER replaced with stock
-- Timestamp: NEVER "Recently" — use Today / N days ago / Last week / DD Mon
-- Subtitle: 4 states per login/submission status (see complete-documentation.html)
-- Mira comment: only on own photo, per celebration type  
-- Upload card always first · Own submission always position 2
-- Lightbox on card click · Like: heart fills pink with pop animation
+### What works (LOCKED — do not change):
+- Real photos Euro/Simba/Zippy NEVER replaced with stock
+- Timestamps: NEVER "Recently" — Today / N days ago / Last week / DD Mon
+- Upload card always first · 3-step modal (photo → caption+tag → confirmation)
+- Frosted glass celebration type tags · Heart pop animation · Lightbox with prev/next
+- Mira comment on own photos · 4-state subtitle (no pet/with pet/pending/approved)
+- Backend: UGC upload → pending_review · Like toggle · Admin moderation (approve/reject)
+- Default photos have stable IDs (default-1 through default-8)
+
+---
