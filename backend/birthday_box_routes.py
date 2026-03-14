@@ -4,7 +4,10 @@ Mira's Birthday Box API — 6-slot curated celebration box
 """
 
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+from typing import Optional, List, Dict, Any
 import uuid
+import secrets
 from datetime import datetime, timezone
 
 birthday_box_router = APIRouter(prefix="/api", tags=["Birthday Box"])
@@ -359,3 +362,210 @@ async def build_birthday_box(pet_id: str, payload: dict):
     await db.birthday_box_orders.insert_one(box_order)
     
     return {"success": True, "orderId": box_order["id"], "message": f"Birthday box for {pet.get('name')} is ready!"}
+
+
+
+# ==================== CONCIERGE HANDOFF ====================
+
+class BirthdayBoxConciergePayload(BaseModel):
+    slots: List[Dict[str, Any]] = []
+    allergyConfirmed: bool = False
+    userEmail: Optional[str] = None
+    userName: Optional[str] = None
+
+
+@birthday_box_router.post("/birthday-box/{pet_id}/concierge-handoff")
+async def birthday_box_concierge_handoff(pet_id: str, payload: BirthdayBoxConciergePayload):
+    """
+    Send a confirmed Birthday Box to the Concierge.
+    This is the final step in the BirthdayBoxBuilder modal.
+    
+    Unified Flow:
+      1. service_desk_tickets (admin inbox)
+      2. admin_notifications (notification bell)
+      3. pillar_requests (pillar-specific tracking)
+      4. channel_intakes (unified inbox)
+      5. member_notifications (user-facing notification)
+    """
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+
+    all_allergies = get_all_allergies(pet)
+    if all_allergies and not payload.allergyConfirmed:
+        return {
+            "success": False,
+            "error": "allergy_confirmation_required",
+            "message": f"Please confirm allergy safety for {pet.get('name')}."
+        }
+
+    pet_name = pet.get("name", "Pet")
+    user_email = payload.userEmail or ""
+    user_name = payload.userName or "Pet Parent"
+    now = get_utc_timestamp()
+
+    # IDs following the unified flow convention
+    request_id = f"BBOX-{secrets.token_hex(4).upper()}"
+    ticket_id = f"TKT-{secrets.token_hex(4).upper()}"
+    notification_id = f"NOTIF-{secrets.token_hex(4).upper()}"
+    inbox_id = f"INBOX-{secrets.token_hex(4).upper()}"
+
+    # Build a rich slot summary for the concierge team
+    slot_lines = []
+    for s in payload.slots:
+        slot_num = s.get("slotNumber", "?")
+        slot_name = s.get("slotName", "Item")
+        item = s.get("itemName") or s.get("chipLabel", "Item")
+        safe = " [ALLERGY-SAFE]" if s.get("isAllergySafe") else ""
+        surprise = " [SURPRISE — do not reveal]" if s.get("hiddenUntilDelivery") else ""
+        slot_lines.append(f"  Slot {slot_num} ({slot_name}): {item}{safe}{surprise}")
+
+    allergy_note = f"\n\nALLERGY ALERT: {pet_name} is allergic to: {', '.join(all_allergies).upper()}\nAllergy safety confirmed by customer." if all_allergies else ""
+
+    message = f"""🎂 BIRTHDAY BOX ORDER — {pet_name.upper()}
+
+{chr(10).join(slot_lines)}
+{allergy_note}
+
+Action required:
+• Confirm {pet_name}'s name embroidery on the bandana (Slot 3)
+• Confirm birthday cake message (Slot 1)
+• Get delivery address and preferred delivery date from customer
+• Assemble and dispatch as single celebration package
+
+Customer: {user_name}
+Email: {user_email or 'See account'}
+Source: BirthdayBoxBuilder (celebrate-soul page)
+"""
+
+    # STEP 1: Service Desk Ticket
+    ticket_doc = {
+        "ticket_id": ticket_id,
+        "id": ticket_id,
+        "request_id": request_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
+        "type": "birthday_box_order",
+        "category": "celebrate",
+        "sub_category": "birthday_box",
+        "pillar": "celebrate",
+        "subject": f"Birthday Box Order — {pet_name}",
+        "description": message,
+        "original_request": message,
+        "status": "new",
+        "priority": 2,
+        "urgency": "high",
+        "channel": "web",
+        "source": "birthday_box_builder",
+        "pet_name": pet_name,
+        "pet_id": pet_id,
+        "member": {"name": user_name, "email": user_email},
+        "slots": payload.slots,
+        "allergies": all_allergies,
+        "allergy_confirmed": payload.allergyConfirmed,
+        "tags": ["celebrate", "birthday_box", "concierge", "unified-flow"],
+        "unified_flow_processed": True,
+        "assigned_to": None,
+        "created_at": now,
+        "updated_at": now,
+        "audit_trail": [{"action": "created", "timestamp": now, "performed_by": "system", "details": "Birthday Box confirmed via BirthdayBoxBuilder modal"}]
+    }
+    await db.service_desk_tickets.insert_one({k: v for k, v in ticket_doc.items() if k != "_id"})
+    await db.tickets.insert_one({k: v for k, v in ticket_doc.items() if k != "_id"})
+
+    # STEP 2: Admin Notification
+    await db.admin_notifications.insert_one({
+        "id": notification_id,
+        "type": "birthday_box_order",
+        "pillar": "celebrate",
+        "title": f"🎂 Birthday Box Order — {pet_name}",
+        "message": f"{user_name} confirmed a {len(payload.slots)}-slot birthday box for {pet_name}. Allergy confirmed: {payload.allergyConfirmed}",
+        "read": False,
+        "status": "unread",
+        "urgency": "high",
+        "ticket_id": ticket_id,
+        "request_id": request_id,
+        "pet_name": pet_name,
+        "customer": {"name": user_name, "email": user_email},
+        "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
+        "created_at": now
+    })
+
+    # STEP 3: Pillar Request
+    await db.pillar_requests.insert_one({
+        "id": f"PR-{secrets.token_hex(4).upper()}",
+        "ticket_id": ticket_id,
+        "request_id": request_id,
+        "pillar": "celebrate",
+        "type": "birthday_box",
+        "pet_name": pet_name,
+        "pet_id": pet_id,
+        "slots_count": len(payload.slots),
+        "status": "pending",
+        "source": "birthday_box_builder",
+        "created_at": now
+    })
+
+    # STEP 4: Channel Intake (unified inbox)
+    await db.channel_intakes.insert_one({
+        "id": inbox_id,
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "channel": "web",
+        "request_type": "birthday_box",
+        "pillar": "celebrate",
+        "status": "new",
+        "urgency": "high",
+        "customer_name": user_name,
+        "customer_email": user_email,
+        "member": {"name": user_name, "email": user_email},
+        "pet": {"name": pet_name, "id": pet_id},
+        "preview": f"Birthday Box — {pet_name} ({len(payload.slots)} slots)",
+        "message": message,
+        "tags": ["celebrate", "birthday_box"],
+        "unified_flow_processed": True,
+        "created_at": now,
+        "updated_at": now
+    })
+
+    # STEP 5: Member Notification (visible to user)
+    if user_email:
+        await db.member_notifications.insert_one({
+            "id": f"MNOTIF-{secrets.token_hex(4).upper()}",
+            "type": "birthday_box_confirmed",
+            "title": f"Birthday Box Confirmed for {pet_name}!",
+            "message": f"Your Concierge has everything they need to build {pet_name}'s birthday box. We'll be in touch within 24 hours.",
+            "user_email": user_email.lower(),
+            "ticket_id": ticket_id,
+            "request_id": request_id,
+            "pet_name": pet_name,
+            "pillar": "celebrate",
+            "read": False,
+            "created_at": now,
+            "data": {
+                "thread_url": f"/mira-demo?tab=services&thread={ticket_id}",
+                "slots_count": len(payload.slots)
+            }
+        })
+
+    # Save a record to birthday_box_orders for our own tracking
+    await db.birthday_box_orders.insert_one({
+        "id": request_id,
+        "ticket_id": ticket_id,
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "slots": payload.slots,
+        "allergy_confirmed": payload.allergyConfirmed,
+        "allergies": all_allergies,
+        "status": "pending_concierge",
+        "user_email": user_email,
+        "created_at": now
+    })
+
+    return {
+        "success": True,
+        "requestId": request_id,
+        "ticketId": ticket_id,
+        "message": f"Birthday box for {pet_name} sent to Concierge. We'll contact you within 24 hours."
+    }

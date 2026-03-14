@@ -39,15 +39,36 @@
   <tr><td>BirthdayBoxBrowseDrawer.jsx</td><td>/frontend/src/components/celebrate/</td><td><span class="badge done">DONE</span></td></tr>
 </table>
 
-<h3>Birthday Box Builder — Multi-step Modal</h3>
-<p>Opened by: <code>window.dispatchEvent(new CustomEvent('openOccasionBoxBuilder', {detail: {preset, petName, petId}}))</code></p>
+<h3>Birthday Box Builder — Updated Concierge Flow (Session 12 Final)</h3>
+<p><strong>Key change:</strong> "Confirm & Build" now routes to <strong>Concierge fulfilment</strong>, NOT e-commerce checkout.</p>
 <table>
-  <tr><th>Step</th><th>Shown When</th><th>Content</th></tr>
-  <tr><td>Step 1</td><td>Always</td><td>All 6 slots with Mira's picks, descriptions, allergy-safe badges</td></tr>
-  <tr><td>Step 2</td><td>Pet has allergies</td><td>Explicit allergy confirmation checkbox, health slot detail</td></tr>
-  <tr><td>Step 3</td><td>After confirm</td><td>Success screen with Order ID, concierge note</td></tr>
+  <tr><th>Step</th><th>Shown When</th><th>Content</th><th>Backend Call</th></tr>
+  <tr><td>Step 1</td><td>Always</td><td>All 6 slots, allergy-safe/surprise badges, "Browse all options" link</td><td>None (display only)</td></tr>
+  <tr><td>Step 2</td><td>Pet has allergies</td><td>Allergy profile, Health slot detail, confirmation checkbox</td><td>None (validation only)</td></tr>
+  <tr><td>Step 3</td><td>After confirm</td><td>🎉 Concierge Handoff — left column: 6 slot summary, right column: "What happens next" (24h contact, bandana personalisation, cake msg, delivery)</td><td>POST /api/birthday-box/{petId}/concierge-handoff</td></tr>
 </table>
-<p><strong>Backend call:</strong> <code>POST /api/birthday-box/{petId}/build</code> — now uses <code>get_all_allergies()</code> in build endpoint too</p>
+
+<h3>Birthday Box Concierge Handoff Endpoint</h3>
+<p><code>POST /api/birthday-box/{pet_id}/concierge-handoff</code></p>
+<p>Unified Flow — writes to ALL 5 collections:</p>
+<table>
+  <tr><th>Step</th><th>Collection</th><th>Purpose</th></tr>
+  <tr><td>1</td><td>service_desk_tickets + tickets</td><td>Admin inbox — full slot list, allergy note, action items</td></tr>
+  <tr><td>2</td><td>admin_notifications</td><td>Notification bell — high urgency birthday box order</td></tr>
+  <tr><td>3</td><td>pillar_requests</td><td>Pillar-specific tracking</td></tr>
+  <tr><td>4</td><td>channel_intakes</td><td>Unified inbox</td></tr>
+  <tr><td>5</td><td>member_notifications</td><td>User's notification bell confirmation</td></tr>
+  <tr><td>+</td><td>birthday_box_orders</td><td>Internal tracking with status=pending_concierge</td></tr>
+</table>
+<p><strong>Ticket format:</strong> <code>TKT-{8 hex chars}</code> — shown to user in Step 3 for reference</p>
+
+<h3>Mobile Responsiveness</h3>
+<ul>
+  <li>Modal anchors to bottom on mobile (bottom sheet), centered on desktop</li>
+  <li>Drag handle shown on mobile</li>
+  <li>Step 3 two-column grid → single column on mobile (<code>sm:grid-cols-2</code>)</li>
+  <li>Max height 92vh, scrollable</li>
+</ul>
 
 <h3>Birthday Box Browse Drawer — Spec Compliant</h3>
 <p>Opened by: <code>window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowse', {detail: {boxPreview, petName}}))</code></p>
