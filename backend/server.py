@@ -7759,10 +7759,14 @@ async def get_public_products(
     actual_skip = skip if skip > 0 else (page - 1) * limit
     
     # First, query products_master collection with pagination
+    # Sort by: 1) Has Cloudinary image (descending), 2) Created date (descending)
     old_products = await db.products_master.find(
         query, 
         {"_id": 0}
-    ).skip(actual_skip).limit(limit).to_list(limit)
+    ).sort([
+        ("ai_image_generated", -1),  # Products with AI-generated images first
+        ("created_at", -1)  # Then by newest first
+    ]).skip(actual_skip).limit(limit).to_list(limit)
     for p in old_products:
         pid = p.get("id") or p.get("shopify_id")
         if pid and pid not in seen_ids:
