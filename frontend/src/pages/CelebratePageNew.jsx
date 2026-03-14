@@ -39,6 +39,9 @@ import {
   CelebrationMemoryWall
 } from '../components/celebrate';
 
+// Birthday Box
+import MiraBirthdayBox from '../components/celebrate/MiraBirthdayBox';
+
 // API utilities
 import { getApiUrl } from '../utils/api';
 
@@ -305,7 +308,14 @@ const CelebratePageNew = () => {
           onCategorySelect={handleCategorySelect}
         />
 
-        {/* 3. SOUL CELEBRATION PILLARS */}
+        {/* 3. MIRA'S BIRTHDAY BOX — Below category strip, above pillars */}
+        <MiraBirthdayBox 
+          pet={selectedPet}
+          onBuildBox={handleBuildBox}
+          onBrowseProducts={() => handleCategorySelect('all')}
+        />
+
+        {/* 4. SOUL CELEBRATION PILLARS */}
         <SoulCelebrationPillars 
           pet={selectedPet}
           onOpenSoulBuilder={handleOpenSoulBuilder}
@@ -313,12 +323,6 @@ const CelebratePageNew = () => {
 
         {/* Mira Ask Bar — appears right below the pillars section */}
         <MiraAskBar petName={selectedPet?.name} />
-
-        {/* 4. MIRA'S BIRTHDAY BOX */}
-        <MiraCuratedBox 
-          pet={selectedPet}
-          onBuildBox={handleBuildBox}
-        />
 
         {/* 5. CELEBRATE CONCIERGE® */}
         <CelebrateConcierge 
