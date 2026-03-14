@@ -232,6 +232,7 @@ const Autoship = lazy(() => import("./pages/Autoship"));
 
 // Pillar Pages (lazy load - user navigates to these)
 const DinePage = lazy(() => import("./pages/DinePage"));
+const DineSoulPage = lazy(() => import("./pages/DineSoulPage"));
 const StayPage = lazy(() => import("./pages/StayPage"));
 const TravelPage = lazy(() => import("./pages/TravelPage"));
 const CarePage = lazy(() => import("./pages/CarePage"));
@@ -577,7 +578,7 @@ function MainLayout() {
         <Route path="/all" element={<ProductListing category="all" />} />
         
         {/* Service Pillars - Open for browsing */}
-        <Route path="/dine" element={<DinePage />} />
+        <Route path="/dine" element={<DineSoulPage />} />
         <Route path="/dine/meals" element={<MealsPage />} />
         <Route path="/dine/fresh-meals" element={<ProductListing category="fresh-meals" pillar="dine" />} />
         <Route path="/dine/treats" element={<ProductListing category="treats" pillar="dine" />} />
