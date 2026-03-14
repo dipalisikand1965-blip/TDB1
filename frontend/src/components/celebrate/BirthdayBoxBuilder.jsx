@@ -393,8 +393,9 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
     const handleOpen = (e) => {
       const { preset, petName: name, petId: id, userEmail: email, userName: uname } = e.detail || {};
       setBoxData(preset);
-      setPetName(name || 'your pet');
-      setPetId(id);
+      setPetName(name || preset?.petName || 'your pet');
+      // Fallback to preset.petId if direct petId not passed (robustness)
+      setPetId(id || preset?.petId || null);
       setUserEmail(email || '');
       setUserName(uname || '');
       setStep(1);
@@ -411,24 +412,20 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
     setTicketId(null);
   }, []);
 
-  const handleNext = useCallback(() => {
-    if (boxData?.hasAllergies) {
-      setStep(2);
-    } else {
-      handleSendToConcierge(false);
-    }
-  }, [boxData]);
-
+  // handleSendToConcierge defined before handleNext to prevent stale closure
   const handleSendToConcierge = useCallback(async (allergyConfirmed) => {
-    if (!petId || !boxData) {
-      toast.error('Missing pet data. Please try again.');
+    // petId fallback: try state, then boxData.petId, then boxData.petId field
+    const resolvedPetId = petId || boxData?.petId;
+    if (!resolvedPetId || !boxData) {
+      toast.error('Missing pet data. Please close and try again.');
+      console.error('[BirthdayBoxBuilder] petId or boxData missing', { petId, boxData });
       return;
     }
 
     setIsOrdering(true);
     try {
       const allSlots = [...(boxData.visibleSlots || []), ...(boxData.hiddenSlots || [])];
-      const response = await fetch(`${API_BASE}/api/birthday-box/${petId}/concierge-handoff`, {
+      const response = await fetch(`${API_BASE}/api/birthday-box/${resolvedPetId}/concierge-handoff`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -458,6 +455,14 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
       setIsOrdering(false);
     }
   }, [petId, boxData, petName, userEmail, userName]);
+
+  const handleNext = useCallback(() => {
+    if (boxData?.hasAllergies) {
+      setStep(2);
+    } else {
+      handleSendToConcierge(false);
+    }
+  }, [boxData, handleSendToConcierge]);
 
   const stepCount = boxData?.hasAllergies ? 2 : 1;
   const stepLabel = step < 3 ? `Step ${step} of ${stepCount}` : '';
