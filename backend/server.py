@@ -1580,12 +1580,12 @@ async def lifespan(app: FastAPI):
                     "Transit & Handling Guidance": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/ea27f49859c08667f132740a2f19138ad844cfa9d4a37f5e55aa8c5816660d7b.png",
                 }
                 
-                # Update services with direct name matching
+                # Update services with direct name matching — set BOTH image and image_url
                 services_updated = 0
                 for name, image_url in SERVICE_IMAGES.items():
                     result = await db.services_master.update_many(
                         {"name": name},
-                        {"$set": {"image": image_url, "images": [image_url]}}
+                        {"$set": {"image": image_url, "image_url": image_url, "images": [image_url]}}
                     )
                     services_updated += result.modified_count
                 
@@ -7791,7 +7791,7 @@ async def get_public_products(
         query, 
         {"_id": 0}
     ).sort([
-        ("ai_image_generated", -1),  # Products with AI-generated images first
+        ("shopify_id", -1),  # Shopify-sourced products (real photos) first
         ("created_at", -1)  # Then by newest first
     ]).skip(actual_skip).limit(limit).to_list(limit)
     for p in old_products:
@@ -20346,7 +20346,100 @@ async def fix_service_images(password: str = Query(...)):
         "message": f"Updated {updated} services with missing images"
     }
 
-@api_router.get("/admin/export-all-data")
+@api_router.post("/admin/fix-celebrate-data")
+async def fix_celebrate_data_comprehensive(password: str = Query(...)):
+    """Comprehensive fix for celebrate page data issues:
+    1. Fix service image_url (set proper illustration URLs for all pillars)
+    2. Fix product image_url (copy from image/images[0] where null)
+    3. Fix AI-generated products showing wrong images
+    """
+    if password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=403, detail="Invalid admin password")
+    
+    results = {
+        "services_fixed": 0,
+        "products_image_url_fixed": 0,
+        "errors": []
+    }
+    
+    # ── 1. Fix Service Images ─────────────────────────────────────────────────
+    # Comprehensive map of service name → proper illustration URL
+    CELEBRATE_SERVICE_IMAGES = {
+        "Birthday Party Planning": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
+        "Birthday Party - Venue": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
+        "Birthday Party - Home": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/3f8f60d3d6ab494c0d5804181180acb8f6f7c8acd969ffaa0f680d714bdeab95.png",
+        "Professional Pet Photography": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/f467fd13355a348bfdc9c2353aab9e643bfd8af401a86a63066b494ea71ce5f4.png",
+        "Professional Pet Photoshoot": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/f467fd13355a348bfdc9c2353aab9e643bfd8af401a86a63066b494ea71ce5f4.png",
+        "Custom Cake Consultation": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/f467fd13355a348bfdc9c2353aab9e643bfd8af401a86a63066b494ea71ce5f4.png",
+        "Pawty Package (Full Celebration)": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
+        "Gotcha Day Celebration": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/c6b989379fea2659b7a568f5925af655d4b5b85888aa60f8edf9172cce34bb74.png",
+        "Surprise Delivery Service": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/c6b989379fea2659b7a568f5925af655d4b5b85888aa60f8edf9172cce34bb74.png",
+        "Milestone Celebration Kit": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/e7a11005e785d5b3b29639030764bc2bd86582d31521d3b849b2bbab3f952960.png",
+        "Milestone Celebration": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/e7a11005e785d5b3b29639030764bc2bd86582d31521d3b849b2bbab3f952960.png",
+        "Pet-Friendly Venue Booking": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
+        # STAY services
+        "Pet-Friendly Hotel Discovery": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/e9d3407a2852a5f43d770d93b6ebe7655b71d81deb29a7252ab7cb9fd60e789b.png",
+        "Room Suitability Advisory": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/004c8ce94a48c431735f22fe2e9a2ef6be63637b0ca3b0dd4c3165df09ea3e72.png",
+        "Long-Stay Assistance": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/451c55d58eb2acc3795b5a49fb65993e221362cf1dfb9fdde61fb7c5361d5a9d.png",
+        "Boarding Alternatives": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/e4c350f803a568ad15ef419c83abf45ef67f4c0fca7d95ba72e613604675eedf.png",
+        "Premium Pet Boarding": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/e6610e067706ace2402c810b096129f717c8e81b7ab452eb55fc619504b3303b.png",
+        "Daycare": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/1b1c1fcad2ad0dec745b30804d345eb480ce778948682bf43ae2a16854201afc.png",
+        "Standard Boarding": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/e6610e067706ace2402c810b096129f717c8e81b7ab452eb55fc619504b3303b.png",
+        "Luxury Suite Boarding": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/5dd610d6fd25f39711693ec237ae1e2015b64c6072807bbb3b4567b6b8e56d6a.png",
+        "In-Home Pet Sitting": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/4b457c33a4f3b3eaaa934bff92f4bd130aeaf35751fef16e215694e04a616075.png",
+        "Property Rule Verification": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/004c8ce94a48c431735f22fe2e9a2ef6be63637b0ca3b0dd4c3165df09ea3e72.png",
+        # TRAVEL services
+        "Pet Taxi": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/c876103d3b245b387497075a69a5ebc95ef70b32bd0f28a12152f4860d4f08cf.png",
+        "Airport Transfer": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/34febffa9542ff79e60fa5bb6a93df3d9a87f6885aa1d94d617f5b0b08e5eec9.png",
+        "Pet Relocation": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/8b698c9709dcd9dd22d78cee18d43debbfbac9d325388495c7e3578eabae91f0.png",
+        "Pet Relocation Service": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/4ba256b37fc2442d672a5550e52cc4016c22438a806da770511b76c2e15c3f25.png",
+        "Pet-Friendly Cab Service": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/96b2191ac971d679dbd1848a3f90af405092fcc39da786b8fa142e9f987fa595.png",
+        # INSURE services
+        "Pet Insurance Quote Comparison": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/927cb368e3f561742892f5f94c5b97265e18d219bdc369692ae6afc898c866de.png",
+        "Free Insurance Quote Comparison": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/927cb368e3f561742892f5f94c5b97265e18d219bdc369692ae6afc898c866de.png",
+        "Policy Review & Optimization": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/4abc1cb0ec76f0090d54eb9680093b325c2c9f1a63bd624ca7eb9430a9aff988.png",
+        "Claim Filing Assistance": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/e87aaf65a6199f7ef0fc3b6c7f6b7b2e0e1291b75a3f9e4e9048fd5bf953eb2a.png",
+        "Renewal Management Service": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/5b426aa91ed07ac70f7c6a84ec1cc8b3446027214d46ffd8372cf3a1ae2a6adb.png",
+        "Complete Insurance Package": "https://static.prod-images.emergentagent.com/jobs/23796d06-9635-4357-82d4-7f09345d06dc/images/000036739ce0bcc2d216656fe2fb02b77dace43365b1648f19738aa07992c16b.png",
+    }
+    
+    try:
+        for name, img_url in CELEBRATE_SERVICE_IMAGES.items():
+            result = await db.services_master.update_many(
+                {"name": name},
+                {"$set": {"image": img_url, "image_url": img_url, "images": [img_url]}}
+            )
+            results["services_fixed"] += result.modified_count
+    except Exception as e:
+        results["errors"].append(f"Services: {str(e)}")
+    
+    # ── 2. Fix Product image_url (copy from image/images[0] where null) ─────
+    # This makes ALL products consistently have image_url set
+    try:
+        # Batch fix: find products with null/empty image_url but non-null image
+        async for product in db.products_master.find(
+            {"$or": [{"image_url": None}, {"image_url": ""}]},
+            {"_id": 1, "image": 1, "images": 1, "shopify_image": 1}
+        ):
+            best_image = (
+                product.get("shopify_image") or
+                (product.get("images") or [None])[0] or
+                product.get("image")
+            )
+            if best_image:
+                await db.products_master.update_one(
+                    {"_id": product["_id"]},
+                    {"$set": {"image_url": best_image}}
+                )
+                results["products_image_url_fixed"] += 1
+    except Exception as e:
+        results["errors"].append(f"Products: {str(e)}")
+    
+    return {
+        "success": True,
+        **results,
+        "message": f"Fixed {results['services_fixed']} service illustrations and {results['products_image_url_fixed']} product image URLs"
+    }
 async def export_all_data(password: str = Query(...)):
     """Export all critical data as JSON for backup or transfer"""
     if password != ADMIN_PASSWORD:
