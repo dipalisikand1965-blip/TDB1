@@ -26,7 +26,93 @@
 <body>
 
 <h1>🐾 The Doggy Company — Platform Documentation</h1>
-<p style="color:#888; font-size:13px">Last updated: March 2026 — Session 11 (PillarSoulModal + Master Sync)</p>
+<p style="color:#888; font-size:13px">Last updated: March 2026 — Session 11 (Birthday Box Spec Added)</p>
+
+<!-- ============================= -->
+<div class="section">
+<h2>🎁 MIRA'S BIRTHDAY BOX — MASTER SPECIFICATION</h2>
+
+<h3>What Is It?</h3>
+<p>A curated <strong>6-slot celebration box</strong> built specifically for one pet, based on their individual soul profile. <em>No two boxes are the same.</em> Mira selects every item based on her knowledge of the pet.</p>
+
+<h3>Where It Appears</h3>
+<p>Single dark card on <code>/celebrate</code>, positioned <strong>below the category strip</strong> and <strong>above the soul pillars</strong>.</p>
+
+<h3>The 6 Slots</h3>
+<table>
+  <tr><th>Slot</th><th>Name</th><th>Primary Signal</th><th>Item Selected</th><th>Fallback</th></tr>
+  <tr><td>1</td><td><strong>Hero Item</strong></td><td>petFavouriteFood1</td><td>[flavour] birthday cake</td><td>Breed-matched cake</td></tr>
+  <tr><td>2</td><td><strong>Joy Item</strong></td><td>topSoulPillar</td><td>Activity-matched gift</td><td>Breed favourite toy</td></tr>
+  <tr><td>3</td><td><strong>Style Item</strong></td><td>birthday registered</td><td>Custom birthday bandana</td><td>Standard bandana</td></tr>
+  <tr><td>4</td><td><strong>Memory Item</strong></td><td>Love & Memory > 60</td><td>Memory card + envelope</td><td>Paw print card</td></tr>
+  <tr><td>5</td><td><strong>Health Item</strong></td><td>healthCondition</td><td>Treatment-safe supplement</td><td>Age-appropriate treat</td></tr>
+  <tr><td>6</td><td><strong>Surprise Item</strong></td><td>petArchetype</td><td>Archetype-matched surprise</td><td>Breed surprise gift</td></tr>
+</table>
+<p><strong>Note:</strong> Slots 5 & 6 are hidden → revealed when user clicks "Build {petName}'s Box"</p>
+
+<h3>UI Components</h3>
+<table>
+  <tr><th>Component</th><th>Specification</th></tr>
+  <tr><td>Card Background</td><td><code>linear-gradient(135deg, #1A0030, #3D0060, #6B0099)</code></td></tr>
+  <tr><td>Border Radius</td><td>20px</td></tr>
+  <tr><td>Eyebrow Default</td><td>"✦ Mira's pick for {petName}'s birthday"</td></tr>
+  <tr><td>Title Format</td><td>"The" + <span style="color:#FF9FE5">{petName}</span> + "Birthday Box"</td></tr>
+  <tr><td>Primary Button</td><td>🎉 Build {petName}'s Box (pink gradient)</td></tr>
+  <tr><td>Secondary Button</td><td>Birthday Box (transparent)</td></tr>
+</table>
+
+<h3>Slot Intelligence Logic</h3>
+<pre>
+SLOT 1 (Hero Cake):
+  favourite food → [flavour] cake
+  allergy → EXCLUDE, label "allergy-safe"
+  breed fallback → Labrador=peanut butter, Indie=chicken, Shih Tzu=salmon
+
+SLOT 2 (Joy Item by Pillar):
+  Play → Favourite toy | Adventure → Outdoor kit | Social → Pawty kit
+  Learning → Puzzle | Food → Treat platter | Grooming → Spa kit
+  Health → Wellness pack | Memory → Photo props
+
+SLOT 3 (Style):
+  birthday registered → Custom embroidered bandana
+  small dog → Birthday bow set
+  large breed → Wide bandana
+
+SLOT 4 (Memory):
+  Memory score > 60 → Memory card + photo envelope
+  exact birthday → Personalised date card
+  multiple pets → Family card
+
+SLOT 5 (Health) — MUST BE ALLERGY-SAFE:
+  condition → Condition-specific supplement
+  senior (>7) → Joint support
+  puppy (<2) → Growth treat
+  NO allergy data → Show notice in builder
+
+SLOT 6 (Surprise by Archetype):
+  Social Butterfly → Friend gift | Adventurer → Trail bandana
+  Thinker → Hidden puzzle | Nurturer → Comfort plush
+  Performer → Party hat + bow | Protector → Calming treat
+  Free Spirit → Mystery toy (sealed)
+</pre>
+
+<h3>Soul Discovery States</h3>
+<table>
+  <tr><th>Soul %</th><th>Behavior</th></tr>
+  <tr><td>&lt; 30%</td><td>Fallback items + "Tell Mira more" banner</td></tr>
+  <tr><td>30-70%</td><td>Partial personalization</td></tr>
+  <tr><td>&gt; 70%</td><td>Full personalization, no caveats</td></tr>
+  <tr><td>89%+</td><td>Full confidence, "exactly right"</td></tr>
+</table>
+
+<h3>Allergy Rules (CRITICAL)</h3>
+<ul>
+  <li>Rule 1: Allergen in profile → EXCLUDE from ALL slots</li>
+  <li>Rule 2: Slot 1 (cake) MUST confirm "allergy-safe"</li>
+  <li>Rule 3: Slot 5 (health) MUST be allergen-checked</li>
+  <li>Rule 4: No allergy data → Show builder notice</li>
+</ul>
+</div>
 
 <!-- ============================= -->
 <div class="section">
