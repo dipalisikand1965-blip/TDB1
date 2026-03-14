@@ -19,45 +19,87 @@
 
 **Source:** Celebrate_Concierge_MASTER.docx
 
-### Implemented:
+### Implemented (ALL DONE):
 | Task | File | Status |
 |---|---|---|
 | Update CTA card (title, description, stat, chips, button) | CelebrateConcierge.jsx | ✅ DONE |
 | 8-card service grid | CelebrateServiceGrid.jsx (NEW) | ✅ DONE |
 | Individual card component | CelebrateServiceCard.jsx (NEW) | ✅ DONE |
 | 3-question Concierge Intake Modal | ConciergeIntakeModal.jsx (NEW) | ✅ DONE |
-| Backend intake endpoint | POST /api/concierge/intake | ✅ DONE |
+| Backend intake endpoint | POST /api/concierge/intake (unified flow) | ✅ DONE |
 
-### Design:
-- CelebrateConcierge CTA: dark #0E0620 background, gold stat, 5 chips, gold CTA button
-- CelebrateServiceGrid: 4-col desktop, 2-col tablet/mobile, "Celebrate, Personally" header
-- CelebrateServiceCard: 180px illustration (object-position: center top), gold sub-label, title, description, CTA link
-- ConciergeIntakeModal: 3 questions, pre-selects service type from card, confirmation screen
-- All copy per master spec — {petName} resolved dynamically
+### Design (LOCKED — do not change):
+- **CelebrateConcierge CTA**: dark `#0E0620` background, `45,000+` stat, 5 chips, gold gradient CTA button, 48h promise
+- **CelebrateServiceGrid**: `"Celebrate, Personally"` section header, 4-col desktop / 2-col mobile grid
+- **CelebrateServiceCard**: 180px illustration, `object-position: center top` (NEVER change), gold uppercase sub-label (BIRTHDAY, PHOTOSHOOT, CAKE, THE FULL DAY, GOTCHA DAY, SURPRISE, MILESTONE, VENUE), spec description, gold CTA link
+- **ConciergeIntakeModal**: 3 questions (celebration type pre-selected from card, date picker + "Not sure yet", notes), gold gradient submit, confirmation screen
+- **Backend intake unified flow**: `concierge_intakes` → `admin_notifications` → `service_desk_tickets` → `channel_intakes`
+
+### Copy rules (FINAL — do not change):
+- Title: `"Celebrate {petName} the way only you know how."`
+- Description: `"45,000+ meals. Hundreds of birthdays..."` (see CelebrateConcierge.jsx)
+- Chips: Birthday Celebrations · Pawty Planning · Memory & Portraits · Milestone Marking · Surprise Deliveries
+- NEVER use: Browse, package, amazing, incredible, seamless
 
 ---
 
-## 🔄 SESSION 17 IN PROGRESS — Celebrate Concierge® Redesign
+## 🔄 SESSION 17 — Guided Celebration Paths (Mar 2026)
 
-**Source:** Celebrate_Concierge_MASTER.docx (ALL COPY IS FINAL)
+**Source:** GuidedCelebrationPaths_MASTER.docx
 
-### What to build:
+### Core Principle:
+Every path ends with a deliverable — not just steps. The Birthday Plan. The Gotcha Day Memory Card. The Shoot Day Brief. Something the pet parent can hold, save, share, or hand to the Concierge to execute entirely.
 
+### Files to build:
 | Task | File | Status |
 |---|---|---|
-| Update CTA card (title, description, stat, chips, button) | CelebrateConcierge.jsx | TODO |
-| 8-card service grid | CelebrateServiceGrid.jsx (NEW) | TODO |
-| Individual card component | CelebrateServiceCard.jsx (NEW) | TODO |
-| 3-question Concierge Intake Modal | ConciergeIntakeModal.jsx (NEW) | TODO |
-| Backend intake endpoint | POST /api/concierge/intake | TODO |
+| Update section header + card copy + chips | GuidedCelebrationPaths.jsx | TODO |
+| Individual path card | GuidedPathCard.jsx (NEW) | TODO |
+| Expansion panel | GuidedPathExpansion.jsx (NEW) | TODO |
+| Individual step component | GuidedPathStep.jsx (NEW) | TODO |
+| Deliverable screen | PathDeliverableScreen.jsx (NEW) | TODO |
+| Path data | celebrationPaths.js (NEW) | TODO |
 
-### Key copy rules (from spec):
-- Title: "Celebrate {petName} the way only you know how."
-- Description: "45,000+ meals. Hundreds of birthdays. Every celebration we have ever planned has started the same way — with us listening to who your dog actually is."
-- CTA: "Plan {petName}'s Celebration →"
-- Stat: 45,000+ / "meals made with love"
-- NEVER use: Browse, package, amazing, incredible, seamless
-- Intake modal: 3 questions (service type pre-selected, date, notes) → POST /api/concierge/intake
+### Section header (FINAL):
+- Title: `Guided celebration paths` (font-size: 2rem, font-weight: 800, color: #1A0030)
+- Subtitle: `Mira walks you through every step. Each path ends with a plan you can keep.` (14px, #666)
+
+### 3-card grid:
+- Desktop: `repeat(3, 1fr)` · gap: 16px
+- Tablet: `repeat(2, 1fr)`
+- Mobile: `1fr`
+- Card border-radius: 20px, padding: 24px
+
+### Card colour system (LOCKED):
+| Path | bg | accent | accentDark |
+|---|---|---|---|
+| Birthday | #FEFCE8 | #F59E0B | #92400E |
+| Gotcha Day | #DCFCE7 | #16A34A | #14532D |
+| Photoshoot | #FCE7F3 | #DB2777 | #831843 |
+
+### 3 paths — card copy (FINAL):
+| # | Title | Description | Visible chips | Hidden (+2) |
+|---|---|---|---|---|
+| 1 | Birthday party path | From theme to cake to guest list — plan {petName}'s full birthday in one guided flow. | Choose theme · Order cake · Guest list | Plan the day · Final birthday plan |
+| 2 | Gotcha day path | Celebrate the day {petName} chose you. A quieter, more personal kind of celebration. | Find the date · Memory book · A quiet ritual | A gift for the day · Gotcha Day card |
+| 3 | Pet photoshoot path | From outfit to location to photographer — capture {petName} at their most beautiful. | Choose location · Plan outfit · Find photographer | Prepare Mojo · Shoot Day Brief |
+
+### 5 steps per path (FINAL — see celebrationPaths.js for full detail):
+**Birthday**: Choose theme → Order cake → Guest list → Plan the day → Birthday Plan (deliverable)
+**Gotcha Day**: Find the date → Memory book → A quiet ritual → A gift for the day → Gotcha Day Memory Card (deliverable)
+**Photoshoot**: Choose location → Plan outfit → Find photographer → Prepare Mojo → Shoot Day Brief (deliverable)
+
+### Expansion panel:
+- Opens inline below card grid (grid-column: span 3)
+- One at a time (opening one closes others)
+- Click same card to close
+- scrollIntoView after open
+
+### Deliverables:
+- **Birthday Plan**: Theme · Cake order · Guest list · Day timeline · Venue
+- **Gotcha Day Memory Card**: 3 photos · gotcha date · caption · ritual note
+- **Shoot Day Brief**: Location · Time · Outfit · Photographer · Prep notes
+- All deliverables have: "Hand to Concierge 👑" → POST /api/concierge/intake
 
 ---
 

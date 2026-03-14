@@ -957,5 +957,194 @@ CelebratePageNew.jsx
 <p style="color:#ef4444; font-weight:600;">⚠️ server.py is already very large. For any new feature, create a new file in /backend/ (like birthday_box_routes.py) and register it in server.py. Do NOT add more code to server.py directly.</p>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION: CELEBRATE CONCIERGE® — SESSION 16 (COMPLETE)
+     Source: Celebrate_Concierge_MASTER.docx
+     Status: FULLY IMPLEMENTED
+     ═══════════════════════════════════════════════════════════ -->
+<div style="background:#fff;border:2px solid #10b981;border-radius:16px;padding:28px;margin:32px 0;">
+<h2 style="color:#065f46;margin-top:0;">✅ Celebrate Concierge® — Complete (Session 16)</h2>
+<p><strong>Source:</strong> Celebrate_Concierge_MASTER.docx | <strong>Status:</strong> FULLY IMPLEMENTED &amp; TESTED</p>
+
+<h3>1. CelebrateConcierge CTA Card</h3>
+<p><strong>File:</strong> <code>CelebrateConcierge.jsx</code> | <strong>Background:</strong> solid <code>#0E0620</code> (NOT gradient)</p>
+<ul>
+  <li><strong>Eyebrow chip:</strong> ★ Mojo's Concierge (amber, dark bg)</li>
+  <li><strong>Title:</strong> "Celebrate <em>{petName}</em> the way only you know how." (Georgia, clamp 1.4–2rem, white)</li>
+  <li><strong>Description:</strong> "45,000+ meals. Hundreds of birthdays. Every celebration we have ever planned has started the same way — with us listening to who your dog actually is." (white/72%)</li>
+  <li><strong>Chips row (below description):</strong> Birthday Celebrations · Pawty Planning · Memory &amp; Portraits · Milestone Marking · Surprise Deliveries</li>
+  <li><strong>Stat + CTA row:</strong> 45,000+ / "meals made with love" · "Plan {petName}'s Celebration →" (gold gradient button) · "48h response promise"</li>
+  <li><strong>CTA action:</strong> Opens ConciergeIntakeModal with no pre-selected service type</li>
+</ul>
+<p style="color:#ef4444;font-weight:600;">⚠️ NEVER change: background colour (#0E0620), stat number, chip labels, 48h promise text</p>
+
+<h3>2. CelebrateServiceGrid — 8 Illustrated Cards</h3>
+<p><strong>File:</strong> <code>CelebrateServiceGrid.jsx</code> + <code>CelebrateServiceCard.jsx</code></p>
+<p><strong>Header:</strong> "Celebrate, Personally" (Georgia 2rem, #1A0030) + subtitle</p>
+<p><strong>Grid:</strong> 4-col desktop / 3-col 1024px / 2-col 768px / 2-col 480px</p>
+<p><strong>Illustration source:</strong> Fetched from <code>/api/service-box/services?pillar=celebrate&amp;limit=8&amp;is_active=true</code> — Cloudinary watercolour URLs. <strong>NEVER change image source, dimensions, object-fit, or order.</strong></p>
+<p><strong>Image spec:</strong> height: 180px · object-fit: cover · <code>object-position: center top</code> (CRITICAL — shows faces)</p>
+<table border="1" style="border-collapse:collapse;width:100%;font-size:13px;">
+  <tr><th>#</th><th>Sub-label (gold uppercase)</th><th>Title</th><th>CTA link</th><th>serviceType</th></tr>
+  <tr><td>1</td><td>BIRTHDAY</td><td>Birthday Party Planning</td><td>Plan {petName}'s birthday →</td><td>birthday_party</td></tr>
+  <tr><td>2</td><td>PHOTOSHOOT</td><td>Professional Pet Photography</td><td>Book a shoot →</td><td>photography</td></tr>
+  <tr><td>3</td><td>CAKE</td><td>Custom Cake Consultation</td><td>Start the consultation →</td><td>custom_cake</td></tr>
+  <tr><td>4</td><td>THE FULL DAY</td><td>Pawty — The Full Day</td><td>Plan the pawty →</td><td>pawty</td></tr>
+  <tr><td>5</td><td>GOTCHA DAY</td><td>Gotcha Day Celebration</td><td>Celebrate the day →</td><td>gotcha_day</td></tr>
+  <tr><td>6</td><td>SURPRISE</td><td>Surprise Delivery</td><td>Send a surprise →</td><td>surprise_delivery</td></tr>
+  <tr><td>7</td><td>MILESTONE</td><td>Milestone Celebration</td><td>Mark the milestone →</td><td>milestone</td></tr>
+  <tr><td>8</td><td>VENUE</td><td>Pet-Friendly Venue Booking</td><td>Find the venue →</td><td>venue</td></tr>
+</table>
+
+<h3>3. ConciergeIntakeModal — 3-Question Modal</h3>
+<p><strong>File:</strong> <code>ConciergeIntakeModal.jsx</code></p>
+<ul>
+  <li>Q1: What are we celebrating? (chips, pre-selected from card's serviceType via useEffect)</li>
+  <li>Q2: When? (date picker + "Not sure yet" toggle)</li>
+  <li>Q3: Anything else about {petName}? (free text, optional)</li>
+  <li><strong>Submit CTA:</strong> "Send to my Concierge →" (gold gradient) → POST /api/concierge/intake</li>
+  <li><strong>Confirmation:</strong> "{petName}'s celebration is in good hands. Your Concierge has everything they need. Expect a message within 48 hours. ♥"</li>
+</ul>
+<p><strong>Pre-selection fix:</strong> useEffect syncs selectedType when isOpen or serviceType prop changes (NOT just on mount).</p>
+
+<h3>4. Backend: POST /api/concierge/intake — Unified Flow</h3>
+<p><strong>File:</strong> <code>concierge_routes.py</code> (around line 610)</p>
+<p><strong>Full unified flow (4 DB writes):</strong></p>
+<ol>
+  <li><code>concierge_intakes</code> — intake record</li>
+  <li><code>admin_notifications</code> — admin notification bell (type: concierge_celebrate)</li>
+  <li><code>service_desk_tickets</code> + <code>tickets</code> — service desk visibility</li>
+  <li><code>channel_intakes</code> — unified inbox</li>
+</ol>
+<p><strong>Returns:</strong> <code>{ success: true, message, intakeId }</code></p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION: GUIDED CELEBRATION PATHS — SESSION 17 (SPEC)
+     Source: GuidedCelebrationPaths_MASTER.docx
+     Status: BUILD IN PROGRESS
+     ═══════════════════════════════════════════════════════════ -->
+<div style="background:#fff;border:2px solid #f59e0b;border-radius:16px;padding:28px;margin:32px 0;">
+<h2 style="color:#92400e;margin-top:0;">🔄 Guided Celebration Paths — Session 17</h2>
+<p><strong>Source:</strong> GuidedCelebrationPaths_MASTER.docx | <strong>Status:</strong> IN BUILD</p>
+
+<h3>Core Principle</h3>
+<p>Every path ends with a <strong>deliverable</strong>. Not just steps — a plan, a card, a brief. Something the pet parent can hold, save, share, or hand to the Concierge to execute entirely.</p>
+<ul>
+  <li>Birthday path → <strong>The Birthday Plan</strong></li>
+  <li>Gotcha Day path → <strong>The Gotcha Day Memory Card</strong></li>
+  <li>Photoshoot path → <strong>The Shoot Day Brief</strong></li>
+</ul>
+
+<h3>Section Header (FINAL)</h3>
+<ul>
+  <li><strong>Title:</strong> "Guided celebration paths" (font-size: 2rem, font-weight: 800, color: #1A0030)</li>
+  <li><strong>Subtitle (NEW):</strong> "Mira walks you through every step. Each path ends with a plan you can keep." (14px, #666)</li>
+  <li><strong>Old subtitle (RETIRED):</strong> "Follow a structured journey — Mira walks you through every step."</li>
+</ul>
+
+<h3>Card Colour System (LOCKED)</h3>
+<table border="1" style="border-collapse:collapse;width:100%;font-size:13px;">
+  <tr><th>Path</th><th>bg</th><th>accent</th><th>accentDark</th><th>chip bg</th></tr>
+  <tr><td>Birthday</td><td>#FEFCE8</td><td>#F59E0B</td><td>#92400E</td><td>rgba(245,158,11,0.15)</td></tr>
+  <tr><td>Gotcha Day</td><td>#DCFCE7</td><td>#16A34A</td><td>#14532D</td><td>rgba(22,163,74,0.15)</td></tr>
+  <tr><td>Photoshoot</td><td>#FCE7F3</td><td>#DB2777</td><td>#831843</td><td>rgba(219,39,119,0.15)</td></tr>
+</table>
+
+<h3>Card Structure (per card)</h3>
+<ul>
+  <li>border-radius: 20px · padding: 24px · cursor: pointer</li>
+  <li>Icon box: 52×52px · border-radius: 14px · bg: rgba(accent, 0.20) · font-size: 26px</li>
+  <li>Title: 18px · font-weight: 800 · #1A0030</li>
+  <li>Description: 13px · #555 · line-height: 1.6 · min-height: 60px</li>
+  <li>Step chips: 3 visible + "+2 more" chip · tonal colour per path</li>
+  <li>Chevron: absolute bottom-right · rotates 90° when expanded</li>
+  <li>Hover: translateY(-3px) · box-shadow 0 8px 24px rgba(0,0,0,0.10)</li>
+  <li>Active (expanded): border: 2px solid accent · glow ring</li>
+</ul>
+
+<h3>3 Cards — Full Copy (FINAL)</h3>
+<table border="1" style="border-collapse:collapse;width:100%;font-size:13px;">
+  <tr><th>Path</th><th>Icon</th><th>Title</th><th>Description</th><th>Chips (visible)</th><th>Hidden (+2)</th></tr>
+  <tr><td>Birthday</td><td>🎂</td><td>Birthday party path</td><td>From theme to cake to guest list — plan {petName}'s full birthday in one guided flow.</td><td>Choose theme · Order cake · Guest list</td><td>Plan the day · Final birthday plan</td></tr>
+  <tr><td>Gotcha</td><td>🏠</td><td>Gotcha day path</td><td>Celebrate the day {petName} chose you. A quieter, more personal kind of celebration.</td><td>Find the date · Memory book · A quiet ritual</td><td>A gift for the day · Gotcha Day card</td></tr>
+  <tr><td>Photoshoot</td><td>📸</td><td>Pet photoshoot path</td><td>From outfit to location to photographer — capture {petName} at their most beautiful.</td><td>Choose location · Plan outfit · Find photographer</td><td>Prepare {petName} · Shoot Day Brief</td></tr>
+</table>
+
+<h3>Expansion Panel (all 3 paths)</h3>
+<ul>
+  <li>Opens inline below card row · grid-column: span 3 (desktop) / span 1 (mobile)</li>
+  <li>One at a time — opening one closes others</li>
+  <li>Click same card to close · scrollIntoView({behavior:'smooth', block:'start'}) on open</li>
+  <li>Animation: max-height 0→1200px · opacity 0→1 · 300ms ease-in-out</li>
+  <li>Border: 2px solid accentColor · border-radius: 18px · bg: #FFFFFF · padding: 24px</li>
+</ul>
+
+<h3>Steps (5 per path — sequential)</h3>
+<ul>
+  <li>Cannot skip steps — step N unlocks after N-1 completes</li>
+  <li>Circle: 32×32px · upcoming: #E5E7EB · active: accentColor · complete: #16A34A (checkmark)</li>
+  <li>Connector: 2px vertical line between circles</li>
+  <li>Active step CTA: accent gradient · full colour</li>
+  <li>Complete step: replaced by ✓ Done tag</li>
+</ul>
+
+<h3>Path 1 — Birthday Steps (FINAL)</h3>
+<table border="1" style="border-collapse:collapse;width:100%;font-size:12px;">
+  <tr><th>#</th><th>Name</th><th>What happens</th><th>CTA</th></tr>
+  <tr><td>1</td><td>Choose theme</td><td>6 soul-matched themes (Social Butterfly=garden party, Adventurer=outdoor trail, Thinker=puzzle party)</td><td>Choose a theme →</td></tr>
+  <tr><td>2</td><td>Order cake</td><td>Allergy-filtered. Salmon cake first (Mojo's favourite). Links to Doggy Bakery.</td><td>Add cake to plan →</td></tr>
+  <tr><td>3</td><td>Build guest list</td><td>Pre-populated from soul profile. Add more. Send paw print invitations.</td><td>Add guests →</td></tr>
+  <tr><td>4</td><td>Plan the day</td><td>Venue + timing + activities. Mira suggests timeline: morning walk, lunch feast, afternoon pawty, sunset photo.</td><td>Build the timeline →</td></tr>
+  <tr><td>5</td><td>Birthday Plan</td><td>Mira assembles complete plan document.</td><td>Get my plan →</td></tr>
+</table>
+
+<h3>Path 2 — Gotcha Day Steps (FINAL)</h3>
+<table border="1" style="border-collapse:collapse;width:100%;font-size:12px;">
+  <tr><th>#</th><th>Name</th><th>What happens</th><th>CTA</th></tr>
+  <tr><td>1</td><td>Find the date</td><td>Enter gotcha date — saves to soul profile. Mira remembers it every year.</td><td>Save {petName}'s Gotcha Day →</td></tr>
+  <tr><td>2</td><td>Build memory book</td><td>Upload 3 photos (day arrived, favourite moment, today). One caption per photo.</td><td>Add photos →</td></tr>
+  <tr><td>3</td><td>A quiet ritual</td><td>Soul-matched suggestions: favourite walk, favourite meal, writing a letter to Mojo.</td><td>Choose a ritual →</td></tr>
+  <tr><td>4</td><td>A gift for the day</td><td>One curated soul-matched product. Mira picks one. Pet parent confirms or swaps.</td><td>See Mira's pick →</td></tr>
+  <tr><td>5</td><td>Gotcha Day Memory Card</td><td>Mira assembles photos, date, ritual, gift into one beautiful card.</td><td>Get my card →</td></tr>
+</table>
+
+<h3>Path 3 — Photoshoot Steps (FINAL)</h3>
+<table border="1" style="border-collapse:collapse;width:100%;font-size:12px;">
+  <tr><th>#</th><th>Name</th><th>What happens</th><th>CTA</th></tr>
+  <tr><td>1</td><td>Choose location</td><td>Indoor/outdoor/café/park/home. Filtered by breed + energy level.</td><td>Choose a location →</td></tr>
+  <tr><td>2</td><td>Plan outfit</td><td>Accessories/bandanas/props matched to size + personality.</td><td>Plan the look →</td></tr>
+  <tr><td>3</td><td>Find a photographer</td><td>Directory filtered by city. Rating, style, price range.</td><td>Find a photographer →</td></tr>
+  <tr><td>4</td><td>Prepare {petName}</td><td>Shoot day tips: best time, treats, grooming checklist, warm-up.</td><td>Get {petName} ready →</td></tr>
+  <tr><td>5</td><td>Shoot Day Brief</td><td>Location, timing, outfit, photographer, prep notes — complete document.</td><td>Get my brief →</td></tr>
+</table>
+
+<h3>Deliverable Screen (shared, all 3 paths)</h3>
+<ul>
+  <li>Background: linear-gradient(135deg, #0E0620, #1A0A00) · border-radius: 16px</li>
+  <li>Primary CTA: "Get my [deliverable]" (accent gradient, full width)</li>
+  <li>Secondary CTA: "Hand to Concierge 👑" (gold gradient) → POST /api/concierge/intake</li>
+  <li>Share CTA: opens share sheet (WhatsApp, copy link, PDF)</li>
+</ul>
+
+<h3>Mira Voice — Per Path (FINAL)</h3>
+<ul>
+  <li><strong>Birthday bar:</strong> "Mojo's soul profile is already loaded into every step. The theme suggestions match who Mojo actually is."</li>
+  <li><strong>Gotcha Day bar:</strong> "The day Mojo came home is one of the most important days in both your stories. This path helps you honour it the way it deserves."</li>
+  <li><strong>Photoshoot bar:</strong> "I know Mojo's personality and how they move through the world. The location, outfit, and timing suggestions are all matched to who Mojo actually is."</li>
+</ul>
+<p style="color:#ef4444;font-weight:600;">⚠️ Gotcha Day path NEVER includes urgency language. No "Order now", "Limited time", "Don't miss".</p>
+
+<h3>Files</h3>
+<ul>
+  <li>MODIFY: <code>GuidedCelebrationPaths.jsx</code> — new subtitle, expansion state management</li>
+  <li>CREATE: <code>celebrationPaths.js</code> — all path data (copy, colours, steps)</li>
+  <li>CREATE: <code>GuidedPathCard.jsx</code> — individual card</li>
+  <li>CREATE: <code>GuidedPathExpansion.jsx</code> — expansion panel</li>
+  <li>CREATE: <code>GuidedPathStep.jsx</code> — individual step</li>
+  <li>CREATE: <code>PathDeliverableScreen.jsx</code> — deliverable output</li>
+</ul>
+</div>
+
 </body>
 </html>
