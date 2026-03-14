@@ -609,6 +609,77 @@ class ConciergeGeneralRequest(BaseModel):
     source: Optional[str] = "website"
 
 
+class ConciergeIntakeRequest(BaseModel):
+    """Request model for Celebrate Concierge® intake form (3-question modal)."""
+    petId: Optional[str] = None
+    petName: Optional[str] = "your pet"
+    serviceType: Optional[str] = "general"
+    celebrationDate: Optional[str] = None
+    notes: Optional[str] = None
+    source: Optional[str] = "concierge_intake_modal"
+
+
+@router.post("/intake")
+async def create_concierge_intake(request: ConciergeIntakeRequest):
+    """
+    Submit a concierge intake from the 3-question modal on /celebrate-soul.
+    Creates a ticket + inbox entry so the concierge can follow up within 48h.
+    Returns: { success, message, intakeId }
+    """
+    db = get_db()
+    import uuid
+
+    intake_id = f"INT-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+    ticket_id = f"TKT-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    service_label = (request.serviceType or 'general').replace('_', ' ').title()
+    pet_name = request.petName or 'your pet'
+
+    # Store intake record
+    intake_doc = {
+        "id": intake_id,
+        "ticket_id": ticket_id,
+        "type": "concierge_intake",
+        "pet_id": request.petId,
+        "pet_name": pet_name,
+        "service_type": request.serviceType,
+        "service_label": service_label,
+        "celebration_date": request.celebrationDate,
+        "notes": request.notes,
+        "source": request.source,
+        "status": "new",
+        "created_at": now_iso
+    }
+    await db.concierge_intakes.insert_one({k: v for k, v in intake_doc.items() if k != "_id"})
+
+    # Create a ticket for the concierge queue
+    ticket_doc = {
+        "id": ticket_id,
+        "intake_id": intake_id,
+        "type": "celebrate_intake",
+        "pillar": "celebrate",
+        "title": f"Celebration intake — {service_label} for {pet_name}",
+        "pet_name": pet_name,
+        "service_type": request.serviceType,
+        "celebration_date": request.celebrationDate,
+        "notes": request.notes,
+        "source": request.source,
+        "status": "open",
+        "priority": "normal",
+        "created_at": now_iso
+    }
+    await db.tickets.insert_one({k: v for k, v in ticket_doc.items() if k != "_id"})
+
+    logger.info(f"[CONCIERGE INTAKE] Created intake {intake_id} for pet {pet_name} | service: {request.serviceType}")
+
+    return {
+        "success": True,
+        "message": f"Your Concierge has everything they need. Expect a message within 48 hours.",
+        "intakeId": intake_id
+    }
+
+
 @router.post("/request")
 async def create_general_concierge_request(request: ConciergeGeneralRequest):
     """Create a general Concierge® request from the modal form."""

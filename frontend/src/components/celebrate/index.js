@@ -19,6 +19,9 @@ export { default as MiraCuratedBox } from './MiraCuratedBox';
 
 // Concierge
 export { default as CelebrateConcierge } from './CelebrateConcierge';
+export { default as CelebrateServiceGrid } from './CelebrateServiceGrid';
+export { default as CelebrateServiceCard } from './CelebrateServiceCard';
+export { default as ConciergeIntakeModal } from './ConciergeIntakeModal';
 
 // Guided Paths
 export { default as GuidedCelebrationPaths } from './GuidedCelebrationPaths';
