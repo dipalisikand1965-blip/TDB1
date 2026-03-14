@@ -3,39 +3,50 @@
 
 ---
 
-## [Mar 14, 2026] Session 5 — Party Products & Soul Picks Cleanup ✅ COMPLETE
+## [Mar 14, 2026] Session 5 — Party Products, Soul Picks & Mira Picks Enhancement ✅ COMPLETE
 
-### ✅ VERIFIED: Party & Decor Working Correctly
-- **47 total party products** available:
-  - 14 generic (party_accessories: 11, party_kits: 2, celebration_addons: 1)
-  - 33 breed-specific party hats (with Cloudinary AI mockup images)
-- **For Mojo (Indie breed):** Shows 16 items (14 generic + 2 Indie-specific)
-- **Breed filtering:** Only shows breed-specific items matching pet's breed
-- All products have **unique realistic AI-generated Cloudinary images**
+### ✅ Party & Decor (47 total products)
+- 14 generic party items with AI-generated Cloudinary images
+- 33 breed-specific party hats (1 per breed, all with Cloudinary mockups)
+- Breed filtering active - only matching breed's products show
 
-### ✅ VERIFIED: Soul Picks Breed Merchandise Clean
-- **All breed merchandise categories now have ONLY Cloudinary images:**
-  - breed-mugs: 33 products (1 per breed)
-  - breed-bandanas: 33 products
-  - breed-frames: 33 products
-  - breed-keychains: 33 products
-  - breed-party_hats: 33 products
-  - breed-tote_bags: 33 products
-- **Indie-specific:** 1 product per category with real mockup
-- **Duplicates & placeholders deactivated:**
-  - 160 breed_products without Cloudinary mockups
-  - 532 breed duplicates in unified_products
-  - 543 breed products in unified_products without images
-  - 43 breed products in products_master without images
+### ✅ Soul Picks - EXPANDED Categories
+Now includes additional celebrate-relevant merchandise:
+- Original: breed-mugs, breed-bandanas, breed-frames, breed-keychains, breed-party_hats, breed-tote_bags
+- **NEW:** breed-blankets, breed-bowls, breed-paw_print_frames, breed-pet_robes, breed-pet_towels, breed-treat_jars
+- Total: 12 breed merchandise categories × 33 breeds = 396 products
 
-### Admin Access:
-- **CelebrateManager:** Categories include party_accessories, party_kits, celebration_addons, breed-party_hats
-- **ProductBoxEditor:** Products accessible via category filter
-- **Activate/Deactivate toggle** available in both editors
+### ✅ Mira's Picks - ENHANCED with Soul Traits
+**Now uses ALL soul data, not just loved foods:**
 
-### KEY DISTINCTION (Documented for Future):
-- **BAD (Illustration Only):** Just a dog face drawing, no product visible. DEACTIVATE.
-- **GOOD (Real Mockup):** Actual product (mug, bandana, frame) with dog face PRINTED ON IT. KEEP.
+1. **Food-based imaginary:** (existing)
+   - "loves salmon" → "Salmon Delight Cake"
+
+2. **Activity-based imaginary:** (NEW)
+   - "loves tennis ball" → "Tennis Ball Birthday Box" 🎾
+   - "loves fetch" → "Ultimate Fetch Party Kit" 🎯
+   - "loves swimming" → "Pool Party Celebration Kit" 🏊
+   - "loves car rides" → "Road Trip Birthday Adventure" 🚗
+   - "loves cuddles" → "Cozy Cuddle Birthday Box" 🥰
+   - "loves naps" → "Nap Time Birthday Bundle" 😴
+   - "loves running" → "Zoomies Party Kit" 🏃
+   - "loves squeaky toys" → "Squeaky Toy Birthday Box" 🧸
+
+3. **Soul Onboarding cards:** (NEW)
+   - If pet has no soul data → shows "Help Mira know [pet] better" card
+   - Questions link to soul onboarding flow
+   - Grows the soul score over time
+
+### ✅ Mira Picks Works for ALL Dogs
+- Extracts traits from: learned_facts, soul object, preferences, direct fields
+- Falls back to onboarding card if no data
+- Works for Mojo, Mystique, and all pets
+
+### Technical Implementation:
+- `extractSoulTraits()` function extracts ALL soul data from pet object
+- `MiraImaginesCard` component handles food, activity, and onboarding types
+- Activity map covers common pet activities
+- Soul onboarding dispatches `openSoulOnboarding` event
 
 ---
 
