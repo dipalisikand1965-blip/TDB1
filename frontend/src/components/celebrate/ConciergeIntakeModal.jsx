@@ -36,6 +36,14 @@ const ConciergeIntakeModal = ({ isOpen, onClose, serviceType, petName, petId }) 
   const [submitted, setSubmitted] = useState(false);
   const [intakeId, setIntakeId] = useState(null);
 
+  // Sync selectedType when modal opens with a new serviceType prop
+  // (useState only initializes once on mount — useEffect keeps it in sync)
+  React.useEffect(() => {
+    if (isOpen) {
+      setSelectedType(serviceType || '');
+    }
+  }, [isOpen, serviceType]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async () => {
