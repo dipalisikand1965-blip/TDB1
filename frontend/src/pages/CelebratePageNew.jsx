@@ -356,7 +356,7 @@ const CelebratePageNew = () => {
 
         {/* 7. CELEBRATION WALL */}
         <CelebrationMemoryWall 
-          petName={selectedPet?.name}
+          pet={selectedPet}
         />
       </div>
 

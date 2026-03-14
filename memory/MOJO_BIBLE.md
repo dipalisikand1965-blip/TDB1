@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://birthday-box-1.preview.emergentagent.com
+https://memory-wall-debug.preview.emergentagent.com
 ```
 
 ---

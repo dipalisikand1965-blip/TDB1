@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://birthday-box-1.preview.emergentagent.com/mira-demo**
+**https://memory-wall-debug.preview.emergentagent.com/mira-demo**
 
 ---
 
