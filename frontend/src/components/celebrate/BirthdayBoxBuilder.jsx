@@ -479,8 +479,13 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={step !== 3 ? handleClose : undefined}
-        className="fixed inset-0 z-[200]"
-        style={{ background: 'rgba(10,0,26,0.80)', backdropFilter: 'blur(4px)' }}
+        style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          zIndex: 200,
+          background: 'rgba(10,0,26,0.80)',
+          backdropFilter: 'blur(4px)',
+        }}
         data-testid="builder-backdrop"
       />
 
@@ -491,19 +496,36 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.92 }}
         transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed z-[201] inset-0 flex items-center justify-center p-4"
         data-testid="birthday-box-builder"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 201,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '16px',
+          pointerEvents: 'none',
+        }}
       >
         <div
-          className="relative w-full max-w-lg rounded-2xl overflow-hidden"
+          onClick={e => e.stopPropagation()}
           style={{
+            position: 'relative',
+            width: '100%',
+            maxWidth: '512px',
+            borderRadius: '16px',
+            overflow: 'hidden',
             background: 'linear-gradient(145deg, #140028 0%, #2D0060 60%, #1A0030 100%)',
             border: '1px solid rgba(196,77,255,0.30)',
             boxShadow: '0 8px 64px rgba(196,77,255,0.30)',
             maxHeight: '88vh',
             overflowY: 'auto',
+            pointerEvents: 'all',
           }}
-          onClick={e => e.stopPropagation()}
         >
           {/* Header */}
           <div
