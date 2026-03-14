@@ -1,6 +1,33 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 2026 (Session 18 — Celebration Wall Bug Fixes COMPLETE)
+## Last Updated: Mar 2026 (Session 23 — Platform-Standard useResizeMobile Hook COMPLETE)
+
+---
+
+## ✅ SESSION 23 COMPLETE — Platform-Standard useResizeMobile Hook (Mar 2026)
+
+**All 5 P0 components verified. 100% pass rate. No JS errors.**
+
+### Hook Rewritten: `/app/frontend/src/hooks/useResizeMobile.js`
+- **Single export:** `useResizeMobile(breakpoint = 641)` — observes `document.body` via ResizeObserver, 150ms debounce, returns just `isMobile` (boolean)
+- **No containerRef needed** — hook is self-contained, one line to use
+- **Backward-compat alias:** `useViewportMobile = useResizeMobile` for any old imports
+- Full SSR safety, full cleanup on unmount
+
+### Applied To (P0):
+| Component | Before | After |
+|---|---|---|
+| BirthdayBoxBuilder.jsx | `const [containerRef, isMobile] = useResizeMobile(640)` + ref on backdrop | `const isMobile = useResizeMobile()` |
+| BirthdayBoxBrowseDrawer.jsx | `const [containerRef, isMobile] = useResizeMobile(640)` + ref on backdrop | `const isMobile = useResizeMobile()` |
+| MiraChatWidget.jsx | `const isMobile = useViewportMobile(640)` | `const isMobile = useResizeMobile()` |
+| ConciergeIntakeModal.jsx | No hook, no responsive layout | `const isMobile = useResizeMobile()` + bottom-sheet on mobile |
+| WallUploadModal.jsx | No hook, no responsive layout | `const isMobile = useResizeMobile()` + bottom-sheet on mobile |
+
+### Mobile Layout for ConciergeIntakeModal & WallUploadModal:
+- Mobile (< 641px): `alignItems: flex-start`, `padding: 88px 0 0`, `borderRadius: 20px 20px 0 0` (bottom-sheet style)
+- Desktop: centered, `padding: 16px`, `borderRadius: 20px`
+
+---
 
 ---
 
