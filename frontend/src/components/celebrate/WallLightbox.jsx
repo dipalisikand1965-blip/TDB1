@@ -28,10 +28,26 @@ const WallLightbox = ({ photo, isOwn, liked, onLike, onClose, onPrev, onNext, ha
         position: 'fixed', inset: 0,
         background: 'rgba(0,0,0,0.90)',
         zIndex: 3000,
-        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px 16px'
       }}
       data-testid="wall-lightbox-overlay"
     >
+      {/* Close button — fixed top-right of overlay, always visible */}
+      <button
+        onClick={onClose}
+        style={{
+          position: 'fixed', top: 20, right: 20,
+          width: 44, height: 44, borderRadius: '50%',
+          background: '#FFFFFF',
+          border: 'none',
+          color: '#1A0030', fontSize: 22, fontWeight: 900,
+          cursor: 'pointer', zIndex: 9999,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          lineHeight: 1,
+          boxShadow: '0 2px 12px rgba(0,0,0,0.30)'
+        }}
+        data-testid="lightbox-close"
+      >✕</button>
       {/* Prev arrow */}
       {hasPrev && (
         <button onClick={e => { e.stopPropagation(); onPrev(); }} style={{
@@ -49,7 +65,8 @@ const WallLightbox = ({ photo, isOwn, liked, onLike, onClose, onPrev, onNext, ha
         style={{
           maxWidth: 520, width: '100%', background: '#FFFFFF',
           borderRadius: 20, overflow: 'hidden',
-          maxHeight: '90vh', overflowY: 'auto'
+          maxHeight: '85vh', overflowY: 'auto',
+          position: 'relative'
         }}
         data-testid="wall-lightbox-card"
       >
@@ -59,19 +76,11 @@ const WallLightbox = ({ photo, isOwn, liked, onLike, onClose, onPrev, onNext, ha
             src={photo.imageUrl || photo.image_url}
             alt={`${photo.petName || photo.pet_name}'s ${celebLabel}`}
             style={{
-              width: '100%', maxHeight: 360,
+              width: '100%', maxHeight: 340,
               objectFit: 'contain', display: 'block'
             }}
             onError={(e) => { e.target.src = 'https://thedoggybakery.com/cdn/shop/files/zippy-april-4-1024x1024.png?v=1759752249&width=800'; }}
           />
-          {/* Close */}
-          <button onClick={onClose} style={{
-            position: 'absolute', top: 12, right: 12,
-            width: 36, height: 36, borderRadius: '50%',
-            background: 'rgba(255,255,255,0.15)', border: 'none',
-            color: '#fff', fontSize: 18, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }} data-testid="lightbox-close">✕</button>
         </div>
 
         {/* Body */}
