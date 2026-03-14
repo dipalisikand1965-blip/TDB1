@@ -13,6 +13,7 @@
  */
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { CELEBRATION_PATHS } from './celebrationPaths';
 import GuidedPathCard from './GuidedPathCard';
 import GuidedPathExpansion from './GuidedPathExpansion';
@@ -23,6 +24,39 @@ const GuidedCelebrationPaths = ({ pet }) => {
   const handleToggle = (pathId) => {
     setExpandedId(prev => (prev === pathId ? null : pathId));
   };
+
+  // Mobile floating close button — rendered via portal to ESCAPE parent CSS transforms
+  // (framer-motion sets transform: matrix(1,0,0,1,0,0) on ancestors which breaks position:fixed)
+  const mobileClosePortal = expandedId !== null && typeof document !== 'undefined'
+    ? createPortal(
+        <div
+          className="md:hidden"
+          style={{
+            position: 'fixed',
+            bottom: 90,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 9990
+          }}
+        >
+          <button
+            onClick={() => setExpandedId(null)}
+            style={{
+              background: '#1A0030', color: '#fff',
+              border: 'none', borderRadius: 9999,
+              padding: '12px 28px', fontSize: 14, fontWeight: 700,
+              cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
+              display: 'flex', alignItems: 'center', gap: 8,
+              whiteSpace: 'nowrap'
+            }}
+            data-testid="guided-path-mobile-close"
+          >
+            ✕ Close guide
+          </button>
+        </div>,
+        document.body
+      )
+    : null;
 
   return (
     <section
@@ -72,24 +106,9 @@ const GuidedCelebrationPaths = ({ pet }) => {
           />
         ))}
       </div>
-      {/* ── Mobile floating close button — appears when any path is expanded ── */}
-      {expandedId !== null && (
-        <div className="md:hidden fixed bottom-[90px] left-1/2 -translate-x-1/2 z-[9990]">
-          <button
-            onClick={() => setExpandedId(null)}
-            style={{
-              background: '#1A0030', color: '#fff',
-              border: 'none', borderRadius: 9999,
-              padding: '12px 28px', fontSize: 14, fontWeight: 700,
-              cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
-              display: 'flex', alignItems: 'center', gap: 8
-            }}
-            data-testid="guided-path-mobile-close"
-          >
-            ✕ Close guide
-          </button>
-        </div>
-      )}
+
+      {/* Mobile floating close button rendered via portal (escapes CSS transform containment) */}
+      {mobileClosePortal}
     </section>
   );
 };
