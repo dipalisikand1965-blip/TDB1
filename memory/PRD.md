@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: March 14, 2026 (Session 7 — Soul Cards Deep Purple Revert + Admin Panel Auth Fix)
+## Last Updated: March 14, 2026 (Session 8 — Soul Score Glow + PetWrap in Celebrate + Context-Aware Soul Questions + Occasion Cards + Mira Memory Loop)
 
 ---
 
@@ -10,6 +10,90 @@
 The world's first soul-driven Pet Operating System. Every dog has a personality, lifestyle, health story — the Soul. The platform captures this and uses it to power every recommendation, every Mira response, and every concierge interaction.
 
 **3,777 products in DB. 221+ API endpoints. 51 Soul Questions. 14 Pillars.**
+
+---
+
+## ✅ SESSION 8 PLAN (March 14, 2026)
+
+### FEATURE 1 — Soul Score Constant Glow (P0)
+**Problem:** The `key={score}` on the score number causes it to re-mount and re-animate with `scale: 1.4` on every update — creating a "bounce" effect. After answering, the score jumps forward and back.
+**Fix:**
+- Remove `key={score}` re-mount strategy
+- Replace spring animation with `@keyframes pulse-glow` CSS that runs INFINITELY
+- Score always glows (`text-shadow` pulse animation, never stops)
+- Score changes counter-animate with a smooth `useSpring` value (no bounce)
+- File: `CelebrateContentModal.jsx` — SoulQuestionsSection component
+
+### FEATURE 2 — PetWrap Mini-Card in Mira's Picks (P1)
+**What:** PetWrap (`/wrapped/:petId`) is a beautiful 5-card pet year-in-review (Cover, Soul Score, Mira Moments, Pillars, Closing). It already exists. User wants it visible NEXT TO the soul section inside the Mira's Picks modal.
+**Design:**
+- Compact PetWrap teaser card: shows cover card info (soul score, archetype, year)
+- "View Full Wrap" → opens `/wrapped/:petId` in new tab
+- Share button using `navigator.share` or clipboard fallback
+- Dynamically loads from `/api/wrapped/generate/{petId}`
+- File: `CelebrateContentModal.jsx` — inside `category === 'miras-picks'` section
+
+### FEATURE 3 — Celebrate-Context Soul Questions (P1) ← KEY FEATURE
+**What:** When in the celebrate modal, soul questions should be CELEBRATE-FIRST. Current behavior: random from all 9 folders. Target: celebrate-relevant folders first.
+
+**Celebrate-Relevant Folders (PRIORITY ORDER):**
+1. `taste_treat` → "What protein does {pet} love?" → Auto-generates cake/treat imagined cards
+2. `celebration_preferences` question → "Which celebrations do you want to remember?" → Occasions setup
+3. `toy_play` (if exists) / `identity_temperament` motivation → toy gift imaginations
+4. Other folders after these
+
+**Backend change:** `GET /api/pet-soul/profile/{petId}/quick-questions?context=celebrate&limit=5`
+- When `context=celebrate`: move `taste_treat` + `celebration_preferences` questions to the TOP of the selection
+- File: `pet_soul_routes.py` — `get_quick_questions` endpoint
+
+**Frontend change after answering a celebrate question:**
+- The `onAnswered` callback fires → `onRefreshMiraCards()` runs
+- Re-generates Mira Imagines cards based on NEW soul data
+- NEW IMAGINATION TYPES (not just cakes): toys, accessories, hampers, treats, activity kits
+  - `favorite_protein = "Chicken"` → "Chicken Celebration Cake" + "Chicken Jerky Hamper"
+  - `favorite_treats = ["Cakes", "Jerky"]` → imagined product cards for those types
+  - `motivation_type = "Toys/play"` → "Custom Fetch Toy Gift Set" imagined card
+  - Soul archetype `wild_explorer` → "Adventure Birthday Hamper" imagined card
+- All imagined products → CONCIERGE FLOW (not add-to-cart)
+- File: `CelebrateContentModal.jsx` — `generateMiraImagines` function (EXPAND beyond cakes)
+
+### FEATURE 4 — Occasion-Based Cards in Mira's Picks (P1)
+**What:** 
+- Check if `doggy_soul_answers.celebration_preferences` is answered for the pet
+- If answered with ["Birthday", "Diwali" etc.] + pet has `birthday` or `gotcha_date` → show special occasion countdown card in Mira's Picks: "Mojo's birthday is in 15 days — here's what Mira prepared 🎂"
+- If NOT answered → `celebration_preferences` question appears FIRST in soul questions (already handled by FEATURE 3)
+- Occasion types: Birthday, Gotcha Day, Diwali, Holi, Christmas, New Year, Valentine's Day, Raksha Bandhan, Rakhi, Independence Day, Easter, Eid
+
+**Where in UI:** At TOP of `miras-picks` section, before imagined cards
+**File:** `CelebrateContentModal.jsx` — new `OccasionCountdownCard` component
+
+### FEATURE 5 — Mira Memory Loop: Product Selections → learned_facts (P2)
+**What:** When a pet parent sends a concierge request (e.g., "Salmon Delight Cake"), store this as a `learned_fact` on the pet.
+**Backend:** In the celebrate concierge request endpoint → add:
+```python
+await db.pets.update_one(
+  {"id": pet_id},
+  {"$push": {"learned_facts": {
+    "type": "concierge_request", 
+    "category": "celebrate",
+    "product_name": product_name,
+    "occasion": occasion,
+    "date": datetime.now(timezone.utc).isoformat()
+  }}}
+)
+```
+**Mira already uses `learned_facts`** in system prompt (verified — `mira_routes.py` line 3088+)
+**Result:** Next time user opens Mira widget, she says: "Last time you asked about {product_name} for {petName} — want to revisit that?"
+**File:** `celebrate_routes.py` — concierge request endpoint
+
+### FEATURE 6 — Soul Archetype → Imagined Products (P2)
+**What:** The soul archetype engine (`/api/soul-archetype/pet/{petId}`) derives personality from soul answers. This should influence what Mira imagines:
+- `gentle_aristocrat` → Premium/elegant items: "Luxury Birthday Hamper", "Velvet Bow Tie"
+- `wild_explorer` → Adventure items: "Adventure Birthday Kit", "Rope Tug Gift Set"
+- `velcro_baby` → Comfort items: "Comfort Snuggle Pack", "Mom's Scent Toy"
+- `social_butterfly` → Party items: "Pawty Decoration Kit", "Group Treat Bag"
+- `foodie_gourmet` → Food items: "Gourmet Tasting Kit", "Custom Recipe Cake"
+**File:** `CelebrateContentModal.jsx` — `generateMiraImagines` function — add archetype-based imaginations
 
 ---
 

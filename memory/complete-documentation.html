@@ -51,6 +51,110 @@
             <p class="date">Last Updated: March 14, 2026 | Soul Cards Deep Purple + Admin Panel Fix</p>
         </div>
 
+        <!-- NEW: Session 8 — Complete Soul + PetWrap + Occasion + Mira Memory Spec -->
+        <div class="section" style="border: 3px solid #9B0CBF; margin-bottom: 20px;">
+            <h2 class="section-title"><span class="emoji">🧠</span> SESSION 8 SPEC — Soul OS + PetWrap + Occasions (Mar 14, 2026)</h2>
+
+            <div class="warning-box">
+                <strong>FUTURE AGENT READ THIS FIRST.</strong> This section describes the FULL intended behaviour of the Soul system in the Celebrate experience. Do NOT change soul card colors (deep purple = correct). Do NOT remove archetype logic. Do NOT simplify imagined product generation.
+            </div>
+
+            <div class="card">
+                <div class="card-title">1. Soul Score — Constant Glow (NEVER stops glowing)</div>
+                <ul>
+                    <li>Score number (64px, Manrope Black) should have a <strong>constant CSS pulse-glow animation</strong> — never stops</li>
+                    <li>Use <code>@keyframes soulGlow</code> on the score text-shadow, NOT spring remount (<code>key=&#123;score&#125;</code> causes bounce)</li>
+                    <li>Score changes animate with smooth counter (no scale-from-1.4 bounce)</li>
+                    <li>Color: <code>#C44DFF</code> below 80%, <code>#F0C060</code> (gold) at 80%+</li>
+                    <li>Background: always <code>linear-gradient(135deg, #1A0020 0%, #3D0060 100%)</code></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">2. PetWrap — Next to Soul in Mira's Picks</div>
+                <ul>
+                    <li>PetWrap already exists at <code>/wrapped/:petId</code> (5 cards: Cover, Soul Score, Mira Moments, Pillars, Closing)</li>
+                    <li>Shows a compact teaser card inside <code>category === 'miras-picks'</code> of <code>CelebrateContentModal</code></li>
+                    <li>Loads from <code>GET /api/wrapped/generate/{petId}</code></li>
+                    <li>Shows: soul score %, archetype name, top Mira moment, year, "View Full Wrap" CTA</li>
+                    <li>Share button: <code>navigator.share</code> or clipboard copy fallback</li>
+                    <li>Deep purple theme matching soul section</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">3. Celebrate-Context Soul Questions — Priority Order</div>
+                <p><strong>Backend endpoint:</strong> <code>GET /api/pet-soul/profile/{petId}/quick-questions?context=celebrate&amp;limit=5</code></p>
+                <p>When <code>context=celebrate</code>, question selection ORDER:</p>
+                <ol>
+                    <li><strong>celebration_preferences</strong> question (if not answered) — ALWAYS FIRST</li>
+                    <li><strong>taste_treat folder</strong> questions (food → generates product imaginations)</li>
+                    <li>toy/play/motivation questions → generates toy gift imaginations</li>
+                    <li>All other folders (normal weight-based selection)</li>
+                </ol>
+                <p><strong>After answering taste/treat question → auto-refresh Mira Imagines with NEW types:</strong></p>
+                <table>
+                    <tr><th>Soul Answer</th><th>Mira Imagines</th></tr>
+                    <tr><td>favorite_protein = Chicken</td><td>"Chicken Celebration Cake" + "Chicken Jerky Gift Box" → Concierge</td></tr>
+                    <tr><td>favorite_protein = Fish</td><td>"Salmon Delight Cake" + "Fish Treat Hamper" → Concierge</td></tr>
+                    <tr><td>motivation_type = Toys/play</td><td>"Custom Fetch Toy Gift Set" + "Rope Tug Birthday Pack" → Concierge</td></tr>
+                    <tr><td>archetype = wild_explorer</td><td>"Adventure Birthday Hamper" → Concierge</td></tr>
+                    <tr><td>archetype = gentle_aristocrat</td><td>"Luxury Celebration Hamper" → Concierge</td></tr>
+                    <tr><td>treat_preference = Crunchy</td><td>"Artisan Birthday Biscuit Tin" → Concierge</td></tr>
+                </table>
+                <p><em>Note: Celebrate is NOT only cakes. Toys, accessories, hampers, treat boxes, activity kits are ALL valid celebrate imaginations.</em></p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">4. Occasion-Based Cards in Mira's Picks</div>
+                <ul>
+                    <li>Check <code>pet.doggy_soul_answers.celebration_preferences</code> (answered = list of occasions e.g. ["Birthday","Diwali"])</li>
+                    <li>Check <code>pet.birthday</code> or <code>pet.gotcha_date</code> for upcoming dates</li>
+                    <li>If upcoming occasion within 30 days → show <code>OccasionCountdownCard</code> at TOP of Mira's Picks</li>
+                    <li>Card shows: occasion name, days remaining, "Mira has a plan — see picks ✦" CTA</li>
+                    <li>If <code>celebration_preferences</code> NOT answered → <code>celebration_preferences</code> question appears FIRST in soul questions (handled by Feature 3)</li>
+                    <li>Supported occasions: Birthday, Gotcha Day, Diwali, Holi, Christmas, New Year, Valentine's Day, Raksha Bandhan, Independence Day, Easter, Eid</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">5. Mira Memory Loop (Product → learned_facts → Mira Chat)</div>
+                <ul>
+                    <li>When concierge request is sent from <code>MiraImaginesCard</code>: backend stores to <code>celebrate_concierge_requests</code> (already done) + ALSO writes to <code>pets.learned_facts</code></li>
+                    <li>Format: <code>{"type":"concierge_request","category":"celebrate","product_name":"Salmon Delight Cake","date":"..."}</code></li>
+                    <li>Mira chat backend reads <code>learned_facts</code> via <code>get_pet_context_pack</code> → builds system prompt (already coded in mira_routes.py line 3088)</li>
+                    <li>Result: Mira says "I remember you asked about the Salmon Delight Cake for Mojo — want to do that again for this birthday?"</li>
+                    <li>File: <code>celebrate_routes.py</code> — concierge request endpoint</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">6. Soul Archetype → Imagined Products Mapping</div>
+                <table>
+                    <tr><th>Archetype</th><th>Celebration Style</th><th>Imagined Product Types</th></tr>
+                    <tr><td>gentle_aristocrat 👑</td><td>intimate, sophisticated</td><td>Luxury Hamper, Premium Cake, Velvet Bow Tie</td></tr>
+                    <tr><td>wild_explorer 🏔️</td><td>outdoor adventure</td><td>Adventure Kit, Durable Rope Toy, Outdoor Treat Pack</td></tr>
+                    <tr><td>velcro_baby 🤗</td><td>cozy family</td><td>Comfort Snuggle Pack, Mom's Scent Toy, Warm Treat Box</td></tr>
+                    <tr><td>social_butterfly 🦋</td><td>big party</td><td>Pawty Decoration Kit, Group Treat Bag, Photo Props</td></tr>
+                    <tr><td>foodie_gourmet 🍴</td><td>gourmet tasting</td><td>Custom Recipe Cake, Gourmet Tasting Kit</td></tr>
+                    <tr><td>zen_philosopher 🧘</td><td>calm, mindful</td><td>Wellness Treat Box, Calm Birthday Hamper</td></tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Key DB Fields Referenced</div>
+                <ul>
+                    <li><code>pets.doggy_soul_answers.celebration_preferences</code> → list of occasions</li>
+                    <li><code>pets.doggy_soul_answers.favorite_protein</code> → drives cake imagination</li>
+                    <li><code>pets.doggy_soul_answers.motivation_type</code> → drives toy imagination</li>
+                    <li><code>pets.soul_archetype</code> → cached archetype object: <code>{primary_archetype, archetype_name, archetype_emoji}</code></li>
+                    <li><code>pets.learned_facts</code> → array of facts Mira remembers (food loves, concierge requests, etc.)</li>
+                    <li><code>pets.birthday</code> → ISO date string for birthday</li>
+                    <li><code>pets.gotcha_date</code> → ISO date string for gotcha/adoption day</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- NEW FIX: Session 7 — Soul Cards Deep Purple + Admin Panel Auth Fix -->
         <div class="section" style="border: 3px solid #C44DFF; margin-bottom: 20px;">
             <h2 class="section-title"><span class="emoji">🔴→✅</span> FIXED: Session 7 — Soul Cards + Admin Panel (Mar 14, 2026)</h2>
