@@ -15,7 +15,29 @@
 
 ---
 
-## 🔄 SESSION 16 IN PROGRESS — Celebrate Concierge® Redesign
+## ✅ SESSION 16 COMPLETE — Celebrate Concierge® Redesign (Mar 2026)
+
+**Source:** Celebrate_Concierge_MASTER.docx
+
+### Implemented:
+| Task | File | Status |
+|---|---|---|
+| Update CTA card (title, description, stat, chips, button) | CelebrateConcierge.jsx | ✅ DONE |
+| 8-card service grid | CelebrateServiceGrid.jsx (NEW) | ✅ DONE |
+| Individual card component | CelebrateServiceCard.jsx (NEW) | ✅ DONE |
+| 3-question Concierge Intake Modal | ConciergeIntakeModal.jsx (NEW) | ✅ DONE |
+| Backend intake endpoint | POST /api/concierge/intake | ✅ DONE |
+
+### Design:
+- CelebrateConcierge CTA: dark #0E0620 background, gold stat, 5 chips, gold CTA button
+- CelebrateServiceGrid: 4-col desktop, 2-col tablet/mobile, "Celebrate, Personally" header
+- CelebrateServiceCard: 180px illustration (object-position: center top), gold sub-label, title, description, CTA link
+- ConciergeIntakeModal: 3 questions, pre-selects service type from card, confirmation screen
+- All copy per master spec — {petName} resolved dynamically
+
+---
+
+## 🔄 SESSION 17 IN PROGRESS — Celebrate Concierge® Redesign
 
 **Source:** Celebrate_Concierge_MASTER.docx (ALL COPY IS FINAL)
 
