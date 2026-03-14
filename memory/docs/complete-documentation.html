@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Doggy Company — Platform Documentation</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 1100px; margin: 0 auto; padding: 40px 24px; color: #1A0030; background: #fff; }
+  h1 { font-size: 2rem; color: #1A0030; border-bottom: 3px solid #C44DFF; padding-bottom: 12px; }
+  h2 { font-size: 1.4rem; color: #3D0060; margin-top: 40px; background: linear-gradient(135deg, #F3E8FF, #FCE4EC); padding: 10px 16px; border-radius: 8px; }
+  h3 { font-size: 1.1rem; color: #6B21A8; margin-top: 24px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th { background: #F3E8FF; color: #3D0060; padding: 10px 14px; text-align: left; font-size: 13px; }
+  td { padding: 9px 14px; border-bottom: 1px solid #F0E8F8; font-size: 13px; }
+  tr:hover td { background: #FAF5FF; }
+  code { background: #F3E8FF; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-family: monospace; color: #6B21A8; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+  .done { background: #dcfce7; color: #166534; }
+  .missing { background: #fee2e2; color: #991b1b; }
+  .wip { background: #fef3c7; color: #92400e; }
+  .section { margin-bottom: 40px; }
+  pre { background: #1A0030; color: #e2c8ff; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 12px; line-height: 1.6; }
+  .pillar-card { display: inline-block; margin: 6px; padding: 10px 14px; border-radius: 10px; font-size: 12px; font-weight: 600; border: 1px solid rgba(196,77,255,0.3); }
+</style>
+</head>
+<body>
+
+<h1>🐾 The Doggy Company — Platform Documentation</h1>
+<p style="color:#888; font-size:13px">Last updated: March 2026 — Session 9 (Celebrate Pillars Master Build)</p>
+
+<!-- ============================= -->
+<div class="section">
+<h2>1. Architecture Overview</h2>
+<table>
+  <tr><th>Layer</th><th>Technology</th><th>Key Files</th></tr>
+  <tr><td>Frontend</td><td>React 18, Tailwind CSS, Framer Motion</td><td>/app/frontend/src/</td></tr>
+  <tr><td>Backend</td><td>FastAPI (Python), MongoDB</td><td>/app/backend/server.py</td></tr>
+  <tr><td>Auth</td><td>JWT (Bearer tokens)</td><td>server.py — verify_jwt_or_admin</td></tr>
+  <tr><td>Products DB</td><td>MongoDB — products_master collection</td><td>3,777 products</td></tr>
+</table>
+</div>
+
+<!-- ============================= -->
+<div class="section">
+<h2>2. /celebrate Page — Soul-First Architecture</h2>
+<p>Route: <code>/celebrate</code> → <code>CelebratePageNew.jsx</code></p>
+<h3>Component Hierarchy</h3>
+<pre>
+CelebratePageNew.jsx
+├── CelebrateHero.jsx              ← Pet photo, soul score, chips, Mira quote
+├── CelebrateCategoryStrip.jsx     ← 11 product categories strip
+├── SoulCelebrationPillars.jsx     ← 8-pillar grid (MAIN FEATURE — Session 9)
+│   ├── PillarCard                 ← Individual clickable card (GLOW/DIM/INCOMPLETE)
+│   └── SoulPillarExpanded.jsx     ← Inline expanded view (Session 9 built)
+│       ├── FeastMenuCard          ← Pillar 1 (Food) special panel
+│       ├── PawtyPlannerCard       ← Pillar 3 (Social) special panel
+│       ├── WellnessHeroCard       ← Pillar 7 (Health) special panel
+│       ├── MemoryInvitationCard   ← Pillar 8 (Memory) special panel
+│       └── DrawerBottomBar.jsx    ← Sticky bottom bar (Session 9 built)
+├── MiraCuratedBox.jsx             ← Birthday box builder
+├── CelebrateConcierge.jsx         ← Concierge drawer
+├── GuidedCelebrationPaths.jsx     ← Guided celebration paths
+└── CelebrationMemoryWall.jsx      ← Community moments wall
+</pre>
+</div>
+
+<!-- ============================= -->
+<div class="section">
+<h2>3. Soul Pillar System — Complete Spec</h2>
+<p><strong>Source:</strong> Celebrate_Pillars_MASTER.docx (canonical, all values final)</p>
+
+<h3>8 Pillars — Color Map</h3>
+<table>
+  <tr><th>Pillar</th><th>Icon</th><th>Background Gradient</th><th>Dot Color</th><th>Badge Color</th></tr>
+  <tr><td>Food &amp; Flavour</td><td>🍰</td><td>linear-gradient(135deg, #FFF3E0, #FFE0B2)</td><td>#FF8C42</td><td>#8B4500</td></tr>
+  <tr><td>Play &amp; Joy</td><td>🎾</td><td>linear-gradient(135deg, #FCE4EC, #F8BBD0)</td><td>#E91E63</td><td>#880E4F</td></tr>
+  <tr><td>Social &amp; Friends</td><td>🦋</td><td>linear-gradient(135deg, #F3E5F5, #E1BEE7)</td><td>#9C27B0</td><td>#4A148C</td></tr>
+  <tr><td>Adventure &amp; Move</td><td>🌅</td><td>linear-gradient(135deg, #E3F2FD, #BBDEFB)</td><td>#2196F3</td><td>#0D47A1</td></tr>
+  <tr><td>Grooming &amp; Beauty</td><td>✨</td><td>linear-gradient(135deg, #FFFDE7, #FFF9C4)</td><td>#F9A825</td><td>#E65100</td></tr>
+  <tr><td>Learning &amp; Mind</td><td>🧠</td><td>linear-gradient(135deg, #E8F5E9, #C8E6C9)</td><td>#4CAF50</td><td>#1B5E20</td></tr>
+  <tr><td>Health &amp; Wellness</td><td>💚</td><td>linear-gradient(135deg, #E0F7FA, #B2EBF2)</td><td>#00BCD4</td><td>#006064</td></tr>
+  <tr><td>Love &amp; Memory</td><td>📸</td><td>linear-gradient(135deg, #FBE9E7, #FFCCBC)</td><td>#FF5722</td><td>#BF360C</td></tr>
+</table>
+
+<h3>Pillar States</h3>
+<table>
+  <tr><th>State</th><th>Opacity</th><th>Indicator</th><th>Badge</th></tr>
+  <tr><td>GLOW</td><td>1.0</td><td>Coloured glow dot</td><td>Personalised (e.g. "Mystique loves this")</td></tr>
+  <tr><td>DIM</td><td>0.60</td><td>No dot</td><td>"Explore"</td></tr>
+  <tr><td>INCOMPLETE</td><td>0.50</td><td>Lock icon</td><td>"Tell Mira more" → opens Soul Builder</td></tr>
+</table>
+
+<h3>Expansion Behaviour</h3>
+<ul>
+  <li><strong>Row-based inline expansion:</strong> Row 1 (pillars 1-4: Food, Play, Social, Adventure) expands below Row 1. Row 2 (pillars 5-8: Grooming, Learning, Health, Memory) expands below Row 2.</li>
+  <li><strong>Only one open at a time</strong> — opening any pillar closes previously open one</li>
+  <li><strong>Same pillar clicked again</strong> → toggles closed</li>
+  <li><strong>Scroll:</strong> scrollIntoView({behavior:'smooth', block:'nearest'}) on open</li>
+  <li>Animation: height 0→auto, opacity 0→1, 300ms ease-in-out</li>
+</ul>
+</div>
+
+<!-- ============================= -->
+<div class="section">
+<h2>4. Special Panels (4 Pillars)</h2>
+
+<h3>FeastMenuCard — Pillar 1 (Food &amp; Flavour)</h3>
+<ul>
+  <li>Background: <code>linear-gradient(135deg, #FFF8F0, #FEF3FF)</code></li>
+  <li>3-item display-only birthday menu (NO add buttons)</li>
+  <li>Items: 🎂 Salmon Birthday Cake ₹899 · 🍪 Treat Platter ₹449 · 🧁 Paw Cupcakes ₹349</li>
+</ul>
+
+<h3>PawtyPlannerCard — Pillar 3 (Social &amp; Friends)</h3>
+<ul>
+  <li>Background: <code>linear-gradient(135deg, #F3E5F5, #FCE4EC)</code></li>
+  <li>4-step actionable pawty plan with numbered circles</li>
+  <li>Dynamic: uses {petFriend1}, {petFriend2} from soul profile</li>
+  <li>Step 4 → gold Concierge CTA</li>
+</ul>
+
+<h3>WellnessHeroCard — Pillar 7 (Health &amp; Wellness)</h3>
+<ul>
+  <li>Background: <code>linear-gradient(135deg, #E0F7FA, #E8F5E9)</code></li>
+  <li>Emotional card — NO CTA button inside</li>
+  <li>Quote changes based on whether pet has health condition</li>
+</ul>
+
+<h3>MemoryInvitationCard — Pillar 8 (Love &amp; Memory)</h3>
+<ul>
+  <li>Background: <code>linear-gradient(135deg, #1A0030, #3D0060)</code> (dark cinematic)</li>
+  <li>Only special panel WITH a CTA — "Book {petName}'s Photoshoot via Concierge 👑"</li>
+  <li>CTA dispatches openMiraAI event for Concierge flow</li>
+</ul>
+</div>
+
+<!-- ============================= -->
+<div class="section">
+<h2>5. DrawerBottomBar — Complete Spec</h2>
+<p>File: <code>/app/frontend/src/components/celebrate/DrawerBottomBar.jsx</code></p>
+<p>Props: <code>itemCount</code>, <code>drawerCategory</code>, <code>petName</code>, <code>onAction</code></p>
+
+<h3>Three States</h3>
+<table>
+  <tr><th>State</th><th>Condition</th><th>Left Whisper</th><th>Right Button</th></tr>
+  <tr><td>State 1</td><td>itemCount === 0</td><td>✦ Everything here is personalised for {petName}</td><td>Explore More for {petName} →</td></tr>
+  <tr><td>State 2</td><td>itemCount === 1</td><td>Pillar-specific (e.g. 🍰 Birthday feast chosen — {petName}'s table is set)</td><td>Build {petName}'s Birthday Plan →</td></tr>
+  <tr><td>State 3</td><td>itemCount >= 2</td><td>🎂 + {itemCount-1} more things — {petName}'s plan is growing</td><td>Keep Building →</td></tr>
+</table>
+
+<h3>Visual Spec</h3>
+<ul>
+  <li>Background: <code>linear-gradient(135deg, #2D0050, #6B0099, #C44DFF)</code></li>
+  <li>Height: 72px</li>
+  <li>Left: Pulsing Mira dot (20px) + whisper text (13px white)</li>
+  <li>Right: Action button with gold border/glow when hasItems</li>
+  <li>State 3: Count badge (gradient gold) on pulse dot, badge-pop animation</li>
+  <li>NEVER use: Continue Shopping, Back, Close, Done, or Checkout</li>
+</ul>
+
+<h3>Pillar-specific State 2 whispers</h3>
+<table>
+  <tr><th>Pillar</th><th>Whisper</th></tr>
+  <tr><td>food</td><td>🍰 Birthday feast chosen — {petName}'s table is set</td></tr>
+  <tr><td>play</td><td>🎾 Toy chosen — {petName}'s tail is already wagging</td></tr>
+  <tr><td>social</td><td>🦋 Pawty item chosen — Bruno and Cookie are going to love this</td></tr>
+  <tr><td>adventure</td><td>🌅 Adventure chosen — {petName}'s birthday starts in motion</td></tr>
+  <tr><td>grooming</td><td>✨ Pamper session chosen — {petName} is going to look beautiful</td></tr>
+  <tr><td>learning</td><td>🧠 Mind gift chosen — {petName} has something to solve</td></tr>
+  <tr><td>health</td><td>💚 Wellness gift chosen — the most loving thing you can give</td></tr>
+  <tr><td>memory</td><td>📸 Memory chosen — this birthday will last forever</td></tr>
+</table>
+</div>
+
+<!-- ============================= -->
+<div class="section">
+<h2>6. API Endpoints (Celebrate)</h2>
+<table>
+  <tr><th>Endpoint</th><th>Purpose</th></tr>
+  <tr><td>GET /api/products?category={X}&amp;limit=40</td><td>Products by category for pillar tabs</td></tr>
+  <tr><td>GET /api/celebrate/bundles</td><td>6 illustrated birthday bundles</td></tr>
+  <tr><td>GET /api/pet-soul/profile/{petId}/quick-questions?context=celebrate&amp;limit=5</td><td>Celebrate-context soul questions</td></tr>
+  <tr><td>POST /api/celebrate/concierge-request</td><td>Create concierge request (also writes to learned_facts)</td></tr>
+  <tr><td>GET /api/wrapped/generate/{petId}</td><td>Pet Wrapped data (soul score, archetype)</td></tr>
+</table>
+</div>
+
+<!-- ============================= -->
+<div class="section">
+<h2>7. Design Tokens</h2>
+<table>
+  <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
+  <tr><td>Expanded panel border</td><td>2px solid #C44DFF</td><td>All pillar expanded views</td></tr>
+  <tr><td>Expanded panel shadow</td><td>0 4px 24px rgba(196,77,255,0.12)</td><td>Panel depth</td></tr>
+  <tr><td>Mira bar bg</td><td>linear-gradient(135deg, #F3E8FF, #FCE4EC)</td><td>Mira quote section</td></tr>
+  <tr><td>DrawerBottomBar bg</td><td>linear-gradient(135deg, #2D0050, #6B0099, #C44DFF)</td><td>Bottom action bar</td></tr>
+  <tr><td>Concierge CTA</td><td>linear-gradient(135deg, #C9973A, #F0C060)</td><td>Gold concierge buttons</td></tr>
+  <tr><td>Primary CTA</td><td>linear-gradient(135deg, #C44DFF, #FF6B9D)</td><td>Add/action buttons</td></tr>
+  <tr><td>Tab active</td><td>background: #C44DFF, color: #FFF</td><td>Active pillar tab</td></tr>
+  <tr><td>Tab inactive</td><td>background: #FAF5FF, border: #E0CCFF, color: #7C3AED</td><td>Inactive pillar tab</td></tr>
+</table>
+</div>
+
+<!-- ============================= -->
+<div class="section">
+<h2>8. Session History</h2>
+<table>
+  <tr><th>Session</th><th>Date</th><th>Changes</th></tr>
+  <tr><td>Session 9</td><td>March 2026</td><td>Celebrate Pillars Master Build: Row-based inline expansion, 4 special panels, DrawerBottomBar, correct tabs per spec</td></tr>
+  <tr><td>Session 8</td><td>March 14, 2026</td><td>Soul Score constant glow, PetWrap teaser, Celebrate-context soul questions, Occasion countdown card, Archetype imagined products, Mira memory loop</td></tr>
+  <tr><td>Session 7</td><td>March 14, 2026</td><td>Soul question cards UI fix, soul score display enhancement, admin panel auth fix</td></tr>
+  <tr><td>Sessions 1-6</td><td>March 2026</td><td>Full celebrate page soul-first redesign, 11 product categories, CelebrateContentModal, SoulCelebrationPillars, MiraCuratedBox, etc.</td></tr>
+</table>
+</div>
+
+<!-- ============================= -->
+<div class="section">
+<h2>9. Test Credentials</h2>
+<table>
+  <tr><th>Role</th><th>Username/Email</th><th>Password</th></tr>
+  <tr><td>User (Mojo — Indie dog, 89% soul)</td><td>dipali@clubconcierge.in</td><td>test123</td></tr>
+  <tr><td>Admin</td><td>aditya</td><td>lola4304</td></tr>
+</table>
+</div>
+
+<!-- ============================= -->
+<div class="section">
+<h2>10. Known Issues / Backlog</h2>
+<table>
+  <tr><th>Issue</th><th>Priority</th><th>Notes</th></tr>
+  <tr><td>Birthday Cakes shows 80 of 111</td><td>P3</td><td>Pagination limit. Consider "Show More" button</td></tr>
+  <tr><td>Category strip icons too small</td><td>P2</td><td>34px icon box → need 52-62px</td></tr>
+  <tr><td>500 uncategorized products</td><td>P2</td><td>Need AI auto-categorization</td></tr>
+  <tr><td>Razorpay checkout failure</td><td>P3</td><td>Legacy bug</td></tr>
+  <tr><td>Scrambled mobile pet dashboard</td><td>P3</td><td>Layout bug on small screens</td></tr>
+  <tr><td>Soul Score bouncing</td><td>P2 (pending user verification)</td><td>Constant glow implemented — awaiting confirmation</td></tr>
+</table>
+</div>
+
+</body>
+</html>

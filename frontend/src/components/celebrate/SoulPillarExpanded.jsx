@@ -1,13 +1,13 @@
 /**
  * SoulPillarExpanded.jsx
  * Celebrate Pillars Master Build — EXACT SPEC from Celebrate_Pillars_MASTER.docx
- * Sections: Panel header → Mira bar → Special panel (4 pillars) → Tab bar → Product grid
+ * Sections: Panel header → Mira bar → Special panel (4 pillars) → Tab bar → Product grid → DrawerBottomBar
  */
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { X, Sparkles, Loader2, Plus } from 'lucide-react';
+import { Sparkles, Loader2, Plus } from 'lucide-react';
 import { getApiUrl } from '../../utils/api';
+import DrawerBottomBar from './DrawerBottomBar';
 
 /* ── Tab definitions — EXACT from spec ─────────────────────────────────── */
 const PILLAR_TABS = {
@@ -217,7 +217,7 @@ const MemoryInvitationCard = ({ pet }) => {
 };
 
 /* ── Product card ─────────────────────────────────────────────────────────── */
-const SoulProductCard = ({ product, petName, isFirst, isConcierge }) => {
+const SoulProductCard = ({ product, petName, isFirst, isConcierge, onAddToCart }) => {
   const price = product.price || product.variants?.[0]?.price || 0;
   const image = product.image_url || product.image || product.images?.[0];
   const handleAction = () => {
@@ -226,6 +226,8 @@ const SoulProductCard = ({ product, petName, isFirst, isConcierge }) => {
         detail: { message: `Book "${product.name}" for ${petName} via concierge`, context: 'celebrate' }
       }));
     } else {
+      // Notify parent to track itemCount, then dispatch global cart event
+      onAddToCart?.(product);
       window.dispatchEvent(new CustomEvent('addToCart', { detail: product }));
     }
   };
@@ -284,6 +286,7 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [itemCount, setItemCount] = useState(0);
   const petName = pet?.name || 'your pet';
   const tabs = PILLAR_TABS[pillar.id] || [{ name: 'All', category: 'cakes' }];
   const titleInfo = PILLAR_TITLES[pillar.id] || { title: pillar.name, sub: () => '' };
@@ -331,129 +334,147 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
   }, [products, allergies]);
 
   const handleAddToCart = (product) => {
-    window.dispatchEvent(new CustomEvent('addToCart', { detail: product }));
+    setItemCount(prev => prev + 1);
     onItemAdd?.(product);
   };
 
+  const handleBottomBarAction = () => {
+    if (itemCount === 0) {
+      onClose();
+    } else {
+      window.dispatchEvent(new CustomEvent('openMiraAI', {
+        detail: { message: `Build ${petName}'s birthday plan`, context: 'celebrate' }
+      }));
+    }
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, maxHeight: 0 }}
-      animate={{ opacity: 1, maxHeight: 1000 }}
-      exit={{ opacity: 0, maxHeight: 0 }}
-      transition={{ duration: 0.3, ease: 'easeInOut' }}
+    <div
       className="bg-white overflow-hidden"
       style={{
-        gridColumn: '1 / -1',
         borderRadius: 18,
         border: '2px solid #C44DFF',
         boxShadow: '0 4px 24px rgba(196,77,255,0.12)',
-        marginTop: 4, marginBottom: 8
+        marginTop: 4, marginBottom: 8,
+        display: 'flex',
+        flexDirection: 'column',
       }}
       data-testid={`pillar-expanded-${pillar.id}`}
     >
-      {/* 1 — Panel header */}
-      <div className="flex items-start gap-3 px-6 pt-5 pb-0 mb-4">
-        <span style={{ fontSize: 32, flexShrink: 0 }}>{pillar.icon}</span>
-        <div className="flex-1">
-          <h3 className="font-extrabold" style={{ fontSize: 18, color: '#1A0030', lineHeight: 1.2 }}>
-            {titleInfo.title.replace('{petName}', petName)}
-          </h3>
-          <p style={{ fontSize: 12, color: '#888888', marginTop: 3 }}>
-            {titleInfo.sub(pet)}
-          </p>
-        </div>
-        <button onClick={onClose}
-          className="flex-shrink-0 rounded-full font-bold"
-          style={{ background: '#F3E8FF', border: 'none', padding: '5px 14px', fontSize: 12, color: '#7C3AED', cursor: 'pointer' }}>
-          Close
-        </button>
-      </div>
-
-      {/* 2 — Mira bar */}
-      <div className="mx-6 mb-4 rounded-xl p-3 flex items-start gap-2.5"
-        style={{ background: 'linear-gradient(135deg, #F3E8FF, #FCE4EC)' }}>
-        <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold text-white"
-          style={{ background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)', marginTop: 1 }}>
-          ✦
-        </div>
-        <div>
-          <p style={{ fontSize: 13, color: '#3D0060', lineHeight: 1.55, fontStyle: 'italic' }}>
-            {getMiraQuote(pillar.id, pet)}
-          </p>
-          <span style={{ fontSize: 11, color: '#C44DFF', marginTop: 3, fontWeight: 600, display: 'block' }}>
-            ♥ Mira knows {petName}
-          </span>
-        </div>
-      </div>
-
-      {/* 3 — Special panel (pillars 1, 3, 7, 8 only) */}
-      <div className="mx-6">
-        {pillar.id === 'food'    && <FeastMenuCard petName={petName} />}
-        {pillar.id === 'social'  && <PawtyPlannerCard pet={pet} />}
-        {pillar.id === 'health'  && <WellnessHeroCard pet={pet} />}
-        {pillar.id === 'memory'  && <MemoryInvitationCard pet={pet} />}
-      </div>
-
-      {/* 4 — Tab bar */}
-      <div className="flex flex-wrap gap-1.5 px-6 mb-4">
-        {tabs.map((tab, idx) => (
-          <button key={tab.name} onClick={() => setActiveTab(idx)}
-            className="rounded-full font-semibold"
-            style={{
-              padding: '6px 14px', fontSize: 12, cursor: 'pointer', transition: 'all 120ms',
-              border: activeTab === idx ? '1px solid #C44DFF' : '1px solid #E0CCFF',
-              background: activeTab === idx ? '#C44DFF' : '#FAF5FF',
-              color: activeTab === idx ? '#FFFFFF' : '#7C3AED',
-            }}>
-            {tab.name}
+      {/* Scrollable content */}
+      <div>
+        {/* 1 — Panel header */}
+        <div className="flex items-start gap-3 px-6 pt-5 pb-0 mb-4">
+          <span style={{ fontSize: 32, flexShrink: 0 }}>{pillar.icon}</span>
+          <div className="flex-1">
+            <h3 className="font-extrabold" style={{ fontSize: 18, color: '#1A0030', lineHeight: 1.2 }}>
+              {titleInfo.title.replace('{petName}', petName)}
+            </h3>
+            <p style={{ fontSize: 12, color: '#888888', marginTop: 3 }}>
+              {titleInfo.sub(pet)}
+            </p>
+          </div>
+          <button onClick={onClose}
+            className="flex-shrink-0 rounded-full font-bold"
+            style={{ background: '#F3E8FF', border: 'none', padding: '5px 14px', fontSize: 12, color: '#7C3AED', cursor: 'pointer' }}>
+            Close
           </button>
-        ))}
-      </div>
+        </div>
 
-      {/* 5 — Product grid */}
-      <div className="px-6 pb-5">
-        {allergies.length > 0 && (
-          <div className="mb-3 px-4 py-2 rounded-lg text-sm flex items-center gap-2"
-            style={{ background: '#FFF3E0', border: '1px solid #FFCC99', color: '#8B4500' }}>
-            <span>🛡️</span>
-            <span>Showing only {petName}-safe items (no {allergies.join(', ')})</span>
+        {/* 2 — Mira bar */}
+        <div className="mx-6 mb-4 rounded-xl p-3 flex items-start gap-2.5"
+          style={{ background: 'linear-gradient(135deg, #F3E8FF, #FCE4EC)' }}>
+          <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold text-white"
+            style={{ background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)', marginTop: 1 }}>
+            ✦
           </div>
-        )}
+          <div>
+            <p style={{ fontSize: 13, color: '#3D0060', lineHeight: 1.55, fontStyle: 'italic' }}>
+              {getMiraQuote(pillar.id, pet)}
+            </p>
+            <span style={{ fontSize: 11, color: '#C44DFF', marginTop: 3, fontWeight: 600, display: 'block' }}>
+              ♥ Mira knows {petName}
+            </span>
+          </div>
+        </div>
 
-        {loading ? (
-          <div className="flex items-center justify-center py-10">
-            <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
-            <span className="ml-3 text-sm text-gray-500">Finding perfect items for {petName}...</span>
-          </div>
-        ) : filteredProducts.length === 0 ? (
-          <div className="text-center py-8">
-            <span className="text-4xl block mb-3">🎁</span>
-            <p className="text-sm text-gray-500 mb-4">We're curating the perfect {pillar.name.toLowerCase()} items for {petName}.</p>
-            <button
-              onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI', {
-                detail: { message: `Suggest ${pillar.name} celebration ideas for ${petName}`, context: 'celebrate' }
-              }))}
-              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium"
-              style={{ background: 'rgba(196,77,255,0.10)', border: '1px solid rgba(196,77,255,0.30)', color: '#7C3AED' }}>
-              <Sparkles className="w-4 h-4" /> Ask Mira
+        {/* 3 — Special panel (pillars food, social, health, memory only) */}
+        <div className="mx-6">
+          {pillar.id === 'food'    && <FeastMenuCard petName={petName} />}
+          {pillar.id === 'social'  && <PawtyPlannerCard pet={pet} />}
+          {pillar.id === 'health'  && <WellnessHeroCard pet={pet} />}
+          {pillar.id === 'memory'  && <MemoryInvitationCard pet={pet} />}
+        </div>
+
+        {/* 4 — Tab bar */}
+        <div className="flex flex-wrap gap-1.5 px-6 mb-4">
+          {tabs.map((tab, idx) => (
+            <button key={tab.name} onClick={() => setActiveTab(idx)}
+              className="rounded-full font-semibold"
+              style={{
+                padding: '6px 14px', fontSize: 12, cursor: 'pointer', transition: 'all 120ms',
+                border: activeTab === idx ? '1px solid #C44DFF' : '1px solid #E0CCFF',
+                background: activeTab === idx ? '#C44DFF' : '#FAF5FF',
+                color: activeTab === idx ? '#FFFFFF' : '#7C3AED',
+              }}>
+              {tab.name}
             </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {filteredProducts.slice(0, 4).map((product, idx) => (
-              <SoulProductCard
-                key={product.id || idx}
-                product={product}
-                petName={petName}
-                isFirst={idx === 0}
-                isConcierge={isConciergeTab}
-                onAddToCart={handleAddToCart}
-              />
-            ))}
-          </div>
-        )}
+          ))}
+        </div>
+
+        {/* 5 — Product grid */}
+        <div className="px-6 pb-5">
+          {allergies.length > 0 && (
+            <div className="mb-3 px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+              style={{ background: '#FFF3E0', border: '1px solid #FFCC99', color: '#8B4500' }}>
+              <span>🛡️</span>
+              <span>Showing only {petName}-safe items (no {allergies.join(', ')})</span>
+            </div>
+          )}
+
+          {loading ? (
+            <div className="flex items-center justify-center py-10">
+              <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
+              <span className="ml-3 text-sm text-gray-500">Finding perfect items for {petName}...</span>
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="text-center py-8">
+              <span className="text-4xl block mb-3">🎁</span>
+              <p className="text-sm text-gray-500 mb-4">We're curating the perfect {pillar.name.toLowerCase()} items for {petName}.</p>
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI', {
+                  detail: { message: `Suggest ${pillar.name} celebration ideas for ${petName}`, context: 'celebrate' }
+                }))}
+                className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium"
+                style={{ background: 'rgba(196,77,255,0.10)', border: '1px solid rgba(196,77,255,0.30)', color: '#7C3AED' }}>
+                <Sparkles className="w-4 h-4" /> Ask Mira
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {filteredProducts.slice(0, 4).map((product, idx) => (
+                <SoulProductCard
+                  key={product.id || idx}
+                  product={product}
+                  petName={petName}
+                  isFirst={idx === 0}
+                  isConcierge={isConciergeTab}
+                  onAddToCart={handleAddToCart}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </motion.div>
+
+      {/* DrawerBottomBar — sticky at bottom of panel */}
+      <DrawerBottomBar
+        itemCount={itemCount}
+        drawerCategory={pillar.id}
+        petName={petName}
+        onAction={handleBottomBarAction}
+      />
+    </div>
   );
 };
 
