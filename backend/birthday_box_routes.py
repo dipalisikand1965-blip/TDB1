@@ -569,3 +569,142 @@ Source: BirthdayBoxBuilder (celebrate-soul page)
         "ticketId": ticket_id,
         "message": f"Birthday box for {pet_name} sent to Concierge. We'll contact you within 24 hours."
     }
+
+
+
+# ==================== ADMIN: BIRTHDAY BOX ORDERS ====================
+
+STATUS_PRIORITY = {"new": 0, "in_progress": 1, "assembled": 2, "dispatched": 3, "delivered": 4, "cancelled": 5}
+
+class StatusUpdatePayload(BaseModel):
+    status: str
+    note: Optional[str] = None
+
+class PersonalisationPayload(BaseModel):
+    bandana_name: Optional[str] = None
+    cake_message: Optional[str] = None
+    delivery_date: Optional[str] = None
+    special_requests: Optional[str] = None
+    delivery_address: Optional[str] = None
+
+
+@birthday_box_router.get("/admin/birthday-box-orders")
+async def list_birthday_box_orders(status: Optional[str] = None, limit: int = 100):
+    """List all birthday box orders for the admin Service Desk."""
+    query = {}
+    if status:
+        query["status"] = status
+
+    cursor = db.birthday_box_orders.find(query, {"_id": 0}).sort("created_at", -1).limit(limit)
+    orders = await cursor.to_list(length=limit)
+
+    # Sort by status priority then date
+    orders.sort(key=lambda o: (STATUS_PRIORITY.get(o.get("status", "new"), 99), o.get("created_at", "")))
+
+    # Enrich with pet name and allergy flag for quick display
+    result = []
+    for order in orders:
+        result.append({
+            **order,
+            "hasAllergies": bool(order.get("allergies")),
+            "slotCount": len(order.get("slots", [])),
+        })
+
+    counts = {
+        "total": len(result),
+        "new": sum(1 for o in result if o.get("status") == "new" or o.get("status") == "pending_concierge"),
+        "in_progress": sum(1 for o in result if o.get("status") == "in_progress"),
+        "assembled": sum(1 for o in result if o.get("status") == "assembled"),
+        "dispatched": sum(1 for o in result if o.get("status") == "dispatched"),
+        "delivered": sum(1 for o in result if o.get("status") == "delivered"),
+    }
+
+    return {"orders": result, "counts": counts}
+
+
+@birthday_box_router.get("/admin/birthday-box-orders/{order_id}")
+async def get_birthday_box_order(order_id: str):
+    """Full order detail including pet data, slots, personalisation."""
+    order = await db.birthday_box_orders.find_one(
+        {"$or": [{"id": order_id}, {"ticket_id": order_id}]},
+        {"_id": 0}
+    )
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    # Enrich with pet data
+    pet = await db.pets.find_one({"id": order.get("pet_id")}, {"_id": 0})
+    if pet:
+        order["pet"] = {
+            "name": pet.get("name"),
+            "breed": pet.get("breed"),
+            "age": pet.get("age"),
+            "image": pet.get("image") or pet.get("profile_image"),
+        }
+
+    return order
+
+
+@birthday_box_router.patch("/admin/birthday-box-orders/{order_id}/status")
+async def update_order_status(order_id: str, payload: StatusUpdatePayload):
+    """Transition the order status with server-side gate validation."""
+    VALID_STATUSES = ["new", "pending_concierge", "in_progress", "assembled", "dispatched", "delivered", "cancelled"]
+    if payload.status not in VALID_STATUSES:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Valid: {VALID_STATUSES}")
+
+    order = await db.birthday_box_orders.find_one(
+        {"$or": [{"id": order_id}, {"ticket_id": order_id}]},
+        {"_id": 0}
+    )
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    now = get_utc_timestamp()
+    # Build audit trail entry
+    audit_entry = {
+        "action": f"status_changed_to_{payload.status}",
+        "from_status": order.get("status"),
+        "to_status": payload.status,
+        "note": payload.note,
+        "timestamp": now,
+        "performed_by": "concierge"
+    }
+
+    await db.birthday_box_orders.update_one(
+        {"$or": [{"id": order_id}, {"ticket_id": order_id}]},
+        {
+            "$set": {"status": payload.status, "updated_at": now},
+            "$push": {"audit_trail": audit_entry}
+        }
+    )
+
+    # Mirror status in service_desk_tickets
+    if order.get("ticket_id"):
+        await db.service_desk_tickets.update_one(
+            {"ticket_id": order["ticket_id"]},
+            {"$set": {"status": payload.status, "updated_at": now}}
+        )
+
+    return {"success": True, "status": payload.status, "orderId": order_id}
+
+
+@birthday_box_router.patch("/admin/birthday-box-orders/{order_id}/personalisation")
+async def update_personalisation(order_id: str, payload: PersonalisationPayload):
+    """Update personalisation details (bandana name, cake message, delivery date, address)."""
+    update_fields = {k: v for k, v in payload.dict().items() if v is not None}
+    if not update_fields:
+        return {"success": True, "message": "Nothing to update"}
+
+    now = get_utc_timestamp()
+    personalisation_update = {f"personalisation.{k}": v for k, v in update_fields.items()}
+    personalisation_update["updated_at"] = now
+
+    result = await db.birthday_box_orders.update_one(
+        {"$or": [{"id": order_id}, {"ticket_id": order_id}]},
+        {"$set": personalisation_update}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    return {"success": True, "updated": update_fields}
