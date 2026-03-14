@@ -3,7 +3,33 @@
 
 ---
 
-## [Mar 15, 2026] Session 6b — Mira Imagines Concierge + Soul Questions + Admin Fix ✅ COMPLETE
+## [Mar 15, 2026] Session 6c — Soul Questions Visibility + Admin Sync + Score Animation ✅
+
+### Fixes Applied
+- **Soul Question Cards**: Redesigned with frosted glass (rgba white bg + blue border + blue glow) — fully visible on dark modal. Each card shows: folder, +Xpts badge, question, options/textarea, 'Save +X pts' button. Success state: green glow card with "+X pts added"
+- **Soul Score Display**: Big 38px animated counter (gold for 90%+, blue for 50%+), progress bar, +delta shown on score change
+- **Mira Cards Dynamic Refresh**: After answering, `fetchData()` re-runs — new imagined products appear when new food preferences revealed
+- **Admin Celebrate Products**: Now uses exact Set of 12 categories matching frontend. Limit raised to 5000. Active-only by default (419 active products showing). Toggle button to show inactive (12 extra)
+- **Admin Active/Inactive Toggle**: "✓ Active only" / "⚡ All (incl. inactive)" toggle button
+
+### Category-Product Sync (Frontend = Admin active view)
+| Category | Active | Match frontend? |
+|----------|--------|----------------|
+| cakes | 111 | ✅ |
+| celebration | 106 | ✅ |
+| breed-cakes | 42 | ✅ |
+| hampers | 37 | ✅ |
+| breed-party_hats | 33 | ✅ |
+| dognuts | 30 | ✅ |
+| frozen-treats | 24 | ✅ |
+| mini-cakes | 11 | ✅ |
+| party_accessories | 11 | ✅ |
+| desi-treats | 7 | ✅ |
+| nut-butters | 6 | ✅ |
+
+---
+
+
 
 ### Feature 1: Request a Quote → Service Desk Ticket (No Mira widget)
 - Clicking "Request a Quote →" on any MiraImaginesCard POSTs to `/api/service_desk/attach_or_create_ticket`
