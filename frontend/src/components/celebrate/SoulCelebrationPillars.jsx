@@ -300,15 +300,15 @@ const PillarCard = ({ pillar, pet, isExpanded, onToggle, onTellMiraMore }) => {
         )}
 
         {/* Icon */}
-        <span className="block mb-2" style={{ fontSize: 26 }}>{pillar.icon}</span>
+        <span className="block mb-2" style={{ fontSize: 28 }}>{pillar.icon}</span>
 
         {/* Name */}
-        <p className="font-bold mb-0.5" style={{ fontSize: 13, color: '#1A0A00' }}>
+        <p className="font-bold mb-0.5" style={{ fontSize: 14, color: '#1A0A00' }}>
           {pillar.name}
         </p>
 
         {/* Tagline */}
-        <p className="mb-2 leading-snug" style={{ fontSize: 11, color: '#666', lineHeight: 1.4 }}>
+        <p className="mb-2 leading-snug" style={{ fontSize: 12, color: '#666', lineHeight: 1.4 }}>
           {pillar.tagline(petName)}
         </p>
 
@@ -316,8 +316,8 @@ const PillarCard = ({ pillar, pet, isExpanded, onToggle, onTellMiraMore }) => {
         <span
           className="rounded-full font-bold whitespace-nowrap overflow-hidden text-ellipsis block"
           style={{
-            fontSize: 10, fontWeight: 700,
-            padding: '2px 8px',
+            fontSize: 11, fontWeight: 700,
+            padding: '3px 9px',
             maxWidth: '100%',
             ...badgeStyle[state]
           }}

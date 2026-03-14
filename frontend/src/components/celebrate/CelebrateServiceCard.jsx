@@ -90,8 +90,7 @@ const CelebrateServiceCard = ({ illustration, subLabel, title, description, ctaT
           fontSize: 13,
           color: '#666666',
           lineHeight: 1.55,
-          marginBottom: 14,
-          minHeight: 52
+          marginBottom: 14
         }}>
           {description}
         </p>

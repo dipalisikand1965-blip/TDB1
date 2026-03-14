@@ -116,7 +116,7 @@ const CelebrateServiceGrid = ({ pet }) => {
       {/* Section Header */}
       <div style={{ textAlign: 'center', marginBottom: 28 }}>
         <h2 style={{
-          fontSize: '2rem',
+          fontSize: 'clamp(1.3rem, 5vw, 2rem)',
           fontWeight: 800,
           color: '#1A0030',
           fontFamily: 'Georgia, serif',
@@ -134,12 +134,9 @@ const CelebrateServiceGrid = ({ pet }) => {
         </p>
       </div>
 
-      {/* 4-column grid — desktop / 2-column — tablet / 1-column — mobile */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: 16
-      }}
+      {/* Mobile: horizontal scroll carousel / Tablet: 2-col / Desktop: 4-col */}
+      <div
+        style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}
         className="service-grid-responsive"
       >
         {CARD_SPECS.map((spec, idx) => (

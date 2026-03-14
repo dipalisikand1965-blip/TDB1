@@ -32,7 +32,7 @@ const GuidedCelebrationPaths = ({ pet }) => {
       {/* Section Header */}
       <div style={{ marginBottom: 28 }}>
         <h2 style={{
-          fontSize: '2rem',
+          fontSize: 'clamp(1.3rem, 5vw, 2rem)',
           fontWeight: 800,
           color: '#1A0030',
           marginBottom: 6,
@@ -72,6 +72,24 @@ const GuidedCelebrationPaths = ({ pet }) => {
           />
         ))}
       </div>
+      {/* ── Mobile floating close button — appears when any path is expanded ── */}
+      {expandedId !== null && (
+        <div className="md:hidden fixed bottom-[90px] left-1/2 -translate-x-1/2 z-[9990]">
+          <button
+            onClick={() => setExpandedId(null)}
+            style={{
+              background: '#1A0030', color: '#fff',
+              border: 'none', borderRadius: 9999,
+              padding: '12px 28px', fontSize: 14, fontWeight: 700,
+              cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
+              display: 'flex', alignItems: 'center', gap: 8
+            }}
+            data-testid="guided-path-mobile-close"
+          >
+            ✕ Close guide
+          </button>
+        </div>
+      )}
     </section>
   );
 };
