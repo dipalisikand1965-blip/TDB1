@@ -27,12 +27,19 @@
 4. **is_active filter** added to products API query - inactive products don't appear
 
 ### ✅ VERIFIED: Party & Decor Working Correctly
-- **14 items displayed** in Party & Decor modal
+- **47 total party products** available:
+  - 14 generic (party_accessories: 11, party_kits: 2, celebration_addons: 1)
+  - 33 breed-specific party hats (with Cloudinary AI mockup images)
+- **For Mojo (Indie breed):** Shows 16 items (14 generic + 2 Indie-specific)
+- **Breed filtering:** Only shows breed-specific items matching pet's breed
 - All products have **unique realistic AI-generated Cloudinary images**
 - All products have **proper pricing** (₹199-₹499)
 - All products have **soul-driven Mira hints**
-- No more repeated generic dog toy images
-- No more "Price on request" products
+
+### Admin Access:
+- **CelebrateManager:** Categories include party_accessories, party_kits, celebration_addons, breed-party_hats
+- **ProductBoxEditor:** Products accessible via category filter
+- **Activate/Deactivate toggle** available in both editors
 
 ### COMPLETED: Deactivated Products with Generic Placeholder Images
 1. **240+ products deactivated** with generic toy image + zero price
