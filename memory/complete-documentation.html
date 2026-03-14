@@ -48,7 +48,49 @@
         <div class="header">
             <h1>The Doggy Company</h1>
             <p class="tagline">Complete Technical Documentation & Platform Bible</p>
-            <p class="date">Last Updated: March 14, 2026 | AI Image Generation for Party & Accessories</p>
+            <p class="date">Last Updated: March 15, 2026 | Critical Regression Fix + Mira Picks Enhancement</p>
+        </div>
+
+        <!-- CRITICAL FIX: Session 6 Regression Resolution -->
+        <div class="section" style="border: 3px solid #e91e63;">
+            <h2 class="section-title"><span class="emoji">🔴→✅</span> FIXED: Session 6 — Critical Regression (Mar 15, 2026)</h2>
+            
+            <div class="success-box">
+                <strong>ROOT CAUSE:</strong> Previous cleanup script set <code>is_active: None</code> (null) on 253 celebrate products.<br>
+                The backend API only checked <code>is_active: True</code> or field missing — <strong>null was silently excluded</strong>.<br>
+                <strong>IMPACT:</strong> Breed Cakes (42), Birthday Cakes (111), Pupcakes (30), Frozen Treats (24), Hampers (37) all showing 0 products.
+            </div>
+
+            <div class="card">
+                <div class="card-title">Fix 1: Re-activated 253 Products</div>
+                <table>
+                    <tr><th>Category</th><th>Products Restored</th><th>Status</th></tr>
+                    <tr><td>cakes (Birthday Cakes)</td><td>111</td><td class="verified">✅ Active</td></tr>
+                    <tr><td>breed-cakes</td><td>42</td><td class="verified">✅ Active</td></tr>
+                    <tr><td>celebration (kits)</td><td>106</td><td class="verified">✅ Active</td></tr>
+                    <tr><td>dognuts (Pupcakes)</td><td>30</td><td class="verified">✅ Active</td></tr>
+                    <tr><td>frozen-treats</td><td>24</td><td class="verified">✅ Active</td></tr>
+                    <tr><td>hampers</td><td>37</td><td class="verified">✅ Active</td></tr>
+                    <tr><td>desi-treats</td><td>7</td><td class="verified">✅ Active</td></tr>
+                    <tr><td>nut-butters</td><td>6</td><td class="verified">✅ Active</td></tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Fix 2: Backend API Robustness (<code>server.py</code>)</div>
+                <p>Updated <code>is_active</code> filter to accept <code>True</code>, field missing, AND <code>None</code>:</p>
+                <div class="api-endpoint">{"$or": [{"is_active": True}, {"is_active": {"$exists": False}}, {"is_active": None}]}</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Fix 3: Mira's Picks Code Improvements (<code>CelebrateContentModal.jsx</code>)</div>
+                <ul>
+                    <li><strong>getLovedFoods()</strong>: Now handles 2 learned_facts formats — <code>{type:'loves', category:'preferences', value:'salmon treats'}</code> AND <code>{category:'loves', content:"Loves ['salmon']"}</code></li>
+                    <li><strong>extractSoulTraits()</strong>: Cleaner extraction, handles all formats, properly deduped</li>
+                    <li><strong>Salmon Delight Cake</strong>: Restored for Mojo (Mojo loves "salmon treats" → imagined cake)</li>
+                    <li><strong>Breed Cakes</strong>: All 42 breed cakes showing in "Breed Cakes" tab</li>
+                </ul>
+            </div>
         </div>
 
         <!-- COMPLETED TASK: AI Image Generation -->

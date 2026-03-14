@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: March 13, 2026 (Session 4 — Celebrate Modal Fixes)
+## Last Updated: March 15, 2026 (Session 6 — Critical Regression Fix + Mira Picks Enhancement)
 
 ---
 
@@ -97,6 +97,20 @@ NEVER use `celebration` for the Birthday Cakes tab. Use `cakes`.
    - **Products:** Generic party items applicable across ALL breeds
    - **Storage:** `products_master` collection
    - **Visibility:** Party & Decor category tab shows 33 items with AI images first
+
+### ✅ FIXED — Session 6 (Mar 15, 2026) — Critical Regression Restored
+**Root Cause:** Previous session's cleanup script set `is_active: None` on all celebrate products, filtering them out.
+**Fix Applied:**
+- Re-activated 253 products: `breed-cakes`(42), `cakes`(111), `dognuts`(30), `frozen-treats`(24), `desi-treats`(7), `nut-butters`(6), `hampers`(37), `celebration`(106)
+- Backend API `is_active` filter now also accepts `None`/`null` values (robustness)
+- `getLovedFoods()` improved: handles both learned_facts formats (type:'loves' + category:'loves')
+- `extractSoulTraits()` improved: cleaner, handles all fact formats, deduped
+
+### ✅ Mira's Picks — Enhanced & Working (Mar 15, 2026)
+- Food-based: Mojo loves "salmon treats" → "Salmon Delight Cake" imagined card
+- Activity-based: "morning walks" → "Adventure Walk Party Pack"
+- Soul onboarding: If no soul data → prompt card with "Help Mira Know Me"
+- Works for ALL pets (Mojo, Mystique, any new pet)
 
 ### IN PROGRESS 🚧 — NEXT TASKS
 1. **Replace `/celebrate` with `/celebrate-soul`** — once Aditya approves

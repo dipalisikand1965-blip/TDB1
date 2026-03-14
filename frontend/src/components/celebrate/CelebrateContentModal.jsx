@@ -60,58 +60,74 @@ const getFoodEmoji = (food) => {
   return '✨';
 };
 
-// Extract loved foods from pet.learned_facts
+// Extract loved foods from pet.learned_facts (handles multiple fact formats)
 const getLovedFoods = (pet) => {
   const facts = pet?.learned_facts || [];
   if (!Array.isArray(facts)) return [];
-  return facts
-    .filter(f => (f.type === 'loves' || f.type === 'likes') && f.category === 'preferences')
-    .map(f => f.value || '')
-    .filter(Boolean);
+  const foods = [];
+  for (const f of facts) {
+    // Format 1: {type:'loves', category:'preferences', value:'salmon treats'}
+    if ((f.type === 'loves' || f.type === 'likes') && f.category === 'preferences' && f.value) {
+      foods.push(f.value);
+    }
+    // Format 2: {category:'loves', content:"Loves ['salmon']"} (no type field)
+    else if (f.category === 'loves' && f.content) {
+      const match = f.content.match(/['"]([\w\s]+)['"]/);
+      if (match) foods.push(match[1]);
+      else {
+        // fallback: grab value after "Loves " 
+        const val = f.content.replace(/^loves\s*/i, '').replace(/[\[\]'"]/g, '').trim();
+        if (val && val.length > 1) foods.push(val);
+      }
+    }
+    // Format 3: {type:'loves'} with value field regardless of category
+    else if ((f.type === 'loves' || f.type === 'likes') && f.value) {
+      foods.push(f.value);
+    }
+  }
+  return [...new Set(foods.filter(Boolean))];
 };
 
 // Helper to extract ALL soul traits from pet data (activities, likes, personality)
 const extractSoulTraits = (pet) => {
   const traits = [];
-  
-  // From learned_facts
-  if (pet?.learned_facts && Array.isArray(pet.learned_facts)) {
-    const factValues = pet.learned_facts
-      .filter(f => f.type === 'activity' || f.type === 'preference' || f.type === 'likes' || f.type === 'loves')
-      .map(f => f.value || f.fact || '');
-    traits.push(...factValues);
+
+  // From learned_facts (handles multiple formats)
+  if (Array.isArray(pet?.learned_facts)) {
+    for (const f of pet.learned_facts) {
+      const val = f.value || f.fact || '';
+      if (f.type === 'activity' || f.type === 'preference' || f.type === 'likes' || f.type === 'loves' || f.type === 'prefers') {
+        if (val) traits.push(val);
+      }
+      // Format 2: category='loves', content="Loves ['tennis ball']"
+      if (f.category === 'loves' && f.content && !val) {
+        const match = f.content.match(/['"]([\w\s]+)['"]/);
+        if (match) traits.push(match[1]);
+      }
+    }
   }
-  
+
   // From soul object
   if (pet?.soul) {
-    if (pet.soul.loves) traits.push(...(Array.isArray(pet.soul.loves) ? pet.soul.loves : [pet.soul.loves]));
-    if (pet.soul.likes) traits.push(...(Array.isArray(pet.soul.likes) ? pet.soul.likes : [pet.soul.likes]));
-    if (pet.soul.activities) traits.push(...pet.soul.activities);
-    if (pet.soul.preferences) traits.push(...pet.soul.preferences);
-    if (pet.soul.personality_traits) traits.push(...pet.soul.personality_traits);
-    if (pet.soul.play_style) traits.push(...pet.soul.play_style);
-    if (pet.soul.favorite_activities) traits.push(...pet.soul.favorite_activities);
+    const s = pet.soul;
+    if (s.loves) traits.push(...(Array.isArray(s.loves) ? s.loves : [s.loves]));
+    if (s.likes) traits.push(...(Array.isArray(s.likes) ? s.likes : [s.likes]));
+    if (s.activities) traits.push(...(Array.isArray(s.activities) ? s.activities : [s.activities]));
+    if (s.play_style) traits.push(...(Array.isArray(s.play_style) ? s.play_style : [s.play_style]));
+    if (s.personality_traits) traits.push(...(Array.isArray(s.personality_traits) ? s.personality_traits : [s.personality_traits]));
+    if (s.favorite_activities) traits.push(...(Array.isArray(s.favorite_activities) ? s.favorite_activities : [s.favorite_activities]));
   }
-  
-  // From preferences object
-  if (pet?.preferences) {
-    if (pet.preferences.activities) traits.push(...pet.preferences.activities);
-    if (pet.preferences.play_style) traits.push(...pet.preferences.play_style);
-    if (pet.preferences.favorite_things) traits.push(...pet.preferences.favorite_things);
-  }
-  
-  // From direct fields
+
+  // From direct pet fields
   if (pet?.likes) traits.push(...(Array.isArray(pet.likes) ? pet.likes : [pet.likes]));
   if (pet?.loves) traits.push(...(Array.isArray(pet.loves) ? pet.loves : [pet.loves]));
-  if (pet?.favorite_activities) traits.push(...pet.favorite_activities);
-  if (pet?.play_preferences) traits.push(...pet.play_preferences);
-  
-  // Flatten and dedupe
+  if (pet?.favorite_activities) traits.push(...(Array.isArray(pet.favorite_activities) ? pet.favorite_activities : []));
+
+  // Flatten, dedupe, clean
   return [...new Set(
-    traits
-      .flat()
-      .map(t => typeof t === 'string' ? t : (t?.name || t?.value || ''))
-      .filter(Boolean)
+    traits.flat()
+      .map(t => (typeof t === 'string' ? t : (t?.name || t?.value || '')).trim())
+      .filter(v => v && v.length > 1)
   )];
 };
 
@@ -622,9 +638,13 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
           const imaginaryProducts = [];
           
           // A) Food-based imaginary (ORIGINAL WORKING LOGIC)
+          // Deduplicate by cleaned name (salmon treats + salmon → same key 'salmon')
+          const seenFoodKeys = new Set();
           const foodImaginary = lovedFoods.filter(food => {
             const f = food.toLowerCase().replace(/\s*(treat|cake|food)s?\b/g, '').trim();
             if (!f || f.length < 3) return false;
+            if (seenFoodKeys.has(f)) return false; // dedupe salmon treats vs salmon
+            seenFoodKeys.add(f);
             if (allergies.some(a => f.includes(a))) return false;
             return !allCakes.some(c => (c.name || '').toLowerCase().includes(f));
           });
