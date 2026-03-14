@@ -1,0 +1,103 @@
+{
+  "summary": "Session 8 feature testing: Soul score glow, PetWrap teaser, celebrate-context questions, OccasionCountdownCard, archetype imaginations, Mira memory loop. Backend: 16/16 tests PASS. Frontend: All major features working with 3 notable bugs found.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "GET /api/wrapped/generate/{petId}",
+        "issue": "archetype_name is None in response (both wrapData.archetype_name and wrapData.cards.cover.archetype_name). PetWrapTeaser subtitle 'Soul Archetype: X' never shows. Also soul_score in wrapped API is at cards.soul_score.current_score but PetWrapTeaser looks for cards.soul_score.score (wrong key).",
+        "priority": "LOW"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "PetWrapTeaser (CelebrateContentModal.jsx line ~791)",
+        "issue": "Archetype subtitle missing — wrapData.archetype_name and wrapData.cards.cover.archetype_name are both null. Fix: wrapped generate API must expose archetype_name at top-level or in cover.",
+        "selector": "PetWrapTeaser in Mira's Picks modal",
+        "priority": "LOW"
+      },
+      {
+        "component": "PetWrapTeaser soul score",
+        "issue": "Shows 95% (from stale pet.soul_score field) instead of 100% (pet.overall_score). Fix: Change PetWrapTeaser score fallback from pet?.soul_score to pet?.overall_score.",
+        "selector": "PetWrapTeaser score display",
+        "priority": "LOW"
+      },
+      {
+        "component": "Mira Imagines archetype cards (CelebrateContentModal.jsx line ~1271-1275)",
+        "issue": "Archetype-based imaginations (Velcro Baby: 'Comfort Snuggle Birthday Pack') NOT showing for Mojo. Root cause: archetypeCards.slice(0, 2 - Math.min(imaginaryProducts.length, 2)) = 0 when 2 food items already added. Fix: reserve minimum 1-2 slots for archetype, or increase total limit to 5+.",
+        "selector": "Mira Imagines section in Mira's Picks modal",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "Mira Imagines text duplication",
+        "issue": "Minor text bug: 'Because Mojo loves salmon treats treats' (double 'treats'). trait is built as 'loves ${food} treats' where food may already contain 'treats'.",
+        "selector": "MiraImaginesCard trait text",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Celebrate-soul pet switching (pre-existing)",
+        "issue": "The /celebrate-soul page always shows Mojo (first pet) regardless of pet switcher selection. Cannot test Buddy's Mira's Picks (soul questions + archetype imaginations) via UI. Pre-existing issue from iteration_109.",
+        "affected_selectors": ["celebrate-hero section", "header pet switcher"]
+      }
+    ],
+    "design_issues": []
+  },
+  "verified_features": {
+    "soul_score_glow_animation": "PASS (code review) — fontSize: 64, motion.span with textShadow cycling 16px→48px→16px glow, repeat: Infinity. No bounce via useAnimation() imperative control.",
+    "petwrap_teaser_renders": "PASS — Shows 'Mojo's 2026 PetWrap', soul score %, 'View Full Wrap' button, 'Share' button",
+    "occasion_countdown_card": "PASS — Today is Holi with Mojo! shown with gold 🎉 TODAY badge (Holi mapped to March 14)",
+    "celebrate_context_questions_order": "PASS — API returns taste_treat folder (favorite_protein) FIRST, then celebration_preferences (SECOND) for Buddy",
+    "api_celebrate_context": "PASS — GET /api/pet-soul/profile/pet-buddy-0faaab34/quick-questions?limit=5&context=celebrate returns correctly ordered questions",
+    "soul_answer_api": "PASS — POST /api/pet-soul/answer updates score (Buddy: 5% → 7% after answering celebration_preferences)",
+    "mira_memory_loop": "PASS — POST /api/celebrate/requests with pet_id writes concierge_request to pet.learned_facts",
+    "wrapped_page_mojo": "PASS — /wrapped/pet-mojo-7327ad56 loads correctly showing '2026 · Mojo · INDIE' wrap",
+    "wrapped_page_mystique": "PASS — /wrapped/pet-mystique-7327ad57 loads correctly (this is Mystique's ID, not Mojo)",
+    "admin_jwt_auth": "PASS (regression) — GET /api/admin/products with JWT Bearer token works",
+    "mira_imagines_food_based": "PASS — Food-based imaginations work (Salmon Celebration Cake, Salmon Treat Hamper based on Mojo's loved foods)",
+    "real_cakes_in_miras_picks": "PASS — Shows 6+ curated cakes (Big Woof, Nutty Pup, Moms Marvel Cake, etc.)"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration_110_session8_features.py",
+    "/app/test_reports/pytest/iteration_110_results.xml"
+  ],
+  "action_items": [
+    "BUG (MEDIUM): Fix archetype imaginations slice formula in CelebrateContentModal.jsx ~line 1272 — archetypeCards.slice(0, 2 - Math.min(imaginaryProducts.length, 2)) gives 0 slots when 2 food items exist. Change logic to always include 1-2 archetype cards (e.g., always show at least 1 archetype card by appending after food items, up to total limit of 5-6 imaginaryProducts).",
+    "BUG (LOW): PetWrapTeaser archetype subtitle never shows — wrapped API doesn't expose archetype_name in response. Fix: Add pet.soul_archetype.archetype_name to wrapped generate API response at top level (wrapData.archetype_name) and/or in cards.cover.",
+    "BUG (LOW): PetWrapTeaser shows stale soul_score (95%) instead of current overall_score (100%) for Mojo. Fix: Change score fallback in PetWrapTeaser from pet?.soul_score to pet?.overall_score.",
+    "BUG (LOW): Text duplication in Mira Imagines 'Because Mojo loves salmon treats treats' — trait field should not append 'treats' if food already contains 'treats'.",
+    "INFO: Test spec has wrong pet ID — Mojo's ID is pet-mojo-7327ad56, NOT pet-mystique-7327ad57 (which is Mystique). The test spec item #8 pointing to /wrapped/pet-mystique-7327ad57 shows Mystique's wrap, not Mojo's.",
+    "PRE-EXISTING: Celebrate-soul page doesn't react to pet switcher — Buddy's Mira's Picks (soul questions, archetype for social_butterfly) cannot be verified via UI until this is fixed."
+  ],
+  "critical_code_review_comments": [
+    "CelebrateContentModal.jsx line ~1272: archetypeCards.slice(0, 2 - Math.min(imaginaryProducts.length, 2)) — when 2 food items = 0 archetype slots. Archetype-based picks are a core feature and should always appear. Fix: imaginaryProducts.push(...archetypeCards.slice(0, Math.max(1, 4 - imaginaryProducts.length))) or restructure to always include archetype cards.",
+    "PetWrapTeaser score resolution: should use wrapData?.cards?.soul_score?.current_score (actual key) not wrapData?.cards?.soul_score?.score (wrong key). Also fallback should be pet?.overall_score not pet?.soul_score (stale cached field).",
+    "Wrapped generate API (/backend/routes/wrapped/generate.py): Does not return archetype_name in response — PetWrapTeaser archetype subtitle feature is broken until API is fixed.",
+    "Buddy's actual archetype is social_butterfly (not Mojo as test spec incorrectly stated). Pawty Decoration Kit would appear for Buddy if pet switching worked on celebrate-soul page."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration_110_session8_features.py"
+  ],
+  "success_rate": {
+    "backend": "100% (16/16 tests pass)",
+    "frontend": "75% (all core features render but archetype cards not showing, archetype subtitle missing in PetWrap)"
+  },
+  "seed_data_creation": "Created 2 test celebrate requests for Buddy (concierge_request written to learned_facts). Answered celebration_preferences for Buddy (score: 5→7%).",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Pet IDs confirmed: Mojo=pet-mojo-7327ad56 (Indie, 100%), Mystique=pet-mystique-7327ad57 (Shih Tzu, 92%), Buddy=pet-buddy-0faaab34 (Golden Retriever, ~10%, social_butterfly). The celebrate-soul page always defaults to Mojo (PillarContext issue). To test Buddy's Mira's Picks with soul questions and archetype imaginations, the pet-switching must be fixed first. All backend APIs working correctly. Wrapped page works for both pets. OccasionCountdownCard correctly shows 'Today is Holi' (March 14). PetWrapTeaser renders but missing archetype subtitle and uses stale score. Archetype imaginations only work if pet has <2 food items in imaginaryProducts.",
+  "rca_of_the_issue": {
+    "archetype_imaginations_missing": {
+      "root_cause": "CelebrateContentModal.jsx line ~1272: archetypeCards.slice(0, 2 - Math.min(imaginaryProducts.length, 2)). When Mojo has loved food 'salmon' with treat_preference set, food generates 2 items (Salmon Celebration Cake + Salmon Treat Hamper). At that point Math.min(2,2)=2, so 2-2=0, giving 0 archetype slots.",
+      "reproduction": "Login as Mojo on celebrate-soul, open Mira's Picks — see only 2 food-based Mira Imagines cards, no archetype cards",
+      "fix": "Change line ~1272 to: archetypeCards.slice(0, Math.max(2, 4 - imaginaryProducts.length)) or restructure to always include archetype cards separately"
+    },
+    "petwrap_archetype_missing": {
+      "root_cause": "The /api/wrapped/generate/{petId} response does not include archetype_name at top level or in cards.cover. PetWrapTeaser checks wrapData.archetype_name and wrapData.cards.cover.archetype_name but both are null/undefined.",
+      "fix": "In wrapped generate API (backend/routes/wrapped/generate.py), add pet.soul_archetype.archetype_name to the response and/or cards.cover object"
+    }
+  }
+}
