@@ -18,11 +18,9 @@ import { createPortal } from 'react-dom';
 import { X, ChevronRight, RotateCcw, ShieldCheck, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { useResizeMobile } from '../../hooks/useResizeMobile';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
-
-// Mobile: pin below header + above nav bar. Desktop: centre.
-const isMobile = () => typeof window !== 'undefined' && window.innerWidth < 640;
 
 /* ─────────────────────────────────────────────────────────────────
    TAB CONFIG
@@ -364,6 +362,9 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
   const [activeTab, setActiveTab] = useState('cakes');
   const [swaps, setSwaps] = useState({}); // { tabId: { slotNumber, originalItem, newProduct } }
 
+  // ResizeObserver on the modal backdrop — 150ms debounce, cleanup included
+  const [containerRef, isMobile] = useResizeMobile(640);
+
   // Listen for open event
   useEffect(() => {
     const handleOpen = (e) => {
@@ -425,15 +426,15 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
 
   const swapCount = Object.keys(swaps).length;
   const allergies = boxPreview?.allergies || [];
-  const mobile = isMobile();
 
   const drawerContent = (
     <>
-      {/* Backdrop */}
+      {/* Backdrop — containerRef tracks viewport size via ResizeObserver */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             key="drawer-backdrop"
+            ref={containerRef}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -465,11 +466,11 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
               top: 0, left: 0, right: 0, bottom: 0,
               zIndex: 9199,
               display: 'flex',
-              alignItems: mobile ? 'flex-start' : 'center',
+              alignItems: isMobile ? 'flex-start' : 'center',
               justifyContent: 'center',
-              padding: mobile ? '110px 12px 80px' : '16px',
+              padding: isMobile ? '110px 12px 80px' : '16px',
               pointerEvents: 'none',
-              overflowY: mobile ? 'auto' : 'visible',
+              overflowY: isMobile ? 'auto' : 'visible',
             }}
           >
             <div
@@ -477,7 +478,7 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
                 position: 'relative',
                 width: '100%',
                 maxWidth: '560px',
-                maxHeight: mobile ? 'none' : '88vh',
+                maxHeight: isMobile ? 'none' : '88vh',
                 display: 'flex',
                 flexDirection: 'column',
                 borderRadius: '16px',
