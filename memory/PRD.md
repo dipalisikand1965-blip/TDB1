@@ -6,7 +6,32 @@
 
 ---
 
-## ✅ SESSION 21 COMPLETE — Real iPhone Mobile Bug Fixes (Mar 2026)
+## ✅ SESSION 22 COMPLETE — ResizeObserver + useEffect Cleanup (Mar 2026)
+
+**12/12 tests passing. iPad rotation + Chrome DevTools verified.**
+
+### Hook Created: `/app/frontend/src/hooks/useResizeMobile.js`
+- `useResizeMobile(breakpoint)` — callback ref pattern, attaches ResizeObserver to modal container, 150ms debounce, cleanup on unmount + element change
+- `useViewportMobile(breakpoint)` — observes `document.documentElement`, for persistent panels (Mira)
+
+### Applied To:
+| Component | Hook Used | Ref Attached To |
+|---|---|---|
+| BirthdayBoxBuilder.jsx | useResizeMobile(640) | backdrop motion.div (position:fixed inset:0) |
+| BirthdayBoxBrowseDrawer.jsx | useResizeMobile(640) | drawer-backdrop motion.div |
+| MiraChatWidget.jsx | useViewportMobile(640) | document.documentElement |
+
+### useEffect Cleanup Fixes (MiraChatWidget):
+- pillar visit + fetchQuickPrompts + fetchMiraContext → `cancelled` flag
+- fetchPets → `cancelled` flag  
+- fetchPetIntelligence → `cancelled` flag
+
+### Verified Behaviour:
+- 1024px → modal centered; 375px → modal top-aligned (110px from top); rotation back to 1024 → centered again
+- Mira: 1024px → right panel (420px); 375px → full-width top:105px
+- No zombie setState warnings after rapid open/close × 5
+
+---
 
 **User reported 4 issues on their Apple phone. All fixed, 100% verified.**
 
