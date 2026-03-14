@@ -108,6 +108,7 @@ const CelebrateManager = ({ getAuthHeader }) => {
     life_stage: '', // NEW: Puppy, Adult, Senior, All Ages
     occasion: '', // NEW: Birthday, Anniversary, Gotcha Day, etc.
     dietary: '', // NEW: Grain-free, Vegan, Low-fat, etc.
+    is_active: true, // ACTIVATE/DEACTIVATE toggle
   });
   
   const [bundleForm, setBundleForm] = useState({
@@ -208,7 +209,8 @@ const CelebrateManager = ({ getAuthHeader }) => {
       life_stage: '', occasion: '', dietary: '',
       in_stock: true, is_bestseller: false, is_new: false,
       is_birthday_perk: false, birthday_discount_percent: '',
-      paw_reward_points: 0, pan_india: false
+      paw_reward_points: 0, pan_india: false,
+      is_active: true  // ACTIVATE/DEACTIVATE
     });
   };
 
@@ -237,7 +239,8 @@ const CelebrateManager = ({ getAuthHeader }) => {
         is_birthday_perk: product.is_birthday_perk ?? false,
         birthday_discount_percent: product.birthday_discount_percent?.toString() || '',
         paw_reward_points: product.paw_reward_points || 0,
-        pan_india: product.pan_india ?? false
+        pan_india: product.pan_india ?? false,
+        is_active: product.is_active ?? true  // ACTIVATE/DEACTIVATE
       });
     } else {
       setEditingProduct(null);
@@ -276,7 +279,8 @@ const CelebrateManager = ({ getAuthHeader }) => {
         is_birthday_perk: productForm.is_birthday_perk,
         birthday_discount_percent: productForm.birthday_discount_percent ? parseInt(productForm.birthday_discount_percent) : null,
         paw_reward_points: parseInt(productForm.paw_reward_points) || 0,
-        pan_india: productForm.pan_india
+        pan_india: productForm.pan_india,
+        is_active: productForm.is_active  // ACTIVATE/DEACTIVATE
       };
 
       if (editingProduct) {
@@ -1198,6 +1202,26 @@ const CelebrateManager = ({ getAuthHeader }) => {
                 onChange={(e) => setProductForm({...productForm, image: e.target.value})}
               />
             </div>
+            
+            {/* Active Status Toggle - PROMINENT */}
+            <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-purple-800 font-medium">Product Active Status</Label>
+                  <p className="text-xs text-purple-600">Inactive products won't appear on the site</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className={`text-sm font-medium ${productForm.is_active !== false ? 'text-green-600' : 'text-red-500'}`}>
+                    {productForm.is_active !== false ? '✓ Active' : '✗ Inactive'}
+                  </span>
+                  <Switch 
+                    checked={productForm.is_active !== false}
+                    onCheckedChange={(v) => setProductForm({...productForm, is_active: v})}
+                  />
+                </div>
+              </div>
+            </div>
+            
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Sizes (format: name:price, comma-separated)</Label>
