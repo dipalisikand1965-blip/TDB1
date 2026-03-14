@@ -623,7 +623,8 @@ class ConciergeIntakeRequest(BaseModel):
 async def create_concierge_intake(request: ConciergeIntakeRequest):
     """
     Submit a concierge intake from the 3-question modal on /celebrate-soul.
-    Creates a ticket + inbox entry so the concierge can follow up within 48h.
+    Goes through the full unified service flow:
+    User Request → Service Desk Ticket → Admin Notification → Channel Intake
     Returns: { success, message, intakeId }
     """
     db = get_db()
@@ -631,12 +632,17 @@ async def create_concierge_intake(request: ConciergeIntakeRequest):
 
     intake_id = f"INT-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
     ticket_id = f"TKT-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
+    notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
     now_iso = datetime.now(timezone.utc).isoformat()
 
     service_label = (request.serviceType or 'general').replace('_', ' ').title()
     pet_name = request.petName or 'your pet'
+    subject = f"Celebrate Intake — {service_label} for {pet_name}"
+    description = request.notes or f"No additional notes provided."
+    date_note = f"Date: {request.celebrationDate}" if request.celebrationDate else "Date: Not confirmed yet"
 
-    # Store intake record
+    # ── 1. INTAKE RECORD ────────────────────────────────────────────────────────
     intake_doc = {
         "id": intake_id,
         "ticket_id": ticket_id,
@@ -649,33 +655,94 @@ async def create_concierge_intake(request: ConciergeIntakeRequest):
         "notes": request.notes,
         "source": request.source,
         "status": "new",
+        "unified_flow_processed": True,
         "created_at": now_iso
     }
     await db.concierge_intakes.insert_one({k: v for k, v in intake_doc.items() if k != "_id"})
 
-    # Create a ticket for the concierge queue
+    # ── 2. ADMIN NOTIFICATION ───────────────────────────────────────────────────
+    await db.admin_notifications.insert_one({
+        "id": notification_id,
+        "type": "concierge_celebrate",
+        "pillar": "celebrate",
+        "title": f"Celebrate Intake: {service_label} — {pet_name}",
+        "message": f"New celebration intake for {pet_name}. {date_note}. Notes: {(request.notes or 'None')[:120]}",
+        "read": False,
+        "status": "unread",
+        "urgency": "medium",
+        "ticket_id": ticket_id,
+        "inbox_id": inbox_id,
+        "intake_id": intake_id,
+        "pet": {"name": pet_name},
+        "link": f"/agent-portal?tab=service_desk&ticket={ticket_id}",
+        "created_at": now_iso,
+        "read_at": None
+    })
+
+    # ── 3. SERVICE DESK TICKET (unified visibility) ─────────────────────────────
     ticket_doc = {
         "id": ticket_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
         "intake_id": intake_id,
-        "type": "celebrate_intake",
+        "type": "concierge_inquiry",
+        "source": "celebrate_intake_modal",
+        "source_id": intake_id,
         "pillar": "celebrate",
-        "title": f"Celebration intake — {service_label} for {pet_name}",
-        "pet_name": pet_name,
-        "service_type": request.serviceType,
+        "category": "concierge",
+        "subcategory": request.serviceType or "general",
+        "subject": subject,
+        "description": f"{date_note}\n{description}",
+        "original_request": f"[CELEBRATE] {service_label} for {pet_name}: {date_note}",
+        "status": "new",
+        "priority": 3,
+        "urgency": "medium",
+        "pet": {"name": pet_name, "id": request.petId},
         "celebration_date": request.celebrationDate,
         "notes": request.notes,
-        "source": request.source,
-        "status": "open",
-        "priority": "normal",
-        "created_at": now_iso
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        "tags": ["celebrate", "concierge_intake", request.serviceType or "general", "unified-flow"],
+        "unified_flow_processed": True,
+        "audit_trail": [
+            {
+                "action": "created",
+                "timestamp": now_iso,
+                "performed_by": "system",
+                "details": f"Created from Celebrate Concierge® intake modal — {service_label}"
+            }
+        ]
     }
+    await db.service_desk_tickets.insert_one({k: v for k, v in ticket_doc.items() if k != "_id"})
     await db.tickets.insert_one({k: v for k, v in ticket_doc.items() if k != "_id"})
 
-    logger.info(f"[CONCIERGE INTAKE] Created intake {intake_id} for pet {pet_name} | service: {request.serviceType}")
+    # ── 4. CHANNEL INTAKE (unified inbox) ───────────────────────────────────────
+    await db.channel_intakes.insert_one({k: v for k, v in {
+        "id": inbox_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "intake_id": intake_id,
+        "channel": "web",
+        "request_type": "concierge_intake",
+        "pillar": "celebrate",
+        "category": request.serviceType or "general",
+        "status": "new",
+        "urgency": "medium",
+        "pet": {"name": pet_name, "id": request.petId},
+        "preview": subject,
+        "message": f"{date_note}. {description}",
+        "tags": ["celebrate", "concierge_intake"],
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        "unified_flow_processed": True
+    }.items() if k != "_id"})
+
+    logger.info(f"[UNIFIED FLOW] Celebrate intake complete: {intake_id} | ticket: {ticket_id} | pet: {pet_name} | service: {request.serviceType}")
 
     return {
         "success": True,
-        "message": f"Your Concierge has everything they need. Expect a message within 48 hours.",
+        "message": "Your Concierge has everything they need. Expect a message within 48 hours.",
         "intakeId": intake_id
     }
 
