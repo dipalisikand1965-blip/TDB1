@@ -81,7 +81,7 @@ const CelebrateManager = ({ getAuthHeader }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [showInactive, setShowInactive] = useState(false); // default: active only (matches frontend)
+  const [showInactive, setShowInactive] = useState(true); // default: show ALL products in admin
   
   // Modals
   const [showProductModal, setShowProductModal] = useState(false);
@@ -134,19 +134,50 @@ const CelebrateManager = ({ getAuthHeader }) => {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      // Fetch from admin products endpoint (shows ALL products, including inactive)
-      const [requestsRes, productsRes, bundlesRes, settingsRes, partnersRes] = await Promise.all([
+      // Use Promise.allSettled so one failing endpoint doesn't kill everything
+      const [requestsResult, productsResult, bundlesResult, settingsResult, partnersResult] = await Promise.allSettled([
         axios.get(`${API_URL}/api/celebrate/requests`),
         axios.get(`${API_URL}/api/admin/products?limit=5000`, { headers: getAuthHeader() }),
         axios.get(`${API_URL}/api/celebrate/admin/bundles`),
         axios.get(`${API_URL}/api/celebrate/admin/settings`),
         axios.get(`${API_URL}/api/celebrate/admin/partners`)
       ]);
-      
-      setRequests(requestsRes.data.requests || []);
-      // Filter products for celebrate categories (cakes, treats, hampers, pupcakes, dognuts, frozen-treats, etc.)
-      const allProducts = productsRes.data.products || [];
-      // Match EXACTLY all categories listed in CATEGORY_OPTIONS above — keeps admin in sync with the filter dropdown
+
+      // Extract data safely — fall back to empty if a request failed
+      const requestsData = requestsResult.status === 'fulfilled' ? (requestsResult.value.data.requests || []) : [];
+      const bundlesData = bundlesResult.status === 'fulfilled' ? (bundlesResult.value.data.bundles || []) : [];
+      const settingsData = settingsResult.status === 'fulfilled' ? (settingsResult.value.data || {}) : {};
+      const partnersData = partnersResult.status === 'fulfilled' ? (partnersResult.value.data.partners || []) : [];
+
+      setRequests(requestsData);
+      setBundles(bundlesData);
+      setSettings(settingsData);
+      setPartners(partnersData);
+
+      // Products — filter for celebrate categories
+      let allProducts = [];
+      if (productsResult.status === 'fulfilled') {
+        allProducts = productsResult.value.data.products || [];
+      } else {
+        // Fallback: fetch from public products endpoint per category
+        console.warn('[CelebrateManager] Admin products endpoint failed, using public API fallback:', productsResult.reason);
+        try {
+          const fallbackCats = ['celebration','cakes','breed-cakes','dognuts','desi-treats','nut-butters','frozen-treats','hampers','party_accessories','party_kits','celebration_addons'];
+          const fbResults = await Promise.allSettled(
+            fallbackCats.map(cat => axios.get(`${API_URL}/api/products?category=${cat}&limit=200`))
+          );
+          for (const r of fbResults) {
+            if (r.status === 'fulfilled') allProducts.push(...(r.value.data.products || []));
+          }
+          // Deduplicate
+          const seen = new Set();
+          allProducts = allProducts.filter(p => { const id = p.id || p._id; if (!id || seen.has(id)) return false; seen.add(id); return true; });
+        } catch (fbErr) {
+          console.error('[CelebrateManager] Fallback also failed:', fbErr);
+        }
+      }
+
+      // Match EXACTLY all categories listed in CATEGORY_OPTIONS above
       const CELEBRATE_CATS = new Set([
         'celebration', 'cakes', 'breed-cakes', 'mini-cakes',
         'pupcakes', 'dognuts',
@@ -154,24 +185,23 @@ const CelebrateManager = ({ getAuthHeader }) => {
         'hampers',
         'party_accessories', 'party_kits', 'celebration_addons', 'celebration-addons',
         'breed-party_hats', 'breed-party-hats',
-        'meals', 'fresh-meals', 'fresh_meals',
-        'accessories',
-        'soul_picks', 'soul-picks',   // both underscore and hyphen forms
+        'soul_picks', 'soul-picks',
       ]);
       const celebrateProducts = allProducts.filter(p => CELEBRATE_CATS.has((p.category || '').toLowerCase().trim()));
       setProducts(celebrateProducts.length > 0 ? celebrateProducts : allProducts);
-      setBundles(bundlesRes.data.bundles || []);
-      // Calculate stats from actual data
-      const statsData = {
-        total_products: celebrateProducts.length || allProducts.length,
-        total_bundles: (bundlesRes.data.bundles || []).length,
-        total_partners: (partnersRes.data.partners || []).length,
-        pending_requests: (requestsRes.data.requests || []).filter(r => ['submitted', 'acknowledged'].includes(r.status)).length,
-        completed_requests: (requestsRes.data.requests || []).filter(r => r.status === 'completed').length
-      };
-      setStats(statsData);
-      setSettings(settingsRes.data || {});
-      setPartners(partnersRes.data.partners || []);
+
+      const finalProds = celebrateProducts.length > 0 ? celebrateProducts : allProducts;
+      setStats({
+        total_products: finalProds.length,
+        total_bundles: bundlesData.length,
+        total_partners: partnersData.length,
+        pending_requests: requestsData.filter(r => ['submitted', 'acknowledged'].includes(r.status)).length,
+        completed_requests: requestsData.filter(r => r.status === 'completed').length
+      });
+
+      if (productsResult.status === 'rejected') {
+        toast({ title: 'Note', description: 'Products loaded via fallback. Log in again if incomplete.', variant: 'default' });
+      }
     } catch (error) {
       console.error('Error fetching celebrate data:', error);
       toast({ title: 'Error', description: 'Failed to load celebrate data', variant: 'destructive' });

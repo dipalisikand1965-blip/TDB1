@@ -1,0 +1,57 @@
+{
+  "summary": "Tested soul card colors/score fix and admin panel JWT auth + party accessories display. All backend tests pass (11/11). Admin panel products loading correctly with JWT Bearer auth. Code review confirms deep purple soul card colors fixed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Celebrate-soul pet switching",
+        "issue": "The /celebrate-soul page does NOT react to pet switcher changes (currentPet from PillarContext doesn't update the page when switched via header dropdown). Page stays on Mojo even when Buddy is selected. This prevented visual testing of soul question cards (Mojo is at 100% so cards don't show).",
+        "affected_selectors": ["celebrate-soul page"],
+        "priority": "LOW (pre-existing issue, not related to this iteration's fixes)"
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration_109_soul_cards_admin.py",
+    "/app/test_reports/pytest/iteration_109_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "SoulQuestionCard (line 570): background: 'linear-gradient(135deg, #12003A 0%, #2D0060 100%)' - CORRECTLY fixed to deep purple. VERIFIED by code review.",
+    "SoulQuestionsSection header (line 728): background: 'linear-gradient(135deg, #1A0020 0%, #3D0060 100%)' - CORRECTLY deep purple. VERIFIED.",
+    "Soul score fontSize (line 753): fontSize: 64 - CORRECTLY large. VERIFIED.",
+    "Submitted state (line 543): dark green background 'linear-gradient(135deg, #0D1A00 0%, #0A3020 100%)' with '#50DC78' green text. VERIFIED.",
+    "Admin products (line 6509 server.py): verify_admin_auth (JWT Bearer + Basic Auth) - VERIFIED working via backend tests.",
+    "CelebrateManager showInactive (line 84): useState(true) default - VERIFIED via UI (shows 'All (incl. inactive)' button).",
+    "Note: Mojo is at 100% soul score, so SoulQuestionsSection correctly hides (line 719: if visibleQuestions.length === 0 && answeredCount === 0 return null). Cannot visually test soul cards for Mojo. Code review confirms correct deep purple colors."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration_109_soul_cards_admin.py"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 tests pass)",
+    "frontend": "90% (all admin panel checks pass; soul card visual test blocked by Mojo 100% soul score)"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Admin panel: Use data-testid='admin-tab-products' to navigate to CelebrateManager (14 Pillars Celebrate = 'products' activeTab). Then data-testid='celebrate-tab-products' for Products sub-tab. Products tab shows 483 products with 'All (incl. inactive)' button. Party Accessories filter visible in All Categories dropdown. Soul question cards can only be visually tested with a pet that has <100% soul score (try Buddy - 5% soul, pet-buddy-0faaab34, or Lola 9%). The /celebrate-soul page doesn't react to pet switching via context - it appears to always default to the first pet (Mojo). Admin login: use /api/admin/login endpoint with {username, password} to get JWT token.",
+  "verified_features": {
+    "admin_products_jwt_auth": "PASS - GET /api/admin/products works with Bearer token (was returning 401 before fix)",
+    "admin_products_basic_auth": "PASS - Still works with Basic Auth",
+    "show_inactive_default_on": "PASS - 'All (incl. inactive)' button visible = showInactive=true confirmed",
+    "party_accessories_filter": "PASS - 'Party Accessories' found in category dropdown and products like 'Pawty Hat Set' visible",
+    "celebration_addons_products": "PASS - Products with party_accessories category in DB",
+    "soul_card_deep_purple_code": "PASS via code review - background: linear-gradient(135deg, #12003A 0%, #2D0060 100%)",
+    "soul_score_64px_code": "PASS via code review - fontSize: 64",
+    "soul_section_header_deep_purple": "PASS via code review - background: linear-gradient(135deg, #1A0020 0%, #3D0060 100%)",
+    "submitted_state_green": "PASS via code review - dark green (#0D1A00 to #0A3020) with '#50DC78' text",
+    "soul_questions_api_working": "PASS - Buddy has 5 questions (score=5), API returns correctly"
+  },
+  "rca_of_the_issue": "1. Soul card light blue regression: CelebrateContentModal.jsx SoulQuestionCard was using light blue theme (rgba(68,136,255,0.06) bg) - fixed to deep purple (#12003A/#2D0060). 2. Admin products 401: GET /api/admin/products was using verify_admin (Basic Auth only) - fixed to verify_admin_auth (accepts both JWT Bearer and Basic Auth). 3. showInactive default: Was false (only showing active products) - fixed to true (shows all including inactive)."
+}
