@@ -1,0 +1,140 @@
+{
+  "summary": "Comprehensive 100% mobile audit across 6 viewport sizes (375px/390px/412px/430px/360px/768px). Tested: Homepage, Navbar/Hamburger, Mira Widget, Celebrate-Soul, Dine, Pet Dashboard, My Pets, Celebration Wall, Login Form, Footer. Logged in as dipali@clubconcierge.in. No horizontal overflow found on any page. Mira widget works correctly at all mobile sizes. Major issues: pet home trait chips wrap to 3 lines at 360-375px (scrambled), category strip labels at 10px, and pet selection strip truncates 3rd pet at 360-375px.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "PetHome / PetHomePage - Pet profile card",
+        "issue": "CRITICAL: Trait chips ('Very Friendly With Strangers', 'Light (15-30 Mins) Energy') wrap to 3 lines at 360px and 2-3 lines at 375px inside the pet profile card. The card layout has a ~95px icon on the left, ~80px soul indicator on the right, leaving only ~175px for chips. This is the 'scrambled pet dashboard' reported previously — still NOT fixed.",
+        "selector": ".pet-profile-card, [class*='pet-card']",
+        "priority": "CRITICAL",
+        "reproduction": "Login as dipali, navigate to /pet-home at 360px or 375px. The Mojo pet profile card shows 'Very / Friendly / With / Strangers' (3 lines) and 'Light (15- / 30 Mins) / Energy' (3 lines).",
+        "fix_suggestion": "Limit trait chip text length on mobile (maxWidth or truncate after 15 chars). Or use a 2-column chip layout. Or hide chips below 380px and show a '+N' indicator."
+      },
+      {
+        "component": "PetHome - Pet selection strip",
+        "issue": "At 360px the 3rd pet chip shows only 'B' (1 char of Bruno), at 375px shows 'Bru' (3 chars). The strip IS scrollable but has no visual scroll indicator (fade edge or arrow) to hint there are more pets. Users may not know additional pets exist.",
+        "selector": "pet selector strip (top of pet-home)",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "CelebrateCategoryStrip - category labels",
+        "issue": "Category labels ('Birthday Cakes', 'Breed Cakes', 'Pupcakes & Dognuts', etc.) are hardcoded at fontSize:10 in CelebrateCategoryStrip.jsx line 152. These are below the 12px minimum legibility threshold. Also 'Birthday Cakes' is truncated to 'Birthday Cak...' with ellipsis even at 430px.",
+        "selector": "CelebrateCategoryStrip span labels",
+        "file": "/app/frontend/src/components/celebrate/CelebrateCategoryStrip.jsx:152",
+        "priority": "MEDIUM",
+        "fix": "Change fontSize: 10 to fontSize: 11 or 12. Or increase maxWidth from 72 to 80-88px."
+      },
+      {
+        "component": "Celebrate-soul Service Grid - 'The Social Butterfly' chip",
+        "issue": "The 'The Social Butterfly' personality chip inside the SoulCelebrationPillars service grid card wraps to 2 lines at 375px ('The Social / Butterfly'). Creates visual inconsistency in the 2-column grid where other chips stay on 1 line.",
+        "selector": "SoulCelebrationPillars grid card personality chip",
+        "priority": "MINOR"
+      },
+      {
+        "component": "Navbar search bar at 768px (iPad)",
+        "issue": "The 'Ask Mira' search bar in the navbar shows truncated placeholder 'Ask Mi...' at 768px iPad. The input appears narrow at this breakpoint.",
+        "selector": "navbar search input",
+        "priority": "MINOR"
+      },
+      {
+        "component": "Marquee ticker bar",
+        "issue": "The '♥ Mira knows Mojo' text in the top marquee ticker is rendered at 11px — 1px below the 12px minimum legibility threshold.",
+        "selector": "marquee/ticker span with '♥ Mira knows Mojo'",
+        "priority": "MINOR"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Pet Home (360px-375px)",
+        "issues": [
+          "Pet profile card trait chips wrap to 3 lines at 360px due to narrow middle column — looks 'scrambled'",
+          "Only 2 pet selection chips fully visible (3rd is truncated). No scroll-hint (fade edge / arrow) visible."
+        ]
+      },
+      {
+        "screen": "Celebrate-soul Category Strip (all mobile viewports)",
+        "issues": [
+          "Category labels at 10px — below 12px minimum. These are the text labels under category icons like 'Birthday Cakes', 'Breed Cakes' etc.",
+          "Labels are also truncated with ellipsis: 'Birthday Cak...' instead of 'Birthday Cakes'"
+        ]
+      },
+      {
+        "screen": "Dine Page (375px)",
+        "issues": [
+          "Category tabs strip shows 'Chew...' partially visible at right edge — acceptable for horizontal scroll, but no right-edge fade indicator"
+        ]
+      }
+    ]
+  },
+  "PASSED_tests": [
+    "No horizontal page overflow at any viewport (375px, 390px, 412px, 430px, 360px, 768px)",
+    "Mira Widget opens correctly at 375px, 390px, 430px as full-screen bottom sheet",
+    "Mira Widget chips: '🎂 Plan Mojo's birthday' and '✦ Surprise me, Mira' BOTH visible at 390px",
+    "Mira Widget close button: 44x44px (meets touch target) at 375px",
+    "Mira Widget input bar: accessible, bottom=655px in 667px viewport (above keyboard area)",
+    "Mira Widget fits viewport: 375px widget bottom=655, 390px bottom=844, 430px bottom=932 — all fit",
+    "Mobile nav bar: correctly visible on all pillar pages (dine, celebrate-soul, my-pets)",
+    "Mobile nav bar: correctly HIDDEN at 768px (iPad) — desktop nav shows instead",
+    "Hamburger menu: 48x48px (meets touch target) at 375px. Opens slide-in Quick Nav panel",
+    "Celebration Wall nav arrows: 44x44px (CSS min-height override ensures this)",
+    "Celebration Wall: personalized subtitle 'Where Mojo's community celebrates' at 375px",
+    "Celebration Wall: 'Share Your Story' button 158x44px (meets touch target)",
+    "Celebration Wall scroll container: 9 cards (1 upload + 8 photos), each 220x325px",
+    "Safe area: mobile nav paddingBottom=8px (static fallback), nav bottom = viewport bottom",
+    "Login form: no overflow at 375px, submit button 261x48px",
+    "Homepage: no overflow at 375px/390px/412px",
+    "Celebrate-soul: no overflow at any scroll position from 0 to 2400px",
+    "Dine page: no overflow at 360px/375px/412px",
+    "Pet Home: no overflow at 360px/375px/430px",
+    "iPad 768px: celebrate-soul renders correctly with 4-column service grid",
+    "Category strip at 768px: all 8+ categories visible",
+    "Footer at 375px: accordion links, CTA button, legal links all render correctly"
+  ],
+  "test_report_links": [
+    "/app/test_reports/iteration_121.json"
+  ],
+  "action_items": [
+    "CRITICAL: Fix pet profile card at /pet-home — trait chips wrap to 3 lines at 360-375px. Fix options: (a) truncate chip text to 15 chars max on mobile, (b) use single-line chips with overflow:hidden, (c) show chips in a compact wrapped style without multi-line wrap. File: /app/frontend/src/pages/PetHomePage.jsx (or related pet card component)",
+    "MEDIUM: Fix CelebrateCategoryStrip label fontSize from 10px to 12px. File: /app/frontend/src/components/celebrate/CelebrateCategoryStrip.jsx line 152. Also increase maxWidth from 72 to 80-88px to reduce truncation.",
+    "MEDIUM: Add scroll-hint (right-edge gradient fade) to pet selection strip at /pet-home when there are >2 pets on 360-375px viewports",
+    "MINOR: Fix navbar search bar width at 768px so 'Ask Mira anything for Mojo...' placeholder is fully visible (sm:w- or md:w- increase)",
+    "MINOR: Increase marquee ticker font from 11px to 12px for legibility",
+    "MINOR: Consider limiting 'The Social Butterfly' chip text or using line-clamp-1 in SoulCelebrationPillars service grid"
+  ],
+  "critical_code_review_comments": [
+    "CelebrateCategoryStrip.jsx line 152: fontSize: 10 is below minimum 12px legibility threshold — hardcoded value should be at least 11-12px",
+    "PetHomePage pet profile card: Flex layout with large icon + soul ring leaves only ~175px for trait chips — needs responsive design for 360-375px viewports",
+    "MiraChatWidget.jsx line 1301: `hidden md:flex` hides the orb button on ALL mobile devices — opening is ONLY possible via MobileNavBar FAB. This is by design but if MobileNavBar is not shown (certain pages/states), Mira is inaccessible on mobile. Confirmed working via mobile_nav_container FAB.",
+    "Celebration Wall: WallLightbox close button uses position:fixed with z-[99998] — confirmed functional but lightbox screenshot wasn't captured in automation (page scroll position issue)"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend only)",
+    "frontend": "75% (major layout issues at 360-375px pet home, minor text size issues; all page loads and nav flows work)"
+  },
+  "test_credentials": {
+    "user": "dipali@clubconcierge.in / test123",
+    "pets": "Mojo (100%), Mystique (94%), Bruno (81%), Buddy (10%), Lola (94%), Meister (87%), Luna (88%) + 2 more"
+  },
+  "seed_data_creation": "",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Mobile audit complete. Key remaining bugs: (1) Pet home trait chips scrambled at 360-375px — STILL NOT FIXED from previous reports. (2) CelebrateCategoryStrip labels at 10px in file /app/frontend/src/components/celebrate/CelebrateCategoryStrip.jsx:152. Mira widget tested and working at all viewports. No horizontal overflow issues anywhere. Login works: dipali@clubconcierge.in / test123. Screenshot files saved to .screenshots/. Tested pages: /, /login, /celebrate-soul, /dine, /dashboard, /pet-home, /my-pets at 360px/375px/390px/412px/430px/768px viewports.",
+  "rca_of_issues": {
+    "pet_home_scrambled": {
+      "issue": "Trait chips 'Very Friendly With Strangers' (27 chars) and 'Light (15-30 Mins) Energy' (24 chars) wrap to 3 lines at 360-375px",
+      "root_cause": "Pet profile card layout: 3-column flex row [icon ~95px | chip area ~175px | soul ring ~80px]. At 375px minus 2*16px padding = 343px total, minus 95px icon, minus 80px soul ring, minus ~20px flex gap = 148px available for chips. A chip with 'Very Friendly With Strangers' at ~12px font needs ~220px. Result: 3-line wrap.",
+      "fix": "Either reduce icon/ring size on mobile, or convert trait section to use truncation/single-line display, or hide soul ring on very small viewports (below 380px)",
+      "file": "Need to locate the pet profile card component — likely /app/frontend/src/pages/PetHomePage.jsx or a sub-component"
+    },
+    "category_strip_10px": {
+      "root_cause": "Explicit inline style fontSize: 10 on line 152 of CelebrateCategoryStrip.jsx. The 10px value overrides global mobile font rules (which only apply to Tailwind classes, not inline styles).",
+      "fix": "Change to fontSize: 11 or 12, increase maxWidth from 72 to 88"
+    }
+  }
+}
