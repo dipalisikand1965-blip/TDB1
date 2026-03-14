@@ -1,106 +1,50 @@
 /**
- * useResizeMobile — ResizeObserver-based mobile detection with 150ms debounce.
+ * useResizeMobile — Platform-standard mobile detection hook.
  *
- * Two variants:
- *  - useResizeMobile(breakpoint)  → callback ref for modal containers
- *  - useViewportMobile(breakpoint) → observes document.documentElement (for persistent panels)
+ * One hook. One truth. Entire platform.
  *
- * Both:
- *  - Debounce at 150ms (never stale after device rotation / Chrome DevTools resize)
- *  - Full cleanup in every useEffect (no memory leaks, no zombie setState)
- *  - SSR-safe (window/document guards)
+ * Uses ResizeObserver on document.body with a 150ms debounce.
+ * Handles device rotation, browser resize, Chrome DevTools resize.
+ * SSR-safe (window/document guards). Full cleanup on unmount.
+ *
+ * Usage:
+ *   const isMobile = useResizeMobile();           // default breakpoint: 641
+ *   const isTablet = useResizeMobile(1024);        // custom breakpoint
+ *
+ * @param {number} breakpoint - width in px below which isMobile=true (default: 641)
+ * @returns {boolean} isMobile
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
-/**
- * useResizeMobile
- *
- * Returns [containerRef, isMobile].
- * Attach containerRef to the modal container element.
- * ResizeObserver fires whenever that element resizes (rotation, DevTools resize).
- * Cleanup runs on unmount AND whenever the observed element changes.
- *
- * @param {number} breakpoint - px threshold below which isMobile=true (default: 640)
- */
-export function useResizeMobile(breakpoint = 640) {
-  const observerRef = useRef(null);
-  const debounceRef = useRef(null);
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== 'undefined' ? window.innerWidth < breakpoint : false
-  );
-
-  // Callback ref — called with el on mount, null on unmount
-  const containerRef = useCallback(
-    (el) => {
-      // Tear down previous observer
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-        observerRef.current = null;
-      }
-      clearTimeout(debounceRef.current);
-
-      if (!el) return;
-
-      observerRef.current = new ResizeObserver((entries) => {
-        const width = entries[0]?.contentRect?.width ?? window.innerWidth;
-        clearTimeout(debounceRef.current);
-        debounceRef.current = setTimeout(
-          () => setIsMobile(width < breakpoint),
-          150
-        );
-      });
-      observerRef.current.observe(el);
-    },
-    [breakpoint]
-  );
-
-  // Final safety cleanup on component unmount
-  useEffect(
-    () => () => {
-      if (observerRef.current) observerRef.current.disconnect();
-      clearTimeout(debounceRef.current);
-    },
-    []
-  );
-
-  return [containerRef, isMobile];
+// Simple debounce helper — no external dependencies needed
+function debounce(fn, wait) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), wait);
+  };
 }
 
-/**
- * useViewportMobile
- *
- * Observes document.documentElement so it tracks the full viewport width.
- * Use this for persistent panels (Mira widget) where the panel itself
- * is narrower than the viewport on desktop.
- *
- * @param {number} breakpoint - px threshold below which isMobile=true (default: 640)
- */
-export function useViewportMobile(breakpoint = 640) {
-  const observerRef = useRef(null);
-  const debounceRef = useRef(null);
+export const useResizeMobile = (breakpoint = 641) => {
   const [isMobile, setIsMobile] = useState(
-    typeof window !== 'undefined' ? window.innerWidth < breakpoint : false
+    () => typeof window !== 'undefined' ? window.innerWidth < breakpoint : false
   );
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    observerRef.current = new ResizeObserver((entries) => {
-      const width = entries[0]?.contentRect?.width ?? window.innerWidth;
-      clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(
-        () => setIsMobile(width < breakpoint),
-        150
-      );
-    });
-    observerRef.current.observe(document.documentElement);
-
-    return () => {
-      observerRef.current?.disconnect();
-      clearTimeout(debounceRef.current);
-    };
+    const observer = new ResizeObserver(
+      debounce(entries => {
+        setIsMobile(entries[0].contentRect.width < breakpoint);
+      }, 150)
+    );
+    observer.observe(document.body);
+    return () => observer.disconnect();
   }, [breakpoint]);
 
   return isMobile;
-}
+};
+
+// Backward-compat alias — use useResizeMobile going forward
+export const useViewportMobile = useResizeMobile;

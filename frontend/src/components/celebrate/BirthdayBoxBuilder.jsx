@@ -390,8 +390,8 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
   const [isOrdering, setIsOrdering] = useState(false);
   const [ticketId, setTicketId] = useState(null);
 
-  // ResizeObserver on the modal backdrop container — 150ms debounce
-  const [containerRef, isMobile] = useResizeMobile(640);
+  // Platform-standard mobile detection — ResizeObserver on document.body
+  const isMobile = useResizeMobile();
 
   // Listen for open event
   useEffect(() => {
@@ -482,10 +482,9 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
 
   const modalContent = (
     <AnimatePresence>
-      {/* Backdrop — containerRef here so ResizeObserver tracks full viewport */}
+      {/* Backdrop */}
       <motion.div
         key="backdrop"
-        ref={containerRef}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}

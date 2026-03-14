@@ -13,6 +13,7 @@ import React, { useState, useRef } from 'react';
 import { X } from 'lucide-react';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
+import { useResizeMobile } from '../../hooks/useResizeMobile';
 
 const CELEBRATION_TYPES = [
   'Birthday', 'Gotcha Day', 'Milestone', 'Photoshoot', 'Pawty', 'Just because'
@@ -30,6 +31,7 @@ const MIRA_COMMENTS = {
 
 const WallUploadModal = ({ isOpen, onClose, petName, petId, onSubmitted }) => {
   const { token } = useAuth();
+  const isMobile = useResizeMobile();
   const [step, setStep] = useState(1);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [fileBase64, setFileBase64] = useState(null);
@@ -122,15 +124,23 @@ const WallUploadModal = ({ isOpen, onClose, petName, petId, onSubmitted }) => {
       style={{
         position: 'fixed', inset: 0,
         background: 'rgba(0,0,0,0.50)', zIndex: 2000,
-        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16
+        display: 'flex',
+        alignItems: isMobile ? 'flex-start' : 'center',
+        justifyContent: 'center',
+        padding: isMobile ? '88px 0 0' : '16px',
+        overflowY: isMobile ? 'auto' : 'visible',
       }}
       data-testid="wall-upload-modal-overlay"
     >
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: '#FFFFFF', borderRadius: 20, padding: 32,
-          maxWidth: 460, width: '100%', maxHeight: '90vh', overflowY: 'auto',
+          background: '#FFFFFF',
+          borderRadius: isMobile ? '20px 20px 0 0' : 20,
+          padding: isMobile ? '24px 20px' : 32,
+          maxWidth: 460, width: '100%',
+          maxHeight: isMobile ? 'none' : '90vh',
+          overflowY: 'auto',
           position: 'relative'
         }}
         data-testid="wall-upload-modal"

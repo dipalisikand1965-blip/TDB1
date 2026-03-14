@@ -19,7 +19,7 @@ import { Badge } from './ui/badge';
 import { getApiUrl } from '../utils/api';
 import { toast } from 'sonner';
 import { useMiraSignal } from '../hooks/useMiraSignal';
-import { useViewportMobile } from '../hooks/useResizeMobile';
+import { useResizeMobile } from '../hooks/useResizeMobile';
 import MiraOrb from './MiraOrb';
 import CinematicKitAssembly from './CinematicKitAssembly';
 import MiraConciergeCards, { parseMiraRecommendations } from './MiraConciergeCard';
@@ -162,9 +162,9 @@ const MiraChatWidget = ({
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
-  // Viewport-level mobile detection — ResizeObserver on document.documentElement
+  // Viewport-level mobile detection — ResizeObserver on document.body
   // Debounced at 150ms, handles device rotation and Chrome DevTools resize
-  const isMobile = useViewportMobile(640);
+  const isMobile = useResizeMobile();
   
   // Widget state
   const [isOpen, setIsOpen] = useState(false);

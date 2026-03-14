@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://memory-wall-debug.preview.emergentagent.com
+**Preview URL:** https://mobile-drawer-fix.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
