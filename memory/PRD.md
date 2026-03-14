@@ -44,9 +44,26 @@ consistent with the preview endpoint.
 | `openOccasionBoxBuilder` | "Build {pet}'s Box" primary button | `{preset, petName, petId}` |
 | `openBirthdayBoxBrowse` | "Birthday Box" secondary button | `{boxPreview, petName}` |
 
+### TESTING RESULTS (Session 12):
+| Test | Status |
+|------|--------|
+| Birthday Box card — allergy fix (Salmon, not Chicken) | ✅ PASS |
+| Build Mojo's Box reveal animation (1.5s) | ✅ PASS |
+| BirthdayBoxBuilder Step 1 — all 6 slots displayed | ✅ PASS |
+| BirthdayBoxBuilder Step 2 — allergy confirmation (Mojo) | ✅ PASS |
+| BirthdayBoxBuilder Step 3 — success + Order ID | ✅ PASS |
+| Birthday Box secondary button → browse drawer opens | ✅ PASS |
+| Browse Drawer 5 tabs (Cakes/Toys/Style/Memory/Wellness) | ✅ PASS |
+| Browse Drawer Mira's pick row per tab | ✅ PASS |
+| Browse Drawer allergy banner (+ fixed all-tab filtering) | ✅ PASS |
+| Browse Drawer bottom bar build CTA | ✅ PASS |
+| POST /api/birthday-box/{petId}/build endpoint | ✅ PASS |
+
+**Backend tests:** 16/16 passed  
+**Frontend tests:** 12/12 passed
+
 ---
 
-## 🎁 MIRA'S BIRTHDAY BOX — MASTER SPECIFICATION
 
 ### WHAT IS IT?
 A **curated 6-slot celebration box** built specifically for one pet, based on their individual soul profile. **No two boxes are the same.** Mira selects every item based on her knowledge of the pet.
