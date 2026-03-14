@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://celebrate-showcase.preview.emergentagent.com/mira-demo**
+**https://celebrate-fix.preview.emergentagent.com/mira-demo**
 
 ---
 

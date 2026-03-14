@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://celebrate-showcase.preview.emergentagent.com
+**Preview URL:** https://celebrate-fix.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
