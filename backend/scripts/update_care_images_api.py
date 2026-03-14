@@ -4,7 +4,7 @@ Update Care products with generated images via API
 """
 import requests
 
-API_URL = "https://mira-gift-generator.preview.emergentagent.com"
+API_URL = "https://mira-orders.preview.emergentagent.com"
 AUTH = ("aditya", "lola4304")
 
 # Generated Care images
