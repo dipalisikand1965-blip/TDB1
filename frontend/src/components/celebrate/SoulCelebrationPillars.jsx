@@ -407,7 +407,7 @@ const SoulCelebrationPillars = ({ pet, onOpenSoulBuilder }) => {
             <PillarCard
               key={pillar.id}
               pillar={pillar}
-              pet={pet}
+              pet={activePet}
               isExpanded={expandedPillar === pillar.id}
               onToggle={handleToggle}
               onTellMiraMore={handleTellMiraMore}
@@ -429,7 +429,7 @@ const SoulCelebrationPillars = ({ pet, onOpenSoulBuilder }) => {
             >
               <SoulPillarExpanded
                 pillar={expandedPillarData}
-                pet={pet}
+                pet={activePet}
                 onClose={() => setExpandedPillar(null)}
               />
             </motion.div>
@@ -442,7 +442,7 @@ const SoulCelebrationPillars = ({ pet, onOpenSoulBuilder }) => {
             <PillarCard
               key={pillar.id}
               pillar={pillar}
-              pet={pet}
+              pet={activePet}
               isExpanded={expandedPillar === pillar.id}
               onToggle={handleToggle}
               onTellMiraMore={handleTellMiraMore}
@@ -464,13 +464,23 @@ const SoulCelebrationPillars = ({ pet, onOpenSoulBuilder }) => {
             >
               <SoulPillarExpanded
                 pillar={expandedPillarData}
-                pet={pet}
+                pet={activePet}
                 onClose={() => setExpandedPillar(null)}
               />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {/* PillarSoulModal — opens when INCOMPLETE pillar clicked */}
+      <PillarSoulModal
+        pillar={soulModalPillar}
+        pet={activePet}
+        token={token}
+        isOpen={!!soulModalPillar}
+        onClose={() => setSoulModalPillar(null)}
+        onComplete={handleModalComplete}
+      />
     </section>
   );
 };
