@@ -26,11 +26,98 @@
 <body>
 
 <h1>🐾 The Doggy Company — Platform Documentation</h1>
-<p style="color:#888; font-size:13px">Last updated: Feb 2026 — Session 12 (Birthday Box Builder + Browse Drawer IMPLEMENTED)</p>
+<p style="color:#888; font-size:13px">Last updated: Feb 2026 — Session 13 (Concierge Handoff + Service Desk Birthday Box Orders Spec)</p>
+
+<!-- ============================= -->
+<div class="section" style="background: #fef3c7; border: 2px solid #d97706; padding: 16px; border-radius: 12px; margin-bottom: 30px;">
+<h2 style="background: #d97706; color: white;">📋 SERVICE DESK — Birthday Box Orders Spec (TO BUILD)</h2>
+
+<h3>Overview</h3>
+<p>A dedicated <strong>"🎂 Birthday Box Orders"</strong> tab in the Service Desk (Concierge team access only). Closes the fulfilment loop — every order is tracked from confirmation through delivery. This is <strong>Phase 1 priority</strong> for the next dev session.</p>
+
+<h3>Layout: 3 columns</h3>
+<table>
+  <tr><th>Column</th><th>Width</th><th>Content</th></tr>
+  <tr><td>Left — Order List</td><td>300px</td><td>Sorted by status priority then date. Pet name, owner, time ago, status badge (color-coded), ⚠ allergy flag</td></tr>
+  <tr><td>Center — Order Detail</td><td>flex-1</td><td>Pet info, manifest header, allergy alert banner, 6-slot manifest table, personalisation panel</td></tr>
+  <tr><td>Right — Action Panel</td><td>280px</td><td>Status controls, tracking link, Contact (WhatsApp/email/call), Notes, Order Log</td></tr>
+</table>
+<p><strong>Mobile:</strong> Single column, list view with tap-to-open detail.</p>
+
+<h3>Order Status System (5 states)</h3>
+<table>
+  <tr><th>Status</th><th>Color</th><th>Meaning</th><th>Transition Gate</th></tr>
+  <tr><td>NEW</td><td>#DC2626 (red)</td><td>Confirmed, awaiting Concierge review</td><td>None</td></tr>
+  <tr><td>IN PROGRESS</td><td>#D97706 (amber)</td><td>Concierge contacted, assembly begins</td><td>Allergy confirmation gate (if pet has allergies)</td></tr>
+  <tr><td>ASSEMBLED</td><td>#2563EB (blue)</td><td>All 6 slots assembled, ready to dispatch</td><td>All 6 slot checkboxes must be ticked</td></tr>
+  <tr><td>DISPATCHED</td><td>#7C3AED (purple)</td><td>Box sent, in transit</td><td>Tracking link required</td></tr>
+  <tr><td>DELIVERED</td><td>#27AE60 (green)</td><td>Box received, loop closed</td><td>None</td></tr>
+</table>
+
+<h3>Pet Parent Status View (simplified, 3 states)</h3>
+<table>
+  <tr><th>Admin Status</th><th>Pet Parent Sees</th></tr>
+  <tr><td>NEW + IN PROGRESS</td><td>"Your Concierge is building {petName}'s box"</td></tr>
+  <tr><td>ASSEMBLED + DISPATCHED</td><td>"{petName}'s box is on its way 🎉"</td></tr>
+  <tr><td>DELIVERED</td><td>"{petName}'s Birthday Box has arrived ♥"</td></tr>
+</table>
+
+<h3>6-Slot Manifest Table (Center column)</h3>
+<table>
+  <tr><th>Column</th><th>Content</th></tr>
+  <tr><td>✓</td><td>Assembly checkbox — turns row green (#F0FDF4) when checked. ALL 6 required for "Mark as Assembled"</td></tr>
+  <tr><td>SLOT</td><td>HERO / JOY / STYLE / MEMORY / HEALTH / SURPRISE</td></tr>
+  <tr><td>ITEM NAME</td><td>Product name</td></tr>
+  <tr><td>DETAIL / PERSONALISATION</td><td>Bandana name, cake message, sourcing notes</td></tr>
+  <tr><td>SAFETY FLAG</td><td>Green "Safe" | Red ⚠ "Allergen check" | Gold 👑 "Concierge source"</td></tr>
+</table>
+
+<h3>Critical: Allergy Alert Banner</h3>
+<p><strong>Background:</strong> #FEF2F2, <strong>Border:</strong> 2px solid #DC2626. Shows ALLERGEN ALERT prominently at top of manifest. Cannot be dismissed until order moves to IN PROGRESS with explicit allergy gate confirmed.</p>
+
+<h3>Admin Actions</h3>
+<ul>
+  <li><strong>Mark as Assembled</strong> — enabled only when all 6 slots checked. Modal confirmation required.</li>
+  <li><strong>Mark as Dispatched</strong> — appears after ASSEMBLED. Tracking link field opens.</li>
+  <li><strong>Contact Owner</strong> — WhatsApp button (pre-filled message), Email, Call. WhatsApp → Email fallback if undelivered.</li>
+  <li><strong>Notes Panel</strong> — free text internal Concierge notes.</li>
+  <li><strong>Order Log</strong> — timeline of all actions with timestamp.</li>
+  <li><strong>Personalisation Panel</strong> — editable: Bandana name, Cake message, Delivery date (datepicker), Special requests.</li>
+  <li><strong>Cancel Order</strong> — requires reason. Status → CANCELLED.</li>
+</ul>
+
+<h3>Backend Requirements</h3>
+<table>
+  <tr><th>Endpoint</th><th>Purpose</th></tr>
+  <tr><td>GET /api/admin/birthday-box-orders</td><td>List all orders with filters (status, date, allergy)</td></tr>
+  <tr><td>GET /api/admin/birthday-box-orders/{id}</td><td>Full order detail with pet data, slots, logs</td></tr>
+  <tr><td>PATCH /api/admin/birthday-box-orders/{id}/status</td><td>Status transition (with gate validation)</td></tr>
+  <tr><td>PATCH /api/admin/birthday-box-orders/{id}/personalisation</td><td>Update bandana name, cake message, delivery date</td></tr>
+  <tr><td>PATCH /api/admin/birthday-box-orders/{id}/slots/{slot}/checked</td><td>Mark a slot assembled</td></tr>
+  <tr><td>POST /api/admin/birthday-box-orders/{id}/notify</td><td>Send WhatsApp/email notification to pet parent</td></tr>
+</table>
+
+<h3>Build Order (Phased)</h3>
+<ol>
+  <li><strong>Phase 1 (MVP):</strong> Read-only manifest view — order list + center column detail. Immediate value for Concierge team.</li>
+  <li><strong>Phase 2:</strong> Status transitions + allergy gate + slot assembly checkboxes.</li>
+  <li><strong>Phase 3:</strong> Contact panel (WhatsApp pre-fill) + personalisation edits + order log.</li>
+  <li><strong>Phase 4:</strong> Delivery notifications to pet parent + tracking integration.</li>
+</ol>
+</div>
 
 <!-- ============================= -->
 <div class="section" style="background: #dcfce7; border: 2px solid #16a34a; padding: 16px; border-radius: 12px; margin-bottom: 30px;">
-<h2 style="background: #16a34a; color: white;">✅ SESSION 12: Birthday Box Builder + Browse Drawer (Feb 2026)</h2>
+<h2 style="background: #16a34a; color: white;">✅ SESSION 13: UI Fixes + Toast + Browse Drawer Selection (Feb 2026)</h2>
+
+<h3>Fixes Applied</h3>
+<table>
+  <tr><th>Issue</th><th>Fix</th><th>File</th></tr>
+  <tr><td>Birthday box card off-center on wide screens</td><td>Added <code>px-4 sm:px-6 lg:px-8</code> to main content wrapper</td><td>CelebratePageNew.jsx</td></tr>
+  <tr><td>"Sent to Concierge" toast not visible</td><td>Toast fired in <code>StepConciergeHandoff</code> <code>useEffect</code> mount — appears above modal overlay</td><td>BirthdayBoxBuilder.jsx</td></tr>
+  <tr><td>Browse Drawer: confusing selection state (first product always showed ✓)</td><td>Replaced auto-selection with explicit "Swap →" / "Current" / ✓ states. Clicking current swap undoes it.</td><td>BirthdayBoxBrowseDrawer.jsx</td></tr>
+</table>
+</div>
 
 <h3>New Components Created</h3>
 <table>

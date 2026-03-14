@@ -666,7 +666,14 @@ function MainLayout() {
       {/* Mobile Bottom Navigation - Only shows on mobile */}
       <ConditionalMobileNav />
       <Toaster />
-      <SonnerToaster richColors position="top-right" />
+      <SonnerToaster 
+        richColors 
+        position="bottom-right"
+        style={{"--z-index": "999999"}}
+        toastOptions={{
+          style: { zIndex: 999999 },
+        }}
+      />
     </div>
   );
 }

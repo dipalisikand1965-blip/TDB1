@@ -315,8 +315,8 @@ const CelebratePageNew = () => {
         soulScore={soulScore}
       />
 
-      {/* Main content area with consistent max-width */}
-      <div className="max-w-5xl mx-auto w-full">
+      {/* Main content area with consistent max-width + padding for centering */}
+      <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8">
         {/* 2. CATEGORY STRIP - Opens modals on click */}
         <CelebrateCategoryStrip 
           pet={selectedPet}

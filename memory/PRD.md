@@ -232,6 +232,70 @@ Rule 4: No allergy data → Show builder notice
 
 ---
 
+---
+
+## 📋 SERVICE DESK — Birthday Box Orders Spec (TO BUILD — Phase 1 Priority)
+
+**Source:** ServiceDesk_BirthdayBoxOrders_SPEC.docx  
+**Purpose:** Close the fulfilment loop. Every birthday box order tracked from confirmation to delivery.
+
+### New Tab: "🎂 Birthday Box Orders" in Service Desk
+- Concierge team access only
+- Tab badge shows count of NEW orders
+- **3-column layout:** Left (order list 300px) | Center (order detail flex-1) | Right (action panel 280px)
+- **Mobile:** Single column, tap-to-open detail
+
+### Status System
+| Status | Color | Gate |
+|--------|-------|------|
+| NEW | #DC2626 | None |
+| IN PROGRESS | #D97706 | Allergy confirmation gate if allergies |
+| ASSEMBLED | #2563EB | All 6 slot checkboxes ticked |
+| DISPATCHED | #7C3AED | Tracking link required |
+| DELIVERED | #27AE60 | None |
+
+### Pet Parent Status (3 simplified states)
+| Admin Status | Pet Parent Sees |
+|---|---|
+| NEW + IN PROGRESS | "Your Concierge is building {petName}'s box" |
+| ASSEMBLED + DISPATCHED | "{petName}'s box is on its way 🎉" |
+| DELIVERED | "{petName}'s Birthday Box has arrived ♥" |
+
+### Critical: Allergy Alert Banner
+Red banner (bg: #FEF2F2, border: 2px solid #DC2626) at top of manifest.
+
+### 6-Slot Manifest Table Columns
+✓ (assembly checkbox) | SLOT | ITEM NAME | DETAIL/PERSONALISATION | SAFETY FLAG
+
+### New API Endpoints Required
+| Endpoint | Purpose |
+|---|---|
+| GET /api/admin/birthday-box-orders | List with status/date/allergy filters |
+| GET /api/admin/birthday-box-orders/{id} | Full order detail |
+| PATCH /api/admin/birthday-box-orders/{id}/status | Status transition (server-side gated) |
+| PATCH /api/admin/birthday-box-orders/{id}/personalisation | Bandana name, cake msg, delivery date |
+| PATCH /api/admin/birthday-box-orders/{id}/slots/{slot}/checked | Mark slot assembled |
+| POST /api/admin/birthday-box-orders/{id}/notify | WhatsApp/email to pet parent |
+
+### Build Order (Phased)
+1. **Phase 1 (MVP):** Read-only manifest view
+2. **Phase 2:** Status transitions + allergy gate + slot checkboxes
+3. **Phase 3:** Contact panel + personalisation edits + order log
+4. **Phase 4:** Delivery notifications + tracking integration
+
+---
+
+## ✅ SESSION 13: UI Fixes + Browse Drawer Selection (Feb 2026)
+| Fix | File |
+|---|---|
+| Birthday box card off-center → `px-4 sm:px-6 lg:px-8` to content wrapper | CelebratePageNew.jsx |
+| Toast "Sent to Concierge" fires on Step 3 mount (above modal overlay) | BirthdayBoxBuilder.jsx |
+| Browse Drawer: replaced confusing auto-selection with clear Swap/Current/✓ states | BirthdayBoxBrowseDrawer.jsx |
+
+---
+
+
+
 ## 🛒 BIRTHDAY BOX BROWSE DRAWER — SPECIFICATION
 
 ### TRIGGER
