@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://birthday-box-1.preview.emergentagent.com
+**Preview URL:** https://memory-wall-debug.preview.emergentagent.com
 
 ---
 

@@ -4,7 +4,7 @@ Update Care products with generated images via API
 """
 import requests
 
-API_URL = "https://birthday-box-1.preview.emergentagent.com"
+API_URL = "https://memory-wall-debug.preview.emergentagent.com"
 AUTH = ("aditya", "lola4304")
 
 # Generated Care images
