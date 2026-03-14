@@ -12,6 +12,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import {
   X, Check, AlertTriangle, Sparkles, Gift, ChevronRight,
   Loader2, ShieldCheck, Phone, Clock, Star
@@ -20,6 +21,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
+
+// Mobile: pin below header + above nav bar. Desktop: centre.
+const isMobile = () => typeof window !== 'undefined' && window.innerWidth < 640;
 
 /* ─────────────────────────────────────────────────────────────────
    SLOT ROW — compact, mobile-friendly
@@ -475,7 +479,9 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
 
   if (!isOpen) return null;
 
-  return (
+  const mobile = isMobile();
+
+  const modalContent = (
     <AnimatePresence>
       {/* Backdrop */}
       <motion.div
@@ -487,14 +493,14 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
         style={{
           position: 'fixed',
           top: 0, left: 0, right: 0, bottom: 0,
-          zIndex: 200,
+          zIndex: 9200,
           background: 'rgba(10,0,26,0.80)',
           backdropFilter: 'blur(4px)',
         }}
         data-testid="builder-backdrop"
       />
 
-      {/* Modal — always centered pop-up */}
+      {/* Modal */}
       <motion.div
         key="modal"
         initial={{ opacity: 0, scale: 0.92 }}
@@ -508,12 +514,14 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
           left: 0,
           right: 0,
           bottom: 0,
-          zIndex: 201,
+          zIndex: 9201,
           display: 'flex',
-          alignItems: 'center',
+          // Mobile: pin to top so X button clears the sticky header
+          alignItems: mobile ? 'flex-start' : 'center',
           justifyContent: 'center',
-          padding: '16px',
+          padding: mobile ? '110px 12px 80px' : '16px',
           pointerEvents: 'none',
+          overflowY: mobile ? 'auto' : 'visible',
         }}
       >
         <div
@@ -523,12 +531,12 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
             width: '100%',
             maxWidth: '512px',
             borderRadius: '16px',
-            overflow: 'hidden',
+            overflowX: 'hidden',
+            overflowY: 'auto',
             background: 'linear-gradient(145deg, #140028 0%, #2D0060 60%, #1A0030 100%)',
             border: '1px solid rgba(196,77,255,0.30)',
             boxShadow: '0 8px 64px rgba(196,77,255,0.30)',
-            maxHeight: '88vh',
-            overflowY: 'auto',
+            maxHeight: mobile ? 'none' : '88vh',
             pointerEvents: 'all',
           }}
         >
@@ -601,6 +609,10 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
       </motion.div>
     </AnimatePresence>
   );
+
+  return typeof document !== 'undefined'
+    ? createPortal(modalContent, document.body)
+    : null;
 };
 
 export default BirthdayBoxBuilder;
