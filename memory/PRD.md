@@ -6,6 +6,32 @@
 
 ## ✅ SESSION 12: Birthday Box Builder + Browse Drawer (Feb 2026)
 
+---
+
+## 🔄 SESSION 15 STATUS — In Progress (Feb 2026)
+
+### WHAT IS IN PROGRESS:
+**P0: Wire BirthdayBoxOrdersAdmin into AgentPortal.jsx**
+- `BirthdayBoxOrdersAdmin.jsx` — FULLY BUILT (3-panel layout, status transitions, allergy banner, personalisation editing) ✅
+- Backend endpoints — ALL BUILT (`GET/PATCH /api/admin/birthday-box-orders/*`) ✅
+- Import already in `AgentPortal.jsx` ✅
+- **28 birthday box orders exist in DB** ✅
+- **MISSING:**
+  - Render block `{activeTab === 'birthday_box_orders' && <BirthdayBoxOrdersAdmin />}` in AgentPortal content area
+  - `birthday_box_orders` permission NOT in `AGENT_PERMISSIONS` list in server.py
+  - No agent exists in `agents` collection (empty) — login fails
+- **Action:** Add render block + permission + seed test agent → test full flow
+
+### WHAT SPEC DOC SAYS (ServiceDesk_BirthdayBoxOrders_SPEC.docx — Full canonical spec):
+See "Service Desk Full Spec" section above in this PRD. Key phases:
+- Phase 1A/1B/1C: DONE (read-only manifest, allergy banner, status transitions)
+- Phase 2A: PARTIALLY DONE (status PATCH exists, slot assembly PATCH missing)
+- Phase 2B/2C: TODO (slot checkboxes UI, allergy gate enforcement)
+- Phase 3: TODO (WhatsApp contact panel, notes, order log)
+- Phase 4: TODO (delivery notifications)
+
+---
+
 ### WHAT WAS BUILT:
 
 #### 1. **BirthdayBoxBuilder.jsx** (NEW — COMPLETED ✅)
@@ -234,10 +260,20 @@ Rule 4: No allergy data → Show builder notice
 
 ---
 
-## 📋 SERVICE DESK — Birthday Box Orders Spec (TO BUILD — Phase 1 Priority)
+## 📋 SERVICE DESK — Birthday Box Orders Spec (IN PROGRESS — Phase 1+2 built, wiring pending)
 
-**Source:** ServiceDesk_BirthdayBoxOrders_SPEC.docx  
+**Source:** ServiceDesk_BirthdayBoxOrders_SPEC.docx (FULL SPEC — all 10 sections)  
 **Purpose:** Close the fulfilment loop. Every birthday box order tracked from confirmation to delivery.
+
+### Closed Loop (8 Steps — per spec doc)
+1. Pet parent confirms → ticket created + concierge handoff screen
+2. System auto-notifies Concierge (WhatsApp + email)
+3. Concierge opens Birthday Box Orders tab → sees 6-slot manifest + allergy flags
+4. Concierge contacts pet parent within 24hrs → confirms delivery + personalisation
+5. Concierge assembles box slot by slot → marks each slot checked
+6. All 6 checked → "Mark as Assembled" → pet parent auto-notified
+7. Concierge dispatches → DISPATCHED + tracking link
+8. DELIVERED → Mira sends brand moment message to pet parent ♥
 
 ### New Tab: "🎂 Birthday Box Orders" in Service Desk
 - Concierge team access only

@@ -26,7 +26,7 @@
 <body>
 
 <h1>🐾 The Doggy Company — Platform Documentation</h1>
-<p style="color:#888; font-size:13px">Last updated: Feb 2026 — Session 14 (Order fix + Modal centering + Next Agent Instructions)</p>
+<p style="color:#888; font-size:13px">Last updated: Feb 2026 — Session 15 (Full Service Desk Spec loaded + BirthdayBoxOrdersAdmin wiring in progress)</p>
 
 <!-- ================================================================== -->
 <!-- ⛔ NEXT AGENT — READ THIS FIRST BEFORE TOUCHING ANYTHING ⛔ -->
@@ -133,104 +133,205 @@
 <!-- ================================================================== -->
 <!-- 🚀 NEXT AGENT: WHAT TO BUILD -->
 <!-- ================================================================== -->
+<!-- CURRENT FOCUS -->
 <div style="background:#fff7ed; border:2px solid #ea580c; padding:20px; border-radius:12px; margin-bottom:30px;">
-<h2 style="background:#ea580c; color:white; padding:10px 16px; border-radius:8px; margin-top:0;">🚀 NEXT AGENT: WHAT TO BUILD (Priority Order)</h2>
+<h2 style="background:#ea580c; color:white; padding:10px 16px; border-radius:8px; margin-top:0;">🚀 CURRENT TASK — Session 15 (IN PROGRESS)</h2>
 
-<h3>P0 — Service Desk Birthday Box Orders Tab (Phase 1 MVP)</h3>
-<p><strong>This is the immediate priority.</strong> The birthday box fulfilment loop is open — orders reach the DB but the Concierge team has no UI to action them.</p>
+<h3>P0 — Wire BirthdayBoxOrdersAdmin into AgentPortal.jsx</h3>
+<p><strong>STATUS: IN PROGRESS.</strong> <code>BirthdayBoxOrdersAdmin.jsx</code> is fully built. Missing: the render block in <code>AgentPortal.jsx</code> content area + <code>birthday_box_orders</code> permission in <code>AGENT_PERMISSIONS</code> + seed a test agent.</p>
 <ul>
-  <li>Add a <strong>"🎂 Birthday Box Orders"</strong> tab inside the existing Service Desk admin view</li>
-  <li>Phase 1 = read-only: order list (left) + 6-slot manifest detail (center)</li>
-  <li>Data source: <code>db.birthday_box_orders</code> collection (status=pending_concierge)</li>
-  <li>Full spec: See "📋 SERVICE DESK — Birthday Box Orders Spec" section below</li>
-  <li>Test account: <code>aditya / lola4304</code> (admin)</li>
+  <li>Add <code>birthday_box_orders</code> to <code>AGENT_PERMISSIONS</code> in server.py</li>
+  <li>Add render block <code>{activeTab === 'birthday_box_orders' &amp;&amp; &lt;BirthdayBoxOrdersAdmin /&gt;}</code> in AgentPortal content area</li>
+  <li>Seed a concierge agent with <code>birthday_box_orders</code> permission in <code>agents</code> collection</li>
+  <li>Test: login → tab appears → 28 orders load → status transitions work</li>
 </ul>
 
-<h3>P1 — Browse Drawer Swap Wire-through</h3>
-<p>When user swaps items in the Browse Drawer and clicks "Build {petName}'s Box", the swapped slots should replace Mira's picks in the BirthdayBoxBuilder modal's Step 1 view and in the concierge-handoff payload.</p>
+<h3>P1 — Love &amp; Memory Drawer (BLOCKED on user spec)</h3>
+<p>Recurring request. Ask user for spec before building.</p>
 
-<h3>P1 — Love &amp; Memory Drawer</h3>
-<p>Recurring user request. <strong>BLOCKED — needs spec from user (Dipali) before building.</strong> Ask before starting.</p>
-
-<h3>P3 — Known Bugs (low priority)</h3>
+<h3>P2 — Upcoming</h3>
 <ul>
-  <li>Razorpay checkout failure (reported, not yet debugged)</li>
+  <li>Standardize /dine, /stay, /learn pillar pages to match /celebrate-soul template</li>
+</ul>
+
+<h3>P3 — Known Bugs</h3>
+<ul>
+  <li>Razorpay checkout failure</li>
   <li>Mobile pet dashboard layout scrambled</li>
 </ul>
 </div>
 
-<h3>Overview</h3>
-<p>A dedicated <strong>"🎂 Birthday Box Orders"</strong> tab in the Service Desk (Concierge team access only). Closes the fulfilment loop — every order is tracked from confirmation through delivery. This is <strong>Phase 1 priority</strong> for the next dev session.</p>
+<!-- ================================================================== -->
+<!-- 📋 FULL SERVICE DESK SPEC (FROM ServiceDesk_BirthdayBoxOrders_SPEC.docx) -->
+<!-- ================================================================== -->
+<div style="background:#f0f9ff; border:2px solid #2563EB; padding:20px; border-radius:12px; margin-bottom:30px;">
+<h2 style="background:#2563EB; color:white; padding:10px 16px; border-radius:8px; margin-top:0;">📋 SERVICE DESK — Birthday Box Orders — FULL SPEC (Aditya's Document)</h2>
+<p style="color:#1e40af; font-weight:600;">Source: ServiceDesk_BirthdayBoxOrders_SPEC.docx — Canonical. All values final.</p>
 
-<h3>Layout: 3 columns</h3>
+<h3>Section 1 — The Closed Loop (8 Steps)</h3>
 <table>
-  <tr><th>Column</th><th>Width</th><th>Content</th></tr>
-  <tr><td>Left — Order List</td><td>300px</td><td>Sorted by status priority then date. Pet name, owner, time ago, status badge (color-coded), ⚠ allergy flag</td></tr>
-  <tr><td>Center — Order Detail</td><td>flex-1</td><td>Pet info, manifest header, allergy alert banner, 6-slot manifest table, personalisation panel</td></tr>
-  <tr><td>Right — Action Panel</td><td>280px</td><td>Status controls, tracking link, Contact (WhatsApp/email/call), Notes, Order Log</td></tr>
+  <tr><th>Step</th><th>Who</th><th>Action</th><th>Result</th></tr>
+  <tr><td>1</td><td>Pet parent</td><td>Confirms Birthday Box in builder</td><td>Ticket created in DB · Concierge handoff screen shown</td></tr>
+  <tr><td>2</td><td>System</td><td>Auto-notifies Concierge team</td><td>WhatsApp/email alert with order summary</td></tr>
+  <tr><td>3</td><td>Concierge</td><td>Opens Birthday Box Orders tab</td><td>Sees new order with full 6-slot manifest + allergy flags</td></tr>
+  <tr><td>4</td><td>Concierge</td><td>Contacts pet parent within 24hrs</td><td>Confirms delivery date, bandana name, cake message</td></tr>
+  <tr><td>5</td><td>Concierge</td><td>Assembles the box slot by slot</td><td>Checks each slot against manifest, marks assembled</td></tr>
+  <tr><td>6</td><td>Concierge</td><td>Clicks 'Mark as Assembled'</td><td>Status → ASSEMBLED · pet parent auto-notified</td></tr>
+  <tr><td>7</td><td>Concierge</td><td>Dispatches box</td><td>Status → DISPATCHED · tracking link added if available</td></tr>
+  <tr><td>8</td><td>System</td><td>Delivery confirmed</td><td>Status → DELIVERED · Mira sends delivery message to pet parent</td></tr>
 </table>
-<p><strong>Mobile:</strong> Single column, list view with tap-to-open detail.</p>
+<p style="background:#dbeafe; padding:10px; border-radius:8px; color:#1e40af;"><strong>Step 8 brand moment:</strong> WhatsApp/email from Mira: "Mojo's Birthday Box has arrived. Give her an extra hug from me today. ♥ Mira" — This closes the emotional loop.</p>
 
-<h3>Order Status System (5 states)</h3>
+<h3>Section 2 — Order Status System</h3>
 <table>
-  <tr><th>Status</th><th>Color</th><th>Meaning</th><th>Transition Gate</th></tr>
-  <tr><td>NEW</td><td>#DC2626 (red)</td><td>Confirmed, awaiting Concierge review</td><td>None</td></tr>
-  <tr><td>IN PROGRESS</td><td>#D97706 (amber)</td><td>Concierge contacted, assembly begins</td><td>Allergy confirmation gate (if pet has allergies)</td></tr>
-  <tr><td>ASSEMBLED</td><td>#2563EB (blue)</td><td>All 6 slots assembled, ready to dispatch</td><td>All 6 slot checkboxes must be ticked</td></tr>
-  <tr><td>DISPATCHED</td><td>#7C3AED (purple)</td><td>Box sent, in transit</td><td>Tracking link required</td></tr>
-  <tr><td>DELIVERED</td><td>#27AE60 (green)</td><td>Box received, loop closed</td><td>None</td></tr>
+  <tr><th>Status</th><th>Color</th><th>Meaning</th><th>Next Action / Gate</th></tr>
+  <tr><td><strong>NEW</strong></td><td>#DC2626 (red)</td><td>Confirmed, awaiting Concierge review</td><td>Concierge: open order, review manifest, contact pet parent</td></tr>
+  <tr><td><strong>IN PROGRESS</strong></td><td>#D97706 (amber)</td><td>Concierge contacted, personalisation confirmed</td><td>Gate: allergy confirmation if allergies present. Then assemble.</td></tr>
+  <tr><td><strong>ASSEMBLED</strong></td><td>#2563EB (blue)</td><td>All 6 slots assembled, box ready</td><td>Gate: ALL 6 slot checkboxes ticked. Dispatch.</td></tr>
+  <tr><td><strong>DISPATCHED</strong></td><td>#7C3AED (purple)</td><td>Box sent, in transit</td><td>Auto-update on tracking confirmation</td></tr>
+  <tr><td><strong>DELIVERED</strong></td><td>#27AE60 (green)</td><td>Loop closed</td><td>System sends Mira delivery message to pet parent</td></tr>
 </table>
-
-<h3>Pet Parent Status View (simplified, 3 states)</h3>
+<p><strong>Pet Parent Simplified View (never expose internal statuses):</strong></p>
 <table>
   <tr><th>Admin Status</th><th>Pet Parent Sees</th></tr>
   <tr><td>NEW + IN PROGRESS</td><td>"Your Concierge is building {petName}'s box"</td></tr>
-  <tr><td>ASSEMBLED + DISPATCHED</td><td>"{petName}'s box is on its way 🎉"</td></tr>
+  <tr><td>ASSEMBLED + DISPATCHED</td><td>"{petName}'s box is on its way 🎉" (+ tracking link)</td></tr>
   <tr><td>DELIVERED</td><td>"{petName}'s Birthday Box has arrived ♥"</td></tr>
 </table>
 
-<h3>6-Slot Manifest Table (Center column)</h3>
-<table>
-  <tr><th>Column</th><th>Content</th></tr>
-  <tr><td>✓</td><td>Assembly checkbox — turns row green (#F0FDF4) when checked. ALL 6 required for "Mark as Assembled"</td></tr>
-  <tr><td>SLOT</td><td>HERO / JOY / STYLE / MEMORY / HEALTH / SURPRISE</td></tr>
-  <tr><td>ITEM NAME</td><td>Product name</td></tr>
-  <tr><td>DETAIL / PERSONALISATION</td><td>Bandana name, cake message, sourcing notes</td></tr>
-  <tr><td>SAFETY FLAG</td><td>Green "Safe" | Red ⚠ "Allergen check" | Gold 👑 "Concierge source"</td></tr>
-</table>
-
-<h3>Critical: Allergy Alert Banner</h3>
-<p><strong>Background:</strong> #FEF2F2, <strong>Border:</strong> 2px solid #DC2626. Shows ALLERGEN ALERT prominently at top of manifest. Cannot be dismissed until order moves to IN PROGRESS with explicit allergy gate confirmed.</p>
-
-<h3>Admin Actions</h3>
+<h3>Section 3 — Tab Layout</h3>
 <ul>
-  <li><strong>Mark as Assembled</strong> — enabled only when all 6 slots checked. Modal confirmation required.</li>
-  <li><strong>Mark as Dispatched</strong> — appears after ASSEMBLED. Tracking link field opens.</li>
-  <li><strong>Contact Owner</strong> — WhatsApp button (pre-filled message), Email, Call. WhatsApp → Email fallback if undelivered.</li>
-  <li><strong>Notes Panel</strong> — free text internal Concierge notes.</li>
-  <li><strong>Order Log</strong> — timeline of all actions with timestamp.</li>
-  <li><strong>Personalisation Panel</strong> — editable: Bandana name, Cake message, Delivery date (datepicker), Special requests.</li>
-  <li><strong>Cancel Order</strong> — requires reason. Status → CANCELLED.</li>
+  <li><strong>Tab placement:</strong> Service Desk / Agent Portal — new tab alongside existing tabs</li>
+  <li><strong>Tab label:</strong> 🎂 Birthday Box Orders</li>
+  <li><strong>Tab badge:</strong> Red badge with count of NEW orders — disappears when all reviewed</li>
+  <li><strong>Access:</strong> Concierge team only — same auth as existing service desk (agent login)</li>
+</ul>
+<table>
+  <tr><th>Column</th><th>Width</th><th>Content</th></tr>
+  <tr><td>Left — Order List</td><td>300px fixed</td><td>Sort: NEW first → IN PROGRESS → ASSEMBLED → DISPATCHED → DELIVERED. Filter bar. Search. Auto-refresh 60s.</td></tr>
+  <tr><td>Center — Order Detail</td><td>flex-1</td><td>6-slot manifest, pet info, allergy banner, personalisation panel</td></tr>
+  <tr><td>Right — Action Panel</td><td>280px fixed</td><td>Status controls, contact panel, notes, order log</td></tr>
+</table>
+<p><strong>Order list item (72px height):</strong> Line 1: {petName}'s Birthday Box (14px bold). Line 2: Owner: {ownerName} (12px). Line 3: Ordered: {timeAgo} (11px). Right: status badge. ⚠ icon if allergies.</p>
+<p>Active item: border-left: 3px solid #C44DFF · background: #FAFAF8</p>
+
+<h3>Section 4 — The 6-Slot Manifest</h3>
+<p><strong>Manifest header:</strong> Pet avatar + name + breed + age. Owner name + WhatsApp link + email. Order ID (#BOX-{id}). Ordered date/time. Birthday with urgency flag if &lt;7 days. Delivery address (or "Pending — confirm with owner").</p>
+
+<div style="background:#FEF2F2; border:2px solid #DC2626; border-radius:12px; padding:14px; margin:12px 0;">
+<strong style="color:#DC2626; font-size:15px;">ALLERGY ALERT BANNER (MOST CRITICAL ELEMENT)</strong>
+<ul style="margin:8px 0 0 0; color:#991b1b;">
+  <li>Background: #FEF2F2 · Border: 2px solid #DC2626 · Border-radius: 12px · Padding: 14px 16px</li>
+  <li>Icon: ⚠️ 24px · Title: "ALLERGY ALERT — {petName}" (15px, font-weight:800, color:#DC2626)</li>
+  <li>Allergens shown as red pills: SOY · CHICKEN</li>
+  <li>Instruction: "Do not include any products containing these ingredients. Check labels before packing."</li>
+  <li>MUST be impossible to miss — red, large, at top, always visible even when scrolling</li>
+  <li>A box assembled without checking = brand crisis</li>
+</ul>
+</div>
+
+<p><strong>Manifest table columns:</strong> ✓ (assembly checkbox) | SLOT (HERO/JOY/STYLE/MEMORY/HEALTH/SURPRISE) | ITEM NAME | DETAIL/PERSONALISATION | SAFETY FLAG</p>
+<p><strong>Slot checkbox behaviour:</strong> Unchecked: □ white (2px border #E0D0C0). Checked: ✓ green (#27AE60). On check: row bg → #F0FDF4 (light green). NO strikethrough — row just greens. All 6 checked → "Mark as Assembled" activates.</p>
+<p><strong>Safety flag values:</strong> ✓ Safe (#F0FDF4 bg, #166534 text) | ⚠ Allergen check (#FEF2F2 bg, #DC2626 text) | 👑 Concierge source (#FFF8E8 bg, #C9973A text)</p>
+
+<h3>Section 5 — The Action Panel (Right Column)</h3>
+<p><strong>Status control:</strong></p>
+<ul>
+  <li>"Mark as Assembled" — DISABLED (grey) until all 6 checkboxes ticked. ENABLED: bg linear-gradient(135deg, #27AE60, #16A34A) · Clicks require modal confirmation: "All 6 items assembled for {petName}'s Birthday Box?"</li>
+  <li>"Mark as Dispatched" — appears after ASSEMBLED. bg linear-gradient(135deg, #7C3AED, #C44DFF)</li>
+  <li>Tracking link field — optional, appears after assembled</li>
+</ul>
+<p><strong>Contact panel:</strong></p>
+<ul>
+  <li>WhatsApp: Large green button "💬 WhatsApp {ownerName}" → wa.me deep link with pre-filled message: "Hi! This is The Doggy Company Concierge. I'm confirming {petName}'s Birthday Box (Order #{id}). Can we arrange delivery for [date]?"</li>
+  <li>Email: "✉ Email {ownerName}"</li>
+  <li>Call: "📞 Call" — shows phone on hover</li>
+</ul>
+<p><strong>Notes panel:</strong> Free text. Internal only. Auto-log on every status change with timestamp + concierge name.</p>
+<p><strong>Allergy confirmation gate (NEW → IN PROGRESS for allergic pets):</strong> Modal: "Confirm allergy check for {petName}" — "I have checked — proceed". Logged: timestamp + concierge name. Cannot be skipped. Server-side enforced.</p>
+
+<h3>Section 6 — Notification System</h3>
+<p><strong>Inbound (to Concierge on new order):</strong> WhatsApp group + email to concierge@thedoggycompany.com. Message: "🎂 NEW Birthday Box Order · Pet: {petName} ({breed}) · Owner: {ownerName} · Allergies: {list or None} · Birthday: {date or Not registered} · Order: #{id}". If birthday &lt;7 days: prefix 🚨 URGENT —</p>
+<table>
+  <tr><th>Status Change</th><th>Channel</th><th>Message to Pet Parent</th></tr>
+  <tr><td>NEW</td><td>WhatsApp + email</td><td>"Your Concierge has received {petName}'s Birthday Box. They will be in touch within 24 hours to confirm delivery details."</td></tr>
+  <tr><td>IN PROGRESS</td><td>WhatsApp</td><td>"Your Concierge is building {petName}'s Birthday Box. We will update you when it is ready to dispatch."</td></tr>
+  <tr><td>ASSEMBLED</td><td>WhatsApp</td><td>"{petName}'s Birthday Box is assembled and ready! We will dispatch it shortly."</td></tr>
+  <tr><td>DISPATCHED</td><td>WhatsApp</td><td>"{petName}'s Birthday Box is on its way! {trackingLink} Expected: {deliveryDate}"</td></tr>
+  <tr><td>DELIVERED</td><td>WhatsApp + email</td><td>"{petName}'s Birthday Box has arrived. Give them an extra hug from me today. — Mira, The Doggy Company"</td></tr>
+</table>
+<p style="color:#7c3aed; font-weight:600;">The DELIVERED message comes from Mira, not from "The Doggy Company". This is intentional — the relationship is between Mira and the pet.</p>
+
+<h3>Section 7 — Backend Spec</h3>
+<p><strong>DB additions needed:</strong></p>
+<table>
+  <tr><th>Collection</th><th>New Fields / Purpose</th></tr>
+  <tr><td>birthday_box_orders</td><td>Add: status (enum), assembled_at, dispatched_at, delivered_at, tracking_url, delivery_date, concierge_notes, allergy_confirmed_by, allergy_confirmed_at, personalisation{}</td></tr>
+  <tr><td>birthday_box_order_logs (NEW)</td><td>id, order_id, timestamp, action, concierge_name, detail — full audit trail</td></tr>
+  <tr><td>birthday_box_slot_assembly (NEW)</td><td>order_id, slot_number, assembled (bool), assembled_at, assembled_by</td></tr>
+</table>
+<p><strong>API endpoints (full spec):</strong></p>
+<table>
+  <tr><th>Endpoint</th><th>Purpose</th><th>Status</th></tr>
+  <tr><td>GET /api/admin/birthday-box-orders</td><td>List with filters (status, search). Admin auth.</td><td><span class="badge done">BUILT ✅</span></td></tr>
+  <tr><td>GET /api/admin/birthday-box-orders/{id}</td><td>Full detail — manifest, pet data, logs</td><td><span class="badge done">BUILT ✅</span></td></tr>
+  <tr><td>PATCH /api/admin/birthday-box-orders/{id}/status</td><td>Status transition with gate validation. Triggers notification.</td><td><span class="badge done">BUILT ✅</span></td></tr>
+  <tr><td>PATCH /api/admin/birthday-box-orders/{id}/personalisation</td><td>Update bandana name, cake message, delivery date, special requests</td><td><span class="badge done">BUILT ✅</span></td></tr>
+  <tr><td>PATCH /api/admin/birthday-box-orders/{id}/slot/{n}/assemble</td><td>Mark individual slot assembled. Returns updated count.</td><td><span class="badge missing">TODO</span></td></tr>
+  <tr><td>POST /api/admin/birthday-box-orders/{id}/allergy-confirm</td><td>Log allergy confirmation. Required before NEW→IN PROGRESS for allergic pets.</td><td><span class="badge missing">TODO</span></td></tr>
+  <tr><td>POST /api/admin/birthday-box-orders/{id}/note</td><td>Add internal Concierge note.</td><td><span class="badge missing">TODO</span></td></tr>
+</table>
+<p><strong>Status transition rules (server-side enforced):</strong></p>
+<ul>
+  <li>NEW → IN PROGRESS: If allergies present — allergy_confirmed must be true</li>
+  <li>IN PROGRESS → ASSEMBLED: All 6 slots marked assembled (check slot_assembly)</li>
+  <li>ASSEMBLED → DISPATCHED: Free — tracking URL optional</li>
+  <li>DISPATCHED → DELIVERED: Manual or auto (courier webhook)</li>
+  <li>Any → NEW: NOT ALLOWED. Status is one-directional.</li>
+  <li>Orders are NEVER deleted — only cancelled. Audit trail always preserved.</li>
 </ul>
 
-<h3>Backend Requirements</h3>
+<h3>Section 8 — Frontend Components</h3>
 <table>
-  <tr><th>Endpoint</th><th>Purpose</th></tr>
-  <tr><td>GET /api/admin/birthday-box-orders</td><td>List all orders with filters (status, date, allergy)</td></tr>
-  <tr><td>GET /api/admin/birthday-box-orders/{id}</td><td>Full order detail with pet data, slots, logs</td></tr>
-  <tr><td>PATCH /api/admin/birthday-box-orders/{id}/status</td><td>Status transition (with gate validation)</td></tr>
-  <tr><td>PATCH /api/admin/birthday-box-orders/{id}/personalisation</td><td>Update bandana name, cake message, delivery date</td></tr>
-  <tr><td>PATCH /api/admin/birthday-box-orders/{id}/slots/{slot}/checked</td><td>Mark a slot assembled</td></tr>
-  <tr><td>POST /api/admin/birthday-box-orders/{id}/notify</td><td>Send WhatsApp/email notification to pet parent</td></tr>
+  <tr><th>Component</th><th>File</th><th>Status</th></tr>
+  <tr><td>BirthdayBoxOrdersAdmin (main)</td><td>/components/admin/BirthdayBoxOrdersAdmin.jsx</td><td><span class="badge done">BUILT ✅ (Phase 1+2)</span></td></tr>
+  <tr><td>OrderRow (list item)</td><td>Inside BirthdayBoxOrdersAdmin</td><td><span class="badge done">BUILT ✅</span></td></tr>
+  <tr><td>OrderDetail (manifest)</td><td>Inside BirthdayBoxOrdersAdmin</td><td><span class="badge done">BUILT ✅</span></td></tr>
+  <tr><td>ManifestTable (6-slot table)</td><td>Inside BirthdayBoxOrdersAdmin</td><td><span class="badge done">BUILT ✅</span></td></tr>
+  <tr><td>PersonalisationPanel (editable)</td><td>Inside BirthdayBoxOrdersAdmin</td><td><span class="badge done">BUILT ✅</span></td></tr>
+  <tr><td>StatusTransition button</td><td>Inside BirthdayBoxOrdersAdmin</td><td><span class="badge done">BUILT ✅</span></td></tr>
+  <tr><td>AllergyBanner</td><td>Inside BirthdayBoxOrdersAdmin</td><td><span class="badge done">BUILT ✅</span></td></tr>
+  <tr><td>SlotRow with checkboxes</td><td>TODO — Phase 2 enhancement</td><td><span class="badge wip">TODO P2</span></td></tr>
+  <tr><td>ContactPanel (WhatsApp pre-fill)</td><td>TODO — Phase 3</td><td><span class="badge wip">TODO P3</span></td></tr>
+  <tr><td>OrderLog (audit timeline)</td><td>TODO — Phase 3</td><td><span class="badge wip">TODO P3</span></td></tr>
+  <tr><td>AgentPortal.jsx wiring</td><td>/pages/AgentPortal.jsx</td><td><span class="badge wip">IN PROGRESS</span></td></tr>
 </table>
 
-<h3>Build Order (Phased)</h3>
-<ol>
-  <li><strong>Phase 1 (MVP):</strong> Read-only manifest view — order list + center column detail. Immediate value for Concierge team.</li>
-  <li><strong>Phase 2:</strong> Status transitions + allergy gate + slot assembly checkboxes.</li>
-  <li><strong>Phase 3:</strong> Contact panel (WhatsApp pre-fill) + personalisation edits + order log.</li>
-  <li><strong>Phase 4:</strong> Delivery notifications to pet parent + tracking integration.</li>
-</ol>
+<h3>Section 9 — Edge Cases</h3>
+<table>
+  <tr><th>Case</th><th>Behaviour</th></tr>
+  <tr><td>Birthday &lt;7 days</td><td>🚨 URGENT badge on list item. Red banner in manifest header. SLA: contact within 4hrs. Inbound notification prefixed 🚨 URGENT.</td></tr>
+  <tr><td>Birthday today</td><td>Order list item bg: #FEF9C3 (yellow). Manifest banner: "🎂 It's {petName}'s birthday TODAY." Personal call to owner — not just WhatsApp.</td></tr>
+  <tr><td>No delivery address</td><td>Orange "📍 NOT COLLECTED" warning. System does not hard-block. Address field shows "Confirm with owner".</td></tr>
+  <tr><td>Concierge item (Slot 4/6)</td><td>👑 Concierge source gold badge. Detail field shows booking requirements.</td></tr>
+  <tr><td>Swapped items (Browse Drawer)</td><td>Manifest shows pet parent's choice. "🔄 Pet parent's choice" label. Original Mira pick shown in grey below.</td></tr>
+  <tr><td>Order cancelled</td><td>CANCELLED status (grey). Requires reason. Pet parent notified. Never deleted — audit trail preserved.</td></tr>
+</table>
+
+<h3>Section 10 — Build Phases</h3>
+<table>
+  <tr><th>Phase</th><th>What to Build</th><th>Value</th><th>Status</th></tr>
+  <tr><td>1A</td><td>Backend GET endpoints</td><td>Concierge can see orders immediately</td><td><span class="badge done">DONE ✅</span></td></tr>
+  <tr><td>1B</td><td>Frontend OrderList + OrderManifest (read-only)</td><td>Concierge can open tab, see manifest</td><td><span class="badge done">DONE ✅</span></td></tr>
+  <tr><td>1C</td><td>AllergyBanner + allergy flags</td><td>Safety element visible</td><td><span class="badge done">DONE ✅</span></td></tr>
+  <tr><td>2A</td><td>Backend PATCH status + slot assembly endpoints</td><td>Status can be updated via API</td><td><span class="badge done">PARTIALLY DONE ✅</span></td></tr>
+  <tr><td>2B</td><td>Frontend ActionPanel — slot checkboxes + Mark Assembled</td><td>Full assembly workflow live</td><td><span class="badge wip">TODO</span></td></tr>
+  <tr><td>2C</td><td>Allergy confirmation gate + logging</td><td>Safety gate server-side enforced</td><td><span class="badge wip">TODO</span></td></tr>
+  <tr><td>3A</td><td>Notification triggers (WhatsApp + email)</td><td>Pet parents get auto-updates</td><td><span class="badge wip">TODO</span></td></tr>
+  <tr><td>3B</td><td>PersonalisationPanel + editable fields</td><td>Concierge can update name/msg</td><td><span class="badge done">DONE ✅</span></td></tr>
+  <tr><td>3C</td><td>OrderLog — activity timeline</td><td>Full audit trail visible</td><td><span class="badge wip">TODO</span></td></tr>
+  <tr><td>4</td><td>Urgency flags, birthday-today, cancel flow</td><td>Edge cases handled</td><td><span class="badge wip">TODO</span></td></tr>
+</table>
 </div>
 
 <!-- ============================= -->
