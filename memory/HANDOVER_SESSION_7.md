@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://doggy-production-fix.preview.emergentagent.com
+https://soul-ranked-preview.preview.emergentagent.com
 
 ---
 
