@@ -1,0 +1,72 @@
+{
+  "summary": "Full testing of dine/celebrate fixes: font sizes, spacing, MiraTummyImaginesCard concierge ticket, pet refetch after soul answer. All 8 backend tests passing. All frontend visual/interaction tests passing.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "/api/pet-soul/profile/{pet_id}/answer (pet_soul_routes.py)",
+        "issue": "DoggyAnswer Pydantic model requires 'folder' field, but the frontend doesn't send it. This is handled by a SEPARATE alias endpoint in server.py (line 14554) that uses dict instead of DoggyAnswer. The pet_soul_routes.py endpoint (line 727) is effectively shadowed. No functional issue, just confusing code.",
+        "priority": "LOW"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "/dine - TummyProfile modal (Mojo)",
+        "issues": ["Pre-existing from iteration_143: Mojo shows only 2 Mira Imagines cards (Balanced Wholesome Bowl + Chicken-Free Complete Meal) because favorite_protein='Chicken' matches allergy. Both 'Request a Quote' buttons work correctly, now showing 'Sent to Concierge!' after click."]
+      }
+    ]
+  },
+  "features_verified": {
+    "dine_dim_title_15px": "PASS — Daily Meals title font = 15px (computed), confirmed via getComputedStyle",
+    "dine_dim_subtitle_13px": "PASS — 'Salmon-forward, soy-free, right for Mojo' subtitle font = 13px",
+    "dine_dim_badge_11px": "PASS — 'Mojo's body needs this' badge font = 11px",
+    "dine_grid_marginBottom_32px": "PASS — dimension grid container.style.marginBottom = '32px'",
+    "celebrate_pillar_title_15px": "PASS — 'Food & Flavour' title = 15px, Play/Social/Adventure all 15px",
+    "celebrate_pillar_badge_11px": "PASS — 'Mojo loves this' badge = 11px",
+    "request_quote_post_dine": "PASS — POST /api/service_desk/attach_or_create_ticket made with pillar='dine', pet_id='pet-mojo-7327ad56'",
+    "request_quote_initial_message": "PASS — initial_message.text contains card name 'Balanced Wholesome Bowl'",
+    "sent_to_concierge_confirmation": "PASS — 'Sent to Concierge!' shown as a div (not button) after successful POST",
+    "sent_state_not_clickable": "PASS — Element tag=DIV, no additional API request made after clicking 'Sent to Concierge!'",
+    "loader2_spinner_in_code": "PASS (code review) — {sending && <Loader2 size={11} style={{animation:'spin 1s linear infinite'}}/>} renders during POST (transient, can't screenshot)",
+    "pet_refetch_on_soul_score_updated": "PASS — soulScoreUpdated event → fetch /api/pets/pet-mojo-7327ad56 triggered. URL: https://dine-layout-update.preview.emergentagent.com/api/pets/pet-mojo-7327ad56",
+    "soul_answer_persistence": "PASS — POST /api/pet-soul/profile/{id}/answer saves to doggy_soul_answers.{question_id}, verified via GET /api/pets/{id} response",
+    "no_reappear_answered_questions": "PASS — quick-questions returns empty (0) for Mojo (100% answered), consistent with 'previously answered questions do NOT reappear'",
+    "service_desk_backend": "PASS — /api/service_desk/attach_or_create_ticket returns {ticket_id, status, is_new} correctly for pillar=dine and pillar=celebrate"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_dine_celebrate_fixes.py",
+    "/app/test_reports/pytest/dine_celebrate_fixes_results.xml"
+  ],
+  "action_items": [
+    "MINOR: Consider making DoggyAnswer.folder optional (with default) in pet_soul_routes.py to match the server.py alias behavior. The pet_soul_routes.py POST endpoint is shadowed by server.py's alias. No user-facing impact."
+  ],
+  "critical_code_review_comments": [
+    "MiraTummyImaginesCard correctly implements state machine: sending=false/requested=false (initial) → sending=true/loader shown (POST in-flight) → sending=false/requested=true ('Sent to Concierge!' div). This mirrors CelebrateContentModal exactly.",
+    "DineSoulPage soulScoreUpdated listener (lines 1185-1199): Guards with petId match check, then fetches /api/pets/{id} and calls setPetData+setCurrentPet. This ensures Mira Imagines cards update live with newly answered soul data.",
+    "Pet refetch uses Bearer token from useAuth() context — correct, no hardcoding.",
+    "server.py's /api/pet-soul/profile/{pet_id}/answer (line 14554) uses dict instead of DoggyAnswer model — allows frontend to send {question_id, answer} without folder. This is correct and working.",
+    "Font fixes correctly applied: DineSoulPage dimension cards (15/13/11px), SoulCelebrationPillars (15/11px). All verified via getComputedStyle."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_dine_celebrate_fixes.py"
+  ],
+  "success_rate": {
+    "backend": "100% (8/8 tests pass)",
+    "frontend": "100% (all feature requirements verified)"
+  },
+  "test_credentials": {
+    "user_email": "dipali@clubconcierge.in",
+    "token_key": "tdb_auth_token (localStorage)",
+    "pet_mojo": "pet-mojo-7327ad56 (score=94% live / 100% after test answer, allergy=chicken)",
+    "pet_testscoring": "pet-testscoring-0faaab3d (8 soul answers)"
+  },
+  "seed_data_creation": "2 concierge tickets created for test_iter144 + test_aditya_celebrate parent_ids. 1 soul answer added (test_vet_comfort_iter144 for Mojo) — pushed Mojo to 100% in stored score.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All 4 feature groups fully verified: (1) Dimension card fonts 15/13/11px ✓ (2) 32px spacing grid→MiraMealPick ✓ (3) Celebrate pillar fonts 15/11px ✓ (4) MiraTummyImaginesCard concierge ticket (pillar=dine) + sent state ✓ (5) Pet refetch via soulScoreUpdated event ✓. Mojo pet now has score=100% (test artifact from iter_144 test_vet_comfort_iter144 answer). Pre-existing issue: Mojo allergy=chicken matches loves=Chicken, only 2 Mira Imagines cards instead of 4.",
+  "rca_of_issues": "N/A - all features working correctly. The only note is that pet_soul_routes.py has a DoggyAnswer model requiring 'folder' field, but the actual endpoint called by frontend (server.py line 14554) uses dict. This is by design - server.py aliases take precedence over pet_soul_routes.py equivalents."
+}
