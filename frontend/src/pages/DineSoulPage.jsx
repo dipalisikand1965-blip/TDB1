@@ -551,8 +551,47 @@ function generateFoodImagines(pet, loves, allergies, healthCondition) {
   return imagines.slice(0, 4);
 }
 
-// ─── Mira Tummy Imagines Card ─────────────────────────────────────────────────
-function MiraTummyImaginesCard({ card, onAskMira }) {
+// ─── Mira Tummy Imagines Card (with concierge ticket — mirrors CelebrateContentModal) ─
+function MiraTummyImaginesCard({ card, pet, token }) {
+  const [sending, setSending] = useState(false);
+  const [requested, setRequested] = useState(false);
+
+  const handleRequest = async () => {
+    setSending(true);
+    const userRaw = localStorage.getItem('user') || '{}';
+    let user = {};
+    try { user = JSON.parse(userRaw); } catch {}
+    const petName = pet?.name || 'my dog';
+    try {
+      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          parent_id: user?.id || user?.email || 'dine_guest',
+          pet_id: pet?.id || 'unknown',
+          pillar: 'dine',
+          intent_primary: 'mira_imagines_product',
+          intent_secondary: [card.name, 'custom_dine_product'],
+          life_state: 'dine',
+          channel: 'dine_mira_imagines',
+          initial_message: {
+            sender: 'parent',
+            source: 'dine_page',
+            text: `Hi! I'd love to get "${card.name}" for ${petName}. ${card.reason}. Can you source this?`
+          }
+        })
+      });
+    } catch (err) {
+      console.error('[MiraTummyImaginesCard] Concierge ticket error:', err);
+    } finally {
+      setSending(false);
+      setRequested(true);
+    }
+  };
+
   return (
     <div style={{
       borderRadius: 16, overflow: 'hidden', position: 'relative',
@@ -560,7 +599,7 @@ function MiraTummyImaginesCard({ card, onAskMira }) {
       border: '1px solid rgba(255,140,66,0.20)',
       display: 'flex', flexDirection: 'column',
     }}>
-      {/* "Mira Imagines" badge — pink to orange gradient (matches CelebrateContentModal) */}
+      {/* "Mira Imagines" badge — pink to orange gradient */}
       <div style={{
         position: 'absolute', top: 12, left: 12, zIndex: 2,
         borderRadius: 20, padding: '4px 12px', fontSize: 10, fontWeight: 700,
@@ -581,17 +620,32 @@ function MiraTummyImaginesCard({ card, onAskMira }) {
         <p style={{ fontWeight: 700, color: '#fff', fontSize: 14, marginBottom: 6, lineHeight: 1.3 }}>{card.name}</p>
         <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.60)', marginBottom: 6, lineHeight: 1.5, flex: 1 }}>{card.desc}</p>
         <p style={{ fontSize: 11, fontWeight: 600, color: '#FF8C42', fontStyle: 'italic', marginBottom: 12 }}>{card.reason}</p>
-        <button
-          onClick={onAskMira}
-          style={{
-            width: '100%', borderRadius: 10, padding: '8px', fontSize: 11, fontWeight: 700,
-            background: 'linear-gradient(135deg, #FF2D87, #FF8C42)',
-            border: 'none', color: '#fff', cursor: 'pointer',
-            boxShadow: '0 3px 12px rgba(255,45,135,0.30)',
-          }}
-        >
-          Request a Quote →
-        </button>
+        {requested ? (
+          <div style={{
+            borderRadius: 10, padding: '8px', fontSize: 11, fontWeight: 700,
+            background: 'rgba(50,200,120,0.20)', border: '1px solid rgba(50,200,120,0.40)',
+            color: '#32C878', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          }}>
+            <Check size={13} /> Sent to Concierge!
+          </div>
+        ) : (
+          <button
+            onClick={handleRequest}
+            disabled={sending}
+            style={{
+              width: '100%', borderRadius: 10, padding: '8px', fontSize: 11, fontWeight: 700,
+              background: sending ? 'rgba(255,45,135,0.40)' : 'linear-gradient(135deg, #FF2D87, #FF8C42)',
+              border: 'none', color: '#fff', cursor: sending ? 'wait' : 'pointer',
+              boxShadow: sending ? 'none' : '0 3px 12px rgba(255,45,135,0.30)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+              opacity: sending ? 0.7 : 1,
+            }}
+            data-testid={`mira-request-${card.name?.replace(/\s+/g, '-').toLowerCase()}`}
+          >
+            {sending && <Loader2 size={11} style={{ animation: 'spin 1s linear infinite' }} />}
+            Request a Quote →
+          </button>
+        )}
       </div>
     </div>
   );
@@ -680,10 +734,6 @@ function TummyProfile({ pet, token }) {
   const healthCondition = getHealthCondition(pet);
   const petName = pet?.name || 'your dog';
   const miraFoodCards = generateFoodImagines(pet, loves, allergies, healthCondition);
-
-  const openMira = () => window.dispatchEvent(new CustomEvent('openMiraAI', {
-    detail: { message: `Source a custom meal for ${petName}`, context: 'dine' }
-  }));
 
   return (
     <>
@@ -813,7 +863,7 @@ function TummyProfile({ pet, token }) {
                   </p>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))', gap: 14 }}>
                     {miraFoodCards.map((card, idx) => (
-                      <MiraTummyImaginesCard key={idx} card={card} onAskMira={openMira} />
+                      <MiraTummyImaginesCard key={idx} card={card} pet={pet} token={token} />
                     ))}
                   </div>
                 </div>
@@ -1133,10 +1183,20 @@ const DineSoulPage = () => {
   }, [currentPet]);
 
   useEffect(() => {
-    const handle = e => { if (e.detail?.petId === petData?.id && e.detail?.score !== undefined) setSoulScore(e.detail.score); };
+    const handle = async (e) => {
+      if (e.detail?.petId !== petData?.id) return;
+      if (e.detail?.score !== undefined) setSoulScore(e.detail.score);
+      // Refetch pet so miraFoodCards update with newly answered soul data
+      try {
+        const freshPet = await fetch(`${API_URL}/api/pets/${e.detail.petId}`, {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        }).then(r => r.ok ? r.json() : null);
+        if (freshPet) { setPetData(freshPet); setCurrentPet(freshPet); }
+      } catch {}
+    };
     window.addEventListener("soulScoreUpdated", handle);
     return () => window.removeEventListener("soulScoreUpdated", handle);
-  }, [petData?.id]);
+  }, [petData?.id, token]);
 
   const handleAddPet = useCallback(() => {
     navigate(isAuthenticated ? "/dashboard/pets?action=add" : "/login?redirect=/dine");
@@ -1191,14 +1251,14 @@ const DineSoulPage = () => {
             <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>5 dimensions, filtered to {petData.name}</div>
 
             {/* Dimensions grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 8, marginBottom: 8 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 8, marginBottom: 32 }}>
               {DINE_DIMS.map(dim => (
                 <div key={dim.id} onClick={() => setOpenDim(openDim === dim.id ? null : dim.id)} style={{ background: dim.bg, borderRadius: 12, padding: "14px 12px", cursor: "pointer", position: "relative", opacity: dim.glow ? 1 : 0.60, boxShadow: dim.glow && openDim !== dim.id ? "0 0 18px rgba(255,140,66,0.18)" : "none", border: openDim === dim.id ? "2px solid #FF8C42" : "2px solid transparent", transition: "all 0.15s" }} data-testid={`dine-dim-${dim.id}`}>
                   {dim.glow && <div style={{ position: "absolute", top: 8, right: 8, width: 8, height: 8, borderRadius: "50%", background: dim.dot }} />}
                   <span style={{ fontSize: 22, display: "block", marginBottom: 8 }}>{dim.icon}</span>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "#1A0A00", marginBottom: 3 }}>{dim.name}</div>
-                  <div style={{ fontSize: 10, color: "#666", lineHeight: 1.3, marginBottom: 6 }}>{t(dim.sub, petData.name)}</div>
-                  <span style={{ fontSize: 9, fontWeight: 700, borderRadius: 20, padding: "2px 7px", display: "inline-block", background: dim.badgeBg, color: dim.badgeCol }}>{t(dim.badge, petData.name)}</span>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "#1A0A00", marginBottom: 3 }}>{dim.name}</div>
+                  <div style={{ fontSize: 13, color: "#666", lineHeight: 1.3, marginBottom: 6 }}>{t(dim.sub, petData.name)}</div>
+                  <span style={{ fontSize: 11, fontWeight: 700, borderRadius: 20, padding: "2px 7px", display: "inline-block", background: dim.badgeBg, color: dim.badgeCol }}>{t(dim.badge, petData.name)}</span>
                   <span style={{ position: "absolute", bottom: 8, right: 10, fontSize: 14, color: "rgba(0,0,0,0.25)", transition: "transform 0.2s", transform: openDim === dim.id ? "rotate(90deg)" : "none" }}>›</span>
                 </div>
               ))}
