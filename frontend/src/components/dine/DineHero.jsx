@@ -1,21 +1,20 @@
 /**
- * DineHero.jsx — /dine pillar hero
+ * DineHero.jsx
  *
- * Mirrors CelebrateHero exactly in structure:
- *   - Full-bleed section (no border radius, no max-width)
- *   - Avatar column (left) + Content column (right)
- *   - Soul % chip, eyebrow, title, subtitle, soul chips, Mira quote
- *   - ChevronDown scroll indicator
- *   - Motion animations (framer-motion)
+ * THE ARRIVAL — Hero for /dine
+ * Mirror of CelebrateHero.jsx — same structure, same golden principles.
+ * Amber/terracotta colour identity instead of purple.
  *
- * COLOUR WORLD: Amber / terracotta — distinct from /celebrate (purple)
+ * Layout:
+ *  - Desktop: flex row (avatar left, content right), max-w-5xl centred
+ *  - Mobile: stacked centred
  */
 
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Utensils, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
-// ─── Soul Chip ───────────────────────────────────────────────────────────────
+// ── helpers ──────────────────────────────────────────────────────────────────
 const SoulChip = ({ icon, label, value, chipStyle }) => (
   <motion.div
     initial={{ opacity: 0, scale: 0.9 }}
@@ -29,38 +28,44 @@ const SoulChip = ({ icon, label, value, chipStyle }) => (
   </motion.div>
 );
 
-// ─── Mira Quote Card ─────────────────────────────────────────────────────────
 const MiraQuoteCard = ({ pet }) => {
   const petName = pet?.name || 'your dog';
-  const allergies = useMemo(() => {
-    const s = new Set();
-    const add = (v) => {
-      if (Array.isArray(v)) v.forEach(x => x && s.add(x));
-      else if (v) s.add(v);
-    };
-    add(pet?.preferences?.allergies);
-    add(pet?.doggy_soul_answers?.food_allergies || pet?.doggy_soul_answers?.allergies);
-    add(pet?.allergies);
-    return [...s].filter(a => a && a.toLowerCase() !== 'none');
+
+  const quote = useMemo(() => {
+    const allergies = (() => {
+      const a = pet?.allergies || [];
+      const fromSoul = pet?.doggy_soul_answers?.food_allergies;
+      return [
+        ...a,
+        ...(Array.isArray(fromSoul) ? fromSoul : fromSoul ? [fromSoul] : [])
+      ].filter(v => v && v.toLowerCase() !== 'none' && v !== 'none_confirmed');
+    })();
+
+    const loves = (() => {
+      const l = [];
+      const add = (v) => {
+        const s = typeof v === 'string' ? v : (v?.name || v?.value || null);
+        if (s && !s.includes('Persistence Test') && !s.includes('c6be919d')) l.push(s);
+      };
+      add(pet?.doggy_soul_answers?.favorite_treats);
+      add(pet?.doggy_soul_answers?.favorite_protein);
+      if (pet?.favorite_foods?.length) add(pet.favorite_foods[0]);
+      return [...new Set(l)].slice(0, 2);
+    })();
+
+    const healthCond = pet?.health_condition || pet?.doggy_soul_answers?.health_condition || '';
+
+    if (allergies.length > 0) {
+      return `I've already removed everything containing ${allergies.slice(0, 2).join(' and ')}. What you see is safe.${healthCond ? ` I'm also keeping ${petName}'s ${healthCond} in mind.` : ''}`;
+    }
+    if (loves.length >= 2) {
+      return `I know ${petName} loves ${loves[0]} and ${loves[1]}. Every meal here is filtered for them — nothing else.`;
+    }
+    if (loves.length === 1) {
+      return `I know ${petName} loves ${loves[0]}. I've kept that in mind across everything here.`;
+    }
+    return `I know ${petName}'s body as well as I know their soul. Everything here has been filtered and chosen for them.`;
   }, [pet]);
-
-  const healthCondition = (() => {
-    const raw = pet?.health?.medical_conditions || pet?.doggy_soul_answers?.health_conditions;
-    if (!raw) return null;
-    const str = Array.isArray(raw) ? raw.join(', ') : String(raw);
-    return str.toLowerCase() === 'none' || str.trim() === '' ? null : str;
-  })();
-
-  let quote = '';
-  if (allergies.length > 0 && healthCondition) {
-    quote = `I've removed everything containing ${allergies.join(' and ')}. I'm keeping ${petName}'s ${healthCondition} in mind with everything I suggest here.`;
-  } else if (allergies.length > 0) {
-    quote = `I've already removed everything containing ${allergies.slice(0, 2).join(' and ')}. What you see is safe for ${petName}.`;
-  } else if (healthCondition) {
-    quote = `I know ${petName}'s ${healthCondition}. Everything I show you here has been filtered with that in mind.`;
-  } else {
-    quote = `I know ${petName}'s body as well as I know their soul. Everything here has been filtered for them.`;
-  }
 
   return (
     <motion.div
@@ -71,72 +76,70 @@ const MiraQuoteCard = ({ pet }) => {
       style={{
         background: 'rgba(255,255,255,0.10)',
         border: '1px solid rgba(255,255,255,0.15)',
-        maxWidth: 440
+        maxWidth: 440,
       }}
     >
       <div
         className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-sm"
-        style={{ background: 'linear-gradient(135deg, #FF8C42, #C44400)' }}
+        style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)' }}
       >
         ✦
       </div>
       <div>
         <p className="text-sm text-white leading-relaxed">"{quote}"</p>
-        <span className="text-[12px] block mt-0.5" style={{ color: '#FFD0A0' }}>
-          ♥ Mira knows {petName}
+        <span className="text-[12px] block mt-0.5" style={{ color: '#FFD080' }}>
+          ♥ Mira knows {pet?.name || 'your dog'}
         </span>
       </div>
     </motion.div>
   );
 };
 
-// ─── Main Hero ────────────────────────────────────────────────────────────────
-const DineHero = ({ pet, soulScore, onAskMira }) => {
+// ── main component ───────────────────────────────────────────────────────────
+const DineHero = ({ pet, soulScore }) => {
   const petName = pet?.name || 'your dog';
-  const score = soulScore || pet?.soul_score || pet?.overall_score || 0;
+  const score   = Math.round(soulScore || pet?.soul_score || pet?.overall_score || 0);
   const petPhoto = pet?.photo_url || pet?.image_url || pet?.image || null;
 
+  // Eyebrow — same logic as Celebrate
   const soulEyebrow = score >= 100
     ? `✦ ${petName}'s soul is fully known. Mira knows everything.`
-    : `🍽️ ${petName}'s soul is ${Math.round(score)}% discovered — keep going!`;
+    : `✦ Food & Nourishment for ${petName}`;
 
+  // Soul chips — Allergy · Loves · Personality (3 chips like Celebrate)
   const soulChips = useMemo(() => {
     const chips = [];
 
-    // Allergies
-    const s = new Set();
-    const add = (v) => {
-      if (Array.isArray(v)) v.forEach(x => x && s.add(x));
-      else if (v) s.add(v);
-    };
-    add(pet?.preferences?.allergies);
-    add(pet?.doggy_soul_answers?.food_allergies || pet?.doggy_soul_answers?.allergies);
-    add(pet?.allergies);
-    const allergies = [...s].filter(a => a && a.toLowerCase() !== 'none');
-    if (allergies.length > 0) {
+    // 1. Allergies
+    const raw = pet?.allergies || [];
+    const fromSoul = pet?.doggy_soul_answers?.food_allergies;
+    const allAllergies = [
+      ...raw,
+      ...(Array.isArray(fromSoul) ? fromSoul : fromSoul ? [fromSoul] : [])
+    ].filter(v => v && v.toLowerCase() !== 'none' && v !== 'none_confirmed');
+    if (allAllergies.length > 0) {
       chips.push({
         id: 'allergy',
         icon: '🚫',
-        label: 'No',
-        value: allergies.slice(0, 2).join(', '),
+        label: 'Allergy',
+        value: allAllergies.slice(0, 2).join(', '),
         chipStyle: {
           background: 'rgba(255,107,157,0.12)',
-          border: '1px solid rgba(255,107,157,0.50)'
-        }
+          border: '1px solid rgba(255,107,157,0.50)',
+        },
       });
     }
 
-    // Loves
+    // 2. Loves (food-focused)
     const loves = [];
-    const addLove = (item) => {
-      if (!item) return;
-      const v = typeof item === 'string' ? item : (item?.name || item?.value || null);
-      if (v) loves.push(v);
+    const addLove = (v) => {
+      const s = typeof v === 'string' ? v : (v?.name || v?.value || null);
+      if (s && !s.includes('Persistence Test') && !s.includes('c6be919d')) loves.push(s);
     };
     addLove(pet?.doggy_soul_answers?.favorite_treats);
     addLove(pet?.doggy_soul_answers?.favorite_protein);
-    if (pet?.preferences?.favorite_flavors?.length) addLove(pet.preferences.favorite_flavors[0]);
-    const uniqueLoves = [...new Set(loves)].slice(0, 2);
+    if (pet?.favorite_foods?.length) addLove(pet.favorite_foods[0]);
+    const uniqueLoves = [...new Set(loves)].slice(0, 3);
     if (uniqueLoves.length > 0) {
       chips.push({
         id: 'loves',
@@ -145,27 +148,30 @@ const DineHero = ({ pet, soulScore, onAskMira }) => {
         value: uniqueLoves.join(' · '),
         chipStyle: {
           background: 'rgba(255,208,128,0.10)',
-          border: '1px solid rgba(255,208,128,0.50)'
-        }
+          border: '1px solid rgba(255,208,128,0.50)',
+        },
       });
     }
 
-    // Health condition
-    const rawHealth = pet?.health?.medical_conditions || pet?.doggy_soul_answers?.health_conditions;
-    if (rawHealth) {
-      const str = Array.isArray(rawHealth) ? rawHealth.join(', ') : String(rawHealth);
-      if (str.toLowerCase() !== 'none' && str.trim() !== '') {
-        chips.push({
-          id: 'health',
-          icon: '🛡️',
-          label: null,
-          value: str.length > 20 ? str.substring(0, 20) + '…' : str,
-          chipStyle: {
-            background: 'rgba(196,77,255,0.10)',
-            border: '1px solid rgba(196,77,255,0.50)'
-          }
-        });
-      }
+    // 3. Personality traits (same as Celebrate)
+    const traits = [];
+    const describe3 = pet?.doggy_soul_answers?.describe_3_words;
+    if (describe3) {
+      traits.push(...describe3.split(/[,·]/).map(w => w.trim()).filter(Boolean).slice(0, 2));
+    }
+    const archetype = pet?.soul_archetype?.archetype_name;
+    if (archetype) traits.push(archetype);
+    if (traits.length > 0) {
+      chips.push({
+        id: 'personality',
+        icon: '✦',
+        label: null,
+        value: traits.slice(0, 3).join(' · '),
+        chipStyle: {
+          background: 'rgba(196,77,255,0.10)',
+          border: '1px solid rgba(196,77,255,0.50)',
+        },
+      });
     }
 
     return chips;
@@ -175,85 +181,74 @@ const DineHero = ({ pet, soulScore, onAskMira }) => {
     <section
       className="relative w-full overflow-hidden"
       style={{
-        background: 'linear-gradient(135deg, #3d1200 0%, #7a2800 40%, #c44400 75%, #e86a00 100%)',
-        minHeight: '360px',
-        padding: '40px 32px 0 32px'
+        background: 'linear-gradient(135deg, #2d0800 0%, #5a1500 30%, #a33000 65%, #d45500 100%)',
+        minHeight: 360,
+        padding: '40px 32px 0 32px',
       }}
       data-testid="dine-hero"
     >
       {/* Glow orbs */}
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          width: 400, height: 400,
-          top: -100, right: -80,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(255,140,66,0.30) 0%, transparent 70%)',
-          zIndex: 1
-        }}
-      />
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          width: 250, height: 250,
-          bottom: 0, left: 80,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(196,77,255,0.15) 0%, transparent 70%)',
-          zIndex: 1
-        }}
-      />
+      <div className="absolute pointer-events-none" style={{
+        width: 400, height: 400,
+        top: -100, right: -80,
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(255,140,66,0.30) 0%, transparent 70%)',
+        zIndex: 1,
+      }} />
+      <div className="absolute pointer-events-none" style={{
+        width: 250, height: 250,
+        bottom: 0, left: 80,
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(196,77,255,0.18) 0%, transparent 70%)',
+        zIndex: 1,
+      }} />
 
-      {/* Inner Layout: flex row desktop, flex col mobile */}
+      {/* Inner layout — flex row desktop, stacked mobile */}
       <div
         className="relative flex flex-col md:flex-row items-center md:items-start gap-7 max-w-5xl mx-auto pb-8"
         style={{ zIndex: 2 }}
       >
-        {/* Avatar column */}
+        {/* Avatar */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           className="flex-shrink-0 flex flex-col items-center"
         >
-          {/* Avatar ring with gradient border */}
           <div
             className="relative flex items-center justify-center"
             style={{
               width: 96, height: 96,
               borderRadius: '50%',
               border: '3px solid transparent',
-              background: 'linear-gradient(#3d1200, #3d1200) padding-box, linear-gradient(135deg, #00E676, #FF8C42) border-box'
+              background: 'linear-gradient(#5a1500, #5a1500) padding-box, linear-gradient(135deg, #00E676, #FF8C42) border-box',
             }}
           >
             {petPhoto ? (
               <img
                 src={petPhoto}
                 alt={petName}
-                className="w-full h-full object-cover rounded-full"
-                style={{ width: 84, height: 84, borderRadius: '50%' }}
+                style={{ width: 84, height: 84, borderRadius: '50%', objectFit: 'cover' }}
               />
             ) : (
-              <span className="text-5xl">🐕</span>
+              <span style={{ fontSize: 44 }}>🐕</span>
             )}
-
-            {/* Soul % chip */}
+            {/* Soul % badge */}
             <div
               className="absolute whitespace-nowrap rounded-full text-white font-bold"
               style={{
-                bottom: -8,
-                left: '50%',
+                bottom: -8, left: '50%',
                 transform: 'translateX(-50%)',
                 background: 'linear-gradient(135deg, #FF8C42, #C44DFF)',
-                fontSize: 10,
-                fontWeight: 700,
-                padding: '2px 8px'
+                fontSize: 10, fontWeight: 700,
+                padding: '2px 8px',
               }}
             >
-              Soul {Math.round(score)}%
+              Soul {score}%
             </div>
           </div>
         </motion.div>
 
-        {/* Content column */}
+        {/* Content */}
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
           {/* Eyebrow chip */}
           <motion.div
@@ -263,13 +258,13 @@ const DineHero = ({ pet, soulScore, onAskMira }) => {
             style={{
               background: 'rgba(255,255,255,0.12)',
               border: '1px solid rgba(255,255,255,0.20)',
-              color: 'rgba(255,255,255,0.85)'
+              color: 'rgba(255,255,255,0.85)',
             }}
           >
             {soulEyebrow}
           </motion.div>
 
-          {/* Title */}
+          {/* Title — Georgia serif, same clamp as Celebrate */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -280,7 +275,7 @@ const DineHero = ({ pet, soulScore, onAskMira }) => {
               style={{
                 fontSize: 'clamp(1.875rem, 4vw, 2.5rem)',
                 color: '#FFD080',
-                fontFamily: "Georgia, 'Times New Roman', serif"
+                fontFamily: "Georgia, 'Times New Roman', serif",
               }}
             >
               Food &amp; Nourishment
@@ -289,7 +284,7 @@ const DineHero = ({ pet, soulScore, onAskMira }) => {
               className="block font-extrabold"
               style={{
                 fontSize: 'clamp(1.875rem, 4vw, 2.5rem)',
-                fontFamily: "Georgia, 'Times New Roman', serif"
+                fontFamily: "Georgia, 'Times New Roman', serif",
               }}
             >
               <span style={{ color: '#FFFFFF' }}>for </span>
@@ -305,7 +300,7 @@ const DineHero = ({ pet, soulScore, onAskMira }) => {
             className="text-sm mb-4"
             style={{ color: 'rgba(255,255,255,0.65)' }}
           >
-            Mira knows {petName}'s body as well as she knows their soul
+            Mark the meals that matter — the way {petName} actually eats
           </motion.p>
 
           {/* Soul chips */}
@@ -327,7 +322,7 @@ const DineHero = ({ pet, soulScore, onAskMira }) => {
         </div>
       </div>
 
-      {/* Bottom scroll indicator */}
+      {/* Scroll chevron */}
       <motion.div
         className="flex justify-center pb-4 relative"
         style={{ zIndex: 2 }}
