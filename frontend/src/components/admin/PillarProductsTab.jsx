@@ -2,6 +2,12 @@
  * PillarProductsTab — Reusable component for showing & managing products in pillar admins
  * Reads/writes from products_master (single source of truth for all pillars)
  * Supports search, pagination, category filter, inline editing, image upload, AI image generation
+ *
+ * ARCHITECTURE RULES: See /app/memory/ARCHITECTURE.md
+ * - Use this component in ALL pillar admins (never build a custom product list)
+ * - Usage: <PillarProductsTab pillar="care" pillarName="Care" />
+ * - All 13 pillars: celebrate, dine, care, fit, stay, travel, enjoy, learn,
+ *                  farewell, emergency, adopt, advisory, paperwork
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';

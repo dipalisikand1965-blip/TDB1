@@ -4,6 +4,13 @@
 
 ---
 
+## ⚠️ IMPORTANT: READ ARCHITECTURE RULES FIRST
+**Every agent must read `/app/memory/ARCHITECTURE.md` before making any changes.**
+It contains the canonical data model, API rules, component patterns, and checklists.
+Violating these rules will break the admin panel and data consistency.
+
+---
+
 ## ✅ SESSION 38 — Full Pillar Architecture Unification + Bundle CRUD Enhancement (Mar 15, 2026)
 
 ### Canonical Architecture (LOCKED):

@@ -2,6 +2,11 @@
 Pillar Products Routes - Unified admin API for ALL pillar product management
 All products are stored in products_master with a 'pillar' field
 This is the single source of truth for all pillars
+
+ARCHITECTURE RULES: See /app/memory/ARCHITECTURE.md
+- NEVER create pillar-specific product collections
+- ALWAYS set locally_edited=True when admin edits a product
+- This endpoint is used by ALL 13 pillar admin pages via PillarProductsTab.jsx
 """
 
 from fastapi import APIRouter, HTTPException, Query
