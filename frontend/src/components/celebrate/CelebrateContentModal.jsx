@@ -410,7 +410,7 @@ const MiraImaginesCard = ({ flavor, pet }) => {
 
   return (
     <div
-      className="rounded-2xl overflow-hidden relative"
+      className="rounded-2xl overflow-hidden relative flex flex-col"
       style={{
         background: isOnboarding
           ? 'linear-gradient(135deg, #0A1A2E 0%, #1A3A5F 100%)'
@@ -418,7 +418,7 @@ const MiraImaginesCard = ({ flavor, pet }) => {
         border: isOnboarding
           ? '1.5px solid rgba(100,200,255,0.3)'
           : '1.5px solid rgba(196,77,255,0.3)',
-        minHeight: 200,
+        minHeight: 220,
       }}
       data-testid={`mira-imagines-${isObject ? flavor.type : flavor}`}
     >
@@ -433,7 +433,7 @@ const MiraImaginesCard = ({ flavor, pet }) => {
       </div>
 
       {/* Icon + sparkle */}
-      <div className="flex flex-col items-center justify-center pt-8 pb-4 px-4">
+      <div className="flex flex-col items-center justify-center pt-8 pb-4 px-4 flex-1">
         <div className="mb-2 relative">
           <span style={{ fontSize: 44 }}>{emoji}</span>
           <span className="absolute -top-1 -right-1" style={{ fontSize: 14 }}>✨</span>
@@ -451,8 +451,8 @@ const MiraImaginesCard = ({ flavor, pet }) => {
         )}
       </div>
 
-      {/* Request button / confirmation */}
-      <div className="px-3 pb-4">
+      {/* Request button / confirmation — always pinned to bottom */}
+      <div className="px-3 pb-4 mt-auto">
         {requested || showOnboarding ? (
           <div className="flex items-center justify-center gap-1.5 text-xs font-bold rounded-xl py-2"
             style={{
