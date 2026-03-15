@@ -11,6 +11,20 @@ Violating these rules will break the admin panel and data consistency.
 
 ---
 
+## ✅ SESSION 46 — Dine: Real ProductCard + Cart Flow (Feb 2026)
+
+### What Was Built:
+- **Replaced custom `DineProductCard`** with the real `ProductCard` component (same as Celebrate page)
+- **Click any Dine product → ProductDetailModal opens**: large image left, name+description right, Add to Cart button
+- **Add to Cart → CartSidebar**: "Your Requests" panel shows item, quantity -/+, ₹ per item, Products Subtotal, Shipping ₹150, Products Total, "Checkout Products (₹X) →" button
+- **Z-index correct**: ProductDetailModal (z=9999 via createPortal) renders above DineContentModal (z=56)
+- **Dine-specific CTA**: "Include" replaces generic "Add to Cart" label for dine products
+- Removed dead code: `DineProductCard`, `MiraImaginesCard`, `miraImagines` state
+
+### Testing: 100% pass rate (iteration_146.json) — Full E2E: pill → modal → View Details → ProductDetailModal → Add to Cart → CartSidebar with Checkout button
+
+---
+
 ## ✅ SESSION 45 — Dine: DineContentModal Redesign (Feb 2026)
 
 ### What Was Built:
