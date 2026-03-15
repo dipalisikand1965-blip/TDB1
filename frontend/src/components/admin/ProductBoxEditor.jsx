@@ -178,6 +178,40 @@ const ProductBoxEditor = ({
   const [dogBreeds, setDogBreeds] = useState([]);
   const [loadingBreeds, setLoadingBreeds] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [generatingImage, setGeneratingImage] = useState(false);
+
+  // Generate AI image for this product (synchronous — returns URL directly)
+  const handleGenerateAIImage = async () => {
+    if (!product?.id || product.id.startsWith('NEW-')) {
+      alert('Please save the product first before generating an AI image.');
+      return;
+    }
+    setGeneratingImage(true);
+    try {
+      const token = localStorage.getItem('admin_token') || localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/api/admin/products/${product.id}/generate-image`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      const data = await res.json();
+      if (data.success && data.image_url) {
+        updateField('media.primary_image', data.image_url);
+        updateField('image', data.image_url);
+        updateField('image_url', data.image_url);
+        updateField('images', [data.image_url]);
+        alert(`AI image generated and saved to Cloudinary for "${product.name}"`);
+      } else {
+        throw new Error(data.detail || 'Image generation failed');
+      }
+    } catch (err) {
+      alert('AI image generation failed: ' + err.message);
+    } finally {
+      setGeneratingImage(false);
+    }
+  };
   
   // Handle image upload to Cloudinary
   const handleImageUpload = async (e) => {
@@ -1362,16 +1396,36 @@ const ProductBoxEditor = ({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Primary Image URL (or paste URL manually)</Label>
-                  <Input 
-                    value={getValue('media.primary_image', '') || getValue('image', '') || getValue('image_url', '')}
-                    onChange={(e) => {
-                      updateField('media.primary_image', e.target.value);
-                      updateField('image', e.target.value);
-                      updateField('image_url', e.target.value);
-                      updateField('thumbnail', e.target.value);
-                    }}
-                    placeholder="https://..."
-                  />
+                  <div className="flex gap-2 mt-1">
+                    <Input 
+                      value={getValue('media.primary_image', '') || getValue('image', '') || getValue('image_url', '')}
+                      onChange={(e) => {
+                        updateField('media.primary_image', e.target.value);
+                        updateField('image', e.target.value);
+                        updateField('image_url', e.target.value);
+                        updateField('thumbnail', e.target.value);
+                      }}
+                      placeholder="https://..."
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleGenerateAIImage}
+                      disabled={generatingImage || !product?.id || product?.id?.startsWith('NEW-')}
+                      className="whitespace-nowrap border-purple-300 text-purple-700 hover:bg-purple-50"
+                      data-testid="generate-product-image-btn"
+                    >
+                      {generatingImage ? (
+                        <><Loader2 className="w-4 h-4 mr-1 animate-spin" />Generating...</>
+                      ) : (
+                        <><Sparkles className="w-4 h-4 mr-1" />Generate AI</>
+                      )}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-purple-600 mt-1">
+                    Generates image from product name/description and saves to Cloudinary
+                  </p>
                   {(getValue('media.primary_image') || getValue('image') || getValue('image_url')) && (
                     <img 
                       src={getValue('media.primary_image') || getValue('image') || getValue('image_url')} 

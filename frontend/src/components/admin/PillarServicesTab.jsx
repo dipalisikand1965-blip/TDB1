@@ -21,6 +21,38 @@ const PillarServicesTab = ({ pillar, pillarName, pillarIcon, pillarColor = 'bg-p
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showOnlyActive, setShowOnlyActive] = useState(false);
+  const [showInactive, setShowInactive] = useState(true); // show inactive by default
+  const [togglingId, setTogglingId] = useState(null);
+
+  // Toggle active/inactive for a service
+  const toggleServiceActive = async (service) => {
+    setTogglingId(service.id);
+    try {
+      const newIsActive = !(service.is_active !== false);
+      const serviceData = { ...service, is_active: newIsActive };
+      // Remove MongoDB internals
+      delete serviceData._id;
+      const res = await fetch(`${API_URL}/api/service-box/services/${service.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(serviceData),
+      });
+      if (res.ok) {
+        // Update local state immediately
+        setServices(prev => prev.map(s =>
+          s.id === service.id ? { ...s, is_active: newIsActive } : s
+        ));
+        toast({ title: newIsActive ? 'Service Activated' : 'Service Deactivated', description: service.name });
+      } else {
+        const err = await res.json();
+        toast({ title: 'Error', description: err.detail || 'Failed to update status', variant: 'destructive' });
+      }
+    } catch (err) {
+      toast({ title: 'Error', description: 'Failed to update status', variant: 'destructive' });
+    } finally {
+      setTogglingId(null);
+    }
+  };
   
   // Fetch all services and filter by pillar
   const fetchServices = useCallback(async () => {
@@ -84,7 +116,8 @@ const PillarServicesTab = ({ pillar, pillarName, pillarIcon, pillarColor = 'bg-p
     const matchesSearch = searchTerm === '' || 
       service.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       service.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesActive = !showOnlyActive || service.is_active || service.active;
+    const isActive = service.is_active !== false && service.active !== false;
+    const matchesActive = showInactive ? true : isActive;
     return matchesSearch && matchesActive;
   });
   
@@ -160,11 +193,6 @@ const PillarServicesTab = ({ pillar, pillarName, pillarIcon, pillarColor = 'bg-p
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h4 className="font-semibold text-gray-900 truncate">{service.name}</h4>
-              {isActive ? (
-                <Badge className="bg-green-100 text-green-700">Active</Badge>
-              ) : (
-                <Badge className="bg-gray-100 text-gray-500">Inactive</Badge>
-              )}
             </div>
             
             <p className="text-sm text-gray-600 line-clamp-2 mb-2">
@@ -197,15 +225,35 @@ const PillarServicesTab = ({ pillar, pillarName, pillarIcon, pillarColor = 'bg-p
           </div>
           
           {/* Price & Actions */}
-          <div className="text-right flex-shrink-0">
+          <div className="text-right flex-shrink-0 flex flex-col items-end gap-2">
             <div className="text-lg font-bold text-gray-900">
               {isFree ? 'Free' : `₹${service.price || service.base_price || 0}`}
             </div>
+            {/* Active/Inactive toggle */}
+            <button
+              onClick={() => toggleServiceActive(service)}
+              disabled={togglingId === service.id}
+              title={isActive ? 'Click to deactivate' : 'Click to activate'}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
+                isActive
+                  ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
+                  : 'bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200'
+              }`}
+            >
+              {togglingId === service.id ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : isActive ? (
+                <CheckCircle className="w-3 h-3" />
+              ) : (
+                <XCircle className="w-3 h-3" />
+              )}
+              {isActive ? 'Active' : 'Inactive'}
+            </button>
             {service.pillar !== pillar && (
               <Button 
                 size="sm" 
                 variant="outline"
-                className="mt-2 text-xs"
+                className="text-xs"
                 onClick={() => assignToPillar(service)}
               >
                 Assign to {pillarName}
@@ -256,12 +304,13 @@ const PillarServicesTab = ({ pillar, pillarName, pillarIcon, pillarColor = 'bg-p
           />
         </div>
         <Button
-          variant={showOnlyActive ? "default" : "outline"}
+          variant={!showInactive ? "default" : "outline"}
           size="sm"
-          onClick={() => setShowOnlyActive(!showOnlyActive)}
+          onClick={() => setShowInactive(!showInactive)}
+          className={!showInactive ? "bg-green-600 hover:bg-green-700 text-white" : ""}
         >
           <CheckCircle className="w-4 h-4 mr-1" />
-          Active Only
+          {showInactive ? 'Active Only' : 'Show All'}
         </Button>
       </div>
       

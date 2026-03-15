@@ -20776,7 +20776,7 @@ async def regenerate_single_product_image(
     background_tasks: BackgroundTasks,
     username: str = Depends(verify_admin_auth),
 ):
-    """Regenerate AI image for a single product."""
+    """Regenerate AI image for a single product (background)."""
     product = await db.products_master.find_one({"id": product_id}, {"_id": 0})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -20797,6 +20797,145 @@ async def regenerate_single_product_image(
             )
     background_tasks.add_task(_regen)
     return {"message": f"Image regeneration started for {product['name']}", "product_id": product_id}
+
+
+@api_router.post("/admin/products/{product_id}/generate-image")
+async def generate_product_image_sync(
+    product_id: str,
+    username: str = Depends(verify_admin_auth),
+):
+    """Generate AI image for a single product — synchronous, returns URL immediately."""
+    import os
+    import base64
+    import cloudinary
+    import cloudinary.uploader
+    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+
+    product = await db.products_master.find_one({"id": product_id}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    emergent_api_key = (
+        os.environ.get("EMERGENT_LLM_KEY")
+        or os.environ.get("EMERGENT_API_KEY")
+        or os.environ.get("EMERGENT_MODEL_API_KEY")
+    )
+    if not emergent_api_key:
+        raise HTTPException(status_code=500, detail="Image generation API key not configured")
+
+    if not os.environ.get("CLOUDINARY_CLOUD_NAME"):
+        raise HTTPException(status_code=500, detail="Cloudinary not configured")
+    cloudinary.config(
+        cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+        api_key=os.environ.get("CLOUDINARY_API_KEY"),
+        api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+    )
+
+    prompt = product.get("ai_image_prompt") or (
+        f"Premium dog product, {product['name']}, {product.get('description', '')[:80]}, "
+        "clean white background, professional product photography, high quality"
+    )
+
+    try:
+        image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
+        images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
+        if not images:
+            raise HTTPException(status_code=500, detail="Image generation returned no results")
+
+        img_b64 = base64.b64encode(images[0]).decode("utf-8")
+        upload_result = cloudinary.uploader.upload(
+            f"data:image/png;base64,{img_b64}",
+            folder="products/ai-generated",
+            public_id=f"product-{product_id}-{product.get('sku', 'img')}",
+            overwrite=True,
+            resource_type="image",
+        )
+        image_url = upload_result.get("secure_url")
+        if not image_url:
+            raise HTTPException(status_code=500, detail="Cloudinary upload failed")
+
+        await db.products_master.update_one(
+            {"id": product_id},
+            {"$set": {
+                "image_url": image_url, "image": image_url, "images": [image_url],
+                "ai_image_generated": True,
+                "image_updated_at": datetime.now(timezone.utc).isoformat(),
+            }}
+        )
+        return {"success": True, "image_url": image_url, "product_id": product_id}
+    except Exception as e:
+        logger.error(f"Product image generation failed for {product_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Image generation failed: {str(e)}")
+
+
+@api_router.post("/admin/celebrate/bundles/{bundle_id}/generate-image")
+async def generate_bundle_image_sync(
+    bundle_id: str,
+    username: str = Depends(verify_admin_auth),
+):
+    """Generate AI image for a celebrate bundle — synchronous, returns URL immediately."""
+    import os
+    import base64
+    import cloudinary
+    import cloudinary.uploader
+    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+
+    bundle = await db.celebrate_bundles.find_one(
+        {"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"_id": 0}
+    )
+    if not bundle:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+
+    emergent_api_key = (
+        os.environ.get("EMERGENT_LLM_KEY")
+        or os.environ.get("EMERGENT_API_KEY")
+        or os.environ.get("EMERGENT_MODEL_API_KEY")
+    )
+    if not emergent_api_key:
+        raise HTTPException(status_code=500, detail="Image generation API key not configured")
+
+    if not os.environ.get("CLOUDINARY_CLOUD_NAME"):
+        raise HTTPException(status_code=500, detail="Cloudinary not configured")
+    cloudinary.config(
+        cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+        api_key=os.environ.get("CLOUDINARY_API_KEY"),
+        api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+    )
+
+    bundle_name = bundle.get("name", "Birthday Bundle")
+    items = bundle.get("items", "")
+    prompt = (
+        f"Premium dog birthday gift bundle: {bundle_name}, containing {items[:100] if items else 'treats and toys'}, "
+        "beautifully arranged in a gift box with ribbon, festive celebration styling, "
+        "white background, professional product photography, high quality"
+    )
+
+    try:
+        image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
+        images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
+        if not images:
+            raise HTTPException(status_code=500, detail="Image generation returned no results")
+
+        img_b64 = base64.b64encode(images[0]).decode("utf-8")
+        upload_result = cloudinary.uploader.upload(
+            f"data:image/png;base64,{img_b64}",
+            folder="bundles/ai-generated",
+            public_id=f"bundle-{bundle_id}",
+            overwrite=True,
+            resource_type="image",
+        )
+        image_url = upload_result.get("secure_url")
+        if not image_url:
+            raise HTTPException(status_code=500, detail="Cloudinary upload failed")
+
+        await db.celebrate_bundles.update_one(
+            {"$or": [{"id": bundle_id}, {"_id": bundle_id}]},
+            {"$set": {"image": image_url, "image_url": image_url}}
+        )
+        return {"success": True, "image_url": image_url, "bundle_id": bundle_id}
+    except Exception as e:
+        logger.error(f"Bundle image generation failed for {bundle_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Image generation failed: {str(e)}")
 
 
 # Include routers
