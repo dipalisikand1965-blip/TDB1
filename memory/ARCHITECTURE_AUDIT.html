@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Doggy Company® — Product Architecture Audit Report</title>
+<style>
+  :root {
+    --purple: #7c3aed; --red: #dc2626; --green: #16a34a;
+    --amber: #d97706; --blue: #2563eb; --gray: #374151;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #111; background: #f9fafb; padding: 24px; }
+  h1 { font-size: 28px; font-weight: 800; color: var(--purple); margin-bottom: 4px; }
+  h2 { font-size: 20px; font-weight: 700; margin: 32px 0 12px; padding-bottom: 6px; border-bottom: 2px solid #e5e7eb; }
+  h3 { font-size: 15px; font-weight: 600; margin: 16px 0 8px; }
+  .subtitle { color: #6b7280; font-size: 13px; margin-bottom: 32px; }
+  
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .badge-ok { background: #dcfce7; color: var(--green); }
+  .badge-warn { background: #fef9c3; color: var(--amber); }
+  .badge-err { background: #fee2e2; color: var(--red); }
+  .badge-info { background: #ede9fe; color: var(--purple); }
+  
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+  th { background: #f3f4f6; color: #374151; font-weight: 600; padding: 10px 14px; text-align: left; border-bottom: 2px solid #e5e7eb; }
+  td { padding: 9px 14px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+  tr:hover td { background: #fafafa; }
+  td.num { text-align: right; font-weight: 600; }
+  td.gap { color: var(--red); font-weight: 600; }
+  td.ok { color: var(--green); font-weight: 600; }
+  td.warn { color: var(--amber); font-weight: 600; }
+  
+  .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin: 12px 0; }
+  .card-red { border-left: 4px solid var(--red); }
+  .card-green { border-left: 4px solid var(--green); }
+  .card-amber { border-left: 4px solid var(--amber); }
+  .card-blue { border-left: 4px solid var(--blue); }
+  
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  
+  .stat { text-align: center; padding: 16px; }
+  .stat-num { font-size: 32px; font-weight: 800; }
+  .stat-label { font-size: 12px; color: #6b7280; margin-top: 2px; }
+  .stat-red .stat-num { color: var(--red); }
+  .stat-green .stat-num { color: var(--green); }
+  .stat-amber .stat-num { color: var(--amber); }
+  
+  .issue { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
+  .issue:last-child { border-bottom: none; }
+  .issue-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; margin-top: 2px; }
+  .icon-red { background: #fee2e2; color: var(--red); }
+  .icon-amber { background: #fef9c3; color: var(--amber); }
+  .icon-green { background: #dcfce7; color: var(--green); }
+  .issue-body { flex: 1; }
+  .issue-title { font-weight: 600; font-size: 14px; }
+  .issue-desc { font-size: 13px; color: #6b7280; margin-top: 3px; }
+  
+  .arch-box { border: 2px dashed #c4b5fd; background: #faf5ff; border-radius: 12px; padding: 16px; margin: 8px 0; }
+  .arch-box h4 { font-size: 14px; font-weight: 700; color: var(--purple); margin-bottom: 6px; }
+  .arch-box p { font-size: 13px; color: #374151; }
+  .arch-box .coll { font-family: monospace; background: #ede9fe; color: var(--purple); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+  
+  .arrow { text-align: center; font-size: 20px; color: #9ca3af; margin: 4px 0; }
+  
+  code { background: #f3f4f6; color: #374151; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 12px; }
+  
+  .toc { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin: 20px 0; }
+  .toc ul { list-style: none; padding: 0; }
+  .toc ul li { padding: 4px 0; }
+  .toc ul li a { color: var(--purple); text-decoration: none; font-size: 14px; }
+  .toc ul li a:hover { text-decoration: underline; }
+  
+  @media print { body { padding: 12px; background: white; } }
+</style>
+</head>
+<body>
+
+<h1>The Doggy Company® — Product Architecture Audit</h1>
+<p class="subtitle">Generated: March 15, 2026 · Environment: pet-os-live-test_database · Preview: celebrate-sync-3</p>
+
+<div class="toc">
+  <h3 style="margin:0 0 10px">Contents</h3>
+  <ul>
+    <li><a href="#summary">1. Executive Summary</a></li>
+    <li><a href="#pillar-table">2. Pillar-wise Count Table (Products / Services / Bundles)</a></li>
+    <li><a href="#gaps">3. Critical Gaps & Issues</a></li>
+    <li><a href="#architecture">4. Intended Architecture (Target State)</a></li>
+    <li><a href="#collections">5. All Database Collections</a></li>
+    <li><a href="#admin-capabilities">6. Admin Capabilities Status</a></li>
+    <li><a href="#action-plan">7. Recommended Fix Plan</a></li>
+  </ul>
+</div>
+
+<!-- ===== SUMMARY ===== -->
+<h2 id="summary">1. Executive Summary</h2>
+<div class="grid-3">
+  <div class="card stat stat-green">
+    <div class="stat-num">4,334</div>
+    <div class="stat-label">Products in Product Box</div>
+  </div>
+  <div class="card stat stat-amber">
+    <div class="stat-num">1,118</div>
+    <div class="stat-label">Services in Service Box</div>
+  </div>
+  <div class="card stat stat-amber">
+    <div class="stat-num">111</div>
+    <div class="stat-label">Bundles (fragmented)</div>
+  </div>
+</div>
+<div class="grid-3">
+  <div class="card stat stat-red">
+    <div class="stat-num">28</div>
+    <div class="stat-label">Products Active (out of 4,334!)</div>
+  </div>
+  <div class="card stat stat-red">
+    <div class="stat-num">561</div>
+    <div class="stat-label">Services with NO Pillar</div>
+  </div>
+  <div class="card stat stat-red">
+    <div class="stat-num">14</div>
+    <div class="stat-label">Fragmented Bundle Collections</div>
+  </div>
+</div>
+
+<!-- ===== PILLAR TABLE ===== -->
+<h2 id="pillar-table">2. Pillar-wise Count Table</h2>
+<p style="font-size:13px;color:#6b7280;margin-bottom:12px">Products from <code>unified_products</code> (primary_pillar/pillars field) · Services from <code>services_master</code> (pillar field) · Bundles from main + pillar-specific collections</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Pillar</th>
+      <th class="num">Products (Product Box)</th>
+      <th class="num">Services (Service Box)</th>
+      <th class="num">Bundles</th>
+      <th>Gaps</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>🎂 Celebrate</td><td class="num">1,263</td><td class="num ok">17</td><td class="num ok">10</td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>❤️ Care</td><td class="num">294</td><td class="num ok">30</td><td class="num ok">6</td><td><span class="badge badge-warn">items as objects (crash fixed)</span></td></tr>
+    <tr><td>💪 Fit</td><td class="num">465</td><td class="num ok">23</td><td class="num ok">6</td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>🍽️ Dine</td><td class="num">333</td><td class="num warn">9</td><td class="num ok">8</td><td><span class="badge badge-warn">Low services</span></td></tr>
+    <tr><td>🎉 Enjoy</td><td class="num">384</td><td class="num warn">5</td><td class="num ok">7</td><td><span class="badge badge-warn">Low services</span></td></tr>
+    <tr><td>✈️ Travel</td><td class="num">404</td><td class="num warn">11</td><td class="num ok">9</td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>🛎️ Stay</td><td class="num">784</td><td class="num warn">9</td><td class="num ok">9</td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>🌈 Farewell</td><td class="num">292</td><td class="num warn">8</td><td class="num ok">6</td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>🚨 Emergency</td><td class="num">315</td><td class="num warn">8</td><td class="num ok">8</td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>🐾 Adopt</td><td class="num">168</td><td class="num warn">9</td><td class="num ok">10</td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>🎓 Learn</td><td class="num">318</td><td class="num ok">12</td><td class="num ok">11</td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>📋 Paperwork</td><td class="num">198</td><td class="num ok">16</td><td class="num ok">9</td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>🧠 Advisory</td><td class="num">99</td><td class="num warn">8</td><td class="num ok">12</td><td><span class="badge badge-warn">Low products</span></td></tr>
+    <tr><td>ℹ️ About</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td><span class="badge badge-info">No products expected</span></td></tr>
+    <tr style="background:#f9fafb;font-weight:700">
+      <td><strong>TOTALS</strong></td>
+      <td class="num">5,317*</td>
+      <td class="num">165</td>
+      <td class="num">111</td>
+      <td style="font-size:11px;color:#6b7280">*some products in multiple pillars</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="card card-amber" style="margin-top:12px">
+  <strong>⚠️ Note:</strong> Totals exceed 4,334 because some products are tagged to multiple pillars. The <code>unified_products</code> collection has 4,334 unique documents, but 5,317 pillar→product relationships.
+</div>
+
+<!-- ===== GAPS ===== -->
+<h2 id="gaps">3. Critical Gaps & Issues</h2>
+
+<div class="card card-red">
+  <h3 style="color:var(--red)">🔴 CRITICAL — Only 28 of 4,334 Products are Active</h3>
+  <div class="issue">
+    <div class="issue-icon icon-red">!</div>
+    <div class="issue-body">
+      <div class="issue-title">Product Box: 4,334 total but only 28 are <code>active: true</code></div>
+      <div class="issue-desc">All 4,306 remaining products have <code>active: false</code> or default value. These products will not show on the frontend pillar pages. This needs a bulk activation (admin can set active=true per pillar via Product Box filters).</div>
+    </div>
+  </div>
+</div>
+
+<div class="card card-red">
+  <h3 style="color:var(--red)">🔴 CRITICAL — 3 Orphan Product Collections Not in Product Box</h3>
+  <div class="issue">
+    <div class="issue-icon icon-red">!</div>
+    <div class="issue-body">
+      <div class="issue-title"><code>products</code> (1,379 items) — Soul Products admin uses this. NOT in Product Box.</div>
+      <div class="issue-desc">Soul Products (Soul Made, Soul Selected, Soul Gifted) live in the <code>products</code> collection. They are NOT in <code>unified_products</code> (Product Box). They have no pillar assignment. They need to be migrated to Product Box with pillar tags.</div>
+    </div>
+  </div>
+  <div class="issue">
+    <div class="issue-icon icon-red">!</div>
+    <div class="issue-body">
+      <div class="issue-title"><code>products_master</code> (3,987 items) — Orphan. What is this?</div>
+      <div class="issue-desc">This collection appears to be a legacy mirror of products. Unclear if this is the source of truth or a cache. Needs investigation and possible consolidation.</div>
+    </div>
+  </div>
+  <div class="issue">
+    <div class="issue-icon icon-red">!</div>
+    <div class="issue-body">
+      <div class="issue-title"><code>breed_products</code> (2,569 items) — Breed-specific products. NOT in Product Box.</div>
+      <div class="issue-desc">Breed-specific products are in a separate collection and not accessible from the Product Box. These need to be tagged to their relevant pillar (care, fit, dine etc.) and added to unified_products.</div>
+    </div>
+  </div>
+</div>
+
+<div class="card card-red">
+  <h3 style="color:var(--red)">🔴 CRITICAL — 561 Services Have No Pillar Assignment</h3>
+  <div class="issue">
+    <div class="issue-icon icon-red">!</div>
+    <div class="issue-body">
+      <div class="issue-title">561 of 1,118 services have <code>pillar: ""</code> or empty array</div>
+      <div class="issue-desc">These services exist in the Service Box but are not visible in any pillar admin tab. The pillar Services tab shows 0 for these services. They need to be assigned to a pillar via bulk update or individual edit in Service Box.</div>
+    </div>
+  </div>
+</div>
+
+<div class="card card-red">
+  <h3 style="color:var(--red)">🔴 CRITICAL — Bundles are Fragmented Across 14+ Collections</h3>
+  <div class="issue">
+    <div class="issue-icon icon-red">!</div>
+    <div class="issue-body">
+      <div class="issue-title">14 separate <code>{pillar}_bundles</code> collections + 1 main <code>bundles</code> collection</div>
+      <div class="issue-desc">Every pillar has its own bundles collection. The main <code>bundles</code> collection only has 39 items. There is NO single "Mother Bundle" collection. This makes pricing sync, bulk operations, and data consistency impossible.</div>
+      <div style="margin-top:8px;font-size:12px;color:#6b7280">Collections: care_bundles, adopt_bundles, fit_bundles, learn_bundles, stay_bundles, celebrate_bundles, farewell_bundles, paperwork_bundles, product_bundles, emergency_bundles, advisory_bundles, dine_bundles, travel_bundles, enjoy_bundles</div>
+    </div>
+  </div>
+</div>
+
+<div class="card card-amber">
+  <h3 style="color:var(--amber)">🟡 MEDIUM — Bundles Not in Pricing Hub</h3>
+  <div class="issue">
+    <div class="issue-icon icon-amber">!</div>
+    <div class="issue-body">
+      <div class="issue-title">Pricing Hub has Product Pricing + Service Pricing tabs but NO Bundle Pricing tab</div>
+      <div class="issue-desc">Bundle prices cannot be bulk-edited from the centralized Pricing Hub. Admin must edit each bundle individually in the pillar manager.</div>
+    </div>
+  </div>
+</div>
+
+<div class="card card-amber">
+  <h3 style="color:var(--amber)">🟡 MEDIUM — Celebrate Subcategories Not Visible as Pillar Sub-sections</h3>
+  <div class="issue">
+    <div class="issue-icon icon-amber">!</div>
+    <div class="issue-body">
+      <div class="issue-title">Celebrate has 8+ subcategories (Pupcakes, Treats, Desi Treats, etc.) but these are NOT structured as named sub-sections in Product Box pillar view</div>
+      <div class="issue-desc">The 1,263 celebrate products have category tags, but the Product Box pillar view does not break them down by subcategory. Admin cannot see "Celebrate → Pupcakes (42 products)" etc.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ARCHITECTURE ===== -->
+<h2 id="architecture">4. Intended Architecture (Target State)</h2>
+
+<div class="arch-box">
+  <h4>MASTER RECORD: Product Box (<span class="coll">unified_products</span>)</h4>
+  <p>Every product from every source (Soul Products, breed-specific, pillar-specific, imported) MUST live here. Fields required: <code>id</code>, <code>name</code>, <code>primary_pillar</code>, <code>pillars[]</code>, <code>category</code>, <code>subcategory</code>, <code>price</code>, <code>active</code>, <code>image_url</code>, <code>product_type</code> (soul_made/standard/breed)</p>
+</div>
+<div class="arrow">↓ feeds into ↓</div>
+<div class="grid-2">
+  <div class="arch-box">
+    <h4>PILLAR PRODUCT TABS (14 pillars)</h4>
+    <p>Each pillar's admin Products tab filters <span class="coll">unified_products</span> by <code>primary_pillar="{pillar}"</code>. Admin can see products sub-category wise and activate/deactivate/edit/generate AI images per product from here.</p>
+  </div>
+  <div class="arch-box">
+    <h4>PRICING HUB — Product Pricing Tab</h4>
+    <p>Reads from <span class="coll">unified_products</span>. Allows bulk price editing across all pillars. Filters by pillar.</p>
+  </div>
+</div>
+
+<div style="margin-top:24px">
+<div class="arch-box">
+  <h4>MASTER RECORD: Service Box (<span class="coll">services_master</span>)</h4>
+  <p>Every service from every pillar MUST live here. Fields required: <code>id</code>, <code>name</code>, <code>pillar</code> (string, not array), <code>base_price</code>, <code>discounted_price</code>, <code>active</code>, <code>image_url</code>, <code>is_bookable</code>, <code>duration_minutes</code></p>
+</div>
+<div class="arrow">↓ feeds into ↓</div>
+<div class="grid-2">
+  <div class="arch-box">
+    <h4>PILLAR SERVICES TABS (14 pillars)</h4>
+    <p>Each pillar's Services tab filters <span class="coll">services_master</span> by <code>pillar="{pillar}"</code>. Active/Inactive toggle available per service.</p>
+  </div>
+  <div class="arch-box">
+    <h4>PRICING HUB — Service Pricing Tab ✅ (Added Mar 15)</h4>
+    <p>Reads from <span class="coll">services_master</span>. Allows bulk price editing. PATCH endpoint: <code>/api/service-box/services/{id}/pricing</code></p>
+  </div>
+</div>
+</div>
+
+<div style="margin-top:24px">
+<div class="arch-box">
+  <h4>MASTER RECORD: Bundles (<span class="coll">bundles</span> — NEEDS CONSOLIDATION)</h4>
+  <p>All pillar bundles MUST be in ONE collection. Required fields: <code>id</code>, <code>name</code>, <code>pillar</code> (string), <code>price</code>, <code>original_price</code>, <code>items[]</code> (strings), <code>active</code>, <code>image_url</code>, <code>watercolor_image</code></p>
+  <p style="color:var(--red);margin-top:6px;font-weight:600">⚠️ Currently: 14 separate pillar collections must be MERGED into 1</p>
+</div>
+<div class="arrow">↓ feeds into ↓</div>
+<div class="grid-2">
+  <div class="arch-box">
+    <h4>PILLAR BUNDLES TABS (14 pillars)</h4>
+    <p>Filter <span class="coll">bundles</span> by <code>pillar="{pillar}"</code>. Admin can create/edit/delete/AI-generate images per bundle.</p>
+  </div>
+  <div class="arch-box">
+    <h4>PRICING HUB — Bundle Pricing Tab ❌ (MISSING)</h4>
+    <p>Needs to be added. Should read from consolidated <span class="coll">bundles</span> collection with pillar filter and inline price editing.</p>
+  </div>
+</div>
+</div>
+
+<!-- ===== COLLECTIONS ===== -->
+<h2 id="collections">5. All Product-Related Database Collections</h2>
+<table>
+  <thead><tr><th>Collection</th><th class="num">Count</th><th>Purpose</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td><code>unified_products</code></td><td class="num">4,334</td><td>Product Box — MASTER (intended)</td><td><span class="badge badge-warn">Only 28 active</span></td></tr>
+    <tr><td><code>products</code></td><td class="num">1,379</td><td>Soul Products admin source</td><td><span class="badge badge-err">Orphan — not in Product Box</span></td></tr>
+    <tr><td><code>products_master</code></td><td class="num">3,987</td><td>Legacy/mirror — unclear purpose</td><td><span class="badge badge-err">Orphan — needs audit</span></td></tr>
+    <tr><td><code>breed_products</code></td><td class="num">2,569</td><td>Breed-specific products</td><td><span class="badge badge-err">Orphan — not in Product Box</span></td></tr>
+    <tr><td><code>celebrate_products</code></td><td class="num">4</td><td>Celebrate-specific legacy</td><td><span class="badge badge-err">Orphan — consolidate</span></td></tr>
+    <tr><td><code>services_master</code></td><td class="num">1,118</td><td>Service Box — MASTER</td><td><span class="badge badge-warn">561 no pillar</span></td></tr>
+    <tr><td><code>bundles</code></td><td class="num">39</td><td>Main bundle collection (partial)</td><td><span class="badge badge-err">Incomplete — 14 pillar colls exist</span></td></tr>
+    <tr><td><code>care_bundles</code></td><td class="num">6</td><td>Care pillar bundles</td><td><span class="badge badge-err">Fragmented + items as objects (fixed)</span></td></tr>
+    <tr><td><code>celebrate_bundles</code></td><td class="num">6</td><td>Celebrate pillar bundles</td><td><span class="badge badge-err">Fragmented</span></td></tr>
+    <tr><td><code>fit_bundles + 11 more</code></td><td class="num">~65</td><td>11 other pillar bundle collections</td><td><span class="badge badge-err">Fragmented — needs consolidation</span></td></tr>
+    <tr><td><code>topic_products</code></td><td class="num">12</td><td>Topic/blog product links</td><td><span class="badge badge-info">OK — separate use case</span></td></tr>
+    <tr><td><code>product_soul_tiers</code></td><td class="num">101</td><td>Soul product tier definitions</td><td><span class="badge badge-info">OK — reference data</span></td></tr>
+  </tbody>
+</table>
+
+<!-- ===== ADMIN CAPABILITIES ===== -->
+<h2 id="admin-capabilities">6. Admin Capabilities Status</h2>
+<table>
+  <thead><tr><th>Capability</th><th>Products</th><th>Services</th><th>Bundles</th></tr></thead>
+  <tbody>
+    <tr><td>View all in one place (Mother Record)</td><td class="ok">✅ Product Box</td><td class="ok">✅ Service Box</td><td class="gap">❌ Fragmented</td></tr>
+    <tr><td>Filter by pillar</td><td class="ok">✅ Works</td><td class="ok">✅ Works</td><td class="warn">⚠️ Partial</td></tr>
+    <tr><td>Filter by subcategory</td><td class="warn">⚠️ Category filter only</td><td class="gap">❌ None</td><td class="gap">❌ None</td></tr>
+    <tr><td>Active / Inactive toggle</td><td class="ok">✅ Works</td><td class="ok">✅ Works (added recently)</td><td class="warn">⚠️ status field only</td></tr>
+    <tr><td>AI Image regeneration</td><td class="ok">✅ Works</td><td class="ok">✅ Works</td><td class="ok">✅ Works (watercolor)</td></tr>
+    <tr><td>Create New from scratch</td><td class="ok">✅ Add Product btn</td><td class="ok">✅ Add Service btn</td><td class="warn">⚠️ Per-pillar manager only</td></tr>
+    <tr><td>Edit / CRUD</td><td class="ok">✅ Full 6-tab editor</td><td class="ok">✅ Full 4-tab editor</td><td class="warn">⚠️ Per-pillar manager</td></tr>
+    <tr><td>In Pricing Hub</td><td class="ok">✅ Product Pricing tab</td><td class="ok">✅ Service Pricing tab (NEW)</td><td class="gap">❌ Missing — needs Bundle Pricing tab</td></tr>
+    <tr><td>Visible in Pillar admin tab</td><td class="warn">⚠️ Via Product Box filter</td><td class="ok">✅ PillarServicesTab (all 14 pillars)</td><td class="ok">✅ PillarBundlesTab (all 14 pillars)</td></tr>
+    <tr><td>Soul Products with pillar tag</td><td class="gap">❌ Soul Products in separate collection</td><td>N/A</td><td>N/A</td></tr>
+  </tbody>
+</table>
+
+<!-- ===== ACTION PLAN ===== -->
+<h2 id="action-plan">7. Recommended Fix Plan</h2>
+
+<div class="card card-red">
+  <h3>🔴 Priority 1 — Fix Active Status (Quick Win)</h3>
+  <p style="font-size:13px;margin-top:8px">Bulk-set <code>active: true</code> for products that should be visible. Current state: only 28/4334 are active. Use the Product Box admin → filter by pillar → bulk activate. Or run a one-time migration script.</p>
+  <p style="font-size:13px;margin-top:6px"><strong>Fix:</strong> Add "Bulk Activate by Pillar" button in Product Box admin, or run: <code>db.unified_products.updateMany({active: {$ne: true}}, {$set: {active: true}})</code></p>
+</div>
+
+<div class="card card-red">
+  <h3>🔴 Priority 2 — Assign Pillar to 561 Unclassified Services</h3>
+  <p style="font-size:13px;margin-top:8px">561 services have no pillar. Use Service Box admin → filter by pillar="" → bulk assign pillar. Or add a "Pillar Bulk Assignment" tool in Service Box.</p>
+</div>
+
+<div class="card card-red">
+  <h3>🔴 Priority 3 — Consolidate 14 Bundle Collections → 1</h3>
+  <p style="font-size:13px;margin-top:8px">Write a migration script that reads all <code>{pillar}_bundles</code> collections, normalizes the <code>items[]</code> field (convert objects to strings), ensures all have a <code>pillar</code> field, and inserts into the main <code>bundles</code> collection. Then add a Bundle Pricing tab to Pricing Hub.</p>
+</div>
+
+<div class="card card-amber">
+  <h3>🟡 Priority 4 — Add Soul Products to Product Box</h3>
+  <p style="font-size:13px;margin-top:8px">Migrate <code>products</code> collection (1,379 Soul Products) to <code>unified_products</code> with <code>product_type: "soul_made"</code> and appropriate <code>primary_pillar</code> tags. Deprecate the separate <code>products</code> collection for the Product Box view.</p>
+</div>
+
+<div class="card card-amber">
+  <h3>🟡 Priority 5 — Add Bundle Pricing Tab to Pricing Hub</h3>
+  <p style="font-size:13px;margin-top:8px">After bundle consolidation, add a "Bundle Pricing" tab to PricingHub.jsx. Use <code>GET /api/bundles?limit=200</code> endpoint with pillar filter and inline price editing via <code>PATCH /api/bundles/{id}/pricing</code>.</p>
+</div>
+
+<div class="card card-blue" style="margin-top:32px;padding:20px">
+  <h3 style="color:var(--blue)">ℹ️ Already Fixed in This Session</h3>
+  <ul style="font-size:13px;margin-top:8px;padding-left:16px;line-height:2">
+    <li>✅ Bundles crash (Objects as React children) — fixed in <code>BundlesManager.jsx</code> + <code>LearnManager.jsx</code></li>
+    <li>✅ Service Pricing tab added to Pricing Hub</li>
+    <li>✅ Services tab added to 7 pillar managers (Fit, Farewell, Emergency, Learn, Paperwork, Advisory, Adopt)</li>
+    <li>✅ Enjoy admin crash (credentials not defined) — fixed</li>
+    <li>✅ Member notification sort bug — fixed (now sorts by _id)</li>
+    <li>✅ Mira Picks → Admin notification flow — all 4 flows confirmed working</li>
+    <li>✅ Service Pricing PATCH endpoint — <code>PATCH /api/service-box/services/{id}/pricing</code></li>
+  </ul>
+</div>
+
+<p style="font-size:12px;color:#9ca3af;margin-top:32px;text-align:center">The Doggy Company® Pet Life OS · Architecture Audit · March 2026 · celebrate-sync-3 preview</p>
+</body>
+</html>

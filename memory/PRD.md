@@ -4,7 +4,46 @@
 
 ---
 
-## ✅ SESSION 34 — Mira Picks Flow Audit + Member Notification Sort Bug Fixed (Mar 15, 2026)
+## ✅ SESSION 35 — Bundle Crash Fixed + Full Architecture Audit (Mar 15, 2026)
+
+### Bug Fixed:
+- **Bundles crash** "Objects are not valid as React child": 4 learn bundles + care_bundles have items stored as `{name, price}` dict objects. Fixed in `BundlesManager.jsx` (line 488) and `LearnManager.jsx` to safely render `item.name` if item is an object.
+
+### Full Architecture Audit Findings:
+See full report: `/app/memory/ARCHITECTURE_AUDIT.html`
+
+| | Products | Services | Bundles |
+|---|---|---|---|
+| celebrate | 1,263 | 17 | 10 |
+| care | 294 | 30 | 6 |
+| fit | 465 | 23 | 6 |
+| dine | 333 | 9 | 8 |
+| enjoy | 384 | 5 | 7 |
+| travel | 404 | 11 | 9 |
+| stay | 784 | 9 | 9 |
+| farewell | 292 | 8 | 6 |
+| emergency | 315 | 8 | 8 |
+| adopt | 168 | 9 | 10 |
+| learn | 318 | 12 | 11 |
+| paperwork | 198 | 16 | 9 |
+| advisory | 99 | 8 | 12 |
+| **TOTAL** | **4,334** | **165 (assigned)** | **111** |
+
+### Critical Gaps Found:
+1. ❌ Only 28/4,334 products are `active: true` (all others are inactive!)
+2. ❌ 561/1,118 services have no pillar assignment
+3. ❌ Bundles fragmented across 14 separate collections (`{pillar}_bundles`)
+4. ❌ `products` (1,379), `products_master` (3,987), `breed_products` (2,569) are orphan collections NOT in Product Box
+5. ❌ Bundle Pricing tab missing from Pricing Hub
+
+### Admin Capabilities Confirmed:
+- ✅ Active/Inactive toggle works for Products AND Services
+- ✅ AI Image regeneration works for Products, Services, Bundles
+- ✅ Create New works for Products (Add Product) and Services (Add Service)
+- ❌ Soul Products not in Product Box (in separate `products` collection)
+- ❌ Bundle Pricing not in Pricing Hub
+
+---
 
 ### Audit Results (All 4 Flows CONFIRMED Working):
 1. **Admin Notification Bell** ✅ — `celebrate_picks_request` notifications appear immediately when user selects Mira Picks (API: `GET /api/admin/notifications`, 663+ total)

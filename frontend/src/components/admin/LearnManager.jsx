@@ -902,7 +902,9 @@ const LearnManager = ({ getAuthHeader }) => {
                 {bundle.items && (
                   <div className="flex flex-wrap gap-1 mb-3">
                     {bundle.items.map((item, i) => (
-                      <Badge key={i} variant="secondary" className="text-xs">{item}</Badge>
+                      <Badge key={i} variant="secondary" className="text-xs">
+                        {typeof item === 'object' ? (item.name || item.title || JSON.stringify(item)) : item}
+                      </Badge>
                     ))}
                   </div>
                 )}
