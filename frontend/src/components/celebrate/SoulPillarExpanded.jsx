@@ -635,7 +635,18 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
       try {
         const apiUrl = getApiUrl();
         const currentCategory = tabs[activeTab]?.category || 'cakes';
-        const resp = await fetch(`${apiUrl}/api/products?category=${currentCategory}&limit=8`);
+        const isConcierge = tabs[activeTab]?.concierge;
+        if (isConcierge) {
+          // Concierge tabs show services, not products
+          setProducts([]);
+          setLoading(false);
+          return;
+        }
+        // Use soul-ranked endpoint when we have a pet (personalises order + excludes allergens)
+        const url = pet?.id
+          ? `${apiUrl}/api/products/soul-ranked?category=${currentCategory}&pet_id=${pet.id}&limit=8`
+          : `${apiUrl}/api/products?category=${currentCategory}&limit=8`;
+        const resp = await fetch(url);
         if (resp.ok) {
           const data = await resp.json();
           setProducts(data.products || []);
@@ -650,9 +661,9 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
       }
     };
     fetchProducts();
-  }, [pillar.id, activeTab]);
+  }, [pillar.id, activeTab, pet?.id]);
 
-  // Allergy filter
+  // Client-side allergy filter as safety net (soul-ranked already excludes on backend)
   const allergies = React.useMemo(() => {
     return [
       ...(pet?.allergies || []),
