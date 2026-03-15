@@ -584,7 +584,10 @@ async def admin_update_product(product_id: str, product: CelebrateProductCreate)
     
     update_data = {
         **product.dict(),
-        "updated_at": datetime.now(timezone.utc)
+        "updated_at": datetime.now(timezone.utc),
+        # Protect from Shopify sync overwriting admin changes
+        "locally_edited": True,
+        "locally_edited_at": datetime.now(timezone.utc).isoformat()
     }
     
     if collection == db.products_master:
@@ -612,7 +615,7 @@ async def admin_delete_product(product_id: str):
     if existing:
         await db.products_master.update_one(
             {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
-            {"$set": {"active": False, "is_active": False, "updated_at": datetime.now(timezone.utc)}}
+            {"$set": {"active": False, "is_active": False, "locally_edited": True, "updated_at": datetime.now(timezone.utc)}}
         )
         return {"message": "Product deactivated (Shopify product)"}
     

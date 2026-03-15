@@ -20695,6 +20695,154 @@ async def fix_pet_string_data(password: str = Query(...)):
     }
 
 
+@api_router.post("/admin/consolidate-data")
+async def consolidate_all_pillar_data(password: str = Query(...)):
+    """
+    ONE-CLICK DATA CONSOLIDATION — Safe to run on any environment (preview or production)
+    1. Migrates pillar-specific product collections → products_master
+    2. Migrates pillar-specific bundle collections → bundles
+    3. Fixes uncategorized celebrate products
+    All operations are idempotent (safe to run multiple times)
+    """
+    if password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=403, detail="Invalid admin password")
+
+    results = {
+        "products_migrated": 0,
+        "products_skipped": 0,
+        "bundles_migrated": 0,
+        "bundles_skipped": 0,
+        "celebrate_categories_fixed": 0,
+        "errors": []
+    }
+
+    try:
+        import uuid as uuid_module
+
+        # =================== 1. MIGRATE PILLAR PRODUCTS ===================
+        PILLAR_PRODUCT_COLLECTIONS = {
+            'dine_products': 'dine', 'care_products': 'care', 'fit_products': 'fit',
+            'stay_products': 'stay', 'travel_products': 'travel', 'enjoy_products': 'enjoy',
+            'learn_products': 'learn', 'farewell_products': 'farewell',
+            'emergency_products': 'emergency', 'adopt_products': 'adopt',
+            'advisory_products': 'advisory', 'paperwork_products': 'paperwork',
+            'celebrate_products': 'celebrate', 'unified_products': None,
+        }
+        existing_product_ids = set()
+        async for doc in db.products_master.find({}, {"_id": 0, "id": 1, "shopify_id": 1}):
+            if doc.get("id"): existing_product_ids.add(doc["id"])
+            if doc.get("shopify_id"): existing_product_ids.add(doc["shopify_id"])
+
+        colls = await db.list_collection_names()
+        for coll_name, pillar_override in PILLAR_PRODUCT_COLLECTIONS.items():
+            if coll_name not in colls: continue
+            async for doc in db[coll_name].find({}):
+                doc.pop("_id", None)
+                pillar = pillar_override or doc.get("pillar", "")
+                if not pillar: results["products_skipped"] += 1; continue
+                doc_id = doc.get("id") or doc.get("shopify_id") or str(uuid_module.uuid4())
+                if doc_id in existing_product_ids: results["products_skipped"] += 1; continue
+                normalized = {
+                    "id": doc_id, "pillar": pillar,
+                    "name": doc.get("name", ""), "description": doc.get("description", ""),
+                    "category": doc.get("category") or doc.get("subcategory") or "",
+                    "price": float(doc.get("price") or 0),
+                    "image_url": doc.get("image_url") or doc.get("image") or "",
+                    "active": doc.get("active", True),
+                    "source": f"migrated_from_{coll_name}",
+                    "locally_edited": False,
+                    "created_at": doc.get("created_at") or datetime.now(timezone.utc).isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                }
+                await db.products_master.insert_one(normalized)
+                normalized.pop("_id", None)
+                existing_product_ids.add(doc_id)
+                results["products_migrated"] += 1
+
+        # =================== 2. MIGRATE PILLAR BUNDLES ===================
+        PILLAR_BUNDLE_COLLECTIONS = {
+            'adopt_bundles': 'adopt', 'advisory_bundles': 'advisory', 'care_bundles': 'care',
+            'celebrate_bundles': 'celebrate', 'dine_bundles': 'dine', 'emergency_bundles': 'emergency',
+            'enjoy_bundles': 'enjoy', 'farewell_bundles': 'farewell', 'fit_bundles': 'fit',
+            'learn_bundles': 'learn', 'paperwork_bundles': 'paperwork', 'stay_bundles': 'stay',
+            'travel_bundles': 'travel', 'product_bundles': None,
+        }
+        existing_bundle_ids = set()
+        async for doc in db.bundles.find({}, {"_id": 0, "id": 1}):
+            if doc.get("id"): existing_bundle_ids.add(doc["id"])
+
+        for coll_name, pillar_override in PILLAR_BUNDLE_COLLECTIONS.items():
+            if coll_name not in colls: continue
+            async for doc in db[coll_name].find({}):
+                doc.pop("_id", None)
+                pillar = pillar_override or doc.get("pillar", "")
+                if not pillar: results["bundles_skipped"] += 1; continue
+                doc_id = doc.get("id") or str(uuid_module.uuid4())
+                if doc_id in existing_bundle_ids: results["bundles_skipped"] += 1; continue
+                original_price = float(doc.get("original_price") or doc.get("price") or 0)
+                bundle_price = float(doc.get("bundle_price") or doc.get("price") or original_price)
+                normalized = {
+                    "id": doc_id, "pillar": pillar,
+                    "name": doc.get("name", ""), "description": doc.get("description", ""),
+                    "items": doc.get("items") or [],
+                    "original_price": original_price, "bundle_price": bundle_price,
+                    "discount": round((1 - bundle_price/original_price)*100) if original_price > 0 else 0,
+                    "icon": doc.get("icon") or "📦",
+                    "image_url": doc.get("image_url") or "",
+                    "active": doc.get("active", True),
+                    "source": f"migrated_from_{coll_name}",
+                    "created_at": doc.get("created_at") or datetime.now(timezone.utc).isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                }
+                await db.bundles.insert_one(normalized)
+                normalized.pop("_id", None)
+                existing_bundle_ids.add(doc_id)
+                results["bundles_migrated"] += 1
+
+        # =================== 3. FIX CELEBRATE CATEGORIES ===================
+        CATEGORY_KEYWORDS = {
+            'cake': 'cakes', 'donut': 'donuts', 'doughnut': 'donuts', 'dognut': 'donuts',
+            'cupcake': 'cakes', 'muffin': 'cakes', 'cookie': 'treats', 'biscuit': 'treats',
+            'treat': 'treats', 'snack': 'treats', 'hamper': 'hampers', 'box': 'hampers',
+            'gift': 'gifts', 'kit': 'gifts', 'pack': 'gifts', 'set': 'gifts',
+            'toy': 'toys', 'ball': 'toys', 'plush': 'toys', 'bandana': 'accessories',
+            'collar': 'accessories', 'hat': 'accessories', 'outfit': 'accessories',
+            'banner': 'decorations', 'balloon': 'decorations', 'candle': 'decorations',
+            'party': 'party', 'birthday': 'birthday',
+        }
+        uncategorized_q = {"pillar": "celebrate", "$or": [{"category": {"$exists": False}}, {"category": None}, {"category": ""}]}
+        async for doc in db.products_master.find(uncategorized_q, {"_id": 0, "id": 1, "shopify_id": 1, "name": 1}):
+            name_lower = (doc.get("name") or "").lower()
+            matched = next((cat for kw, cat in CATEGORY_KEYWORDS.items() if kw in name_lower), "general")
+            doc_id = doc.get("id") or doc.get("shopify_id")
+            await db.products_master.update_one(
+                {"$or": [{"id": doc_id}, {"shopify_id": doc_id}]},
+                {"$set": {"category": matched}}
+            )
+            results["celebrate_categories_fixed"] += 1
+
+        # Final counts
+        products_total = await db.products_master.count_documents({})
+        bundles_total = await db.bundles.count_documents({})
+        results["products_master_total"] = products_total
+        results["bundles_total"] = bundles_total
+        results["success"] = True
+        results["message"] = (
+            f"Migrated {results['products_migrated']} products, "
+            f"{results['bundles_migrated']} bundles, "
+            f"fixed {results['celebrate_categories_fixed']} celebrate categories. "
+            f"Totals: {products_total} products, {bundles_total} bundles"
+        )
+        logger.info(f"[CONSOLIDATE] {results['message']}")
+        return results
+
+    except Exception as e:
+        logger.error(f"[CONSOLIDATE] Error: {e}")
+        results["success"] = False
+        results["message"] = str(e)
+        raise HTTPException(status_code=500, detail=results)
+
+
 async def export_all_data(password: str = Query(...)):
     """Export all critical data as JSON for backup or transfer"""
     if password != ADMIN_PASSWORD:
