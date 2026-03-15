@@ -4,6 +4,16 @@
 
 ---
 
+
+## ✅ SESSION 28 — Celebrate Page Design Quality Pass (Mar 2026)
+**Improved font sizes, spacing, and mobile experience across celebrate page**
+
+### Changes Made:
+1. **SoulCelebrationPillars.jsx** — Pillar cards: icon 28→36px, title 14→16px, tagline 12→13px, badge 11→12px, card padding+radius increased, section header clamp(1.5rem→2rem), gap `gap-2.5`→`gap-3 md:gap-4`
+2. **SoulPillarExpanded.jsx** — Product cards: image 80→120px, name 12→14px, price 13→15px. Panel header 18→20px, tabs 12→13px
+3. **ProductDetailModal.jsx** — Proper iOS bottom sheet on mobile (slides from bottom, drag handle), image 224→256px, action buttons py-4 fontSize 16
+
+
 ## ✅ SESSION 27 COMPLETE — Production Fix Panel + Compare Tool (Mar 2026)
 
 **Status: Complete — Admin now has zero-deployment production fix buttons and live preview↔production compare**

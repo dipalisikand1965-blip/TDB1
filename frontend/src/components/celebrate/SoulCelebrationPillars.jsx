@@ -240,12 +240,12 @@ const PillarCard = ({ pillar, pet, isExpanded, onToggle, onTellMiraMore }) => {
 
   const cardStyle = {
     background: pillar.color,
-    borderRadius: 12,
-    padding: '18px 14px',
+    borderRadius: 16,
+    padding: '20px 16px 18px',
     cursor: 'pointer',
     position: 'relative',
     opacity: state === 'glow' ? 1.0 : state === 'dim' ? 0.60 : 0.50,
-    boxShadow: state === 'glow' ? '0 0 20px rgba(196,77,255,0.25)' : 'none',
+    boxShadow: state === 'glow' ? '0 0 24px rgba(196,77,255,0.28)' : 'none',
     border: isExpanded ? `2px solid #C44DFF` : '2px solid transparent',
     transition: 'transform 200ms ease, box-shadow 400ms ease'
   };
@@ -300,15 +300,15 @@ const PillarCard = ({ pillar, pet, isExpanded, onToggle, onTellMiraMore }) => {
         )}
 
         {/* Icon */}
-        <span className="block mb-2" style={{ fontSize: 28 }}>{pillar.icon}</span>
+        <span className="block mb-3" style={{ fontSize: 36 }}>{pillar.icon}</span>
 
         {/* Name */}
-        <p className="font-bold mb-0.5" style={{ fontSize: 14, color: '#1A0A00' }}>
+        <p className="font-bold mb-1" style={{ fontSize: 16, color: '#1A0A00', lineHeight: 1.2 }}>
           {pillar.name}
         </p>
 
         {/* Tagline */}
-        <p className="mb-2 leading-snug" style={{ fontSize: 12, color: '#666', lineHeight: 1.4 }}>
+        <p className="mb-3 leading-snug" style={{ fontSize: 13, color: '#555', lineHeight: 1.45 }}>
           {pillar.tagline(petName)}
         </p>
 
@@ -316,8 +316,8 @@ const PillarCard = ({ pillar, pet, isExpanded, onToggle, onTellMiraMore }) => {
         <span
           className="rounded-full font-bold whitespace-nowrap overflow-hidden text-ellipsis block"
           style={{
-            fontSize: 11, fontWeight: 700,
-            padding: '3px 9px',
+            fontSize: 12, fontWeight: 700,
+            padding: '5px 12px',
             maxWidth: '100%',
             ...badgeStyle[state]
           }}
@@ -389,13 +389,13 @@ const SoulCelebrationPillars = ({ pet, onOpenSoulBuilder }) => {
   const row2Expanded = expandedPillar && ROW2.some(p => p.id === expandedPillar);
 
   return (
-    <section className="py-8 px-6 bg-white" data-testid="soul-celebration-pillars">
+    <section className="py-10 px-4 sm:px-6 bg-white" data-testid="soul-celebration-pillars">
       {/* Section Header */}
-      <div className="max-w-6xl mx-auto mb-5">
-        <h2 className="font-bold" style={{ fontSize: '1.5rem', color: '#0E0620', marginBottom: 4 }}>
+      <div className="max-w-6xl mx-auto mb-7">
+        <h2 className="font-bold" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', color: '#0E0620', marginBottom: 6 }}>
           How would <span style={{ color: '#C44DFF' }}>{petName}</span> love to celebrate?
         </h2>
-        <p style={{ fontSize: 13, color: '#888888' }}>
+        <p style={{ fontSize: 15, color: '#888888', lineHeight: 1.5 }}>
           Choose a pillar — everything inside is personalised to {petName}'s soul profile.{' '}
           <span style={{ color: '#7C3AED', fontWeight: 600 }}>Glowing ones match who {petName} is.</span>
         </p>
@@ -403,7 +403,7 @@ const SoulCelebrationPillars = ({ pet, onOpenSoulBuilder }) => {
 
       <div className="max-w-6xl mx-auto">
         {/* Row 1: Food, Play, Social, Adventure */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           {ROW1.map((pillar) => (
             <PillarCard
               key={pillar.id}
@@ -438,7 +438,7 @@ const SoulCelebrationPillars = ({ pet, onOpenSoulBuilder }) => {
         </AnimatePresence>
 
         {/* Row 2: Grooming, Learning, Health, Memory */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 mt-2.5">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-3">
           {ROW2.map((pillar) => (
             <PillarCard
               key={pillar.id}
