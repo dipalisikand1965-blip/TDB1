@@ -17,7 +17,7 @@ New Test User: audit_test_1771750532@test.com / test123
 
 ### URLs
 ```
-Preview: https://dine-consistency-fix.preview.emergentagent.com
+Preview: https://dine-layout-update.preview.emergentagent.com
 Production: https://thedoggycompany.com
 Admin: /admin (login required)
 ```

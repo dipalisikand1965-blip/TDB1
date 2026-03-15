@@ -15,7 +15,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dine-consistency-fix.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dine-layout-update.preview.emergentagent.com').rstrip('/')
 
 class TestHealth:
     """Health check tests"""
