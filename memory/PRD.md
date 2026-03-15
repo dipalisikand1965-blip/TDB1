@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 15, 2026 (Session 39 — Dine Pillar Architecture Completion + Full Seeder)
+## Last Updated: Mar 15, 2026 (Session 40 — Dine Page: MiraSoulNudge + Dynamic Products + Font Fixes)
 
 ---
 
@@ -8,6 +8,39 @@
 **Every agent must read `/app/memory/ARCHITECTURE.md` before making any changes.**
 It contains the canonical data model, API rules, component patterns, and checklists.
 Violating these rules will break the admin panel and data consistency.
+
+---
+
+## ✅ SESSION 40 — Dine Page: MiraSoulNudge + Dynamic Products + Font Fixes (Mar 15, 2026)
+
+### What Was Fixed / Built:
+
+#### 1. MiraSoulNudge Added to /dine Page
+- Component `<MiraSoulNudge pet={petData} token={token} context="dine" limit={3} />` added to the "Eat & Nourish" tab in `DineSoulPage.jsx`, positioned after the TummyProfile
+- Uses `context="dine"` so it surfaces nutrition and food-related unanswered soul questions first
+- Shows "all done" state when pet's soul score is high (e.g., 94% for Mojo)
+- Import was already present but component was not rendered — now wired into JSX
+
+#### 2. Dynamic Product Drawers (SSOT Products from API)
+- Replaced hardcoded product data in dimension drawers with live data from `/api/admin/pillar-products?pillar=dine&limit=600`
+- Added `apiProducts` state and fetch `useEffect` in `DineSoulPage` component
+- Products are grouped by `category` → `sub_category` and passed to `DimExpanded` via `apiProducts` prop
+- `DimExpanded` now prefers live API products, falls back to hardcoded catalog if API returns empty
+- Helper functions added: `adaptDineProduct()`, `getDineProductIcon()`, `CATEGORY_BG`, `DIM_ID_TO_CATEGORY`
+- Category mapping: "Daily Meals" → `meals`, "Treats & Rewards" → `treats`, "Supplements" → `supplements`, "Frozen & Fresh" → `frozen`, "Homemade & Recipes" → `homemade`
+
+#### 3. Font Sizes Standardized with clamp()
+- Hero title: `fontSize: 32` → `fontSize: "clamp(1.75rem, 4vw, 2.5rem)"` (responsive)
+- Hero subtitle: `fontSize: 13` → `fontSize: "clamp(0.8rem, 1.5vw, 0.9rem)"`
+- "Eat & Nourish" heading: `fontSize: 20` → `fontSize: "clamp(1.125rem, 2.5vw, 1.375rem)"`
+- "Guided Nutrition Paths" heading: same clamp
+- "Dining Concierge Services" heading: same clamp
+- "Want us to plan the whole outing?" heading: same clamp
+- "The Mojo Meal Pick" title: `fontSize: 22` → `fontSize: "clamp(1.25rem, 3vw, 1.5rem)"`
+
+#### Testing Result: 100% Pass
+All features verified by testing agent (iteration_139.json):
+- NoPetState, logged-in hero, TummyProfile, MiraSoulNudge (all-done state at 94%), dimension grid, drawer with live API products (Morning/Evening/Portion/Special tabs), font clamp sizes, Celebrate page regression — ALL PASS
 
 ---
 
