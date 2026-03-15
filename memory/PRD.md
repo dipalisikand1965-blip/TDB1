@@ -4,6 +4,28 @@
 
 ---
 
+## ✅ SESSION 27 COMPLETE — Production Fix Panel in Admin (Mar 2026)
+
+**Status: Complete — Admin now has "🚀 FIX PROD DATA" button for zero-deployment production fixes**
+
+### What Was Built:
+1. **New backend endpoint** `/api/admin/fix-pet-string-data` — converts pet soul data string→array (fixes Food & Flavour crash)
+2. **Updated `/api/admin/fix-celebrate-data`** — now also fixes pet soul string data in one call
+3. **"🚀 FIX PROD DATA" button** in admin dashboard (CONFIG section) — calls thedoggycompany.com API directly from browser
+4. **"Production Fix Panel"** in CelebrateManager Settings tab — two granular fix buttons with results display
+
+### How it works (No Deployment Needed):
+- Click "🚀 FIX PROD DATA" → browser calls `https://thedoggycompany.com/api/admin/fix-celebrate-data` directly
+- CORS is `*` on production → cross-origin calls work
+- Fix 1 (works immediately): Service illustrations + product image URLs
+- Fix 2 (needs ONE deploy to activate on prod): Pet soul string→array conversion
+
+### Action Still Required:
+- ONE deployment to push the new `fix-pet-string-data` endpoint to production
+- Then click "🚀 FIX PROD DATA" to permanently fix the Food & Flavour crash
+
+---
+
 ## ✅ SESSION 26 COMPLETE — Production Celebrate Page Fixes (Mar 2026)
 
 **Status: Partial (data fixes live; crash fix + sort order pending deployment)**
