@@ -14,6 +14,7 @@ import { Loader2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
+import MiraSoulNudge from "../components/celebrate/MiraSoulNudge";
 import { API_URL } from "../utils/api";
 import { toast } from "../hooks/use-toast";
 
