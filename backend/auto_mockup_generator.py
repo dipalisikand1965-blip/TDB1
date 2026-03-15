@@ -22,7 +22,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-API_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://doggy-production-fix.preview.emergentagent.com')
+API_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://soul-ranked-preview.preview.emergentagent.com')
 BATCH_SIZE = 50
 CHECK_INTERVAL = 60  # seconds
 

@@ -327,7 +327,7 @@ A percentage (0-100%) showing how well Mira "knows" a pet.
 ## 📱 HOW TO TEST
 
 ### On Preview (Safe to experiment):
-- URL: `https://doggy-production-fix.preview.emergentagent.com`
+- URL: `https://soul-ranked-preview.preview.emergentagent.com`
 - Test user: `dipali@clubconcierge.in` / `test123`
 - Admin: `aditya` / `lola4304`
 
@@ -4504,7 +4504,7 @@ MONGO_URL=...                   # Already in .env
 DB_NAME=doggyconcierge
 
 # Frontend  
-REACT_APP_BACKEND_URL=https://doggy-production-fix.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://soul-ranked-preview.preview.emergentagent.com
 
 # Services
 Backend: port 8001 (supervisor-managed)
@@ -4517,15 +4517,15 @@ Frontend: port 3000 (supervisor-managed)
 
 ```bash
 # Test Voice
-curl -s "https://doggy-production-fix.preview.emergentagent.com/api/mira/voice/test"
+curl -s "https://soul-ranked-preview.preview.emergentagent.com/api/mira/voice/test"
 
 # Test Remember
-curl -s -X POST "https://doggy-production-fix.preview.emergentagent.com/api/mira/memory/remember" \
+curl -s -X POST "https://soul-ranked-preview.preview.emergentagent.com/api/mira/memory/remember" \
   -H "Content-Type: application/json" \
   -d '{"pet_id": "test", "memory_text": "Buddy is scared of thunder"}'
 
 # Test Concierge Summarize
-curl -s -X POST "https://doggy-production-fix.preview.emergentagent.com/api/mira/concierge/summarize" \
+curl -s -X POST "https://soul-ranked-preview.preview.emergentagent.com/api/mira/concierge/summarize" \
   -H "Content-Type: application/json" \
   -d '{"session_id":"x","pet_id":"x","pet_name":"Buddy","pet_breed":"Golden Retriever","conversation_history":[{"role":"user","content":"I need boarding for Buddy"}],"category":"boarding","urgency":"normal"}'
 ```
@@ -4978,12 +4978,12 @@ This session focused on implementing the **Conversation Architecture** for Mira 
 ## Test Commands
 ```bash
 # Test pillar-first search
-curl -s -X POST "https://doggy-production-fix.preview.emergentagent.com/api/mira/os/understand-with-products" \
+curl -s -X POST "https://soul-ranked-preview.preview.emergentagent.com/api/mira/os/understand-with-products" \
   -H "Content-Type: application/json" \
   -d '{"input": "I need a dog walker", "pet_context": {"name": "Mojo", "breed": "Indie"}}' | python3 -c "import sys,json; r=json.load(sys.stdin); print('Products:', len(r.get('response',{}).get('products',[])))"
 
 # Test concierge confirmation
-curl -s -X POST "https://doggy-production-fix.preview.emergentagent.com/api/mira/os/understand-with-products" \
+curl -s -X POST "https://soul-ranked-preview.preview.emergentagent.com/api/mira/os/understand-with-products" \
   -H "Content-Type: application/json" \
   -d '{"input": "Send this to my concierge please", "pet_context": {"name": "Mojo"}}' | python3 -c "import sys,json; r=json.load(sys.stdin); print('Banner:', r.get('concierge_confirmation') is not None)"
 ```
@@ -6399,19 +6399,19 @@ Before touching ANY Mira code, read these files:
 
 ```bash
 # 1. Login and get token
-TOKEN=$(curl -s -X POST 'https://doggy-production-fix.preview.emergentagent.com/api/auth/login' \
+TOKEN=$(curl -s -X POST 'https://soul-ranked-preview.preview.emergentagent.com/api/auth/login' \
   -H 'Content-Type: application/json' \
   -d '{"email":"dipali@clubconcierge.in","password":"test123"}' | \
   python3 -c 'import sys,json;print(json.load(sys.stdin).get("access_token",""))')
 
 # 2. Test chat (should mention allergies without asking)
-curl -X POST "https://doggy-production-fix.preview.emergentagent.com/api/mira/chat" \
+curl -X POST "https://soul-ranked-preview.preview.emergentagent.com/api/mira/chat" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TOKEN" \
   -d '{"message": "What food for Lola?", "session_id": "test-123"}'
 
 # 3. Test pets API (Lola should show ~62% score)
-curl "https://doggy-production-fix.preview.emergentagent.com/api/pets/my-pets" \
+curl "https://soul-ranked-preview.preview.emergentagent.com/api/pets/my-pets" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -6436,7 +6436,7 @@ curl "https://doggy-production-fix.preview.emergentagent.com/api/pets/my-pets" \
 
 ## 🔗 URLS
 
-- **Preview**: https://doggy-production-fix.preview.emergentagent.com
+- **Preview**: https://soul-ranked-preview.preview.emergentagent.com
 - **Production**: https://thedoggycompany.in
 - **To deploy**: Click "Replace deployment" on Emergent platform
 
@@ -6534,7 +6534,7 @@ xl: 32px - Major divisions
 | **Test User** | dipali@clubconcierge.in | test123 |
 | **Admin** | aditya | lola4304 |
 
-**Preview URL:** https://doggy-production-fix.preview.emergentagent.com
+**Preview URL:** https://soul-ranked-preview.preview.emergentagent.com
 
 ---
 
@@ -10122,7 +10122,7 @@ When user does action on `/care` page:
 | Admin | aditya | lola4304 |
 
 ## URLs
-- Preview: https://doggy-production-fix.preview.emergentagent.com
+- Preview: https://soul-ranked-preview.preview.emergentagent.com
 - Production: https://thedoggycompany.com (currently down - Nginx issue)
 
 ---
@@ -12503,7 +12503,7 @@ Everything rendered together regardless of mode.
 
 | Environment | URL |
 |-------------|-----|
-| **Preview** | https://doggy-production-fix.preview.emergentagent.com |
+| **Preview** | https://soul-ranked-preview.preview.emergentagent.com |
 | **Production** | https://thedoggycompany.in |
 
 ---
@@ -12512,11 +12512,11 @@ Everything rendered together regardless of mode.
 
 ## Quick Reply Test
 ```bash
-TOKEN=$(curl -s -X POST 'https://doggy-production-fix.preview.emergentagent.com/api/auth/login' \
+TOKEN=$(curl -s -X POST 'https://soul-ranked-preview.preview.emergentagent.com/api/auth/login' \
   -H 'Content-Type: application/json' \
   -d '{"email":"dipali@clubconcierge.in","password":"test123"}' | python3 -c 'import sys,json;print(json.load(sys.stdin).get("access_token",""))')
 
-curl -s -X POST "https://doggy-production-fix.preview.emergentagent.com/api/mira/chat" \
+curl -s -X POST "https://soul-ranked-preview.preview.emergentagent.com/api/mira/chat" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TOKEN" \
   -d '{"message": "What treats for Lola?", "session_id": "test-123", "pet_name": "Lola"}' | python3 -c "
@@ -18140,7 +18140,7 @@ ARCHIVE AFTER 5 MIN INACTIVITY
 
 ## Test 1: Meal Plan (No Products)
 ```bash
-curl -s -X POST "https://doggy-production-fix.preview.emergentagent.com/api/mira/os/understand-with-products" \
+curl -s -X POST "https://soul-ranked-preview.preview.emergentagent.com/api/mira/os/understand-with-products" \
   -H "Content-Type: application/json" \
   -d '{"input": "Create a healthy meal plan for Mojo", "pet_context": {"name": "Mojo", "breed": "Indie"}}' \
   | python3 -c "import sys,json; r=json.load(sys.stdin); print('Products:', len(r.get('response',{}).get('products',[]))); print('Tip Card:', r.get('response',{}).get('tip_card',{}).get('title'))"
@@ -18149,7 +18149,7 @@ curl -s -X POST "https://doggy-production-fix.preview.emergentagent.com/api/mira
 
 ## Test 2: Birthday Cake (Products)
 ```bash
-curl -s -X POST "https://doggy-production-fix.preview.emergentagent.com/api/mira/os/understand-with-products" \
+curl -s -X POST "https://soul-ranked-preview.preview.emergentagent.com/api/mira/os/understand-with-products" \
   -H "Content-Type: application/json" \
   -d '{"input": "Birthday cake for Mojo", "pet_context": {"name": "Mojo", "breed": "Indie"}}' \
   | python3 -c "import sys,json; r=json.load(sys.stdin); print('Products:', len(r.get('response',{}).get('products',[])))"
@@ -18871,14 +18871,14 @@ User lost access to all 8 pets including Mystique (recently passed pet - emotion
 ### Root Cause
 `REACT_APP_BACKEND_URL` was set to a **DEAD preview URL** that returned 404:
 ```
-❌ DEPLOYED WITH: https://doggy-production-fix.preview.emergentagent.com (DOESN'T EXIST!)
+❌ DEPLOYED WITH: https://soul-ranked-preview.preview.emergentagent.com (DOESN'T EXIST!)
 ✅ SHOULD BE: https://thedoggycompany.com
 ```
 
 ### How We Found It
 Browser console showed:
 ```
-Failed to load resource: 404 at https://doggy-production-fix.preview.emergentagent.com/api/auth/me
+Failed to load resource: 404 at https://soul-ranked-preview.preview.emergentagent.com/api/auth/me
 ```
 
 ### LESSON LEARNED
@@ -18903,7 +18903,7 @@ Your production site will show OLD content because it's calling the WRONG backen
 # 1. Check current URL
 cat /app/frontend/.env | grep REACT_APP_BACKEND_URL
 
-# 2. If it shows preview URL (like https://doggy-production-fix.preview.emergentagent.com), FIX IT:
+# 2. If it shows preview URL (like https://soul-ranked-preview.preview.emergentagent.com), FIX IT:
 sed -i 's|REACT_APP_BACKEND_URL=.*|REACT_APP_BACKEND_URL=https://thedoggycompany.com|' /app/frontend/.env
 
 # 3. Restart frontend to pick up changes
@@ -18916,7 +18916,7 @@ sudo supervisorctl restart frontend
 
 | Environment | REACT_APP_BACKEND_URL |
 |-------------|----------------------|
-| Preview | `https://doggy-production-fix.preview.emergentagent.com` (varies) |
+| Preview | `https://soul-ranked-preview.preview.emergentagent.com` (varies) |
 | **PRODUCTION** | **`https://thedoggycompany.com`** |
 
 ---
@@ -21264,7 +21264,7 @@ curl -X POST "https://thedoggycompany.in/api/admin/env-sync/full-sync?token=sync
   -u "aditya:lola4304" \
   -H "Content-Type: application/json" \
   -d '{
-    "source_url": "https://doggy-production-fix.preview.emergentagent.com",
+    "source_url": "https://soul-ranked-preview.preview.emergentagent.com",
     "user_email": "dipali@clubconcierge.in",
     "user_password": "test123",
     "sync_soul_data": true
@@ -21275,7 +21275,7 @@ curl -X POST "https://thedoggycompany.in/api/admin/env-sync/full-sync?token=sync
 
 ```bash
 # Full sync from Production to Preview
-curl -X POST "https://doggy-production-fix.preview.emergentagent.com/api/admin/env-sync/full-sync?token=sync-preview-to-prod-2026&overwrite=true" \
+curl -X POST "https://soul-ranked-preview.preview.emergentagent.com/api/admin/env-sync/full-sync?token=sync-preview-to-prod-2026&overwrite=true" \
   -u "aditya:lola4304" \
   -H "Content-Type: application/json" \
   -d '{
@@ -22228,7 +22228,7 @@ MOJO (Identity)
 ## 2.2 URLs
 | Environment | URL |
 |-------------|-----|
-| **Preview** | https://doggy-production-fix.preview.emergentagent.com |
+| **Preview** | https://soul-ranked-preview.preview.emergentagent.com |
 | **Main Demo Page** | /mira-demo |
 | **Admin Panel** | /admin |
 | **Dashboard** | /dashboard |
@@ -22246,7 +22246,7 @@ MOJO (Identity)
 
 ## 2.4 API Base URL
 ```
-REACT_APP_BACKEND_URL=https://doggy-production-fix.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://soul-ranked-preview.preview.emergentagent.com
 ```
 
 ---
@@ -23657,7 +23657,7 @@ Mira Memories: 121 stored
 
 ### To Test API:
 ```bash
-API_URL="https://doggy-production-fix.preview.emergentagent.com"
+API_URL="https://soul-ranked-preview.preview.emergentagent.com"
 TOKEN=$(curl -s -X POST "$API_URL/api/auth/login" -H "Content-Type: application/json" -d '{"email":"dipali@clubconcierge.in","password":"test123"}' | python3 -c "import sys,json;print(json.load(sys.stdin).get('token',''))")
 
 # Test /api/mira/chat
@@ -25857,7 +25857,7 @@ Test Pets:
 ## Services
 - Backend: Running on port 8001
 - Frontend: Running on port 3000
-- Preview URL: https://doggy-production-fix.preview.emergentagent.com
+- Preview URL: https://soul-ranked-preview.preview.emergentagent.com
 
 ---
 
@@ -26302,7 +26302,7 @@ The user's exact words that define everything:
 | Test User | dipali@clubconcierge.in / test123 |
 | Admin | aditya / lola4304 |
 | Database | MongoDB - test_database |
-| Preview URL | https://doggy-production-fix.preview.emergentagent.com/mira-demo |
+| Preview URL | https://soul-ranked-preview.preview.emergentagent.com/mira-demo |
 | Production | https://thedoggycompany.in/mira-demo |
 
 ---
@@ -26507,7 +26507,7 @@ Step 4: Welcome!
 ---
 
 ## PREVIEW URL
-`https://doggy-production-fix.preview.emergentagent.com`
+`https://soul-ranked-preview.preview.emergentagent.com`
 
 ## SERVICES
 - Frontend: Running on port 3000 (hot reload)
@@ -26743,7 +26743,7 @@ User Message → Intent Detection → Pillar Bonus + Learning Bonus
 - **User:** `dipali@clubconcierge.in` / `test123`
 - **Admin:** `aditya` / `lola4304`
 - **Test URL:** `/mira-demo?debug=1`
-- **API URL:** `https://doggy-production-fix.preview.emergentagent.com`
+- **API URL:** `https://soul-ranked-preview.preview.emergentagent.com`
 
 ---
 
@@ -27631,7 +27631,7 @@ The Rainbow Bridge Memorial feature ensures that pets like Mystique are:
 ## 📞 SUPPORT CONTACTS
 
 - **Production Site:** https://thedoggycompany.com
-- **Preview Environment:** https://doggy-production-fix.preview.emergentagent.com
+- **Preview Environment:** https://soul-ranked-preview.preview.emergentagent.com
 - **MongoDB:** Configured via MONGO_URL in backend/.env
 - **LLM:** OpenAI via Emergent LLM Key
 
@@ -28182,7 +28182,7 @@ PATH 2: "Let Mira know more"
 # URLs (VERIFIED)
 
 ## Frontend
-- **Base URL**: https://doggy-production-fix.preview.emergentagent.com
+- **Base URL**: https://soul-ranked-preview.preview.emergentagent.com
 - **Login**: /login
 - **Join (Onboarding)**: /join
 - **Pet Home**: /pet-home
@@ -28193,7 +28193,7 @@ PATH 2: "Let Mira know more"
 - **Admin Service Desk**: /admin/service-desk
 
 ## Backend API
-- **Base**: https://doggy-production-fix.preview.emergentagent.com/api
+- **Base**: https://soul-ranked-preview.preview.emergentagent.com/api
 
 ---
 
@@ -28270,7 +28270,7 @@ asyncio.run(check())
 "
 
 # Create test user via API
-curl -s -X POST "https://doggy-production-fix.preview.emergentagent.com/api/membership/onboard" \
+curl -s -X POST "https://soul-ranked-preview.preview.emergentagent.com/api/membership/onboard" \
   -H "Content-Type: application/json" \
   -d '{"parent":{"name":"Test","email":"test@test.com","password":"test123",...},"pets":[{...}]}'
 ```
@@ -28322,7 +28322,7 @@ curl -s -X POST "https://doggy-production-fix.preview.emergentagent.com/api/memb
 | **Mira OS** | `/mira-demo` (THE MAIN OS - NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` or `/my-pets` |
-| **Preview** | `https://doggy-production-fix.preview.emergentagent.com` |
+| **Preview** | `https://soul-ranked-preview.preview.emergentagent.com` |
 
 ## Test Credentials
 | Role | Email/Username | Password |
@@ -28705,7 +28705,7 @@ const response = await fetch(`${apiUrl}/api/pet-soul/profile/${petId}/answers/bu
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://doggy-production-fix.preview.emergentagent.com` |
+| **Preview** | `https://soul-ranked-preview.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |
@@ -29324,7 +29324,7 @@ Mira should talk like Claude talks - understanding context, remembering the pet'
 ### Preview Environment
 - **Member:** dipali@clubconcierge.in / test123
 - **Admin:** aditya / lola4304
-- **URL:** https://doggy-production-fix.preview.emergentagent.com
+- **URL:** https://soul-ranked-preview.preview.emergentagent.com
 
 ### Production Environment
 - **Member:** dipali@clubconcierge.in / test123 (IF deployed from this session)
@@ -29746,7 +29746,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://doggy-production-fix.preview.emergentagent.com
+https://soul-ranked-preview.preview.emergentagent.com
 ```
 
 ---
@@ -29929,8 +29929,8 @@ await db.concierge_threads.insert_one(concierge_thread)
 
 ## TEST URLS
 
-- **Main Demo**: https://doggy-production-fix.preview.emergentagent.com/mira-demo
-- **Pure OS Test**: https://doggy-production-fix.preview.emergentagent.com/mira-pure-os
+- **Main Demo**: https://soul-ranked-preview.preview.emergentagent.com/mira-demo
+- **Pure OS Test**: https://soul-ranked-preview.preview.emergentagent.com/mira-pure-os
 - **Login**: `dipali@clubconcierge.in` / `test123`
 
 ## TEST SCENARIOS
@@ -30018,7 +30018,7 @@ New Test User: audit_test_1771750532@test.com / test123
 
 ### URLs
 ```
-Preview: https://doggy-production-fix.preview.emergentagent.com
+Preview: https://soul-ranked-preview.preview.emergentagent.com
 Production: https://thedoggycompany.com
 Admin: /admin (login required)
 ```
@@ -30541,13 +30541,13 @@ tail -50 /var/log/supervisor/backend.err.log
 sudo supervisorctl restart frontend backend
 
 # Test admin notifications
-curl -s -u "aditya:lola4304" "https://doggy-production-fix.preview.emergentagent.com/api/admin/notifications?limit=5"
+curl -s -u "aditya:lola4304" "https://soul-ranked-preview.preview.emergentagent.com/api/admin/notifications?limit=5"
 
 # Test ticket enrichment
-curl -s -X POST "https://doggy-production-fix.preview.emergentagent.com/api/service_desk/resolve_ticket/TCK-XXX"
+curl -s -X POST "https://soul-ranked-preview.preview.emergentagent.com/api/service_desk/resolve_ticket/TCK-XXX"
 
 # Check pet soul data
-curl -s "https://doggy-production-fix.preview.emergentagent.com/api/pets/pet-3661ae55d2e2"
+curl -s "https://soul-ranked-preview.preview.emergentagent.com/api/pets/pet-3661ae55d2e2"
 ```
 
 ---
@@ -30714,7 +30714,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://doggy-production-fix.preview.emergentagent.com
+https://soul-ranked-preview.preview.emergentagent.com
 
 ---
 
@@ -30738,7 +30738,7 @@ Agent: E1 (Emergent Labs)
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://doggy-production-fix.preview.emergentagent.com/mira-demo**
+**https://soul-ranked-preview.preview.emergentagent.com/mira-demo**
 
 ---
 

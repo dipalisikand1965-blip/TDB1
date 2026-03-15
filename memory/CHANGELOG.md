@@ -317,6 +317,24 @@ Now includes additional celebrate-relevant merchandise:
 
 ---
 
+---
+
+## SESSION 29 — Mar 15, 2026 — AI Personalization + Celebrate Production Parity
+
+**Status: COMPLETE ✅**
+
+### Verified & Fixed:
+- **Backend health confirmed** — lint warnings (F811/F841) are non-critical; backend starts and runs fine
+- **AI personalization tested end-to-end** — `GET /api/products/soul-ranked?category=cakes&pet_id=...` returns personalized=true, different product rankings for different pets (Mojo→peanut butter cakes, Mystique→festive cake pops)
+- **Service illustrations fixed** — ran fix-celebrate-data endpoint: all 15 celebrate services now use Cloudinary URLs (was 1 Unsplash remaining)
+- **Food & Flavour crash fix confirmed** — toStrArray() helper in SoulPillarExpanded.jsx handles string vs array data from production
+- **Route confirmed** — /celebrate redirects to /celebrate-soul via App.js
+- **Documentation completed** — complete-documentation.html, CHANGELOG.md, PRD.md all updated with session 29
+
+### Next: Dine page enhancements + other pillars
+
+---
+
 ## Known Issues Backlog
 
 | Issue | Status | Priority |

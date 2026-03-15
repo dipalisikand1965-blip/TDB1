@@ -732,11 +732,50 @@
         </div>
 
         <!-- FOOTER -->
+        <!-- SESSION 29 START — Mar 15, 2026 -->
+        <div class="section" style="border: 3px solid #22C55E; background: #f0fdf4;">
+            <h2 class="section-title" style="color: #166534;">SESSION 29 START — AI Personalization + Celebrate Production Parity (Mar 15, 2026)</h2>
+
+            <div class="success-box">
+                <strong>All celebrate page changes verified ready for production deployment.</strong><br>
+                Backend is healthy. AI personalization (soul-ranked products) tested and working. Service illustrations all use Cloudinary URLs.
+            </div>
+
+            <div class="card">
+                <div class="card-title">AI Personalization Architecture</div>
+                <div class="api-endpoint"><span class="method method-get">GET</span>/api/products/soul-ranked?category={cat}&pet_id={id}&limit=N</div>
+                <ul>
+                    <li>Scoring engine: <code>_soul_score(product, soul_answers, pet)</code> in server.py</li>
+                    <li>Mojo (Indie) → "Peanut Pup Prints" cake (score=85)</li>
+                    <li>Mystique (Shih Tzu) → "Festive Cake Pops" (score=65)</li>
+                    <li>Allergen exclusion: score -999 (excluded from results)</li>
+                    <li>Frontend: <code>SoulPillarExpanded.jsx</code> line 645-648</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Production Deploy Checklist</div>
+                <ol>
+                    <li>Deploy preview → production</li>
+                    <li>Run: <code>POST /api/admin/fix-celebrate-data?password=lola4304</code></li>
+                    <li>Verify all 15+ services have Cloudinary images</li>
+                    <li>Test /celebrate → redirects to /celebrate-soul</li>
+                    <li>Test Food & Flavour pillar doesn't crash (toStrArray fix)</li>
+                </ol>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Next Priority: /dine + Other Pillars</div>
+                <p>User confirmed: CMS deferred. Next work is /dine page enhancements and other pillar pages (/stay, /learn etc.) using the same architecture as /celebrate.</p>
+            </div>
+        </div>
+        <!-- SESSION 29 END — Mar 15, 2026 -->
+
         <div class="section" style="text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
             <h3>The Doggy Company - MIRA OS</h3>
             <p>Building the future of personalized pet care</p>
             <p style="margin-top: 15px; opacity: 0.8;">WhatsApp: +91 8971702582 | Email: hello@thedoggycompany.com</p>
-            <p style="margin-top: 8px; opacity: 0.6; font-size: 0.85em;">Last updated: March 13, 2026</p>
+            <p style="margin-top: 8px; opacity: 0.6; font-size: 0.85em;">Last updated: March 15, 2026 | Session 29</p>
         </div>
 
     </div>
