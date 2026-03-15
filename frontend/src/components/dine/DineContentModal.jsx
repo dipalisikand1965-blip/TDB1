@@ -12,9 +12,10 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, Check, ShoppingCart } from 'lucide-react';
+import { X, Loader2, Check } from 'lucide-react';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
+import ProductCard from '../ProductCard';
 
 // ── Pet data helpers ──────────────────────────────────────────────────────────
 const getPetAllergies = (pet) => {
@@ -123,109 +124,6 @@ const sortProductsForPet = (products, allergies) => {
   });
 };
 
-// ── DineProductCard ───────────────────────────────────────────────────────────
-const DineProductCard = ({ product, petName, allergies }) => {
-  const [added, setAdded] = useState(false);
-  const price = product.price || product.bundle_price;
-  const freeFrom = product.allergy_free && product.allergy_free !== 'N/A — guide only'
-    ? product.allergy_free : null;
-  const badge = product.mira_tag || null;
-  const isFree = !price || price === 0;
-
-  // Check if this product matches pet's allergy requirements
-  const isAllergyMatch = allergies.length > 0 && freeFrom
-    ? allergies.every(al => freeFrom.toLowerCase().includes(al + '-free'))
-    : false;
-
-  return (
-    <div
-      style={{
-        borderRadius: 14,
-        overflow: 'hidden',
-        border: `1.5px solid ${isAllergyMatch ? '#FF8C42' : '#F0E8E0'}`,
-        background: '#fff',
-        display: 'flex',
-        flexDirection: 'column',
-        boxShadow: isAllergyMatch
-          ? '0 2px 16px rgba(255,140,66,0.15)'
-          : '0 2px 8px rgba(0,0,0,0.06)',
-      }}
-      data-testid={`dine-product-${product.id}`}
-    >
-      {/* Image */}
-      <div style={{ position: 'relative', height: 160, overflow: 'hidden', background: 'linear-gradient(135deg, #FFF3E0, #FFE0B2)', flexShrink: 0 }}>
-        {(product.image_url || product.image) ? (
-          <img
-            src={product.image_url || product.image}
-            alt={product.name}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        ) : (
-          <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40 }}>🍽️</div>
-        )}
-        {badge && (
-          <div style={{
-            position: 'absolute', top: 10, left: 10,
-            background: 'linear-gradient(135deg, #7B2FBE, #C44DFF)',
-            color: '#fff', borderRadius: 20, padding: '4px 10px',
-            fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap',
-          }}>
-            ✦ {badge}
-          </div>
-        )}
-      </div>
-
-      {/* Content */}
-      <div style={{ padding: '12px 12px 14px', flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <p style={{ fontWeight: 800, fontSize: 13, color: '#1A0A00', lineHeight: 1.3, margin: 0 }}>
-          {product.name}
-        </p>
-
-        {freeFrom && (
-          <p style={{ fontSize: 10.5, color: '#888', margin: 0, lineHeight: 1.4 }}>
-            {freeFrom}
-          </p>
-        )}
-
-        {/* Price + Add */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', paddingTop: 6 }}>
-          {isFree ? (
-            <span style={{ fontSize: 13, fontWeight: 800, color: '#27AE60' }}>Free</span>
-          ) : (
-            <span style={{ fontSize: 14, fontWeight: 800, color: '#C44400' }}>
-              ₹{Number(price).toLocaleString('en-IN')}
-            </span>
-          )}
-          {added ? (
-            <button
-              style={{
-                display: 'flex', alignItems: 'center', gap: 4,
-                background: '#27AE60', color: '#fff', border: '2px solid #9B59B6',
-                borderRadius: 10, padding: '7px 14px', fontSize: 11, fontWeight: 700, cursor: 'pointer',
-              }}
-              onClick={() => setAdded(false)}
-            >
-              <Check size={12} /> Added
-            </button>
-          ) : (
-            <button
-              style={{
-                background: 'linear-gradient(135deg, #FF8C42, #C44400)',
-                color: '#fff', border: 'none', borderRadius: 10,
-                padding: '7px 18px', fontSize: 11, fontWeight: 700, cursor: 'pointer',
-              }}
-              onClick={() => setAdded(true)}
-              data-testid={`add-product-${product.id}`}
-            >
-              Add
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
 // ── BundleCard (for bundles category) ────────────────────────────────────────
 const DineBundleCard = ({ bundle, petName }) => {
   const [requested, setRequested] = useState(false);
@@ -286,32 +184,6 @@ const DineBundleCard = ({ bundle, petName }) => {
   );
 };
 
-// ── Mira Imagines Card ────────────────────────────────────────────────────────
-const MiraImaginesCard = ({ item, petName }) => {
-  const [requested, setRequested] = useState(false);
-  return (
-    <div style={{ borderRadius: 14, overflow: 'hidden', background: 'linear-gradient(135deg, #1A0A00, #2D1A00)', border: '1.5px solid rgba(255,140,66,0.3)', minHeight: 200, display: 'flex', flexDirection: 'column' }}>
-      <div style={{ position: 'absolute', top: 8, right: 8 }} />
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 16px 12px' }}>
-        <span style={{ fontSize: 40 }}>{item.emoji}</span>
-        <p style={{ fontWeight: 800, color: '#fff', textAlign: 'center', fontSize: 12, marginTop: 8 }}>{item.name}</p>
-        <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 10, textAlign: 'center', marginTop: 4 }}>{item.description}</p>
-      </div>
-      <div style={{ padding: '0 12px 14px' }}>
-        {requested ? (
-          <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#32C878' }}>
-            <Check size={12} style={{ display: 'inline', marginRight: 4 }} /> Sent to Concierge!
-          </div>
-        ) : (
-          <button onClick={() => setRequested(true)} style={{ width: '100%', background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)', color: '#fff', border: 'none', borderRadius: 10, padding: '8px', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
-            Request a Quote →
-          </button>
-        )}
-      </div>
-    </div>
-  );
-};
-
 // ── Breed slug helper ─────────────────────────────────────────────────────────
 const getBreedDisplay = (pet) => {
   const breed = (pet?.breed || '').trim();
@@ -325,7 +197,6 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
   const [tabs, setTabs] = useState([]);
-  const [miraImagines, setMiraImagines] = useState([]);
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
   const { token } = useAuth();
 
@@ -356,7 +227,6 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
     setLoading(true);
     setProducts([]);
     setTabs([]);
-    setMiraImagines([]);
     setActiveTab('all');
 
     const apiUrl = getApiUrl();
@@ -392,12 +262,6 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
           const d = await r.json();
           setProducts((d.products || []).slice(0, 12));
         }
-        const imaginary = [];
-        const loves = getPetLoves(pet);
-        if (loves.length === 0 && petName !== 'your dog') {
-          imaginary.push({ emoji: '✨', name: `${petName}'s Personalised Meal Plan`, description: 'Mira imagines the perfect weekly plan for your dog' });
-        }
-        setMiraImagines(imaginary);
         return;
       }
 
@@ -571,24 +435,15 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
               </p>
             )}
 
-            {/* Mira imagines */}
-            {miraImagines.length > 0 && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(180px, 100%), 1fr))', gap: 16, marginBottom: 16 }}>
-                {miraImagines.map((item, idx) => (
-                  <MiraImaginesCard key={idx} item={item} petName={petName} />
-                ))}
-              </div>
-            )}
-
             {/* Products / Bundles grid */}
             {filteredProducts.length > 0 ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 100%), 1fr))', gap: 16 }}>
                 {isBundles
                   ? filteredProducts.map((b, idx) => (
                       <DineBundleCard key={b.id || idx} bundle={b} petName={petName} />
                     ))
-                  : filteredProducts.map((product, idx) => (
-                      <DineProductCard key={product.id || idx} product={product} petName={petName} allergies={allergies} />
+                  : filteredProducts.map((p, idx) => (
+                      <ProductCard key={p.id || idx} product={p} pillar="dine" selectedPet={pet} />
                     ))
                 }
               </div>
