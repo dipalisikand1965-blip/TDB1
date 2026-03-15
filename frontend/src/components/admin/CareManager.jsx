@@ -18,6 +18,7 @@ import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
 import axios from 'axios';
 import PillarServicesTab from './PillarServicesTab';
+import PillarProductsTab from './PillarProductsTab';
 import {
   Scissors, PawPrint, GraduationCap, Stethoscope, AlertTriangle, Heart,
   ClipboardList, Bell, Building2, Package, Gift, Settings, Search,
@@ -819,144 +820,7 @@ const CareManager = ({ getAuthHeader }) => {
 
         {/* Products Tab */}
         <TabsContent value="products" className="space-y-4">
-          <Card className="p-4">
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <div className="flex gap-2">
-                <Button onClick={() => { resetProductForm(); setEditingProduct(null); setShowProductModal(true); }}>
-                  <Plus className="w-4 h-4 mr-2" /> Add Product
-                </Button>
-                <Button variant="outline" onClick={seedProducts}>
-                  <RefreshCw className="w-4 h-4 mr-2" /> Seed Default Products
-                </Button>
-              </div>
-              <div className="flex gap-2">
-                <input
-                  type="file"
-                  accept=".csv"
-                  ref={fileInputRef}
-                  onChange={handleProductImport}
-                  className="hidden"
-                />
-                <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
-                  <Upload className="w-4 h-4 mr-2" /> Import CSV
-                </Button>
-                <Button variant="outline" onClick={handleProductExport}>
-                  <Download className="w-4 h-4 mr-2" /> Export CSV
-                </Button>
-              </div>
-            </div>
-          </Card>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {products.map((product) => (
-              <Card key={product.id} className={`p-4 ${product.good_for_tags?.length > 0 ? 'border-purple-200 bg-purple-50/30' : ''}`}>
-                <div className="flex items-start gap-3">
-                  {product.image ? (
-                    <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-lg bg-gray-100" />
-                  ) : (
-                    <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <Package className="w-6 h-6 text-gray-400" />
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900">{product.name}</h4>
-                    <p className="text-xs text-gray-500 capitalize">{product.subcategory?.replace(/_/g, ' ') || product.care_type}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="font-bold text-green-600">₹{product.price}</span>
-                      {product.compare_price && (
-                        <span className="text-xs text-gray-400 line-through">₹{product.compare_price}</span>
-                      )}
-                    </div>
-                    {/* Good For Tags */}
-                    {product.good_for_tags?.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {product.good_for_tags.slice(0, 4).map(tag => (
-                          <Badge key={tag} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">{tag}</Badge>
-                        ))}
-                        {product.good_for_tags.length > 4 && (
-                          <Badge variant="outline" className="text-xs">+{product.good_for_tags.length - 4}</Badge>
-                        )}
-                      </div>
-                    )}
-                    {/* Intent Tags */}
-                    {product.intent_tags?.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {product.intent_tags.slice(0, 2).map(tag => (
-                          <Badge key={tag} variant="outline" className="text-xs bg-teal-50 text-teal-700 border-teal-200">{tag.replace(/_/g, ' ')}</Badge>
-                        ))}
-                      </div>
-                    )}
-                    {/* Status Badges */}
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {product.paw_reward_points > 0 && (
-                        <Badge variant="outline" className="text-xs">🐾 {product.paw_reward_points} pts</Badge>
-                      )}
-                      {product.is_birthday_perk && (
-                        <Badge variant="outline" className="text-xs text-pink-600">🎂 Birthday</Badge>
-                      )}
-                      {!product.in_stock && (
-                        <Badge className="bg-red-100 text-red-600 text-xs">Out of Stock</Badge>
-                      )}
-                      {product.status === 'draft' && (
-                        <Badge className="bg-gray-100 text-gray-600 text-xs">Draft</Badge>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-3 pt-3 border-t">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setEditingProduct(product);
-                      setProductForm({
-                        name: product.name || '',
-                        description: product.description || '',
-                        price: product.price?.toString() || '',
-                        compare_price: product.compare_price?.toString() || '',
-                        image: product.image || '',
-                        subcategory: product.subcategory || 'grooming_essentials',
-                        product_type: product.product_type || 'individual',
-                        good_for_tags: Array.isArray(product.good_for_tags) ? product.good_for_tags.join(', ') : '',
-                        intent_tags: Array.isArray(product.intent_tags) ? product.intent_tags.join(', ') : '',
-                        concierge_note: product.concierge_note || '',
-                        cta_label: product.cta_label || 'Ask Mira to Include',
-                        care_type: product.care_type || 'grooming',
-                        tags: Array.isArray(product.tags) ? product.tags.join(', ') : '',
-                        pet_sizes: Array.isArray(product.pet_sizes) ? product.pet_sizes.join(', ') : '',
-                        status: product.status || 'active',
-                        in_stock: product.in_stock !== false,
-                        paw_reward_points: product.paw_reward_points || 0,
-                        is_birthday_perk: product.is_birthday_perk || false,
-                        birthday_discount_percent: product.birthday_discount_percent?.toString() || '',
-                        partner_vendor: product.partner_vendor || '',
-                        availability_cities: Array.isArray(product.availability_cities) ? product.availability_cities.join(', ') : ''
-                      });
-                      setShowProductModal(true);
-                    }}
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="text-red-600"
-                    onClick={() => deleteProduct(product.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          {products.length === 0 && (
-            <Card className="p-8 text-center">
-              <Package className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-              <p className="text-gray-500">No care products yet</p>
-              <Button className="mt-4" onClick={seedProducts}>Seed Default Products</Button>
-            </Card>
-          )}
+          <PillarProductsTab pillar="care" pillarName="Care" />
         </TabsContent>
 
         {/* Services Tab */}

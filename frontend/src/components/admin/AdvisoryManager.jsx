@@ -18,6 +18,7 @@ import {
   AlertCircle, TrendingUp, PawPrint, Gift, Bell, Shield, RefreshCw, Briefcase
 } from 'lucide-react';
 import PillarServicesTab from './PillarServicesTab';
+import PillarProductsTab from './PillarProductsTab';
 
 const ADVISORY_TYPES = {
   behaviour: { name: 'Behaviour', color: 'bg-violet-100 text-violet-700' },
@@ -569,56 +570,8 @@ const AdvisoryManager = () => {
         </TabsContent>
 
         {/* Products Tab */}
-        <TabsContent value="products" className="mt-4">
-          <Card className="p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold text-gray-900">Advisory Products ({products.length})</h3>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={exportProductsCSV}>
-                  <Download className="w-4 h-4 mr-2" /> Export CSV
-                </Button>
-                <input
-                  type="file"
-                  accept=".csv"
-                  ref={productFileRef}
-                  onChange={handleProductFileChange}
-                  className="hidden"
-                />
-                <Button variant="outline" onClick={() => productFileRef.current?.click()} disabled={importingProducts}>
-                  <Upload className="w-4 h-4 mr-2" /> {importingProducts ? 'Importing...' : 'Import CSV'}
-                </Button>
-                <Button className="bg-violet-600 hover:bg-violet-700" onClick={() => { setEditingItem(null); setShowProductModal(true); }}>
-                  <Plus className="w-4 h-4 mr-2" /> Add Product
-                </Button>
-              </div>
-            </div>
-            
-            <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {products.map((product) => (
-                <Card key={product.id} className="p-4 hover:shadow-md transition-shadow">
-                  <div className="aspect-square bg-gradient-to-br from-violet-100 to-purple-50 rounded-lg mb-3 flex items-center justify-center">
-                    <Brain className="w-12 h-12 text-violet-300" />
-                  </div>
-                  <h4 className="font-medium text-gray-900 text-sm line-clamp-1">{product.name}</h4>
-                  <p className="text-xs text-gray-500 line-clamp-2 mb-2">{product.description}</p>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold text-violet-600">₹{product.price}</span>
-                    {product.compare_price && (
-                      <span className="text-xs text-gray-400 line-through">₹{product.compare_price}</span>
-                    )}
-                  </div>
-                  <Badge className={ADVISORY_TYPES[product.advisory_type]?.color || 'bg-gray-100'} variant="outline">
-                    {ADVISORY_TYPES[product.advisory_type]?.name || product.advisory_type}
-                  </Badge>
-                  <div className="flex gap-2 mt-3">
-                    <Button size="sm" variant="outline" className="flex-1" onClick={() => { setEditingItem(product); setShowProductModal(true); }}>
-                      <Edit className="w-3 h-3 mr-1" /> Edit
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </Card>
+        <TabsContent value="products" className="space-y-4">
+          <PillarProductsTab pillar="advisory" pillarName="Advisory" />
         </TabsContent>
 
         {/* Bundles Tab */}

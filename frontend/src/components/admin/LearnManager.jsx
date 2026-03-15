@@ -19,6 +19,7 @@ import {
   Heart, Zap, Shield, Target, Calendar, MapPin, Briefcase
 } from 'lucide-react';
 import PillarServicesTab from './PillarServicesTab';
+import PillarProductsTab from './PillarProductsTab';
 
 const LEARN_TYPE_ICONS = {
   basic_obedience: GraduationCap,
@@ -795,91 +796,8 @@ const LearnManager = ({ getAuthHeader }) => {
         </TabsContent>
 
         {/* Products Tab */}
-        <TabsContent value="products" className="mt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Training Products</h3>
-            <Button onClick={() => { resetProductForm(); setEditingProduct(null); setShowProductModal(true); }}>
-              <Plus className="w-4 h-4 mr-2" /> Add Product
-            </Button>
-          </div>
-
-          <Card className="overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Paw Points</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {products.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded bg-gray-100 overflow-hidden flex-shrink-0">
-                          {product.image ? (
-                            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <Package className="w-5 h-5 text-gray-300" />
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium">{product.name}</p>
-                          <p className="text-xs text-gray-500 line-clamp-1">{product.description}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-sm">{product.learn_type}</td>
-                    <td className="px-4 py-3">
-                      <span className="font-medium">₹{product.price}</span>
-                      {product.compare_price && (
-                        <span className="text-xs text-gray-400 line-through ml-2">₹{product.compare_price}</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge className={product.in_stock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}>
-                        {product.in_stock ? 'In Stock' : 'Out of Stock'}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3 text-sm">{product.paw_reward_points || 0}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-1">
-                        <Button size="sm" variant="ghost" onClick={() => {
-                          setEditingProduct(product);
-                          setProductForm({
-                            name: product.name || '',
-                            description: product.description || '',
-                            price: product.price?.toString() || '',
-                            compare_price: product.compare_price?.toString() || '',
-                            image: product.image || '',
-                            learn_type: product.learn_type || 'training_tool',
-                            tags: product.tags?.join(', ') || '',
-                            pet_sizes: product.pet_sizes?.join(', ') || 'small, medium, large',
-                            in_stock: product.in_stock !== false,
-                            paw_reward_points: product.paw_reward_points?.toString() || '0',
-                            is_birthday_perk: product.is_birthday_perk || false,
-                            birthday_discount_percent: product.birthday_discount_percent?.toString() || ''
-                          });
-                          setShowProductModal(true);
-                        }}>
-                          <Edit2 className="w-4 h-4" />
-                        </Button>
-                        <Button size="sm" variant="ghost" className="text-red-600" onClick={() => deleteProduct(product.id)}>
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </Card>
+        <TabsContent value="products" className="space-y-4">
+          <PillarProductsTab pillar="learn" pillarName="Learn" />
         </TabsContent>
 
         {/* Bundles Tab */}

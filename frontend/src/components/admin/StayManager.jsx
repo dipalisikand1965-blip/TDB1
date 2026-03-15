@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
 import PillarServicesTab from './PillarServicesTab';
+import PillarProductsTab from './PillarProductsTab';
 import {
   Hotel, Building2, Home, Tent, TreePine, MapPin, Users, Package,
   Settings, Search, Plus, Edit2, Trash2, RefreshCw, Eye, Clock,
@@ -760,125 +761,7 @@ const StayManager = ({ getAuthHeader }) => {
 
         {/* Products Tab */}
         <TabsContent value="products" className="space-y-4">
-          <div className="flex flex-wrap justify-between items-center gap-2">
-            <h3 className="font-semibold">Stay Products ({products.length})</h3>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={async () => {
-                try {
-                  const response = await fetch(`${API_URL}/api/admin/stay/seed-products`, {
-                    method: 'POST',
-                    headers: getAuthHeader()
-                  });
-                  if (response.ok) {
-                    const data = await response.json();
-                    toast({ title: 'Products Seeded', description: `${data.products_seeded || 'Products'} added` });
-                    fetchProducts();
-                  }
-                } catch (error) {
-                  toast({ title: 'Error', description: 'Failed to seed products', variant: 'destructive' });
-                }
-              }}>
-                <Database className="w-4 h-4 mr-2" /> Seed Products
-              </Button>
-              <Button onClick={() => { resetProductForm(); setShowProductModal(true); }}>
-                <Plus className="w-4 h-4 mr-2" /> Add Product
-              </Button>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {products.map((product) => (
-              <Card key={product.id} className="overflow-hidden group hover:shadow-md transition-shadow">
-                <div className="aspect-square bg-gray-100 relative">
-                  {product.image ? (
-                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50">
-                      <Package className="w-8 h-8 text-purple-300" />
-                    </div>
-                  )}
-                  {/* Edit/Delete buttons overlay */}
-                  <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button 
-                      size="sm" 
-                      variant="secondary" 
-                      className="h-7 w-7 p-0 bg-white/90 hover:bg-white shadow"
-                      onClick={() => {
-                        setEditingProduct(product);
-                        setProductForm({
-                          name: product.name || product.title || '',
-                          description: product.description || '',
-                          price: product.price?.toString() || '',
-                          original_price: product.original_price?.toString() || '',
-                          image: product.image || '',
-                          category: product.category || 'travel',
-                          tags: Array.isArray(product.tags) ? product.tags.join(', ') : '',
-                          stock: product.stock?.toString() || '100',
-                          paw_reward_points: product.paw_reward_points || 0
-                        });
-                        setShowProductModal(true);
-                      }}
-                    >
-                      <Edit2 className="w-3 h-3" />
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="secondary" 
-                      className="h-7 w-7 p-0 bg-white/90 hover:bg-red-50 text-red-500 shadow"
-                      onClick={async () => {
-                        if (!window.confirm('Delete this product?')) return;
-                        try {
-                          await fetch(`${API_URL}/api/admin/stay/products/${product.id}`, {
-                            method: 'DELETE',
-                            headers: getAuthHeader()
-                          });
-                          toast({ title: 'Product deleted' });
-                          fetchProducts();
-                        } catch (error) {
-                          toast({ title: 'Error', description: 'Failed to delete', variant: 'destructive' });
-                        }
-                      }}
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </div>
-                <div className="p-3">
-                  <p className="text-sm font-medium line-clamp-2">{product.name || product.title}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-emerald-600 font-bold">₹{product.price}</span>
-                    {product.original_price && product.original_price > product.price && (
-                      <span className="text-xs text-gray-400 line-through">₹{product.original_price}</span>
-                    )}
-                  </div>
-                  {product.paw_reward_points > 0 && (
-                    <Badge className="mt-2 text-xs bg-amber-100 text-amber-700">+{product.paw_reward_points} paws</Badge>
-                  )}
-                </div>
-              </Card>
-            ))}
-          </div>
-          
-          {products.length === 0 && (
-            <Card className="p-8 text-center">
-              <Package className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-              <h4 className="font-semibold mb-2">No Products Yet</h4>
-              <p className="text-sm text-gray-500 mb-4">Click "Seed Products" to auto-populate with travel essentials</p>
-              <Button onClick={async () => {
-                try {
-                  await fetch(`${API_URL}/api/admin/stay/seed-products`, {
-                    method: 'POST',
-                    headers: getAuthHeader()
-                  });
-                  toast({ title: 'Products seeded!' });
-                  fetchProducts();
-                } catch (error) {
-                  toast({ title: 'Error seeding products', variant: 'destructive' });
-                }
-              }}>
-                <Database className="w-4 h-4 mr-2" /> Seed Stay Products
-              </Button>
-            </Card>
-          )}
+          <PillarProductsTab pillar="stay" pillarName="Stay" />
         </TabsContent>
 
         {/* Services Tab */}
