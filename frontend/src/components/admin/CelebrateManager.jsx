@@ -24,7 +24,7 @@ import {
   Cake, Gift, Heart, ShoppingBag, Settings, Search,
   Plus, Edit2, Trash2, RefreshCw, Upload, Download, ChevronRight,
   Clock, CheckCircle, XCircle, User, Phone, Mail, MapPin, Star,
-  Calendar, Filter, Eye, Package, Building2, Sparkles, PartyPopper, Briefcase
+  Calendar, Filter, Eye, Package, Building2, Sparkles, PartyPopper, Briefcase, Loader2
 } from 'lucide-react';
 
 const CATEGORY_OPTIONS = [
@@ -94,6 +94,34 @@ const CelebrateManager = ({ getAuthHeader }) => {
   const [editingBundle, setEditingBundle] = useState(null);
   const [editingPartner, setEditingPartner] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [generatingBundleImage, setGeneratingBundleImage] = useState(false);
+
+  // Generate AI image for a bundle
+  const handleGenerateBundleImage = async () => {
+    if (!editingBundle?.id) {
+      toast({ title: 'Save the bundle first', description: 'Bundle must be saved before generating an AI image.', variant: 'destructive' });
+      return;
+    }
+    setGeneratingBundleImage(true);
+    try {
+      const token = localStorage.getItem('admin_token') || localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/api/admin/celebrate/bundles/${editingBundle.id}/generate-image`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      });
+      const data = await res.json();
+      if (data.success && data.image_url) {
+        setBundleForm(prev => ({ ...prev, image: data.image_url }));
+        toast({ title: 'Image Generated!', description: `AI image saved to Cloudinary for "${editingBundle.name}"` });
+      } else {
+        throw new Error(data.detail || 'Generation failed');
+      }
+    } catch (err) {
+      toast({ title: 'Generation Failed', description: err.message, variant: 'destructive' });
+    } finally {
+      setGeneratingBundleImage(false);
+    }
+  };
   
   // Production Sync states
   const [syncingImages, setSyncingImages] = useState(false);
@@ -1639,10 +1667,29 @@ const CelebrateManager = ({ getAuthHeader }) => {
             </div>
             <div>
               <Label>Image URL</Label>
-              <Input
-                value={bundleForm.image}
-                onChange={(e) => setBundleForm({...bundleForm, image: e.target.value})}
-              />
+              <div className="flex gap-2 mt-1">
+                <Input
+                  value={bundleForm.image}
+                  onChange={(e) => setBundleForm({...bundleForm, image: e.target.value})}
+                  placeholder="https://... or click Generate AI"
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleGenerateBundleImage}
+                  disabled={generatingBundleImage}
+                  className="whitespace-nowrap border-purple-300 text-purple-700 hover:bg-purple-50"
+                  data-testid="generate-bundle-image-btn"
+                >
+                  {generatingBundleImage
+                    ? <><Loader2 className="w-4 h-4 mr-1 animate-spin" />Generating...</>
+                    : <><Sparkles className="w-4 h-4 mr-1" />Generate AI</>}
+                </Button>
+              </div>
+              {bundleForm.image && (
+                <img src={bundleForm.image} alt="Bundle preview" className="mt-2 w-24 h-24 object-cover rounded border" onError={(e) => e.target.style.display = 'none'} />
+              )}
             </div>
             <div>
               <Label>Items (comma-separated)</Label>
