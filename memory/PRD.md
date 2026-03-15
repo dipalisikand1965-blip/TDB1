@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 15, 2026 (Session 38 — Full Pillar Architecture Unification)
+## Last Updated: Mar 15, 2026 (Session 39 — Dine Pillar Architecture Completion + Full Seeder)
 
 ---
 
@@ -8,6 +8,44 @@
 **Every agent must read `/app/memory/ARCHITECTURE.md` before making any changes.**
 It contains the canonical data model, API rules, component patterns, and checklists.
 Violating these rules will break the admin panel and data consistency.
+
+---
+
+## ✅ SESSION 39 — Dine Pillar Architecture Completion + Full Product Catalog Seeder (Mar 15, 2026)
+
+### What Was Fixed / Built:
+
+#### 1. Bundle Architecture — ALL Pillar Managers Fixed
+- **Problem**: DineManager, CareManager, FitManager, LearnManager, AdvisoryManager, EmergencyManager, PaperworkManager all used old pillar-specific bundle APIs (`/api/X/admin/bundles`) and custom `BundleModal` components
+- **Fix**: All 7 managers now use `<PillarBundlesTab pillar="X" />` component
+- **PillarBundlesTab.jsx**: Completely rewritten to use canonical `/api/bundles?pillar=X` endpoint (per ARCHITECTURE.md)
+- **Result**: ALL pillar managers now use the SSOT bundles collection
+
+#### 2. Dine Product Catalog Seeded (48 products)
+- **Source**: `Dine_ProductCatalogue_SEED.xlsx` — 5 Dine Dimensions:
+  - Daily Meals (13 products): Morning Meal, Evening Meal, Portion Guide, Special Diets
+  - Treats & Rewards (12 products): Everyday, Training, Birthday, Allergy-Safe
+  - Supplements (11 products): Immunity/Treatment, Joint, Digestion, Skin & Coat
+  - Frozen & Fresh (5 products): Cold Pressed, Raw, Freeze Dried, Fresh Cooked
+  - Homemade & Recipes (7 products): Recipes, Ingredient Packs, Guides
+- **All products** stored in `products_master` with `pillar: "dine"`, `locally_edited: True`
+- **Admin endpoint**: `POST /api/admin/pillar-products/seed-dine-catalog` (idempotent, skips existing)
+- **Admin button**: "Seed Dine Catalog (49 products)" in DineManager > Products tab
+- **Included in**: CONSOLIDATE DATA button on admin dashboard
+
+#### 3. Reference Documents (from files.zip — now in /app/docs/dine/)
+- `Dine_MASTER.docx` — Complete spec: hero, tabs, TummyProfile, 5 dimensions, MiraMealPick, Concierge
+- `Dine_CopySpec_ForAditya.docx` — Full page copy with all variables and Mira voice lines
+- `Dine_UISpec_ForAditya.docx` — Exact colors, typography, spacing values
+- `Dine_ProductCatalogue_SEED.xlsx` — Product catalog (seeded to DB)
+- `DineSoulPage.jsx` — Mock-data reference implementation (not used directly — existing components are wired to real API)
+
+#### 4. Sync to Production Guide (updated)
+After deploying via "Save to Github":
+1. Log in to admin panel (`/admin`)
+2. Click "🗃️ CONSOLIDATE DATA" button
+3. This now ALSO runs `seed-dine-catalog` — 48 dine products seeded to production
+4. All bundles from old pillar-specific collections migrated to unified `bundles` collection
 
 ---
 

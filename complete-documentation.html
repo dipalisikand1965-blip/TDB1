@@ -73,7 +73,7 @@
   <div class="badge">Pet Life Operating System</div>
   <h1>The Doggy Company®</h1>
   <p>The world's first soul-driven pet operating system — built over 200+ days with love, vision, and extraordinary depth.</p>
-  <p class="meta">Version 13.0.0 &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; 22,000+ lines of backend · 14 Pillars · 221 API endpoints · 51 Soul Questions</p>
+  <p class="meta">Version 13.1.0 &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; 23,000+ lines of backend · 14 Pillars · 225 API endpoints · 51 Soul Questions</p>
 </div>
 
 <nav class="nav">
@@ -82,6 +82,8 @@
     <a href="#soul">Pet Soul</a>
     <a href="#mira">Mira AI</a>
     <a href="#pillars">14 Pillars</a>
+    <a href="#dine">Dine Pillar</a>
+    <a href="#architecture">Architecture</a>
     <a href="#servicedesk">Service Desk</a>
     <a href="#dashboard">Member Dashboard</a>
     <a href="#commerce">Commerce</a>
@@ -407,6 +409,118 @@
       <div class="card"><h4>Guided Paths</h4><p>Journey cards — title, steps, color, topic link.</p></div>
       <div class="card"><h4>Mira Prompts</h4><p>Pre-built Ask Mira suggestions for each pillar.</p></div>
     </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SERVICE DESK -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="dine">
+  <div class="container">
+    <h2>Dine Pillar — Complete Specification (Session 39, Mar 2026)</h2>
+    <p>The /dine page is the food and nutrition operating centre for each pet. It was redesigned following the /celebrate-soul template — warmer, more protective, food-first. Built with two switchable tabs: <strong>Eat & Nourish</strong> and <strong>Dine Out</strong>.</p>
+
+    <div class="soul-quote">
+      "On /celebrate, Mira is joyful and excited. On /dine, Mira is protective, knowledgeable, quietly confident — a nutritionist who loves this dog."
+    </div>
+
+    <h3>Page Architecture (Top to Bottom)</h3>
+    <ol style="color:#94a3b8; padding-left:20px; line-height:2">
+      <li><strong style="color:#a78bfa">Hero</strong> — Pet front and centre, Mira's food-first voice, soul chips (allergy, favourite food, personality)</li>
+      <li><strong style="color:#a78bfa">Two Main Tabs</strong> — "Eat & Nourish" | "Dine Out"</li>
+      <li><strong style="color:#a78bfa">Tummy Profile</strong> — Collapsed bar (default), expands to 4-cell grid: Loves · Allergic To · Nutrition Goal · Health Note</li>
+      <li><strong style="color:#a78bfa">Five Dine Dimensions</strong> — Daily Meals, Treats & Rewards, Supplements, Frozen & Fresh, Homemade & Recipes</li>
+      <li><strong style="color:#a78bfa">Mira's Meal Pick</strong> — Single curated meal recommendation, personalised to Tummy Profile</li>
+      <li><strong style="color:#a78bfa">Guided Nutrition Paths</strong> — 3 of 6 paths surfaced by Mira (allergy, treatment, fresh food, senior, puppy, weight)</li>
+      <li><strong style="color:#a78bfa">Dine Out Tab</strong> — Pet-friendly restaurants via Google Places API, filtered by Mira for breed suitability</li>
+      <li><strong style="color:#a78bfa">Dining Concierge Services</strong> — 4 illustrated cards, below both tabs (Restaurant Discovery, Reservation, Etiquette, Venue Advisory)</li>
+    </ol>
+
+    <h3>Product Catalog — 48 Products (5 Dimensions)</h3>
+    <table class="table">
+      <thead><tr><th>Dimension</th><th>Sub-categories</th><th>Products</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Daily Meals</td><td>Morning Meal, Evening Meal, Portion Guide, Special Diets</td><td>13</td><td>All allergy-filtered; treatment-safe items marked</td></tr>
+        <tr><td>Treats & Rewards</td><td>Everyday, Training Rewards, Birthday Treats, Allergy-Safe</td><td>12</td><td>Soy-free · Chicken-free options throughout</td></tr>
+        <tr><td>Supplements</td><td>Immunity & Treatment, Joint & Mobility, Digestion & Gut, Skin & Coat</td><td>11</td><td>Lymphoma-safe, vet-checked items tagged</td></tr>
+        <tr><td>Frozen & Fresh</td><td>Cold Pressed, Raw, Freeze Dried, Fresh Cooked</td><td>5</td><td>Glow dimension when coldPressedPreference=true</td></tr>
+        <tr><td>Homemade & Recipes</td><td>Quick Recipes, Weekend Recipes, Special Occasion, Ingredient Guide</td><td>7</td><td>Free recipes + paid ingredient packs</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Tummy Profile — Four Data Cells</h3>
+    <div class="grid-4">
+      <div class="card"><h4>Loves</h4><p>petFavouriteFood1, petFavouriteFood2. Renders as e.g. "Salmon, Peanut Butter"</p></div>
+      <div class="card"><h4>Allergic To</h4><p>petAllergy1, petAllergy2. Renders as e.g. "Soy, Chicken". Filters all products.</p></div>
+      <div class="card"><h4>Nutrition Goal</h4><p>petNutritionGoal — High protein / Weight management / Easy on digestion</p></div>
+      <div class="card"><h4>Health Note</h4><p>petHealthCondition — e.g. "Lymphoma · Stage 3". Shows "Treatment-safe items are marked."</p></div>
+    </div>
+
+    <h3>Dimension Glow Logic</h3>
+    <table class="table">
+      <thead><tr><th>Dimension</th><th>Glows When</th><th>Dim Badge</th></tr></thead>
+      <tbody>
+        <tr><td>Daily Meals</td><td>petFavouriteFood1 OR petAllergy1 is defined</td><td>"Tell Mira more"</td></tr>
+        <tr><td>Treats & Rewards</td><td>petFavouriteFood1 is defined</td><td>"Tell Mira more"</td></tr>
+        <tr><td>Supplements</td><td>petHealthCondition defined OR petAge > 7</td><td>"Tell Mira more"</td></tr>
+        <tr><td>Frozen & Fresh</td><td>coldPressedPreference = true (soul builder)</td><td>"Explore"</td></tr>
+        <tr><td>Homemade & Recipes</td><td>homemadePreference = true (soul builder)</td><td>"Explore"</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Admin Panel — Dine Manager</h3>
+    <div class="grid-3">
+      <div class="card"><h4>Products Tab</h4><p>Uses <code>PillarProductsTab pillar="dine"</code>. "Seed Dine Catalog" button seeds 48 products from catalog. <code>POST /api/admin/pillar-products/seed-dine-catalog</code></p></div>
+      <div class="card"><h4>Bundles Tab</h4><p>Uses <code>PillarBundlesTab pillar="dine"</code>. Reads from unified <code>bundles</code> collection via <code>GET /api/bundles?pillar=dine</code>. Full CRUD.</p></div>
+      <div class="card"><h4>Other Tabs</h4><p>Restaurants, Reservations, Buddy Visits, Meetup Requests, Services, Experiences, Settings — all Dine-specific.</p></div>
+    </div>
+
+    <h3>Reference Documents</h3>
+    <ul>
+      <li><strong>Dine_MASTER.docx</strong> — Complete build specification: architecture, components, all copy states</li>
+      <li><strong>Dine_CopySpec_ForAditya.docx</strong> — Every word, variable, Mira voice line, state</li>
+      <li><strong>Dine_UISpec_ForAditya.docx</strong> — Exact hex values, typography, spacing, colour maps</li>
+      <li><strong>Dine_ProductCatalogue_SEED.xlsx</strong> — 48 products with SKU, price, allergy info, Shopify tags</li>
+      <li><strong>DineSoulPage.jsx</strong> — Mock-data reference. Real implementation uses: DineSoulPage.jsx + components/dine/</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section" id="architecture">
+  <div class="container">
+    <h2>Architecture Rules — SSOT Data Model (Session 38-39, Mar 2026)</h2>
+    <div class="soul-quote">
+      "Every product lives in products_master. Every bundle lives in bundles. Every service lives in services_master. Never create a pillar-specific collection. This is the law."
+    </div>
+
+    <h3>Canonical Collections</h3>
+    <table class="table">
+      <thead><tr><th>Collection</th><th>Source of Truth For</th><th>Who Writes</th></tr></thead>
+      <tbody>
+        <tr><td><code>products_master</code></td><td>ALL products — all 13 pillars (~5,837)</td><td>Shopify Sync + Admin + Soul Products</td></tr>
+        <tr><td><code>services_master</code></td><td>ALL services — all 13 pillars (~1,102)</td><td>ServiceBox Admin</td></tr>
+        <tr><td><code>bundles</code></td><td>ALL bundles — all 13 pillars (~111)</td><td>BundlesManager Admin + PillarBundlesTab</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Reusable Pillar Admin Components</h3>
+    <div class="grid-3">
+      <div class="card"><h4>PillarProductsTab.jsx</h4><p>Products CRUD for any pillar. <code>GET/POST/PUT/DEL /api/admin/pillar-products?pillar=X</code>. All 13 pillar managers use this.</p></div>
+      <div class="card"><h4>PillarServicesTab.jsx</h4><p>Services view for any pillar. <code>GET /api/service-box/services?pillar=X</code>. All 13 pillar managers use this.</p></div>
+      <div class="card"><h4>PillarBundlesTab.jsx</h4><p>Bundles CRUD for any pillar. <code>GET/POST/PUT/DEL /api/bundles?pillar=X</code>. All 13 pillar managers use this. ✅ Fixed Session 39.</p></div>
+    </div>
+
+    <h3>Data Protection — locally_edited Flag</h3>
+    <p>Shopify sync runs on every deployment. Products with <code>locally_edited: true</code> are protected — Shopify sync only updates <code>available</code> and <code>shopify_updated_at</code>, never overwrites admin changes. All admin product creates/edits set this flag automatically.</p>
+
+    <h3>CONSOLIDATE DATA Button</h3>
+    <p>Admin panel → <strong>"🗃️ CONSOLIDATE DATA"</strong> button. Runs <code>POST /api/admin/consolidate-data?password=lola4304</code>. Performs:</p>
+    <ol style="color:#94a3b8; padding-left:20px; line-height:2">
+      <li>Migrates all pillar-specific product collections → products_master (idempotent)</li>
+      <li>Migrates all pillar-specific bundle collections → bundles (idempotent)</li>
+      <li>Fixes uncategorized Celebrate products (keyword heuristic)</li>
+      <li>Seeds 48 Dine catalog products (Session 39 addition)</li>
+    </ol>
   </div>
 </section>
 
