@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://celebrate-sync-3.preview.emergentagent.com
+**Preview URL:** https://architecture-rebuild.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

@@ -15,7 +15,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://celebrate-sync-3.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://architecture-rebuild.preview.emergentagent.com').rstrip('/')
 
 class TestHealth:
     """Health check tests"""

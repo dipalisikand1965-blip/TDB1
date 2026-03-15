@@ -10,7 +10,7 @@ import os
 import uuid
 from datetime import datetime, timezone
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://celebrate-sync-3.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://architecture-rebuild.preview.emergentagent.com').rstrip('/')
 
 # Admin credentials
 ADMIN_USERNAME = "aditya"

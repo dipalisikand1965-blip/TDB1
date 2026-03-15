@@ -304,7 +304,7 @@ Test Pets:
 ## Services
 - Backend: Running on port 8001
 - Frontend: Running on port 3000
-- Preview URL: https://celebrate-sync-3.preview.emergentagent.com
+- Preview URL: https://architecture-rebuild.preview.emergentagent.com
 
 ---
 
