@@ -4,7 +4,16 @@
 
 ---
 
-## ✅ SESSION 30b — Admin AI Generate + Active/Inactive for Services (Mar 15, 2026)
+## ✅ SESSION 30c — PillarServicesTab Bug Fix (Mar 15, 2026)
+
+**Bug:** Celebrate Services tab (PillarServicesTab) was showing 255 services instead of 15.
+**Root cause:** Component fetched ALL 1100+ services and used keyword matching ("birthday", "party", "event") to filter — flooding every pillar tab with unrelated services.
+**Fix:** Changed to use `?pillar=celebrate` API parameter (exact match only). Removed the `getPillarKeywords()` function entirely.
+**Result:** Celebrate shows 15, dine shows 9, stay shows 9, care shows 30, travel shows 11 — exactly what's assigned in each pillar.
+
+---
+
+
 
 ### What Was Done:
 1. **"Generate AI Image" in Product Box** — Added to `ProductBoxEditor.jsx` Media tab. Calls synchronous `POST /api/admin/products/{id}/generate-image` → saves to Cloudinary, returns URL immediately (like ServiceBox does).
