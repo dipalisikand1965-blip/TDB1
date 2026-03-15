@@ -4,7 +4,7 @@
  * Allows creating, editing, and deleting product bundles
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -26,8 +26,9 @@ import {
   SelectValue,
 } from '../ui/select';
 import { 
-  Package, Plus, Edit2, Trash2, Save, X, Loader2, 
-  Gift, Star, AlertCircle, CheckCircle2, RefreshCw, Sparkles, Image
+  Package, Plus, Edit2, Trash2, Save, X, Loader2, Upload,
+  Gift, Star, AlertCircle, CheckCircle2, RefreshCw, Sparkles, Image,
+  Search, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
@@ -55,9 +56,15 @@ const BundlesManager = () => {
   const [bundles, setBundles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPillar, setSelectedPillar] = useState('all');
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalBundles, setTotalBundles] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [editingBundle, setEditingBundle] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [generatingModalImage, setGeneratingModalImage] = useState(false);
+  const fileInputRef = useRef(null);
   
   // Form state
   const [formData, setFormData] = useState({
@@ -73,29 +80,28 @@ const BundlesManager = () => {
   });
   
   useEffect(() => {
-    fetchBundles();
+    setPage(1);
+    fetchBundles(1);
   }, [selectedPillar]);
   
-  const fetchBundles = async () => {
+  const fetchBundles = async (pageNum = page) => {
     setLoading(true);
     try {
-      let url = `${API_URL}/api/bundles?active_only=false`;
-      if (selectedPillar !== 'all') {
-        url += `&pillar=${selectedPillar}`;
-      }
+      let url = `${API_URL}/api/bundles?active_only=false&page=${pageNum}&limit=30`;
+      if (selectedPillar !== 'all') url += `&pillar=${selectedPillar}`;
+      if (search) url += `&search=${encodeURIComponent(search)}`;
       
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
         setBundles(data.bundles || []);
+        setTotalBundles(data.total || (data.bundles || []).length);
+        setTotalPages(data.pages || 1);
+        setPage(pageNum);
       }
     } catch (error) {
       console.error('Error fetching bundles:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load bundles",
-        variant: "destructive"
-      });
+      toast({ title: "Error", description: "Failed to load bundles", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -112,7 +118,7 @@ const BundlesManager = () => {
           title: "Success",
           description: data.message
         });
-        fetchBundles();
+        fetchBundles(1);
       }
     } catch (error) {
       toast({
@@ -155,35 +161,61 @@ const BundlesManager = () => {
   
   const generateBundleImage = async (bundleId) => {
     try {
-      toast({
-        title: "Generating...",
-        description: "Creating AI image for bundle"
-      });
-      
-      const response = await fetch(`${API_URL}/api/bundles/${bundleId}/generate-image`, {
-        method: 'POST'
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          toast({
-            title: "Image Generated!",
-            description: data.message
-          });
-          fetchBundles(); // Refresh to show new image
-        } else {
-          throw new Error(data.message);
-        }
+      toast({ title: "Generating...", description: "Creating AI image for bundle" });
+      const response = await fetch(`${API_URL}/api/bundles/${bundleId}/generate-image`, { method: 'POST' });
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : {};
+      if (data.success) {
+        toast({ title: "Image Generated!", description: data.message });
+        fetchBundles(page);
       } else {
-        throw new Error('Generation failed');
+        throw new Error(data.message || 'Generation failed');
       }
     } catch (error) {
-      toast({
-        title: "Generation Failed",
-        description: error.message,
-        variant: "destructive"
-      });
+      toast({ title: "Generation Failed", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const handleModalGenerateImage = async () => {
+    if (!editingBundle?.id) {
+      toast({ title: 'Save bundle first', description: 'Bundle must exist before generating an AI image', variant: 'destructive' });
+      return;
+    }
+    setGeneratingModalImage(true);
+    try {
+      const response = await fetch(`${API_URL}/api/bundles/${editingBundle.id}/generate-image`, { method: 'POST' });
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : {};
+      if (data.success && data.image_url) {
+        setFormData(prev => ({ ...prev, image_url: data.image_url }));
+        toast({ title: 'AI Image Generated!', description: 'Image saved to Cloudinary' });
+      } else {
+        toast({ title: 'Generation failed', description: data.message || 'Unknown error', variant: 'destructive' });
+      }
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setGeneratingModalImage(false);
+    }
+  };
+
+  const handleModalUploadImage = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !editingBundle?.id) return;
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch(`${API_URL}/api/bundles/${editingBundle.id}/upload-image`, { method: 'POST', body: fd });
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : {};
+      if (data.success && data.image_url) {
+        setFormData(prev => ({ ...prev, image_url: data.image_url }));
+        toast({ title: 'Image uploaded!' });
+      }
+    } catch (err) {
+      toast({ title: 'Upload failed', variant: 'destructive' });
+    } finally {
+      e.target.value = '';
     }
   };
   
@@ -204,7 +236,7 @@ const BundlesManager = () => {
           title: "Complete!",
           description: `Generated ${data.generated} images`
         });
-        fetchBundles();
+        fetchBundles(page);
       }
     } catch (error) {
       toast({
@@ -295,7 +327,7 @@ const BundlesManager = () => {
           description: editingBundle ? "Bundle updated!" : "Bundle created!"
         });
         setShowModal(false);
-        fetchBundles();
+        fetchBundles(page);
       } else {
         const error = await response.json();
         throw new Error(error.detail || 'Failed to save bundle');
@@ -322,11 +354,8 @@ const BundlesManager = () => {
       });
       
       if (response.ok) {
-        toast({
-          title: "Deleted",
-          description: "Bundle has been deactivated"
-        });
-        fetchBundles();
+        toast({ title: "Deleted", description: "Bundle has been deactivated" });
+        fetchBundles(page);
       }
     } catch (error) {
       toast({
@@ -379,7 +408,24 @@ const BundlesManager = () => {
         </div>
       </div>
       
-      {/* Pillar Filter */}
+      {/* Pillar Filter + Search */}
+      <div className="flex flex-wrap gap-3 items-center">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Input
+            placeholder="Search bundles..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && fetchBundles(1)}
+            className="pl-9 w-56"
+            data-testid="bundle-search-input"
+          />
+        </div>
+        <Button variant="outline" size="sm" onClick={() => fetchBundles(1)}>
+          <Search className="w-4 h-4 mr-1" /> Search
+        </Button>
+        <div className="text-sm text-gray-500">{totalBundles} bundles</div>
+      </div>
       <div className="flex gap-2 flex-wrap">
         <Button
           variant={selectedPillar === 'all' ? 'default' : 'outline'}
@@ -524,6 +570,19 @@ const BundlesManager = () => {
               </div>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-3 py-4">
+          <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => fetchBundles(page - 1)}>
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+          <span className="text-sm text-gray-600">Page {page} of {totalPages}</span>
+          <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => fetchBundles(page + 1)}>
+            <ChevronRight className="w-4 h-4" />
+          </Button>
         </div>
       )}
       
@@ -671,14 +730,39 @@ const BundlesManager = () => {
             </div>
             
             {/* Image Upload */}
-            <CloudinaryUploader
-              entityType="bundle"
-              entityId={editingBundle?.id}
-              currentImageUrl={formData.image_url || editingBundle?.image_url}
-              onUploadSuccess={(url) => setFormData({...formData, image_url: url})}
-              label="Bundle Image"
-              showPreview={true}
-            />
+            <div>
+              <label className="text-sm font-medium mb-2 block">Bundle Image</label>
+              {formData.image_url && (
+                <div className="relative mb-2">
+                  <img src={formData.image_url} alt="Preview" className="w-full h-36 object-cover rounded-lg" />
+                  <button onClick={() => setFormData({...formData, image_url: ''})} className="absolute top-2 right-2 bg-white rounded-full p-1 shadow">
+                    <X className="w-4 h-4 text-gray-600" />
+                  </button>
+                </div>
+              )}
+              <div className="flex gap-2">
+                <Input
+                  value={formData.image_url || ''}
+                  onChange={e => setFormData({...formData, image_url: e.target.value})}
+                  placeholder="Image URL"
+                  className="flex-1"
+                />
+                <input type="file" ref={fileInputRef} accept="image/*" className="hidden" onChange={handleModalUploadImage} />
+                <Button type="button" variant="outline" size="sm" disabled={!editingBundle?.id}
+                  onClick={() => fileInputRef.current?.click()}
+                  title={!editingBundle?.id ? 'Save bundle first' : 'Upload image'}
+                  data-testid="bundle-upload-image-btn">
+                  <Upload className="w-4 h-4" />
+                </Button>
+                <Button type="button" variant="outline" size="sm" disabled={generatingModalImage || !editingBundle?.id}
+                  onClick={handleModalGenerateImage}
+                  title={!editingBundle?.id ? 'Save bundle first' : 'Generate AI image'}
+                  data-testid="bundle-generate-image-btn">
+                  {generatingModalImage ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-purple-600" />}
+                </Button>
+              </div>
+              {!editingBundle?.id && <p className="text-xs text-gray-400 mt-1">Save bundle first to enable image upload/generation</p>}
+            </div>
           </div>
           
           <DialogFooter>

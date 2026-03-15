@@ -1515,14 +1515,15 @@ const CelebrateManager = ({ getAuthHeader }) => {
                       const res = await fetch(`${API_URL}/api/celebrate/admin/products/${editingProduct.id}/generate-image`, {
                         method: 'POST', headers: { 'Content-Type': 'application/json' }
                       });
-                      const data = await res.json();
+                      const text = await res.text();
+                      const data = text ? JSON.parse(text) : {};
                       if (data.success && data.image_url) {
                         setProductForm(prev => ({...prev, image: data.image_url}));
                         toast({ title: 'AI Image Generated!', description: 'Image saved to Cloudinary' });
                       } else {
-                        toast({ title: 'Generation failed', description: data.message, variant: 'destructive' });
+                        toast({ title: 'Generation failed', description: data.message || 'Unknown error', variant: 'destructive' });
                       }
-                    } catch { toast({ title: 'Error', variant: 'destructive' }); }
+                    } catch (err) { toast({ title: 'Error', description: err.message, variant: 'destructive' }); }
                     finally { setGeneratingProductImage(false); }
                   }}
                   className="flex items-center gap-1"

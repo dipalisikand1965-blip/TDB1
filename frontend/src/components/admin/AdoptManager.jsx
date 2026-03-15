@@ -17,12 +17,13 @@ import { toast } from '../../hooks/use-toast';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Mail, Users,
   Plus, Edit, Trash2, Search, Filter, Eye, CheckCircle, XCircle,
-  Building2, Clock, RefreshCw, FileText, Loader2, Download, Sparkles, Briefcase
+  Building2, Clock, RefreshCw, FileText, Loader2, Download, Sparkles, Briefcase, Package
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import PillarServicesTab from './PillarServicesTab';
 import PillarBundlesTab from './PillarBundlesTab';
 import PillarExperiencesTab from './PillarExperiencesTab';
+import PillarProductsTab from './PillarProductsTab';
 
 // Removed getApiUrl function - use imported API_URL instead
 
@@ -423,6 +424,7 @@ const AdoptManager = ({ authHeaders }) => {
           <TabsTrigger value="bundles"><PawPrint className="w-4 h-4 mr-1" /> Bundles</TabsTrigger>
           <TabsTrigger value="experiences"><Sparkles className="w-4 h-4 mr-1" /> Experiences</TabsTrigger>
           <TabsTrigger value="services"><Briefcase className="w-4 h-4 mr-1" /> Services</TabsTrigger>
+          <TabsTrigger value="products"><Package className="w-4 h-4 mr-1" /> Products</TabsTrigger>
         </TabsList>
 
         {/* PETS TAB */}
@@ -682,6 +684,10 @@ const AdoptManager = ({ authHeaders }) => {
             pillarIcon="🐾"
             pillarColor="bg-orange-500"
           />
+        </TabsContent>
+
+        <TabsContent value="products" className="space-y-4">
+          <PillarProductsTab pillar="adopt" pillarName="Adopt" />
         </TabsContent>
       </Tabs>
 

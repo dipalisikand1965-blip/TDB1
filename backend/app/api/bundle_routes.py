@@ -3,11 +3,12 @@ Bundle Routes - CRUD API for Curated Bundles
 Allows admin to create, edit, and manage product bundles
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile, File
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -59,9 +60,12 @@ class BundleUpdate(BaseModel):
 @router.get("")
 async def get_bundles(
     pillar: Optional[str] = None,
-    active_only: bool = True
+    active_only: bool = True,
+    page: int = 1,
+    limit: int = 30,
+    search: Optional[str] = None
 ):
-    """Get all bundles, optionally filtered by pillar"""
+    """Get all bundles, optionally filtered by pillar, with search and pagination"""
     try:
         db = get_db()
         query = {}
@@ -69,17 +73,29 @@ async def get_bundles(
             query["pillar"] = pillar
         if active_only:
             query["active"] = True
+        if search:
+            query["$or"] = [
+                {"name": {"$regex": search, "$options": "i"}},
+                {"description": {"$regex": search, "$options": "i"}}
+            ]
         
-        cursor = db.bundles.find(query, {"_id": 0})
-        bundles = await cursor.to_list(length=100)
+        total = await db.bundles.count_documents(query)
+        skip = (page - 1) * limit
+
+        cursor = db.bundles.find(query, {"_id": 0}).sort("name", 1).skip(skip).limit(limit)
+        bundles = await cursor.to_list(length=limit)
         
         # If no bundles in DB, return default bundles
-        if not bundles:
+        if not bundles and not search:
             bundles = get_default_bundles(pillar)
+            total = len(bundles)
         
         return {
             "bundles": bundles,
-            "total": len(bundles),
+            "total": total,
+            "page": page,
+            "limit": limit,
+            "pages": max(1, -(-total // limit)),
             "pillar": pillar
         }
     except Exception as e:
@@ -681,6 +697,46 @@ Use soft handcrafted brush textures, warm emotional tones, premium editorial sty
         
     except Exception as e:
         logger.error(f"[BUNDLE IMAGE] Error: {e}")
+        return {"success": False, "message": str(e)}
+
+
+@router.post("/{bundle_id}/upload-image")
+async def upload_bundle_image(bundle_id: str, file: UploadFile = File(...)):
+    """Upload an image file for a bundle and store in Cloudinary"""
+    import cloudinary
+    import cloudinary.uploader
+    import io
+
+    db = get_db()
+    try:
+        bundle = await db.bundles.find_one({"id": bundle_id}, {"_id": 0})
+        if not bundle:
+            raise HTTPException(status_code=404, detail="Bundle not found")
+
+        cloudinary.config(
+            cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+            api_key=os.environ.get("CLOUDINARY_API_KEY"),
+            api_secret=os.environ.get("CLOUDINARY_API_SECRET")
+        )
+
+        contents = await file.read()
+        upload_result = cloudinary.uploader.upload(
+            io.BytesIO(contents),
+            folder=f"doggy-company/bundles/{bundle.get('pillar', 'general')}",
+            public_id=bundle_id,
+            overwrite=True
+        )
+        cloudinary_url = upload_result.get("secure_url")
+
+        await db.bundles.update_one(
+            {"id": bundle_id},
+            {"$set": {"image_url": cloudinary_url, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        return {"success": True, "image_url": cloudinary_url, "message": "Image uploaded"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[BUNDLE UPLOAD] Error: {e}")
         return {"success": False, "message": str(e)}
 
 

@@ -17,6 +17,7 @@ import {
   Folder, File, Eye, Calendar, TrendingUp, Briefcase
 } from 'lucide-react';
 import PillarServicesTab from './PillarServicesTab';
+import PillarProductsTab from './PillarProductsTab';
 
 const CATEGORY_CONFIG = {
   identity: { name: 'Identity', icon: Shield, color: 'bg-blue-100 text-blue-700' },
@@ -646,56 +647,8 @@ const PaperworkManager = () => {
         </TabsContent>
 
         {/* Products Tab */}
-        <TabsContent value="products" className="mt-4">
-          <Card className="p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold text-gray-900">Paperwork Products ({products.length})</h3>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={exportProductsCSV}>
-                  <Download className="w-4 h-4 mr-2" /> Export CSV
-                </Button>
-                <input
-                  type="file"
-                  accept=".csv"
-                  ref={productFileRef}
-                  onChange={handleProductFileChange}
-                  className="hidden"
-                />
-                <Button variant="outline" onClick={() => productFileRef.current?.click()} disabled={importingProducts}>
-                  <Upload className="w-4 h-4 mr-2" /> {importingProducts ? 'Importing...' : 'Import CSV'}
-                </Button>
-                <Button className="bg-blue-600 hover:bg-blue-700">
-                  <Plus className="w-4 h-4 mr-2" /> Add Product
-                </Button>
-              </div>
-            </div>
-            
-            <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {products.map((product) => (
-                <Card key={product.id} className="p-4 hover:shadow-md transition-shadow">
-                  <div className="aspect-square bg-gradient-to-br from-blue-100 to-indigo-50 rounded-lg mb-3 flex items-center justify-center">
-                    <FileText className="w-12 h-12 text-blue-300" />
-                  </div>
-                  <Badge variant="outline" className="text-xs mb-2 capitalize">
-                    {product.product_type}
-                  </Badge>
-                  <h4 className="font-medium text-gray-900 text-sm line-clamp-1">{product.name}</h4>
-                  <p className="text-xs text-gray-500 line-clamp-2 mb-2">{product.description}</p>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold text-blue-600">₹{product.price}</span>
-                    {product.paw_reward_points > 0 && (
-                      <span className="text-xs text-blue-600">🐾 {product.paw_reward_points}</span>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="flex-1">
-                      <Edit className="w-3 h-3 mr-1" /> Edit
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </Card>
+        <TabsContent value="products" className="space-y-4">
+          <PillarProductsTab pillar="paperwork" pillarName="Paperwork" />
         </TabsContent>
 
         {/* Bundles Tab */}

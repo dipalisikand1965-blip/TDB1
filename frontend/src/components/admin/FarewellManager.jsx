@@ -22,6 +22,7 @@ import {
   Sparkles, Flower2, Home, Briefcase
 } from 'lucide-react';
 import PillarServicesTab from './PillarServicesTab';
+import PillarProductsTab from './PillarProductsTab';
 import axios from 'axios';
 import { toast } from '../../hooks/use-toast';
 import { API_URL } from '../../utils/api';
@@ -663,107 +664,7 @@ const FarewellManager = ({ getAuthHeader }) => {
 
         {/* Products Tab */}
         <TabsContent value="products" className="space-y-4">
-          <Card className="p-4">
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <div className="flex gap-2">
-                <Button onClick={() => { resetProductForm(); setEditingProduct(null); setShowProductModal(true); }}>
-                  <Plus className="w-4 h-4 mr-2" /> Add Product
-                </Button>
-                <Button variant="outline" onClick={seedProducts}>
-                  <RefreshCw className="w-4 h-4 mr-2" /> Seed Default Products
-                </Button>
-              </div>
-              <div className="flex gap-2">
-                <input
-                  type="file"
-                  accept=".csv"
-                  ref={fileInputRef}
-                  onChange={handleProductImport}
-                  className="hidden"
-                />
-                <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
-                  <Upload className="w-4 h-4 mr-2" /> Import CSV
-                </Button>
-                <Button variant="outline" onClick={handleProductExport}>
-                  <Download className="w-4 h-4 mr-2" /> Export CSV
-                </Button>
-              </div>
-            </div>
-          </Card>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {products.map((product) => (
-              <Card key={product.id} className="p-4">
-                <div className="flex items-start gap-3">
-                  {product.image ? (
-                    <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-lg bg-gray-100" />
-                  ) : (
-                    <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <Package className="w-6 h-6 text-gray-400" />
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900">{product.name}</h4>
-                    <p className="text-sm text-gray-500">{productCategories[product.category] || product.category}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="font-bold text-green-600">₹{product.price}</span>
-                      {product.compare_price && (
-                        <span className="text-sm text-gray-400 line-through">₹{product.compare_price}</span>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {product.paw_reward_points > 0 && (
-                        <Badge variant="outline" className="text-xs">🐾 {product.paw_reward_points} pts</Badge>
-                      )}
-                      {!product.in_stock && (
-                        <Badge className="bg-red-100 text-red-600 text-xs">Out of Stock</Badge>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-3 pt-3 border-t">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setEditingProduct(product);
-                      setProductForm({
-                        name: product.name || '',
-                        description: product.description || '',
-                        price: product.price?.toString() || '',
-                        compare_price: product.compare_price?.toString() || '',
-                        image: product.image || '',
-                        category: product.category || 'urns',
-                        subcategory: product.subcategory || '',
-                        sizes: Array.isArray(product.sizes) ? product.sizes.join(', ') : '',
-                        in_stock: product.in_stock !== false,
-                        paw_reward_points: product.paw_reward_points || 0
-                      });
-                      setShowProductModal(true);
-                    }}
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="text-red-600"
-                    onClick={() => deleteProduct(product.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          {products.length === 0 && (
-            <Card className="p-8 text-center">
-              <Package className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-              <p className="text-gray-500">No farewell products yet</p>
-              <Button className="mt-4" onClick={seedProducts}>Seed Default Products</Button>
-            </Card>
-          )}
+          <PillarProductsTab pillar="farewell" pillarName="Farewell" />
         </TabsContent>
 
         {/* Bundles Tab */}
