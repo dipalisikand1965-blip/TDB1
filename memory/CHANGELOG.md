@@ -3,7 +3,16 @@
 
 ---
 
-## [Mar 15, 2026] Session 36 — Admin Comprehensive Fix ✅
+## [Mar 15, 2026] Session 37 — Services Architecture + Celebrate Full CRUD ✅
+
+### What Was Fixed
+- **Services Architecture**: 953 services (561 empty pillar + 392 shop pillar) reassigned to correct 13 pillars via keyword-heuristic script. Shop-type products deactivated from services_master. ServiceBox admin: removed 'shop' from pillar filter — now shows only 13 real service pillars
+- **Celebrate Admin Full CRUD**: `GET /api/celebrate/admin/products` now merges celebrate_products (4) + products_master (1,495) = **1,499 products**. Full pagination, search, category filter, image upload (Cloudinary), AI image generation
+- **Architecture Rule Established**: Shop = products by sub-category | Services tab = all 13 pillar services
+
+---
+
+
 
 ### What Was Fixed
 - **Product Activation**: 3,960 products activated (were missing `active` field → now 3,987 active)
