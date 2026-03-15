@@ -179,7 +179,7 @@ curl "$API_URL/api/pet-soul/profile/pet-99a708f1722a/quick-questions"
 
 ## 🚀 PREVIEW URL
 ```
-https://celebrate-products.preview.emergentagent.com
+https://celebrate-sync-3.preview.emergentagent.com
 ```
 
 Key pages:

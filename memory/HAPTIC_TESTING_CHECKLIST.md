@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://celebrate-products.preview.emergentagent.com/mira-demo**
+**https://celebrate-sync-3.preview.emergentagent.com/mira-demo**
 
 ---
 
