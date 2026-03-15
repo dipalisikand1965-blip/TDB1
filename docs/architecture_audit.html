@@ -566,6 +566,18 @@
             <strong>Service Pricing in PricingHub</strong> — Added Service Pricing tab to PricingHub.jsx with new backend endpoint <code>PATCH /api/service-box/services/{id}/pricing</code>.
           </div>
         </li>
+        <li>
+          <span class="status-badge status-fixed" style="white-space:nowrap;">✓ Fixed Mar 15</span>
+          <div>
+            <strong>Services Architecture — Shop Removal + Pillar Assignment</strong> — 561 services with <code>pillar: ''</code> assigned to correct pillars using keyword heuristics. 392 services with <code>pillar: 'shop'</code>: product-type entries deactivated, real services reassigned. ServiceBox admin now shows only 13 true service pillars (no 'shop'). Shop page is for products only.
+          </div>
+        </li>
+        <li>
+          <span class="status-badge status-fixed" style="white-space:nowrap;">✓ Fixed Mar 15</span>
+          <div>
+            <strong>Celebrate Products Admin — Full CRUD with 1,499 Products</strong> — <code>GET /api/celebrate/admin/products</code> merged from <code>celebrate_products</code> (4 manual) + <code>products_master</code> (1,495 Shopify). Shows 1,499 products with full CRUD, pagination, search, category filter, image upload button, and AI image generation button.
+          </div>
+        </li>
       </ul>
     </div>
   </div>
