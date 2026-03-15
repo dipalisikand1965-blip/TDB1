@@ -8,7 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { Sparkles, Loader2, Plus } from 'lucide-react';
 import { getApiUrl } from '../../utils/api';
 import DrawerBottomBar from './DrawerBottomBar';
-import ProductDetailModal from './ProductDetailModal';
+import ProductCard from '../ProductCard';
 
 /* ── Shared concierge-request helper ─────────────────────────────────────── */
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
@@ -619,17 +619,12 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
   const [loading, setLoading] = useState(true);
   const [itemCount, setItemCount] = useState(0);
   
-  // Product modal state
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
-  const [modalIsConcierge, setModalIsConcierge] = useState(false);
-  
   const petName = pet?.name || 'your pet';
   const tabs = PILLAR_TABS[pillar.id] || [{ name: 'All', category: 'cakes' }];
   const titleInfo = PILLAR_TITLES[pillar.id] || { title: pillar.name, sub: () => '' };
   const isConciergeTab = !!tabs[activeTab]?.concierge;
   
-  // Get pillar color for modal
+  // Get pillar color
   const pillarColors = {
     food: '#FF8C42',
     play: '#E91E63',
@@ -641,19 +636,6 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
     memory: '#C44DFF'
   };
   const pillarColor = pillarColors[pillar.id] || '#C44DFF';
-
-  // Handle opening product modal
-  const handleOpenProductModal = (product, isConcierge = false) => {
-    setSelectedProduct(product);
-    setModalIsConcierge(isConcierge);
-    setIsProductModalOpen(true);
-  };
-  
-  // Handle closing product modal
-  const handleCloseProductModal = () => {
-    setIsProductModalOpen(false);
-    setSelectedProduct(null);
-  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -827,15 +809,12 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {filteredProducts.slice(0, 4).map((product, idx) => (
-                <SoulProductCard
+                <ProductCard
                   key={product.id || idx}
                   product={product}
-                  petName={petName}
-                  isFirst={idx === 0}
-                  isConcierge={isConciergeTab}
-                  onAddToCart={handleAddToCart}
-                  onOpenModal={handleOpenProductModal}
-                  pillarColor={pillarColor}
+                  pillar="celebrate"
+                  selectedPet={pet}
+                  size="small"
                 />
               ))}
             </div>
@@ -849,16 +828,6 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
         drawerCategory={pillar.id}
         petName={petName}
         onAction={handleBottomBarAction}
-      />
-      
-      {/* Product Detail Modal */}
-      <ProductDetailModal
-        product={selectedProduct}
-        isOpen={isProductModalOpen}
-        onClose={handleCloseProductModal}
-        petName={petName}
-        isConcierge={modalIsConcierge}
-        pillarColor={pillarColor}
       />
     </div>
   );
