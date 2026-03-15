@@ -18,6 +18,7 @@ import {
   CheckCircle, XCircle, Star, Download, Upload, Database, Award, Briefcase
 } from 'lucide-react';
 import PillarServicesTab from './PillarServicesTab';
+import PillarProductsTab from './PillarProductsTab';
 
 const FIT_TYPE_ICONS = {
   assessment: Activity,
@@ -722,73 +723,7 @@ const FitManager = ({ getAuthHeader }) => {
 
         {/* Products Tab */}
         <TabsContent value="products" className="space-y-4">
-          <Card className="p-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold">Fitness Products ({products.length})</h3>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={exportProductsCSV}>
-                  <Download className="w-4 h-4 mr-1" /> Export CSV
-                </Button>
-                <Button size="sm" onClick={() => { resetProductForm(); setEditingProduct(null); setShowProductModal(true); }}>
-                  <Plus className="w-4 h-4 mr-1" /> Add Product
-                </Button>
-              </div>
-            </div>
-          </Card>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {products.map((product) => (
-              <Card key={product.id} className="p-4 hover:shadow-md transition-all">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <h4 className="font-semibold">{product.name}</h4>
-                    <p className="text-sm text-gray-500 truncate">{product.description}</p>
-                    <Badge variant="outline" className="mt-2 text-xs">{product.fit_type || 'general'}</Badge>
-                  </div>
-                  <div className="flex gap-1">
-                    <Button size="sm" variant="ghost" onClick={() => {
-                      setEditingProduct(product);
-                      setProductForm({
-                        name: product.name || '',
-                        description: product.description || '',
-                        price: product.price?.toString() || '',
-                        compare_price: product.compare_price?.toString() || '',
-                        image: product.image || '',
-                        fit_type: product.fit_type || 'equipment',
-                        tags: (product.tags || []).join(', '),
-                        pet_sizes: (product.pet_sizes || ['small', 'medium', 'large']).join(', '),
-                        in_stock: product.in_stock !== false,
-                        paw_reward_points: product.paw_reward_points?.toString() || '0',
-                        is_birthday_perk: product.is_birthday_perk || false,
-                        birthday_discount_percent: product.birthday_discount_percent?.toString() || ''
-                      });
-                      setShowProductModal(true);
-                    }}>
-                      <Edit2 className="w-4 h-4" />
-                    </Button>
-                    <Button size="sm" variant="ghost" className="text-red-600" onClick={() => deleteProduct(product.id)}>
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between mt-3 pt-3 border-t">
-                  <div>
-                    <span className="font-bold text-teal-600">₹{product.price}</span>
-                    {product.compare_price && (
-                      <span className="text-sm text-gray-400 line-through ml-2">₹{product.compare_price}</span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {product.paw_reward_points > 0 && (
-                      <Badge variant="outline" className="text-xs">🐾 {product.paw_reward_points}</Badge>
-                    )}
-                    {product.is_birthday_perk && (
-                      <Badge className="text-xs bg-pink-100 text-pink-700">🎂</Badge>
-                    )}
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+          <PillarProductsTab pillar="fit" pillarName="Fit" />
         </TabsContent>
 
         {/* Bundles Tab */}
