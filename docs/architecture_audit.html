@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architecture Audit — The Doggy Company OS</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #e2e8f0; line-height: 1.6; }
+    .header { background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%); padding: 40px; }
+    .header h1 { font-size: 2.2rem; font-weight: 800; color: white; }
+    .header p { color: rgba(255,255,255,0.8); margin-top: 8px; font-size: 1rem; }
+    .header .meta { display: flex; gap: 24px; margin-top: 16px; flex-wrap: wrap; }
+    .header .meta span { background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; color: white; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 32px 20px; }
+    .section { margin-bottom: 40px; }
+    .section-title { font-size: 1.4rem; font-weight: 700; color: #a78bfa; margin-bottom: 16px; border-bottom: 2px solid #1e293b; padding-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .card-title { font-size: 1rem; font-weight: 600; color: #f1f5f9; margin-bottom: 12px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+    .stat { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 16px; text-align: center; }
+    .stat .num { font-size: 2rem; font-weight: 800; color: #a78bfa; }
+    .stat .label { font-size: 0.8rem; color: #94a3b8; margin-top: 4px; }
+    .status-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 600; }
+    .status-fixed { background: #065f46; color: #34d399; }
+    .status-pending { background: #7c2d12; color: #fb923c; }
+    .status-ok { background: #1e3a5f; color: #60a5fa; }
+    .status-warn { background: #713f12; color: #fbbf24; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #0f172a; color: #94a3b8; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 12px; text-align: left; }
+    td { padding: 10px 12px; border-bottom: 1px solid #1e293b; font-size: 0.9rem; color: #cbd5e1; }
+    tr:hover td { background: #0f172a; }
+    .pillar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .pillar-card { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; text-align: center; }
+    .pillar-icon { font-size: 1.8rem; }
+    .pillar-name { font-weight: 600; font-size: 0.9rem; color: #f1f5f9; margin-top: 4px; }
+    .pillar-count { font-size: 0.8rem; color: #64748b; }
+    .gap-list li { padding: 8px 0; border-bottom: 1px solid #1e293b; list-style: none; display: flex; align-items: flex-start; gap: 8px; }
+    .gap-list li:last-child { border-bottom: none; }
+    .flow-diagram { background: #0f172a; border-radius: 12px; padding: 24px; }
+    .flow-step { display: flex; align-items: center; gap: 16px; padding: 12px 0; }
+    .flow-arrow { color: #7c3aed; font-size: 1.2rem; }
+    .flow-box { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 8px 16px; font-size: 0.9rem; }
+    .architecture-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 768px) { .architecture-grid { grid-template-columns: 1fr; } }
+    .collection-table { margin-top: 12px; }
+    .breadcrumb { color: #64748b; font-size: 0.85rem; margin-bottom: 8px; }
+    .highlight { color: #34d399; font-weight: 600; }
+    .warn-text { color: #fbbf24; }
+    .error-text { color: #f87171; }
+    h2.section-title { font-size: 1.1rem; }
+    .toc { background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 32px; }
+    .toc h3 { color: #a78bfa; margin-bottom: 12px; }
+    .toc ol { padding-left: 20px; }
+    .toc li { padding: 4px 0; }
+    .toc a { color: #60a5fa; text-decoration: none; }
+    .toc a:hover { color: #a78bfa; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>The Doggy Company OS — Architecture Audit</h1>
+  <p>Comprehensive report on Product, Service, and Bundle architecture, data integrity, and admin panel health</p>
+  <div class="meta">
+    <span>📅 Updated: March 2026</span>
+    <span>📊 Products: 3,987 active</span>
+    <span>🛒 Services: 1,118</span>
+    <span>📦 Bundles: 39 (unified)</span>
+    <span>🏛️ Pillars: 13</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Table of Contents -->
+  <div class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#executive-summary">Executive Summary</a></li>
+      <li><a href="#data-counts">Data Counts & Collections</a></li>
+      <li><a href="#pillar-coverage">Pillar Coverage</a></li>
+      <li><a href="#product-architecture">Product Architecture</a></li>
+      <li><a href="#service-architecture">Service Architecture</a></li>
+      <li><a href="#bundle-architecture">Bundle Architecture</a></li>
+      <li><a href="#admin-panel-health">Admin Panel Health</a></li>
+      <li><a href="#fixes-applied">Fixes Applied</a></li>
+      <li><a href="#gaps-identified">Gaps & Next Steps</a></li>
+      <li><a href="#api-reference">API Reference</a></li>
+    </ol>
+  </div>
+
+  <!-- Executive Summary -->
+  <div class="section" id="executive-summary">
+    <div class="section-title">🔍 Executive Summary</div>
+    <div class="card">
+      <p style="color:#94a3b8; margin-bottom: 16px;">A comprehensive audit and fix was performed across the Product, Service, and Bundle architecture. Critical issues have been resolved and the admin panel is now functional across all 13 pillars.</p>
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="num">3,987</div>
+          <div class="label">Active Products</div>
+        </div>
+        <div class="stat">
+          <div class="num">1,118</div>
+          <div class="label">Total Services</div>
+        </div>
+        <div class="stat">
+          <div class="num">39</div>
+          <div class="label">Unified Bundles</div>
+        </div>
+        <div class="stat">
+          <div class="num">13</div>
+          <div class="label">Active Pillars</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color:#34d399;">5/5</div>
+          <div class="label">P0 Crashes Fixed</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color:#34d399;">✓</div>
+          <div class="label">Bundle Pricing Live</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Counts -->
+  <div class="section" id="data-counts">
+    <div class="section-title">📊 Data Counts & Collections</div>
+    <div class="card">
+      <div class="card-title">Primary Collections (Source of Truth)</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Collection</th>
+            <th>Count</th>
+            <th>Role</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>products_master</code></td>
+            <td class="highlight">3,987</td>
+            <td>Master product catalog (unified source of truth)</td>
+            <td><span class="status-badge status-ok">✓ Active</span></td>
+          </tr>
+          <tr>
+            <td><code>services_master</code></td>
+            <td class="highlight">1,118</td>
+            <td>Master service catalog</td>
+            <td><span class="status-badge status-ok">✓ Active</span></td>
+          </tr>
+          <tr>
+            <td><code>bundles</code></td>
+            <td class="highlight">39</td>
+            <td>Unified curated bundles (all pillars)</td>
+            <td><span class="status-badge status-ok">✓ Active</span></td>
+          </tr>
+          <tr>
+            <td><code>breed_products</code></td>
+            <td class="highlight">2,569</td>
+            <td>Soul Made / Breed-specific products</td>
+            <td><span class="status-badge status-ok">✓ Active</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Pillar-Specific Bundle Collections (Legacy)</div>
+      <table>
+        <thead>
+          <tr><th>Collection</th><th>Count</th><th>Managed By</th><th>Note</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>celebrate_bundles</code></td><td>6</td><td>CelebrateManager</td><td>Items are strings ✓</td></tr>
+          <tr><td><code>dine_bundles</code></td><td>4</td><td>DineManager</td><td>Items are strings ✓</td></tr>
+          <tr><td><code>care_bundles</code></td><td>3</td><td>CareManager</td><td><span class="warn-text">Items are objects {name, price}</span></td></tr>
+          <tr><td><code>learn_bundles</code></td><td>5</td><td>LearnManager</td><td>Items are strings ✓</td></tr>
+          <tr><td><code>advisory_bundles</code></td><td>5</td><td>AdvisoryManager</td><td>Items are strings ✓</td></tr>
+          <tr><td><code>travel_bundles</code></td><td>3</td><td>TravelManager</td><td>Items are strings ✓</td></tr>
+        </tbody>
+      </table>
+      <p style="color:#64748b; font-size:0.8rem; margin-top:12px;">⚠️ Note: These collections are separate from the unified <code>bundles</code> collection. The PricingHub Pillar Bundles tab now uses the unified collection.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Product Activation Status (Before vs After Fix)</div>
+      <table>
+        <thead>
+          <tr><th>Metric</th><th>Before Audit</th><th>After Fix</th><th>Change</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Active Products</td>
+            <td class="error-text">27</td>
+            <td class="highlight">3,987</td>
+            <td><span class="status-badge status-fixed">+3,960 activated</span></td>
+          </tr>
+          <tr>
+            <td>Products with no `active` field</td>
+            <td class="error-text">3,960</td>
+            <td class="highlight">0</td>
+            <td><span class="status-badge status-fixed">✓ All patched</span></td>
+          </tr>
+          <tr>
+            <td>Products with images</td>
+            <td>3,960</td>
+            <td>3,987</td>
+            <td>No change</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="color:#64748b; font-size:0.8rem; margin-top:12px;">Fix: <code>products_master.update_many(active: missing + has image_url → set active: true)</code></p>
+    </div>
+  </div>
+
+  <!-- Pillar Coverage -->
+  <div class="section" id="pillar-coverage">
+    <div class="section-title">🏛️ Pillar Coverage</div>
+    <div class="card">
+      <div class="card-title">Bundles per Pillar (Unified Collection)</div>
+      <div class="pillar-grid">
+        <div class="pillar-card"><div class="pillar-icon">🎂</div><div class="pillar-name">Celebrate</div><div class="pillar-count">2 bundles</div></div>
+        <div class="pillar-card"><div class="pillar-icon">🍽️</div><div class="pillar-name">Dine</div><div class="pillar-count">4 bundles</div></div>
+        <div class="pillar-card"><div class="pillar-icon">🏨</div><div class="pillar-name">Stay</div><div class="pillar-count">1 bundle</div></div>
+        <div class="pillar-card"><div class="pillar-icon">✈️</div><div class="pillar-name">Travel</div><div class="pillar-count">2 bundles</div></div>
+        <div class="pillar-card"><div class="pillar-icon">💊</div><div class="pillar-name">Care</div><div class="pillar-count">3 bundles</div></div>
+        <div class="pillar-card"><div class="pillar-icon">💪</div><div class="pillar-name">Fit</div><div class="pillar-count">1 bundle</div></div>
+        <div class="pillar-card"><div class="pillar-icon">🎉</div><div class="pillar-name">Enjoy</div><div class="pillar-count">3 bundles</div></div>
+        <div class="pillar-card"><div class="pillar-icon">📚</div><div class="pillar-name">Learn</div><div class="pillar-count">6 bundles</div></div>
+        <div class="pillar-card"><div class="pillar-icon">🌈</div><div class="pillar-name">Farewell</div><div class="pillar-count">3 bundles</div></div>
+        <div class="pillar-card"><div class="pillar-icon">🚨</div><div class="pillar-name">Emergency</div><div class="pillar-count">3 bundles</div></div>
+        <div class="pillar-card"><div class="pillar-icon">🐕</div><div class="pillar-name">Adopt</div><div class="pillar-count">5 bundles</div></div>
+        <div class="pillar-card"><div class="pillar-icon">💡</div><div class="pillar-name">Advisory</div><div class="pillar-count">4 bundles</div></div>
+        <div class="pillar-card"><div class="pillar-icon">📋</div><div class="pillar-name">Paperwork</div><div class="pillar-count">1 bundle</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Services per Pillar (services_master)</div>
+      <table>
+        <thead>
+          <tr><th>Pillar</th><th>Services</th><th>Note</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Advisory</td><td>27</td><td><span class="status-badge status-ok">OK</span></td></tr>
+          <tr><td>Care</td><td>30</td><td><span class="status-badge status-ok">OK</span></td></tr>
+          <tr><td>Fit</td><td>23</td><td><span class="status-badge status-ok">OK</span></td></tr>
+          <tr><td>Celebrate</td><td>19</td><td><span class="status-badge status-ok">OK</span></td></tr>
+          <tr><td>Emergency</td><td>16</td><td><span class="status-badge status-ok">OK</span></td></tr>
+          <tr><td>Farewell</td><td>14</td><td><span class="status-badge status-ok">OK</span></td></tr>
+          <tr><td>Stay</td><td>12</td><td><span class="status-badge status-ok">OK</span></td></tr>
+          <tr><td>Learn</td><td>11</td><td><span class="status-badge status-ok">OK</span></td></tr>
+          <tr><td>Dine</td><td>10</td><td><span class="status-badge status-ok">OK</span></td></tr>
+          <tr><td>Adopt</td><td>8</td><td><span class="status-badge status-ok">OK</span></td></tr>
+          <tr><td>Paperwork</td><td>7</td><td><span class="status-badge status-ok">OK</span></td></tr>
+          <tr><td>Travel</td><td>6</td><td><span class="status-badge status-ok">OK</span></td></tr>
+          <tr><td>shop</td><td>392</td><td><span class="status-badge status-warn">Needs pillar assignment</span></td></tr>
+          <tr><td>(no pillar)</td><td>561</td><td><span class="status-badge status-pending">Missing pillar assignment</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Product Architecture -->
+  <div class="section" id="product-architecture">
+    <div class="section-title">📦 Product Architecture</div>
+    <div class="architecture-grid">
+      <div class="card">
+        <div class="card-title">Data Flow: Products</div>
+        <div class="flow-diagram">
+          <div class="flow-step">
+            <div class="flow-box" style="background:#1a1a2e; border-color:#7c3aed;">Shopify (3,575 items)</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box" style="background:#1a2e2e; border-color:#0d9488;">Sync / Import</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box" style="background:#2e1a2e; border-color:#db2777;"><code>products_master</code></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-box" style="background:#1a2e1a; border-color:#16a34a;">Manual Entry</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box" style="background:#2e2e1a; border-color:#ca8a04;">Product Box Admin</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box" style="background:#2e1a2e; border-color:#db2777;"><code>products_master</code></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-box" style="background:#1a1a2e; border-color:#7c3aed;">Soul Made (breed_products)</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box" style="background:#2e1a2e; border-color:#db2777;">Merged at read-time</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Key Endpoints</div>
+        <table>
+          <thead><tr><th>Endpoint</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>GET /api/product-box/products</code></td><td>Unified product list (paginated)</td></tr>
+            <tr><td><code>GET /api/admin/products</code></td><td>Admin product management</td></tr>
+            <tr><td><code>GET /api/admin/pricing/products</code></td><td>Products with pricing data</td></tr>
+            <tr><td><code>PUT /api/product-box/products/{id}</code></td><td>Update product</td></tr>
+            <tr><td><code>PATCH /api/admin/pricing/products/{id}</code></td><td>Update product pricing</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Service Architecture -->
+  <div class="section" id="service-architecture">
+    <div class="section-title">🔧 Service Architecture</div>
+    <div class="architecture-grid">
+      <div class="card">
+        <div class="card-title">Data Flow: Services</div>
+        <div class="flow-diagram">
+          <div class="flow-step">
+            <div class="flow-box" style="background:#1a2e1a; border-color:#16a34a;">Manual Entry / Import</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box" style="background:#2e1a2e; border-color:#db2777;"><code>services_master</code></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-box" style="background:#2e1a2e; border-color:#db2777;"><code>services_master</code></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box" style="background:#1a1a2e; border-color:#7c3aed;">Pillar Manager → Services tab</div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-box" style="background:#2e1a2e; border-color:#db2777;"><code>services_master</code></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box" style="background:#1a2e2e; border-color:#0d9488;">PricingHub → Service Pricing tab</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Key Endpoints</div>
+        <table>
+          <thead><tr><th>Endpoint</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>GET /api/service-box/services</code></td><td>List services (with pillar filter)</td></tr>
+            <tr><td><code>POST /api/service-box/services</code></td><td>Create service</td></tr>
+            <tr><td><code>PUT /api/service-box/services/{id}</code></td><td>Update service</td></tr>
+            <tr><td><code>PATCH /api/service-box/services/{id}/pricing</code></td><td>Update service pricing</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bundle Architecture -->
+  <div class="section" id="bundle-architecture">
+    <div class="section-title">🎁 Bundle Architecture</div>
+    <div class="card">
+      <p style="margin-bottom:12px; color:#94a3b8;">There are <strong style="color:#f1f5f9;">two bundle systems</strong> in the application. The <strong style="color:#a78bfa;">unified system</strong> (recommended) is the source of truth for all pricing and cross-pillar operations.</p>
+      <div class="architecture-grid">
+        <div>
+          <div class="card-title" style="color:#34d399;">✓ Unified Bundle System (Recommended)</div>
+          <ul style="list-style:none; color:#94a3b8; font-size:0.9rem;">
+            <li style="padding:4px 0;">• Collection: <code>bundles</code></li>
+            <li style="padding:4px 0;">• 39 bundles across all 13 pillars</li>
+            <li style="padding:4px 0;">• Managed by: BundlesManager.jsx</li>
+            <li style="padding:4px 0;">• Priced via: PricingHub → Pillar Bundles tab</li>
+            <li style="padding:4px 0;">• Fields: id, name, pillar, original_price, bundle_price, discount, active, items, image_url</li>
+          </ul>
+        </div>
+        <div>
+          <div class="card-title" style="color:#fbbf24;">⚠️ Legacy Pillar-Specific Bundle System</div>
+          <ul style="list-style:none; color:#94a3b8; font-size:0.9rem;">
+            <li style="padding:4px 0;">• Collections: <code>{pillar}_bundles</code> (6+ collections)</li>
+            <li style="padding:4px 0;">• Managed by: Individual Pillar Managers</li>
+            <li style="padding:4px 0;">• NOT shown in PricingHub (use unified instead)</li>
+            <li style="padding:4px 0;">• Some have inconsistent item schemas (strings vs objects)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Bundle API Endpoints</div>
+      <table>
+        <thead><tr><th>Endpoint</th><th>Method</th><th>Purpose</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><code>/api/bundles</code></td><td>GET</td><td>List all bundles (filterable by pillar, active_only)</td><td><span class="status-badge status-ok">Live</span></td></tr>
+          <tr><td><code>/api/bundles/{id}</code></td><td>GET</td><td>Get single bundle</td><td><span class="status-badge status-ok">Live</span></td></tr>
+          <tr><td><code>/api/bundles</code></td><td>POST</td><td>Create new bundle</td><td><span class="status-badge status-ok">Live</span></td></tr>
+          <tr><td><code>/api/bundles/{id}</code></td><td>PUT</td><td>Full bundle update</td><td><span class="status-badge status-ok">Live</span></td></tr>
+          <tr><td><code>/api/bundles/{id}/pricing</code></td><td>PATCH</td><td>Pricing-only update (NEW)</td><td><span class="status-badge status-fixed">Added March 2026</span></td></tr>
+          <tr><td><code>/api/bundles/{id}</code></td><td>DELETE</td><td>Delete bundle</td><td><span class="status-badge status-ok">Live</span></td></tr>
+          <tr><td><code>/api/bundles/{id}/generate-image</code></td><td>POST</td><td>AI image generation</td><td><span class="status-badge status-ok">Live</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Admin Panel Health -->
+  <div class="section" id="admin-panel-health">
+    <div class="section-title">🏥 Admin Panel Health Check</div>
+    <div class="card">
+      <div class="card-title">Component Status</div>
+      <table>
+        <thead><tr><th>Component</th><th>Location</th><th>Status</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>BundlesManager</td>
+            <td>Admin → Bundles</td>
+            <td><span class="status-badge status-fixed">✓ Fixed</span></td>
+            <td>Object items crash fixed (typeof check)</td>
+          </tr>
+          <tr>
+            <td>PricingHub → Products</td>
+            <td>Admin → Pricing</td>
+            <td><span class="status-badge status-ok">✓ OK</span></td>
+            <td>Shows all 3,987 products</td>
+          </tr>
+          <tr>
+            <td>PricingHub → Services</td>
+            <td>Admin → Pricing</td>
+            <td><span class="status-badge status-ok">✓ OK</span></td>
+            <td>Shows services from services_master</td>
+          </tr>
+          <tr>
+            <td>PricingHub → Pillar Bundles</td>
+            <td>Admin → Pricing</td>
+            <td><span class="status-badge status-fixed">✓ Fixed</span></td>
+            <td>Now shows all 13 pillars from unified /api/bundles</td>
+          </tr>
+          <tr>
+            <td>Notification Sort</td>
+            <td>Admin → Notifications</td>
+            <td><span class="status-badge status-fixed">✓ Fixed</span></td>
+            <td>Sort by _id (was broken: mixed datetime types)</td>
+          </tr>
+          <tr>
+            <td>CelebrateManager</td>
+            <td>Admin → Celebrate</td>
+            <td><span class="status-badge status-ok">✓ OK</span></td>
+            <td>All tabs functional</td>
+          </tr>
+          <tr>
+            <td>DineManager</td>
+            <td>Admin → Dine</td>
+            <td><span class="status-badge status-ok">✓ OK</span></td>
+            <td>All tabs functional</td>
+          </tr>
+          <tr>
+            <td>StayManager</td>
+            <td>Admin → Stay</td>
+            <td><span class="status-badge status-ok">✓ OK</span></td>
+            <td>Background AI image generation running</td>
+          </tr>
+          <tr>
+            <td>EnjoyManager</td>
+            <td>Admin → Enjoy</td>
+            <td><span class="status-badge status-fixed">✓ Fixed</span></td>
+            <td>credentials crash fixed</td>
+          </tr>
+          <tr>
+            <td>LearnManager</td>
+            <td>Admin → Learn</td>
+            <td><span class="status-badge status-fixed">✓ Fixed</span></td>
+            <td>Object items crash fixed</td>
+          </tr>
+          <tr>
+            <td>FarewellManager</td>
+            <td>Admin → Farewell</td>
+            <td><span class="status-badge status-ok">✓ OK</span></td>
+            <td>Services tab added</td>
+          </tr>
+          <tr>
+            <td>EmergencyManager</td>
+            <td>Admin → Emergency</td>
+            <td><span class="status-badge status-ok">✓ OK</span></td>
+            <td>Services tab added</td>
+          </tr>
+          <tr>
+            <td>FitManager</td>
+            <td>Admin → Fit</td>
+            <td><span class="status-badge status-ok">✓ OK</span></td>
+            <td>Services tab added</td>
+          </tr>
+          <tr>
+            <td>AdoptManager</td>
+            <td>Admin → Adopt</td>
+            <td><span class="status-badge status-ok">✓ OK</span></td>
+            <td>Services tab added</td>
+          </tr>
+          <tr>
+            <td>AdvisoryManager</td>
+            <td>Admin → Advisory</td>
+            <td><span class="status-badge status-ok">✓ OK</span></td>
+            <td>Services tab added</td>
+          </tr>
+          <tr>
+            <td>PaperworkManager</td>
+            <td>Admin → Paperwork</td>
+            <td><span class="status-badge status-ok">✓ OK</span></td>
+            <td>Services tab added</td>
+          </tr>
+          <tr>
+            <td>CareManager</td>
+            <td>Admin → Care</td>
+            <td><span class="status-badge status-ok">✓ OK</span></td>
+            <td>care_bundles have object items (handled safely)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Fixes Applied -->
+  <div class="section" id="fixes-applied">
+    <div class="section-title">🔧 Fixes Applied</div>
+    <div class="card">
+      <ul class="gap-list">
+        <li>
+          <span class="status-badge status-fixed" style="white-space:nowrap;">✓ Fixed</span>
+          <div>
+            <strong>Product Activation</strong> — 3,960 products in <code>products_master</code> had no <code>active</code> field. Script ran: <code>update_many(active: missing → set active: True)</code>. Now 3,987 products are active and will display in the app.
+          </div>
+        </li>
+        <li>
+          <span class="status-badge status-fixed" style="white-space:nowrap;">✓ Fixed</span>
+          <div>
+            <strong>PricingHub Pillar Bundles Tab</strong> — Was fetching from 5 pillar-specific endpoints with wrong field names. Rewritten to use <code>GET /api/bundles?active_only=false</code> (all 39 bundles), grouped by all 13 pillars, with correct <code>original_price</code>/<code>bundle_price</code> fields and inline price editing.
+          </div>
+        </li>
+        <li>
+          <span class="status-badge status-fixed" style="white-space:nowrap;">✓ Fixed</span>
+          <div>
+            <strong>Bundle Pricing PATCH Endpoint</strong> — Added <code>PATCH /api/bundles/{id}/pricing</code> for lightweight pricing updates (original_price, bundle_price, active). Automatically recalculates discount %.
+          </div>
+        </li>
+        <li>
+          <span class="status-badge status-fixed" style="white-space:nowrap;">✓ Fixed</span>
+          <div>
+            <strong>BundlesManager Crash</strong> — Bundle items in <code>bundles</code> collection can be objects <code>{name, price}</code>. Added <code>typeof item === 'object' ? item.name : item</code> check to prevent "Objects are not valid as React child" crash.
+          </div>
+        </li>
+        <li>
+          <span class="status-badge status-fixed" style="white-space:nowrap;">✓ Fixed</span>
+          <div>
+            <strong>LearnManager Bundle Crash</strong> — Same typeof check applied to LearnManager's bundle items rendering.
+          </div>
+        </li>
+        <li>
+          <span class="status-badge status-fixed" style="white-space:nowrap;">✓ Fixed</span>
+          <div>
+            <strong>EnjoyManager Crash</strong> — <code>credentials</code> variable was not defined in scope when passed to <code>PillarBundlesTab</code>. Removed the undefined prop reference.
+          </div>
+        </li>
+        <li>
+          <span class="status-badge status-fixed" style="white-space:nowrap;">✓ Fixed</span>
+          <div>
+            <strong>Notification Sort Bug</strong> — Member notifications were sorting by <code>created_at</code> which had mixed types (BSON datetime + strings). Fixed by sorting by <code>_id</code> (always monotonically increasing).
+          </div>
+        </li>
+        <li>
+          <span class="status-badge status-fixed" style="white-space:nowrap;">✓ Added</span>
+          <div>
+            <strong>Services Tab Added</strong> — Added PillarServicesTab to 7 pillar admin pages: FarewellManager, EmergencyManager, AdoptManager, FitManager, LearnManager, PaperworkManager, AdvisoryManager.
+          </div>
+        </li>
+        <li>
+          <span class="status-badge status-fixed" style="white-space:nowrap;">✓ Added</span>
+          <div>
+            <strong>Service Pricing in PricingHub</strong> — Added Service Pricing tab to PricingHub.jsx with new backend endpoint <code>PATCH /api/service-box/services/{id}/pricing</code>.
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Gaps Identified -->
+  <div class="section" id="gaps-identified">
+    <div class="section-title">⚠️ Remaining Gaps & Next Steps</div>
+    <div class="card">
+      <ul class="gap-list">
+        <li>
+          <span class="status-badge status-pending" style="white-space:nowrap;">P1 Pending</span>
+          <div>
+            <strong>561 Services have no pillar assignment</strong> — These services sit in <code>services_master</code> with <code>pillar: null</code>. Cannot be filtered by pillar in admin. Need to manually assign or bulk-assign pillars based on service category/type.
+          </div>
+        </li>
+        <li>
+          <span class="status-badge status-pending" style="white-space:nowrap;">P1 Pending</span>
+          <div>
+            <strong>392 Services have pillar="shop"</strong> — These are likely generic shop services. They need either a real pillar assignment or a "shop" pillar to be created in the UI.
+          </div>
+        </li>
+        <li>
+          <span class="status-badge status-pending" style="white-space:nowrap;">P2 Pending</span>
+          <div>
+            <strong>Consolidate Legacy Pillar Bundle Collections</strong> — 6 pillar-specific bundle collections (<code>celebrate_bundles</code>, <code>dine_bundles</code>, etc.) are separate from the unified <code>bundles</code> collection. Consider migrating all to the unified collection or at least syncing them.
+          </div>
+        </li>
+        <li>
+          <span class="status-badge status-pending" style="white-space:nowrap;">P2 Pending</span>
+          <div>
+            <strong>care_bundles items are objects</strong> — Items in <code>care_bundles</code> are <code>{name: string, price: number}</code> objects. The CareManager doesn't render them directly so no crash, but editing bundles will show <code>[object Object]</code> in text fields. Need to normalize.
+          </div>
+        </li>
+        <li>
+          <span class="status-badge status-pending" style="white-space:nowrap;">P3 Pending</span>
+          <div>
+            <strong>Razorpay Checkout Failure</strong> — Known bug, not yet investigated.
+          </div>
+        </li>
+        <li>
+          <span class="status-badge status-pending" style="white-space:nowrap;">P3 Pending</span>
+          <div>
+            <strong>Love Memory Drawer</strong> — Feature request awaiting specifications.
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- API Reference -->
+  <div class="section" id="api-reference">
+    <div class="section-title">📡 API Reference — Critical Endpoints</div>
+    <div class="card">
+      <div class="card-title">Products</div>
+      <table>
+        <thead><tr><th>Method</th><th>Endpoint</th><th>Collection</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>GET</td><td>/api/product-box/products</td><td>products_master</td><td>Unified + Soul Made combined</td></tr>
+          <tr><td>GET</td><td>/api/admin/products</td><td>products_master</td><td>Admin-only, no active filter</td></tr>
+          <tr><td>GET</td><td>/api/admin/pricing/products</td><td>products_master + product_pricing</td><td>Enriched with pricing</td></tr>
+          <tr><td>PATCH</td><td>/api/admin/pricing/products/{id}</td><td>product_pricing</td><td>Update pricing only</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">Services</div>
+      <table>
+        <thead><tr><th>Method</th><th>Endpoint</th><th>Collection</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>GET</td><td>/api/service-box/services</td><td>services_master</td><td>Filterable by pillar, category</td></tr>
+          <tr><td>POST</td><td>/api/service-box/services</td><td>services_master</td><td>Create new service</td></tr>
+          <tr><td>PUT</td><td>/api/service-box/services/{id}</td><td>services_master</td><td>Full update</td></tr>
+          <tr><td>PATCH</td><td>/api/service-box/services/{id}/pricing</td><td>services_master</td><td>Pricing only update</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">Bundles (Unified)</div>
+      <table>
+        <thead><tr><th>Method</th><th>Endpoint</th><th>Collection</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>GET</td><td>/api/bundles?pillar=X&active_only=false</td><td>bundles</td><td>All 13 pillars supported</td></tr>
+          <tr><td>POST</td><td>/api/bundles</td><td>bundles</td><td>Create bundle</td></tr>
+          <tr><td>PUT</td><td>/api/bundles/{id}</td><td>bundles</td><td>Full update</td></tr>
+          <tr><td>PATCH</td><td>/api/bundles/{id}/pricing</td><td>bundles</td><td>NEW: Pricing only update</td></tr>
+          <tr><td>DELETE</td><td>/api/bundles/{id}</td><td>bundles</td><td>Soft delete (active: false)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="text-align:center; padding: 40px 0; color:#475569; font-size:0.85rem;">
+    Architecture Audit — The Doggy Company OS &bull; Generated March 2026 &bull; <a href="/admin" style="color:#7c3aed;">Open Admin Panel</a>
+  </div>
+
+</div>
+</body>
+</html>

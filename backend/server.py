@@ -18689,6 +18689,18 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 os.makedirs("static/uploads/pets", exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# Serve architecture docs
+@api_router.get("/docs/architecture-audit")
+async def serve_architecture_audit():
+    """Serve the architecture audit HTML documentation"""
+    from fastapi.responses import HTMLResponse
+    import os
+    docs_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs", "architecture_audit.html")
+    if os.path.exists(docs_path):
+        with open(docs_path, "r") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse(content="<h1>Documentation not found</h1>", status_code=404)
+
 # Set database for admin routes
 set_admin_routes_db(db)
 
