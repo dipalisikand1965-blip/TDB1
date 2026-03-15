@@ -196,7 +196,20 @@ const ProductBoxEditor = ({
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
       });
-      const data = await res.json();
+
+      // Always read as text first to avoid "body stream already read" error
+      const rawText = await res.text();
+      let data;
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        throw new Error(`Server error (${res.status}): ${rawText.substring(0, 200)}`);
+      }
+
+      if (!res.ok) {
+        throw new Error(data?.detail || `Request failed: ${res.status}`);
+      }
+
       if (data.success && data.image_url) {
         updateField('media.primary_image', data.image_url);
         updateField('image', data.image_url);
