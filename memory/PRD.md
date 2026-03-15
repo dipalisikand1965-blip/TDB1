@@ -11,6 +11,22 @@ Violating these rules will break the admin panel and data consistency.
 
 ---
 
+## ✅ SESSION 45 — Dine: DineContentModal Redesign (Feb 2026)
+
+### What Was Built:
+- **Completely rewrote `DineContentModal.jsx`** to match the product mockup design
+- **Header allergy chips**: Pet's allergies shown as "Chicken-free · Treatment-safe" chips derived from all allergy sources on pet object
+- **Mira quote block**: Peach background card with dynamic quote — "I built this around Mojo's profile and what works for Indies. The Salmon options are first. Everything here is chicken-free and treatment-safe." + "♥ Mira knows Mojo"
+- **Amber pill sub-category tabs**: Active = orange gradient, inactive = light amber with orange border
+- **New `DineProductCard`**: Large 160px image, purple ✦ mira_tag badge overlay, allergy_free chips below name, orange price, Add (orange) / ✓ Added (green with purple border) button
+- **Smart product sorting**: Products safe for pet's allergies appear first
+- **`DineBundleCard`**: Items chips, bundle price + original price strikethrough, Get Bundle → Sent! state
+- **Bug Fix**: `useMemo` added for allergies to prevent infinite fetch loop (was causing ERR_INSUFFICIENT_RESOURCES)
+
+### Testing: 100% pass rate (iteration_145.json) — All 8 category pills, all modal states, Add→Added toggle, Bundles
+
+---
+
 ## ✅ SESSION 44 — Dine: Bundles as Category Pill (Feb 2026)
 
 ### What Was Done:
