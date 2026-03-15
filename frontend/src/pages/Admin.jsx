@@ -606,6 +606,27 @@ const Admin = () => {
         console.log('[Master Sync] Pillar seed error:', e);
       }
       
+      // Step 11.5: Seed Celebrate Excel Catalog (93 curated products)
+      toast({ title: '🎂 Step 11.5/12: Celebrate Catalog...', description: 'Seeding 93 curated celebrate products from Excel catalog + AI images' });
+      
+      try {
+        const excelRes = await fetch(`${API_URL}/api/admin/celebrate/seed-from-excel`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (excelRes.ok) {
+          const excelData = await excelRes.json();
+          console.log('[Master Sync] Celebrate Excel seed started:', excelData.message);
+          toast({
+            title: '✅ Celebrate Catalog Queued',
+            description: `${excelData.total_products || 93} celebrate products seeding + AI images generating in background`,
+            duration: 5000
+          });
+        }
+      } catch (e) {
+        console.log('[Master Sync] Celebrate Excel seed error:', e);
+      }
+      
       // Step 12: Seed Curated Bundles
       toast({ title: '🎁 Step 12/12: Seeding Bundles...', description: 'Creating curated product bundles for all pillars' });
       
@@ -3476,7 +3497,7 @@ const Admin = () => {
                     btn.innerHTML = '☁️ Syncing...';
                     btn.disabled = true;
                     
-                    // Use server-side sync to bypass CORS
+                    // Step 1: Sync Soul/Mockup data to production
                     const syncRes = await fetch(`${API_URL}/api/mockups/sync-to-production`, {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' }
@@ -3486,7 +3507,21 @@ const Admin = () => {
                     try { result = JSON.parse(syncText); } catch { result = { success: false, message: syncText || 'Unknown error' }; }
                     
                     if (result.success) {
-                      alert(`✅ ${result.message}\n\nImported: ${result.imported}\nUpdated: ${result.updated}\nTotal: ${result.total}`);
+                      // Step 2: Seed Celebrate Excel Catalog (93 products + AI images)
+                      btn.innerHTML = '🎂 Seeding Catalog...';
+                      try {
+                        const excelRes = await fetch(`${API_URL}/api/admin/celebrate/seed-from-excel`, {
+                          method: 'POST',
+                          headers: getAuthHeaders()
+                        });
+                        const excelData = await excelRes.json();
+                        alert(
+                          `✅ Sync complete!\n\nMockups: ${result.imported || 0} imported, ${result.updated || 0} updated\n` +
+                          `Celebrate Catalog: ${excelData.message || '93 products queued with AI images'}`
+                        );
+                      } catch (excelErr) {
+                        alert(`✅ Mockup sync done!\n${result.message}\n\n⚠️ Celebrate catalog seed failed: ${excelErr.message}`);
+                      }
                     } else {
                       alert(`❌ ${result.message}`);
                     }
