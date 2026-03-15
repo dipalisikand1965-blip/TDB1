@@ -20905,9 +20905,11 @@ async def generate_bundle_image_sync(
     bundle_name = bundle.get("name", "Birthday Bundle")
     items = bundle.get("items", "")
     prompt = (
-        f"Premium dog birthday gift bundle: {bundle_name}, containing {items[:100] if items else 'treats and toys'}, "
-        "beautifully arranged in a gift box with ribbon, festive celebration styling, "
-        "white background, professional product photography, high quality"
+        f"Soulful watercolor illustration of a dog birthday gift bundle called '{bundle_name}', "
+        f"containing {items[:80] if items else 'birthday treats, toys and accessories'}, "
+        "beautifully arranged, warm painterly brushstrokes, soft layered watercolor pigments, "
+        "premium editorial composition, elegant and emotive, white background, "
+        "professional illustration style, similar to premium pet brand art"
     )
 
     try:
