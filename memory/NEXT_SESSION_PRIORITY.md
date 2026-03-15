@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://architecture-rebuild.preview.emergentagent.com
+**Preview URL:** https://data-integrity-task.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

@@ -292,13 +292,13 @@ tail -50 /var/log/supervisor/backend.err.log
 sudo supervisorctl restart frontend backend
 
 # Test admin notifications
-curl -s -u "aditya:lola4304" "https://architecture-rebuild.preview.emergentagent.com/api/admin/notifications?limit=5"
+curl -s -u "aditya:lola4304" "https://data-integrity-task.preview.emergentagent.com/api/admin/notifications?limit=5"
 
 # Test ticket enrichment
-curl -s -X POST "https://architecture-rebuild.preview.emergentagent.com/api/service_desk/resolve_ticket/TCK-XXX"
+curl -s -X POST "https://data-integrity-task.preview.emergentagent.com/api/service_desk/resolve_ticket/TCK-XXX"
 
 # Check pet soul data
-curl -s "https://architecture-rebuild.preview.emergentagent.com/api/pets/pet-3661ae55d2e2"
+curl -s "https://data-integrity-task.preview.emergentagent.com/api/pets/pet-3661ae55d2e2"
 ```
 
 ---
