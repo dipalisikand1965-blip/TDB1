@@ -97,7 +97,7 @@ const CelebrateCategoryStrip = ({ pet, onCategorySelect }) => {
     <>
       {/* Strip */}
       <div
-        className="w-full bg-white"
+        className="w-full bg-white relative"
         style={{ borderBottom: '1px solid #F0E8E0' }}
         data-testid="celebrate-category-strip"
       >
@@ -107,7 +107,8 @@ const CelebrateCategoryStrip = ({ pet, onCategorySelect }) => {
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
-            WebkitOverflowScrolling: 'touch'
+            WebkitOverflowScrolling: 'touch',
+            paddingRight: 40
           }}
         >
           {CELEBRATE_CATEGORIES.map((cat) => {
@@ -164,6 +165,14 @@ const CelebrateCategoryStrip = ({ pet, onCategorySelect }) => {
             );
           })}
         </div>
+        {/* Right-edge fade hint — shows more items exist */}
+        <div
+          className="absolute right-0 top-0 bottom-0 pointer-events-none"
+          style={{
+            width: 48,
+            background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.95))'
+          }}
+        />
       </div>
 
       {/* Category Modal */}

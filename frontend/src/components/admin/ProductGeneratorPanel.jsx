@@ -47,9 +47,10 @@ const ProductGeneratorPanel = ({ token }) => {
 
   const fetchStatus = useCallback(async () => {
     try {
-      const resp = await fetch(`${API_URL}/admin/celebrate/generation-status`, { headers });
+      const resp = await fetch(`${API_URL}/api/admin/celebrate/generation-status`, { headers });
       if (!resp.ok) return;
-      const data = await resp.json();
+      const text = await resp.text();
+      const data = JSON.parse(text);
       setStatus(data);
       if (!data.running) setPolling(false);
     } catch (e) {
@@ -72,23 +73,27 @@ const ProductGeneratorPanel = ({ token }) => {
   const startGeneration = async () => {
     setLoading(true);
     try {
-      const resp = await fetch(`${API_URL}/admin/celebrate/seed-and-generate`, {
+      const resp = await fetch(`${API_URL}/api/admin/celebrate/seed-and-generate`, {
         method: 'POST', headers,
       });
-      const data = await resp.json();
+      const text = await resp.text();
+      let data;
+      try { data = JSON.parse(text); } catch { data = { message: text }; }
       if (resp.ok) {
         setPolling(true);
         await fetchStatus();
       } else {
         alert(data.detail || data.message || 'Failed to start generation');
       }
+    } catch (e) {
+      alert(`Generation failed: ${e.message}`);
     } finally {
       setLoading(false);
     }
   };
 
   const regenerateImage = async (productId, productName) => {
-    const resp = await fetch(`${API_URL}/admin/products/${productId}/regenerate-image`, {
+    const resp = await fetch(`${API_URL}/api/admin/products/${productId}/regenerate-image`, {
       method: 'POST', headers,
     });
     if (resp.ok) {

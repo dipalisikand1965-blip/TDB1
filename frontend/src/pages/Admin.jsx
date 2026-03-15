@@ -671,28 +671,31 @@ const Admin = () => {
     }
   };
 
-  // 🚀 FIX PRODUCTION DATA - calls thedoggycompany.com API directly  
+  // 🚀 FIX PRODUCTION DATA - fixes service illustrations + pet soul data on current environment
   const fixProductionData = async () => {
-    if (!window.confirm('This will fix service illustrations + pet soul data on thedoggycompany.com (production). Continue?')) return;
+    if (!window.confirm('This will fix service illustrations + pet soul data on this server. Continue?')) return;
     setFixingProdData(true);
     setProdFixResult(null);
     try {
-      toast({ title: '🚀 Fixing Production Data...', description: 'Calling thedoggycompany.com directly' });
-      // Fix 1: Celebrate images + pet soul string data
-      const res1 = await fetch('https://thedoggycompany.com/api/admin/fix-celebrate-data?password=lola4304', { method: 'POST' });
-      const d1 = await res1.json();
-      // Fix 2: Pet string data (if endpoint exists on production)
+      toast({ title: '🚀 Fixing Data...', description: 'Updating service illustrations + pet soul data' });
+      // Fix celebrate data on current server (works on both preview and production)
+      const res1 = await fetch(`${API_URL}/api/admin/fix-celebrate-data?password=lola4304`, { method: 'POST' });
+      const text1 = await res1.text();
+      let d1;
+      try { d1 = JSON.parse(text1); } catch { d1 = { success: false, message: text1 || 'Unknown error' }; }
+      // Fix pet string data
       let d2 = { success: false, message: 'Skipped' };
       try {
-        const res2 = await fetch('https://thedoggycompany.com/api/admin/fix-pet-string-data?password=lola4304', { method: 'POST' });
-        d2 = await res2.json();
+        const res2 = await fetch(`${API_URL}/api/admin/fix-pet-string-data?password=lola4304`, { method: 'POST' });
+        const text2 = await res2.text();
+        try { d2 = JSON.parse(text2); } catch { d2 = { success: false, message: 'No fix-pet endpoint' }; }
       } catch {}
       const msg = `Images: ${d1.success ? d1.message : 'Failed'}\nPet data: ${d2.success ? d2.message : d2.message || 'Needs deploy'}`;
       setProdFixResult({ success: d1.success, message: msg, details: { ...d1, petFix: d2 } });
-      toast({ title: d1.success ? '✅ Production Fixed!' : '⚠️ Partial Fix', description: d1.message, duration: 8000 });
+      toast({ title: d1.success ? '✅ Data Fixed!' : '⚠️ Partial Fix', description: d1.message, duration: 8000 });
     } catch (error) {
       setProdFixResult({ success: false, message: error.message });
-      toast({ title: 'Error', description: 'Could not reach thedoggycompany.com — check network', variant: 'destructive' });
+      toast({ title: 'Error', description: `Fix failed: ${error.message}`, variant: 'destructive' });
     } finally {
       setFixingProdData(false);
     }
@@ -3478,7 +3481,9 @@ const Admin = () => {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' }
                     });
-                    const result = await syncRes.json();
+                    const syncText = await syncRes.text();
+                    let result;
+                    try { result = JSON.parse(syncText); } catch { result = { success: false, message: syncText || 'Unknown error' }; }
                     
                     if (result.success) {
                       alert(`✅ ${result.message}\n\nImported: ${result.imported}\nUpdated: ${result.updated}\nTotal: ${result.total}`);
