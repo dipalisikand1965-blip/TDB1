@@ -166,7 +166,7 @@ ARCHIVE AFTER 5 MIN INACTIVITY
 
 ## Test 1: Meal Plan (No Products)
 ```bash
-curl -s -X POST "https://data-integrity-task.preview.emergentagent.com/api/mira/os/understand-with-products" \
+curl -s -X POST "https://unified-dine.preview.emergentagent.com/api/mira/os/understand-with-products" \
   -H "Content-Type: application/json" \
   -d '{"input": "Create a healthy meal plan for Mojo", "pet_context": {"name": "Mojo", "breed": "Indie"}}' \
   | python3 -c "import sys,json; r=json.load(sys.stdin); print('Products:', len(r.get('response',{}).get('products',[]))); print('Tip Card:', r.get('response',{}).get('tip_card',{}).get('title'))"
@@ -175,7 +175,7 @@ curl -s -X POST "https://data-integrity-task.preview.emergentagent.com/api/mira/
 
 ## Test 2: Birthday Cake (Products)
 ```bash
-curl -s -X POST "https://data-integrity-task.preview.emergentagent.com/api/mira/os/understand-with-products" \
+curl -s -X POST "https://unified-dine.preview.emergentagent.com/api/mira/os/understand-with-products" \
   -H "Content-Type: application/json" \
   -d '{"input": "Birthday cake for Mojo", "pet_context": {"name": "Mojo", "breed": "Indie"}}' \
   | python3 -c "import sys,json; r=json.load(sys.stdin); print('Products:', len(r.get('response',{}).get('products',[])))"

@@ -4,7 +4,7 @@ Update Care products with generated images via API
 """
 import requests
 
-API_URL = "https://data-integrity-task.preview.emergentagent.com"
+API_URL = "https://unified-dine.preview.emergentagent.com"
 AUTH = ("aditya", "lola4304")
 
 # Generated Care images
