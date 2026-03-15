@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://dine-consistency-fix.preview.emergentagent.com
+**Preview URL:** https://dine-layout-update.preview.emergentagent.com
 
 ---
 

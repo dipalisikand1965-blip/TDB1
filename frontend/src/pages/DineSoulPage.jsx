@@ -7,14 +7,13 @@
  * Colors:       Amber / terracotta  (#3d1200 → #e86a00)
  */
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
-import { Loader2 } from "lucide-react";
+import { Loader2, Check } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
-import MiraSoulNudge from "../components/celebrate/MiraSoulNudge";
 import DineCategoryStrip from "../components/dine/DineCategoryStrip";
 import DineHero from "../components/dine/DineHero";
 import { API_URL } from "../utils/api";
@@ -286,79 +285,390 @@ function ProductCard({ product }) {
   );
 }
 
-// ─── TummyProfile ─────────────────────────────────────────────────────────────
+// ─── Soul Question Card (Dine — amber themed) ────────────────────────────────
+function SoulQuestionCardDine({ question, petName, onAnswered, token }) {
+  const [selected, setSelected] = useState('');
+  const [textValue, setTextValue] = useState('');
+  const [multiSelected, setMultiSelected] = useState([]);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [pointsGained, setPointsGained] = useState(null);
+
+  const handleSubmit = async () => {
+    const answer = question.type === 'text' ? textValue
+      : question.type === 'multi_select' ? multiSelected
+      : selected;
+    if (!answer || (Array.isArray(answer) && answer.length === 0)) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${API_URL}/api/pet-soul/profile/${question.pet_id}/answer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ question_id: question.question_id, answer })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPointsGained(question.weight || 3);
+        setSubmitted(true);
+        onAnswered?.(data.scores?.overall, question.weight || 3);
+      }
+    } catch (err) {
+      console.error('[SoulQuestionCardDine] Error:', err);
+      setPointsGained(question.weight || 3);
+      setSubmitted(true);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const toggleMulti = (opt) => {
+    setMultiSelected(prev => prev.includes(opt) ? prev.filter(o => o !== opt) : [...prev, opt]);
+  };
+
+  if (submitted) {
+    return (
+      <div style={{
+        borderRadius: 16, padding: '16px', display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 140,
+        background: 'linear-gradient(135deg, #1A0A00 0%, #0A2000 100%)',
+        border: '2px solid rgba(80,220,120,0.45)',
+        boxShadow: '0 0 24px rgba(80,220,120,0.15)',
+      }}>
+        <div style={{
+          borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: 40, height: 40, marginBottom: 4,
+          background: 'rgba(80,220,120,0.18)', border: '2px solid rgba(80,220,120,0.5)',
+        }}>
+          <Check size={20} style={{ color: '#50DC78' }} />
+        </div>
+        <p style={{ fontWeight: 800, color: '#50DC78', fontSize: 14, textAlign: 'center' }}>Soul score growing!</p>
+        {pointsGained && (
+          <div style={{ borderRadius: 20, padding: '4px 12px', fontWeight: 700, fontSize: 11, background: 'rgba(80,220,120,0.15)', color: '#50DC78', border: '1px solid rgba(80,220,120,0.3)' }}>
+            +{pointsGained} pts added
+          </div>
+        )}
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, textAlign: 'center' }}>
+          Mira now knows {petName} better ✦
+        </p>
+      </div>
+    );
+  }
+
+  const hasAnswer = selected || textValue.trim() || multiSelected.length > 0;
+
+  return (
+    <div style={{
+      borderRadius: 16, padding: '14px',
+      background: 'linear-gradient(135deg, #3d1200 0%, #7a2800 100%)',
+      border: '1.5px solid rgba(255,140,66,0.40)',
+      minHeight: 140,
+      boxShadow: '0 4px 20px rgba(196,68,0,0.15)',
+    }}>
+      {/* Folder label + weight */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ fontSize: 12 }}>{question.folder_icon || '✦'}</span>
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,200,120,0.85)' }}>
+            {question.folder_name}
+          </span>
+        </div>
+        <span style={{
+          borderRadius: 20, padding: '2px 8px', fontSize: 9, fontWeight: 700,
+          background: 'rgba(255,140,66,0.20)', color: '#FFB366',
+          border: '1px solid rgba(255,140,66,0.35)',
+        }}>
+          +{question.weight || 3} pts
+        </span>
+      </div>
+
+      {/* Question */}
+      <p style={{ fontWeight: 700, fontSize: 12, color: 'rgba(255,255,255,0.92)', marginBottom: 10, lineHeight: 1.4 }}>
+        {question.question}
+      </p>
+
+      {question.type === 'text' && (
+        <textarea
+          value={textValue}
+          onChange={e => setTextValue(e.target.value)}
+          placeholder="Type here..."
+          rows={2}
+          style={{
+            width: '100%', borderRadius: 10, padding: '8px 12px', fontSize: 12,
+            background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,140,66,0.40)',
+            color: 'rgba(255,255,255,0.88)', outline: 'none', resize: 'none', boxSizing: 'border-box',
+          }}
+        />
+      )}
+
+      {question.type === 'select' && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+          {(question.options || []).map(opt => (
+            <button key={opt} onClick={() => setSelected(opt)} style={{
+              borderRadius: 20, padding: '4px 10px', fontSize: 11, fontWeight: 600,
+              background: selected === opt ? 'rgba(255,140,66,0.35)' : 'rgba(255,255,255,0.07)',
+              border: selected === opt ? '1.5px solid #FF8C42' : '1px solid rgba(255,255,255,0.18)',
+              color: selected === opt ? '#FFD080' : 'rgba(255,255,255,0.70)',
+              cursor: 'pointer', transition: 'all 0.15s',
+            }}>{opt}</button>
+          ))}
+        </div>
+      )}
+
+      {question.type === 'multi_select' && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+          {(question.options || []).slice(0, 6).map(opt => (
+            <button key={opt} onClick={() => toggleMulti(opt)} style={{
+              borderRadius: 20, padding: '4px 10px', fontSize: 11, fontWeight: 600,
+              background: multiSelected.includes(opt) ? 'rgba(255,140,66,0.35)' : 'rgba(255,255,255,0.07)',
+              border: multiSelected.includes(opt) ? '1.5px solid #FF8C42' : '1px solid rgba(255,255,255,0.18)',
+              color: multiSelected.includes(opt) ? '#FFD080' : 'rgba(255,255,255,0.70)',
+              cursor: 'pointer', transition: 'all 0.15s',
+            }}>{opt}</button>
+          ))}
+        </div>
+      )}
+
+      <button
+        onClick={handleSubmit}
+        disabled={submitting || !hasAnswer}
+        style={{
+          marginTop: 8, width: '100%', borderRadius: 10, padding: '8px', fontSize: 12,
+          fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          background: !hasAnswer ? 'rgba(255,140,66,0.20)' : 'linear-gradient(135deg, #FF8C42, #C44400)',
+          border: 'none', cursor: submitting ? 'wait' : (!hasAnswer ? 'not-allowed' : 'pointer'),
+          boxShadow: hasAnswer ? '0 4px 16px rgba(196,68,0,0.40)' : 'none',
+          opacity: submitting ? 0.7 : 1, transition: 'all 0.2s',
+        }}
+        data-testid={`soul-question-submit-${question.question_id}`}
+      >
+        {submitting ? <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> : <Check size={12} />}
+        Save +{question.weight || 3} pts
+      </button>
+    </div>
+  );
+}
+
+// ─── TummyProfile (soul-score aware — like Mira's Picks) ────────────────────
 function TummyProfile({ pet, token, onUpdate }) {
   const [open, setOpen] = useState(true);
   const [goal, setGoal] = useState(pet?.nutrition_goal || pet?.doggy_soul_answers?.nutrition_goal || "Healthy maintenance");
   const [saving, setSaving] = useState(false);
+  const [questions, setQuestions] = useState([]);
+  const [questionsLoading, setQuestionsLoading] = useState(false);
+  const [answeredCount, setAnsweredCount] = useState(0);
+  const [currentScore, setCurrentScore] = useState(pet?.soul_score || pet?.overall_score || 0);
+
   const allergies = getAllergies(pet);
   const loves = getLoves(pet);
   const healthCondition = getHealthCondition(pet);
   const petName = pet?.name || "your dog";
 
+  // "Mira Knows" state — has meaningful food data
+  const hasFoodData = loves.length > 0 || allergies.length > 0 || !!healthCondition;
+
+  // Fetch dine-scoped soul questions
+  const fetchQuestions = useCallback(() => {
+    if (!pet?.id) return;
+    setQuestionsLoading(true);
+    fetch(`${API_URL}/api/pet-soul/profile/${pet.id}/quick-questions?limit=4&context=dine`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data) {
+          setQuestions((data.questions || []).map(q => ({ ...q, pet_id: pet.id })));
+          if (data.current_score !== undefined) setCurrentScore(data.current_score);
+        }
+      })
+      .catch(e => console.error("[TummyProfile] questions error:", e))
+      .finally(() => setQuestionsLoading(false));
+  }, [pet?.id]);
+
+  useEffect(() => { fetchQuestions(); }, [fetchQuestions]);
+
+  const handleQuestionAnswered = useCallback((newScore, pts) => {
+    setAnsweredCount(prev => prev + 1);
+    if (newScore !== undefined) {
+      setCurrentScore(newScore);
+      window.dispatchEvent(new CustomEvent('soulScoreUpdated', { detail: { petId: pet.id, score: newScore } }));
+    }
+    setTimeout(() => fetchQuestions(), 800);
+  }, [pet?.id, fetchQuestions]);
+
   const saveGoal = async () => {
     setSaving(true);
     try {
       const res = await fetch(`${API_URL}/api/pets/${pet.id}/soul`, {
-        method:"PUT",
-        headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},
-        body:JSON.stringify({nutrition_goal:goal}),
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ nutrition_goal: goal }),
       });
       if (res.ok) toast({ title: "Nutrition goal updated!" });
     } catch {}
     setSaving(false);
   };
 
-  return (
-    <div style={{background:"#fff",border:"2px solid #FFE5CC",borderRadius:20,marginBottom:24,overflow:"hidden"}} data-testid="tummy-profile">
-      <div onClick={() => setOpen(!open)} style={{padding:"16px 20px",display:"flex",alignItems:"center",gap:14,cursor:"pointer"}}>
-        <div style={{width:40,height:40,borderRadius:10,background:"linear-gradient(135deg,#FFF3E0,#FFE0B2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}}>🐾</div>
-        <div style={{flex:1}}>
-          <div style={{fontSize:15,fontWeight:700,color:"#1A0A00"}}>{petName}'s Tummy Profile</div>
-          <div style={{fontSize:11,color:"#888"}}>How Mira filters everything on this page</div>
-        </div>
-        <span style={{color:"#C44400",fontSize:14}}>{open?"▲":"▼"}</span>
-      </div>
-      {open && (
-        <div style={{padding:"0 20px 20px"}}>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:14}}>
-            <div style={{background:"#E8F8EE",border:"1px solid #B2DFC4",borderRadius:14,padding:14}}>
-              <div style={{fontSize:10,fontWeight:700,color:"#27AE60",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:8}}>Loves</div>
-              <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-                {loves.length > 0 ? loves.map(l => (
-                  <span key={l} style={{background:"#fff",border:"1.5px solid #27AE60",borderRadius:20,padding:"3px 10px",fontSize:12,color:"#27AE60",fontWeight:500}}>{l.charAt(0).toUpperCase()+l.slice(1)}</span>
-                )) : <span style={{fontSize:12,color:"#aaa"}}>Tell Mira what {petName} loves</span>}
-              </div>
+  const visibleQuestions = questions.slice(0, Math.max(0, 4 - answeredCount));
+  const isGold = currentScore >= 80;
+
+  // ── GROW SOUL state (no food data) ──────────────────────────────────────────
+  if (!hasFoodData) {
+    return (
+      <div style={{ marginBottom: 24 }} data-testid="tummy-profile">
+        {/* Soul Score header — amber themed */}
+        <div style={{
+          borderRadius: 20, padding: '20px 24px', marginBottom: 16,
+          background: 'linear-gradient(135deg, #3d1200 0%, #7a2800 100%)',
+          border: '1.5px solid rgba(255,140,66,0.50)',
+          boxShadow: '0 0 32px rgba(196,68,0,0.18)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <p style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,200,100,0.85)', fontSize: 9, marginBottom: 4 }}>
+                ✦ GROW {petName.toUpperCase()}'S TUMMY PROFILE
+              </p>
+              <p style={{ color: 'rgba(255,255,255,0.50)', fontSize: 11 }}>
+                Tell Mira what {petName} eats · {visibleQuestions.length} questions remaining
+              </p>
             </div>
-            <div style={{background:"#FEF0F0",border:"1px solid #F5C6C6",borderRadius:14,padding:14}}>
-              <div style={{fontSize:10,fontWeight:700,color:"#C0392B",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:8}}>Avoid</div>
-              <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-                {allergies.length > 0 ? allergies.map(a => (
-                  <span key={a} style={{background:"#fff",border:"1.5px solid #E57373",borderRadius:20,padding:"3px 10px",fontSize:12,color:"#C0392B",fontWeight:500}}>{a}</span>
-                )) : <span style={{fontSize:12,color:"#aaa"}}>No allergies noted yet</span>}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2 }}>
+                <span style={{
+                  fontSize: 56, fontWeight: 900, lineHeight: 1,
+                  color: isGold ? '#F0C060' : '#FF8C42',
+                  textShadow: isGold ? '0 0 32px rgba(240,192,96,0.7)' : '0 0 32px rgba(255,140,66,0.7)',
+                }}>
+                  {Math.round(currentScore)}
+                </span>
+                <span style={{ color: 'rgba(255,255,255,0.40)', fontSize: 14, marginBottom: 6 }}>%</span>
               </div>
-            </div>
-            <div style={{background:"#FFFBEE",border:"1px solid #FFE5A0",borderRadius:14,padding:14}}>
-              <div style={{fontSize:10,fontWeight:700,color:"#C9973A",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:8}}>Nutrition Goal</div>
-              <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                <input value={goal} onChange={e => setGoal(e.target.value)} style={{flex:1,border:"1.5px solid #FFE5A0",borderRadius:8,padding:"6px 10px",fontSize:13,color:"#1A0A00",outline:"none",background:"#fff"}} />
-                <button onClick={saveGoal} disabled={saving} style={{background:"#C44400",color:"#fff",border:"none",borderRadius:8,padding:"7px 14px",fontSize:12,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>{saving?"…":"✓ Update"}</button>
-              </div>
-            </div>
-            <div style={{background:"#F0F4FF",border:"1px solid #C5CEFF",borderRadius:14,padding:14}}>
-              <div style={{fontSize:10,fontWeight:700,color:"#3B5BDB",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:8}}>Health Note</div>
-              <div style={{fontSize:13,color:healthCondition?"#1A0A00":"#999"}}>{healthCondition||"No health notes added yet"}</div>
+              {answeredCount > 0 && (
+                <div style={{
+                  borderRadius: 20, padding: '2px 10px', fontSize: 9, fontWeight: 700,
+                  background: 'rgba(80,220,120,0.20)', color: '#50DC78',
+                  border: '1px solid rgba(80,220,120,0.35)',
+                }}>
+                  +{answeredCount} answered this session
+                </div>
+              )}
             </div>
           </div>
-          <div style={{background:"linear-gradient(135deg,#FFF3E0,#FDE8E8)",borderRadius:12,padding:"12px 16px",display:"flex",alignItems:"flex-start",gap:10}}>
-            <div style={{width:28,height:28,borderRadius:"50%",background:"linear-gradient(135deg,#FF8C42,#C44DFF)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:"#fff",flexShrink:0,marginTop:1}}>✦</div>
-            <p style={{fontSize:13,color:"#5A2800",lineHeight:1.55,margin:0}}>
-              <strong style={{color:"#1A0A00"}}>Mira filters every product on this page</strong> using the profile above
-              {allergies.length > 0 ? ` — hiding anything with ${allergies.join(" and ")}` : ""}
-              {loves.length > 0 ? `, surfacing ${loves[0].charAt(0).toUpperCase()+loves[0].slice(1)}-based options first` : ""}
-              {healthCondition ? `, and adjusting picks for ${petName}'s ${healthCondition}` : ""}.
+        </div>
+
+        {/* Question cards grid */}
+        {visibleQuestions.length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 100%), 1fr))', gap: 12, marginBottom: 12 }}>
+            {visibleQuestions.map(q => (
+              <SoulQuestionCardDine
+                key={q.question_id}
+                question={q}
+                petName={petName}
+                token={token}
+                onAnswered={handleQuestionAnswered}
+              />
+            ))}
+          </div>
+        )}
+
+        {!questionsLoading && visibleQuestions.length === 0 && answeredCount === 0 && (
+          <div style={{
+            borderRadius: 16, padding: '20px', textAlign: 'center',
+            background: '#FFF7ED', border: '1.5px dashed #FFCC99',
+          }}>
+            <p style={{ fontSize: 13, color: '#888' }}>Questions loading...</p>
+          </div>
+        )}
+
+        <div style={{ marginTop: 8, textAlign: 'center' }}>
+          <a href={`/pet-soul/${pet?.id}`} style={{ fontSize: 12, fontWeight: 600, color: 'rgba(196,68,0,0.75)', textDecoration: 'none' }}>
+            See full soul profile →
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // ── MIRA KNOWS state (has food data) ─────────────────────────────────────────
+  return (
+    <div style={{ background: "#fff", border: "2px solid #FFE5CC", borderRadius: 20, marginBottom: 24, overflow: "hidden" }} data-testid="tummy-profile">
+      {/* Header — collapsible */}
+      <div onClick={() => setOpen(!open)} style={{ padding: "16px 20px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer" }}>
+        <div style={{ width: 40, height: 40, borderRadius: 10, background: "linear-gradient(135deg,#FFF3E0,#FFE0B2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>🐾</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#1A0A00" }}>{petName}'s Tummy Profile</div>
+          <div style={{ fontSize: 11, color: "#888" }}>
+            ✦ Mira knows {petName}'s food preferences
+          </div>
+        </div>
+        <span style={{ color: "#C44400", fontSize: 14 }}>{open ? "▲" : "▼"}</span>
+      </div>
+
+      {open && (
+        <div style={{ padding: "0 20px 20px" }}>
+          {/* Mira knows banner */}
+          <div style={{
+            background: 'linear-gradient(135deg, #3d1200, #7a2800)', borderRadius: 12,
+            padding: '10px 16px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10,
+          }}>
+            <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,140,66,0.25)', border: '1.5px solid rgba(255,140,66,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#FFB366', flexShrink: 0 }}>✦</div>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, margin: 0, fontStyle: 'italic' }}>
+              Mira knows {petName}'s food preferences
+              {allergies.length > 0 ? ` — hiding ${allergies.join(" & ")}` : ""}
+              {loves.length > 0 ? `, surfacing ${loves[0]}-based options first` : ""}.
             </p>
           </div>
+
+          {/* 4-cell grid */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+            <div style={{ background: "#E8F8EE", border: "1px solid #B2DFC4", borderRadius: 14, padding: 14 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#27AE60", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Loves</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {loves.length > 0 ? loves.map(l => (
+                  <span key={l} style={{ background: "#fff", border: "1.5px solid #27AE60", borderRadius: 20, padding: "3px 10px", fontSize: 12, color: "#27AE60", fontWeight: 500 }}>{l.charAt(0).toUpperCase() + l.slice(1)}</span>
+                )) : <span style={{ fontSize: 12, color: "#aaa" }}>Tell Mira what {petName} loves</span>}
+              </div>
+            </div>
+            <div style={{ background: "#FEF0F0", border: "1px solid #F5C6C6", borderRadius: 14, padding: 14 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#C0392B", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Avoid</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {allergies.length > 0 ? allergies.map(a => (
+                  <span key={a} style={{ background: "#fff", border: "1.5px solid #E57373", borderRadius: 20, padding: "3px 10px", fontSize: 12, color: "#C0392B", fontWeight: 500 }}>{a}</span>
+                )) : <span style={{ fontSize: 12, color: "#aaa" }}>No allergies noted yet</span>}
+              </div>
+            </div>
+            <div style={{ background: "#FFFBEE", border: "1px solid #FFE5A0", borderRadius: 14, padding: 14 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#C9973A", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Nutrition Goal</div>
+              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <input value={goal} onChange={e => setGoal(e.target.value)} style={{ flex: 1, border: "1.5px solid #FFE5A0", borderRadius: 8, padding: "6px 10px", fontSize: 13, color: "#1A0A00", outline: "none", background: "#fff" }} />
+                <button onClick={saveGoal} disabled={saving} style={{ background: "#C44400", color: "#fff", border: "none", borderRadius: 8, padding: "7px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>{saving ? "…" : "✓ Update"}</button>
+              </div>
+            </div>
+            <div style={{ background: "#F0F4FF", border: "1px solid #C5CEFF", borderRadius: 14, padding: 14 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#3B5BDB", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Health Note</div>
+              <div style={{ fontSize: 13, color: healthCondition ? "#1A0A00" : "#999" }}>{healthCondition || "No health notes added yet"}</div>
+            </div>
+          </div>
+
+          {/* Grow soul questions (if any remaining) */}
+          {visibleQuestions.length > 0 && (
+            <div style={{ marginTop: 8 }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#C44400', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
+                ✦ GROW {petName.toUpperCase()}'S SOUL
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))', gap: 10 }}>
+                {visibleQuestions.map(q => (
+                  <SoulQuestionCardDine
+                    key={q.question_id}
+                    question={q}
+                    petName={petName}
+                    token={token}
+                    onAnswered={handleQuestionAnswered}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -619,9 +929,28 @@ function DineHeroV2({ pet, soulScore }) {
 // ─── Tab bar ──────────────────────────────────────────────────────────────────
 function TabBar({ active, onChange }) {
   return (
-    <div style={{background:"#fff",borderBottom:"1px solid #F0E8E0",display:"flex",padding:"0 24px"}} data-testid="dine-tab-bar">
-      {[{id:"eat",icon:"🍽️",label:"Eat & Nourish"},{id:"out",icon:"🗺️",label:"Dine Out"}].map(tab => (
-        <button key={tab.id} onClick={() => onChange(tab.id)} style={{display:"flex",alignItems:"center",gap:6,padding:"0 24px",height:52,fontSize:14,fontWeight:600,color:active===tab.id?"#C44400":"#888",borderBottom:`3px solid ${active===tab.id?"#C44400":"transparent"}`,background:"none",border:"none",borderBottom:`3px solid ${active===tab.id?"#C44400":"transparent"}`,cursor:"pointer",transition:"all 0.15s"}} data-testid={`dine-tab-${tab.id}`}>
+    <div
+      style={{ display: "flex", justifyContent: "center", gap: 8, padding: "12px 16px", background: "#FDF6EE", borderBottom: "1px solid #F0E8E0" }}
+      data-testid="dine-tab-bar"
+    >
+      {[{ id: "eat", icon: "🍽️", label: "Eat & Nourish" }, { id: "out", icon: "🗺️", label: "Dine Out" }].map(tab => (
+        <button
+          key={tab.id}
+          onClick={() => onChange(tab.id)}
+          style={{
+            display: "flex", alignItems: "center", gap: 6,
+            padding: "8px 20px",
+            fontSize: 13, fontWeight: 700,
+            color: active === tab.id ? "#fff" : "#C44400",
+            background: active === tab.id ? "linear-gradient(135deg, #FF8C42, #C44400)" : "#FFF3E0",
+            border: `1.5px solid ${active === tab.id ? "#FF8C42" : "#FFCC99"}`,
+            borderRadius: 20,
+            cursor: "pointer",
+            transition: "all 0.18s",
+            boxShadow: active === tab.id ? "0 2px 12px rgba(196,68,0,0.30)" : "none",
+          }}
+          data-testid={`dine-tab-${tab.id}`}
+        >
           {tab.icon} {tab.label}
         </button>
       ))}
@@ -722,41 +1051,56 @@ const DineSoulPage = () => {
       {/* Hero — full bleed, mirrors CelebrateHero */}
       <DineHero pet={petData} soulScore={soulScore} />
 
-      {/* Category strip — same golden principle as /celebrate-soul */}
-      <DineCategoryStrip pet={petData} />
-
-      {/* Tab bar */}
-      <TabBar active={activeTab} onChange={setActiveTab} />
-
       {/* Page body — max-w-5xl centred, matches Celebrate layout */}
-      <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{background:"#FDF6EE",fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"}}>
+      <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{ background: "#FDF6EE", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
+
+        {/* Category strip — centered within max-w container (same as Celebrate) */}
+        <DineCategoryStrip pet={petData} />
+
+        {/* Tab bar — centered, amber box style */}
+        <TabBar active={activeTab} onChange={setActiveTab} />
+
+        {/* "How would Mojo love to eat?" — mirrors "How would Mojo love to celebrate?" on /celebrate */}
+        <section className="py-8" data-testid="dine-how-would-section">
+          <h2 style={{
+            fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 800,
+            color: '#1A0A00', marginBottom: 6,
+            fontFamily: "Georgia, 'Times New Roman', serif",
+          }}>
+            How would{' '}
+            <span style={{ color: '#FF8C42' }}>{petData.name}</span>{' '}
+            love to eat?
+          </h2>
+          <p style={{ fontSize: 14, color: '#888888', lineHeight: 1.5 }}>
+            Choose a dimension — everything inside is personalised to {petData.name}'s food profile.{' '}
+            <span style={{ color: '#C44400', fontWeight: 600 }}>Glowing ones match what {petData.name} loves.</span>
+          </p>
+        </section>
 
         {activeTab === "eat" && (
           <>
             <TummyProfile pet={petData} token={token} onUpdate={p => { setPetData(p); setCurrentPet(p); }} />
 
-            {/* Mira soul nudge removed per user request */}
-
-            <div style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:"#1A0A00",marginBottom:4,fontFamily:"Georgia,serif"}}>Eat &amp; Nourish</div>
-            <div style={{fontSize:12,color:"#888",marginBottom:16}}>5 dimensions, filtered to {petData.name}</div>
+            <div style={{ fontSize: "clamp(1.125rem,2.5vw,1.375rem)", fontWeight: 800, color: "#1A0A00", marginBottom: 4, fontFamily: "Georgia,serif" }}>Eat &amp; Nourish</div>
+            <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>5 dimensions, filtered to {petData.name}</div>
 
             {/* Dimensions grid */}
-            <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:8,marginBottom:8}}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 8, marginBottom: 8 }}>
               {DINE_DIMS.map(dim => (
-                <div key={dim.id} onClick={() => setOpenDim(openDim===dim.id?null:dim.id)} style={{background:dim.bg,borderRadius:12,padding:"14px 12px",cursor:"pointer",position:"relative",opacity:dim.glow?1:0.60,boxShadow:dim.glow&&openDim!==dim.id?"0 0 18px rgba(255,140,66,0.18)":"none",border:openDim===dim.id?"2px solid #FF8C42":"2px solid transparent",transition:"all 0.15s"}} data-testid={`dine-dim-${dim.id}`}>
-                  {dim.glow && <div style={{position:"absolute",top:8,right:8,width:8,height:8,borderRadius:"50%",background:dim.dot}}/>}
-                  <span style={{fontSize:22,display:"block",marginBottom:8}}>{dim.icon}</span>
-                  <div style={{fontSize:11,fontWeight:700,color:"#1A0A00",marginBottom:3}}>{dim.name}</div>
-                  <div style={{fontSize:10,color:"#666",lineHeight:1.3,marginBottom:6}}>{t(dim.sub, petData.name)}</div>
-                  <span style={{fontSize:9,fontWeight:700,borderRadius:20,padding:"2px 7px",display:"inline-block",background:dim.badgeBg,color:dim.badgeCol}}>{dim.badge}</span>
-                  <span style={{position:"absolute",bottom:8,right:10,fontSize:14,color:"rgba(0,0,0,0.25)",transition:"transform 0.2s",transform:openDim===dim.id?"rotate(90deg)":"none"}}>›</span>
+                <div key={dim.id} onClick={() => setOpenDim(openDim === dim.id ? null : dim.id)} style={{ background: dim.bg, borderRadius: 12, padding: "14px 12px", cursor: "pointer", position: "relative", opacity: dim.glow ? 1 : 0.60, boxShadow: dim.glow && openDim !== dim.id ? "0 0 18px rgba(255,140,66,0.18)" : "none", border: openDim === dim.id ? "2px solid #FF8C42" : "2px solid transparent", transition: "all 0.15s" }} data-testid={`dine-dim-${dim.id}`}>
+                  {dim.glow && <div style={{ position: "absolute", top: 8, right: 8, width: 8, height: 8, borderRadius: "50%", background: dim.dot }} />}
+                  <span style={{ fontSize: 22, display: "block", marginBottom: 8 }}>{dim.icon}</span>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#1A0A00", marginBottom: 3 }}>{dim.name}</div>
+                  <div style={{ fontSize: 10, color: "#666", lineHeight: 1.3, marginBottom: 6 }}>{t(dim.sub, petData.name)}</div>
+                  <span style={{ fontSize: 9, fontWeight: 700, borderRadius: 20, padding: "2px 7px", display: "inline-block", background: dim.badgeBg, color: dim.badgeCol }}>{dim.badge}</span>
+                  <span style={{ position: "absolute", bottom: 8, right: 10, fontSize: 14, color: "rgba(0,0,0,0.25)", transition: "transform 0.2s", transform: openDim === dim.id ? "rotate(90deg)" : "none" }}>›</span>
                 </div>
               ))}
             </div>
 
             {/* Expanded panel */}
             {activeDim && (
-              <div style={{display:"grid",gridTemplateColumns:"1fr"}}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr" }}>
                 <DimExpanded dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
               </div>
             )}
@@ -772,7 +1116,7 @@ const DineSoulPage = () => {
       </div>
 
       {/* Mira pill */}
-      <div onClick={() => window.dispatchEvent(new CustomEvent("openMiraAI",{detail:{message:`What should ${petData.name} eat today?`,context:"dine"}}))} style={{position:"fixed",bottom:20,right:20,background:"linear-gradient(135deg,#C44DFF,#FF2D87)",color:"#fff",borderRadius:20,padding:"8px 14px",fontSize:12,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:5,zIndex:100,boxShadow:"0 4px 20px rgba(196,77,255,0.40)"}} data-testid="ask-mira-pill">
+      <div onClick={() => window.dispatchEvent(new CustomEvent("openMiraAI", { detail: { message: `What should ${petData.name} eat today?`, context: "dine" } }))} style={{ position: "fixed", bottom: 20, right: 20, background: "linear-gradient(135deg,#C44DFF,#FF2D87)", color: "#fff", borderRadius: 20, padding: "8px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, zIndex: 100, boxShadow: "0 4px 20px rgba(196,77,255,0.40)" }} data-testid="ask-mira-pill">
         ✦ Ask Mira
       </div>
     </PillarPageLayout>

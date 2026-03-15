@@ -11,7 +11,48 @@ Violating these rules will break the admin panel and data consistency.
 
 ---
 
-## ✅ SESSION 42 — Dine Hero: Full Parity with CelebrateHero (Mar 15, 2026)
+## ✅ SESSION 43 — Dine Page Finalization: Layout + Heading + Tummy Profile Refactor (Feb 2026)
+
+### What Was Built / Fixed:
+
+#### 1. Layout: Category Strip & Tab Bar — Center-Aligned
+- **DineCategoryStrip** moved inside `max-w-5xl mx-auto` container (matching Celebrate page structure)
+- **TabBar** moved inside same container + center-aligned with `justify-content: center`
+- **TabBar styling**: Changed from underline-style to amber pill/box buttons:
+  - Active tab: `linear-gradient(135deg, #FF8C42, #C44400)` background, white text
+  - Inactive tab: `#FFF3E0` background, `#C44400` text, amber border
+  - Both tabs have pill shape (`borderRadius: 20`)
+
+#### 2. New Heading: "How would Mojo love to eat?"
+- Added `<section data-testid="dine-how-would-section">` between TabBar and content
+- Heading: `How would [petName] love to eat?` (petName in #FF8C42 amber color)
+- Sub-heading: "Choose a dimension — everything inside is personalised to [petName]'s food profile."
+- Mirrors the exact structure and styling of the "How would Mojo love to celebrate?" section in `SoulCelebrationPillars.jsx`
+- Uses `fontFamily: "Georgia, 'Times New Roman', serif"` to match
+
+#### 3. Tummy Profile Refactor — Now Functions Like "Mira's Picks"
+- **Two states** based on `hasFoodData` (loves.length > 0 OR allergies.length > 0 OR healthCondition):
+  - **GROW SOUL state** (no food data): Shows amber-themed soul score header + question cards (4 dine-scoped questions from `/api/pet-soul/profile/{id}/quick-questions?limit=4&context=dine`)
+  - **MIRA KNOWS state** (has food data): Shows rich profile (loves, avoid, goal, health) + questions below if any remain
+- **New `SoulQuestionCardDine` component**: Amber-themed version of `SoulQuestionCard` from CelebrateContentModal
+  - Submits to `/api/pet-soul/profile/{id}/answer`
+  - Shows +pts earned, success confirmation
+  - All amber/terracotta color scheme (#FF8C42, #C44400)
+- **Live score update**: Soul score updates live as questions are answered; dispatches `soulScoreUpdated` event
+
+#### 4. Removed
+- Removed unused `MiraSoulNudge` import from DineSoulPage.jsx
+
+### Files Modified:
+- `frontend/src/pages/DineSoulPage.jsx` — All changes above
+
+### Testing:
+- Lint: 0 errors
+- Screenshots: Verified amber tabs, centered layout, new heading, TummyProfile states
+
+---
+
+
 
 ### What Was Fixed:
 - **Rebuilt DineHero.jsx** — Complete mirror of `CelebrateHero.jsx`, 1:1 structure:
