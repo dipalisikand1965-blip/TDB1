@@ -15,8 +15,9 @@ import axios from 'axios';
 import {
   Brain, Plus, Edit, Trash2, Search, Filter, Download, Upload,
   Users, Package, Settings, Star, Loader2, CheckCircle, Clock,
-  AlertCircle, TrendingUp, PawPrint, Gift, Bell, Shield, RefreshCw
+  AlertCircle, TrendingUp, PawPrint, Gift, Bell, Shield, RefreshCw, Briefcase
 } from 'lucide-react';
+import PillarServicesTab from './PillarServicesTab';
 
 const ADVISORY_TYPES = {
   behaviour: { name: 'Behaviour', color: 'bg-violet-100 text-violet-700' },
@@ -394,6 +395,9 @@ const AdvisoryManager = () => {
           <TabsTrigger value="bundles" className="data-[state=active]:bg-violet-600 data-[state=active]:text-white">
             <Gift className="w-4 h-4 mr-2" /> Bundles
           </TabsTrigger>
+          <TabsTrigger value="services" className="data-[state=active]:bg-violet-600 data-[state=active]:text-white">
+            <Briefcase className="w-4 h-4 mr-2" /> Services
+          </TabsTrigger>
           <TabsTrigger value="settings" className="data-[state=active]:bg-violet-600 data-[state=active]:text-white">
             <Settings className="w-4 h-4 mr-2" /> Settings
           </TabsTrigger>
@@ -673,6 +677,16 @@ const AdvisoryManager = () => {
               ))}
             </div>
           </Card>
+        </TabsContent>
+
+        {/* Services Tab */}
+        <TabsContent value="services" className="mt-4">
+          <PillarServicesTab
+            pillar="advisory"
+            pillarName="Advisory"
+            pillarIcon="🧠"
+            pillarColor="bg-violet-500"
+          />
         </TabsContent>
 
         {/* Settings Tab */}

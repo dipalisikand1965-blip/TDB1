@@ -19,8 +19,9 @@ import {
   Heart, Package, Gift, Settings, RefreshCw, Upload, Download,
   Plus, Edit2, Trash2, Search, Eye, Calendar, Clock, MapPin, User, Phone, Mail,
   PawPrint, CheckCircle, XCircle, Loader2, Building2, Star, DollarSign, Bell,
-  Sparkles, Flower2, Home
+  Sparkles, Flower2, Home, Briefcase
 } from 'lucide-react';
+import PillarServicesTab from './PillarServicesTab';
 import axios from 'axios';
 import { toast } from '../../hooks/use-toast';
 import { API_URL } from '../../utils/api';
@@ -383,6 +384,9 @@ const FarewellManager = ({ getAuthHeader }) => {
           </TabsTrigger>
           <TabsTrigger value="experiences" data-testid="farewell-tab-experiences">
             <Sparkles className="w-4 h-4 mr-2" /> Experiences
+          </TabsTrigger>
+          <TabsTrigger value="services" data-testid="farewell-tab-services">
+            <Briefcase className="w-4 h-4 mr-2" /> Services
           </TabsTrigger>
           <TabsTrigger value="settings" data-testid="farewell-tab-settings">
             <Settings className="w-4 h-4 mr-2" /> Settings
@@ -777,6 +781,16 @@ const FarewellManager = ({ getAuthHeader }) => {
             pillar="farewell"
             credentials={getAuthHeader}
             accentColor="purple"
+          />
+        </TabsContent>
+
+        {/* Services Tab */}
+        <TabsContent value="services" className="space-y-4">
+          <PillarServicesTab
+            pillar="farewell"
+            pillarName="Farewell"
+            pillarIcon="🌈"
+            pillarColor="bg-purple-500"
           />
         </TabsContent>
 
