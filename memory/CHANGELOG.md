@@ -364,18 +364,16 @@ Now includes additional celebrate-relevant merchandise:
 - **Route confirmed** — /celebrate redirects to /celebrate-soul via App.js
 - **Documentation completed** — complete-documentation.html, CHANGELOG.md, PRD.md all updated with session 29
 
-### Next: Dine page enhancements + other pillars
+## Session 38 — Full Pillar Architecture Unification (Mar 15, 2026)
+- **Canonical Architecture locked**: products_master / services_master / bundles = single sources of truth for all pillars
+- **12 Pillar Admins unified**: Care, Fit, Stay, Travel, Enjoy, Learn, Farewell, Emergency, Advisory, Paperwork, Dine, Adopt now show products from products_master via new PillarProductsTab.jsx reusable component
+- **New API**: GET/POST/PUT/DELETE /api/admin/pillar-products (unified for all pillars)
+- **BundlesManager enhanced**: search, pagination, AI image generate + file upload in modal
+- **Data migrations**: products_master=5789, bundles=103, 149 celebrate categories fixed
+- **AI image generation bug fixed** (CelebrateManager body stream locked error)
+- **Test result**: 100% backend (20/20) and 100% frontend (5 features verified)
 
----
-
-## Known Issues Backlog
-
-| Issue | Status | Priority |
-|-------|--------|----------|
-| ElevenLabs voice in Mira OS | Untested | P0 |
-| Production domain DNS | External blocker | P0 |
-| Original FAB multi-pet switching | Broken | P2 |
-| Original FAB voice | Broken | P2 |
+### Next: Razorpay checkout fix, Love Memory Drawer
 
 ---
 

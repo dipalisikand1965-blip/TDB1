@@ -1,6 +1,30 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 15, 2026 (Session 36 — Admin Once and For All: Bundle Pricing, Product Activation, Architecture Audit)
+## Last Updated: Mar 15, 2026 (Session 38 — Full Pillar Architecture Unification)
+
+---
+
+## ✅ SESSION 38 — Full Pillar Architecture Unification + Bundle CRUD Enhancement (Mar 15, 2026)
+
+### Canonical Architecture (LOCKED):
+| Collection | Source of Truth For | Who Writes |
+|---|---|---|
+| `products_master` | ALL products across ALL pillars | Shopify Sync + Product Box + Soul Products + Admin |
+| `services_master` | ALL services across ALL pillars | Service Box + Admin |
+| `bundles` | ALL bundles across ALL pillars | BundlesManager Admin |
+
+### What Was Built:
+1. **Unified Pillar Products API** — `GET/POST/PUT/DELETE /api/admin/pillar-products?pillar=X` reading from products_master
+2. **PillarProductsTab.jsx** — Reusable component for all 12 pillar admins (search, pagination, CRUD, image upload, AI gen)
+3. **All 12 Pillar Admins Updated** — Care, Fit, Stay, Travel, Enjoy, Learn, Farewell, Emergency, Advisory, Paperwork, Dine, Adopt
+4. **BundlesManager Enhanced** — Search bar, pagination (30/page), AI image generate in modal, file upload
+5. **AI Image Generation Bug Fixed** — Used `res.text()` + `JSON.parse()` instead of `res.json()` (body stream locked fix)
+6. **Data Migrations Run** — products_master: 5,789 | bundles: 103 | 149 celebrate categories fixed
+
+### Testing Results:
+- Backend: 100% (20/20 tests) ✅
+- Frontend: 100% (5 features verified) ✅
+- Data: products_master=5,789 | bundles=103 | services_master=1,102 ✅
 
 ---
 
