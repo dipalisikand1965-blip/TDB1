@@ -354,6 +354,25 @@ async def delete_service(service_id: str):
     return {"success": True, "message": "Service archived"}
 
 
+
+# ==================== PATCH SERVICE PRICING ====================
+
+@router.patch("/services/{service_id}/pricing")
+async def patch_service_pricing(service_id: str, updates: dict):
+    """Update only service pricing fields — used by Pricing Hub"""
+    db = get_db()
+    allowed_fields = {"base_price", "discounted_price", "active", "is_free", "sort_order"}
+    update_doc = {k: v for k, v in updates.items() if k in allowed_fields}
+    if not update_doc:
+        raise HTTPException(status_code=400, detail="No valid pricing fields provided")
+    update_doc["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.services_master.update_one({"id": service_id}, {"$set": update_doc})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Service not found")
+    updated = await db.services_master.find_one({"id": service_id}, {"_id": 0})
+    return {"success": True, "service": updated}
+
+
 # ==================== CLONE SERVICE ====================
 
 @router.post("/services/{service_id}/clone")

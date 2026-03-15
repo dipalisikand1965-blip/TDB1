@@ -4,7 +4,20 @@
 
 ---
 
-## ✅ SESSION 32 — Services Tab Added to 7 Pillar Managers + Enjoy Crash Fixed (Mar 15, 2026)
+## ✅ SESSION 33 — Service Pricing Tab Added to Pricing Hub (Mar 15, 2026)
+
+### What Was Added:
+1. **Service Pricing tab** in Pricing, Shipping & Commercial Hub — 7th tab added (was 6, now 7)
+2. **Backend**: New `PATCH /api/service-box/services/{service_id}/pricing` endpoint for atomic pricing updates (only `base_price`, `discounted_price`, `active`, `is_free`, `sort_order`)
+3. **Frontend**: Full service pricing table with: Service image/name/id, Pillar badge, Base Price, Discounted Price, Active status — all inline-editable
+4. **Seed from Product Box** bug: Was only happening on old preview URL (celebrate-products). Our current environment (`celebrate-sync-3`) works fine — endpoint returns migrated/skipped stats
+5. **Pillar field handling**: Fixed pillar badge to handle both string `'fit'` and array `[]` formats in service data
+
+### Files Modified:
+- `service_box_routes.py` — Added `PATCH /services/{service_id}/pricing` endpoint
+- `PricingHub.jsx` — Added services state, fetchServices, updateServicePricing, Service Pricing tab
+
+---
 
 ### What Was Fixed/Added:
 1. **Enjoy pillar crash fix** — `credentials is not defined` error when clicking Bundles tab was fixed by removing invalid `credentials={credentials}` prop from PillarBundlesTab in EnjoyManager.jsx
