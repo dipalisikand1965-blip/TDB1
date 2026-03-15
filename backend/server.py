@@ -20821,6 +20821,18 @@ async def consolidate_all_pillar_data(password: str = Query(...)):
             )
             results["celebrate_categories_fixed"] += 1
 
+        # =================== 4. SEED DINE PRODUCT CATALOG ===================
+        try:
+            from pillar_products_routes import router as pillar_products_router
+            # Call the seed endpoint logic inline
+            from pillar_products_routes import seed_dine_catalog
+            dine_result = await seed_dine_catalog()
+            results["dine_catalog_seeded"] = dine_result.get("seeded", 0)
+            results["dine_catalog_skipped"] = dine_result.get("skipped", 0)
+        except Exception as dine_err:
+            logger.warning(f"Dine catalog seed (non-blocking): {dine_err}")
+            results["dine_catalog_note"] = str(dine_err)
+
         # Final counts
         products_total = await db.products_master.count_documents({})
         bundles_total = await db.bundles.count_documents({})

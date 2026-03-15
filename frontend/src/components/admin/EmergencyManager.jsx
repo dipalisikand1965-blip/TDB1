@@ -19,6 +19,7 @@ import {
   Phone, MapPin, Ambulance, Heart, Briefcase
 } from 'lucide-react';
 import PillarServicesTab from './PillarServicesTab';
+import PillarBundlesTab from './PillarBundlesTab';
 import PillarProductsTab from './PillarProductsTab';
 
 const EMERGENCY_TYPES = {
@@ -588,56 +589,8 @@ const EmergencyManager = () => {
         </TabsContent>
 
         {/* Bundles Tab */}
-        <TabsContent value="bundles" className="mt-4">
-          <Card className="p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold text-gray-900">Emergency Bundles ({bundles.length})</h3>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={exportBundlesCSV}>
-                  <Download className="w-4 h-4 mr-2" /> Export CSV
-                </Button>
-                <input
-                  type="file"
-                  accept=".csv"
-                  ref={bundleFileRef}
-                  onChange={handleBundleFileChange}
-                  className="hidden"
-                />
-                <Button variant="outline" onClick={() => bundleFileRef.current?.click()} disabled={importingBundles}>
-                  <Upload className="w-4 h-4 mr-2" /> {importingBundles ? 'Importing...' : 'Import CSV'}
-                </Button>
-                <Button className="bg-red-600 hover:bg-red-700" onClick={() => { setEditingItem(null); setShowBundleModal(true); }}>
-                  <Plus className="w-4 h-4 mr-2" /> Add Bundle
-                </Button>
-              </div>
-            </div>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {bundles.map((bundle) => (
-                <Card key={bundle.id} className="p-4 border-2 border-red-200 bg-red-50/30">
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-semibold text-gray-900">{bundle.name}</h4>
-                    {bundle.is_recommended && (
-                      <Badge className="bg-red-500">Recommended</Badge>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-600 line-clamp-2 mb-3">{bundle.description}</p>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl font-bold text-red-600">₹{bundle.price}</span>
-                    <span className="text-sm text-gray-400 line-through">₹{bundle.original_price}</span>
-                  </div>
-                  {bundle.paw_reward_points > 0 && (
-                    <p className="text-xs text-red-600 mb-2">🐾 {bundle.paw_reward_points} Paw Points</p>
-                  )}
-                  <div className="flex gap-2 mt-3">
-                    <Button size="sm" variant="outline" className="flex-1" onClick={() => { setEditingItem(bundle); setShowBundleModal(true); }}>
-                      <Edit className="w-3 h-3 mr-1" /> Edit
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </Card>
+        <TabsContent value="bundles">
+          <PillarBundlesTab pillar="emergency" pillarName="Emergency" accentColor="red" />
         </TabsContent>
 
         {/* Services Tab */}

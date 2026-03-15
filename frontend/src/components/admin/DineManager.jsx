@@ -16,6 +16,7 @@ import { API_URL } from '../../utils/api';
 import PillarServicesTab from './PillarServicesTab';
 import PillarExperiencesTab from './PillarExperiencesTab';
 import PillarProductsTab from './PillarProductsTab';
+import PillarBundlesTab from './PillarBundlesTab';
 
 
 const DineManager = ({ credentials }) => {
@@ -1863,154 +1864,37 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
           )}
         </div>
       )}
-      
-      {/* ============ BUNDLES TAB ============ */}
+      {/* ============ BUNDLES TAB (UNIFIED) ============ */}
       {activeTab === 'bundles' && (
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <div className="flex gap-4">
-              <Card className="px-4 py-2">
-                <span className="text-sm text-gray-500">Total</span>
-                <p className="text-2xl font-bold text-gray-900">{bundleStats.total || 0}</p>
-              </Card>
-              <Card className="px-4 py-2">
-                <span className="text-sm text-gray-500">Active</span>
-                <p className="text-2xl font-bold text-green-600">{bundleStats.active || 0}</p>
-              </Card>
-              <Card className="px-4 py-2">
-                <span className="text-sm text-gray-500">Featured</span>
-                <p className="text-2xl font-bold text-orange-600">{bundleStats.featured || 0}</p>
-              </Card>
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              <Button variant="outline" onClick={fetchBundles}>
-                <RefreshCw className="w-4 h-4 mr-2" /> Refresh
-              </Button>
-              <Button variant="outline" onClick={seedBundles}>
-                <Sparkles className="w-4 h-4 mr-2" /> Seed Sample Bundles
-              </Button>
-              <Button variant="outline" onClick={exportBundlesCsv} data-testid="export-bundles-csv">
-                <Download className="w-4 h-4 mr-2" /> Export CSV
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => bundleCsvInputRef.current?.click()}
-                disabled={importingBundles}
-                data-testid="import-bundles-csv"
-              >
-                <Upload className="w-4 h-4 mr-2" /> {importingBundles ? 'Importing...' : 'Import CSV'}
-              </Button>
-              <input
-                ref={bundleCsvInputRef}
-                type="file"
-                accept=".csv"
-                onChange={importBundlesCsv}
-                className="hidden"
-              />
-              <Button className="bg-green-500 hover:bg-green-600" onClick={() => setIsAddingBundle(true)}>
-                <Plus className="w-4 h-4 mr-2" /> Add Bundle
-              </Button>
-            </div>
-          </div>
-          
-          {/* Bundles List */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {bundles.map(bundle => (
-              <Card key={bundle.id} className="overflow-hidden" data-testid={`admin-bundle-${bundle.id}`}>
-                <div className="relative h-32">
-                  <img 
-                    src={bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800'} 
-                    alt={bundle.name}
-                    className="w-full h-full object-cover"
-                  />
-                  {bundle.discount_percent > 0 && (
-                    <Badge className="absolute top-2 right-2 bg-red-500">{bundle.discount_percent}% OFF</Badge>
-                  )}
-                  {bundle.featured && (
-                    <Badge className="absolute top-2 left-2 bg-orange-500">Featured</Badge>
-                  )}
-                  {!bundle.active && (
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                      <Badge variant="destructive">Inactive</Badge>
-                    </div>
-                  )}
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <Badge variant="outline" className="text-xs capitalize">{bundle.category?.replace('_', ' ')}</Badge>
-                    {bundle.for_occasion && (
-                      <Badge className="bg-purple-100 text-purple-800 text-xs">{bundle.for_occasion}</Badge>
-                    )}
-                  </div>
-                  <h3 className="font-semibold text-gray-900">{bundle.name}</h3>
-                  <p className="text-sm text-gray-500 line-clamp-2 mt-1">{bundle.description}</p>
-                  
-                  {bundle.items && bundle.items.length > 0 && (
-                    <div className="mt-2 text-xs text-gray-400">
-                      {bundle.items.length} items included
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center justify-between mt-3">
-                    <div>
-                      <span className="text-lg font-bold text-green-600">₹{bundle.bundle_price}</span>
-                      {bundle.original_price > bundle.bundle_price && (
-                        <span className="text-xs text-gray-400 line-through ml-1">₹{bundle.original_price}</span>
-                      )}
-                    </div>
-                    <div className="flex gap-1">
-                      <Button size="sm" variant="outline" onClick={() => setEditingBundle(bundle)}>
-                        <Edit className="w-3 h-3" />
-                      </Button>
-                      <Button size="sm" variant="destructive" onClick={() => deleteBundle(bundle.id)}>
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-          
-          {bundles.length === 0 && (
-            <Card className="p-12 text-center">
-              <Sparkles className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-600">No Bundles Yet</h3>
-              <p className="text-gray-500 mb-4">Click "Seed Sample Bundles" to add starter bundles or create your own</p>
-              <div className="flex gap-2 justify-center">
-                <Button variant="outline" onClick={seedBundles}>Seed Samples</Button>
-                <Button className="bg-green-500" onClick={() => setIsAddingBundle(true)}>Create Bundle</Button>
-              </div>
-            </Card>
-          )}
-        </div>
-      )}
-      
-      {/* Bundle Edit/Add Modal */}
-      {(editingBundle || isAddingBundle) && (
-        <BundleModal 
-          bundle={editingBundle || {
-            name: '',
-            description: '',
-            image: '',
-            bundle_price: 0,
-            original_price: 0,
-            category: 'dining_kit',
-            items: [],
-            for_occasion: '',
-            featured: false,
-            active: true,
-            tags: []
-          }}
-          onSave={saveBundle}
-          onClose={() => { setEditingBundle(null); setIsAddingBundle(false); }}
+        <PillarBundlesTab
+          pillar="dine"
+          pillarName="Dine"
+          accentColor="orange"
         />
       )}
-      
 
       {/* ============ PRODUCTS TAB ============ */}
       {activeTab === 'products' && (
         <div className="space-y-4">
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-orange-600 border-orange-300 hover:bg-orange-50"
+              onClick={async () => {
+                try {
+                  const res = await fetch(`${API_URL}/api/admin/pillar-products/seed-dine-catalog`, { method: 'POST' });
+                  const data = await res.json();
+                  toast({ title: `Seed Complete`, description: data.message });
+                } catch (e) {
+                  toast({ title: 'Seed Failed', variant: 'destructive' });
+                }
+              }}
+              data-testid="seed-dine-products-btn"
+            >
+              <Sparkles className="w-4 h-4 mr-2" /> Seed Dine Catalog (49 products)
+            </Button>
+          </div>
           <PillarProductsTab pillar="dine" pillarName="Dine" />
         </div>
       )}
@@ -2131,178 +2015,6 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
           </div>
         </div>
       )}
-    </div>
-  );
-};
-
-// Bundle Modal Component
-const BundleModal = ({ bundle, onSave, onClose }) => {
-  const [formData, setFormData] = useState(bundle);
-  const [itemInput, setItemInput] = useState('');
-  
-  const addItem = () => {
-    if (itemInput.trim()) {
-      setFormData({ ...formData, items: [...(formData.items || []), itemInput.trim()] });
-      setItemInput('');
-    }
-  };
-  
-  const removeItem = (index) => {
-    setFormData({ ...formData, items: formData.items.filter((_, i) => i !== index) });
-  };
-  
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold">{bundle.id ? 'Edit Bundle' : 'Create Bundle'}</h2>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
-        
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium">Name *</label>
-              <Input 
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Bundle name"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Category *</label>
-              <Select 
-                value={formData.category}
-                onValueChange={(value) => setFormData({ ...formData, category: value })}
-              >
-                <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="party_package">Party Package</SelectItem>
-                  <SelectItem value="dining_kit">Dining Kit</SelectItem>
-                  <SelectItem value="pet_treats">Pet Treats</SelectItem>
-                  <SelectItem value="gift_card">Gift Card</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          
-          <div>
-            <label className="text-sm font-medium">Description</label>
-            <textarea 
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full p-2 border rounded-lg text-sm"
-              rows={3}
-              placeholder="Describe the bundle..."
-            />
-          </div>
-          
-          <div>
-            <label className="text-sm font-medium">Image URL</label>
-            <Input 
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              placeholder="https://..."
-            />
-            {formData.image && (
-              <div className="mt-2 w-24 h-24 rounded-lg overflow-hidden border">
-                <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
-              </div>
-            )}
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium">Bundle Price (₹) *</label>
-              <Input 
-                type="number"
-                value={formData.bundle_price}
-                onChange={(e) => setFormData({ ...formData, bundle_price: parseFloat(e.target.value) || 0 })}
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Original Price (₹)</label>
-              <Input 
-                type="number"
-                value={formData.original_price}
-                onChange={(e) => setFormData({ ...formData, original_price: parseFloat(e.target.value) || 0 })}
-              />
-            </div>
-          </div>
-          
-          <div>
-            <label className="text-sm font-medium">For Occasion</label>
-            <Select 
-              value={formData.for_occasion || 'any'}
-              onValueChange={(value) => setFormData({ ...formData, for_occasion: value === 'any' ? '' : value })}
-            >
-              <SelectTrigger><SelectValue placeholder="Select occasion" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="any">Any Occasion</SelectItem>
-                <SelectItem value="birthday">Birthday</SelectItem>
-                <SelectItem value="anniversary">Anniversary</SelectItem>
-                <SelectItem value="casual">Casual</SelectItem>
-                <SelectItem value="gift">Gift</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div>
-            <label className="text-sm font-medium">Items Included</label>
-            <div className="flex gap-2 mb-2">
-              <Input 
-                value={itemInput}
-                onChange={(e) => setItemInput(e.target.value)}
-                placeholder="Add an item..."
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addItem())}
-              />
-              <Button type="button" onClick={addItem}>Add</Button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {(formData.items || []).map((item, idx) => (
-                <Badge key={idx} variant="secondary" className="flex items-center gap-1">
-                  {item}
-                  <X className="w-3 h-3 cursor-pointer" onClick={() => removeItem(idx)} />
-                </Badge>
-              ))}
-            </div>
-          </div>
-          
-          <div className="flex gap-4">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input 
-                type="checkbox"
-                checked={formData.featured}
-                onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
-                className="w-4 h-4"
-              />
-              <span className="text-sm">Featured</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input 
-                type="checkbox"
-                checked={formData.active}
-                onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
-                className="w-4 h-4"
-              />
-              <span className="text-sm">Active</span>
-            </label>
-          </div>
-        </div>
-        
-        <div className="flex gap-2 mt-6">
-          <Button variant="outline" onClick={onClose} className="flex-1">Cancel</Button>
-          <Button 
-            className="flex-1 bg-green-500 hover:bg-green-600"
-            onClick={() => onSave(formData)}
-            disabled={!formData.name || !formData.bundle_price}
-          >
-            <Save className="w-4 h-4 mr-2" /> Save Bundle
-          </Button>
-        </div>
-      </Card>
     </div>
   );
 };

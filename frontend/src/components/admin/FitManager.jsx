@@ -18,6 +18,7 @@ import {
   CheckCircle, XCircle, Star, Download, Upload, Database, Award, Briefcase
 } from 'lucide-react';
 import PillarServicesTab from './PillarServicesTab';
+import PillarBundlesTab from './PillarBundlesTab';
 import PillarProductsTab from './PillarProductsTab';
 
 const FIT_TYPE_ICONS = {
@@ -727,59 +728,8 @@ const FitManager = ({ getAuthHeader }) => {
         </TabsContent>
 
         {/* Bundles Tab */}
-        <TabsContent value="bundles" className="space-y-4">
-          <Card className="p-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold">Fitness Bundles ({bundles.length})</h3>
-              <Button size="sm" onClick={() => { resetBundleForm(); setEditingBundle(null); setShowBundleModal(true); }}>
-                <Plus className="w-4 h-4 mr-1" /> Add Bundle
-              </Button>
-            </div>
-          </Card>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {bundles.map((bundle) => (
-              <Card key={bundle.id} className="p-4 border-2 border-teal-200 bg-teal-50/50">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-semibold">{bundle.name}</h4>
-                      {bundle.is_recommended && <Star className="w-4 h-4 text-amber-500 fill-current" />}
-                    </div>
-                    <p className="text-sm text-gray-500">{bundle.description}</p>
-                  </div>
-                  <div className="flex gap-1">
-                    <Button size="sm" variant="ghost" onClick={() => {
-                      setEditingBundle(bundle);
-                      setBundleForm({
-                        name: bundle.name || '',
-                        description: bundle.description || '',
-                        items: (bundle.items || []).join(', '),
-                        price: bundle.price?.toString() || '',
-                        original_price: bundle.original_price?.toString() || '',
-                        paw_reward_points: bundle.paw_reward_points?.toString() || '0',
-                        is_recommended: bundle.is_recommended || false,
-                        is_birthday_perk: bundle.is_birthday_perk || false,
-                        birthday_discount_percent: bundle.birthday_discount_percent?.toString() || ''
-                      });
-                      setShowBundleModal(true);
-                    }}>
-                      <Edit2 className="w-4 h-4" />
-                    </Button>
-                    <Button size="sm" variant="ghost" className="text-red-600" onClick={() => deleteBundle(bundle.id)}>
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 mt-3">
-                  <span className="text-xl font-bold text-teal-600">₹{bundle.price}</span>
-                  <span className="text-sm text-gray-400 line-through">₹{bundle.original_price}</span>
-                  <Badge variant="outline" className="text-teal-600">
-                    Save ₹{bundle.original_price - bundle.price}
-                  </Badge>
-                </div>
-              </Card>
-            ))}
-          </div>
+        <TabsContent value="bundles">
+          <PillarBundlesTab pillar="fit" pillarName="Fit" accentColor="teal" />
         </TabsContent>
 
         {/* Transformation Stories Tab */}
