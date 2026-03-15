@@ -324,11 +324,6 @@ const CelebratePageNew = () => {
           onCategorySelect={handleCategorySelect}
         />
 
-        {/* 2a. MIRA SOUL NUDGE — unanswered soul questions (food & nutrition first)
-              This is the continuation of the soul builder. Mira always remembers.
-              It disappears once all taste_treat questions are answered. */}
-        <MiraSoulNudge pet={selectedPet} token={token} context="celebrate" limit={3} />
-
         {/* 3. SOUL CELEBRATION PILLARS — "How would Mojo love to celebrate?" */}
         <SoulCelebrationPillars 
           pet={selectedPet}
