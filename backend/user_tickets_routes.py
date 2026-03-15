@@ -930,7 +930,10 @@ async def get_member_notifications(
     if unread_only:
         query["read"] = False
     
-    notifications = await db.member_notifications.find(query).sort("created_at", -1).limit(limit).to_list(limit)
+    notifications = await db.member_notifications.find(query).sort("_id", -1).limit(limit).to_list(limit)
+    
+    for n in notifications:
+        n.pop("_id", None)
     
     # Count unread
     unread_count = await db.member_notifications.count_documents({"user_email": email, "read": False})
