@@ -268,7 +268,7 @@ const PillarCard = ({ pillar, pet, isExpanded, onToggle, onTellMiraMore }) => {
     >
       <div
         onClick={handleClick}
-        style={cardStyle}
+        style={{...cardStyle, display:'flex', flexDirection:'column'}}
         className="hover:-translate-y-0.5"
         data-testid={`pillar-card-${pillar.id}`}
       >
@@ -307,14 +307,14 @@ const PillarCard = ({ pillar, pet, isExpanded, onToggle, onTellMiraMore }) => {
           {pillar.name}
         </p>
 
-        {/* Tagline */}
-        <p className="mb-3 leading-snug" style={{ fontSize: 13, color: '#555', lineHeight: 1.45 }}>
+        {/* Tagline — flex-1 so it stretches, pushing badge to bottom */}
+        <p className="flex-1 mb-3 leading-snug" style={{ fontSize: 13, color: '#555', lineHeight: 1.45 }}>
           {pillar.tagline(petName)}
         </p>
 
-        {/* Badge */}
+        {/* Badge — always at bottom */}
         <span
-          className="rounded-full font-bold whitespace-nowrap overflow-hidden text-ellipsis block"
+          className="rounded-full font-bold whitespace-nowrap overflow-hidden text-ellipsis block mt-auto"
           style={{
             fontSize: 12, fontWeight: 700,
             padding: '5px 12px',
