@@ -1,16 +1,21 @@
 /**
  * DineSoulPage.jsx — The /dine pillar
- * Architecture mirrors /celebrate-soul exactly:
- *   Hero → TummyProfile (data spine) → Tab bar
- *   Tab "Eat & Nourish": MiraMealPick → Dimensions → GuidedNutritionPaths
+ *
+ * Architecture mirrors CelebratePageNew exactly:
+ *   PillarPageLayout wrapper (hideHero=true, hideNavigation=true)
+ *   DineHero (full-bleed, avatar + soul chips + Mira quote)
+ *   max-w-5xl mx-auto content wrapper
+ *   Tab "Eat & Nourish": TummyProfile → DineDimensions → MiraMealPick → GuidedNutritionPaths
  *   Tab "Dine Out": PetFriendlySpots → DiningConciergeServices
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { usePillarContext } from '../context/PillarContext';
+import PillarPageLayout from '../components/PillarPageLayout';
 
 import DineHero from '../components/dine/DineHero';
 import DineTabBar from '../components/dine/DineTabBar';
@@ -24,52 +29,85 @@ import DiningConciergeServices from '../components/dine/DiningConciergeServices'
 
 // ── Loading ───────────────────────────────────────────────────────────────────
 const LoadingState = () => (
-  <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16 }}>
-    <div style={{ width: 48, height: 48, borderRadius: '50%', border: '3px solid #F0E0D0', borderTopColor: '#C44400', animation: 'spin 0.8s linear infinite' }} />
-    <p style={{ fontSize: 14, color: '#888' }}>Loading Mira's kitchen…</p>
+  <div
+    className="min-h-[60vh] flex items-center justify-center"
+    style={{ background: 'linear-gradient(135deg, #3d1200 0%, #7a2800 50%, #c44400 100%)' }}
+    data-testid="dine-loading"
+  >
+    <div className="text-center text-white">
+      <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-orange-300" />
+      <p style={{ color: 'rgba(255,255,255,0.70)' }}>Loading Mira's kitchen…</p>
+    </div>
   </div>
 );
 
 // ── No pet ────────────────────────────────────────────────────────────────────
-const NoPetState = ({ onNavigate }) => (
-  <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
-    <div style={{ textAlign: 'center', maxWidth: 400 }}>
-      <div style={{ fontSize: 48, marginBottom: 16 }}>🍽️</div>
-      <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1A0A00', marginBottom: 8 }}>Add your dog first</h2>
-      <p style={{ fontSize: 14, color: '#888', lineHeight: 1.6, marginBottom: 24 }}>
-        Mira needs to know who she's feeding. Add your pet profile and she'll filter every meal, treat, and restaurant to their exact tummy.
+const NoPetState = ({ onAddPet }) => (
+  <section
+    className="min-h-[60vh] flex flex-col items-center justify-center px-4"
+    style={{ background: 'linear-gradient(135deg, #3d1200 0%, #7a2800 50%, #c44400 100%)' }}
+    data-testid="dine-no-pet"
+  >
+    <div className="text-center max-w-md">
+      <div className="text-6xl mb-6">🍽️</div>
+      <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
+        Food &amp; Nourishment for your pet
+      </h1>
+      <p className="text-lg mb-8" style={{ color: 'rgba(255,255,255,0.70)' }}>
+        Add your pet to unlock a personalised nutrition experience — meals, treats, and restaurants filtered by Mira.
       </p>
       <button
-        onClick={() => onNavigate('/my-pets')}
-        style={{ background: 'linear-gradient(135deg, #C44400, #E86A00)', color: '#fff', border: 'none', borderRadius: 20, padding: '14px 28px', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
+        onClick={onAddPet}
+        className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium shadow-lg transition-shadow"
+        style={{
+          background: 'linear-gradient(135deg, #FF8C42, #C44400)',
+          color: '#fff',
+          boxShadow: '0 4px 20px rgba(196,68,0,0.40)'
+        }}
         data-testid="dine-add-pet-btn"
       >
-        Add your dog →
+        <span>✦</span>
+        <span>Add your dog to begin</span>
       </button>
     </div>
-  </div>
+  </section>
 );
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 const DineSoulPage = () => {
   const navigate = useNavigate();
-  const { user, token } = useAuth();
+  const { user, token, isAuthenticated } = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
 
   const [loading, setLoading]             = useState(true);
   const [activeTab, setActiveTab]         = useState('eat');
   const [openDimension, setOpenDimension] = useState(null);
   const [petData, setPetData]             = useState(null);
+  const [soulScore, setSoulScore]         = useState(0);
 
-  // Sync from pillar context (same as CelebrateSoulPage)
+  // Sync from pillar context (same as CelebratePageNew)
   useEffect(() => {
-    if (contextPets !== undefined) setLoading(false);
     if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
+    if (contextPets !== undefined) setLoading(false);
   }, [contextPets, currentPet, setCurrentPet]);
 
   useEffect(() => {
-    if (currentPet) setPetData(currentPet);
+    if (currentPet) {
+      setPetData(currentPet);
+      setSoulScore(currentPet.soul_score || currentPet.overall_score || 0);
+    }
   }, [currentPet]);
+
+  // Live soul score updates
+  useEffect(() => {
+    const handle = (e) => {
+      if (e.detail?.petId === petData?.id && e.detail?.score !== undefined) {
+        setSoulScore(e.detail.score);
+      }
+    };
+    window.addEventListener('soulScoreUpdated', handle);
+    return () => window.removeEventListener('soulScoreUpdated', handle);
+  }, [petData?.id]);
 
   // Optimistic update for TummyProfile saves
   const handlePetUpdate = useCallback((updated) => {
@@ -77,46 +115,72 @@ const DineSoulPage = () => {
     setCurrentPet(updated);
   }, [setCurrentPet]);
 
-  const openMira = (message) => {
+  const openMira = useCallback((message) => {
     window.dispatchEvent(new CustomEvent('openMiraAI', {
-      detail: { message: message || `What should ${petData?.name || 'my dog'} eat today?`, context: 'dine' },
+      detail: {
+        message: message || `What should ${petData?.name || 'my dog'} eat today?`,
+        context: 'dine'
+      },
     }));
-  };
+  }, [petData?.name]);
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!loading && !user) navigate('/login');
-  }, [loading, user, navigate]);
+  const handleAddPet = useCallback(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard/pets?action=add');
+    } else {
+      navigate('/login?redirect=/dine');
+    }
+  }, [isAuthenticated, navigate]);
 
   const activeDimension = DINE_DIMENSIONS.find(d => d.id === openDimension) || null;
 
-  // Guards (navigate effect handles unauthenticated redirect above)
-  if (loading)   return <LoadingState />;
-  if (!user)     return null;
-  if (!petData)  return <NoPetState onNavigate={navigate} />;
+  if (loading) {
+    return (
+      <PillarPageLayout pillar="dine" hideMiraWidget={false} hideHero={true} hideNavigation={true}>
+        <LoadingState />
+      </PillarPageLayout>
+    );
+  }
+
+  if (!petData) {
+    return (
+      <PillarPageLayout pillar="dine" hideMiraWidget={false} hideHero={true} hideNavigation={true}>
+        <NoPetState onAddPet={handleAddPet} />
+      </PillarPageLayout>
+    );
+  }
 
   return (
-    <>
+    <PillarPageLayout
+      pillar="dine"
+      hideMiraWidget={false}
+      hideHero={true}
+      hideNavigation={true}
+    >
       <Helmet>
         <title>Dine · {petData.name} · The Doggy Company</title>
         <meta name="description" content={`Everything ${petData.name} eats, filtered by Mira.`} />
       </Helmet>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
+      {/* 1. HERO — full-bleed, matches CelebrateHero structure */}
+      <DineHero
+        pet={petData}
+        soulScore={soulScore}
+        onAskMira={openMira}
+      />
+
+      {/* 2. CONTENT WRAPPER — max-w-5xl like CelebratePageNew */}
       <div
-        style={{ maxWidth: 800, margin: '0 auto', padding: '16px 16px 100px' }}
+        className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8"
         data-testid="dine-soul-page"
       >
-        {/* Hero */}
-        <DineHero pet={petData} onAskMira={openMira} />
-
-        {/* TummyProfile — the data spine. Always first. */}
+        {/* Tummy Profile — the data spine. Always visible. */}
         <TummyProfile pet={petData} token={token} onUpdate={handlePetUpdate} />
 
         {/* Tab bar */}
         <DineTabBar activeTab={activeTab} onChange={setActiveTab} />
 
-        {/* ── Tab: Eat & Nourish ─────────────────────────────────────────── */}
+        {/* ── Tab: Eat & Nourish ──────────────────────────────────────────── */}
         {activeTab === 'eat' && (
           <>
             <MiraMealPick pet={petData} />
@@ -146,7 +210,7 @@ const DineSoulPage = () => {
         )}
       </div>
 
-      {/* Dimension expanded panel — portal, escapes stacking context */}
+      {/* Dimension expanded panel */}
       {activeDimension && (
         <DineDimensionExpanded
           dimension={activeDimension}
@@ -155,7 +219,7 @@ const DineSoulPage = () => {
           onClose={() => setOpenDimension(null)}
         />
       )}
-    </>
+    </PillarPageLayout>
   );
 };
 
