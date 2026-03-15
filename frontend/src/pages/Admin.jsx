@@ -205,6 +205,8 @@ const Admin = () => {
   const [fixingImages, setFixingImages] = useState(false);
   const [fixingProdData, setFixingProdData] = useState(false);
   const [prodFixResult, setProdFixResult] = useState(null);
+  const [comparing, setComparing] = useState(false);
+  const [compareResults, setCompareResults] = useState(null);
   
   // AI Image Generation Status
   const [aiGenStatus, setAiGenStatus] = useState({ 
@@ -693,6 +695,34 @@ const Admin = () => {
       toast({ title: 'Error', description: 'Could not reach thedoggycompany.com — check network', variant: 'destructive' });
     } finally {
       setFixingProdData(false);
+    }
+  };
+
+  // 🔀 COMPARE PREVIEW ↔ PRODUCTION environments
+  const compareEnvironments = async () => {
+    setComparing(true);
+    setCompareResults(null);
+    const PROD = 'https://thedoggycompany.com';
+    const TRACKED = ['products','services','members','pets','orders','tickets_total','faqs','collections'];
+    try {
+      const [previewRes, prodRes] = await Promise.allSettled([
+        fetch(`${API_URL}/api/admin/site-status`).then(r => r.json()),
+        fetch(`${PROD}/api/admin/site-status`).then(r => r.json()),
+      ]);
+      const preview = previewRes.status === 'fulfilled' ? (previewRes.value.stats || {}) : {};
+      const prod    = prodRes.status    === 'fulfilled' ? (prodRes.value.stats    || {}) : null;
+      const rows = TRACKED.map(key => {
+        const pv = preview[key] ?? '–';
+        const pr = prod ? (prod[key] ?? '–') : 'unreachable';
+        const diff = (typeof pv === 'number' && typeof pr === 'number') ? pr - pv : null;
+        const status = diff === null ? 'unknown' : diff === 0 ? 'match' : Math.abs(diff) < 5 ? 'close' : 'mismatch';
+        return { key, preview: pv, prod: pr, diff, status };
+      });
+      setCompareResults({ rows, prodReachable: !!prod, timestamp: new Date().toLocaleTimeString() });
+    } catch (e) {
+      setCompareResults({ error: e.message, rows: [], prodReachable: false, timestamp: new Date().toLocaleTimeString() });
+    } finally {
+      setComparing(false);
     }
   };
 
@@ -3279,6 +3309,19 @@ const Admin = () => {
                 {fixingProdData ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <span className="mr-1">🚀</span>}
                 {fixingProdData ? 'Fixing Prod...' : '🚀 FIX PROD DATA'}
               </Button>
+
+              {/* 🔀 COMPARE Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gradient-to-r from-cyan-600 to-teal-600 text-white border-0 text-sm font-bold shadow-lg px-4 ml-2"
+                onClick={compareEnvironments}
+                disabled={comparing}
+                data-testid="compare-envs-btn"
+              >
+                {comparing ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <span className="mr-1">🔀</span>}
+                {comparing ? 'Comparing...' : '🔀 COMPARE'}
+              </Button>
               
               {/* 🎨 AI IMAGE GENERATION Button */}
               <Button
@@ -3529,6 +3572,87 @@ const Admin = () => {
                   </div>
                   <button onClick={() => setProdFixResult(null)} className="text-slate-500 hover:text-white ml-4">✕</button>
                 </div>
+              </div>
+            )}
+
+            {/* 🔀 Preview ↔ Production Compare Panel */}
+            {compareResults && (
+              <div className="mt-4 bg-slate-800 rounded-xl p-5 border border-slate-700">
+                <div className="flex justify-between items-center mb-4">
+                  <h4 className="text-white font-bold flex items-center gap-2">
+                    🔀 Preview ↔ Production Compare
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-normal ${compareResults.prodReachable ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                      {compareResults.prodReachable ? 'Production reachable ✓' : 'Production unreachable ✗'}
+                    </span>
+                  </h4>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-slate-400">{compareResults.timestamp}</span>
+                    <button onClick={() => setCompareResults(null)} className="text-slate-500 hover:text-white">✕</button>
+                  </div>
+                </div>
+
+                {compareResults.error ? (
+                  <p className="text-red-400 text-sm">{compareResults.error}</p>
+                ) : (
+                  <>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-slate-600">
+                            <th className="text-left text-slate-400 font-medium pb-2 pr-4">Collection</th>
+                            <th className="text-right text-cyan-400 font-medium pb-2 px-4">Preview</th>
+                            <th className="text-right text-purple-400 font-medium pb-2 px-4">Production</th>
+                            <th className="text-right text-slate-400 font-medium pb-2 pl-4">Diff</th>
+                            <th className="text-center text-slate-400 font-medium pb-2 pl-4">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {compareResults.rows.map(row => (
+                            <tr key={row.key} className="border-b border-slate-700/50">
+                              <td className="py-2 pr-4 text-slate-300 capitalize">{row.key.replace(/_/g, ' ')}</td>
+                              <td className="py-2 px-4 text-right text-cyan-300 font-mono">{typeof row.preview === 'number' ? row.preview.toLocaleString() : row.preview}</td>
+                              <td className="py-2 px-4 text-right text-purple-300 font-mono">{typeof row.prod === 'number' ? row.prod.toLocaleString() : row.prod}</td>
+                              <td className={`py-2 pl-4 text-right font-mono text-xs ${
+                                row.diff === 0 ? 'text-slate-500' :
+                                row.diff > 0 ? 'text-amber-400' : 'text-red-400'
+                              }`}>
+                                {row.diff === null ? '–' : row.diff > 0 ? `+${row.diff}` : row.diff}
+                              </td>
+                              <td className="py-2 pl-4 text-center">
+                                {row.status === 'match'    && <span className="text-xs text-green-400">✓ In sync</span>}
+                                {row.status === 'close'    && <span className="text-xs text-amber-400">~ Close</span>}
+                                {row.status === 'mismatch' && <span className="text-xs text-red-400 font-medium">✗ Out of sync</span>}
+                                {row.status === 'unknown'  && <span className="text-xs text-slate-500">?</span>}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Summary */}
+                    <div className="mt-4 pt-3 border-t border-slate-700 flex flex-wrap gap-4 text-xs">
+                      {(() => {
+                        const mismatches = compareResults.rows.filter(r => r.status === 'mismatch').length;
+                        const matches    = compareResults.rows.filter(r => r.status === 'match').length;
+                        return (
+                          <>
+                            <span className="text-green-400">✓ {matches} in sync</span>
+                            {mismatches > 0 && <span className="text-red-400">✗ {mismatches} out of sync — run MASTER SYNC to fix</span>}
+                            {mismatches === 0 && <span className="text-slate-400">Preview and production databases are aligned.</span>}
+                          </>
+                        );
+                      })()}
+                      <button
+                        onClick={compareEnvironments}
+                        disabled={comparing}
+                        className="ml-auto text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+                      >
+                        <RefreshCw className={`w-3 h-3 ${comparing ? 'animate-spin' : ''}`} /> Refresh
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>
