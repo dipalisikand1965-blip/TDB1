@@ -40,7 +40,7 @@ import {
   CelebrationMemoryWall
 } from '../components/celebrate';
 
-// Birthday Box
+import MiraSoulNudge from '../components/celebrate/MiraSoulNudge';
 import MiraBirthdayBox from '../components/celebrate/MiraBirthdayBox';
 import BirthdayBoxBuilder from '../components/celebrate/BirthdayBoxBuilder';
 import BirthdayBoxBrowseDrawer from '../components/celebrate/BirthdayBoxBrowseDrawer';
@@ -162,7 +162,7 @@ const MiraAskBar = ({ petName }) => {
 
 const CelebratePageNew = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth();
+  const { user, token, isAuthenticated } = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
   
   // Use currentPet from context
@@ -323,6 +323,11 @@ const CelebratePageNew = () => {
           pet={selectedPet}
           onCategorySelect={handleCategorySelect}
         />
+
+        {/* 2a. MIRA SOUL NUDGE — unanswered soul questions (food & nutrition first)
+              This is the continuation of the soul builder. Mira always remembers.
+              It disappears once all taste_treat questions are answered. */}
+        <MiraSoulNudge pet={selectedPet} token={token} context="celebrate" limit={3} />
 
         {/* 3. SOUL CELEBRATION PILLARS — "How would Mojo love to celebrate?" */}
         <SoulCelebrationPillars 
