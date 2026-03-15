@@ -531,51 +531,52 @@ const SoulProductCard = ({ product, petName, isFirst, isConcierge, onAddToCart, 
   
   return (
     <div 
-      className="rounded-xl overflow-hidden bg-white cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
+      className="rounded-2xl overflow-hidden bg-white cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
       style={{ border: '1px solid #F0E8F8' }}
       onClick={handleClick}
       data-testid={`soul-product-${product.id || product.name?.replace(/\s/g,'')}`}>
-      <div className="flex items-center justify-center bg-gray-50 relative" style={{ height: 80 }}>
+      {/* Image */}
+      <div className="flex items-center justify-center bg-gray-50 relative" style={{ height: 120 }}>
         {image
           ? <img src={image} alt={product.name} className="w-full h-full object-cover" />
-          : <span style={{ fontSize: 32 }}>🎁</span>}
-        {/* Quick view indicator */}
+          : <span style={{ fontSize: 40 }}>🎁</span>}
         <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 hover:opacity-100">
-          <span className="text-xs text-white bg-black/50 px-2 py-1 rounded-full">Click for details</span>
+          <span className="text-xs text-white bg-black/50 px-2 py-1 rounded-full">View details</span>
         </div>
       </div>
-      <div style={{ padding: '9px' }}>
-        <div className="inline-block rounded-lg mb-1.5"
+      {/* Info */}
+      <div style={{ padding: '12px 12px 11px' }}>
+        <div className="inline-block rounded-lg mb-2"
           style={{
-            fontSize: 10, fontWeight: 600,
+            fontSize: 11, fontWeight: 600,
             background: isFirst
               ? 'linear-gradient(135deg,rgba(196,77,255,0.18),rgba(255,107,157,0.12))'
               : 'linear-gradient(135deg,rgba(196,77,255,0.08),rgba(255,107,157,0.06))',
             border: `1px solid ${isFirst ? 'rgba(196,77,255,0.35)' : 'rgba(196,77,255,0.18)'}`,
-            padding: '2px 7px', color: '#6B21A8'
+            padding: '3px 9px', color: '#6B21A8'
           }}>
           {isFirst ? `${petName}'s #1` : `For ${petName}`}
         </div>
-        <p className="font-bold line-clamp-1" style={{ fontSize: 12, color: '#1A0030', marginBottom: 2 }}>
+        <p className="font-bold line-clamp-2" style={{ fontSize: 14, color: '#1A0030', marginBottom: 3, lineHeight: 1.3 }}>
           {product.name}
         </p>
         {product.description && (
-          <p className="line-clamp-1" style={{ fontSize: 11, color: '#888', lineHeight: 1.35, marginBottom: 7 }}>
+          <p className="line-clamp-1" style={{ fontSize: 12, color: '#888', lineHeight: 1.4, marginBottom: 9 }}>
             {product.description}
           </p>
         )}
-        <div className="flex items-center justify-between gap-1">
-          <span className="font-bold" style={{ fontSize: 13, color: isService ? '#C9973A' : '#1A0030' }}>
+        <div className="flex items-center justify-between gap-1.5 mt-1">
+          <span className="font-bold" style={{ fontSize: 15, color: isService ? '#C9973A' : '#1A0030' }}>
             {isService ? 'Concierge' : `₹${typeof price === 'number' ? price.toLocaleString('en-IN') : price}`}
           </span>
           <button onClick={handleQuickAdd}
-            className="rounded-full text-white flex items-center gap-1"
+            className="rounded-full text-white flex items-center gap-1 flex-shrink-0"
             style={{
               background: isService
                 ? 'linear-gradient(135deg,#C9973A,#F0C060)'
                 : 'linear-gradient(135deg,#C44DFF,#FF6B9D)',
               color: isService ? '#1A0A00' : 'white',
-              border: 'none', padding: '4px 10px', fontSize: 10, fontWeight: 700, cursor: 'pointer'
+              border: 'none', padding: '6px 12px', fontSize: 11, fontWeight: 700, cursor: 'pointer'
             }}>
             {isService ? 'Book 👑' : <><Plus className="w-3 h-3" /> Add</>}
           </button>
@@ -700,42 +701,42 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
       {/* Scrollable content */}
       <div>
         {/* 1 — Panel header */}
-        <div className="flex items-start gap-3 px-6 pt-5 pb-0 mb-4">
-          <span style={{ fontSize: 32, flexShrink: 0 }}>{pillar.icon}</span>
+        <div className="flex items-start gap-3 px-5 pt-6 pb-0 mb-5">
+          <span style={{ fontSize: 36, flexShrink: 0 }}>{pillar.icon}</span>
           <div className="flex-1">
-            <h3 className="font-extrabold" style={{ fontSize: 18, color: '#1A0030', lineHeight: 1.2 }}>
+            <h3 className="font-extrabold" style={{ fontSize: 20, color: '#1A0030', lineHeight: 1.2 }}>
               {titleInfo.title.replace('{petName}', petName)}
             </h3>
-            <p style={{ fontSize: 12, color: '#888888', marginTop: 3 }}>
+            <p style={{ fontSize: 13, color: '#888888', marginTop: 4 }}>
               {titleInfo.sub(pet)}
             </p>
           </div>
           <button onClick={onClose}
             className="flex-shrink-0 rounded-full font-bold"
-            style={{ background: '#F3E8FF', border: 'none', padding: '5px 14px', fontSize: 12, color: '#7C3AED', cursor: 'pointer' }}>
+            style={{ background: '#F3E8FF', border: 'none', padding: '7px 16px', fontSize: 13, color: '#7C3AED', cursor: 'pointer' }}>
             Close
           </button>
         </div>
 
         {/* 2 — Mira bar */}
-        <div className="mx-6 mb-4 rounded-xl p-3 flex items-start gap-2.5"
+        <div className="mx-5 mb-5 rounded-2xl p-4 flex items-start gap-3"
           style={{ background: 'linear-gradient(135deg, #F3E8FF, #FCE4EC)' }}>
-          <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold text-white"
+          <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold text-white"
             style={{ background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)', marginTop: 1 }}>
             ✦
           </div>
           <div>
-            <p style={{ fontSize: 13, color: '#3D0060', lineHeight: 1.55, fontStyle: 'italic' }}>
+            <p style={{ fontSize: 14, color: '#3D0060', lineHeight: 1.6, fontStyle: 'italic' }}>
               {getMiraQuote(pillar.id, pet)}
             </p>
-            <span style={{ fontSize: 11, color: '#C44DFF', marginTop: 3, fontWeight: 600, display: 'block' }}>
+            <span style={{ fontSize: 12, color: '#C44DFF', marginTop: 4, fontWeight: 600, display: 'block' }}>
               ♥ Mira knows {petName}
             </span>
           </div>
         </div>
 
         {/* 3 — Special panel (pillars food, social, health, memory only) */}
-        <div className="mx-6">
+        <div className="mx-5">
           {pillar.id === 'food'    && <FeastMenuCard pet={pet} />}
           {pillar.id === 'social'  && <PawtyPlannerCard pet={pet} />}
           {pillar.id === 'health'  && <WellnessHeroCard pet={pet} />}
@@ -743,12 +744,12 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
         </div>
 
         {/* 4 — Tab bar */}
-        <div className="flex flex-wrap gap-1.5 px-6 mb-4">
+        <div className="flex flex-wrap gap-2 px-5 mb-5">
           {tabs.map((tab, idx) => (
             <button key={tab.name} onClick={() => setActiveTab(idx)}
               className="rounded-full font-semibold"
               style={{
-                padding: '6px 14px', fontSize: 12, cursor: 'pointer', transition: 'all 120ms',
+                padding: '8px 16px', fontSize: 13, cursor: 'pointer', transition: 'all 120ms',
                 border: activeTab === idx ? '1px solid #C44DFF' : '1px solid #E0CCFF',
                 background: activeTab === idx ? '#C44DFF' : '#FAF5FF',
                 color: activeTab === idx ? '#FFFFFF' : '#7C3AED',
@@ -759,9 +760,9 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
         </div>
 
         {/* 5 — Product grid */}
-        <div className="px-6 pb-5">
+        <div className="px-5 pb-6">
           {allergies.length > 0 && (
-            <div className="mb-3 px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+            <div className="mb-4 px-4 py-2.5 rounded-xl text-sm flex items-center gap-2"
               style={{ background: '#FFF3E0', border: '1px solid #FFCC99', color: '#8B4500' }}>
               <span>🛡️</span>
               <span>Showing only {petName}-safe items (no {allergies.join(', ')})</span>
@@ -787,7 +788,7 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {filteredProducts.slice(0, 4).map((product, idx) => (
                 <SoulProductCard
                   key={product.id || idx}

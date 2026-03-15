@@ -122,14 +122,11 @@ const ProductDetailModal = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex"
       style={{
-        alignItems: isMobile ? 'flex-start' : 'center',
-        paddingTop: isMobile ? '88px' : '16px',
-        paddingLeft: isMobile ? 0 : '16px',
-        paddingRight: isMobile ? 0 : '16px',
-        paddingBottom: isMobile ? 0 : '16px',
-        overflowY: isMobile ? 'auto' : 'visible',
+        alignItems: isMobile ? 'flex-end' : 'center',
+        justifyContent: 'center',
+        padding: isMobile ? 0 : '16px',
       }}
       onClick={onClose}
       data-testid="product-detail-modal"
@@ -137,19 +134,28 @@ const ProductDetailModal = ({
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       
-      {/* Modal */}
+      {/* Modal — bottom sheet on mobile, centered card on desktop */}
       <div 
-        className="relative w-full max-w-md bg-white overflow-hidden shadow-2xl"
+        className="relative w-full bg-white overflow-hidden shadow-2xl"
         onClick={e => e.stopPropagation()}
         style={{
-          maxHeight: isMobile ? 'none' : '90vh',
-          borderRadius: isMobile ? '20px 20px 0 0' : 24,
+          maxWidth: isMobile ? '100%' : '28rem',
+          maxHeight: isMobile ? '92vh' : '90vh',
+          borderRadius: isMobile ? '24px 24px 0 0' : 24,
+          overflowY: 'auto',
         }}
       >
+        {/* Drag handle (mobile) */}
+        {isMobile && (
+          <div className="flex justify-center pt-3 pb-1">
+            <div className="w-10 h-1 rounded-full bg-gray-200" />
+          </div>
+        )}
+
         {/* Close button */}
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center shadow-lg"
+          className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/95 flex items-center justify-center shadow-lg"
           data-testid="modal-close-btn"
         >
           <X className="w-4 h-4 text-gray-600" />
@@ -157,8 +163,8 @@ const ProductDetailModal = ({
 
         {/* Product Image */}
         <div 
-          className="relative h-56 flex items-center justify-center"
-          style={{ background: `linear-gradient(135deg, ${pillarColor}15, ${pillarColor}08)` }}
+          className="relative flex items-center justify-center"
+          style={{ height: isMobile ? 220 : 256, background: `linear-gradient(135deg, ${pillarColor}15, ${pillarColor}08)` }}
         >
           {image ? (
             <img 
@@ -187,11 +193,11 @@ const ProductDetailModal = ({
         </div>
 
         {/* Content */}
-        <div className="p-5">
+        <div className="p-6">
           {/* Category tag */}
           {product.category && (
             <span 
-              className="inline-block px-2 py-0.5 rounded text-xs font-medium mb-2"
+              className="inline-block px-2.5 py-1 rounded-lg text-xs font-semibold mb-3"
               style={{ background: `${pillarColor}15`, color: pillarColor }}
             >
               {product.category.replace(/_/g, ' ')}
@@ -199,27 +205,27 @@ const ProductDetailModal = ({
           )}
 
           {/* Title */}
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
+          <h2 className="font-bold text-gray-900 mb-2.5 leading-snug" style={{ fontSize: 20 }}>
             {product.name}
           </h2>
 
           {/* Description */}
           {product.description && (
-            <p className="text-sm text-gray-500 mb-4 leading-relaxed">
+            <p className="text-gray-500 mb-5 leading-relaxed" style={{ fontSize: 14 }}>
               {product.description}
             </p>
           )}
 
           {/* Variants selector */}
           {hasVariants && (
-            <div className="mb-4">
-              <p className="text-xs font-semibold text-gray-600 mb-2">Select Option:</p>
+            <div className="mb-5">
+              <p className="text-sm font-semibold text-gray-700 mb-2.5">Select Option:</p>
               <div className="flex flex-wrap gap-2">
                 {variants.map((v, i) => (
                   <button
                     key={i}
                     onClick={() => setSelectedVariant(i)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                    className="px-3.5 py-2 rounded-xl text-sm font-medium transition-all"
                     style={{
                       background: selectedVariant === i ? pillarColor : 'transparent',
                       color: selectedVariant === i ? 'white' : '#555',
@@ -227,7 +233,7 @@ const ProductDetailModal = ({
                     }}
                   >
                     {v.name || v.size || `Option ${i + 1}`}
-                    {v.price && ` - ₹${v.price}`}
+                    {v.price && ` — ₹${v.price}`}
                   </button>
                 ))}
               </div>
@@ -235,15 +241,12 @@ const ProductDetailModal = ({
           )}
 
           {/* Price and Quantity */}
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center justify-between mb-6">
             {/* Price */}
             <div>
               {isService ? (
                 <div className="flex items-center gap-2">
-                  <span 
-                    className="text-lg font-bold"
-                    style={{ color: '#C9973A' }}
-                  >
+                  <span className="font-bold" style={{ fontSize: 18, color: '#C9973A' }}>
                     Concierge Service
                   </span>
                   <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium">
@@ -252,7 +255,7 @@ const ProductDetailModal = ({
                 </div>
               ) : (
                 <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-bold" style={{ color: '#1A0030' }}>
+                  <span className="font-bold" style={{ fontSize: 26, color: '#1A0030' }}>
                     ₹{(price * quantity).toLocaleString('en-IN')}
                   </span>
                   {quantity > 1 && (
@@ -264,23 +267,23 @@ const ProductDetailModal = ({
               )}
             </div>
 
-            {/* Quantity selector (only for products, not services) */}
+            {/* Quantity selector */}
             {!isService && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-8 h-8 rounded-full flex items-center justify-center border border-gray-200 hover:bg-gray-50"
+                  className="w-9 h-9 rounded-full flex items-center justify-center border border-gray-200 hover:bg-gray-50 transition-colors"
                   disabled={quantity <= 1}
                 >
-                  <Minus className="w-3 h-3" />
+                  <Minus className="w-4 h-4" />
                 </button>
-                <span className="w-8 text-center font-bold">{quantity}</span>
+                <span className="w-8 text-center font-bold text-base">{quantity}</span>
                 <button
                   onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                  className="w-8 h-8 rounded-full flex items-center justify-center border border-gray-200 hover:bg-gray-50"
+                  className="w-9 h-9 rounded-full flex items-center justify-center border border-gray-200 hover:bg-gray-50 transition-colors"
                   disabled={quantity >= 10}
                 >
-                  <Plus className="w-3 h-3" />
+                  <Plus className="w-4 h-4" />
                 </button>
               </div>
             )}
@@ -291,9 +294,10 @@ const ProductDetailModal = ({
             <button
               onClick={handleSendToConcierge}
               disabled={isAdding || isSentToConcierge}
-              className="w-full py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all"
+              className="w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all"
               data-testid="send-concierge-btn"
               style={{
+                fontSize: 16,
                 background: isSentToConcierge
                   ? 'linear-gradient(135deg, #22C55E, #16A34A)'
                   : 'linear-gradient(135deg, #C9973A, #F0C060)',
@@ -302,26 +306,19 @@ const ProductDetailModal = ({
               }}
             >
               {isSentToConcierge ? (
-                <>
-                  <Check className="w-4 h-4" />
-                  Sent to Concierge!
-                </>
-              ) : isAdding ? (
-                'Sending...'
-              ) : (
-                <>
-                  <Star className="w-4 h-4" />
-                  Request via Concierge
-                </>
+                <><Check className="w-5 h-5" /> Sent to Concierge!</>
+              ) : isAdding ? 'Sending...' : (
+                <><Star className="w-5 h-5" /> Request via Concierge</>
               )}
             </button>
           ) : (
             <button
               onClick={handleAddToCart}
               disabled={isAdding || isAdded}
-              className="w-full py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all"
+              className="w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all"
               data-testid="add-to-cart-btn"
               style={{
+                fontSize: 16,
                 background: isAdded
                   ? 'linear-gradient(135deg, #22C55E, #16A34A)'
                   : `linear-gradient(135deg, ${pillarColor}, #FF6B9D)`,
@@ -330,23 +327,15 @@ const ProductDetailModal = ({
               }}
             >
               {isAdded ? (
-                <>
-                  <Check className="w-4 h-4" />
-                  Added to Cart!
-                </>
-              ) : isAdding ? (
-                'Adding...'
-              ) : (
-                <>
-                  <ShoppingCart className="w-4 h-4" />
-                  Add to Cart — ₹{(price * quantity).toLocaleString('en-IN')}
-                </>
+                <><Check className="w-5 h-5" /> Added to Cart!</>
+              ) : isAdding ? 'Adding...' : (
+                <><ShoppingCart className="w-5 h-5" /> Add to Cart — ₹{(price * quantity).toLocaleString('en-IN')}</>
               )}
             </button>
           )}
 
           {/* Additional info */}
-          <p className="text-xs text-center text-gray-400 mt-3">
+          <p className="text-xs text-center text-gray-400 mt-4">
             {isService 
               ? '✦ Our concierge team will contact you within 24 hours'
               : '✦ Free delivery on orders above ₹999'
