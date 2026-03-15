@@ -4,7 +4,18 @@
 
 ---
 
-## ✅ SESSION 30 — Product Catalog Audit & Excel Seed (Mar 15, 2026)
+## ✅ SESSION 30b — Admin AI Generate + Active/Inactive for Services (Mar 15, 2026)
+
+### What Was Done:
+1. **"Generate AI Image" in Product Box** — Added to `ProductBoxEditor.jsx` Media tab. Calls synchronous `POST /api/admin/products/{id}/generate-image` → saves to Cloudinary, returns URL immediately (like ServiceBox does).
+2. **"Generate AI Image" in Bundle editor** — Added to `CelebrateManager.jsx` bundle edit modal. Calls `POST /api/admin/celebrate/bundles/{id}/generate-image`.
+3. **Active/Inactive toggle in PillarServicesTab** — Each service row now has a clickable green/gray toggle button to activate/deactivate the service. Plus a "Show All / Active Only" filter button.
+4. **Two new backend endpoints:** `POST /api/admin/products/{id}/generate-image` and `POST /api/admin/celebrate/bundles/{id}/generate-image` — both synchronous, return Cloudinary URL.
+5. **Testing:** 100% pass rate (21/21 backend + 4/4 frontend) via testing agent.
+
+---
+
+
 **93 products from Celebrate_ProductCatalogue_SEED.xlsx seeded into DB with AI images**
 
 ### What Was Done:
