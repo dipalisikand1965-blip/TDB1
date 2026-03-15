@@ -1,47 +1,44 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 15, 2026 (Session 31 — Sync to Production Verified + Create New Product/Service Confirmed Working)
+## Last Updated: Mar 15, 2026 (Session 36 — Admin Once and For All: Bundle Pricing, Product Activation, Architecture Audit)
 
 ---
 
-## ✅ SESSION 35 — Bundle Crash Fixed + Full Architecture Audit (Mar 15, 2026)
+## ✅ SESSION 36 — Admin Panel Comprehensive Fix (Mar 15, 2026)
 
-### Bug Fixed:
-- **Bundles crash** "Objects are not valid as React child": 4 learn bundles + care_bundles have items stored as `{name, price}` dict objects. Fixed in `BundlesManager.jsx` (line 488) and `LearnManager.jsx` to safely render `item.name` if item is an object.
+### What Was Fixed:
 
-### Full Architecture Audit Findings:
-See full report: `/app/memory/ARCHITECTURE_AUDIT.html`
+#### 1. Product Activation (CRITICAL DATA FIX)
+- **Problem**: 3,960 products in `products_master` had no `active` field → showing 0 products everywhere
+- **Fix**: Script `update_many(active missing → set active: True)` on all products with `image_url`
+- **Result**: 3,987 products now active ✅
 
-| | Products | Services | Bundles |
-|---|---|---|---|
-| celebrate | 1,263 | 17 | 10 |
-| care | 294 | 30 | 6 |
-| fit | 465 | 23 | 6 |
-| dine | 333 | 9 | 8 |
-| enjoy | 384 | 5 | 7 |
-| travel | 404 | 11 | 9 |
-| stay | 784 | 9 | 9 |
-| farewell | 292 | 8 | 6 |
-| emergency | 315 | 8 | 8 |
-| adopt | 168 | 9 | 10 |
-| learn | 318 | 12 | 11 |
-| paperwork | 198 | 16 | 9 |
-| advisory | 99 | 8 | 12 |
-| **TOTAL** | **4,334** | **165 (assigned)** | **111** |
+#### 2. PricingHub Pillar Bundles Tab (COMPLETE REWRITE)
+- **Problem**: Only showed 5 pillars from wrong pillar-specific endpoints with wrong field names
+- **Fix**: Rewrote `PillarBundlesSection` to use `GET /api/bundles?active_only=false` (unified collection)
+- **Result**: Shows all **13 pillars**, 39 bundles total, inline price editing works ✅
 
-### Critical Gaps Found:
-1. ❌ Only 28/4,334 products are `active: true` (all others are inactive!)
-2. ❌ 561/1,118 services have no pillar assignment
-3. ❌ Bundles fragmented across 14 separate collections (`{pillar}_bundles`)
-4. ❌ `products` (1,379), `products_master` (3,987), `breed_products` (2,569) are orphan collections NOT in Product Box
-5. ❌ Bundle Pricing tab missing from Pricing Hub
+#### 3. Bundle Pricing PATCH Endpoint (NEW FEATURE)
+- **Added**: `PATCH /api/bundles/{id}/pricing` in `bundle_routes.py`
+- Allows lightweight pricing-only updates (original_price, bundle_price, active)
+- Auto-recalculates discount %
 
-### Admin Capabilities Confirmed:
-- ✅ Active/Inactive toggle works for Products AND Services
-- ✅ AI Image regeneration works for Products, Services, Bundles
-- ✅ Create New works for Products (Add Product) and Services (Add Service)
-- ❌ Soul Products not in Product Box (in separate `products` collection)
-- ❌ Bundle Pricing not in Pricing Hub
+#### 4. Admin Navigation Fix
+- **Problem**: Admin > Celebrate (sidebar) showed blank page (no render case for `activeTab === 'celebrate'`)
+- **Fix**: Added `{activeTab === 'celebrate' && <CelebrateManager />}` render case in `Admin.jsx`
+
+#### 5. Bundle Crash Fixes (Carried from Session 35)
+- `BundlesManager.jsx`: `typeof item === 'object' ? item.name : item` for object items
+- `LearnManager.jsx`: Same typeof check
+
+#### 6. Architecture Documentation
+- Created comprehensive HTML audit at `/app/docs/architecture_audit.html`
+- API endpoint to serve it: `GET /api/docs/architecture-audit`
+
+### Testing Results (Session 36):
+- **Backend**: 15/15 tests passed ✅
+- **Frontend**: 90% — CelebrateManager navigation fixed ✅
+- **P0 Crash**: Resolved ✅
 
 ---
 

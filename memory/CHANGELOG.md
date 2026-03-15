@@ -3,6 +3,18 @@
 
 ---
 
+## [Mar 15, 2026] Session 36 — Admin Comprehensive Fix ✅
+
+### What Was Fixed
+- **Product Activation**: 3,960 products activated (were missing `active` field → now 3,987 active)
+- **PricingHub Pillar Bundles Tab**: Rewrote to show all 13 pillars from unified `/api/bundles` (was 5 pillars, wrong endpoints)
+- **Bundle Pricing PATCH Endpoint**: Added `PATCH /api/bundles/{id}/pricing` with auto-discount recalculation
+- **Admin Celebrate Navigation**: Fixed blank page when clicking Celebrate in sidebar (added render case `activeTab === 'celebrate'`)
+- **Architecture HTML Docs**: Created comprehensive `/app/docs/architecture_audit.html`, served via `GET /api/docs/architecture-audit`
+- **Testing**: 15/15 backend tests passed, frontend 90% (P0 crash resolved)
+
+---
+
 ## [Mar 15, 2026] Session 30 — Product Catalog Audit + 93 Excel Products Seeded ✅
 
 ### What Was Built
