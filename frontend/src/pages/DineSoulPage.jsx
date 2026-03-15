@@ -881,51 +881,6 @@ function DiningConcierge({ pet }) {
   );
 }
 
-// ─── Hero ─────────────────────────────────────────────────────────────────────
-function DineHeroV2({ pet, soulScore }) {
-  const petName = pet?.name || "your dog";
-  const score = Math.round(soulScore || pet?.soul_score || pet?.overall_score || 0);
-  const petPhoto = pet?.photo_url || pet?.image_url || null;
-  const allergies = getAllergies(pet);
-  const loves = getLoves(pet);
-  const healthCondition = getHealthCondition(pet);
-
-  const quoteText = allergies.length > 0
-    ? `I've already removed everything containing ${allergies.join(" and ")}. What you see is safe.${healthCondition ? ` I'm keeping ${petName}'s ${healthCondition} in mind with everything I suggest here.` : ""}`
-    : `I know ${petName}'s body as well as I know their soul. Everything I show you here has been filtered for them.`;
-
-  return (
-    <div style={{background:"linear-gradient(135deg,#3d1200 0%,#7a2800 40%,#c44400 75%,#e86a00 100%)",padding:"32px 32px 24px",position:"relative",overflow:"hidden"}} data-testid="dine-hero">
-      <div style={{position:"absolute",top:-80,right:-60,width:280,height:280,background:"radial-gradient(circle,rgba(255,140,66,0.25) 0%,transparent 70%)",borderRadius:"50%",pointerEvents:"none"}}/>
-      <div style={{position:"absolute",bottom:0,left:60,width:180,height:180,background:"radial-gradient(circle,rgba(196,77,255,0.15) 0%,transparent 70%)",borderRadius:"50%",pointerEvents:"none"}}/>
-      <div style={{position:"relative",zIndex:2,display:"flex",alignItems:"flex-start",gap:18}}>
-        {/* Avatar */}
-        <div style={{position:"relative",flexShrink:0}}>
-          <div style={{width:80,height:80,borderRadius:"50%",border:"2px solid transparent",background:"linear-gradient(#3d1200,#3d1200) padding-box,linear-gradient(135deg,#00E676,#FF8C42) border-box",display:"flex",alignItems:"center",justifyContent:"center",fontSize:38,overflow:"hidden"}}>
-            {petPhoto ? <img src={petPhoto} alt={petName} style={{width:"100%",height:"100%",objectFit:"cover",borderRadius:"50%"}} /> : "🐕"}
-          </div>
-          <div style={{position:"absolute",bottom:-8,left:"50%",transform:"translateX(-50%)",background:"linear-gradient(135deg,#FF8C42,#C44DFF)",color:"#fff",fontSize:9,fontWeight:700,padding:"2px 6px",borderRadius:20,whiteSpace:"nowrap"}}>Soul {score}%</div>
-        </div>
-        {/* Content */}
-        <div style={{flex:1}}>
-          <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.20)",borderRadius:20,padding:"3px 10px",color:"rgba(255,255,255,0.85)",fontSize:12,marginBottom:10}}>✦ Food &amp; Nourishment for {petName}</div>
-          <div style={{fontSize:"clamp(1.75rem,4vw,2.5rem)",fontWeight:800,lineHeight:1.1,marginBottom:6}}>
-            <span style={{color:"#FFD080"}}>Food &amp; Nourishment</span><br/>
-            <span style={{color:"#fff"}}>for </span><span style={{color:"#FFAAD4"}}>{petName}</span>
-          </div>
-          <div style={{fontSize:"clamp(0.8rem,1.5vw,0.9rem)",color:"rgba(255,255,255,0.60)",marginBottom:14}}>I know {petName}'s body as well as I know their soul.</div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:14}}>
-            {allergies.map(a => <SoulChip key={a} extraStyle={{borderColor:"rgba(255,107,157,0.50)",background:"rgba(255,107,157,0.12)"}}>⚠️ No {a}</SoulChip>)}
-            {loves[0] && <SoulChip extraStyle={{borderColor:"rgba(255,208,128,0.50)",background:"rgba(255,208,128,0.10)"}}>💚 Loves: {loves[0]}</SoulChip>}
-            {healthCondition && <SoulChip extraStyle={{borderColor:"rgba(196,77,255,0.50)",background:"rgba(196,77,255,0.10)"}}>🛡️ {healthCondition}</SoulChip>}
-          </div>
-          <MiraQuoteBox text={quoteText} byline={`♥ Mira knows ${petName}`} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ─── Tab bar ──────────────────────────────────────────────────────────────────
 function TabBar({ active, onChange }) {
   return (
@@ -1092,7 +1047,7 @@ const DineSoulPage = () => {
                   <span style={{ fontSize: 22, display: "block", marginBottom: 8 }}>{dim.icon}</span>
                   <div style={{ fontSize: 11, fontWeight: 700, color: "#1A0A00", marginBottom: 3 }}>{dim.name}</div>
                   <div style={{ fontSize: 10, color: "#666", lineHeight: 1.3, marginBottom: 6 }}>{t(dim.sub, petData.name)}</div>
-                  <span style={{ fontSize: 9, fontWeight: 700, borderRadius: 20, padding: "2px 7px", display: "inline-block", background: dim.badgeBg, color: dim.badgeCol }}>{dim.badge}</span>
+                  <span style={{ fontSize: 9, fontWeight: 700, borderRadius: 20, padding: "2px 7px", display: "inline-block", background: dim.badgeBg, color: dim.badgeCol }}>{t(dim.badge, petData.name)}</span>
                   <span style={{ position: "absolute", bottom: 8, right: 10, fontSize: 14, color: "rgba(0,0,0,0.25)", transition: "transform 0.2s", transform: openDim === dim.id ? "rotate(90deg)" : "none" }}>›</span>
                 </div>
               ))}

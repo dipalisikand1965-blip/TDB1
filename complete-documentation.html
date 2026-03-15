@@ -448,13 +448,36 @@
       </tbody>
     </table>
 
-    <h3>Tummy Profile — Four Data Cells</h3>
+    <h3>Tummy Profile — Soul-Score Aware (Feb 2026 Refactor)</h3>
+    <p>The Tummy Profile now functions like "Mira's Picks" on the Celebrate page. It has two states based on <code>hasFoodData</code> (whether the pet has any loves, allergies, or health condition data).</p>
+    <div class="grid-2">
+      <div class="card highlight">
+        <h4 style="color:#FF8C42">MIRA KNOWS State (has food data)</h4>
+        <p>Shows the 4-cell grid (Loves · Avoid · Nutrition Goal · Health Note) with a "Mira knows [pet]'s food preferences" banner. If there are unanswered soul questions, a "GROW SOUL" section appears below with amber-themed <code>SoulQuestionCardDine</code> question cards.</p>
+      </div>
+      <div class="card highlight">
+        <h4 style="color:#50DC78">GROW SOUL State (no food data)</h4>
+        <p>Shows an amber soul-score header with big % number + "+X answered this session" badge, then 4 question cards from <code>/api/pet-soul/profile/{id}/quick-questions?limit=4&amp;context=dine</code>. Each card can be answered inline. Soul score updates live and dispatches <code>soulScoreUpdated</code> custom event.</p>
+      </div>
+    </div>
+    <p style="margin-top:12px"><strong>SoulQuestionCardDine</strong> — Amber-themed question card (local component in DineSoulPage.jsx). Submits to <code>POST /api/pet-soul/profile/{id}/answer</code>. Shows +pts badge on success. Supports select, multi_select, and text question types.</p>
+    <h4>Original Four Data Cells (Mira Knows state)</h4>
     <div class="grid-4">
       <div class="card"><h4>Loves</h4><p>petFavouriteFood1, petFavouriteFood2. Renders as e.g. "Salmon, Peanut Butter"</p></div>
       <div class="card"><h4>Allergic To</h4><p>petAllergy1, petAllergy2. Renders as e.g. "Soy, Chicken". Filters all products.</p></div>
       <div class="card"><h4>Nutrition Goal</h4><p>petNutritionGoal — High protein / Weight management / Easy on digestion</p></div>
       <div class="card"><h4>Health Note</h4><p>petHealthCondition — e.g. "Lymphoma · Stage 3". Shows "Treatment-safe items are marked."</p></div>
     </div>
+
+    <h3>Layout — Category Strip &amp; Tab Bar (Feb 2026)</h3>
+    <p>Both <code>DineCategoryStrip</code> and <code>TabBar</code> are now inside the <code>max-w-5xl mx-auto</code> container (same as Celebrate page). The <code>TabBar</code> uses center-aligned amber pill buttons instead of the previous underline style.</p>
+    <ul>
+      <li><strong>Active tab</strong>: <code>linear-gradient(135deg, #FF8C42, #C44400)</code> background, white text, border-radius 20px</li>
+      <li><strong>Inactive tab</strong>: <code>#FFF3E0</code> amber light background, <code>#C44400</code> text, amber border</li>
+    </ul>
+
+    <h3>"How would Mojo love to eat?" Heading (Feb 2026)</h3>
+    <p>Added a new section between the TabBar and the Tummy Profile with heading: <strong>"How would [petName] love to eat?"</strong> (petName in #FF8C42 amber). Sub-heading: "Choose a dimension — everything inside is personalised to [petName]'s food profile. Glowing ones match what [petName] loves." Uses Georgia serif font, mirrors "How would Mojo love to celebrate?" on the Celebrate page. <code>data-testid="dine-how-would-section"</code>.</p>
 
     <h3>Dimension Glow Logic</h3>
     <table class="table">
