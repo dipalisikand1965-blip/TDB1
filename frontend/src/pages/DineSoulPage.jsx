@@ -154,6 +154,58 @@ const CONC_SERVICES = [
   {icon:"📍",sub:"COMPLIMENTARY",name:"Venue Suitability Advisory",desc:"Tell us the venue. Tell us about {name}. We assess if it is the right match for their personality.",free:true,cta:"Assess this venue for {name} →"},
 ];
 
+// ─── Category → dim mapping (used for dynamic product lookup) ────────────────
+const DIM_ID_TO_CATEGORY = {
+  meals:       "Daily Meals",
+  treats:      "Treats & Rewards",
+  supplements: "Supplements",
+  frozen:      "Frozen & Fresh",
+  homemade:    "Homemade & Recipes",
+};
+
+const CATEGORY_BG = {
+  "Daily Meals":        "#FFF3E0",
+  "Treats & Rewards":   "#FCE4EC",
+  "Supplements":        "#E8F5E9",
+  "Frozen & Fresh":     "#E3F2FD",
+  "Homemade & Recipes": "#FFFDE7",
+};
+
+function getDineProductIcon(name = "") {
+  const n = name.toLowerCase();
+  if (n.includes("salmon"))        return "🐟";
+  if (n.includes("lamb"))          return "🐑";
+  if (n.includes("chicken"))       return "🐔";
+  if (n.includes("peanut butter")) return "🥜";
+  if (n.includes("birthday cake") || n.includes("cupcake")) return "🎂";
+  if (n.includes("birthday"))      return "🎁";
+  if (n.includes("veggie") || n.includes("vegetable")) return "🥕";
+  if (n.includes("mushroom"))      return "🍄";
+  if (n.includes("probiotic"))     return "🌱";
+  if (n.includes("glucosamine"))   return "🦴";
+  if (n.includes("vitamin"))       return "💊";
+  if (n.includes("coconut oil"))   return "🥥";
+  if (n.includes("oil"))           return "💧";
+  if (n.includes("fish"))          return "🐠";
+  if (n.includes("guide") || n.includes("recipe")) return "📝";
+  if (n.includes("pack"))          return "📦";
+  if (n.includes("platter"))       return "🍽️";
+  return "🐾";
+}
+
+function adaptDineProduct(p) {
+  const price = p.price;
+  return {
+    id:    p.id,
+    icon:  getDineProductIcon(p.name),
+    bg:    CATEGORY_BG[p.category] || "#FFF3E0",
+    tag:   p.mira_tag || p.category || "",
+    name:  p.name,
+    desc:  p.allergy_free || (p.description ? p.description.slice(0, 70) : ""),
+    price: !price || price === 0 ? "Free" : `₹${Number(price).toLocaleString("en-IN")}`,
+  };
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function t(str, name) { return str.replace(/{name}/g, name || "your dog"); }
 
@@ -312,11 +364,17 @@ function TummyProfile({ pet, token, onUpdate }) {
 }
 
 // ─── Dimension Expanded ───────────────────────────────────────────────────────
-function DimExpanded({ dim, pet, onClose }) {
+function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const [activeTab, setActiveTab] = useState(dim.tabs[0]);
   const petName = pet?.name || "your dog";
   const allergies = getAllergies(pet);
-  const products = dim.products[activeTab] || [];
+
+  // Prefer live API products, fall back to hardcoded catalog
+  const catName = DIM_ID_TO_CATEGORY[dim.id];
+  const liveProducts = apiProducts[catName]?.[activeTab] || [];
+  const products = liveProducts.length > 0
+    ? liveProducts.map(adaptDineProduct)
+    : (dim.products[activeTab] || []);
   return (
     <div style={{background:"#fff",border:"2px solid #FF8C42",borderRadius:18,padding:22,marginBottom:16,gridColumn:"1 / -1"}}>
       <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:14,paddingBottom:12,borderBottom:"1px solid #FFF3E0"}}>
@@ -356,7 +414,7 @@ function MiraMealPick({ pet }) {
     <div style={{background:"linear-gradient(135deg,#3d1200,#7a2800)",borderRadius:20,padding:28,marginBottom:32,display:"flex",alignItems:"center",gap:24}} data-testid="mira-meal-pick">
       <div style={{flex:1}}>
         <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(255,140,66,0.20)",border:"1px solid rgba(255,140,66,0.40)",borderRadius:20,padding:"3px 10px",color:"#FFC080",fontSize:10,fontWeight:600,marginBottom:10}}>✦ Mira's meal pick for {petName}</div>
-        <div style={{fontSize:22,fontWeight:800,color:"#fff",marginBottom:6}}>The {petName} Meal Pick</div>
+        <div style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:"#fff",marginBottom:6}}>The {petName} Meal Pick</div>
         <p style={{fontSize:12,color:"rgba(255,255,255,0.65)",lineHeight:1.65,marginBottom:14}}>
           {healthCondition
             ? `I've built this around ${petName}'s ${healthCondition}. Every item supports their treatment and strength. Nothing harmful. Everything nourishing.`
@@ -394,7 +452,7 @@ function GuidedNutritionPaths({ pet }) {
   return (
     <div style={{marginBottom:32}} data-testid="guided-nutrition-paths">
       <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",marginBottom:4}}>
-        <div style={{fontSize:20,fontWeight:800,color:"#1A0A00",fontFamily:"Georgia,serif"}}>Guided Nutrition Paths</div>
+        <div style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:"#1A0A00",fontFamily:"Georgia,serif"}}>Guided Nutrition Paths</div>
         <button style={{background:"none",border:"1.5px solid #E0D0C0",borderRadius:20,padding:"5px 14px",fontSize:12,fontWeight:600,color:"#888",cursor:"pointer"}}>See all 6</button>
       </div>
       <div style={{fontSize:12,color:"#888",marginBottom:18}}>Mira picked {paths.length} paths for {petName}</div>
@@ -479,7 +537,7 @@ function DiningConcierge({ pet }) {
   const openMira = () => window.dispatchEvent(new CustomEvent("openMiraAI",{detail:{message:`Plan a dining out experience for ${petName}`,context:"dine"}}));
   return (
     <div style={{background:"linear-gradient(135deg,#FFF8F0,#FFF0F8)",borderRadius:20,border:"1px solid #F5E8D4",padding:24,marginBottom:32}} data-testid="dining-concierge">
-      <div style={{fontSize:20,fontWeight:800,color:"#1A0A00",marginBottom:4,fontFamily:"Georgia,serif"}}>Dining Concierge Services</div>
+      <div style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:"#1A0A00",marginBottom:4,fontFamily:"Georgia,serif"}}>Dining Concierge Services</div>
       <div style={{fontSize:13,color:"#888",marginBottom:20}}>Concierge-led support for every dining out moment — from finding the right place to making sure {petName} is welcome.</div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
         {CONC_SERVICES.map(svc => (
@@ -497,7 +555,7 @@ function DiningConcierge({ pet }) {
       <div style={{background:"#1A0A00",borderRadius:20,padding:28,display:"flex",alignItems:"center",gap:24}}>
         <div style={{flex:1}}>
           <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(201,151,58,0.20)",border:"1px solid rgba(201,151,58,0.40)",borderRadius:20,padding:"4px 12px",color:"#F0C060",fontSize:11,fontWeight:600,marginBottom:12}}>👑 Dining Concierge®</div>
-          <div style={{fontSize:20,fontWeight:800,color:"#fff",marginBottom:8,fontFamily:"Georgia,serif"}}>Want us to plan the whole outing?</div>
+          <div style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:"#fff",marginBottom:8,fontFamily:"Georgia,serif"}}>Want us to plan the whole outing?</div>
           <div style={{fontSize:13,color:"rgba(255,255,255,0.60)",lineHeight:1.7,marginBottom:18}}>You tell us where you want to take {petName}.<br/>We find the right venue, check {breed} suitability, confirm outdoor seating, make the reservation, and have a safe treat waiting when you arrive.</div>
           <button onClick={openMira} style={{display:"inline-flex",alignItems:"center",gap:8,background:"linear-gradient(135deg,#C9973A,#F0C060)",color:"#1A0A00",border:"none",borderRadius:10,padding:"12px 24px",fontSize:14,fontWeight:800,cursor:"pointer"}}>👑 Talk to your Concierge</button>
         </div>
@@ -538,12 +596,12 @@ function DineHeroV2({ pet, soulScore }) {
         </div>
         {/* Content */}
         <div style={{flex:1}}>
-          <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.20)",borderRadius:20,padding:"3px 10px",color:"rgba(255,255,255,0.85)",fontSize:11,marginBottom:10}}>✦ Food &amp; Nourishment for {petName}</div>
-          <div style={{fontSize:32,fontWeight:800,lineHeight:1.1,marginBottom:6}}>
+          <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.20)",borderRadius:20,padding:"3px 10px",color:"rgba(255,255,255,0.85)",fontSize:12,marginBottom:10}}>✦ Food &amp; Nourishment for {petName}</div>
+          <div style={{fontSize:"clamp(1.75rem,4vw,2.5rem)",fontWeight:800,lineHeight:1.1,marginBottom:6}}>
             <span style={{color:"#FFD080"}}>Food &amp; Nourishment</span><br/>
             <span style={{color:"#fff"}}>for </span><span style={{color:"#FFAAD4"}}>{petName}</span>
           </div>
-          <div style={{fontSize:13,color:"rgba(255,255,255,0.60)",marginBottom:14}}>I know {petName}'s body as well as I know their soul.</div>
+          <div style={{fontSize:"clamp(0.8rem,1.5vw,0.9rem)",color:"rgba(255,255,255,0.60)",marginBottom:14}}>I know {petName}'s body as well as I know their soul.</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:14}}>
             {allergies.map(a => <SoulChip key={a} extraStyle={{borderColor:"rgba(255,107,157,0.50)",background:"rgba(255,107,157,0.12)"}}>⚠️ No {a}</SoulChip>)}
             {loves[0] && <SoulChip extraStyle={{borderColor:"rgba(255,208,128,0.50)",background:"rgba(255,208,128,0.10)"}}>💚 Loves: {loves[0]}</SoulChip>}
@@ -607,6 +665,26 @@ const DineSoulPage = () => {
   const [openDim, setOpenDim] = useState(null);
   const [petData, setPetData] = useState(null);
   const [soulScore, setSoulScore] = useState(0);
+  const [apiProducts, setApiProducts] = useState({});
+
+  // Fetch Dine products from SSOT (products_master) on mount
+  useEffect(() => {
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&limit=600`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data?.products?.length) return;
+        const grouped = {};
+        data.products.forEach(p => {
+          const cat = p.category || "";
+          const sub = p.sub_category || "";
+          if (!grouped[cat]) grouped[cat] = {};
+          if (!grouped[cat][sub]) grouped[cat][sub] = [];
+          grouped[cat][sub].push(p);
+        });
+        setApiProducts(grouped);
+      })
+      .catch(e => console.error("[DineSoulPage] products fetch error:", e));
+  }, []);
 
   useEffect(() => {
     if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
@@ -652,7 +730,10 @@ const DineSoulPage = () => {
           <>
             <TummyProfile pet={petData} token={token} onUpdate={p => { setPetData(p); setCurrentPet(p); }} />
 
-            <div style={{fontSize:20,fontWeight:800,color:"#1A0A00",marginBottom:4,fontFamily:"Georgia,serif"}}>Eat &amp; Nourish</div>
+            {/* Mira soul nudge — dine context (unanswered nutrition questions) */}
+            <MiraSoulNudge pet={petData} token={token} context="dine" limit={3} />
+
+            <div style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:"#1A0A00",marginBottom:4,fontFamily:"Georgia,serif"}}>Eat &amp; Nourish</div>
             <div style={{fontSize:12,color:"#888",marginBottom:16}}>5 dimensions, filtered to {petData.name}</div>
 
             {/* Dimensions grid */}
@@ -672,7 +753,7 @@ const DineSoulPage = () => {
             {/* Expanded panel */}
             {activeDim && (
               <div style={{display:"grid",gridTemplateColumns:"1fr"}}>
-                <DimExpanded dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} />
+                <DimExpanded dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
               </div>
             )}
 

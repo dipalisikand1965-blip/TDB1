@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://unified-dine.preview.emergentagent.com/mira-demo**
+**https://dine-consistency-fix.preview.emergentagent.com/mira-demo**
 
 ---
 
