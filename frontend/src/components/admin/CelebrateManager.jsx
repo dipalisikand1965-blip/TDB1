@@ -185,18 +185,34 @@ const CelebrateManager = ({ getAuthHeader }) => {
         }
       }
 
-      // Match EXACTLY all categories listed in CATEGORY_OPTIONS above
+      // Match ALL celebrate-relevant categories — includes all pillar tab categories
       const CELEBRATE_CATS = new Set([
-        'celebration', 'cakes', 'breed-cakes', 'mini-cakes',
-        'pupcakes', 'dognuts',
+        // Food pillar
+        'celebration', 'cakes', 'breed-cakes', 'mini-cakes', 'pupcakes', 'dognuts',
         'treats', 'desi-treats', 'nut-butters', 'frozen-treats', 'frozen',
-        'hampers',
-        'party_accessories', 'party_kits', 'celebration_addons', 'celebration-addons',
-        'breed-party_hats', 'breed-party-hats',
-        'soul_picks', 'soul-picks',
+        // Social pillar
+        'hampers', 'party_accessories', 'party_kits', 'celebration_addons', 'celebration-addons',
+        'breed-party_hats', 'breed-party-hats', 'soul_picks', 'soul-picks',
+        // Play pillar
+        'toys', 'puzzle_toys', 'enrichment',
+        // Adventure pillar
+        'walking', 'adventure', 'travel',
+        // Grooming pillar
+        'grooming', 'spa', 'spa_bath', 'styling',
+        // Learning pillar
+        'training',
+        // Health pillar
+        'supplements', 'health',
+        // Memory pillar
+        'portraits', 'memory_books',
+        // Venue / services
+        'venue', 'services',
+        // Extra Shopify-synced variants (production)
+        'birthday', 'birthday-accessories', 'party', 'celebration-products',
       ]);
+      // If fewer than 20 celebrate products, just show ALL products (production may use different categories)
       const celebrateProducts = allProducts.filter(p => CELEBRATE_CATS.has((p.category || '').toLowerCase().trim()));
-      setProducts(celebrateProducts.length > 0 ? celebrateProducts : allProducts);
+      setProducts(celebrateProducts.length > 20 ? celebrateProducts : allProducts);
 
       const finalProds = celebrateProducts.length > 0 ? celebrateProducts : allProducts;
       setStats({
