@@ -485,7 +485,7 @@ const BundlesManager = () => {
                 <div className="flex flex-wrap gap-1">
                   {bundle.items?.map((item, idx) => (
                     <Badge key={idx} variant="secondary" className="text-xs">
-                      {item}
+                      {typeof item === 'object' ? (item.name || item.title || JSON.stringify(item)) : item}
                     </Badge>
                   ))}
                 </div>
