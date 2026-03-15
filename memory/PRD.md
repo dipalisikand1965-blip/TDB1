@@ -11,6 +11,41 @@ Violating these rules will break the admin panel and data consistency.
 
 ---
 
+## ✅ SESSION 41 — Dine Page: Golden Principles — Category Strip + AI Images + Product Modal (Mar 15, 2026)
+
+### What Was Built:
+
+#### 1. 20 AI-Generated Product Images (Sub-Category Level)
+- Generated distinct food photography images for all 20 Dine sub-categories using Gemini Imagen 4
+- Each image is styled as premium food photography (salmon bowls, birthday cakes, supplement jars, raw patties, recipe cards, etc.)
+- Updated all 48 Excel catalog products in `products_master` with `image`, `image_url`, and `images` fields pointing to the new sub-category-specific image
+- Previous: All 48 products shared 1 generic image. Now: 20 unique images across 20 sub-categories
+
+#### 2. DineCategoryStrip.jsx — `/app/frontend/src/components/dine/DineCategoryStrip.jsx`
+- 7-tile scrollable category strip (Daily Meals, Treats & Rewards, Supplements, Frozen & Fresh, Homemade & Recipes, Soul Picks, Mira's Picks)
+- Exact same golden principle pattern as `CelebrateCategoryStrip.jsx`
+- Active tile highlighted with `#FF8C42` underline, amber colour scheme
+- Wired into `DineSoulPage.jsx` between hero and TabBar
+
+#### 3. DineContentModal.jsx — `/app/frontend/src/components/dine/DineContentModal.jsx`
+- Full product modal identical in structure to `CelebrateContentModal`
+- Fetches from SSOT: `/api/admin/pillar-products?pillar=dine&category=...`
+- Sub-category tabs auto-generated from product data
+- Uses shared `ProductCard` component — same CRUD/admin/View Details as everywhere else
+- Personalised CTAs: "Build Mojo's Meal Plan →", "Add to Mojo's Treat Box →", "Start Mojo's Supplement Plan →" etc.
+- Soul Picks: fetches breed merchandise from existing endpoints
+- Mobile-first: bottom sheet on mobile, centered modal on desktop
+
+#### 4. ProductCard.jsx — Image Fix
+- Added `image_url` check in both `getValidImage()` and `getValidProductImage()` functions
+- Added `emergentagent.com` to allowed image domains in `images[]` fallback
+- All 48 Dine products now show correct AI-generated food photography
+
+#### Testing Result: 100% Pass (iteration_140.json)
+All 9 features verified: category strip, all modals with correct images and counts, tab filtering, personalised CTAs, View Details CRUD, Celebrate regression, admin panel access — ALL PASS
+
+---
+
 ## ✅ SESSION 40 — Dine Page: MiraSoulNudge + Dynamic Products + Font Fixes (Mar 15, 2026)
 
 ### What Was Fixed / Built:
