@@ -1,6 +1,6 @@
 # 🚨 AGENT START HERE - READ THIS FIRST 🚨
 
-> **Last Updated:** March 13, 2026 12:30 IST
+> **Last Updated:** March 15, 2026
 > **Purpose:** Fast, current recovery guide for the next agent
 
 ---
@@ -9,17 +9,39 @@
 
 Before changing anything, read these in order:
 1. `/app/memory/AGENT_START_HERE.md`
-2. `/app/memory/PRD.md`
-3. `/app/memory/NEXT_AGENT_CRITICAL.md`
-4. `/app/memory/COMPLETE_SESSION_HANDOFF.md`
-5. `/app/memory/PILLAR_AUDIT.md`
+2. `/app/memory/ARCHITECTURE.md` ← **NEW — READ THIS FOR DATA MODEL RULES**
+3. `/app/memory/PRD.md`
+4. `/app/memory/NEXT_AGENT_CRITICAL.md`
+5. `/app/memory/COMPLETE_SESSION_HANDOFF.md`
+6. `/app/memory/PILLAR_AUDIT.md`
 
 Then review the live-served documentation target:
 - `/app/frontend/public/complete-documentation.html`
+- Live: `https://thedoggycompany.com/complete-documentation.html`
 
 ---
 
-## 🔴 CRITICAL PROTECTIONS
+## 🔴 CRITICAL DATA ARCHITECTURE (Session 38 — Mar 15, 2026)
+
+### CANONICAL DATA MODEL — NON-NEGOTIABLE
+```
+products_master  → ALL products, ALL pillars (source of truth)
+services_master  → ALL services, ALL pillars (source of truth)
+bundles          → ALL bundles, ALL pillars (source of truth)
+```
+
+**NEVER** create `care_products`, `dine_bundles` etc. Use master collections with `pillar` field.
+
+**Every pillar admin** uses reusable components:
+- `<PillarProductsTab pillar="X" />` — reads products_master
+- `<PillarServicesTab pillar="X" />` — reads services_master
+- `<PillarBundlesTab pillar="X" />` — reads bundles
+
+**Admin edits to products** MUST set `locally_edited: True` to survive Shopify sync.
+
+**Full architecture rules:** `/app/memory/ARCHITECTURE.md`
+
+---
 
 ### 1. THE $1000 MOCKUP BUG MUST NEVER RETURN
 
