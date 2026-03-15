@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://unified-dine.preview.emergentagent.com
+https://dine-consistency-fix.preview.emergentagent.com
 ```
 
 ---

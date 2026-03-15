@@ -304,7 +304,7 @@ Test Pets:
 ## Services
 - Backend: Running on port 8001
 - Frontend: Running on port 3000
-- Preview URL: https://unified-dine.preview.emergentagent.com
+- Preview URL: https://dine-consistency-fix.preview.emergentagent.com
 
 ---
 
