@@ -3,7 +3,16 @@
 
 ---
 
-## [Mar 15, 2026] Session 39 — Dine Pillar Architecture Completion + Full Product Catalog ✅
+## [Mar 15, 2026] Session 39b — Dine Page v2 + CelebrateConcierge Patch ✅
+
+### What Was Built
+- **DineSoulPage.jsx v2**: Complete rewrite from spec. Full-bleed amber/terracotta hero (no border-radius), PillarPageLayout wrapper (matches celebrate page), DineHeroV2 with avatar + soul chips + Mira quote, TabBar (Eat & Nourish / Dine Out), TummyProfile (4-cell editable grid), 5 Dimension cards (DailyMeals, Treats, Supplements, Frozen&Fresh, Homemade), MiraMealPick dark card, GuidedNutritionPaths (3 expandable paths), DiningConcierge (4 service cards + dark CTA), PetFriendlySpots (6 restaurant cards)
+- **CelebrateConcierge Patch**: Added "Celebrate, Personally" heading above CelebrateServiceGrid
+- All components inline in DineSoulPage.jsx (self-contained), wired to real pet context data
+
+---
+
+
 
 ### What Was Fixed / Built
 - **Bundle Architecture**: Fixed ALL 7 pillar managers (Dine, Care, Fit, Learn, Advisory, Emergency, Paperwork) — all now use `<PillarBundlesTab pillar="X" />` with canonical `/api/bundles?pillar=X` endpoint
