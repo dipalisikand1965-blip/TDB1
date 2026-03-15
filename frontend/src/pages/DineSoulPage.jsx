@@ -811,9 +811,6 @@ function TummyProfile({ pet, token }) {
               <DineSoulQuestionsSection
                 pet={pet}
                 token={token}
-                onScoreUpdated={(newScore) => {
-                  window.dispatchEvent(new CustomEvent('soulScoreUpdated', { detail: { petId: pet.id, score: newScore } }));
-                }}
               />
             </div>
           </div>
