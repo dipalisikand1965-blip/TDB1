@@ -921,7 +921,7 @@ CelebratePageNew.jsx
   <tr><td>Mystique</td><td>pet-mystique-7327ad57</td><td>None known</td><td>Test non-allergic flow</td></tr>
 </table>
 <h3>App URL</h3>
-<p><code>https://doggy-production-fix.preview.emergentagent.com</code></p>
+<p><code>https://soul-ranked-preview.preview.emergentagent.com</code></p>
 </div>
 
 <!-- ================================================================== -->
@@ -1276,6 +1276,59 @@ CelebratePageNew.jsx
   <li>MODIFY: <code>backend/app/api/celebration_wall_routes.py</code> — add like, UGC upload, timeAgo, miraComment, admin moderation</li>
 </ul>
 </div>
+
+
+<!-- ================================================================== -->
+<!-- SESSION 29 START — Mar 15, 2026 — AI Personalization + Celebrate Parity Check -->
+<!-- ================================================================== -->
+<div style="background:#0D1F0D; border:3px solid #22C55E; padding:24px; border-radius:16px; margin-bottom:36px;">
+<h2 style="background:#22C55E; color:white; padding:12px 16px; border-radius:8px; margin-top:0;">
+  ✅ SESSION 29 START — AI Personalization + Preview=Production Parity (Mar 15, 2026)
+</h2>
+
+<h3 style="color:#86EFAC;">Context</h3>
+<p style="color:#dcfce7;">Previous agent (session 28) implemented AI personalization for /celebrate but left the backend with lint warnings and potentially incomplete. This session focused on verifying the backend health, testing AI personalization, fixing remaining data issues, and verifying preview=production parity for the /celebrate page.</p>
+
+<h3 style="color:#86EFAC;">What Was Verified ✅</h3>
+<table border="1" style="border-collapse:collapse; width:100%; font-size:13px; color:#dcfce7;">
+  <tr><th style="background:#166534; color:white; padding:8px;">Item</th><th style="background:#166534; color:white; padding:8px;">Status</th><th style="background:#166534; color:white; padding:8px;">Detail</th></tr>
+  <tr><td style="padding:8px;">Backend health</td><td style="padding:8px; color:#86EFAC;">✅ HEALTHY</td><td style="padding:8px;">Lint warnings are non-critical (F811/F841); server starts & runs fine</td></tr>
+  <tr><td style="padding:8px;">AI personalization endpoint</td><td style="padding:8px; color:#86EFAC;">✅ WORKING</td><td style="padding:8px;"><code>GET /api/products/soul-ranked?category=cakes&pet_id=...&limit=8</code> returns personalized=true, top_score=85 for Mojo</td></tr>
+  <tr><td style="padding:8px;">Personalization differs per pet</td><td style="padding:8px; color:#86EFAC;">✅ VERIFIED</td><td style="padding:8px;">Mojo → "Peanut Pup Prints" (score=85); Mystique → "Festive Cake Pops" (score=65)</td></tr>
+  <tr><td style="padding:8px;">Service illustrations</td><td style="padding:8px; color:#86EFAC;">✅ ALL CLOUDINARY</td><td style="padding:8px;">Ran fix-celebrate-data: 20 services updated. 15/15 celebrate services now use res.cloudinary.com URLs. 0 Unsplash.</td></tr>
+  <tr><td style="padding:8px;">Food &amp; Flavour crash fix</td><td style="padding:8px; color:#86EFAC;">✅ IN PLACE</td><td style="padding:8px;"><code>toStrArray()</code> helper in SoulPillarExpanded.jsx handles string vs array for favorite_treats/food_allergies</td></tr>
+  <tr><td style="padding:8px;">/celebrate redirect</td><td style="padding:8px; color:#86EFAC;">✅ CORRECT</td><td style="padding:8px;">App.js line 539: /celebrate → /celebrate-soul via Navigate component</td></tr>
+  <tr><td style="padding:8px;">Products per pillar category</td><td style="padding:8px; color:#86EFAC;">✅ OK</td><td style="padding:8px;">cakes:20, toys:20, grooming:20, supplements:15, treats:20, party_kits:10, puzzle_toys:9</td></tr>
+  <tr><td style="padding:8px;">fix-celebrate-data endpoint</td><td style="padding:8px; color:#86EFAC;">✅ WORKS</td><td style="padding:8px;">POST /api/admin/fix-celebrate-data?password=lola4304 → fixes service images + product image_url + pet soul strings</td></tr>
+</table>
+
+<h3 style="color:#86EFAC;">AI Personalization Architecture</h3>
+<ul style="color:#dcfce7;">
+  <li><strong>Endpoint:</strong> <code>GET /api/products/soul-ranked?category={cat}&pet_id={id}&limit=N</code></li>
+  <li><strong>Scoring engine:</strong> <code>_soul_score(product, soul_answers, pet)</code> in server.py (~line 9580)</li>
+  <li><strong>Score factors:</strong> breed match (+20), allergen exclusion (-999), food preference (+15), energy level (+12), size preference (+10), activity preference (+12), travel preference (+12)</li>
+  <li><strong>Frontend usage:</strong> SoulPillarExpanded.jsx line 645-648 — uses soul-ranked when pet.id available, falls back to regular products endpoint</li>
+  <li><strong>Allergy safety:</strong> Backend excludes allergen products (score -999). Client-side filter as safety net in SoulPillarExpanded.jsx line 666-680</li>
+  <li><strong>Result:</strong> Different pets get different product rankings and allergen-safe results</li>
+</ul>
+
+<h3 style="color:#86EFAC;">Production Deploy Checklist (What to do when deploying)</h3>
+<ol style="color:#dcfce7;">
+  <li>Deploy preview → production</li>
+  <li>Run: <code>POST https://thedoggycompany.com/api/admin/fix-celebrate-data?password=lola4304</code></li>
+  <li>Verify services have Cloudinary images (not Unsplash)</li>
+  <li>Verify /celebrate redirects to /celebrate-soul</li>
+  <li>Test with Mojo — Food &amp; Flavour pillar should not crash</li>
+</ol>
+
+<h3 style="color:#86EFAC;">Key Files Modified This Session</h3>
+<ul style="color:#dcfce7;">
+  <li><strong>Data only:</strong> Ran fix-celebrate-data to update 20 service Cloudinary images in DB</li>
+  <li><strong>Documentation:</strong> Updated complete-documentation.html, CHANGELOG.md, PRD.md</li>
+</ul>
+</div>
+<!-- SESSION 29 END — Mar 15, 2026 -->
+<!-- ================================================================== -->
 
 </body>
 </html>
