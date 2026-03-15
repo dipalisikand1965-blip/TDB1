@@ -735,8 +735,7 @@ const DineSoulPage = () => {
           <>
             <TummyProfile pet={petData} token={token} onUpdate={p => { setPetData(p); setCurrentPet(p); }} />
 
-            {/* Mira soul nudge — dine context (unanswered nutrition questions) */}
-            <MiraSoulNudge pet={petData} token={token} context="dine" limit={3} />
+            {/* Mira soul nudge removed per user request */}
 
             <div style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:"#1A0A00",marginBottom:4,fontFamily:"Georgia,serif"}}>Eat &amp; Nourish</div>
             <div style={{fontSize:12,color:"#888",marginBottom:16}}>5 dimensions, filtered to {petData.name}</div>
