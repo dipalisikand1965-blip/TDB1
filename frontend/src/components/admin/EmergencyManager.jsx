@@ -16,8 +16,9 @@ import {
   AlertTriangle, Plus, Edit, Trash2, Search, Filter, Download, Upload,
   Users, Package, Settings, Star, Loader2, CheckCircle, Clock,
   TrendingUp, PawPrint, Gift, Bell, Shield, RefreshCw, Siren,
-  Phone, MapPin, Ambulance, Heart
+  Phone, MapPin, Ambulance, Heart, Briefcase
 } from 'lucide-react';
+import PillarServicesTab from './PillarServicesTab';
 
 const EMERGENCY_TYPES = {
   lost_pet: { name: 'Lost Pet', color: 'bg-red-100 text-red-700' },
@@ -396,6 +397,9 @@ const EmergencyManager = () => {
           <TabsTrigger value="bundles" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">
             <Gift className="w-4 h-4 mr-2" /> Bundles
           </TabsTrigger>
+          <TabsTrigger value="services" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">
+            <Briefcase className="w-4 h-4 mr-2" /> Services
+          </TabsTrigger>
           <TabsTrigger value="settings" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">
             <Settings className="w-4 h-4 mr-2" /> Settings
           </TabsTrigger>
@@ -678,6 +682,16 @@ const EmergencyManager = () => {
               ))}
             </div>
           </Card>
+        </TabsContent>
+
+        {/* Services Tab */}
+        <TabsContent value="services" className="mt-4">
+          <PillarServicesTab
+            pillar="emergency"
+            pillarName="Emergency"
+            pillarIcon="🚨"
+            pillarColor="bg-red-500"
+          />
         </TabsContent>
 
         {/* Settings Tab */}

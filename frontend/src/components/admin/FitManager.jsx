@@ -15,8 +15,9 @@ import axios from 'axios';
 import {
   Dumbbell, Activity, Scale, TrendingUp, Users, Package, Building2,
   Settings, Search, Plus, Edit2, Trash2, RefreshCw, Eye, Clock,
-  CheckCircle, XCircle, Star, Download, Upload, Database, Award
+  CheckCircle, XCircle, Star, Download, Upload, Database, Award, Briefcase
 } from 'lucide-react';
+import PillarServicesTab from './PillarServicesTab';
 
 const FIT_TYPE_ICONS = {
   assessment: Activity,
@@ -503,6 +504,7 @@ const FitManager = ({ getAuthHeader }) => {
           <TabsTrigger value="bundles" data-testid="fit-tab-bundles">Bundles</TabsTrigger>
           <TabsTrigger value="stories" data-testid="fit-tab-stories">Stories</TabsTrigger>
           <TabsTrigger value="tips" data-testid="fit-tab-tips">Tips</TabsTrigger>
+          <TabsTrigger value="services" data-testid="fit-tab-services"><Briefcase className="w-4 h-4 mr-1" />Services</TabsTrigger>
           <TabsTrigger value="settings" data-testid="fit-tab-settings">Settings</TabsTrigger>
         </TabsList>
 
@@ -949,6 +951,16 @@ const FitManager = ({ getAuthHeader }) => {
               </div>
             )}
           </Card>
+        </TabsContent>
+
+        {/* Services Tab */}
+        <TabsContent value="services" className="space-y-4">
+          <PillarServicesTab
+            pillar="fit"
+            pillarName="Fit"
+            pillarIcon="🏋️"
+            pillarColor="bg-green-500"
+          />
         </TabsContent>
 
         {/* Settings Tab */}

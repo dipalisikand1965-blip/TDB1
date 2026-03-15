@@ -818,7 +818,6 @@ const EnjoyManager = ({ getAuthHeader }) => {
         <TabsContent value="bundles" className="space-y-4">
           <PillarBundlesTab 
             pillar="enjoy"
-            credentials={credentials}
             accentColor="purple"
           />
         </TabsContent>
