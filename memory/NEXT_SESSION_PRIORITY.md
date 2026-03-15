@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://data-integrity-task.preview.emergentagent.com
+**Preview URL:** https://unified-dine.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

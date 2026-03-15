@@ -134,7 +134,7 @@ soulReason={getSoulBasedReason(activePet, 'celebrate')}  // or 'stay', 'dine', e
 ---
 
 ## PREVIEW URL
-https://data-integrity-task.preview.emergentagent.com
+https://unified-dine.preview.emergentagent.com
 
 ---
 

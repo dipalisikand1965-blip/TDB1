@@ -200,7 +200,7 @@ All features tested and verified (Test Report: `/app/test_reports/iteration_23.j
 | System | Username | Password |
 |--------|----------|----------|
 | Admin Panel | aditya | lola4304 |
-| Preview URL | https://data-integrity-task.preview.emergentagent.com |
+| Preview URL | https://unified-dine.preview.emergentagent.com |
 
 ---
 
