@@ -113,6 +113,8 @@ async def create_pillar_product(product: dict):
             "active": product.get("active", True),
             "is_active": product.get("active", True),
             "source": "admin",
+            "locally_edited": True,
+            "locally_edited_at": now,
             "created_at": now,
             "updated_at": now,
         }
@@ -138,6 +140,9 @@ async def update_pillar_product(product_id: str, updates: dict):
     try:
         updates.pop("_id", None)
         updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+        # Mark as admin-edited so Shopify sync doesn't overwrite admin changes
+        updates["locally_edited"] = True
+        updates["locally_edited_at"] = datetime.now(timezone.utc).isoformat()
 
         result = await db.products_master.update_one(
             {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
