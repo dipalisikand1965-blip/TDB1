@@ -99,6 +99,7 @@ Products:
   POST /api/admin/pillar-products                → create product in products_master
   PUT  /api/admin/pillar-products/{id}           → update product in products_master
   DEL  /api/admin/pillar-products/{id}           → soft-delete (active=False)
+  POST /api/admin/pillar-products/seed-dine-catalog → seed 48 Dine products from catalog (idempotent)
 
 Bundles:
   GET  /api/bundles?pillar=X&page=N&limit=N&search=X&active_only=false
@@ -173,11 +174,20 @@ frontend/src/components/
 
 ---
 
-## DATA COUNTS (as of Session 38, Mar 2026)
-- `products_master`: ~5,789 products (from Shopify + pillar migrations)
+## DATA COUNTS (as of Session 39, Mar 2026)
+- `products_master`: ~5,837 products (5,789 from Shopify + 48 Dine catalog = 5,837)
 - `services_master`: ~1,102 services
 - `bundles`: ~111 bundles (from 13 pillar collections merged)
 - Active pillars: 13 (celebrate, dine, care, fit, stay, travel, enjoy, learn, farewell, emergency, adopt, advisory, paperwork)
+
+### Dine Pillar Product Categories (seeded Session 39):
+| Category | Sub-categories | Count |
+|---|---|---|
+| Daily Meals | Morning Meal, Evening Meal, Portion Guide, Special Diets | 13 |
+| Treats & Rewards | Everyday, Training Rewards, Birthday Treats, Allergy-Safe | 12 |
+| Supplements | Immunity & Treatment, Joint & Mobility, Digestion & Gut, Skin & Coat | 11 |
+| Frozen & Fresh | Cold Pressed, Raw, Freeze Dried, Fresh Cooked | 5 |
+| Homemade & Recipes | Quick Recipes, Weekend Recipes, Special Occasion, Ingredient Guide | 7 |
 
 ---
 
@@ -186,10 +196,11 @@ frontend/src/components/
 Before marking any feature complete, verify:
 - [ ] New product endpoints set `locally_edited: True`
 - [ ] New pillar admin uses `PillarProductsTab` (not custom product list)
+- [ ] New pillar bundles tab uses `PillarBundlesTab` (not custom bundle list)
 - [ ] No new pillar-specific product/service/bundle collections created
 - [ ] PricingHub not modified for CRUD operations
-- [ ] Bundles go through BundlesManager → `bundles` collection
+- [ ] Bundles go through BundlesManager or `PillarBundlesTab` → `bundles` collection
 
 ---
-*Last updated: Session 38, Mar 15, 2026*
+*Last updated: Session 39, Mar 15, 2026*
 *Maintained by: Every agent working on The Doggy Company codebase*

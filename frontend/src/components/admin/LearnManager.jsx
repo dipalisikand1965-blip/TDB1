@@ -19,6 +19,7 @@ import {
   Heart, Zap, Shield, Target, Calendar, MapPin, Briefcase
 } from 'lucide-react';
 import PillarServicesTab from './PillarServicesTab';
+import PillarBundlesTab from './PillarBundlesTab';
 import PillarProductsTab from './PillarProductsTab';
 
 const LEARN_TYPE_ICONS = {
@@ -801,64 +802,8 @@ const LearnManager = ({ getAuthHeader }) => {
         </TabsContent>
 
         {/* Bundles Tab */}
-        <TabsContent value="bundles" className="mt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Training Bundles</h3>
-            <Button onClick={() => { resetBundleForm(); setEditingBundle(null); setShowBundleModal(true); }}>
-              <Plus className="w-4 h-4 mr-2" /> Add Bundle
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {bundles.map((bundle) => (
-              <Card key={bundle.id} className="p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <h4 className="font-semibold">{bundle.name}</h4>
-                  {bundle.is_recommended && <Badge className="bg-amber-100 text-amber-700">Recommended</Badge>}
-                </div>
-                <p className="text-sm text-gray-600 mb-3">{bundle.description}</p>
-                {bundle.items && (
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {bundle.items.map((item, i) => (
-                      <Badge key={i} variant="secondary" className="text-xs">
-                        {typeof item === 'object' ? (item.name || item.title || JSON.stringify(item)) : item}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-lg font-bold text-blue-600">₹{bundle.price?.toLocaleString()}</span>
-                    {bundle.original_price && (
-                      <span className="text-sm text-gray-400 line-through ml-2">₹{bundle.original_price?.toLocaleString()}</span>
-                    )}
-                  </div>
-                  <div className="flex gap-1">
-                    <Button size="sm" variant="ghost" onClick={() => {
-                      setEditingBundle(bundle);
-                      setBundleForm({
-                        name: bundle.name || '',
-                        description: bundle.description || '',
-                        items: bundle.items?.join(', ') || '',
-                        price: bundle.price?.toString() || '',
-                        original_price: bundle.original_price?.toString() || '',
-                        paw_reward_points: bundle.paw_reward_points?.toString() || '0',
-                        is_recommended: bundle.is_recommended || false,
-                        is_birthday_perk: bundle.is_birthday_perk || false,
-                        birthday_discount_percent: bundle.birthday_discount_percent?.toString() || ''
-                      });
-                      setShowBundleModal(true);
-                    }}>
-                      <Edit2 className="w-4 h-4" />
-                    </Button>
-                    <Button size="sm" variant="ghost" className="text-red-600" onClick={() => deleteBundle(bundle.id)}>
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+        <TabsContent value="bundles">
+          <PillarBundlesTab pillar="learn" pillarName="Learn" accentColor="blue" />
         </TabsContent>
 
         {/* Services Tab */}

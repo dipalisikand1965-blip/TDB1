@@ -17,6 +17,7 @@ import {
   Folder, File, Eye, Calendar, TrendingUp, Briefcase
 } from 'lucide-react';
 import PillarServicesTab from './PillarServicesTab';
+import PillarBundlesTab from './PillarBundlesTab';
 import PillarProductsTab from './PillarProductsTab';
 
 const CATEGORY_CONFIG = {
@@ -652,64 +653,8 @@ const PaperworkManager = () => {
         </TabsContent>
 
         {/* Bundles Tab */}
-        <TabsContent value="bundles" className="mt-4">
-          <Card className="p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold text-gray-900">Paperwork Bundles ({bundles.length})</h3>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={exportBundlesCSV}>
-                  <Download className="w-4 h-4 mr-2" /> Export CSV
-                </Button>
-                <input
-                  type="file"
-                  accept=".csv"
-                  ref={bundleFileRef}
-                  onChange={handleBundleFileChange}
-                  className="hidden"
-                />
-                <Button variant="outline" onClick={() => bundleFileRef.current?.click()} disabled={importingBundles}>
-                  <Upload className="w-4 h-4 mr-2" /> {importingBundles ? 'Importing...' : 'Import CSV'}
-                </Button>
-                <Button className="bg-blue-600 hover:bg-blue-700">
-                  <Plus className="w-4 h-4 mr-2" /> Add Bundle
-                </Button>
-              </div>
-            </div>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {bundles.map((bundle) => (
-                <Card key={bundle.id} className={`p-4 border-2 ${bundle.is_premium ? 'border-blue-400 bg-blue-50/30' : 'border-gray-200'}`}>
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-semibold text-gray-900">{bundle.name}</h4>
-                    {bundle.is_recommended && (
-                      <Badge className="bg-green-500">Recommended</Badge>
-                    )}
-                    {bundle.is_premium && (
-                      <Badge className="bg-blue-500">Premium</Badge>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-600 line-clamp-2 mb-3">{bundle.description}</p>
-                  {bundle.includes_service && (
-                    <Badge variant="outline" className="text-blue-600 mb-2">
-                      Includes {bundle.service_type?.replace(/_/g, ' ')}
-                    </Badge>
-                  )}
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl font-bold text-blue-600">₹{bundle.price}</span>
-                    <span className="text-sm text-gray-400 line-through">₹{bundle.original_price}</span>
-                  </div>
-                  {bundle.paw_reward_points > 0 && (
-                    <p className="text-xs text-blue-600 mb-2">🐾 {bundle.paw_reward_points} Paw Points</p>
-                  )}
-                  <div className="flex gap-2 mt-3">
-                    <Button size="sm" variant="outline" className="flex-1">
-                      <Edit className="w-3 h-3 mr-1" /> Edit
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </Card>
+        <TabsContent value="bundles">
+          <PillarBundlesTab pillar="paperwork" pillarName="Paperwork" accentColor="indigo" />
         </TabsContent>
 
         {/* Services Tab */}

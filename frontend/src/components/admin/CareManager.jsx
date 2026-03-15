@@ -18,6 +18,7 @@ import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
 import axios from 'axios';
 import PillarServicesTab from './PillarServicesTab';
+import PillarBundlesTab from './PillarBundlesTab';
 import PillarProductsTab from './PillarProductsTab';
 import {
   Scissors, PawPrint, GraduationCap, Stethoscope, AlertTriangle, Heart,
@@ -834,116 +835,8 @@ const CareManager = ({ getAuthHeader }) => {
         </TabsContent>
 
         {/* Bundles Tab */}
-        <TabsContent value="bundles" className="space-y-4">
-          <Card className="p-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold">Care Bundles</h3>
-              <Button onClick={() => { resetBundleForm(); setEditingBundle(null); setShowBundleModal(true); }}>
-                <Plus className="w-4 h-4 mr-2" /> Add Bundle
-              </Button>
-            </div>
-          </Card>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {bundles.map((bundle) => (
-              <Card key={bundle.id} className={`p-4 ${bundle.good_for_tags?.length > 0 ? 'border-purple-200 bg-gradient-to-br from-purple-50/50 to-pink-50/50' : ''}`}>
-                <div className="flex items-start gap-3">
-                  {bundle.image ? (
-                    <img src={bundle.image} alt={bundle.name} className="w-16 h-16 object-cover rounded-lg bg-gray-100" />
-                  ) : (
-                    <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-purple-100 rounded-lg flex items-center justify-center">
-                      <Gift className="w-6 h-6 text-purple-500" />
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900 text-sm">{bundle.name}</h4>
-                    <p className="text-xs text-gray-500 capitalize">{bundle.bundle_type?.replace(/_/g, ' ') || bundle.care_type}</p>
-                    {bundle.what_it_helps_with && (
-                      <p className="text-xs text-purple-600 mt-1 line-clamp-1">{bundle.what_it_helps_with}</p>
-                    )}
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="font-bold text-green-600">₹{bundle.price}</span>
-                      {bundle.original_price && (
-                        <>
-                          <span className="text-xs text-gray-400 line-through">₹{bundle.original_price}</span>
-                          <Badge className="bg-red-100 text-red-600 text-xs">
-                            {Math.round((1 - bundle.price / bundle.original_price) * 100)}% OFF
-                          </Badge>
-                        </>
-                      )}
-                    </div>
-                    {/* Good For Tags */}
-                    {bundle.good_for_tags?.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {bundle.good_for_tags.slice(0, 3).map(tag => (
-                          <Badge key={tag} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">{tag}</Badge>
-                        ))}
-                        {bundle.good_for_tags.length > 3 && (
-                          <Badge variant="outline" className="text-xs">+{bundle.good_for_tags.length - 3}</Badge>
-                        )}
-                      </div>
-                    )}
-                    {/* Included Items Count */}
-                    {bundle.included_items?.length > 0 && (
-                      <p className="text-xs text-gray-500 mt-1">📦 {bundle.included_items.length} items included</p>
-                    )}
-                    {bundle.paw_reward_points > 0 && (
-                      <p className="text-xs text-purple-600 mt-1">🐾 {bundle.paw_reward_points} Paw Points</p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-3 pt-3 border-t">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setEditingBundle(bundle);
-                      setBundleForm({
-                        name: bundle.name || '',
-                        description: bundle.description || '',
-                        what_it_helps_with: bundle.what_it_helps_with || '',
-                        price: bundle.price?.toString() || '',
-                        original_price: bundle.original_price?.toString() || '',
-                        image: bundle.image || '',
-                        bundle_type: bundle.bundle_type || 'routine_care',
-                        included_items: Array.isArray(bundle.included_items) ? bundle.included_items.join(', ') : '',
-                        optional_addons: Array.isArray(bundle.optional_addons) ? bundle.optional_addons.join(', ') : '',
-                        good_for_tags: Array.isArray(bundle.good_for_tags) ? bundle.good_for_tags.join(', ') : '',
-                        intent_tags: Array.isArray(bundle.intent_tags) ? bundle.intent_tags.join(', ') : '',
-                        concierge_flow_mapping: bundle.concierge_flow_mapping || '',
-                        care_type: bundle.care_type || 'grooming',
-                        items: Array.isArray(bundle.items) ? bundle.items.join(', ') : '',
-                        status: bundle.status || 'active',
-                        display_priority: bundle.display_priority || 99,
-                        is_recommended: bundle.is_recommended !== false,
-                        paw_reward_points: bundle.paw_reward_points || 0,
-                        guardrail_note: bundle.guardrail_note || ''
-                      });
-                      setShowBundleModal(true);
-                    }}
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="text-red-600"
-                    onClick={() => deleteBundle(bundle.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          {bundles.length === 0 && (
-            <Card className="p-8 text-center">
-              <Gift className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-              <p className="text-gray-500">No care bundles yet</p>
-              <Button className="mt-4" onClick={seedComprehensiveCare}>Seed Care Bundles</Button>
-            </Card>
-          )}
+        <TabsContent value="bundles">
+          <PillarBundlesTab pillar="care" pillarName="Care" accentColor="pink" />
         </TabsContent>
 
         {/* Tips Tab */}
