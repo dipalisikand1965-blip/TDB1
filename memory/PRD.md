@@ -4,7 +4,22 @@
 
 ---
 
-## ✅ SESSION 33 — Service Pricing Tab Added to Pricing Hub (Mar 15, 2026)
+## ✅ SESSION 34 — Mira Picks Flow Audit + Member Notification Sort Bug Fixed (Mar 15, 2026)
+
+### Audit Results (All 4 Flows CONFIRMED Working):
+1. **Admin Notification Bell** ✅ — `celebrate_picks_request` notifications appear immediately when user selects Mira Picks (API: `GET /api/admin/notifications`, 663+ total)
+2. **Service Desk Ticket** ✅ — Ticket created with `status=new` and full pet/user info (API: `GET /api/tickets/`, 559 total)  
+3. **Channel Intake (Unified Inbox)** ✅ — Entry created in `mira_picks_panel` channel (API: `GET /api/channels/intakes`)
+4. **Member Notification** ✅ — `picks_request_received` appears in Dipali's notification inbox after sorting fix
+
+### Bug Fixed:
+- **Member notification sort bug**: `created_at` stored as BSON datetime in old notifications vs ISO string in new picks notifications caused MongoDB to sort by type (9 > 2), putting old items first. Fixed by sorting `_id` (ObjectId insertion order) in both `/api/member/notifications/inbox/{email}` (server.py line 17088) and `/api/user/notifications` (user_tickets_routes.py line 933)
+
+### Key Finding:
+- The bug was NOT in the data creation (all data was being saved correctly)
+- It was a MongoDB sort bug causing newest `picks_request_received` to appear hidden behind older `pet_wrapped` notifications
+
+---
 
 ### What Was Added:
 1. **Service Pricing tab** in Pricing, Shipping & Commercial Hub — 7th tab added (was 6, now 7)

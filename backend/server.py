@@ -17085,10 +17085,17 @@ async def get_member_notifications_by_email(
         query["type"] = {"$in": ["status_change", "approval_needed", "payment_needed", "announcement"]}
     
     # Get from member_notifications collection
+    # Sort by _id (ObjectId) for consistent ordering regardless of created_at type mismatch
     notifications = await db.member_notifications.find(
         query,
-        {"_id": 0}
-    ).sort("created_at", -1).limit(limit).to_list(limit)
+        {"_id": 1, "id": 1, "type": 1, "title": 1, "message": 1, "pet_name": 1,
+         "pet_id": 1, "user_email": 1, "ticket_id": 1, "pillar": 1, "read": 1,
+         "created_at": 1, "data": 1, "archived": 1, "read_at": 1}
+    ).sort("_id", -1).limit(limit).to_list(limit)
+    
+    # Remove _id from results
+    for n in notifications:
+        n.pop("_id", None)
     
     # Count unread (excluding archived)
     unread_query = {"user_email": email, "read": False}
