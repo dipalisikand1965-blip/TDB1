@@ -58,7 +58,7 @@
       "header": "✓ 'Mojo's Birthday Plan' with icon + subtitle",
       "white_inner_card": "✓ Shows Theme, Cake, Guest list, Day timeline with user's choices",
       "hand_to_concierge": "✓ '👑 Hand to Concierge' button present and clickable",
-      "api_call": "✓ POST https://soul-ranked-preview.preview.emergentagent.com/api/concierge/intake called",
+      "api_call": "✓ POST https://celebrate-products.preview.emergentagent.com/api/concierge/intake called",
       "confirmation_screen": "✓ 'Birthday Plan sent to your Concierge.' shown with 'Start again' button",
       "data_testids": "✓ deliverable-screen-birthday, deliverable-hand-to-concierge-birthday, deliverable-sent-confirmation, deliverable-reset-btn"
     },
