@@ -17,7 +17,6 @@ import PillarPageLayout from "../components/PillarPageLayout";
 import DineCategoryStrip from "../components/dine/DineCategoryStrip";
 import DineHero from "../components/dine/DineHero";
 import { API_URL } from "../utils/api";
-import { toast } from "../hooks/use-toast";
 
 // ─── Catalogue (matches products seeded to products_master) ─────────────────
 const DINE_DIMS = [
@@ -451,227 +450,376 @@ function SoulQuestionCardDine({ question, petName, onAnswered, token }) {
   );
 }
 
-// ─── TummyProfile (soul-score aware — like Mira's Picks) ────────────────────
-function TummyProfile({ pet, token, onUpdate }) {
-  const [open, setOpen] = useState(true);
-  const [goal, setGoal] = useState(pet?.nutrition_goal || pet?.doggy_soul_answers?.nutrition_goal || "Healthy maintenance");
-  const [saving, setSaving] = useState(false);
+// ─── Food emoji helper ────────────────────────────────────────────────────────
+function getFoodEmoji(food) {
+  const f = (food || '').toLowerCase();
+  if (f.includes('salmon') || f.includes('fish')) return '🐟';
+  if (f.includes('chicken')) return '🍗';
+  if (f.includes('beef') || f.includes('lamb')) return '🥩';
+  if (f.includes('peanut') || f.includes('nut')) return '🥜';
+  if (f.includes('pumpkin') || f.includes('sweet')) return '🎃';
+  if (f.includes('carrot') || f.includes('veg')) return '🥕';
+  if (f.includes('egg')) return '🥚';
+  return '🍽️';
+}
+
+// ─── Generate Mira's food imagines (mirrors CelebrateContentModal pattern) ────
+function generateFoodImagines(pet, loves, allergies, healthCondition) {
+  const petName = pet?.name || 'your dog';
+  const imagines = [];
+  const seen = new Set();
+  const allergySet = new Set(allergies.map(a => a.toLowerCase()));
+  const soulAnswers = pet?.doggy_soul_answers || {};
+  const favProtein = soulAnswers.favorite_protein || soulAnswers.fav_protein;
+
+  // soul-answered fav protein first, then loves list
+  const allSources = [...loves];
+  if (favProtein && !allSources.map(f => f.toLowerCase()).includes(favProtein.toLowerCase())) {
+    allSources.unshift(favProtein);
+  }
+
+  for (const food of allSources.slice(0, 2)) {
+    const key = food.toLowerCase().replace(/\s*(treat|food|cake)s?\b/g, '').trim();
+    if (!key || key.length < 2 || seen.has(key) || allergySet.has(key)) continue;
+    seen.add(key);
+    const label = key.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    imagines.push({
+      emoji: getFoodEmoji(key),
+      bg: 'linear-gradient(135deg, #1A0A00, #3d1200)',
+      name: `${label} Grain-Free Bowl`,
+      desc: `A complete, ${label.toLowerCase()}-rich meal formulated just for ${petName}`,
+      reason: `Because ${petName} loves ${food}`,
+    });
+    if (imagines.length < 4) {
+      imagines.push({
+        emoji: '🎁',
+        bg: 'linear-gradient(135deg, #0d1a00, #1a3000)',
+        name: `${label} Weekly Treat Pack`,
+        desc: `Curated ${label.toLowerCase()} treats, perfectly sized for ${petName}`,
+        reason: `Because ${petName} loves ${food} treats`,
+      });
+    }
+  }
+
+  if (healthCondition && imagines.length < 4) {
+    imagines.push({
+      emoji: '🛡️',
+      bg: 'linear-gradient(135deg, #001a0d, #003a20)',
+      name: 'Recovery Support Bowl',
+      desc: `Formulated keeping ${petName}'s ${healthCondition} in mind — gentle, nourishing, restorative`,
+      reason: `Because of ${petName}'s ${healthCondition}`,
+    });
+  }
+
+  if (allergies.length > 0 && imagines.length < 4) {
+    const a = allergies[0];
+    const aLabel = a.charAt(0).toUpperCase() + a.slice(1);
+    imagines.push({
+      emoji: '✓',
+      bg: 'linear-gradient(135deg, #001a0a, #003a20)',
+      name: `${aLabel}-Free Complete Meal`,
+      desc: `100% ${aLabel.toLowerCase()}-free nutrition ${petName} can eat worry-free`,
+      reason: `Because ${petName} is allergic to ${aLabel.toLowerCase()}`,
+    });
+  }
+
+  if (imagines.length === 0) {
+    imagines.push({
+      emoji: '✨',
+      bg: 'linear-gradient(135deg, #1A0A00, #3d1200)',
+      name: `Help Mira know ${petName} better`,
+      desc: 'Answer a few questions so Mira can imagine perfect meals',
+      reason: 'Soul profile in progress',
+    });
+  }
+
+  return imagines.slice(0, 4);
+}
+
+// ─── Mira Tummy Imagines Card ─────────────────────────────────────────────────
+function MiraTummyImaginesCard({ card, onAskMira }) {
+  return (
+    <div style={{
+      borderRadius: 16, overflow: 'hidden', position: 'relative',
+      background: card.bg || 'linear-gradient(135deg, #1A0A00, #3d1200)',
+      border: '1.5px solid rgba(255,140,66,0.35)',
+    }}>
+      <div style={{
+        position: 'absolute', top: 10, left: 10, zIndex: 2,
+        borderRadius: 20, padding: '3px 10px', fontSize: 9, fontWeight: 700,
+        background: 'linear-gradient(135deg, #FF8C42, #C44400)', color: '#fff',
+      }}>
+        Mira Imagines
+      </div>
+      <div style={{
+        height: 90, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 38, background: 'rgba(0,0,0,0.18)',
+      }}>
+        {card.emoji}
+      </div>
+      <div style={{ padding: '12px 14px 14px' }}>
+        <p style={{ fontWeight: 800, color: '#fff', fontSize: 12, marginBottom: 4, lineHeight: 1.3 }}>{card.name}</p>
+        <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', marginBottom: 6, lineHeight: 1.4 }}>{card.desc}</p>
+        <p style={{ fontSize: 9, fontWeight: 600, color: '#FFB366', marginBottom: 10 }}>{card.reason}</p>
+        <button
+          onClick={onAskMira}
+          style={{
+            width: '100%', borderRadius: 8, padding: '6px', fontSize: 10, fontWeight: 700,
+            background: 'rgba(255,140,66,0.18)', border: '1px solid rgba(255,140,66,0.38)',
+            color: '#FFB366', cursor: 'pointer',
+          }}
+        >
+          Ask Mira to Source →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Dine Soul Questions Section (amber-themed — mirrors SoulQuestionsSection) ─
+function DineSoulQuestionsSection({ pet, token, onScoreUpdated }) {
   const [questions, setQuestions] = useState([]);
-  const [questionsLoading, setQuestionsLoading] = useState(false);
+  const [score, setScore] = useState(null);
+  const [prevScore, setPrevScore] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [answeredCount, setAnsweredCount] = useState(0);
-  const [currentScore, setCurrentScore] = useState(pet?.soul_score || pet?.overall_score || 0);
+  const [totalPts, setTotalPts] = useState(0);
+  const petName = pet?.name || 'your pet';
+  const isGold = (score || 0) >= 80;
 
-  const allergies = getAllergies(pet);
-  const loves = getLoves(pet);
-  const healthCondition = getHealthCondition(pet);
-  const petName = pet?.name || "your dog";
-
-  // "Mira Knows" state — has meaningful food data
-  const hasFoodData = loves.length > 0 || allergies.length > 0 || !!healthCondition;
-
-  // Fetch dine-scoped soul questions
-  const fetchQuestions = useCallback(() => {
-    if (!pet?.id) return;
-    setQuestionsLoading(true);
-    fetch(`${API_URL}/api/pet-soul/profile/${pet.id}/quick-questions?limit=4&context=dine`)
+  const loadQuestions = useCallback(() => {
+    if (!pet?.id) { setLoading(false); return; }
+    fetch(`${API_URL}/api/pet-soul/profile/${pet.id}/quick-questions?limit=5&context=dine`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (data) {
           setQuestions((data.questions || []).map(q => ({ ...q, pet_id: pet.id })));
-          if (data.current_score !== undefined) setCurrentScore(data.current_score);
+          setScore(s => {
+            if (s === null) setPrevScore(data.current_score);
+            return data.current_score;
+          });
         }
       })
-      .catch(e => console.error("[TummyProfile] questions error:", e))
-      .finally(() => setQuestionsLoading(false));
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, [pet?.id]);
 
-  useEffect(() => { fetchQuestions(); }, [fetchQuestions]);
+  useEffect(() => { loadQuestions(); }, [loadQuestions]);
 
-  const handleQuestionAnswered = useCallback((newScore, pts) => {
+  const handleAnswered = useCallback((newScore, pts) => {
     setAnsweredCount(prev => prev + 1);
+    setTotalPts(prev => prev + (pts || 0));
     if (newScore !== undefined) {
-      setCurrentScore(newScore);
+      setPrevScore(score);
+      setScore(newScore);
+      onScoreUpdated?.(newScore);
       window.dispatchEvent(new CustomEvent('soulScoreUpdated', { detail: { petId: pet.id, score: newScore } }));
     }
-    setTimeout(() => fetchQuestions(), 800);
-  }, [pet?.id, fetchQuestions]);
+    setTimeout(() => loadQuestions(), 800);
+  }, [score, pet?.id, loadQuestions, onScoreUpdated]);
 
-  const saveGoal = async () => {
-    setSaving(true);
-    try {
-      const res = await fetch(`${API_URL}/api/pets/${pet.id}/soul`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-        body: JSON.stringify({ nutrition_goal: goal }),
-      });
-      if (res.ok) toast({ title: "Nutrition goal updated!" });
-    } catch {}
-    setSaving(false);
-  };
+  const visibleQuestions = questions.slice(0, Math.max(0, 5 - answeredCount));
 
-  const visibleQuestions = questions.slice(0, Math.max(0, 4 - answeredCount));
-  const isGold = currentScore >= 80;
+  if (loading) return null;
+  if (visibleQuestions.length === 0 && answeredCount === 0) return null;
 
-  // ── GROW SOUL state (no food data) ──────────────────────────────────────────
-  if (!hasFoodData) {
-    return (
-      <div style={{ marginBottom: 24 }} data-testid="tummy-profile">
-        {/* Soul Score header — amber themed */}
-        <div style={{
-          borderRadius: 20, padding: '20px 24px', marginBottom: 16,
-          background: 'linear-gradient(135deg, #3d1200 0%, #7a2800 100%)',
-          border: '1.5px solid rgba(255,140,66,0.50)',
-          boxShadow: '0 0 32px rgba(196,68,0,0.18)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div>
-              <p style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,200,100,0.85)', fontSize: 9, marginBottom: 4 }}>
-                ✦ GROW {petName.toUpperCase()}'S TUMMY PROFILE
-              </p>
-              <p style={{ color: 'rgba(255,255,255,0.50)', fontSize: 11 }}>
-                Tell Mira what {petName} eats · {visibleQuestions.length} questions remaining
-              </p>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2 }}>
-                <span style={{
-                  fontSize: 56, fontWeight: 900, lineHeight: 1,
-                  color: isGold ? '#F0C060' : '#FF8C42',
-                  textShadow: isGold ? '0 0 32px rgba(240,192,96,0.7)' : '0 0 32px rgba(255,140,66,0.7)',
-                }}>
-                  {Math.round(currentScore)}
-                </span>
-                <span style={{ color: 'rgba(255,255,255,0.40)', fontSize: 14, marginBottom: 6 }}>%</span>
-              </div>
-              {answeredCount > 0 && (
-                <div style={{
-                  borderRadius: 20, padding: '2px 10px', fontSize: 9, fontWeight: 700,
-                  background: 'rgba(80,220,120,0.20)', color: '#50DC78',
-                  border: '1px solid rgba(80,220,120,0.35)',
-                }}>
-                  +{answeredCount} answered this session
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Question cards grid */}
-        {visibleQuestions.length > 0 && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 100%), 1fr))', gap: 12, marginBottom: 12 }}>
-            {visibleQuestions.map(q => (
-              <SoulQuestionCardDine
-                key={q.question_id}
-                question={q}
-                petName={petName}
-                token={token}
-                onAnswered={handleQuestionAnswered}
-              />
-            ))}
-          </div>
-        )}
-
-        {!questionsLoading && visibleQuestions.length === 0 && answeredCount === 0 && (
-          <div style={{
-            borderRadius: 16, padding: '20px', textAlign: 'center',
-            background: '#FFF7ED', border: '1.5px dashed #FFCC99',
-          }}>
-            <p style={{ fontSize: 13, color: '#888' }}>Questions loading...</p>
-          </div>
-        )}
-
-        <div style={{ marginTop: 8, textAlign: 'center' }}>
-          <a href={`/pet-soul/${pet?.id}`} style={{ fontSize: 12, fontWeight: 600, color: 'rgba(196,68,0,0.75)', textDecoration: 'none' }}>
-            See full soul profile →
-          </a>
-        </div>
-      </div>
-    );
-  }
-
-  // ── MIRA KNOWS state (has food data) ─────────────────────────────────────────
   return (
-    <div style={{ background: "#fff", border: "2px solid #FFE5CC", borderRadius: 20, marginBottom: 24, overflow: "hidden" }} data-testid="tummy-profile">
-      {/* Header — collapsible */}
-      <div onClick={() => setOpen(!open)} style={{ padding: "16px 20px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer" }}>
-        <div style={{ width: 40, height: 40, borderRadius: 10, background: "linear-gradient(135deg,#FFF3E0,#FFE0B2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>🐾</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: "#1A0A00" }}>{petName}'s Tummy Profile</div>
-          <div style={{ fontSize: 11, color: "#888" }}>
-            ✦ Mira knows {petName}'s food preferences
-          </div>
-        </div>
-        <span style={{ color: "#C44400", fontSize: 14 }}>{open ? "▲" : "▼"}</span>
-      </div>
-
-      {open && (
-        <div style={{ padding: "0 20px 20px" }}>
-          {/* Mira knows banner */}
-          <div style={{
-            background: 'linear-gradient(135deg, #3d1200, #7a2800)', borderRadius: 12,
-            padding: '10px 16px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10,
-          }}>
-            <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,140,66,0.25)', border: '1.5px solid rgba(255,140,66,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#FFB366', flexShrink: 0 }}>✦</div>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, margin: 0, fontStyle: 'italic' }}>
-              Mira knows {petName}'s food preferences
-              {allergies.length > 0 ? ` — hiding ${allergies.join(" & ")}` : ""}
-              {loves.length > 0 ? `, surfacing ${loves[0]}-based options first` : ""}.
+    <div style={{ marginBottom: 24 }}>
+      {/* Big amber soul score header */}
+      <div style={{
+        borderRadius: 20, padding: '20px 24px', marginBottom: 16,
+        background: 'linear-gradient(135deg, #1A0A00 0%, #3D0A00 100%)',
+        border: '1.5px solid rgba(255,140,66,0.45)',
+        boxShadow: '0 0 32px rgba(196,68,0,0.18)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <p style={{
+              fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em',
+              color: 'rgba(255,140,66,0.85)', fontSize: 9, marginBottom: 4,
+            }}>
+              ✦ GROW {petName.toUpperCase()}'S SOUL
+            </p>
+            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 10 }}>
+              Answer quick questions · {visibleQuestions.length} remaining
             </p>
           </div>
-
-          {/* 4-cell grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
-            <div style={{ background: "#E8F8EE", border: "1px solid #B2DFC4", borderRadius: 14, padding: 14 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#27AE60", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Loves</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {loves.length > 0 ? loves.map(l => (
-                  <span key={l} style={{ background: "#fff", border: "1.5px solid #27AE60", borderRadius: 20, padding: "3px 10px", fontSize: 12, color: "#27AE60", fontWeight: 500 }}>{l.charAt(0).toUpperCase() + l.slice(1)}</span>
-                )) : <span style={{ fontSize: 12, color: "#aaa" }}>Tell Mira what {petName} loves</span>}
-              </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2 }}>
+              <span style={{
+                fontSize: 64, fontWeight: 900, lineHeight: 1,
+                color: isGold ? '#F0C060' : '#FF8C42',
+                textShadow: isGold
+                  ? '0 0 16px rgba(240,192,96,0.5), 0 0 48px rgba(240,192,96,0.35)'
+                  : '0 0 16px rgba(255,140,66,0.5), 0 0 48px rgba(255,140,66,0.35)',
+              }}>
+                {score ?? '--'}
+              </span>
+              <span style={{ color: 'rgba(255,255,255,0.40)', fontSize: 16, marginBottom: 6 }}>%</span>
             </div>
-            <div style={{ background: "#FEF0F0", border: "1px solid #F5C6C6", borderRadius: 14, padding: 14 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#C0392B", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Avoid</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {allergies.length > 0 ? allergies.map(a => (
-                  <span key={a} style={{ background: "#fff", border: "1.5px solid #E57373", borderRadius: 20, padding: "3px 10px", fontSize: 12, color: "#C0392B", fontWeight: 500 }}>{a}</span>
-                )) : <span style={{ fontSize: 12, color: "#aaa" }}>No allergies noted yet</span>}
-              </div>
-            </div>
-            <div style={{ background: "#FFFBEE", border: "1px solid #FFE5A0", borderRadius: 14, padding: 14 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#C9973A", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Nutrition Goal</div>
-              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                <input value={goal} onChange={e => setGoal(e.target.value)} style={{ flex: 1, border: "1.5px solid #FFE5A0", borderRadius: 8, padding: "6px 10px", fontSize: 13, color: "#1A0A00", outline: "none", background: "#fff" }} />
-                <button onClick={saveGoal} disabled={saving} style={{ background: "#C44400", color: "#fff", border: "none", borderRadius: 8, padding: "7px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>{saving ? "…" : "✓ Update"}</button>
-              </div>
-            </div>
-            <div style={{ background: "#F0F4FF", border: "1px solid #C5CEFF", borderRadius: 14, padding: 14 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#3B5BDB", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Health Note</div>
-              <div style={{ fontSize: 13, color: healthCondition ? "#1A0A00" : "#999" }}>{healthCondition || "No health notes added yet"}</div>
+            <div style={{ width: 64, height: 4, borderRadius: 4, background: 'rgba(255,255,255,0.10)', overflow: 'hidden', marginTop: 8 }}>
+              <div style={{
+                height: '100%', width: `${score || 0}%`, borderRadius: 4,
+                background: isGold ? 'linear-gradient(90deg, #FF8C42, #F0C060)' : 'linear-gradient(90deg, #FF8C42, #C44400)',
+                transition: 'width 0.9s ease-out',
+              }} />
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Grow soul questions (if any remaining) */}
-          {visibleQuestions.length > 0 && (
-            <div style={{ marginTop: 8 }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: '#C44400', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
-                ✦ GROW {petName.toUpperCase()}'S SOUL
-              </p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))', gap: 10 }}>
-                {visibleQuestions.map(q => (
-                  <SoulQuestionCardDine
-                    key={q.question_id}
-                    question={q}
-                    petName={petName}
-                    token={token}
-                    onAnswered={handleQuestionAnswered}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
+      {answeredCount > 0 && (
+        <div style={{
+          marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8,
+          padding: '8px 12px', borderRadius: 12,
+          background: 'rgba(80,220,120,0.08)', border: '1px solid rgba(80,220,120,0.25)',
+        }}>
+          <Check size={14} style={{ color: '#50DC78', flexShrink: 0 }} />
+          <p style={{ fontSize: 12, fontWeight: 600, color: '#50DC78' }}>
+            {answeredCount} answer{answeredCount > 1 ? 's' : ''} saved · +{totalPts} pts · Soul score: {score}%
+          </p>
         </div>
       )}
+
+      {visibleQuestions.length > 0 && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 100%), 1fr))', gap: 12 }}>
+          {visibleQuestions.map(q => (
+            <SoulQuestionCardDine key={q.question_id} question={q} petName={petName} token={token} onAnswered={handleAnswered} />
+          ))}
+        </div>
+      )}
+
+      <div style={{ marginTop: 12, textAlign: 'center' }}>
+        <a href={`/pet-soul/${pet?.id}`} style={{ fontSize: 12, fontWeight: 600, color: 'rgba(196,68,0,0.75)', textDecoration: 'none' }}>
+          See full soul profile →
+        </a>
+      </div>
     </div>
+  );
+}
+
+// ─── TummyProfile — compact bar + right-side drawer (exactly like Mira's Picks) ─
+function TummyProfile({ pet, token }) {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const allergies = getAllergies(pet);
+  const loves = getLoves(pet);
+  const healthCondition = getHealthCondition(pet);
+  const petName = pet?.name || 'your dog';
+  const miraFoodCards = generateFoodImagines(pet, loves, allergies, healthCondition);
+
+  const openMira = () => window.dispatchEvent(new CustomEvent('openMiraAI', {
+    detail: { message: `Source a custom meal for ${petName}`, context: 'dine' }
+  }));
+
+  return (
+    <>
+      {/* ── Compact clickable bar ── */}
+      <div
+        onClick={() => setDrawerOpen(true)}
+        data-testid="tummy-profile"
+        style={{
+          background: '#fff', border: '2px solid #FFE5CC', borderRadius: 16,
+          padding: '14px 18px', marginBottom: 20, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', gap: 14,
+          boxShadow: '0 2px 12px rgba(196,68,0,0.08)',
+          transition: 'box-shadow 0.18s',
+        }}
+      >
+        <div style={{
+          width: 40, height: 40, borderRadius: 10, flexShrink: 0, fontSize: 20,
+          background: 'linear-gradient(135deg,#FFF3E0,#FFE0B2)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>🐾</div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#1A0A00' }}>{petName}'s Tummy Profile</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 4 }}>
+            {allergies.map(a => (
+              <span key={a} style={{ fontSize: 10, fontWeight: 600, color: '#C0392B', background: '#FEF0F0', border: '1px solid #F5C6C6', borderRadius: 20, padding: '2px 8px' }}>✗ {a}</span>
+            ))}
+            {loves.slice(0, 2).map(l => (
+              <span key={l} style={{ fontSize: 10, fontWeight: 600, color: '#27AE60', background: '#E8F8EE', border: '1px solid #B2DFC4', borderRadius: 20, padding: '2px 8px' }}>♥ {l}</span>
+            ))}
+            {allergies.length === 0 && loves.length === 0 && (
+              <span style={{ fontSize: 10, color: '#999' }}>Tap to tell Mira what {petName} eats</span>
+            )}
+          </div>
+        </div>
+        <span style={{ fontSize: 11, color: '#FF8C42', fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0 }}>
+          Mira's picks →
+        </span>
+      </div>
+
+      {/* ── Right-side drawer ── */}
+      {drawerOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            onClick={() => setDrawerOpen(false)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000 }}
+          />
+          {/* Panel */}
+          <div
+            style={{
+              position: 'fixed', top: 0, right: 0, bottom: 0,
+              width: '92%', maxWidth: 460,
+              background: '#FDF6EE', zIndex: 1001, overflowY: 'auto',
+              boxShadow: '-8px 0 48px rgba(0,0,0,0.25)',
+            }}
+            data-testid="tummy-drawer"
+          >
+            {/* Sticky header */}
+            <div style={{
+              padding: '20px 24px', borderBottom: '1px solid #F0E8E0',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              position: 'sticky', top: 0, background: '#FDF6EE', zIndex: 2,
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: 16 }}>🌟</span>
+                  <span style={{ fontWeight: 800, color: '#1A0A00', fontSize: 16 }}>Mira's Tummy Picks</span>
+                </div>
+                <p style={{ fontSize: 12, color: '#888', marginTop: 2 }}>
+                  For <span style={{ color: '#FF8C42', fontWeight: 700 }}>{petName}</span>
+                </p>
+              </div>
+              <button
+                onClick={() => setDrawerOpen(false)}
+                style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: '#999', lineHeight: 1 }}
+                data-testid="tummy-drawer-close"
+              >✕</button>
+            </div>
+
+            {/* Drawer body */}
+            <div style={{ padding: '20px 20px 48px' }}>
+              {/* ✦ Mira Imagines — Just for [Pet] */}
+              <div style={{ marginBottom: 28 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: '#C44400', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
+                  ✦ Mira Imagines — Just for {petName}
+                </p>
+                <p style={{ fontSize: 12, color: '#888', marginBottom: 14, lineHeight: 1.5 }}>
+                  Based on {petName}'s soul profile — not in range yet, but Mira can request these specially.
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))', gap: 12 }}>
+                  {miraFoodCards.map((card, idx) => (
+                    <MiraTummyImaginesCard key={idx} card={card} onAskMira={openMira} />
+                  ))}
+                </div>
+                <div style={{ margin: '24px 0 4px', borderTop: '1px solid #F0E8E0' }} />
+              </div>
+
+              {/* Soul Questions — dine context, amber theme */}
+              <DineSoulQuestionsSection
+                pet={pet}
+                token={token}
+                onScoreUpdated={(newScore) => {
+                  window.dispatchEvent(new CustomEvent('soulScoreUpdated', { detail: { petId: pet.id, score: newScore } }));
+                }}
+              />
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 }
 
@@ -1034,7 +1182,7 @@ const DineSoulPage = () => {
 
         {activeTab === "eat" && (
           <>
-            <TummyProfile pet={petData} token={token} onUpdate={p => { setPetData(p); setCurrentPet(p); }} />
+            <TummyProfile pet={petData} token={token} />
 
             <div style={{ fontSize: "clamp(1.125rem,2.5vw,1.375rem)", fontWeight: 800, color: "#1A0A00", marginBottom: 4, fontFamily: "Georgia,serif" }}>Eat &amp; Nourish</div>
             <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>5 dimensions, filtered to {petData.name}</div>
