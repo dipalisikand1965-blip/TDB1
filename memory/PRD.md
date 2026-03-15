@@ -1,6 +1,24 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 15, 2026 (Session 30 — Product Catalog Audit + 93 Excel Products Seeded)
+## Last Updated: Mar 15, 2026 (Session 31 — Sync to Production Verified + Create New Product/Service Confirmed Working)
+
+---
+
+## ✅ SESSION 31 — Sync to Production + Create New Product/Service (Mar 15, 2026)
+
+### What Was Verified/Completed:
+1. **Sync to Production (MASTER SYNC)** — Confirmed the "Sync to Production" button includes the Celebrate Excel Catalog seeding step (Step 11.5/12) at `Admin.jsx` line 609. Calls `POST /api/admin/celebrate/seed-from-excel`.
+2. **SYNC → PROD button** — Also includes the Celebrate Excel Catalog seeding step (Step 2) at `Admin.jsx` line 3510 after the mockup sync.
+3. **Create New Product** — The "Add Product" button in Product Box (COMMERCE section) was already implemented. Opens a 6-tab editor dialog. Saves via `POST /api/product-box/products`. Verified working: product count increased from 3954 → 3955 after test.
+4. **Create New Service** — The "Add Service" button in Service Box was already implemented. Opens a 4-tab editor dialog. Saves via `POST /api/service-box/services`. Verified working: service count increased from 1117 → 1118 after test.
+5. **Testing:** 100% pass rate (6/6 features) via testing agent (iteration_131.json).
+
+### Key Endpoints:
+- `POST /api/admin/celebrate/seed-from-excel` — Seeds 93 products + generates AI images
+- `POST /api/product-box/products` — Create new product (no auth required)
+- `POST /api/service-box/services` — Create new service (no auth required)
+
+---
 
 ---
 
