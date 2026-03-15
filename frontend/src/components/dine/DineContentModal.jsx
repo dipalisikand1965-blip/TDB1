@@ -53,6 +53,13 @@ const CATEGORY_CONFIG = {
     emptyText: 'Recipes being curated!',
     apiCategory: 'Homemade & Recipes',
   },
+  'bundles': {
+    emoji: '🎁',
+    label: 'Dining Bundles',
+    miraLabel: 'Curated dine bundles for your dog',
+    emptyText: 'Bundle packs being curated!',
+    apiCategory: null, // handled separately via /api/bundles?pillar=dine
+  },
   'soul-picks': {
     emoji: '✨',
     label: 'Soul Picks',
@@ -76,6 +83,7 @@ const CTA_LABELS = {
   'supplements':        (n) => `Start ${n}'s Supplement Plan →`,
   'frozen-fresh':       (n) => `Plan ${n}'s Fresh Meals →`,
   'homemade-recipes':   (n) => `Try a Recipe for ${n} →`,
+  'bundles':            (n) => `Get a Bundle for ${n} →`,
   'soul-picks':         (n) => `Build ${n}'s Soul Box →`,
   'miras-picks':        (n) => `Start ${n}'s Dine Plan →`,
 };
@@ -158,6 +166,30 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
     const apiUrl = getApiUrl();
 
     try {
+      // ── Bundles: fetch from unified bundles collection ─────────────
+      if (category === 'bundles') {
+        const r = await fetch(`${apiUrl}/api/bundles?pillar=dine&limit=20`);
+        if (r.ok) {
+          const d = await r.json();
+          // Map bundles to product-card-compatible shape
+          const mapped = (d.bundles || []).map(b => ({
+            id: b.id,
+            name: b.name,
+            description: b.description,
+            price: b.bundle_price || b.price,
+            original_price: b.original_price,
+            image_url: b.image_url || b.image || null,
+            mira_tag: b.popular ? '⭐ Popular' : null,
+            sub_category: 'Bundle',
+            category: 'Bundles',
+            items: b.items || [],
+            discount: b.discount,
+          }));
+          setProducts(mapped);
+        }
+        return;
+      }
+
       // ── Soul Picks: breed-specific merchandise ──────────────────────
       if (category === 'soul-picks') {
         const breedDisplay = getBreedDisplay(pet);
