@@ -305,7 +305,7 @@ From `/app/memory/CONCIERGE_DNA_DOCTRINE.md`:
 
 ## PREVIEW vs PRODUCTION
 
-- **Preview:** https://dine-consistency-fix.preview.emergentagent.com
+- **Preview:** https://dine-layout-update.preview.emergentagent.com
 - **Production:** https://thedoggycompany.com
 
 Changes are made to preview first, then deployed to production.

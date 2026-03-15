@@ -257,7 +257,7 @@ PATH 2: "Let Mira know more"
 # URLs (VERIFIED)
 
 ## Frontend
-- **Base URL**: https://dine-consistency-fix.preview.emergentagent.com
+- **Base URL**: https://dine-layout-update.preview.emergentagent.com
 - **Login**: /login
 - **Join (Onboarding)**: /join
 - **Pet Home**: /pet-home
@@ -268,7 +268,7 @@ PATH 2: "Let Mira know more"
 - **Admin Service Desk**: /admin/service-desk
 
 ## Backend API
-- **Base**: https://dine-consistency-fix.preview.emergentagent.com/api
+- **Base**: https://dine-layout-update.preview.emergentagent.com/api
 
 ---
 
@@ -345,7 +345,7 @@ asyncio.run(check())
 "
 
 # Create test user via API
-curl -s -X POST "https://dine-consistency-fix.preview.emergentagent.com/api/membership/onboard" \
+curl -s -X POST "https://dine-layout-update.preview.emergentagent.com/api/membership/onboard" \
   -H "Content-Type: application/json" \
   -d '{"parent":{"name":"Test","email":"test@test.com","password":"test123",...},"pets":[{...}]}'
 ```

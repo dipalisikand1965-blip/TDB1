@@ -200,7 +200,7 @@ All features tested and verified (Test Report: `/app/test_reports/iteration_23.j
 | System | Username | Password |
 |--------|----------|----------|
 | Admin Panel | aditya | lola4304 |
-| Preview URL | https://dine-consistency-fix.preview.emergentagent.com |
+| Preview URL | https://dine-layout-update.preview.emergentagent.com |
 
 ---
 
