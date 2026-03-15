@@ -4,7 +4,7 @@ Update Care products with generated images via API
 """
 import requests
 
-API_URL = "https://dine-layout-update.preview.emergentagent.com"
+API_URL = "https://dine-category-pills.preview.emergentagent.com"
 AUTH = ("aditya", "lola4304")
 
 # Generated Care images
