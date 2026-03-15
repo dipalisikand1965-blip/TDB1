@@ -20363,11 +20363,24 @@ async def fix_celebrate_data_comprehensive(password: str = Query(...)):
     }
     
     # ── 1. Fix Service Images ─────────────────────────────────────────────────
-    # Comprehensive map of service name → proper illustration URL
+    # Authoritative map of service name → Cloudinary watercolor illustration URL
     CELEBRATE_SERVICE_IMAGES = {
-        "Birthday Party Planning": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
-        "Birthday Party - Venue": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
-        "Birthday Party - Home": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/3f8f60d3d6ab494c0d5804181180acb8f6f7c8acd969ffaa0f680d714bdeab95.png",
+        "Birthday Party Planning": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333621/doggy/services/celebrate/svc-celebrate-party.png",
+        "Professional Pet Photography": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333645/doggy/services/celebrate/svc-celebrate-photoshoot.png",
+        "Custom Cake Consultation": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333665/doggy/services/celebrate/svc-celebrate-cake-consult.png",
+        "Pawty Package (Full Celebration)": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333688/doggy/services/celebrate/svc-celebrate-pawty-package.png",
+        "Gotcha Day Celebration": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333709/doggy/services/celebrate/svc-celebrate-gotcha.png",
+        "Surprise Delivery Service": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773361888/doggy/services/celebrate/20260313003127.webp",
+        "Surprise Delivery": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773361888/doggy/services/celebrate/20260313003127.webp",
+        "Milestone Celebration Kit": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333757/doggy/services/celebrate/svc-celebrate-milestone.png",
+        "Pet-Friendly Venue Booking": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333778/doggy/services/celebrate/svc-celebrate-venue.png",
+        "Birthday Party - Home": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333798/doggy/services/celebrate/svc-celeb-bday-home.png",
+        "Birthday Party - Venue": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333824/doggy/services/celebrate/svc-celeb-bday-venue.png",
+        "Milestone Celebration": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333847/doggy/services/celebrate/svc-celeb-milestone.png",
+        "Festive Celebration Planning": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773362004/doggy/services/celebrate/20260313003324.webp",
+        "Surprise Coordination": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773362022/doggy/services/celebrate/20260313003342.webp",
+        "Life Moment Tracking": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333908/doggy/services/celebrate/svc-celeb-reminders.png",
+        "Birthday Party": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333932/doggy/services/celebrate/svc-celebrate-birthday.png",
         "Professional Pet Photography": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/f467fd13355a348bfdc9c2353aab9e643bfd8af401a86a63066b494ea71ce5f4.png",
         "Professional Pet Photoshoot": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/f467fd13355a348bfdc9c2353aab9e643bfd8af401a86a63066b494ea71ce5f4.png",
         "Custom Cake Consultation": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/f467fd13355a348bfdc9c2353aab9e643bfd8af401a86a63066b494ea71ce5f4.png",
