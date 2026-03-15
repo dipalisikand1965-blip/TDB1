@@ -203,6 +203,8 @@ const Admin = () => {
   const [seedingProduction, setSeedingProduction] = useState(false);
   const [syncingShopify, setSyncingShopify] = useState(false);
   const [fixingImages, setFixingImages] = useState(false);
+  const [fixingProdData, setFixingProdData] = useState(false);
+  const [prodFixResult, setProdFixResult] = useState(null);
   
   // AI Image Generation Status
   const [aiGenStatus, setAiGenStatus] = useState({ 
@@ -664,6 +666,33 @@ const Admin = () => {
       });
     } finally {
       setFixingImages(false);
+    }
+  };
+
+  // 🚀 FIX PRODUCTION DATA - calls thedoggycompany.com API directly  
+  const fixProductionData = async () => {
+    if (!window.confirm('This will fix service illustrations + pet soul data on thedoggycompany.com (production). Continue?')) return;
+    setFixingProdData(true);
+    setProdFixResult(null);
+    try {
+      toast({ title: '🚀 Fixing Production Data...', description: 'Calling thedoggycompany.com directly' });
+      // Fix 1: Celebrate images + pet soul string data
+      const res1 = await fetch('https://thedoggycompany.com/api/admin/fix-celebrate-data?password=lola4304', { method: 'POST' });
+      const d1 = await res1.json();
+      // Fix 2: Pet string data (if endpoint exists on production)
+      let d2 = { success: false, message: 'Skipped' };
+      try {
+        const res2 = await fetch('https://thedoggycompany.com/api/admin/fix-pet-string-data?password=lola4304', { method: 'POST' });
+        d2 = await res2.json();
+      } catch {}
+      const msg = `Images: ${d1.success ? d1.message : 'Failed'}\nPet data: ${d2.success ? d2.message : d2.message || 'Needs deploy'}`;
+      setProdFixResult({ success: d1.success, message: msg, details: { ...d1, petFix: d2 } });
+      toast({ title: d1.success ? '✅ Production Fixed!' : '⚠️ Partial Fix', description: d1.message, duration: 8000 });
+    } catch (error) {
+      setProdFixResult({ success: false, message: error.message });
+      toast({ title: 'Error', description: 'Could not reach thedoggycompany.com — check network', variant: 'destructive' });
+    } finally {
+      setFixingProdData(false);
     }
   };
 
@@ -3238,6 +3267,19 @@ const Admin = () => {
                 {fixingImages ? 'Fixing...' : '🖼️ FIX IMAGES'}
               </Button>
               
+              {/* 🚀 FIX PRODUCTION DATA Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gradient-to-r from-red-600 to-pink-600 text-white border-0 text-sm font-bold shadow-lg px-4 ml-2"
+                onClick={fixProductionData}
+                disabled={fixingProdData}
+                data-testid="fix-prod-data-btn"
+              >
+                {fixingProdData ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <span className="mr-1">🚀</span>}
+                {fixingProdData ? 'Fixing Prod...' : '🚀 FIX PROD DATA'}
+              </Button>
+              
               {/* 🎨 AI IMAGE GENERATION Button */}
               <Button
                 variant="outline"
@@ -3474,10 +3516,23 @@ const Admin = () => {
                 </div>
               </div>
             )}
+            
+            {/* Production Fix Result Panel */}
+            {prodFixResult && (
+              <div className={`mt-4 rounded-xl p-4 border ${prodFixResult.success ? 'bg-green-900/20 border-green-500/40' : 'bg-red-900/20 border-red-500/40'}`}>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className={`font-bold flex items-center gap-2 text-sm ${prodFixResult.success ? 'text-green-400' : 'text-red-400'}`}>
+                      {prodFixResult.success ? <><CheckCircle className="w-4 h-4" /> Production Fix Result</> : <>⚠️ Fix Result</>}
+                    </h4>
+                    <pre className="text-xs text-slate-300 mt-2 whitespace-pre-wrap">{prodFixResult.message}</pre>
+                  </div>
+                  <button onClick={() => setProdFixResult(null)} className="text-slate-500 hover:text-white ml-4">✕</button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-
-        {/* Fulfilment Tab */}
         {activeTab === 'fulfilment' && (
           <FulfilmentManager authHeaders={getAuthHeaders()} />
         )}

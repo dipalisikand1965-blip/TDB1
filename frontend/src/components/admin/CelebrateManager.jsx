@@ -95,6 +95,12 @@ const CelebrateManager = ({ getAuthHeader }) => {
   const [editingPartner, setEditingPartner] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
   
+  // Production Sync states
+  const [syncingImages, setSyncingImages] = useState(false);
+  const [syncingPetData, setSyncingPetData] = useState(false);
+  const [syncImageResult, setSyncImageResult] = useState(null);
+  const [syncPetResult, setSyncPetResult] = useState(null);
+
   // Import states
   const [importingProducts, setImportingProducts] = useState(false);
   const [importingBundles, setImportingBundles] = useState(false);
@@ -223,6 +229,46 @@ const CelebrateManager = ({ getAuthHeader }) => {
       fetchAllData();
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to sync with Shopify', variant: 'destructive' });
+    }
+  };
+
+  // Production Fix: Fix celebrate images & services on thedoggycompany.com directly
+  const fixProductionImages = async () => {
+    setSyncingImages(true);
+    setSyncImageResult(null);
+    try {
+      const res = await fetch(
+        'https://thedoggycompany.com/api/admin/fix-celebrate-data?password=lola4304',
+        { method: 'POST' }
+      );
+      const data = await res.json();
+      setSyncImageResult(data);
+      toast({ title: data.success ? 'Production Fixed!' : 'Fix Failed', description: data.message });
+    } catch (err) {
+      setSyncImageResult({ success: false, message: 'Network error — is production reachable?' });
+      toast({ title: 'Error', description: 'Could not reach thedoggycompany.com', variant: 'destructive' });
+    } finally {
+      setSyncingImages(false);
+    }
+  };
+
+  // Production Fix: Fix pet soul string data (Food & Flavour crash)
+  const fixProductionPetData = async () => {
+    setSyncingPetData(true);
+    setSyncPetResult(null);
+    try {
+      const res = await fetch(
+        'https://thedoggycompany.com/api/admin/fix-pet-string-data?password=lola4304',
+        { method: 'POST' }
+      );
+      const data = await res.json();
+      setSyncPetResult(data);
+      toast({ title: data.success ? 'Pet Data Fixed!' : 'Fix Failed', description: data.message });
+    } catch (err) {
+      setSyncPetResult({ success: false, message: 'Endpoint not found — deploy once to activate this fix.' });
+      toast({ title: 'Error', description: 'Endpoint not on production yet — needs one deploy', variant: 'destructive' });
+    } finally {
+      setSyncingPetData(false);
     }
   };
 
@@ -1199,6 +1245,110 @@ const CelebrateManager = ({ getAuthHeader }) => {
           <Button onClick={saveSettings} className="bg-pink-600 hover:bg-pink-700">
             Save Settings
           </Button>
+
+          {/* PRODUCTION FIX PANEL */}
+          <Card className="p-6 border-2 border-red-200 bg-red-50">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                <RefreshCw className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-red-900">Production Fix Panel</h3>
+                <p className="text-sm text-red-700 mt-0.5">
+                  These buttons fix data directly on <strong>thedoggycompany.com</strong> without any deployment.
+                  Safe to run anytime — all fixes are reversible.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg p-3 mb-4 border border-red-100 text-xs text-gray-600">
+              <strong>Why are databases different?</strong> This preview environment and thedoggycompany.com each have
+              their own separate databases. Code changes need deployment, but data fixes can be applied
+              directly by calling the production server's API — which is exactly what these buttons do.
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* Fix 1: Images & Services */}
+              <div className="bg-white rounded-xl p-4 border border-red-100 space-y-3">
+                <div>
+                  <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs font-bold">1</span>
+                    Fix Images & Services
+                  </h4>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Restores service illustrations + fixes product image URLs on production celebrate page.
+                    Works right now, no deployment needed.
+                  </p>
+                </div>
+                <Button
+                  data-testid="fix-production-images-btn"
+                  onClick={fixProductionImages}
+                  disabled={syncingImages}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                >
+                  {syncingImages ? (
+                    <><RefreshCw className="w-4 h-4 mr-2 animate-spin" /> Fixing Production...</>
+                  ) : (
+                    <><CheckCircle className="w-4 h-4 mr-2" /> Sync: Fix Images & Services</>
+                  )}
+                </Button>
+                {syncImageResult && (
+                  <div className={`text-xs rounded p-2 ${syncImageResult.success ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+                    {syncImageResult.success ? '✓ ' : '✗ '}{syncImageResult.message}
+                    {syncImageResult.services_fixed !== undefined && (
+                      <div className="mt-1 space-y-0.5">
+                        <div>Services fixed: {syncImageResult.services_fixed}</div>
+                        <div>Product image URLs fixed: {syncImageResult.products_image_url_fixed}</div>
+                        {syncImageResult.pet_fields_fixed !== undefined && <div>Pet soul fields fixed: {syncImageResult.pet_fields_fixed}</div>}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Fix 2: Pet Soul Data (Food & Flavour crash) */}
+              <div className="bg-white rounded-xl p-4 border border-red-100 space-y-3">
+                <div>
+                  <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold">2</span>
+                    Fix Food & Flavour Crash
+                  </h4>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Converts pet soul data (food_allergies, favorite_treats) from string to array.
+                    Fixes the crash when users click the Food & Flavour pillar.
+                    <span className="text-amber-600 font-medium"> Requires one deploy to activate endpoint on production.</span>
+                  </p>
+                </div>
+                <Button
+                  data-testid="fix-production-pet-data-btn"
+                  onClick={fixProductionPetData}
+                  disabled={syncingPetData}
+                  className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+                >
+                  {syncingPetData ? (
+                    <><RefreshCw className="w-4 h-4 mr-2 animate-spin" /> Fixing Pet Data...</>
+                  ) : (
+                    <><CheckCircle className="w-4 h-4 mr-2" /> Sync: Fix Pet Soul Data</>
+                  )}
+                </Button>
+                {syncPetResult && (
+                  <div className={`text-xs rounded p-2 ${syncPetResult.success ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
+                    {syncPetResult.success ? '✓ ' : '⚠ '}{syncPetResult.message}
+                    {syncPetResult.pets_fixed !== undefined && (
+                      <div className="mt-1">Pets fixed: {syncPetResult.pets_fixed}</div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-4 text-xs text-gray-500 bg-gray-50 rounded p-3 border border-gray-100">
+              <strong>What each fix does:</strong><br />
+              Fix 1 (works now): Restores correct watercolor illustrations for all concierge services. Fixes product image_url so all products show their correct photos.<br />
+              Fix 2 (after one deploy): Converts old string-format pet food preferences to arrays so the Food & Flavour pillar loads correctly without crashing.
+            </div>
+          </Card>
+
         </TabsContent>
 
         {/* GENERATE TAB */}
