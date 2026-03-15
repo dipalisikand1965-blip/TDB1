@@ -22917,6 +22917,22 @@ async def get_birthday_box_preview(pet_id: str):
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     
+    # Normalize age: "4 years" / "4" / 4 → int
+    raw_age = pet.get("age")
+    if isinstance(raw_age, str):
+        import re as _re
+        m = _re.search(r'\d+', raw_age)
+        pet["age"] = int(m.group()) if m else 0
+    elif raw_age is None:
+        pet["age"] = 0
+    
+    # Normalize allergies: string → list
+    raw_allergies = pet.get("allergies")
+    if isinstance(raw_allergies, str):
+        pet["allergies"] = [a.strip() for a in raw_allergies.replace(';', ',').split(',') if a.strip() and a.strip().lower() not in ('none', 'no allergies', 'nil', 'n/a')]
+    elif raw_allergies is None:
+        pet["allergies"] = []
+    
     pet_name = pet.get("name", "Pet")
     slot1, slot2, slot3, slot4 = get_slot_1_hero_cake(pet), get_slot_2_joy_item(pet), get_slot_3_style_item(pet), get_slot_4_memory_item(pet)
     slot5, slot6 = get_slot_5_health_item(pet), get_slot_6_surprise_item(pet)
