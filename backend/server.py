@@ -20435,11 +20435,68 @@ async def fix_celebrate_data_comprehensive(password: str = Query(...)):
     except Exception as e:
         results["errors"].append(f"Products: {str(e)}")
     
+    # ── 3. Fix Pet Soul String Data (food_allergies, favorite_treats stored as strings) ─
+    # This fixes the "Food & Flavour pillar crash" — .map() called on a string
+    pet_fields_fixed = 0
+    try:
+        async for pet in db.pets.find({}, {"_id": 1, "doggy_soul_answers": 1}):
+            soul = pet.get("doggy_soul_answers") or {}
+            updates = {}
+            for field in ["food_allergies", "favorite_treats"]:
+                val = soul.get(field)
+                if isinstance(val, str) and val.strip():
+                    # Convert "liver, cheese" → ["liver", "cheese"]
+                    as_arr = [s.strip() for s in val.replace(";", ",").split(",") if s.strip()]
+                    updates[f"doggy_soul_answers.{field}"] = as_arr
+            if updates:
+                await db.pets.update_one({"_id": pet["_id"]}, {"$set": updates})
+                pet_fields_fixed += 1
+    except Exception as e:
+        results["errors"].append(f"Pets: {str(e)}")
+    
+    results["pet_fields_fixed"] = pet_fields_fixed
+    
     return {
         "success": True,
         **results,
-        "message": f"Fixed {results['services_fixed']} service illustrations and {results['products_image_url_fixed']} product image URLs"
+        "message": f"Fixed {results['services_fixed']} service illustrations, {results['products_image_url_fixed']} product image URLs, {pet_fields_fixed} pet soul data fields"
     }
+
+
+@api_router.post("/admin/fix-pet-string-data")
+async def fix_pet_string_data(password: str = Query(...)):
+    """Fix pet soul answers where food_allergies / favorite_treats are stored as strings instead of arrays.
+    This is the root cause of the 'Food & Flavour pillar crash' (TypeError: .map is not a function).
+    Safe to run multiple times (idempotent)."""
+    if password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=403, detail="Invalid admin password")
+    
+    fixed_count = 0
+    errors = []
+    
+    try:
+        async for pet in db.pets.find({}, {"_id": 1, "doggy_soul_answers": 1, "name": 1}):
+            soul = pet.get("doggy_soul_answers") or {}
+            updates = {}
+            for field in ["food_allergies", "favorite_treats"]:
+                val = soul.get(field)
+                if isinstance(val, str) and val.strip():
+                    as_arr = [s.strip() for s in val.replace(";", ",").split(",") if s.strip()]
+                    updates[f"doggy_soul_answers.{field}"] = as_arr
+            if updates:
+                await db.pets.update_one({"_id": pet["_id"]}, {"$set": updates})
+                fixed_count += 1
+    except Exception as e:
+        errors.append(str(e))
+    
+    return {
+        "success": True,
+        "pets_fixed": fixed_count,
+        "errors": errors,
+        "message": f"Fixed soul data for {fixed_count} pets (string→array conversion)"
+    }
+
+
 async def export_all_data(password: str = Query(...)):
     """Export all critical data as JSON for backup or transfer"""
     if password != ADMIN_PASSWORD:
