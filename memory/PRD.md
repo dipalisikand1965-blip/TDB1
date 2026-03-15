@@ -11,7 +11,21 @@ Violating these rules will break the admin panel and data consistency.
 
 ---
 
-## ✅ SESSION 43 — Dine Page Finalization: Layout + Heading + Tummy Profile Refactor (Feb 2026)
+## ✅ SESSION 43b — TummyProfile Rebuilt as Compact Bar + Drawer (Feb 2026)
+
+**Replaced the incorrect 4-cell grid with the correct Mira's Picks pattern:**
+
+- **Compact bar** inline on `/dine` page: shows pet name, allergy chips (red ✗), loves chips (green ♥), and "Mira's picks →" CTA
+- **Right-side drawer** (fixed panel, 460px, full height) with:
+  - **"Mira Imagines"** section: dynamic food cards generated from `pet.loves` + `pet.allergies` + `pet.healthCondition` via `generateFoodImagines()` — mirrors the imaginaryProducts pattern in `CelebrateContentModal`. Each card has "Mira Imagines" badge, emoji, name, desc, reason, "Ask Mira to Source →" button
+  - **`DineSoulQuestionsSection`**: Amber-themed SoulQuestionsSection — fetches from `/api/pet-soul/profile/{id}/quick-questions?limit=5&context=dine`, shows big soul score % (64px, amber glow), progress bar, amber `SoulQuestionCardDine` cards. Returns null for high-score pets (0 unanswered questions)
+- **Backdrop**: `position:fixed; inset:0; z-index:1000` closes drawer on click
+- **data-testids**: `tummy-profile` (bar), `tummy-drawer` (panel), `tummy-drawer-close` (✕ button)
+- Testing: 100% frontend (11/11) + 100% backend (10/10) — iteration_142
+
+---
+
+
 
 ### What Was Built / Fixed:
 
