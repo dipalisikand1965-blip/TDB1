@@ -58,7 +58,7 @@ Be patient. Be thorough. Honor the Sikand legacy.
 - Admin: `aditya` / `lola4304`
 
 ## 🌐 PREVIEW URL
-https://unified-dine.preview.emergentagent.com
+https://dine-consistency-fix.preview.emergentagent.com
 
 ---
 

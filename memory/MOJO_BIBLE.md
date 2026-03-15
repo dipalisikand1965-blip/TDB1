@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://unified-dine.preview.emergentagent.com
+https://dine-consistency-fix.preview.emergentagent.com
 ```
 
 ---

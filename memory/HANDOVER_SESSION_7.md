@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://unified-dine.preview.emergentagent.com
+https://dine-consistency-fix.preview.emergentagent.com
 
 ---
 
