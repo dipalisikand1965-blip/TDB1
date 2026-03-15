@@ -1892,7 +1892,7 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
               }}
               data-testid="seed-dine-products-btn"
             >
-              <Sparkles className="w-4 h-4 mr-2" /> Seed Dine Catalog (49 products)
+              <Sparkles className="w-4 h-4 mr-2" /> Seed Dine Catalog (48 products)
             </Button>
           </div>
           <PillarProductsTab pillar="dine" pillarName="Dine" />
