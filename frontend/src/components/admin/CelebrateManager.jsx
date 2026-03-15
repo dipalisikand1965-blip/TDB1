@@ -95,6 +95,11 @@ const CelebrateManager = ({ getAuthHeader }) => {
   const [editingPartner, setEditingPartner] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [generatingBundleImage, setGeneratingBundleImage] = useState(false);
+  const [generatingProductImage, setGeneratingProductImage] = useState(false);
+  const [uploadingProductImage, setUploadingProductImage] = useState(false);
+  const [productPage, setProductPage] = useState(1);
+  const [productTotal, setProductTotal] = useState(0);
+  const PRODUCTS_PER_PAGE = 50;
 
   // Generate AI image for a bundle
   const handleGenerateBundleImage = async () => {
@@ -162,6 +167,30 @@ const CelebrateManager = ({ getAuthHeader }) => {
     commission_percent: 0, rating: 5, is_verified: false, is_active: true
   });
 
+  // Fetch products from unified admin endpoint (includes products_master)
+  const fetchProducts = async (page = 1, category = 'all', search = '') => {
+    try {
+      let url = `${API_URL}/api/celebrate/admin/products?page=${page}&limit=50`;
+      if (category && category !== 'all') url += `&category=${category}`;
+      if (search) url += `&search=${encodeURIComponent(search)}`;
+      const res = await axios.get(url);
+      const data = res.data;
+      setProducts(data.products || []);
+      setProductTotal(data.total || 0);
+      return data.total || 0;
+    } catch (err) {
+      console.error('[CelebrateManager] Failed to load products:', err);
+      return 0;
+    }
+  };
+
+  // Re-fetch products when category filter changes
+  useEffect(() => {
+    setProductPage(1);
+    fetchProducts(1, categoryFilter, searchQuery);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryFilter]);
+
   // Fetch all data
   useEffect(() => {
     fetchAllData();
@@ -170,16 +199,13 @@ const CelebrateManager = ({ getAuthHeader }) => {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      // Use Promise.allSettled so one failing endpoint doesn't kill everything
-      const [requestsResult, productsResult, bundlesResult, settingsResult, partnersResult] = await Promise.allSettled([
+      const [requestsResult, bundlesResult, settingsResult, partnersResult] = await Promise.allSettled([
         axios.get(`${API_URL}/api/celebrate/requests`),
-        axios.get(`${API_URL}/api/admin/products?limit=5000`, { headers: getAuthHeader() }),
         axios.get(`${API_URL}/api/celebrate/admin/bundles`),
         axios.get(`${API_URL}/api/celebrate/admin/settings`),
         axios.get(`${API_URL}/api/celebrate/admin/partners`)
       ]);
 
-      // Extract data safely — fall back to empty if a request failed
       const requestsData = requestsResult.status === 'fulfilled' ? (requestsResult.value.data.requests || []) : [];
       const bundlesData = bundlesResult.status === 'fulfilled' ? (bundlesResult.value.data.bundles || []) : [];
       const settingsData = settingsResult.status === 'fulfilled' ? (settingsResult.value.data || {}) : {};
@@ -190,70 +216,17 @@ const CelebrateManager = ({ getAuthHeader }) => {
       setSettings(settingsData);
       setPartners(partnersData);
 
-      // Products — filter for celebrate categories
-      let allProducts = [];
-      if (productsResult.status === 'fulfilled') {
-        allProducts = productsResult.value.data.products || [];
-      } else {
-        // Fallback: fetch from public products endpoint per category
-        console.warn('[CelebrateManager] Admin products endpoint failed, using public API fallback:', productsResult.reason);
-        try {
-          const fallbackCats = ['celebration','cakes','breed-cakes','dognuts','desi-treats','nut-butters','frozen-treats','hampers','party_accessories','party_kits','celebration_addons'];
-          const fbResults = await Promise.allSettled(
-            fallbackCats.map(cat => axios.get(`${API_URL}/api/products?category=${cat}&limit=200`))
-          );
-          for (const r of fbResults) {
-            if (r.status === 'fulfilled') allProducts.push(...(r.value.data.products || []));
-          }
-          // Deduplicate
-          const seen = new Set();
-          allProducts = allProducts.filter(p => { const id = p.id || p._id; if (!id || seen.has(id)) return false; seen.add(id); return true; });
-        } catch (fbErr) {
-          console.error('[CelebrateManager] Fallback also failed:', fbErr);
-        }
-      }
+      // Fetch products separately via unified admin endpoint
+      const prodResult = await fetchProducts(productPage, categoryFilter, searchQuery);
+      const totalProd = prodResult || 0;
 
-      // Match ALL celebrate-relevant categories — includes all pillar tab categories
-      const CELEBRATE_CATS = new Set([
-        // Food pillar
-        'celebration', 'cakes', 'breed-cakes', 'mini-cakes', 'pupcakes', 'dognuts',
-        'treats', 'desi-treats', 'nut-butters', 'frozen-treats', 'frozen',
-        // Social pillar
-        'hampers', 'party_accessories', 'party_kits', 'celebration_addons', 'celebration-addons',
-        'breed-party_hats', 'breed-party-hats', 'soul_picks', 'soul-picks',
-        // Play pillar
-        'toys', 'puzzle_toys', 'enrichment',
-        // Adventure pillar
-        'walking', 'adventure', 'travel',
-        // Grooming pillar
-        'grooming', 'spa', 'spa_bath', 'styling',
-        // Learning pillar
-        'training',
-        // Health pillar
-        'supplements', 'health',
-        // Memory pillar
-        'portraits', 'memory_books',
-        // Venue / services
-        'venue', 'services',
-        // Extra Shopify-synced variants (production)
-        'birthday', 'birthday-accessories', 'party', 'celebration-products',
-      ]);
-      // If fewer than 20 celebrate products, just show ALL products (production may use different categories)
-      const celebrateProducts = allProducts.filter(p => CELEBRATE_CATS.has((p.category || '').toLowerCase().trim()));
-      setProducts(celebrateProducts.length > 20 ? celebrateProducts : allProducts);
-
-      const finalProds = celebrateProducts.length > 0 ? celebrateProducts : allProducts;
       setStats({
-        total_products: finalProds.length,
+        total_products: totalProd,
         total_bundles: bundlesData.length,
         total_partners: partnersData.length,
         pending_requests: requestsData.filter(r => ['submitted', 'acknowledged'].includes(r.status)).length,
         completed_requests: requestsData.filter(r => r.status === 'completed').length
       });
-
-      if (productsResult.status === 'rejected') {
-        toast({ title: 'Note', description: 'Products loaded via fallback. Log in again if incomplete.', variant: 'default' });
-      }
     } catch (error) {
       console.error('Error fetching celebrate data:', error);
       toast({ title: 'Error', description: 'Failed to load celebrate data', variant: 'destructive' });
@@ -663,21 +636,10 @@ const CelebrateManager = ({ getAuthHeader }) => {
     }
   };
 
-  // Filter functions
-  const GROUP_CATS = { treats: ['treat'], frozen: ['frozen'] };
+  // Filter functions — products are now server-paginated, just filter inactive
   const filteredProducts = products.filter(p => {
-    const matchesSearch = !searchQuery || (p.name || '').toLowerCase().includes(searchQuery.toLowerCase());
-    if (!matchesSearch) return false;
-    // Active/inactive toggle
-    if (!showInactive && p.is_active === false) return false;
-    if (categoryFilter === 'all') return true;
-    const pCat = (p.category || '').toLowerCase().replace(/_/g, '-'); // normalize _ to - for matching
-    const filter = categoryFilter.toLowerCase().replace(/_/g, '-');
-    // Grouped categories
-    if (GROUP_CATS[filter]) {
-      return GROUP_CATS[filter].some(k => pCat.includes(k));
-    }
-    return pCat === filter || pCat.includes(filter);
+    if (!showInactive && (p.is_active === false || p.active === false)) return false;
+    return true;
   });
 
   const filteredRequests = requests.filter(r => {
@@ -907,23 +869,35 @@ const CelebrateManager = ({ getAuthHeader }) => {
         <TabsContent value="products" className="space-y-4">
           <div className="flex flex-wrap gap-4 items-center justify-between">
             <div className="flex gap-4 items-center flex-wrap">
-              <Input
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="max-w-xs"
-              />
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      setProductPage(1);
+                      fetchProducts(1, categoryFilter, searchQuery);
+                    }
+                  }}
+                  className="max-w-xs"
+                />
+                <Button variant="outline" size="sm" onClick={() => { setProductPage(1); fetchProducts(1, categoryFilter, searchQuery); }}>
+                  Search
+                </Button>
+              </div>
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
                 className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 style={{ width: 160, cursor: 'pointer' }}
               >
-                <option value="all">All Categories</option>
+                <option value="all">All Categories ({productTotal})</option>
                 {CATEGORY_OPTIONS.map(cat => (
                   <option key={cat.value} value={cat.value}>{cat.label}</option>
                 ))}
               </select>
+              <span className="text-sm text-gray-500 font-medium">{productTotal} products total</span>
             </div>
             <div className="flex gap-2 flex-wrap items-center">
               {/* Active/Inactive toggle — key for admin vs frontend sync */}
@@ -965,36 +939,39 @@ const CelebrateManager = ({ getAuthHeader }) => {
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredProducts.map((product) => (
-              <Card key={product.id} className="overflow-hidden">
+              <Card key={product.id || product.shopify_id} className="overflow-hidden">
                 <div className="aspect-square relative">
                   <img 
-                    src={product.image || 'https://via.placeholder.com/300'} 
+                    src={product.image || product.image_url || 'https://via.placeholder.com/300'} 
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute top-2 right-2 flex flex-col gap-1">
                     {product.is_bestseller && <Badge className="bg-yellow-500 text-white">Bestseller</Badge>}
                     {product.is_new && <Badge className="bg-green-500 text-white">New</Badge>}
-                    {!product.in_stock && <Badge className="bg-red-500 text-white">Out of Stock</Badge>}
-                    <Badge className={product.is_active === false ? 'bg-gray-400 text-white' : 'bg-emerald-500 text-white'} style={{ fontSize: 10 }}>
-                      {product.is_active === false ? 'Inactive' : 'Active'}
+                    {!product.in_stock && !product.available && <Badge className="bg-red-500 text-white">Out of Stock</Badge>}
+                    <Badge className={product.is_active === false || product.active === false ? 'bg-gray-400 text-white' : 'bg-emerald-500 text-white'} style={{ fontSize: 10 }}>
+                      {product.is_active === false || product.active === false ? 'Inactive' : 'Active'}
                     </Badge>
+                    {product._source === 'products_master' && (
+                      <Badge className="bg-blue-500 text-white" style={{ fontSize: 9 }}>Shopify</Badge>
+                    )}
                   </div>
                 </div>
                 <div className="p-4">
                   <h3 className="font-semibold line-clamp-1">{product.name}</h3>
                   <p className="text-sm text-gray-500 capitalize">{product.category}</p>
                   <div className="flex items-center gap-2 mt-2">
-                    <span className="text-lg font-bold text-pink-600">₹{product.price}</span>
-                    {product.compare_price && (
-                      <span className="text-sm text-gray-400 line-through">₹{product.compare_price}</span>
+                    <span className="text-lg font-bold text-pink-600">₹{product.price || product.selling_price || product.variants?.[0]?.price || '—'}</span>
+                    {(product.compare_price || product.compare_at_price) && (
+                      <span className="text-sm text-gray-400 line-through">₹{product.compare_price || product.compare_at_price}</span>
                     )}
                   </div>
                   <div className="flex gap-2 mt-3">
                     <Button size="sm" variant="outline" className="flex-1" onClick={() => openProductModal(product)}>
                       <Edit2 className="w-4 h-4 mr-1" /> Edit
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => deleteProduct(product.id)}>
+                    <Button size="sm" variant="outline" onClick={() => deleteProduct(product.id || product.shopify_id)}>
                       <Trash2 className="w-4 h-4 text-red-500" />
                     </Button>
                   </div>
@@ -1002,6 +979,25 @@ const CelebrateManager = ({ getAuthHeader }) => {
               </Card>
             ))}
           </div>
+          
+          {/* Pagination */}
+          {productTotal > 50 && (
+            <div className="flex items-center justify-between pt-4 border-t">
+              <p className="text-sm text-gray-500">
+                Showing {Math.min((productPage - 1) * 50 + 1, productTotal)}–{Math.min(productPage * 50, productTotal)} of {productTotal} products
+              </p>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" disabled={productPage === 1}
+                  onClick={() => { const newPage = productPage - 1; setProductPage(newPage); fetchProducts(newPage, categoryFilter, searchQuery); }}>
+                  Previous
+                </Button>
+                <Button size="sm" variant="outline" disabled={productPage * 50 >= productTotal}
+                  onClick={() => { const newPage = productPage + 1; setProductPage(newPage); fetchProducts(newPage, categoryFilter, searchQuery); }}>
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </TabsContent>
 
         {/* SERVICES TAB */}
@@ -1464,11 +1460,78 @@ const CelebrateManager = ({ getAuthHeader }) => {
               </div>
             </div>
             <div>
-              <Label>Image URL</Label>
-              <Input
-                value={productForm.image}
-                onChange={(e) => setProductForm({...productForm, image: e.target.value})}
-              />
+              <Label>Image</Label>
+              {/* Image Preview */}
+              {productForm.image && (
+                <div className="mb-2 relative inline-block">
+                  <img src={productForm.image} alt="Product preview" className="w-32 h-32 object-cover rounded-lg border" />
+                  <button onClick={() => setProductForm({...productForm, image: ''})}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">×</button>
+                </div>
+              )}
+              <div className="flex gap-2 items-center">
+                <Input
+                  value={productForm.image}
+                  onChange={(e) => setProductForm({...productForm, image: e.target.value})}
+                  placeholder="https://... or upload below"
+                  className="flex-1"
+                />
+              </div>
+              <div className="flex gap-2 mt-2">
+                {/* File Upload */}
+                <label className="flex items-center gap-1 cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-md text-sm font-medium border">
+                  <Upload className="w-4 h-4" />
+                  {uploadingProductImage ? 'Uploading...' : 'Upload Image'}
+                  <input type="file" accept="image/*" className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files[0];
+                      if (!file) return;
+                      setUploadingProductImage(true);
+                      try {
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        const res = await fetch(`${API_URL}/api/upload/product-image`, {
+                          method: 'POST', body: formData
+                        });
+                        const data = await res.json();
+                        if (data.url || data.image_url) {
+                          setProductForm(prev => ({...prev, image: data.url || data.image_url}));
+                          toast({ title: 'Image uploaded!', description: 'Image saved to cloud storage' });
+                        }
+                      } catch { toast({ title: 'Upload failed', variant: 'destructive' }); }
+                      finally { setUploadingProductImage(false); e.target.value = ''; }
+                    }}
+                  />
+                </label>
+                {/* AI Generate Image */}
+                <Button type="button" variant="outline" size="sm" disabled={generatingProductImage}
+                  onClick={async () => {
+                    if (!editingProduct?.id) {
+                      toast({ title: 'Save the product first', description: 'Product must be saved before generating an AI image', variant: 'destructive' });
+                      return;
+                    }
+                    setGeneratingProductImage(true);
+                    try {
+                      const res = await fetch(`${API_URL}/api/celebrate/admin/products/${editingProduct.id}/generate-image`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' }
+                      });
+                      const data = await res.json();
+                      if (data.success && data.image_url) {
+                        setProductForm(prev => ({...prev, image: data.image_url}));
+                        toast({ title: 'AI Image Generated!', description: 'Image saved to Cloudinary' });
+                      } else {
+                        toast({ title: 'Generation failed', description: data.message, variant: 'destructive' });
+                      }
+                    } catch { toast({ title: 'Error', variant: 'destructive' }); }
+                    finally { setGeneratingProductImage(false); }
+                  }}
+                  className="flex items-center gap-1"
+                  data-testid="generate-product-image-btn"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  {generatingProductImage ? 'Generating...' : 'AI Generate'}
+                </Button>
+              </div>
             </div>
             
             {/* Active Status Toggle - PROMINENT */}
