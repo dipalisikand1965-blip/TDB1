@@ -779,5 +779,34 @@
         </div>
 
     </div>
+<!-- ================================================================== -->
+<!-- SESSION 29 CONTINUED — Bug Fixes: Sync, AI Generate, Category Strip, Pillar Cards -->
+<!-- ================================================================== -->
+<div style="background:#1a1a2e; border:3px solid #f59e0b; padding:24px; border-radius:16px; margin-bottom:36px;">
+<h2 style="background:#f59e0b; color:white; padding:12px 16px; border-radius:8px; margin-top:0;">
+  SESSION 29 BUG FIXES — Admin + Frontend (Mar 15, 2026)
+</h2>
+
+<h3 style="color:#fbbf24;">Bugs Fixed</h3>
+<table border="1" style="border-collapse:collapse; width:100%; font-size:13px; color:#fde68a;">
+  <tr><th style="background:#92400e; color:white; padding:8px;">Bug</th><th style="background:#92400e; color:white; padding:8px;">Root Cause</th><th style="background:#92400e; color:white; padding:8px;">Fix</th></tr>
+  <tr><td style="padding:8px;">FIX PROD DATA button: "body stream already read" + CORS fail</td><td style="padding:8px;">Was calling thedoggycompany.com directly from frontend (CORS blocked from preview)</td><td style="padding:8px;">Changed to call current server's /api/admin/fix-celebrate-data (works on both preview + production)</td></tr>
+  <tr><td style="padding:8px;">SYNC → PROD button: "body stream already read"</td><td style="padding:8px;">resp.json() could fail if response body was already consumed; no defensive handling</td><td style="padding:8px;">Changed to resp.text() + JSON.parse() with try/catch for robust error handling</td></tr>
+  <tr><td style="padding:8px;">AI Generate button: "body stream already read" + wrong URLs</td><td style="padding:8px;">ProductGeneratorPanel.jsx missing /api/ prefix: /admin/celebrate/... instead of /api/admin/celebrate/...</td><td style="padding:8px;">Added /api/ prefix to all 3 fetch URLs in ProductGeneratorPanel.jsx + defensive text/parse pattern</td></tr>
+  <tr><td style="padding:8px;">Category strip: Mira's Picks hidden</td><td style="padding:8px;">No scroll hint - users couldn't tell there were more items to scroll to</td><td style="padding:8px;">Added right-edge fade gradient (pointer-events-none, gradient to white) + paddingRight:40</td></tr>
+  <tr><td style="padding:8px;">8 pillar cards: non-uniform heights</td><td style="padding:8px;">motion.div and card div had no h-full, so cards took natural content height instead of grid cell height</td><td style="padding:8px;">Added className="h-full" to motion.div and height:'100%' to card div in SoulCelebrationPillars.jsx</td></tr>
+</table>
+
+<h3 style="color:#fbbf24;">Key Files Changed</h3>
+<ul style="color:#fde68a;">
+  <li><code>frontend/src/components/admin/ProductGeneratorPanel.jsx</code> — Added /api/ prefix to all fetch URLs, defensive text+parse pattern</li>
+  <li><code>frontend/src/pages/Admin.jsx</code> — FIX PROD DATA now calls current env, SYNC button uses text+parse</li>
+  <li><code>frontend/src/components/celebrate/CelebrateCategoryStrip.jsx</code> — Right-edge fade gradient + paddingRight for scroll hint</li>
+  <li><code>frontend/src/components/celebrate/SoulCelebrationPillars.jsx</code> — h-full on motion.div + height:100% on card div</li>
+</ul>
+</div>
+<!-- SESSION 29 CONTINUED END -->
+<!-- ================================================================== -->
+
 </body>
 </html>
