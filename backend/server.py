@@ -20707,6 +20707,11 @@ from celebrate_product_generator import (
     celebrate_gen_status,
     CELEBRATE_PRODUCTS,
 )
+from celebrate_excel_seeder import (
+    run_excel_seed,
+    excel_seed_status,
+    EXCEL_CELEBRATE_PRODUCTS,
+)
 
 @api_router.post("/admin/celebrate/seed-and-generate")
 async def start_celebrate_product_generation(
@@ -20733,6 +20738,36 @@ async def get_celebrate_generation_status(username: str = Depends(verify_admin_a
         count = await db.products_master.count_documents({"category": cat, "pillar": "celebrate"})
         category_counts[cat] = count
     return {**celebrate_gen_status, "category_counts": category_counts}
+
+
+@api_router.post("/admin/celebrate/seed-from-excel")
+async def start_excel_seed(
+    background_tasks: BackgroundTasks,
+    username: str = Depends(verify_admin_auth),
+):
+    """Seed 93 celebrate products from the Excel catalog + start AI image generation."""
+    if excel_seed_status.get("running"):
+        return {"message": "Excel seed already running", "status": excel_seed_status}
+    background_tasks.add_task(run_excel_seed, db)
+    return {
+        "message": "Excel catalog seed started — seeding 93 products then generating images",
+        "total_products": len(EXCEL_CELEBRATE_PRODUCTS),
+        "status": "starting",
+    }
+
+
+@api_router.get("/admin/celebrate/excel-seed-status")
+async def get_excel_seed_status(username: str = Depends(verify_admin_auth)):
+    """Live status of Excel seed operation."""
+    # Count seeded products by sku prefix
+    counts = {}
+    for prefix, label in [("FF-", "food"), ("PJ-", "play"), ("SF-", "social"),
+                           ("AM-", "adventure"), ("GB-", "grooming"),
+                           ("LM-", "learning_memory"), ("HW-", "health")]:
+        counts[label] = await db.products_master.count_documents(
+            {"sku": {"$regex": f"^{prefix}"}}
+        )
+    return {**excel_seed_status, "pillar_counts": counts}
 
 
 @api_router.post("/admin/products/{product_id}/regenerate-image")
