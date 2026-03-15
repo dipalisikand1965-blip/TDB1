@@ -6,7 +6,7 @@
  * Active: border-bottom: 3px solid #FF8C42; color: #C44400
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import CelebrateContentModal from './CelebrateContentModal';
 
@@ -85,12 +85,37 @@ export { CELEBRATE_CATEGORIES };
 const CelebrateCategoryStrip = ({ pet, onCategorySelect }) => {
   const [activeCategory, setActiveCategory] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
   const scrollRef = useRef(null);
 
   const handleCategoryClick = (cat) => {
     setActiveCategory(cat);
     setShowModal(true);
     if (onCategorySelect) onCategorySelect(cat);
+  };
+
+  const updateScrollButtons = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    updateScrollButtons();
+    el.addEventListener('scroll', updateScrollButtons, { passive: true });
+    window.addEventListener('resize', updateScrollButtons);
+    return () => {
+      el.removeEventListener('scroll', updateScrollButtons);
+      window.removeEventListener('resize', updateScrollButtons);
+    };
+  }, []);
+
+  const scrollBy = (amount) => {
+    scrollRef.current?.scrollBy({ left: amount, behavior: 'smooth' });
   };
 
   return (
@@ -101,6 +126,18 @@ const CelebrateCategoryStrip = ({ pet, onCategorySelect }) => {
         style={{ borderBottom: '1px solid #F0E8E0' }}
         data-testid="celebrate-category-strip"
       >
+        {/* Left scroll arrow — desktop only */}
+        {canScrollLeft && (
+          <button
+            onClick={() => scrollBy(-240)}
+            className="hidden md:flex absolute left-0 top-0 bottom-0 z-10 items-center justify-center"
+            style={{ width: 32, background: 'linear-gradient(to right, white 60%, transparent)', border: 'none', cursor: 'pointer' }}
+            aria-label="Scroll left"
+          >
+            <span style={{ fontSize: 14, color: '#888' }}>‹</span>
+          </button>
+        )}
+
         <div
           ref={scrollRef}
           className="flex overflow-x-auto"
@@ -108,7 +145,8 @@ const CelebrateCategoryStrip = ({ pet, onCategorySelect }) => {
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
             WebkitOverflowScrolling: 'touch',
-            paddingRight: 40
+            paddingLeft: canScrollLeft ? 32 : 0,
+            paddingRight: canScrollRight ? 40 : 12
           }}
         >
           {CELEBRATE_CATEGORIES.map((cat) => {
@@ -122,7 +160,6 @@ const CelebrateCategoryStrip = ({ pet, onCategorySelect }) => {
                   minWidth: 78,
                   height: 72,
                   padding: '10px 12px',
-                  borderBottom: isActive ? '3px solid #FF8C42' : '3px solid transparent',
                   cursor: 'pointer',
                   background: 'transparent',
                   border: 'none',
@@ -165,14 +202,19 @@ const CelebrateCategoryStrip = ({ pet, onCategorySelect }) => {
             );
           })}
         </div>
-        {/* Right-edge fade hint — shows more items exist */}
-        <div
-          className="absolute right-0 top-0 bottom-0 pointer-events-none"
-          style={{
-            width: 48,
-            background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.95))'
-          }}
-        />
+
+        {/* Right scroll arrow — desktop only, shows when more items exist */}
+        {canScrollRight && (
+          <button
+            onClick={() => scrollBy(240)}
+            className="hidden md:flex absolute right-0 top-0 bottom-0 z-10 items-center justify-center"
+            style={{ width: 48, background: 'linear-gradient(to left, white 50%, transparent)', border: 'none', cursor: 'pointer' }}
+            aria-label="Scroll right — more categories"
+            data-testid="category-strip-scroll-right"
+          >
+            <span style={{ fontSize: 16, color: '#FF8C42', fontWeight: 700 }}>›</span>
+          </button>
+        )}
       </div>
 
       {/* Category Modal */}
