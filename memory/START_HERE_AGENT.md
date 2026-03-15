@@ -179,7 +179,7 @@ curl "$API_URL/api/pet-soul/profile/pet-99a708f1722a/quick-questions"
 
 ## 🚀 PREVIEW URL
 ```
-https://architecture-rebuild.preview.emergentagent.com
+https://data-integrity-task.preview.emergentagent.com
 ```
 
 Key pages:

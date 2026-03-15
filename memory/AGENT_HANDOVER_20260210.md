@@ -192,12 +192,12 @@ This session focused on implementing the **Conversation Architecture** for Mira 
 ## Test Commands
 ```bash
 # Test pillar-first search
-curl -s -X POST "https://architecture-rebuild.preview.emergentagent.com/api/mira/os/understand-with-products" \
+curl -s -X POST "https://data-integrity-task.preview.emergentagent.com/api/mira/os/understand-with-products" \
   -H "Content-Type: application/json" \
   -d '{"input": "I need a dog walker", "pet_context": {"name": "Mojo", "breed": "Indie"}}' | python3 -c "import sys,json; r=json.load(sys.stdin); print('Products:', len(r.get('response',{}).get('products',[])))"
 
 # Test concierge confirmation
-curl -s -X POST "https://architecture-rebuild.preview.emergentagent.com/api/mira/os/understand-with-products" \
+curl -s -X POST "https://data-integrity-task.preview.emergentagent.com/api/mira/os/understand-with-products" \
   -H "Content-Type: application/json" \
   -d '{"input": "Send this to my concierge please", "pet_context": {"name": "Mojo"}}' | python3 -c "import sys,json; r=json.load(sys.stdin); print('Banner:', r.get('concierge_confirmation') is not None)"
 ```

@@ -6,7 +6,7 @@ Iteration 126 - Follow-up to iteration_125.
 
 import asyncio
 
-BASE_URL = "https://architecture-rebuild.preview.emergentagent.com"
+BASE_URL = "https://data-integrity-task.preview.emergentagent.com"
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 
