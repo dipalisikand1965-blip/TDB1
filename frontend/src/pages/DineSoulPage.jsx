@@ -361,10 +361,10 @@ function SoulQuestionCardDine({ question, petName, onAnswered, token }) {
   return (
     <div style={{
       borderRadius: 16, padding: '14px',
-      background: 'linear-gradient(135deg, #3d1200 0%, #7a2800 100%)',
-      border: '1.5px solid rgba(255,140,66,0.40)',
+      background: 'linear-gradient(135deg, #1A0620 0%, #2d0a00 100%)',
+      border: '1.5px solid rgba(180,80,255,0.22)',
       minHeight: 140,
-      boxShadow: '0 4px 20px rgba(196,68,0,0.15)',
+      boxShadow: '0 4px 20px rgba(100,20,60,0.18)',
     }}>
       {/* Folder label + weight */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
@@ -406,10 +406,10 @@ function SoulQuestionCardDine({ question, petName, onAnswered, token }) {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
           {(question.options || []).map(opt => (
             <button key={opt} onClick={() => setSelected(opt)} style={{
-              borderRadius: 20, padding: '4px 10px', fontSize: 11, fontWeight: 600,
-              background: selected === opt ? 'rgba(255,140,66,0.35)' : 'rgba(255,255,255,0.07)',
-              border: selected === opt ? '1.5px solid #FF8C42' : '1px solid rgba(255,255,255,0.18)',
-              color: selected === opt ? '#FFD080' : 'rgba(255,255,255,0.70)',
+              borderRadius: 20, padding: '5px 12px', fontSize: 11, fontWeight: 600,
+              background: selected === opt ? 'rgba(255,140,66,0.25)' : 'rgba(255,255,255,0.07)',
+              border: selected === opt ? '1.5px solid #FF8C42' : '1px solid rgba(255,255,255,0.15)',
+              color: selected === opt ? '#FFD080' : 'rgba(255,255,255,0.72)',
               cursor: 'pointer', transition: 'all 0.15s',
             }}>{opt}</button>
           ))}
@@ -420,10 +420,10 @@ function SoulQuestionCardDine({ question, petName, onAnswered, token }) {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
           {(question.options || []).slice(0, 6).map(opt => (
             <button key={opt} onClick={() => toggleMulti(opt)} style={{
-              borderRadius: 20, padding: '4px 10px', fontSize: 11, fontWeight: 600,
-              background: multiSelected.includes(opt) ? 'rgba(255,140,66,0.35)' : 'rgba(255,255,255,0.07)',
-              border: multiSelected.includes(opt) ? '1.5px solid #FF8C42' : '1px solid rgba(255,255,255,0.18)',
-              color: multiSelected.includes(opt) ? '#FFD080' : 'rgba(255,255,255,0.70)',
+              borderRadius: 20, padding: '5px 12px', fontSize: 11, fontWeight: 600,
+              background: multiSelected.includes(opt) ? 'rgba(255,140,66,0.25)' : 'rgba(255,255,255,0.07)',
+              border: multiSelected.includes(opt) ? '1.5px solid #FF8C42' : '1px solid rgba(255,255,255,0.15)',
+              color: multiSelected.includes(opt) ? '#FFD080' : 'rgba(255,255,255,0.72)',
               cursor: 'pointer', transition: 'all 0.15s',
             }}>{opt}</button>
           ))}
@@ -471,6 +471,7 @@ function generateFoodImagines(pet, loves, allergies, healthCondition) {
   const allergySet = new Set(allergies.map(a => a.toLowerCase()));
   const soulAnswers = pet?.doggy_soul_answers || {};
   const favProtein = soulAnswers.favorite_protein || soulAnswers.fav_protein;
+  const breed = (pet?.breed || soulAnswers.breed || '').split('(')[0].trim();
 
   // soul-answered fav protein first, then loves list
   const allSources = [...loves];
@@ -483,22 +484,36 @@ function generateFoodImagines(pet, loves, allergies, healthCondition) {
     if (!key || key.length < 2 || seen.has(key) || allergySet.has(key)) continue;
     seen.add(key);
     const label = key.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    const breedSuffix = breed ? ` — soy-free, ${breed.toLowerCase() === 'labrador' || breed.toLowerCase().includes('retriever') ? 'weight-conscious' : 'omega-rich'}` : ' — omega-rich';
     imagines.push({
       emoji: getFoodEmoji(key),
-      bg: 'linear-gradient(135deg, #1A0A00, #3d1200)',
-      name: `${label} Grain-Free Bowl`,
-      desc: `A complete, ${label.toLowerCase()}-rich meal formulated just for ${petName}`,
+      bg: 'linear-gradient(135deg, #1A0A00, #2d0a18)',
+      name: `${label} Weekly Meal Box`,
+      desc: `Built around what ${petName} loves${breedSuffix}`,
       reason: `Because ${petName} loves ${food}`,
     });
     if (imagines.length < 4) {
       imagines.push({
-        emoji: '🎁',
-        bg: 'linear-gradient(135deg, #0d1a00, #1a3000)',
-        name: `${label} Weekly Treat Pack`,
-        desc: `Curated ${label.toLowerCase()} treats, perfectly sized for ${petName}`,
-        reason: `Because ${petName} loves ${food} treats`,
+        emoji: key.includes('peanut') || key.includes('nut') ? '🥜' : '🎁',
+        bg: 'linear-gradient(135deg, #0d1a00, #1a1a30)',
+        name: `${label} Training Pack`,
+        desc: `High-value rewards${breed ? `, tailored for a ${breed}'s training drive` : ''} — no xylitol`,
+        reason: `Because ${petName} loves ${food}`,
       });
     }
+  }
+
+  // Breed-specific card
+  if (breed && imagines.length < 4) {
+    const breedLower = breed.toLowerCase();
+    const breedCard = breedLower.includes('labrador') || breedLower.includes('retriever')
+      ? { emoji: '🦴', name: 'Joint Support Blend', desc: `Glucosamine & omega-3 formula — especially important for ${breed}s`, reason: `Mira knows ${breed}s need joint care` }
+      : breedLower.includes('german') || breedLower.includes('shepherd') || breedLower.includes('husky')
+      ? { emoji: '💪', name: 'High-Performance Kibble', desc: `Protein-dense formula for ${breed}'s active metabolism`, reason: `Because ${breed}s burn more energy` }
+      : breedLower.includes('indie') || breedLower.includes('pariah') || breedLower.includes('mongrel') || breedLower.includes('mix')
+      ? { emoji: '🌿', name: 'Balanced Wholesome Bowl', desc: `Adaptogen-rich, easily digestible — formulated for India's native breeds`, reason: `Mira knows Indian dogs thrive on diverse nutrition` }
+      : { emoji: '🏆', name: `${breed} Formulated Blend`, desc: `Nutritionally calibrated for ${petName}'s ${breed} — size, metabolism, and temperament`, reason: `Mira knows every ${breed} is different` };
+    imagines.push({ bg: 'linear-gradient(135deg, #0a1a00, #0d2800)', ...breedCard });
   }
 
   if (healthCondition && imagines.length < 4) {
@@ -542,62 +557,63 @@ function MiraTummyImaginesCard({ card, onAskMira }) {
     <div style={{
       borderRadius: 16, overflow: 'hidden', position: 'relative',
       background: card.bg || 'linear-gradient(135deg, #1A0A00, #3d1200)',
-      border: '1.5px solid rgba(255,140,66,0.35)',
+      border: '1px solid rgba(255,140,66,0.20)',
+      display: 'flex', flexDirection: 'column',
     }}>
+      {/* "Mira Imagines" badge — pink to orange gradient (matches CelebrateContentModal) */}
       <div style={{
-        position: 'absolute', top: 10, left: 10, zIndex: 2,
-        borderRadius: 20, padding: '3px 10px', fontSize: 9, fontWeight: 700,
-        background: 'linear-gradient(135deg, #FF8C42, #C44400)', color: '#fff',
+        position: 'absolute', top: 12, left: 12, zIndex: 2,
+        borderRadius: 20, padding: '4px 12px', fontSize: 10, fontWeight: 700,
+        background: 'linear-gradient(135deg, #FF2D87, #FF8C42)',
+        color: '#fff', boxShadow: '0 2px 8px rgba(255,45,135,0.35)',
       }}>
         Mira Imagines
       </div>
+      {/* Emoji — centered, large */}
       <div style={{
-        height: 90, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 38, background: 'rgba(0,0,0,0.18)',
+        height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 44, paddingTop: 28,
       }}>
         {card.emoji}
       </div>
-      <div style={{ padding: '12px 14px 14px' }}>
-        <p style={{ fontWeight: 800, color: '#fff', fontSize: 12, marginBottom: 4, lineHeight: 1.3 }}>{card.name}</p>
-        <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', marginBottom: 6, lineHeight: 1.4 }}>{card.desc}</p>
-        <p style={{ fontSize: 9, fontWeight: 600, color: '#FFB366', marginBottom: 10 }}>{card.reason}</p>
+      {/* Content — centered */}
+      <div style={{ padding: '12px 16px 16px', textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <p style={{ fontWeight: 700, color: '#fff', fontSize: 14, marginBottom: 6, lineHeight: 1.3 }}>{card.name}</p>
+        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.60)', marginBottom: 6, lineHeight: 1.5, flex: 1 }}>{card.desc}</p>
+        <p style={{ fontSize: 11, fontWeight: 600, color: '#FF8C42', fontStyle: 'italic', marginBottom: 12 }}>{card.reason}</p>
         <button
           onClick={onAskMira}
           style={{
-            width: '100%', borderRadius: 8, padding: '6px', fontSize: 10, fontWeight: 700,
-            background: 'rgba(255,140,66,0.18)', border: '1px solid rgba(255,140,66,0.38)',
-            color: '#FFB366', cursor: 'pointer',
+            width: '100%', borderRadius: 10, padding: '8px', fontSize: 11, fontWeight: 700,
+            background: 'linear-gradient(135deg, #FF2D87, #FF8C42)',
+            border: 'none', color: '#fff', cursor: 'pointer',
+            boxShadow: '0 3px 12px rgba(255,45,135,0.30)',
           }}
         >
-          Ask Mira to Source →
+          Request a Quote →
         </button>
       </div>
     </div>
   );
 }
 
-// ─── Dine Soul Questions Section (amber-themed — mirrors SoulQuestionsSection) ─
+// ─── Dine Soul Questions Section (inside modal — score header is in modal header) ─
 function DineSoulQuestionsSection({ pet, token, onScoreUpdated }) {
   const [questions, setQuestions] = useState([]);
-  const [score, setScore] = useState(null);
-  const [prevScore, setPrevScore] = useState(null);
   const [loading, setLoading] = useState(true);
   const [answeredCount, setAnsweredCount] = useState(0);
   const [totalPts, setTotalPts] = useState(0);
   const petName = pet?.name || 'your pet';
-  const isGold = (score || 0) >= 80;
 
   const loadQuestions = useCallback(() => {
     if (!pet?.id) { setLoading(false); return; }
-    fetch(`${API_URL}/api/pet-soul/profile/${pet.id}/quick-questions?limit=5&context=dine`)
+    fetch(`${API_URL}/api/pet-soul/profile/${pet.id}/quick-questions?limit=4&context=dine`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (data) {
           setQuestions((data.questions || []).map(q => ({ ...q, pet_id: pet.id })));
-          setScore(s => {
-            if (s === null) setPrevScore(data.current_score);
-            return data.current_score;
-          });
+          // Notify parent (modal header) of current score on load
+          if (data.current_score !== undefined) onScoreUpdated?.(data.current_score);
         }
       })
       .catch(console.error)
@@ -610,86 +626,43 @@ function DineSoulQuestionsSection({ pet, token, onScoreUpdated }) {
     setAnsweredCount(prev => prev + 1);
     setTotalPts(prev => prev + (pts || 0));
     if (newScore !== undefined) {
-      setPrevScore(score);
-      setScore(newScore);
       onScoreUpdated?.(newScore);
       window.dispatchEvent(new CustomEvent('soulScoreUpdated', { detail: { petId: pet.id, score: newScore } }));
     }
     setTimeout(() => loadQuestions(), 800);
-  }, [score, pet?.id, loadQuestions, onScoreUpdated]);
+  }, [pet?.id, loadQuestions, onScoreUpdated]);
 
-  const visibleQuestions = questions.slice(0, Math.max(0, 5 - answeredCount));
+  const visibleQuestions = questions.slice(0, Math.max(0, 4 - answeredCount));
 
-  if (loading) return null;
+  if (loading) return (
+    <div style={{ textAlign: 'center', padding: '24px 0', color: '#888', fontSize: 13 }}>Loading questions…</div>
+  );
   if (visibleQuestions.length === 0 && answeredCount === 0) return null;
 
   return (
     <div style={{ marginBottom: 24 }}>
-      {/* Big amber soul score header */}
-      <div style={{
-        borderRadius: 20, padding: '20px 24px', marginBottom: 16,
-        background: 'linear-gradient(135deg, #1A0A00 0%, #3D0A00 100%)',
-        border: '1.5px solid rgba(255,140,66,0.45)',
-        boxShadow: '0 0 32px rgba(196,68,0,0.18)',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div>
-            <p style={{
-              fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em',
-              color: 'rgba(255,140,66,0.85)', fontSize: 9, marginBottom: 4,
-            }}>
-              ✦ GROW {petName.toUpperCase()}'S SOUL
-            </p>
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 10 }}>
-              Answer quick questions · {visibleQuestions.length} remaining
-            </p>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2 }}>
-              <span style={{
-                fontSize: 64, fontWeight: 900, lineHeight: 1,
-                color: isGold ? '#F0C060' : '#FF8C42',
-                textShadow: isGold
-                  ? '0 0 16px rgba(240,192,96,0.5), 0 0 48px rgba(240,192,96,0.35)'
-                  : '0 0 16px rgba(255,140,66,0.5), 0 0 48px rgba(255,140,66,0.35)',
-              }}>
-                {score ?? '--'}
-              </span>
-              <span style={{ color: 'rgba(255,255,255,0.40)', fontSize: 16, marginBottom: 6 }}>%</span>
-            </div>
-            <div style={{ width: 64, height: 4, borderRadius: 4, background: 'rgba(255,255,255,0.10)', overflow: 'hidden', marginTop: 8 }}>
-              <div style={{
-                height: '100%', width: `${score || 0}%`, borderRadius: 4,
-                background: isGold ? 'linear-gradient(90deg, #FF8C42, #F0C060)' : 'linear-gradient(90deg, #FF8C42, #C44400)',
-                transition: 'width 0.9s ease-out',
-              }} />
-            </div>
-          </div>
-        </div>
-      </div>
-
       {answeredCount > 0 && (
         <div style={{
-          marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8,
-          padding: '8px 12px', borderRadius: 12,
+          marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8,
+          padding: '10px 14px', borderRadius: 12,
           background: 'rgba(80,220,120,0.08)', border: '1px solid rgba(80,220,120,0.25)',
         }}>
           <Check size={14} style={{ color: '#50DC78', flexShrink: 0 }} />
-          <p style={{ fontSize: 12, fontWeight: 600, color: '#50DC78' }}>
-            {answeredCount} answer{answeredCount > 1 ? 's' : ''} saved · +{totalPts} pts · Soul score: {score}%
+          <p style={{ fontSize: 13, fontWeight: 600, color: '#50DC78' }}>
+            {answeredCount} answer{answeredCount > 1 ? 's' : ''} saved · +{totalPts} pts
           </p>
         </div>
       )}
 
       {visibleQuestions.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 100%), 1fr))', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
           {visibleQuestions.map(q => (
             <SoulQuestionCardDine key={q.question_id} question={q} petName={petName} token={token} onAnswered={handleAnswered} />
           ))}
         </div>
       )}
 
-      <div style={{ marginTop: 12, textAlign: 'center' }}>
+      <div style={{ marginTop: 14, textAlign: 'center' }}>
         <a href={`/pet-soul/${pet?.id}`} style={{ fontSize: 12, fontWeight: 600, color: 'rgba(196,68,0,0.75)', textDecoration: 'none' }}>
           See full soul profile →
         </a>
@@ -698,9 +671,10 @@ function DineSoulQuestionsSection({ pet, token, onScoreUpdated }) {
   );
 }
 
-// ─── TummyProfile — compact bar + right-side drawer (exactly like Mira's Picks) ─
+// ─── TummyProfile — compact bar + centered modal (exactly like Mira's Picks) ─
 function TummyProfile({ pet, token }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [liveScore, setLiveScore] = useState(null);
   const allergies = getAllergies(pet);
   const loves = getLoves(pet);
   const healthCondition = getHealthCondition(pet);
@@ -749,72 +723,104 @@ function TummyProfile({ pet, token }) {
         </span>
       </div>
 
-      {/* ── Right-side drawer ── */}
+      {/* ── Centered modal (replaces right-side drawer) ── */}
       {drawerOpen && (
-        <>
-          {/* Backdrop */}
+        <div
+          onClick={() => setDrawerOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1000,
+            background: 'rgba(0,0,0,0.72)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '16px',
+          }}
+        >
+          {/* Modal panel — min(780px, 95%) wide, 90vh max height */}
           <div
-            onClick={() => setDrawerOpen(false)}
-            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000 }}
-          />
-          {/* Panel */}
-          <div
+            onClick={e => e.stopPropagation()}
             style={{
-              position: 'fixed', top: 0, right: 0, bottom: 0,
-              width: '92%', maxWidth: 460,
-              background: '#FDF6EE', zIndex: 1001, overflowY: 'auto',
-              boxShadow: '-8px 0 48px rgba(0,0,0,0.25)',
+              width: 'min(780px, 100%)', maxHeight: '90vh', overflowY: 'auto',
+              borderRadius: 24, background: '#fff',
+              boxShadow: '0 24px 80px rgba(0,0,0,0.55)',
+              display: 'flex', flexDirection: 'column',
             }}
             data-testid="tummy-drawer"
           >
-            {/* Sticky header */}
+            {/* ── Dark amber header: score + progress + label ── */}
             <div style={{
-              padding: '20px 24px', borderBottom: '1px solid #F0E8E0',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              position: 'sticky', top: 0, background: '#FDF6EE', zIndex: 2,
+              borderRadius: '24px 24px 0 0', padding: '24px 28px 20px',
+              background: 'linear-gradient(135deg, #1A0A00 0%, #3D0A00 60%, #5a1200 100%)',
+              flexShrink: 0, position: 'sticky', top: 0, zIndex: 2,
             }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 16 }}>🌟</span>
-                  <span style={{ fontWeight: 800, color: '#1A0A00', fontSize: 16 }}>Mira's Tummy Picks</span>
+              {/* Top row: label + score */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10 }}>
+                <div>
+                  <p style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,140,66,0.90)', fontSize: 10, marginBottom: 5 }}>
+                    ✦ GROW {petName.toUpperCase()}'S TUMMY PROFILE
+                  </p>
+                  <p style={{ color: 'rgba(255,255,255,0.50)', fontSize: 12 }}>
+                    Answer quick questions · {petName}'s food profile is almost there
+                  </p>
                 </div>
-                <p style={{ fontSize: 12, color: '#888', marginTop: 2 }}>
-                  For <span style={{ color: '#FF8C42', fontWeight: 700 }}>{petName}</span>
-                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2 }}>
+                    <span style={{
+                      fontSize: 72, fontWeight: 900, lineHeight: 1,
+                      color: liveScore >= 80 ? '#F0C060' : '#FF8C42',
+                      textShadow: liveScore >= 80
+                        ? '0 0 20px rgba(240,192,96,0.6)'
+                        : '0 0 20px rgba(255,140,66,0.6)',
+                    }}>
+                      {liveScore ?? '—'}
+                    </span>
+                    <span style={{ color: 'rgba(255,255,255,0.40)', fontSize: 18, marginBottom: 8 }}>%</span>
+                  </div>
+                </div>
               </div>
+              {/* Progress bar (pink-purple fill, matching screenshot) */}
+              <div style={{ height: 5, borderRadius: 5, background: 'rgba(255,255,255,0.10)', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${liveScore || 0}%`, borderRadius: 5, background: 'linear-gradient(90deg, #FF2D87, #C44DFF)', transition: 'width 0.9s ease-out' }} />
+              </div>
+              {/* Close button */}
               <button
                 onClick={() => setDrawerOpen(false)}
-                style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: '#999', lineHeight: 1 }}
+                style={{
+                  position: 'absolute', top: 16, right: 20,
+                  background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.15)',
+                  borderRadius: 20, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 16, cursor: 'pointer', color: 'rgba(255,255,255,0.70)',
+                }}
                 data-testid="tummy-drawer-close"
               >✕</button>
             </div>
 
-            {/* Drawer body */}
-            <div style={{ padding: '20px 20px 48px' }}>
-              {/* ✦ Mira Imagines — Just for [Pet] */}
-              <div style={{ marginBottom: 28 }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: '#C44400', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
-                  ✦ Mira Imagines — Just for {petName}
-                </p>
-                <p style={{ fontSize: 12, color: '#888', marginBottom: 14, lineHeight: 1.5 }}>
-                  Based on {petName}'s soul profile — not in range yet, but Mira can request these specially.
-                </p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))', gap: 12 }}>
-                  {miraFoodCards.map((card, idx) => (
-                    <MiraTummyImaginesCard key={idx} card={card} onAskMira={openMira} />
-                  ))}
-                </div>
-                <div style={{ margin: '24px 0 4px', borderTop: '1px solid #F0E8E0' }} />
-              </div>
-
-              {/* Soul Questions — dine context, amber theme */}
+            {/* ── Modal body ── */}
+            <div style={{ padding: '24px 28px', background: '#fff' }}>
+              {/* Soul Questions — dine context, dark purple cards, 2-col grid */}
               <DineSoulQuestionsSection
                 pet={pet}
                 token={token}
+                onScoreUpdated={(s) => setLiveScore(s)}
               />
+
+              {/* Mira Imagines section */}
+              {miraFoodCards.length > 0 && (
+                <div style={{ marginTop: 8 }}>
+                  <p style={{ fontWeight: 800, color: '#1A0A00', fontSize: 16, marginBottom: 4 }}>
+                    Mira Imagines for <span style={{ color: '#FF8C42' }}>{petName}</span>
+                  </p>
+                  <p style={{ fontSize: 12, color: '#888', marginBottom: 16, lineHeight: 1.5 }}>
+                    Based on {petName}'s soul profile — not in range yet, but Mira can request these specially.
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))', gap: 14 }}>
+                    {miraFoodCards.map((card, idx) => (
+                      <MiraTummyImaginesCard key={idx} card={card} onAskMira={openMira} />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );
