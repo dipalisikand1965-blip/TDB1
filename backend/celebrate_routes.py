@@ -381,18 +381,69 @@ async def update_celebrate_request(request_id: str, update: Dict[str, Any]):
 
 # ============ ADMIN PRODUCT ENDPOINTS ============
 
+CELEBRATE_MASTER_CATEGORIES = [
+    'celebration', 'cakes', 'breed-cakes', 'mini-cakes', 'pupcakes', 'dognuts',
+    'treats', 'desi-treats', 'nut-butters', 'frozen-treats', 'frozen', 'hampers',
+    'party_accessories', 'party_kits', 'celebration_addons', 'breed-party_hats',
+    'meals', 'accessories', 'soul-picks', 'grooming', 'party_supplies',
+    'memory_books', 'portraits', 'puzzle_toys', 'party_toys', 'breed-bandanas',
+    'breed-keychains', 'breed-mugs', 'breed-tote_bags', 'breed-frames', 'cake_decorations'
+]
+
 @router.get("/admin/products")
-async def admin_get_products():
-    """Admin: Get all celebrate products"""
+async def admin_get_products(category: Optional[str] = None, search: Optional[str] = None,
+                              source: Optional[str] = None, page: int = 1, limit: int = 50):
+    """Admin: Get ALL celebrate products from both celebrate_products and products_master"""
     db = get_db()
     
-    products = await db.celebrate_products.find({}).to_list(length=500)
-    
-    for p in products:
-        p["id"] = p.get("id", str(p.get("_id", "")))
-        p.pop("_id", None)
-    
-    return {"products": products}
+    all_products = []
+    seen_ids = set()
+
+    # 1. Fetch from celebrate_products (manually created)
+    cel_query = {}
+    if category and category != 'all':
+        cel_query["category"] = category
+    if search:
+        cel_query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"category": {"$regex": search, "$options": "i"}}
+        ]
+    cel_products = await db.celebrate_products.find(cel_query, {"_id": 0}).to_list(length=2000)
+    for p in cel_products:
+        pid = p.get("id") or str(p.get("_id", ""))
+        if pid not in seen_ids:
+            seen_ids.add(pid)
+            p["_source"] = "celebrate_products"
+            all_products.append(p)
+
+    # 2. Fetch from products_master with celebrate categories (Shopify + unified)
+    if source != "celebrate_products":
+        master_q = {"$or": [{"pillar": "celebrate"}, {"category": {"$in": CELEBRATE_MASTER_CATEGORIES}}]}
+        if category and category != 'all':
+            master_q = {"$and": [master_q, {"category": category}]}
+        if search:
+            master_q = {"$and": [master_q, {"$or": [
+                {"name": {"$regex": search, "$options": "i"}},
+                {"category": {"$regex": search, "$options": "i"}}
+            ]}]}
+        master_products = await db.products_master.find(master_q, {"_id": 0}).to_list(length=2000)
+        for p in master_products:
+            pid = p.get("id") or p.get("shopify_id") or str(p.get("_id", ""))
+            if pid not in seen_ids:
+                seen_ids.add(pid)
+                if not p.get("id"):
+                    p["id"] = str(p.get("shopify_id", pid))
+                p["_source"] = "products_master"
+                all_products.append(p)
+
+    # Sort: celebrate_products first (manually created), then by name
+    all_products.sort(key=lambda x: (0 if x.get("_source") == "celebrate_products" else 1, x.get("name", "")))
+
+    total = len(all_products)
+    skip = (page - 1) * limit
+    paginated = all_products[skip: skip + limit]
+
+    return {"products": paginated, "total": total, "page": page, "limit": limit}
 
 @router.post("/admin/products")
 async def admin_create_product(product: CelebrateProductCreate):
@@ -548,14 +599,92 @@ async def admin_update_product(product_id: str, product: CelebrateProductCreate)
 
 @router.delete("/admin/products/{product_id}")
 async def admin_delete_product(product_id: str):
-    """Admin: Delete a celebrate product"""
+    """Admin: Delete a celebrate product from either collection"""
     db = get_db()
     
+    # Try celebrate_products first
     result = await db.celebrate_products.delete_one({"id": product_id})
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Product not found")
+    if result.deleted_count > 0:
+        return {"message": "Product deleted"}
     
-    return {"message": "Product deleted"}
+    # Try products_master (mark inactive instead of hard delete for Shopify products)
+    existing = await db.products_master.find_one({"$or": [{"id": product_id}, {"shopify_id": product_id}]})
+    if existing:
+        await db.products_master.update_one(
+            {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
+            {"$set": {"active": False, "is_active": False, "updated_at": datetime.now(timezone.utc)}}
+        )
+        return {"message": "Product deactivated (Shopify product)"}
+    
+    raise HTTPException(status_code=404, detail="Product not found")
+
+
+@router.post("/admin/products/{product_id}/generate-image")
+async def generate_celebrate_product_image(product_id: str):
+    """Generate AI image for a celebrate product"""
+    db = get_db()
+    logger = get_logger()
+    
+    try:
+        # Find product in either collection
+        product = await db.celebrate_products.find_one({"id": product_id}, {"_id": 0})
+        if not product:
+            product = await db.products_master.find_one(
+                {"$or": [{"id": product_id}, {"shopify_id": product_id}]}, {"_id": 0}
+            )
+        
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        name = product.get("name", "pet product")
+        category = product.get("category", "")
+        
+        # Build image prompt based on product type
+        category_prompts = {
+            "cakes": f"professional product photo of a beautiful dog birthday cake called '{name}', decorated with dog-safe frosting, paw prints, on a clean white background",
+            "breed-cakes": f"professional product photo of a custom dog breed birthday cake '{name}', with breed-specific decoration, white background",
+            "hampers": f"professional product photo of a luxury dog gift hamper '{name}', beautifully arranged on white background",
+            "party_accessories": f"professional product photo of pet party accessories '{name}', colorful, festive, white background",
+            "treats": f"professional product photo of healthy dog treats '{name}', appetizing, clean white background",
+            "desi-treats": f"professional product photo of Indian-inspired dog treats '{name}', authentic presentation, white background",
+        }
+        prompt = category_prompts.get(category, 
+            f"professional product photo of '{name}' for dogs, clean white background, high quality commercial photography"
+        )
+        
+        # Use existing AI image generation infrastructure
+        from ai_image_service import generate_ai_image
+        image_url = await generate_ai_image(prompt)
+        
+        if image_url:
+            # Update the product record
+            update_query = {"$or": [{"id": product_id}, {"shopify_id": product_id}]}
+            await db.celebrate_products.update_one({"id": product_id}, 
+                                                   {"$set": {"image": image_url, "image_url": image_url}})
+            await db.products_master.update_one(update_query, 
+                                                {"$set": {"image_url": image_url}})
+            return {"success": True, "image_url": image_url, "message": "Image generated"}
+        
+        return {"success": False, "message": "Image generation failed"}
+    except Exception as e:
+        logger.error(f"Error generating product image: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/admin/products/upload-image")
+async def upload_celebrate_product_image(file: UploadFile = File(...)):
+    """Upload image file for a celebrate product"""
+    try:
+        # Use existing upload infrastructure
+        from server import upload_image_to_cloudinary
+        file_content = await file.read()
+        image_url = await upload_image_to_cloudinary(file_content, file.filename)
+        if image_url:
+            return {"success": True, "image_url": image_url, "url": image_url}
+        raise HTTPException(status_code=500, detail="Upload failed")
+    except ImportError:
+        # Fallback: use the generic upload endpoint
+        raise HTTPException(status_code=501, detail="Use /api/upload/product-image instead")
 
 # ============ ADMIN BUNDLE ENDPOINTS ============
 
