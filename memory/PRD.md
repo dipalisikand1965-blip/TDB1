@@ -11,6 +11,23 @@ Violating these rules will break the admin panel and data consistency.
 
 ---
 
+## ✅ SESSION 44 — Dine: Bundles as Category Pill (Feb 2026)
+
+### What Was Done:
+- **Removed incorrect `DineBundles` inline component** from `DineSoulPage.jsx` (was dead code, never rendered)
+- **Added "Bundles" pill** to `DINE_CATEGORIES` in `DineCategoryStrip.jsx`, positioned after "Homemade & Recipes" (slot 5 of 8)
+- **Added `bundles` config** to `DineContentModal.jsx` `CATEGORY_CONFIG` — emoji 🎁, label "Dining Bundles"
+- **Added bundles fetch logic** to `DineContentModal.jsx`: fetches from `/api/bundles?pillar=dine`, maps bundle objects to ProductCard-compatible shape (preserving price, image, items, discount)
+- **Added CTA**: "Get a Bundle for {petName} →"
+- **Verified**: 3 dine bundles exist in DB (Premium Mealtime Bundle, etc.)
+
+### Files Modified:
+- `frontend/src/components/dine/DineCategoryStrip.jsx` — Added "Bundles" pill
+- `frontend/src/components/dine/DineContentModal.jsx` — Added config + fetch logic
+- `frontend/src/pages/DineSoulPage.jsx` — Removed unused DineBundles + DineBundleCard components
+
+---
+
 ## ✅ SESSION 43b — TummyProfile Rebuilt as Compact Bar + Drawer (Feb 2026)
 
 **Replaced the incorrect 4-cell grid with the correct Mira's Picks pattern:**
