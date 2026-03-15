@@ -9518,6 +9518,178 @@ async def get_repeat_purchase_suggestions(pet_id: str, limit: int = 6):
     }
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# SOUL-RANKED PRODUCTS  — pillar tab product scoring based on pet soul profile
+# Used by SoulPillarExpanded.jsx across all 8 celebrate pillars
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _to_str_list(val) -> list:
+    """Safely convert string or list to a list of lowercase strings."""
+    if not val:
+        return []
+    if isinstance(val, list):
+        return [str(v).lower().strip() for v in val if v and str(v).lower().strip() != 'none']
+    return [s.lower().strip() for s in str(val).replace(';', ',').split(',') if s.strip() and s.strip().lower() != 'none']
+
+
+def _soul_score(product: dict, soul: dict, pet: dict) -> int:
+    """
+    Score a product against a pet's soul profile.
+    Returns int score. Negative = should be excluded (allergen).
+    Higher score = better match.
+    """
+    name  = (product.get('name') or '').lower()
+    desc  = (product.get('description') or '').lower()
+    tags  = [str(t).lower() for t in (product.get('tags') or [])]
+    text  = f"{name} {desc} {' '.join(tags)}"
+
+    score = 0
+
+    # ── Allergen hard exclusion ──────────────────────────────────────────────
+    allergies = _to_str_list(soul.get('food_allergies') or pet.get('food_allergies'))
+    for allergen in allergies:
+        if len(allergen) > 2 and allergen in text:
+            return -999  # Exclude completely
+
+    # ── Favourite treats / protein (+30 per match) ──────────────────────────
+    for treat in _to_str_list(soul.get('favorite_treats') or soul.get('favourite_treats')):
+        if treat in text:
+            score += 30
+    if (soul.get('favorite_protein') or '').lower() in text:
+        score += 20
+
+    # ── Treat texture preference ─────────────────────────────────────────────
+    treat_pref = (soul.get('treat_preference') or '').lower()
+    if 'soft' in treat_pref or 'chewy' in treat_pref:
+        if any(w in text for w in ['soft', 'chewy', 'moist', 'tender', 'pupcake']):
+            score += 15
+    elif 'crunchy' in treat_pref or 'hard' in treat_pref:
+        if any(w in text for w in ['crunchy', 'biscuit', 'crunch', 'dry', 'hard']):
+            score += 15
+
+    # ── Diet flags ───────────────────────────────────────────────────────────
+    if soul.get('prefers_grain_free'):
+        if any(w in text for w in ['grain-free', 'grain free', 'gluten-free', 'gluten free']):
+            score += 12
+    if soul.get('sensitive_stomach') in [True, 'Yes', 'Sometimes', 'yes', 'sometimes']:
+        if any(w in text for w in ['digestive', 'gentle', 'sensitive', 'probiotic', 'stomach']):
+            score += 18
+
+    # ── Favourite activities / play style (+25) ──────────────────────────────
+    fav_activity = (soul.get('favorite_activity') or '').lower()
+    play_style   = (soul.get('play_style') or '').lower()
+    for kw in ['fetch', 'ball', 'frisbee', 'tug', 'sniff', 'puzzle', 'swim', 'run', 'chase']:
+        if kw in fav_activity and kw in text:
+            score += 25
+    if 'human' in play_style or 'together' in play_style or 'owner' in play_style:
+        if any(w in text for w in ['interactive', 'tug', 'human', 'together', 'bond']):
+            score += 15
+
+    # ── Energy level ─────────────────────────────────────────────────────────
+    energy = (soul.get('energy_level') or '').lower()
+    if 'high' in energy:
+        if any(w in text for w in ['active', 'outdoor', 'fetch', 'agility', 'energetic', 'run']):
+            score += 12
+    elif 'low' in energy or 'calm' in energy:
+        if any(w in text for w in ['calm', 'gentle', 'slow', 'sniff', 'puzzle', 'relaxing']):
+            score += 12
+
+    # ── Life stage ───────────────────────────────────────────────────────────
+    life_stage   = (soul.get('life_stage') or '').lower()
+    age_raw      = pet.get('age') or soul.get('age') or 0
+    try:
+        age_int = int(str(age_raw).split()[0])
+    except (ValueError, TypeError):
+        age_int = 4
+    is_senior = age_int >= 7 or 'senior' in life_stage
+    is_puppy  = age_int <= 1 or 'puppy' in life_stage
+    if is_senior:
+        if any(w in text for w in ['senior', 'joint', 'hip', 'gentle', 'supplement', 'memory', 'calm', 'elder']):
+            score += 22
+    if is_puppy:
+        if any(w in text for w in ['puppy', 'young', 'starter', 'basic', 'intro', 'foundation']):
+            score += 22
+
+    # ── Breed match (+20) ────────────────────────────────────────────────────
+    breed = (pet.get('breed') or soul.get('breed') or '').lower()
+    if breed and len(breed) > 3 and breed in text:
+        score += 20
+
+    # ── Grooming traits ───────────────────────────────────────────────────────
+    groom_style = (soul.get('grooming_style') or '').lower()
+    if 'salon' in groom_style:
+        if any(w in text for w in ['salon', 'professional', 'grooming service', 'spa']):
+            score += 15
+
+    # ── Training ─────────────────────────────────────────────────────────────
+    train_response = (soul.get('training_response') or '').lower()
+    if 'treat' in train_response or 'food' in (soul.get('motivation_type') or '').lower():
+        if any(w in text for w in ['training treat', 'training', 'reward', 'lure']):
+            score += 15
+
+    # ── Social / celebration preferences ────────────────────────────────────
+    if soul.get('loves_celebrations'):
+        if any(w in text for w in ['birthday', 'celebrate', 'party', 'pawty', 'gotcha', 'anniversary']):
+            score += 15
+
+    # ── Celebration birthday feast style ─────────────────────────────────────
+    feast_style = (soul.get('birthday_feast_style') or '').lower()
+    if 'big' in feast_style or 'show stopper' in feast_style:
+        if any(w in text for w in ['large', 'big', 'grand', 'special', 'premium', 'wow', 'show']):
+            score += 18
+
+    # ── Travel / adventure ───────────────────────────────────────────────────
+    if (soul.get('car_rides') or '').lower() in ['loves them', 'loves', 'yes']:
+        if any(w in text for w in ['car', 'travel', 'on-the-go', 'portable', 'adventure']):
+            score += 12
+
+    return score
+
+
+@api_router.get("/products/soul-ranked")
+async def get_soul_ranked_products(
+    category: str,
+    pet_id: str,
+    limit: int = 8
+):
+    """
+    Returns products from a given category, re-ranked by pet soul profile.
+    Powers SoulPillarExpanded.jsx across all 8 celebrate pillars.
+    Products matching the pet's traits appear first; allergen products are excluded.
+    """
+    # ── Fetch pet and soul profile ───────────────────────────────────────────
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    soul = (pet or {}).get('doggy_soul_answers') or {}
+
+    # ── Fetch products for this category ─────────────────────────────────────
+    raw = await db.products_master.find(
+        {"category": category, "is_active": {"$ne": False}},
+        {"_id": 0}
+    ).limit(50).to_list(50)
+
+    if not raw:
+        # Fallback: return un-ranked products (category may not exist)
+        return {"products": [], "personalized": False, "pet_name": None}
+
+    # ── Score + sort ─────────────────────────────────────────────────────────
+    scored = []
+    for p in raw:
+        s = _soul_score(p, soul, pet or {})
+        if s > -900:  # Not excluded by allergen
+            scored.append({**p, "_soul_score": s})
+
+    scored.sort(key=lambda x: x["_soul_score"], reverse=True)
+
+    pet_name = (pet or {}).get('name') or None
+
+    return {
+        "products": scored[:limit],
+        "personalized": bool(pet),
+        "pet_name": pet_name,
+        "top_score": scored[0]["_soul_score"] if scored else 0,
+    }
+
+
 @api_router.get("/products/{product_id}")
 async def get_product_detail(product_id: str):
     """Get single product by ID or handle for detail page"""
@@ -20381,15 +20553,6 @@ async def fix_celebrate_data_comprehensive(password: str = Query(...)):
         "Surprise Coordination": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773362022/doggy/services/celebrate/20260313003342.webp",
         "Life Moment Tracking": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333908/doggy/services/celebrate/svc-celeb-reminders.png",
         "Birthday Party": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333932/doggy/services/celebrate/svc-celebrate-birthday.png",
-        "Professional Pet Photography": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/f467fd13355a348bfdc9c2353aab9e643bfd8af401a86a63066b494ea71ce5f4.png",
-        "Professional Pet Photoshoot": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/f467fd13355a348bfdc9c2353aab9e643bfd8af401a86a63066b494ea71ce5f4.png",
-        "Custom Cake Consultation": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/f467fd13355a348bfdc9c2353aab9e643bfd8af401a86a63066b494ea71ce5f4.png",
-        "Pawty Package (Full Celebration)": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
-        "Gotcha Day Celebration": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/c6b989379fea2659b7a568f5925af655d4b5b85888aa60f8edf9172cce34bb74.png",
-        "Surprise Delivery Service": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/c6b989379fea2659b7a568f5925af655d4b5b85888aa60f8edf9172cce34bb74.png",
-        "Milestone Celebration Kit": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/e7a11005e785d5b3b29639030764bc2bd86582d31521d3b849b2bbab3f952960.png",
-        "Milestone Celebration": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/e7a11005e785d5b3b29639030764bc2bd86582d31521d3b849b2bbab3f952960.png",
-        "Pet-Friendly Venue Booking": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
         # STAY services
         "Pet-Friendly Hotel Discovery": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/e9d3407a2852a5f43d770d93b6ebe7655b71d81deb29a7252ab7cb9fd60e789b.png",
         "Room Suitability Advisory": "https://static.prod-images.emergentagent.com/jobs/b5fdcdaa-b825-42e2-a68d-56375f7c002e/images/004c8ce94a48c431735f22fe2e9a2ef6be63637b0ca3b0dd4c3165df09ea3e72.png",
