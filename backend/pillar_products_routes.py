@@ -42,15 +42,21 @@ async def get_pillar_products(
     db = get_db()
     try:
         query = {"pillar": pillar}
+        
+        # Build conditions
+        conditions = [{"pillar": pillar}]
+        
         if active_only:
-            query["$or"] = [{"active": True}, {"is_active": True}]
+            conditions.append({"$or": [{"active": True}, {"is_active": True}]})
         if search:
-            query["$or"] = [
+            conditions.append({"$or": [
                 {"name": {"$regex": search, "$options": "i"}},
                 {"description": {"$regex": search, "$options": "i"}},
-            ]
+            ]})
         if category:
-            query["category"] = category
+            conditions.append({"category": category})
+        
+        query = {"$and": conditions} if len(conditions) > 1 else {"pillar": pillar}
 
         total = await db.products_master.count_documents(query)
         skip = (page - 1) * limit
