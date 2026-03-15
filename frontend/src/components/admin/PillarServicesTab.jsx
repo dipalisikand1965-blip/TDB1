@@ -54,29 +54,19 @@ const PillarServicesTab = ({ pillar, pillarName, pillarIcon, pillarColor = 'bg-p
     }
   };
   
-  // Fetch all services and filter by pillar
+  // Fetch services assigned to this pillar (exact pillar match only)
   const fetchServices = useCallback(async () => {
     setLoading(true);
     try {
-      // Fetch all services
-      const response = await fetch(`${API_URL}/api/service-box/services?limit=10000`);
+      // Fetch ONLY services with this exact pillar assignment
+      const response = await fetch(
+        `${API_URL}/api/service-box/services?limit=500&pillar=${encodeURIComponent(pillar)}`
+      );
       if (response.ok) {
         const data = await response.json();
-        const allSvcs = data.services || [];
-        setAllServices(allSvcs);
-        
-        // Filter by pillar - check pillar field or category that matches the pillar
-        const pillarServices = allSvcs.filter(s => {
-          // Check direct pillar assignment
-          if (s.pillar === pillar) return true;
-          
-          // Check if category/type matches pillar keywords
-          const pillarKeywords = getPillarKeywords(pillar);
-          const serviceText = `${s.name || ''} ${s.category || ''} ${s.description || ''}`.toLowerCase();
-          return pillarKeywords.some(keyword => serviceText.includes(keyword));
-        });
-        
+        const pillarServices = data.services || [];
         setServices(pillarServices);
+        setAllServices(pillarServices);
       }
     } catch (error) {
       console.error('Error fetching services:', error);
@@ -85,27 +75,6 @@ const PillarServicesTab = ({ pillar, pillarName, pillarIcon, pillarColor = 'bg-p
       setLoading(false);
     }
   }, [pillar]);
-  
-  // Get keywords for each pillar to match services
-  const getPillarKeywords = (pillar) => {
-    const keywordMap = {
-      celebrate: ['birthday', 'party', 'celebration', 'cake', 'event', 'pawty', 'anniversary'],
-      dine: ['food', 'meal', 'nutrition', 'diet', 'feeding', 'eat', 'dinner', 'lunch'],
-      stay: ['boarding', 'hotel', 'stay', 'accommodation', 'daycare', 'overnight', 'kennel'],
-      travel: ['travel', 'transport', 'cab', 'flight', 'train', 'relocation', 'trip', 'vacation'],
-      care: ['vet', 'grooming', 'health', 'medical', 'vaccination', 'checkup', 'dental', 'sitting', 'walking'],
-      enjoy: ['play', 'park', 'fun', 'entertainment', 'social', 'meetup', 'activity', 'game'],
-      fit: ['fitness', 'exercise', 'weight', 'training', 'workout', 'swim', 'agility', 'sport'],
-      learn: ['training', 'obedience', 'behavior', 'puppy', 'school', 'course', 'class', 'learn'],
-      paperwork: ['document', 'registration', 'license', 'certificate', 'insurance', 'legal', 'paperwork'],
-      advisory: ['consult', 'advice', 'counseling', 'guidance', 'expert', 'recommendation', 'advisory'],
-      emergency: ['emergency', 'urgent', 'sos', '24x7', 'rescue', 'ambulance', 'critical'],
-      farewell: ['farewell', 'memorial', 'cremation', 'burial', 'goodbye', 'loss', 'grief'],
-      adopt: ['adopt', 'rescue', 'foster', 'shelter', 'rehome', 'adoption'],
-      shop: ['product', 'accessory', 'toy', 'supply', 'equipment', 'gear', 'shop']
-    };
-    return keywordMap[pillar] || [];
-  };
   
   useEffect(() => {
     fetchServices();
@@ -180,8 +149,12 @@ const PillarServicesTab = ({ pillar, pillarName, pillarIcon, pillarColor = 'bg-p
         <div className="flex items-start gap-4">
           {/* Service Image */}
           <div className="w-16 h-16 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden">
-            {service.image ? (
-              <img src={service.image} alt={service.name} className="w-full h-full object-cover" />
+            {(service.image_url || service.watercolor_image || service.image) ? (
+              <img
+                src={service.image_url || service.watercolor_image || service.image}
+                alt={service.name}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <div className={`w-full h-full ${pillarColor} flex items-center justify-center`}>
                 <Briefcase className="w-6 h-6 text-white" />
