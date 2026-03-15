@@ -3865,6 +3865,11 @@ const Admin = () => {
           <CelebrateManager getAuthHeader={getAuthHeaders} />
         )}
 
+        {/* Celebrate Pillar Manager (via sidebar) */}
+        {activeTab === 'celebrate' && (
+          <CelebrateManager getAuthHeader={getAuthHeaders} />
+        )}
+
         {/* Unified Product Box Tab */}
         {activeTab === 'product-box' && (
           <UnifiedProductBox />
