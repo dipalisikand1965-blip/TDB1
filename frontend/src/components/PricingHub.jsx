@@ -450,6 +450,13 @@ const PricingHub = ({ getAuthHeader }) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [filters, setFilters] = useState({ pillar: '', category: '', search: '' });
   const [editingProduct, setEditingProduct] = useState(null);
+
+  // Services state
+  const [services, setServices] = useState([]);
+  const [totalServices, setTotalServices] = useState(0);
+  const [serviceFilters, setServiceFilters] = useState({ pillar: '', search: '' });
+  const [editingService, setEditingService] = useState(null);
+  const [servicesLoading, setServicesLoading] = useState(false);
   
   // Shipping state
   const [shippingRules, setShippingRules] = useState([]);
@@ -578,6 +585,44 @@ const PricingHub = ({ getAuthHeader }) => {
     }
   };
 
+  const fetchServices = useCallback(async () => {
+    setServicesLoading(true);
+    try {
+      let url = `${getApiUrl()}/api/service-box/services?limit=200`;
+      if (serviceFilters.pillar) url += `&pillar=${serviceFilters.pillar}`;
+      if (serviceFilters.search) url += `&search=${encodeURIComponent(serviceFilters.search)}`;
+      const res = await fetch(url, { headers: getAuthHeader() });
+      const data = await res.json();
+      setServices(data.services || []);
+      setTotalServices(data.total || 0);
+    } catch (err) {
+      console.error('Error fetching services:', err);
+    }
+    setServicesLoading(false);
+  }, [serviceFilters, getAuthHeader]);
+
+  const updateServicePricing = async (serviceId, updates) => {
+    setSaving(true);
+    try {
+      const res = await fetch(`${getApiUrl()}/api/service-box/services/${serviceId}/pricing`, {
+        method: 'PATCH',
+        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      });
+      if (res.ok) {
+        setEditingService(null);
+        fetchServices();
+        fetchStats();
+      } else {
+        alert('Failed to update service pricing');
+      }
+    } catch (err) {
+      console.error('Error updating service:', err);
+      alert('Error updating service pricing');
+    }
+    setSaving(false);
+  };
+
   useEffect(() => {
     fetchProducts();
     fetchShippingRules();
@@ -585,7 +630,8 @@ const PricingHub = ({ getAuthHeader }) => {
     fetchPartnerCommissions();
     fetchStats();
     fetchAppSettings();
-  }, [fetchProducts]);
+    fetchServices();
+  }, [fetchProducts, fetchServices]);
 
   // Update product pricing
   const updateProductPricing = async (productId, pricingData) => {
@@ -835,8 +881,9 @@ const PricingHub = ({ getAuthHeader }) => {
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-6 w-full max-w-4xl">
+        <TabsList className="grid grid-cols-7 w-full max-w-5xl">
           <TabsTrigger value="products">Product Pricing</TabsTrigger>
+          <TabsTrigger value="services">Service Pricing</TabsTrigger>
           <TabsTrigger value="bundles">Pillar Bundles</TabsTrigger>
           <TabsTrigger value="shipping">Shipping Rules</TabsTrigger>
           <TabsTrigger value="commissions">Pillar Commissions</TabsTrigger>
@@ -1077,6 +1124,175 @@ const PricingHub = ({ getAuthHeader }) => {
                 {selectedProducts.length > 0 && ` • ${selectedProducts.length} selected`}
               </p>
               <p className="text-xs text-gray-400">* = Price manually overridden</p>
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Service Pricing Tab */}
+        <TabsContent value="services" className="space-y-4">
+          {/* Filters */}
+          <Card className="p-4">
+            <div className="flex flex-wrap gap-4 items-center">
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  placeholder="Search services..."
+                  value={serviceFilters.search}
+                  onChange={(e) => setServiceFilters({ ...serviceFilters, search: e.target.value })}
+                  onKeyDown={(e) => e.key === 'Enter' && fetchServices()}
+                  className="pl-10"
+                />
+              </div>
+              <select
+                className="border rounded-lg px-3 py-2"
+                value={serviceFilters.pillar}
+                onChange={(e) => setServiceFilters({ ...serviceFilters, pillar: e.target.value })}
+              >
+                <option value="">All Pillars</option>
+                {PILLARS.map(p => (
+                  <option key={p.id} value={p.id}>{p.icon} {p.name}</option>
+                ))}
+              </select>
+              <Button variant="outline" onClick={fetchServices}>
+                <Filter className="w-4 h-4 mr-2" /> Filter
+              </Button>
+            </div>
+          </Card>
+
+          {/* Services Table */}
+          <Card className="overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="p-3 text-left">Service</th>
+                    <th className="p-3 text-left">Pillar</th>
+                    <th className="p-3 text-right">Base Price (₹)</th>
+                    <th className="p-3 text-right">Discounted Price (₹)</th>
+                    <th className="p-3 text-center">Active</th>
+                    <th className="p-3 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {servicesLoading ? (
+                    <tr>
+                      <td colSpan={6} className="p-8 text-center">
+                        <Loader2 className="w-6 h-6 animate-spin mx-auto text-purple-600" />
+                      </td>
+                    </tr>
+                  ) : services.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="p-8 text-center text-gray-500">
+                        No services found
+                      </td>
+                    </tr>
+                  ) : (
+                    services.map((service) => {
+                      const isEditing = editingService?.id === service.id;
+                      return (
+                        <tr key={service.id} className="border-b hover:bg-gray-50">
+                          <td className="p-3">
+                            <div className="flex items-center gap-3">
+                              {(service.image_url || service.image) && (
+                                <img src={service.image_url || service.image} alt="" className="w-10 h-10 rounded object-cover" />
+                              )}
+                              <div>
+                                <p className="font-medium truncate max-w-[220px]">{service.name}</p>
+                                <p className="text-xs text-gray-400">{service.id}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="p-3">
+                            <Badge variant="outline" className="text-xs">
+                              {(() => {
+                                const p = Array.isArray(service.pillar) ? (service.pillar[0] || '') : (service.pillar || '');
+                                const pillarInfo = PILLARS.find(x => x.id === p);
+                                return p ? `${pillarInfo?.icon || '📦'} ${p}` : '—';
+                              })()}
+                            </Badge>
+                          </td>
+                          <td className="p-3 text-right">
+                            {isEditing ? (
+                              <Input
+                                type="number"
+                                value={editingService.base_price}
+                                onChange={(e) => setEditingService({ ...editingService, base_price: parseFloat(e.target.value) || 0 })}
+                                className="w-28 text-right"
+                              />
+                            ) : (
+                              <span className={service.base_price > 0 ? 'font-medium' : 'text-gray-400'}>
+                                {service.base_price > 0 ? formatCurrency(service.base_price) : 'Not set'}
+                              </span>
+                            )}
+                          </td>
+                          <td className="p-3 text-right">
+                            {isEditing ? (
+                              <Input
+                                type="number"
+                                value={editingService.discounted_price || ''}
+                                placeholder="—"
+                                onChange={(e) => setEditingService({ ...editingService, discounted_price: parseFloat(e.target.value) || null })}
+                                className="w-28 text-right"
+                              />
+                            ) : (
+                              service.discounted_price
+                                ? <span className="text-green-600 font-medium">{formatCurrency(service.discounted_price)}</span>
+                                : <span className="text-gray-300">—</span>
+                            )}
+                          </td>
+                          <td className="p-3 text-center">
+                            {isEditing ? (
+                              <input
+                                type="checkbox"
+                                checked={editingService.active}
+                                onChange={(e) => setEditingService({ ...editingService, active: e.target.checked })}
+                                className="rounded w-4 h-4"
+                              />
+                            ) : (
+                              <Badge className={service.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}>
+                                {service.active ? 'Active' : 'Inactive'}
+                              </Badge>
+                            )}
+                          </td>
+                          <td className="p-3 text-center">
+                            {isEditing ? (
+                              <div className="flex items-center justify-center gap-1">
+                                <Button
+                                  size="sm"
+                                  onClick={() => updateServicePricing(service.id, {
+                                    base_price: editingService.base_price,
+                                    discounted_price: editingService.discounted_price,
+                                    active: editingService.active
+                                  })}
+                                  disabled={saving}
+                                >
+                                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                </Button>
+                                <Button size="sm" variant="ghost" onClick={() => setEditingService(null)}>
+                                  <X className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => setEditingService({ ...service })}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="p-4 border-t bg-gray-50">
+              <p className="text-sm text-gray-500">
+                Showing {services.length} of {totalServices} services
+              </p>
             </div>
           </Card>
         </TabsContent>
