@@ -11,6 +11,24 @@ Violating these rules will break the admin panel and data consistency.
 
 ---
 
+## ✅ SESSION 42 — Dine Hero: Full Parity with CelebrateHero (Mar 15, 2026)
+
+### What Was Fixed:
+- **Rebuilt DineHero.jsx** — Complete mirror of `CelebrateHero.jsx`, 1:1 structure:
+  - Full-viewport dark amber gradient (`#2d0800 → #5a1500 → #a33000 → #d45500`)
+  - 96px avatar with gradient ring border + "Soul X%" badge
+  - Eyebrow chip — soul status text
+  - Georgia serif title: "Food & Nourishment / for Mojo"
+  - Subtitle: "Mark the meals that matter — the way Mojo actually eats"
+  - **3 soul chips** (was 2): Allergy · Loves · Personality traits (from soul archetype + describe_3_words)
+  - Mira quote card — food/allergy context-aware (different from Celebrate's birthday context)
+  - Animated ChevronDown scroll indicator
+  - Framer Motion entrance animations on all elements
+- **max-w-5xl centred content** — replaced `maxWidth:1100` inline style with Tailwind `max-w-5xl mx-auto`
+- `DineSoulPage.jsx` — replaced `DineHeroV2` inline component with clean import of new `DineHero.jsx`
+
+---
+
 ## ✅ SESSION 41 — Dine Page: Golden Principles — Category Strip + AI Images + Product Modal (Mar 15, 2026)
 
 ### What Was Built:

@@ -16,6 +16,7 @@ import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
 import MiraSoulNudge from "../components/celebrate/MiraSoulNudge";
 import DineCategoryStrip from "../components/dine/DineCategoryStrip";
+import DineHero from "../components/dine/DineHero";
 import { API_URL } from "../utils/api";
 import { toast } from "../hooks/use-toast";
 
@@ -718,8 +719,8 @@ const DineSoulPage = () => {
         <meta name="description" content={`Everything ${petData.name} eats, filtered by Mira.`} />
       </Helmet>
 
-      {/* Hero — full bleed */}
-      <DineHeroV2 pet={petData} soulScore={soulScore} />
+      {/* Hero — full bleed, mirrors CelebrateHero */}
+      <DineHero pet={petData} soulScore={soulScore} />
 
       {/* Category strip — same golden principle as /celebrate-soul */}
       <DineCategoryStrip pet={petData} />
@@ -727,8 +728,8 @@ const DineSoulPage = () => {
       {/* Tab bar */}
       <TabBar active={activeTab} onChange={setActiveTab} />
 
-      {/* Page body */}
-      <div style={{background:"#FDF6EE",padding:20,maxWidth:1100,margin:"0 auto",fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"}}>
+      {/* Page body — max-w-5xl centred, matches Celebrate layout */}
+      <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{background:"#FDF6EE",fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"}}>
 
         {activeTab === "eat" && (
           <>
