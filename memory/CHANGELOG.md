@@ -3,7 +3,25 @@
 
 ---
 
-## [Mar 15, 2026] Session 39b — Dine Page v2 + CelebrateConcierge Patch ✅
+## [Mar 15, 2026] Session 39c — Soul Score System + MiraSoulNudge + none_confirmed Bug Fix ✅
+
+### What Was Built / Fixed
+- **BUG FIX**: `none_confirmed` allergy value (stored when user selects "No allergies" in soul builder) no longer shows as an allergy chip in TummyProfile AVOID section. Fixed in `DineSoulPage.jsx` (`getAllergies()` uses `CLEAN_NONE` regex) and `SoulCelebrationPillars.jsx` (both `incompleteCondition` and `miraQuote`)
+- **BUG FIX**: `SoulCelebrationPillars` food pillar: `none_confirmed` now correctly treated as "allergies answered" (not "incomplete") — the allergy question is answered, the pet just has no real allergens
+- **NEW: `MiraSoulNudge.jsx`**: Soul cards component for /celebrate page. Shows top unanswered soul questions (taste_treat/food folder first). Each card shows: Mira's voice question, soul score points to unlock, inline answer options. On answer: calls `POST /api/pet-soul/answer`, emits `soulScoreUpdated` event, animates score jump. When all questions answered: shows "Mira knows {petName}'s food soul" completion state
+- **INTEGRATED**: `MiraSoulNudge` added to `CelebratePageNew.jsx` — renders above `SoulCelebrationPillars`. Uses `context="celebrate"` which surfaces taste_treat questions first
+
+### Soul Score System Notes (embedded in MiraSoulNudge.jsx)
+- 51 questions across 8 folders (taste_treat, personality, activity, care, health, social, environment, celebration)
+- Each question weighted 1-5 points (high-weight = high impact on score)
+- `none_confirmed` = user deliberately said "no" → counts as answered, score increases
+- Mira ALWAYS REMEMBERS every answer (persisted in doggy_soul_answers)
+- API: GET `/api/pet-soul/profile/:petId/quick-questions?context=celebrate&limit=3`
+- API: POST `/api/pet-soul/answer` { pet_id, question_id, answer }
+
+---
+
+
 
 ### What Was Built
 - **DineSoulPage.jsx v2**: Complete rewrite from spec. Full-bleed amber/terracotta hero (no border-radius), PillarPageLayout wrapper (matches celebrate page), DineHeroV2 with avatar + soul chips + Mira quote, TabBar (Eat & Nourish / Dine Out), TummyProfile (4-cell editable grid), 5 Dimension cards (DailyMeals, Treats, Supplements, Frozen&Fresh, Homemade), MiraMealPick dark card, GuidedNutritionPaths (3 expandable paths), DiningConcierge (4 service cards + dark CTA), PetFriendlySpots (6 restaurant cards)

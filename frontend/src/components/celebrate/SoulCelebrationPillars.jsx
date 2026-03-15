@@ -53,10 +53,11 @@ const SOUL_PILLARS = [
     incompleteCondition: (pet) => {
       const NONE_RE = /^(no|none|none_confirmed|no_allergies)$/i;
       const rawAllergy = pet?.doggy_soul_answers?.food_allergies;
-      const hasRealAllergy = rawAllergy && (
-        Array.isArray(rawAllergy) ? rawAllergy.some(a => !NONE_RE.test(String(a).trim())) : !NONE_RE.test(String(rawAllergy).trim())
+      // "answered" = any non-null/non-empty allergy response (including none_confirmed which = "user said no allergies")
+      const allergyAnswered = rawAllergy && (
+        Array.isArray(rawAllergy) ? rawAllergy.length > 0 : String(rawAllergy).trim().length > 0
       );
-      return !hasRealAllergy && !pet?.doggy_soul_answers?.favorite_protein;
+      return !allergyAnswered && !pet?.doggy_soul_answers?.favorite_protein;
     }
   },
   {
