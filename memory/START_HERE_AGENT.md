@@ -179,7 +179,7 @@ curl "$API_URL/api/pet-soul/profile/pet-99a708f1722a/quick-questions"
 
 ## 🚀 PREVIEW URL
 ```
-https://dine-layout-update.preview.emergentagent.com
+https://dine-category-pills.preview.emergentagent.com
 ```
 
 Key pages:
