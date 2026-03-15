@@ -14,8 +14,9 @@ import {
   FileText, Upload, Download, Search, RefreshCw, Plus, Edit, Trash2,
   Shield, Heart, Plane, Sparkles, Scale, Bell, Settings, Package,
   Loader2, CheckCircle, Clock, AlertCircle, PawPrint, Gift, Users,
-  Folder, File, Eye, Calendar, TrendingUp
+  Folder, File, Eye, Calendar, TrendingUp, Briefcase
 } from 'lucide-react';
+import PillarServicesTab from './PillarServicesTab';
 
 const CATEGORY_CONFIG = {
   identity: { name: 'Identity', icon: Shield, color: 'bg-blue-100 text-blue-700' },
@@ -414,6 +415,9 @@ const PaperworkManager = () => {
           <TabsTrigger value="bundles" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
             <Gift className="w-4 h-4 mr-2" /> Bundles
           </TabsTrigger>
+          <TabsTrigger value="services" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            <Briefcase className="w-4 h-4 mr-2" /> Services
+          </TabsTrigger>
           <TabsTrigger value="settings" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
             <Settings className="w-4 h-4 mr-2" /> Settings
           </TabsTrigger>
@@ -753,6 +757,16 @@ const PaperworkManager = () => {
               ))}
             </div>
           </Card>
+        </TabsContent>
+
+        {/* Services Tab */}
+        <TabsContent value="services" className="mt-4">
+          <PillarServicesTab
+            pillar="paperwork"
+            pillarName="Paperwork"
+            pillarIcon="📋"
+            pillarColor="bg-blue-600"
+          />
         </TabsContent>
 
         {/* Settings Tab */}

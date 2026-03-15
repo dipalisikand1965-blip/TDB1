@@ -17,9 +17,10 @@ import { toast } from '../../hooks/use-toast';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Mail, Users,
   Plus, Edit, Trash2, Search, Filter, Eye, CheckCircle, XCircle,
-  Building2, Clock, RefreshCw, FileText, Loader2, Download, Sparkles
+  Building2, Clock, RefreshCw, FileText, Loader2, Download, Sparkles, Briefcase
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
+import PillarServicesTab from './PillarServicesTab';
 import PillarBundlesTab from './PillarBundlesTab';
 import PillarExperiencesTab from './PillarExperiencesTab';
 
@@ -421,6 +422,7 @@ const AdoptManager = ({ authHeaders }) => {
           <TabsTrigger value="shelters"><Building2 className="w-4 h-4 mr-1" /> Shelters</TabsTrigger>
           <TabsTrigger value="bundles"><PawPrint className="w-4 h-4 mr-1" /> Bundles</TabsTrigger>
           <TabsTrigger value="experiences"><Sparkles className="w-4 h-4 mr-1" /> Experiences</TabsTrigger>
+          <TabsTrigger value="services"><Briefcase className="w-4 h-4 mr-1" /> Services</TabsTrigger>
         </TabsList>
 
         {/* PETS TAB */}
@@ -669,6 +671,16 @@ const AdoptManager = ({ authHeaders }) => {
             pillar="adopt"
             credentials={authHeaders}
             accentColor="pink"
+          />
+        </TabsContent>
+
+        {/* Services Tab */}
+        <TabsContent value="services" className="space-y-4">
+          <PillarServicesTab
+            pillar="adopt"
+            pillarName="Adopt"
+            pillarIcon="🐾"
+            pillarColor="bg-orange-500"
           />
         </TabsContent>
       </Tabs>

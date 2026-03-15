@@ -16,8 +16,9 @@ import {
   GraduationCap, BookOpen, Brain, Users, Package, Building2,
   Settings, Search, Plus, Edit2, Trash2, RefreshCw, Eye, Clock,
   CheckCircle, XCircle, Star, Download, Upload, Database, Award,
-  Heart, Zap, Shield, Target, Calendar, MapPin
+  Heart, Zap, Shield, Target, Calendar, MapPin, Briefcase
 } from 'lucide-react';
+import PillarServicesTab from './PillarServicesTab';
 
 const LEARN_TYPE_ICONS = {
   basic_obedience: GraduationCap,
@@ -519,6 +520,7 @@ const LearnManager = ({ getAuthHeader }) => {
           <TabsTrigger value="trainers">Trainers</TabsTrigger>
           <TabsTrigger value="products">Products</TabsTrigger>
           <TabsTrigger value="bundles">Bundles</TabsTrigger>
+          <TabsTrigger value="services"><Briefcase className="w-4 h-4 mr-1" />Services</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
@@ -937,6 +939,16 @@ const LearnManager = ({ getAuthHeader }) => {
               </Card>
             ))}
           </div>
+        </TabsContent>
+
+        {/* Services Tab */}
+        <TabsContent value="services" className="mt-6 space-y-4">
+          <PillarServicesTab
+            pillar="learn"
+            pillarName="Learn"
+            pillarIcon="🎓"
+            pillarColor="bg-blue-500"
+          />
         </TabsContent>
 
         {/* Settings Tab - Full Settings like FitManager */}
