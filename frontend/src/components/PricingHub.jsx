@@ -124,284 +124,219 @@ const PartnerCommissionRow = ({ partner, partnerType, defaultCommission, getAuth
   );
 };
 
-// Pillar Bundles Section Component
+// Pillar Bundles Section Component — uses unified /api/bundles collection
+const BUNDLE_PILLAR_CONFIG = {
+  celebrate: { icon: '🎂', color: 'bg-pink-100 text-pink-700', label: 'Celebrate' },
+  dine:      { icon: '🍽️', color: 'bg-orange-100 text-orange-700', label: 'Dine' },
+  stay:      { icon: '🏨', color: 'bg-green-100 text-green-700', label: 'Stay' },
+  travel:    { icon: '✈️', color: 'bg-blue-100 text-blue-700', label: 'Travel' },
+  care:      { icon: '💊', color: 'bg-purple-100 text-purple-700', label: 'Care' },
+  fit:       { icon: '💪', color: 'bg-cyan-100 text-cyan-700', label: 'Fit' },
+  enjoy:     { icon: '🎉', color: 'bg-rose-100 text-rose-700', label: 'Enjoy' },
+  learn:     { icon: '📚', color: 'bg-indigo-100 text-indigo-700', label: 'Learn' },
+  farewell:  { icon: '🌈', color: 'bg-violet-100 text-violet-700', label: 'Farewell' },
+  emergency: { icon: '🚨', color: 'bg-red-100 text-red-700', label: 'Emergency' },
+  adopt:     { icon: '🐕', color: 'bg-lime-100 text-lime-700', label: 'Adopt' },
+  advisory:  { icon: '💡', color: 'bg-amber-100 text-amber-700', label: 'Advisory' },
+  paperwork: { icon: '📋', color: 'bg-slate-100 text-slate-700', label: 'Paperwork' },
+};
+
 const PillarBundlesSection = ({ getAuthHeader, formatCurrency }) => {
   const [activePillar, setActivePillar] = useState('celebrate');
-  const [bundles, setBundles] = useState({ celebrate: [], dine: [], stay: [], travel: [], care: [] });
+  const [allBundles, setAllBundles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingBundle, setEditingBundle] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  // Fetch bundles for all pillars
   const fetchAllBundles = async () => {
     setLoading(true);
     try {
-      // Fetch Celebrate bundles (products with bundle_type)
-      const celebrateRes = await fetch(`${getApiUrl()}/api/admin/pricing/products?pillar=celebrate&limit=50`, { headers: getAuthHeader() });
-      const celebrateData = await celebrateRes.json();
-      const celebrateBundles = (celebrateData.products || []).filter(p => p.bundle_type || p.tags?.includes('bundle'));
-
-      // Fetch Dine bundles
-      let dineBundles = [];
-      try {
-        const dineRes = await fetch(`${getApiUrl()}/api/admin/dine/bundles`, { headers: getAuthHeader() });
-        if (dineRes.ok) {
-          const dineData = await dineRes.json();
-          dineBundles = dineData.bundles || [];
-        }
-      } catch (e) { console.log('Dine bundles not available'); }
-
-      // Fetch Stay bundles/socials
-      let stayBundles = [];
-      try {
-        const stayRes = await fetch(`${getApiUrl()}/api/admin/stay/socials`, { headers: getAuthHeader() });
-        if (stayRes.ok) {
-          const stayData = await stayRes.json();
-          stayBundles = stayData.events || stayData.socials || [];
-        }
-      } catch (e) { console.log('Stay bundles not available'); }
-
-      // Fetch products for Travel and Care pillars (bundles)
-      const travelRes = await fetch(`${getApiUrl()}/api/admin/pricing/products?pillar=travel&limit=50`, { headers: getAuthHeader() });
-      const travelData = await travelRes.json();
-      const travelBundles = (travelData.products || []).filter(p => p.bundle_type || p.tags?.includes('bundle'));
-
-      // Fetch Care bundles from dedicated care bundles endpoint
-      let careBundles = [];
-      try {
-        const careBundlesRes = await fetch(`${getApiUrl()}/api/care/bundles`);
-        if (careBundlesRes.ok) {
-          const careBundlesData = await careBundlesRes.json();
-          careBundles = careBundlesData.bundles || [];
-        }
-      } catch (e) { 
-        console.log('Care bundles not available from dedicated endpoint, trying products');
-        // Fallback to products with bundle tag
-        const careRes = await fetch(`${getApiUrl()}/api/admin/pricing/products?pillar=care&limit=50`, { headers: getAuthHeader() });
-        const careData = await careRes.json();
-        careBundles = (careData.products || []).filter(p => p.bundle_type || p.tags?.includes('bundle'));
+      const res = await fetch(`${getApiUrl()}/api/bundles?active_only=false&limit=500`);
+      if (res.ok) {
+        const data = await res.json();
+        setAllBundles(data.bundles || []);
       }
-
-      setBundles({
-        celebrate: celebrateBundles,
-        dine: dineBundles,
-        stay: stayBundles,
-        travel: travelBundles,
-        care: careBundles
-      });
     } catch (err) {
       console.error('Error fetching bundles:', err);
     }
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchAllBundles();
-  }, []);
+  useEffect(() => { fetchAllBundles(); }, []);
 
-  const updateBundlePricing = async (bundle, pillar) => {
+  const getBundlesForPillar = (pillar) => allBundles.filter(b => b.pillar === pillar);
+
+  const updateBundlePricing = async (bundle) => {
     setSaving(true);
     try {
-      let endpoint = '';
-      let method = 'PATCH';
-      let body = {};
-
-      if (pillar === 'dine') {
-        endpoint = `${getApiUrl()}/api/admin/dine/bundles/${bundle.id}`;
-        body = { price: bundle.price, discounted_price: bundle.discounted_price };
-      } else if (pillar === 'stay') {
-        endpoint = `${getApiUrl()}/api/admin/stay/socials/${bundle.id}`;
-        body = { price: bundle.price };
-      } else {
-        // Celebrate, Travel, Care - use product pricing endpoint
-        endpoint = `${getApiUrl()}/api/admin/pricing/products/${bundle.id}`;
-        body = { selling_price: bundle.price, margin_percent: bundle.margin_percent };
-      }
-
-      await fetch(endpoint, {
-        method,
-        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+      const res = await fetch(`${getApiUrl()}/api/bundles/${bundle.id}/pricing`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          original_price: bundle.original_price,
+          bundle_price: bundle.bundle_price,
+          active: bundle.active
+        })
       });
-
-      setEditingBundle(null);
-      fetchAllBundles();
+      if (res.ok) {
+        setEditingBundle(null);
+        fetchAllBundles();
+      }
     } catch (err) {
-      console.error('Error updating bundle:', err);
+      console.error('Error updating bundle pricing:', err);
     }
     setSaving(false);
   };
 
-  const pillarConfig = {
-    celebrate: { icon: '🎂', color: 'bg-pink-100 text-pink-700', label: 'Celebrate' },
-    dine: { icon: '🍽️', color: 'bg-orange-100 text-orange-700', label: 'Dine' },
-    stay: { icon: '🏨', color: 'bg-green-100 text-green-700', label: 'Stay' },
-    travel: { icon: '✈️', color: 'bg-blue-100 text-blue-700', label: 'Travel' },
-    care: { icon: '💊', color: 'bg-purple-100 text-purple-700', label: 'Care' }
-  };
+  const currentBundles = getBundlesForPillar(activePillar);
+  const pillarCfg = BUNDLE_PILLAR_CONFIG[activePillar] || { icon: '📦', color: 'bg-gray-100 text-gray-700', label: activePillar };
 
-  const currentBundles = bundles[activePillar] || [];
+  // Total count across all pillars
+  const totalBundles = allBundles.length;
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
           <h3 className="text-lg font-semibold">Pillar Bundles & Packages</h3>
-          <p className="text-sm text-gray-500">Manage pricing for bundles and packages across all pillars</p>
+          <p className="text-sm text-gray-500">{totalBundles} bundles across all 13 pillars — inline price editing</p>
         </div>
         <Button variant="outline" onClick={fetchAllBundles}>
           <RefreshCw className="w-4 h-4 mr-2" /> Refresh
         </Button>
       </div>
 
-      {/* Pillar Tabs */}
+      {/* Pillar Tabs — all 13 pillars */}
       <div className="flex gap-2 flex-wrap">
-        {Object.entries(pillarConfig).map(([key, config]) => (
-          <button
-            key={key}
-            onClick={() => setActivePillar(key)}
-            data-testid={`pillar-bundle-${key}`}
-            className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
-              activePillar === key 
-                ? `${config.color} font-semibold ring-2 ring-offset-2 ring-purple-500`
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            <span>{config.icon}</span>
-            <span>{config.label}</span>
-            <Badge variant="secondary" className="ml-1">{bundles[key]?.length || 0}</Badge>
-          </button>
-        ))}
+        {Object.entries(BUNDLE_PILLAR_CONFIG).map(([key, config]) => {
+          const count = getBundlesForPillar(key).length;
+          return (
+            <button
+              key={key}
+              onClick={() => setActivePillar(key)}
+              data-testid={`pillar-bundle-${key}`}
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-sm transition-all ${
+                activePillar === key
+                  ? `${config.color} font-semibold ring-2 ring-offset-1 ring-purple-500`
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <span>{config.icon}</span>
+              <span>{config.label}</span>
+              <Badge variant="secondary" className="ml-0.5 text-xs">{count}</Badge>
+            </button>
+          );
+        })}
       </div>
 
       {/* Bundles Table */}
       <Card className="overflow-hidden">
-        <div className={`px-4 py-3 border-b ${pillarConfig[activePillar].color}`}>
+        <div className={`px-4 py-3 border-b ${pillarCfg.color}`}>
           <span className="font-semibold flex items-center gap-2">
-            {pillarConfig[activePillar].icon} {pillarConfig[activePillar].label} Bundles & Packages
+            {pillarCfg.icon} {pillarCfg.label} Bundles ({currentBundles.length})
           </span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="p-3 text-left">Bundle / Package</th>
-                <th className="p-3 text-left">Type</th>
-                <th className="p-3 text-right">Price (₹)</th>
-                <th className="p-3 text-right">Discounted (₹)</th>
+                <th className="p-3 text-left">Bundle</th>
+                <th className="p-3 text-left">Items</th>
+                <th className="p-3 text-right">Original (₹)</th>
+                <th className="p-3 text-right">Bundle Price (₹)</th>
+                <th className="p-3 text-center">Discount</th>
                 <th className="p-3 text-center">Status</th>
                 <th className="p-3 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr>
-                  <td colSpan={6} className="p-8 text-center">
-                    <Loader2 className="w-6 h-6 animate-spin mx-auto text-purple-600" />
-                  </td>
-                </tr>
+                <tr><td colSpan={7} className="p-8 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-purple-600" /></td></tr>
               ) : currentBundles.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-gray-500">
+                  <td colSpan={7} className="p-8 text-center text-gray-500">
                     <Package className="w-12 h-12 mx-auto text-gray-300 mb-2" />
-                    <p>No bundles found for {pillarConfig[activePillar].label}</p>
-                    <p className="text-xs mt-1">Create bundles in the {pillarConfig[activePillar].label} Manager</p>
+                    <p>No bundles found for {pillarCfg.label}</p>
+                    <p className="text-xs mt-1">Create bundles in the {pillarCfg.label} Manager → Bundles tab</p>
                   </td>
                 </tr>
               ) : (
                 currentBundles.map((bundle) => {
                   const isEditing = editingBundle?.id === bundle.id;
-                  const bundlePrice = bundle.price || bundle.pricing?.selling_price || 0;
-                  const discountedPrice = bundle.discounted_price || bundle.sale_price || bundlePrice;
+                  const origPrice = bundle.original_price || 0;
+                  const bndlPrice = bundle.bundle_price || 0;
+                  const discount = origPrice > 0 ? Math.round((1 - bndlPrice / origPrice) * 100) : (bundle.discount || 0);
 
                   return (
-                    <tr key={bundle.id} className="border-b hover:bg-gray-50">
+                    <tr key={bundle.id} className={`border-b hover:bg-gray-50 ${!bundle.active ? 'opacity-50' : ''}`}>
                       <td className="p-3">
-                        <div className="flex items-center gap-3">
-                          {(bundle.image || bundle.images?.[0]) && (
-                            <img 
-                              src={bundle.image || bundle.images?.[0]} 
-                              alt="" 
-                              className="w-10 h-10 rounded object-cover" 
-                            />
+                        <div className="flex items-center gap-2">
+                          {(bundle.image_url || bundle.image || bundle.cloudinary_image_url) && (
+                            <img src={bundle.image_url || bundle.image || bundle.cloudinary_image_url} alt="" className="w-8 h-8 rounded object-cover" />
                           )}
                           <div>
-                            <p className="font-medium">{bundle.name || bundle.title}</p>
+                            <p className="font-medium">{bundle.icon} {bundle.name}</p>
                             <p className="text-xs text-gray-400">{bundle.id}</p>
                           </div>
                         </div>
                       </td>
                       <td className="p-3">
-                        <Badge variant="outline">
-                          {bundle.bundle_type || bundle.category || bundle.type || 'Package'}
-                        </Badge>
+                        <div className="flex flex-wrap gap-1 max-w-48">
+                          {(bundle.items || []).slice(0, 3).map((item, i) => (
+                            <Badge key={i} variant="secondary" className="text-xs">
+                              {typeof item === 'object' ? (item.name || item.title || 'Item') : item}
+                            </Badge>
+                          ))}
+                          {(bundle.items || []).length > 3 && (
+                            <Badge variant="secondary" className="text-xs">+{bundle.items.length - 3}</Badge>
+                          )}
+                        </div>
                       </td>
                       <td className="p-3 text-right">
                         {isEditing ? (
-                          <Input
-                            type="number"
-                            value={editingBundle.price}
-                            onChange={(e) => setEditingBundle({
-                              ...editingBundle,
-                              price: parseFloat(e.target.value) || 0
-                            })}
-                            className="w-24 text-right"
-                          />
+                          <Input type="number" value={editingBundle.original_price}
+                            onChange={(e) => setEditingBundle({ ...editingBundle, original_price: parseFloat(e.target.value) || 0 })}
+                            className="w-24 text-right" />
                         ) : (
-                          formatCurrency(bundlePrice)
+                          <span className="text-gray-500 line-through">{formatCurrency(origPrice)}</span>
                         )}
                       </td>
                       <td className="p-3 text-right">
                         {isEditing ? (
-                          <Input
-                            type="number"
-                            value={editingBundle.discounted_price || editingBundle.price}
-                            onChange={(e) => setEditingBundle({
-                              ...editingBundle,
-                              discounted_price: parseFloat(e.target.value) || 0
-                            })}
-                            className="w-24 text-right"
-                          />
+                          <Input type="number" value={editingBundle.bundle_price}
+                            onChange={(e) => setEditingBundle({ ...editingBundle, bundle_price: parseFloat(e.target.value) || 0 })}
+                            className="w-24 text-right" />
                         ) : (
-                          <span className={discountedPrice < bundlePrice ? 'text-green-600 font-medium' : ''}>
-                            {formatCurrency(discountedPrice)}
-                            {discountedPrice < bundlePrice && (
-                              <span className="text-xs ml-1">
-                                ({Math.round((1 - discountedPrice/bundlePrice) * 100)}% off)
-                              </span>
-                            )}
-                          </span>
+                          <span className="font-bold text-green-700">{formatCurrency(bndlPrice)}</span>
                         )}
                       </td>
                       <td className="p-3 text-center">
-                        <Badge className={bundle.active !== false ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}>
-                          {bundle.active !== false ? 'Active' : 'Inactive'}
-                        </Badge>
+                        <Badge className="bg-green-100 text-green-700">{discount}% off</Badge>
+                      </td>
+                      <td className="p-3 text-center">
+                        {isEditing ? (
+                          <button
+                            onClick={() => setEditingBundle({ ...editingBundle, active: !editingBundle.active })}
+                            className={`px-2 py-1 rounded text-xs font-medium ${editingBundle.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}
+                          >
+                            {editingBundle.active ? 'Active' : 'Inactive'}
+                          </button>
+                        ) : (
+                          <Badge className={bundle.active !== false ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}>
+                            {bundle.active !== false ? 'Active' : 'Inactive'}
+                          </Badge>
+                        )}
                       </td>
                       <td className="p-3 text-center">
                         {isEditing ? (
                           <div className="flex items-center justify-center gap-1">
-                            <Button
-                              size="sm"
-                              onClick={() => updateBundlePricing(editingBundle, activePillar)}
-                              disabled={saving}
-                            >
+                            <Button size="sm" onClick={() => updateBundlePricing(editingBundle)} disabled={saving}>
                               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                             </Button>
-                            <Button size="sm" variant="ghost" onClick={() => setEditingBundle(null)}>
-                              <X className="w-4 h-4" />
-                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => setEditingBundle(null)}><X className="w-4 h-4" /></Button>
                           </div>
                         ) : (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => setEditingBundle({ 
-                              ...bundle, 
-                              price: bundlePrice,
-                              discounted_price: discountedPrice
-                            })}
-                          >
+                          <Button size="sm" variant="ghost" onClick={() => setEditingBundle({ ...bundle })}>
                             <Edit className="w-4 h-4" />
                           </Button>
                         )}
@@ -413,28 +348,11 @@ const PillarBundlesSection = ({ getAuthHeader, formatCurrency }) => {
             </tbody>
           </table>
         </div>
-        <div className="p-4 border-t bg-gray-50">
-          <p className="text-sm text-gray-500">
-            Total: {currentBundles.length} bundles in {pillarConfig[activePillar].label}
-          </p>
+        <div className="p-3 border-t bg-gray-50 text-xs text-gray-500">
+          {currentBundles.length} bundles in {pillarCfg.label} · {totalBundles} total across all pillars
         </div>
       </Card>
 
-      {/* Quick Tips */}
-      <Card className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
-        <div className="flex items-start gap-3">
-          <Sparkles className="w-5 h-5 text-purple-600 flex-shrink-0 mt-1" />
-          <div>
-            <p className="font-medium text-purple-900">Bundle Management Tips</p>
-            <ul className="text-sm text-purple-700 mt-2 space-y-1">
-              <li>• <strong>Celebrate:</strong> Manage bundles in Celebrate Manager or mark products as bundles</li>
-              <li>• <strong>Dine:</strong> Create bundles in Dine Manager (Meal Packages, Special Menus)</li>
-              <li>• <strong>Stay:</strong> Social events & pawcation packages in Stay Manager</li>
-              <li>• <strong>Travel & Care:</strong> Coming soon - bundles will appear here when created</li>
-            </ul>
-          </div>
-        </div>
-      </Card>
     </div>
   );
 };

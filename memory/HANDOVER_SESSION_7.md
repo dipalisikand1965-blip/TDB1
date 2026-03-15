@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://celebrate-sync-3.preview.emergentagent.com
+https://architecture-rebuild.preview.emergentagent.com
 
 ---
 

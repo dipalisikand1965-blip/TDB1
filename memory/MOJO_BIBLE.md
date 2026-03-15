@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://celebrate-sync-3.preview.emergentagent.com
+https://architecture-rebuild.preview.emergentagent.com
 ```
 
 ---

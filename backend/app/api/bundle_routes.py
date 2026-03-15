@@ -179,6 +179,36 @@ async def update_bundle(bundle_id: str, updates: BundleUpdate):
         logger.error(f"Error updating bundle: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.patch("/{bundle_id}/pricing")
+async def update_bundle_pricing(bundle_id: str, pricing: dict):
+    """Update bundle pricing fields only (original_price, bundle_price, active)"""
+    try:
+        db = get_db()
+        allowed = {"original_price", "bundle_price", "active"}
+        update_doc = {k: v for k, v in pricing.items() if k in allowed}
+        update_doc["updated_at"] = datetime.now(timezone.utc).isoformat()
+
+        # Recalculate discount
+        bundle = await db.bundles.find_one({"id": bundle_id})
+        if bundle:
+            original = update_doc.get("original_price", bundle.get("original_price", 0))
+            bp = update_doc.get("bundle_price", bundle.get("bundle_price", 0))
+            if original > 0:
+                update_doc["discount"] = round((1 - bp / original) * 100)
+
+        result = await db.bundles.update_one({"id": bundle_id}, {"$set": update_doc})
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Bundle not found")
+
+        updated = await db.bundles.find_one({"id": bundle_id}, {"_id": 0})
+        return {"message": "Bundle pricing updated", "bundle": updated}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating bundle pricing: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.delete("/{bundle_id}")
 async def delete_bundle(bundle_id: str):
     """Delete a bundle (soft delete - sets active=False)"""

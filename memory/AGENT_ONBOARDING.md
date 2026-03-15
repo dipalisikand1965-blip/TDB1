@@ -75,19 +75,19 @@ Before touching ANY Mira code, read these files:
 
 ```bash
 # 1. Login and get token
-TOKEN=$(curl -s -X POST 'https://celebrate-sync-3.preview.emergentagent.com/api/auth/login' \
+TOKEN=$(curl -s -X POST 'https://architecture-rebuild.preview.emergentagent.com/api/auth/login' \
   -H 'Content-Type: application/json' \
   -d '{"email":"dipali@clubconcierge.in","password":"test123"}' | \
   python3 -c 'import sys,json;print(json.load(sys.stdin).get("access_token",""))')
 
 # 2. Test chat (should mention allergies without asking)
-curl -X POST "https://celebrate-sync-3.preview.emergentagent.com/api/mira/chat" \
+curl -X POST "https://architecture-rebuild.preview.emergentagent.com/api/mira/chat" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TOKEN" \
   -d '{"message": "What food for Lola?", "session_id": "test-123"}'
 
 # 3. Test pets API (Lola should show ~62% score)
-curl "https://celebrate-sync-3.preview.emergentagent.com/api/pets/my-pets" \
+curl "https://architecture-rebuild.preview.emergentagent.com/api/pets/my-pets" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -112,7 +112,7 @@ curl "https://celebrate-sync-3.preview.emergentagent.com/api/pets/my-pets" \
 
 ## 🔗 URLS
 
-- **Preview**: https://celebrate-sync-3.preview.emergentagent.com
+- **Preview**: https://architecture-rebuild.preview.emergentagent.com
 - **Production**: https://thedoggycompany.in
 - **To deploy**: Click "Replace deployment" on Emergent platform
 
