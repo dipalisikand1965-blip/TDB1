@@ -196,13 +196,14 @@ function getDineProductIcon(name = "") {
 function adaptDineProduct(p) {
   const price = p.price;
   return {
-    id:    p.id,
-    icon:  getDineProductIcon(p.name),
-    bg:    CATEGORY_BG[p.category] || "#FFF3E0",
-    tag:   p.mira_tag || p.category || "",
-    name:  p.name,
-    desc:  p.allergy_free || (p.description ? p.description.slice(0, 70) : ""),
-    price: !price || price === 0 ? "Free" : `₹${Number(price).toLocaleString("en-IN")}`,
+    id:        p.id,
+    image_url: p.image_url || p.image || p.shopify_image_url || null,
+    icon:      getDineProductIcon(p.name),
+    bg:        CATEGORY_BG[p.category] || "#FFF3E0",
+    tag:       p.mira_tag || p.category || "",
+    name:      p.name,
+    desc:      p.allergy_free || (p.description ? p.description.slice(0, 70) : ""),
+    price:     !price || price === 0 ? "Free" : `₹${Number(price).toLocaleString("en-IN")}`,
   };
 }
 
@@ -263,20 +264,43 @@ function SoulChip({ children, extraStyle = {} }) {
   );
 }
 
+// ─── Product Card (real DB images — mirrors Celebrate ProductCard) ────────────
 function ProductCard({ product }) {
   const [added, setAdded] = useState(false);
+  const [imgErr, setImgErr] = useState(false);
   const isFree = product.price === "Free";
   return (
-    <div style={{borderRadius:12,border:"1px solid #F0E8F8",background:"#fff",overflow:"hidden"}}>
-      <div style={{height:64,display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,background:product.bg||"#FFF3E0"}}>{product.icon}</div>
-      <div style={{padding:8}}>
-        <div style={{display:"inline-block",background:"linear-gradient(135deg,rgba(255,140,66,0.12),rgba(196,77,255,0.10))",border:"1px solid rgba(255,140,66,0.25)",borderRadius:8,padding:"1px 6px",fontSize:9,color:"#8B4500",fontWeight:600,marginBottom:4}}>✦ {product.tag}</div>
-        <div style={{fontSize:11,fontWeight:700,color:"#1A0A00",marginBottom:2}}>{product.name}</div>
-        <div style={{fontSize:10,color:"#888",lineHeight:1.3,marginBottom:6}}>{product.desc}</div>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-          <span style={{fontSize:12,fontWeight:700,color:isFree?"#27AE60":"#1A0A00"}}>{product.price}</span>
-          <button onClick={() => setAdded(true)} style={{background:added?"#E8F5E9":"linear-gradient(135deg,#FF8C42,#C44DFF)",color:added?"#27AE60":"#fff",border:added?"1px solid #BBF7D0":"none",borderRadius:10,padding:"3px 8px",fontSize:9,fontWeight:700,cursor:"pointer"}}>
-            {added?"✓ Added":isFree?"Get Free":"Add"}
+    <div style={{ borderRadius: 12, border: "1px solid #F0E8F8", background: "#fff", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+      {/* Image area — real DB image if available, emoji fallback */}
+      <div style={{ height: 120, overflow: "hidden", position: "relative", background: product.bg || "#FFF3E0", flexShrink: 0 }}>
+        {product.image_url && !imgErr ? (
+          <img src={product.image_url} alt={product.name} onError={() => setImgErr(true)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        ) : (
+          <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 34 }}>{product.icon}</div>
+        )}
+        {product.tag && (
+          <div style={{ position: "absolute", top: 8, left: 8, background: "linear-gradient(135deg,#C44DFF,#FF2D87)", color: "#fff", borderRadius: 20, padding: "2px 8px", fontSize: 9, fontWeight: 700 }}>
+            ✦ {product.tag}
+          </div>
+        )}
+      </div>
+      {/* Content */}
+      <div style={{ padding: "10px 10px 12px", flex: 1, display: "flex", flexDirection: "column" }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "#1A0A00", marginBottom: 3, lineHeight: 1.3 }}>{product.name}</div>
+        <div style={{ fontSize: 11, color: "#888", lineHeight: 1.4, flex: 1, marginBottom: 8 }}>{product.desc}</div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: isFree ? "#27AE60" : "#C44400" }}>{product.price}</span>
+          <button
+            onClick={() => setAdded(true)}
+            style={{
+              background: added ? "#27AE60" : "linear-gradient(135deg,#FF8C42,#C44400)",
+              color: "#fff", border: "none", borderRadius: 8,
+              padding: "5px 12px", fontSize: 11, fontWeight: 700, cursor: "pointer",
+              transition: "all 0.15s",
+            }}
+            data-testid={`add-to-cart-${product.id}`}
+          >
+            {added ? "✓ Added" : isFree ? "Get Free" : "Add"}
           </button>
         </div>
       </div>
@@ -450,7 +474,120 @@ function SoulQuestionCardDine({ question, petName, onAnswered, token }) {
   );
 }
 
-// ─── Food emoji helper ────────────────────────────────────────────────────────
+// ─── Dine Bundles (at top of Eat & Nourish tab) ─────────────────────────────
+function DineBundles({ pet }) {
+  const [bundles, setBundles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const petName = pet?.name || 'your dog';
+  const loves = getLoves(pet);
+  const allergies = getAllergies(pet);
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/dine/bundles`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d) setBundles(d.bundles || []); })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading || bundles.length === 0) return null;
+
+  return (
+    <div style={{ marginBottom: 28 }}>
+      {/* Section header */}
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 14 }}>
+        <h3 style={{ fontSize: 16, fontWeight: 800, color: '#1A0A00', fontFamily: "Georgia, serif" }}>
+          Dine Bundles for <span style={{ color: '#FF8C42' }}>{petName}</span>
+        </h3>
+        {allergies.length > 0 && (
+          <span style={{ fontSize: 11, color: '#888' }}>
+            · {allergies[0]}-free options shown
+          </span>
+        )}
+      </div>
+      {/* Bundle cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(260px, 100%), 1fr))', gap: 16 }}>
+        {bundles.map(bundle => (
+          <DineBundleCard key={bundle.id} bundle={bundle} petName={petName} loves={loves} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DineBundleCard({ bundle, petName, loves }) {
+  const [requested, setRequested] = useState(false);
+  const imgUrl = bundle.image_url || bundle.image || null;
+  const items = bundle.items || [];
+  const price = bundle.price ? `₹${Number(bundle.price).toLocaleString('en-IN')}` : null;
+  const badge = bundle.badge || bundle.tag || null;
+
+  return (
+    <div style={{
+      borderRadius: 16, overflow: 'hidden', border: '1.5px solid #FFE5CC',
+      background: '#fff', display: 'flex', flexDirection: 'column',
+      boxShadow: '0 2px 12px rgba(196,68,0,0.08)',
+    }} data-testid={`dine-bundle-${bundle.id}`}>
+      {/* Image */}
+      <div style={{ height: 160, overflow: 'hidden', position: 'relative', background: 'linear-gradient(135deg, #FFF3E0, #FFE0B2)', flexShrink: 0 }}>
+        {imgUrl ? (
+          <img src={imgUrl} alt={bundle.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48 }}>🍽️</div>
+        )}
+        {badge && (
+          <div style={{
+            position: 'absolute', top: 12, left: 12,
+            background: 'linear-gradient(135deg, #FF8C42, #C44400)',
+            color: '#fff', borderRadius: 20, padding: '4px 12px', fontSize: 10, fontWeight: 700,
+          }}>
+            {badge}
+          </div>
+        )}
+      </div>
+      {/* Content */}
+      <div style={{ padding: '14px 16px 16px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <p style={{ fontWeight: 800, fontSize: 15, color: '#1A0A00', marginBottom: 4 }}>{bundle.name}</p>
+        <p style={{ fontSize: 12, color: '#888', lineHeight: 1.5, marginBottom: 10, flex: 1 }}>{bundle.description}</p>
+        {/* Items list */}
+        {items.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 12 }}>
+            {items.slice(0, 4).map((item, i) => (
+              <span key={i} style={{ fontSize: 10, fontWeight: 600, color: '#C44400', background: '#FFF3E0', border: '1px solid #FFCC99', borderRadius: 20, padding: '2px 8px' }}>
+                {item}
+              </span>
+            ))}
+            {items.length > 4 && (
+              <span style={{ fontSize: 10, color: '#888', padding: '2px 4px' }}>+{items.length - 4} more</span>
+            )}
+          </div>
+        )}
+        {/* Price + CTA row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+          {price && <span style={{ fontSize: 16, fontWeight: 800, color: '#C44400' }}>{price}</span>}
+          {requested ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 700, color: '#27AE60' }}>
+              <Check size={14} /> Sent to Concierge!
+            </div>
+          ) : (
+            <button
+              onClick={() => setRequested(true)}
+              style={{
+                background: 'linear-gradient(135deg, #FF8C42, #C44400)',
+                color: '#fff', border: 'none', borderRadius: 10,
+                padding: '8px 18px', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                boxShadow: '0 3px 12px rgba(196,68,0,0.25)',
+              }}
+              data-testid={`request-bundle-${bundle.id}`}
+            >
+              Get This Bundle →
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 function getFoodEmoji(food) {
   const f = (food || '').toLowerCase();
   if (f.includes('salmon') || f.includes('fish')) return '🐟';
