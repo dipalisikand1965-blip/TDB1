@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://architecture-rebuild.preview.emergentagent.com/mira-demo**
+**https://data-integrity-task.preview.emergentagent.com/mira-demo**
 
 ---
 

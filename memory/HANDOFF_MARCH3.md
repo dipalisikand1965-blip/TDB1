@@ -110,7 +110,7 @@ Step 4: Welcome!
 ---
 
 ## PREVIEW URL
-`https://architecture-rebuild.preview.emergentagent.com`
+`https://data-integrity-task.preview.emergentagent.com`
 
 ## SERVICES
 - Frontend: Running on port 3000 (hot reload)
