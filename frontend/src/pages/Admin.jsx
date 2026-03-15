@@ -692,6 +692,29 @@ const Admin = () => {
     }
   };
 
+  // 🗃️ CONSOLIDATE DATA - Migrate all pillar collections to master + fix categories
+  const [consolidating, setConsolidating] = useState(false);
+  const [consolidateResult, setConsolidateResult] = useState(null);
+  const consolidateData = async () => {
+    if (!window.confirm('This will migrate all pillar-specific product/bundle collections into products_master and bundles (idempotent - safe to run multiple times). Continue?')) return;
+    setConsolidating(true);
+    setConsolidateResult(null);
+    try {
+      toast({ title: '🗃️ Consolidating Data...', description: 'Migrating pillar products & bundles to master collections' });
+      const res = await fetch(`${API_URL}/api/admin/consolidate-data?password=lola4304`, { method: 'POST' });
+      const text = await res.text();
+      let d;
+      try { d = JSON.parse(text); } catch { d = { success: false, message: text || 'Unknown error' }; }
+      setConsolidateResult(d);
+      toast({ title: d.success ? '✅ Consolidation Complete!' : '⚠️ Consolidation Failed', description: d.message, duration: 10000 });
+    } catch (error) {
+      setConsolidateResult({ success: false, message: error.message });
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    } finally {
+      setConsolidating(false);
+    }
+  };
+
   // 🚀 FIX PRODUCTION DATA - fixes service illustrations + pet soul data on current environment
   const fixProductionData = async () => {
     if (!window.confirm('This will fix service illustrations + pet soul data on this server. Continue?')) return;
@@ -3332,6 +3355,19 @@ const Admin = () => {
               >
                 {fixingProdData ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <span className="mr-1">🚀</span>}
                 {fixingProdData ? 'Fixing Prod...' : '🚀 FIX PROD DATA'}
+              </Button>
+
+              {/* 🗃️ CONSOLIDATE DATA Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white border-0 text-sm font-bold shadow-lg px-4 ml-2"
+                onClick={consolidateData}
+                disabled={consolidating}
+                data-testid="consolidate-data-btn"
+              >
+                {consolidating ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <span className="mr-1">🗃️</span>}
+                {consolidating ? 'Consolidating...' : '🗃️ CONSOLIDATE DATA'}
               </Button>
 
               {/* 🔀 COMPARE Button */}
