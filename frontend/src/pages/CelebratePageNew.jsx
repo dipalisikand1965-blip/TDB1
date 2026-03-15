@@ -343,8 +343,19 @@ const CelebratePageNew = () => {
           onTalkToConcierge={handleTalkToConcierge}
         />
 
-        {/* 5b. SERVICE GRID — 8 illustrated service cards */}
+        {/* 5b. CELEBRATE PERSONALLY — Section header + service cards */}
         <div style={{ marginTop: 32, marginBottom: 8 }}>
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <div style={{
+              fontSize: 'clamp(1.4rem, 2.5vw, 2rem)', fontWeight: 800, color: '#0E0620',
+              fontFamily: "Georgia, 'Times New Roman', serif", marginBottom: 8,
+            }}>
+              Celebrate, Personally
+            </div>
+            <div style={{ fontSize: 15, color: '#888' }}>
+              Tell us what you want {selectedPet?.name || 'your dog'}'s day to feel like. We'll do the rest.
+            </div>
+          </div>
           <CelebrateServiceGrid pet={selectedPet} />
         </div>
 
