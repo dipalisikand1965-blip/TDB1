@@ -31,8 +31,17 @@ const SOUL_PILLARS = [
     incompleteBadge: (petName) => `Complete ${petName}'s food preferences to unlock`,
     miraQuote: (pet) => {
       const fav = typeof pet?.favorites?.[0] === 'string' ? pet.favorites[0] : (pet?.favorites?.[0]?.name || pet?.favorites?.[0]?.value || 'treats');
-      const allergy = pet?.allergies?.[0] || (Array.isArray(pet?.doggy_soul_answers?.food_allergies) ? pet.doggy_soul_answers.food_allergies[0] : pet?.doggy_soul_answers?.food_allergies) || 'nothing specific';
-      return `"We know ${pet?.name || 'your pet'} loves ${fav} and can't have ${allergy}. Every item here is checked. Nothing that would hurt them, everything that makes them happy."`;
+      // Clean allergy: filter out "none_confirmed", "no", "none", etc.
+      const NONE_RE = /^(no|none|none_confirmed|no_allergies)$/i;
+      const rawAllergy = Array.isArray(pet?.doggy_soul_answers?.food_allergies)
+        ? pet.doggy_soul_answers.food_allergies.filter(a => !NONE_RE.test(String(a).trim()))[0]
+        : pet?.doggy_soul_answers?.food_allergies;
+      const allergyClean = rawAllergy && !NONE_RE.test(String(rawAllergy).trim()) ? rawAllergy : null;
+      const allergy = pet?.allergies?.[0] || allergyClean || null;
+      if (allergy) {
+        return `"We know ${pet?.name || 'your pet'} loves ${fav} and can't have ${allergy}. Every item here is checked. Nothing that would hurt them, everything that makes them happy."`;
+      }
+      return `"We know ${pet?.name || 'your pet'} loves ${fav}. Every item here has been chosen for their taste and body. Nothing harmful, everything joyful."`;
     },
     tabs: ['Birthday Cakes', 'Breed Cakes', 'Pupcakes', 'Desi Treats', 'Gift Hampers', 'Treat Boxes'],
     glowCondition: (pet) => {
@@ -42,7 +51,12 @@ const SOUL_PILLARS = [
       return hasAllergies || hasFavoriteProtein || hasFoodPrefs;
     },
     incompleteCondition: (pet) => {
-      return !pet?.doggy_soul_answers?.food_allergies && !pet?.doggy_soul_answers?.favorite_protein;
+      const NONE_RE = /^(no|none|none_confirmed|no_allergies)$/i;
+      const rawAllergy = pet?.doggy_soul_answers?.food_allergies;
+      const hasRealAllergy = rawAllergy && (
+        Array.isArray(rawAllergy) ? rawAllergy.some(a => !NONE_RE.test(String(a).trim())) : !NONE_RE.test(String(rawAllergy).trim())
+      );
+      return !hasRealAllergy && !pet?.doggy_soul_answers?.favorite_protein;
     }
   },
   {

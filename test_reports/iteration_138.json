@@ -1,0 +1,107 @@
+{
+  "summary": "Iteration 138 - Testing none_confirmed allergy filter, MiraSoulNudge component, and quick-questions API for Mojo (94% soul score). Fixed critical bug: MiraBirthdayBox was not imported in CelebratePageNew causing page crash. All specified features verified with Mojo pet.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "GET /api/pet-soul/profile/:petId",
+        "issue": "Response has soul_score: null and overall_score: null at top level; real score is in data.scores.overall (100.0 for Mojo). The hero picks up 100% from scores.overall while MiraSoulNudge quick-questions returns 94%. These two endpoints return different soul score values for the same pet.",
+        "priority": "LOW"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "CelebratePageNew.jsx",
+        "issue": "CRITICAL BUG FIXED: MiraBirthdayBox was used in JSX (line 338) but NOT imported — caused entire /celebrate-soul page to crash with 'Oops! Something went wrong' error boundary when user has a pet. Fixed by adding: import MiraBirthdayBox from '../components/celebrate/MiraBirthdayBox'",
+        "selector": "[data-testid='celebrate-hero']",
+        "priority": "CRITICAL - FIXED"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "SoulCelebrationPillars food pillar for none_confirmed pets",
+        "issue": "incompleteCondition in SoulCelebrationPillars.jsx uses NONE_RE to filter none_confirmed BUT still marks the food pillar as INCOMPLETE for pets whose ONLY allergy answer is 'none_confirmed' (like Buddy). Logic: !hasRealAllergy && !favorite_protein = true (incomplete). Spec says none_confirmed should mean 'allergies answered' not 'incomplete'. Fix: check if any allergy answer exists (not null/undefined) regardless of value to count as answered.",
+        "affected_selectors": ["[data-testid='pillar-card-food']"]
+      }
+    ],
+    "design_issues": [
+      {
+        "screen": "/celebrate-soul CelebrateHero",
+        "issues": ["Hero soul score badge shows '100%' (from full profile scores.overall) while MiraSoulNudge shows '94%' (from quick-questions current_score). Review team specified 94% as the correct soul score for Mojo. Minor inconsistency between two score sources."]
+      }
+    ]
+  },
+  "features_verified": {
+    "mira_soul_nudge_visible": {
+      "status": "PASS",
+      "evidence": "data-testid='mira-soul-nudge' present when user logged in with Mojo pet"
+    },
+    "mira_soul_nudge_94_score": {
+      "status": "PASS",
+      "evidence": "MiraSoulNudge header shows 'Soul score: 94%' and '94% soul known'"
+    },
+    "mira_soul_nudge_progress_bar": {
+      "status": "PASS",
+      "evidence": "Purple/pink gradient progress bar visible in MiraSoulNudge header"
+    },
+    "mira_soul_nudge_all_done": {
+      "status": "PASS",
+      "evidence": "Shows 'Mira knows Mojo's food soul' + 'Mojo's soul score is 94%. Every product, treat, and celebration pick is now personalised.'"
+    },
+    "quick_questions_api": {
+      "status": "PASS",
+      "evidence": "GET /api/pet-soul/profile/pet-mojo-7327ad56/quick-questions?context=celebrate&limit=3 returns {questions:[], current_score: 94, total_unanswered: 0}"
+    },
+    "hero_no_none_confirmed": {
+      "status": "PASS",
+      "evidence": "Hero shows 'Allergy: chicken' chip, NOT 'none_confirmed'"
+    },
+    "food_pillar_glow_mojo": {
+      "status": "PASS",
+      "evidence": "Food & Flavour pillar shows 'Mojo loves this' badge (GLOW state, not locked)"
+    },
+    "none_confirmed_buddy_food_pillar": {
+      "status": "FAIL",
+      "evidence": "Buddy (food_allergies: ['none_confirmed']) food pillar shows INCOMPLETE state. incompleteCondition returns true because hasRealAllergy=false (none_confirmed filtered) AND no favorite_protein. Spec says none_confirmed should be 'answered'."
+    },
+    "dine_tummy_profile_none_confirmed": {
+      "status": "PASS (code verified)",
+      "evidence": "DineSoulPage.jsx inline TummyProfile uses getAllergies() with CLEAN_NONE regex which correctly filters none_confirmed. getAllergies(['none_confirmed']) returns []."
+    }
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_celebrate_soul_nudge.py",
+    "/app/test_reports/pytest/pytest_results_138.xml"
+  ],
+  "action_items": [
+    "Fix SoulCelebrationPillars food pillar incompleteCondition to treat 'none_confirmed' as an answered allergy (not incomplete). Current logic: !hasRealAllergy && !favorite_protein. Fix: also check if any allergy value was given (even none_confirmed) to count as answered.",
+    "Review soul score discrepancy: hero shows 100% (from data.scores.overall) while MiraSoulNudge shows 94% (from quick-questions current_score). Decide which is canonical for the hero badge."
+  ],
+  "critical_code_review_comments": [
+    "CRITICAL BUG FIXED: CelebratePageNew.jsx was using MiraBirthdayBox component on line 338 but never importing it. This caused a ReferenceError crash for ALL users with pets on /celebrate-soul. Added import statement.",
+    "SoulCelebrationPillars.jsx incompleteCondition for food pillar: none_confirmed is correctly filtered from being displayed as an allergy, but the pillar still becomes INCOMPLETE for pets that only have none_confirmed (not treated as 'answered'). Needs fix to check if any allergy response exists (not just real allergies).",
+    "Score inconsistency: /api/pet-soul/profile returns soul_score:null, overall_score:null but data.scores.overall=100. The /api/pet-soul/profile/:id/quick-questions returns current_score=94. Hero uses 100% while MiraSoulNudge uses 94%.",
+    "TummyProfile.jsx in /components/dine/ (mergeAllergies) still has the old bug (doesn't filter none_confirmed), but this file is NOT imported anywhere - only the inline TummyProfile in DineSoulPage.jsx is used, which correctly uses getAllergies() with CLEAN_NONE."
+  ],
+  "updated_files": [
+    "/app/frontend/src/pages/CelebratePageNew.jsx"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 tests pass)",
+    "frontend": "87% (7/8 features pass; 1 fails for Buddy none_confirmed food pillar)"
+  },
+  "seed_data_creation": "Used existing pets: Mojo (pet-mojo-7327ad56, food_allergies: chicken), Buddy (pet-buddy-0faaab34, food_allergies: none_confirmed)",
+  "test_credentials": "dipali@clubconcierge.in / test123 (or lola4304 on admin panel)",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "MiraBirthdayBox import fix applied in CelebratePageNew.jsx. All core features work: MiraSoulNudge visible, 94% score, all done state, quick-questions API correct. Remaining: SoulCelebrationPillars food pillar incompleteCondition doesn't treat none_confirmed as answered for Buddy-type pets. The page is now fully functional after the import fix.",
+  "rca_of_critical_bug": {
+    "bug": "MiraBirthdayBox not imported in CelebratePageNew.jsx",
+    "root_cause": "When MiraSoulNudge was added (new feature), the file imports were updated with the new component but MiraBirthdayBox (already used in JSX at line 338) was accidentally removed from imports. The component exists at /app/frontend/src/components/celebrate/MiraBirthdayBox.jsx but was not imported.",
+    "reproduction": "1. Login as dipali@clubconcierge.in 2. Navigate to /celebrate-soul 3. Page shows 'Oops! Something went wrong' error boundary",
+    "fix_applied": "Added: import MiraBirthdayBox from '../components/celebrate/MiraBirthdayBox'; after MiraSoulNudge import",
+    "verified": "Page now renders correctly with all sections including MiraBirthdayBox, MiraSoulNudge, and CelebrateHero"
+  }
+}

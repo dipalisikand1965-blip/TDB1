@@ -156,12 +156,17 @@ const CONC_SERVICES = [
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function t(str, name) { return str.replace(/{name}/g, name || "your dog"); }
 
+const CLEAN_NONE = /^(no|none|none_confirmed|no_allergies|no allergies)$/i;
+
 function getAllergies(pet) {
   const s = new Set();
-  const add = v => { if (Array.isArray(v)) v.forEach(x => x && s.add(x)); else if (v) s.add(v); };
+  const add = v => {
+    if (Array.isArray(v)) v.forEach(x => { if (x && !CLEAN_NONE.test(String(x).trim())) s.add(x); });
+    else if (v && !CLEAN_NONE.test(String(v).trim())) s.add(v);
+  };
   add(pet?.preferences?.allergies); add(pet?.doggy_soul_answers?.food_allergies);
   add(pet?.doggy_soul_answers?.allergies); add(pet?.allergies);
-  return [...s].filter(a => a && a.toLowerCase() !== "none");
+  return [...s].filter(a => a && !CLEAN_NONE.test(String(a).trim()));
 }
 
 function getLoves(pet) {
