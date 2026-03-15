@@ -25,7 +25,7 @@ const SOUL_PILLARS = [
     color: 'linear-gradient(135deg, #FFF3E0, #FFE0B2)',
     dotColor: '#FF8C42',
     borderColor: '#FF8C42',
-    tagline: (petName) => `Salmon cake, allergy-safe treats, birthday feast`,
+    tagline: (petName) => `Birthday feast, allergy-safe treats, curated just for ${petName}`,
     glowBadge: (petName) => `${petName} loves this`,
     dimBadge: 'Explore',
     incompleteBadge: (petName) => `Complete ${petName}'s food preferences to unlock`,

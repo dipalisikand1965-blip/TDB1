@@ -86,20 +86,45 @@ const PILLAR_TABS = {
   ],
 };
 
+/* Safely convert a value that might be a string, array, or undefined to a lowercase string array */
+const toStrArray = (val) => {
+  if (!val) return [];
+  if (Array.isArray(val)) return val.map(v => String(v).toLowerCase());
+  if (typeof val === 'string') return val.split(/[,;]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
+  return [];
+};
+
 /* ── Exact Mira quotes from spec ─────────────────────────────────────────── */
+const KNOWN_FLAVORS = ['salmon', 'chicken', 'beef', 'peanut butter', 'banana', 'lamb', 'tuna'];
+
 const getMiraQuote = (pillarId, pet) => {
   const name = pet?.name || 'your pet';
   const friend1 = pet?.doggy_soul_answers?.pet_friends?.[0] || pet?.pet_friends?.[0] || 'Bruno';
   const friend2 = pet?.doggy_soul_answers?.pet_friends?.[1] || pet?.pet_friends?.[1] || 'Cookie';
-  const condition = pet?.doggy_soul_answers?.health_conditions || pet?.health_conditions;
+
+  // Food pillar — derive the pet's top safe flavor dynamically
+  const favTreats = toStrArray(pet?.doggy_soul_answers?.favorite_treats);
+  const allergies = toStrArray(pet?.doggy_soul_answers?.food_allergies || pet?.allergies)
+    .filter(a => a && a !== 'none');
+
+  // Match a known clean flavor name from the pet's favorite treats
+  const topFlavor = KNOWN_FLAVORS.find(
+    f => favTreats.some(t => t.includes(f)) && !allergies.some(a => a && f.includes(a))
+  ) || favTreats.find(t => !allergies.some(a => a && t.includes(a)));
+  const topFlavourDisplay = topFlavor
+    ? topFlavor.charAt(0).toUpperCase() + topFlavor.slice(1)
+    : null;
+
   const quotes = {
-    food:      `"Everything here is soy-free. The salmon cake is ${name}'s number one — I put it first. This is the feast she deserves."`,
-    play:      `"Play is ${name}'s top soul pillar. Tennis balls first — that's her language. Everything else follows from that."`,
-    social:    `"${name} is a Social Butterfly. Her birthday isn't complete without ${friend1} and ${friend2}. I've built the pawty around all three of them."`,
-    adventure: `"${name}'s happiest when she's moving. Start her birthday with a sunrise walk — that's the real gift. Everything else is extra."`,
+    food: topFlavourDisplay
+      ? `"I've checked every item here for ${name}. The ${topFlavourDisplay.toLowerCase()} cake is ${name}'s number one — I put it first. This is the feast ${name} deserves."`
+      : `"I've checked every item here for ${name}. Nothing that could hurt them, everything that makes them happy. This is the feast ${name} deserves."`,
+    play:      `"Play is ${name}'s top soul pillar. Every toy here was picked for their energy and play style. This isn't just a gift — it's speaking their language."`,
+    social:    `"${name} is a Social Butterfly. Their birthday isn't complete without ${friend1} and ${friend2}. I've built the pawty around all three of them."`,
+    adventure: `"${name}'s happiest when moving. Start their birthday with a sunrise walk — that's the real gift. Everything else is extra."`,
     grooming:  `"Every birthday dog deserves to look the part. ${name}'s birthday bandana is waiting. Book the pamper session first — everything else follows."`,
-    learning:  `"${name} has a bright mind. The best birthday gift is something to solve. Start with the Level 3 puzzle — she's ready for it."`,
-    health:    `"The most loving thing you can give ${name} on her birthday is more time. Every product here is treatment-safe. I've checked each one personally."`,
+    learning:  `"${name} has a bright mind. The best birthday gift is something to solve. I've picked the right challenge level — they're ready for it."`,
+    health:    `"The most loving thing you can give ${name} on their birthday is more time. Every product here is treatment-safe. I've checked each one personally."`,
     memory:    `"${name}'s birthday happens once. This is how you keep it. The portrait goes on the wall. The memory book is read for years. Start with the photoshoot."`,
   };
   return quotes[pillarId] || `"I've curated everything here with ${name} in mind."`;
@@ -107,13 +132,22 @@ const getMiraQuote = (pillarId, pet) => {
 
 /* ── Expanded titles + subtitles ─────────────────────────────────────────── */
 const PILLAR_TITLES = {
-  food:      { title: 'Food & Flavour — Birthday Feast',           sub: (p) => `Soy-free. Salmon-forward. Every item checked by Mira.` },
+  food:      { title: 'Food & Flavour — Birthday Feast',            sub: (p) => {
+    const treats = toStrArray(p?.doggy_soul_answers?.favorite_treats);
+    const allergies = toStrArray(p?.doggy_soul_answers?.food_allergies || p?.allergies);
+    const topFlavor = treats.find(t => !allergies.some(a => a && t.includes(a))) || treats[0];
+    const hasAllergens = allergies.filter(a => a && a !== 'none').length > 0;
+    const allergenNote = hasAllergens ? `${allergies.filter(a => a && a !== 'none').join('-')}-free.` : 'Allergen-checked.';
+    return topFlavor
+      ? `${allergenNote} ${topFlavor.charAt(0).toUpperCase() + topFlavor.slice(1)}-forward. Every item checked by Mira.`
+      : `${allergenNote} Every item checked by Mira.`;
+  }},
   play:      { title: 'Play & Joy — The Language {petName} Speaks', sub: (p) => `Play is ${p?.name || 'your pet'}'s top soul pillar. Start here.` },
   social:    { title: 'Social & Friends — {petName}\'s Pawty',      sub: (p) => `Bruno and Cookie are already on the list. Let's plan.` },
-  adventure: { title: 'Adventure & Move — Celebrate in Motion',    sub: (p) => `${p?.name || 'your pet'}'s happiest when she's moving. Make her birthday start with her favourite thing.` },
+  adventure: { title: 'Adventure & Move — Celebrate in Motion',    sub: (p) => `${p?.name || 'your pet'}'s happiest when moving. Make their birthday start with their favourite thing.` },
   grooming:  { title: 'Grooming & Beauty — Birthday Glow-Up',      sub: () => `Every birthday dog deserves to look the part.` },
   learning:  { title: 'Learning & Mind — A Gift That Grows',       sub: (p) => `The best birthday gift you can give ${p?.name || 'your pet'} is something to solve.` },
-  health:    { title: 'Health & Wellness — The Most Loving Gift',  sub: (p) => `I've noted ${p?.name || 'your pet'}'s health. Everything here supports her strength.` },
+  health:    { title: 'Health & Wellness — The Most Loving Gift',  sub: (p) => `I've noted ${p?.name || 'your pet'}'s health. Everything here supports their strength.` },
   memory:    { title: 'Love & Memory — Make This Birthday Permanent', sub: (p) => `${p?.name || 'your pet'}'s birthday happens once. This is how you keep it.` },
 };
 
@@ -149,14 +183,6 @@ const FLAVOR_FEAST_ITEMS = {
     { icon: '🍪', name: 'Signature Treat Platter', desc: 'Handpicked × 12 biscuits' },
     { icon: '🧁', name: 'Birthday Paw Cupcakes', desc: '6 celebration cups for the guests' },
   ],
-};
-
-/* Safely convert a value that might be a string, array, or undefined to a lowercase string array */
-const toStrArray = (val) => {
-  if (!val) return [];
-  if (Array.isArray(val)) return val.map(v => String(v).toLowerCase());
-  if (typeof val === 'string') return val.split(/[,;]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
-  return [];
 };
 
 const deriveFeastItems = (pet) => {
