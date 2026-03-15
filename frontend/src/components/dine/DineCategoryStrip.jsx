@@ -44,6 +44,12 @@ export const DINE_CATEGORIES = [
     iconBg: 'linear-gradient(135deg, #FFFDE7, #FFF59D)',
   },
   {
+    id: 'bundles',
+    name: 'Bundles',
+    icon: '🎁',
+    iconBg: 'linear-gradient(135deg, #FFF3E0, #FFCCBC)',
+  },
+  {
     id: 'soul-picks',
     name: 'Soul Picks',
     icon: '✨',
