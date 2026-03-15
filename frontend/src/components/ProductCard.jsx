@@ -373,9 +373,14 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
       return product.image;
     }
     
+    // Also accept image_url (used by pillar catalog products)
+    if (product.image_url && product.image_url.startsWith('http')) {
+      return product.image_url;
+    }
+    
     // AVOID using images array for marketplace products - it may contain AI-generated images
     // Only use images array as last resort
-    if (product.images?.[0] && product.images[0].startsWith('http') && product.images[0].includes('shopify.com')) {
+    if (product.images?.[0] && product.images[0].startsWith('http') && (product.images[0].includes('shopify.com') || product.images[0].includes('emergentagent.com'))) {
       return product.images[0];
     }
     
@@ -601,8 +606,13 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
       return product.image;
     }
     
+    // Also accept image_url (used by pillar catalog products)
+    if (product.image_url && product.image_url.startsWith('http')) {
+      return product.image_url;
+    }
+    
     // AVOID using images array for marketplace products - it may contain AI-generated images
-    if (product.images?.[0] && product.images[0].startsWith('http') && product.images[0].includes('shopify.com')) {
+    if (product.images?.[0] && product.images[0].startsWith('http') && (product.images[0].includes('shopify.com') || product.images[0].includes('emergentagent.com'))) {
       return product.images[0];
     }
     

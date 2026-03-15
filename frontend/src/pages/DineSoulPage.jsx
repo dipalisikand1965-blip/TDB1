@@ -15,6 +15,7 @@ import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
 import MiraSoulNudge from "../components/celebrate/MiraSoulNudge";
+import DineCategoryStrip from "../components/dine/DineCategoryStrip";
 import { API_URL } from "../utils/api";
 import { toast } from "../hooks/use-toast";
 
@@ -719,6 +720,9 @@ const DineSoulPage = () => {
 
       {/* Hero — full bleed */}
       <DineHeroV2 pet={petData} soulScore={soulScore} />
+
+      {/* Category strip — same golden principle as /celebrate-soul */}
+      <DineCategoryStrip pet={petData} />
 
       {/* Tab bar */}
       <TabBar active={activeTab} onChange={setActiveTab} />
