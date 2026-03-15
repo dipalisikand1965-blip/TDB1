@@ -265,10 +265,11 @@ const PillarCard = ({ pillar, pet, isExpanded, onToggle, onTellMiraMore }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
+      className="h-full"
     >
       <div
         onClick={handleClick}
-        style={{...cardStyle, display:'flex', flexDirection:'column'}}
+        style={{...cardStyle, display:'flex', flexDirection:'column', height:'100%'}}
         className="hover:-translate-y-0.5"
         data-testid={`pillar-card-${pillar.id}`}
       >
