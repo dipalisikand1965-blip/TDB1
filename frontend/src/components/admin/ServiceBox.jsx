@@ -38,8 +38,8 @@ const ALL_PILLARS = [
   { id: 'advisory', name: 'Advisory', icon: '📋', color: 'bg-teal-500' },
   { id: 'emergency', name: 'Emergency', icon: '🚨', color: 'bg-red-500' },
   { id: 'farewell', name: 'Farewell', icon: '🌈', color: 'bg-violet-500' },
-  { id: 'adopt', name: 'Adopt', icon: '🐾', color: 'bg-amber-500' },
-  { id: 'shop', name: 'Shop', icon: '🛒', color: 'bg-emerald-500' }
+  { id: 'adopt', name: 'Adopt', icon: '🐾', color: 'bg-amber-500' }
+  // 'shop' removed — shop is for products, not services
 ];
 
 const CITIES = ['mumbai', 'delhi', 'bangalore', 'chennai', 'hyderabad', 'pune', 'kolkata', 'jaipur'];

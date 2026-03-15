@@ -4,7 +4,36 @@
 
 ---
 
-## ✅ SESSION 36 — Admin Panel Comprehensive Fix (Mar 15, 2026)
+## ✅ SESSION 37 — Services Architecture Fix + Celebrate Full CRUD (Mar 15, 2026)
+
+### What Was Fixed:
+
+#### 1. Services Architecture — Shop Removed (PERMANENT FIX)
+- **Problem**: 561 services had `pillar: ''`, 392 had `pillar: 'shop'` (wrong — shop is for products)
+- **Fix**: Keyword-heuristic script reassigned all services to correct pillars (care, emergency, advisory, etc.)
+- **Product-type entries** in services_master (type='product') → marked `is_active: False`
+- **ServiceBox admin**: Removed 'shop' from ALL_PILLARS array → now shows only 13 true service pillars
+- **Architecture rule**: Shop = products by sub-category | Services = services from all 13 pillars
+
+#### 2. Celebrate Products Admin — Full CRUD (1,499 products)
+- **Problem**: Admin only showed 4 products (from `celebrate_products`), missing 1,495 from `products_master`
+- **Fix**: `GET /api/celebrate/admin/products` now merges both collections
+- **Features Added**: Pagination (50/page), search, category filter, total count display
+- **Image Upload**: File upload button → `/api/upload/product-image` → Cloudinary
+- **AI Generate Image**: Button calls `/api/celebrate/admin/products/{id}/generate-image`  
+- **Shopify Badge**: Products from products_master show "Shopify" badge
+- **Delete**: Soft-delete for products_master (marks inactive), hard delete for celebrate_products
+
+#### 3. Architecture Documentation Updated
+- HTML audit at `/app/docs/architecture_audit.html` updated with all fixes
+- All data counts corrected
+
+### Testing Results (Session 37):
+- **Backend**: All tests passed ✅
+- **Frontend**: CelebrateManager loads 1,499 products ✅
+- **Services**: 13 pillars in ServiceBox (no 'shop') ✅
+
+---
 
 ### What Was Fixed:
 
