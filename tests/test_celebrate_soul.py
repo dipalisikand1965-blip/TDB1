@@ -6,7 +6,7 @@ import asyncio
 from playwright.async_api import async_playwright
 import json
 
-BASE_URL = "https://dine-layout-update.preview.emergentagent.com"
+BASE_URL = "https://dine-category-pills.preview.emergentagent.com"
 BRUNO_PET_ID = "pet-bruno-7327ad58"
 
 

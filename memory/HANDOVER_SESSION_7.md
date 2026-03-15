@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://dine-layout-update.preview.emergentagent.com
+https://dine-category-pills.preview.emergentagent.com
 
 ---
 

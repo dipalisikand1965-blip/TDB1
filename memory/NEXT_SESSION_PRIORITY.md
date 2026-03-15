@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://dine-layout-update.preview.emergentagent.com
+**Preview URL:** https://dine-category-pills.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

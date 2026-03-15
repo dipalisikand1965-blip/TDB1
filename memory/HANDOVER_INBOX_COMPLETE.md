@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://dine-layout-update.preview.emergentagent.com
+https://dine-category-pills.preview.emergentagent.com
 ```
 
 ---
