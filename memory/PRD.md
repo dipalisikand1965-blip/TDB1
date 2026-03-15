@@ -4,25 +4,30 @@
 
 ---
 
-## ✅ SESSION 27 COMPLETE — Production Fix Panel in Admin (Mar 2026)
+## ✅ SESSION 27 COMPLETE — Production Fix Panel + Compare Tool (Mar 2026)
 
-**Status: Complete — Admin now has "🚀 FIX PROD DATA" button for zero-deployment production fixes**
+**Status: Complete — Admin now has zero-deployment production fix buttons and live preview↔production compare**
 
 ### What Was Built:
 1. **New backend endpoint** `/api/admin/fix-pet-string-data` — converts pet soul data string→array (fixes Food & Flavour crash)
 2. **Updated `/api/admin/fix-celebrate-data`** — now also fixes pet soul string data in one call
-3. **"🚀 FIX PROD DATA" button** in admin dashboard (CONFIG section) — calls thedoggycompany.com API directly from browser
-4. **"Production Fix Panel"** in CelebrateManager Settings tab — two granular fix buttons with results display
+3. **"🚀 FIX PROD DATA" button** in admin dashboard CONFIG row — calls thedoggycompany.com API directly from browser
+4. **"🔀 COMPARE" button** in admin dashboard CONFIG row — fetches live stats from both environments
+5. **Preview ↔ Production Compare Panel** — table showing collection counts with diff + sync status
+6. **Production Fix Panel** in CelebrateManager Settings tab — granular fix buttons with results display
 
-### How it works (No Deployment Needed):
-- Click "🚀 FIX PROD DATA" → browser calls `https://thedoggycompany.com/api/admin/fix-celebrate-data` directly
-- CORS is `*` on production → cross-origin calls work
-- Fix 1 (works immediately): Service illustrations + product image URLs
-- Fix 2 (needs ONE deploy to activate on prod): Pet soul string→array conversion
+### Confirmed Out-of-Sync (from COMPARE as of Mar 2026):
+| Collection | Preview | Production | Diff |
+|---|---|---|---|
+| Products | 3,860 | 4,258 | +398 (prod has more Shopify products) |
+| Services | 1,115 | 1,120 | +5 |
+| Members | 9 | 6 | -3 |
+| Orders | 11 | 0 | -11 |
 
-### Action Still Required:
-- ONE deployment to push the new `fix-pet-string-data` endpoint to production
-- Then click "🚀 FIX PROD DATA" to permanently fix the Food & Flavour crash
+### Action Required:
+1. Deploy this preview → production (one time)
+2. Click "🚀 FIX PROD DATA" to fix service illustrations + pet soul string data
+3. Click "🔀 COMPARE" after deploy to verify sync
 
 ---
 
