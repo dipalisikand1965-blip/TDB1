@@ -134,7 +134,7 @@ soulReason={getSoulBasedReason(activePet, 'celebrate')}  // or 'stay', 'dine', e
 ---
 
 ## PREVIEW URL
-https://soul-ranked-preview.preview.emergentagent.com
+https://celebrate-products.preview.emergentagent.com
 
 ---
 

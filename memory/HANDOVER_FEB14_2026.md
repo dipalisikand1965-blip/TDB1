@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://soul-ranked-preview.preview.emergentagent.com` |
+| **Preview** | `https://celebrate-products.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |

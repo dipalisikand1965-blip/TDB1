@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://soul-ranked-preview.preview.emergentagent.com
+https://celebrate-products.preview.emergentagent.com
 ```
 
 ---
