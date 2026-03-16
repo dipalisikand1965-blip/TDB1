@@ -17,7 +17,7 @@ New Test User: audit_test_1771750532@test.com / test123
 
 ### URLs
 ```
-Preview: https://dine-category-pills.preview.emergentagent.com
+Preview: https://mojo-tummy-profile.preview.emergentagent.com
 Production: https://thedoggycompany.com
 Admin: /admin (login required)
 ```
