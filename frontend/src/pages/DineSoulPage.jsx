@@ -19,6 +19,7 @@ import DineHero from "../components/dine/DineHero";
 import MealBoxCard from "../components/dine/MealBoxCard";
 import ConciergeIntakeModal from "../components/dine/ConciergeIntakeModal";
 import DineConciergeSection from "../components/dine/DineConciergeSection";
+import GuidedNutritionPaths from "../components/dine/GuidedNutritionPaths";
 import { PillarHelpBuckets, PillarGuidedPaths } from "../components/PillarGoldSections";
 import { API_URL } from "../utils/api";
 import SharedProductCard from "../components/ProductCard";
@@ -936,58 +937,6 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
 }
 
 // ─── Guided Nutrition Paths ───────────────────────────────────────────────────
-function GuidedNutritionPaths({ pet }) {
-  const [openPath, setOpenPath] = useState("allergy");
-  const petName = pet?.name || "your dog";
-  const allergies = getAllergies(pet);
-  const healthCondition = getHealthCondition(pet);
-  const paths = [
-    {id:"allergy",icon:"🛡️",iconBg:"#FEF0F0",badge:"Mira Pick",badgeBg:"#C0392B",title:"Allergy Navigation Path",desc:`Already know about ${allergies[0]||"allergies"}. Mira guides you to check for more — elimination, novel proteins, reintroduction.`,steps:["Identify symptoms","Elimination diet","Novel proteins","Reintroduction"]},
-    {id:"health",icon:"💜",iconBg:"#F0ECFF",badge:"Mira Pick",badgeBg:"#4B0082",title:"Health Nutrition Path",desc:`Nutrition protocol tailored to ${petName}'s ${healthCondition||"specific health condition"} — joints, digestion, immunity, or more.`,steps:["Treatment-safe foods","Anti-inflammatory plan","Supplement schedule","Recovery meals"]},
-    {id:"homemade",icon:"👩‍🍳",iconBg:"#FFF8E8",badge:"Mira Pick",badgeBg:"#C9973A",title:"Homemade Cooking Path",desc:`Safe, balanced recipes you can make at home — allergy-filtered and vet-reviewed.`,steps:["Safe ingredients","Simple recipes","Portion guide","Weekly plan"]},
-  ];
-  return (
-    <div style={{marginBottom:32}} data-testid="guided-nutrition-paths">
-      <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",marginBottom:4}}>
-        <div style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:"#1A0A00",fontFamily:"Georgia,serif"}}>Guided Nutrition Paths</div>
-        <button style={{background:"none",border:"1.5px solid #E0D0C0",borderRadius:20,padding:"5px 14px",fontSize:12,fontWeight:600,color:"#888",cursor:"pointer"}}>See all 6</button>
-      </div>
-      <div style={{fontSize:12,color:"#888",marginBottom:18}}>Mira picked {paths.length} paths for {petName}</div>
-      <div style={{display:"flex",flexDirection:"column",gap:10}}>
-        {paths.map(path => (
-          <div key={path.id}>
-            <div onClick={() => setOpenPath(openPath===path.id?null:path.id)} style={{background:openPath===path.id?(path.id==="allergy"?"#FFF0F0":path.id==="health"?"#F0ECFF":"#FFF8E8"):"#fff",border:`1.5px solid ${openPath===path.id?(path.id==="allergy"?"#F5C6C6":path.id==="health"?"#C5AEFF":"#FFE5A0"):"#F0E8E0"}`,borderRadius:14,padding:"14px 18px",cursor:"pointer",display:"flex",alignItems:"center",gap:14,transition:"all 0.15s"}}>
-              <div style={{width:40,height:40,borderRadius:10,background:path.iconBg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{path.icon}</div>
-              <div style={{flex:1}}>
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
-                  <span style={{fontSize:14,fontWeight:700,color:"#1A0A00"}}>{path.title}</span>
-                  <span style={{background:path.badgeBg,color:"#fff",fontSize:10,fontWeight:700,borderRadius:20,padding:"2px 8px"}}>{path.badge}</span>
-                </div>
-                <div style={{fontSize:12,color:"#555",lineHeight:1.5}}>{path.desc}</div>
-              </div>
-              <span style={{fontSize:16,color:"#ccc",flexShrink:0,transform:openPath===path.id?"rotate(90deg)":"none",transition:"transform 0.2s"}}>›</span>
-            </div>
-            {openPath===path.id && (
-              <div style={{background:"#fff",border:`1.5px solid ${path.id==="allergy"?"#F5C6C6":path.id==="health"?"#C5AEFF":"#FFE5A0"}`,borderTop:"none",borderRadius:"0 0 14px 14px",padding:"16px 18px 18px"}}>
-                <div style={{fontSize:10,fontWeight:700,color:path.badgeBg,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:12}}>Path Steps</div>
-                <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:16}}>
-                  {path.steps.map((step,i) => (
-                    <div key={step} style={{display:"flex",alignItems:"center",gap:12}}>
-                      <div style={{width:24,height:24,borderRadius:"50%",border:`1.5px solid ${path.badgeBg}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:path.badgeBg,flexShrink:0}}>{i+1}</div>
-                      <span style={{fontSize:13,color:"#1A0A00"}}>{step}</span>
-                    </div>
-                  ))}
-                </div>
-                <button onClick={() => window.dispatchEvent(new CustomEvent("openMiraAI",{detail:{message:`Start the ${path.title} for ${petName}`,context:"dine"}}))} style={{width:"100%",background:path.badgeBg,color:"#fff",border:"none",borderRadius:10,padding:11,fontSize:13,fontWeight:700,cursor:"pointer"}}>Start this path with Mira →</button>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 // ─── Pet Friendly Spots ───────────────────────────────────────────────────────
 const MOCK_SPOTS = [
   {name:"The Doggy Café",addr:"Indiranagar · 1.2km",icon:"☕",rating:"4.7",tag:"Great for Indies"},

@@ -609,8 +609,90 @@ class ConciergeGeneralRequest(BaseModel):
     source: Optional[str] = "website"
 
 
-class ConciergeIntakeRequest(BaseModel):
-    """Request model for Celebrate Concierge® intake form (3-question modal)."""
+class NutritionPathRequest(BaseModel):
+    """Request model for Guided Nutrition Path hand-to-concierge."""
+    petId: Optional[str] = None
+    petName: Optional[str] = "your pet"
+    pathId: Optional[str] = None
+    pathTitle: Optional[str] = None
+    selections: Optional[dict] = None
+
+
+@router.post("/nutrition-path")
+async def submit_nutrition_path(request: NutritionPathRequest):
+    """
+    Submit a guided nutrition path to the Concierge.
+    Follows the unified service flow: intake → admin notification → ticket → channel intake.
+    Returns: { success, message, intakeId }
+    """
+    db = get_db()
+    import uuid
+
+    intake_id = f"NUTR-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+    ticket_id = f"TKT-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
+    notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    path_title = request.pathTitle or (request.pathId or "Nutrition Path").replace("_", " ").title()
+    pet_name = request.petName or "your pet"
+    subject = f"Nutrition Path — {path_title} for {pet_name}"
+
+    intake_doc = {
+        "id": intake_id, "ticket_id": ticket_id, "type": "nutrition_path",
+        "pet_id": request.petId, "pet_name": pet_name,
+        "path_id": request.pathId, "path_title": path_title,
+        "selections": request.selections, "source": "guided_nutrition_paths",
+        "status": "new", "created_at": now_iso
+    }
+    await db.concierge_intakes.insert_one({k: v for k, v in intake_doc.items() if k != "_id"})
+
+    await db.admin_notifications.insert_one({
+        "id": notification_id, "type": "nutrition_path", "pillar": "dine",
+        "title": f"Nutrition Path: {path_title} — {pet_name}",
+        "message": f"Guided nutrition path completed for {pet_name}. Path: {path_title}.",
+        "read": False, "status": "unread", "urgency": "medium",
+        "ticket_id": ticket_id, "inbox_id": inbox_id, "intake_id": intake_id,
+        "pet": {"name": pet_name}, "link": f"/agent-portal?tab=service_desk&ticket={ticket_id}",
+        "created_at": now_iso, "read_at": None
+    })
+
+    ticket_doc = {
+        "id": ticket_id, "ticket_id": ticket_id, "notification_id": notification_id,
+        "inbox_id": inbox_id, "intake_id": intake_id, "type": "concierge_inquiry",
+        "source": "guided_nutrition_paths", "source_id": intake_id,
+        "pillar": "dine", "category": "nutrition", "subcategory": request.pathId or "general",
+        "subject": subject, "description": f"Nutrition path completed: {path_title}",
+        "status": "new", "priority": 3, "urgency": "medium",
+        "pet": {"name": pet_name, "id": request.petId},
+        "path_id": request.pathId, "selections": request.selections,
+        "created_at": now_iso, "updated_at": now_iso,
+        "tags": ["dine", "nutrition_path", request.pathId or "general"],
+        "unified_flow_processed": True,
+        "audit_trail": [{"action": "created", "timestamp": now_iso, "performed_by": "system",
+                         "details": f"Created from Guided Nutrition Paths — {path_title}"}]
+    }
+    await db.service_desk_tickets.insert_one({k: v for k, v in ticket_doc.items() if k != "_id"})
+    await db.tickets.insert_one({k: v for k, v in ticket_doc.items() if k != "_id"})
+
+    await db.channel_intakes.insert_one({k: v for k, v in {
+        "id": inbox_id, "ticket_id": ticket_id, "intake_id": intake_id,
+        "channel": "web", "request_type": "nutrition_path", "pillar": "dine",
+        "category": request.pathId or "general", "status": "new", "urgency": "medium",
+        "pet": {"name": pet_name, "id": request.petId},
+        "preview": subject, "created_at": now_iso, "updated_at": now_iso,
+    }.items() if k != "_id"})
+
+    logger.info(f"[UNIFIED FLOW] Nutrition path complete: {intake_id} | ticket: {ticket_id} | pet: {pet_name} | path: {request.pathId}")
+
+    return {
+        "success": True,
+        "message": f"{path_title} sent to your Concierge. They'll reach out within 48 hours.",
+        "intakeId": intake_id
+    }
+
+
+
     petId: Optional[str] = None
     petName: Optional[str] = "your pet"
     serviceType: Optional[str] = "general"
@@ -709,6 +791,17 @@ async def create_dining_concierge_intake(request: DiningIntakeRequest):
         "message": "Your Concierge has everything they need. Expect a message within 48 hours.",
         "intakeId": intake_id
     }
+
+
+
+class ConciergeIntakeRequest(BaseModel):
+    """Request model for Celebrate Concierge® intake form (3-question modal)."""
+    petId: Optional[str] = None
+    petName: Optional[str] = "your pet"
+    serviceType: Optional[str] = "general"
+    celebrationDate: Optional[str] = None
+    notes: Optional[str] = None
+    source: Optional[str] = "concierge_intake_modal"
 
 
 @router.post("/intake")
