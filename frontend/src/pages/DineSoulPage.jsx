@@ -20,7 +20,6 @@ import MealBoxCard from "../components/dine/MealBoxCard";
 import ConciergeIntakeModal from "../components/dine/ConciergeIntakeModal";
 import DineConciergeSection from "../components/dine/DineConciergeSection";
 import GuidedNutritionPaths from "../components/dine/GuidedNutritionPaths";
-import MiraOrb from "../components/MiraOrb";
 import { PillarHelpBuckets, PillarGuidedPaths } from "../components/PillarGoldSections";
 import { API_URL } from "../utils/api";
 import SharedProductCard from "../components/ProductCard";
@@ -836,6 +835,114 @@ function TummyProfile({ pet, token }) {
   );
 }
 
+// ─── Mira's Picks — AI-scored mix of products + services ─────────────────────
+function MiraPicksSection({ pet }) {
+  const [picks, setPicks] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!pet?.id) { setLoading(false); return; }
+    // Fetch both products+services picks in parallel for diversity
+    Promise.all([
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=dine&limit=12&min_score=60&entity_type=product`).then(r => r.ok ? r.json() : null),
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=dine&limit=6&min_score=60&entity_type=service`).then(r => r.ok ? r.json() : null),
+    ])
+      .then(([pData, sData]) => {
+        const prods = pData?.picks || [];
+        const svcs = sData?.picks || [];
+        // Interleave: product, product, service, product, product, service…
+        const merged = [];
+        let pi = 0, si = 0;
+        while (pi < prods.length || si < svcs.length) {
+          if (pi < prods.length) merged.push(prods[pi++]);
+          if (pi < prods.length) merged.push(prods[pi++]);
+          if (si < svcs.length) merged.push(svcs[si++]);
+        }
+        if (merged.length) setPicks(merged.slice(0, 16));
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [pet?.id]);
+
+  if (loading || !picks.length) return null;
+
+  const petName = pet?.name || "your dog";
+
+  return (
+    <section style={{ marginBottom: 32 }} data-testid="mira-picks-section">
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 4 }}>
+        <h3 style={{ fontSize: 'clamp(1.125rem,2.5vw,1.375rem)', fontWeight: 800, color: '#1A0A00', margin: 0, fontFamily: 'Georgia,serif' }}>
+          Mira's Picks for <span style={{ color: '#FF8C42' }}>{petName}</span>
+        </h3>
+        <span style={{ fontSize: 11, background: 'linear-gradient(135deg,#F59E0B,#D97706)', color: '#fff', borderRadius: 20, padding: '2px 10px', fontWeight: 700 }}>
+          AI Scored
+        </span>
+      </div>
+      <p style={{ fontSize: 12, color: '#888', marginBottom: 16, lineHeight: 1.5 }}>
+        Products &amp; services matched by Mira to {petName}'s soul profile — updated as {petName} grows.
+      </p>
+      {/* Horizontal scroll */}
+      <div style={{ display: 'flex', gap: 14, overflowX: 'auto', paddingBottom: 10, scrollbarWidth: 'thin' }} className="mira-picks-scroll">
+        <style>{`.mira-picks-scroll::-webkit-scrollbar { height: 4px; } .mira-picks-scroll::-webkit-scrollbar-thumb { background: #F59E0B50; border-radius: 4px; }`}</style>
+        {picks.map((pick, i) => {
+          const isService = pick.entity_type === 'service';
+          const img = pick.image_url || pick.image || pick.media?.primary_image || null;
+          const score = pick.mira_score || 0;
+          const scoreColor = score >= 80 ? '#16A34A' : score >= 70 ? '#F59E0B' : '#6B7280';
+          return (
+            <div key={pick.id || i} style={{
+              flexShrink: 0, width: 168,
+              background: '#fff', borderRadius: 14,
+              border: '1.5px solid #F0E8E0',
+              overflow: 'hidden',
+              boxShadow: '0 2px 12px rgba(196,68,0,0.06)',
+              transition: 'transform 0.15s, box-shadow 0.15s',
+              cursor: 'pointer',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(196,68,0,0.12)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 2px 12px rgba(196,68,0,0.06)'; }}
+              data-testid={`mira-pick-card-${i}`}
+            >
+              {/* Image */}
+              <div style={{ width: '100%', height: 130, background: '#FFF8F0', overflow: 'hidden', position: 'relative' }}>
+                {img ? (
+                  <img src={img} alt={pick.name || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { e.target.style.display = 'none'; }} />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36 }}>
+                    {isService ? '✨' : '🐾'}
+                  </div>
+                )}
+                {/* Entity type badge */}
+                <span style={{ position: 'absolute', top: 7, left: 7, fontSize: 9, fontWeight: 700, background: isService ? '#6366F1' : '#FF8C42', color: '#fff', borderRadius: 20, padding: '2px 7px', letterSpacing: 0.5 }}>
+                  {isService ? 'SERVICE' : 'PRODUCT'}
+                </span>
+              </div>
+              {/* Info */}
+              <div style={{ padding: '10px 11px 12px' }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#1A0A00', lineHeight: 1.3, marginBottom: 6, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  {pick.name || pick.entity_name || '—'}
+                </div>
+                {/* Mira score bar */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 5 }}>
+                  <div style={{ flex: 1, height: 4, background: '#F0E8E0', borderRadius: 4, overflow: 'hidden' }}>
+                    <div style={{ width: `${score}%`, height: '100%', background: scoreColor, borderRadius: 4, transition: 'width 0.8s ease' }} />
+                  </div>
+                  <span style={{ fontSize: 10, fontWeight: 800, color: scoreColor, minWidth: 26 }}>{score}</span>
+                </div>
+                {pick.mira_reason && (
+                  <p style={{ fontSize: 10, color: '#888', lineHeight: 1.4, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontStyle: 'italic' }}>
+                    {pick.mira_reason}
+                  </p>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 // ─── Dimension Expanded ───────────────────────────────────────────────────────
 function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const petName = pet?.name || "your dog";
@@ -1272,6 +1379,9 @@ const DineSoulPage = () => {
           <>
             <TummyProfile pet={petData} token={token} />
 
+            {/* Mira's Picks — AI scored, products + services mix */}
+            <MiraPicksSection pet={petData} />
+
             <div style={{ fontSize: "clamp(1.125rem,2.5vw,1.375rem)", fontWeight: 800, color: "#1A0A00", marginBottom: 4, fontFamily: "Georgia,serif" }}>Eat &amp; Nourish</div>
             <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>5 dimensions, filtered to {petData.name}</div>
 
@@ -1318,10 +1428,6 @@ const DineSoulPage = () => {
 
       </div>
 
-      {/* Mira orb — amber/terracotta for Dine */}
-      <div onClick={() => window.dispatchEvent(new CustomEvent("openMiraAI", { detail: { message: `What should ${petData.name} eat today?`, context: "dine" } }))} style={{ position: "fixed", bottom: 80, right: 20, zIndex: 9996, cursor: "pointer" }} data-testid="dine-mira-orb">
-        <MiraOrb pillar="dine" size="md" />
-      </div>
     </PillarPageLayout>
   );
 };

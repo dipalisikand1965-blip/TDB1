@@ -95,18 +95,18 @@ const PARTICLE_PRESETS = [
 
 // Pillar-specific colors and icons for orb badge
 const PILLAR_THEMES = {
-  celebrate: { emoji: '🎂', color: '#EC4899', label: 'Celebrate' },
-  dine: { emoji: '🍽️', color: '#F59E0B', label: 'Dine' },
-  stay: { emoji: '🏠', color: '#10B981', label: 'Stay' },
-  travel: { emoji: '✈️', color: '#3B82F6', label: 'Travel' },
-  care: { emoji: '💊', color: '#14B8A6', label: 'Care' },
-  enjoy: { emoji: '🎾', color: '#8B5CF6', label: 'Enjoy' },
-  fit: { emoji: '🏃', color: '#EF4444', label: 'Fit' },
-  learn: { emoji: '📚', color: '#6366F1', label: 'Learn' },
-  emergency: { emoji: '🚨', color: '#DC2626', label: 'Emergency' },
-  farewell: { emoji: '🌈', color: '#9CA3AF', label: 'Farewell' },
-  shop: { emoji: '🛍️', color: '#9333EA', label: 'Shop' },
-  default: { emoji: '✨', color: '#9333EA', label: 'Mira' }
+  celebrate: { emoji: '🎂', color: '#EC4899', colorSecondary: '#DB2777', label: 'Celebrate' },
+  dine: { emoji: '🍽️', color: '#F59E0B', colorSecondary: '#D97706', label: 'Dine' },
+  stay: { emoji: '🏠', color: '#10B981', colorSecondary: '#059669', label: 'Stay' },
+  travel: { emoji: '✈️', color: '#3B82F6', colorSecondary: '#2563EB', label: 'Travel' },
+  care: { emoji: '💊', color: '#14B8A6', colorSecondary: '#0D9488', label: 'Care' },
+  enjoy: { emoji: '🎾', color: '#8B5CF6', colorSecondary: '#7C3AED', label: 'Enjoy' },
+  fit: { emoji: '🏃', color: '#EF4444', colorSecondary: '#DC2626', label: 'Fit' },
+  learn: { emoji: '📚', color: '#6366F1', colorSecondary: '#4F46E5', label: 'Learn' },
+  emergency: { emoji: '🚨', color: '#DC2626', colorSecondary: '#B91C1C', label: 'Emergency' },
+  farewell: { emoji: '🌈', color: '#9CA3AF', colorSecondary: '#6B7280', label: 'Farewell' },
+  shop: { emoji: '🛍️', color: '#9333EA', colorSecondary: '#7E22CE', label: 'Shop' },
+  default: { emoji: '✨', color: '#9333EA', colorSecondary: '#EC4899', label: 'Mira' }
 };
 
 // The main Mira Orb component
@@ -120,8 +120,11 @@ const MiraOrb = ({
 }) => {
   const orbRef = useRef(null);
   
-  // Get pillar theme for badge
+  // Get pillar theme — drives orb color when a specific pillar is active
   const pillarTheme = PILLAR_THEMES[pillar] || PILLAR_THEMES.default;
+  // Orb gradient: use pillar color when specified, otherwise the default pink/purple
+  const orbPrimary = pillar ? pillarTheme.color : MIRA_COLORS.primary;
+  const orbSecondary = pillar ? pillarTheme.colorSecondary : MIRA_COLORS.secondary;
   
   // Size configurations - Enhanced glow radius
   const sizes = {
@@ -310,7 +313,7 @@ const MiraOrb = ({
         style={{
           width: config.glow,
           height: config.glow,
-          background: `radial-gradient(circle, ${getStateColor()}50 0%, ${MIRA_COLORS.primary}30 50%, transparent 70%)`,
+          background: `radial-gradient(circle, ${getStateColor()}50 0%, ${orbPrimary}30 50%, transparent 70%)`,
           filter: 'blur(8px)',
         }}
         variants={glowVariants}
@@ -328,11 +331,11 @@ const MiraOrb = ({
         style={{
           width: config.orb,
           height: config.orb,
-          background: `linear-gradient(135deg, ${MIRA_COLORS.primary} 0%, ${MIRA_COLORS.secondary} 100%)`,
+          background: `linear-gradient(135deg, ${orbPrimary} 0%, ${orbSecondary} 100%)`,
           boxShadow: `
-            0 0 30px ${MIRA_COLORS.primary}70, 
-            0 0 60px ${MIRA_COLORS.secondary}40,
-            0 0 80px ${MIRA_COLORS.glow}20,
+            0 0 30px ${orbPrimary}70, 
+            0 0 60px ${orbSecondary}40,
+            0 0 80px ${orbPrimary}20,
             inset 0 0 20px rgba(255,255,255,0.3)
           `,
         }}
@@ -341,9 +344,9 @@ const MiraOrb = ({
         whileHover={{ 
           scale: 1.15,
           boxShadow: `
-            0 0 40px ${MIRA_COLORS.primary}80, 
-            0 0 80px ${MIRA_COLORS.secondary}50,
-            0 0 100px ${MIRA_COLORS.glow}30,
+            0 0 40px ${orbPrimary}80, 
+            0 0 80px ${orbSecondary}50,
+            0 0 100px ${orbPrimary}30,
             inset 0 0 25px rgba(255,255,255,0.4)
           `,
         }}
