@@ -3,7 +3,31 @@
 
 ---
 
-## [Mar 16, 2026] Session 40 — Product Box Category Filters + Soul Picks Fix + P0 Data Refactor ✅
+## [Mar 16, 2026] Session 40 — Product Box Category Filters + Soul Picks Fix + P0 Data Refactor + Bulk Assignment Tool ✅
+
+### What Was Fixed/Built
+- **BUG FIX: Soul Picks rope toy images** — Deleted 4564 bad `products_master` entries. Breed merchandise (Indie Food Bowl, Treat Jar, Lover Mug, Bandana) now show correct Cloudinary mockup images
+- **BUG FIX: DineSoulPage generic images** — Now fetches only 5 food categories in parallel
+- **BUG FIX: Product Box filter $or overwrite** — Refactored to `$and` array builder; combined pillar+category filters now work correctly
+- **BUG FIX: Product Box filters page reset** — All filter handlers call `setPage(0)`
+- **NEW: Category column in Product Box table** — Shows category badge or `+ category` click-to-select for empty ones
+- **NEW: Bulk Category Assignment tool** — Select multiple products with checkboxes → sticky bulk action bar appears → pick category + optional sub-category → Assign. Backend: `PUT /api/product-box/products/bulk-assign-category`
+- **NEW: Category pills in Product Box** — MAIN_CATEGORIES pills appear when a pillar is selected
+- **P0 Data Architecture Refactor** — Added `categories: List[str]` to `ProductCreate`; backend filters both `category` and `categories`; ProductBoxEditor has multi-category checkboxes
+
+### P1 Admin Tabs Verified (Dine)
+- DineManager Products: 433 products, categories: Daily Meals, Frozen & Fresh, Homemade & Recipes, Supplements, Treats & Rewards ✅
+- DineManager Bundles: 5 ✅  
+- Product Box Dine filter: 527 products ✅
+- Product Box pillar+category combined filter working ✅
+- Soul Picks breed products: Indie Treat Jar/Bowl/Mug/Bandana → correct mockup images ✅
+
+### Files Changed
+- `frontend/src/pages/DineSoulPage.jsx`
+- `frontend/src/components/admin/UnifiedProductBox.jsx` — checkboxes, category col, bulk action bar, category pills
+- `frontend/src/components/admin/ProductBoxEditor.jsx` — multi-category checkboxes
+- `backend/unified_product_box.py` — `categories` schema, `$and` builder, `BulkCategoryAssign` model + endpoint
+- Database: deleted 4564 bad breed product entries with rope toy images
 
 ### What Was Fixed
 - **BUG FIX: Soul Picks rope toy images** — Deleted 4564 bad `products_master` entries with ai_generated rope toy URLs for breed merchandise. Indie Soul Picks now show correct Cloudinary mockup images.
