@@ -1053,22 +1053,25 @@ const ServiceBox = () => {
                           }
                           try {
                             setSaving(true);
-                            const res = await fetch(`${API_URL}/api/service-box/services/${selectedService.id}/generate-image`, {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' }
-                            });
-                            const data = await res.json();
-                            if (data.success && data.image_url) {
-                              handleInputChange('image_url', data.image_url);
-                              toast({ title: 'Image Generated', description: `AI image created for ${selectedService.name}` });
-                            } else {
-                              throw new Error(data.detail || 'Failed to generate');
-                            }
-                          } catch (err) {
-                            toast({ title: 'Error', description: err.message, variant: 'destructive' });
-                          } finally {
-                            setSaving(false);
-                          }
+                            // Use XMLHttpRequest to bypass Emergent's fetch interceptor
+                            const xhr = new XMLHttpRequest();
+                            xhr.open('POST', `${API_URL}/api/service-box/services/${selectedService.id}/generate-image`);
+                            xhr.setRequestHeader('Content-Type', 'application/json');
+                            xhr.onload = () => {
+                              setSaving(false);
+                              try {
+                                const data = JSON.parse(xhr.responseText);
+                                if (xhr.status >= 200 && xhr.status < 300 && data.success && data.image_url) {
+                                  handleInputChange('image_url', data.image_url);
+                                  toast({ title: 'Image Generated', description: `AI image created for ${selectedService.name}` });
+                                } else {
+                                  toast({ title: 'Error', description: data.detail || 'Failed to generate', variant: 'destructive' });
+                                }
+                              } catch { toast({ title: 'Error', description: 'Parse error', variant: 'destructive' }); }
+                            };
+                            xhr.onerror = () => { setSaving(false); toast({ title: 'Error', description: 'Network error', variant: 'destructive' }); };
+                            xhr.send();
+                          } catch (err) { setSaving(false); toast({ title: 'Error', description: err.message, variant: 'destructive' }); }
                         }}
                         disabled={saving || !selectedService.id || selectedService.id.startsWith('NEW-')}
                         className="whitespace-nowrap"

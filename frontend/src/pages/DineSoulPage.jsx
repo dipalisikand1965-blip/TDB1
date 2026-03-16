@@ -19,44 +19,66 @@ import DineHero from "../components/dine/DineHero";
 import { API_URL } from "../utils/api";
 import SharedProductCard from "../components/ProductCard";
 
-// ─── Dimension visual config (NO hardcoded products — fetched from SSOT) ─────
-const DINE_DIMS = [
-  {
-    id:"meals", icon:"🐟", name:"Daily Meals",
-    sub:"Salmon-forward, soy-free, right for {name}",
-    badge:"Mojo's body needs this", badgeBg:"rgba(255,140,66,0.18)", badgeCol:"#8B4500",
-    bg:"linear-gradient(135deg,#FFF3E0,#FFE0B2)", dot:"#FF8C42", glow:true,
-    mira:"I built this around {name}'s weight, age, and health profile. The salmon meals are first. Everything here is soy-free and treatment-safe.",
-  },
-  {
-    id:"treats", icon:"🦴", name:"Treats & Rewards",
-    sub:"Salmon biscuits first — {name} loves these",
-    badge:"Mojo loves these", badgeBg:"rgba(233,30,99,0.18)", badgeCol:"#880E4F",
-    bg:"linear-gradient(135deg,#FCE4EC,#F8BBD0)", dot:"#E91E63", glow:true,
-    mira:"Everything here is soy-free and chicken-free. The salmon biscuits are first because {name} loves them.",
-  },
-  {
-    id:"supplements", icon:"💊", name:"Supplements",
-    sub:"Treatment-safe, vet-checked",
-    badge:"Health priority", badgeBg:"rgba(76,175,80,0.18)", badgeCol:"#2E7D32",
-    bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)", dot:"#4CAF50", glow:true,
-    mira:"These are the supplements I would choose for {name} right now — every one is treatment-safe, vet-checked, and soy-free.",
-  },
-  {
-    id:"frozen", icon:"🧊", name:"Frozen & Fresh",
-    sub:"Cold-pressed options for {name}",
-    badge:"Explore", badgeBg:"rgba(0,0,0,0.08)", badgeCol:"#555555",
-    bg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)", dot:"#2196F3", glow:false,
-    mira:"Tell me if {name} prefers cold-pressed or raw food and I'll build this section around that preference.",
-  },
-  {
-    id:"homemade", icon:"🍳", name:"Homemade & Recipes",
-    sub:"Recipes built around {name}'s allergies",
-    badge:"Explore", badgeBg:"rgba(0,0,0,0.08)", badgeCol:"#555555",
-    bg:"linear-gradient(135deg,#FFFDE7,#FFF9C4)", dot:"#F9A825", glow:false,
-    mira:"These recipes are built around what {name} loves and what their body can handle. No soy, no chicken. Everything here is safe.",
-  },
-];
+// ─── Dimension visual config — dynamic per pet ───────────────────────────────
+function getDineDims(pet) {
+  const loves = getLoves(pet);
+  const allergies = getAllergies(pet);
+  const favProtein = loves[0] || null;
+  const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : '';
+  const allergyFreeText = allergies.length > 0
+    ? allergies.slice(0, 2).map(a => `${a.toLowerCase()}-free`).join(', ')
+    : 'allergy-checked';
+
+  return [
+    {
+      id:"meals", icon:"🐟", name:"Daily Meals",
+      sub: favProtein
+        ? `${cap(favProtein)}-forward, ${allergyFreeText}, right for {name}`
+        : `Nutritionally balanced, ${allergyFreeText}, right for {name}`,
+      badge:"{name}'s body needs this", badgeBg:"rgba(255,140,66,0.18)", badgeCol:"#8B4500",
+      bg:"linear-gradient(135deg,#FFF3E0,#FFE0B2)", dot:"#FF8C42", glow:true,
+      mira: favProtein
+        ? `I built this around {name}'s weight, age, and health profile. The ${favProtein.toLowerCase()} meals are first. Everything here is ${allergyFreeText} and treatment-safe.`
+        : `I built this around {name}'s weight, age, and health profile. Everything here is ${allergyFreeText} and treatment-safe.`,
+    },
+    {
+      id:"treats", icon:"🦴", name:"Treats & Rewards",
+      sub: favProtein
+        ? `${cap(favProtein)} treats first — {name} loves these`
+        : `Healthy treats {name} will love`,
+      badge:"{name} loves these", badgeBg:"rgba(233,30,99,0.18)", badgeCol:"#880E4F",
+      bg:"linear-gradient(135deg,#FCE4EC,#F8BBD0)", dot:"#E91E63", glow:true,
+      mira: favProtein
+        ? `Everything here is ${allergyFreeText}. The ${favProtein.toLowerCase()} treats are first because {name} loves them.`
+        : `All treats are ${allergyFreeText} and dog-safe. Pick the ones {name} will love most.`,
+    },
+    {
+      id:"supplements", icon:"💊", name:"Supplements",
+      sub:"Treatment-safe, vet-checked",
+      badge:"Health priority", badgeBg:"rgba(76,175,80,0.18)", badgeCol:"#2E7D32",
+      bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)", dot:"#4CAF50", glow:true,
+      mira:`These are the supplements I would choose for {name} right now — every one is treatment-safe, vet-checked, and ${allergyFreeText}.`,
+    },
+    {
+      id:"frozen", icon:"🧊", name:"Frozen & Fresh",
+      sub:"Cold-pressed options for {name}",
+      badge:"Explore", badgeBg:"rgba(0,0,0,0.08)", badgeCol:"#555555",
+      bg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)", dot:"#2196F3", glow:false,
+      mira:`Tell me if {name} prefers cold-pressed or raw food and I'll build this section around that preference.`,
+    },
+    {
+      id:"homemade", icon:"🍳", name:"Homemade & Recipes",
+      sub: allergies.length > 0
+        ? `Recipes avoiding ${allergies.slice(0,2).join(', ')} for {name}`
+        : `Recipes built around {name}'s taste`,
+      badge:"Explore", badgeBg:"rgba(0,0,0,0.08)", badgeCol:"#555555",
+      bg:"linear-gradient(135deg,#FFFDE7,#FFF9C4)", dot:"#F9A825", glow:false,
+      mira: allergies.length > 0
+        ? `These recipes avoid ${allergies.slice(0,2).join(', ')} — everything here is safe and nutritious for {name}.`
+        : `These recipes are built around what {name} loves. Everything is nutritious and dog-safe.`,
+    },
+  ];
+}
 
 const CONC_SERVICES = [
   {icon:"🔍",sub:"COMPLIMENTARY",name:"Pet-Friendly Restaurant Discovery",desc:"We find venues that genuinely welcome dogs — not just allow them. There is a difference, and we know it.",free:true,cta:"Find us a restaurant →"},
@@ -1182,7 +1204,8 @@ const DineSoulPage = () => {
   if (loading) return <PillarPageLayout pillar="dine" hideHero hideNavigation><LoadingState /></PillarPageLayout>;
   if (!petData) return <PillarPageLayout pillar="dine" hideHero hideNavigation><NoPetState onAddPet={handleAddPet} /></PillarPageLayout>;
 
-  const activeDim = DINE_DIMS.find(d => d.id === openDim);
+  const dineDims = getDineDims(petData);
+  const activeDim = dineDims.find(d => d.id === openDim);
 
   return (
     <PillarPageLayout pillar="dine" hideHero hideNavigation>
@@ -1229,7 +1252,7 @@ const DineSoulPage = () => {
 
             {/* Dimensions grid */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 8, marginBottom: 32 }}>
-              {DINE_DIMS.map(dim => (
+              {dineDims.map(dim => (
                 <div key={dim.id} onClick={() => setOpenDim(openDim === dim.id ? null : dim.id)} style={{ background: dim.bg, borderRadius: 12, padding: "14px 12px", cursor: "pointer", position: "relative", opacity: dim.glow ? 1 : 0.60, boxShadow: dim.glow && openDim !== dim.id ? "0 0 18px rgba(255,140,66,0.18)" : "none", border: openDim === dim.id ? "2px solid #FF8C42" : "2px solid transparent", transition: "all 0.15s" }} data-testid={`dine-dim-${dim.id}`}>
                   {dim.glow && <div style={{ position: "absolute", top: 8, right: 8, width: 8, height: 8, borderRadius: "50%", background: dim.dot }} />}
                   <span style={{ fontSize: 22, display: "block", marginBottom: 8 }}>{dim.icon}</span>
