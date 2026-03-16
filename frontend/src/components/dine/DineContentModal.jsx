@@ -128,29 +128,31 @@ const generateMiraImagines = (pet, existingProducts) => {
   const healthCondition = getHealthCondition(pet);
   const imagines = [];
 
-  // 1. Breed-specific meal plan (if no breed product found)
+  // 1. Breed-specific meal plan
   const hasBreedProduct = breed && existingProducts.some(
     p => (p.name || '').toLowerCase().includes(breed.toLowerCase())
   );
-  if (breed && !hasBreedProduct) {
+  if (!hasBreedProduct) {
     imagines.push({
-      id: `imagine-meal-${breed.replace(/\s/g,'-')}`,
+      id: `imagine-meal-${(breed || 'custom').replace(/\s/g, '-')}`,
       isImagined: true, emoji: '🍽️',
-      name: `${breed} Meal Plan`,
-      description: `A 7-day plan built around what ${breed}s need at this life stage — portioned right, nutrient-dense.`,
+      name: breed ? `${breed} Meal Plan` : `${petName}'s Custom Meal Plan`,
+      description: breed
+        ? `A 7-day plan built around what ${breed}s need at this life stage — portioned right, nutrient-dense.`
+        : `A personalised 7-day meal plan built around ${petName}'s taste, age, and health.`,
     });
   }
 
-  // 2. Custom allergy-safe pack (if has allergies and no fully-safe bundle found)
+  // 2. Custom allergy-safe pack
   if (allergies.length > 0) {
     const hasSafePack = existingProducts.some(p =>
-      allergies.every(a => (p.allergy_free || '').toLowerCase().includes(`${a}-free`))
+      allergies.every(a => isSafeFromAllergen(a, `${p.name} ${p.description || ''}`.toLowerCase(), (p.allergy_free || '').toLowerCase()))
     );
     if (!hasSafePack) {
       imagines.push({
         id: 'imagine-allergy-pack',
         isImagined: true, emoji: '🛡️',
-        name: `${allergies.map(a => a.charAt(0).toUpperCase()+a.slice(1)+'-Free').join(' & ')} Monthly Pack`,
+        name: `${allergies.map(a => a.charAt(0).toUpperCase() + a.slice(1) + '-Free').join(' & ')} Monthly Pack`,
         description: `Every item verified ${allergies.join(' & ')}-free. Curated monthly for ${petName}'s safety.`,
       });
     }
@@ -166,39 +168,69 @@ const generateMiraImagines = (pet, existingProducts) => {
     });
   }
 
-  // 4. Favourite food special order (if loves data exists)
+  // 4. Love-based custom box
   if (loves.length > 0) {
     const fav = loves[0];
-    const hasLoveProduct = existingProducts.some(p => (p.name||'').toLowerCase().includes(fav.toLowerCase()));
+    const hasLoveProduct = existingProducts.some(p => (p.name || '').toLowerCase().includes(fav.toLowerCase()));
     if (!hasLoveProduct) {
       imagines.push({
-        id: `imagine-love-${fav.replace(/\s/g,'-')}`,
+        id: `imagine-love-${fav.replace(/\s/g, '-')}`,
         isImagined: true, emoji: '♥',
-        name: `${fav.charAt(0).toUpperCase()+fav.slice(1)}-Forward Custom Box`,
+        name: `${fav.charAt(0).toUpperCase() + fav.slice(1)}-Forward Custom Box`,
         description: `${petName} loves ${fav}. Mira would build a monthly treat box around this.`,
       });
     }
   }
 
-  return imagines.slice(0, 4); // max 4 imagine cards
+  // 5. Always guarantee at least one card — personalised monthly box fallback
+  if (imagines.length === 0) {
+    imagines.push({
+      id: 'imagine-monthly-box',
+      isImagined: true, emoji: '📦',
+      name: `${petName}'s Monthly Soul Box`,
+      description: `Mira curates a monthly box of meals, treats, and supplements built around ${petName}'s soul profile.`,
+    });
+    imagines.push({
+      id: 'imagine-nutrition-consult',
+      isImagined: true, emoji: '🐾',
+      name: `Nutritionist Consult for ${petName}`,
+      description: `A 1:1 session with a canine nutritionist to build ${petName}'s perfect feeding plan.`,
+    });
+  }
+
+  return imagines.slice(0, 4);
 };
 
 // ── Apply intelligence for Mira's Picks ──────────────────────────────────────
+const isSafeFromAllergen = (allergen, text, freeFrom) => {
+  // Explicitly safe: allergy_free field OR description/name says "{allergen}-free"
+  const a = allergen.toLowerCase();
+  if (freeFrom.includes(`${a}-free`) || freeFrom.includes(`${a} free`)) return true;
+  if (text.includes(`${a}-free`) || text.includes(`${a} free`)) return true;
+  return false;
+};
+
+const containsAllergen = (allergen, text) => {
+  // Remove all "{allergen}-free" occurrences, then check if allergen remains
+  const a = allergen.toLowerCase();
+  const cleaned = text.replace(new RegExp(`${a}[- ]free`, 'gi'), '');
+  return cleaned.includes(a);
+};
+
 const applyMirasPicksIntelligence = (products, allergies, loves, healthCondition, petName) => {
   const allergyTerms = allergies.map(a => a.toLowerCase().trim());
   const loveTerms = loves.map(l => l.toLowerCase().trim()).filter(Boolean);
 
   return products
     .filter(p => {
-      // Remove allergen-containing products (keep services)
       const isService = p.category === 'service' || p.product_type === 'service';
       if (isService) return true;
       if (!allergyTerms.length) return true;
       const text = `${p.name} ${p.description || ''}`.toLowerCase();
       const freeFrom = (p.allergy_free || '').toLowerCase();
       return !allergyTerms.some(a => {
-        if (freeFrom.includes(`${a}-free`)) return false;
-        return text.includes(a);
+        if (isSafeFromAllergen(a, text, freeFrom)) return false;
+        return containsAllergen(a, text);
       });
     })
     .map(p => {
@@ -207,7 +239,7 @@ const applyMirasPicksIntelligence = (products, allergies, loves, healthCondition
       const tag = (p.mira_tag || '').toLowerCase();
       const matchedLove = loveTerms.find(l => text.includes(l));
       const isHealthSafe = healthCondition && (tag.includes('treatment') || freeFrom.includes('treatment-safe') || text.includes('treatment-safe'));
-      const isAllergySafe = allergyTerms.length > 0 && allergyTerms.every(a => freeFrom.includes(`${a}-free`));
+      const isAllergySafe = allergyTerms.length > 0 && allergyTerms.every(a => isSafeFromAllergen(a, text, freeFrom));
       let mira_hint = p.mira_hint || null;
       if (!mira_hint) {
         if (matchedLove) mira_hint = `Matches ${petName}'s love for ${matchedLove}`;
@@ -471,7 +503,7 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
         }));
 
         // 4. Apply client-side intelligence (filter allergens + sort)
-        const intelligent = applyMirasPicksIntelligence(enriched, allergies, getLoves(pet), healthCondition, petName);
+        const intelligent = applyMirasPicksIntelligence(enriched, allergies, getPetLoves(pet), healthCondition, petName);
 
         // 5. Sort: Claude scores override client-side sort when available
         const hasMiraScores = preScored.length > 0;
