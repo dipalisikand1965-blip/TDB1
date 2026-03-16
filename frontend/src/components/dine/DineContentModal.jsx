@@ -448,16 +448,21 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
         return;
       }
 
-      // ── Soul Picks: breed merchandise ──────────────────────────────
+      // ── Soul Picks: breed merchandise for this specific breed ────────
       if (category === 'soul-picks') {
         const breedDisplay = getBreedDisplay(pet);
         const breedSearch = breedDisplay.toLowerCase();
+        if (!breedSearch) {
+          setProducts([]); // No breed info → show empty state
+          return;
+        }
         const breedCats = ['breed-bowls', 'breed-treat_jars', 'breed-mugs', 'breed-bandanas', 'breed-frames', 'breed-keychains', 'breed-tote_bags'];
         const responses = await Promise.all(breedCats.map(cat => fetch(`${apiUrl}/api/products?category=${cat}&limit=40`)));
         const datasets = await Promise.all(responses.map(r => r.ok ? r.json() : { products: [] }));
         const allMerch = datasets.flatMap(d => d.products || []);
-        const breedMerch = breedSearch ? allMerch.filter(p => (p.name || '').toLowerCase().includes(breedSearch)) : allMerch;
-        setProducts(breedMerch.length > 0 ? breedMerch : allMerch.slice(0, 12));
+        // Only show merchandise matching this pet's exact breed — never show wrong breed
+        const breedMerch = allMerch.filter(p => (p.name || '').toLowerCase().includes(breedSearch));
+        setProducts(breedMerch); // Empty if no breed match (correct — don't show wrong breed)
         return;
       }
 
@@ -481,17 +486,31 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
           }
         }
 
-        // 2. Fetch all dine products + services
-        const [generalRes, serviceRes] = await Promise.all([
-          fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&limit=60`),
-          fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&category=service&limit=20`),
+        // 2. Fetch real food products by category (NOT a blanket dine fetch which returns
+        //    breed merchandise first due to alphabetical sort). Fetch each food category in parallel.
+        const FOOD_CATS = ['Daily Meals', 'Treats & Rewards', 'Supplements', 'Frozen & Fresh', 'Homemade & Recipes'];
+        const [catResults, serviceRes] = await Promise.all([
+          Promise.all(FOOD_CATS.map(cat =>
+            fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&category=${encodeURIComponent(cat)}&limit=60`)
+              .then(r => r.ok ? r.json() : { products: [] })
+              .catch(() => ({ products: [] }))
+          )),
+          fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&category=service&limit=20`).catch(() => null),
         ]);
-        const generalData = generalRes.ok ? await generalRes.json() : { products: [] };
-        const serviceData = serviceRes.ok ? await serviceRes.json() : { products: [] };
-        const allById = new Map();
-        (generalData.products || []).forEach(p => allById.set(p.id, p));
-        (serviceData.products || []).forEach(p => { if (!allById.has(p.id)) allById.set(p.id, p); });
-        const allRaw = [...allById.values()];
+        const serviceData = serviceRes?.ok ? await serviceRes.json().catch(() => ({ products: [] })) : { products: [] };
+        // Deduplicate by name (some products are seeded twice with different IDs)
+        const allByName = new Map();
+        catResults.forEach(d => {
+          (d.products || []).forEach(p => {
+            const key = (p.name || p.id || '').toLowerCase().trim();
+            if (!allByName.has(key)) allByName.set(key, p);
+          });
+        });
+        (serviceData.products || []).forEach(p => {
+          const key = (p.name || p.id || '').toLowerCase().trim();
+          if (!allByName.has(key)) allByName.set(key, p);
+        });
+        const allRaw = [...allByName.values()];
 
         // 3. Merge pre-computed Claude scores into raw items
         const scoreById = {};
