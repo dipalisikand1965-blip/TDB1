@@ -20,6 +20,8 @@
  */
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
+import { toast } from "sonner";
 import { API_URL } from "../../utils/api";
 
 // --- Data & Constants ---
@@ -275,18 +277,19 @@ export default function ConciergeIntakeModal({
 
 // --- Layout Shells ---
 function Backdrop({ onClick, children }) {
-  return (
+  return createPortal(
     <div
       onClick={onClick}
       style={{
-        position: "fixed", inset: 0, zIndex: 9998,
+        position: "fixed", inset: 0, zIndex: 10002,
         background: "rgba(0,0,0,0.52)",
         display: "flex", alignItems: "center",
         justifyContent: "center", padding: 20,
       }}
     >
       {children}
-    </div>
+    </div>,
+    document.body
   );
 }
 

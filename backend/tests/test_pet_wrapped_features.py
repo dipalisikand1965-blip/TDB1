@@ -15,7 +15,7 @@ import requests
 import os
 
 # Use public API URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mojo-personalized.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://nutrition-engine-ui.preview.emergentagent.com')
 
 # Test Pet ID from the problem statement
 TEST_PET_ID = "699fa0a513e44c977327ad57"  # Mystique

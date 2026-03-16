@@ -738,7 +738,7 @@ function TummyProfile({ pet, token }) {
         <div
           onClick={() => setDrawerOpen(false)}
           style={{
-            position: 'fixed', inset: 0, zIndex: 1000,
+            position: 'fixed', inset: 0, zIndex: 10002,
             background: 'rgba(0,0,0,0.72)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             padding: '16px',
@@ -957,7 +957,12 @@ function PetFriendlySpots({ pet }) {
         <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"#FFF3E0",border:"1px solid #FFCC99",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:600,color:"#C44400"}}>📍 Pet-friendly spots near {petName} in {city}</div>
         <button style={{background:"#fff",border:"1px solid #FFCC99",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:600,color:"#C44400",cursor:"pointer"}}>🗺️ View on map</button>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:24}}>
+      <div style={{display:"grid",gap:12,marginBottom:24}} className="pet-spots-grid">
+        <style>{`
+          .pet-spots-grid { grid-template-columns: repeat(1, 1fr); }
+          @media (min-width: 640px) { .pet-spots-grid { grid-template-columns: repeat(2, 1fr); } }
+          @media (min-width: 1024px) { .pet-spots-grid { grid-template-columns: repeat(3, 1fr); } }
+        `}</style>
         {MOCK_SPOTS.map(spot => (
           <div key={spot.name} style={{background:"#fff",border:"1px solid #F5E8D4",borderRadius:12,overflow:"hidden"}}>
             <div style={{height:80,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,background:"#FFF8F0"}}>{spot.icon}</div>
@@ -994,7 +999,12 @@ function DiningConcierge({ pet }) {
           overflow: 'hidden',
         }}
         data-testid="dining-concierge"
+        className="dine-concierge-hero"
       >
+        <style>{`
+          .dine-concierge-hero { padding: 28px 20px; }
+          @media (min-width: 640px) { .dine-concierge-hero { padding: 36px 32px; } }
+        `}</style>
         {/* Subtle top-left glow */}
         <div style={{
           position: 'absolute', top: -60, left: -40,
@@ -1265,8 +1275,13 @@ const DineSoulPage = () => {
             <div style={{ fontSize: "clamp(1.125rem,2.5vw,1.375rem)", fontWeight: 800, color: "#1A0A00", marginBottom: 4, fontFamily: "Georgia,serif" }}>Eat &amp; Nourish</div>
             <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>5 dimensions, filtered to {petData.name}</div>
 
-            {/* Dimensions grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 8, marginBottom: 32 }}>
+            {/* Dimensions grid — responsive: 2-col mobile, 3-col tablet, 5-col desktop */}
+            <div style={{ display: "grid", gap: 8, marginBottom: 32 }} className="dine-dims-grid">
+              <style>{`
+                .dine-dims-grid { grid-template-columns: repeat(2, 1fr); }
+                @media (min-width: 640px) { .dine-dims-grid { grid-template-columns: repeat(3, 1fr); } }
+                @media (min-width: 1024px) { .dine-dims-grid { grid-template-columns: repeat(5, 1fr); } }
+              `}</style>
               {dineDims.map(dim => (
                 <div key={dim.id} onClick={() => setOpenDim(openDim === dim.id ? null : dim.id)} style={{ background: dim.bg, borderRadius: 12, padding: "14px 12px", cursor: "pointer", position: "relative", opacity: dim.glow ? 1 : 0.60, boxShadow: dim.glow && openDim !== dim.id ? "0 0 18px rgba(255,140,66,0.18)" : "none", border: openDim === dim.id ? "2px solid #FF8C42" : "2px solid transparent", transition: "all 0.15s" }} data-testid={`dine-dim-${dim.id}`}>
                   {dim.glow && <div style={{ position: "absolute", top: 8, right: 8, width: 8, height: 8, borderRadius: "50%", background: dim.dot }} />}
@@ -1304,7 +1319,7 @@ const DineSoulPage = () => {
       </div>
 
       {/* Mira orb — amber/terracotta for Dine */}
-      <div onClick={() => window.dispatchEvent(new CustomEvent("openMiraAI", { detail: { message: `What should ${petData.name} eat today?`, context: "dine" } }))} style={{ position: "fixed", bottom: 24, right: 20, zIndex: 9996, cursor: "pointer" }} data-testid="dine-mira-orb">
+      <div onClick={() => window.dispatchEvent(new CustomEvent("openMiraAI", { detail: { message: `What should ${petData.name} eat today?`, context: "dine" } }))} style={{ position: "fixed", bottom: 80, right: 20, zIndex: 9996, cursor: "pointer" }} data-testid="dine-mira-orb">
         <MiraOrb pillar="dine" size="md" />
       </div>
     </PillarPageLayout>

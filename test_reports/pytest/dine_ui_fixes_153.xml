@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="11" skipped="0" tests="11" time="721.882" timestamp="2026-03-16T09:34:34.535969+00:00" hostname="agent-env-4d292762-af2e-4537-baa0-dd4f2021a432"><testcase classname="backend.tests.test_dine_ui_fixes_iteration153.TestAdminLogin" name="test_admin_login_with_aditya_credentials" time="120.311"><failure message="AssertionError: Unexpected status: 502&#10;assert 502 in [200, 401, 400, 422]&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_dine_ui_fixes_iteration153.py:74: in test_admin_login_with_aditya_credentials
+    assert resp.status_code in [200, 401, 400, 422], f"Unexpected status: {resp.status_code}"
+E   AssertionError: Unexpected status: 502
+E   assert 502 in [200, 401, 400, 422]
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_dine_ui_fixes_iteration153.TestDiningIntakeAPI" name="test_dining_intake_basic_post_returns_200" time="60.134"><failure message="AssertionError: Expected 200, got 502: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_dine_ui_fixes_iteration153.py:91: in test_dining_intake_basic_post_returns_200
+    assert resp.status_code == 200, f"Expected 200, got {resp.status_code}: {resp.text[:300]}"
+E   AssertionError: Expected 200, got 502: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_dine_ui_fixes_iteration153.TestDiningIntakeAPI" name="test_dining_intake_with_date_returns_200" time="60.135"><failure message="AssertionError: Expected 200, got 502: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_dine_ui_fixes_iteration153.py:109: in test_dining_intake_with_date_returns_200
+    assert resp.status_code == 200, f"Expected 200, got {resp.status_code}: {resp.text[:300]}"
+E   AssertionError: Expected 200, got 502: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_dine_ui_fixes_iteration153.TestDiningIntakeAPI" name="test_dining_intake_minimal_payload" time="60.139"><failure message="AssertionError: Unexpected status: 502: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 in [200, 201, 422]&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_dine_ui_fixes_iteration153.py:119: in test_dining_intake_minimal_payload
+    assert resp.status_code in [200, 201, 422], f"Unexpected status: {resp.status_code}: {resp.text[:300]}"
+E   AssertionError: Unexpected status: 502: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 in [200, 201, 422]
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_dine_ui_fixes_iteration153.TestNutritionPathAPI" name="test_nutrition_path_allergy_returns_200" time="60.138"><failure message="AssertionError: Expected 200, got 502: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_dine_ui_fixes_iteration153.py:141: in test_nutrition_path_allergy_returns_200
+    assert resp.status_code == 200, f"Expected 200, got {resp.status_code}: {resp.text[:300]}"
+E   AssertionError: Expected 200, got 502: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_dine_ui_fixes_iteration153.TestNutritionPathAPI" name="test_nutrition_path_health_returns_200" time="60.138"><failure message="AssertionError: Expected 200, got 502: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_dine_ui_fixes_iteration153.py:160: in test_nutrition_path_health_returns_200
+    assert resp.status_code == 200, f"Expected 200, got {resp.status_code}: {resp.text[:300]}"
+E   AssertionError: Expected 200, got 502: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_dine_ui_fixes_iteration153.TestNutritionPathAPI" name="test_nutrition_path_homemade_returns_200" time="60.137"><failure message="AssertionError: Expected 200, got 502: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_dine_ui_fixes_iteration153.py:178: in test_nutrition_path_homemade_returns_200
+    assert resp.status_code == 200, f"Expected 200, got {resp.status_code}: {resp.text[:300]}"
+E   AssertionError: Expected 200, got 502: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_dine_ui_fixes_iteration153.TestNutritionPathAPI" name="test_nutrition_path_response_structure" time="60.135"><failure message="AssertionError: Expected 200, got 502: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_dine_ui_fixes_iteration153.py:195: in test_nutrition_path_response_structure
+    assert resp.status_code == 200, f"Expected 200, got {resp.status_code}: {resp.text[:300]}"
+E   AssertionError: Expected 200, got 502: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_dine_ui_fixes_iteration153.TestServicesAPI" name="test_services_endpoint_returns_200" time="60.188"><failure message="AssertionError: Expected 200, got 502: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_dine_ui_fixes_iteration153.py:211: in test_services_endpoint_returns_200
+    assert resp.status_code == 200, f"Expected 200, got {resp.status_code}: {resp.text[:200]}"
+E   AssertionError: Expected 200, got 502: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_dine_ui_fixes_iteration153.TestServicesAPI" name="test_services_dine_pillar_filter" time="60.137"><failure message="AssertionError: Unexpected status: 502: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 in [200, 404]&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_dine_ui_fixes_iteration153.py:220: in test_services_dine_pillar_filter
+    assert resp.status_code in [200, 404], f"Unexpected status: {resp.status_code}: {resp.text[:200]}"
+E   AssertionError: Unexpected status: 502: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 in [200, 404]
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_dine_ui_fixes_iteration153.TestServicesAPI" name="test_admin_pillar_products_dine" time="60.130"><failure message="AssertionError: Expected 200, got 502: The preview environment is not responding. It may be starting up.&#10;  &#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_dine_ui_fixes_iteration153.py:230: in test_admin_pillar_products_dine
+    assert resp.status_code == 200, f"Expected 200, got {resp.status_code}: {resp.text[:200]}"
+E   AssertionError: Expected 200, got 502: The preview environment is not responding. It may be starting up.
+E     
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase></testsuite></testsuites>
