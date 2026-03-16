@@ -4,7 +4,23 @@
 
 ---
 
-## ✅ SESSION 58 — P0 Image Regression Confirmed Fixed + P1 AI Image Persistence + P2b Interactive Mira Picks (Mar 16, 2026)
+## ✅ SESSION 59 — Dine Toy Image Regression Fixed + Product Box Dine Integration (Mar 16, 2026)
+
+### What Was Fixed:
+1. **Toy Images in Dine Page FIXED** — Root cause: 155 dine products had `static.prod-images.emergentagent.com/jobs/4700c8db-...` URLs (AI images generated for TOY products in a previous session, wrongly assigned to food products). All cleared: 155 `image_url` + 395 `image` fields reset to empty.
+2. **Placeholder Food Images Added** — 47 dine products (Daily Meals, Treats & Rewards, Supplements, Frozen & Fresh, Homemade & Recipes) given category-appropriate Unsplash placeholder images. DM-001 retains its correct Cloudinary AI-generated image.
+3. **Product Box Dine Integration** — 48 seeded dine products (DM-XXX, TR-XXX, SP-XXX, FF-XXX, HR-XXX) updated with `primary_pillar=dine` for full Product Box compatibility. Admin can now go to COMMERCE > Product Box, filter by "Dine" pillar, and edit any product with the full ProductBoxEditor (including AI image generation).
+4. **Product Box Category Filter** — Added `category` query parameter to `/api/product-box/products` endpoint (was previously ignored).
+
+### Key File Changes:
+- `backend/unified_product_box.py` — Added `category` filter parameter to `get_all_products`
+- Database (`products_master`): Cleared 155 wrong toy image_urls and 395 wrong image fields; set `primary_pillar=dine` on 48 products; added Unsplash placeholder images to 47 empty-image products
+
+### Testing: All 9/9 tests PASS. 0 toy images remaining in database.
+
+---
+
+
 
 ### What Was Fixed:
 1. **P0 Image Regression CONFIRMED RESOLVED** — Verified via grep that `static.prod-images.emergentagent.com` filter has been fully removed from both `DineSoulPage.jsx` (`resolvePickImage`) and `DineContentModal.jsx` (`resolveEntityImage`). Testing agent confirmed 42/42 images loading on /dine page.

@@ -621,6 +621,7 @@ async def get_all_products(
     limit: int = 50,
     product_type: Optional[str] = None,
     pillar: Optional[str] = None,
+    category: Optional[str] = None,
     status: Optional[str] = None,
     reward_eligible: Optional[bool] = None,
     search: Optional[str] = None,
@@ -640,6 +641,8 @@ async def get_all_products(
     
     if product_type:
         query["product_type"] = product_type
+    if category:
+        query["category"] = category
     if pillar:
         # Check both 'pillar' (singular) and 'pillars' (array) fields
         query["$or"] = [
