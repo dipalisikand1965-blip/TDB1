@@ -3,6 +3,20 @@
 
 ---
 
+## [Mar 16, 2026] Session 40 — Product Box Category Filters + Dine Page Image Fix ✅
+
+### What Was Fixed
+- **BUG FIX: DineSoulPage generic images** — `/dine` page was fetching ALL 857 dine products (sorted newest = Akita breed merchandise). Fixed: now fetches ONLY 5 food categories in parallel (`Daily Meals`, `Treats & Rewards`, `Supplements`, `Frozen & Fresh`, `Homemade & Recipes`), returning exactly the 48 seeded food products with proper food images.
+- **BUG FIX: Product Box filters never reset page** — When clicking pillar buttons or changing any filter dropdown, `page` state was NOT being reset to 0, causing empty results on later pages. Fixed: all filter change handlers now call `setPage(0)`.
+- **NEW: Product Box Category Filter** — Added a horizontal pill-strip of category buttons in `UnifiedProductBox.jsx`. When a pillar is selected, the relevant MAIN_CATEGORIES appear below the pillar buttons (e.g., selecting "Dine" shows: All, Daily Meals, Treats & Rewards, Supplements, Frozen & Fresh, Homemade & Recipes, Bowls & Accessories, Food General). Category resets when pillar changes.
+- **API verified**: `GET /api/product-box/products?pillar=dine&category=Daily+Meals` correctly returns 13 products.
+
+### Files Changed
+- `frontend/src/pages/DineSoulPage.jsx` — parallel category fetch (5 food categories × 100 limit each)
+- `frontend/src/components/admin/UnifiedProductBox.jsx` — filterCategory state, category pill strip, setPage(0) on all filter changes
+
+---
+
 ## [Mar 15, 2026] Session 39c — Soul Score System + MiraSoulNudge + none_confirmed Bug Fix ✅
 
 ### What Was Built / Fixed

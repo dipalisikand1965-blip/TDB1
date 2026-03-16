@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Please test the admin Service Box on https://mira-picks-engine.preview.emergentagent.com/admin after the latest illustration-field fix. Admin credentials: aditya / lola4304. User reported that service illustrations were generated and saved somewhere else, and only Stay was showing in Service Box. Verify: 1. Login to /admin. 2. Open Service Box. 3. Check that service rows now show thumbnails not just for Stay, but also for at least 2 non-Stay pillars (Dine / Fit / Advisory / Farewell if present). 4. Open one non-Stay service editor and confirm the image preview is visible there too."
+user_problem_statement: "Please test the admin Service Box on https://dine-places.preview.emergentagent.com/admin after the latest illustration-field fix. Admin credentials: aditya / lola4304. User reported that service illustrations were generated and saved somewhere else, and only Stay was showing in Service Box. Verify: 1. Login to /admin. 2. Open Service Box. 3. Check that service rows now show thumbnails not just for Stay, but also for at least 2 non-Stay pillars (Dine / Fit / Advisory / Farewell if present). 4. Open one non-Stay service editor and confirm the image preview is visible there too."
 
 backend:
   - task: "Backend testing not requested"

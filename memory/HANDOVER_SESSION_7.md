@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://mira-picks-engine.preview.emergentagent.com
+https://dine-places.preview.emergentagent.com
 
 ---
 

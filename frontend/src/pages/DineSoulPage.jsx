@@ -1344,13 +1344,19 @@ const DineSoulPage = () => {
   const [dineOutVenue, setDineOutVenue] = useState(null);
   const [dineOutCity, setDineOutCity] = useState(null);
 
-  // Fetch Dine products from SSOT (products_master) on mount
+  // Fetch Dine products from SSOT — only food categories to avoid breed merchandise
   useEffect(() => {
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&limit=600`)
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
+    const FOOD_CATS = ['Daily Meals', 'Treats & Rewards', 'Supplements', 'Frozen & Fresh', 'Homemade & Recipes'];
+    Promise.all(
+      FOOD_CATS.map(cat =>
+        fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&limit=100&category=${encodeURIComponent(cat)}`)
+          .then(r => r.ok ? r.json() : null)
+          .catch(() => null)
+      )
+    ).then(results => {
+      const grouped = {};
+      results.forEach(data => {
         if (!data?.products?.length) return;
-        const grouped = {};
         data.products.forEach(p => {
           const cat = p.category || "";
           const sub = p.sub_category || "";
@@ -1358,9 +1364,9 @@ const DineSoulPage = () => {
           if (!grouped[cat][sub]) grouped[cat][sub] = [];
           grouped[cat][sub].push(p);
         });
-        setApiProducts(grouped);
-      })
-      .catch(e => console.error("[DineSoulPage] products fetch error:", e));
+      });
+      setApiProducts(grouped);
+    }).catch(e => console.error("[DineSoulPage] products fetch error:", e));
   }, []);
 
   useEffect(() => {

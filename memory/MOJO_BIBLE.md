@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-picks-engine.preview.emergentagent.com
+https://dine-places.preview.emergentagent.com
 ```
 
 ---
