@@ -17,8 +17,9 @@ import PillarPageLayout from "../components/PillarPageLayout";
 import DineCategoryStrip from "../components/dine/DineCategoryStrip";
 import DineHero from "../components/dine/DineHero";
 import { API_URL } from "../utils/api";
+import SharedProductCard from "../components/ProductCard";
 
-// ─── Catalogue (matches products seeded to products_master) ─────────────────
+// ─── Dimension visual config (NO hardcoded products — fetched from SSOT) ─────
 const DINE_DIMS = [
   {
     id:"meals", icon:"🐟", name:"Daily Meals",
@@ -26,28 +27,6 @@ const DINE_DIMS = [
     badge:"Mojo's body needs this", badgeBg:"rgba(255,140,66,0.18)", badgeCol:"#8B4500",
     bg:"linear-gradient(135deg,#FFF3E0,#FFE0B2)", dot:"#FF8C42", glow:true,
     mira:"I built this around {name}'s weight, age, and health profile. The salmon meals are first. Everything here is soy-free and treatment-safe.",
-    tabs:["Morning Meal","Evening Meal","Portion Guide","Special Diets"],
-    products:{
-      "Morning Meal":[
-        {id:"DM-001",icon:"🐟",bg:"#FFF3E0",tag:"Treatment-safe",name:"Salmon & Sweet Potato Morning Bowl",desc:"Soy-free, omega-rich, anti-inflammatory",price:"₹349"},
-        {id:"DM-002",icon:"🥜",bg:"#FFF3E0",tag:"Safe for Mojo",name:"Peanut Butter & Banana Morning Mash",desc:"High-energy, senior-friendly",price:"₹299"},
-        {id:"DM-004",icon:"🐑",bg:"#FFF3E0",tag:"Hypoallergenic",name:"Lamb & Quinoa Morning Bowl",desc:"Novel protein, multi-allergy safe",price:"₹399"},
-        {id:"DM-009",icon:"📋",bg:"#E8F5E9",tag:"Free from Mira",name:"Treatment Nutrition Guide",desc:"Eating well through cancer treatment",price:"Free"},
-      ],
-      "Evening Meal":[
-        {id:"DM-005",icon:"🐟",bg:"#FFF3E0",tag:"Treatment-safe",name:"Salmon & Lentil Evening Dinner",desc:"High protein, treatment-supportive",price:"₹399"},
-        {id:"DM-006",icon:"🍲",bg:"#FFF3E0",tag:"Recovery meal",name:"Lamb & Vegetable Stew",desc:"Slow-cooked, nutrient-dense",price:"₹449"},
-        {id:"DM-007",icon:"🐠",bg:"#FFF3E0",tag:"Safe for Mojo",name:"Fish & Brown Rice Dinner",desc:"Omega-rich, easy to digest",price:"₹379"},
-      ],
-      "Portion Guide":[
-        {id:"DM-008",icon:"📊",bg:"#E8F5E9",tag:"Free from Mira",name:"Breed-Specific Portion Guide",desc:"Tailored for your dog's size and age",price:"Free"},
-        {id:"DM-009b",icon:"📋",bg:"#E8F5E9",tag:"For Mojo",name:"Treatment Nutrition Guide",desc:"Eating well through treatment",price:"Free"},
-      ],
-      "Special Diets":[
-        {id:"DM-010",icon:"🌿",bg:"#FFF3E0",tag:"For seniors",name:"Senior Wellness Meal Pack",desc:"7-day, joint-supportive",price:"₹1,999"},
-        {id:"DM-012",icon:"💚",bg:"#E8F5E9",tag:"Treatment-safe",name:"Post-Treatment Recovery Meals",desc:"Gentle nutrition for healing",price:"₹1,799"},
-      ],
-    },
   },
   {
     id:"treats", icon:"🦴", name:"Treats & Rewards",
@@ -55,29 +34,6 @@ const DINE_DIMS = [
     badge:"Mojo loves these", badgeBg:"rgba(233,30,99,0.18)", badgeCol:"#880E4F",
     bg:"linear-gradient(135deg,#FCE4EC,#F8BBD0)", dot:"#E91E63", glow:true,
     mira:"Everything here is soy-free and chicken-free. The salmon biscuits are first because {name} loves them.",
-    tabs:["Everyday Treats","Training Rewards","Birthday Treats","Allergy-Safe"],
-    products:{
-      "Everyday Treats":[
-        {id:"TR-001",icon:"🍪",bg:"#FCE4EC",tag:"Mojo's #1",name:"Salmon Biscuit Box",desc:"12 hand-baked, soy-free, chicken-free",price:"₹449"},
-        {id:"TR-002",icon:"🥜",bg:"#FCE4EC",tag:"Safe for Mojo",name:"Peanut Butter Drops",desc:"Soft, small, no xylitol",price:"₹349"},
-        {id:"TR-003",icon:"🥕",bg:"#FCE4EC",tag:"Light reward",name:"Mixed Veggie Chews",desc:"Low calorie, great for teeth",price:"₹299"},
-        {id:"TR-004",icon:"🐑",bg:"#FCE4EC",tag:"Hypoallergenic",name:"Lamb Jerky Strips",desc:"Novel protein, long-lasting chew",price:"₹399"},
-      ],
-      "Training Rewards":[
-        {id:"TR-005",icon:"🎯",bg:"#FCE4EC",tag:"Training pick",name:"Salmon Training Bites",desc:"Tiny, high-value, soy-free",price:"₹299"},
-        {id:"TR-006",icon:"🥜",bg:"#FCE4EC",tag:"Training pick",name:"Peanut Butter Training Bites",desc:"Soft, quick to eat",price:"₹279"},
-        {id:"TR-007",icon:"⭐",bg:"#FCE4EC",tag:"High-value reward",name:"Freeze-Dried Liver Bites",desc:"Ultra high-value — use sparingly",price:"₹349"},
-      ],
-      "Birthday Treats":[
-        {id:"TR-008",icon:"🎂",bg:"#FCE4EC",tag:"Birthday cake",name:"Birthday Salmon Cake",desc:"Soy-free, hand-decorated, fresh",price:"₹899"},
-        {id:"TR-009",icon:"🎁",bg:"#FCE4EC",tag:"Birthday platter",name:"Birthday Treat Platter",desc:"12 mixed treats, birthday box",price:"₹649"},
-        {id:"TR-010",icon:"🧁",bg:"#FCE4EC",tag:"Pawty ready",name:"Paw Print Birthday Cupcakes",desc:"6-pack, soy-free",price:"₹549"},
-      ],
-      "Allergy-Safe":[
-        {id:"TR-011",icon:"🛡️",bg:"#E8F5E9",tag:"Multi-allergy safe",name:"Allergy-Safe Variety Pack",desc:"Free of 7 common allergens",price:"₹499"},
-        {id:"TR-012",icon:"🐟",bg:"#E8F5E9",tag:"Single ingredient",name:"Salmon-Only Biscuits",desc:"One ingredient. Nothing else.",price:"₹379"},
-      ],
-    },
   },
   {
     id:"supplements", icon:"💊", name:"Supplements",
@@ -85,27 +41,6 @@ const DINE_DIMS = [
     badge:"Health priority", badgeBg:"rgba(76,175,80,0.18)", badgeCol:"#2E7D32",
     bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)", dot:"#4CAF50", glow:true,
     mira:"These are the supplements I would choose for {name} right now — every one is treatment-safe, vet-checked, and soy-free.",
-    tabs:["Immunity & Treatment","Joint & Mobility","Digestion & Gut","Skin & Coat"],
-    products:{
-      "Immunity & Treatment":[
-        {id:"SP-001",icon:"🛡️",bg:"#E8F5E9",tag:"Treatment-safe",name:"Canine Immunity Booster",desc:"Antioxidants, lymphoma-safe, vet-checked",price:"₹899"},
-        {id:"SP-002",icon:"🌿",bg:"#E8F5E9",tag:"Treatment-safe",name:"Turmeric & Black Pepper",desc:"Natural anti-inflammatory",price:"₹549"},
-        {id:"SP-003",icon:"🍄",bg:"#E8F5E9",tag:"Lymphoma support",name:"Medicinal Mushroom Complex",desc:"Turkey Tail — lymphoma research",price:"₹1,299"},
-        {id:"SP-004",icon:"⚡",bg:"#E8F5E9",tag:"Treatment-safe",name:"Vitamin B Complex",desc:"Energy support during treatment",price:"₹649"},
-      ],
-      "Joint & Mobility":[
-        {id:"SP-005",icon:"🦴",bg:"#E3F2FD",tag:"Joint support",name:"Glucosamine & Chondroitin",desc:"Salmon-flavoured chewable tablet",price:"₹799"},
-        {id:"SP-006",icon:"🐚",bg:"#E3F2FD",tag:"Premium joint",name:"Green-Lipped Mussel Powder",desc:"Natural omega-3 + joint nutrients",price:"₹999"},
-      ],
-      "Digestion & Gut":[
-        {id:"SP-007",icon:"🌱",bg:"#FFF3E0",tag:"Treatment-safe",name:"Probiotic Powder",desc:"10 billion CFU — daily gut health",price:"₹549"},
-        {id:"SP-008",icon:"🔬",bg:"#FFF3E0",tag:"Absorption support",name:"Digestive Enzyme Blend",desc:"Supports nutrient absorption",price:"₹699"},
-      ],
-      "Skin & Coat":[
-        {id:"SP-010",icon:"🐟",bg:"#FCE4EC",tag:"Treatment-safe",name:"Salmon Oil — Omega 3 & 6",desc:"Cold-pressed, anti-inflammatory",price:"₹699"},
-        {id:"SP-011",icon:"🥥",bg:"#FCE4EC",tag:"Coat nourishing",name:"Coconut Oil",desc:"Antifungal, antibacterial, coat health",price:"₹449"},
-      ],
-    },
   },
   {
     id:"frozen", icon:"🧊", name:"Frozen & Fresh",
@@ -113,16 +48,6 @@ const DINE_DIMS = [
     badge:"Explore", badgeBg:"rgba(0,0,0,0.08)", badgeCol:"#555555",
     bg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)", dot:"#2196F3", glow:false,
     mira:"Tell me if {name} prefers cold-pressed or raw food and I'll build this section around that preference.",
-    tabs:["Cold Pressed","Raw","Freeze Dried","Fresh Cooked"],
-    products:{
-      "Cold Pressed":[
-        {id:"FF-001",icon:"❄️",bg:"#E3F2FD",tag:"Cold press pick",name:"Salmon & Vegetable Patty",desc:"Gently processed, max nutrition",price:"₹549"},
-        {id:"FF-002",icon:"🐑",bg:"#E3F2FD",tag:"Hypoallergenic",name:"Lamb & Quinoa Patty",desc:"Novel protein, multi-allergy safe",price:"₹599"},
-      ],
-      "Raw":[{id:"FF-003",icon:"🐟",bg:"#E8F5E9",tag:"BARF compatible",name:"Raw Salmon Mince",desc:"Single protein, soy-free",price:"₹499"}],
-      "Freeze Dried":[{id:"FF-004",icon:"✨",bg:"#FFFDE7",tag:"Convenience pick",name:"Freeze Dried Salmon Nuggets",desc:"Raw nutrition, shelf-stable",price:"₹799"}],
-      "Fresh Cooked":[{id:"FF-005",icon:"🍳",bg:"#FFF3E0",tag:"Fresh delivered",name:"Salmon Weekly Box",desc:"Home-cooked quality, weekly delivery",price:"₹2,499"}],
-    },
   },
   {
     id:"homemade", icon:"🍳", name:"Homemade & Recipes",
@@ -130,20 +55,6 @@ const DINE_DIMS = [
     badge:"Explore", badgeBg:"rgba(0,0,0,0.08)", badgeCol:"#555555",
     bg:"linear-gradient(135deg,#FFFDE7,#FFF9C4)", dot:"#F9A825", glow:false,
     mira:"These recipes are built around what {name} loves and what their body can handle. No soy, no chicken. Everything here is safe.",
-    tabs:["Quick Recipes","Weekend Recipes","Special Occasion","Ingredient Guide"],
-    products:{
-      "Quick Recipes":[
-        {id:"HR-001",icon:"📝",bg:"#FFFDE7",tag:"Free recipe",name:"Salmon & Sweet Potato Biscuits",desc:"20 minutes, makes 24 biscuits",price:"Free"},
-        {id:"HR-002",icon:"🧊",bg:"#FFFDE7",tag:"Free recipe",name:"Peanut Butter Frozen Treats",desc:"5 ingredients, freeze-ahead",price:"Free"},
-        {id:"HR-005",icon:"📦",bg:"#FFF3E0",tag:"Ready to cook",name:"Salmon & Oat Ingredient Pack",desc:"Pre-measured, everything included",price:"₹349"},
-      ],
-      "Weekend Recipes":[{id:"HR-003",icon:"🍲",bg:"#FFFDE7",tag:"Recovery recipe",name:"Slow-Cooked Lamb Stew",desc:"Makes 7 servings, freeze in portions",price:"Free"}],
-      "Special Occasion":[
-        {id:"HR-004",icon:"🎂",bg:"#FFFDE7",tag:"Birthday recipe",name:"DIY Salmon Birthday Cake",desc:"Full recipe including frosting",price:"Free"},
-        {id:"HR-007",icon:"📦",bg:"#FFF3E0",tag:"Birthday pack",name:"Birthday Cake Ingredient Pack",desc:"Everything pre-measured",price:"₹499"},
-      ],
-      "Ingredient Guide":[{id:"HR-006",icon:"📋",bg:"#E8F5E9",tag:"Free from Mira",name:"Doggy Safe Ingredients Guide",desc:"Safe and unsafe — complete list",price:"Free"}],
-    },
   },
 ];
 
@@ -162,50 +73,6 @@ const DIM_ID_TO_CATEGORY = {
   frozen:      "Frozen & Fresh",
   homemade:    "Homemade & Recipes",
 };
-
-const CATEGORY_BG = {
-  "Daily Meals":        "#FFF3E0",
-  "Treats & Rewards":   "#FCE4EC",
-  "Supplements":        "#E8F5E9",
-  "Frozen & Fresh":     "#E3F2FD",
-  "Homemade & Recipes": "#FFFDE7",
-};
-
-function getDineProductIcon(name = "") {
-  const n = name.toLowerCase();
-  if (n.includes("salmon"))        return "🐟";
-  if (n.includes("lamb"))          return "🐑";
-  if (n.includes("chicken"))       return "🐔";
-  if (n.includes("peanut butter")) return "🥜";
-  if (n.includes("birthday cake") || n.includes("cupcake")) return "🎂";
-  if (n.includes("birthday"))      return "🎁";
-  if (n.includes("veggie") || n.includes("vegetable")) return "🥕";
-  if (n.includes("mushroom"))      return "🍄";
-  if (n.includes("probiotic"))     return "🌱";
-  if (n.includes("glucosamine"))   return "🦴";
-  if (n.includes("vitamin"))       return "💊";
-  if (n.includes("coconut oil"))   return "🥥";
-  if (n.includes("oil"))           return "💧";
-  if (n.includes("fish"))          return "🐠";
-  if (n.includes("guide") || n.includes("recipe")) return "📝";
-  if (n.includes("pack"))          return "📦";
-  if (n.includes("platter"))       return "🍽️";
-  return "🐾";
-}
-
-function adaptDineProduct(p) {
-  const price = p.price;
-  return {
-    id:        p.id,
-    image_url: p.image_url || p.image || p.shopify_image_url || null,
-    icon:      getDineProductIcon(p.name),
-    bg:        CATEGORY_BG[p.category] || "#FFF3E0",
-    tag:       p.mira_tag || p.category || "",
-    name:      p.name,
-    desc:      p.allergy_free || (p.description ? p.description.slice(0, 70) : ""),
-    price:     !price || price === 0 ? "Free" : `₹${Number(price).toLocaleString("en-IN")}`,
-  };
-}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function t(str, name) { return str.replace(/{name}/g, name || "your dog"); }
@@ -264,48 +131,62 @@ function SoulChip({ children, extraStyle = {} }) {
   );
 }
 
-// ─── Product Card (real DB images — mirrors Celebrate ProductCard) ────────────
-function ProductCard({ product }) {
-  const [added, setAdded] = useState(false);
-  const [imgErr, setImgErr] = useState(false);
-  const isFree = product.price === "Free";
-  return (
-    <div style={{ borderRadius: 12, border: "1px solid #F0E8F8", background: "#fff", overflow: "hidden", display: "flex", flexDirection: "column" }}>
-      {/* Image area — real DB image if available, emoji fallback */}
-      <div style={{ height: 120, overflow: "hidden", position: "relative", background: product.bg || "#FFF3E0", flexShrink: 0 }}>
-        {product.image_url && !imgErr ? (
-          <img src={product.image_url} alt={product.name} onError={() => setImgErr(true)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-        ) : (
-          <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 34 }}>{product.icon}</div>
-        )}
-        {product.tag && (
-          <div style={{ position: "absolute", top: 8, left: 8, background: "linear-gradient(135deg,#C44DFF,#FF2D87)", color: "#fff", borderRadius: 20, padding: "2px 8px", fontSize: 9, fontWeight: 700 }}>
-            ✦ {product.tag}
-          </div>
-        )}
-      </div>
-      {/* Content */}
-      <div style={{ padding: "10px 10px 12px", flex: 1, display: "flex", flexDirection: "column" }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#1A0A00", marginBottom: 3, lineHeight: 1.3 }}>{product.name}</div>
-        <div style={{ fontSize: 11, color: "#888", lineHeight: 1.4, flex: 1, marginBottom: 8 }}>{product.desc}</div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: isFree ? "#27AE60" : "#C44400" }}>{product.price}</span>
-          <button
-            onClick={() => setAdded(true)}
-            style={{
-              background: added ? "#27AE60" : "linear-gradient(135deg,#FF8C42,#C44400)",
-              color: "#fff", border: "none", borderRadius: 8,
-              padding: "5px 12px", fontSize: 11, fontWeight: 700, cursor: "pointer",
-              transition: "all 0.15s",
-            }}
-            data-testid={`add-to-cart-${product.id}`}
-          >
-            {added ? "✓ Added" : isFree ? "Get Free" : "Add"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+// ─── Mira Intelligence: filter, sort, dim, and reason products for pet ────────
+function applyMiraIntelligence(products, allergies, loves, healthCondition, nutritionGoal, pet) {
+  const petName = pet?.name || 'your dog';
+  const allergyTerms = allergies.map(a => a.toLowerCase().trim());
+  const loveTerms = loves.map(l => l.toLowerCase().trim()).filter(Boolean);
+
+  return products
+    // 1. Remove products containing known allergens
+    .filter(p => {
+      if (!allergyTerms.length) return true;
+      const productText = `${p.name} ${p.description || ''}`.toLowerCase();
+      const freeFromText = (p.allergy_free || '').toLowerCase();
+      return !allergyTerms.some(allergen => {
+        if (freeFromText.includes(`${allergen}-free`) || freeFromText.includes(`${allergen} free`)) return false;
+        return productText.includes(allergen);
+      });
+    })
+    // 2. Enrich with Mira flags + "Why Mira picked this"
+    .map(p => {
+      const productText = `${p.name} ${p.description || ''} ${p.sub_category || ''}`.toLowerCase();
+      const freeFromText = (p.allergy_free || '').toLowerCase();
+      const tagText = (p.mira_tag || '').toLowerCase();
+
+      const matchedLove = loveTerms.find(l => productText.includes(l));
+      const isHealthSafe = healthCondition && (
+        tagText.includes('treatment') ||
+        freeFromText.includes('treatment-safe') ||
+        productText.includes('treatment-safe') ||
+        productText.includes('recovery')
+      );
+      const isAllergySafe = allergyTerms.length > 0 &&
+        allergyTerms.every(a => freeFromText.includes(`${a}-free`));
+      const conflictsGoal = nutritionGoal && (
+        (nutritionGoal.toLowerCase().includes('weight loss') && productText.includes('high calorie')) ||
+        (nutritionGoal.toLowerCase().includes('weight gain') && productText.includes('low calorie'))
+      );
+
+      // "Why Mira picked this" — prefer existing DB hint
+      let mira_hint = p.mira_hint || null;
+      if (!mira_hint) {
+        if (matchedLove) mira_hint = `Matches ${petName}'s love for ${matchedLove}`;
+        else if (isHealthSafe) mira_hint = `Safe during ${petName}'s treatment`;
+        else if (isAllergySafe) mira_hint = `Free from ${allergyTerms.join(' & ')} — safe for ${petName}`;
+        else if (p.mira_tag) mira_hint = p.mira_tag;
+      }
+
+      return { ...p, mira_hint, _loved: !!matchedLove, _healthSafe: isHealthSafe, _dimmed: !!conflictsGoal };
+    })
+    // 3. Sort: loved → health-safe → rest
+    .sort((a, b) => {
+      if (a._loved && !b._loved) return -1;
+      if (!a._loved && b._loved) return 1;
+      if (a._healthSafe && !b._healthSafe) return -1;
+      if (!a._healthSafe && b._healthSafe) return 1;
+      return 0;
+    });
 }
 
 // ─── Soul Question Card (Dine — amber themed) ────────────────────────────────
@@ -901,26 +782,47 @@ function TummyProfile({ pet, token }) {
 
 // ─── Dimension Expanded ───────────────────────────────────────────────────────
 function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
-  const [activeTab, setActiveTab] = useState(dim.tabs[0]);
   const petName = pet?.name || "your dog";
-  const allergies = getAllergies(pet);
-
-  // Prefer live API products, fall back to hardcoded catalog
   const catName = DIM_ID_TO_CATEGORY[dim.id];
-  const liveProducts = apiProducts[catName]?.[activeTab] || [];
-  const products = liveProducts.length > 0
-    ? liveProducts.map(adaptDineProduct)
-    : (dim.products[activeTab] || []);
+
+  // All raw products for this dimension from SSOT
+  const rawByTab = apiProducts[catName] || {};
+  const allRaw = Object.values(rawByTab).flat();
+
+  // Mira intelligence (client-side — no extra API call)
+  const allergies = getAllergies(pet);
+  const loves = getLoves(pet);
+  const healthCondition = getHealthCondition(pet);
+  const nutritionGoal = pet?.doggy_soul_answers?.nutrition_goal || null;
+  const intelligent = applyMiraIntelligence(allRaw, allergies, loves, healthCondition, nutritionGoal, pet);
+
+  // Dynamic tabs from actual sub_categories in API data
+  const tabList = ['All', ...Object.keys(rawByTab)];
+  const [activeTab, setActiveTab] = useState('All');
+
+  const products = activeTab === 'All'
+    ? intelligent
+    : intelligent.filter(p => p.sub_category === activeTab);
+
+  // Mira context for SharedProductCard
+  const miraCtx = { includeText: 'Add to Cart' };
+
   return (
     <div style={{background:"#fff",border:"2px solid #FF8C42",borderRadius:18,padding:22,marginBottom:16,gridColumn:"1 / -1"}}>
+      {/* Header */}
       <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:14,paddingBottom:12,borderBottom:"1px solid #FFF3E0"}}>
         <span style={{fontSize:28}}>{dim.icon}</span>
         <div style={{flex:1}}>
           <div style={{fontSize:16,fontWeight:800,color:"#1A0A00"}}>{dim.name}</div>
-          <div style={{fontSize:11,color:"#888"}}>{allergies.map(a=>`${a}-free`).join(" · ")}{allergies.length > 0 ? " · " : ""}Treatment-safe</div>
+          <div style={{fontSize:11,color:"#888"}}>
+            {allergies.map(a=>`${a}-free`).join(" · ")}{allergies.length > 0 ? " · " : ""}
+            {healthCondition ? "Treatment-safe" : "Personalised for " + petName}
+          </div>
         </div>
         <button onClick={onClose} style={{background:"#FFF3E0",border:"none",borderRadius:20,padding:"4px 12px",fontSize:11,fontWeight:700,color:"#C44400",cursor:"pointer"}}>Close ✕</button>
       </div>
+
+      {/* Mira quote */}
       <div style={{display:"flex",alignItems:"flex-start",gap:8,background:"linear-gradient(135deg,#FFF3E0,#FDE8E8)",borderRadius:10,padding:"10px 14px",marginBottom:14}}>
         <div style={{width:24,height:24,borderRadius:"50%",background:"linear-gradient(135deg,#FF8C42,#C44DFF)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"#fff",flexShrink:0}}>✦</div>
         <div>
@@ -928,14 +830,53 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
           <span style={{fontSize:10,color:"#C44400",fontWeight:600}}>♥ Mira knows {petName}</span>
         </div>
       </div>
-      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
-        {dim.tabs.map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)} style={{padding:"5px 12px",borderRadius:20,border:`1px solid ${activeTab===tab?"#FF8C42":"#FFD0A0"}`,background:activeTab===tab?"#FF8C42":"#FFF8F0",fontSize:11,fontWeight:600,color:activeTab===tab?"#fff":"#C44400",cursor:"pointer"}}>{tab}</button>
-        ))}
-      </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
-        {products.map(p => <ProductCard key={p.id} product={p} />)}
-      </div>
+
+      {/* Dynamic sub-category tabs (from API, never hardcoded) */}
+      {tabList.length > 1 && (
+        <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
+          {tabList.map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab)} style={{padding:"5px 12px",borderRadius:20,border:`1px solid ${activeTab===tab?"#FF8C42":"#FFD0A0"}`,background:activeTab===tab?"#FF8C42":"#FFF8F0",fontSize:11,fontWeight:600,color:activeTab===tab?"#fff":"#C44400",cursor:"pointer"}}>
+              {tab}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Mira stats bar */}
+      {allRaw.length > 0 && (
+        <div style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:14,fontSize:11,color:"#888"}}>
+          <span style={{color:"#27AE60",fontWeight:700}}>✓ {intelligent.length} safe for {petName}</span>
+          {allRaw.length - intelligent.length > 0 && (
+            <span style={{color:"#E87722"}}>✗ {allRaw.length - intelligent.length} filtered (allergens)</span>
+          )}
+          {intelligent.filter(p => p._loved).length > 0 && (
+            <span style={{color:"#E91E63",fontWeight:700}}>♥ {intelligent.filter(p => p._loved).length} match {petName}'s loves</span>
+          )}
+        </div>
+      )}
+
+      {/* Product grid — real ProductCard with Add to Cart + ProductDetailModal */}
+      {products.length === 0 ? (
+        <div style={{textAlign:"center",padding:"24px 0",color:"#888",fontSize:13}}>
+          {allRaw.length === 0
+            ? `Loading ${dim.name} products for ${petName}…`
+            : `All ${dim.name} products were filtered — they contain ${allergies.join(', ')} which ${petName} is allergic to.`}
+        </div>
+      ) : (
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(min(200px, 100%), 1fr))",gap:12}}>
+          {products.map(p => (
+            <div key={p.id} style={{opacity: p._dimmed ? 0.4 : 1, position:"relative"}} data-testid={`dim-product-${p.id}`}>
+              {p._loved && (
+                <div style={{position:"absolute",top:-6,right:-6,zIndex:2,background:"#E91E63",borderRadius:"50%",width:18,height:18,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:"#fff"}}>♥</div>
+              )}
+              {p._dimmed && (
+                <div style={{position:"absolute",top:4,left:4,zIndex:2,background:"rgba(0,0,0,0.6)",borderRadius:6,padding:"2px 6px",fontSize:9,color:"#fff",fontWeight:700}}>Conflicts goal</div>
+              )}
+              <SharedProductCard product={p} pillar="dine" selectedPet={pet} miraContext={miraCtx} />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
