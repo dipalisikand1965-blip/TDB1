@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 15, 2026 (Session 40 — Dine Page: MiraSoulNudge + Dynamic Products + Font Fixes)
+## Last Updated: Mar 16, 2026 (Session 51 — Dine Page: Mira's Picks Breed Fix + Product Image Fix)
 
 ---
 
@@ -8,6 +8,37 @@
 **Every agent must read `/app/memory/ARCHITECTURE.md` before making any changes.**
 It contains the canonical data model, API rules, component patterns, and checklists.
 Violating these rules will break the admin panel and data consistency.
+
+---
+
+## ✅ SESSION 51 — Dine Page: Mira's Picks Breed Fix + Product Image Fix (Mar 16, 2026)
+
+### Root Cause Fixed:
+**Mira's Picks was showing Akita breed merchandise (Akita Feeding Mat, Akita Food Storage Container) instead of food products for Mojo (Indie breed)**
+
+The bug: `DineContentModal.jsx` miras-picks fetch used `GET /api/admin/pillar-products?pillar=dine&limit=60` which returns ALL dine products sorted alphabetically. Since breed merchandise (Akita, American Bully...) comes first alphabetically, only breed merch appeared in the first 60.
+
+### Fixes Applied:
+1. **`DineContentModal.jsx` - `miras-picks` fetch**: Now fetches 5 food categories in parallel (Daily Meals, Treats & Rewards, Supplements, Frozen & Fresh, Homemade & Recipes + services). Also deduplicates by name (same product existed with different IDs).
+2. **`DineContentModal.jsx` - `soul-picks`**: Now only shows breed merchandise that exactly matches the pet's breed. No fallback to wrong breed products. Also deduplicated by name.
+3. **DB: Food product images**: Updated `image` field for all 48 catalog products (DM-001 to HR-007) to point to the correct sub-category food photography stored in `image_url`.
+4. **DB: Service mira_tags**: Updated 5 dine service products with appropriate tags ("Complimentary", "Reservation Service", "Dining Support") instead of incorrect "Nutritious & delicious".
+
+### Product Mapping Confirmed (64 real food/service products):
+- Daily Meals: 13 (Morning Meal/Evening Meal/Portion Guide/Special Diets sub-tabs ✓)
+- Treats & Rewards: 12 (Everyday/Training/Birthday/Allergy-Safe sub-tabs ✓)
+- Supplements: 11 (Immunity/Joint/Digestion/Skin & Coat sub-tabs ✓)
+- Frozen & Fresh: 5 (Cold Pressed/Raw/Freeze Dried/Fresh Cooked ✓)
+- Homemade & Recipes: 7 (Quick Recipes/Weekend/Special Occasion/Ingredient Guide ✓)
+- Fresh Meals: ~11
+- Services (dine): 5
+
+### Testing: 90% → verified by testing agent (iteration_150.json)
+- Mira's Picks: PASS — Food products showing (Salmon Training Bites, Salmon Bowls, Supplements)
+- No Akita products: PASS
+- All 5 services showing: PASS
+- Subcategory tabs: PASS (all 5 categories)
+- Soul Picks: PASS (shows Indie breed products only, deduped)
 
 ---
 
