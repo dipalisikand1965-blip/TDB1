@@ -9,6 +9,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { toast } from 'sonner';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import { useResizeMobile } from '../../hooks/useResizeMobile';
@@ -70,6 +71,7 @@ const DineConciergeModal = ({ isOpen, onClose, serviceType, petName, petId }) =>
     } finally {
       setSubmitting(false);
       setSubmitted(true);
+      toast.success(`Sent to ${displayName}'s Concierge`, { description: "We will reach out within 48 hours." });
     }
   };
 
@@ -91,7 +93,7 @@ const DineConciergeModal = ({ isOpen, onClose, serviceType, petName, petId }) =>
         onClick={handleClose}
         style={{
           position: 'fixed', inset: 0,
-          background: 'rgba(0,0,0,0.50)', zIndex: 1000,
+          background: 'rgba(0,0,0,0.50)', zIndex: 9998,
           display: 'flex',
           alignItems: isMobile ? 'flex-start' : 'center',
           justifyContent: 'center',
@@ -109,7 +111,7 @@ const DineConciergeModal = ({ isOpen, onClose, serviceType, petName, petId }) =>
             padding: isMobile ? '24px 20px' : 32,
             maxWidth: 480, width: '100%',
             maxHeight: isMobile ? 'none' : '90vh',
-            overflowY: 'auto', position: 'relative', zIndex: 1001,
+            overflowY: 'auto', position: 'relative', zIndex: 9999,
           }}
           data-testid="dine-intake-modal"
         >

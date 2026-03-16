@@ -20,6 +20,7 @@ import MealBoxCard from "../components/dine/MealBoxCard";
 import ConciergeIntakeModal from "../components/dine/ConciergeIntakeModal";
 import DineConciergeSection from "../components/dine/DineConciergeSection";
 import GuidedNutritionPaths from "../components/dine/GuidedNutritionPaths";
+import MiraOrb from "../components/MiraOrb";
 import { PillarHelpBuckets, PillarGuidedPaths } from "../components/PillarGoldSections";
 import { API_URL } from "../utils/api";
 import SharedProductCard from "../components/ProductCard";
@@ -1302,9 +1303,9 @@ const DineSoulPage = () => {
 
       </div>
 
-      {/* Mira pill */}
-      <div onClick={() => window.dispatchEvent(new CustomEvent("openMiraAI", { detail: { message: `What should ${petData.name} eat today?`, context: "dine" } }))} style={{ position: "fixed", bottom: 20, right: 20, background: "linear-gradient(135deg,#C44DFF,#FF2D87)", color: "#fff", borderRadius: 20, padding: "8px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, zIndex: 100, boxShadow: "0 4px 20px rgba(196,77,255,0.40)" }} data-testid="ask-mira-pill">
-        ✦ Ask Mira
+      {/* Mira orb — amber/terracotta for Dine */}
+      <div onClick={() => window.dispatchEvent(new CustomEvent("openMiraAI", { detail: { message: `What should ${petData.name} eat today?`, context: "dine" } }))} style={{ position: "fixed", bottom: 24, right: 20, zIndex: 9996, cursor: "pointer" }} data-testid="dine-mira-orb">
+        <MiraOrb pillar="dine" size="md" />
       </div>
     </PillarPageLayout>
   );

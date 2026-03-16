@@ -11,6 +11,7 @@
  */
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { getApiUrl } from "../../utils/api";
 
 // ─────────────────────────────────────────────────────────────
@@ -508,7 +509,7 @@ function ModalShell({ onClose, children, noPadding }) {
   return (
     <div
       style={{
-        position:"fixed", inset:0, zIndex:500,
+        position:"fixed", inset:0, zIndex:9998,
         background:"rgba(0,0,0,0.50)",
         display:"flex", alignItems:"center",
         justifyContent:"center", padding:20,
@@ -593,6 +594,7 @@ function PathFlowModal({ path, pet, onClose }) {
     } finally {
       setSubmitting(false);
       setSubmitted(true);
+      toast.success(`${path.title.replace(" Path","")} sent to Concierge`, { description: "We'll reach out within 48 hours." });
     }
   };
 

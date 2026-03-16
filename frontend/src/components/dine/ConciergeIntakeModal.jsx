@@ -76,6 +76,10 @@ export default function ConciergeIntakeModal({
     } finally {
       setSending(false);
       setSent(true);
+      if (typeof window !== 'undefined') {
+        const { toast } = await import('sonner');
+        toast.success(`Sent to your Concierge`, { description: "We'll reach out within 48 hours." });
+      }
     }
   };
 
@@ -275,7 +279,7 @@ function Backdrop({ onClick, children }) {
     <div
       onClick={onClick}
       style={{
-        position: "fixed", inset: 0, zIndex: 600,
+        position: "fixed", inset: 0, zIndex: 9998,
         background: "rgba(0,0,0,0.52)",
         display: "flex", alignItems: "center",
         justifyContent: "center", padding: 20,
