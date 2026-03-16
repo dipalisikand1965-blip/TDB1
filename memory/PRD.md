@@ -11,6 +11,23 @@ Violating these rules will break the admin panel and data consistency.
 
 ---
 
+## ✅ SESSION 51b — Dynamic Dimension Text + Admin Filter + AI Image Fix (Mar 16, 2026)
+
+### Fixes:
+1. **Dynamic DINE_DIMS per pet** (`DineSoulPage.jsx`): Converted `DINE_DIMS` from a hardcoded constant to `getDineDims(pet)` function. Now "Salmon-forward" shows for Mojo (loves Salmon) and "Chicken-forward" shows for Lola (loves Chicken). Badge text also dynamic: `"{name}'s body needs this"` and `"{name} loves these"`.
+2. **Fixed "Salmon treats-forward"**: Strip food/treat suffixes (`treats/biscuits/food/meal`) from `favProtein` before inserting into templates. Mojo now sees "Salmon-forward" (not "Salmon treats-forward").
+3. **Admin Product Filter** (`PillarProductsTab.jsx`): Fixed stale closure bug — `fetchProducts` now accepts `catOverride` param; `onChange` passes new category directly instead of relying on stale closure. Selecting "Homemade & Recipes" now correctly shows 7 products.
+4. **AI Image Generation** (`ProductBoxEditor.jsx`, `PillarProductsTab.jsx`, `CelebrateManager.jsx`, `ServiceBox.jsx`): All 4 files now use `XMLHttpRequest` instead of `fetch` to bypass Emergent platform's fetch interceptor that was causing "body stream already read" error.
+5. **Fixed allergy "No" showing** (`TummyProfile.jsx`, `DineContentModal.jsx`): Added `"no"` to allergy filter list. Lola's `food_allergies: ["No"]` now correctly shows as no allergies.
+6. **Mira Score Engine confirmed working**: Mojo has 3234 scores, top dine picks are salmon-ranked (Salmon Training Bites: 99, Salmon Morning Bowl: 98).
+
+### Test Results (iteration_151.json — 95%):
+- Dynamic text: Lola shows "Chicken-forward" ✓, Mojo shows dynamic salmon text ✓
+- Admin filter: "Homemade & Recipes" shows exactly 7 products ✓
+- Mira's Picks: All salmon products for Mojo ✓, no Akita products ✓
+
+---
+
 ## ✅ SESSION 51 — Dine Page: Mira's Picks Breed Fix + Product Image Fix (Mar 16, 2026)
 
 ### Root Cause Fixed:
