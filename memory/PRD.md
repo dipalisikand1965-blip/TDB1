@@ -11,6 +11,18 @@ Violating these rules will break the admin panel and data consistency.
 
 ---
 
+## ✅ SESSION 47 — Dine: Product vs Service Routing (Feb 2026)
+
+### What Was Built:
+- **Products → Cart**: Any product (non-service) shows purple "View Details" → ProductDetailModal → pink-purple "Add to Cart/Include" → CartSidebar ("Your Requests") with quantity, subtotal, shipping, checkout
+- **Services → Concierge**: Any product with `product_type='service'` or `category='service'` shows orange "Request Service" card button → ProductDetailModal → orange "Request This Service" button → POST `/api/service_desk/attach_or_create_ticket` → toast "Sent to Concierge!" + "Handle Requests →" link. CartSidebar does NOT open.
+- **Mira's Picks**: Now does two parallel fetches — general dine products + dine category=service. All 5 dine services now surface (Backup Dining Alternatives, Venue Suitability Advisory, Dining Etiquette Guidance, Reservation Assistance, Pet-Friendly Restaurant Discovery)
+- Service success state: button turns green "✓ Sent to Concierge!" after click
+
+### Testing: 90% pass rate (iteration_148.json) — Product flow 100%, Service flow end-to-end verified. Fixed 4/5 missing services via parallel fetch (iteration retest in progress)
+
+---
+
 ## ✅ SESSION 46 — Dine: Real ProductCard + Cart Flow (Feb 2026)
 
 ### What Was Built:
