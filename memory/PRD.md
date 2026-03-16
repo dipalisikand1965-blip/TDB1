@@ -4,6 +4,25 @@
 
 ---
 
+## ✅ SESSION 57 — Admin Scroll Fix + Mira Picks Image Fix + ServiceCard (Mar 16, 2026)
+
+### What Was Fixed:
+1. **Admin panel horizontal scroll** — `Master Controls` div in `Admin.jsx` now has `flex-wrap` — buttons wrap to next line, no overflow
+2. **Mira Picks broken images (403)** — `resolvePickImage()` helper in `DineSoulPage.jsx` and `resolveEntityImage()` in `DineContentModal.jsx` both skip `static.prod-images.emergentagent.com` URLs (return 403). Products/services without valid images show branded gradient fallback
+3. **ServiceCard with Send to Concierge** — New `ServiceCard` component in `DineContentModal.jsx` for services from `services_master`. Clicking "Send to Concierge →" calls `POST /api/service_desk/attach_or_create_ticket` with full intent flow. Toast confirms success. ID-card shows SERVICE badge + mira_score + mira_reason
+4. **Services now appear in Mira's Picks pills** — `DineContentModal` for `miras-picks` now includes services from `claude-picks` that aren't in `products_master`. Uses `entity_type` for routing: service → `ServiceCard`, product → `ProductCard`
+5. **Product image enrichment** — Products in DineContentModal use `resolveEntityImage()` — prefers cloudinary URL from scored picks, falls back to filtered product image
+6. **ProductCard in Mira's Picks** — Opens product detail modal (existing behavior) with "Include" / Add to Cart flow
+
+### Key File Changes:
+- `frontend/src/pages/Admin.jsx` — `flex-wrap` on Master Controls div
+- `frontend/src/pages/DineSoulPage.jsx` — `resolvePickImage()` helper, branded gradient fallback
+- `frontend/src/components/dine/DineContentModal.jsx` — `resolveEntityImage()` helper, `ServiceCard`, entity_type routing, services from claude-picks added to display
+
+### Testing: All tests PASS (100% backend, 95% frontend — all critical flows ✓)
+
+---
+
 ## ✅ SESSION 56 — Mira Picks, MiraOrb Amber, Bundle Fix, Admin Auth (Mar 16, 2026)
 
 ### What Was Fixed:
