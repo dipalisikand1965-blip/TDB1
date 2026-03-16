@@ -23,7 +23,7 @@
   "test_credentials": {
     "user_email": "dipali@clubconcierge.in",
     "user_password": "test123",
-    "preview_url": "https://nutrition-engine-ui.preview.emergentagent.com"
+    "preview_url": "https://mira-picks-engine.preview.emergentagent.com"
   },
   "seed_data_creation": "None - used existing data",
   "retest_needed": false,

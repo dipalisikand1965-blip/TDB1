@@ -202,10 +202,14 @@ const ProductBoxEditor = ({
       try {
         const data = JSON.parse(xhr.responseText);
         if (xhr.status >= 200 && xhr.status < 300 && data.success && data.image_url) {
-          updateField('media.primary_image', data.image_url);
-          updateField('image', data.image_url);
-          updateField('image_url', data.image_url);
-          updateField('images', [data.image_url]);
+          // Single atomic update — avoids React batching losing earlier fields
+          const newProduct = JSON.parse(JSON.stringify(product));
+          newProduct.media = newProduct.media || {};
+          newProduct.media.primary_image = data.image_url;
+          newProduct.image = data.image_url;
+          newProduct.image_url = data.image_url;
+          newProduct.images = [data.image_url];
+          setProduct(newProduct);
           alert(`AI image generated and saved to Cloudinary for "${product.name}"`);
         } else if (xhr.status === 401 || (data?.detail || '').toLowerCase().includes('credentials')) {
           alert('Session expired. Please log out and log back in to the admin panel.');
@@ -250,13 +254,16 @@ const ProductBoxEditor = ({
       
       if (response.ok) {
         const data = await response.json();
-        // Update the product with the new Cloudinary URL
-        updateField('media.primary_image', data.url);
-        updateField('media.images', [data.url]);
-        updateField('image', data.url);
-        updateField('image_url', data.url);
-        updateField('images', [data.url]);
-        updateField('thumbnail', data.url);
+        // Single atomic update — avoids React batching losing earlier fields
+        const newProduct = JSON.parse(JSON.stringify(product));
+        newProduct.media = newProduct.media || {};
+        newProduct.media.primary_image = data.url;
+        newProduct.media.images = [data.url];
+        newProduct.image = data.url;
+        newProduct.image_url = data.url;
+        newProduct.images = [data.url];
+        newProduct.thumbnail = data.url;
+        setProduct(newProduct);
         alert(isExistingProduct
           ? 'Image uploaded to Cloudinary successfully! Image is now linked to this product and will persist.'
           : 'Image uploaded to Cloudinary successfully! Save the product to keep this image linked.');
