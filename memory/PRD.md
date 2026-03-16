@@ -11,6 +11,28 @@ Violating these rules will break the admin panel and data consistency.
 
 ---
 
+## ✅ SESSION 49 — Universal Mira Intelligence Pattern + Celebrate Fix (Feb 2026)
+
+### UNIVERSAL PATTERN (applies to all pillars going forward):
+**"Mira's Picks" on any pillar page MUST:**
+1. Fetch real DB products + services for that pillar (allergy-filtered, loves-first, health-safe flagged)
+2. Generate `MiraImaginesCard`s client-side for missing breed-relevant dream items (NOT in catalog yet)
+3. Render:
+   - **Services** → `ProductCard` with orange "Request Service" button → concierge ticket → "Sent to Concierge!" toast
+   - **Real products** → `ProductCard` with "View Details" → `ProductDetailModal` → Add to Cart → CartSidebar
+   - **Mira Imagines** → `MiraImaginesCard` (dark amber card) → "Request a Quote" → concierge ticket
+4. **Imagines are generated from**: breed (no breed product = breed meal plan), allergies (no safe pack = allergy pack), health condition (treatment kit), loves (fav protein box)
+5. No hardcoding. No extra API call. All client-side from soul profile already in context.
+
+### What Was Built:
+- **Celebrate duplicate heading fixed**: removed outer heading from `CelebratePageNew.jsx` (CelebrateServiceGrid already has its own)
+- **`MiraImaginesCard`** component: dark amber card, "MIRA IMAGINES" badge, "Request a Quote" → concierge ticket → "Sent to Concierge!" state
+- **`generateMiraImagines()`**: breed-specific meal plan, allergy-free pack, treatment support kit, fav-food box — all client-side
+- **`applyMirasPicksIntelligence()`**: full filtering + sorting + mira_hint for Mira's Picks section
+- **`DineContentModal` miras-picks** rewritten: real products + services (intelligently filtered) + Mira Imagines grid
+
+---
+
 ## ✅ SESSION 48 — Eat & Nourish: Real Products + Mira Intelligence (Feb 2026)
 
 ### What Was Built:
