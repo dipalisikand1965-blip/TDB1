@@ -19,6 +19,7 @@ import DineHero from "../components/dine/DineHero";
 import MealBoxCard from "../components/dine/MealBoxCard";
 import ConciergeIntakeModal from "../components/dine/ConciergeIntakeModal";
 import DineConciergeSection from "../components/dine/DineConciergeSection";
+import PetFriendlySpots from "../components/dine/PetFriendlySpots";
 import GuidedNutritionPaths from "../components/dine/GuidedNutritionPaths";
 import { PillarHelpBuckets, PillarGuidedPaths } from "../components/PillarGoldSections";
 import { API_URL } from "../utils/api";
@@ -1144,50 +1145,6 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
 }
 
 // ─── Guided Nutrition Paths ───────────────────────────────────────────────────
-// ─── Pet Friendly Spots ───────────────────────────────────────────────────────
-const MOCK_SPOTS = [
-  {name:"The Doggy Café",addr:"Indiranagar · 1.2km",icon:"☕",rating:"4.7",tag:"Great for Indies"},
-  {name:"Paws & Brew",addr:"Koramangala · 2.4km",icon:"🌿",rating:"4.5",tag:"Outdoor seating"},
-  {name:"Barkery & Co.",addr:"HSR Layout · 3.1km",icon:"🏡",rating:"4.6",tag:"Dog menu available"},
-  {name:"The Pet Pantry",addr:"Whitefield · 4.8km",icon:"🍽️",rating:"4.4",tag:"Quiet — good for anxious dogs"},
-  {name:"Bark & Bite",addr:"Jayanagar · 5.2km",icon:"🌟",rating:"4.8",tag:"Great for Indies"},
-  {name:"Canine Kitchen",addr:"Sarjapur · 6.1km",icon:"👨‍🍳",rating:"4.3",tag:"Dog menu available"},
-];
-
-function PetFriendlySpots({ pet }) {
-  const petName = pet?.name || "your dog";
-  const city = pet?.city || pet?.doggy_soul_answers?.city || "your city";
-  return (
-    <div data-testid="pet-friendly-spots">
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
-        <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"#FFF3E0",border:"1px solid #FFCC99",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:600,color:"#C44400"}}>📍 Pet-friendly spots near {petName} in {city}</div>
-        <button style={{background:"#fff",border:"1px solid #FFCC99",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:600,color:"#C44400",cursor:"pointer"}}>🗺️ View on map</button>
-      </div>
-      <div style={{display:"grid",gap:12,marginBottom:24}} className="pet-spots-grid">
-        <style>{`
-          .pet-spots-grid { grid-template-columns: repeat(1, 1fr); }
-          @media (min-width: 640px) { .pet-spots-grid { grid-template-columns: repeat(2, 1fr); } }
-          @media (min-width: 1024px) { .pet-spots-grid { grid-template-columns: repeat(3, 1fr); } }
-        `}</style>
-        {MOCK_SPOTS.map(spot => (
-          <div key={spot.name} style={{background:"#fff",border:"1px solid #F5E8D4",borderRadius:12,overflow:"hidden"}}>
-            <div style={{height:80,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,background:"#FFF8F0"}}>{spot.icon}</div>
-            <div style={{padding:10}}>
-              <div style={{fontSize:13,fontWeight:700,color:"#1A0A00",marginBottom:3}}>{spot.name}</div>
-              <div style={{fontSize:10,color:"#888",marginBottom:6}}>{spot.addr}</div>
-              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
-                <span style={{fontSize:11,color:"#F59E0B",fontWeight:600}}>★ {spot.rating}</span>
-                <span style={{fontSize:9,fontWeight:600,background:"#E8F5E9",color:"#2E7D32",borderRadius:8,padding:"2px 7px"}}>{spot.tag}</span>
-              </div>
-              <button style={{width:"100%",background:"linear-gradient(135deg,#FF8C42,#C44DFF)",color:"#fff",border:"none",borderRadius:10,padding:7,fontSize:11,fontWeight:600,cursor:"pointer"}}>Reserve via Concierge</button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 // ─── Dining Concierge ─────────────────────────────────────────────────────────
 function DiningConcierge({ pet }) {
   const petName = pet?.name || "your pet";
@@ -1383,6 +1340,9 @@ const DineSoulPage = () => {
   const [petData, setPetData] = useState(null);
   const [soulScore, setSoulScore] = useState(0);
   const [apiProducts, setApiProducts] = useState({});
+  const [dineOutIntakeOpen, setDineOutIntakeOpen] = useState(false);
+  const [dineOutVenue, setDineOutVenue] = useState(null);
+  const [dineOutCity, setDineOutCity] = useState(null);
 
   // Fetch Dine products from SSOT (products_master) on mount
   useEffect(() => {
@@ -1523,7 +1483,25 @@ const DineSoulPage = () => {
           </>
         )}
 
-        {activeTab === "out" && <PetFriendlySpots pet={petData} />}
+        {activeTab === "out" && (
+          <PetFriendlySpots
+            pet={petData}
+            onReserve={(spot, city) => {
+              setDineOutVenue(spot?.name || null);
+              setDineOutCity(city || null);
+              setDineOutIntakeOpen(true);
+            }}
+          />
+        )}
+
+        {/* Dining Out Concierge Modal */}
+        {dineOutIntakeOpen && (
+          <ConciergeIntakeModal
+            pet={petData}
+            prefilledVenue={dineOutVenue || (dineOutCity ? `Dining in ${dineOutCity}` : null)}
+            onClose={() => { setDineOutIntakeOpen(false); setDineOutVenue(null); setDineOutCity(null); }}
+          />
+        )}
 
       </div>
 

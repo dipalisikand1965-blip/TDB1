@@ -486,7 +486,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
               <Badge className="bg-purple-500 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">💜 Popular</Badge>
             )}
           </div>
-          {optionsCount > 1 && (
+          {optionsCount > 1 && pillar === 'shop' && (
             <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 hidden sm:block">
               <Badge variant="secondary" className="bg-white/90 text-gray-700 text-xs">
                 {optionsCount} options
