@@ -560,6 +560,7 @@ class UnifiedProduct(BaseModel):
     # Categorization
     category: Optional[str] = None
     subcategory: Optional[str] = None
+    categories: List[str] = []     # Multi-category support (SSOT)
     tags: List[str] = []
     intelligent_tags: List[str] = []
     collections: List[str] = []
@@ -638,85 +639,79 @@ async def get_all_products(
     
     # Build query
     query = {}
+    and_conditions = []  # Use $and to combine all filter conditions safely
     
     if product_type:
-        query["product_type"] = product_type
+        and_conditions.append({"product_type": product_type})
     if category:
-        query["category"] = category
+        # Check both 'category' (singular) and 'categories' (array) fields
+        and_conditions.append({"$or": [
+            {"category": category},
+            {"categories": category}
+        ]})
     if pillar:
         # Check both 'pillar' (singular) and 'pillars' (array) fields
-        query["$or"] = [
+        and_conditions.append({"$or": [
             {"pillar": pillar},
             {"pillars": pillar},
             {"primary_pillar": pillar}
-        ]
+        ]})
     if status:
-        query["visibility.status"] = status
+        and_conditions.append({"visibility.status": status})
     if reward_eligible is not None:
-        query["paw_rewards.is_reward_eligible"] = reward_eligible
+        and_conditions.append({"paw_rewards.is_reward_eligible": reward_eligible})
     if shipping:
         if shipping == "pan-india":
-            query["is_pan_india_shippable"] = True
+            and_conditions.append({"is_pan_india_shippable": True})
         elif shipping == "local":
-            query["is_pan_india_shippable"] = {"$ne": True}
+            and_conditions.append({"is_pan_india_shippable": {"$ne": True}})
     
     # Source filter (shopify, soul_made, manual)
     if source:
         if source == "soul_made":
-            query["soul_tier"] = "soul_made"
+            and_conditions.append({"soul_tier": "soul_made"})
         elif source == "shopify":
-            query["shopify_id"] = {"$exists": True}
+            and_conditions.append({"shopify_id": {"$exists": True}})
         elif source == "manual":
-            query["$and"] = query.get("$and", []) + [
-                {"shopify_id": {"$exists": False}},
-                {"soul_tier": {"$ne": "soul_made"}}
-            ]
+            and_conditions.append({"shopify_id": {"$exists": False}})
+            and_conditions.append({"soul_tier": {"$ne": "soul_made"}})
     
     # Breed Intelligence Filters
     if breed:
-        query["$or"] = [
+        and_conditions.append({"$or": [
             {"breed_metadata.breeds": breed},
             {"breed_metadata.breeds": {"$size": 0}},  # Universal products
             {"breed_tags": {"$regex": breed, "$options": "i"}},
             {"breed": {"$regex": breed, "$options": "i"}}  # For soul_made products
-        ]
+        ]})
     if size:
-        size_query = {
-            "$or": [
-                {"breed_metadata.sizes": size},
-                {"breed_metadata.sizes": {"$size": 0}}  # Universal products
-            ]
-        }
-        if "$and" not in query:
-            query["$and"] = []
-        query["$and"].append(size_query)
+        and_conditions.append({"$or": [
+            {"breed_metadata.sizes": size},
+            {"breed_metadata.sizes": {"$size": 0}}  # Universal products
+        ]})
     if has_mira_hint:
         if has_mira_hint == "true":
-            query["mira_hint"] = {"$exists": True, "$ne": "", "$ne": None}
+            and_conditions.append({"mira_hint": {"$exists": True, "$ne": ""}})
         elif has_mira_hint == "false":
-            query["$or"] = [
+            and_conditions.append({"$or": [
                 {"mira_hint": {"$exists": False}},
                 {"mira_hint": ""},
                 {"mira_hint": None}
-            ]
+            ]})
     
     if search:
-        search_query = {
-            "$or": [
-                {"name": {"$regex": search, "$options": "i"}},
-                {"sku": {"$regex": search, "$options": "i"}},
-                {"tags": {"$regex": search, "$options": "i"}},
-                {"category": {"$regex": search, "$options": "i"}},
-                {"description": {"$regex": search, "$options": "i"}},
-                {"breed": {"$regex": search, "$options": "i"}},
-                {"breed_name": {"$regex": search, "$options": "i"}}
-            ]
-        }
-        # Merge search query with existing query
-        if "$or" in query:
-            query = {"$and": [query, search_query]}
-        else:
-            query.update(search_query)
+        and_conditions.append({"$or": [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"sku": {"$regex": search, "$options": "i"}},
+            {"tags": {"$regex": search, "$options": "i"}},
+            {"category": {"$regex": search, "$options": "i"}},
+            {"description": {"$regex": search, "$options": "i"}},
+            {"breed": {"$regex": search, "$options": "i"}},
+            {"breed_name": {"$regex": search, "$options": "i"}}
+        ]})
+    
+    if and_conditions:
+        query = {"$and": and_conditions} if len(and_conditions) > 1 else and_conditions[0]
     
     all_products = []
     total = 0

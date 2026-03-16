@@ -1,19 +1,25 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 16, 2026 (Session 61 — Product Box Category Filters + Dine Image Fix)
+## Last Updated: Mar 16, 2026 (Session 61 — Soul Picks Fix + P0 Data Refactor + Multiple Bug Fixes)
 
 ---
 
-## ✅ SESSION 61 — Product Box Category Filters + Dine Page Image Fix (Mar 16, 2026)
+## ✅ SESSION 61 — Soul Picks Fix + P0 Data Refactor + Multiple Bug Fixes (Mar 16, 2026)
 
 ### Issues Resolved:
-1. **Dine Page Generic Images** — DineSoulPage was fetching all 857 dine products (sorted newest = Akita merchandise on top). Fixed: fetches only 5 food categories (Daily Meals, Treats & Rewards, Supplements, Frozen & Fresh, Homemade & Recipes) via parallel API calls. Now shows ONLY the 48 seeded food products on the /dine page.
-2. **Product Box Filters Not Working** — All filter change handlers (pillar buttons, dropdowns) were NOT resetting `page` to 0. When on page 5 and changing filter, the API returned empty results. Fixed: all handlers now call `setPage(0)`.
-3. **Category Filter Added to Product Box** — A horizontal pill strip of category buttons now appears below the pillar quick-filter buttons when a pillar is selected. Shows MAIN_CATEGORIES for that pillar (e.g., Dine → Daily Meals, Treats & Rewards, Supplements, Frozen & Fresh, Homemade & Recipes, Bowls & Accessories, Food General). Filter resets when pillar changes.
+1. **Soul Picks rope toy images** — `products_master` had 4564 duplicate breed merchandise entries with wrong AI-generated rope toy images. All deleted. Soul Picks now correctly show Cloudinary mockup images.
+2. **Dine Page Generic Images** — DineSoulPage fetches only 5 food categories (parallel API calls).
+3. **Product Box Combined Filter Conflict** — Fixed `$or` overwrite bug with `$and` builder.
+4. **Product Box Filters Page Reset** — All filter handlers now call `setPage(0)`.
+5. **P0 Data Architecture Refactor** — Added `categories: List[str]` to `ProductCreate` schema; multi-category checkbox UI in ProductBoxEditor; query searches both `category` and `categories`.
+6. **Category Filter in Product Box** — Pill strip showing pillar categories appears when pillar is selected.
 
 ### Files Changed:
-- `frontend/src/pages/DineSoulPage.jsx` — parallel fetch from 5 food categories
-- `frontend/src/components/admin/UnifiedProductBox.jsx` — filterCategory state, category pill strip, setPage(0) fixes
+- `frontend/src/pages/DineSoulPage.jsx` — parallel category fetch
+- `frontend/src/components/admin/UnifiedProductBox.jsx` — filterCategory, category pills, setPage(0)
+- `frontend/src/components/admin/ProductBoxEditor.jsx` — Additional Categories checkboxes
+- `backend/unified_product_box.py` — `categories` in schema, $and filter builder
+- Database: deleted 4564 bad breed product entries with rope toy images
 
 ---
 
