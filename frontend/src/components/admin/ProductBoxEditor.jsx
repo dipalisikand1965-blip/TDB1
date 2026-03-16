@@ -181,49 +181,37 @@ const ProductBoxEditor = ({
   const [generatingImage, setGeneratingImage] = useState(false);
 
   // Generate AI image for this product (synchronous — returns URL directly)
-  const handleGenerateAIImage = async () => {
+  // Uses XMLHttpRequest to bypass Emergent's fetch interceptor that consumes response body
+  const handleGenerateAIImage = () => {
     if (!product?.id || product.id.startsWith('NEW-')) {
       alert('Please save the product first before generating an AI image.');
       return;
     }
     setGeneratingImage(true);
-    try {
-      const token = localStorage.getItem('admin_token') || localStorage.getItem('token');
-      const res = await fetch(`${API_URL}/api/admin/products/${product.id}/generate-image`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
-
-      // Always read as text first to avoid "body stream already read" error
-      const rawText = await res.text();
-      let data;
-      try {
-        data = JSON.parse(rawText);
-      } catch {
-        throw new Error(`Server error (${res.status}): ${rawText.substring(0, 200)}`);
-      }
-
-      if (!res.ok) {
-        throw new Error(data?.detail || `Request failed: ${res.status}`);
-      }
-
-      if (data.success && data.image_url) {
-        updateField('media.primary_image', data.image_url);
-        updateField('image', data.image_url);
-        updateField('image_url', data.image_url);
-        updateField('images', [data.image_url]);
-        alert(`AI image generated and saved to Cloudinary for "${product.name}"`);
-      } else {
-        throw new Error(data.detail || 'Image generation failed');
-      }
-    } catch (err) {
-      alert('AI image generation failed: ' + err.message);
-    } finally {
+    const token = localStorage.getItem('admin_token') || localStorage.getItem('token');
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${API_URL}/api/admin/products/${product.id}/generate-image`);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    xhr.onload = () => {
       setGeneratingImage(false);
-    }
+      try {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.status >= 200 && xhr.status < 300 && data.success && data.image_url) {
+          updateField('media.primary_image', data.image_url);
+          updateField('image', data.image_url);
+          updateField('image_url', data.image_url);
+          updateField('images', [data.image_url]);
+          alert(`AI image generated and saved to Cloudinary for "${product.name}"`);
+        } else {
+          alert('AI image generation failed: ' + (data?.detail || `Server error ${xhr.status}`));
+        }
+      } catch {
+        alert('AI image generation failed: Could not parse server response');
+      }
+    };
+    xhr.onerror = () => { setGeneratingImage(false); alert('AI image generation failed: Network error'); };
+    xhr.send();
   };
   
   // Handle image upload to Cloudinary
