@@ -1,6 +1,26 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 16, 2026 (Session 55 — Comprehensive Dine UI/UX Fixes + Mobile Responsiveness)
+## Last Updated: Mar 16, 2026 (Session 56 — Mira Picks + Orb Fix + Bundle AI Image + Admin Auth Fix)
+
+---
+
+## ✅ SESSION 56 — Mira Picks, MiraOrb Amber, Bundle Fix, Admin Auth (Mar 16, 2026)
+
+### What Was Fixed:
+1. **Double MiraOrb removed** — Removed duplicate `MiraOrb` from `DineSoulPage.jsx` (now uses single orb from `MiraChatWidget` in `PillarPageLayout`)
+2. **MiraOrb now uses pillar colors** — `MiraOrb.jsx` updated to use `orbPrimary`/`orbSecondary` from `PILLAR_THEMES` when `pillar` prop is set. `dine` → amber `#F59E0B / #D97706`. `MiraChatWidget` now passes `pillar={pillar}` to `MiraOrb` when floating (collapsed state).
+3. **Mira Picks section added to /dine** — New `MiraPicksSection` component in `DineSoulPage.jsx`: fetches from `GET /api/mira/claude-picks/{pet_id}?pillar=dine&entity_type={type}` in parallel (products + services), interleaves results (2 products : 1 service), displays up to 16 AI-scored cards with image, score bar, and mira_reason. Shows ONLY for pets with scores.
+4. **Bundle generate-image URL fixed** — `BundlesManager.jsx` was calling `/api/bundles/{id}/generate-image` (wrong) → now calls `/api/admin/celebrate/bundles/{id}/generate-image` (correct)
+5. **Admin auth sessionStorage fix** — Both `BundlesManager.jsx` and `ProductBoxEditor.jsx` added `getAdminAuth()` helper that checks both `localStorage.adminAuth` AND `sessionStorage.admin_auth` — fixes "Invalid credentials" error caused by `AdminProtectedRoute` only setting sessionStorage.
+
+### Key File Changes:
+- `frontend/src/pages/DineSoulPage.jsx` — Removed duplicate MiraOrb, added MiraPicksSection
+- `frontend/src/components/MiraOrb.jsx` — Pillar-specific orb gradient colors
+- `frontend/src/components/MiraChatWidget.jsx` — Passes `pillar` prop to `MiraOrb`
+- `frontend/src/components/admin/BundlesManager.jsx` — Fixed URL + added getAdminAuth() sessionStorage fallback
+- `frontend/src/components/admin/ProductBoxEditor.jsx` — Added getAdminAuth() sessionStorage fallback
+
+### Testing: All 11 tests PASS (100%) ✓ Backend 12/12 ✓
 
 ---
 
