@@ -11,10 +11,13 @@
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, Check } from 'lucide-react';
+import { X, Loader2, Check, Send, ShoppingCart, Star } from 'lucide-react';
+import { toast } from 'sonner';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 import ProductCard from '../ProductCard';
 
 // ── Pet data helpers ──────────────────────────────────────────────────────────
@@ -114,6 +117,107 @@ const MiraImaginesCard = ({ item, pet, apiUrl, token }) => {
             style={{ width: '100%', background: 'linear-gradient(135deg, #FF8C42, #C44400)', color: '#fff', border: 'none', borderRadius: 10, padding: '9px', fontSize: 11, fontWeight: 700, cursor: 'pointer', opacity: state === 'sending' ? 0.7 : 1 }}
           >
             {state === 'sending' ? 'Sending…' : 'Request a Quote →'}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ── ServiceCard — real service from services_master with Send to Concierge ────
+const ServiceCard = ({ service, pet, apiUrl, token }) => {
+  const [state, setState] = useState('idle'); // idle | sending | sent
+  const petName = pet?.name || 'your dog';
+  const scoreColor = !service.mira_score ? '#6B7280' : service.mira_score >= 80 ? '#16A34A' : '#F59E0B';
+  const img = (() => {
+    const candidates = [service.image_url, service.image, service.media?.primary_image];
+    for (const url of candidates) {
+      if (!url) continue;
+      if (url.includes('static.prod-images.emergentagent.com')) continue;
+      if (url.startsWith('http')) return url;
+    }
+    return null;
+  })();
+
+  const sendToConcierge = async () => {
+    setState('sending');
+    try {
+      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+      await fetch(`${apiUrl}/api/service_desk/attach_or_create_ticket`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          parent_id: storedUser?.id || storedUser?.email || 'guest',
+          pet_id: pet?.id || 'unknown',
+          pillar: 'dine',
+          intent_primary: 'service_request',
+          intent_secondary: [service.name || service.entity_name],
+          life_state: 'dine',
+          channel: 'miras_picks_services',
+          initial_message: {
+            sender: 'parent',
+            source: 'dine_miras_picks',
+            text: `I'd like "${service.name || service.entity_name}" for ${petName}. Mira scored this as a match (${service.mira_score || '?'}/100). Please get in touch!`,
+          },
+        }),
+      });
+      toast.success('Sent to Concierge!', { description: `We'll reach out about "${service.name || service.entity_name}" within 48 hours.` });
+      setState('sent');
+    } catch (err) {
+      console.error('[ServiceCard] concierge error:', err);
+      toast.error('Could not send request. Please try again.');
+      setState('idle');
+    }
+  };
+
+  return (
+    <div style={{
+      borderRadius: 14, overflow: 'hidden',
+      background: 'linear-gradient(135deg, #0F172A, #1E293B)',
+      border: '1.5px solid rgba(99,102,241,0.35)',
+      display: 'flex', flexDirection: 'column', minHeight: 220,
+    }} data-testid={`service-card-${service.id}`}>
+      {/* Image */}
+      <div style={{ width: '100%', height: 110, overflow: 'hidden', position: 'relative', background: '#1E293B' }}>
+        {img ? (
+          <img src={img} alt={service.name || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { e.target.style.display = 'none'; }} />
+        ) : (
+          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32 }}>✨</div>
+        )}
+        <div style={{ position: 'absolute', top: 7, left: 7, background: '#6366F1', color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 20 }}>SERVICE</div>
+        {service.mira_score && (
+          <div style={{ position: 'absolute', top: 7, right: 7, background: scoreColor, color: '#fff', fontSize: 9, fontWeight: 800, padding: '2px 7px', borderRadius: 20 }}>
+            <Star size={8} style={{ display: 'inline', marginRight: 2 }} />{service.mira_score}
+          </div>
+        )}
+      </div>
+      <div style={{ flex: 1, padding: '10px 12px 4px' }}>
+        <p style={{ fontWeight: 800, color: '#fff', fontSize: 12, lineHeight: 1.3, marginBottom: 4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          {service.name || service.entity_name || '—'}
+        </p>
+        {service.mira_hint && (
+          <p style={{ color: 'rgba(255,255,255,0.50)', fontSize: 10, lineHeight: 1.4, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontStyle: 'italic' }}>
+            {service.mira_hint}
+          </p>
+        )}
+      </div>
+      <div style={{ padding: '0 12px 12px' }}>
+        {state === 'sent' ? (
+          <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#34D399' }}>
+            <Check size={12} style={{ display: 'inline', marginRight: 4 }} /> Sent to Concierge!
+          </div>
+        ) : (
+          <button
+            onClick={sendToConcierge}
+            disabled={state === 'sending'}
+            data-testid={`service-concierge-btn-${service.id}`}
+            style={{ width: '100%', background: 'linear-gradient(135deg, #6366F1, #4F46E5)', color: '#fff', border: 'none', borderRadius: 10, padding: '9px', fontSize: 11, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, opacity: state === 'sending' ? 0.7 : 1 }}
+          >
+            <Send size={11} />
+            {state === 'sending' ? 'Sending…' : 'Send to Concierge →'}
           </button>
         )}
       </div>
@@ -524,17 +628,36 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
         });
         const allRaw = [...allByName.values()];
 
-        // 3. Merge pre-computed Claude scores into raw items
+        // 3. Merge pre-computed Claude scores into raw items + add services from preScored
         const scoreById = {};
         preScored.forEach(p => { scoreById[p.id] = p; });
+        
+        // Start with raw products enriched with scores + updated images
         const enriched = allRaw.map(p => ({
           ...p,
-          ...(scoreById[p.id] ? { mira_score: scoreById[p.id].mira_score } : {}),
+          ...(scoreById[p.id] ? {
+            mira_score: scoreById[p.id].mira_score,
+            // Use the updated image from the scored pick (reflects admin changes)
+            image: scoreById[p.id].image_url || scoreById[p.id].image || p.image,
+            image_url: scoreById[p.id].image_url || p.image_url,
+            entity_type: scoreById[p.id].entity_type || p.entity_type || 'product',
+          } : {}),
           mira_hint: scoreById[p.id]?.mira_reason || p.mira_hint || null,
         }));
 
+        // Add services from preScored that don't exist in allRaw (services_master items)
+        const rawIds = new Set(allRaw.map(p => p.id));
+        const extraFromScores = preScored
+          .filter(p => !rawIds.has(p.id) && p.entity_type === 'service')
+          .map(p => ({
+            ...p,
+            image: p.image_url || p.image,
+            mira_hint: p.mira_reason || null,
+          }));
+        const allEnriched = [...enriched, ...extraFromScores];
+
         // 4. Apply client-side intelligence (filter allergens + sort)
-        const intelligent = applyMirasPicksIntelligence(enriched, allergies, getPetLoves(pet), healthCondition, petName);
+        const intelligent = applyMirasPicksIntelligence(allEnriched, allergies, getPetLoves(pet), healthCondition, petName);
 
         // 5. Sort: Claude scores override client-side sort when available
         const hasMiraScores = preScored.length > 0;
@@ -542,9 +665,10 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
           ? [...intelligent].sort((a, b) => (b.mira_score || 0) - (a.mira_score || 0))
           : intelligent;
 
-        const services = sorted.filter(p => p.category === 'service' || p.product_type === 'service');
-        const realProducts = sorted.filter(p => p.category !== 'service' && p.product_type !== 'service');
-        setProducts([...services, ...realProducts].slice(0, 20));
+        const services = sorted.filter(p => p.entity_type === 'service' || p.category === 'service' || p.product_type === 'service');
+        const realProducts = sorted.filter(p => p.entity_type !== 'service' && p.category !== 'service' && p.product_type !== 'service');
+        // Show services first (interleaved), cap at 22
+        setProducts([...services.slice(0, 5), ...realProducts].slice(0, 22));
         setImagines(generateMiraImagines(pet, realProducts));
 
         // 6. Fire-and-forget background scoring if no scores yet
@@ -742,16 +866,19 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
               </div>
             )}
 
-            {/* Products / Bundles grid */}
+            {/* Products / Bundles / Services grid */}
             {filteredProducts.length > 0 ? (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 100%), 1fr))', gap: 16 }}>
                 {isBundles
                   ? filteredProducts.map((b, idx) => (
                       <DineBundleCard key={b.id || idx} bundle={b} petName={petName} />
                     ))
-                  : filteredProducts.map((p, idx) => (
-                      <ProductCard key={p.id || idx} product={p} pillar="dine" selectedPet={pet} />
-                    ))
+                  : filteredProducts.map((p, idx) => {
+                      const isService = p.entity_type === 'service' || p.category === 'service' || p.product_type === 'service';
+                      return isService
+                        ? <ServiceCard key={p.id || idx} service={p} pet={pet} apiUrl={getApiUrl()} token={token} />
+                        : <ProductCard key={p.id || idx} product={p} pillar="dine" selectedPet={pet} />;
+                    })
                 }
               </div>
             ) : (
