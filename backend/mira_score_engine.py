@@ -299,6 +299,29 @@ async def _run_full_scoring(pet_id: str, pillar: Optional[str], entity_types: Op
 
 # ── API Routes ────────────────────────────────────────────────────────────────
 
+@mira_score_router.post("/batch-score-all-pets")
+async def batch_score_all_pets(background_tasks: BackgroundTasks, pillar: Optional[str] = None):
+    """Trigger background scoring for ALL pets in the DB."""
+    async def _batch():
+        if _db is None:
+            return
+        pets = await _db.pets.find({}, {"_id": 0, "id": 1, "name": 1}).to_list(200)
+        print(f"[BatchScore] Starting batch for {len(pets)} pets pillar={pillar}")
+        for pet in pets:
+            pet_id = pet.get("id")
+            if not pet_id:
+                continue
+            pillars_to_score = [pillar] if pillar else ["dine", "celebrate", "care", "fit", "adopt"]
+            for p in pillars_to_score:
+                try:
+                    await _run_full_scoring(pet_id, p, None)
+                except Exception as e:
+                    print(f"[BatchScore] Error pet={pet_id} pillar={p}: {e}")
+        print("[BatchScore] Batch complete")
+    background_tasks.add_task(_batch)
+    return {"status": "batch_started", "message": "Scoring all pets in background. Check logs for progress."}
+
+
 @mira_score_router.post("/score-for-pet")
 async def score_for_pet(req: ScoreForPetRequest, background_tasks: BackgroundTasks):
     """Trigger background scoring for a pet. Returns immediately."""

@@ -131,6 +131,19 @@ function SoulChip({ children, extraStyle = {} }) {
   );
 }
 
+// ─── Shared allergen helpers (used by applyMiraIntelligence) ─────────────────
+function isSafeFromAllergen(allergen, text, freeFromText) {
+  const a = allergen.toLowerCase();
+  if (freeFromText.includes(`${a}-free`) || freeFromText.includes(`${a} free`)) return true;
+  if (text.includes(`${a}-free`) || text.includes(`${a} free`)) return true;
+  return false;
+}
+function containsAllergen(allergen, text) {
+  const a = allergen.toLowerCase();
+  const cleaned = text.replace(new RegExp(`${a}[- ]free`, 'gi'), '');
+  return cleaned.includes(a);
+}
+
 // ─── Mira Intelligence: filter, sort, dim, and reason products for pet ────────
 function applyMiraIntelligence(products, allergies, loves, healthCondition, nutritionGoal, pet) {
   const petName = pet?.name || 'your dog';
@@ -144,8 +157,8 @@ function applyMiraIntelligence(products, allergies, loves, healthCondition, nutr
       const productText = `${p.name} ${p.description || ''}`.toLowerCase();
       const freeFromText = (p.allergy_free || '').toLowerCase();
       return !allergyTerms.some(allergen => {
-        if (freeFromText.includes(`${allergen}-free`) || freeFromText.includes(`${allergen} free`)) return false;
-        return productText.includes(allergen);
+        if (isSafeFromAllergen(allergen, productText, freeFromText)) return false;
+        return containsAllergen(allergen, productText);
       });
     })
     // 2. Enrich with Mira flags + "Why Mira picked this"
