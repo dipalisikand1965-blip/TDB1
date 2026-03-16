@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mojo-personalized.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://nutrition-engine-ui.preview.emergentagent.com').rstrip('/')
 
 
 class TestPaperworkPageConfigAPI:

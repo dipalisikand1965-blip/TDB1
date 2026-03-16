@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mojo-personalized.preview.emergentagent.com
+https://nutrition-engine-ui.preview.emergentagent.com
 ```
 
 ---

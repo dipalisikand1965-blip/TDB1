@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://mojo-personalized.preview.emergentagent.com
+**Preview URL:** https://nutrition-engine-ui.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

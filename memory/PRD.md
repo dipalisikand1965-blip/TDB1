@@ -1,17 +1,32 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 16, 2026 (Session 51 — Dine Page: Mira's Picks Breed Fix + Product Image Fix)
+## Last Updated: Mar 16, 2026 (Session 55 — Comprehensive Dine UI/UX Fixes + Mobile Responsiveness)
 
 ---
 
-## ⚠️ IMPORTANT: READ ARCHITECTURE RULES FIRST
-**Every agent must read `/app/memory/ARCHITECTURE.md` before making any changes.**
-It contains the canonical data model, API rules, component patterns, and checklists.
-Violating these rules will break the admin panel and data consistency.
+## ✅ SESSION 55 — Comprehensive Dine UI/UX Fixes + Mobile Responsiveness (Mar 16, 2026)
+
+### What Was Fixed:
+1. **Modal z-index fixed (all 4 modals)** — `DineConciergeModal`, `ConciergeIntakeModal`, `GuidedNutritionPaths` ModalShell all migrated to `createPortal(content, document.body)` with `zIndex: 10002`. `MealBoxCard` bumped to 10002. All modals now render above the sticky navbar (`z-[10000]`).
+2. **MealBoxCard race condition fixed** — `openModal()` now triggers `loadProducts()` if `slotsData` is null. Subtitle shows "Building plan…" when loading, not "0 slots".
+3. **DineSoulPage mobile responsive grids** — Dimensions grid: 5-col → 2-col mobile / 3-col tablet / 5-col desktop. Pet Friendly Spots: 3-col → 1-col mobile / 2-col tablet / 3-col desktop. DiningConcierge hero padding: 28px mobile / 36px desktop.
+4. **TummyProfile modal z-index** — Bumped from 1000 → 10002.
+5. **MiraOrb bottom clearance** — Moved from `bottom: 24` → `bottom: 80` to clear mobile bottom nav.
+6. **GuidedNutritionPaths responsive grid CSS** — Added `@media` breakpoints for `.guided-paths-grid` (1-col mobile → 2-col tablet → 3-col desktop).
+7. **CelebrateHero layout aligned to DineHero** — Changed from `flex-col md:flex-row` to `flex-col items-center` (always centered column, matching DineHero).
+
+### Key File Changes:
+- `frontend/src/components/dine/DineConciergeModal.jsx` — createPortal, z-10002, mobile bottom sheet
+- `frontend/src/components/dine/ConciergeIntakeModal.jsx` — createPortal, z-10002
+- `frontend/src/components/dine/GuidedNutritionPaths.jsx` — createPortal, z-10002, responsive grid CSS
+- `frontend/src/components/dine/MealBoxCard.jsx` — race condition fix, z-10002
+- `frontend/src/pages/DineSoulPage.jsx` — responsive grids, TummyProfile z-10002, MiraOrb bottom 80
+- `frontend/src/components/celebrate/CelebrateHero.jsx` — centered column layout
+
+### Testing: Visual ✓ API ✓ Lint ✓
 
 ---
 
-## ✅ SESSION 53 — Dine Page: Concierge Box Reorder + ConciergeIntakeModal (Mar 16, 2026)
 
 ### What Was Built:
 1. **Moved dark brown CTA ("Want us to plan the whole outing?") to the TOP** of `DiningConcierge` component — was below 4 service cards, now above them per user spec

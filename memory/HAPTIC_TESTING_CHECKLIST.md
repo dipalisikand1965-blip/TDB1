@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://mojo-personalized.preview.emergentagent.com/mira-demo**
+**https://nutrition-engine-ui.preview.emergentagent.com/mira-demo**
 
 ---
 

@@ -225,9 +225,9 @@ const CelebrateHero = ({ pet, soulScore }) => {
         }}
       />
 
-      {/* Inner Layout: flex row desktop, flex col mobile */}
+      {/* Inner Layout: centered column — matching DineHero layout */}
       <div
-        className="relative flex flex-col md:flex-row items-center md:items-start gap-7 max-w-5xl mx-auto pb-8"
+        className="relative flex flex-col items-center gap-5 max-w-5xl mx-auto pb-8 text-center"
         style={{ zIndex: 2 }}
       >
         {/* Avatar column */}
@@ -276,7 +276,7 @@ const CelebrateHero = ({ pet, soulScore }) => {
         </motion.div>
 
         {/* Content column */}
-        <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
+        <div className="flex-1 flex flex-col items-center text-center">
           {/* Eyebrow chip */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -336,7 +336,7 @@ const CelebrateHero = ({ pet, soulScore }) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="flex flex-wrap justify-center md:justify-start gap-2 mb-2"
+              className="flex flex-wrap justify-center gap-2 mb-2"
             >
               {soulChips.map((chip) => (
                 <SoulChip key={chip.id} {...chip} />
