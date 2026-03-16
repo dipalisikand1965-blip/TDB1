@@ -6,7 +6,7 @@ Iteration 126 - Follow-up to iteration_125.
 
 import asyncio
 
-BASE_URL = "https://mojo-tummy-profile.preview.emergentagent.com"
+BASE_URL = "https://mojo-personalized.preview.emergentagent.com"
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 

@@ -13,14 +13,14 @@ User lost access to all 8 pets including Mystique (recently passed pet - emotion
 ### Root Cause
 `REACT_APP_BACKEND_URL` was set to a **DEAD preview URL** that returned 404:
 ```
-❌ DEPLOYED WITH: https://mojo-tummy-profile.preview.emergentagent.com (DOESN'T EXIST!)
+❌ DEPLOYED WITH: https://mojo-personalized.preview.emergentagent.com (DOESN'T EXIST!)
 ✅ SHOULD BE: https://thedoggycompany.com
 ```
 
 ### How We Found It
 Browser console showed:
 ```
-Failed to load resource: 404 at https://mojo-tummy-profile.preview.emergentagent.com/api/auth/me
+Failed to load resource: 404 at https://mojo-personalized.preview.emergentagent.com/api/auth/me
 ```
 
 ### LESSON LEARNED
@@ -45,7 +45,7 @@ Your production site will show OLD content because it's calling the WRONG backen
 # 1. Check current URL
 cat /app/frontend/.env | grep REACT_APP_BACKEND_URL
 
-# 2. If it shows preview URL (like https://mojo-tummy-profile.preview.emergentagent.com), FIX IT:
+# 2. If it shows preview URL (like https://mojo-personalized.preview.emergentagent.com), FIX IT:
 sed -i 's|REACT_APP_BACKEND_URL=.*|REACT_APP_BACKEND_URL=https://thedoggycompany.com|' /app/frontend/.env
 
 # 3. Restart frontend to pick up changes
@@ -58,7 +58,7 @@ sudo supervisorctl restart frontend
 
 | Environment | REACT_APP_BACKEND_URL |
 |-------------|----------------------|
-| Preview | `https://mojo-tummy-profile.preview.emergentagent.com` (varies) |
+| Preview | `https://mojo-personalized.preview.emergentagent.com` (varies) |
 | **PRODUCTION** | **`https://thedoggycompany.com`** |
 
 ---
