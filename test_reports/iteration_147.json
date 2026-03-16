@@ -1,0 +1,81 @@
+{
+  "summary": "Dine page product/service split testing. PRODUCT FLOW works end-to-end. SERVICE FLOW implementation code is correct in ProductCard.jsx but service products (category=service) are NOT visible in any DineContentModal category pill — they are unreachable in the UI.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "Server startup",
+        "issue": "dipali@clubconcierge.in password is reset to 'test123' on every server startup (server.py line 2582-2621 runs ALWAYS and overwrites to test123), but review_request specifies 'lola4304'. Password mismatch causes 401 with provided credentials."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "DineContentModal / Service Products",
+        "issue": "Service products (product_type=service, category=service) from products_master are NOT shown in ANY DineContentModal category. CATEGORY_CONFIG has no entry with apiCategory='service'. Products like 'Backup Dining Alternatives', 'Venue Suitability Advisory', 'Reservation Assistance', etc. exist in DB but are unreachable via any pill. The 'Request Service' orange button and concierge flow in ProductCard.jsx is correctly coded but never triggered because service products never appear in the UI grid.",
+        "priority": "HIGH",
+        "selector": "[data-testid='request-service-*'] — 0 elements found on page",
+        "affected_categories": "Daily Meals (13 products), Treats & Rewards, Supplements, Frozen & Fresh, Homemade & Recipes, Bundles, Soul Picks, Mira's Picks — NONE show service products"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Service Request E2E",
+        "issue": "Cannot test full service E2E (Request Service → ProductDetailModal → Request This Service button → Concierge API → Toast) because service products are never rendered in any DineContentModal category. The code path exists correctly in ProductCard.jsx but is unreachable.",
+        "root_cause": "DineContentModal CATEGORY_CONFIG (DineContentModal.jsx line 57-66) has no entry mapping to 'service' apiCategory. All categories map to specific product categories (Daily Meals, Treats & Rewards, etc.) or return null (bundles, soul-picks, miras-picks). The miras-picks endpoint /api/admin/pillar-products?pillar=dine&limit=20 returns breed products, not service products."
+      }
+    ],
+    "design_issues": []
+  },
+  "features_verified": {
+    "login_test123": "PASS — dipali@clubconcierge.in with test123 (server resets password on startup)",
+    "dine_page_loads": "PASS — /dine page loads with hero, Mojo's tummy profile, allergy/loves badges",
+    "daily_meals_pill": "PASS — Clicking Daily Meals pill opens DineContentModal with 13 products",
+    "product_cards_view_details": "PASS — All 13 Daily Meals products show purple 'View Details' button (correct for non-service products)",
+    "no_request_service_in_daily_meals": "PASS — 0 'Request Service' buttons in Daily Meals modal (all are products, not services)",
+    "product_detail_modal_opens": "PASS — Clicking View Details on 'Allergy-Safe Rotation Pack' opens ProductDetailModal",
+    "product_detail_includes_include_button": "PASS — ProductDetailModal shows 'Include' button (pink-purple gradient from-pink-600 to-purple-600)",
+    "no_request_this_service_for_product": "PASS — ProductDetailModal for a product does NOT show 'Request This Service' button",
+    "add_to_cart_opens_sidebar": "PASS — Clicking 'Include' button adds to cart and opens CartSidebar",
+    "cart_sidebar_header": "PASS — CartSidebar shows 'Your Requests' header with '1 product'",
+    "cart_item_name": "PASS — 'Allergy-Safe Rotation Pack' displayed in cart",
+    "cart_quantity_controls": "PASS — Quantity control: - 1 + shown correctly",
+    "cart_price_per_item": "PASS — ₹2,299 shown",
+    "cart_products_subtotal": "PASS — 'Products Subtotal ₹2,299'",
+    "cart_shipping": "PASS — 'Shipping ₹150'",
+    "cart_products_total": "PASS — 'Products Total ₹2,449'",
+    "cart_checkout_button": "PASS — 'Checkout Products (₹2,449) →' button visible",
+    "service_products_in_db": "VERIFIED — 5 service products exist in products_master: Backup Dining Alternatives (price=0), Venue Suitability Advisory (price=0), Dining Etiquette Guidance (price=500), Reservation Assistance (price=200), Pet-Friendly Restaurant Discovery (price=0)",
+    "concierge_api_endpoint": "PASS — POST /api/service_desk/attach_or_create_ticket returns 200 with ticket_id",
+    "service_code_in_productcard": "PASS (code review) — ProductCard.jsx correctly implements: isService detection (line 215), orange 'Request Service' card button (lines 543-549), 'Request This Service' orange modal button (lines 1594-1605), handleServiceRequest API call + toast 'Sent to Concierge!' with 'Handle Requests →' link (lines 635-678)",
+    "backup_dining_alternatives_visible": "FAIL — NOT visible in any DineContentModal category (cannot test service card button click, ProductDetailModal service view, or toast)",
+    "request_service_orange_button": "UNTESTABLE — Service products not rendered in UI. Code verified: from-orange-500 to-pink-600 (orange) vs from-pink-600 to-purple-600 (pink-purple for products) — color logic is correct",
+    "cart_does_not_open_after_service": "UNTESTABLE — handleServiceRequest (line 635) doesn't call addToCart, so cart correctly doesn't open. Verified by code review."
+  },
+  "test_report_links": [],
+  "action_items": [
+    "CRITICAL: Add service products to DineContentModal — Fix DineContentModal.jsx CATEGORY_CONFIG to include a 'services' entry with apiCategory matching the service products (e.g., apiCategory: 'service'). OR modify the miras-picks endpoint to include service products. Service products have IDs: prod-SVC-DINE-BACKUP, prod-SVC-DINE-ADVISORY, prod-SVC-DINE-ETIQUETTE, prod-SVC-DINE-RESERVE, prod-SVC-DINE-DISCOVER.",
+    "MINOR: Fix password mismatch — server.py line 2582 sets default_password='test123' and always overwrites on startup, but review credentials specify 'lola4304'. Either remove the always-overwrite behavior or update the spec credentials."
+  ],
+  "critical_code_review_comments": [
+    "DineContentModal.jsx CATEGORY_CONFIG (lines 57-66) has 8 categories (daily-meals, treats-rewards, supplements, frozen-fresh, homemade-recipes, bundles, soul-picks, miras-picks) but NONE map to service products. Service products with category='service' are invisible to users.",
+    "server.py lines 2608-2621: ALWAYS updates dipali's password to 'test123' on every startup — this silently breaks the specified credentials without warning. Should be removed or guarded.",
+    "ProductCard.jsx isService detection (line 215) and service button rendering (lines 1588-1616) are correctly implemented — code is production-ready, just needs service products to be surfaced in a modal category."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend-only testing)",
+    "frontend": "50% — Product flow 100% working, Service flow 0% testable (service products not visible in UI)"
+  },
+  "test_credentials": {
+    "user_email": "dipali@clubconcierge.in",
+    "user_password": "test123 (NOT lola4304 — server resets to test123 on startup)",
+    "pet": "Mojo (Indie, chicken allergy)"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "PRODUCT FLOW fully verified and passing. SERVICE FLOW blocked: service products (Backup Dining Alternatives etc.) don't appear in any DineContentModal category. Main fix needed: add 'services' entry to CATEGORY_CONFIG in DineContentModal.jsx OR ensure service products appear in Mira's Picks. After fix, test: (1) Request Service orange button on card, (2) ProductDetailModal shows orange 'Request This Service', (3) Click → toast says 'Sent to Concierge!' with 'Handle Requests →' link, (4) CartSidebar does NOT open. Password is test123 not lola4304.",
+  "rca_of_issue": "SERVICE PRODUCTS NOT VISIBLE: DineContentModal.jsx fetches products using /api/admin/pillar-products?pillar=dine&category={apiCategory}. None of the 8 CATEGORY_CONFIG entries map to apiCategory='service'. Service products exist in products_master with category='service' but this category string has no corresponding pill in the Dine UI. Mira's Picks also doesn't return them (returns breed products first). Fix: Add CATEGORY_CONFIG entry { 'services': { emoji: '🤝', label: 'Services', apiCategory: 'service' } } to DineContentModal.jsx and add corresponding pill in DineCategoryStrip or wherever pills are rendered."
+}

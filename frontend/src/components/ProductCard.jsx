@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { ShoppingCart, Star, X, CalendarIcon, Plus, Sparkles, MessageSquare, PawPrint, ChevronDown, Award } from 'lucide-react';
+import { ShoppingCart, Star, X, CalendarIcon, Plus, Sparkles, MessageSquare, PawPrint, ChevronDown, Award, Check, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { useCart } from '../context/CartContext';
@@ -212,6 +212,7 @@ const PILLAR_CROSS_SELL_TITLES = {
 const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraContext = null }) => {
   const [showModal, setShowModal] = useState(false);
   const { user, token } = useAuth();
+  const isServiceProduct = (product.product_type === 'service') || (product.category === 'service');
   
   // Default miraContext if not provided - generates pillar-appropriate messaging
   const defaultMiraContext = {
@@ -541,9 +542,10 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
           {/* View Button */}
           <button 
             onClick={(e) => { e.stopPropagation(); setShowModal(true); }}
-            className="w-full mt-2 py-2 text-xs font-semibold bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-lg transition-colors"
+            className={`w-full mt-2 py-2 text-xs font-semibold rounded-lg transition-colors ${isServiceProduct ? 'bg-orange-100 hover:bg-orange-200 text-orange-700' : 'bg-purple-100 hover:bg-purple-200 text-purple-700'}`}
+            data-testid={`view-product-${product.id}`}
           >
-            View Details
+            {isServiceProduct ? 'Request Service' : 'View Details'}
           </button>
         </div>
       </div>
@@ -624,6 +626,57 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   const productOptions = product.options || [];
   const variants = product.variants || [];
   const { user, token } = useAuth();
+  
+  // ── Service detection & concierge flow ─────────────────────────────────────
+  const isService = (product.product_type === 'service') || (product.category === 'service');
+  const [serviceSent, setServiceSent] = useState(false);
+  const [serviceSending, setServiceSending] = useState(false);
+
+  const handleServiceRequest = async () => {
+    setServiceSending(true);
+    const petName = selectedPet?.name || 'my dog';
+    try {
+      const userRaw = localStorage.getItem('user') || '{}';
+      let storedUser = {};
+      try { storedUser = JSON.parse(userRaw); } catch {}
+      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          parent_id: user?.id || storedUser?.id || storedUser?.email || 'guest',
+          pet_id: selectedPet?.id || 'unknown',
+          pillar: pillar || 'dine',
+          intent_primary: 'service_request',
+          intent_secondary: [product.name, product.category || pillar],
+          life_state: pillar || 'dine',
+          channel: `${pillar}_product_card`,
+          initial_message: {
+            sender: 'parent',
+            source: `${pillar}_page`,
+            text: `I'd like to request "${product.name}" for ${petName}. Please get in touch!`,
+          },
+        }),
+      });
+    } catch (err) {
+      console.error('[ProductCard] Service request error:', err);
+    } finally {
+      setServiceSending(false);
+      setServiceSent(true);
+      toast({
+        title: 'Sent to Concierge!',
+        description: (
+          <span>
+            {product.name} request received.{' '}
+            <a href="/admin/requests" className="font-bold underline text-purple-700">Handle Requests →</a>
+          </span>
+        ),
+      });
+    }
+  };
+  // ────────────────────────────────────────────────────────────────────────────
   
   // Pet Soul Integration - Fetch user's pets
   const [userPets, setUserPets] = useState([]);
@@ -1525,16 +1578,42 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
 
             <div className="flex items-center justify-between pt-3 border-t">
               <div>
-                <p className="text-xs text-gray-500">Total Price</p>
-                <p className="text-2xl font-bold text-gray-900">₹{currentPrice}</p>
+                <p className="text-xs text-gray-500">{isService ? 'Service' : 'Total Price'}</p>
+                {isService ? (
+                  <p className="text-base font-semibold text-purple-600">Concierge Request</p>
+                ) : (
+                  <p className="text-2xl font-bold text-gray-900">₹{currentPrice}</p>
+                )}
               </div>
-              <Button
-                onClick={handleAddToCart}
-                className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 px-6"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                {miraContext?.includeText || 'Include'}
-              </Button>
+              {isService ? (
+                serviceSent ? (
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm font-semibold">
+                    <Check className="w-4 h-4" /> Sent to Concierge!
+                  </div>
+                ) : (
+                  <Button
+                    onClick={handleServiceRequest}
+                    disabled={serviceSending}
+                    className="bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700 px-6"
+                    data-testid={`request-service-${product.id}`}
+                  >
+                    {serviceSending ? (
+                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...</>
+                    ) : (
+                      <><MessageSquare className="w-4 h-4 mr-2" /> Request This Service</>
+                    )}
+                  </Button>
+                )
+              ) : (
+                <Button
+                  onClick={handleAddToCart}
+                  className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 px-6"
+                  data-testid={`add-to-cart-${product.id}`}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  {miraContext?.includeText || 'Add to Cart'}
+                </Button>
+              )}
             </div>
           </div>
         {/* NPS Testimonials Section - Happy Customers */}
