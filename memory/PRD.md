@@ -11,6 +11,27 @@ Violating these rules will break the admin panel and data consistency.
 
 ---
 
+## ✅ SESSION 48 — Eat & Nourish: Real Products + Mira Intelligence (Feb 2026)
+
+### What Was Built:
+- **Removed ALL hardcoded products and tabs from `DINE_DIMS`** — 5 dimensions now use visual config only
+- **`DimExpanded` rebuilt** — fetches from `apiProducts` (preloaded from `/api/admin/pillar-products?pillar=dine&limit=600`), derives tabs dynamically from `sub_category` field
+- **`applyMiraIntelligence()`** — pure client-side intelligence layer on existing pet soul data:
+  - **Filter**: removes products containing known allergens (e.g., "Chicken & Rice" filtered for Mojo)
+  - **Surface first**: products matching `favoriteFoods`/`favorite_protein` sorted to top
+  - **Flag health-safe**: `isHealthSafe` products sorted above rest
+  - **Dim**: `_dimmed=true` products shown at 40% opacity with "Conflicts goal" label
+  - **Reason**: each product gets `mira_hint` = "Matches Mojo's love for salmon" / "Free from chicken — safe for Mojo" / "Safe during Mojo's treatment"
+- **Stats bar**: "✓ 12 safe for Mojo | ✗ 1 filtered (allergens) | ♥ 2 match Mojo's loves"
+- **♥ heart badge** on loved products in grid
+- **Real `SharedProductCard`** (from `ProductCard.jsx`) used — click "View Details" → `ProductDetailModal` opens → Add to Cart → CartSidebar
+- **"Why Mira suggests this" block** added to `ProductDetailModal` (amber card with ✦, shows `mira_hint`)
+- **Removed dead code**: `adaptDineProduct`, `getDineProductIcon`, `CATEGORY_BG`, local `ProductCard` function
+
+### Testing: 92% → 100% after mira_hint in modal fix (iteration_149.json — all critical flows passing)
+
+---
+
 ## ✅ SESSION 47 — Dine: Product vs Service Routing (Feb 2026)
 
 ### What Was Built:
