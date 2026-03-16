@@ -53,7 +53,179 @@ const getHealthCondition = (pet) => {
   return Array.isArray(cond) ? cond[0] : cond;
 };
 
-// ── Category config ───────────────────────────────────────────────────────────
+// ── Mira Imagines Card (for items not yet in catalog → concierge) ────────────
+const MiraImaginesCard = ({ item, pet, apiUrl, token }) => {
+  const [state, setState] = useState('idle'); // idle | sending | sent
+  const petName = pet?.name || 'your dog';
+
+  const sendToConcierge = async () => {
+    setState('sending');
+    try {
+      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+      await fetch(`${apiUrl}/api/service_desk/attach_or_create_ticket`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          parent_id: storedUser?.id || storedUser?.email || 'guest',
+          pet_id: pet?.id || 'unknown',
+          pillar: 'dine',
+          intent_primary: 'mira_imagines_request',
+          intent_secondary: [item.name],
+          life_state: 'dine',
+          channel: 'miras_picks_imagines',
+          initial_message: {
+            sender: 'parent',
+            source: 'dine_miras_picks',
+            text: `I'd love "${item.name}" for ${petName}. Mira imagined this — please help source it!`,
+          },
+        }),
+      });
+    } catch (err) { console.error('[MiraImaginesCard]', err); }
+    setState('sent');
+  };
+
+  return (
+    <div style={{
+      borderRadius: 14, overflow: 'hidden',
+      background: 'linear-gradient(135deg, #1A0A00, #2D1A00)',
+      border: '1.5px solid rgba(255,140,66,0.25)',
+      display: 'flex', flexDirection: 'column', minHeight: 220,
+    }} data-testid={`mira-imagines-${item.id}`}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px 14px 8px' }}>
+        <span style={{ fontSize: 36 }}>{item.emoji}</span>
+        <div style={{ marginTop: 6, background: 'rgba(255,140,66,0.2)', border: '1px solid rgba(255,140,66,0.4)', borderRadius: 20, padding: '2px 10px', fontSize: 9, color: '#FFC080', fontWeight: 700, letterSpacing: '0.05em' }}>MIRA IMAGINES</div>
+        <p style={{ fontWeight: 800, color: '#fff', textAlign: 'center', fontSize: 12, marginTop: 8, lineHeight: 1.3 }}>{item.name}</p>
+        <p style={{ color: 'rgba(255,255,255,0.50)', fontSize: 10, textAlign: 'center', marginTop: 4, lineHeight: 1.5 }}>{item.description}</p>
+      </div>
+      <div style={{ padding: '0 12px 14px' }}>
+        {state === 'sent' ? (
+          <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#32C878' }}>
+            <Check size={12} style={{ display: 'inline', marginRight: 4 }} /> Sent to Concierge!
+          </div>
+        ) : (
+          <button
+            onClick={sendToConcierge}
+            disabled={state === 'sending'}
+            style={{ width: '100%', background: 'linear-gradient(135deg, #FF8C42, #C44400)', color: '#fff', border: 'none', borderRadius: 10, padding: '9px', fontSize: 11, fontWeight: 700, cursor: 'pointer', opacity: state === 'sending' ? 0.7 : 1 }}
+          >
+            {state === 'sending' ? 'Sending…' : 'Request a Quote →'}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ── Generate Mira Imagines (breed+soul relevant dream items) ─────────────────
+const generateMiraImagines = (pet, existingProducts) => {
+  const petName = pet?.name || 'your dog';
+  const breed = (pet?.breed || '').trim();
+  const allergies = getPetAllergies(pet);
+  const loves = getPetLoves(pet);
+  const healthCondition = getHealthCondition(pet);
+  const imagines = [];
+
+  // 1. Breed-specific meal plan (if no breed product found)
+  const hasBreedProduct = breed && existingProducts.some(
+    p => (p.name || '').toLowerCase().includes(breed.toLowerCase())
+  );
+  if (breed && !hasBreedProduct) {
+    imagines.push({
+      id: `imagine-meal-${breed.replace(/\s/g,'-')}`,
+      isImagined: true, emoji: '🍽️',
+      name: `${breed} Meal Plan`,
+      description: `A 7-day plan built around what ${breed}s need at this life stage — portioned right, nutrient-dense.`,
+    });
+  }
+
+  // 2. Custom allergy-safe pack (if has allergies and no fully-safe bundle found)
+  if (allergies.length > 0) {
+    const hasSafePack = existingProducts.some(p =>
+      allergies.every(a => (p.allergy_free || '').toLowerCase().includes(`${a}-free`))
+    );
+    if (!hasSafePack) {
+      imagines.push({
+        id: 'imagine-allergy-pack',
+        isImagined: true, emoji: '🛡️',
+        name: `${allergies.map(a => a.charAt(0).toUpperCase()+a.slice(1)+'-Free').join(' & ')} Monthly Pack`,
+        description: `Every item verified ${allergies.join(' & ')}-free. Curated monthly for ${petName}'s safety.`,
+      });
+    }
+  }
+
+  // 3. Treatment support if health condition
+  if (healthCondition && healthCondition.toLowerCase() !== 'none') {
+    imagines.push({
+      id: 'imagine-treatment',
+      isImagined: true, emoji: '💜',
+      name: `${petName}'s Treatment Support Kit`,
+      description: `Nutrition tailored to ${petName}'s ${healthCondition} — anti-inflammatory, recovery-safe, vet-approved.`,
+    });
+  }
+
+  // 4. Favourite food special order (if loves data exists)
+  if (loves.length > 0) {
+    const fav = loves[0];
+    const hasLoveProduct = existingProducts.some(p => (p.name||'').toLowerCase().includes(fav.toLowerCase()));
+    if (!hasLoveProduct) {
+      imagines.push({
+        id: `imagine-love-${fav.replace(/\s/g,'-')}`,
+        isImagined: true, emoji: '♥',
+        name: `${fav.charAt(0).toUpperCase()+fav.slice(1)}-Forward Custom Box`,
+        description: `${petName} loves ${fav}. Mira would build a monthly treat box around this.`,
+      });
+    }
+  }
+
+  return imagines.slice(0, 4); // max 4 imagine cards
+};
+
+// ── Apply intelligence for Mira's Picks ──────────────────────────────────────
+const applyMirasPicksIntelligence = (products, allergies, loves, healthCondition, petName) => {
+  const allergyTerms = allergies.map(a => a.toLowerCase().trim());
+  const loveTerms = loves.map(l => l.toLowerCase().trim()).filter(Boolean);
+
+  return products
+    .filter(p => {
+      // Remove allergen-containing products (keep services)
+      const isService = p.category === 'service' || p.product_type === 'service';
+      if (isService) return true;
+      if (!allergyTerms.length) return true;
+      const text = `${p.name} ${p.description || ''}`.toLowerCase();
+      const freeFrom = (p.allergy_free || '').toLowerCase();
+      return !allergyTerms.some(a => {
+        if (freeFrom.includes(`${a}-free`)) return false;
+        return text.includes(a);
+      });
+    })
+    .map(p => {
+      const text = `${p.name} ${p.description || ''}`.toLowerCase();
+      const freeFrom = (p.allergy_free || '').toLowerCase();
+      const tag = (p.mira_tag || '').toLowerCase();
+      const matchedLove = loveTerms.find(l => text.includes(l));
+      const isHealthSafe = healthCondition && (tag.includes('treatment') || freeFrom.includes('treatment-safe') || text.includes('treatment-safe'));
+      const isAllergySafe = allergyTerms.length > 0 && allergyTerms.every(a => freeFrom.includes(`${a}-free`));
+      let mira_hint = p.mira_hint || null;
+      if (!mira_hint) {
+        if (matchedLove) mira_hint = `Matches ${petName}'s love for ${matchedLove}`;
+        else if (isHealthSafe) mira_hint = `Safe during ${petName}'s treatment`;
+        else if (isAllergySafe) mira_hint = `Free from ${allergyTerms.join(' & ')} — safe for ${petName}`;
+        else if (p.mira_tag) mira_hint = p.mira_tag;
+      }
+      return { ...p, mira_hint, _loved: !!matchedLove, _healthSafe: isHealthSafe };
+    })
+    .sort((a, b) => {
+      if (a._loved && !b._loved) return -1;
+      if (!a._loved && b._loved) return 1;
+      if (a._healthSafe && !b._healthSafe) return -1;
+      return 0;
+    });
+};
+
+
 const CATEGORY_CONFIG = {
   'daily-meals':      { emoji: '🐟', label: 'Daily Meals',          apiCategory: 'Daily Meals' },
   'treats-rewards':   { emoji: '🦴', label: 'Treats & Rewards',     apiCategory: 'Treats & Rewards' },
@@ -194,6 +366,7 @@ const getBreedDisplay = (pet) => {
 // ── Main Modal ────────────────────────────────────────────────────────────────
 const DineContentModal = ({ isOpen, onClose, category, pet }) => {
   const [products, setProducts] = useState([]);
+  const [imagines, setImagines] = useState([]);  // Mira Imagines (not-yet-in-catalog)
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
   const [tabs, setTabs] = useState([]);
@@ -226,6 +399,7 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
     if (!isOpen || !category) return;
     setLoading(true);
     setProducts([]);
+    setImagines([]);
     setTabs([]);
     setActiveTab('all');
 
@@ -255,21 +429,33 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
         return;
       }
 
-      // ── Mira's Picks: curated picks + all dine services ─────────────
+      // ── Mira's Picks: full intelligence — breed-relevant, allergy-safe ──
       if (category === 'miras-picks') {
         const [generalRes, serviceRes] = await Promise.all([
-          fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&limit=30`),
+          fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&limit=60`),
           fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&category=service&limit=20`),
         ]);
         const generalData = generalRes.ok ? await generalRes.json() : { products: [] };
         const serviceData = serviceRes.ok ? await serviceRes.json() : { products: [] };
-        // Merge and deduplicate by id, services first
+
+        // Deduplicate by id
         const allById = new Map();
-        (serviceData.products || []).forEach(p => allById.set(p.id, p));
-        (generalData.products || []).forEach(p => { if (!allById.has(p.id)) allById.set(p.id, p); });
-        const services = [...allById.values()].filter(p => p.category === 'service' || p.product_type === 'service');
-        const products = [...allById.values()].filter(p => p.category !== 'service' && p.product_type !== 'service');
-        setProducts([...services, ...products].slice(0, 24));
+        (generalData.products || []).forEach(p => allById.set(p.id, p));
+        (serviceData.products || []).forEach(p => { if (!allById.has(p.id)) allById.set(p.id, p); });
+        const allRaw = [...allById.values()];
+
+        // Apply Mira's full intelligence
+        const intelligent = applyMirasPicksIntelligence(allRaw, allergies, getLoves(pet), healthCondition, petName);
+
+        // Split: services first, then products
+        const services = intelligent.filter(p => p.category === 'service' || p.product_type === 'service');
+        const realProducts = intelligent.filter(p => p.category !== 'service' && p.product_type !== 'service');
+
+        // Generate Mira Imagines for missing dream items
+        const mirasImagines = generateMiraImagines(pet, realProducts);
+
+        setProducts([...services, ...realProducts].slice(0, 20));
+        setImagines(mirasImagines);
         return;
       }
 
@@ -437,10 +623,24 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
           <div className="px-4 pb-6" style={{ paddingTop: tabs.length > 1 ? 4 : 16 }}>
 
             {/* Product count */}
-            {filteredProducts.length > 0 && (
+            {(filteredProducts.length > 0 || imagines.length > 0) && (
               <p style={{ fontSize: 11, fontWeight: 700, color: '#FF8C42', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 14 }}>
-                ✦ {filteredProducts.length} {activeTab === 'all' ? config.label : activeTab} — For {petName}
+                ✦ {filteredProducts.length} {activeTab === 'all' ? config.label : activeTab}{imagines.length > 0 ? ` + ${imagines.length} Mira Imagines` : ''} — For {petName}
               </p>
+            )}
+
+            {/* Mira Imagines grid (for miras-picks — dream items → concierge) */}
+            {imagines.length > 0 && (
+              <div style={{ marginBottom: 20 }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,140,66,0.85)', marginBottom: 10, letterSpacing: '0.04em' }}>
+                  ✦ MIRA IMAGINES — NOT YET IN CATALOG
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))', gap: 14 }}>
+                  {imagines.map(item => (
+                    <MiraImaginesCard key={item.id} item={item} pet={pet} apiUrl={getApiUrl()} token={token} />
+                  ))}
+                </div>
+              </div>
             )}
 
             {/* Products / Bundles grid */}
@@ -456,7 +656,7 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
                 }
               </div>
             ) : (
-              !loading && (
+              !loading && imagines.length === 0 && (
                 <div className="text-center py-12">
                   <p style={{ fontSize: 36 }}>{config.emoji}</p>
                   <p className="text-sm text-gray-500 mt-2">Personalised picks being curated for {petName}!</p>
