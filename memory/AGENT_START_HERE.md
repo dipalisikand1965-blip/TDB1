@@ -1,7 +1,78 @@
 # 🚨 AGENT START HERE - READ THIS FIRST 🚨
 
-> **Last Updated:** March 15, 2026
+> **Last Updated:** March 15, 2026 (Latest Sessions: 44-50, Mar 15)
 > **Purpose:** Fast, current recovery guide for the next agent
+
+---
+
+## 🟣 LATEST SESSIONS SUMMARY (Mar 15, 2026 — Sessions 44–50)
+
+**What was built in this fork (current codebase state):**
+
+### ✅ Universal Product/Service/Bundle Routing Pattern (CRITICAL — APPLIES ALL PILLARS)
+Every "Mira's Picks" and product display section follows this rule:
+- **Physical Products** → `ProductCard` → "View Details" → `ProductDetailModal` → **Add to Cart** → `CartSidebar` checkout
+- **Services** (`product_type=service` OR `category=service`) → `ProductCard` → "Request Service" (orange button) → `ProductDetailModal` → **"Request This Service"** → POST `/api/service_desk/attach_or_create_ticket` → toast "Sent to Concierge! Handle Requests →"
+- **Missing/Dream items** → `MiraImaginesCard` (dark amber, "MIRA IMAGINES" badge) → **"Request a Quote"** → concierge ticket → "Sent to Concierge!"
+
+### ✅ Mira Score Engine (NEW — Claude Sonnet 4.6)
+- **File:** `/app/backend/mira_score_engine.py`
+- **Routes:** `/api/mira/*` (registered in server.py)
+- **DB collection:** `mira_product_scores`
+- **Schema:** `{pet_id, entity_id, entity_type (product/service/bundle), pillar, score (0-100), mira_reason, scored_at}`
+- **Endpoints:**
+  - `POST /api/mira/score-for-pet` → background scoring ALL entities for a pet
+  - `POST /api/mira/score-context` → sync scoring for specific pillar+category (fast)
+  - `GET /api/mira/scores/{pet_id}` → fetch all pre-computed scores
+  - `GET /api/mira/top-picks/{pet_id}` → top-N scored items with full product data
+  - `GET /api/mira/score-status/{pet_id}` → check if scores exist + when last computed
+- **How it works:** Sends pet soul profile + batches of 20 items to Claude Sonnet 4.6. Returns `{id, score (0-100), reason}` per item. Stores in `mira_product_scores`. Frontend checks for pre-computed scores first (fast path), falls back to client-side `applyMiraIntelligence()`, triggers background scoring on first visit.
+- **Covers:** products_master, services_master, bundles (ALL pillars, ALL entity types)
+
+### ✅ Dine Page — Eat & Nourish Dimensions (SSOT, no hardcoding)
+- `DINE_DIMS` in `DineSoulPage.jsx` now has **zero hardcoded products or tabs**
+- `DimExpanded` fetches from `apiProducts` (preloaded from `/api/admin/pillar-products?pillar=dine`)
+- `applyMiraIntelligence()` client-side: filters allergens, sorts loves-first, health-safe flagged, dims goal conflicts, adds `mira_hint` reason per product
+- Stats bar: "✓ 12 safe · ✗ 1 filtered · ♥ 2 match Mojo's loves"
+- Clicking any product → `ProductDetailModal` → Add to Cart → CartSidebar
+
+### ✅ Dine Page — Category Pills (DineContentModal)
+- 8 pills: Daily Meals, Treats & Rewards, Supplements, Frozen & Fresh, Homemade & Recipes, **Bundles**, Soul Picks, Mira's Picks
+- "Bundles" is pill #6 (after Homemade) — fetches from `/api/bundles?pillar=dine`
+- All pills use `ProductCard` (real, same as Celebrate) with full ProductDetailModal + cart
+- Allergy chips in modal header (e.g., "Chicken-free · Treatment-safe")
+- Mira quote block in each modal
+
+### ✅ Mira's Picks in DineContentModal (SSOT + Intelligence)
+- Fetches real products + services (parallel: `/api/admin/pillar-products?pillar=dine`)
+- Checks pre-computed Claude scores from `mira_product_scores` (fast path when available)
+- Falls back to `applyMirasPicksIntelligence()` client-side
+- Generates `MiraImaginesCard`s for missing breed-relevant dream items
+- Triggers background `POST /api/mira/score-for-pet` on first visit (fire-and-forget)
+
+### ✅ Celebrate Fix
+- Removed duplicate "Celebrate, Personally" heading from `CelebratePageNew.jsx`
+
+### ✅ ProductCard.jsx (Universal)
+- Detects services via `product.product_type === 'service' || product.category === 'service'`
+- Orange "Request Service" card button for services
+- ProductDetailModal shows "Why Mira suggests this" amber block (from `product.mira_hint`)
+- ProductDetailModal shows "Request This Service" (orange) vs "Add to Cart" (pink-purple) based on type
+
+### Key Files (latest):
+- `frontend/src/components/dine/DineContentModal.jsx` — Full intelligence, Mira Imagines, pre-scored
+- `frontend/src/components/dine/DineCategoryStrip.jsx` — 8 pills including Bundles
+- `frontend/src/pages/DineSoulPage.jsx` — DINE_DIMS (no hardcoding), DimExpanded with applyMiraIntelligence
+- `frontend/src/components/ProductCard.jsx` — Service detection, "Why Mira suggests this", concierge flow
+- `backend/mira_score_engine.py` — Claude Sonnet 4.6 scoring engine
+- `backend/server.py` — mira_score_router registered + set_score_engine_db(db)
+
+### Pending (for next agent):
+- Fix `CONC_SERVICES` card gradients on Dine page (all amber, need unique colors)
+- Wire `MOCK_SPOTS` restaurants to actual DB collection
+- Add dine product `options`/`variants` (protein/portion) for ProductDetailModal parity
+- Apply universal Mira's Picks pattern to Celebrate + Care + Fit pillars
+- Test Mira Score Engine E2E with real pet_id from DB
 
 ---
 

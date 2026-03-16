@@ -11,6 +11,38 @@ Violating these rules will break the admin panel and data consistency.
 
 ---
 
+## ✅ SESSION 50 — Mira Score Engine: Claude Sonnet 4.6 Recommendation System (Mar 15, 2026)
+
+### Architecture:
+**Covers ALL entity types across ALL pillars:**
+- `products_master` — all physical products
+- `services_master` — all services
+- `bundles` — all bundle packs
+- (Collections & Experiences: same pattern when added)
+
+### Backend — `mira_score_engine.py`:
+- **Claude Sonnet 4.6** (`claude-sonnet-4-6`) via `emergentintegrations`
+- **Batch size**: 20 items per Claude call, 2 batches in parallel
+- **System prompt**: Mira persona, scores 0-100, ultra-personalized 15-word reason
+- **DB collection**: `mira_product_scores` — `{pet_id, entity_id, entity_type, pillar, score, mira_reason, scored_at, pet_name}`
+- **Endpoints** (all at `/api/mira/`):
+  - `POST /score-for-pet` — background (fire-and-forget), scores ALL entities
+  - `POST /score-context` — sync scoring for specific pillar+category (~5s for 60 items)
+  - `GET /scores/{pet_id}` — all pre-computed scores
+  - `GET /top-picks/{pet_id}` — top-N scores, enriched with full product data
+  - `GET /score-status/{pet_id}` — check if scores exist + timestamp
+
+### Frontend Integration (`DineContentModal` miras-picks):
+1. Check `GET /api/mira/score-status/{pet_id}` — has pre-computed scores?
+2. If YES → `GET /api/mira/top-picks/{pet_id}?pillar=dine` → merge Claude's `mira_reason` as `mira_hint` → sort by `mira_score`
+3. Always apply client-side `applyMirasPicksIntelligence()` as safety filter (allergens)
+4. If NO scores → fire-and-forget `POST /api/mira/score-for-pet` → client-side sort only
+5. `MiraImaginesCard`s generated for dream items missing from catalog
+
+### Testing Status: Backend live ✅ (`/api/mira/score-status/test123` returns 200). E2E test with real pet_id pending.
+
+---
+
 ## ✅ SESSION 49 — Universal Mira Intelligence Pattern + Celebrate Fix (Feb 2026)
 
 ### UNIVERSAL PATTERN (applies to all pillars going forward):
