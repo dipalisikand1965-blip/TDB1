@@ -461,8 +461,15 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
         const datasets = await Promise.all(responses.map(r => r.ok ? r.json() : { products: [] }));
         const allMerch = datasets.flatMap(d => d.products || []);
         // Only show merchandise matching this pet's exact breed — never show wrong breed
-        const breedMerch = allMerch.filter(p => (p.name || '').toLowerCase().includes(breedSearch));
-        setProducts(breedMerch); // Empty if no breed match (correct — don't show wrong breed)
+        // Deduplicate by name (same product can appear across multiple categories with different IDs)
+        const seen = new Map();
+        allMerch
+          .filter(p => (p.name || '').toLowerCase().includes(breedSearch))
+          .forEach(p => {
+            const key = (p.name || '').toLowerCase().trim();
+            if (!seen.has(key)) seen.set(key, p);
+          });
+        setProducts([...seen.values()]); // Empty if no breed match (correct — don't show wrong breed)
         return;
       }
 
