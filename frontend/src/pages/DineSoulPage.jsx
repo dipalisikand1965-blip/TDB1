@@ -18,6 +18,7 @@ import DineCategoryStrip from "../components/dine/DineCategoryStrip";
 import DineHero from "../components/dine/DineHero";
 import MealBoxCard from "../components/dine/MealBoxCard";
 import ConciergeIntakeModal from "../components/dine/ConciergeIntakeModal";
+import DineConciergeSection from "../components/dine/DineConciergeSection";
 import { PillarHelpBuckets, PillarGuidedPaths } from "../components/PillarGoldSections";
 import { API_URL } from "../utils/api";
 import SharedProductCard from "../components/ProductCard";
@@ -86,13 +87,6 @@ function getDineDims(pet) {
     },
   ];
 }
-
-const CONC_SERVICES = [
-  {icon:"🔍",sub:"COMPLIMENTARY",name:"Pet-Friendly Restaurant Discovery",desc:"We find venues that genuinely welcome dogs — not just allow them. There is a difference, and we know it.",free:true,cta:"Find us a restaurant →"},
-  {icon:"📅",sub:"RESERVATION",name:"Reservation Assistance",desc:"We make the booking, confirm dog-friendliness, and arrange any special requests before you arrive.",free:false,cta:"Make the reservation →"},
-  {icon:"🎓",sub:"FIRST TIME OUT",name:"Dining Etiquette Guidance",desc:"First time dining out with {name}? We prepare you both. What to bring, what signals to watch for.",free:true,cta:"Prepare us for the outing →"},
-  {icon:"📍",sub:"COMPLIMENTARY",name:"Venue Suitability Advisory",desc:"Tell us the venue. Tell us about {name}. We assess if it is the right match for their personality.",free:true,cta:"Assess this venue for {name} →"},
-];
 
 // ─── Category → dim mapping (used for dynamic product lookup) ────────────────
 const DIM_ID_TO_CATEGORY = {
@@ -1017,60 +1011,120 @@ function PetFriendlySpots({ pet }) {
 
 // ─── Dining Concierge ─────────────────────────────────────────────────────────
 function DiningConcierge({ pet }) {
-  const petName = pet?.name || "your dog";
-  const breed = pet?.breed || "your dog's breed";
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalOccasion, setModalOccasion] = useState(null);
-
-  const openModal = (occasion = null) => {
-    setModalOccasion(occasion);
-    setModalOpen(true);
-  };
+  const petName = pet?.name || "your pet";
+  const [intakeOpen, setIntakeOpen] = useState(false);
 
   return (
-    <div style={{background:"linear-gradient(135deg,#FFF8F0,#FFF0F8)",borderRadius:20,border:"1px solid #F5E8D4",padding:24,marginBottom:32}} data-testid="dining-concierge">
+    <>
+      <div
+        style={{
+          background: '#1A0A00',
+          borderRadius: 24,
+          padding: '36px 32px',
+          marginBottom: 32,
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+        data-testid="dining-concierge"
+      >
+        {/* Subtle top-left glow */}
+        <div style={{
+          position: 'absolute', top: -60, left: -40,
+          width: 200, height: 200, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(201,151,58,0.10) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
 
-      {/* ── Dark brown CTA box — TOP ── */}
-      <div style={{background:"#1A0A00",borderRadius:20,padding:28,display:"flex",alignItems:"center",gap:24,marginBottom:24}}>
-        <div style={{flex:1}}>
-          <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(201,151,58,0.20)",border:"1px solid rgba(201,151,58,0.40)",borderRadius:20,padding:"4px 12px",color:"#F0C060",fontSize:11,fontWeight:600,marginBottom:12}}>👑 Dining Concierge®</div>
-          <div style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:"#fff",marginBottom:8,fontFamily:"Georgia,serif"}}>Want us to plan the whole outing?</div>
-          <div style={{fontSize:13,color:"rgba(255,255,255,0.60)",lineHeight:1.7,marginBottom:18}}>You tell us where you want to take {petName}.<br/>We find the right venue, check {breed} suitability, confirm outdoor seating, make the reservation, and have a safe treat waiting when you arrive.</div>
-          <button onClick={() => openModal()} style={{display:"inline-flex",alignItems:"center",gap:8,background:"linear-gradient(135deg,#C9973A,#F0C060)",color:"#1A0A00",border:"none",borderRadius:10,padding:"12px 24px",fontSize:14,fontWeight:800,cursor:"pointer"}} data-testid="talk-to-concierge-btn">👑 Talk to your Concierge</button>
-        </div>
-        <div style={{flexShrink:0,textAlign:"center"}}>
-          <div style={{width:80,height:80,borderRadius:"50%",background:"rgba(201,151,58,0.20)",border:"2px solid rgba(201,151,58,0.40)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:34,margin:"0 auto 8px"}}>👑</div>
-          <div style={{fontSize:22,fontWeight:900,color:"#F0C060"}}>100%</div>
-          <div style={{fontSize:11,color:"rgba(255,255,255,0.50)",marginBottom:6}}>handled for you</div>
-        </div>
-      </div>
-
-      {/* ── Service cards section — BELOW ── */}
-      <div style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:"#1A0A00",marginBottom:4,fontFamily:"Georgia,serif"}}>Dining Concierge Services</div>
-      <div style={{fontSize:13,color:"#888",marginBottom:20}}>Concierge-led support for every dining out moment — from finding the right place to making sure {petName} is welcome.</div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
-        {CONC_SERVICES.map(svc => (
-          <div key={svc.name} style={{background:"#fff",borderRadius:14,border:"1px solid #F5E8D4",overflow:"hidden"}}>
-            <div style={{height:80,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,background:"linear-gradient(135deg,#FFF3E0,#FFF0F8)"}}>{svc.icon}</div>
-            <div style={{padding:10}}>
-              {svc.free && <div style={{display:"inline-block",background:"#E8F5E9",color:"#2E7D32",fontSize:9,fontWeight:700,borderRadius:8,padding:"2px 7px",marginBottom:4}}>Complimentary</div>}
-              <div style={{fontSize:12,fontWeight:700,color:"#1A0A00",marginBottom:4}}>{svc.name}</div>
-              <div style={{fontSize:10,color:"#888",lineHeight:1.4,marginBottom:8}}>{t(svc.desc, petName)}</div>
-              <button onClick={() => openModal(svc.name)} style={{fontSize:11,color:"#C44400",fontWeight:600,background:"none",border:"none",padding:0,cursor:"pointer"}}>{t(svc.cta, petName)}</button>
-            </div>
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          {/* Eyebrow chip */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            background: 'rgba(201,151,58,0.15)', border: '1px solid rgba(201,151,58,0.35)',
+            borderRadius: 9999, padding: '5px 16px', marginBottom: 20,
+          }}>
+            <span style={{ fontSize: 11, color: '#C9973A' }}>★</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(201,151,58,0.90)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              {petName}'s Concierge
+            </span>
           </div>
-        ))}
+
+          {/* Title */}
+          <h2 style={{
+            fontSize: 'clamp(1.4rem, 3vw, 2rem)',
+            fontWeight: 900, color: '#FFFFFF',
+            fontFamily: 'Georgia, serif',
+            marginBottom: 14, lineHeight: 1.25, maxWidth: 520,
+          }}>
+            Dine with <span style={{ color: '#F0C060' }}>{petName}</span> the way only you know how.
+          </h2>
+
+          {/* Description */}
+          <p style={{
+            fontSize: 15, color: 'rgba(255,255,255,0.72)',
+            lineHeight: 1.65, marginBottom: 20, maxWidth: 540,
+          }}>
+            From finding the perfect spot to making the reservation and checking {petName}'s breed is welcome — we handle every detail so you can just show up and enjoy.
+          </p>
+
+          {/* Chips — dine-relevant */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
+            {[
+              'Restaurant Discoveries',
+              'Date Night Outings',
+              'Special Occasion Dining',
+              'Allergy-Safe Venues',
+              'Reservation Assistance',
+            ].map(chip => (
+              <span
+                key={chip}
+                style={{
+                  fontSize: 11, fontWeight: 600,
+                  color: 'rgba(255,255,255,0.72)',
+                  background: 'rgba(255,255,255,0.07)',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  borderRadius: 9999, padding: '4px 12px',
+                }}
+              >
+                {chip}
+              </span>
+            ))}
+          </div>
+
+          {/* Stat + CTA row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <span style={{ fontSize: 22, fontWeight: 900, color: '#F0C060', fontFamily: 'Georgia, serif', lineHeight: 1 }}>100%</span>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>handled for you</span>
+            </div>
+            <button
+              onClick={() => setIntakeOpen(true)}
+              style={{
+                background: 'linear-gradient(135deg, #C9973A, #F0C060)',
+                color: '#1A0A00', border: 'none', borderRadius: 12,
+                padding: '13px 28px', fontSize: 14, fontWeight: 800,
+                cursor: 'pointer', transition: 'all 150ms', whiteSpace: 'nowrap',
+              }}
+              data-testid="talk-to-concierge-btn"
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(201,151,58,0.40)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; }}
+            >
+              Plan {petName}'s Dining →
+            </button>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.40)', margin: 0 }}>
+              48h response promise
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* Modal */}
-      {modalOpen && (
+      {intakeOpen && (
         <ConciergeIntakeModal
           pet={pet}
-          prefilledOccasion={modalOccasion}
-          onClose={() => setModalOpen(false)}
+          onClose={() => setIntakeOpen(false)}
+          prefilledOccasion={null}
         />
       )}
-    </div>
+    </>
   );
 }
 
@@ -1270,6 +1324,8 @@ const DineSoulPage = () => {
             </div>
 
             <DiningConcierge pet={petData} />
+
+            <DineConciergeSection pet={petData} />
 
             <GuidedNutritionPaths pet={petData} />
           </>
