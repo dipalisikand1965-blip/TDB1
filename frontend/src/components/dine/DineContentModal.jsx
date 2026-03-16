@@ -18,12 +18,14 @@ import { useAuth } from '../../context/AuthContext';
 import ProductCard from '../ProductCard';
 
 // ── Pet data helpers ──────────────────────────────────────────────────────────
+const ALLERGY_CLEAN = /^(no|none|none_confirmed|no_allergies|no allergies|na|n\/a|unknown)$/i;
+
 const getPetAllergies = (pet) => {
   const sets = new Set();
   const push = (v) => {
     if (!v) return;
     const arr = Array.isArray(v) ? v : v.split(/,|;/).map(s => s.trim());
-    arr.forEach(a => { if (a) sets.add(a.toLowerCase()); });
+    arr.forEach(a => { if (a && !ALLERGY_CLEAN.test(a.trim())) sets.add(a.toLowerCase()); });
   };
   push(pet?.allergies);
   push(pet?.allergy1); push(pet?.allergy2);
@@ -292,7 +294,10 @@ const buildMiraQuote = (pet, category, allergies, healthCondition) => {
     ? allergies.map(a => `${a}-free`).join(' and ')
     : null;
 
-  const loveStr = loves.length > 0 ? loves[0] : null;
+  const loveStr = loves.length > 0
+    // Strip food/treat suffixes to avoid "The Salmon treats options are first."
+    ? loves[0].replace(/\s*(treats?|biscuits?|food|meal|diet|snacks?|chews?)\s*$/i, '').trim()
+    : null;
 
   // Build context phrase
   const context = [

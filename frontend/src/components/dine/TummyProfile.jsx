@@ -35,7 +35,10 @@ function mergeAllergies(pet) {
   add(pet?.doggy_soul_answers?.food_allergies);
   add(pet?.doggy_soul_answers?.allergies);
   add(pet?.allergies);
-  return [...s].filter(a => a.toLowerCase() !== 'none' && a.toLowerCase() !== 'unknown');
+  return [...s].filter(a => {
+    const low = a.toLowerCase().trim();
+    return low !== 'none' && low !== 'unknown' && low !== 'no' && low !== 'no allergies' && low !== 'none_confirmed' && low !== 'na' && low !== 'n/a' && low.length > 1;
+  });
 }
 
 function getLoves(pet) {
