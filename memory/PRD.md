@@ -11,6 +11,37 @@ Violating these rules will break the admin panel and data consistency.
 
 ---
 
+## ✅ SESSION 52 — Mira Meal Box + AI Image Gen Auth Fix (Mar 16, 2026)
+
+### Features Built:
+
+#### 1. The Mira Meal Box (`MealBoxCard.jsx` + `meal_box_routes.py`)
+Full 6-screen meal plan builder on the `/dine` page:
+- **Teaser Card** (always visible): Dynamic description ("Salmon-forward, chicken-free, safe for their lymphoma"), 4 chips, two CTAs
+- **Screen 1**: Meals per day (1 or 2)
+- **Screen 2**: Review Mira's curated 5 slots (morning meal, evening meal, treat, supplement, health support)
+- **Screen 3**: Browse & swap alternatives per slot
+- **Screen 4**: Delivery frequency (weekly/fortnightly/monthly)
+- **Screen 5**: Health & allergy confirmation checkbox
+- **Screen 6**: Confirmed — ticket number + "What happens next"
+- **Never empty**: DB products first (ranked by Mira scores); "Mira Imagines" fallback if DB empty — persisted to `products_master` with `pillar=dine`
+- **Fully dynamic**: Works for any future pet (reads `doggy_soul_answers.favorite_protein`, `health_data.allergies`, `health_data.chronic_conditions`)
+
+#### 2. Backend Endpoints:
+- `GET /api/mira/meal-box-products` — curates 5 slots, filters by allergy, sorts by Mira score, fallback to Mira Imagines
+- `POST /api/concierge/meal-box` — creates `meal_box` ticket in `service_desk_tickets`, returns `ticket_id`
+
+#### 3. AI Image Generation Auth Fix:
+- **Root cause**: All 4 admin XHR calls were sending `Authorization: Bearer <token>` but admin uses HTTP Basic Auth (`Authorization: Basic <base64(user:pass)>`)
+- **Fixed in**: `ProductBoxEditor.jsx`, `PillarProductsTab.jsx`, `CelebrateManager.jsx`, `ServiceBox.jsx`
+- **Verified**: `POST /api/admin/products/DM-001/generate-image` with Basic Auth → HTTP 200, Cloudinary URL returned
+
+#### 4. Allergy "No" Fix:
+- `TummyProfile.jsx`: `mergeAllergies` now filters `"no"`, `"no allergies"`, `"na"`, `"n/a"`
+- `DineContentModal.jsx`: `getPetAllergies` now has `ALLERGY_CLEAN` regex filtering same values
+
+---
+
 ## ✅ SESSION 51b — Dynamic Dimension Text + Admin Filter + AI Image Fix (Mar 16, 2026)
 
 ### Fixes:

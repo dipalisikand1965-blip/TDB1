@@ -21465,6 +21465,9 @@ app.include_router(care_plan_router)  # Care Plan at /api/mira/care-plan/*
 
 from mira_score_engine import mira_score_router, set_database as set_score_engine_db
 app.include_router(mira_score_router)  # Mira Score Engine at /api/mira/*
+
+from meal_box_routes import meal_box_router
+app.include_router(meal_box_router, prefix="/api")  # Meal Box at /api/mira/meal-box-products & /api/concierge/meal-box
 set_score_engine_db(db)
 logger.info("Mira Care Plan Intelligence initialized")
 

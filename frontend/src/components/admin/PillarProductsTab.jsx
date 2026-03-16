@@ -193,9 +193,11 @@ const PillarProductsTab = ({ pillar, pillarName = '', pillarColor = 'bg-purple-5
     }
     setGeneratingImage(true);
     // Use XMLHttpRequest to bypass Emergent's fetch interceptor consuming the response body
+    const adminAuth = localStorage.getItem('adminAuth');
     const xhr = new XMLHttpRequest();
     xhr.open('POST', `${API_URL}/api/celebrate/admin/products/${editingProduct.id}/generate-image`);
     xhr.setRequestHeader('Content-Type', 'application/json');
+    if (adminAuth) xhr.setRequestHeader('Authorization', `Basic ${adminAuth}`);
     xhr.onload = () => {
       setGeneratingImage(false);
       try {
