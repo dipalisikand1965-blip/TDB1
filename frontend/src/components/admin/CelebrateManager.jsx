@@ -108,24 +108,28 @@ const CelebrateManager = ({ getAuthHeader }) => {
       return;
     }
     setGeneratingBundleImage(true);
-    try {
-      const token = localStorage.getItem('admin_token') || localStorage.getItem('token');
-      const res = await fetch(`${API_URL}/api/admin/celebrate/bundles/${editingBundle.id}/generate-image`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-      });
-      const data = await res.json();
-      if (data.success && data.image_url) {
-        setBundleForm(prev => ({ ...prev, image: data.image_url }));
-        toast({ title: 'Image Generated!', description: `AI image saved to Cloudinary for "${editingBundle.name}"` });
-      } else {
-        throw new Error(data.detail || 'Generation failed');
-      }
-    } catch (err) {
-      toast({ title: 'Generation Failed', description: err.message, variant: 'destructive' });
-    } finally {
+    const token = localStorage.getItem('admin_token') || localStorage.getItem('token');
+    // Use XMLHttpRequest to bypass Emergent's fetch interceptor consuming the response body
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${API_URL}/api/admin/celebrate/bundles/${editingBundle.id}/generate-image`);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    xhr.onload = () => {
       setGeneratingBundleImage(false);
-    }
+      try {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.status >= 200 && xhr.status < 300 && data.success && data.image_url) {
+          setBundleForm(prev => ({ ...prev, image: data.image_url }));
+          toast({ title: 'Image Generated!', description: `AI image saved to Cloudinary for "${editingBundle.name}"` });
+        } else {
+          toast({ title: 'Generation Failed', description: data.detail || 'Generation failed', variant: 'destructive' });
+        }
+      } catch {
+        toast({ title: 'Error', description: 'Could not parse response', variant: 'destructive' });
+      }
+    };
+    xhr.onerror = () => { setGeneratingBundleImage(false); toast({ title: 'Network Error', variant: 'destructive' }); };
+    xhr.send();
   };
   
   // Production Sync states
@@ -1505,26 +1509,30 @@ const CelebrateManager = ({ getAuthHeader }) => {
                 </label>
                 {/* AI Generate Image */}
                 <Button type="button" variant="outline" size="sm" disabled={generatingProductImage}
-                  onClick={async () => {
+                  onClick={() => {
                     if (!editingProduct?.id) {
                       toast({ title: 'Save the product first', description: 'Product must be saved before generating an AI image', variant: 'destructive' });
                       return;
                     }
                     setGeneratingProductImage(true);
-                    try {
-                      const res = await fetch(`${API_URL}/api/celebrate/admin/products/${editingProduct.id}/generate-image`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' }
-                      });
-                      const text = await res.text();
-                      const data = text ? JSON.parse(text) : {};
-                      if (data.success && data.image_url) {
-                        setProductForm(prev => ({...prev, image: data.image_url}));
-                        toast({ title: 'AI Image Generated!', description: 'Image saved to Cloudinary' });
-                      } else {
-                        toast({ title: 'Generation failed', description: data.message || 'Unknown error', variant: 'destructive' });
-                      }
-                    } catch (err) { toast({ title: 'Error', description: err.message, variant: 'destructive' }); }
-                    finally { setGeneratingProductImage(false); }
+                    // Use XMLHttpRequest to bypass Emergent's fetch interceptor consuming the response body
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', `${API_URL}/api/celebrate/admin/products/${editingProduct.id}/generate-image`);
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.onload = () => {
+                      setGeneratingProductImage(false);
+                      try {
+                        const data = JSON.parse(xhr.responseText);
+                        if (xhr.status >= 200 && xhr.status < 300 && data.success && data.image_url) {
+                          setProductForm(prev => ({...prev, image: data.image_url}));
+                          toast({ title: 'AI Image Generated!', description: 'Image saved to Cloudinary' });
+                        } else {
+                          toast({ title: 'Generation failed', description: data.message || 'Unknown error', variant: 'destructive' });
+                        }
+                      } catch { toast({ title: 'Error', description: 'Could not parse response', variant: 'destructive' }); }
+                    };
+                    xhr.onerror = () => { setGeneratingProductImage(false); toast({ title: 'Error', description: 'Network error', variant: 'destructive' }); };
+                    xhr.send();
                   }}
                   className="flex items-center gap-1"
                   data-testid="generate-product-image-btn"

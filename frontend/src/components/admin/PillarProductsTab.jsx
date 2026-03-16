@@ -49,12 +49,13 @@ const PillarProductsTab = ({ pillar, pillarName = '', pillarColor = 'bg-purple-5
   const [generatingImage, setGeneratingImage] = useState(false);
   const fileInputRef = useRef(null);
 
-  const fetchProducts = useCallback(async (pageNum = page) => {
+  const fetchProducts = useCallback(async (pageNum = page, catOverride = undefined) => {
     setLoading(true);
+    const cat = catOverride !== undefined ? catOverride : filterCategory;
     try {
       let url = `${API_URL}/api/admin/pillar-products?pillar=${encodeURIComponent(pillar)}&page=${pageNum}&limit=${ITEMS_PER_PAGE}`;
       if (search) url += `&search=${encodeURIComponent(search)}`;
-      if (filterCategory) url += `&category=${encodeURIComponent(filterCategory)}`;
+      if (cat) url += `&category=${encodeURIComponent(cat)}`;
       const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
@@ -185,30 +186,32 @@ const PillarProductsTab = ({ pillar, pillarName = '', pillarColor = 'bg-purple-5
     }
   };
 
-  const handleGenerateImage = async () => {
+  const handleGenerateImage = () => {
     if (!editingProduct?.id) {
       toast({ title: 'Save product first', description: 'Product must exist before generating an image', variant: 'destructive' });
       return;
     }
     setGeneratingImage(true);
-    try {
-      const res = await fetch(`${API_URL}/api/celebrate/admin/products/${editingProduct.id}/generate-image`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const text = await res.text();
-      const data = text ? JSON.parse(text) : {};
-      if (data.success && data.image_url) {
-        setForm(prev => ({ ...prev, image_url: data.image_url }));
-        toast({ title: 'AI Image Generated!', description: 'Image saved to Cloudinary' });
-      } else {
-        toast({ title: 'Generation failed', description: data.message || 'Unknown error', variant: 'destructive' });
-      }
-    } catch (err) {
-      toast({ title: 'Error', description: err.message, variant: 'destructive' });
-    } finally {
+    // Use XMLHttpRequest to bypass Emergent's fetch interceptor consuming the response body
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${API_URL}/api/celebrate/admin/products/${editingProduct.id}/generate-image`);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = () => {
       setGeneratingImage(false);
-    }
+      try {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.status >= 200 && xhr.status < 300 && data.success && data.image_url) {
+          setForm(prev => ({ ...prev, image_url: data.image_url }));
+          toast({ title: 'AI Image Generated!', description: 'Image saved to Cloudinary' });
+        } else {
+          toast({ title: 'Generation failed', description: data.message || `Error ${xhr.status}`, variant: 'destructive' });
+        }
+      } catch {
+        toast({ title: 'Error', description: 'Could not parse server response', variant: 'destructive' });
+      }
+    };
+    xhr.onerror = () => { setGeneratingImage(false); toast({ title: 'Error', description: 'Network error', variant: 'destructive' }); };
+    xhr.send();
   };
 
   return (
@@ -231,7 +234,7 @@ const PillarProductsTab = ({ pillar, pillarName = '', pillarColor = 'bg-purple-5
             <select
               className="border rounded-lg px-3 py-2 text-sm"
               value={filterCategory}
-              onChange={e => { setFilterCategory(e.target.value); setPage(1); fetchProducts(1); }}
+              onChange={e => { const v = e.target.value; setFilterCategory(v); setPage(1); fetchProducts(1, v); }}
               data-testid="category-filter-select"
             >
               <option value="">All Categories</option>
