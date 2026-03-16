@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mojo-tummy-profile.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mojo-personalized.preview.emergentagent.com')
 
 class TestKitDetection:
     """Test kit detection prioritizes current message over history"""

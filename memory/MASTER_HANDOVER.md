@@ -58,7 +58,7 @@ Be patient. Be thorough. Honor the Sikand legacy.
 - Admin: `aditya` / `lola4304`
 
 ## 🌐 PREVIEW URL
-https://mojo-tummy-profile.preview.emergentagent.com
+https://mojo-personalized.preview.emergentagent.com
 
 ---
 

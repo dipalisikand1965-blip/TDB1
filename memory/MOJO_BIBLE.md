@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mojo-tummy-profile.preview.emergentagent.com
+https://mojo-personalized.preview.emergentagent.com
 ```
 
 ---

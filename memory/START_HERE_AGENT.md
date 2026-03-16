@@ -179,7 +179,7 @@ curl "$API_URL/api/pet-soul/profile/pet-99a708f1722a/quick-questions"
 
 ## 🚀 PREVIEW URL
 ```
-https://mojo-tummy-profile.preview.emergentagent.com
+https://mojo-personalized.preview.emergentagent.com
 ```
 
 Key pages:
