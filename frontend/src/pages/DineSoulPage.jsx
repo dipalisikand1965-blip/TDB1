@@ -23,7 +23,11 @@ import SharedProductCard from "../components/ProductCard";
 function getDineDims(pet) {
   const loves = getLoves(pet);
   const allergies = getAllergies(pet);
-  const favProtein = loves[0] || null;
+  // Extract clean protein name - strip food/treat suffix words to avoid "Salmon treats-forward"
+  const rawFav = loves[0] || null;
+  const favProtein = rawFav
+    ? rawFav.replace(/\s*(treats?|biscuits?|food|meal|diet|snacks?|chews?)\s*$/i, '').trim()
+    : null;
   const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : '';
   const allergyFreeText = allergies.length > 0
     ? allergies.slice(0, 2).map(a => `${a.toLowerCase()}-free`).join(', ')
