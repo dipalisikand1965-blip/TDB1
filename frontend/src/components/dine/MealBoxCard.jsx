@@ -99,8 +99,8 @@ const Modal = ({ onClose, children }) => createPortal(
   <AnimatePresence>
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.80)', backdropFilter: 'blur(8px)' }}
+      className="fixed inset-0 flex items-end sm:items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.80)', backdropFilter: 'blur(8px)', zIndex: 9998 }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       <motion.div
@@ -211,12 +211,13 @@ export default function MealBoxCard() {
 
   const closeModal = () => setOpen(false);
 
-  // Update slots when mealsPerDay changes
+  // When screen 2 is shown and slotsData is null, auto-retry loading products
   useEffect(() => {
+    if (screen === 2 && !slotsData && !loadingProducts) { loadProducts(); }
     if (open) setSlots(mealsPerDay === 1
       ? (slotsData || []).filter(s => s.key !== 'evening')
       : (slotsData || []));
-  }, [mealsPerDay, slotsData, open]);
+  }, [mealsPerDay, slotsData, open, screen, loadingProducts, loadProducts]);
 
   const handleSwap = (targetSlot, newProduct) => {
     setSlots(prev => prev.map(s =>
@@ -400,23 +401,37 @@ export default function MealBoxCard() {
             {/* Screen 2 — Review slots */}
             {screen === 2 && !swapSlot && (
               <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                <ScreenHeader title="Mira's Curated Plan" subtitle={`${slots.length} slots for ${petName}`}
+                <ScreenHeader title="Mira's Curated Plan" subtitle={loadingProducts ? `Building plan for ${petName}…` : `${slots.length} slots for ${petName}`}
                   step={1} totalSteps={3} onClose={closeModal} onBack={() => setScreen(1)} />
                 <div className="px-5 pb-5 space-y-2">
-                  {slots.map(slot => (
-                    <SlotRow key={slot.key} slot={slot} onSwap={s => { setSwapSlot(s); setScreen(3); }} />
-                  ))}
-                  <div className="mt-3 p-3 rounded-xl" style={{ background: 'rgba(196,77,255,0.08)', border: '1px solid rgba(196,77,255,0.12)' }}>
-                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.50)' }}>
-                      Tap the swap icon to change any item. Mira has pre-selected the best match for {petName}.
-                    </p>
-                  </div>
-                  <button onClick={() => setScreen(4)}
-                    className="w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 mt-1 transition-all hover:scale-[1.01]"
-                    style={{ background: 'linear-gradient(135deg,#C44DFF,#FF8C42)', color: '#fff' }}
-                    data-testid="meal-box-next-s2">
-                    Looks good — Next <ChevronRight size={14} />
-                  </button>
+                  {loadingProducts ? (
+                    <div className="py-8 flex flex-col items-center gap-3">
+                      <div style={{ width: 32, height: 32, border: '3px solid rgba(196,77,255,0.20)', borderTopColor: '#C44DFF', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                      <p className="text-sm" style={{ color: 'rgba(255,255,255,0.55)' }}>Mira is building {petName}'s plan…</p>
+                    </div>
+                  ) : slots.length === 0 ? (
+                    <div className="py-6 text-center">
+                      <p className="text-sm mb-3" style={{ color: 'rgba(255,255,255,0.55)' }}>Having trouble loading the plan. Tap to retry.</p>
+                      <button onClick={loadProducts} className="px-4 py-2 rounded-xl text-sm font-semibold" style={{ background: 'rgba(196,77,255,0.20)', color: '#C44DFF' }}>Retry</button>
+                    </div>
+                  ) : (
+                    <>
+                      {slots.map(slot => (
+                        <SlotRow key={slot.key} slot={slot} onSwap={s => { setSwapSlot(s); setScreen(3); }} />
+                      ))}
+                      <div className="mt-3 p-3 rounded-xl" style={{ background: 'rgba(196,77,255,0.08)', border: '1px solid rgba(196,77,255,0.12)' }}>
+                        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.50)' }}>
+                          Tap the swap icon to change any item. Mira has pre-selected the best match for {petName}.
+                        </p>
+                      </div>
+                      <button onClick={() => setScreen(4)}
+                        className="w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 mt-1 transition-all hover:scale-[1.01]"
+                        style={{ background: 'linear-gradient(135deg,#C44DFF,#FF8C42)', color: '#fff' }}
+                        data-testid="meal-box-next-s2">
+                        Looks good — Next <ChevronRight size={14} />
+                      </button>
+                    </>
+                  )}
                 </div>
               </motion.div>
             )}
