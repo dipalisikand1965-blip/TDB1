@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://mojo-tummy-profile.preview.emergentagent.com
+https://mojo-personalized.preview.emergentagent.com
 
 ---
 

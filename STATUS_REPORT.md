@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://mojo-tummy-profile.preview.emergentagent.com
+**Preview URL:** https://mojo-personalized.preview.emergentagent.com
 
 ---
 

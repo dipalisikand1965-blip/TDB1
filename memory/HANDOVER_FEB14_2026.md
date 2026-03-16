@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://mojo-tummy-profile.preview.emergentagent.com` |
+| **Preview** | `https://mojo-personalized.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |
