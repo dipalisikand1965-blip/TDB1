@@ -108,12 +108,12 @@ const CelebrateManager = ({ getAuthHeader }) => {
       return;
     }
     setGeneratingBundleImage(true);
-    const token = localStorage.getItem('admin_token') || localStorage.getItem('token');
+    const adminAuth = localStorage.getItem('adminAuth');
     // Use XMLHttpRequest to bypass Emergent's fetch interceptor consuming the response body
     const xhr = new XMLHttpRequest();
     xhr.open('POST', `${API_URL}/api/admin/celebrate/bundles/${editingBundle.id}/generate-image`);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    if (adminAuth) xhr.setRequestHeader('Authorization', `Basic ${adminAuth}`);
     xhr.onload = () => {
       setGeneratingBundleImage(false);
       try {
@@ -1516,9 +1516,11 @@ const CelebrateManager = ({ getAuthHeader }) => {
                     }
                     setGeneratingProductImage(true);
                     // Use XMLHttpRequest to bypass Emergent's fetch interceptor consuming the response body
+                    const adminAuth2 = localStorage.getItem('adminAuth');
                     const xhr = new XMLHttpRequest();
                     xhr.open('POST', `${API_URL}/api/celebrate/admin/products/${editingProduct.id}/generate-image`);
                     xhr.setRequestHeader('Content-Type', 'application/json');
+                    if (adminAuth2) xhr.setRequestHeader('Authorization', `Basic ${adminAuth2}`);
                     xhr.onload = () => {
                       setGeneratingProductImage(false);
                       try {

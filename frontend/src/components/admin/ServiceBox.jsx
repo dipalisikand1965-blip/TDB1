@@ -1054,9 +1054,11 @@ const ServiceBox = () => {
                           try {
                             setSaving(true);
                             // Use XMLHttpRequest to bypass Emergent's fetch interceptor
+                            const adminAuthSvc = localStorage.getItem('adminAuth');
                             const xhr = new XMLHttpRequest();
                             xhr.open('POST', `${API_URL}/api/service-box/services/${selectedService.id}/generate-image`);
                             xhr.setRequestHeader('Content-Type', 'application/json');
+                            if (adminAuthSvc) xhr.setRequestHeader('Authorization', `Basic ${adminAuthSvc}`);
                             xhr.onload = () => {
                               setSaving(false);
                               try {
