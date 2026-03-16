@@ -84,6 +84,12 @@ const UnifiedProductBox = () => {
   const [filterSource, setFilterSource] = useState('');  // NEW: shopify, soul_made, manual
   const [filterCategory, setFilterCategory] = useState('');  // Category filter
   
+  // Bulk Selection
+  const [selectedProducts, setSelectedProducts] = useState(new Set());
+  const [bulkCategory, setBulkCategory] = useState('');
+  const [bulkSubCategory, setBulkSubCategory] = useState('');
+  const [bulkAssigning, setBulkAssigning] = useState(false);
+  
   // Pagination
   const [page, setPage] = useState(0);
   const [totalProducts, setTotalProducts] = useState(0);
@@ -215,7 +221,53 @@ const UnifiedProductBox = () => {
     }
   };
 
-  // Quick Edit Save - for image, price, pillars, name, mira_hint
+  // ── Bulk Category Assign ──────────────────────────────────────────────────
+  const handleBulkAssign = async () => {
+    if (!bulkCategory || selectedProducts.size === 0) return;
+    setBulkAssigning(true);
+    try {
+      const response = await fetch(`${API_URL}/api/product-box/products/bulk-assign-category`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_ids: [...selectedProducts],
+          category: bulkCategory,
+          sub_category: bulkSubCategory || undefined
+        })
+      });
+      if (response.ok) {
+        const result = await response.json();
+        toast({ title: 'Categories Assigned!', description: `Updated ${result.updated} of ${result.matched} matched products.` });
+        setSelectedProducts(new Set());
+        setBulkCategory('');
+        setBulkSubCategory('');
+        fetchProducts();
+      } else {
+        const err = await response.json();
+        toast({ title: 'Error', description: err.detail || 'Failed to assign', variant: 'destructive' });
+      }
+    } catch (err) {
+      toast({ title: 'Error', description: 'Network error', variant: 'destructive' });
+    } finally {
+      setBulkAssigning(false);
+    }
+  };
+
+  const toggleSelectProduct = (id) => {
+    setSelectedProducts(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedProducts.size === products.length) {
+      setSelectedProducts(new Set());
+    } else {
+      setSelectedProducts(new Set(products.map(p => p.id)));
+    }
+  };
   const quickSave = async () => {
     if (!quickEditProduct || !quickEditType) return;
     
@@ -1124,7 +1176,18 @@ const UnifiedProductBox = () => {
               <table className="w-full text-sm" data-testid="products-table">
                 <thead className="bg-gray-50 border-b">
                   <tr>
+                    <th className="p-3 w-8">
+                      <input
+                        type="checkbox"
+                        checked={products.length > 0 && selectedProducts.size === products.length}
+                        ref={el => el && (el.indeterminate = selectedProducts.size > 0 && selectedProducts.size < products.length)}
+                        onChange={toggleSelectAll}
+                        className="w-4 h-4 cursor-pointer"
+                        data-testid="select-all-products-checkbox"
+                      />
+                    </th>
                     <th className="text-left p-3 font-medium text-gray-600">Product</th>
+                    <th className="text-left p-3 font-medium text-gray-600">Category</th>
                     <th className="text-left p-3 font-medium text-gray-600">Type</th>
                     <th className="text-left p-3 font-medium text-gray-600">Pillars</th>
                     <th className="text-left p-3 font-medium text-gray-600">Price</th>
@@ -1138,7 +1201,16 @@ const UnifiedProductBox = () => {
                 </thead>
                 <tbody>
                   {products.map((product) => (
-                    <tr key={product.id} className="border-b hover:bg-gray-50" data-testid={`product-row-${product.id}`}>
+                    <tr key={product.id} className={`border-b hover:bg-gray-50 ${selectedProducts.has(product.id) ? 'bg-amber-50' : ''}`} data-testid={`product-row-${product.id}`}>
+                      <td className="p-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedProducts.has(product.id)}
+                          onChange={() => toggleSelectProduct(product.id)}
+                          className="w-4 h-4 cursor-pointer"
+                          data-testid={`select-product-${product.id}`}
+                        />
+                      </td>
                       <td className="p-3">
                         <div className="flex items-center gap-3">
                           {/* Clickable Image for Quick Edit */}
@@ -1173,6 +1245,22 @@ const UnifiedProductBox = () => {
                             <p className="text-xs text-gray-500">{product.sku}</p>
                           </div>
                         </div>
+                      </td>
+                      {/* Category Cell — click to quick-assign */}
+                      <td className="p-3">
+                        {product.category ? (
+                          <Badge variant="outline" className="text-xs capitalize bg-amber-50 border-amber-200 text-amber-800">
+                            {product.category}
+                          </Badge>
+                        ) : (
+                          <button
+                            onClick={() => { toggleSelectProduct(product.id); }}
+                            className="text-xs text-gray-400 hover:text-amber-600 border border-dashed border-gray-200 hover:border-amber-300 rounded px-2 py-0.5 transition-colors"
+                            title="Select to bulk assign category"
+                          >
+                            + category
+                          </button>
+                        )}
                       </td>
                       <td className="p-3">
                         <Badge variant="outline" className="capitalize">
@@ -1373,6 +1461,56 @@ const UnifiedProductBox = () => {
                 </tbody>
               </table>
             </div>
+
+            {/* Bulk Action Bar — appears when products are selected */}
+            {selectedProducts.size > 0 && (
+              <div className="sticky bottom-0 z-20 border-t bg-amber-50 border-amber-200 p-3 flex flex-wrap items-center gap-3 shadow-md" data-testid="bulk-action-bar">
+                <span className="text-sm font-semibold text-amber-800">
+                  {selectedProducts.size} product{selectedProducts.size > 1 ? 's' : ''} selected
+                </span>
+                <div className="flex items-center gap-2 flex-1 flex-wrap">
+                  <select
+                    value={bulkCategory}
+                    onChange={e => setBulkCategory(e.target.value)}
+                    className="h-8 px-2 rounded border border-amber-300 text-sm bg-white min-w-[180px]"
+                    data-testid="bulk-category-select"
+                  >
+                    <option value="">— Select Category —</option>
+                    {(filterPillar
+                      ? MAIN_CATEGORIES.filter(c => !c.pillar || c.pillar === filterPillar)
+                      : MAIN_CATEGORIES
+                    ).map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                  <input
+                    value={bulkSubCategory}
+                    onChange={e => setBulkSubCategory(e.target.value)}
+                    placeholder="Sub-category (optional)"
+                    className="h-8 px-2 rounded border border-amber-300 text-sm bg-white min-w-[160px]"
+                    data-testid="bulk-subcategory-input"
+                  />
+                  <Button
+                    size="sm"
+                    disabled={!bulkCategory || bulkAssigning}
+                    onClick={handleBulkAssign}
+                    className="bg-amber-600 hover:bg-amber-700 text-white h-8"
+                    data-testid="bulk-assign-category-btn"
+                  >
+                    {bulkAssigning ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Assign Category'}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedProducts(new Set())}
+                    className="h-8 text-amber-700 hover:bg-amber-100"
+                    data-testid="bulk-clear-selection-btn"
+                  >
+                    Clear Selection
+                  </Button>
+                </div>
+              </div>
+            )}
             
             {/* Pagination */}
             <div className="p-4 border-t flex items-center justify-between">
