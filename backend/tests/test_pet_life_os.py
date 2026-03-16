@@ -22,7 +22,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dine-category-pills.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mojo-tummy-profile.preview.emergentagent.com')
 
 # Test credentials
 USER_EMAIL = "dipali@clubconcierge.in"

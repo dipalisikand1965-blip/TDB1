@@ -25,7 +25,7 @@
     "frontend": "100% - 10/10 features verified working"
   },
   "test_credentials": {
-    "test_url": "https://dine-category-pills.preview.emergentagent.com/join",
+    "test_url": "https://mojo-tummy-profile.preview.emergentagent.com/join",
     "test_type": "Frontend UI Flow Testing"
   },
   "seed_data_creation": "None - UI flow testing only",
