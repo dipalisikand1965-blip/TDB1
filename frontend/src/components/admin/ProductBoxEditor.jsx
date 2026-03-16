@@ -802,12 +802,66 @@ const ProductBoxEditor = ({
                     onChange={(e) => {
                       updateField('pillars_occasions.pillar.primary_pillar', e.target.value);
                       updateField('primary_pillar', e.target.value);
+                      updateField('pillar', e.target.value);
                     }}
                     className="w-full h-10 px-3 rounded-md border border-gray-200"
                   >
                     {ALL_PILLARS.map(p => (
                       <option key={p.id} value={p.id}>{p.icon} {p.name}</option>
                     ))}
+                  </select>
+                </div>
+
+                {/* Category — filtered by selected primary pillar */}
+                <div>
+                  <Label>Category *</Label>
+                  <select
+                    value={getValue('commerce_ops.category', '') || getValue('category', '')}
+                    onChange={(e) => {
+                      updateField('commerce_ops.category', e.target.value);
+                      updateField('category', e.target.value);
+                    }}
+                    className="w-full h-10 px-3 rounded-md border border-gray-200"
+                  >
+                    <option value="">— Select Category —</option>
+                    {MAIN_CATEGORIES
+                      .filter(c => !c.pillar || c.pillar === (getValue('pillars_occasions.pillar.primary_pillar', 'shop') || getValue('primary_pillar', 'shop')))
+                      .map(c => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                      ))
+                    }
+                  </select>
+                </div>
+
+                {/* Sub-Category */}
+                <div>
+                  <Label>Sub-Category</Label>
+                  <Input
+                    value={getValue('commerce_ops.subcategory', '') || getValue('sub_category', '')}
+                    onChange={(e) => {
+                      updateField('commerce_ops.subcategory', e.target.value);
+                      updateField('sub_category', e.target.value);
+                    }}
+                    placeholder="e.g. Special Diets, Chicken-Free, Grain-Free, Senior, Puppy…"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Used to tag this product into a specific diet/sub-section within the pillar category</p>
+                </div>
+
+                {/* Pillar Status — activate/deactivate per pillar */}
+                <div>
+                  <Label>Status in Pillar</Label>
+                  <select
+                    value={getValue('approval_status', 'live') || getValue('commerce_ops.approval_status', 'live')}
+                    onChange={(e) => {
+                      updateField('approval_status', e.target.value);
+                      updateField('commerce_ops.approval_status', e.target.value);
+                    }}
+                    className="w-full h-10 px-3 rounded-md border border-gray-200"
+                  >
+                    <option value="live">🟢 Live (Active)</option>
+                    <option value="paused">⏸️ Paused (Hidden from front-end)</option>
+                    <option value="draft">📝 Draft</option>
+                    <option value="archived">📦 Archived</option>
                   </select>
                 </div>
                 

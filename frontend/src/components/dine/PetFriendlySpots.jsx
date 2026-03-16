@@ -1,228 +1,247 @@
 /**
- * PetFriendlySpots.jsx — Dine Out tab
- * Finds pet-friendly restaurants near the user using the existing
- * /api/nearby/places endpoint (Google Places API, already configured).
- * Geolocation → fallback to pet's city.
+ * PetFriendlySpots.jsx — The Doggy Company /dine page
+ * Powered by Google Places API via backend proxy.
  */
+import { useState, useEffect, useRef } from "react";
 
-import React, { useState, useEffect } from 'react';
-import { MapPin, Star, Loader2, Navigation, RefreshCw } from 'lucide-react';
-import { useResizeMobile } from '../../hooks/useResizeMobile';
-import { getApiUrl } from '../../utils/api';
-
-const MIRA_TAGS = [
-  'Great for dogs', 'Outdoor seating', 'Dog-friendly menu', 'Water bowls provided',
-  'Leash-friendly', 'Dog treats available', 'Open lawn', 'Dog events hosted',
+const POPULAR_CITIES = [
+  "Bengaluru", "Mumbai", "Delhi", "Hyderabad", "Chennai",
+  "Pune", "Kolkata", "Ahmedabad", "Jaipur", "Goa",
 ];
 
-function getMiraTag(name, idx) {
-  return MIRA_TAGS[((name?.charCodeAt(0) || 0) + idx) % MIRA_TAGS.length];
+async function fetchSpots({ city, breed, lat, lng }) {
+  const params = new URLSearchParams({ city, breed: breed || "" });
+  if (lat) params.set("lat", lat);
+  if (lng) params.set("lng", lng);
+  const res = await fetch(`/api/places/pet-friendly?${params}`);
+  if (!res.ok) throw new Error(`Places API error: ${res.status}`);
+  return res.json();
 }
 
-const SpotCard = ({ place, petName, idx }) => {
-  const tag = getMiraTag(place.name, idx);
+function getCurrentPosition() {
+  return new Promise(resolve => {
+    if (!navigator.geolocation) return resolve(null);
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      () => resolve(null),
+      { timeout: 5000 }
+    );
+  });
+}
+
+function SpotCard({ spot, onReserve }) {
   return (
-    <div
-      style={{
-        background: '#FFFFFF',
-        border: '1.5px solid #F0E0D0',
-        borderRadius: 16, padding: '16px 16px',
-        display: 'flex', flexDirection: 'column', gap: 8,
-      }}
-      data-testid={`dine-out-spot-${idx}`}
+    <div style={{
+      background: "#fff", border: "1.5px solid #F5E8D4",
+      borderRadius: 14, overflow: "hidden",
+      boxShadow: "0 2px 12px rgba(196,68,0,0.06)",
+      transition: "transform 0.15s, box-shadow 0.15s",
+    }}
+      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(196,68,0,0.12)"; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 2px 12px rgba(196,68,0,0.06)"; }}
+      data-testid={`spot-card-${spot.placeId || spot.name}`}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-        <p style={{ fontSize: 14, fontWeight: 800, color: '#1A0A00', lineHeight: 1.3, flex: 1 }}>{place.name}</p>
-        {place.rating && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-            <Star size={13} color="#F59E0B" fill="#F59E0B" />
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#444' }}>{place.rating}</span>
-          </div>
+      <div style={{ height: 110, background: "#FFF8F0", overflow: "hidden", position: "relative" }}>
+        {spot.photoUrl ? (
+          <img src={spot.photoUrl} alt={spot.name} style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            onError={e => { e.target.parentNode.style.background = "linear-gradient(135deg,#FF8C42,#C44DFF)"; e.target.remove(); }} />
+        ) : (
+          <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36 }}>🍽️</div>
+        )}
+        {spot.openNow === true && (
+          <span style={{ position: "absolute", top: 7, right: 7, fontSize: 9, background: "#22C55E", color: "#fff", borderRadius: 20, padding: "2px 8px", fontWeight: 700 }}>Open now</span>
+        )}
+        {spot.openNow === false && (
+          <span style={{ position: "absolute", top: 7, right: 7, fontSize: 9, background: "#EF4444", color: "#fff", borderRadius: 20, padding: "2px 8px", fontWeight: 700 }}>Closed</span>
         )}
       </div>
-
-      {place.address && (
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-          <MapPin size={13} color="#C44400" style={{ flexShrink: 0, marginTop: 2 }} />
-          <p style={{ fontSize: 12, color: '#888', lineHeight: 1.4 }}>{place.address}</p>
+      <div style={{ padding: "10px 12px 12px" }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#1A0A00", marginBottom: 3, lineHeight: 1.3 }}>{spot.name}</div>
+        <div style={{ fontSize: 10, color: "#888", marginBottom: 6 }}>{spot.address}{spot.distance ? ` · ${spot.distance}` : ""}</div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+          <span style={{ fontSize: 11, color: "#F59E0B", fontWeight: 700 }}>★ {spot.rating || "—"}</span>
+          {spot.tag && <span style={{ fontSize: 9, fontWeight: 600, background: "#E8F5E9", color: "#2E7D32", borderRadius: 8, padding: "2px 7px" }}>{spot.tag}</span>}
         </div>
-      )}
-
-      {/* Mira suitability tag */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 12, color: '#C44400' }}>✦</span>
-        <span style={{ fontSize: 12, fontWeight: 600, color: '#7a2800', background: 'rgba(196,68,0,0.08)', borderRadius: 20, padding: '3px 10px' }}>
-          {tag}
-        </span>
+        <div style={{ display: "flex", gap: 6 }}>
+          {spot.mapsUrl && (
+            <a href={spot.mapsUrl} target="_blank" rel="noopener noreferrer"
+              style={{ flexShrink: 0, background: "#F5F0EA", border: "none", borderRadius: 8, padding: "7px 10px", fontSize: 12, cursor: "pointer", textDecoration: "none", color: "#C44400" }}>
+              🗺️
+            </a>
+          )}
+          <button onClick={() => onReserve && onReserve(spot)} data-testid="reserve-concierge-btn"
+            style={{ flex: 1, background: "linear-gradient(135deg,#FF8C42,#C44DFF)", color: "#fff", border: "none", borderRadius: 8, padding: "7px 10px", fontSize: 11, fontWeight: 600, cursor: "pointer" }}>
+            Reserve via Concierge
+          </button>
+        </div>
       </div>
-
-      {place.open_now !== undefined && (
-        <span style={{
-          fontSize: 11, fontWeight: 700,
-          color: place.open_now ? '#15803D' : '#9CA3AF',
-          background: place.open_now ? '#DCFCE7' : '#F3F4F6',
-          borderRadius: 20, padding: '2px 8px', alignSelf: 'flex-start',
-        }}>
-          {place.open_now ? 'Open now' : 'Closed'}
-        </span>
-      )}
     </div>
   );
-};
+}
 
-const PetFriendlySpots = ({ pet }) => {
-  const isMobile = useResizeMobile();
-  const [places, setPlaces] = useState([]);
-  const [loading, setLoading] = useState(false);
+function SpotSkeleton() {
+  return (
+    <div style={{ background: "#fff", border: "1.5px solid #F5E8D4", borderRadius: 14, overflow: "hidden" }}>
+      <div style={{ height: 110, background: "linear-gradient(90deg,#F5F0EA 25%,#FFF8F0 50%,#F5F0EA 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.5s infinite" }} />
+      <div style={{ padding: "10px 12px" }}>
+        {[60, 80, 40].map((w, i) => <div key={i} style={{ height: 10, background: "#F5F0EA", borderRadius: 4, marginBottom: 6, width: `${w}%` }} />)}
+      </div>
+    </div>
+  );
+}
+
+export default function PetFriendlySpots({ pet, onReserve }) {
+  const homeCity = pet?.city || pet?.doggy_soul_answers?.city || "Bengaluru";
+  const breedName = pet?.breed || "";
+  const petName = pet?.name || "your dog";
+
+  const [searchInput, setSearchInput] = useState("");
+  const [activeCity, setActiveCity] = useState(homeCity);
+  const [spots, setSpots] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [locationGranted, setLocationGranted] = useState(false);
-  const petName = pet?.name || 'your dog';
-  const petCity = pet?.city || null;
+  const [userLocation, setUserLocation] = useState(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const inputRef = useRef(null);
 
-  const fetchSpots = async (lat, lng) => {
-    setLoading(true);
-    setError(null);
+  const suggestions = searchInput.length > 0
+    ? POPULAR_CITIES.filter(c => c.toLowerCase().startsWith(searchInput.toLowerCase()) && c.toLowerCase() !== searchInput.toLowerCase())
+    : [];
+
+  useEffect(() => {
+    loadSpots(homeCity);
+    getCurrentPosition().then(pos => { if (pos) setUserLocation(pos); });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function loadSpots(city, position = userLocation) {
+    setLoading(true); setError(null);
     try {
-      const res = await fetch(
-        `${getApiUrl()}/api/nearby/places?lat=${lat}&lng=${lng}&keyword=pet+friendly+restaurant&radius=5000`
-      );
-      const data = await res.json();
-      setPlaces(Array.isArray(data.results) ? data.results : Array.isArray(data) ? data : []);
-    } catch {
-      setError('Could not load nearby spots. Try again.');
+      const data = await fetchSpots({ city, breed: breedName, lat: position?.lat, lng: position?.lng });
+      setSpots(data.spots || []);
+      setActiveCity(city);
+    } catch (err) {
+      console.error("PetFriendlySpots:", err);
+      setError(`Couldn't load spots for ${city}. Please try again.`);
+      setSpots([]);
     } finally {
       setLoading(false);
     }
+  }
+
+  const handleSearch = (e) => {
+    e?.preventDefault();
+    const city = searchInput.trim();
+    if (!city) return;
+    setShowSuggestions(false);
+    loadSpots(city);
   };
 
-  const fetchByCity = async (city) => {
-    // Geocode the city via Google Geocoding API (backend handles it)
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(
-        `${getApiUrl()}/api/nearby/places?lat=19.0760&lng=72.8777&keyword=pet+friendly+restaurant+${encodeURIComponent(city)}&radius=10000`
-      );
-      const data = await res.json();
-      setPlaces(Array.isArray(data.results) ? data.results : Array.isArray(data) ? data : []);
-    } catch {
-      setError('Could not load spots for your city.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const requestLocation = () => {
-    if (!navigator.geolocation) {
-      if (petCity) fetchByCity(petCity);
-      else setError('Geolocation not supported. Add your city to your pet profile.');
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocationGranted(true);
-        fetchSpots(pos.coords.latitude, pos.coords.longitude);
-      },
-      () => {
-        if (petCity) fetchByCity(petCity);
-        else setError('Location access denied. Add your city to your pet profile to find nearby spots.');
-      }
-    );
-  };
-
-  const hasFetched = places.length > 0 || error;
+  const resetToHome = () => { setSearchInput(""); setActiveCity(homeCity); loadSpots(homeCity); };
+  const isHomeCity = activeCity === homeCity;
 
   return (
     <div data-testid="pet-friendly-spots">
-      {/* Section header */}
-      <div style={{ marginBottom: 16 }}>
-        <h2 style={{ fontSize: 20, fontWeight: 800, color: '#1A0A00', marginBottom: 4 }}>Dine Out with {petName}</h2>
-        <p style={{ fontSize: 13, color: '#888' }}>Pet-friendly restaurants near you, curated by Mira</p>
-      </div>
+      <style>{`@keyframes shimmer { from{background-position:200% 0} to{background-position:-200% 0} } .spots-grid{display:grid;gap:14px;grid-template-columns:1fr} @media(min-width:640px){.spots-grid{grid-template-columns:repeat(2,1fr)}} @media(min-width:1024px){.spots-grid{grid-template-columns:repeat(3,1fr)}}`}</style>
 
-      {/* Not fetched yet — CTA */}
-      {!hasFetched && !loading && (
-        <div style={{
-          background: 'linear-gradient(135deg, #3d1200 0%, #7a2800 50%, #c44400 100%)',
-          borderRadius: 20, padding: '32px 24px',
-          textAlign: 'center', marginBottom: 20,
-        }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>🗺️</div>
-          <p style={{ fontSize: 17, fontWeight: 800, color: '#fff', marginBottom: 8 }}>
-            Find pet-friendly restaurants near you
-          </p>
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', marginBottom: 20 }}>
-            Mira will find spots where {petName} is welcome
-          </p>
-          <button
-            onClick={requestLocation}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              background: '#FFFFFF', color: '#C44400',
-              border: 'none', borderRadius: 20, padding: '12px 24px',
-              fontSize: 14, fontWeight: 700, cursor: 'pointer',
-            }}
-            data-testid="find-spots-btn"
-          >
-            <Navigation size={15} />
-            Find spots near me
-          </button>
-          {petCity && (
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 10 }}>
-              Or we'll use {petName}'s city: {petCity}
-            </p>
+      {/* Search bar */}
+      <form onSubmit={handleSearch} style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+        <div style={{ flex: 1, minWidth: 200, display: "flex", alignItems: "center", background: "#fff", border: "1.5px solid #F0E8E0", borderRadius: 20, padding: "0 14px", gap: 8, position: "relative" }}>
+          <span style={{ color: "#C44400", fontSize: 14 }}>📍</span>
+          <input ref={inputRef} value={searchInput}
+            onChange={e => { setSearchInput(e.target.value); setShowSuggestions(true); }}
+            onFocus={() => setShowSuggestions(true)}
+            onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+            placeholder={`Search a city… (${homeCity})`}
+            style={{ flex: 1, border: "none", outline: "none", fontSize: 13, color: "#1A0A00", background: "transparent", padding: "10px 0" }}
+            data-testid="city-search-input"
+          />
+          {searchInput && <button onClick={() => setSearchInput("")} style={{ background: "none", border: "none", color: "#BBB", fontSize: 16, cursor: "pointer", lineHeight: 1 }}>✕</button>}
+          {showSuggestions && suggestions.length > 0 && (
+            <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "#fff", border: "1px solid #F0E8E0", borderRadius: 12, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", zIndex: 50, marginTop: 4 }}>
+              {suggestions.map(city => (
+                <div key={city} onClick={() => { setSearchInput(city); setShowSuggestions(false); loadSpots(city); }}
+                  style={{ padding: "10px 16px", fontSize: 13, color: "#1A0A00", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}
+                  onMouseEnter={e => e.currentTarget.style.background = "#FFF8F4"}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                  📍 {city}
+                </div>
+              ))}
+            </div>
           )}
         </div>
-      )}
+        <button type="submit" style={{ background: "linear-gradient(135deg,#FF8C42,#C44400)", color: "#fff", border: "none", borderRadius: 20, padding: "0 18px", fontSize: 13, fontWeight: 700, cursor: "pointer" }} data-testid="search-spots-btn">Search</button>
+        <button type="button" onClick={async () => {
+          setLoading(true);
+          const pos = await getCurrentPosition();
+          if (pos) { setUserLocation(pos); loadSpots(activeCity, pos); }
+          else { setError("Location access denied."); setLoading(false); }
+        }} style={{ background: "#FFF8F0", border: "1.5px solid #F0E8E0", borderRadius: 20, padding: "0 14px", fontSize: 12, color: "#C44400", cursor: "pointer", fontWeight: 600 }}>
+          ◎ Near me
+        </button>
+      </form>
 
-      {/* Loading */}
-      {loading && (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '48px 0', gap: 12 }}>
-          <Loader2 size={28} color="#C44400" className="animate-spin" />
-          <p style={{ fontSize: 14, color: '#888' }}>Finding pet-friendly spots near you…</p>
+      {/* Context bar */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12, flexWrap: "wrap", gap: 8 }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#FFF3E0", border: "1px solid #FFCC99", borderRadius: 20, padding: "5px 12px", fontSize: 11, fontWeight: 600, color: "#C44400" }}>
+          📍 {isHomeCity ? `Pet-friendly spots near ${petName} in ${activeCity}` : `Pet-friendly spots in ${activeCity}`}
+          {!isHomeCity && <button onClick={resetToHome} style={{ background: "none", border: "none", color: "#888", fontSize: 10, cursor: "pointer", padding: 0, marginLeft: 4 }}>← Back</button>}
+        </div>
+        <a href={`https://www.google.com/maps/search/pet+friendly+restaurant+${encodeURIComponent(activeCity)}`} target="_blank" rel="noopener noreferrer"
+          style={{ background: "#fff", border: "1px solid #FFCC99", borderRadius: 20, padding: "5px 12px", fontSize: 11, fontWeight: 600, color: "#C44400", textDecoration: "none" }}>
+          🗺️ View on map
+        </a>
+      </div>
+
+      {/* Popular cities */}
+      {isHomeCity && !loading && (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 10, color: "#AAA", fontWeight: 600 }}>Explore:</span>
+          {POPULAR_CITIES.filter(c => c !== homeCity).slice(0, 6).map(city => (
+            <button key={city} onClick={() => { setSearchInput(city); loadSpots(city); }}
+              style={{ background: "#FFF8F4", border: "1px solid #F0E8E0", borderRadius: 20, padding: "3px 12px", fontSize: 11, color: "#C44400", cursor: "pointer", fontWeight: 500 }}>
+              {city}
+            </button>
+          ))}
         </div>
       )}
 
-      {/* Error */}
-      {error && !loading && (
-        <div style={{ background: '#FEF2F2', border: '1.5px solid #FECACA', borderRadius: 14, padding: '16px', marginBottom: 16, textAlign: 'center' }}>
-          <p style={{ fontSize: 14, color: '#991B1B', marginBottom: 10 }}>{error}</p>
-          <button onClick={requestLocation} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#C44400', color: '#fff', border: 'none', borderRadius: 20, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-            <RefreshCw size={13} /> Try again
+      {/* Grid */}
+      {loading ? (
+        <div className="spots-grid">{[1,2,3,4,5,6].map(i => <SpotSkeleton key={i} />)}</div>
+      ) : error ? (
+        <div style={{ textAlign: "center", padding: "32px 16px", background: "#FFF8F0", borderRadius: 14 }}>
+          <div style={{ fontSize: 32, marginBottom: 8 }}>🗺️</div>
+          <p style={{ color: "#888", fontSize: 13, marginBottom: 12 }}>{error}</p>
+          <button onClick={resetToHome} style={{ background: "linear-gradient(135deg,#FF8C42,#C44400)", color: "#fff", border: "none", borderRadius: 20, padding: "8px 20px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Back to {homeCity}</button>
+        </div>
+      ) : spots.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "32px 16px", background: "#FFF8F0", borderRadius: 14 }}>
+          <div style={{ fontSize: 32, marginBottom: 8 }}>🐾</div>
+          <p style={{ fontWeight: 700, color: "#1A0A00", marginBottom: 4 }}>No spots found in {activeCity} yet.</p>
+          <p style={{ color: "#888", fontSize: 12, marginBottom: 12 }}>Our Concierge can still find the right place for {petName}.</p>
+          <button onClick={() => onReserve && onReserve(null, activeCity)}
+            style={{ background: "linear-gradient(135deg,#FF8C42,#C44400)", color: "#fff", border: "none", borderRadius: 20, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+            Ask Concierge to find a spot
           </button>
         </div>
+      ) : (
+        <div className="spots-grid">
+          {spots.map((spot, i) => <SpotCard key={spot.placeId || i} spot={spot} onReserve={s => onReserve && onReserve(s, activeCity)} />)}
+        </div>
       )}
 
-      {/* Results */}
-      {places.length > 0 && !loading && (
-        <>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <p style={{ fontSize: 13, color: '#888' }}>{places.length} spots found</p>
-            <button onClick={requestLocation} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', color: '#C44400', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-              <RefreshCw size={13} /> Refresh
-            </button>
-          </div>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
-            gap: 12,
-          }}>
-            {places.map((place, i) => (
-              <SpotCard key={place.place_id || i} place={place} petName={petName} idx={i} />
-            ))}
-          </div>
-        </>
-      )}
-
-      {places.length === 0 && hasFetched && !loading && !error && (
-        <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-          <p style={{ fontSize: 28, marginBottom: 8 }}>🗺️</p>
-          <p style={{ fontSize: 15, fontWeight: 700, color: '#1A0A00', marginBottom: 6 }}>No spots found nearby</p>
-          <p style={{ fontSize: 13, color: '#888' }}>Try expanding the search radius or check back later.</p>
+      {!isHomeCity && !loading && spots.length > 0 && (
+        <div style={{ marginTop: 16, background: "#FFF3E0", border: "1px solid #FFCC99", borderRadius: 12, padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+          <p style={{ margin: 0, fontSize: 12, color: "#7A3800" }}>
+            Planning a trip to <strong>{activeCity}</strong> with {petName}? Your Concierge can plan the whole dining experience.
+          </p>
+          <button onClick={() => onReserve && onReserve(null, activeCity)}
+            style={{ background: "linear-gradient(135deg,#FF8C42,#C44400)", color: "#fff", border: "none", borderRadius: 20, padding: "7px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>
+            Plan {activeCity} with Concierge →
+          </button>
         </div>
       )}
     </div>
   );
-};
-
-export default PetFriendlySpots;
+}

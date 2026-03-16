@@ -300,6 +300,99 @@ class RestaurantPartialUpdate(BaseModel):
 
 # ==================== PUBLIC ROUTES ====================
 
+@dine_router.get("/places/pet-friendly")
+async def get_pet_friendly_places(
+    city: str = "Bengaluru",
+    breed: str = "",
+    lat: Optional[float] = None,
+    lng: Optional[float] = None,
+):
+    """
+    Fetch pet-friendly restaurant spots via Google Places API.
+    Returns: { city, spots: [{ placeId, name, address, distance, rating, photoUrl, openNow, tag, mapsUrl }] }
+    """
+    import httpx
+    from math import radians, sin, cos, sqrt, atan2
+
+    GOOGLE_PLACES_API_KEY = os.getenv("GOOGLE_PLACES_API_KEY") or os.getenv("GOOGLE_MAPS_API_KEY")
+    if not GOOGLE_PLACES_API_KEY:
+        # Return mock spots gracefully if API key not set
+        return {"city": city, "spots": [
+            {"placeId": "mock-1", "name": "The Doggy Café", "address": f"Near {city}", "rating": 4.7, "tag": "Pet-friendly", "mapsUrl": None, "openNow": None, "photoUrl": None, "distance": None},
+            {"placeId": "mock-2", "name": "Paws & Brew", "address": f"Near {city}", "rating": 4.5, "tag": "Outdoor seating", "mapsUrl": None, "openNow": None, "photoUrl": None, "distance": None},
+        ]}
+
+    def tag_for_breed(breed_name: str, place: dict) -> str:
+        place_name = place.get("name", "").lower()
+        breed_lower = breed_name.lower()
+        if any(b in breed_lower for b in ["indie", "pariah", "indian"]):
+            return "Great for Indies"
+        elif any(b in breed_lower for b in ["labrador", "golden", "retriever"]):
+            return "Spacious — good for large dogs"
+        elif any(b in breed_lower for b in ["pug", "bulldog"]):
+            return "Air-conditioned seating"
+        elif any(b in breed_lower for b in ["poodle", "maltese", "shih tzu"]):
+            return "Styled seating"
+        if any(k in place_name for k in ["outdoor", "garden", "terrace", "park"]):
+            return "Outdoor seating"
+        if any(k in place_name for k in ["cafe", "coffee", "bakery"]):
+            return "Café atmosphere"
+        return "Dog-friendly"
+
+    def haversine(lat1, lng1, lat2, lng2) -> str:
+        R = 6371
+        dlat = radians(lat2 - lat1)
+        dlng = radians(lng2 - lng1)
+        a = sin(dlat/2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlng/2)**2
+        return f"{R * 2 * atan2(sqrt(a), sqrt(1 - a)):.1f}km"
+
+    try:
+        query = f"pet friendly dog café restaurant in {city}"
+        params = {"query": query, "key": GOOGLE_PLACES_API_KEY}
+        if lat and lng:
+            params["location"] = f"{lat},{lng}"
+            params["radius"] = "10000"
+
+        async with httpx.AsyncClient(timeout=12.0) as client:
+            resp = await client.get(
+                "https://maps.googleapis.com/maps/api/place/textsearch/json",
+                params=params,
+            )
+            data = resp.json()
+
+        spots = []
+        for place in data.get("results", [])[:8]:
+            photo_url = None
+            if place.get("photos"):
+                ref = place["photos"][0].get("photo_reference")
+                if ref:
+                    photo_url = (
+                        f"https://maps.googleapis.com/maps/api/place/photo"
+                        f"?maxwidth=400&photoreference={ref}&key={GOOGLE_PLACES_API_KEY}"
+                    )
+            distance = None
+            if lat and lng and place.get("geometry", {}).get("location"):
+                ploc = place["geometry"]["location"]
+                distance = haversine(lat, lng, ploc["lat"], ploc["lng"])
+
+            spots.append({
+                "placeId": place.get("place_id"),
+                "name": place.get("name"),
+                "address": place.get("formatted_address", ""),
+                "distance": distance,
+                "rating": place.get("rating"),
+                "photoUrl": photo_url,
+                "openNow": place.get("opening_hours", {}).get("open_now"),
+                "tag": tag_for_breed(breed, place),
+                "mapsUrl": f"https://www.google.com/maps/place/?q=place_id:{place.get('place_id')}",
+            })
+        return {"city": city, "spots": spots}
+
+    except Exception as e:
+        logger.error(f"get_pet_friendly_places error: {e}")
+        raise HTTPException(status_code=500, detail=f"Could not fetch places: {str(e)}")
+
+
 @dine_router.get("/dine/restaurants")
 async def get_restaurants(
     city: Optional[str] = None,

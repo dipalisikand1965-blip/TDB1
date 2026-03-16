@@ -677,6 +677,110 @@ async def stop_generation():
     return {"message": "Generation stopped", "final_status": generation_status}
 
 
+@ai_image_router.post("/generate-pillar-images")
+async def start_pillar_image_generation(
+    background_tasks: BackgroundTasks,
+    pillar: str = "dine",
+    force_regenerate: bool = False,
+    limit: int = 100,
+):
+    """
+    Generate AI photo-realistic images for products in products_master for a specific pillar.
+    Only processes products WITHOUT a cloudinary image (unless force_regenerate=True).
+    Saves to Cloudinary and updates products_master.
+    """
+    global generation_status
+
+    if generation_status["running"]:
+        raise HTTPException(status_code=400, detail="Generation already in progress")
+
+    generation_status = {
+        "running": True,
+        "type": f"pillar-products-{pillar}",
+        "pillar": pillar,
+        "total": 0,
+        "completed": 0,
+        "failed": 0,
+        "current_item": None,
+        "started_at": datetime.now(timezone.utc).isoformat(),
+        "last_update": None,
+        "results": [],
+    }
+
+    async def run():
+        global generation_status
+        if db is None:
+            generation_status["running"] = False
+            return
+
+        try:
+            query: dict = {"pillar": pillar}
+            if not force_regenerate:
+                # Only products that do NOT have a cloudinary URL already
+                query["$or"] = [
+                    {"image_url": {"$exists": False}},
+                    {"image_url": None},
+                    {"image_url": ""},
+                    {"image_url": {"$not": {"$regex": "res.cloudinary.com"}}},
+                ]
+
+            products = await db.products_master.find(query, {"_id": 0}).limit(limit).to_list(length=limit)
+            generation_status["total"] = len(products)
+            logger.info(f"Generating images for {len(products)} {pillar} products in products_master")
+
+            for idx, product in enumerate(products):
+                if not generation_status["running"]:
+                    break
+
+                pid = product.get("id")
+                pname = product.get("name", "Unknown")
+                generation_status["current_item"] = pname
+                generation_status["completed"] = idx
+                generation_status["last_update"] = datetime.now(timezone.utc).isoformat()
+
+                try:
+                    prompt = get_product_image_prompt(product)
+                    cloudinary_url = await generate_ai_image(prompt)
+
+                    if cloudinary_url:
+                        now = datetime.now(timezone.utc).isoformat()
+                        await db.products_master.update_one(
+                            {"id": pid},
+                            {"$set": {
+                                "image_url": cloudinary_url,
+                                "image": cloudinary_url,
+                                "images": [cloudinary_url],
+                                "ai_generated_image": True,
+                                "image_updated_at": now,
+                                "updated_at": now,
+                            }}
+                        )
+                        generation_status["results"].append({"id": pid, "name": pname, "status": "success", "url": cloudinary_url})
+                        logger.info(f"[PillarImages] Generated: {pname}")
+                    else:
+                        generation_status["failed"] += 1
+                except Exception as e:
+                    logger.error(f"[PillarImages] Failed {pid}: {e}")
+                    generation_status["failed"] += 1
+
+                await asyncio.sleep(3)  # Rate limit guard
+
+            generation_status["completed"] = len(products)
+        except Exception as e:
+            logger.error(f"[PillarImages] Batch error: {e}")
+        finally:
+            generation_status["running"] = False
+
+    background_tasks.add_task(run)
+    return {
+        "message": f"Pillar image generation started for '{pillar}'",
+        "pillar": pillar,
+        "force_regenerate": force_regenerate,
+        "limit": limit,
+        "status": "running",
+    }
+
+
 @ai_image_router.get("/stats")
 async def get_image_stats():
     """Get comprehensive image statistics by pillar"""

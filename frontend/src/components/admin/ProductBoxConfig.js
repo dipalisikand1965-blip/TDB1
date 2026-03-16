@@ -218,24 +218,37 @@ export const DOG_BREEDS = [
   'Samoyed', 'Akita', 'Bernese Mountain Dog', 'Cavalier King Charles'
 ];
 
-// Main Categories
+// Main Categories — pillar-scoped
 export const MAIN_CATEGORIES = [
+  // Celebrate
   { id: 'cakes', name: 'Cakes', pillar: 'celebrate' },
   { id: 'breed-cakes', name: 'Breed Cakes', pillar: 'celebrate' },
   { id: 'pupcakes', name: 'Pupcakes', pillar: 'celebrate' },
+  { id: 'hampers', name: 'Gift Hampers', pillar: 'celebrate' },
+  // Dine — mirrors DIM_ID_TO_CATEGORY in DineSoulPage
+  { id: 'Daily Meals', name: 'Daily Meals', pillar: 'dine' },
+  { id: 'Treats & Rewards', name: 'Treats & Rewards', pillar: 'dine' },
+  { id: 'Supplements', name: 'Supplements', pillar: 'dine' },
+  { id: 'Frozen & Fresh', name: 'Frozen & Fresh', pillar: 'dine' },
+  { id: 'Homemade & Recipes', name: 'Homemade & Recipes', pillar: 'dine' },
+  { id: 'bowls', name: 'Bowls & Accessories', pillar: 'dine' },
+  { id: 'food', name: 'Food (General)', pillar: 'dine' },
+  // Shop
   { id: 'treats', name: 'Treats', pillar: 'shop' },
   { id: 'toys', name: 'Toys', pillar: 'shop' },
   { id: 'accessories', name: 'Accessories', pillar: 'shop' },
   { id: 'apparel', name: 'Apparel', pillar: 'shop' },
+  // Care
   { id: 'grooming', name: 'Grooming', pillar: 'care' },
-  { id: 'food', name: 'Food', pillar: 'dine' },
-  { id: 'supplements', name: 'Supplements', pillar: 'fit' },
-  { id: 'training', name: 'Training', pillar: 'learn' },
-  { id: 'travel-gear', name: 'Travel Gear', pillar: 'travel' },
-  { id: 'beds', name: 'Beds', pillar: 'stay' },
-  { id: 'bowls', name: 'Bowls', pillar: 'dine' },
   { id: 'healthcare', name: 'Healthcare', pillar: 'care' },
-  { id: 'hampers', name: 'Gift Hampers', pillar: 'celebrate' }
+  // Fit
+  { id: 'supplements', name: 'Supplements', pillar: 'fit' },
+  // Learn
+  { id: 'training', name: 'Training', pillar: 'learn' },
+  // Travel
+  { id: 'travel-gear', name: 'Travel Gear', pillar: 'travel' },
+  // Stay
+  { id: 'beds', name: 'Beds', pillar: 'stay' },
 ];
 
 // Default new product template
