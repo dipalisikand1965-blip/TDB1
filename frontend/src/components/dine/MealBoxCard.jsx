@@ -100,7 +100,7 @@ const Modal = ({ onClose, children }) => createPortal(
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 flex items-end sm:items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.80)', backdropFilter: 'blur(8px)', zIndex: 9998 }}
+      style={{ background: 'rgba(0,0,0,0.80)', backdropFilter: 'blur(8px)', zIndex: 10002 }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       <motion.div
@@ -202,6 +202,8 @@ export default function MealBoxCard() {
 
   // Open modal and init slots
   const openModal = () => {
+    // If products haven't loaded yet, trigger a load
+    if (!slotsData && !loadingProducts) { loadProducts(); }
     setSlots(activeSlots);
     setScreen(1);
     setSwapSlot(null);
@@ -401,7 +403,7 @@ export default function MealBoxCard() {
             {/* Screen 2 — Review slots */}
             {screen === 2 && !swapSlot && (
               <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                <ScreenHeader title="Mira's Curated Plan" subtitle={loadingProducts ? `Building plan for ${petName}…` : `${slots.length} slots for ${petName}`}
+                <ScreenHeader title="Mira's Curated Plan" subtitle={loadingProducts || (slots.length === 0 && slotsData === null) ? `Building plan for ${petName}…` : `${slots.length} slot${slots.length !== 1 ? 's' : ''} for ${petName}`}
                   step={1} totalSteps={3} onClose={closeModal} onBack={() => setScreen(1)} />
                 <div className="px-5 pb-5 space-y-2">
                   {loadingProducts ? (

@@ -6,7 +6,7 @@ Iteration 126 - Follow-up to iteration_125.
 
 import asyncio
 
-BASE_URL = "https://mojo-personalized.preview.emergentagent.com"
+BASE_URL = "https://nutrition-engine-ui.preview.emergentagent.com"
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 

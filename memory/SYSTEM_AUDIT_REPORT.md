@@ -423,7 +423,7 @@ const handleServiceComplete = async (ticket) => {
 | Admin URL | `/admin` |
 | Admin Username | `aditya` |
 | Admin Password | `lola4304` |
-| Preview URL | `https://mojo-personalized.preview.emergentagent.com` |
+| Preview URL | `https://nutrition-engine-ui.preview.emergentagent.com` |
 
 ---
 

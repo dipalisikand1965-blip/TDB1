@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://mojo-personalized.preview.emergentagent.com
+https://nutrition-engine-ui.preview.emergentagent.com
 ```
 
 ---

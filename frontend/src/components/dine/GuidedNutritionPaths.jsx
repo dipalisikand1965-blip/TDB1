@@ -11,6 +11,7 @@
  */
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { getApiUrl } from "../../utils/api";
 
@@ -503,13 +504,13 @@ function StepPanel({ title, desc, accentColor, children }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// MODAL SHELL
+// MODAL SHELL — uses createPortal to escape stacking contexts
 // ─────────────────────────────────────────────────────────────
 function ModalShell({ onClose, children, noPadding }) {
-  return (
+  return createPortal(
     <div
       style={{
-        position:"fixed", inset:0, zIndex:9998,
+        position:"fixed", inset:0, zIndex:10002,
         background:"rgba(0,0,0,0.50)",
         display:"flex", alignItems:"center",
         justifyContent:"center", padding:20,
@@ -531,7 +532,8 @@ function ModalShell({ onClose, children, noPadding }) {
       >
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -838,6 +840,21 @@ export default function GuidedNutritionPaths({ pet }) {
       </div>
 
       {/* 3-column grid — matches guided-paths-grid CSS */}
+      <style>{`
+        .guided-paths-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        @media (max-width: 767px) {
+          .guided-paths-grid {
+            grid-template-columns: repeat(1, 1fr);
+          }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .guided-paths-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+      `}</style>
       <div style={{ display: "grid", gap: 16 }} className="guided-paths-grid">
         {allPaths.map(path => (
           <NutritionPathCard

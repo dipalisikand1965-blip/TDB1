@@ -8,6 +8,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import { getApiUrl } from '../../utils/api';
@@ -86,18 +87,18 @@ const DineConciergeModal = ({ isOpen, onClose, serviceType, petName, petId }) =>
 
   const displayName = petName || 'your pet';
 
-  return (
+  return createPortal(
     <>
       {/* Overlay */}
       <div
         onClick={handleClose}
         style={{
           position: 'fixed', inset: 0,
-          background: 'rgba(0,0,0,0.50)', zIndex: 9998,
+          background: 'rgba(0,0,0,0.50)', zIndex: 10002,
           display: 'flex',
-          alignItems: isMobile ? 'flex-start' : 'center',
+          alignItems: isMobile ? 'flex-end' : 'center',
           justifyContent: 'center',
-          padding: isMobile ? '88px 0 0' : '16px',
+          padding: isMobile ? '0' : '16px',
           overflowY: isMobile ? 'auto' : 'visible',
         }}
         data-testid="dine-intake-modal-overlay"
@@ -108,10 +109,11 @@ const DineConciergeModal = ({ isOpen, onClose, serviceType, petName, petId }) =>
           style={{
             background: '#FFFFFF',
             borderRadius: isMobile ? '20px 20px 0 0' : 20,
-            padding: isMobile ? '24px 20px' : 32,
-            maxWidth: 480, width: '100%',
-            maxHeight: isMobile ? 'none' : '90vh',
-            overflowY: 'auto', position: 'relative', zIndex: 9999,
+            padding: isMobile ? '24px 20px 40px' : 32,
+            maxWidth: isMobile ? '100%' : 480,
+            width: '100%',
+            maxHeight: isMobile ? '92vh' : '90vh',
+            overflowY: 'auto', position: 'relative',
           }}
           data-testid="dine-intake-modal"
         >
@@ -283,7 +285,8 @@ const DineConciergeModal = ({ isOpen, onClose, serviceType, petName, petId }) =>
           )}
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 };
 
