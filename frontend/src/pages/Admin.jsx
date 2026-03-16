@@ -3305,7 +3305,7 @@ const Admin = () => {
             ))}
             
             {/* Master Controls */}
-            <div className="ml-4 flex gap-2">
+            <div className="ml-4 flex gap-2 flex-wrap mt-1">
               <Button
                 variant="outline"
                 size="sm"

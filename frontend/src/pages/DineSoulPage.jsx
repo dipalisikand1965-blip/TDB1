@@ -836,6 +836,21 @@ function TummyProfile({ pet, token }) {
 }
 
 // ─── Mira's Picks — AI-scored mix of products + services ─────────────────────
+// Helper: returns a valid image URL (skips static.prod-images 403 URLs)
+function resolvePickImage(pick) {
+  const candidates = [
+    pick.image_url,
+    pick.image,
+    pick.media?.primary_image,
+    ...(pick.images || []),
+  ];
+  for (const url of candidates) {
+    if (!url) continue;
+    if (url.includes('static.prod-images.emergentagent.com')) continue; // 403 forbidden
+    if (url.startsWith('http')) return url;
+  }
+  return null;
+}
 function MiraPicksSection({ pet }) {
   const [picks, setPicks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -886,7 +901,7 @@ function MiraPicksSection({ pet }) {
         <style>{`.mira-picks-scroll::-webkit-scrollbar { height: 4px; } .mira-picks-scroll::-webkit-scrollbar-thumb { background: #F59E0B50; border-radius: 4px; }`}</style>
         {picks.map((pick, i) => {
           const isService = pick.entity_type === 'service';
-          const img = pick.image_url || pick.image || pick.media?.primary_image || null;
+          const img = resolvePickImage(pick);
           const score = pick.mira_score || 0;
           const scoreColor = score >= 80 ? '#16A34A' : score >= 70 ? '#F59E0B' : '#6B7280';
           return (
@@ -908,8 +923,8 @@ function MiraPicksSection({ pet }) {
                 {img ? (
                   <img src={img} alt={pick.name || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { e.target.style.display = 'none'; }} />
                 ) : (
-                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36 }}>
-                    {isService ? '✨' : '🐾'}
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isService ? 'linear-gradient(135deg,#312E81,#4C1D95)' : 'linear-gradient(135deg,#78350F,#B45309)', color: '#fff', fontSize: 12, fontWeight: 700, padding: 8, textAlign: 'center' }}>
+                    {(pick.name || pick.entity_name || '').slice(0,18) || (isService ? 'SERVICE' : 'PRODUCT')}
                   </div>
                 )}
                 {/* Entity type badge */}
