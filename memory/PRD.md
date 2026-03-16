@@ -11,6 +11,27 @@ Violating these rules will break the admin panel and data consistency.
 
 ---
 
+## ✅ SESSION 53 — Dine Page: Concierge Box Reorder + ConciergeIntakeModal (Mar 16, 2026)
+
+### What Was Built:
+1. **Moved dark brown CTA ("Want us to plan the whole outing?") to the TOP** of `DiningConcierge` component — was below 4 service cards, now above them per user spec
+2. **Created `ConciergeIntakeModal.jsx`** (`/app/frontend/src/components/dine/`) — 3-question intake modal (occasion, date, notes) that opens from both "Talk to your Concierge" CTA and each service card CTA link
+3. **Created `POST /api/concierge/dining-intake`** backend endpoint — follows the unified service flow: intake record → admin notification → service desk ticket → channel intake. Returns `{ success, intakeId }`
+4. **Removed duplicate `DiningConcierge`** that was erroneously rendered outside the eat tab (was showing on both Eat & Dine Out tabs)
+5. **Removed dead `MiraMealPick` function** (old "dud" meal pick component, lines 926-957)
+
+### Final Eat-Tab Layout (confirmed by screenshot):
+> Hero → CategoryStrip → TabBar → "How would Mojo love to eat?" → TummyProfile → Eat & Nourish (dimensions) → **MealBoxCard** → **DiningConcierge** (brown CTA on top, service cards below) → GuidedNutritionPaths
+
+### Key File Changes:
+- `frontend/src/pages/DineSoulPage.jsx` — Reordered DiningConcierge, added modal state, removed MiraMealPick
+- `frontend/src/components/dine/ConciergeIntakeModal.jsx` — NEW: 3-question modal with real API call
+- `backend/concierge_routes.py` — Added `DiningIntakeRequest` model + `POST /api/concierge/dining-intake`
+
+### Testing: Visual ✓ API ✓ (intakeId: DINT-20260316-7B591F returned from curl test)
+
+---
+
 ## ✅ SESSION 52 — Mira Meal Box + AI Image Gen Auth Fix (Mar 16, 2026)
 
 ### Features Built:
