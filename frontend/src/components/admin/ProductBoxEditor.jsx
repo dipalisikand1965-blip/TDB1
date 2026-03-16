@@ -814,16 +814,21 @@ const ProductBoxEditor = ({
 
                 {/* Category — filtered by selected primary pillar */}
                 <div>
-                  <Label>Category *</Label>
+                  <Label>Primary Category *</Label>
                   <select
                     value={getValue('commerce_ops.category', '') || getValue('category', '')}
                     onChange={(e) => {
                       updateField('commerce_ops.category', e.target.value);
                       updateField('category', e.target.value);
+                      // Also add to categories array if not already present
+                      const currentCats = getValue('categories', []) || [];
+                      if (e.target.value && !currentCats.includes(e.target.value)) {
+                        updateField('categories', [e.target.value, ...currentCats.filter(c => c !== e.target.value)]);
+                      }
                     }}
                     className="w-full h-10 px-3 rounded-md border border-gray-200"
                   >
-                    <option value="">— Select Category —</option>
+                    <option value="">— Select Primary Category —</option>
                     {MAIN_CATEGORIES
                       .filter(c => !c.pillar || c.pillar === (getValue('pillars_occasions.pillar.primary_pillar', 'shop') || getValue('primary_pillar', 'shop')))
                       .map(c => (
@@ -832,6 +837,49 @@ const ProductBoxEditor = ({
                     }
                   </select>
                 </div>
+
+                {/* Multi-Category — cross-category applicability */}
+                {(() => {
+                  const currentPillar = getValue('pillars_occasions.pillar.primary_pillar', 'shop') || getValue('primary_pillar', 'shop');
+                  const pillarCats = MAIN_CATEGORIES.filter(c => !c.pillar || c.pillar === currentPillar);
+                  if (pillarCats.length < 2) return null;
+                  return (
+                    <div>
+                      <Label className="mb-2 block">Additional Categories (cross-category applicability)</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {pillarCats.map(c => (
+                          <label
+                            key={c.id}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full cursor-pointer border-2 text-xs transition-all ${
+                              (getValue('categories', []) || []).includes(c.id)
+                                ? 'border-amber-500 bg-amber-50 text-amber-800'
+                                : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              className="sr-only"
+                              checked={(getValue('categories', []) || []).includes(c.id)}
+                              onChange={(e) => {
+                                const current = getValue('categories', []) || [];
+                                const newVal = e.target.checked
+                                  ? [...current.filter(x => x !== c.id), c.id]
+                                  : current.filter(x => x !== c.id);
+                                updateField('categories', newVal);
+                                // Sync primary category if categories[0] changes
+                                if (newVal.length > 0 && !getValue('category', '')) {
+                                  updateField('category', newVal[0]);
+                                  updateField('commerce_ops.category', newVal[0]);
+                                }
+                              }}
+                            />
+                            {c.name}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Sub-Category */}
                 <div>
