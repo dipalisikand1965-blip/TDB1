@@ -1569,6 +1569,17 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
               </div>
             )}
 
+            {/* Why Mira suggests this — shown when mira_hint is set (e.g. from DimExpanded intelligence) */}
+            {product.mira_hint && (
+              <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3 mb-3">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 mt-0.5">✦</div>
+                <div>
+                  <p className="text-xs font-bold text-amber-900 mb-0.5">Why Mira suggests this</p>
+                  <p className="text-xs text-amber-800">{product.mira_hint}</p>
+                </div>
+              </div>
+            )}
+
             {/* Quiet grey hint - pillar specific */}
             {miraContext && (
               <p className="text-[10px] text-gray-400 text-center py-2">
