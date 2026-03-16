@@ -839,6 +839,43 @@ async def create_product(product: UnifiedProduct, admin_user: str = "system"):
     return {"message": "Product created", "product": product_dict}
 
 
+class BulkCategoryAssign(BaseModel):
+    product_ids: List[str]
+    category: str
+    sub_category: Optional[str] = None
+
+# ── Bulk Category Assign — MUST be defined BEFORE /{product_id} routes ──────
+@product_box_router.put("/products/bulk-assign-category")
+async def bulk_assign_category(data: BulkCategoryAssign):
+    """Bulk assign category (and optionally sub_category) to multiple products"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    if not data.product_ids:
+        raise HTTPException(status_code=400, detail="No product IDs provided")
+    if not data.category:
+        raise HTTPException(status_code=400, detail="Category is required")
+
+    update_fields = {
+        "category": data.category,
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    if data.sub_category is not None:
+        update_fields["sub_category"] = data.sub_category
+
+    # Update in products_master (by both 'id' and 'shopify_id' fields)
+    result = await db.products_master.update_many(
+        {"$or": [{"id": {"$in": data.product_ids}}, {"shopify_id": {"$in": data.product_ids}}]},
+        {"$set": update_fields, "$addToSet": {"categories": data.category}}
+    )
+
+    return {
+        "updated": result.modified_count,
+        "matched": result.matched_count,
+        "category": data.category,
+        "product_ids_count": len(data.product_ids)
+    }
+
+
 @product_box_router.put("/products/{product_id}")
 async def update_product(product_id: str, updates: Dict[str, Any], admin_user: str = "system"):
     """Update a product - supports both regular and Soul Made products"""
@@ -1123,6 +1160,12 @@ async def assign_pillars_to_soul_made(product_id: str, pillars: List[str], admin
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+class BulkCategoryAssign(BaseModel):
+    product_ids: List[str]
+    category: str
+    sub_category: Optional[str] = None
 
 
 # ==================== SIZE/VARIANT PRICING ====================
