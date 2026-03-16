@@ -188,11 +188,11 @@ const ProductBoxEditor = ({
       return;
     }
     setGeneratingImage(true);
-    const token = localStorage.getItem('admin_token') || localStorage.getItem('token');
+    const adminAuth = localStorage.getItem('adminAuth');
     const xhr = new XMLHttpRequest();
     xhr.open('POST', `${API_URL}/api/admin/products/${product.id}/generate-image`);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    if (adminAuth) xhr.setRequestHeader('Authorization', `Basic ${adminAuth}`);
     xhr.onload = () => {
       setGeneratingImage(false);
       try {

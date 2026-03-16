@@ -16,6 +16,7 @@ import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
 import DineCategoryStrip from "../components/dine/DineCategoryStrip";
 import DineHero from "../components/dine/DineHero";
+import MealBoxCard from "../components/dine/MealBoxCard";
 import { API_URL } from "../utils/api";
 import SharedProductCard from "../components/ProductCard";
 
@@ -1250,6 +1251,11 @@ const DineSoulPage = () => {
         {activeTab === "eat" && (
           <>
             <TummyProfile pet={petData} token={token} />
+
+            {/* Mira Meal Box — personalized meal plan builder */}
+            <div style={{ marginBottom: 24 }}>
+              <MealBoxCard />
+            </div>
 
             <div style={{ fontSize: "clamp(1.125rem,2.5vw,1.375rem)", fontWeight: 800, color: "#1A0A00", marginBottom: 4, fontFamily: "Georgia,serif" }}>Eat &amp; Nourish</div>
             <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>5 dimensions, filtered to {petData.name}</div>

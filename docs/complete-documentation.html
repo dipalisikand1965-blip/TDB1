@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Doggy Company® — Complete Technical Documentation</title>
+<style>
+  :root {
+    --bg: #0d0a1a; --surface: #1a1228; --border: rgba(196,77,255,0.18);
+    --accent: #C44DFF; --orange: #FF8C42; --text: #e8e0f5; --muted: rgba(255,255,255,0.45);
+    --green: #4ade80; --red: #f87171; --yellow: #facc15;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+  h1 { font-size: 2.2rem; font-weight: 900; background: linear-gradient(135deg,#C44DFF,#FF8C42); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+  h2 { font-size: 1.35rem; font-weight: 800; color: #fff; margin: 36px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  h3 { font-size: 1.05rem; font-weight: 700; color: var(--accent); margin: 20px 0 8px; }
+  h4 { font-size: 0.9rem; font-weight: 700; color: var(--orange); margin: 14px 0 6px; }
+  p { color: var(--text); margin-bottom: 10px; font-size: 0.92rem; }
+  code { background: rgba(196,77,255,0.12); color: #C44DFF; padding: 1px 6px; border-radius: 4px; font-size: 0.85rem; font-family: 'Courier New', monospace; }
+  pre { background: #120e1e; border: 1px solid var(--border); border-radius: 10px; padding: 16px; overflow-x: auto; margin: 10px 0 16px; }
+  pre code { background: none; color: #a5f3fc; padding: 0; font-size: 0.82rem; }
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .badge-green { background: rgba(74,222,128,0.15); color: var(--green); }
+  .badge-red { background: rgba(248,113,113,0.15); color: var(--red); }
+  .badge-yellow { background: rgba(250,204,21,0.15); color: var(--yellow); }
+  .badge-purple { background: rgba(196,77,255,0.15); color: var(--accent); }
+  .badge-orange { background: rgba(255,140,66,0.15); color: var(--orange); }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 0.85rem; }
+  th { text-align: left; padding: 8px 12px; background: rgba(196,77,255,0.10); color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+  td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.06); vertical-align: top; }
+  tr:hover td { background: rgba(255,255,255,0.03); }
+  .section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 24px; }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .last-updated { font-size: 11px; color: var(--muted); margin-bottom: 32px; }
+  ul { padding-left: 20px; margin-bottom: 10px; }
+  li { font-size: 0.88rem; margin-bottom: 4px; color: rgba(255,255,255,0.75); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width:700px){ .grid2{grid-template-columns:1fr;} }
+  .highlight { background: rgba(196,77,255,0.08); border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 10px 0; }
+  .warn { background: rgba(255,140,66,0.08); border-left: 3px solid var(--orange); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 10px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>The Doggy Company® — Technical Documentation</h1>
+  <p class="last-updated">Last updated: March 16, 2026 &nbsp;|&nbsp; Version: Session 52</p>
+
+  <!-- ── Overview ── -->
+  <div class="section">
+    <h2>Overview</h2>
+    <p>The Doggy Company® is a Pet Life Operating System — a full-stack platform powering personalised pet experiences across multiple life pillars: <strong>Dine, Celebrate, Care, Fit, Stay, Travel</strong> and more.</p>
+    <div class="grid2">
+      <div>
+        <h4>Stack</h4>
+        <ul>
+          <li>Frontend: React 18 + Tailwind CSS + Shadcn UI</li>
+          <li>Backend: FastAPI (Python) on port 8001</li>
+          <li>Database: MongoDB via Motor (async)</li>
+          <li>AI: Claude Sonnet 4.6 via emergentintegrations</li>
+          <li>Images: Cloudinary + OpenAI GPT-Image-1</li>
+          <li>Auth: JWT (user) + HTTP Basic Auth (admin)</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Key Integrations</h4>
+        <ul>
+          <li>Claude Sonnet 4.6 — Mira Score Engine</li>
+          <li>OpenAI GPT-Image-1 — Product image generation</li>
+          <li>Cloudinary — Image hosting / CDN</li>
+          <li>Shopify — Product catalog sync</li>
+          <li>Google Places API — Restaurant data (planned)</li>
+          <li>Razorpay — Payments (partial)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Mira Intelligence Architecture ── -->
+  <div class="section">
+    <h2>Mira Intelligence Architecture</h2>
+    <p>Mira is the AI concierge powering personalisation across all pillars. The intelligence has two layers:</p>
+
+    <h3>1. Mira Score Engine (Claude Sonnet 4.6)</h3>
+    <p>Pre-computes relevance scores for every product × pet combination, stored in <code>mira_product_scores</code>.</p>
+    <table>
+      <thead><tr><th>Endpoint</th><th>Method</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>/api/mira/score-for-pet/{pet_id}</code></td><td>POST</td><td>Trigger scoring for one pet (background)</td></tr>
+        <tr><td><code>/api/mira/batch-score-all-pets</code></td><td>POST</td><td>Score ALL pets in DB (background)</td></tr>
+        <tr><td><code>/api/mira/score-status/{pet_id}</code></td><td>GET</td><td>Check scoring status + count</td></tr>
+        <tr><td><code>/api/mira/claude-picks/{pet_id}</code></td><td>GET</td><td>Top scored picks (filtered by pillar, min_score)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="highlight">
+      <strong>Auto-trigger:</strong> When a new pet opens "Mira's Picks" for the first time with no scores, the system automatically fires scoring in the background. By their second visit, full AI ranking is ready.
+    </div>
+
+    <h3>2. Client-Side Intelligence (getDineDims, buildMiraQuote)</h3>
+    <p>Real-time personalisation using pet's <code>doggy_soul_answers</code> and <code>health_data</code> — no pre-compute needed. Works for any pet instantly.</p>
+  </div>
+
+  <!-- ── Dine Pillar ── -->
+  <div class="section">
+    <h2>Dine Pillar — /dine</h2>
+    <p>The most mature pillar. Mira Intelligence is fully wired end-to-end.</p>
+
+    <h3>Components</h3>
+    <table>
+      <thead><tr><th>Component</th><th>Location</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>DineSoulPage.jsx</code></td><td>pages/</td><td>Main page. Pet selector, tabs (Eat & Nourish / Dine Out), dimension cards</td></tr>
+        <tr><td><code>DineHero.jsx</code></td><td>components/dine/</td><td>Pet photo, score, personality pills hero section</td></tr>
+        <tr><td><code>DineContentModal.jsx</code></td><td>components/dine/</td><td>Category modal (Mira's Picks, Daily Meals, Treats etc.) with subcategory tabs</td></tr>
+        <tr><td><code>MealBoxCard.jsx</code></td><td>components/dine/</td><td>NEW: 6-screen Mira Meal Box builder</td></tr>
+        <tr><td><code>TummyProfile.jsx</code></td><td>components/dine/</td><td>Pet tummy profile bar + modal (allergies, loves, health)</td></tr>
+        <tr><td><code>DineCategoryStrip.jsx</code></td><td>components/dine/</td><td>Horizontal scrollable category pills</td></tr>
+        <tr><td><code>PetFriendlySpots.jsx</code></td><td>components/dine/</td><td>Restaurant listings (currently MOCK_SPOTS)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Mira's Picks — Fetch Strategy</h3>
+    <div class="highlight">
+      Fetches 5 food categories in parallel (<code>Daily Meals</code>, <code>Treats &amp; Rewards</code>, <code>Supplements</code>, <code>Frozen &amp; Fresh</code>, <code>Homemade &amp; Recipes</code>) + services. Deduplicates by name. Enriches with Mira scores. NEVER uses a blanket <code>pillar=dine</code> fetch (returns breed merchandise first alphabetically).
+    </div>
+
+    <h3>The Mira Meal Box — NEW</h3>
+    <p>6-screen personalised meal plan builder. Always shows real DB products (ranked by Mira scores). Falls back to "Mira Imagines" items if DB is empty — and persists those to <code>products_master</code>.</p>
+
+    <h4>Backend Endpoints</h4>
+    <table>
+      <thead><tr><th>Endpoint</th><th>Method</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>/api/mira/meal-box-products</code></td><td>GET</td><td>Returns 5 curated slots. Params: pet_id, allergies, fav_protein, health_condition, pet_name</td></tr>
+        <tr><td><code>/api/concierge/meal-box</code></td><td>POST</td><td>Submits meal box request → creates ticket in service_desk_tickets → returns ticket_id</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Pet Data Mapping (Meal Box)</h4>
+    <table>
+      <thead><tr><th>Field Used</th><th>DB Path</th><th>Example (Mojo)</th></tr></thead>
+      <tbody>
+        <tr><td>Favourite protein</td><td><code>pet.doggy_soul_answers.favorite_protein</code></td><td>Salmon</td></tr>
+        <tr><td>Allergies</td><td><code>pet.health_data.allergies</code></td><td>["chicken"]</td></tr>
+        <tr><td>Health condition</td><td><code>pet.health_data.chronic_conditions[0]</code></td><td>lymphoma - on treatment</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Product Categories (64 real food/service products)</h3>
+    <table>
+      <thead><tr><th>Category</th><th>Count</th><th>Sub-categories</th></tr></thead>
+      <tbody>
+        <tr><td>Daily Meals</td><td>13</td><td>Morning Meal, Evening Meal, Portion Guide, Special Diets</td></tr>
+        <tr><td>Treats &amp; Rewards</td><td>12</td><td>Everyday Treats, Training Rewards, Birthday Treats, Allergy-Safe</td></tr>
+        <tr><td>Supplements</td><td>11</td><td>Joint &amp; Mobility, Digestion &amp; Gut, Skin &amp; Coat, Immunity &amp; Treatment</td></tr>
+        <tr><td>Frozen &amp; Fresh</td><td>5</td><td>Cold Pressed, Raw, Freeze Dried, Fresh Cooked</td></tr>
+        <tr><td>Homemade &amp; Recipes</td><td>7</td><td>Quick Recipes, Weekend, Special Occasion, Ingredient Guide</td></tr>
+        <tr><td>Services (dine)</td><td>5</td><td>Restaurant Discovery, Reservation, Etiquette, Advisory, Backup</td></tr>
+      </tbody>
+    </table>
+
+    <div class="warn">
+      <strong>Known limitation:</strong> Restaurant section (<code>Dine Out</code> tab) uses hardcoded <code>MOCK_SPOTS</code>. Google Places API integration is planned (P2).
+    </div>
+  </div>
+
+  <!-- ── Celebrate Pillar ── -->
+  <div class="section">
+    <h2>Celebrate Pillar — /celebrate</h2>
+    <p>Client-side Mira Intelligence. Uses breed name + <code>doggy_soul_answers</code> at render time. Works for any pet instantly — no pre-scoring needed.</p>
+    <h4>Key Components</h4>
+    <ul>
+      <li><code>CelebrateCategoryStrip.jsx</code> — Category pills including Mira's Picks, Soul Picks</li>
+      <li><code>CelebrateContentModal.jsx</code> — Category modal with breed-based filtering and Mira Imagines cards</li>
+      <li><code>BirthdayBoxBuilder.jsx</code> — Celebrate box builder (mirrors Meal Box architecture)</li>
+    </ul>
+    <p>More sub-pillars to be built on this foundation.</p>
+  </div>
+
+  <!-- ── Admin ── -->
+  <div class="section">
+    <h2>Admin Panel — /admin</h2>
+    <h3>Authentication</h3>
+    <div class="highlight">Admin uses <strong>HTTP Basic Auth</strong>: <code>Authorization: Basic base64(username:password)</code>. Stored in <code>localStorage.getItem('adminAuth')</code>. All admin XHR calls must use this header.</div>
+
+    <h3>AI Image Generation</h3>
+    <p>Fixed in Session 52 — was failing with "Invalid credentials". All 4 admin files now use <code>XMLHttpRequest</code> (to bypass Emergent platform fetch interceptor) with <code>Authorization: Basic ${adminAuth}</code>.</p>
+    <p>Affected files: <code>ProductBoxEditor.jsx</code>, <code>PillarProductsTab.jsx</code>, <code>CelebrateManager.jsx</code>, <code>ServiceBox.jsx</code></p>
+    <p>Backend endpoint: <code>POST /api/admin/products/{product_id}/generate-image</code> (uses GPT-Image-1 → Cloudinary)</p>
+
+    <h3>Product Box — Dine Filter</h3>
+    <p>Fixed stale React closure bug in <code>PillarProductsTab.jsx</code>. Category filter now passes the new category directly to <code>fetchProducts(1, newCat)</code> instead of relying on stale state.</p>
+  </div>
+
+  <!-- ── Database Schema ── -->
+  <div class="section">
+    <h2>Key Database Collections</h2>
+    <table>
+      <thead><tr><th>Collection</th><th>Purpose</th><th>Key Fields</th></tr></thead>
+      <tbody>
+        <tr><td><code>pets</code></td><td>Pet profiles</td><td>id, name, breed, photo, health_data{allergies,chronic_conditions}, doggy_soul_answers{favorite_protein,food_allergies}</td></tr>
+        <tr><td><code>products_master</code></td><td>All sellable items</td><td>id, name, pillar, category, sub_category, image, image_url, active, is_mira_imagines</td></tr>
+        <tr><td><code>mira_product_scores</code></td><td>AI personalization scores</td><td>pet_id, entity_id, pillar, score (0-100), mira_reason, scored_at</td></tr>
+        <tr><td><code>service_desk_tickets</code></td><td>All concierge requests</td><td>id, type (meal_box/concierge/etc), pet_id, status, slots, created_at</td></tr>
+        <tr><td><code>meal_box_requests</code></td><td>Meal box submissions (via service_desk_tickets)</td><td>ticket_id, meals_per_day, delivery_frequency, slots, allergies_confirmed</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── API Reference ── -->
+  <div class="section">
+    <h2>Critical API Endpoints</h2>
+    <table>
+      <thead><tr><th>Endpoint</th><th>Method</th><th>Auth</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>/api/auth/login</code></td><td>POST</td><td>None</td><td>User JWT login (email+password)</td></tr>
+        <tr><td><code>/api/pets</code></td><td>GET</td><td>JWT</td><td>Get current user's pets</td></tr>
+        <tr><td><code>/api/admin/pillar-products</code></td><td>GET</td><td>Basic</td><td>Products by pillar+category. ALWAYS use category param for dine food products</td></tr>
+        <tr><td><code>/api/mira/claude-picks/{pet_id}</code></td><td>GET</td><td>None</td><td>Top Mira-scored picks. Params: pillar, limit, min_score</td></tr>
+        <tr><td><code>/api/mira/meal-box-products</code></td><td>GET</td><td>None</td><td>Curated 5 meal slots for a pet</td></tr>
+        <tr><td><code>/api/concierge/meal-box</code></td><td>POST</td><td>None</td><td>Submit meal box → ticket</td></tr>
+        <tr><td><code>/api/mira/batch-score-all-pets</code></td><td>POST</td><td>None</td><td>Trigger Claude scoring for ALL pets (background)</td></tr>
+        <tr><td><code>/api/admin/products/{id}/generate-image</code></td><td>POST</td><td>Basic</td><td>Generate AI product image → Cloudinary</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── New Pet Onboarding ── -->
+  <div class="section">
+    <h2>New Pet Onboarding — Zero Setup Required</h2>
+    <p>All personalisation is dynamic. A new pet onboarded today will:</p>
+    <ul>
+      <li>✅ See correctly personalised dimension text immediately (reads <code>doggy_soul_answers</code> at render)</li>
+      <li>✅ See food products in Mira's Picks immediately (category-based fetch, allergy-filtered)</li>
+      <li>✅ See their Meal Box with correct protein/allergy/health data immediately</li>
+      <li>✅ Auto-trigger Mira AI scoring on first Mira's Picks visit (fire-and-forget)</li>
+      <li>✅ Get full salmon/chicken/beef-ranked picks on their second visit</li>
+      <li>✅ Be included in the next <code>/api/mira/batch-score-all-pets</code> run</li>
+    </ul>
+  </div>
+
+  <!-- ── Known Issues ── -->
+  <div class="section">
+    <h2>Known Issues &amp; Backlog</h2>
+    <table>
+      <thead><tr><th>Priority</th><th>Issue</th><th>Location</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-yellow">P2</span></td><td>Restaurant section uses hardcoded MOCK_SPOTS</td><td>PetFriendlySpots.jsx</td></tr>
+        <tr><td><span class="badge badge-yellow">P2</span></td><td>CONC_SERVICES card gradient incorrect on /dine</td><td>DineSoulPage.jsx</td></tr>
+        <tr><td><span class="badge badge-red">P3</span></td><td>Razorpay checkout failure</td><td>Payment flow</td></tr>
+        <tr><td><span class="badge badge-red">P3</span></td><td>Love Memory Drawer feature (not built)</td><td>Future feature</td></tr>
+        <tr><td><span class="badge badge-purple">Upcoming</span></td><td>Apply Mira's Picks to Care, Fit pillars</td><td>Planned</td></tr>
+        <tr><td><span class="badge badge-purple">Upcoming</span></td><td>Wire Google Places API for Dine Out tab</td><td>PetFriendlySpots.jsx</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── Changelog ── -->
+  <div class="section">
+    <h2>Changelog</h2>
+
+    <h3>Session 52 — Mar 16, 2026</h3>
+    <ul>
+      <li>Built <strong>Mira Meal Box</strong> — 6-screen personalised meal plan builder on /dine</li>
+      <li>Backend: <code>/api/mira/meal-box-products</code> + <code>/api/concierge/meal-box</code></li>
+      <li>Fixed AI image generation auth (Basic Auth vs Bearer token)</li>
+      <li>Fixed "body stream already read" — all admin XHR calls now use XMLHttpRequest</li>
+    </ul>
+
+    <h3>Session 51b — Mar 16, 2026</h3>
+    <ul>
+      <li>Dynamic DINE_DIMS (getDineDims) — pet-specific text for all dimension cards</li>
+      <li>Fixed admin Dine Product filter stale closure</li>
+      <li>Fixed allergy "No" showing in Tummy Profile and DineContentModal</li>
+    </ul>
+
+    <h3>Session 51 — Mar 16, 2026</h3>
+    <ul>
+      <li>Fixed Mira's Picks showing Akita breed merchandise instead of food products</li>
+      <li>Fixed Soul Picks wrong-breed fallback</li>
+      <li>Updated 48 catalog product images to food photography</li>
+    </ul>
+
+    <h3>Session 50 — Mar 15, 2026</h3>
+    <ul>
+      <li>Built Mira Score Engine (Claude Sonnet 4.6) — pre-computes personalization scores</li>
+      <li>Batch scoring endpoint for all pets</li>
+      <li>Unified ProductCard → ProductDetailModal flow for Dine pillar</li>
+    </ul>
+  </div>
+
+  <p style="text-align:center;color:var(--muted);font-size:11px;margin-top:40px;">
+    The Doggy Company® &nbsp;|&nbsp; Auto-generated documentation &nbsp;|&nbsp; March 16, 2026
+  </p>
+</div>
+</body>
+</html>
