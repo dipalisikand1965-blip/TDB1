@@ -3,7 +3,22 @@
 
 ---
 
-## [Mar 16, 2026] Session 40 — Product Box Category Filters + Dine Page Image Fix ✅
+## [Mar 16, 2026] Session 40 — Product Box Category Filters + Soul Picks Fix + P0 Data Refactor ✅
+
+### What Was Fixed
+- **BUG FIX: Soul Picks rope toy images** — Deleted 4564 bad `products_master` entries with ai_generated rope toy URLs for breed merchandise. Indie Soul Picks now show correct Cloudinary mockup images.
+- **BUG FIX: DineSoulPage generic images** — Fetches only 5 food categories; removed Akita breed merchandise from /dine food sections.
+- **BUG FIX: Product Box combined filter conflict** — Multiple `$or` conditions were overwriting each other in backend. Fixed with `$and` array approach.
+- **BUG FIX: Product Box filters page reset** — All filter handlers now call `setPage(0)`.
+- **NEW: Product Box Category Filter pills** — Pill strip showing MAIN_CATEGORIES appears when a pillar is selected.
+- **P0 Data Architecture Refactor** — Added `categories: List[str]` to schema; updated filters to search both `category` and `categories`; added multi-category checkbox UI to ProductBoxEditor.
+
+### Files Changed
+- `frontend/src/pages/DineSoulPage.jsx` — parallel fetch from 5 food categories
+- `frontend/src/components/admin/UnifiedProductBox.jsx` — filterCategory state, category pill strip, setPage(0)
+- `frontend/src/components/admin/ProductBoxEditor.jsx` — multi-category checkboxes
+- `backend/unified_product_box.py` — `categories: List[str]` in schema, $and filter builder
+- Database: deleted 4564 bad breed product entries with rope toy images
 
 ### What Was Fixed
 - **BUG FIX: DineSoulPage generic images** — `/dine` page was fetching ALL 857 dine products (sorted newest = Akita breed merchandise). Fixed: now fetches ONLY 5 food categories in parallel (`Daily Meals`, `Treats & Rewards`, `Supplements`, `Frozen & Fresh`, `Homemade & Recipes`), returning exactly the 48 seeded food products with proper food images.
