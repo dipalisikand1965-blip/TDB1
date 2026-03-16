@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Doggy Company — Agent Handoff Master Documentation</title>
+<style>
+  :root {
+    --amber: #FF8C42; --amber-dark: #C44400; --amber-light: #FFF8F0;
+    --indigo: #4F46E5; --green: #16A34A; --red: #DC2626;
+    --gray: #6B7280; --dark: #1A0A00; --white: #fff;
+    --border: #F0E8E0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #FAFAF9; color: #1A1A1A; line-height: 1.6; }
+  .page-header { background: linear-gradient(135deg, #1A0A00, #5a1500); color: white; padding: 40px 48px; }
+  .page-header h1 { font-size: 2.2rem; font-family: Georgia, serif; margin-bottom: 8px; }
+  .page-header p { opacity: 0.75; font-size: 1rem; }
+  .page-header .badge { display: inline-block; background: var(--amber); color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-top: 12px; }
+  .toc { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 24px 32px; margin: 32px 48px; }
+  .toc h2 { font-size: 1rem; font-weight: 700; color: var(--amber-dark); margin-bottom: 12px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 4px 0; font-size: 0.9rem; }
+  .toc a { color: var(--indigo); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  main { max-width: 1100px; margin: 0 auto; padding: 0 48px 80px; }
+  section { margin-bottom: 48px; }
+  h2 { font-size: 1.5rem; font-family: Georgia, serif; color: var(--dark); border-bottom: 3px solid var(--amber); padding-bottom: 8px; margin-bottom: 20px; }
+  h3 { font-size: 1.1rem; font-weight: 700; color: var(--amber-dark); margin: 20px 0 10px; }
+  h4 { font-size: 0.95rem; font-weight: 700; color: #374151; margin: 14px 0 6px; }
+  p { margin-bottom: 10px; font-size: 0.92rem; color: #374151; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .card-amber { background: #FFF8F0; border-color: #FFCC99; }
+  .card-green { background: #F0FDF4; border-color: #86EFAC; }
+  .card-red { background: #FEF2F2; border-color: #FCA5A5; }
+  .card-blue { background: #EFF6FF; border-color: #BFDBFE; }
+  .card-purple { background: #F5F3FF; border-color: #C4B5FD; }
+  .card h4 { margin-top: 0; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
+  .badge-green { background: #DCFCE7; color: #15803D; }
+  .badge-amber { background: #FEF3C7; color: #92400E; }
+  .badge-red { background: #FEE2E2; color: #991B1B; }
+  .badge-blue { background: #DBEAFE; color: #1E40AF; }
+  .badge-gray { background: #F3F4F6; color: #374151; }
+  .badge-purple { background: #EDE9FE; color: #5B21B6; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin-bottom: 16px; }
+  th { background: #F9FAFB; text-align: left; padding: 10px 12px; font-weight: 600; border-bottom: 2px solid var(--border); color: #374151; }
+  td { padding: 9px 12px; border-bottom: 1px solid #F0F0F0; vertical-align: top; }
+  tr:hover td { background: #FAFAF9; }
+  code { background: #F3F4F6; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.82rem; color: #C44400; }
+  pre { background: #1E293B; color: #E2E8F0; padding: 20px; border-radius: 10px; font-size: 0.8rem; overflow-x: auto; margin: 12px 0; line-height: 1.6; }
+  .alert { padding: 14px 18px; border-radius: 10px; margin: 16px 0; font-size: 0.88rem; }
+  .alert-critical { background: #FEF2F2; border-left: 4px solid #DC2626; color: #991B1B; }
+  .alert-warning { background: #FFFBEB; border-left: 4px solid #F59E0B; color: #92400E; }
+  .alert-info { background: #EFF6FF; border-left: 4px solid #3B82F6; color: #1E40AF; }
+  .alert-success { background: #F0FDF4; border-left: 4px solid #22C55E; color: #15803D; }
+  .pillar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+  .pillar-card { background: white; border: 1.5px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; }
+  .pillar-card .icon { font-size: 1.5rem; }
+  .pillar-card .name { font-size: 0.8rem; font-weight: 700; margin: 4px 0; }
+  .pillar-card .status { font-size: 0.7rem; }
+  ul, ol { padding-left: 22px; margin-bottom: 12px; }
+  li { margin: 4px 0; font-size: 0.9rem; color: #374151; }
+  .file-list { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; font-family: monospace; font-size: 0.8rem; }
+  .file-list .dir { color: #2563EB; font-weight: 600; }
+  .file-list .file { color: #374151; margin-left: 16px; }
+  .file-list .note { color: #6B7280; font-style: italic; margin-left: 32px; }
+  .priority-high::before { content: "🔴 "; }
+  .priority-med::before { content: "🟠 "; }
+  .priority-low::before { content: "🟡 "; }
+  .priority-done::before { content: "✅ "; }
+  .section-divider { height: 1px; background: linear-gradient(90deg, var(--amber), transparent); margin: 32px 0; }
+  @media (max-width: 768px) {
+    main { padding: 0 20px 60px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .pillar-grid { grid-template-columns: repeat(2, 1fr); }
+    .page-header { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>The Doggy Company® — Agent Handoff Master Documentation</h1>
+  <p>Pet Life Operating System · Full-Stack React + FastAPI + MongoDB</p>
+  <div class="badge">Last Updated: March 16, 2026 — Session 60</div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ol>
+    <li><a href="#critical-notes">🚨 Critical Notes for Next Agent (READ FIRST)</a></li>
+    <li><a href="#project-overview">Project Overview & Vision</a></li>
+    <li><a href="#architecture">Technical Architecture</a></li>
+    <li><a href="#pillar-status">All 14 Pillars — Build Status</a></li>
+    <li><a href="#completed-work">What Has Been Completed (Session-by-Session)</a></li>
+    <li><a href="#data-models">Core Data Models & Collections</a></li>
+    <li><a href="#key-apis">Key API Endpoints</a></li>
+    <li><a href="#key-files">Key Files Reference</a></li>
+    <li><a href="#admin-panel">Admin Panel Guide</a></li>
+    <li><a href="#next-tasks">Next Tasks — Prioritized Backlog</a></li>
+    <li><a href="#care-pillar">CARE Pillar — Next Build Spec</a></li>
+    <li><a href="#known-issues">Known Issues & Bugs</a></li>
+    <li><a href="#credentials">Credentials & Environment</a></li>
+  </ol>
+</div>
+
+<main>
+
+<!-- SECTION 1: CRITICAL NOTES -->
+<section id="critical-notes">
+  <h2>🚨 Critical Notes for Next Agent — READ BEFORE ANYTHING ELSE</h2>
+
+  <div class="alert alert-critical">
+    <strong>DO NOT BREAK THE PRODUCT BOX.</strong> The <code>products_master</code> MongoDB collection is the Single Source of Truth (SSOT) for ALL products across ALL pillars. Never create a separate products collection for any pillar. Always query/modify <code>products_master</code>.
+  </div>
+
+  <div class="alert alert-critical">
+    <strong>DO NOT OVERWRITE SEEDED DATA ON DEPLOYMENT.</strong> Products (DM-XXX, TR-XXX, SP-XXX, FF-XXX, HR-XXX), services, and bundles are seeded in the database. No seed scripts should run on every server startup. Always check DB before seeding.
+  </div>
+
+  <div class="alert alert-warning">
+    <strong>IMAGE HISTORY WARNING.</strong> In a previous session, an agent added a faulty image filter that broke all product images by blocking <code>static.prod-images.emergentagent.com</code> URLs. This was fixed. DO NOT add any image URL filtering logic to <code>resolveEntityImage()</code> or <code>resolvePickImage()</code> functions. They should simply return the first valid URL starting with "http".
+  </div>
+
+  <div class="alert alert-warning">
+    <strong>REACT STATE BATCHING BUG — Already Fixed.</strong> <code>ProductBoxEditor.jsx</code> was calling multiple <code>updateField()</code> in sequence inside an async XHR callback. Due to React 18 batching, only the last call persisted. Fixed by creating one <code>newProduct</code> object with all fields set, then calling <code>setProduct(newProduct)</code> once. DO NOT revert this pattern.
+  </div>
+
+  <div class="alert alert-info">
+    <strong>ADMIN AUTH PATTERN.</strong> The admin panel uses HTTP Basic Auth (username/password). Admin XHR calls must use <code>Authorization: Basic base64(user:pass)</code>, NOT Bearer tokens. Use the <code>getAdminAuth()</code> helper already present in ProductBoxEditor, BundlesManager, CelebrateManager, ServiceBox. Check BOTH <code>localStorage.adminAuth</code> AND <code>sessionStorage.admin_auth</code>.
+  </div>
+
+  <div class="alert alert-info">
+    <strong>PORTAL Z-INDEX PATTERN.</strong> All modals on pillar pages use <code>createPortal(content, document.body)</code> with <code>zIndex: 10002</code>. The sticky navbar is at <code>z-[10000]</code>. Never set a modal below 10002 or it will render behind the navbar.
+  </div>
+
+  <h3>Product Box Architecture Rules</h3>
+  <table>
+    <thead><tr><th>Rule</th><th>Details</th></tr></thead>
+    <tbody>
+      <tr><td><strong>SSOT</strong></td><td><code>products_master</code> collection holds ALL products. Never use <code>db.products</code> (old/legacy collection)</td></tr>
+      <tr><td><strong>Pillar assignment</strong></td><td>Use flat field <code>pillar: "dine"</code> + <code>primary_pillar: "dine"</code>. Multi-pillar via <code>pillars: ["dine","celebrate"]</code> array (future)</td></tr>
+      <tr><td><strong>Category</strong></td><td>Flat field <code>category: "Daily Meals"</code>. Values must match <code>DIM_ID_TO_CATEGORY</code> mapping in DineSoulPage.jsx</td></tr>
+      <tr><td><strong>Sub-category</strong></td><td>Flat field <code>sub_category: "Chicken-Free"</code>. Free text. Used for tab filtering in DimExpanded</td></tr>
+      <tr><td><strong>Status</strong></td><td>Flat field <code>approval_status: "live"</code>. Only "live" products show on front-end</td></tr>
+      <tr><td><strong>Images</strong></td><td>Use Cloudinary URLs whenever possible. Never use <code>static.prod-images.emergentagent.com/jobs/...</code> — these are from wrong sessions</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 2: PROJECT OVERVIEW -->
+<section id="project-overview">
+  <h2>Project Overview & Vision</h2>
+
+  <div class="card card-amber" style="margin-bottom:20px">
+    <h4>The Doggy Company® — Mission</h4>
+    <p>A <strong>Pet Life Operating System</strong> powered by Mira AI. Everything a pet parent needs across 14 life pillars — from food and celebration to healthcare and farewell — all deeply personalized to their specific dog's soul profile, breed, health, loves, and allergies.</p>
+    <p>URL: <code>https://mira-picks-engine.preview.emergentagent.com</code></p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>Core Philosophy</h4>
+      <ul>
+        <li>"Mira" is the AI brain — knows every pet deeply</li>
+        <li>Everything is ultra-personalized to pet's soul profile</li>
+        <li>All pillars follow the same golden pattern: Hero → Category Strip → TabBar → Dimensions → Mira Picks → Concierge</li>
+        <li>Products/services served from one SSOT: <code>products_master</code></li>
+        <li>Recommendations powered by Mira Score Engine (Claude Sonnet)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Tech Stack</h4>
+      <ul>
+        <li><strong>Frontend</strong>: React 18, Tailwind CSS, Framer Motion, Lucide Icons</li>
+        <li><strong>Backend</strong>: FastAPI (Python), MongoDB (Motor async), Cloudinary</li>
+        <li><strong>AI</strong>: Claude Sonnet 4.6 (scoring/chat), OpenAI GPT-Image (images)</li>
+        <li><strong>Integrations</strong>: Google Places API, Shopify (import), Razorpay (payments)</li>
+        <li><strong>Auth</strong>: JWT for users, HTTP Basic for admin</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 3: ARCHITECTURE -->
+<section id="architecture">
+  <h2>Technical Architecture</h2>
+
+  <h3>Frontend Structure</h3>
+  <div class="file-list">
+    <div class="dir">frontend/src/</div>
+    <div class="file">pages/DineSoulPage.jsx <span style="color:#16A34A">← ACTIVE PILLAR — most developed</span></div>
+    <div class="note">MiraPicksSection, DimExpanded, PetFriendlySpots, TummyProfile, DiningConcierge</div>
+    <div class="file">pages/CelebratePageNew.jsx <span style="color:#16A34A">← ACTIVE PILLAR</span></div>
+    <div class="file">pages/CarePage.jsx <span style="color:#F59E0B">← NEXT TO BUILD</span></div>
+    <div class="file">pages/Admin.jsx <span style="color:#6B7280">← Admin panel (14 pillar tabs + COMMERCE)</span></div>
+    <div class="dir">components/dine/</div>
+    <div class="file">DineContentModal.jsx <span style="color:#6B7280">← Category modal with ProductCard + ServiceCard</span></div>
+    <div class="file">PetFriendlySpots.jsx <span style="color:#16A34A">← Google Places integration (NEW)</span></div>
+    <div class="file">ConciergeIntakeModal.jsx, DineConciergeSection.jsx</div>
+    <div class="file">MealBoxCard.jsx, GuidedNutritionPaths.jsx, DineHero.jsx</div>
+    <div class="dir">components/admin/</div>
+    <div class="file">ProductBoxEditor.jsx <span style="color:#6B7280">← 6-tab rich product editor (SSOT admin tool)</span></div>
+    <div class="file">UnifiedProductBox.jsx <span style="color:#6B7280">← Product Box list view with pillar/category filters</span></div>
+    <div class="file">ProductBoxConfig.js <span style="color:#6B7280">← ALL_PILLARS, MAIN_CATEGORIES, DEFAULT_PRODUCT</span></div>
+    <div class="dir">components/common/</div>
+    <div class="file">ProductCard.jsx <span style="color:#6B7280">← Shared product card + ProductDetailModal (1832 lines)</span></div>
+    <div class="file">MiraOrb.jsx, MiraChatWidget.jsx <span style="color:#6B7280">← Amber for Dine, default for others</span></div>
+  </div>
+
+  <h3>Backend Structure</h3>
+  <div class="file-list">
+    <div class="dir">backend/</div>
+    <div class="file">server.py <span style="color:#6B7280">← Main FastAPI app, all router registrations</span></div>
+    <div class="file">dine_routes.py <span style="color:#16A34A">← /api/* dine endpoints (3013 lines)</span></div>
+    <div class="file">pillar_products_routes.py <span style="color:#6B7280">← /api/admin/pillar-products (pillar SSOT API)</span></div>
+    <div class="file">unified_product_box.py <span style="color:#6B7280">← /api/product-box/products (admin Product Box API)</span></div>
+    <div class="file">ai_image_service.py <span style="color:#16A34A">← NEW /api/ai-images/generate-pillar-images</span></div>
+    <div class="file">mira_score_engine.py <span style="color:#16A34A">← Claude Sonnet scoring engine</span></div>
+    <div class="file">pet_soul_api.py <span style="color:#6B7280">← /api/mira/claude-picks, /api/mira/score-*</span></div>
+    <div class="file">care_routes.py <span style="color:#F59E0B">← CARE endpoints (partially built)</span></div>
+    <div class="file">care_products_data.py <span style="color:#F59E0B">← Care product catalog data</span></div>
+    <div class="file">care_products_master.py <span style="color:#F59E0B">← Care product seeder</span></div>
+  </div>
+
+  <h3>Key MongoDB Collections</h3>
+  <table>
+    <thead><tr><th>Collection</th><th>Purpose</th><th>Count</th></tr></thead>
+    <tbody>
+      <tr><td><code>products_master</code></td><td>ALL products for all pillars (SSOT)</td><td>~15,941</td></tr>
+      <tr><td><code>services_master</code></td><td>ALL services for all pillars</td><td>~1,100</td></tr>
+      <tr><td><code>bundles</code></td><td>Product bundles/packs</td><td>~50+</td></tr>
+      <tr><td><code>mira_product_scores</code> / <code>mira_scores</code></td><td>Claude-scored recommendations per pet</td><td>3234+ (Mojo)</td></tr>
+      <tr><td><code>pets</code></td><td>Pet profiles (Mojo, Mystique, Bruno, etc.)</td><td>~10+</td></tr>
+      <tr><td><code>users</code></td><td>User accounts</td><td>~15+</td></tr>
+      <tr><td><code>service_desk_tickets</code></td><td>Concierge requests/tickets</td><td>~50+</td></tr>
+      <tr><td><code>meal_boxes</code></td><td>Mojo Meal Box orders</td><td>~5+</td></tr>
+      <tr><td><code>orders</code></td><td>Product orders</td><td>~20+</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 4: PILLAR STATUS -->
+<section id="pillar-status">
+  <h2>All 14 Pillars — Build Status</h2>
+
+  <div class="pillar-grid">
+    <div class="pillar-card" style="border-color:#22C55E">
+      <div class="icon">🎂</div>
+      <div class="name">Celebrate</div>
+      <span class="badge badge-green">COMPLETE</span>
+    </div>
+    <div class="pillar-card" style="border-color:#22C55E">
+      <div class="icon">🍽️</div>
+      <div class="name">Dine</div>
+      <span class="badge badge-green">COMPLETE</span>
+    </div>
+    <div class="pillar-card" style="border-color:#F59E0B">
+      <div class="icon">🏥</div>
+      <div class="name">Care</div>
+      <span class="badge badge-amber">NEXT</span>
+    </div>
+    <div class="pillar-card" style="border-color:#E5E7EB">
+      <div class="icon">🏨</div>
+      <div class="name">Stay</div>
+      <span class="badge badge-gray">PENDING</span>
+    </div>
+    <div class="pillar-card" style="border-color:#E5E7EB">
+      <div class="icon">✈️</div>
+      <div class="name">Travel</div>
+      <span class="badge badge-gray">PENDING</span>
+    </div>
+    <div class="pillar-card" style="border-color:#E5E7EB">
+      <div class="icon">🎮</div>
+      <div class="name">Enjoy</div>
+      <span class="badge badge-gray">PENDING</span>
+    </div>
+    <div class="pillar-card" style="border-color:#E5E7EB">
+      <div class="icon">💪</div>
+      <div class="name">Fit</div>
+      <span class="badge badge-gray">PENDING</span>
+    </div>
+    <div class="pillar-card" style="border-color:#E5E7EB">
+      <div class="icon">📚</div>
+      <div class="name">Learn</div>
+      <span class="badge badge-gray">PENDING</span>
+    </div>
+    <div class="pillar-card" style="border-color:#E5E7EB">
+      <div class="icon">📋</div>
+      <div class="name">Paperwork</div>
+      <span class="badge badge-gray">PENDING</span>
+    </div>
+    <div class="pillar-card" style="border-color:#E5E7EB">
+      <div class="icon">🤝</div>
+      <div class="name">Advisory</div>
+      <span class="badge badge-gray">PENDING</span>
+    </div>
+    <div class="pillar-card" style="border-color:#E5E7EB">
+      <div class="icon">🚨</div>
+      <div class="name">Emergency</div>
+      <span class="badge badge-gray">PENDING</span>
+    </div>
+    <div class="pillar-card" style="border-color:#E5E7EB">
+      <div class="icon">🌹</div>
+      <div class="name">Farewell</div>
+      <span class="badge badge-gray">PENDING</span>
+    </div>
+    <div class="pillar-card" style="border-color:#E5E7EB">
+      <div class="icon">💝</div>
+      <div class="name">Memorial</div>
+      <span class="badge badge-gray">PENDING</span>
+    </div>
+    <div class="pillar-card" style="border-color:#E5E7EB">
+      <div class="icon">🐾</div>
+      <div class="name">Adopt</div>
+      <span class="badge badge-gray">PENDING</span>
+    </div>
+  </div>
+
+  <h3>Completed Pillars Detail</h3>
+  <table>
+    <thead><tr><th>Pillar</th><th>Page</th><th>Features</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Celebrate 🎂</strong></td>
+        <td><code>/celebrate</code> → CelebratePageNew.jsx</td>
+        <td>Hero, CategoryStrip, CelebrateContentModal (all categories), Mira Picks, MiraImaginesCard, Cart, Bundles, Soul Questions, Shopify-synced bakery products</td>
+      </tr>
+      <tr>
+        <td><strong>Dine 🍽️</strong></td>
+        <td><code>/dine</code> → DineSoulPage.jsx</td>
+        <td>Hero, TummyProfile, DimExpanded (5 food categories), MiraPicksSection (AI-scored products+services), Mira Meal Box (6-screen flow), DiningConcierge, PetFriendlySpots (Google Places), GuidedNutritionPaths, DineContentModal, interactive cards (Add to Cart + Concierge)</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 5: COMPLETED WORK -->
+<section id="completed-work">
+  <h2>What Has Been Completed (Recent Sessions)</h2>
+
+  <div class="card card-green" style="margin-bottom:12px">
+    <h4>Session 60 — PetFriendlySpots + Product Box Category System (Mar 16, 2026)</h4>
+    <ul>
+      <li>Google Places API wired up — real dog-café spots (Bengaluru, Mumbai, Goa, all cities)</li>
+      <li>"9 options" removed from Dine product cards (now only shows for shop pillar)</li>
+      <li>Product Box: Category dropdown (pillar-filtered), Sub-Category input, Status per Pillar — added to Pillars tab in ProductBoxEditor</li>
+      <li>ProductBoxConfig.js: full dine categories (Daily Meals, Treats, Supplements, Frozen & Fresh, Homemade, Bowls)</li>
+      <li>NEW endpoint: <code>POST /api/ai-images/generate-pillar-images?pillar=dine&amp;limit=N</code></li>
+    </ul>
+  </div>
+
+  <div class="card card-green" style="margin-bottom:12px">
+    <h4>Session 59 — Dine Toy Images Fixed + Product Box Dine Integration (Mar 16, 2026)</h4>
+    <ul>
+      <li>155 wrong toy images cleared from dine products_master</li>
+      <li>47 dine food products given category-appropriate Unsplash placeholder images</li>
+      <li>48 seeded dine products updated with <code>primary_pillar=dine</code></li>
+      <li><code>category</code> filter added to <code>GET /api/product-box/products</code></li>
+    </ul>
+  </div>
+
+  <div class="card card-green" style="margin-bottom:12px">
+    <h4>Session 58 — Mira Picks Interactive + AI Image Persistence Fix (Mar 16, 2026)</h4>
+    <ul>
+      <li>MiraPicksSection: products open ProductDetailModal (Add to Cart), services open Concierge modal</li>
+      <li>ProductBoxEditor: fixed React batching bug — single <code>setProduct()</code> call for all image fields</li>
+      <li>Eat &amp; Nourish dimension cards: SharedProductCard with Add to Cart confirmed working</li>
+    </ul>
+  </div>
+
+  <div class="card card-green" style="margin-bottom:12px">
+    <h4>Sessions 50-57 — Mira Score Engine + Full Dine Page (Mar 2026)</h4>
+    <ul>
+      <li>Claude Sonnet 4.6 Mira Score Engine — scores all products/services/bundles per pet</li>
+      <li>Full DineSoulPage with all 5 tabs, 5 food dimensions, TummyProfile, Mira Meal Box (6-screen)</li>
+      <li>DineContentModal with ProductCard + ServiceCard + interactive flows</li>
+      <li>DineHero, DineCategoryStrip, GuidedNutritionPaths, DineConciergeSection</li>
+      <li>All modals migrated to createPortal with z-index 10002</li>
+      <li>Mobile responsiveness across all dine components</li>
+    </ul>
+  </div>
+
+  <div class="card card-green" style="margin-bottom:12px">
+    <h4>Sessions 41-49 — Dine Foundation + Celebrate Enhancement (Feb 2026)</h4>
+    <ul>
+      <li>20 AI-generated food photography images for dine sub-categories</li>
+      <li>DineCategoryStrip, DimeContentModal, TummyProfile drawer</li>
+      <li>MiraImaginesCard, applyMirasPicksIntelligence(), generateMiraImagines()</li>
+      <li>Celebrate: MiraImaginesCard, universal Mira intelligence pattern established</li>
+    </ul>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 6: DATA MODELS -->
+<section id="data-models">
+  <h2>Core Data Models</h2>
+
+  <h3>Product (products_master) — FLAT schema</h3>
+  <pre>{
+  "id": "DM-001",                          // Unique ID
+  "pillar": "dine",                        // PRIMARY pillar (SSOT field)
+  "primary_pillar": "dine",               // Same as pillar (for Product Box queries)
+  "pillars": ["dine"],                     // Array for multi-pillar (future)
+  "category": "Daily Meals",              // Maps to DIM_ID_TO_CATEGORY in DineSoulPage
+  "sub_category": "Morning Meal",         // Used for tab filtering in DimExpanded
+  "approval_status": "live",              // "live" | "paused" | "draft" | "archived"
+  "name": "Salmon & Sweet Potato Morning Bowl",
+  "description": "...",
+  "price": 450,
+  "currency": "INR",
+  "image_url": "https://res.cloudinary.com/...",  // PRIMARY image (Cloudinary preferred)
+  "image": "https://res.cloudinary.com/...",       // Backup image field
+  "images": ["https://..."],              // Array of images
+  "media": { "primary_image": "https://..." },
+  "tags": ["salmon", "grain-free"],
+  "allergens": ["wheat"],
+  "breed": null,
+  "shopify_id": "...",
+  "source": "seeded",                     // "shopify" | "seeded" | "soul_made" | "manual"
+  "created_at": "2026-03-15T...",
+  "updated_at": "2026-03-16T..."
+}</pre>
+
+  <h3>Pet (pets collection)</h3>
+  <pre>{
+  "id": "pet-mojo-7327ad56",
+  "owner_id": "...",
+  "name": "Mojo",
+  "breed": "Indian Pariah Dog",
+  "city": "Bengaluru",
+  "doggy_soul_answers": {
+    "favorite_protein": "Salmon treats",
+    "city": "Bengaluru",
+    "describe_3_words": ["Playful", "Loyal", "Curious"]
+  },
+  "health_data": {
+    "allergies": ["chicken"],
+    "chronic_conditions": ["lymphoma"],
+    "favorite_foods": ["salmon", "sweet potato"]
+  },
+  "loves": ["salmon", "outdoor walks"],
+  "soul_score": 94
+}</pre>
+
+  <h3>Mira Score (mira_scores / mira_product_scores)</h3>
+  <pre>{
+  "pet_id": "pet-mojo-7327ad56",
+  "entity_id": "DM-001",
+  "entity_type": "product",               // "product" | "service" | "bundle"
+  "pillar": "dine",
+  "score": 98,                            // 0-100
+  "mira_reason": "Salmon-forward, safe for lymphoma, matches Mojo's protein love",
+  "scored_at": "2026-03-16T...",
+  "pet_name": "Mojo"
+}</pre>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 7: KEY APIs -->
+<section id="key-apis">
+  <h2>Key API Endpoints</h2>
+
+  <h3>Products (SSOT)</h3>
+  <table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/api/admin/pillar-products?pillar=dine&amp;limit=600</code></td><td>All dine products for front-end display</td></tr>
+      <tr><td>GET</td><td><code>/api/product-box/products?pillar=dine&amp;category=Daily+Meals</code></td><td>Admin Product Box with filters</td></tr>
+      <tr><td>PUT</td><td><code>/api/product-box/products/{id}</code></td><td>Update product (all fields)</td></tr>
+      <tr><td>POST</td><td><code>/api/admin/products/{id}/generate-image</code></td><td>AI image generation for product</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Mira AI Engine</h3>
+  <table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/api/mira/claude-picks/{pet_id}?pillar=dine&amp;entity_type=product</code></td><td>AI-scored picks for pet</td></tr>
+      <tr><td>POST</td><td><code>/api/mira/score-for-pet</code></td><td>Trigger background scoring for pet</td></tr>
+      <tr><td>GET</td><td><code>/api/mira/score-status/{pet_id}</code></td><td>Check if scores exist</td></tr>
+      <tr><td>GET</td><td><code>/api/mira/top-picks/{pet_id}?pillar=dine</code></td><td>Top scored picks enriched</td></tr>
+      <tr><td>GET</td><td><code>/api/pet-soul/mira-picks/{pet_id}</code></td><td>Mixed products+services picks</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Dining Out / Places</h3>
+  <table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/api/places/pet-friendly?city=Bengaluru&amp;breed=Labrador</code></td><td>Real Google Places dog cafes (NEW)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Concierge / Service Desk</h3>
+  <table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/api/service_desk/attach_or_create_ticket</code></td><td>Create concierge ticket</td></tr>
+      <tr><td>POST</td><td><code>/api/concierge/dining-intake</code></td><td>Dining concierge intake</td></tr>
+      <tr><td>POST</td><td><code>/api/mira/meal-box-products</code></td><td>Curate 5-slot meal box</td></tr>
+      <tr><td>POST</td><td><code>/api/concierge/meal-box</code></td><td>Submit meal box order</td></tr>
+    </tbody>
+  </table>
+
+  <h3>AI Image Generation (Background)</h3>
+  <table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/api/ai-images/generate-pillar-images?pillar=dine&amp;limit=50</code></td><td>Batch generate images for pillar products in products_master</td></tr>
+      <tr><td>GET</td><td><code>/api/ai-images/status</code></td><td>Check generation progress</td></tr>
+      <tr><td>POST</td><td><code>/api/ai-images/stop</code></td><td>Stop generation</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 8: KEY FILES -->
+<section id="key-files">
+  <h2>Key Files Reference</h2>
+
+  <div class="grid-2">
+    <div>
+      <h3>Frontend — Critical Files</h3>
+      <table>
+        <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>pages/DineSoulPage.jsx</code></td><td>Main Dine page (1492 lines) — HIGH RISK, edit carefully</td></tr>
+          <tr><td><code>components/dine/DineContentModal.jsx</code></td><td>Category modal with ProductCard + ServiceCard</td></tr>
+          <tr><td><code>components/dine/PetFriendlySpots.jsx</code></td><td>Google Places dining spots (NEW)</td></tr>
+          <tr><td><code>components/dine/MealBoxCard.jsx</code></td><td>Mojo Meal Box 6-screen flow</td></tr>
+          <tr><td><code>components/ProductCard.jsx</code></td><td>Shared ProductCard + ProductDetailModal (1832 lines)</td></tr>
+          <tr><td><code>components/admin/ProductBoxEditor.jsx</code></td><td>6-tab rich product editor (1655 lines)</td></tr>
+          <tr><td><code>components/admin/ProductBoxConfig.js</code></td><td>ALL_PILLARS, MAIN_CATEGORIES (with dine categories)</td></tr>
+          <tr><td><code>components/admin/UnifiedProductBox.jsx</code></td><td>Product Box list + filters</td></tr>
+          <tr><td><code>pages/CelebratePageNew.jsx</code></td><td>Celebrate pillar (golden template for all pillars)</td></tr>
+          <tr><td><code>pages/Admin.jsx</code></td><td>Admin panel (all 14 pillar tabs + COMMERCE)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3>Backend — Critical Files</h3>
+      <table>
+        <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>dine_routes.py</code></td><td>All dine routes (3013 lines). Google Places endpoint here</td></tr>
+          <tr><td><code>pillar_products_routes.py</code></td><td>Products SSOT API for all pillars</td></tr>
+          <tr><td><code>unified_product_box.py</code></td><td>Product Box admin API (2381 lines)</td></tr>
+          <tr><td><code>mira_score_engine.py</code></td><td>Claude Sonnet 4.6 scoring engine</td></tr>
+          <tr><td><code>pet_soul_api.py</code></td><td>Mira picks, claude-picks endpoints</td></tr>
+          <tr><td><code>ai_image_service.py</code></td><td>AI image generation + NEW generate-pillar-images</td></tr>
+          <tr><td><code>care_routes.py</code></td><td>Care pillar routes (partially built)</td></tr>
+          <tr><td><code>care_products_data.py</code></td><td>Care product catalog data</td></tr>
+          <tr><td><code>server.py</code></td><td>FastAPI app + all router registrations</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 9: ADMIN PANEL -->
+<section id="admin-panel">
+  <h2>Admin Panel Guide</h2>
+
+  <div class="alert alert-info">
+    Admin URL: <code>/admin</code> | Credentials: <strong>aditya / lola4304</strong>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>COMMERCE Section</h4>
+      <ul>
+        <li><strong>Product Box</strong> — unified product editor. Filter by pillar, category. Click any product for 6-tab editor. NEW: Category, Sub-Category, Status fields in Pillars tab</li>
+        <li><strong>Service Box</strong> — all services management</li>
+        <li><strong>Bundles</strong> — bundle packs per pillar</li>
+        <li><strong>Orders / Fulfilment</strong> — order management</li>
+        <li><strong>Soul Products</strong> — breed-specific AI products</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>14 PILLARS Section</h4>
+      <ul>
+        <li>Each pillar has its own admin tab (Celebrate, Dine, Stay, etc.)</li>
+        <li><strong>Dine Manager</strong> → manages dine products, services, dining spots</li>
+        <li><strong>Celebrate Manager</strong> → Shopify-synced bakery products + bundle management</li>
+        <li><strong>Care Manager</strong> → TBD (next build)</li>
+        <li>Franchise tab → MASTER SYNC, VERIFY DATA, AI IMAGES, SYNC→PROD</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Product Box Workflow (How to Add/Edit Dine Products)</h3>
+  <ol>
+    <li>Go to <code>/admin</code> → COMMERCE → Product Box</li>
+    <li>Click <strong>"Dine"</strong> pill filter (shows ~789 dine products)</li>
+    <li>Filter further by Category (e.g., "Daily Meals") using the category dropdown</li>
+    <li>Click any product → opens 6-tab ProductBoxEditor</li>
+    <li>Go to <strong>Pillars</strong> tab → assign Category, Sub-Category, Status</li>
+    <li>Go to <strong>Media</strong> tab → generate AI image or upload photo</li>
+    <li>Save → product immediately appears on /dine front-end</li>
+  </ol>
+
+  <h3>Batch AI Image Generation</h3>
+  <pre>POST /api/ai-images/generate-pillar-images?pillar=dine&amp;limit=50
+# Runs in background, generates OpenAI images for products without Cloudinary URLs
+# ~3-5 seconds per image, saves to Cloudinary, updates products_master
+
+GET /api/ai-images/status
+# Check progress: { running, completed, total, failed, results }
+
+POST /api/ai-images/stop
+# Stop generation</pre>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 10: NEXT TASKS -->
+<section id="next-tasks">
+  <h2>Next Tasks — Prioritized Backlog</h2>
+
+  <div class="alert alert-critical">
+    <strong>P0 — Start CARE Pillar</strong> (next immediate task per user instruction)
+  </div>
+
+  <h3>Immediate (P0)</h3>
+  <div class="card card-red" style="margin-bottom:12px">
+    <h4 class="priority-high">CARE Pillar Build</h4>
+    <p>Build the Care pillar page following the exact same golden template as Dine. Full spec in the CARE section below.</p>
+    <p>Backend: <code>care_routes.py</code>, <code>care_products_data.py</code>, <code>care_products_master.py</code> already exist (partially built)</p>
+    <p>Frontend: <code>pages/CarePage.jsx</code> exists but needs the full soul-page treatment</p>
+  </div>
+
+  <h3>Short-Term (P1)</h3>
+  <div class="card card-amber" style="margin-bottom:12px">
+    <h4 class="priority-med">Multi-Pillar Assignment</h4>
+    <p>Allow one product to appear in multiple pillars simultaneously. ProductBoxEditor Pillars tab should have a multi-select for pillars. Front-end should include product if any of its <code>pillars[]</code> array matches.</p>
+  </div>
+  <div class="card card-amber" style="margin-bottom:12px">
+    <h4 class="priority-med">Celebrate AI Score Engine</h4>
+    <p>Apply the same Mira Score Engine from Dine to Celebrate pillar. Run batch scoring for all pets.</p>
+    <p>Backend: Trigger <code>POST /api/mira/score-for-pet</code> for each pet with <code>pillar=celebrate</code></p>
+  </div>
+  <div class="card card-amber" style="margin-bottom:12px">
+    <h4 class="priority-med">Run Full Batch Scoring</h4>
+    <p>Trigger <code>/app/backend/batch_score_all_pets.py</code> to populate mira_scores for all pets across all pillars</p>
+  </div>
+  <div class="card card-amber" style="margin-bottom:12px">
+    <h4 class="priority-med">Pillar Activate/Deactivate UI</h4>
+    <p>In Product Box list view (UnifiedProductBox), add per-product toggle to set <code>approval_status = "paused"</code> without opening the full editor. Show paused products as dimmed rows.</p>
+  </div>
+
+  <h3>Medium-Term (P2)</h3>
+  <ul>
+    <li class="priority-med">Generate AI images pillar-by-pillar (use <code>/api/ai-images/generate-pillar-images</code>): celebrate → care → stay → travel</li>
+    <li class="priority-med">Sync Preview→Production (run MASTER SYNC from Franchise admin panel — Preview has 15,941 products, Production has only 4,291)</li>
+    <li class="priority-med">Multi-category assignment (one product → multiple categories)</li>
+    <li class="priority-low">Wire up Razorpay checkout (known bug — low priority)</li>
+    <li class="priority-low">Love Memory Drawer feature</li>
+  </ul>
+
+  <h3>Future/Backlog (P3)</h3>
+  <ul>
+    <li class="priority-low">Stay, Travel, Enjoy, Fit, Learn pillars — build in order</li>
+    <li class="priority-low">Paperwork, Advisory, Emergency, Farewell, Memorial pillars</li>
+    <li class="priority-low">Final documentation update after all pillars built</li>
+    <li class="priority-low">"Love Memory Drawer" feature</li>
+  </ul>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 11: CARE PILLAR -->
+<section id="care-pillar">
+  <h2>CARE Pillar — Next Build Specification</h2>
+
+  <div class="alert alert-success">
+    The user has explicitly said "Once this is over we start CARE". This is the next pillar to build.
+  </div>
+
+  <h3>What CARE Covers</h3>
+  <p>Healthcare, grooming, vet services, wellness supplements, dental care, vaccinations, deworming, tick & flea protection, emergency preparedness — everything related to the physical health and hygiene of the pet.</p>
+
+  <h3>Golden Template (Follow Exactly as Dine)</h3>
+  <table>
+    <thead><tr><th>Component</th><th>Dine Equivalent</th><th>Care Implementation</th></tr></thead>
+    <tbody>
+      <tr><td>Hero</td><td>DineHero.jsx</td><td>CareHero.jsx — teal/indigo gradient, health-focused copy</td></tr>
+      <tr><td>Category Strip</td><td>DineCategoryStrip.jsx</td><td>CareCategoryStrip.jsx — Grooming, Vet Care, Supplements, Dental, Vaccinations, Emergency Kit, Soul Picks, Mira's Picks</td></tr>
+      <tr><td>Content Modal</td><td>DineContentModal.jsx</td><td>CareContentModal.jsx — same structure, care-specific copy</td></tr>
+      <tr><td>Concierge Section</td><td>DineConciergeSection.jsx</td><td>CareConciergeSection.jsx — "Book a Vet", "Schedule Grooming", etc.</td></tr>
+      <tr><td>Mira Picks</td><td>MiraPicksSection (in DineSoulPage)</td><td>Same pattern — AI-scored health products + services</td></tr>
+      <tr><td>Dimension Grid</td><td>DimExpanded with 5 categories</td><td>5 care categories with product cards</td></tr>
+      <tr><td>Tab Bar</td><td>"Eat" + "Out" tabs</td><td>"Care" + "Nearby" tabs (vet clinics near user)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Care Dimensions (5 core)</h3>
+  <table>
+    <thead><tr><th>Dimension</th><th>Category (in DB)</th><th>Sub-categories</th></tr></thead>
+    <tbody>
+      <tr><td>Grooming & Hygiene</td><td>Grooming</td><td>Shampoos, Brushes, Nail Care, Dental, Ear Care</td></tr>
+      <tr><td>Vet & Medical</td><td>Vet Care</td><td>Vaccinations, Deworming, Tick & Flea, Health Checkup</td></tr>
+      <tr><td>Wellness Supplements</td><td>Supplements</td><td>Immunity, Joint Health, Skin & Coat, Digestive</td></tr>
+      <tr><td>Dental Care</td><td>Dental</td><td>Toothbrush, Toothpaste, Chews, Rinse</td></tr>
+      <tr><td>Emergency Kit</td><td>Emergency</td><td>First Aid, Medications, Bandages, Vet Contact</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Backend Already Exists</h3>
+  <ul>
+    <li><code>care_routes.py</code> — care-specific routes (check existing endpoints)</li>
+    <li><code>care_products_data.py</code> — care product catalog data</li>
+    <li><code>care_products_master.py</code> — care product seeder (check if already run)</li>
+    <li>Care services should be in <code>services_master</code> with <code>pillar=care</code></li>
+  </ul>
+
+  <h3>Key Differences from Dine</h3>
+  <ul>
+    <li><strong>Color scheme</strong>: Teal (#0D9488) + deep blue (#1E3A5F) instead of amber/terracotta</li>
+    <li><strong>"Nearby Vets" tab</strong>: Replace "Dining Out" with a nearby vet clinics/groomers map (can use same Google Places pattern as PetFriendlySpots)</li>
+    <li><strong>Health Profile Bar</strong>: Instead of TummyProfile, show a "Health Profile" bar with vaccination status, last vet visit, known conditions, allergies</li>
+    <li><strong>Booking flow</strong>: Services should trigger a "Book Appointment" flow (date/time picker) instead of just concierge intake</li>
+    <li><strong>Urgent flag</strong>: Emergency items should have "URGENT" badge with red accent</li>
+  </ul>
+
+  <h3>File Creation Checklist for CARE</h3>
+  <div class="card card-blue">
+    <ol>
+      <li>Check <code>care_products_data.py</code> — are care products already in <code>products_master</code>? If not, run the seeder</li>
+      <li>Check <code>care_routes.py</code> — what endpoints exist? What's missing?</li>
+      <li>Create <code>frontend/src/components/care/CareHero.jsx</code></li>
+      <li>Create <code>frontend/src/components/care/CareCategoryStrip.jsx</code></li>
+      <li>Create <code>frontend/src/components/care/CareContentModal.jsx</code></li>
+      <li>Create <code>frontend/src/components/care/CareConciergeSection.jsx</code></li>
+      <li>Create <code>frontend/src/components/care/NearbyVets.jsx</code> (Google Places — same as PetFriendlySpots)</li>
+      <li>Update <code>frontend/src/pages/CarePage.jsx</code> to the full soul-page treatment</li>
+      <li>Add <code>care</code> categories to <code>ProductBoxConfig.js</code> MAIN_CATEGORIES</li>
+      <li>Add <code>/api/places/nearby-vets</code> endpoint to care_routes.py</li>
+      <li>Run Mira Score Engine for care products: <code>POST /api/mira/score-for-pet</code></li>
+    </ol>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 12: KNOWN ISSUES -->
+<section id="known-issues">
+  <h2>Known Issues & Bugs</h2>
+
+  <table>
+    <thead><tr><th>Issue</th><th>Priority</th><th>Status</th><th>Details</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Razorpay Checkout Failure</td>
+        <td><span class="badge badge-gray">P3</span></td>
+        <td>Not Fixed</td>
+        <td>Checkout flow fails at payment step. Root cause not investigated.</td>
+      </tr>
+      <tr>
+        <td>Preview vs Production Sync</td>
+        <td><span class="badge badge-amber">P2</span></td>
+        <td>Not Fixed</td>
+        <td>Preview: 15,941 products / Production: 4,291 products. Use Franchise → MASTER SYNC.</td>
+      </tr>
+      <tr>
+        <td>Dine products Unsplash placeholders</td>
+        <td><span class="badge badge-amber">P2</span></td>
+        <td>In Progress</td>
+        <td>158 dine products have Unsplash placeholder images. Run <code>/api/ai-images/generate-pillar-images?pillar=dine</code> to replace with Cloudinary.</td>
+      </tr>
+      <tr>
+        <td>Backend slow during AI image generation</td>
+        <td><span class="badge badge-gray">P3</span></td>
+        <td>Known Limitation</td>
+        <td>Single uvicorn worker. AI generation blocks other requests. Fix: add ThreadPoolExecutor or multiple workers.</td>
+      </tr>
+      <tr>
+        <td>MOCK_SPOTS (fully removed)</td>
+        <td><span class="badge badge-green">FIXED</span></td>
+        <td>Fixed Session 60</td>
+        <td>Replaced with real Google Places API.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 13: CREDENTIALS -->
+<section id="credentials">
+  <h2>Credentials & Environment</h2>
+
+  <div class="grid-2">
+    <div class="card card-red">
+      <h4>Test Credentials</h4>
+      <table>
+        <tbody>
+          <tr><td><strong>Admin</strong></td><td>aditya / lola4304 → <code>/admin</code></td></tr>
+          <tr><td><strong>User (main)</strong></td><td>dipali@clubconcierge.in / TestPass@123</td></tr>
+          <tr><td><strong>Pet (Mojo)</strong></td><td>pet-mojo-7327ad56 (Indie breed, Bengaluru)</td></tr>
+          <tr><td><strong>App URL</strong></td><td>https://mira-picks-engine.preview.emergentagent.com</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card card-blue">
+      <h4>Environment Variables</h4>
+      <table>
+        <tbody>
+          <tr><td><code>REACT_APP_BACKEND_URL</code></td><td>Full preview URL (frontend/.env)</td></tr>
+          <tr><td><code>MONGO_URL</code></td><td>MongoDB connection (backend/.env)</td></tr>
+          <tr><td><code>DB_NAME</code></td><td>Database name (backend/.env)</td></tr>
+          <tr><td><code>GOOGLE_PLACES_API_KEY</code></td><td>Google Places (backend/.env) ✅</td></tr>
+          <tr><td><code>CLOUDINARY_*</code></td><td>Cloudinary upload (backend/.env) ✅</td></tr>
+          <tr><td>Emergent LLM Key</td><td>Universal key via emergentintegrations ✅</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3>Service Architecture</h3>
+  <ul>
+    <li>Backend: FastAPI on <code>0.0.0.0:8001</code> (supervisor-managed)</li>
+    <li>Frontend: React on <code>3000</code> (supervisor-managed)</li>
+    <li>All backend routes prefixed with <code>/api</code> — routed via Kubernetes ingress</li>
+    <li>Frontend always uses <code>process.env.REACT_APP_BACKEND_URL</code> for API calls</li>
+    <li>Hot reload enabled for both services</li>
+    <li>Restart command: <code>sudo supervisorctl restart frontend/backend</code> (only for .env changes or new dependencies)</li>
+  </ul>
+</section>
+
+</main>
+
+<footer style="background:#1A0A00;color:rgba(255,255,255,0.5);text-align:center;padding:24px;font-size:0.8rem">
+  The Doggy Company® Agent Handoff Documentation — Session 60 — March 16, 2026
+</footer>
+
+</body>
+</html>
