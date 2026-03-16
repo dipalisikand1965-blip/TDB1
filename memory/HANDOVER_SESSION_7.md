@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://nutrition-engine-ui.preview.emergentagent.com
+https://mira-picks-engine.preview.emergentagent.com
 
 ---
 

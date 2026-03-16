@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://nutrition-engine-ui.preview.emergentagent.com
+https://mira-picks-engine.preview.emergentagent.com
 ```
 
 ---
