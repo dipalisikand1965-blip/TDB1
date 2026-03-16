@@ -25,7 +25,7 @@ def get_base_url():
                     return line.strip().split('=', 1)[1].rstrip('/')
     except Exception:
         pass
-    return "https://nutrition-engine-ui.preview.emergentagent.com"
+    return "https://mira-picks-engine.preview.emergentagent.com"
 
 BASE_URL = get_base_url()
 
