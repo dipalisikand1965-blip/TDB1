@@ -1,10 +1,26 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 16, 2026 (Session 56 — Mira Picks + Orb Fix + Bundle AI Image + Admin Auth Fix)
+## Last Updated: Mar 16, 2026 (Session 58 — Image Regression Revert + AI Image Persistence + Interactive Mira Picks)
 
 ---
 
-## ✅ SESSION 57 — Admin Scroll Fix + Mira Picks Image Fix + ServiceCard (Mar 16, 2026)
+## ✅ SESSION 58 — P0 Image Regression Confirmed Fixed + P1 AI Image Persistence + P2b Interactive Mira Picks (Mar 16, 2026)
+
+### What Was Fixed:
+1. **P0 Image Regression CONFIRMED RESOLVED** — Verified via grep that `static.prod-images.emergentagent.com` filter has been fully removed from both `DineSoulPage.jsx` (`resolvePickImage`) and `DineContentModal.jsx` (`resolveEntityImage`). Testing agent confirmed 42/42 images loading on /dine page.
+2. **P1 AI Image Persistence in Admin** — `ProductBoxEditor.jsx` `handleGenerateAIImage` was using 4 separate `updateField` calls which all captured the same original `product` state snapshot (React batching causes only the last call to persist). Fixed by creating a single `newProduct` object with all fields set atomically, then calling `setProduct` once. Same fix applied to `handleImageUpload`. Image now persists correctly after generation.
+3. **P2 Interactive Cards in Eat & Nourish** — `DimExpanded` already uses `SharedProductCard` with built-in Add to Cart and ProductDetailModal. Testing confirmed this was already working.
+4. **P2b Interactive Mira Picks Cards** — `MiraPicksSection` in `DineSoulPage.jsx` now has full interactivity: products open `ProductDetailModal` (Add to Cart), services open a dedicated Concierge modal that calls `POST /api/service_desk/attach_or_create_ticket`. Each card now shows "Tap → View & Add" or "Tap → Concierge" hint.
+
+### Key File Changes:
+- `frontend/src/pages/DineSoulPage.jsx` — `MiraPicksSection` added `selectedPick`, `conciergeService` states, onClick handlers, `ProductDetailModal`, service concierge modal
+- `frontend/src/components/admin/ProductBoxEditor.jsx` — `handleGenerateAIImage` and `handleImageUpload` use single atomic `setProduct` call
+
+### Testing: P0/P1/P2 all PASS (100%). P2b implemented and code verified.
+
+---
+
+
 
 ### What Was Fixed:
 1. **Admin panel horizontal scroll** — `Master Controls` div in `Admin.jsx` now has `flex-wrap` — buttons wrap to next line, no overflow
