@@ -1303,6 +1303,7 @@ const MiraChatWidget = ({
       <div className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999] flex-col items-end gap-3 hidden md:flex ${className}`}>
         <MiraOrb 
           state={getOrbState()}
+          pillar={pillar}
           size="sm"
           showLabel={true}
           onClick={() => setIsOpen(true)}
