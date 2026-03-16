@@ -429,33 +429,69 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
         return;
       }
 
-      // ── Mira's Picks: full intelligence — breed-relevant, allergy-safe ──
+      // ── Mira's Picks: Claude-powered intelligence — breed-relevant, pre-scored ──
       if (category === 'miras-picks') {
+        const petId = pet?.id;
+        let preScored = [];
+
+        // 1. Check for pre-computed Mira scores (fast path)
+        if (petId) {
+          const statusRes = await fetch(`${apiUrl}/api/mira/score-status/${petId}`).catch(() => null);
+          if (statusRes?.ok) {
+            const status = await statusRes.json();
+            if (status.has_scores && status.count > 10) {
+              const topRes = await fetch(`${apiUrl}/api/mira/claude-picks/${petId}?pillar=dine&limit=24&min_score=40`).catch(() => null);
+              if (topRes?.ok) {
+                const topData = await topRes.json();
+                preScored = topData.picks || [];
+              }
+            }
+          }
+        }
+
+        // 2. Fetch all dine products + services
         const [generalRes, serviceRes] = await Promise.all([
           fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&limit=60`),
           fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&category=service&limit=20`),
         ]);
         const generalData = generalRes.ok ? await generalRes.json() : { products: [] };
         const serviceData = serviceRes.ok ? await serviceRes.json() : { products: [] };
-
-        // Deduplicate by id
         const allById = new Map();
         (generalData.products || []).forEach(p => allById.set(p.id, p));
         (serviceData.products || []).forEach(p => { if (!allById.has(p.id)) allById.set(p.id, p); });
         const allRaw = [...allById.values()];
 
-        // Apply Mira's full intelligence
-        const intelligent = applyMirasPicksIntelligence(allRaw, allergies, getLoves(pet), healthCondition, petName);
+        // 3. Merge pre-computed Claude scores into raw items
+        const scoreById = {};
+        preScored.forEach(p => { scoreById[p.id] = p; });
+        const enriched = allRaw.map(p => ({
+          ...p,
+          ...(scoreById[p.id] ? { mira_score: scoreById[p.id].mira_score } : {}),
+          mira_hint: scoreById[p.id]?.mira_reason || p.mira_hint || null,
+        }));
 
-        // Split: services first, then products
-        const services = intelligent.filter(p => p.category === 'service' || p.product_type === 'service');
-        const realProducts = intelligent.filter(p => p.category !== 'service' && p.product_type !== 'service');
+        // 4. Apply client-side intelligence (filter allergens + sort)
+        const intelligent = applyMirasPicksIntelligence(enriched, allergies, getLoves(pet), healthCondition, petName);
 
-        // Generate Mira Imagines for missing dream items
-        const mirasImagines = generateMiraImagines(pet, realProducts);
+        // 5. Sort: Claude scores override client-side sort when available
+        const hasMiraScores = preScored.length > 0;
+        const sorted = hasMiraScores
+          ? [...intelligent].sort((a, b) => (b.mira_score || 0) - (a.mira_score || 0))
+          : intelligent;
 
+        const services = sorted.filter(p => p.category === 'service' || p.product_type === 'service');
+        const realProducts = sorted.filter(p => p.category !== 'service' && p.product_type !== 'service');
         setProducts([...services, ...realProducts].slice(0, 20));
-        setImagines(mirasImagines);
+        setImagines(generateMiraImagines(pet, realProducts));
+
+        // 6. Fire-and-forget background scoring if no scores yet
+        if (petId && !hasMiraScores) {
+          fetch(`${apiUrl}/api/mira/score-for-pet`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pet_id: petId, pillar: 'dine' }),
+          }).catch(() => {});
+        }
         return;
       }
 
