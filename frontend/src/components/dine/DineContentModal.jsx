@@ -124,15 +124,10 @@ const MiraImaginesCard = ({ item, pet, apiUrl, token }) => {
   );
 };
 
-// Helper: skip broken static.prod-images 403 URLs
+// Helper: returns first available image URL — no filtering, static.prod-images works in browser
 function resolveEntityImage(entity) {
   const candidates = [entity.image_url, entity.image, entity.media?.primary_image, ...(entity.images || [])];
-  for (const url of candidates) {
-    if (!url) continue;
-    if (url.includes('static.prod-images.emergentagent.com')) continue;
-    if (url.startsWith('http')) return url;
-  }
-  return null;
+  return candidates.find(url => url && url.startsWith('http')) || null;
 }
 
 // ── ServiceCard — real service from services_master with Send to Concierge ────

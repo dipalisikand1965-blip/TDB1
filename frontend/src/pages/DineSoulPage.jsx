@@ -836,20 +836,10 @@ function TummyProfile({ pet, token }) {
 }
 
 // ─── Mira's Picks — AI-scored mix of products + services ─────────────────────
-// Helper: returns a valid image URL (skips static.prod-images 403 URLs)
+// Helper: returns first available image URL — no filtering, static.prod-images works in browser
 function resolvePickImage(pick) {
-  const candidates = [
-    pick.image_url,
-    pick.image,
-    pick.media?.primary_image,
-    ...(pick.images || []),
-  ];
-  for (const url of candidates) {
-    if (!url) continue;
-    if (url.includes('static.prod-images.emergentagent.com')) continue; // 403 forbidden
-    if (url.startsWith('http')) return url;
-  }
-  return null;
+  const candidates = [pick.image_url, pick.image, pick.media?.primary_image, ...(pick.images || [])];
+  return candidates.find(url => url && url.startsWith('http')) || null;
 }
 function MiraPicksSection({ pet }) {
   const [picks, setPicks] = useState([]);
