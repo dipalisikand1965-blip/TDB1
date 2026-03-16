@@ -124,20 +124,23 @@ const MiraImaginesCard = ({ item, pet, apiUrl, token }) => {
   );
 };
 
+// Helper: skip broken static.prod-images 403 URLs
+function resolveEntityImage(entity) {
+  const candidates = [entity.image_url, entity.image, entity.media?.primary_image, ...(entity.images || [])];
+  for (const url of candidates) {
+    if (!url) continue;
+    if (url.includes('static.prod-images.emergentagent.com')) continue;
+    if (url.startsWith('http')) return url;
+  }
+  return null;
+}
+
 // ── ServiceCard — real service from services_master with Send to Concierge ────
 const ServiceCard = ({ service, pet, apiUrl, token }) => {
   const [state, setState] = useState('idle'); // idle | sending | sent
   const petName = pet?.name || 'your dog';
   const scoreColor = !service.mira_score ? '#6B7280' : service.mira_score >= 80 ? '#16A34A' : '#F59E0B';
-  const img = (() => {
-    const candidates = [service.image_url, service.image, service.media?.primary_image];
-    for (const url of candidates) {
-      if (!url) continue;
-      if (url.includes('static.prod-images.emergentagent.com')) continue;
-      if (url.startsWith('http')) return url;
-    }
-    return null;
-  })();
+  const img = resolveEntityImage(service);
 
   const sendToConcierge = async () => {
     setState('sending');
@@ -632,16 +635,18 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
         const scoreById = {};
         preScored.forEach(p => { scoreById[p.id] = p; });
         
-        // Start with raw products enriched with scores + updated images
+        // Start with raw products enriched with scores + updated images (filter 403 URLs)
         const enriched = allRaw.map(p => ({
           ...p,
           ...(scoreById[p.id] ? {
             mira_score: scoreById[p.id].mira_score,
-            // Use the updated image from the scored pick (reflects admin changes)
-            image: scoreById[p.id].image_url || scoreById[p.id].image || p.image,
+            // Use the updated image from the scored pick (reflects admin changes), skip broken 403 URLs
+            image: resolveEntityImage(scoreById[p.id]) || resolveEntityImage(p) || p.image,
             image_url: scoreById[p.id].image_url || p.image_url,
             entity_type: scoreById[p.id].entity_type || p.entity_type || 'product',
-          } : {}),
+          } : {
+            image: resolveEntityImage(p) || p.image,
+          }),
           mira_hint: scoreById[p.id]?.mira_reason || p.mira_hint || null,
         }));
 
