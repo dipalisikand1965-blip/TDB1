@@ -21462,6 +21462,10 @@ logger.info("Favorites API routes initialized")
 # Mira Care Plan Intelligence
 from mira_care_plan import care_plan_router
 app.include_router(care_plan_router)  # Care Plan at /api/mira/care-plan/*
+
+from mira_score_engine import mira_score_router, set_database as set_score_engine_db
+app.include_router(mira_score_router)  # Mira Score Engine at /api/mira/*
+set_score_engine_db(db)
 logger.info("Mira Care Plan Intelligence initialized")
 
 # Pet Wrapped - The viral acquisition engine
