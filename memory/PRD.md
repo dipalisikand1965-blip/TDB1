@@ -4,7 +4,36 @@
 
 ---
 
-## ✅ SESSION 59 — Dine Toy Image Regression Fixed + Product Box Dine Integration (Mar 16, 2026)
+## ✅ SESSION 60 — PetFriendlySpots + Product Box Category Fix + No "9 Options" + Dine AI Images (Mar 16, 2026)
+
+### What Was Built:
+1. **Google Places / PetFriendlySpots Integration** — Replaced MOCK_SPOTS with a real-time component using `GET /api/places/pet-friendly`. Component features: city search with autocomplete, "Near me" GPS, 8 real restaurant spots per city with photos/ratings/breed tags, "Reserve via Concierge" button that opens ConciergeIntakeModal. PASS ✅
+2. **Removed "9 options" from Dine** — `ProductCard.jsx`: options count badge now only shown when `pillar === 'shop'`. All dine food product cards clean. PASS ✅
+3. **Product Box: Category + Sub-Category + Status** — `ProductBoxEditor.jsx` Pillars tab now has:
+   - **Category** dropdown (filtered by selected primary pillar — shows dine categories for Dine, shop categories for Shop, etc.)
+   - **Sub-Category** text input (for tags like "Special Diets", "Chicken-Free", "Senior", "Puppy")
+   - **Status in Pillar** dropdown (Live/Paused/Draft/Archived — controls visibility on front-end)
+   All 3 fields save as FLAT fields (`category`, `sub_category`, `approval_status`) in `products_master`. PASS ✅
+4. **ProductBoxConfig dine categories** — Added all 7 dine categories to `MAIN_CATEGORIES`: Daily Meals, Treats & Rewards, Supplements, Frozen & Fresh, Homemade & Recipes, Bowls & Accessories, Food (General). PASS ✅
+5. **Background AI Image Generator for pillars** — `POST /api/ai-images/generate-pillar-images?pillar=dine&limit=N` runs in background, generates photo-realistic images via OpenAI/Emergent, saves to Cloudinary, updates `products_master`. PASS ✅
+
+### Current AI Image Generation:
+- **Model**: OpenAI GPT-Image via Emergent universal key (used in Services and Products)
+- **158 dine products** have Unsplash placeholders — admin can trigger batch from admin panel or API
+- **538 dine products** already have Cloudinary images
+
+### Key File Changes:
+- `frontend/src/components/dine/PetFriendlySpots.jsx` — Full rewrite with Google Places
+- `frontend/src/pages/DineSoulPage.jsx` — Import PetFriendlySpots, remove MOCK_SPOTS, add dineOutIntakeOpen state
+- `backend/dine_routes.py` — NEW `GET /api/places/pet-friendly` endpoint
+- `backend/ai_image_service.py` — NEW `POST /api/ai-images/generate-pillar-images` endpoint
+- `frontend/src/components/ProductCard.jsx` — Options count hidden for non-shop pillars
+- `frontend/src/components/admin/ProductBoxEditor.jsx` — Category/Sub-Category/Status fields in Pillars tab
+- `frontend/src/components/admin/ProductBoxConfig.js` — Full dine categories in MAIN_CATEGORIES
+
+---
+
+
 
 ### What Was Fixed:
 1. **Toy Images in Dine Page FIXED** — Root cause: 155 dine products had `static.prod-images.emergentagent.com/jobs/4700c8db-...` URLs (AI images generated for TOY products in a previous session, wrongly assigned to food products). All cleared: 155 `image_url` + 395 `image` fields reset to empty.
