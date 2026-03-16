@@ -17,6 +17,7 @@ import PillarPageLayout from "../components/PillarPageLayout";
 import DineCategoryStrip from "../components/dine/DineCategoryStrip";
 import DineHero from "../components/dine/DineHero";
 import MealBoxCard from "../components/dine/MealBoxCard";
+import ConciergeIntakeModal from "../components/dine/ConciergeIntakeModal";
 import { PillarHelpBuckets, PillarGuidedPaths } from "../components/PillarGoldSections";
 import { API_URL } from "../utils/api";
 import SharedProductCard from "../components/ProductCard";
@@ -922,40 +923,6 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   );
 }
 
-// ─── Mira Meal Pick ───────────────────────────────────────────────────────────
-function MiraMealPick({ pet }) {
-  const petName = pet?.name || "your dog";
-  const allergies = getAllergies(pet);
-  const healthCondition = getHealthCondition(pet);
-  const openMira = () => window.dispatchEvent(new CustomEvent("openMiraAI", {detail:{message:`Build a weekly meal plan for ${petName}`,context:"dine"}}));
-  return (
-    <div style={{background:"linear-gradient(135deg,#3d1200,#7a2800)",borderRadius:20,padding:28,marginBottom:32,display:"flex",alignItems:"center",gap:24}} data-testid="mira-meal-pick">
-      <div style={{flex:1}}>
-        <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(255,140,66,0.20)",border:"1px solid rgba(255,140,66,0.40)",borderRadius:20,padding:"3px 10px",color:"#FFC080",fontSize:10,fontWeight:600,marginBottom:10}}>✦ Mira's meal pick for {petName}</div>
-        <div style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:"#fff",marginBottom:6}}>The {petName} Meal Pick</div>
-        <p style={{fontSize:12,color:"rgba(255,255,255,0.65)",lineHeight:1.65,marginBottom:14}}>
-          {healthCondition
-            ? `I've built this around ${petName}'s ${healthCondition}. Every item supports their treatment and strength. Nothing harmful. Everything nourishing.`
-            : allergies.length > 0
-              ? `${allergies.map(a=>a.charAt(0).toUpperCase()+a.slice(1)).join("-free, ")}-free. Everything right for ${petName} at their stage.`
-              : `I've matched this to ${petName}'s weight, age, and what they love. Everything right for them right now.`
-          }
-        </p>
-        <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:18}}>
-          {["🌅 Salmon fresh meal","🌙 Sweet potato bowl","🦴 Salmon biscuits","💊 Immunity booster"].map(chip => (
-            <span key={chip} style={{background:"rgba(255,255,255,0.10)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:20,padding:"4px 10px",color:"#fff",fontSize:11}}>{chip}</span>
-          ))}
-        </div>
-        <button onClick={openMira} style={{background:"linear-gradient(135deg,#FF8C42,#C44DFF)",color:"#fff",border:"none",borderRadius:10,padding:"10px 18px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Order {petName}'s Weekly Plan →</button>
-      </div>
-      <div style={{flexShrink:0,textAlign:"center"}}>
-        <div style={{width:80,height:80,borderRadius:"50%",background:"linear-gradient(135deg,#FF8C42,#C44DFF)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,marginBottom:6}}>🍽️</div>
-        <div style={{color:"rgba(255,255,255,0.55)",fontSize:11}}>Curated by Mira</div>
-      </div>
-    </div>
-  );
-}
-
 // ─── Guided Nutrition Paths ───────────────────────────────────────────────────
 function GuidedNutritionPaths({ pet }) {
   const [openPath, setOpenPath] = useState("allergy");
@@ -1052,30 +1019,24 @@ function PetFriendlySpots({ pet }) {
 function DiningConcierge({ pet }) {
   const petName = pet?.name || "your dog";
   const breed = pet?.breed || "your dog's breed";
-  const openMira = () => window.dispatchEvent(new CustomEvent("openMiraAI",{detail:{message:`Plan a dining out experience for ${petName}`,context:"dine"}}));
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalOccasion, setModalOccasion] = useState(null);
+
+  const openModal = (occasion = null) => {
+    setModalOccasion(occasion);
+    setModalOpen(true);
+  };
+
   return (
     <div style={{background:"linear-gradient(135deg,#FFF8F0,#FFF0F8)",borderRadius:20,border:"1px solid #F5E8D4",padding:24,marginBottom:32}} data-testid="dining-concierge">
-      <div style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:"#1A0A00",marginBottom:4,fontFamily:"Georgia,serif"}}>Dining Concierge Services</div>
-      <div style={{fontSize:13,color:"#888",marginBottom:20}}>Concierge-led support for every dining out moment — from finding the right place to making sure {petName} is welcome.</div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
-        {CONC_SERVICES.map(svc => (
-          <div key={svc.name} style={{background:"#fff",borderRadius:14,border:"1px solid #F5E8D4",overflow:"hidden"}}>
-            <div style={{height:80,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,background:"linear-gradient(135deg,#FFF3E0,#FFF0F8)"}}>{svc.icon}</div>
-            <div style={{padding:10}}>
-              {svc.free && <div style={{display:"inline-block",background:"#E8F5E9",color:"#2E7D32",fontSize:9,fontWeight:700,borderRadius:8,padding:"2px 7px",marginBottom:4}}>Complimentary</div>}
-              <div style={{fontSize:12,fontWeight:700,color:"#1A0A00",marginBottom:4}}>{svc.name}</div>
-              <div style={{fontSize:10,color:"#888",lineHeight:1.4,marginBottom:8}}>{t(svc.desc, petName)}</div>
-              <button onClick={openMira} style={{fontSize:11,color:"#C44400",fontWeight:600,background:"none",border:"none",padding:0,cursor:"pointer"}}>{t(svc.cta, petName)}</button>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div style={{background:"#1A0A00",borderRadius:20,padding:28,display:"flex",alignItems:"center",gap:24}}>
+
+      {/* ── Dark brown CTA box — TOP ── */}
+      <div style={{background:"#1A0A00",borderRadius:20,padding:28,display:"flex",alignItems:"center",gap:24,marginBottom:24}}>
         <div style={{flex:1}}>
           <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(201,151,58,0.20)",border:"1px solid rgba(201,151,58,0.40)",borderRadius:20,padding:"4px 12px",color:"#F0C060",fontSize:11,fontWeight:600,marginBottom:12}}>👑 Dining Concierge®</div>
           <div style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:"#fff",marginBottom:8,fontFamily:"Georgia,serif"}}>Want us to plan the whole outing?</div>
           <div style={{fontSize:13,color:"rgba(255,255,255,0.60)",lineHeight:1.7,marginBottom:18}}>You tell us where you want to take {petName}.<br/>We find the right venue, check {breed} suitability, confirm outdoor seating, make the reservation, and have a safe treat waiting when you arrive.</div>
-          <button onClick={openMira} style={{display:"inline-flex",alignItems:"center",gap:8,background:"linear-gradient(135deg,#C9973A,#F0C060)",color:"#1A0A00",border:"none",borderRadius:10,padding:"12px 24px",fontSize:14,fontWeight:800,cursor:"pointer"}}>👑 Talk to your Concierge</button>
+          <button onClick={() => openModal()} style={{display:"inline-flex",alignItems:"center",gap:8,background:"linear-gradient(135deg,#C9973A,#F0C060)",color:"#1A0A00",border:"none",borderRadius:10,padding:"12px 24px",fontSize:14,fontWeight:800,cursor:"pointer"}} data-testid="talk-to-concierge-btn">👑 Talk to your Concierge</button>
         </div>
         <div style={{flexShrink:0,textAlign:"center"}}>
           <div style={{width:80,height:80,borderRadius:"50%",background:"rgba(201,151,58,0.20)",border:"2px solid rgba(201,151,58,0.40)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:34,margin:"0 auto 8px"}}>👑</div>
@@ -1083,6 +1044,32 @@ function DiningConcierge({ pet }) {
           <div style={{fontSize:11,color:"rgba(255,255,255,0.50)",marginBottom:6}}>handled for you</div>
         </div>
       </div>
+
+      {/* ── Service cards section — BELOW ── */}
+      <div style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:"#1A0A00",marginBottom:4,fontFamily:"Georgia,serif"}}>Dining Concierge Services</div>
+      <div style={{fontSize:13,color:"#888",marginBottom:20}}>Concierge-led support for every dining out moment — from finding the right place to making sure {petName} is welcome.</div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+        {CONC_SERVICES.map(svc => (
+          <div key={svc.name} style={{background:"#fff",borderRadius:14,border:"1px solid #F5E8D4",overflow:"hidden"}}>
+            <div style={{height:80,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,background:"linear-gradient(135deg,#FFF3E0,#FFF0F8)"}}>{svc.icon}</div>
+            <div style={{padding:10}}>
+              {svc.free && <div style={{display:"inline-block",background:"#E8F5E9",color:"#2E7D32",fontSize:9,fontWeight:700,borderRadius:8,padding:"2px 7px",marginBottom:4}}>Complimentary</div>}
+              <div style={{fontSize:12,fontWeight:700,color:"#1A0A00",marginBottom:4}}>{svc.name}</div>
+              <div style={{fontSize:10,color:"#888",lineHeight:1.4,marginBottom:8}}>{t(svc.desc, petName)}</div>
+              <button onClick={() => openModal(svc.name)} style={{fontSize:11,color:"#C44400",fontWeight:600,background:"none",border:"none",padding:0,cursor:"pointer"}}>{t(svc.cta, petName)}</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Modal */}
+      {modalOpen && (
+        <ConciergeIntakeModal
+          pet={pet}
+          prefilledOccasion={modalOccasion}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
@@ -1290,7 +1277,6 @@ const DineSoulPage = () => {
 
         {activeTab === "out" && <PetFriendlySpots pet={petData} />}
 
-        <DiningConcierge pet={petData} />
       </div>
 
       {/* Mira pill */}
