@@ -62,7 +62,7 @@ const CATEGORY_CONFIG = {
   'homemade-recipes': { emoji: '🍳', label: 'Homemade & Recipes',    apiCategory: 'Homemade & Recipes' },
   'bundles':          { emoji: '🎁', label: 'Dining Bundles',        apiCategory: null },
   'soul-picks':       { emoji: '✨', label: 'Soul Picks',            apiCategory: null },
-  'miras-picks':      { emoji: '💫', label: "Mira's Picks",          apiCategory: null },
+  'miras-picks':      { emoji: '💫', label: "Mira's Picks",          apiCategory: null }, // includes services
 };
 
 const CTA_LABELS = {
@@ -255,12 +255,16 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
         return;
       }
 
-      // ── Mira's Picks ───────────────────────────────────────────────
+      // ── Mira's Picks: show all curated dine items including services ─
       if (category === 'miras-picks') {
-        const r = await fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&limit=20`);
+        const r = await fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&limit=60`);
         if (r.ok) {
           const d = await r.json();
-          setProducts((d.products || []).slice(0, 12));
+          // Sort: services first (they're curated concierge picks), then by name
+          const all = d.products || [];
+          const services = all.filter(p => p.category === 'service' || p.product_type === 'service');
+          const others = all.filter(p => p.category !== 'service' && p.product_type !== 'service');
+          setProducts([...services, ...others].slice(0, 20));
         }
         return;
       }
