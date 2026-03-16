@@ -601,17 +601,22 @@ function DineSoulQuestionsSection({ pet, token, onScoreUpdated }) {
 
   const loadQuestions = useCallback(() => {
     if (!pet?.id) { setLoading(false); return; }
-    fetch(`${API_URL}/api/pet-soul/profile/${pet.id}/quick-questions?limit=4&context=dine`)
+    setLoading(true);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8000); // 8s timeout
+    fetch(`${API_URL}/api/pet-soul/profile/${pet.id}/quick-questions?limit=4&context=dine`, { signal: controller.signal })
       .then(r => r.ok ? r.json() : null)
       .then(data => {
+        clearTimeout(timer);
         if (data) {
           setQuestions((data.questions || []).map(q => ({ ...q, pet_id: pet.id })));
-          // Notify parent (modal header) of current score on load
           if (data.current_score !== undefined) onScoreUpdated?.(data.current_score);
         }
       })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+      .catch(err => {
+        if (err.name !== 'AbortError') console.error('[TummyProfile questions]', err);
+      })
+      .finally(() => { clearTimeout(timer); setLoading(false); });
   }, [pet?.id]);
 
   useEffect(() => { loadQuestions(); }, [loadQuestions]);
@@ -629,9 +634,22 @@ function DineSoulQuestionsSection({ pet, token, onScoreUpdated }) {
   const visibleQuestions = questions.slice(0, Math.max(0, 4 - answeredCount));
 
   if (loading) return (
-    <div style={{ textAlign: 'center', padding: '24px 0', color: '#888', fontSize: 13 }}>Loading questions…</div>
+    <div style={{ textAlign: 'center', padding: '32px 0', color: '#888', fontSize: 13 }}>
+      <div style={{ width: 20, height: 20, border: '2px solid #FFE5CC', borderTopColor: '#FF8C42', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 10px' }} />
+      Loading {petName}'s questions…
+    </div>
   );
-  if (visibleQuestions.length === 0 && answeredCount === 0) return null;
+  if (visibleQuestions.length === 0 && answeredCount === 0) return (
+    <div style={{ textAlign: 'center', padding: '24px 0' }}>
+      <div style={{ fontSize: 28, marginBottom: 10 }}>🎉</div>
+      <p style={{ fontSize: 14, fontWeight: 700, color: '#1A0A00', marginBottom: 6 }}>
+        {petName}'s food profile is complete!
+      </p>
+      <p style={{ fontSize: 12, color: '#888' }}>
+        All questions answered · Mira has everything she needs
+      </p>
+    </div>
+  );
 
   return (
     <div style={{ marginBottom: 24 }}>
