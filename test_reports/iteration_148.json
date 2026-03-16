@@ -1,0 +1,79 @@
+{
+  "summary": "Dine Service Flow end-to-end testing post-fix. Product flow (Daily Meals → View Details → Include → CartSidebar) 100% passing. Service flow (Mira's Picks → Request Service → ProductDetailModal → Request This Service → Toast) is working for Backup Dining Alternatives. Only 1 out of 5 expected service products appears in Mira's Picks due to backend API limitation.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "/api/admin/pillar-products?pillar=dine&limit=60",
+        "issue": "Only 1 service product (Backup Dining Alternatives) returned in 60 results. Other 4 dine services (Venue Suitability Advisory, Dining Etiquette Guidance, Reservation Assistance, Pet-Friendly Restaurant Discovery) do not appear in the general pillar-products fetch even though they are returned correctly from /api/admin/pillar-products?pillar=dine&category=service&limit=20. Suggests these 4 products may not have their pillar tagged as 'dine' in the DB or are lower priority in the general endpoint.",
+        "priority": "MEDIUM"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Mira's Picks / Service Products",
+        "issue": "Only 1 service product (Backup Dining Alternatives) visible in Mira's Picks grid instead of all 5. The fix fetches limit=60 from pillar-products and sorts services first, but only 1 service appears in those 60 results. The other 4 service products exist but don't surface in the general dine pillar query.",
+        "priority": "MEDIUM",
+        "note": "The service flow itself works perfectly for the 1 visible service product. All button logic, toast, and cart behavior are correct."
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Mira's Picks - Service Card",
+        "issues": ["The 'Request Service' card button uses bg-orange-100 / text-orange-700 (light muted tone), while the modal uses bold orange gradient. The card button is visually subtle vs the strong orange in the modal - minor UX inconsistency but acceptable."]
+      },
+      {
+        "screen": "ProductDetailModal - Service",
+        "issues": ["Service product (Backup Dining Alternatives) shows a toy/colorful rope image which is unrelated to dining services. Service products likely have no dedicated image and fall back to a placeholder - minor UX issue, not blocking."]
+      }
+    ]
+  },
+  "features_verified": {
+    "login_test123": "PASS — dipali@clubconcierge.in with test123",
+    "dine_page_loads": "PASS",
+    "daily_meals_pill": "PASS — Opens modal with 13 products",
+    "daily_meals_view_details_button": "PASS — All 13 cards show purple 'View Details' button",
+    "no_request_service_in_daily_meals": "PASS — 0 'Request Service' buttons in Daily Meals",
+    "product_detail_modal_opens": "PASS — ProductDetailModal opens for 'Allergy-Safe Rotation Pack'",
+    "product_detail_include_button": "PASS — Shows pink-purple 'Include' button (not 'Request This Service')",
+    "add_to_cart_works": "PASS — Clicking Include adds to cart",
+    "cart_sidebar_your_requests": "PASS — CartSidebar shows 'Your Requests'",
+    "miras_picks_pill_opens": "PASS — 💫 Mira's Picks modal opens with 20 products",
+    "service_products_in_miras_picks": "PARTIAL — 1 service product (Backup Dining Alternatives) visible with orange 'Request Service' button (expected 5)",
+    "request_service_button_on_card": "PASS — Orange/light 'Request Service' button on service product card",
+    "product_detail_modal_service_view": "PASS — ProductDetailModal opens for service product",
+    "request_this_service_button": "PASS — Orange 'Request This Service' button visible (NOT 'Include'/'Add to Cart')",
+    "no_include_button_for_service": "PASS — No 'Include' button shown for service product",
+    "click_request_this_service": "PASS — Clicking triggers concierge API call",
+    "sent_to_concierge_toast": "PASS — Toast shows 'Sent to Concierge!' with product name",
+    "handle_requests_link_in_toast": "PASS — 'Handle Requests →' link visible in toast notification",
+    "cart_not_open_after_service": "PASS — CartSidebar does NOT open after service request",
+    "button_success_state": "PASS — Button changes to green '✓ Sent to Concierge!' after click"
+  },
+  "test_report_links": [],
+  "action_items": [
+    "MEDIUM: Fix backend — ensure all 5 dine service products (Venue Suitability Advisory, Dining Etiquette Guidance, Reservation Assistance, Pet-Friendly Restaurant Discovery, Backup Dining Alternatives) are returned in the general /api/admin/pillar-products?pillar=dine fetch. They exist in DB with product_type=service and category=service, and are returned by the category-specific endpoint, but 4 of 5 don't appear in the general 60-product fetch. Consider: (a) ensure their pillar field includes 'dine', or (b) change miras-picks fetch to use two parallel calls — general + category=service merged."
+  ],
+  "critical_code_review_comments": [
+    "DineContentModal.jsx miras-picks logic (lines 259-270): Fetching limit=60 from general pillar-products and sorting services first is correct in principle, but depends on all service products being included in the general query. Since only 1/5 services appear, a more robust approach would be to explicitly fetch both: (1) general products + (2) service category, then merge. E.g.: const [generalRes, serviceRes] = await Promise.all([fetch(...limit=30), fetch(...category=service&limit=10)]) → merge and deduplicate.",
+    "Service product images use a toy/colorful rope placeholder image — should ideally use a concierge/service icon or solid color background for service products that have no product image."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend-only testing)",
+    "frontend": "90% — Product flow 100% working, Service flow 95% (all 5 flow steps work for visible service, but only 1/5 services appear in Mira's Picks instead of all 5)"
+  },
+  "test_credentials": {
+    "user_email": "dipali@clubconcierge.in",
+    "user_password": "test123",
+    "pet": "Mojo (Indie, chicken allergy)"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Product flow: 100% passing (Daily Meals → View Details → Include → CartSidebar Your Requests). Service flow: All 5 steps work for the 1 visible service product (Backup Dining Alternatives). Core issue: /api/admin/pillar-products?pillar=dine&limit=60 returns only 1 service product; 4 others (Venue Suitability Advisory, Dining Etiquette Guidance, Reservation Assistance, Pet-Friendly Restaurant Discovery) are accessible via ?category=service but not in the general fetch. Fix: either backend-side (ensure all 5 have pillar=dine in DB) or frontend-side (parallel fetch general + service category in miras-picks). Password is test123.",
+  "rca_of_issue": "PARTIAL SERVICE VISIBILITY: The miras-picks fix correctly fetches limit=60 and sorts services first. However, the backend's general pillar-products endpoint with pillar=dine only includes 1 service (Backup Dining Alternatives) in the first 60 products. The remaining 4 service products either: (a) don't have 'dine' in their pillar field in products_master, or (b) are ranked lower in backend sorting and fall outside the 60-product window. Verification: curl GET /api/admin/pillar-products?pillar=dine&category=service&limit=20 returns all 5 correctly, but GET /api/admin/pillar-products?pillar=dine&limit=200 returns only 2 services (Backup + Dining Etiquette Guidance). Fix approach: UPDATE products_master to ensure all 5 dine services have pillar='dine' or pillar list includes 'dine'."
+}
