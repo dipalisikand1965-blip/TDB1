@@ -22,7 +22,7 @@ import DineConciergeSection from "../components/dine/DineConciergeSection";
 import GuidedNutritionPaths from "../components/dine/GuidedNutritionPaths";
 import { PillarHelpBuckets, PillarGuidedPaths } from "../components/PillarGoldSections";
 import { API_URL } from "../utils/api";
-import SharedProductCard from "../components/ProductCard";
+import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 
 // ─── Dimension visual config — dynamic per pet ───────────────────────────────
 function getDineDims(pet) {
@@ -844,6 +844,36 @@ function resolvePickImage(pick) {
 function MiraPicksSection({ pet }) {
   const [picks, setPicks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPick, setSelectedPick] = useState(null);
+  const [conciergeService, setConciergeService] = useState(null);
+  const [conciergeSending, setConciergeSending] = useState(false);
+  const [conciergeSent, setConciergeSent] = useState(false);
+  const { token } = useAuth();
+  const petName = pet?.name || "your dog";
+
+  const handleServiceConcierge = async (service) => {
+    setConciergeSending(true);
+    try {
+      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          parent_id: storedUser?.id || storedUser?.email || 'guest',
+          pet_id: pet?.id || 'unknown',
+          pillar: 'dine',
+          intent_primary: 'service_request',
+          intent_secondary: [service.name || service.entity_name],
+          life_state: 'dine',
+          channel: 'miras_picks',
+          initial_message: { sender: 'parent', source: 'dine_miras_picks', text: `I'd like "${service.name || service.entity_name}" for ${petName}. Mira scored it ${service.mira_score || '?'}/100. Please help!` }
+        })
+      });
+    } catch {}
+    setConciergeSending(false);
+    setConciergeSent(true);
+    setTimeout(() => { setConciergeSent(false); setConciergeService(null); }, 2000);
+  };
 
   useEffect(() => {
     if (!pet?.id) { setLoading(false); return; }
@@ -870,8 +900,6 @@ function MiraPicksSection({ pet }) {
   }, [pet?.id]);
 
   if (loading || !picks.length) return null;
-
-  const petName = pet?.name || "your dog";
 
   return (
     <section style={{ marginBottom: 32 }} data-testid="mira-picks-section">
@@ -904,6 +932,7 @@ function MiraPicksSection({ pet }) {
               transition: 'transform 0.15s, box-shadow 0.15s',
               cursor: 'pointer',
             }}
+              onClick={() => isService ? setConciergeService(pick) : setSelectedPick(pick)}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(196,68,0,0.12)'; }}
               onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 2px 12px rgba(196,68,0,0.06)'; }}
               data-testid={`mira-pick-card-${i}`}
@@ -939,11 +968,76 @@ function MiraPicksSection({ pet }) {
                     {pick.mira_reason}
                   </p>
                 )}
+                {/* Tap hint */}
+                <p style={{ fontSize: 9, color: isService ? '#6366F1' : '#FF8C42', fontWeight: 700, margin: '6px 0 0', letterSpacing: '0.04em' }}>
+                  {isService ? 'Tap → Concierge' : 'Tap → View & Add'}
+                </p>
               </div>
             </div>
           );
         })}
       </div>
+
+      {/* Product Detail Modal */}
+      {selectedPick && (
+        <ProductDetailModal
+          product={selectedPick}
+          pillar="dine"
+          selectedPet={pet}
+          onClose={() => setSelectedPick(null)}
+        />
+      )}
+
+      {/* Service Concierge Modal */}
+      {conciergeService && (
+        <div
+          onClick={() => !conciergeSending && setConciergeService(null)}
+          style={{ position: 'fixed', inset: 0, zIndex: 10003, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ width: 'min(420px, 100%)', borderRadius: 20, background: '#fff', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', overflow: 'hidden' }}
+            data-testid="service-concierge-modal"
+          >
+            {/* Dark header */}
+            <div style={{ background: 'linear-gradient(135deg, #0F172A, #1E293B)', padding: '20px 24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, background: '#6366F1', color: '#fff', borderRadius: 20, padding: '3px 10px' }}>SERVICE · Mira Scored {conciergeService.mira_score || '—'}</span>
+                <button onClick={() => setConciergeService(null)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: 20, width: 28, height: 28, cursor: 'pointer', color: 'rgba(255,255,255,0.7)', fontSize: 16 }}>✕</button>
+              </div>
+              <p style={{ fontWeight: 800, color: '#fff', fontSize: 16, margin: '0 0 6px', lineHeight: 1.3 }}>
+                {conciergeService.name || conciergeService.entity_name}
+              </p>
+              {conciergeService.mira_reason && (
+                <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12, margin: 0, fontStyle: 'italic' }}>
+                  {conciergeService.mira_reason}
+                </p>
+              )}
+            </div>
+            {/* Body */}
+            <div style={{ padding: '20px 24px' }}>
+              <p style={{ fontSize: 13, color: '#555', marginBottom: 16 }}>
+                Our concierge team will reach out within 48 hours to arrange this service for <strong>{petName}</strong>.
+              </p>
+              {conciergeSent ? (
+                <div style={{ textAlign: 'center', padding: '12px', borderRadius: 12, background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.3)' }}>
+                  <Check size={20} style={{ color: '#22C55E', margin: '0 auto 6px' }} />
+                  <p style={{ fontWeight: 700, color: '#22C55E', margin: 0, fontSize: 14 }}>Sent to Concierge!</p>
+                </div>
+              ) : (
+                <button
+                  onClick={() => handleServiceConcierge(conciergeService)}
+                  disabled={conciergeSending}
+                  data-testid="service-modal-concierge-btn"
+                  style={{ width: '100%', background: 'linear-gradient(135deg, #6366F1, #4F46E5)', color: '#fff', border: 'none', borderRadius: 12, padding: '13px', fontSize: 14, fontWeight: 700, cursor: conciergeSending ? 'wait' : 'pointer', opacity: conciergeSending ? 0.7 : 1 }}
+                >
+                  {conciergeSending ? 'Sending…' : `Send to Concierge for ${petName} →`}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
