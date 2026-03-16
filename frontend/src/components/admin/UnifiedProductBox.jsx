@@ -82,6 +82,7 @@ const UnifiedProductBox = () => {
   const [filterSize, setFilterSize] = useState('');
   const [filterHasMiraHint, setFilterHasMiraHint] = useState('');
   const [filterSource, setFilterSource] = useState('');  // NEW: shopify, soul_made, manual
+  const [filterCategory, setFilterCategory] = useState('');  // Category filter
   
   // Pagination
   const [page, setPage] = useState(0);
@@ -122,6 +123,7 @@ const UnifiedProductBox = () => {
       if (filterSize) params.append('size', filterSize);
       if (filterHasMiraHint) params.append('has_mira_hint', filterHasMiraHint);
       if (filterSource) params.append('source', filterSource);  // NEW: Source filter
+      if (filterCategory) params.append('category', filterCategory);  // Category filter
       
       const response = await fetch(`${API_URL}/api/product-box/products?${params}`);
       const data = await response.json();
@@ -134,7 +136,7 @@ const UnifiedProductBox = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, searchTerm, filterType, filterPillar, filterStatus, filterShipping, filterRewardEligible, filterBreed, filterSize, filterHasMiraHint, filterSource]);
+  }, [page, searchTerm, filterType, filterPillar, filterStatus, filterShipping, filterRewardEligible, filterBreed, filterSize, filterHasMiraHint, filterSource, filterCategory]);
 
   // Fetch stats
   const fetchStats = async () => {
@@ -852,7 +854,7 @@ const UnifiedProductBox = () => {
         <Button
           variant={filterPillar === '' ? 'default' : 'outline'}
           size="sm"
-          onClick={() => setFilterPillar('')}
+          onClick={() => { setFilterPillar(''); setFilterCategory(''); setPage(0); }}
           className="h-8"
           data-testid="filter-all-product-pillars"
         >
@@ -863,7 +865,7 @@ const UnifiedProductBox = () => {
             key={p.id}
             variant={filterPillar === p.id ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setFilterPillar(p.id)}
+            onClick={() => { setFilterPillar(p.id); setFilterCategory(''); setPage(0); }}
             className="h-8"
             data-testid={`filter-product-pillar-${p.id}`}
           >
@@ -871,6 +873,30 @@ const UnifiedProductBox = () => {
           </Button>
         ))}
       </div>
+
+      {/* Category Quick Filter — shows when a pillar is selected */}
+      {filterPillar && MAIN_CATEGORIES.filter(c => c.pillar === filterPillar).length > 0 && (
+        <div className="flex flex-wrap gap-2 items-center">
+          <span className="text-xs text-gray-500 font-medium">Category:</span>
+          <button
+            onClick={() => { setFilterCategory(''); setPage(0); }}
+            className={`h-7 px-3 text-xs rounded-full border transition-colors ${filterCategory === '' ? 'bg-purple-600 text-white border-purple-600' : 'border-gray-300 text-gray-600 hover:border-purple-400'}`}
+            data-testid="filter-category-all"
+          >
+            All
+          </button>
+          {MAIN_CATEGORIES.filter(c => c.pillar === filterPillar).map(c => (
+            <button
+              key={c.id}
+              onClick={() => { setFilterCategory(c.id); setPage(0); }}
+              className={`h-7 px-3 text-xs rounded-full border transition-colors ${filterCategory === c.id ? 'bg-purple-600 text-white border-purple-600' : 'border-gray-300 text-gray-600 hover:border-purple-400'}`}
+              data-testid={`filter-category-${c.id}`}
+            >
+              {c.name}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Filters */}
       <Card className="p-4" data-testid="product-filters-card">
@@ -890,7 +916,7 @@ const UnifiedProductBox = () => {
           
           <select 
             value={filterType} 
-            onChange={(e) => setFilterType(e.target.value)}
+            onChange={(e) => { setFilterType(e.target.value); setPage(0); }}
             className="h-10 px-3 rounded-md border border-gray-200 text-sm"
             data-testid="filter-product-type-select"
           >
@@ -902,7 +928,7 @@ const UnifiedProductBox = () => {
           
           <select 
             value={filterPillar} 
-            onChange={(e) => setFilterPillar(e.target.value)}
+            onChange={(e) => { setFilterPillar(e.target.value); setFilterCategory(''); setPage(0); }}
             className="h-10 px-3 rounded-md border border-gray-200 text-sm"
             data-testid="filter-product-pillar-select"
           >
@@ -914,7 +940,7 @@ const UnifiedProductBox = () => {
           
           <select 
             value={filterStatus} 
-            onChange={(e) => setFilterStatus(e.target.value)}
+            onChange={(e) => { setFilterStatus(e.target.value); setPage(0); }}
             className="h-10 px-3 rounded-md border border-gray-200 text-sm"
             data-testid="filter-product-status-select"
           >
@@ -926,7 +952,7 @@ const UnifiedProductBox = () => {
           
           <select 
             value={filterShipping} 
-            onChange={(e) => setFilterShipping(e.target.value)}
+            onChange={(e) => { setFilterShipping(e.target.value); setPage(0); }}
             className="h-10 px-3 rounded-md border border-gray-200 text-sm"
             data-testid="filter-product-shipping-select"
           >
@@ -938,7 +964,7 @@ const UnifiedProductBox = () => {
           {/* Breed Intelligence Filters */}
           <select 
             value={filterBreed} 
-            onChange={(e) => setFilterBreed(e.target.value)}
+            onChange={(e) => { setFilterBreed(e.target.value); setPage(0); }}
             className="h-10 px-3 rounded-md border border-purple-200 text-sm bg-purple-50"
             data-testid="filter-product-breed-select"
           >
@@ -982,7 +1008,7 @@ const UnifiedProductBox = () => {
           
           <select 
             value={filterSize} 
-            onChange={(e) => setFilterSize(e.target.value)}
+            onChange={(e) => { setFilterSize(e.target.value); setPage(0); }}
             className="h-10 px-3 rounded-md border border-purple-200 text-sm bg-purple-50"
             data-testid="filter-product-size-select"
           >
@@ -996,7 +1022,7 @@ const UnifiedProductBox = () => {
           
           <select 
             value={filterHasMiraHint} 
-            onChange={(e) => setFilterHasMiraHint(e.target.value)}
+            onChange={(e) => { setFilterHasMiraHint(e.target.value); setPage(0); }}
             className="h-10 px-3 rounded-md border border-blue-200 text-sm bg-blue-50"
             data-testid="filter-mira-hint-select"
           >
@@ -1029,6 +1055,8 @@ const UnifiedProductBox = () => {
             setFilterSize('');
             setFilterHasMiraHint('');
             setFilterSource('');
+            setFilterCategory('');
+            setPage(0);
           }} data-testid="clear-product-filters-btn">
             <RefreshCw className="w-4 h-4 mr-1" /> Clear
           </Button>

@@ -1,6 +1,19 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 16, 2026 (Session 58 — Image Regression Revert + AI Image Persistence + Interactive Mira Picks)
+## Last Updated: Mar 16, 2026 (Session 61 — Product Box Category Filters + Dine Image Fix)
+
+---
+
+## ✅ SESSION 61 — Product Box Category Filters + Dine Page Image Fix (Mar 16, 2026)
+
+### Issues Resolved:
+1. **Dine Page Generic Images** — DineSoulPage was fetching all 857 dine products (sorted newest = Akita merchandise on top). Fixed: fetches only 5 food categories (Daily Meals, Treats & Rewards, Supplements, Frozen & Fresh, Homemade & Recipes) via parallel API calls. Now shows ONLY the 48 seeded food products on the /dine page.
+2. **Product Box Filters Not Working** — All filter change handlers (pillar buttons, dropdowns) were NOT resetting `page` to 0. When on page 5 and changing filter, the API returned empty results. Fixed: all handlers now call `setPage(0)`.
+3. **Category Filter Added to Product Box** — A horizontal pill strip of category buttons now appears below the pillar quick-filter buttons when a pillar is selected. Shows MAIN_CATEGORIES for that pillar (e.g., Dine → Daily Meals, Treats & Rewards, Supplements, Frozen & Fresh, Homemade & Recipes, Bowls & Accessories, Food General). Filter resets when pillar changes.
+
+### Files Changed:
+- `frontend/src/pages/DineSoulPage.jsx` — parallel fetch from 5 food categories
+- `frontend/src/components/admin/UnifiedProductBox.jsx` — filterCategory state, category pill strip, setPage(0) fixes
 
 ---
 

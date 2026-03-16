@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="8" skipped="0" tests="13" time="509.502" timestamp="2026-03-16T16:00:14.561863+00:00" hostname="agent-env-b5608231-5cf3-47a3-a096-60d976bf5a11"><testcase classname="backend.tests.test_product_box_category_filters.TestProductBoxCategoryFilter" name="test_get_products_no_filter" time="60.265"><failure message="assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_product_box_category_filters.py:28: in test_get_products_no_filter
+    assert resp.status_code == 200
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_product_box_category_filters.TestProductBoxCategoryFilter" name="test_dine_pillar_filter" time="62.160"><failure message="assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_product_box_category_filters.py:37: in test_dine_pillar_filter
+    assert resp.status_code == 200
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_product_box_category_filters.TestProductBoxCategoryFilter" name="test_daily_meals_category_filter" time="60.287"><failure message="assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_product_box_category_filters.py:47: in test_daily_meals_category_filter
+    assert resp.status_code == 200
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_product_box_category_filters.TestProductBoxCategoryFilter" name="test_treats_rewards_category_filter" time="60.319"><failure message="assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_product_box_category_filters.py:61: in test_treats_rewards_category_filter
+    assert resp.status_code == 200
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_product_box_category_filters.TestProductBoxCategoryFilter" name="test_page_reset_with_category_filter" time="60.266"><failure message="assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_product_box_category_filters.py:72: in test_page_reset_with_category_filter
+    assert resp.status_code == 200
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_product_box_category_filters.TestProductBoxCategoryFilter" name="test_all_food_categories_have_products" time="60.230"><failure message="AssertionError: Failed for category: Daily Meals&#10;assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_product_box_category_filters.py:85: in test_all_food_categories_have_products
+    assert resp.status_code == 200, f"Failed for category: {cat}"
+E   AssertionError: Failed for category: Daily Meals
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_product_box_category_filters.TestProductBoxCategoryFilter" name="test_clear_filter_returns_all" time="60.271"><failure message="assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_product_box_category_filters.py:92: in test_clear_filter_returns_all
+    assert resp.status_code == 200
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_product_box_category_filters.TestPillarProductsEndpoint" name="test_pillar_products_dine" time="60.235"><failure message="assert 502 == 200&#10; +  where 502 = &lt;Response [502]&gt;.status_code">backend/tests/test_product_box_category_filters.py:104: in test_pillar_products_dine
+    assert resp.status_code == 200
+E   assert 502 == 200
+E    +  where 502 = &lt;Response [502]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_product_box_category_filters.TestPillarProductsEndpoint" name="test_pillar_products_with_daily_meals_category" time="23.284" /><testcase classname="backend.tests.test_product_box_category_filters.TestPillarProductsEndpoint" name="test_pillar_products_all_food_categories" time="1.403" /><testcase classname="backend.tests.test_product_box_category_filters.TestPillarProductsEndpoint" name="test_categories_list_in_response" time="0.209" /><testcase classname="backend.tests.test_product_box_category_filters.TestDinePageProductFetch" name="test_dine_food_products_not_breed_merchandise" time="0.170" /><testcase classname="backend.tests.test_product_box_category_filters.TestDinePageProductFetch" name="test_dine_treats_are_food_not_merchandise" time="0.164" /></testsuite></testsuites>
