@@ -1,0 +1,79 @@
+{
+  "summary": "Tested Mira's Picks fix on /dine page for Mojo (Indie breed, Chicken allergy). MAIN FIX VERIFIED: Mira's Picks modal now shows FOOD products (Salmon Training Bites, Salmon & Lentil Evening Dinner, Salmon-Only Biscuits, etc.) and Services (Pet-Friendly Restaurant Discovery, Reservation Assistance etc.) — NO Akita/breed merchandise shown. All 5 food category modals and Soul Picks tested successfully. Two minor issues found.",
+
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Soul Picks Modal",
+        "issue": "Duplicate products shown: 'Indie Food Bowl' appears 2x (From ₹599 and Price on request), 'Indie Treat Jar' appears 3x, 'Indie Lover Mug' appears 2x. The deduplication logic (by name) used in Mira's Picks is NOT applied to Soul Picks. The soul-picks code fetches from multiple breed categories (breed-bowls, breed-treat_jars, breed-mugs etc.) without deduplication.",
+        "selector": "[data-testid='dine-modal-soul-picks']",
+        "priority": "MEDIUM",
+        "fix": "Apply same Map-based deduplication by name to soul-picks fetch (lines ~452-467 of DineContentModal.jsx), similar to how miras-picks deduplicates: const seen = new Map(); allMerch.filter(...).forEach(p => { const key = (p.name||'').toLowerCase().trim(); if(!seen.has(key)) seen.set(key, p); }); setProducts([...seen.values()]);"
+      },
+      {
+        "component": "Mira's Picks Modal - Service Product Images",
+        "issue": "Service product cards (Pet-Friendly Restaurant Discovery, Dining Etiquette Guidance, Reservation Assistance, Venue Suitability Advisory, Backup Dining Alternatives) are showing generic dog toy images (colorful polka-dot rubber toy sets) instead of appropriate service images. This is a product data issue - the image_url for these service products is pointing to a generic toy image.",
+        "selector": "[data-testid='dine-modal-miras-picks'] img",
+        "priority": "LOW"
+      },
+      {
+        "component": "Mira's Picks Modal - Service mira_tag",
+        "issue": "Service products show '✨ Nutritious & delicious' as mira_tag — this is inappropriate for concierge services. The tag should be updated to something like 'Concierge Service' or 'Pet-Friendly Experience'.",
+        "selector": "[data-testid='dine-modal-miras-picks']",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Daily Meals / Standard Category Modals",
+        "issues": ["All food product images (Allergy-Safe Rotation Pack, Fish & Brown Rice Dinner, Lamb & Quinoa Morning Bowl, etc.) display the same generic polka-dot rubber dog toy image instead of food product photos. Product image_url values need to be updated with correct food product images."]
+      }
+    ]
+  },
+
+  "test_results_detail": {
+    "miras_picks_no_akita": "PASS — Modal shows 20 food+service products, NO Akita Feeding Mat / Dining Placemat / Lick Mat or any breed merchandise",
+    "miras_picks_food_products": "PASS — Salmon Training Bites, Salmon & Lentil Evening Dinner, Salmon & Sweet Potato Morning Bowl, Salmon-Only Biscuits, Fresh Cooked Salmon Weekly Box, Salmon Oil Omega 3&6, etc. visible",
+    "miras_picks_services": "PASS — All 5 services shown: Backup Dining Alternatives, Dining Etiquette Guidance, Pet-Friendly Restaurant Discovery, Reservation Assistance, Venue Suitability Advisory",
+    "miras_picks_services_order": "PASS — Services appear before food products in the product grid (Mira Imagines section appears first as separate section, then services, then food)",
+    "miras_picks_no_duplicates": "PASS — No duplicate product names in Mira's Picks (deduplication by name working correctly)",
+    "soul_picks_no_akita": "PASS — Soul Picks shows only Indie breed products (Indie Food Bowl, Indie Treat Jar, Indie Lover Mug, Indie Bandana) — NO Akita products",
+    "soul_picks_duplicates": "FAIL — Soul Picks shows 15 items but 'Indie Food Bowl' ×2, 'Indie Treat Jar' ×3, 'Indie Lover Mug' ×2 are duplicates (deduplication not applied to soul-picks)",
+    "daily_meals_tabs": "PASS — Tabs: All, Special Diets, Portion Guide, Morning Meal, Evening Meal (all 4 expected tabs present)",
+    "treats_rewards_tabs": "PASS — Tabs: All, Allergy-Safe, Birthday Treats, Training Rewards, Everyday Treats (all 4 expected tabs present)",
+    "supplements_tabs": "PASS — Tabs: All, Immunity & Treatment, Skin & Coat, Digestion & Gut, Joint & Mobility",
+    "admin_product_box_dine": "PASS — Admin Product Box with Dine pillar filter shows 721 products (includes all dine-tagged items: food + breed merchandise). Food categories shown: Daily Meals 13, Treats 12, Supplements 11, Frozen&Fresh 5, Homemade 7, Fresh Meals 11, Services 5 = 64 food/service products correct",
+    "allergy_filter": "PASS — Chicken allergy correctly applied — modal header shows 'Chicken-free · Treatment-safe'"
+  },
+
+  "test_report_links": [],
+  "action_items": [
+    "MEDIUM: Fix Soul Picks duplicate products — apply Map-based deduplication by name (same as miras-picks) in DineContentModal.jsx soul-picks section (lines ~452-467). Code: const seen = new Map(); allMerch.filter(p => (p.name||'').toLowerCase().includes(breedSearch)).forEach(p => { const key = (p.name||'').toLowerCase().trim(); if(!seen.has(key)) seen.set(key, p); }); setProducts([...seen.values()]);",
+    "LOW: Fix service product images — update image_url for the 5 service products (Pet-Friendly Restaurant Discovery, Reservation Assistance, Dining Etiquette Guidance, Venue Suitability Advisory, Backup Dining Alternatives) to use appropriate service/concierge imagery instead of dog toy images",
+    "LOW: Fix service product mira_tag — change 'Nutritious & delicious' to more appropriate tag like 'Concierge Service' for the 5 dine service products",
+    "LOW: Fix food product images — Daily Meals products (Allergy-Safe Rotation Pack, Fish & Brown Rice Dinner etc.) show generic dog toy images — update with correct food product photos"
+  ],
+
+  "critical_code_review_comments": [
+    "DineContentModal.jsx soul-picks deduplication missing: The miras-picks section correctly uses Map-based deduplication by name (line ~503-511) but soul-picks (line ~452-467) does NOT deduplicate. Since the same breed can appear in multiple categories (breed-bowls, breed-treat_jars, breed-mugs, etc.) with the same name but different prices/IDs, duplicates appear.",
+    "Service products have incorrect mira_tag ('Nutritious & delicious') and wrong image_url values — this is a product data seeding issue in the database, not a code issue."
+  ],
+
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend-only test)",
+    "frontend": "90% — Main fix (Akita→food products) VERIFIED. Soul Picks has duplicates, product images are generic."
+  },
+  "test_credentials": "dipali@clubconcierge.in / test123 (Mojo — Indie breed, Chicken allergy, loves Salmon). Admin: aditya / lola4304",
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "PRIMARY FIX VERIFIED: Mira's Picks on /dine now correctly fetches food categories in parallel, shows food products (Salmon Training Bites, Salmon & Sweet Potato Morning Bowl, etc.) and 5 services (Restaurant Discovery, Reservation Assistance etc.) - NO Akita merchandise. Services appear first in product grid. No food product duplicates. Soul Picks correctly shows only Indie breed products (no Akita). Daily Meals tabs: All/Special Diets/Portion Guide/Morning Meal/Evening Meal ✓. OPEN ISSUE: Soul Picks has duplicate product cards (Indie Food Bowl ×2, Indie Treat Jar ×3). Product images for food items and services show generic dog toy images. Test via: inject tdb_auth_token + user into localStorage, navigate to /dine, click category strip pills.",
+  "rca_of_issue": "Root cause of original bug (Akita products in Mira's Picks): The old fetch used /api/admin/pillar-products?pillar=dine&limit=60 which returned ALL dine-tagged products sorted alphabetically, placing breed merchandise (Akita Dining Placemat, Akita Enrichment Lick Mat etc.) first. Fix: Now fetches 5 specific food categories in parallel (Daily Meals, Treats & Rewards, Supplements, Frozen & Fresh, Homemade & Recipes) + services separately, then deduplicates by name. VERIFIED FIXED."
+}
