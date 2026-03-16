@@ -255,17 +255,21 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
         return;
       }
 
-      // ── Mira's Picks: show all curated dine items including services ─
+      // ── Mira's Picks: curated picks + all dine services ─────────────
       if (category === 'miras-picks') {
-        const r = await fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&limit=60`);
-        if (r.ok) {
-          const d = await r.json();
-          // Sort: services first (they're curated concierge picks), then by name
-          const all = d.products || [];
-          const services = all.filter(p => p.category === 'service' || p.product_type === 'service');
-          const others = all.filter(p => p.category !== 'service' && p.product_type !== 'service');
-          setProducts([...services, ...others].slice(0, 20));
-        }
+        const [generalRes, serviceRes] = await Promise.all([
+          fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&limit=30`),
+          fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&category=service&limit=20`),
+        ]);
+        const generalData = generalRes.ok ? await generalRes.json() : { products: [] };
+        const serviceData = serviceRes.ok ? await serviceRes.json() : { products: [] };
+        // Merge and deduplicate by id, services first
+        const allById = new Map();
+        (serviceData.products || []).forEach(p => allById.set(p.id, p));
+        (generalData.products || []).forEach(p => { if (!allById.has(p.id)) allById.set(p.id, p); });
+        const services = [...allById.values()].filter(p => p.category === 'service' || p.product_type === 'service');
+        const products = [...allById.values()].filter(p => p.category !== 'service' && p.product_type !== 'service');
+        setProducts([...services, ...products].slice(0, 24));
         return;
       }
 
