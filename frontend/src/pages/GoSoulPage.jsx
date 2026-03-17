@@ -35,6 +35,7 @@ import GoHero from "../components/go/GoHero";
 import GoCategoryStrip from "../components/go/GoCategoryStrip";
 import GuidedGoPaths from "../components/go/GuidedGoPaths";
 import GoConciergeSection from "../components/go/GoConciergeSection";
+import PetFriendlyStays from "../components/go/PetFriendlyStays";
 import { API_URL } from "../utils/api";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 
@@ -1388,7 +1389,13 @@ function ServiceBookingModal({ service, pet, onClose }) {
 // ─────────────────────────────────────────────────────────────
 function GoConcierge({ pet, token }) {
   const [activeService, setActiveService] = useState(null);
+  const [bookingVenue, setBookingVenue] = useState(null);
   const petName = pet?.name || "your dog";
+
+  const handleStayBook = (spot, city) => {
+    // Opens the planning flow pre-filled with the stay info
+    setActiveService("planning");
+  };
 
   return (
     <div style={{ background:`linear-gradient(135deg,${G.cream},#E8F8F5)`, borderRadius:20, border:`1px solid ${G.border}`, padding:24, marginBottom:32 }}>
@@ -1423,6 +1430,19 @@ function GoConcierge({ pet, token }) {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* ── Pet-Friendly Stays near {petName} — Google Places powered ── */}
+      <div style={{ marginBottom:20 }}>
+        <div style={{ marginBottom:14, paddingBottom:14, borderBottom:`1px solid rgba(26,188,156,0.15)` }}>
+          <h3 style={{ margin:0, fontSize:18, fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif" }}>
+            Pet-Friendly Stays near {petName}
+          </h3>
+          <p style={{ margin:"4px 0 0", fontSize:13, color:G.mutedText }}>
+            Hotels, resorts, homestays &amp; boarding — verified pet-friendly, powered by Google
+          </p>
+        </div>
+        <PetFriendlyStays pet={pet} onBook={handleStayBook} />
       </div>
 
       {/* Dark CTA */}
