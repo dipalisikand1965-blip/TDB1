@@ -10,7 +10,7 @@ import sys
 def test_documentation_verification():
     """Test the complete documentation endpoint as requested in review"""
     
-    base_url = "https://care-dine-parity.preview.emergentagent.com"
+    base_url = "https://care-pillar-impl.preview.emergentagent.com"
     documentation_url = f"{base_url}/complete-documentation.html"
     
     print("Documentation Generation Verification")
