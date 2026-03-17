@@ -313,7 +313,7 @@ async def batch_score_all_pets(background_tasks: BackgroundTasks, pillar: Option
             pet_id = pet.get("id")
             if not pet_id:
                 continue
-            pillars_to_score = [pillar] if pillar else ["dine", "celebrate", "care", "fit", "adopt"]
+            pillars_to_score = [pillar] if pillar else ["dine", "celebrate", "care", "go", "fit", "adopt"]
             for p in pillars_to_score:
                 try:
                     await _run_full_scoring(pet_id, p, None)

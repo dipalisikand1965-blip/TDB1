@@ -58,7 +58,7 @@ Be patient. Be thorough. Honor the Sikand legacy.
 - Admin: `aditya` / `lola4304`
 
 ## 🌐 PREVIEW URL
-https://care-pillar-fix.preview.emergentagent.com
+https://mira-go-launch.preview.emergentagent.com
 
 ---
 
