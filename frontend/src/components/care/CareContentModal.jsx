@@ -89,6 +89,33 @@ const getBreedDisplay = (pet) => {
 };
 
 // ─── Robust breed matching (handles multi-word breeds) ──────────────────────
+const KNOWN_BREEDS = [
+  'american bully','beagle','border collie','boxer','cavalier','chihuahua',
+  'chow chow','cocker spaniel','dachshund','dalmatian','doberman',
+  'english bulldog','french bulldog','german shepherd','golden retriever',
+  'great dane','husky','indie','irish setter','italian greyhound',
+  'jack russell','labrador','lhasa apso','maltese','pomeranian',
+  'poodle','pug','rottweiler','schnoodle','scottish terrier',
+  'shih tzu','st bernard','yorkshire',
+];
+
+function filterBreedProducts(products, petBreed) {
+  const petLower = (petBreed || '').trim().toLowerCase();
+  const petWords = petLower.split(/\s+/).filter(w => w.length > 2);
+  return products.filter(p => {
+    const nameLower = (p.name || '').toLowerCase();
+    for (const breed of KNOWN_BREEDS) {
+      if (nameLower.includes(breed)) {
+        if (!petLower) return false;
+        if (nameLower.includes(petLower)) return true;
+        if (petWords.some(w => breed.includes(w) || breed.startsWith(w))) return true;
+        return false;
+      }
+    }
+    return true;
+  });
+}
+
 function matchesBreed(productName, breedRaw) {
   if (!breedRaw) return false;
   const nameLower = (productName || '').toLowerCase();
@@ -356,7 +383,11 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
 
       const r = await fetch(`${apiUrl}/api/admin/pillar-products?pillar=care&limit=600`);
       const data = r.ok ? await r.json() : { products: [] };
-      const dimProds = (data.products || []).filter(p => p.dimension === dimKey);
+      // Filter to this dimension, then apply global breed filter
+      const dimProds = filterBreedProducts(
+        (data.products || []).filter(p => p.dimension === dimKey),
+        pet?.breed
+      );
 
       // Allergy filter
       const allergyTerms = allergies.map(a => a.toLowerCase().trim());

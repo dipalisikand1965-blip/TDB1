@@ -627,6 +627,35 @@ function WellnessProfile({ pet, token }) {
 // Uses SharedProductCard + real apiProducts
 // ─────────────────────────────────────────────────────────────
 
+// ─── Known breed names — applied globally across all dimensions ──────────────
+const KNOWN_BREEDS = [
+  'american bully','beagle','border collie','boxer','cavalier','chihuahua',
+  'chow chow','cocker spaniel','dachshund','dalmatian','doberman',
+  'english bulldog','french bulldog','german shepherd','golden retriever',
+  'great dane','husky','indie','irish setter','italian greyhound',
+  'jack russell','labrador','lhasa apso','maltese','pomeranian',
+  'poodle','pug','rottweiler','schnoodle','scottish terrier',
+  'shih tzu','st bernard','yorkshire',
+];
+
+// Keeps only products without a breed name OR that match this pet's breed.
+function filterBreedProducts(products, petBreed) {
+  const petLower = (petBreed || '').trim().toLowerCase();
+  const petWords = petLower.split(/\s+/).filter(w => w.length > 2);
+  return products.filter(p => {
+    const nameLower = (p.name || '').toLowerCase();
+    for (const breed of KNOWN_BREEDS) {
+      if (nameLower.includes(breed)) {
+        if (!petLower) return false;
+        if (nameLower.includes(petLower)) return true;
+        if (petWords.some(w => breed.includes(w) || breed.startsWith(w))) return true;
+        return false;
+      }
+    }
+    return true; // no breed mention → visible for all pets
+  });
+}
+
 // Helper: robust breed matching (handles multi-word breeds, "Labrador Retriever" → "Labrador")
 function matchesBreed(productName, breedRaw) {
   if (!breedRaw) return false;
@@ -646,16 +675,8 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const rawByTab = apiProducts[catName] || {};
   let allRaw = Object.values(rawByTab).flat();
 
-  // Soul Care: filter "Breed Collection" to pet's breed only — never show other breeds
-  if (dim.id === 'soul') {
-    const breedRaw = (pet?.breed || '').trim().toLowerCase();
-    allRaw = allRaw.filter(p => {
-      if (p.sub_category === 'Breed Collection') {
-        return matchesBreed(p.name, breedRaw);
-      }
-      return true; // Care Essentials, Personalised etc. visible for all pets
-    });
-  }
+  // Apply global breed filter — removes other breeds' products from ALL dimensions
+  allRaw = filterBreedProducts(allRaw, pet?.breed);
 
   // Mira intelligence
   const allergies  = getAllergies(pet);
@@ -995,10 +1016,11 @@ function GroomingFlow({ pet, service, onClose }) {
   const [format, setFormat] = useState(null);
   const [svcs, setSvcs]     = useState([]);
   const [comfort, setComfort] = useState({ strangers:null, nervous:null });
-  const [location, setLocation] = useState({ area:"", water:null, time:null });
+  const [location, setLocation] = useState({ area:"", water:null, time:null, date:"" });
   const [sent, setSent]     = useState(false);
   const toggleSvc = v => setSvcs(p => p.includes(v)?p.filter(x=>x!==v):[...p,v]);
-  const canNext = [!!mode,!!format,svcs.length>0,comfort.strangers&&comfort.nervous,location.water&&location.time][step-1];
+  const today = new Date().toISOString().split('T')[0];
+  const canNext = [!!mode,!!format,svcs.length>0,comfort.strangers&&comfort.nervous,location.date&&location.time][step-1];
   if (sent) return <BookingConfirmed service={service} pet={pet} onClose={onClose} />;
   return (
     <>
@@ -1045,6 +1067,8 @@ function GroomingFlow({ pet, service, onClose }) {
               {["Yes","No"].map(v=>(<StepCard key={v} label={v} selected={location.water===v} onClick={()=>setLocation(p=>({...p,water:v}))} />))}
             </div>
           </>)}
+          <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:8 }}>Preferred date</div>
+          <input type="date" min={today} value={location.date} onChange={e=>setLocation(p=>({...p,date:e.target.value}))} style={{ width:"100%", border:`1.5px solid ${location.date?G.sage:G.border}`, borderRadius:10, padding:"11px 14px", fontSize:14, color:G.darkText, outline:"none", marginBottom:16, boxSizing:"border-box", background:"#fff" }} />
           <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:12 }}>Preferred time window</div>
           <div style={{ display:"flex", gap:10 }}>
             {["Morning (8am–12pm)","Afternoon (12pm–5pm)","Evening (5pm–8pm)"].map(v=>(<StepCard key={v} label={v} selected={location.time===v} onClick={()=>setLocation(p=>({...p,time:v,water:p.water||"Yes"}))} />))}
@@ -1065,7 +1089,9 @@ function VetFlow({ pet, service, onClose }) {
   const [pref, setPref]   = useState(null);
   const [urgency, setUrgency] = useState(null);
   const [notes, setNotes] = useState("");
+  const [preferredDate, setPreferredDate] = useState("");
   const [sent, setSent]   = useState(false);
+  const today = new Date().toISOString().split('T')[0];
   const canNext = [!!reason,!!pref,!!urgency,true][step-1];
   if (sent) return <BookingConfirmed service={service} pet={pet} onClose={onClose} />;
   return (
@@ -1099,8 +1125,10 @@ function VetFlow({ pet, service, onClose }) {
           </div>
         </>)}
         {step===4 && (<>
+          <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:8 }}>Preferred appointment date</div>
+          <input type="date" min={today} value={preferredDate} onChange={e=>setPreferredDate(e.target.value)} style={{ width:"100%", border:`1.5px solid ${preferredDate?G.sage:G.border}`, borderRadius:10, padding:"11px 14px", fontSize:14, color:G.darkText, outline:"none", marginBottom:16, boxSizing:"border-box", background:"#fff" }} />
           <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:8 }}>Anything specific to share? <span style={{ fontSize:12, color:"#BBB", fontWeight:400 }}>Optional</span></div>
-          <textarea rows={5} value={notes} onChange={e=>setNotes(e.target.value)} placeholder={`Describe any symptoms, concerns, or details about ${pet.name}…`} style={{ width:"100%", border:`1.5px solid ${G.border}`, borderRadius:10, padding:"12px 14px", fontSize:14, color:G.darkText, outline:"none", resize:"none", fontFamily:"inherit", lineHeight:1.6, boxSizing:"border-box" }} />
+          <textarea rows={4} value={notes} onChange={e=>setNotes(e.target.value)} placeholder={`Describe any symptoms, concerns, or details about ${pet.name}…`} style={{ width:"100%", border:`1.5px solid ${G.border}`, borderRadius:10, padding:"12px 14px", fontSize:14, color:G.darkText, outline:"none", resize:"none", fontFamily:"inherit", lineHeight:1.6, boxSizing:"border-box" }} />
         </>)}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
@@ -1473,8 +1501,8 @@ function CareConcierge({ pet }) {
             onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="none";}}
             data-testid={`care-service-${svc.id}`}
           >
-            <div style={{ height:110, overflow:"hidden", background:svc.illustrationBg, display:"flex", alignItems:"center", justifyContent:"center", position:"relative" }}>
-              {svc.illustrationUrl ? <img src={svc.illustrationUrl} alt={svc.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} /> : <span style={{ fontSize:40 }}>{svc.icon}</span>}
+            <div style={{ height:76, background:svc.illustrationBg, display:"flex", alignItems:"center", justifyContent:"center", position:"relative" }}>
+              <span style={{ fontSize:34 }}>{svc.icon}</span>
               {svc.urgent && <div style={{ position:"absolute", top:8, right:8, background:"#C62828", color:"#fff", fontSize:9, fontWeight:700, borderRadius:20, padding:"2px 7px" }}>URGENT</div>}
             </div>
             <div style={{ padding:"12px 14px 14px" }}>
