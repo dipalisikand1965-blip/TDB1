@@ -926,27 +926,50 @@ const UnifiedProductBox = () => {
         ))}
       </div>
 
-      {/* Category Quick Filter — shows when a pillar is selected */}
+      {/* Category Quick Filter + Pillar Search — shows when a pillar is selected */}
       {filterPillar && MAIN_CATEGORIES.filter(c => c.pillar === filterPillar).length > 0 && (
-        <div className="flex flex-wrap gap-2 items-center">
-          <span className="text-xs text-gray-500 font-medium">Category:</span>
-          <button
-            onClick={() => { setFilterCategory(''); setPage(0); }}
-            className={`h-7 px-3 text-xs rounded-full border transition-colors ${filterCategory === '' ? 'bg-purple-600 text-white border-purple-600' : 'border-gray-300 text-gray-600 hover:border-purple-400'}`}
-            data-testid="filter-category-all"
-          >
-            All
-          </button>
-          {MAIN_CATEGORIES.filter(c => c.pillar === filterPillar).map(c => (
+        <div className="space-y-3 bg-gray-50 border border-gray-200 rounded-xl p-3">
+          {/* Prominent search bar for this pillar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder={`Search ${ALL_PILLARS.find(p => p.id === filterPillar)?.name || ''} products by name or sub-category...`}
+              value={searchTerm}
+              onChange={(e) => { setSearchTerm(e.target.value); setPage(0); }}
+              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+              data-testid="pillar-search-input"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => { setSearchTerm(''); setPage(0); }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                ×
+              </button>
+            )}
+          </div>
+          {/* Category chips */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-xs text-gray-500 font-medium">Category:</span>
             <button
-              key={c.id}
-              onClick={() => { setFilterCategory(c.id); setPage(0); }}
-              className={`h-7 px-3 text-xs rounded-full border transition-colors ${filterCategory === c.id ? 'bg-purple-600 text-white border-purple-600' : 'border-gray-300 text-gray-600 hover:border-purple-400'}`}
-              data-testid={`filter-category-${c.id}`}
+              onClick={() => { setFilterCategory(''); setPage(0); }}
+              className={`h-7 px-3 text-xs rounded-full border transition-colors ${filterCategory === '' ? 'bg-purple-600 text-white border-purple-600' : 'border-gray-300 text-gray-600 hover:border-purple-400'}`}
+              data-testid="filter-category-all"
             >
-              {c.name}
+              All
             </button>
-          ))}
+            {MAIN_CATEGORIES.filter(c => c.pillar === filterPillar).map(c => (
+              <button
+                key={c.id}
+                onClick={() => { setFilterCategory(c.id); setPage(0); }}
+                className={`h-7 px-3 text-xs rounded-full border transition-colors ${filterCategory === c.id ? 'bg-purple-600 text-white border-purple-600' : 'border-gray-300 text-gray-600 hover:border-purple-400'}`}
+                data-testid={`filter-category-${c.id}`}
+              >
+                {c.name}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
