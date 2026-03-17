@@ -1,6 +1,30 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 16, 2026 (Session 61 — Soul Picks Fix + P0 Data Refactor + Multiple Bug Fixes)
+## Last Updated: Mar 17, 2026 (Session 62 — Service Box Fixes + Celebrate Watercolor Images)
+
+---
+
+## ✅ SESSION 62 — Service Box Fixes + Celebrate Watercolor Images (Mar 17, 2026)
+
+### Issues Resolved:
+1. **Celebrate watercolor images missing** — `watercolor_image` (Cloudinary) existed in DB but `image`/`image_url` had old dead `static.prod-images.emergentagent.com` session URLs. Fixed: (a) DB migration copying `watercolor_image` → `image`/`image_url` for 16 services; (b) `service_box_routes.py` image priority changed to `watercolor_image > image_url > image` so Cloudinary always takes precedence.
+2. **Products wrongly shown as services** — 7 physical products (Snuffle Mat, Airtight Travel Food Container, Gentle Oatmeal Shampoo x3, Snuffle Pupcake Toy, Snuffle Mat Large) were hard-deleted from `services_master`.
+3. **Delete service not working (soft delete)** — Changed `DELETE /api/service-box/services/{id}` from soft-archive (`is_active: False`) to hard delete (`delete_one`). Frontend confirmation updated to "Permanently delete".
+4. **Inactive services showing in Mira's Picks** — `mira_score_engine.py` services query now includes `is_active: {"$ne": False}` filter at lines 232 and 363.
+5. **Inactive services on ServicesPage.jsx** — Added `&is_active=true` to the fetch query. Same fix in `ServiceDetailPage.jsx`.
+6. **Product Box stats endpoint timeout** — Replaced sequential MongoDB `count_documents` calls with `estimated_document_count()` + parallel async queries (0.2s vs 60s timeout). Added 8s AbortController in frontend to prevent blocking product list.
+7. **Single product AI image generation timeout** — Already implemented in previous session: async background task + polling. Verified working: generates in ~12s, no browser timeout.
+
+### Key File Changes:
+- `backend/service_box_routes.py` — Hard delete, image priority fix
+- `backend/mira_score_engine.py` — is_active filter for services at 2 locations
+- `backend/unified_product_box.py` — Stats endpoint with parallel queries
+- `frontend/src/pages/ServicesPage.jsx` — is_active=true filter
+- `frontend/src/pages/ServiceDetailPage.jsx` — is_active=true filter
+- `frontend/src/components/admin/ServiceBox.jsx` — Hard delete UI
+- `frontend/src/components/admin/UnifiedProductBox.jsx` — AbortController on stats fetch
+
+---
 
 ---
 
