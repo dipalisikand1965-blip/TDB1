@@ -1,6 +1,33 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 17, 2026 (Session 63 — Care DB Clean + CareSoulPage_v2 Live)
+## Last Updated: Mar 17, 2026 (Session 64 — CareSoulPage Products Fix + AI Image Gen)
+
+---
+
+## ✅ SESSION 64 — Care Page Products Fix + AI Image Generation (Mar 17, 2026)
+
+### P0 Bug Fixed: Care Dimension Products Not Showing
+- **Root cause:** CareSoulPage.jsx grouped products by `p.category` field (e.g., "grooming", "health") but all 429 care products in DB use `p.dimension` field (e.g., "Grooming", "Dental & Paw") as the grouping key
+- **Fix:** Changed product fetch from 7 parallel calls with `category=X` filter → single `/api/admin/pillar-products?pillar=care&limit=600` call, then group locally by `p.dimension`
+- **Result:** All 8 dimension panels now load products correctly (Grooming: 95, Soul Care: 262, Supplements: 32, Dental & Paw: 12, Wellness: 11, Senior: 11, Coat & Skin: 6)
+
+### Minor Bug Fixed: `{petName}` Template in Pet Sitting Service
+- Changed `svc.desc.replace("{petName}", pet.name)` → `svc.desc.replace(/\{petName\}/g, pet.name)` (global replace)
+
+### AI Image Generation Running (Background)
+- Triggered batch generation for 140 care products missing Cloudinary images
+- Status: 93/140 completed (66%), 0 failures — runs at 3s intervals
+- After completion: ~383/429 care products will have Cloudinary images
+
+### Testing: 97% pass rate (iteration_159.json)
+- All 12 features tested PASS
+- Dimension products: Grooming=95, Soul Care=262 ✅
+- ProductDetailModal, WellnessProfile, GuidedCarePaths, CareConcierge all working ✅
+
+### Files Changed:
+- `frontend/src/pages/CareSoulPage.jsx` — Product fetch fixed (single call, group by dimension) + petName regex fix
+
+
 
 ---
 
