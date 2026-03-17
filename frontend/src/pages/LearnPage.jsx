@@ -113,7 +113,7 @@ const TrainingProductsSection = () => {
       name: product.name,
       price: product.price || 999,
       quantity: 1,
-      image_url: product.image || product.image_url,
+      image_url: product.image_url || product.image,
       pillar: 'learn'
     });
     toast({
@@ -188,9 +188,9 @@ const TrainingProductsSection = () => {
               onClick={() => setSelectedProduct(product)}
             >
               <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50">
-                {product.image || product.image_url ? (
+                {product.image_url || product.image ? (
                   <img 
-                    src={product.image || product.image_url}
+                    src={product.image_url || product.image}
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     onError={(e) => {

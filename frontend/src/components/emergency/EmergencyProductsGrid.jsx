@@ -104,9 +104,9 @@ const ProductDetailModal = ({ product, pet, isOpen, onClose, onAddToCart }) => {
         <div className="p-6">
           {/* Image */}
           <div className="aspect-square max-h-64 bg-gray-100 rounded-xl mb-6 flex items-center justify-center overflow-hidden">
-            {product.image || product.image_url ? (
+            {product.image_url || product.image ? (
               <img 
-                src={product.image || product.image_url}
+                src={product.image_url || product.image}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
@@ -421,9 +421,9 @@ const EmergencyProductsGrid = ({ maxProducts = 12, showPersonalized = true }) =>
                 >
                   {/* Icon/Image */}
                   <div className="w-full h-20 bg-white rounded-lg flex items-center justify-center mb-2 overflow-hidden">
-                    {product.image || product.image_url ? (
+                    {product.image_url || product.image ? (
                       <img 
-                        src={product.image || product.image_url}
+                        src={product.image_url || product.image}
                         alt={product.name}
                         className="w-full h-full object-cover rounded-lg"
                       />

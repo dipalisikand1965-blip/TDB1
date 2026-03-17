@@ -334,25 +334,26 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
   // Fallback placeholder image
   const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop';
   
-  // Get valid image - PRIORITIZE original Shopify image for marketplace products
-  // Use breed illustrations for breed-specific products (IDs starting with "breed-")
+  // Get valid image - PRIORITIZE image_url (clean curated URL), then Shopify CDN, then legacy fields
   const getValidImage = () => {
-    // CRITICAL: For regular Shopify marketplace products, ALWAYS use the original image
-    // The `image` field contains the correct Shopify CDN URL
+    // 1. Shopify CDN images are always valid
     if (product.image && product.image.startsWith('http') && product.image.includes('shopify.com')) {
       return product.image;
     }
+
+    // 2. image_url is the clean, curated field — always prefer it over legacy `image`
+    if (product.image_url && product.image_url.startsWith('http')) {
+      return product.image_url;
+    }
     
-    // For breed-specific products (IDs like "breed-cavalier-welcome_kit"), use breed illustration
+    // 3. For breed-specific products (IDs like "breed-cavalier-welcome_kit"), use breed illustration
     const productId = product.id || '';
     if (productId.startsWith('breed-')) {
-      // Extract breed key from product ID (e.g., "breed-cavalier-welcome_kit" -> "cavalier")
       const breedKey = productId.replace('breed-', '').split('-')[0];
       const breedIllustration = getBreedIllustrationByName(breedKey);
       if (breedIllustration) {
         return breedIllustration;
       }
-      // Also try to find from product name
       const productName = (product.name || product.title || '').toLowerCase();
       const breedMatch = findBreedIllustration(productName);
       if (breedMatch) {
@@ -360,7 +361,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
       }
     }
     
-    // For soul_made products only, check for breed illustration
+    // 4. For soul_made products only, check for breed illustration
     if (product.soul_tier === 'soul_made') {
       const productName = (product.name || product.title || '').toLowerCase();
       const breedMatch = findBreedIllustration(productName);
@@ -369,18 +370,12 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
       }
     }
     
-    // Fallback: use original product image if valid
+    // 5. Fallback: legacy image field
     if (product.image && product.image.startsWith('http')) {
       return product.image;
     }
     
-    // Also accept image_url (used by pillar catalog products)
-    if (product.image_url && product.image_url.startsWith('http')) {
-      return product.image_url;
-    }
-    
-    // AVOID using images array for marketplace products - it may contain AI-generated images
-    // Only use images array as last resort
+    // 6. Last resort: images array (Shopify/Emergent only)
     if (product.images?.[0] && product.images[0].startsWith('http') && (product.images[0].includes('shopify.com') || product.images[0].includes('emergentagent.com'))) {
       return product.images[0];
     }
@@ -568,25 +563,27 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   // miraContext is now always passed (effectiveMiraContext from parent)
   // onAddToPicks - callback for Mira picks panel (instead of cart)
   
-  // Get valid product image - PRIORITIZE original Shopify image for marketplace products
+  // Get valid product image - PRIORITIZE image_url (clean curated URL), then Shopify CDN, then legacy fields
   const PLACEHOLDER_IMAGE = 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579';
   const getValidProductImage = () => {
-    // CRITICAL: For regular Shopify marketplace products, ALWAYS use the original image
-    // The `image` field contains the correct Shopify CDN URL
+    // 1. Shopify CDN images are always valid
     if (product.image && product.image.startsWith('http') && product.image.includes('shopify.com')) {
       return product.image;
     }
+
+    // 2. image_url is the clean, curated field — always prefer it over legacy `image`
+    if (product.image_url && product.image_url.startsWith('http')) {
+      return product.image_url;
+    }
     
-    // For breed-specific products (IDs like "breed-cavalier-welcome_kit"), use breed illustration
+    // 3. For breed-specific products (IDs like "breed-cavalier-welcome_kit"), use breed illustration
     const productId = product.id || '';
     if (productId.startsWith('breed-')) {
-      // Extract breed key from product ID (e.g., "breed-cavalier-welcome_kit" -> "cavalier")
       const breedKey = productId.replace('breed-', '').split('-')[0];
       const breedIllustration = getBreedIllustrationByName(breedKey);
       if (breedIllustration) {
         return breedIllustration;
       }
-      // Also try to find from product name
       const productName = (product.name || product.title || '').toLowerCase();
       const breedMatch = findBreedIllustration(productName);
       if (breedMatch) {
@@ -594,7 +591,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
       }
     }
     
-    // For soul_made products only, check for breed illustration
+    // 4. For soul_made products only, check for breed illustration
     if (product.soul_tier === 'soul_made') {
       const productName = (product.name || product.title || '').toLowerCase();
       const breedMatch = findBreedIllustration(productName);
@@ -603,17 +600,12 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
       }
     }
     
-    // Fallback: use original product image if valid
+    // 5. Fallback: legacy image field
     if (product.image && product.image.startsWith('http')) {
       return product.image;
     }
     
-    // Also accept image_url (used by pillar catalog products)
-    if (product.image_url && product.image_url.startsWith('http')) {
-      return product.image_url;
-    }
-    
-    // AVOID using images array for marketplace products - it may contain AI-generated images
+    // 6. Last resort: images array (Shopify/Emergent only)
     if (product.images?.[0] && product.images[0].startsWith('http') && (product.images[0].includes('shopify.com') || product.images[0].includes('emergentagent.com'))) {
       return product.images[0];
     }

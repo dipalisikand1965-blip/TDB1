@@ -192,8 +192,8 @@ const ReviewsTab = ({
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {reviewableProducts.slice(0, 6).map((product) => (
               <div key={product.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                {product.image && (
-                  <img src={product.image} alt={product.name} className="w-12 h-12 rounded-lg object-cover" />
+                {(product.image_url || product.image) && (
+                  <img src={product.image_url || product.image} alt={product.name} className="w-12 h-12 rounded-lg object-cover" />
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm truncate">{product.name}</p>

@@ -238,9 +238,9 @@ const MiraSearchPanel = ({
     >
       {/* Product Image */}
       <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
-        {product.image ? (
+        {product.image_url || product.image ? (
           <img 
-            src={product.image} 
+            src={product.image_url || product.image} 
             alt={product.name} 
             className="w-full h-full object-cover"
             onError={(e) => { e.target.src = `https://api.dicebear.com/7.x/shapes/svg?seed=${product.name}`; }}

@@ -807,9 +807,9 @@ const MiraPage = () => {
                               navigate(productUrl);
                             }}
                           >
-                            {product.image && (
+                            {(product.image_url || product.image) && (
                               <img 
-                                src={product.image} 
+                                src={product.image_url || product.image} 
                                 alt={product.name}
                                 className="w-full h-16 object-cover rounded mb-1"
                               />
