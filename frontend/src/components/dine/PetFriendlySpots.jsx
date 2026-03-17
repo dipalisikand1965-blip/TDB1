@@ -102,19 +102,39 @@ export default function PetFriendlySpots({ pet, onReserve }) {
   const [error, setError] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [locating, setLocating] = useState(false);
   const inputRef = useRef(null);
 
   const suggestions = searchInput.length > 0
     ? POPULAR_CITIES.filter(c => c.toLowerCase().startsWith(searchInput.toLowerCase()) && c.toLowerCase() !== searchInput.toLowerCase())
     : [];
 
+  // Auto-detect location on load, then fetch
   useEffect(() => {
-    loadSpots(homeCity);
-    getCurrentPosition().then(pos => { if (pos) setUserLocation(pos); });
+    setLocating(true);
+    getCurrentPosition().then(pos => {
+      setLocating(false);
+      if (pos) {
+        setUserLocation(pos);
+        // Reverse-geocode to get city name (best-effort)
+        fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${pos.lat},${pos.lng}&key=AIzaSyAGhWgj4SqpXMqJWLh6SH3rHjxIYoecny4`)
+          .then(r => r.json())
+          .then(d => {
+            const comp = d.results?.[0]?.address_components || [];
+            const cityComp = comp.find(c => c.types.includes("locality") || c.types.includes("administrative_area_level_2"));
+            const detectedCity = cityComp?.long_name || homeCity;
+            setActiveCity(detectedCity);
+            loadSpots(detectedCity, pos);
+          })
+          .catch(() => loadSpots(homeCity, pos));
+      } else {
+        loadSpots(homeCity, null);
+      }
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function loadSpots(city, position = userLocation) {
+  async function loadSpots(city, position) {
     setLoading(true); setError(null);
     try {
       const data = await fetchSpots({ city, breed: breedName, lat: position?.lat, lng: position?.lng });
@@ -134,77 +154,101 @@ export default function PetFriendlySpots({ pet, onReserve }) {
     const city = searchInput.trim();
     if (!city) return;
     setShowSuggestions(false);
-    loadSpots(city);
+    loadSpots(city, userLocation);
   };
 
-  const resetToHome = () => { setSearchInput(""); setActiveCity(homeCity); loadSpots(homeCity); };
+  const handleNearMe = async () => {
+    setLocating(true);
+    const pos = await getCurrentPosition();
+    setLocating(false);
+    if (pos) {
+      setUserLocation(pos);
+      loadSpots(activeCity, pos);
+    } else {
+      setError("Location access denied.");
+    }
+  };
+
+  const resetToHome = () => { setSearchInput(""); setActiveCity(homeCity); loadSpots(homeCity, userLocation); };
   const isHomeCity = activeCity === homeCity;
 
   return (
     <div data-testid="pet-friendly-spots">
       <style>{`@keyframes shimmer { from{background-position:200% 0} to{background-position:-200% 0} } .spots-grid{display:grid;gap:14px;grid-template-columns:1fr} @media(min-width:640px){.spots-grid{grid-template-columns:repeat(2,1fr)}} @media(min-width:1024px){.spots-grid{grid-template-columns:repeat(3,1fr)}}`}</style>
 
+      {/* ── Big heading ── */}
+      <div style={{ marginBottom:24 }}>
+        <h2 style={{ fontFamily:"Georgia,serif", fontSize:"clamp(22px,4vw,36px)", fontWeight:700, color:"#1A0A00", margin:"0 0 8px", lineHeight:1.2 }}>
+          How would{" "}
+          <span style={{ color:"#C44400" }}>{petName}</span>
+          {" "}love to eat?
+        </h2>
+        <p style={{ margin:0, fontSize:14, color:"#888", lineHeight:1.6 }}>
+          Choose a dimension — everything inside is personalised to {petName}'s food profile.{" "}
+          <span style={{ color:"#C44400", fontWeight:600 }}>Glowing ones match what {petName} loves.</span>
+        </p>
+      </div>
+
       {/* Search bar */}
-      <form onSubmit={handleSearch} style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-        <div style={{ flex: 1, minWidth: 200, display: "flex", alignItems: "center", background: "#fff", border: "1.5px solid #F0E8E0", borderRadius: 20, padding: "0 14px", gap: 8, position: "relative" }}>
-          <span style={{ color: "#C44400", fontSize: 14 }}>📍</span>
+      <form onSubmit={handleSearch} style={{ display:"flex", gap:8, marginBottom:12, flexWrap:"wrap" }}>
+        <div style={{ flex:1, minWidth:200, display:"flex", alignItems:"center", background:"#fff", border:"1.5px solid #F0E8E0", borderRadius:30, padding:"0 16px", gap:8, position:"relative", boxShadow:"0 2px 8px rgba(196,68,0,0.06)" }}>
+          <span style={{ color:"#E91E63", fontSize:16 }}>📍</span>
           <input ref={inputRef} value={searchInput}
             onChange={e => { setSearchInput(e.target.value); setShowSuggestions(true); }}
             onFocus={() => setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-            placeholder={`Search a city… (${homeCity})`}
-            style={{ flex: 1, border: "none", outline: "none", fontSize: 13, color: "#1A0A00", background: "transparent", padding: "10px 0" }}
+            placeholder={`Search a city… (${activeCity})`}
+            style={{ flex:1, border:"none", outline:"none", fontSize:14, color:"#1A0A00", background:"transparent", padding:"13px 0" }}
             data-testid="city-search-input"
           />
-          {searchInput && <button onClick={() => setSearchInput("")} style={{ background: "none", border: "none", color: "#BBB", fontSize: 16, cursor: "pointer", lineHeight: 1 }}>✕</button>}
+          {searchInput && <button type="button" onClick={() => setSearchInput("")} style={{ background:"none", border:"none", color:"#BBB", fontSize:18, cursor:"pointer", lineHeight:1 }}>✕</button>}
           {showSuggestions && suggestions.length > 0 && (
-            <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "#fff", border: "1px solid #F0E8E0", borderRadius: 12, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", zIndex: 50, marginTop: 4 }}>
+            <div style={{ position:"absolute", top:"100%", left:0, right:0, background:"#fff", border:"1px solid #F0E8E0", borderRadius:16, boxShadow:"0 8px 24px rgba(0,0,0,0.12)", zIndex:50, marginTop:4, overflow:"hidden" }}>
               {suggestions.map(city => (
-                <div key={city} onClick={() => { setSearchInput(city); setShowSuggestions(false); loadSpots(city); }}
-                  style={{ padding: "10px 16px", fontSize: 13, color: "#1A0A00", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}
-                  onMouseEnter={e => e.currentTarget.style.background = "#FFF8F4"}
-                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                <div key={city} onClick={() => { setSearchInput(city); setShowSuggestions(false); loadSpots(city, userLocation); }}
+                  style={{ padding:"11px 18px", fontSize:13, color:"#1A0A00", cursor:"pointer" }}
+                  onMouseEnter={e => e.currentTarget.style.background="#FFF8F4"}
+                  onMouseLeave={e => e.currentTarget.style.background="transparent"}>
                   📍 {city}
                 </div>
               ))}
             </div>
           )}
         </div>
-        <button type="submit" style={{ background: "linear-gradient(135deg,#FF8C42,#C44400)", color: "#fff", border: "none", borderRadius: 20, padding: "0 18px", fontSize: 13, fontWeight: 700, cursor: "pointer" }} data-testid="search-spots-btn">Search</button>
-        <button type="button" onClick={async () => {
-          setLoading(true);
-          const pos = await getCurrentPosition();
-          if (pos) { setUserLocation(pos); loadSpots(activeCity, pos); }
-          else { setError("Location access denied."); setLoading(false); }
-        }} style={{ background: "#FFF8F0", border: "1.5px solid #F0E8E0", borderRadius: 20, padding: "0 14px", fontSize: 12, color: "#C44400", cursor: "pointer", fontWeight: 600 }}>
-          ◎ Near me
+        <button type="submit" style={{ background:"linear-gradient(135deg,#FF8C42,#C44400)", color:"#fff", border:"none", borderRadius:30, padding:"0 24px", fontSize:14, fontWeight:700, cursor:"pointer", minHeight:48 }} data-testid="search-spots-btn">
+          Search
         </button>
+        <button type="button" onClick={handleNearMe} disabled={locating}
+          style={{ background:"#FFF8F0", border:"1.5px solid #F0E8E0", borderRadius:30, padding:"0 18px", fontSize:13, color:"#C44400", cursor:"pointer", fontWeight:600, minHeight:48, display:"flex", alignItems:"center", gap:6 }}>
+          {locating ? <span style={{ width:14, height:14, border:"2px solid #F0E8E0", borderTopColor:"#C44400", borderRadius:"50%", display:"inline-block", animation:"spin 0.8s linear infinite" }} /> : "⊙"} Near me
+        </button>
+        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       </form>
 
       {/* Context bar */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12, flexWrap: "wrap", gap: 8 }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#FFF3E0", border: "1px solid #FFCC99", borderRadius: 20, padding: "5px 12px", fontSize: 11, fontWeight: 600, color: "#C44400" }}>
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12, flexWrap:"wrap", gap:8 }}>
+        <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#FFF3E0", border:"1.5px solid #FFCC99", borderRadius:30, padding:"6px 14px", fontSize:12, fontWeight:600, color:"#C44400" }}>
           📍 {isHomeCity ? `Pet-friendly spots near ${petName} in ${activeCity}` : `Pet-friendly spots in ${activeCity}`}
-          {!isHomeCity && <button onClick={resetToHome} style={{ background: "none", border: "none", color: "#888", fontSize: 10, cursor: "pointer", padding: 0, marginLeft: 4 }}>← Back</button>}
+          {!isHomeCity && <button onClick={resetToHome} style={{ background:"none", border:"none", color:"#888", fontSize:10, cursor:"pointer", padding:0, marginLeft:4 }}>← Back</button>}
         </div>
         <a href={`https://www.google.com/maps/search/pet+friendly+restaurant+${encodeURIComponent(activeCity)}`} target="_blank" rel="noopener noreferrer"
-          style={{ background: "#fff", border: "1px solid #FFCC99", borderRadius: 20, padding: "5px 12px", fontSize: 11, fontWeight: 600, color: "#C44400", textDecoration: "none" }}>
+          style={{ background:"#fff", border:"1.5px solid #F0E8E0", borderRadius:30, padding:"6px 14px", fontSize:12, fontWeight:600, color:"#C44400", textDecoration:"none", display:"flex", alignItems:"center", gap:5, boxShadow:"0 1px 6px rgba(196,68,0,0.06)" }}>
           🗺️ View on map
         </a>
       </div>
 
-      {/* Popular cities */}
-      {isHomeCity && !loading && (
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 10, color: "#AAA", fontWeight: 600 }}>Explore:</span>
-          {POPULAR_CITIES.filter(c => c !== homeCity).slice(0, 6).map(city => (
-            <button key={city} onClick={() => { setSearchInput(city); loadSpots(city); }}
-              style={{ background: "#FFF8F4", border: "1px solid #F0E8E0", borderRadius: 20, padding: "3px 12px", fontSize: 11, color: "#C44400", cursor: "pointer", fontWeight: 500 }}>
-              {city}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* City quick chips */}
+      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:20, flexWrap:"wrap" }}>
+        <span style={{ fontSize:11, color:"#AAA", fontWeight:700, letterSpacing:"0.05em" }}>Explore:</span>
+        {POPULAR_CITIES.filter(c => c !== activeCity).slice(0, 7).map(city => (
+          <button key={city} onClick={() => { setSearchInput(city); loadSpots(city, userLocation); }}
+            style={{ background:"#FFF8F4", border:"1.5px solid #F0E8E0", borderRadius:30, padding:"4px 14px", fontSize:12, color:"#C44400", cursor:"pointer", fontWeight:500, transition:"all 0.15s" }}
+            onMouseEnter={e => { e.currentTarget.style.background="#FFE8D8"; e.currentTarget.style.borderColor="#C44400"; }}
+            onMouseLeave={e => { e.currentTarget.style.background="#FFF8F4"; e.currentTarget.style.borderColor="#F0E8E0"; }}>
+            {city}
+          </button>
+        ))}
+      </div>
 
       {/* Grid */}
       {loading ? (
