@@ -179,7 +179,7 @@ curl "$API_URL/api/pet-soul/profile/pet-99a708f1722a/quick-questions"
 
 ## 🚀 PREVIEW URL
 ```
-https://product-box-overhaul.preview.emergentagent.com
+https://care-dine-parity.preview.emergentagent.com
 ```
 
 Key pages:

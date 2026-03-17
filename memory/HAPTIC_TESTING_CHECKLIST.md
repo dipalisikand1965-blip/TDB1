@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://product-box-overhaul.preview.emergentagent.com/mira-demo**
+**https://care-dine-parity.preview.emergentagent.com/mira-demo**
 
 ---
 
