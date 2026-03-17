@@ -729,6 +729,59 @@ async def stop_generation():
     return {"message": "Generation stopped", "final_status": generation_status}
 
 
+@ai_image_router.post("/auto-resume")
+async def auto_resume_generation(background_tasks: BackgroundTasks):
+    """
+    Auto-resume: Checks products_master for any products still needing AI images
+    (no image OR unsplash). Starts generation for ALL pillars in sequence.
+    Safe to call multiple times — Cloudinary images are always skipped.
+    Designed to be called by any agent at session start to continue incomplete work.
+    """
+    global generation_status
+
+    if generation_status["running"]:
+        return {"status": "already_running", "message": "Generation is already in progress", "current": generation_status}
+
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+
+    # Count products still needing generation
+    needs_gen_query = {
+        "$or": [
+            {"image_url": {"$exists": False}},
+            {"image_url": {"$in": [None, ""]}},
+            {"image_url": {"$regex": "unsplash", "$options": "i"}},
+        ]
+    }
+    needs_count = await db.products_master.count_documents(needs_gen_query)
+
+    if needs_count == 0:
+        return {"status": "complete", "message": "All products already have Cloudinary images. Nothing to do.", "needs_generation": 0}
+
+    # Start generation for ALL products (no pillar filter) — skips Cloudinary ones automatically
+    generation_status = {
+        "running": True,
+        "type": "products (auto-resume, all)",
+        "pillar": None,
+        "total": 0,
+        "completed": 0,
+        "failed": 0,
+        "current_item": "Starting auto-resume...",
+        "started_at": datetime.now(timezone.utc).isoformat(),
+        "last_update": None,
+        "results": [],
+    }
+
+    background_tasks.add_task(process_products_batch, None)
+
+    return {
+        "status": "running",
+        "message": f"Auto-resume started. {needs_count} products queued. Cloudinary images will be skipped.",
+        "needs_generation": needs_count,
+        "instruction": "Poll GET /api/ai-images/status for progress."
+    }
+
+
 @ai_image_router.post("/generate-pillar-images")
 async def start_pillar_image_generation(
     background_tasks: BackgroundTasks,
