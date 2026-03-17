@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://dine-places.preview.emergentagent.com
+**Preview URL:** https://product-box-refactor.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

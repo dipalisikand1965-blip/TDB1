@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://dine-places.preview.emergentagent.com
+https://product-box-refactor.preview.emergentagent.com
 ```
 
 ---

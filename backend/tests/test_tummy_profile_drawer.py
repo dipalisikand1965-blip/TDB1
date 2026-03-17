@@ -12,7 +12,7 @@ import os
 import jwt
 from datetime import datetime, timezone, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dine-places.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://product-box-refactor.preview.emergentagent.com').rstrip('/')
 
 # Test pets
 PET_HIGH_SCORE = "pet-mojo-7327ad56"          # Mojo: allergies=chicken, loves=Salmon/PB, score=94

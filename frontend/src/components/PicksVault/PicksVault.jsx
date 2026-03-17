@@ -249,8 +249,8 @@ const PicksVault = ({
                 tabIndex={0}
                 aria-label={`View details for ${product.name}`}
               >
-                {product.image ? (
-                  <img src={product.image} alt={product.name} />
+                {product.image_url || product.image ? (
+                  <img src={product.image_url || product.image} alt={product.name} />
                 ) : (
                   <div className="pv-pick-placeholder">
                     <span>🎁</span>

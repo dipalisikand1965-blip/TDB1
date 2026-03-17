@@ -101,8 +101,8 @@ const MiraTray = ({
                 {/* Show products if no places */}
                 {!miraPicks.places?.length && miraPicks.products?.slice(0, 3).map((product, idx) => (
                   <div key={idx} className="mp-tray-preview-item">
-                    {product.image ? (
-                      <img src={product.image} alt={product.name} />
+                    {product.image_url || product.image ? (
+                      <img src={product.image_url || product.image} alt={product.name} />
                     ) : (
                       <div className="mp-tray-preview-placeholder">🎁</div>
                     )}

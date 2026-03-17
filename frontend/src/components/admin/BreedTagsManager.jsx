@@ -488,8 +488,8 @@ const ProductRow = ({ product, isSelected, onToggle, breedOptions, onUpdateTags 
       <td className="p-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-            {product.image ? (
-              <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+            {product.image_url || product.image ? (
+              <img src={product.image_url || product.image} alt={product.name} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-400">
                 <Package className="w-5 h-5" />

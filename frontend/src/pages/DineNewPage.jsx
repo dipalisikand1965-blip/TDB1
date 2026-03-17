@@ -147,8 +147,10 @@ const CatalogueSection = ({ title, subtitle, products, onProductClick, onAddToCa
 
 // Product Card Component
 const ProductCard = ({ product, onClick, onAddToCart }) => {
-  const imageUrl = product.image?.startsWith('http') 
-    ? product.image 
+  const imageUrl = product.image_url?.startsWith('http')
+    ? product.image_url
+    : product.image?.startsWith('http')
+    ? product.image
     : product.images?.[0] || 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=300&h=300&fit=crop';
 
   return (

@@ -378,7 +378,7 @@ const MiraWidget = ({
                 {products.map((product, idx) => (
                   <div key={idx} className="mira-widget-product-card">
                     <img 
-                      src={product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=150&h=150&fit=crop'} 
+                      src={product.image_url || product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=150&h=150&fit=crop'} 
                       alt={product.name}
                       className="mira-widget-product-image"
                     />

@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://dine-places.preview.emergentagent.com` |
+| **Preview** | `https://product-box-refactor.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |

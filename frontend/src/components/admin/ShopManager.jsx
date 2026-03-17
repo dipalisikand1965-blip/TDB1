@@ -454,8 +454,8 @@ const ShopManager = ({ getAuthHeader }) => {
             {filteredProducts.map((product) => (
               <Card key={product.id || product.shopify_id} className="p-4">
                 <div className="flex items-start gap-3">
-                  {product.image ? (
-                    <img src={product.image} alt={product.title} className="w-16 h-16 object-cover rounded-lg bg-gray-100" />
+                  {product.image_url || product.image ? (
+                    <img src={product.image_url || product.image} alt={product.title} className="w-16 h-16 object-cover rounded-lg bg-gray-100" />
                   ) : (
                     <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
                       <Package className="w-6 h-6 text-gray-400" />
