@@ -1,6 +1,46 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 17, 2026 (Session 62 — Service Box Fixes + Celebrate Watercolor Images)
+## Last Updated: Mar 17, 2026 (Session 63 — Care DB Clean + CareSoulPage_v2 Live)
+
+---
+
+## ✅ SESSION 63 — Care Database Cleaning + CareSoulPage_v2 (Mar 17, 2026)
+
+### Database Actions Completed (from Cleaning Excel):
+1. **91 junk products deleted** — 66 grooming_pouches + id_tags (no category, dead URLs)
+2. **198 breed products** → Soul Care dimension (pet towels, robes, aprons)
+3. **41 new products inserted** from Excel Sheet 7 with all 7 dimensions
+4. **Prices set** for all 41 new products (₹299–₹2,499, 3 free)
+5. **190 legacy care products** categorised by keyword → dimension mapping
+6. **Services cleaned**: 36 canonical care services (from 76 — deleted 40 junk/merges)
+7. **Bundle duplicates removed**: `bundles` collection (care) = 0; `product_bundles` = 12 source of truth
+8. **Dead URLs cleared**: 122 care products with dead `static.prod-images` URLs reset → queued for AI gen
+9. **AI generation queued**: 858 products queued (care first priority) — runs overnight
+
+### CareSoulPage_v2 Shipped:
+- **Route**: `/care` now serves `CareSoulPage.jsx` (was CarePage)
+- **GuidedCarePaths.jsx** installed alongside
+- **Live data wiring**: Real pet from `usePillarContext` (no more MOCK_PET)
+- **Live products**: Per-dimension API fetch from `/api/care/products?dimension={dim}` 
+- **Graceful fallback**: Falls back to MOCK_DIMS if API unavailable
+- **Backend**: `/api/care/products` updated to support `dimension` + `sub_category` filters
+
+### Key Files Changed:
+- `frontend/src/pages/CareSoulPage.jsx` — NEW (from zip), wired to real API
+- `frontend/src/pages/GuidedCarePaths.jsx` — NEW (from zip)
+- `frontend/src/App.js` — CareSoulPage replaces CarePage at `/care`
+- `backend/care_routes.py` — `GET /care/products` now supports dimension/sub_category filter
+- `backend/export_routes.py` — 3 new CSV export endpoints (care-products, care-services, care-bundles)
+
+### Care Database State:
+- Care products: **429** (was 454 → -66 junk, +41 new)
+- With dimension: **429/429** (100%)
+- Soul Care: **200** (198 breed + 2 new)
+- New from Excel: **41** (all priced, all have ai_image_prompt)
+- Care services: **36** canonical
+- Care bundles: **12** in product_bundles (source of truth)
+
+---
 
 ---
 
