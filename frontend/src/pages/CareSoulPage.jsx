@@ -632,7 +632,18 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
 
   // All raw products for this dimension from API
   const rawByTab = apiProducts[catName] || {};
-  const allRaw = Object.values(rawByTab).flat();
+  let allRaw = Object.values(rawByTab).flat();
+
+  // Soul Care: filter "Breed Collection" to pet's breed only; keep other sub-cats for all
+  if (dim.id === 'soul') {
+    const breedRaw = (pet?.breed || '').trim().toLowerCase();
+    allRaw = allRaw.filter(p => {
+      if (p.sub_category === 'Breed Collection') {
+        return breedRaw && (p.name || '').toLowerCase().includes(breedRaw);
+      }
+      return true; // Keep Care Essentials, Personalised etc. for all pets
+    });
+  }
 
   // Mira intelligence
   const allergies  = getAllergies(pet);
@@ -1576,7 +1587,7 @@ export default function CareSoulPage() {
       <CareHero pet={petData} soulScore={soulScore} />
 
       <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>
-        <CareCategoryStrip onDimSelect={id => setOpenDim(prev => prev===id?null:id)} activeDim={openDim} />
+        <CareCategoryStrip pet={petData} onDimSelect={id => setOpenDim(prev => prev===id?null:id)} activeDim={openDim} />
 
         <CareTabBar active={activeTab} onChange={setActiveTab} />
 
@@ -1600,6 +1611,14 @@ export default function CareSoulPage() {
 
               {/* Mira's Picks */}
               <MiraPicksSection pet={petData} />
+
+              {/* "Care & Nourish" label — mirrors "Eat & Nourish" in DineSoulPage */}
+              <div style={{ fontSize:"clamp(1.125rem,2.5vw,1.375rem)", fontWeight:800, color:G.darkText, marginBottom:4, fontFamily:"Georgia,serif" }}>
+                Care for <span style={{ color:G.sage }}>{petData.name}</span>
+              </div>
+              <div style={{ fontSize:12, color:"#888", marginBottom:16 }}>
+                8 dimensions, matched to {petData.name}'s coat and health
+              </div>
 
               {/* Dimension grid — cards only (mirrors DineSoulPage pattern) */}
               <div style={{ display:"grid", gap:10, marginBottom:8 }} className="care-dims-grid">

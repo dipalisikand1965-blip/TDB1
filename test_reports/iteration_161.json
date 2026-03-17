@@ -1,0 +1,46 @@
+{
+  "summary": "Frontend testing of 3 new Care page changes: (1) 'Care for Mojo' heading, (2) CareCategoryStrip pill CareContentModal, (3) Soul Care breed filtering. All 3 features work correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Soul Care - Breed Collection tab",
+        "issues": ["Duplicate products in Breed Collection: 2x 'Indie Bath Towel', 2x 'Indie Drying Robe', 2x 'Indie Grooming Apron'. These are data duplicates in the database (6 products total but only 3 distinct). Minor data quality issue, not a code bug."]
+      }
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "MINOR: De-duplicate Soul Care Breed Collection products in database (3 distinct Indie products each appear twice). Consider adding unique constraint on product name within Breed Collection sub-category."
+  ],
+  "critical_code_review_comments": [
+    "CareContentModal.jsx: For Soul Care category, the breedSearch logic uses `breed.toLowerCase()` which calls `getBreedDisplay()` which title-cases the breed. Then breedSearch is lowercased again. This works correctly for 'Indie' but may fail for multi-word breeds like 'Golden Retriever' where the search checks `p.name.toLowerCase().includes('golden retriever')` — would need exact match in product name.",
+    "CareContentModal.jsx line 219: `const subCats = [...new Set(dimProds.map(p => p.sub_category)...)]` uses `dimProds` (unfiltered) for tab building, but should use `safe` (filtered) or `scored` to avoid showing tabs with no products after allergy filtering. Currently tabs may show empty states when clicked.",
+    "CareSoulPage.jsx: <style> tag inside .care-dims-grid creates a 9th grid cell (style + 8 cards). No functional impact but technically invalid HTML structure."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend only test)",
+    "frontend": "100%"
+  },
+  "test_credentials": "dipali@clubconcierge.in / test123 | JWT via /api/auth/login | tdb_auth_token localStorage key",
+  "seed_data_creation": "No seed data created",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "features_verified": {
+    "care_for_mojo_heading": "PASS - 'Care for Mojo' heading in green Georgia serif appears above the 8 dimension cards grid, after MiraPicksSection. '8 dimensions, matched to Mojo's coat and health' subtitle visible below heading.",
+    "care_category_strip_grooming_pill": "PASS - Clicking Grooming pill opens CareContentModal as large panel with: care green theme, ✂️ Grooming header, 'Chicken-free · Treatment-safe' allergy chip, Mira quote about long silky coat, sub-tabs (All, Shampoo & Conditioner, Ear & Eye Care, At-Home Kits, Spa at Home, Brushes & Combs), '95 Grooming — for Mojo' product count, full product grid",
+    "care_category_strip_soul_pill": "PASS - Clicking Soul Care pill opens CareContentModal with: ✨ Soul Care header, Mira quote 'Mojo's long, silky soul — I pulled everything made just for your breed.', sub-tabs (All, Care Essentials, Breed Collection, Personalised), '70 Soul Care — for Mojo' product count (NOT 262 — breed filtering applied correctly)",
+    "soul_care_breed_filtering_modal": "PASS - Breed Collection tab in Soul Care modal shows ONLY 6 products with 'Indie' in name: 'Indie Bath Towel' x2, 'Indie Drying Robe' x2, 'Indie Grooming Apron' x2. Total soul products reduced from 262 to 70 (198 Breed Collection products filtered to 6 Indie-matching + 64 Care Essentials/Personalised/Other)",
+    "care_category_strip_dental_pill": "PASS - Dental & Paw modal opens with 🦷 header, Mira quote, tabs (All, Dental Chews, Dental Care, Nail Care, Paw Care), '12 Dental & Paw — for Mojo' products",
+    "care_modal_close_button": "PASS - Close ✕ button works for all modals (Grooming, Soul Care, Dental & Paw verified)",
+    "soul_dim_card_expanded": "PASS - Soul Care dim card opens DimExpanded inline panel showing '70 safe for Mojo' with tabs (All, Care Essentials, Breed Collection, Personalised, Other) — same breed filtering as modal",
+    "grooming_dim_card_expanded": "PASS - Grooming dim card opens DimExpanded full-width panel with 95 products, 'Chicken-free · Personalised for Mojo' subtitle, tabs (All, Other, Shampoo & Conditioner, Ear & Eye Care, At-Home Kits, Spa at Home, Brushes & Combs)"
+  },
+  "context_for_next_testing_agent": "Test user: dipali@clubconcierge.in / test123. Login via API POST /api/auth/login, store access_token as 'tdb_auth_token' in localStorage. Mojo's breed is 'Indie' (from MongoDB pets collection). Soul Care has 262 total products, after breed filtering 70 shown (6 Indie Breed Collection + 64 other sub-cats). All 3 features from this ticket verified working. Previous context: DimExpanded full-width verified in iteration_160."
+}
