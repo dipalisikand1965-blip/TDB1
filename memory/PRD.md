@@ -4,7 +4,22 @@
 
 ---
 
-## ✅ SESSION 66 — GO Pillar Core Features (Mar 17, 2026)
+## ✅ SESSION 67 — GO Page 10-Point UI Overhaul (Mar 17, 2026)
+
+### Changes Made
+1. **GoHero.jsx** rewritten: "for [name]" h1 style matching Dine/Care, avatar + chips + Mira quote, NO embedded tab bar
+2. **GoTabBar** (new inline component in GoSoulPage): centered pill-style buttons below GoCategoryStrip
+3. **GoCategoryStrip**: proper pill sizing (72px), opens GoContentModal
+4. **PetFriendlyStays.jsx** replaced: destination search worldwide, popular city chips, autocomplete, auto-fetches pet's city on mount
+5. **TripProfile compact bar**: always shows breed + city + size chips (never empty)
+6. **apiProducts fetch** fixed: groups by dim.id using keyword matching instead of wrong category name strings
+7. **DimExpanded**: now uses DIM_ID_TO_KEYWORDS and correctly finds products inline
+8. **Go Essentials tab**: ONLY shows TripProfile + MiraPicksSection + dim cards + GuidedGoPaths (no concierge)
+9. **Book a Service tab**: shows GoConcierge (illustration cards) + GoConciergeSection
+10. **PetFriendlyStays**: auto-fetches pet's city on mount (Goa for Mojo)
+- **Testing**: 10/10 tests passing (iteration_166.json), 100% frontend success
+
+---
 
 ### GoCategoryStrip → GoContentModal (New)
 - **GoCategoryStrip.jsx** updated: 6 pills (Safety, Calming, Carriers, Feeding, Health & Docs, Stay & Board) now open GoContentModal on click (was just decorative pills before)

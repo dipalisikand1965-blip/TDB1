@@ -140,13 +140,14 @@ export default function PetFriendlyStays({ pet, onBook }) {
 
   const petCity = pet?.city || pet?.doggy_soul_answers?.city || null;
 
-  // Pre-fill with pet's city on mount
+  // Pre-fill with pet's city on mount and auto-fetch
   useEffect(() => {
     if (petCity) {
       setSearchInput(petCity);
       setActiveQuery(petCity);
+      doFetch(petCity, null, activeType);
     }
-  }, [petCity]);
+  }, [petCity]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fetch stays
   const doFetch = useCallback(async (query, coords, type) => {
