@@ -30,9 +30,13 @@ const CareConciergeSection = ({ pet }) => {
 
   useEffect(() => {
     const apiUrl = getApiUrl();
-    fetch(`${apiUrl}/api/service-box/services?pillar=care&limit=8&is_active=true`)
+    // Fetch care services, exclude nutrition/feed ones for the "Care, Personally" section
+    fetch(`${apiUrl}/api/service-box/services?pillar=care&limit=12&is_active=true`)
       .then(r => r.ok ? r.json() : { services: [] })
-      .then(d => setServices(d.services || []))
+      .then(d => {
+        const svcs = (d.services || []).filter(s => (s.category || '').toLowerCase() !== 'feed');
+        setServices(svcs.length > 0 ? svcs : (d.services || []).slice(0, 8));
+      })
       .catch(() => {});
   }, []);
 
