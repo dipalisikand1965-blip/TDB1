@@ -161,13 +161,13 @@ function getGoDims(pet) {
   ];
 }
 
-const DIM_ID_TO_CATEGORY = {
-  safety:   "Go Essentials",
-  calming:  "Go Essentials",
-  carriers: "Go Essentials",
-  feeding:  "Go Essentials",
-  health:   "Go Essentials",
-  stay:     "Stay & Board",
+const DIM_ID_TO_KEYWORDS = {
+  safety:   ["safety"],
+  calming:  ["calm"],
+  carriers: ["carrier"],
+  feeding:  ["feed"],
+  health:   ["health"],
+  stay:     ["boarding", "stay"],
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -539,11 +539,13 @@ function TripProfile({ pet, token }) {
         <div style={{ flex:1, minWidth:0 }}>
           <div style={{ fontSize:14, fontWeight:700, color:G.darkText }}>{petName}'s Trip Profile</div>
           <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginTop:4 }}>
+            {pet?.breed && <span style={{ fontSize:10, fontWeight:600, color:G.deepMid, background:G.pale, border:`1px solid ${G.light}`, borderRadius:20, padding:"2px 8px" }}>🐕 {pet.breed}</span>}
             {size && <span style={{ fontSize:10, fontWeight:600, color:G.deepMid, background:G.pale, border:`1px solid ${G.light}`, borderRadius:20, padding:"2px 8px" }}>🐾 {size}</span>}
+            {(pet?.city || pet?.doggy_soul_answers?.city) && <span style={{ fontSize:10, fontWeight:600, color:G.deepMid, background:G.pale, border:`1px solid ${G.light}`, borderRadius:20, padding:"2px 8px" }}>📍 {pet?.city || pet?.doggy_soul_answers?.city}</span>}
             {anxious && <span style={{ fontSize:10, fontWeight:600, color:"#AD1457", background:"#FCE4EC", border:"1px solid #F48FB1", borderRadius:20, padding:"2px 8px" }}>✗ Travel anxiety</span>}
             {condition && <span style={{ fontSize:10, fontWeight:600, color:"#AD1457", background:"#FCE4EC", border:"1px solid #F48FB1", borderRadius:20, padding:"2px 8px" }}>⚕ {condition}</span>}
             {allergies.map(a => <span key={a} style={{ fontSize:10, fontWeight:600, color:"#C62828", background:"#FFEBEE", border:"1px solid #FFCDD2", borderRadius:20, padding:"2px 8px" }}>✗ {a}</span>)}
-            {!size && !anxious && allergies.length === 0 && <span style={{ fontSize:10, color:"#999" }}>Tap to tell Mira about {petName}'s travel needs</span>}
+            {!pet?.breed && !size && !(pet?.city || pet?.doggy_soul_answers?.city) && !anxious && allergies.length === 0 && <span style={{ fontSize:10, color:"#999" }}>Tap to build {petName}'s travel profile — Mira personalises everything</span>}
           </div>
         </div>
         <span style={{ fontSize:11, color:G.teal, fontWeight:700, whiteSpace:"nowrap", flexShrink:0 }}>Mira's picks →</span>
@@ -666,8 +668,8 @@ function TripProfile({ pet, token }) {
 // ─────────────────────────────────────────────────────────────
 function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const petName   = pet?.name || "your dog";
-  const catName   = DIM_ID_TO_CATEGORY[dim.id] || "Go Essentials";
-  const rawByTab  = apiProducts[catName] || {};
+  // apiProducts keyed by dim.id now
+  const rawByTab  = apiProducts[dim.id] || {};
   const allRaw    = Object.values(rawByTab).flat();
   const allergies = getAllergies(pet);
   const size      = getPetSize(pet);
@@ -1447,19 +1449,6 @@ function GoConcierge({ pet, token }) {
         ))}
       </div>
 
-      {/* ── Pet-Friendly Stays near {petName} — Google Places powered ── */}
-      <div style={{ marginBottom:20 }}>
-        <div style={{ marginBottom:14, paddingBottom:14, borderBottom:`1px solid rgba(26,188,156,0.15)` }}>
-          <h3 style={{ margin:0, fontSize:18, fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif" }}>
-            Pet-Friendly Stays near {petName}
-          </h3>
-          <p style={{ margin:"4px 0 0", fontSize:13, color:G.mutedText }}>
-            Hotels, resorts, homestays &amp; boarding — verified pet-friendly, powered by Google
-          </p>
-        </div>
-        <PetFriendlyStays pet={pet} onBook={handleStayBook} />
-      </div>
-
       {/* Dark CTA */}
       <div style={{ background:G.deep, borderRadius:20, padding:28, display:"flex", alignItems:"flex-start", gap:24 }}>
         <div style={{ flex:1 }}>
@@ -1494,6 +1483,31 @@ function GoConcierge({ pet, token }) {
           <div style={{ fontSize:11, color:G.whiteDim, marginBottom:6 }}>handled for you</div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// GO TAB BAR — centered pill tabs (mirrors CareTabBar)
+// ─────────────────────────────────────────────────────────────
+function GoTabBar({ active, onChange }) {
+  const tabs = [
+    { id: "go",       label: "✈️ Go Essentials" },
+    { id: "stay",     label: "🏡 Find a Stay" },
+    { id: "services", label: "🗺️ Book a Service" },
+  ];
+  return (
+    <div style={{ background:"#fff", borderBottom:`1px solid rgba(26,188,156,0.10)`, padding:"16px 16px 0", display:"flex", justifyContent:"center", gap:10, flexWrap:"wrap" }}>
+      {tabs.map(tab => {
+        const sel = active === tab.id;
+        return (
+          <button key={tab.id} onClick={() => onChange(tab.id)}
+            data-testid={`go-tab-${tab.id}`}
+            style={{ padding:"10px 24px", borderRadius:9999, border:"none", background:sel?`linear-gradient(135deg,${G.teal},${G.deepMid})`:`rgba(26,188,156,0.08)`, color:sel?"#fff":G.mutedText, fontSize:14, fontWeight:sel?700:400, cursor:"pointer", transition:"all 0.15s", marginBottom:0 }}>
+            {tab.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -1542,29 +1556,36 @@ const GoSoulPage = () => {
   const [soulScore, setSoulScore]   = useState(0);
   const [apiProducts, setApiProducts] = useState({});
 
-  // Fetch Go products — mirrors CareSoulPage useEffect
+  // Fetch Go products — group by dim.id using keyword matching (mirrors CareSoulPage)
   useEffect(() => {
-    const GO_CATS = ["Go Essentials", "Stay & Board"];
-    Promise.all(
-      GO_CATS.map(cat =>
-        fetch(`${API_URL}/api/admin/pillar-products?pillar=go&limit=100&category=${encodeURIComponent(cat)}`)
-          .then(r => r.ok ? r.json() : null)
-          .catch(() => null)
-      )
-    ).then(results => {
-      const grouped = {};
-      results.forEach(data => {
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=go&limit=300`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
         if (!data?.products?.length) return;
+        const grouped = {};
+        // Group each product into the matching dim bucket
         data.products.forEach(p => {
-          const cat = p.category || "";
-          const sub = p.sub_category || "";
-          if (!grouped[cat])      grouped[cat] = {};
-          if (!grouped[cat][sub]) grouped[cat][sub] = [];
-          grouped[cat][sub].push(p);
+          const catLower = (p.category || "").toLowerCase();
+          let matched = false;
+          Object.entries(DIM_ID_TO_KEYWORDS).forEach(([dimId, keywords]) => {
+            if (keywords.some(kw => catLower.includes(kw))) {
+              if (!grouped[dimId]) grouped[dimId] = {};
+              const sub = p.sub_category || "General";
+              if (!grouped[dimId][sub]) grouped[dimId][sub] = [];
+              grouped[dimId][sub].push(p);
+              matched = true;
+            }
+          });
+          // Fallback: put unmatched in safety
+          if (!matched) {
+            if (!grouped["safety"]) grouped["safety"] = {};
+            const sub = p.sub_category || "Other";
+            if (!grouped["safety"][sub]) grouped["safety"][sub] = [];
+            grouped["safety"][sub].push(p);
+          }
         });
-      });
-      setApiProducts(grouped);
-    }).catch(e => console.error("[GoSoulPage] products fetch error:", e));
+        setApiProducts(grouped);
+      }).catch(e => console.error("[GoSoulPage] products fetch:", e));
   }, []);
 
   useEffect(() => {
@@ -1619,86 +1640,105 @@ const GoSoulPage = () => {
         <meta name="description" content={`Everything ${petData.name} needs for travel and stays — flights, boarding, and hotels arranged by Mira.`} />
       </Helmet>
 
-      <GoHero pet={petData} soulScore={soulScore} activeTab={activeTab} onTabChange={setActiveTab} />
+      <GoHero pet={petData} soulScore={soulScore} />
 
-      <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
-
+      <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>
         <GoCategoryStrip pet={petData} />
 
+        <GoTabBar active={activeTab} onChange={setActiveTab} />
+
         {activeTab === "go" && (
-          <>
+          <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
             {/* Trip Profile — mirrors WellnessProfile */}
             <TripProfile pet={petData} token={token} />
 
-            {/* Mira's Picks */}
-            <MiraPicksSection pet={petData} />
-
             {/* Section header */}
             <section style={{ paddingBottom:16 }} data-testid="go-how-would-section">
-              <h2 style={{ fontSize:"clamp(1.5rem,4vw,2rem)", fontWeight:800, color:G.darkText, marginBottom:6, fontFamily:"Georgia,'Times New Roman',serif" }}>
+              <h2 style={{ fontSize:"clamp(1.375rem,3vw,1.875rem)", fontWeight:800, color:G.darkText, marginBottom:6, fontFamily:"Georgia,serif", lineHeight:1.2 }}>
                 How would <span style={{ color:G.teal }}>{petData.name}</span> love to travel?
               </h2>
-              <p style={{ fontSize:14, color:"#888", lineHeight:1.5 }}>
+              <p style={{ fontSize:13, color:G.mutedText, lineHeight:1.6 }}>
                 Choose a dimension — everything inside is matched to {petData.name}'s size, anxiety level, and travel needs.{" "}
                 <span style={{ color:G.deepMid, fontWeight:600 }}>Glowing ones match what {petData.name} needs most.</span>
               </p>
             </section>
 
-            {/* Dimension grid — 2→3→6 col */}
-            <div style={{ display:"grid", gap:10, marginBottom:32 }} className="go-dims-grid">
-              <style>{`
-                .go-dims-grid{grid-template-columns:repeat(2,1fr)}
-                @media(min-width:640px){.go-dims-grid{grid-template-columns:repeat(3,1fr)}}
-                @media(min-width:1024px){.go-dims-grid{grid-template-columns:repeat(6,1fr)}}
-              `}</style>
-              {goDims.map(dim => (
-                <div key={dim.id}
-                  onClick={() => setOpenDim(openDim===dim.id?null:dim.id)}
-                  style={{ background:"#fff", borderRadius:12, padding:"14px 10px", cursor:"pointer", position:"relative", textAlign:"center", opacity:dim.glow?1:0.60, boxShadow:dim.glow&&openDim!==dim.id?`0 0 18px ${dim.glowColor}`:"none", border:openDim===dim.id?`2px solid ${G.teal}`:"2px solid transparent", transition:"all 0.15s" }}
-                  data-testid={`go-dim-${dim.id}`}>
-                  {dim.glow && <div style={{ position:"absolute", top:8, right:8, width:7, height:7, borderRadius:"50%", background:G.light }} />}
-                  <div style={{ fontSize:22, marginBottom:8 }}>{dim.icon}</div>
-                  <div style={{ fontSize:12, fontWeight:700, color:G.darkText, marginBottom:3, lineHeight:1.2 }}>{dim.label}</div>
-                  <div style={{ fontSize:10, color:G.mutedText, lineHeight:1.3, marginBottom:6 }}>{t(dim.sub, petData.name)}</div>
-                  <span style={{ fontSize:9, fontWeight:700, borderRadius:20, padding:"2px 7px", display:"inline-block", background:`${dim.badgeBg}22`, color:dim.badgeBg }}>{t(dim.badge, petData.name)}</span>
-                  <span style={{ position:"absolute", bottom:8, right:8, fontSize:12, color:"rgba(0,0,0,0.20)", transform:openDim===dim.id?"rotate(90deg)":"none", transition:"transform 0.2s" }}>›</span>
-                </div>
-              ))}
+            {/* Mira's Picks */}
+            <MiraPicksSection pet={petData} />
+
+            {/* "Go for [name]" label */}
+            <div style={{ fontSize:"clamp(1.125rem,2.5vw,1.375rem)", fontWeight:800, color:G.darkText, marginBottom:4, fontFamily:"Georgia,serif" }}>
+              Go for <span style={{ color:G.teal }}>{petData.name}</span>
+            </div>
+            <div style={{ fontSize:12, color:"#888", marginBottom:16 }}>
+              6 dimensions, matched to {petData.name}'s size and travel profile
             </div>
 
+            {/* Dimension grid — 2→3→6 col */}
+            <div style={{ display:"grid", gap:10, marginBottom:8 }} className="go-dims-grid">
+              <style>{`
+                .go-dims-grid{grid-template-columns:repeat(2,1fr)}
+                @media(min-width:480px){.go-dims-grid{grid-template-columns:repeat(4,1fr)}}
+                @media(min-width:768px){.go-dims-grid{grid-template-columns:repeat(4,1fr)}}
+                @keyframes spin{to{transform:rotate(360deg)}}
+              `}</style>
+              {goDims.map(dim => {
+                const isOpen = openDim === dim.id;
+                return (
+                  <div key={dim.id}
+                    onClick={() => setOpenDim(isOpen ? null : dim.id)}
+                    style={{
+                      background: dim.glow ? G.cream : "#fff",
+                      border: isOpen ? `2px solid ${G.teal}` : "2px solid transparent",
+                      borderRadius:12, padding:"16px 12px", cursor:"pointer",
+                      textAlign:"center", transition:"all 0.15s", minHeight:154,
+                      boxShadow: dim.glow && !isOpen ? `0 4px 20px ${dim.glowColor}` : "none",
+                      position:"relative", opacity: dim.glow ? 1 : 0.72,
+                    }}
+                    data-testid={`go-dim-${dim.id}`}>
+                    {dim.glow && !isOpen && (
+                      <div style={{ position:"absolute", top:8, right:8, width:8, height:8, borderRadius:"50%", background:G.light, boxShadow:`0 0 6px ${G.light}` }} />
+                    )}
+                    <div style={{ fontSize:28, marginBottom:10 }}>{dim.icon}</div>
+                    <div style={{ fontSize:14, fontWeight:800, color:G.darkText, marginBottom:4 }}>{dim.label}</div>
+                    <div style={{ fontSize:11, color:G.mutedText, marginBottom:8, lineHeight:1.3 }}>{t(dim.sub, petData.name)}</div>
+                    {dim.badge && (
+                      <div style={{ display:"inline-flex", alignItems:"center", background:dim.badgeBg, color:"#fff", borderRadius:20, padding:"2px 8px", fontSize:9, fontWeight:700 }}>
+                        {t(dim.badge, petData.name)}
+                      </div>
+                    )}
+                    <span style={{ position:"absolute", bottom:8, right:10, fontSize:14, color:"rgba(0,0,0,0.25)", transition:"transform 0.2s", transform:isOpen?"rotate(90deg)":"none" }}>›</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Expanded panel */}
             {activeDim && (
-              <DimExpanded dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
+              <div style={{ display:"grid", gridTemplateColumns:"1fr", marginBottom:8 }}>
+                <DimExpanded dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
+              </div>
             )}
 
             {/* Guided Go Paths */}
-            <GuidedGoPaths pet={petData} />
-
-            {/* Go Concierge */}
-            <GoConcierge pet={petData} token={token} />
-
-            {/* Go Concierge Section (live services from DB) */}
-            <GoConciergeSection pet={petData} />
-          </>
+            <div style={{ marginTop:32 }}>
+              <GuidedGoPaths pet={petData} />
+            </div>
+          </div>
         )}
 
         {activeTab === "services" && (
-          <GoConcierge pet={petData} token={token} />
+          <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+            <GoConcierge pet={petData} token={token} />
+            <GoConciergeSection pet={petData} />
+          </div>
         )}
 
         {activeTab === "stay" && (
-          <div style={{ paddingTop:24, paddingBottom:32 }}>
-            <div style={{ marginBottom:20 }}>
-              <h2 style={{ fontSize:"clamp(1.25rem,3vw,1.625rem)", fontWeight:800, color:G.darkText, marginBottom:6, fontFamily:"Georgia,'Times New Roman',serif" }}>
-                Pet-Friendly Stays near <span style={{ color:G.teal }}>{petData.name}</span>
-              </h2>
-              <p style={{ fontSize:13, color:"#888", lineHeight:1.6, marginBottom:0 }}>
-                Hotels, resorts, homestays &amp; boarding — powered by Google · Book via Concierge
-              </p>
-            </div>
+          <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
             <PetFriendlyStays
               pet={petData}
               onBook={(spot) => {
-                // Opens GoConcierge booking flow for travel planning
                 const evt = new CustomEvent("goOpenConcierge", { detail: { service:"planning", venue:spot?.name } });
                 window.dispatchEvent(evt);
               }}
