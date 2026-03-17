@@ -6,7 +6,7 @@ Iteration 126 - Follow-up to iteration_125.
 
 import asyncio
 
-BASE_URL = "https://care-pillar-fix.preview.emergentagent.com"
+BASE_URL = "https://mira-go-launch.preview.emergentagent.com"
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 

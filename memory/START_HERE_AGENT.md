@@ -179,7 +179,7 @@ curl "$API_URL/api/pet-soul/profile/pet-99a708f1722a/quick-questions"
 
 ## 🚀 PREVIEW URL
 ```
-https://care-pillar-fix.preview.emergentagent.com
+https://mira-go-launch.preview.emergentagent.com
 ```
 
 Key pages:

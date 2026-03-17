@@ -1,0 +1,114 @@
+{
+  "summary": "Frontend testing of GO pillar feature parity. All 10 key features tested with logged-in user (dipali@clubconcierge.in / test123 / Mojo as active pet). Core functionality works correctly. Two medium issues identified around loading performance.",
+
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "GET /api/places/pet-friendly-stays?city=Goa&type=all&radius=10000&breed=Indie",
+        "issue": "Intermittent 500 when breed param is included without lat/lng coordinates. Returns 200 when coordinates are provided or when no breed param. Seen in backend logs line 895.",
+        "priority": "MEDIUM"
+      },
+      {
+        "endpoint": "GET /api/mira/claude-picks/{pet_id}?pillar=go&entity_type=product",
+        "issue": "Very slow response (~14+ seconds) when AI scoring is triggered. The MiraPicksSection Promise.all waits for both product and service picks - product picks block on LiteLLM scoring calls. Causes MiraPicksSection to appear blank for 14+ seconds.",
+        "priority": "MEDIUM"
+      }
+    ]
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "GoContentModal",
+        "issue": "Modal shows loading spinner for ~5-8 seconds on each open. Root cause: `allergies = useMemo(() => getPetAllergies(pet), [pet])` creates new array reference when `pet` reference changes (from background scoring events updating petData in GoSoulPage). This triggers `useEffect([isOpen, category, allergies, size, condition, apiUrl])` repeatedly, calling `setLoading(true)` each time. Fix: Change useEffect deps to use `pet?.id` instead of `allergies` object reference, or compute allergies inside the effect.",
+        "selector": "[data-testid='go-modal-close']",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "MiraPicksSection",
+        "issue": "Section shows only header text ('Mira's Go Picks for Mojo AI Scored') with completely blank content area for 14+ seconds during initial page load. No loading indicator is shown, creating a jarring blank space. Root cause: claude-picks product API takes ~14+ seconds (AI scoring LiteLLM calls). While loading=true and picks=[], showImagines=false, so nothing renders.",
+        "selector": "[data-testid='go-mira-picks-section']",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "TripProfile drawer",
+        "issue": "Soul score shows '—%' initially (before API returns liveScore). This is expected behavior but shows 'Loading Mojo's questions…' with '—%' score simultaneously. Minor UX observation.",
+        "selector": "[data-testid='trip-drawer']",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Go page - Mira Picks section",
+        "issues": ["Blank content area while loading (no spinner/skeleton) creates visual gap between 'Mira's Go Picks for Mojo' header and the dimension cards section below it"]
+      }
+    ]
+  },
+
+  "tests_passed": [
+    "Go page loads correctly at /go route - NoPetState shown when not logged in",
+    "GoHero displays correctly with pet photo, soul score 95%, breed badge",
+    "GoHero tab bar shows 3 tabs: '✈️ Go Essentials', '🏡 Find a Stay', '🗺️ Book a Service' with teal active underline",
+    "GoCategoryStrip renders 6 pills: Safety, Calming, Carriers, Feeding, Health & Docs, Stay & Board",
+    "ALL 6 category pills open GoContentModal (all tested: safety, calming, carriers, feeding, health, stay)",
+    "GoContentModal teal color scheme: dark gradient header (#0D3349), teal Mira quote box",
+    "GoContentModal shows Mira quote (e.g., 'These are the safety essentials I'd insist on for every trip with Mojo.')",
+    "GoContentModal shows filtered products: Safety shows 9 products for Mojo with '× chicken-free filtered' badge",
+    "GoContentModal close button (X) works correctly",
+    "GoContentModal sub-category tabs render (e.g., All | Safety)",
+    "'Find a Stay' tab click shows PetFriendlyStays component with 'Pet-Friendly Stays near Mojo' heading",
+    "PetFriendlyStays has 6 type filter pills: All, Hotels, Resorts, Homestays, Boarding, Camping",
+    "PetFriendlyStays shows location: 'Pet-friendly stays near Mojo in Goa'",
+    "PetFriendlyStays loads stays from Google Places API (working, shows skeleton → places)",
+    "TripProfile bar visible: 'Mojo's Trip Profile ✗ Chicken Mira's picks →'",
+    "TripProfile drawer opens on click: shows 'GROW MOJO'S TRIP PROFILE', close button (✕)",
+    "TripProfile drawer closes correctly",
+    "'Book a Service' tab shows Go Concierge services: Flight Coordination, Road & Train Travel, Boarding & Daycare, Pet Sitting, Relocation, Pet Taxi, Travel Planning, Emergency Travel"
+  ],
+
+  "test_report_links": ["/app/test_reports/iteration_165.json"],
+
+  "action_items": [
+    "FIX: GoContentModal useEffect deps - change `allergies` to `pet?.id` to prevent re-fetch on every petData reference change. Line 313 in /app/frontend/src/components/go/GoContentModal.jsx: `}, [isOpen, category, allergies, size, condition, apiUrl]);` → `}, [isOpen, category, pet?.id, apiUrl]);` and compute allergies/size/condition inside the effect.",
+    "FIX: MiraPicksSection should show loading skeleton cards while claude-picks API is pending (loading=true). Currently shows blank space. Add 3-4 shimmer/skeleton cards when loading=true in GoSoulPage.jsx MiraPicksSection (~line 360).",
+    "INVESTIGATE: Backend `/api/places/pet-friendly-stays` returns 500 when breed=Indie param included without lat/lng. Check error handling in the places API route."
+  ],
+
+  "critical_code_review_comments": [
+    "GoContentModal.jsx line 313: useEffect deps include `allergies` (array object) which creates a new reference every time `pet` prop reference changes. This causes the modal to reload products repeatedly during initial page load when GoSoulPage re-renders due to background AI scoring. Fix: Use `pet?.id` as dep and compute allergies inside effect.",
+    "MiraPicksSection (GoSoulPage.jsx ~line 360): No loading state UI - blank space shown while claude-picks API is in flight. Should add skeleton cards (3-4 cards) while loading=true.",
+    "PetFriendlyStays.jsx: The API call includes `breed=Indie` param which causes intermittent 500 on backend. Consider removing breed from the API call params or fixing backend to handle it gracefully."
+  ],
+
+  "updated_files": [],
+
+  "success_rate": {
+    "backend": "95% (2 minor intermittent issues)",
+    "frontend": "80% (core features all work, 2 medium performance/loading issues)"
+  },
+
+  "seed_data_creation": "Used existing test user: dipali@clubconcierge.in / test123 with Mojo as active pet (soul_score: 95%, breed: Indie, allergy: Chicken, city: Goa)",
+
+  "retest_needed": true,
+
+  "should_main_agent_self_test": true,
+
+  "context_for_next_testing_agent": "All GO pillar core features are implemented and working: GoCategoryStrip (6 pills), GoContentModal (opens correctly, shows products, teal scheme, allergy filtering), GoHero (3 tabs), Find a Stay (PetFriendlyStays with 6 filter pills), Book a Service (concierge services), TripProfile (compact bar + drawer). Two medium issues: (1) GoContentModal slow load due to deps instability, (2) MiraPicksSection blank space while loading. Test user: dipali@clubconcierge.in / test123. Pet: Mojo.",
+
+  "rca_of_issues": {
+    "GoContentModal_slow_load": {
+      "symptom": "Modal shows loading spinner for 5-8 seconds after clicking category pill",
+      "root_cause": "GoContentModal useEffect has `allergies` in deps array. `allergies = useMemo(() => getPetAllergies(pet), [pet])`. When GoSoulPage triggers background scoring (POST /api/mira/score-for-pet on mount), scoring completes and may update petData via soulScoreUpdated events. Each petData update creates new `pet` object reference → `allergies` useMemo recomputes to new array reference → useEffect re-runs → setLoading(true) → products cleared → new fetch starts. Cycle repeats until petData stabilizes.",
+      "fix": "Change useEffect dependency from `allergies` to `pet?.id`. Compute allergies inside the effect body. This ensures the effect only re-runs when the actual pet changes, not on every re-render.",
+      "file": "/app/frontend/src/components/go/GoContentModal.jsx",
+      "line": 313
+    },
+    "MiraPicksSection_blank": {
+      "symptom": "Mira's Go Picks section shows only header with blank content area for 14+ seconds",
+      "root_cause": "MiraPicksSection uses Promise.all([claude-picks-products, claude-picks-services]). The claude-picks endpoint for products may trigger LiteLLM AI scoring calls that take 14+ seconds each. While loading=true, showImagines=false and picks=[], so the section renders an empty flex container with no visible content.",
+      "fix": "Add loading skeleton in MiraPicksSection: show 3-4 shimmer placeholder cards while loading=true. Also consider adding a timeout (e.g., 5s) after which showImagines becomes true even if loading hasn't completed."
+    }
+  }
+}

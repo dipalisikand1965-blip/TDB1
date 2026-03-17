@@ -304,7 +304,7 @@ Test Pets:
 ## Services
 - Backend: Running on port 8001
 - Frontend: Running on port 3000
-- Preview URL: https://care-pillar-fix.preview.emergentagent.com
+- Preview URL: https://mira-go-launch.preview.emergentagent.com
 
 ---
 
