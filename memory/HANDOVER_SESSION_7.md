@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://mira-go-launch.preview.emergentagent.com
+https://go-pillar-launch.preview.emergentagent.com
 
 ---
 
