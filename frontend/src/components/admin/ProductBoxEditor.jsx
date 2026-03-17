@@ -180,8 +180,8 @@ const ProductBoxEditor = ({
   const [uploadingImage, setUploadingImage] = useState(false);
   const [generatingImage, setGeneratingImage] = useState(false);
 
-  // Generate AI image for this product (synchronous — returns URL directly)
-  const handleGenerateAIImage = () => {
+  // Generate AI image — starts background job, polls for result (avoids 30s timeout)
+  const handleGenerateAIImage = async () => {
     if (!product?.id || product.id.startsWith('NEW-')) {
       alert('Please save the product first before generating an AI image.');
       return;
@@ -189,41 +189,66 @@ const ProductBoxEditor = ({
     const adminAuth = localStorage.getItem('adminAuth') || 
       (sessionStorage.getItem('admin_authenticated') === 'true' ? btoa(`${sessionStorage.getItem('admin_username') || 'aditya'}:lola4304`) : null);
     if (!adminAuth) {
-      alert('Admin session not found. Please log out and log back in to the admin panel.');
+      alert('Admin session not found. Please log out and log back in.');
       return;
     }
     setGeneratingImage(true);
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', `${API_URL}/api/admin/products/${product.id}/generate-image`);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.setRequestHeader('Authorization', `Basic ${adminAuth}`);
-    xhr.onload = () => {
-      setGeneratingImage(false);
-      try {
-        const data = JSON.parse(xhr.responseText);
-        if (xhr.status >= 200 && xhr.status < 300 && data.success && data.image_url) {
-          // Single atomic update — avoids React batching losing earlier fields
-          const newProduct = JSON.parse(JSON.stringify(product));
-          newProduct.media = newProduct.media || {};
-          newProduct.media.primary_image = data.image_url;
-          newProduct.image = data.image_url;
-          newProduct.image_url = data.image_url;
-          newProduct.images = [data.image_url];
-          setProduct(newProduct);
-          alert(`AI image generated and saved to Cloudinary for "${product.name}"`);
-        } else if (xhr.status === 401 || (data?.detail || '').toLowerCase().includes('credentials')) {
-          alert('Session expired. Please log out and log back in to the admin panel.');
-        } else {
-          alert('AI image generation failed: ' + (data?.detail || `Server error ${xhr.status}`));
-        }
-      } catch {
-        alert('AI image generation failed: Could not parse server response');
+    try {
+      // Step 1: Start background job — returns immediately
+      const startRes = await fetch(`${API_URL}/api/admin/products/${encodeURIComponent(product.id)}/generate-image`, {
+        method: 'POST',
+        headers: { 'Authorization': `Basic ${adminAuth}`, 'Content-Type': 'application/json' }
+      });
+      if (startRes.status === 404) { setGeneratingImage(false); alert('Product not found. Please save first.'); return; }
+      if (startRes.status === 401) { setGeneratingImage(false); alert('Session expired. Please log back in.'); return; }
+
+      const startData = await startRes.json();
+      if (startData.status !== 'generating') {
+        setGeneratingImage(false);
+        alert('Failed to start image generation: ' + (startData.detail || JSON.stringify(startData)));
+        return;
       }
-    };
-    xhr.onerror = () => { setGeneratingImage(false); alert('AI image generation failed: Network error'); };
-    xhr.send();
+
+      // Step 2: Poll every 4s for up to 3 minutes
+      let attempts = 0;
+      const maxAttempts = 45;
+      const pollInterval = setInterval(async () => {
+        attempts++;
+        try {
+          const statusRes = await fetch(`${API_URL}/api/admin/products/${encodeURIComponent(product.id)}/image-status`, {
+            headers: { 'Authorization': `Basic ${adminAuth}` }
+          });
+          const statusData = await statusRes.json();
+
+          if (statusData.status === 'complete' && statusData.image_url) {
+            clearInterval(pollInterval);
+            setGeneratingImage(false);
+            const newProduct = JSON.parse(JSON.stringify(product));
+            newProduct.image_url = statusData.image_url;
+            newProduct.image = statusData.image_url;
+            newProduct.images = [statusData.image_url];
+            setProduct(newProduct);
+            alert(`✅ AI image generated for "${product.name}"`);
+          } else if (statusData.status === 'error') {
+            clearInterval(pollInterval);
+            setGeneratingImage(false);
+            alert('Image generation failed: ' + (statusData.error || 'Unknown error'));
+          } else if (attempts >= maxAttempts) {
+            clearInterval(pollInterval);
+            setGeneratingImage(false);
+            alert('Image generation is taking longer than expected. It will complete in the background — refresh in 2 minutes.');
+          }
+        } catch (pollErr) {
+          console.warn('Poll error (will retry):', pollErr);
+        }
+      }, 4000);
+
+    } catch (err) {
+      setGeneratingImage(false);
+      alert('Failed to start image generation: ' + err.message);
+    }
   };
-  
+
   // Handle image upload to Cloudinary
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
