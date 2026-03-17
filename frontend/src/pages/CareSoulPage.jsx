@@ -517,6 +517,212 @@ function MiraPicksSection({ pet }) {
 }
 
 // ─────────────────────────────────────────────────────────────
+// BREED CARE INSIGHTS — drives bar chip + drawer best practices
+// ─────────────────────────────────────────────────────────────
+const BREED_CARE_INSIGHTS = {
+  'indie': {
+    tagline: 'short, straight coat · weekly brush',
+    coat_desc: 'Short, dense, straight coat — hardy and low-maintenance. Brush weekly, bath monthly.',
+    tips: [
+      'Weekly brushing with a rubber mitt or bristle brush keeps shedding minimal',
+      'Monthly bath with gentle, mild shampoo — Indie skin is naturally resilient',
+      'Clean ears every 2 weeks — Indies can accumulate wax in their upright ears',
+      'Nail trim every 3–4 weeks to prevent discomfort when walking',
+    ],
+    watch_for: 'Tick and flea infestations in monsoon season · Skin infections from street exposure',
+    dental: 'Brush 2–3× per week — Indies are genetically hardy but tartar builds with age',
+  },
+  'shih tzu': {
+    tagline: 'silky double coat · daily brush · face fold care',
+    coat_desc: 'Long, silky double coat — requires daily brushing and professional grooming every 6–8 weeks.',
+    tips: [
+      'Brush daily with a pin brush and slicker — focus on behind ears and armpits',
+      'Clean face folds and around eyes daily with pet-safe wipes',
+      'Professional grooming every 6–8 weeks — consider a "puppy cut" for easier home care',
+      'Tear stain cleaning every 2–3 days to prevent redness and infection',
+    ],
+    watch_for: 'Brachycephalic breathing issues · Eye discharge · Patellar luxation',
+    dental: 'Brush daily — Shih Tzus are extremely prone to dental disease',
+  },
+  'labrador': {
+    tagline: 'dense double coat · weekly brush · ear check',
+    coat_desc: 'Dense, water-resistant double coat — sheds year-round with heavy seasonal blow-outs.',
+    tips: [
+      'Brush weekly with a slicker brush; increase to daily during shedding season',
+      'Bath every 4–6 weeks — avoid over-bathing which strips natural oils',
+      'Check and clean ears weekly — Labs are highly prone to ear infections',
+      'Paw inspection after outdoor activity — Labs love mud and debris',
+    ],
+    watch_for: 'Obesity · Hip dysplasia · Ear infections',
+    dental: 'Brush 3× per week — large mouths accumulate tartar fast',
+  },
+  'golden retriever': {
+    tagline: 'feathered coat · brush 3× week · ear care',
+    coat_desc: 'Long, dense, water-repellent coat with feathering on legs, chest, and tail.',
+    tips: [
+      'Brush 2–3× per week — focus on feathered areas prone to matting',
+      'Professional grooming every 8–12 weeks',
+      'Check ears weekly — Goldens are prone to ear infections',
+      'Bath every 4–6 weeks with moisturising shampoo to maintain coat shine',
+    ],
+    watch_for: 'Hip dysplasia · Skin allergies · Cancer risk',
+    dental: 'Brush daily — Goldens have large mouths that collect plaque',
+  },
+  'poodle': {
+    tagline: 'curly non-shedding coat · groom every 6 weeks',
+    coat_desc: 'Curly, non-shedding coat that grows continuously — professional grooming essential.',
+    tips: [
+      'Brush daily to prevent matting between professional grooming sessions',
+      'Professional grooming every 6–8 weeks is non-negotiable',
+      'Clean and check ears weekly — curly ear canals trap moisture',
+      'Keep hair trimmed around eyes for hygiene and vision',
+    ],
+    watch_for: 'Ear infections · Eye problems · Hip dysplasia',
+    dental: 'Brush daily — small mouths are overcrowded and plaque-prone',
+  },
+  'french bulldog': {
+    tagline: 'smooth coat · daily face fold cleaning',
+    coat_desc: 'Short, smooth coat — minimal brushing, but face fold care is critical for health.',
+    tips: [
+      'Wipe facial folds daily with unscented pet wipes to prevent skin fold infections',
+      'Bath every 2–4 weeks — keep folds dry after bathing',
+      'Check and wipe tail pocket every 2–3 days if present',
+      'Brush weekly with a soft bristle brush to remove dead hair',
+    ],
+    watch_for: 'Brachycephalic syndrome · Skin fold infections · Spinal issues',
+    dental: 'Brush daily — Frenchies have the highest dental disease risk',
+  },
+  'german shepherd': {
+    tagline: 'double coat · brush 2–3× week',
+    coat_desc: 'Dense double coat with soft undercoat — heavy year-round shedder.',
+    tips: [
+      'Brush 2–3× per week with an undercoat rake; daily during shedding seasons',
+      'Bath every 4–6 weeks — over-bathing strips natural oils',
+      'Check ears weekly — prone to infections',
+      'Nail trim every 3–4 weeks — GSD nails grow fast',
+    ],
+    watch_for: 'Hip and elbow dysplasia · Degenerative myelopathy · Bloat',
+    dental: 'Brush 3× per week',
+  },
+  'husky': {
+    tagline: 'thick double coat · seasonal blow-out · never shave',
+    coat_desc: 'Thick double coat — sheds year-round with two heavy annual blow-outs.',
+    tips: [
+      'Brush 2–3× per week; daily during bi-annual blow-out season',
+      'Use an undercoat rake + slicker brush combination',
+      'Bath every 6–8 weeks — Huskies are naturally clean and odour-resistant',
+      'NEVER shave — double coat insulates in both heat and cold',
+    ],
+    watch_for: 'Eye conditions (cataracts, PRA) · Hip dysplasia · Hypothyroidism',
+    dental: 'Brush 2–3× per week',
+  },
+  'pug': {
+    tagline: 'smooth coat · face wrinkle care daily',
+    coat_desc: 'Short, smooth coat with facial skin folds that require daily attention.',
+    tips: [
+      'Clean facial wrinkles daily with pet-safe wipes to prevent yeast infections',
+      'Brush weekly with a rubber grooming mitt',
+      'Clean eyes gently every day — Pug eyes are prominent and collect debris',
+      'Bath every 3–4 weeks with gentle hypoallergenic shampoo',
+    ],
+    watch_for: 'Brachycephalic breathing · Eye injuries · Obesity',
+    dental: 'Brush daily — Pugs are very prone to dental disease',
+  },
+  'beagle': {
+    tagline: 'short coat · ear cleaning weekly',
+    coat_desc: 'Short, dense, weather-resistant coat — moderate shedder.',
+    tips: [
+      'Brush weekly with a hound glove or soft bristle brush',
+      'Clean long, floppy ears weekly — Beagles have the highest ear infection risk',
+      'Bath every 4–6 weeks — Beagles can develop a characteristic hound odour',
+      'Paw check after trail walks — prone to cuts and debris between toes',
+    ],
+    watch_for: 'Obesity · Ear infections · Intervertebral disc disease',
+    dental: 'Brush 2–3× per week',
+  },
+  'chihuahua': {
+    tagline: 'smooth or long coat · dental care critical',
+    coat_desc: 'Either smooth or long coat — low to moderate maintenance. Dental care is critical.',
+    tips: [
+      'Brush weekly (smooth coat) or 2–3× per week (long coat)',
+      'Bath every 2–4 weeks with gentle puppy shampoo',
+      'Keep warm in cold weather — Chihuahuas are temperature-sensitive',
+      'Nail trim every 2–3 weeks — tiny paws, fast-growing nails',
+    ],
+    watch_for: 'Dental disease · Patellar luxation · Heart disease · Hypoglycaemia',
+    dental: 'Brush DAILY — highest dental disease risk of all breeds',
+  },
+  'dachshund': {
+    tagline: 'smooth, wire, or long coat · back care essential',
+    coat_desc: 'Three coat varieties — all require regular grooming. Spinal health is critical.',
+    tips: [
+      'Brush weekly (smooth/wire) or 2–3× per week (long coat)',
+      'Avoid stairs and jumping — Dachshund spines are fragile',
+      'Clean ears weekly — long ear canals trap moisture',
+      'Use a ramp for furniture access to protect their long backs',
+    ],
+    watch_for: 'Intervertebral Disc Disease (IVDD) · Obesity · Dental disease',
+    dental: 'Brush daily — tiny mouths with big dental disease risk',
+  },
+};
+
+function getBreedInsight(pet) {
+  const breedRaw = (pet?.breed || '').trim().toLowerCase();
+  return BREED_CARE_INSIGHTS[breedRaw] || BREED_CARE_INSIGHTS['default'] || {
+    tagline: 'personalised care',
+    coat_desc: 'Regular grooming keeps your dog healthy and comfortable.',
+    tips: [
+      'Regular brushing reduces shedding and keeps coat healthy',
+      'Monthly baths with breed-appropriate shampoo',
+      'Nail trim every 3–4 weeks',
+      'Ear cleaning every 2 weeks',
+    ],
+    watch_for: null,
+    dental: 'Brush 2–3× per week to prevent tartar buildup',
+  };
+}
+
+function generateWellnessImagines(pet) {
+  const petName = pet?.name || 'your dog';
+  const breed = (pet?.breed || '').trim();
+  const coat = getCoatType(pet);
+  const condition = getHealthCondition(pet);
+  const imagines = [];
+  if (breed) {
+    imagines.push({
+      id: `wi-groom-${breed.replace(/\s/g,'-')}`,
+      emoji: '✂️',
+      name: `${breed.charAt(0).toUpperCase() + breed.slice(1)} Grooming Essentials Kit`,
+      description: `A complete grooming set built for ${breed}'s coat — brushes, breed-safe shampoo, ear care, and more.`,
+    });
+  }
+  if (coat) {
+    imagines.push({
+      id: `wi-coat-${coat.replace(/\s/g,'-')}`,
+      emoji: '🌿',
+      name: `${coat.charAt(0).toUpperCase() + coat.slice(1)} Coat Conditioning Pack`,
+      description: `Deep conditioning treatment for ${petName}'s ${coat} coat — Mira would love to source this monthly.`,
+    });
+  }
+  if (condition && condition.toLowerCase() !== 'none') {
+    imagines.push({
+      id: 'wi-health',
+      emoji: '💊',
+      name: `${petName}'s Recovery Care Kit`,
+      description: `Gentle supplements and care products safe for ${petName}'s ${condition} — vet-approved, sourced by Mira.`,
+    });
+  } else {
+    imagines.push({
+      id: 'wi-dental',
+      emoji: '🦷',
+      name: `${petName}'s Dental & Fresh Breath Kit`,
+      description: `Enzymatic toothbrush, dental chews, and water additive — everything ${petName} needs for healthy teeth.`,
+    });
+  }
+  return imagines.slice(0, 3);
+}
+
+// ─────────────────────────────────────────────────────────────
 // WELLNESS PROFILE — compact bar + soul questions modal
 // Fetches real questions from /api/pet-soul/profile/{id}/quick-questions
 // ─────────────────────────────────────────────────────────────
@@ -531,12 +737,13 @@ function WellnessProfile({ pet, token }) {
   const [qPts, setQPts]             = useState({});
   const [totalPts, setTotalPts]     = useState(0);
 
-  const allergies = getAllergies(pet);
   const coat      = getCoatType(pet);
   const comfort   = getGroomingComfort(pet);
   const condition = getHealthCondition(pet);
   const dental    = getDentalHealth(pet);
   const petName   = pet?.name || "your dog";
+  const breedInsight = getBreedInsight(pet);
+  const wellnessImagines = generateWellnessImagines(pet);
 
   const loadQuestions = useCallback(() => {
     if (!pet?.id) return;
@@ -605,12 +812,12 @@ function WellnessProfile({ pet, token }) {
         <div style={{ flex:1, minWidth:0 }}>
           <div style={{ fontSize:14, fontWeight:700, color:G.darkText }}>{petName}'s Wellness Profile</div>
           <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginTop:4 }}>
+            {pet?.breed && <span style={{ fontSize:10, fontWeight:600, color:"#1B4332", background:"#D8F3DC", border:"1px solid #74C69D", borderRadius:20, padding:"2px 8px" }}>🐾 {pet.breed} · {breedInsight.tagline}</span>}
             {coat && <span style={{ fontSize:10, fontWeight:600, color:G.deepMid, background:G.pale, border:`1px solid ${G.light}`, borderRadius:20, padding:"2px 8px" }}>🌿 {coat}</span>}
             {comfort && <span style={{ fontSize:10, fontWeight:600, color:"#1565C0", background:"#E3F2FD", border:"1px solid #90CAF9", borderRadius:20, padding:"2px 8px" }}>✓ {comfort} with grooming</span>}
             {dental && <span style={{ fontSize:10, fontWeight:600, color:"#00695C", background:"#E0F2F1", border:"1px solid #80CBC4", borderRadius:20, padding:"2px 8px" }}>🦷 {dental}</span>}
             {condition && <span style={{ fontSize:10, fontWeight:600, color:"#AD1457", background:"#FCE4EC", border:"1px solid #F48FB1", borderRadius:20, padding:"2px 8px" }}>⚕ {condition}</span>}
-            {allergies.map(a => <span key={a} style={{ fontSize:10, fontWeight:600, color:"#C62828", background:"#FFEBEE", border:"1px solid #FFCDD2", borderRadius:20, padding:"2px 8px" }}>✗ {a}</span>)}
-            {!coat && !comfort && allergies.length === 0 && <span style={{ fontSize:10, color:"#999" }}>Tap to tell Mira about {petName}'s care needs</span>}
+            {!pet?.breed && !coat && !comfort && <span style={{ fontSize:10, color:"#999" }}>Tap to tell Mira about {petName}'s care needs</span>}
           </div>
         </div>
         <span style={{ fontSize:11, color:G.sage, fontWeight:700, whiteSpace:"nowrap", flexShrink:0 }}>Mira's picks →</span>
@@ -659,6 +866,40 @@ function WellnessProfile({ pet, token }) {
                   <p style={{ fontSize:13, fontWeight:600, color:G.light }}>Answers saved · +{totalPts} pts added to soul score</p>
                 </div>
               )}
+
+              {/* ── BREED BEST PRACTICES ── */}
+              <div style={{ marginBottom:22, borderRadius:16, overflow:"hidden", border:`1.5px solid #B7E4C7` }}>
+                <div style={{ background:"linear-gradient(135deg,#0A1F12,#1B4332)", padding:"14px 18px 12px" }}>
+                  <p style={{ margin:0, fontWeight:800, fontSize:11, textTransform:"uppercase", letterSpacing:"0.10em", color:"#74C69D" }}>Best Practices · {pet?.breed || "Your Dog"}</p>
+                  <p style={{ margin:"4px 0 0", fontSize:11, color:"rgba(255,255,255,0.55)" }}>{breedInsight.coat_desc}</p>
+                </div>
+                <div style={{ background:"#F0FFF4", padding:"14px 18px" }}>
+                  <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:8, marginBottom:12 }}>
+                    {breedInsight.tips.map((tip, i) => (
+                      <div key={i} style={{ display:"flex", alignItems:"flex-start", gap:8, padding:"10px 12px", borderRadius:10, background:"#fff", border:"1px solid #C3E6CB" }}>
+                        <span style={{ fontSize:14, flexShrink:0, marginTop:1 }}>{["🪮","🛁","👂","✂️"][i] || "✦"}</span>
+                        <p style={{ margin:0, fontSize:11, color:"#1B4332", lineHeight:1.5 }}>{tip}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ display:"flex", gap:10 }}>
+                    {breedInsight.watch_for && (
+                      <div style={{ flex:1, padding:"8px 12px", borderRadius:10, background:"#FFF3E0", border:"1px solid #FFCC80" }}>
+                        <p style={{ margin:0, fontSize:10, fontWeight:700, color:"#E65100", marginBottom:3 }}>Watch for</p>
+                        <p style={{ margin:0, fontSize:10, color:"#BF360C", lineHeight:1.4 }}>{breedInsight.watch_for}</p>
+                      </div>
+                    )}
+                    {breedInsight.dental && (
+                      <div style={{ flex:1, padding:"8px 12px", borderRadius:10, background:"#E0F2F1", border:"1px solid #80CBC4" }}>
+                        <p style={{ margin:0, fontSize:10, fontWeight:700, color:"#00695C", marginBottom:3 }}>Dental</p>
+                        <p style={{ margin:0, fontSize:10, color:"#004D40", lineHeight:1.4 }}>{breedInsight.dental}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* ── QUESTIONS ── */}
 
               {qLoading ? (
                 <div style={{ textAlign:"center", padding:"32px 0", color:"#888", fontSize:13 }}>
@@ -733,6 +974,19 @@ function WellnessProfile({ pet, token }) {
                   })}
                 </div>
               )}
+
+              {/* ── MIRA IMAGINES — always shown at bottom ── */}
+              <div style={{ marginTop:8, paddingTop:20, borderTop:`1px solid #E8F5E9` }}>
+                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14 }}>
+                  <span style={{ fontSize:11, fontWeight:800, textTransform:"uppercase", letterSpacing:"0.10em", color:G.deepMid }}>✦ Mira Imagines</span>
+                  <span style={{ fontSize:10, color:"#888" }}>— products Mira would source for {petName}</span>
+                </div>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12 }}>
+                  {wellnessImagines.map(item => (
+                    <MiraImagineCard key={item.id} item={item} pet={pet} token={token} />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>

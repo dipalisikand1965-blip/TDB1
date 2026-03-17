@@ -74,7 +74,7 @@ function ConditionalFloatingButton() {
   // Hide on /mira, /admin, and ALL pillar pages (they have their own Ask Concierge buttons)
   const hiddenPaths = [
     '/mira', '/admin', '/demo',
-    '/care', '/celebrate', '/celebrate-soul', '/advisory', '/dine', '/stay', '/travel', 
+    '/care', '/celebrate', '/celebrate-soul', '/advisory', '/dine', '/stay', '/travel', '/go',
     '/emergency', '/enjoy', '/fit', '/learn', '/farewell', '/adopt', 
     '/paperwork', '/shop', '/cakes', '/breed-cakes', '/mini-cakes'
   ];
@@ -233,6 +233,7 @@ const Autoship = lazy(() => import("./pages/Autoship"));
 // Pillar Pages (lazy load - user navigates to these)
 const DinePage = lazy(() => import("./pages/DinePage"));
 const DineSoulPage = lazy(() => import("./pages/DineSoulPage"));
+const GoSoulPage = lazy(() => import("./pages/GoSoulPage"));
 const StayPage = lazy(() => import("./pages/StayPage"));
 const TravelPage = lazy(() => import("./pages/TravelPage"));
 const CareSoulPage = lazy(() => import("./pages/CareSoulPage"));
@@ -587,6 +588,7 @@ function MainLayout() {
         <Route path="/dine/supplements" element={<ProductListing category="supplements" pillar="dine" />} />
         <Route path="/dine/:category" element={<ProductListing pillar="dine" />} />
         
+        <Route path="/go" element={<GoSoulPage />} />
         <Route path="/stay" element={<StayPage />} />
         <Route path="/stay/beds" element={<ProductListing category="beds" pillar="stay" />} />
         <Route path="/stay/mats" element={<ProductListing category="mats" pillar="stay" />} />

@@ -43,14 +43,16 @@ async def get_pillar_products(
     """
     Get products for a specific pillar from products_master.
     Single unified endpoint used by all pillar admin pages.
+    Checks both pillar (string) and pillars (array) fields.
     """
     db = get_db()
     try:
-        query = {"pillar": pillar}
-        
+        # Match either pillar == pillar OR pillars array contains pillar
+        pillar_condition = {"$or": [{"pillar": pillar}, {"pillars": pillar}]}
+
         # Build conditions
-        conditions = [{"pillar": pillar}]
-        
+        conditions = [pillar_condition]
+
         if active_only:
             conditions.append({"$or": [{"active": True}, {"is_active": True}]})
         if search:
@@ -60,8 +62,8 @@ async def get_pillar_products(
             ]})
         if category:
             conditions.append({"category": category})
-        
-        query = {"$and": conditions} if len(conditions) > 1 else {"pillar": pillar}
+
+        query = {"$and": conditions} if len(conditions) > 1 else pillar_condition
 
         total = await db.products_master.count_documents(query)
         skip = (page - 1) * limit
@@ -71,7 +73,7 @@ async def get_pillar_products(
 
         # Get unique categories for filter
         cat_pipeline = [
-            {"$match": {"pillar": pillar, "category": {"$exists": True, "$ne": ""}}},
+            {"$match": pillar_condition},
             {"$group": {"_id": "$category"}},
             {"$sort": {"_id": 1}}
         ]
