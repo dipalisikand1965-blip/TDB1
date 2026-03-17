@@ -835,65 +835,93 @@ async def start_pillar_image_generation(
 
 @ai_image_router.get("/stats")
 async def get_image_stats():
-    """Get comprehensive image statistics by pillar"""
+    """Get comprehensive image statistics — queries products_master (SSOT)"""
     if db is None:
         raise HTTPException(status_code=500, detail="Database not connected")
     
-    # Products stats
-    total_products = await db.products.count_documents({})
-    products_with_images = await db.products.count_documents({
+    # Products stats from products_master (SSOT)
+    total_products = await db.products_master.count_documents({})
+    products_with_cloudinary = await db.products_master.count_documents({
+        "image_url": {"$regex": "res.cloudinary.com", "$options": "i"}
+    })
+    products_with_unsplash = await db.products_master.count_documents({
+        "image_url": {"$regex": "unsplash", "$options": "i"}
+    })
+    products_no_image = await db.products_master.count_documents({
         "$or": [
-            {"image_url": {"$exists": True, "$ne": None, "$ne": ""}},
-            {"image": {"$exists": True, "$ne": None, "$ne": ""}}
+            {"image_url": {"$exists": False}},
+            {"image_url": {"$in": [None, ""]}}
         ]
     })
-    products_ai_generated = await db.products.count_documents({"ai_generated_image": True})
+    products_ai_generated = await db.products_master.count_documents({"ai_generated_image": True})
+    # Products that NEED generation = no image OR unsplash (not yet contextual)
+    products_needing_generation = products_with_unsplash + products_no_image
     
-    # Services stats
+    # Services stats (unchanged — services collection is correct)
     total_services = await db.services.count_documents({})
     services_with_images = await db.services.count_documents({
         "$or": [
-            {"image_url": {"$exists": True, "$ne": None, "$ne": ""}},
-            {"watercolor_image": {"$exists": True, "$ne": None, "$ne": ""}}
+            {"image_url": {"$exists": True, "$nin": [None, ""]}},
+            {"watercolor_image": {"$exists": True, "$nin": [None, ""]}}
         ]
     })
     services_ai_generated = await db.services.count_documents({"ai_generated_image": True})
     
-    # By pillar breakdown
+    # Per-pillar breakdown from products_master
     pillars = ["celebrate", "dine", "stay", "travel", "care", "enjoy", "fit", "learn", "paperwork", "advisory", "emergency", "farewell", "adopt", "shop"]
     
     pillar_stats = {}
     for pillar in pillars:
-        p_total = await db.products.count_documents({"pillar": pillar})
-        p_with_img = await db.products.count_documents({
-            "pillar": pillar,
+        pillar_filter = {"$or": [{"pillar": pillar}, {"pillars": pillar}]}
+        p_total = await db.products_master.count_documents(pillar_filter)
+        p_cloudinary = await db.products_master.count_documents({
+            **pillar_filter,
+            "image_url": {"$regex": "res.cloudinary.com", "$options": "i"}
+        })
+        p_unsplash = await db.products_master.count_documents({
+            **pillar_filter,
+            "image_url": {"$regex": "unsplash", "$options": "i"}
+        })
+        p_no_img = await db.products_master.count_documents({
+            **pillar_filter,
             "$or": [
-                {"image_url": {"$exists": True, "$ne": None, "$ne": ""}},
-                {"image": {"$exists": True, "$ne": None, "$ne": ""}}
+                {"image_url": {"$exists": False}},
+                {"image_url": {"$in": [None, ""]}}
             ]
         })
+        p_ai = await db.products_master.count_documents({**pillar_filter, "ai_generated_image": True})
         
         s_total = await db.services.count_documents({"pillar": pillar})
         s_with_img = await db.services.count_documents({
             "pillar": pillar,
             "$or": [
-                {"image_url": {"$exists": True, "$ne": None, "$ne": ""}},
-                {"watercolor_image": {"$exists": True, "$ne": None, "$ne": ""}}
+                {"image_url": {"$exists": True, "$nin": [None, ""]}},
+                {"watercolor_image": {"$exists": True, "$nin": [None, ""]}}
             ]
         })
         
         pillar_stats[pillar] = {
-            "products": {"total": p_total, "with_images": p_with_img, "missing": p_total - p_with_img},
+            "products": {
+                "total": p_total,
+                "cloudinary": p_cloudinary,
+                "unsplash": p_unsplash,
+                "no_image": p_no_img,
+                "ai_generated": p_ai,
+                "needs_generation": p_unsplash + p_no_img
+            },
             "services": {"total": s_total, "with_images": s_with_img, "missing": s_total - s_with_img}
         }
     
     return {
         "products": {
             "total": total_products,
-            "with_images": products_with_images,
-            "missing_images": total_products - products_with_images,
+            "with_cloudinary": products_with_cloudinary,
+            "with_unsplash": products_with_unsplash,
+            "no_image": products_no_image,
+            "needs_generation": products_needing_generation,
+            "missing_images": products_needing_generation,
             "ai_generated": products_ai_generated,
-            "coverage_percent": round((products_with_images / total_products * 100) if total_products > 0 else 0, 1)
+            "coverage_percent": round((products_with_cloudinary / total_products * 100) if total_products > 0 else 0, 1)
         },
         "services": {
             "total": total_services,
