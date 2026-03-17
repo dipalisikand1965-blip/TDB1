@@ -27,6 +27,8 @@ import PillarPageLayout from "../components/PillarPageLayout";
 import CareHero from "../components/care/CareHero";
 import CareCategoryStrip from "../components/care/CareCategoryStrip";
 import GuidedCarePaths from "../components/care/GuidedCarePaths";
+import CareConciergeSection from "../components/care/CareConciergeSection";
+import CareConciergeModal from "../components/care/CareConciergeModal";
 import { API_URL } from "../utils/api";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 
@@ -1486,10 +1488,19 @@ function ServiceBookingModal({ service, pet, onClose }) {
 // ─────────────────────────────────────────────────────────────
 function CareConcierge({ pet }) {
   const [activeService, setActiveService] = useState(null);
+  const [conciergeOpen, setConciergeOpen] = useState(false);
   return (
     <div style={{ background:`linear-gradient(135deg,${G.cream},#E8F5EE)`, borderRadius:20, border:`1px solid ${G.border}`, padding:24, marginBottom:32 }} data-testid="care-concierge">
       {activeService && (
         <ServiceBookingModal service={CARE_SERVICES.find(s=>s.id===activeService)} pet={pet} onClose={()=>setActiveService(null)} />
+      )}
+      {conciergeOpen && (
+        <CareConciergeModal
+          isOpen={conciergeOpen}
+          onClose={() => setConciergeOpen(false)}
+          petName={pet?.name}
+          petId={pet?.id}
+        />
       )}
       <div style={{ fontSize:20, fontWeight:800, color:G.darkText, marginBottom:4, fontFamily:"Georgia,serif" }}>Care Concierge Services</div>
       <div style={{ fontSize:13, color:G.mutedText, marginBottom:20 }}>Concierge-led care coordination — from finding the right groomer to making sure {pet.name} is comfortable every step of the way.</div>
@@ -1539,7 +1550,7 @@ function CareConcierge({ pet }) {
               <span style={{ fontSize:26, fontWeight:900, color:G.light }}>45,000+</span>
               <span style={{ fontSize:12, color:"rgba(255,255,255,0.50)", marginLeft:6 }}>care moments arranged</span>
             </div>
-            <button onClick={()=>setActiveService("grooming")} style={{ display:"inline-flex", alignItems:"center", gap:8, background:`linear-gradient(135deg,${G.sage},${G.light})`, color:G.deep, border:"none", borderRadius:10, padding:"12px 22px", fontSize:14, fontWeight:800, cursor:"pointer" }} data-testid="care-talk-concierge-btn">
+            <button onClick={()=>setConciergeOpen(true)} style={{ display:"inline-flex", alignItems:"center", gap:8, background:`linear-gradient(135deg,${G.sage},${G.light})`, color:G.deep, border:"none", borderRadius:10, padding:"12px 22px", fontSize:14, fontWeight:800, cursor:"pointer" }} data-testid="care-talk-concierge-btn">
               🌿 Talk to your Care Concierge
             </button>
             <span style={{ fontSize:12, color:"rgba(255,255,255,0.40)" }}>48h response promise · Emergency: 5 min</span>
@@ -1741,11 +1752,15 @@ export default function CareSoulPage() {
               <div style={{ marginTop:32 }}>
                 <GuidedCarePaths pet={flowPet} />
               </div>
+              <CareConciergeSection pet={flowPet} />
             </>
           )}
 
           {activeTab === "services" && (
-            <CareConcierge pet={flowPet} token={token} />
+            <>
+              <CareConcierge pet={flowPet} token={token} />
+              <CareConciergeSection pet={flowPet} />
+            </>
           )}
 
         </div>
