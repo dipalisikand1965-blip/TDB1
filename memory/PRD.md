@@ -1,9 +1,37 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 17, 2026 (Session 65 — Care Page P0/P1/P2 Verification — All Tests PASS)
+## Last Updated: Mar 17, 2026 (Session 66 — GO Pillar Core Features Complete)
 
 ---
 
+## ✅ SESSION 66 — GO Pillar Core Features (Mar 17, 2026)
+
+### GoCategoryStrip → GoContentModal (New)
+- **GoCategoryStrip.jsx** updated: 6 pills (Safety, Calming, Carriers, Feeding, Health & Docs, Stay & Board) now open GoContentModal on click (was just decorative pills before)
+- **GoContentModal.jsx** created (new file, 464 lines): mirrors CareContentModal architecture, teal palette, allergy filtering, Mira intelligence, Mira Imagines cards for travel destinations
+- **useEffect deps stabilized**: uses `pet?.id` not `allergies` array ref to prevent re-render loops
+- **6 category → product mappings**: safety→safety, calming→calm/travel-calm, carriers→carrier, feeding→feeding, health→travel-health, stay→boarding
+
+### GoHero Tab Bar — 3rd Tab Added
+- **GoHero.jsx**: Added "🏡 Find a Stay" tab between "Go Essentials" and "Book a Service"
+- **GoSoulPage.jsx**: `activeTab === "stay"` renders `<PetFriendlyStays>` with teal heading block
+
+### Mira Picks Section — Loading Skeleton
+- **GoSoulPage.jsx MiraPicksSection**: Added 4 shimmer skeleton cards while AI picks load (prevents blank content gap during 14s+ LiteLLM scoring calls)
+
+### Product Engine — Go Pillar Added
+- **mira_score_engine.py**: Added "go" to default `pillars_to_score` list
+- **GoSoulPage.jsx**: Auto-triggers `POST /api/mira/score-for-pet` on pet load for Go pillar (fire-and-forget)
+
+### Backend Resilience
+- **dine_routes.py** `/api/places/pet-friendly-stays`: Added "camping" type, changed 500 → empty `places:[]` on error
+- **Testing**: All 10 core features passing (test report: iteration_165.json)
+
+### Test Credentials (verified working):
+- Member: `dipali@clubconcierge.in` / `test123` (Mojo = Indie, 95% soul score, Goa, Chicken allergy)
+- Admin: `aditya` / `lola4304`
+
+---
 ## ✅ SESSION 65B — Go Pillar Setup + Care Hero Fix (Mar 17, 2026)
 
 ### Go Pillar Created (/go = Travel + Stay merged)
