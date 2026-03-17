@@ -17,7 +17,7 @@
  * Colour world: Sage green — distinct from /dine (amber) and /celebrate (purple)
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { Loader2, Check } from "lucide-react";
@@ -626,22 +626,34 @@ function WellnessProfile({ pet, token }) {
 // DIM EXPANDED — mirrors DineSoulPage's DimExpanded
 // Uses SharedProductCard + real apiProducts
 // ─────────────────────────────────────────────────────────────
+
+// Helper: robust breed matching (handles multi-word breeds, "Labrador Retriever" → "Labrador")
+function matchesBreed(productName, breedRaw) {
+  if (!breedRaw) return false;
+  const nameLower = (productName || '').toLowerCase();
+  if (nameLower.includes(breedRaw)) return true;
+  // Any word of the breed > 3 chars
+  return breedRaw.split(/\s+/).filter(w => w.length > 3).some(w => nameLower.includes(w));
+}
+
 function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const petName = pet?.name || "your dog";
   const catName = DIM_ID_TO_CATEGORY[dim.id];
+  const loadMoreRef = useRef(null);
+  const [visibleCount, setVisibleCount] = useState(20);
 
   // All raw products for this dimension from API
   const rawByTab = apiProducts[catName] || {};
   let allRaw = Object.values(rawByTab).flat();
 
-  // Soul Care: filter "Breed Collection" to pet's breed only; keep other sub-cats for all
+  // Soul Care: filter "Breed Collection" to pet's breed only — never show other breeds
   if (dim.id === 'soul') {
     const breedRaw = (pet?.breed || '').trim().toLowerCase();
     allRaw = allRaw.filter(p => {
       if (p.sub_category === 'Breed Collection') {
-        return breedRaw && (p.name || '').toLowerCase().includes(breedRaw);
+        return matchesBreed(p.name, breedRaw);
       }
-      return true; // Keep Care Essentials, Personalised etc. for all pets
+      return true; // Care Essentials, Personalised etc. visible for all pets
     });
   }
 
@@ -651,14 +663,35 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const condition  = getHealthCondition(pet);
   const intelligent = applyMiraIntelligence(allRaw, allergies, coat, condition, pet);
 
-  // Dynamic tabs from actual sub_categories in API data
-  const tabList = ["All", ...Object.keys(rawByTab)];
+  // Build tabs only from sub_categories that have products after filtering
+  const filteredSubCats = [...new Set(intelligent.map(p => p.sub_category).filter(Boolean))];
+  const tabList = ["All", ...filteredSubCats];
   const [activeTab, setActiveTab] = useState("All");
 
   const products = activeTab === "All"
     ? intelligent
     : intelligent.filter(p => p.sub_category === activeTab);
 
+  // Reset visible count when tab changes
+  const prevTab = useRef(activeTab);
+  if (prevTab.current !== activeTab) {
+    prevTab.current = activeTab;
+    setVisibleCount(20);
+  }
+
+  // Lazy scroll sentinel — load more when bottom enters viewport
+  useEffect(() => {
+    const sentinel = loadMoreRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      entries => { if (entries[0].isIntersecting) setVisibleCount(n => n + 20); },
+      { threshold: 0.1 }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [products.length, activeTab]);
+
+  const visibleProducts = products.slice(0, visibleCount);
   const miraCtx = { includeText: "Add to Cart" };
 
   return (
@@ -685,7 +718,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
         </div>
       </div>
 
-      {/* Dynamic sub-category tabs */}
+      {/* Sub-category tabs — only tabs with products after filtering */}
       {tabList.length > 1 && (
         <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
           {tabList.map(tab => (
@@ -699,14 +732,14 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
       {/* Mira stats */}
       {allRaw.length > 0 && (
         <div style={{ display:"flex", gap:12, flexWrap:"wrap", marginBottom:14, fontSize:11, color:"#888" }}>
-          <span style={{ color:"#27AE60", fontWeight:700 }}>✓ {intelligent.length} safe for {petName}</span>
+          <span style={{ color:"#27AE60", fontWeight:700 }}>✓ {intelligent.length} for {petName}</span>
           {allRaw.length - intelligent.length > 0 && (
-            <span style={{ color:"#E87722" }}>✗ {allRaw.length - intelligent.length} filtered (allergens)</span>
+            <span style={{ color:"#E87722" }}>✗ {allRaw.length - intelligent.length} filtered</span>
           )}
         </div>
       )}
 
-      {/* Product grid */}
+      {/* Product grid — lazy scroll, no count labels */}
       {products.length === 0 ? (
         <div style={{ textAlign:"center", padding:"24px 0", color:"#888", fontSize:13 }}>
           {allRaw.length === 0
@@ -714,13 +747,19 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
             : `All ${dim.label} products were filtered for ${petName}'s allergens.`}
         </div>
       ) : (
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(min(200px, 100%), 1fr))", gap:12 }}>
-          {products.map(p => (
-            <div key={p.id} style={{ position:"relative" }} data-testid={`care-dim-product-${p.id}`}>
-              <SharedProductCard product={p} pillar="care" selectedPet={pet} miraContext={miraCtx} />
-            </div>
-          ))}
-        </div>
+        <>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(min(200px, 100%), 1fr))", gap:12 }}>
+            {visibleProducts.map(p => (
+              <div key={p.id} style={{ position:"relative" }} data-testid={`care-dim-product-${p.id}`}>
+                <SharedProductCard product={p} pillar="care" selectedPet={pet} miraContext={miraCtx} />
+              </div>
+            ))}
+          </div>
+          {/* Lazy sentinel — invisible div triggers load-more on scroll */}
+          {visibleCount < products.length && (
+            <div ref={loadMoreRef} style={{ height:1, marginTop:8 }} />
+          )}
+        </>
       )}
     </div>
   );

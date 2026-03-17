@@ -7,7 +7,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, Send, Check } from 'lucide-react';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import ProductCard from '../ProductCard';
@@ -88,9 +88,171 @@ const getBreedDisplay = (pet) => {
   return breed.split(/[\s_-]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
 };
 
-// ─── Main Modal ───────────────────────────────────────────────────────────────
+// ─── Robust breed matching (handles multi-word breeds) ──────────────────────
+function matchesBreed(productName, breedRaw) {
+  if (!breedRaw) return false;
+  const nameLower = (productName || '').toLowerCase();
+  if (nameLower.includes(breedRaw)) return true;
+  return breedRaw.split(/\s+/).filter(w => w.length > 3).some(w => nameLower.includes(w));
+}
+
+// ─── Mira Imagines Card for Care ─────────────────────────────────────────────
+const MiraCareImaginesCard = ({ item, pet, apiUrl, token }) => {
+  const [state, setState] = useState('idle');
+  const petName = pet?.name || 'your dog';
+
+  const sendToConcierge = async () => {
+    setState('sending');
+    try {
+      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+      await fetch(`${apiUrl}/api/service_desk/attach_or_create_ticket`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          parent_id: storedUser?.id || storedUser?.email || 'guest',
+          pet_id: pet?.id || 'unknown',
+          pillar: 'care',
+          intent_primary: 'mira_imagines_request',
+          intent_secondary: [item.name],
+          life_state: 'care',
+          channel: 'care_miras_picks_imagines',
+          initial_message: {
+            sender: 'parent',
+            source: 'care_miras_picks',
+            text: `I'd love "${item.name}" for ${petName}. Mira imagined this for care — please help source it!`,
+          },
+        }),
+      });
+    } catch (err) { console.error('[MiraCareImaginesCard]', err); }
+    setState('sent');
+  };
+
+  return (
+    <div style={{
+      borderRadius: 14, overflow: 'hidden',
+      background: 'linear-gradient(135deg, #0D2818, #1B4332)',
+      border: `1.5px solid rgba(64,145,108,0.30)`,
+      display: 'flex', flexDirection: 'column', minHeight: 220,
+    }}>
+      <div style={{
+        position: 'relative', height: 120,
+        background: 'linear-gradient(135deg, #1B4332, #2D6A4F)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <span style={{ fontSize: 44 }}>{item.emoji || '🌿'}</span>
+        <div style={{ position: 'absolute', top: 8, left: 8, background: G.sage, color: '#fff', fontSize: 9, fontWeight: 700, padding: '3px 8px', borderRadius: 20 }}>
+          Mira Imagines
+        </div>
+      </div>
+      <div style={{ flex: 1, padding: '10px 12px 4px' }}>
+        <p style={{ fontWeight: 800, color: '#fff', fontSize: 12, lineHeight: 1.3, marginBottom: 4 }}>{item.name}</p>
+        <p style={{ color: 'rgba(255,255,255,0.50)', fontSize: 10, lineHeight: 1.4, margin: 0, fontStyle: 'italic' }}>{item.description}</p>
+      </div>
+      <div style={{ padding: '0 12px 12px' }}>
+        {state === 'sent' ? (
+          <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#34D399' }}>
+            <Check size={12} style={{ display: 'inline', marginRight: 4 }} /> Sent to Concierge!
+          </div>
+        ) : (
+          <button
+            onClick={sendToConcierge}
+            disabled={state === 'sending'}
+            style={{
+              width: '100%', background: `linear-gradient(135deg, ${G.sage}, ${G.deepMid})`,
+              color: '#fff', border: 'none', borderRadius: 10, padding: '9px',
+              fontSize: 11, fontWeight: 700, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+              opacity: state === 'sending' ? 0.7 : 1,
+            }}
+            data-testid={`care-imagine-btn-${item.id}`}
+          >
+            <Send size={11} />
+            {state === 'sending' ? 'Sending…' : 'Tap — Concierge →'}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ─── Generate Mira Imagines for Care ────────────────────────────────────────
+const generateCareImagines = (pet, existingProducts) => {
+  const petName = pet?.name || 'your dog';
+  const breed = getBreedDisplay(pet);
+  const coat = getCoatType(pet);
+  const condition = getHealthCondition(pet);
+  const allergies = getPetAllergies(pet);
+  const imagines = [];
+
+  // 1. Breed-specific grooming kit (if breed products don't exist)
+  const hasBreedProduct = breed && existingProducts.some(p =>
+    matchesBreed(p.name, breed.toLowerCase())
+  );
+  if (!hasBreedProduct && breed) {
+    imagines.push({
+      id: `care-imagine-groom-${breed.replace(/\s/g, '-')}`,
+      isImagined: true, emoji: '✂️',
+      name: `${breed} Grooming Kit`,
+      description: `A complete grooming set built for ${breed}'s coat type — brushes, shampoo, ear care, and more.`,
+    });
+  }
+
+  // 2. Coat-specific treatment
+  if (coat) {
+    imagines.push({
+      id: 'care-imagine-coat',
+      isImagined: true, emoji: '🌿',
+      name: `${coat.charAt(0).toUpperCase() + coat.slice(1)} Coat Spa Pack`,
+      description: `Deep conditioning for ${petName}'s ${coat} coat — a monthly spa box Mira would love to source.`,
+    });
+  }
+
+  // 3. Health condition care kit
+  if (condition && condition.toLowerCase() !== 'none') {
+    imagines.push({
+      id: 'care-imagine-health',
+      isImagined: true, emoji: '💊',
+      name: `${petName}'s Recovery Care Kit`,
+      description: `Gentle supplements and care products safe for ${petName}'s ${condition} — vet-approved, sourced by Mira.`,
+    });
+  }
+
+  // 4. Allergy-safe pack
+  if (allergies.length > 0) {
+    imagines.push({
+      id: 'care-imagine-allergy',
+      isImagined: true, emoji: '🛡️',
+      name: `${allergies.map(a => a.charAt(0).toUpperCase() + a.slice(1) + '-Free').join(' & ')} Care Pack`,
+      description: `Every item verified safe for ${petName} — no ${allergies.join(', ')}.`,
+    });
+  }
+
+  // 5. Fallback — always guarantee at least 2 cards
+  if (imagines.length === 0) {
+    imagines.push({
+      id: 'care-imagine-monthly',
+      isImagined: true, emoji: '📦',
+      name: `${petName}'s Monthly Care Box`,
+      description: `Mira curates grooming, dental, and wellness picks tailored to ${petName}'s needs every month.`,
+    });
+    imagines.push({
+      id: 'care-imagine-soul',
+      isImagined: true, emoji: '✨',
+      name: `${petName}'s Soul Care Bundle`,
+      description: `A personalised soul care collection — capturing ${petName}'s spirit in products Mira imagines for them.`,
+    });
+  }
+
+  return imagines.slice(0, 3);
+};
+
+
 const CareContentModal = ({ isOpen, onClose, category, pet }) => {
   const [products, setProducts]     = useState([]);
+  const [imagines, setImagines]     = useState([]);
   const [loading, setLoading]       = useState(false);
   const [activeTab, setActiveTab]   = useState('All');
   const [tabs, setTabs]             = useState(['All']);
@@ -123,6 +285,7 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
     if (!isOpen || !category) return;
     setLoading(true);
     setProducts([]);
+    setImagines([]);
     setTabs(['All']);
     setActiveTab('All');
 
@@ -141,7 +304,7 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
         // Breed Collection: filter to pet's breed only
         const breedProducts = soulProducts.filter(p =>
           p.sub_category === 'Breed Collection'
-            ? breedSearch && (p.name || '').toLowerCase().includes(breedSearch)
+            ? matchesBreed(p.name, breed.toLowerCase())
             : true  // Keep Care Essentials / other sub-cats for all
         );
 
@@ -152,7 +315,7 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
         return;
       }
 
-      // ── Mira's Picks for care ────────────────────────────────────────────
+      // ── Mira's Picks for care — pre-scored + Imagines ───────────────────
       if (category === 'mira') {
         const petId = pet?.id;
         let preScored = [];
@@ -171,13 +334,19 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
         }
         if (preScored.length > 0) {
           setProducts(preScored);
+          // Generate Mira Imagines alongside real products
+          const imagines = generateCareImagines(pet, preScored);
+          setImagines(imagines);
           return;
         }
         // Fallback: fetch all care products, sort by mira_score
         const r = await fetch(`${apiUrl}/api/admin/pillar-products?pillar=care&limit=600`);
         const data = r.ok ? await r.json() : { products: [] };
         const all = (data.products || []).filter(p => p.mira_score || p.mira_tag);
-        setProducts(all.sort((a, b) => (b.mira_score || 0) - (a.mira_score || 0)).slice(0, 24));
+        const sorted = all.sort((a, b) => (b.mira_score || 0) - (a.mira_score || 0)).slice(0, 24);
+        setProducts(sorted);
+        // Always generate Mira Imagines for care
+        setImagines(generateCareImagines(pet, sorted));
         return;
       }
 
@@ -362,6 +531,31 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
                       </div>
                     ))}
                   </div>
+                )}
+
+                {/* Mira Imagines — items not yet in catalog, shown for Mira's Picks */}
+                {category === 'mira' && imagines.length > 0 && !loading && (
+                  <>
+                    <div style={{ marginTop: 24, marginBottom: 12 }}>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: G.darkText, fontFamily: 'Georgia, serif', marginBottom: 4 }}>
+                        Mira Imagines for <span style={{ color: G.sage }}>{petName}</span>
+                      </div>
+                      <div style={{ fontSize: 11, color: G.mutedText }}>
+                        Based on {petName}'s soul profile — not in range yet, but Mira can request these specially.
+                      </div>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(190px,100%), 1fr))', gap: 12 }}>
+                      {imagines.map(item => (
+                        <MiraCareImaginesCard
+                          key={item.id}
+                          item={item}
+                          pet={pet}
+                          apiUrl={getApiUrl()}
+                          token={token}
+                        />
+                      ))}
+                    </div>
+                  </>
                 )}
               </div>
             </motion.div>
