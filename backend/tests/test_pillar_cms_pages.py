@@ -9,7 +9,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://product-box-overhaul.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://care-dine-parity.preview.emergentagent.com')
 
 class TestPaperworkPageCMS:
     """Tests for Paperwork pillar page CMS integration"""

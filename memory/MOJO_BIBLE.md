@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://product-box-overhaul.preview.emergentagent.com
+https://care-dine-parity.preview.emergentagent.com
 ```
 
 ---

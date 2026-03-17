@@ -304,7 +304,7 @@ Test Pets:
 ## Services
 - Backend: Running on port 8001
 - Frontend: Running on port 3000
-- Preview URL: https://product-box-overhaul.preview.emergentagent.com
+- Preview URL: https://care-dine-parity.preview.emergentagent.com
 
 ---
 

@@ -6,7 +6,7 @@ Iteration 126 - Follow-up to iteration_125.
 
 import asyncio
 
-BASE_URL = "https://product-box-overhaul.preview.emergentagent.com"
+BASE_URL = "https://care-dine-parity.preview.emergentagent.com"
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 
