@@ -959,7 +959,7 @@ const UnifiedProductBox = () => {
               <Input
                 placeholder="Search products..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => { setSearchTerm(e.target.value); setPage(0); }}
                 className="pl-9"
                 data-testid="search-products-input"
               />
