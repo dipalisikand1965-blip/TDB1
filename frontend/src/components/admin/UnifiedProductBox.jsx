@@ -144,14 +144,20 @@ const UnifiedProductBox = () => {
     }
   }, [page, searchTerm, filterType, filterPillar, filterStatus, filterShipping, filterRewardEligible, filterBreed, filterSize, filterHasMiraHint, filterSource, filterCategory]);
 
-  // Fetch stats
+  // Fetch stats — non-critical, uses AbortController so it never blocks product list
   const fetchStats = async () => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8000); // 8s max
     try {
-      const response = await fetch(`${API_URL}/api/product-box/stats`);
-      const data = await response.json();
-      setStats(data);
+      const response = await fetch(`${API_URL}/api/product-box/stats`, { signal: controller.signal });
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data);
+      }
     } catch (err) {
-      console.error('Error fetching stats:', err);
+      if (err.name !== 'AbortError') console.error('Stats fetch error (non-critical):', err);
+    } finally {
+      clearTimeout(timer);
     }
   };
 
