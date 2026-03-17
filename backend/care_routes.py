@@ -748,36 +748,41 @@ async def get_care_stats():
 # ==================== PRODUCTS ENDPOINTS ====================
 
 @router.get("/products")
-async def get_care_products(care_type: Optional[str] = None, limit: int = 100, comprehensive_only: bool = False):
-    """Get care-related products
-    
-    Set comprehensive_only=true to get only products with good_for_tags (new taxonomy)
-    """
+async def get_care_products(
+    care_type: Optional[str] = None,
+    dimension: Optional[str] = None,
+    sub_category: Optional[str] = None,
+    limit: int = 100,
+    comprehensive_only: bool = False
+):
+    """Get care products — supports dimension/sub_category filtering for CareSoulPage_v2"""
     db = get_db()
-    
-    if comprehensive_only:
-        # Only products with comprehensive tags (size/coat/life_stage/temperament)
-        query = {
-            "pillar": "care",
-            "good_for_tags": {"$exists": True, "$ne": []}
-        }
+
+    if dimension:
+        # Direct dimension-based query (new schema)
+        query = {"pillar": "care", "dimension": dimension}
+        if sub_category:
+            query["sub_category"] = sub_category
+    elif comprehensive_only:
+        query = {"pillar": "care", "good_for_tags": {"$exists": True, "$ne": []}}
     else:
         query = {"$or": [
-            {"category": "care"},
             {"pillar": "care"},
+            {"category": "care"},
             {"care_type": {"$exists": True}},
             {"tags": {"$in": ["care", "grooming", "training", "walking", "wellness", "health"]}}
         ]}
-    
-    if care_type:
-        query = {"$and": [query, {"$or": [{"care_type": care_type}, {"category": care_type}, {"tags": care_type}, {"intent_tags": care_type}]}]}
-    
-    # Sort by priority: comprehensive products first, then by updated_at
+        if care_type:
+            query = {"$and": [query, {"$or": [
+                {"care_type": care_type}, {"category": care_type},
+                {"tags": care_type}, {"intent_tags": care_type}
+            ]}]}
+
     products = await db.products_master.find(query, {"_id": 0}).sort([
-        ("good_for_tags", -1),  # Products with tags first
+        ("mira_pick", -1),
         ("updated_at", -1)
     ]).limit(limit).to_list(limit)
-    
+
     return {"products": products, "total": len(products)}
 
 
