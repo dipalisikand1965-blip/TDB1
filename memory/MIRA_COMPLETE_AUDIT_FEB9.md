@@ -296,4 +296,4 @@ Password: test123
 
 **Audit Status:** COMPLETE
 **Generated:** February 9, 2026
-**Preview URL:** https://product-box-refactor.preview.emergentagent.com
+**Preview URL:** https://product-box-overhaul.preview.emergentagent.com
