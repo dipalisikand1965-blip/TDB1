@@ -170,7 +170,8 @@ async def list_services(
     services = await db.services_master.find(query, {"_id": 0}).sort("pillar", 1).skip(skip).limit(limit).to_list(limit)
 
     for service in services:
-        preferred_image = service.get("image_url") or service.get("watercolor_image") or service.get("image")
+        # Prefer watercolor_image (Cloudinary) over image_url (may be old static URL)
+        preferred_image = service.get("watercolor_image") or service.get("image_url") or service.get("image")
         if preferred_image:
             service["image_url"] = preferred_image
             service["image"] = preferred_image
@@ -196,7 +197,8 @@ async def get_service(service_id: str):
     if not service:
         raise HTTPException(status_code=404, detail="Service not found")
 
-    preferred_image = service.get("image_url") or service.get("watercolor_image") or service.get("image")
+    # Prefer watercolor_image (Cloudinary) over image_url (may be old static URL)
+    preferred_image = service.get("watercolor_image") or service.get("image_url") or service.get("image")
     if preferred_image:
         service["image_url"] = preferred_image
         service["image"] = preferred_image
@@ -337,21 +339,18 @@ async def update_service(service_id: str, service: ServiceCreate):
 
 @router.delete("/services/{service_id}")
 async def delete_service(service_id: str):
-    """Archive/deactivate service (soft delete)"""
+    """Hard delete a service from the database"""
     db = get_db()
     
     existing = await db.services_master.find_one({"id": service_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Service not found")
     
-    await db.services_master.update_one(
-        {"id": service_id},
-        {"$set": {"is_active": False, "archived_at": datetime.now(timezone.utc)}}
-    )
+    await db.services_master.delete_one({"id": service_id})
     
-    logger.info(f"[SERVICE BOX] Archived service: {service_id}")
+    logger.info(f"[SERVICE BOX] Deleted service: {service_id}")
     
-    return {"success": True, "message": "Service archived"}
+    return {"success": True, "message": "Service deleted"}
 
 
 

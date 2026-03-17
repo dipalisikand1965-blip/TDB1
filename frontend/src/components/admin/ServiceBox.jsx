@@ -220,9 +220,9 @@ const ServiceBox = () => {
     }
   };
 
-  // Delete (archive) service
+  // Delete service (hard delete)
   const archiveService = async (serviceId) => {
-    if (!confirm('Are you sure you want to archive this service?')) return;
+    if (!confirm('Permanently delete this service? This cannot be undone.')) return;
     
     try {
       const response = await fetch(`${API_URL}/api/service-box/services/${serviceId}`, {
@@ -230,13 +230,13 @@ const ServiceBox = () => {
       });
       
       if (response.ok) {
-        toast({ title: 'Archived', description: 'Service archived' });
+        toast({ title: 'Deleted', description: 'Service permanently deleted' });
         fetchServices();
         fetchStats();
       }
     } catch (err) {
-      console.error('Error archiving:', err);
-      toast({ title: 'Error', description: 'Failed to archive', variant: 'destructive' });
+      console.error('Error deleting:', err);
+      toast({ title: 'Error', description: 'Failed to delete', variant: 'destructive' });
     }
   };
 
