@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://care-pillar-impl.preview.emergentagent.com
+**Preview URL:** https://care-pillar-fix.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

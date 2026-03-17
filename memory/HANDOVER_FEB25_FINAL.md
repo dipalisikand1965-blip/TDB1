@@ -34,7 +34,7 @@ Mira should talk like Claude talks - understanding context, remembering the pet'
 ### Preview Environment
 - **Member:** dipali@clubconcierge.in / test123
 - **Admin:** aditya / lola4304
-- **URL:** https://care-pillar-impl.preview.emergentagent.com
+- **URL:** https://care-pillar-fix.preview.emergentagent.com
 
 ### Production Environment
 - **Member:** dipali@clubconcierge.in / test123 (IF deployed from this session)
