@@ -3426,11 +3426,11 @@ const Admin = () => {
                       );
                       if (pillarChoice === null) { btn.disabled = false; btn.innerHTML = '🎨 AI IMAGES'; return; }
                       
-                      const url = new URL(`${API_URL}/api/ai-images/generate-pillar-images`);
-                      if (pillarChoice.trim()) url.searchParams.set('pillar', pillarChoice.trim().toLowerCase());
-                      url.searchParams.set('force_regenerate', 'false'); // NEVER re-generate Cloudinary images
+                      // Build URL safely with string concatenation — avoid URL constructor issues
+                      const pillarParam = pillarChoice.trim().toLowerCase();
+                      const genUrl = `${API_URL}/api/ai-images/generate-pillar-images?force_regenerate=false${pillarParam ? `&pillar=${encodeURIComponent(pillarParam)}` : ''}`;
                       
-                      const res = await fetch(url.toString(), { method: 'POST' });
+                      const res = await fetch(genUrl, { method: 'POST' });
                       const data = await res.json();
                       
                       if (data.status === 'running') {

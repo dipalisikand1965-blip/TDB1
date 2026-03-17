@@ -798,13 +798,21 @@ const ProductBoxEditor = ({
                 <div>
                   <Label>Primary Pillar *</Label>
                   <select 
-                    value={getValue('pillars_occasions.pillar.primary_pillar', 'shop') || getValue('primary_pillar', 'shop')}
+                    value={getValue('primary_pillar', '') || getValue('pillar', 'shop')}
                     onChange={(e) => {
-                      updateField('pillars_occasions.pillar.primary_pillar', e.target.value);
-                      updateField('primary_pillar', e.target.value);
-                      updateField('pillar', e.target.value);
+                      const newPillar = e.target.value;
+                      // Single batched update — avoids stale state race condition
+                      const newProduct = JSON.parse(JSON.stringify(product));
+                      newProduct['pillar'] = newPillar;
+                      newProduct['primary_pillar'] = newPillar;
+                      newProduct['pillars'] = Array.from(new Set([newPillar, ...(newProduct['pillars'] || [])]));
+                      // Also clear category so it resets to match new pillar
+                      newProduct['category'] = '';
+                      if (newProduct.commerce_ops?.category !== undefined) newProduct.commerce_ops.category = '';
+                      setProduct(newProduct);
                     }}
-                    className="w-full h-10 px-3 rounded-md border border-gray-200"
+                    className="w-full h-10 px-3 rounded-md border border-gray-200 bg-white"
+                    data-testid="primary-pillar-select"
                   >
                     {ALL_PILLARS.map(p => (
                       <option key={p.id} value={p.id}>{p.icon} {p.name}</option>
@@ -830,7 +838,7 @@ const ProductBoxEditor = ({
                   >
                     <option value="">— Select Primary Category —</option>
                     {MAIN_CATEGORIES
-                      .filter(c => !c.pillar || c.pillar === (getValue('pillars_occasions.pillar.primary_pillar', 'shop') || getValue('primary_pillar', 'shop')))
+                      .filter(c => !c.pillar || c.pillar === (getValue('primary_pillar', '') || getValue('pillar', 'shop')))
                       .map(c => (
                         <option key={c.id} value={c.id}>{c.name}</option>
                       ))
@@ -840,7 +848,7 @@ const ProductBoxEditor = ({
 
                 {/* Multi-Category — cross-category applicability */}
                 {(() => {
-                  const currentPillar = getValue('pillars_occasions.pillar.primary_pillar', 'shop') || getValue('primary_pillar', 'shop');
+                  const currentPillar = getValue('primary_pillar', '') || getValue('pillar', 'shop');
                   const pillarCats = MAIN_CATEGORIES.filter(c => !c.pillar || c.pillar === currentPillar);
                   if (pillarCats.length < 2) return null;
                   return (
