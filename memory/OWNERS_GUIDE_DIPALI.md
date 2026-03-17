@@ -189,7 +189,7 @@ A percentage (0-100%) showing how well Mira "knows" a pet.
 ## 📱 HOW TO TEST
 
 ### On Preview (Safe to experiment):
-- URL: `https://care-pillar-impl.preview.emergentagent.com`
+- URL: `https://care-pillar-fix.preview.emergentagent.com`
 - Test user: `dipali@clubconcierge.in` / `test123`
 - Admin: `aditya` / `lola4304`
 
