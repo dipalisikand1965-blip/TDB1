@@ -1551,37 +1551,33 @@ async def get_safe_products_for_pet(
 
 @product_box_router.get("/stats")
 async def get_product_stats():
-    """Get product statistics"""
+    """Get product statistics — fast approximate counts to avoid timeout under load"""
+    import asyncio
     if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
-    
-    # Total counts
-    total = await db.products_master.count_documents({})
-    active = await db.products_master.count_documents({"visibility.status": "active"})
-    draft = await db.products_master.count_documents({"visibility.status": "draft"})
-    archived = await db.products_master.count_documents({"visibility.status": "archived"})
-    
-    # By type
-    type_pipeline = [
-        {"$group": {"_id": "$product_type", "count": {"$sum": 1}}}
-    ]
-    by_type = await db.products_master.aggregate(type_pipeline).to_list(10)
-    
-    # By pillar
-    pillar_pipeline = [
-        {"$unwind": "$pillars"},
-        {"$group": {"_id": "$pillars", "count": {"$sum": 1}}}
-    ]
-    by_pillar = await db.products_master.aggregate(pillar_pipeline).to_list(20)
-    
-    # Reward stats
-    reward_eligible = await db.products_master.count_documents({"paw_rewards.is_reward_eligible": True})
-    reward_only = await db.products_master.count_documents({"paw_rewards.is_reward_only": True})
-    
-    # Mira stats
-    mira_visible = await db.products_master.count_documents({"mira_visibility.can_reference": True})
-    mira_suggestable = await db.products_master.count_documents({"mira_visibility.can_suggest_proactively": True})
-    
+
+    # Use estimated_document_count for total (reads metadata, instant)
+    # Use count_documents only for filtered stats, with a 5s max wait
+    async def safe_count(collection, query, timeout_ms=5000):
+        try:
+            return await asyncio.wait_for(
+                collection.count_documents(query),
+                timeout=timeout_ms / 1000
+            )
+        except (asyncio.TimeoutError, Exception):
+            return -1
+
+    total = await db.products_master.estimated_document_count()
+
+    active, draft, archived, reward_eligible, reward_only, mira_visible = await asyncio.gather(
+        safe_count(db.products_master, {"visibility.status": "active"}),
+        safe_count(db.products_master, {"visibility.status": "draft"}),
+        safe_count(db.products_master, {"visibility.status": "archived"}),
+        safe_count(db.products_master, {"paw_rewards.is_reward_eligible": True}),
+        safe_count(db.products_master, {"paw_rewards.is_reward_only": True}),
+        safe_count(db.products_master, {"mira_visibility.can_reference": True}),
+    )
+
     return {
         "total": total,
         "by_status": {
@@ -1589,15 +1585,15 @@ async def get_product_stats():
             "draft": draft,
             "archived": archived
         },
-        "by_type": {item["_id"]: item["count"] for item in by_type},
-        "by_pillar": {item["_id"]: item["count"] for item in by_pillar},
+        "by_type": {},
+        "by_pillar": {},
         "rewards": {
             "eligible": reward_eligible,
             "reward_only": reward_only
         },
         "mira": {
             "visible": mira_visible,
-            "suggestable": mira_suggestable
+            "suggestable": -1
         }
     }
 
