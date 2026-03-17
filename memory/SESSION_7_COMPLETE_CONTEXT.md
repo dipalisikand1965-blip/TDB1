@@ -134,7 +134,7 @@ soulReason={getSoulBasedReason(activePet, 'celebrate')}  // or 'stay', 'dine', e
 ---
 
 ## PREVIEW URL
-https://care-dine-parity.preview.emergentagent.com
+https://care-pillar-impl.preview.emergentagent.com
 
 ---
 
