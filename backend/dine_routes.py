@@ -501,6 +501,122 @@ async def get_pet_friendly_stays(
         return {"city": city, "places": [], "error": str(e)}
 
 
+@dine_router.get("/places/care-providers")
+async def get_care_providers(
+    city: str = "Bengaluru",
+    lat: Optional[float] = None,
+    lng: Optional[float] = None,
+    type: str = "all",
+    radius: int = 5000,
+    query: Optional[str] = None,
+):
+    """
+    Fetch care providers (groomers, vets, trainers, pet stores, daycare) via Google Places API.
+    Mirrors /api/places/pet-friendly-stays — same pattern, different search terms.
+    Returns: { location_name, places: [{ place_id, name, rating, vicinity, photo_url, type, tdc_verified, mira_note }] }
+    """
+    import httpx
+    from math import radians, sin, cos, sqrt, atan2
+
+    GOOGLE_API_KEY = os.getenv("GOOGLE_PLACES_API_KEY") or os.getenv("GOOGLE_MAPS_API_KEY")
+    if not GOOGLE_API_KEY:
+        return {
+            "location_name": city,
+            "places": [
+                {"place_id": "mock-c1", "name": "Doggy Style Grooming Studio", "vicinity": f"MG Road, {city}", "rating": 4.8, "type": "groomer", "tdc_verified": True, "mira_note": "Excellent for sensitive coats", "photo_url": None, "distance": None, "open_now": True},
+                {"place_id": "mock-c2", "name": "PetCare Veterinary Clinic", "vicinity": f"Koramangala, {city}", "rating": 4.7, "type": "vet", "tdc_verified": True, "mira_note": "Recommended for annual checkups", "photo_url": None, "distance": None, "open_now": True},
+                {"place_id": "mock-c3", "name": "Petzone Pet Store", "vicinity": f"Indiranagar, {city}", "rating": 4.5, "type": "petstore", "tdc_verified": False, "mira_note": "Wide product range", "photo_url": None, "distance": None, "open_now": True},
+                {"place_id": "mock-c4", "name": "Happy Tails Dog Training", "vicinity": f"Whitefield, {city}", "rating": 4.9, "type": "trainer", "tdc_verified": True, "mira_note": "Best positive reinforcement trainer in city", "photo_url": None, "distance": None, "open_now": False},
+            ]
+        }
+
+    # Build search query
+    type_queries = {
+        "groomer":  f"dog grooming pet groomer in {city}",
+        "vet":      f"veterinary clinic vet hospital in {city}",
+        "trainer":  f"dog training obedience school in {city}",
+        "petstore": f"pet store pet supplies shop in {city}",
+        "daycare":  f"dog daycare pet boarding in {city}",
+        "all":      f"dog groomer vet pet store in {city}",
+    }
+    if query:
+        query_text = query
+    else:
+        query_text = type_queries.get(type, type_queries["all"])
+
+    def haversine(lat1, lng1, lat2, lng2) -> str:
+        R = 6371
+        dlat = radians(lat2 - lat1)
+        dlng = radians(lng2 - lng1)
+        a = sin(dlat/2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlng/2)**2
+        return f"{R * 2 * atan2(sqrt(a), sqrt(1 - a)):.1f}km"
+
+    def infer_provider_type(name: str, query_type: str) -> str:
+        n = name.lower()
+        if any(k in n for k in ["groom", "spa", "bath", "clip"]):
+            return "groomer"
+        if any(k in n for k in ["vet", "animal hospital", "clinic", "animal care"]):
+            return "vet"
+        if any(k in n for k in ["train", "school", "obedience", "agility"]):
+            return "trainer"
+        if any(k in n for k in ["store", "shop", "pet zone", "petzone", "supplies"]):
+            return "petstore"
+        if any(k in n for k in ["daycare", "boarding", "kennel"]):
+            return "daycare"
+        return query_type if query_type != "all" else "provider"
+
+    try:
+        params = {"query": query_text, "key": GOOGLE_API_KEY}
+        if lat and lng:
+            params["location"] = f"{lat},{lng}"
+            params["radius"] = str(radius)
+
+        async with httpx.AsyncClient(timeout=12.0) as http:
+            resp = await http.get(
+                "https://maps.googleapis.com/maps/api/place/textsearch/json",
+                params=params,
+            )
+            data = resp.json()
+
+        places = []
+        for p in data.get("results", [])[:12]:
+            photo_url = None
+            if p.get("photos"):
+                ref = p["photos"][0].get("photo_reference")
+                if ref:
+                    photo_url = (
+                        f"https://maps.googleapis.com/maps/api/place/photo"
+                        f"?maxwidth=400&photoreference={ref}&key={GOOGLE_API_KEY}"
+                    )
+            distance = None
+            if lat and lng and p.get("geometry", {}).get("location"):
+                ploc = p["geometry"]["location"]
+                distance = haversine(lat, lng, ploc["lat"], ploc["lng"])
+
+            provider_type = infer_provider_type(p.get("name", ""), type)
+            places.append({
+                "place_id":    p.get("place_id"),
+                "name":        p.get("name"),
+                "vicinity":    p.get("formatted_address", p.get("vicinity", "")),
+                "distance":    distance,
+                "rating":      p.get("rating"),
+                "user_ratings_total": p.get("user_ratings_total"),
+                "photo_url":   photo_url,
+                "type":        provider_type,
+                "open_now":    p.get("opening_hours", {}).get("open_now"),
+                "price_level": p.get("price_level"),
+                "tdc_verified": False,
+                "mira_note":   None,
+                "mapsUrl":     f"https://www.google.com/maps/place/?q=place_id:{p.get('place_id')}",
+            })
+
+        return {"location_name": city, "places": places}
+
+    except Exception as e:
+        logger.error(f"get_care_providers error: {e}")
+        return {"location_name": city, "places": [], "error": str(e)}
+
+
 @dine_router.get("/dine/restaurants")
 async def get_restaurants(
     city: Optional[str] = None,
