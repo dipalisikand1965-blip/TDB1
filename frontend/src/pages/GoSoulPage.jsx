@@ -1948,6 +1948,10 @@ const GoSoulPage = () => {
           <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
             <GoConcierge pet={petData} token={token} />
             <GoConciergeSection pet={petData} />
+            {/* Guided Go Paths — shown after personal services */}
+            <div style={{ marginTop:40 }}>
+              <GuidedGoPaths pet={petData} />
+            </div>
           </div>
         )}
 

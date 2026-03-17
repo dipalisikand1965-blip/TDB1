@@ -19,16 +19,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import hapticFeedback from '../utils/haptic';
 
-// Mira's soul colors - Pink to Purple gradient (matching landing page)
+// Mira's soul colors - Teal (matching Go pillar and brand identity)
 const MIRA_COLORS = {
-  primary: '#EC4899',      // Pink - magenta/hot pink
-  secondary: '#9333EA',    // Purple - deep purple
-  glow: '#F472B6',         // Light pink - aura
+  primary: '#1ABC9C',      // Teal - brand identity
+  secondary: '#0D7A6B',    // Deep teal
+  glow: '#76D7C4',         // Light teal - aura
   listening: '#3B82F6',    // Blue - attention
   thinking: '#F59E0B',     // Amber - processing
   speaking: '#10B981',     // Emerald - guidance
-  celebrating: '#F472B6',  // Pink - joy
-  aura: '#DB2777',         // Rose - mystical aura
+  celebrating: '#1ABC9C',  // Teal - joy
+  aura: '#148F77',         // Mid teal - mystical aura
 };
 
 // Particle component for ambient effects - xOffset and yOffset pre-computed

@@ -204,8 +204,9 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 ### Go Pillar APIs
 | Endpoint | Method | Purpose |
 |---------|--------|---------|
-| `GET /api/admin/pillar-products?pillar=go&limit=200` | GET | All Go products (528 total) |
+| `GET /api/admin/pillar-products?pillar=go&limit=200` | GET | All Go products (52 total) |
 | `GET /api/places/pet-friendly-stays?city={city}&type={type}` | GET | Google Places pet-friendly stays |
+|| `GET /api/places/care-providers?city={city}&type={type}` | GET | Google Places care providers (new) |
 | `GET /api/mira/claude-picks/{pet_id}?pillar=go&limit=10` | GET | AI-scored picks for pet |
 | `POST /api/mira/score-for-pet` | POST | Trigger background scoring |
 | `GET /api/mira/score-status/{pet_id}` | GET | Check if scoring complete |

@@ -1423,26 +1423,24 @@ const DineSoulPage = () => {
         {/* Tab bar — centered, amber box style */}
         <TabBar active={activeTab} onChange={setActiveTab} />
 
-        {/* "How would Mojo love to eat?" — mirrors "How would Mojo love to celebrate?" on /celebrate */}
-        <section className="py-8" data-testid="dine-how-would-section">
-          <h2 style={{
-            fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 800,
-            color: '#1A0A00', marginBottom: 6,
-            fontFamily: "Georgia, 'Times New Roman', serif",
-          }}>
-            How would{' '}
-            <span style={{ color: '#FF8C42' }}>{petData.name}</span>{' '}
-            love to eat?
-          </h2>
-          <p style={{ fontSize: 14, color: '#888888', lineHeight: 1.5 }}>
-            Choose a dimension — everything inside is personalised to {petData.name}'s food profile.{' '}
-            <span style={{ color: '#C44400', fontWeight: 600 }}>Glowing ones match what {petData.name} loves.</span>
-          </p>
-        </section>
-
         {activeTab === "eat" && (
           <>
-            <TummyProfile pet={petData} token={token} />
+            {/* "How would Mojo love to eat?" */}
+            <section className="py-8" data-testid="dine-how-would-section">
+              <h2 style={{
+                fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 800,
+                color: '#1A0A00', marginBottom: 6,
+                fontFamily: "Georgia, 'Times New Roman', serif",
+              }}>
+                How would{' '}
+                <span style={{ color: '#FF8C42' }}>{petData.name}</span>{' '}
+                love to eat?
+              </h2>
+              <p style={{ fontSize: 14, color: '#888888', lineHeight: 1.5 }}>
+                Choose a dimension — everything inside is personalised to {petData.name}'s food profile.{' '}
+                <span style={{ color: '#C44400', fontWeight: 600 }}>Glowing ones match what {petData.name} loves.</span>
+              </p>
+            </section>
 
             {/* Mira's Picks — AI scored, products + services mix */}
             <MiraPicksSection pet={petData} />
