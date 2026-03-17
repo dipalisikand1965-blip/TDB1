@@ -1,6 +1,37 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 17, 2026 (Session 64 — CareSoulPage Products Fix + AI Image Gen)
+## Last Updated: Mar 17, 2026 (Session 65 — Care Page P0/P1/P2 Verification — All Tests PASS)
+
+---
+
+## ✅ SESSION 65 — Care Page P0/P1/P2 Full Verification (Mar 17, 2026)
+
+### All P0/P1/P2 Tests PASSED — 100% Success Rate
+- **P0**: Care page loads correctly with Mojo (Indie, 94% soul, chicken allergy, long silky coat) — hero, soul chips, Mira quote, 8-pill category strip, wellness profile, dimension grid ✅
+- **P0**: Mira Imagines fallback working — section shows AI-scored picks (never empty) ✅
+- **P0**: GuidedCarePaths shows "long, silky coat" — no "coat coat" double text ✅
+- **P0**: WellnessProfile subtitle is dynamic: "Answer a few more · Mojo's profile is looking great" at 94% ✅
+- **P1**: WellnessProfile drawer opens, shows progress, questions answered correctly ✅
+- **P1**: Care & Products tab → 8 dimension cards → Grooming DimExpanded opens with products ✅
+- **P2**: Pet photo from onboarding displayed in CareHero avatar (real /api/pet-photo/ URL, not emoji) ✅
+- **P2**: 8-pill CareCategoryStrip → CareContentModal opens with 71 products for Mojo's coat ✅
+- **P2**: 5-step GroomingFlow with date picker working, all steps navigable ✅
+- **P2**: "Care, Personally" section shows DB service cards with concierge CTAs ✅
+
+### Test Credentials (verified working):
+- Member login: `dipali@clubconcierge.in` / `test123` (Mojo = Indie, 94% soul score)
+- Admin: `aditya` / `lola4304`
+
+### Care Page Component Architecture (7 files, ~4,204 lines total):
+| File | Lines | Key Components |
+|------|-------|----------------|
+| `CareSoulPage.jsx` | 1,882 | Main page + MiraPicksSection + WellnessProfile + DimExpanded + 8 service booking flows + CareConcierge |
+| `CareHero.jsx` | 328 | Pet avatar + soul chips + Mira quote |
+| `CareCategoryStrip.jsx` | 178 | 8 scrollable pills → CareContentModal |
+| `CareContentModal.jsx` | 601 | Product modal + MiraCareImaginesCard |
+| `GuidedCarePaths.jsx` | 794 | 6 care paths × 4-step modals |
+| `CareConciergeSection.jsx` | 117 | DB-driven service cards |
+| `CareConciergeModal.jsx` | 305 | 3-question care intake |
 
 ---
 
