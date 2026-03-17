@@ -393,6 +393,112 @@ async def get_pet_friendly_places(
         raise HTTPException(status_code=500, detail=f"Could not fetch places: {str(e)}")
 
 
+@dine_router.get("/places/pet-friendly-stays")
+async def get_pet_friendly_stays(
+    city: str = "Bengaluru",
+    breed: str = "",
+    lat: Optional[float] = None,
+    lng: Optional[float] = None,
+    type: str = "all",
+    radius: int = 10000,
+):
+    """
+    Fetch pet-friendly stays (hotels, resorts, homestays, boarding) via Google Places API.
+    Returns: { city, places: [{ place_id, name, rating, vicinity, photo_url, type, pet_policy, tdc_listed, mapsUrl }] }
+    Mirrors /api/places/pet-friendly (Dine) — same pattern, different search terms.
+    """
+    import httpx
+    from math import radians, sin, cos, sqrt, atan2
+
+    GOOGLE_API_KEY = os.getenv("GOOGLE_PLACES_API_KEY") or os.getenv("GOOGLE_MAPS_API_KEY")
+    if not GOOGLE_API_KEY:
+        return {"city": city, "places": [
+            {"place_id": "mock-1", "name": "Taj Pet-Friendly Resort", "vicinity": f"Near {city}", "rating": 4.8, "type": "hotel", "pet_policy": True, "tdc_listed": False, "photo_url": None, "distance": None, "mapsUrl": None},
+            {"place_id": "mock-2", "name": "Pawsome Boarding House", "vicinity": f"Near {city}", "rating": 4.6, "type": "boarding", "pet_policy": True, "tdc_listed": True, "photo_url": None, "distance": None, "mapsUrl": None},
+            {"place_id": "mock-3", "name": "Garden Homestay", "vicinity": f"Near {city}", "rating": 4.4, "type": "homestay", "pet_policy": True, "tdc_listed": False, "photo_url": None, "distance": None, "mapsUrl": None},
+        ]}
+
+    # Build search query based on type
+    type_queries = {
+        "hotel":    f"pet friendly hotel in {city}",
+        "resort":   f"pet friendly resort in {city}",
+        "homestay": f"pet friendly homestay Airbnb in {city}",
+        "boarding": f"pet boarding kennel daycare in {city}",
+        "all":      f"pet friendly hotel resort boarding in {city}",
+    }
+    query_text = type_queries.get(type, type_queries["all"])
+
+    def haversine(lat1, lng1, lat2, lng2) -> str:
+        R = 6371
+        dlat = radians(lat2 - lat1)
+        dlng = radians(lng2 - lng1)
+        a = sin(dlat/2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlng/2)**2
+        return f"{R * 2 * atan2(sqrt(a), sqrt(1 - a)):.1f}km"
+
+    def infer_type(name: str, query_type: str) -> str:
+        n = name.lower()
+        if any(k in n for k in ["boarding", "kennel", "daycare", "pet hotel"]):
+            return "boarding"
+        if any(k in n for k in ["resort", "villa", "retreat"]):
+            return "resort"
+        if any(k in n for k in ["homestay", "airbnb", "home", "bungalow"]):
+            return "homestay"
+        return "hotel"
+
+    try:
+        params = {
+            "query": query_text,
+            "key": GOOGLE_API_KEY,
+        }
+        if lat and lng:
+            params["location"] = f"{lat},{lng}"
+            params["radius"] = str(radius)
+
+        async with httpx.AsyncClient(timeout=12.0) as http:
+            resp = await http.get(
+                "https://maps.googleapis.com/maps/api/place/textsearch/json",
+                params=params,
+            )
+            data = resp.json()
+
+        places = []
+        for p in data.get("results", [])[:10]:
+            photo_url = None
+            if p.get("photos"):
+                ref = p["photos"][0].get("photo_reference")
+                if ref:
+                    photo_url = (
+                        f"https://maps.googleapis.com/maps/api/place/photo"
+                        f"?maxwidth=400&photoreference={ref}&key={GOOGLE_API_KEY}"
+                    )
+            distance = None
+            if lat and lng and p.get("geometry", {}).get("location"):
+                ploc = p["geometry"]["location"]
+                distance = haversine(lat, lng, ploc["lat"], ploc["lng"])
+
+            place_type = infer_type(p.get("name", ""), type)
+
+            places.append({
+                "place_id":   p.get("place_id"),
+                "name":       p.get("name"),
+                "vicinity":   p.get("formatted_address", p.get("vicinity", "")),
+                "distance":   distance,
+                "rating":     p.get("rating"),
+                "photo_url":  photo_url,
+                "type":       place_type,
+                "openNow":    p.get("opening_hours", {}).get("open_now"),
+                "pet_policy": True,   # filtered results are already pet-relevant
+                "tdc_listed": False,  # future: cross-check against TDC DB
+                "mapsUrl":    f"https://www.google.com/maps/place/?q=place_id:{p.get('place_id')}",
+            })
+
+        return {"city": city, "places": places}
+
+    except Exception as e:
+        logger.error(f"get_pet_friendly_stays error: {e}")
+        raise HTTPException(status_code=500, detail=f"Could not fetch stays: {str(e)}")
+
+
 @dine_router.get("/dine/restaurants")
 async def get_restaurants(
     city: Optional[str] = None,
