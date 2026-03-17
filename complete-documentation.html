@@ -380,8 +380,11 @@
       </thead>
       <tbody>
         <tr><td>Learn</td><td>/learn</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Gold Standard</span></td></tr>
-        <tr><td>Care</td><td>/care</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
+        <tr><td>Care</td><td>/care</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete v2</span></td></tr>
         <tr><td>Dine</td><td>/dine</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
+        <tr><td>Go</td><td>/go</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">NEW — Travel+Stay merged</span></td></tr>
+        <tr><td>Travel</td><td>/travel (legacy)</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="status partial">Legacy DB only</span></td></tr>
+        <tr><td>Stay</td><td>/stay (legacy)</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="status partial">Legacy DB only</span></td></tr>
         <tr><td>Fit</td><td>/fit</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
         <tr><td>Travel</td><td>/travel</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
         <tr><td>Stay</td><td>/stay</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><span class="status done">Complete</span></td></tr>
@@ -1057,12 +1060,146 @@
   </div>
 </section>
 
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- CARE PILLAR — FULL SPECIFICATION v2 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="care">
+  <div class="container">
+    <h2>Care Pillar — Full Specification v2 (Session 65, Mar 2026)</h2>
+    <p>The <code>/care</code> page is the grooming, wellness, and health management centre for each pet. Architecture mirrors the Dine pillar exactly — dark forest green palette, soul-first, breed-specific intelligence.</p>
+
+    <div class="soul-quote">
+      "On /care, Mira is a devoted wellness guardian. She knows the breed, the coat, the comfort level. She never mentions food allergies here — care is about grooming, wellness routines, and breed intelligence."
+    </div>
+
+    <h3>Component Architecture (7 files, ~4,204 lines)</h3>
+    <div class="grid-3">
+      <div class="card"><h4>CareSoulPage.jsx (1,882 lines)</h4><p>Main page + 8 inline service booking flows + WellnessProfile + DimExpanded + MiraPicksSection + CareConcierge</p></div>
+      <div class="card"><h4>CareHero.jsx (328 lines)</h4><p>Pet avatar with breed chip, coat chip, personality chip, soul% badge. Mira quote is breed/coat-aware. NO food allergy chips.</p></div>
+      <div class="card"><h4>CareContentModal.jsx (601 lines)</h4><p>Category product modal. Strict breed filter via KNOWN_BREEDS (43 breeds). Breed-match priority sort. Mira Imagines fallback.</p></div>
+      <div class="card"><h4>GuidedCarePaths.jsx (794 lines)</h4><p>6 care paths × 4-step modals. Coat displayed without doubling: <code>rawCoat.replace(/coat/gi, '').trim()</code></p></div>
+      <div class="card"><h4>CareCategoryStrip.jsx (178 lines)</h4><p>8 scrollable category pills → opens CareContentModal per category.</p></div>
+      <div class="card"><h4>CareConciergeSection.jsx / Modal (422 lines)</h4><p>DB-driven "Care, Personally" section + 3-question intake modal with date picker.</p></div>
+    </div>
+
+    <h3>WellnessProfile v2 (Mar 2026)</h3>
+    <p>Compact clickable bar + full drawer modal. Updated to be breed-centric:</p>
+    <div class="grid-2">
+      <div class="card"><h4>Bar Chips (breed-first)</h4>
+        <ul>
+          <li>🐾 <strong>Breed chip</strong> — shows breed + care tagline (e.g. "Indie · short coat · weekly brush")</li>
+          <li>🌿 Coat type (from soul answers)</li>
+          <li>✓ Grooming comfort level</li>
+          <li>🦷 Dental health note</li>
+          <li>⚕ Health condition (if any)</li>
+          <li><strong>Removed:</strong> Food allergy chips — irrelevant in care context</li>
+        </ul>
+      </div>
+      <div class="card"><h4>Drawer Contents</h4>
+        <ul>
+          <li><strong>Best Practices section</strong> — breed-specific care tips (4 tips, watch-for, dental note)</li>
+          <li><strong>Soul Questions</strong> — 2×2 grid of unanswered care questions, each +3-5 pts</li>
+          <li><strong>Mira Imagines</strong> — 3 cards at bottom: breed kit, coat pack, dental kit</li>
+          <li>BREED_CARE_INSIGHTS covers 12 specific breeds + default fallback</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Breed Filter — KNOWN_BREEDS (43 breeds, v2)</h3>
+    <p>Added 9 missing breeds: <code>akita, australian shepherd, corgi, samoyed, spitz, bernese mountain dog, bulldog, shiba inu, weimaraner, saint bernard</code>. All breed-specific kits now correctly hidden from non-matching pets. Indie Grooming Kit shows FIRST for Indie pets via breed-match priority sort.</p>
+
+    <h3>Product Coverage (as of Mar 2026)</h3>
+    <div class="grid-3">
+      <div class="card"><h4>330 total care products</h4><p>In <code>products_master</code> with <code>pillar: 'care'</code></p></div>
+      <div class="card"><h4>35 new products added</h4><p>8 missing grooming kits + 27 soul care trios (9 breeds × bath towel + drying robe + grooming apron). Ready for soul mockup generator.</p></div>
+      <div class="card"><h4>8 grooming kits still missing</h4><p>American Bully, Chow Chow, English Bulldog, Irish Setter, Italian Greyhound, Schnoodle, Scottish Terrier, St Bernard — added, awaiting image gen.</p></div>
+    </div>
+
+    <h3>Key API Endpoints</h3>
+    <span class="api-endpoint"><span class="method get">GET</span>/api/care/products?breed={breed}&amp;dimension={dim}</span>
+    <span class="api-endpoint"><span class="method get">GET</span>/api/admin/pillar-products?pillar=care&amp;limit=600</span>
+    <span class="api-endpoint"><span class="method post">POST</span>/api/concierge/care-intake</span>
+    <span class="api-endpoint"><span class="method get">GET</span>/api/pet-soul/profile/{id}/quick-questions</span>
+    <span class="api-endpoint"><span class="method post">POST</span>/api/pet-soul/profile/{id}/answer</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- GO PILLAR — NEW (Travel + Stay merged) -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="go">
+  <div class="container">
+    <h2>Go Pillar — NEW: Travel + Stay Merged (Session 65, Mar 2026)</h2>
+    <p>The <code>/go</code> page replaces both <code>/stay</code> and <code>/travel</code> in the navigation. The two legacy pages remain in the DB and codebase for backward compatibility but are no longer surfaced in the nav. Go is the unified travel intelligence centre — flights, boarding, relocation, taxi, planning, and emergency transport.</p>
+
+    <div class="soul-quote">
+      "Go is where Mira plans the journey — every flight, every boarding stay, every taxi ride. She knows the pet's breed, documents, and health record. She handles everything so the family just focuses on the trip."
+    </div>
+
+    <h3>Architecture</h3>
+    <div class="grid-2">
+      <div class="card"><h4>Files</h4>
+        <ul>
+          <li><code>src/pages/GoSoulPage.jsx</code> — 1,647 lines, main page</li>
+          <li><code>src/components/go/GoHero.jsx</code></li>
+          <li><code>src/components/go/GoCategoryStrip.jsx</code></li>
+          <li><code>src/components/go/GuidedGoPaths.jsx</code></li>
+          <li><code>src/components/go/GoConciergeSection.jsx</code></li>
+          <li><code>src/components/go/GoConciergeModal.jsx</code></li>
+        </ul>
+      </div>
+      <div class="card"><h4>Colour World</h4>
+        <p>Deep teal + travel gold palette. Mirrors CareSoulPage architecture exactly (same hooks, same layout, same component patterns).</p>
+        <ul>
+          <li><code>deep: #0D3349</code> — darkest background</li>
+          <li><code>teal: #1ABC9C</code> — accent</li>
+          <li><code>light: #76D7C4</code> — highlights</li>
+          <li><code>pale: #D1F2EB</code> — light surfaces</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Service Booking Flows (8 flows)</h3>
+    <div class="grid-4">
+      <div class="card"><h4>Flight Coordination</h4><p>5 steps — destination, dates, airline, documents, booking confirmation</p></div>
+      <div class="card"><h4>Pet Taxi / Road</h4><p>4 steps — from/to, date, pet safety setup, confirm</p></div>
+      <div class="card"><h4>Boarding & Stay</h4><p>4 steps — duration, type, special needs, confirm</p></div>
+      <div class="card"><h4>Pet Sitting</h4><p>4 steps — location, dates, instructions, confirm</p></div>
+      <div class="card"><h4>Relocation</h4><p>5 steps — destination city, transport type, dates, documents, confirm</p></div>
+      <div class="card"><h4>Train Travel</h4><p>4 steps — route, date, coach type, confirm</p></div>
+      <div class="card"><h4>Travel Planning</h4><p>4 steps — destination, budget, duration, services needed</p></div>
+      <div class="card"><h4>Emergency Transport</h4><p>2 steps — fast flow for urgent relocations</p></div>
+    </div>
+
+    <h3>Database — Product Tagging</h3>
+    <p>Products in the DB retain their original <code>pillar: 'travel'</code> or <code>pillar: 'stay'</code> values. The <code>/go</code> page queries products by adding <code>pillars: 'go'</code> to the relevant documents.</p>
+    <ul>
+      <li>478 products tagged with <code>pillars: 'go'</code> (all travel-id + seed-stay/svc-stay products)</li>
+      <li>API query: <code>pillar_products_routes.py</code> updated to check both <code>pillar</code> field AND <code>pillars</code> array</li>
+      <li>Aditya can expand coverage by adding <code>pillars: ['go']</code> to any product in the admin panel</li>
+    </ul>
+
+    <h3>Navigation Changes</h3>
+    <ul>
+      <li>Navbar: "Stay" + "Travel" entries replaced by single <strong>"Go"</strong> entry → <code>/go</code></li>
+      <li>Go dropdown: Go By Concierge®, Flight Coordination, Pet Taxi & Road, Boarding & Stay, Relocation, Travel Planning</li>
+      <li>PetHomePage PILLARS: stay + travel → single "Go" entry</li>
+      <li>hiddenPaths updated to include <code>/go</code></li>
+    </ul>
+
+    <h3>Key API Endpoints</h3>
+    <span class="api-endpoint"><span class="method get">GET</span>/api/admin/pillar-products?pillar=go&amp;limit=50</span>
+    <span class="api-endpoint"><span class="method post">POST</span>/api/concierge/go-booking</span>
+    <span class="api-endpoint"><span class="method post">POST</span>/api/concierge/go-path</span>
+  </div>
+</section>
+
 <footer>
   <div>
     <strong style="color:#a78bfa">The Doggy Company®</strong> &nbsp;·&nbsp; Pet Concierge®
     &nbsp;·&nbsp; Les Concierges® (1998) &nbsp;·&nbsp; Club Concierge® &nbsp;·&nbsp; The Doggy Bakery® (2020) &nbsp;·&nbsp; Mira®
   </div>
-  <div style="margin-top:8px">Version 14.0.0 &nbsp;|&nbsp; March 17, 2026 &nbsp;|&nbsp; Built with 200+ days of love</div>
+  <div style="margin-top:8px">Version 15.0.0 &nbsp;|&nbsp; March 17, 2026 &nbsp;|&nbsp; Built with 200+ days of love</div>
   <div style="margin-top:8px; font-style:italic; color:#4338ca">In loving memory of Mystique 💜 and Kouros — who taught us what unconditional love truly means.</div>
 </footer>
 

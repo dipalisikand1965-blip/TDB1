@@ -44,27 +44,17 @@ const PILLARS = [
     ]
   },
   {
-    id: 'stay',
-    name: 'Stay',
-    icon: '🏨',
-    path: '/stay',
-    dropdown: [
-      { name: 'Stay By Concierge®', path: '/stay', highlight: true },
-      { name: 'Pet Hotels', path: '/stay' },
-      { name: 'Boarding', path: '/stay?type=boarding' },
-      { name: 'Stay Essentials', path: '/stay#essentials' },
-    ]
-  },
-  {
-    id: 'travel',
-    name: 'Travel',
+    id: 'go',
+    name: 'Go',
     icon: '✈️',
-    path: '/travel',
+    path: '/go',
     dropdown: [
-      { name: 'Travel By Concierge®', path: '/travel', highlight: true },
-      { name: 'Pet Taxi', path: '/travel?type=taxi' },
-      { name: 'Pet Airlines', path: '/travel?type=airline' },
-      { name: 'Travel Planning', path: '/travel?type=planning' },
+      { name: 'Go By Concierge®', path: '/go', highlight: true },
+      { name: 'Flight Coordination', path: '/go?type=flight' },
+      { name: 'Pet Taxi & Road', path: '/go?type=taxi' },
+      { name: 'Boarding & Stay', path: '/go?type=boarding' },
+      { name: 'Relocation', path: '/go?type=relocation' },
+      { name: 'Travel Planning', path: '/go?type=planning' },
     ]
   },
   {
@@ -348,8 +338,10 @@ const Navbar = () => {
       // Training
       training: { pillar: 'learn', path: '/learn', keywords: ['trainer', 'training', 'obedience', 'behavior', 'puppy class', 'learn', 'teach'] },
       
-      // Travel
-      travel: { pillar: 'travel', path: '/travel', keywords: ['travel', 'flight', 'taxi', 'cab', 'transport', 'trip', 'vacation', 'passport', 'relocate'] },
+      // Go (merged Travel + Stay)
+      travel: { pillar: 'go', path: '/go', keywords: ['travel', 'flight', 'taxi', 'cab', 'transport', 'trip', 'vacation', 'passport', 'relocate'] },
+      boarding: { pillar: 'go', path: '/go?type=boarding', keywords: ['boarding', 'kennel', 'leave my pet', 'overnight'] },
+      hotel: { pillar: 'go', path: '/go', keywords: ['hotel', 'pet hotel', 'staycation', 'vacation stay'] },
       
       // Celebrate
       cake: { pillar: 'celebrate', path: '/celebrate/cakes', keywords: ['cake', 'birthday cake', 'pupcake', 'treat'] },
