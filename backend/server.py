@@ -767,6 +767,71 @@ Need help choosing? Chat with Mira, our Concierge®!"""
 # Product fulfilment types
 FULFILMENT_TYPES = ["shipping", "store_pickup", "both"]
 
+# In-memory job store for single-product image generation (background tasks)
+_single_image_jobs: dict = {}
+
+
+async def _run_single_product_image(product_id: str, product: dict):
+    """Background task: generate AI image for a single product and save to DB."""
+    import os, base64, cloudinary, cloudinary.uploader
+    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+    from ai_image_service import get_product_image_prompt
+
+    try:
+        emergent_api_key = (
+            os.environ.get("EMERGENT_LLM_KEY")
+            or os.environ.get("EMERGENT_API_KEY")
+            or os.environ.get("EMERGENT_MODEL_API_KEY")
+        )
+        if not emergent_api_key:
+            _single_image_jobs[product_id] = {"status": "error", "error": "API key not configured", "product_id": product_id}
+            return
+
+        cloudinary.config(
+            cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+            api_key=os.environ.get("CLOUDINARY_API_KEY"),
+            api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+        )
+
+        # Use the smart contextual prompt builder
+        prompt = product.get("ai_image_prompt") or get_product_image_prompt(product)
+        logger.info(f"Generating single image for '{product.get('name')}' | prompt: {prompt[:80]}")
+
+        image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
+        images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
+
+        if not images:
+            _single_image_jobs[product_id] = {"status": "error", "error": "No image returned", "product_id": product_id}
+            return
+
+        img_b64 = base64.b64encode(images[0]).decode("utf-8")
+        upload_result = cloudinary.uploader.upload(
+            f"data:image/png;base64,{img_b64}",
+            folder="products/ai-generated",
+            public_id=f"product-{product_id}-img",
+            overwrite=True,
+            resource_type="image",
+        )
+        image_url = upload_result.get("secure_url")
+        if not image_url:
+            _single_image_jobs[product_id] = {"status": "error", "error": "Cloudinary upload failed", "product_id": product_id}
+            return
+
+        await db.products_master.update_one(
+            {"id": product_id},
+            {"$set": {
+                "image_url": image_url, "image": image_url, "images": [image_url],
+                "ai_generated_image": True,
+                "image_updated_at": datetime.now(timezone.utc).isoformat(),
+            }}
+        )
+        _single_image_jobs[product_id] = {"status": "complete", "image_url": image_url, "product_id": product_id, "success": True}
+        logger.info(f"Single image done for '{product.get('name')}': {image_url}")
+
+    except Exception as e:
+        logger.error(f"Single image generation failed for {product_id}: {e}")
+        _single_image_jobs[product_id] = {"status": "error", "error": str(e), "product_id": product_id}
+
 
 async def force_initialize_database():
     """Force initialize database on every startup - ensures data survives deployments"""
@@ -20982,72 +21047,38 @@ async def regenerate_single_product_image(
 
 
 @api_router.post("/admin/products/{product_id}/generate-image")
-async def generate_product_image_sync(
+async def generate_product_image_async(
     product_id: str,
+    background_tasks: BackgroundTasks,
     username: str = Depends(verify_admin_auth),
 ):
-    """Generate AI image for a single product — synchronous, returns URL immediately."""
-    import os
-    import base64
-    import cloudinary
-    import cloudinary.uploader
-    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
-
+    """Start AI image generation for a single product as a background task.
+    Returns immediately. Poll /admin/products/{id}/image-status for result."""
     product = await db.products_master.find_one({"id": product_id}, {"_id": 0})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    emergent_api_key = (
-        os.environ.get("EMERGENT_LLM_KEY")
-        or os.environ.get("EMERGENT_API_KEY")
-        or os.environ.get("EMERGENT_MODEL_API_KEY")
-    )
-    if not emergent_api_key:
-        raise HTTPException(status_code=500, detail="Image generation API key not configured")
+    # Mark as in-progress
+    _single_image_jobs[product_id] = {"status": "generating", "product_id": product_id, "started_at": datetime.now(timezone.utc).isoformat()}
 
-    if not os.environ.get("CLOUDINARY_CLOUD_NAME"):
-        raise HTTPException(status_code=500, detail="Cloudinary not configured")
-    cloudinary.config(
-        cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
-        api_key=os.environ.get("CLOUDINARY_API_KEY"),
-        api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
-    )
+    background_tasks.add_task(_run_single_product_image, product_id, product)
+    return {"status": "generating", "product_id": product_id, "poll_url": f"/api/admin/products/{product_id}/image-status"}
 
-    prompt = product.get("ai_image_prompt") or (
-        f"Premium dog product, {product['name']}, {product.get('description', '')[:80]}, "
-        "clean white background, professional product photography, high quality"
-    )
 
-    try:
-        image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
-        images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
-        if not images:
-            raise HTTPException(status_code=500, detail="Image generation returned no results")
-
-        img_b64 = base64.b64encode(images[0]).decode("utf-8")
-        upload_result = cloudinary.uploader.upload(
-            f"data:image/png;base64,{img_b64}",
-            folder="products/ai-generated",
-            public_id=f"product-{product_id}-{product.get('sku', 'img')}",
-            overwrite=True,
-            resource_type="image",
-        )
-        image_url = upload_result.get("secure_url")
-        if not image_url:
-            raise HTTPException(status_code=500, detail="Cloudinary upload failed")
-
-        await db.products_master.update_one(
-            {"id": product_id},
-            {"$set": {
-                "image_url": image_url, "image": image_url, "images": [image_url],
-                "ai_image_generated": True,
-                "image_updated_at": datetime.now(timezone.utc).isoformat(),
-            }}
-        )
-        return {"success": True, "image_url": image_url, "product_id": product_id}
-    except Exception as e:
-        logger.error(f"Product image generation failed for {product_id}: {e}")
-        raise HTTPException(status_code=500, detail=f"Image generation failed: {str(e)}")
+@api_router.get("/admin/products/{product_id}/image-status")
+async def get_product_image_status(
+    product_id: str,
+    username: str = Depends(verify_admin_auth),
+):
+    """Poll for the result of a background image generation job."""
+    job = _single_image_jobs.get(product_id)
+    if not job:
+        # Check if product already has a cloudinary image (completed in previous run)
+        product = await db.products_master.find_one({"id": product_id}, {"_id": 0, "image_url": 1})
+        if product and product.get("image_url", "").startswith("https://res.cloudinary.com"):
+            return {"status": "complete", "image_url": product["image_url"], "product_id": product_id}
+        return {"status": "not_started", "product_id": product_id}
+    return job
 
 
 @api_router.post("/admin/celebrate/bundles/{bundle_id}/generate-image")
