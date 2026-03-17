@@ -1504,29 +1504,24 @@ export default function CareSoulPage() {
   const [soulScore, setSoulScore] = useState(0);
   const [apiProducts, setApiProducts] = useState({});
 
-  // Fetch all care products on mount — grouped by category / sub_category
+  // Fetch all care products on mount — grouped by dimension / sub_category
+  // (care products use 'dimension' field, not 'category', for page grouping)
   useEffect(() => {
-    const CARE_CATS = ["Grooming", "Dental & Paw", "Coat & Skin", "Wellness Visits", "Senior Care", "Supplements", "Soul Care Products"];
-    Promise.all(
-      CARE_CATS.map(cat =>
-        fetch(`${API_URL}/api/admin/pillar-products?pillar=care&limit=100&category=${encodeURIComponent(cat)}`)
-          .then(r => r.ok ? r.json() : null)
-          .catch(() => null)
-      )
-    ).then(results => {
-      const grouped = {};
-      results.forEach(data => {
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=care&limit=600`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
         if (!data?.products?.length) return;
+        const grouped = {};
         data.products.forEach(p => {
-          const cat = p.category || "";
+          const dim = p.dimension || "";
           const sub = p.sub_category || "Other";
-          if (!grouped[cat]) grouped[cat] = {};
-          if (!grouped[cat][sub]) grouped[cat][sub] = [];
-          grouped[cat][sub].push(p);
+          if (!dim) return;
+          if (!grouped[dim]) grouped[dim] = {};
+          if (!grouped[dim][sub]) grouped[dim][sub] = [];
+          grouped[dim][sub].push(p);
         });
-      });
-      setApiProducts(grouped);
-    }).catch(err => console.error("[CareSoulPage] products:", err));
+        setApiProducts(grouped);
+      }).catch(err => console.error("[CareSoulPage] products:", err));
   }, []);
 
   // Sync pet from context
