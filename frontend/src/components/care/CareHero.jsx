@@ -45,6 +45,7 @@ const MiraQuoteCard = ({ pet }) => {
 
   const quote = useMemo(() => {
     const coat = pet?.doggy_soul_answers?.coat_type || pet?.coat_type;
+    const breed = (pet?.breed || '').trim();
     const comfort = pet?.doggy_soul_answers?.grooming_comfort;
     const condition = (() => {
       const raw = pet?.health?.medical_conditions || pet?.doggy_soul_answers?.health_conditions;
@@ -52,10 +53,15 @@ const MiraQuoteCard = ({ pet }) => {
       const s = Array.isArray(raw) ? raw.join(', ') : String(raw);
       return s.toLowerCase() === 'none' || !s.trim() ? null : s;
     })();
-    const allergies = getAllergies(pet);
 
-    if (allergies.length > 0) {
-      return `I've removed everything containing ${allergies.slice(0, 2).join(' and ')} from ${petName}'s care list — everything you see is safe.${condition ? ` And I'm keeping ${petName}'s ${condition} in mind.` : ''}`;
+    if (breed && coat && comfort) {
+      return `I know ${petName} is a ${breed} with a ${coat.toLowerCase()} coat — and they're ${comfort.toLowerCase()} with grooming. Every product here is perfectly matched.${condition ? ` And I'm keeping ${petName}'s ${condition} in mind throughout.` : ''}`;
+    }
+    if (breed && coat) {
+      return `I've matched everything to ${petName}'s ${coat.toLowerCase()} coat. As a ${breed}, their care needs are specific — everything here is chosen for that.`;
+    }
+    if (breed) {
+      return `I know ${petName} is a ${breed}. I've curated their care essentials around their breed — grooming, wellness, and coat care all in one place.`;
     }
     if (coat && comfort) {
       return `I know ${petName} has a ${coat.toLowerCase()} coat and is ${comfort.toLowerCase()} with grooming. Everything here is matched to that.`;
@@ -107,7 +113,19 @@ const CareHero = ({ pet, soulScore }) => {
   const soulChips = useMemo(() => {
     const chips = [];
 
-    // 1. Coat type
+    // 1. Breed chip (replaces allergy — care is about breed, not food)
+    const breed = (pet?.breed || '').trim();
+    if (breed) {
+      chips.push({
+        id: 'breed',
+        icon: '🐾',
+        label: 'Breed',
+        value: breed,
+        chipStyle: { background: 'rgba(64,145,108,0.20)', border: '1px solid rgba(116,198,157,0.60)' },
+      });
+    }
+
+    // 2. Coat type
     const coat = pet?.doggy_soul_answers?.coat_type || pet?.coat_type;
     if (coat) {
       chips.push({
@@ -119,36 +137,7 @@ const CareHero = ({ pet, soulScore }) => {
       });
     }
 
-    // 2. Allergies
-    const allergies = getAllergies(pet);
-    if (allergies.length > 0) {
-      chips.push({
-        id: 'allergy',
-        icon: '🚫',
-        label: 'Allergy',
-        value: allergies.slice(0, 2).join(', '),
-        chipStyle: { background: 'rgba(255,107,107,0.12)', border: '1px solid rgba(255,107,107,0.50)' },
-      });
-    }
-
-    // 3. Health condition
-    const condition = (() => {
-      const raw = pet?.health?.medical_conditions || pet?.doggy_soul_answers?.health_conditions;
-      if (!raw) return null;
-      const s = Array.isArray(raw) ? raw.join(', ') : String(raw);
-      return s.toLowerCase() === 'none' || !s.trim() ? null : s;
-    })();
-    if (condition) {
-      chips.push({
-        id: 'condition',
-        icon: '⚕',
-        label: 'Health',
-        value: condition,
-        chipStyle: { background: 'rgba(173,20,87,0.12)', border: '1px solid rgba(244,143,177,0.50)' },
-      });
-    }
-
-    // 4. Personality / archetype
+    // 3. Personality / archetype (keep — relevant to care)
     const traits = [];
     const describe3 = pet?.doggy_soul_answers?.describe_3_words;
     if (describe3) traits.push(...describe3.split(/[,·]/).map(w => w.trim()).filter(Boolean).slice(0, 2));
