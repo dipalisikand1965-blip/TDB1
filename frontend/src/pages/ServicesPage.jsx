@@ -833,7 +833,7 @@ const ServicesPage = () => {
     const fetchServices = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${API_URL}/api/service-box/services?limit=200`);
+        const res = await fetch(`${API_URL}/api/service-box/services?limit=200&is_active=true`);
         if (res.ok) {
           const data = await res.json();
           setServices(data.services || []);

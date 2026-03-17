@@ -126,7 +126,7 @@ const ServiceDetailPage = () => {
         
         if (!response.ok) {
           // If not found, try fetching all and filtering
-          response = await fetch(`${API_URL}/api/service-box/services?limit=500`);
+          response = await fetch(`${API_URL}/api/service-box/services?limit=500&is_active=true`);
           if (response.ok) {
             const data = await response.json();
             const foundService = data.services?.find(s => 
