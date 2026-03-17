@@ -1004,12 +1004,65 @@
   </div>
 </section>
 
+<section id="care-pillar">
+  <div class="section-header">
+    <div class="pill">Care Pillar</div>
+    <h2>Care &amp; Wellbeing — CareSoulPage v2</h2>
+    <p>Personalised care across 8 dimensions, fully pet-first with breed intelligence. Shipped March 2026.</p>
+  </div>
+  <div class="content-block">
+    <h3>Architecture</h3>
+    <ul>
+      <li><strong>Route:</strong> <code>/care</code> → <code>CareSoulPage.jsx</code> (1750 lines)</li>
+      <li><strong>Child components:</strong> CareHero, CareCategoryStrip, CareContentModal, CareDimExpanded (inline), GuidedCarePaths</li>
+      <li><strong>Data source:</strong> <code>/api/admin/pillar-products?pillar=care&amp;limit=600</code> → 330 products grouped by <code>dimension</code> field</li>
+      <li><strong>Colour theme:</strong> Sage green palette (<code>#40916C</code> primary)</li>
+    </ul>
+    <h3>8 Dimensions</h3>
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <tr style="background:#f0fdf4"><th style="padding:8px;text-align:left">Dimension</th><th style="padding:8px;text-align:left">Products</th><th style="padding:8px;text-align:left">Sub-categories</th></tr>
+      <tr><td style="padding:8px">✂️ Grooming</td><td style="padding:8px">~82</td><td style="padding:8px">Shampoo &amp; Conditioner, Ear &amp; Eye Care, Breed-Specific Kits</td></tr>
+      <tr style="background:#f0fdf4"><td style="padding:8px">🌿 Coat &amp; Skin</td><td style="padding:8px">6</td><td style="padding:8px">—</td></tr>
+      <tr><td style="padding:8px">🦷 Dental &amp; Paw</td><td style="padding:8px">12</td><td style="padding:8px">Dental Care, Paw Care</td></tr>
+      <tr style="background:#f0fdf4"><td style="padding:8px">💊 Supplements</td><td style="padding:8px">32</td><td style="padding:8px">Joint &amp; Mobility, Vitamins, Omega</td></tr>
+      <tr><td style="padding:8px">🏥 Wellness Visits</td><td style="padding:8px">11</td><td style="padding:8px">—</td></tr>
+      <tr style="background:#f0fdf4"><td style="padding:8px">🌸 Senior Care</td><td style="padding:8px">11</td><td style="padding:8px">—</td></tr>
+      <tr><td style="padding:8px">✨ Soul Care</td><td style="padding:8px">163</td><td style="padding:8px">Breed Collection (99, breed-filtered), Care Essentials (61)</td></tr>
+      <tr style="background:#f0fdf4"><td style="padding:8px">🪄 Mira's Picks</td><td style="padding:8px">Dynamic</td><td style="padding:8px">Mira-scored products + Mira Imagines cards</td></tr>
+    </table>
+    <h3>Pet-First Breed Intelligence</h3>
+    <ul>
+      <li><strong>KNOWN_BREEDS</strong>: 33 breed names list applied globally to all 8 dimensions</li>
+      <li>Products with another breed's name are hidden — only the pet's breed products + generic products show</li>
+      <li>Applied in both DimExpanded (grid cards) and CareContentModal (pill strip modals)</li>
+      <li>Breed matching is robust: "Labrador Retriever" → matches "Labrador Bath Towel" via word-level check</li>
+    </ul>
+    <h3>Category Strip (Top Pills)</h3>
+    <ul>
+      <li>8 centred pills — matches DineCategoryStrip architecture exactly</li>
+      <li>Each pill opens <code>CareContentModal</code> with Mira intelligence (allergy chips, coat filtering, Mira quote)</li>
+      <li>Mira's Picks tab shows Mira Imagines cards (dark green, "Tap → Concierge" button) for items not in catalogue</li>
+    </ul>
+    <h3>Service Concierge</h3>
+    <ul>
+      <li>5 services: Grooming (5-step), Vet Visits (4-step), Boarding (4-step), Pet Sitting (3-step), First Aid (urgent)</li>
+      <li>All flows include preferred date picker (min = today)</li>
+      <li>Multi-step flows send to Service Desk on completion</li>
+    </ul>
+    <h3>AI Image Generation</h3>
+    <ul>
+      <li>140 care products generated via DALL-E → Cloudinary (0 failures)</li>
+      <li>295 of 330 care products have Cloudinary images</li>
+    </ul>
+  </div>
+</section>
+
 <footer>
   <div>
     <strong style="color:#a78bfa">The Doggy Company®</strong> &nbsp;·&nbsp; Pet Concierge®
     &nbsp;·&nbsp; Les Concierges® (1998) &nbsp;·&nbsp; Club Concierge® &nbsp;·&nbsp; The Doggy Bakery® (2020) &nbsp;·&nbsp; Mira®
   </div>
-  <div style="margin-top:8px">Version 13.0.0 &nbsp;|&nbsp; March 12, 2026 &nbsp;|&nbsp; Built with 200+ days of love</div>
+  <div style="margin-top:8px">Version 14.0.0 &nbsp;|&nbsp; March 17, 2026 &nbsp;|&nbsp; Built with 200+ days of love</div>
   <div style="margin-top:8px; font-style:italic; color:#4338ca">In loving memory of Mystique 💜 and Kouros — who taught us what unconditional love truly means.</div>
 </footer>
 
