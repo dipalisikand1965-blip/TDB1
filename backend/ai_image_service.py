@@ -53,50 +53,70 @@ def is_cloudinary_configured():
 
 
 def get_product_image_prompt(product: dict) -> str:
-    """Generate an appropriate prompt for a product image"""
-    name = (product.get("name") or "").lower()
+    """Generate a realistic, contextual product photography prompt — NEVER generic Unsplash stock"""
+    name = (product.get("name") or product.get("title") or "")
+    name_lower = name.lower()
     category = (product.get("category") or "").lower()
     pillar = (product.get("pillar") or "").lower()
     
-    # Category-specific prompts for realistic product photography
-    if any(x in name for x in ["treat", "snack", "biscuit", "cookie"]):
-        return f"Dog treats in premium packaging, {product.get('name')}, natural ingredients, appetizing display, clean white background, professional product photography, realistic, high quality"
+    style = "clean white background, professional product photography, sharp focus, photorealistic, high detail, commercial quality, 4K"
     
-    if any(x in name for x in ["food", "meal", "kibble"]):
-        return f"Premium dog food bag, {product.get('name')}, nutritious formula, attractive modern packaging, clean white background, professional product photography, realistic"
+    # ── DINE PILLAR: Food products ──────────────────────────────────────────
+    if pillar == "dine" or category in ["daily meals", "treats & rewards", "supplements", "frozen & fresh", "homemade & recipes"]:
+        
+        if any(x in name_lower for x in ["biscuit", "cookie", "bone"]):
+            return f"Homemade dog biscuits beautifully arranged on a rustic wooden board, natural golden-brown colour, shaped like bones and paws, '{name}', {style}"
+        if any(x in name_lower for x in ["birthday cake", "birthday treat", "cupcake", "paw print"]):
+            return f"Beautiful dog-safe birthday cake with natural frosting, decorated with dog bone shapes and a single candle, '{name}', celebratory, warm kitchen background, {style}"
+        if any(x in name_lower for x in ["salmon"]):
+            return f"Fresh premium salmon fillet pieces on a slate board, with herbs, for dog food, appetizing natural presentation, '{name}', {style}"
+        if any(x in name_lower for x in ["chicken", "rice"]):
+            return f"Freshly cooked chicken and rice in a premium dog bowl, wholesome meal presentation, natural ingredients visible, '{name}', {style}"
+        if any(x in name_lower for x in ["lamb", "stew"]):
+            return f"Hearty slow-cooked lamb and vegetable stew in a ceramic bowl, rich natural colours, healthy dog meal, '{name}', {style}"
+        if any(x in name_lower for x in ["peanut butter"]):
+            return f"Natural peanut butter in a small jar with dog treats, warm golden tones, '{name}', {style}"
+        if any(x in name_lower for x in ["liver", "jerky", "freeze"]):
+            return f"Freeze-dried liver training treats scattered on a slate surface, rich brown colour, high-value reward treats, '{name}', {style}"
+        if any(x in name_lower for x in ["veggie", "vegetable", "carrot"]):
+            return f"Colourful dog-safe vegetable chews arranged neatly, fresh carrot, sweet potato and pumpkin, natural wholesome look, '{name}', {style}"
+        if any(x in name_lower for x in ["supplement", "vitamin", "probiotic", "omega", "glucosamine", "enzyme", "mushroom", "turmeric", "coconut oil", "elm"]):
+            return f"Premium pet supplement in a clean minimalist amber glass bottle with label, '{name}', natural wellness product, {style}"
+        if any(x in name_lower for x in ["frozen", "patty", "raw", "mince"]):
+            return f"Premium raw frozen dog food patties arranged on a wooden board with fresh ingredients visible, '{name}', {style}"
+        if any(x in name_lower for x in ["recipe", "guide", "ingredient pack"]):
+            return f"Premium recipe card and fresh ingredients for homemade dog food, flat lay on marble surface, '{name}', artisan food prep, {style}"
+        if any(x in name_lower for x in ["meal", "bowl", "dinner", "morning", "evening"]):
+            return f"Beautifully plated fresh dog meal in a premium ceramic bowl, wholesome ingredients visible, '{name}', {style}"
+        # Generic dine fallback
+        return f"Premium dog food product, '{name}', appetizing natural ingredients, beautiful presentation, {style}"
     
-    if any(x in name for x in ["toy", "ball", "chew", "rope"]):
-        return f"Dog toy, {product.get('name')}, colorful and durable, pet-safe materials, clean white background, professional product photography, realistic"
+    # ── CELEBRATE PILLAR ────────────────────────────────────────────────────
+    if pillar == "celebrate" or any(x in name_lower for x in ["birthday", "party", "cake", "celebration"]):
+        return f"Festive dog birthday cake with natural pet-safe frosting, colourful decoration, '{name}', celebratory warm background, {style}"
     
-    if any(x in name for x in ["bed", "mat", "blanket", "cushion"]):
-        return f"Cozy dog bed, {product.get('name')}, soft and comfortable, premium quality materials, clean white background, professional product photography, realistic"
+    # ── CARE PILLAR ─────────────────────────────────────────────────────────
+    if pillar == "care" or any(x in name_lower for x in ["shampoo", "grooming", "brush", "comb", "nail"]):
+        return f"Premium dog grooming product, '{name}', professional quality, natural ingredients, clean bathroom counter, {style}"
     
-    if any(x in name for x in ["collar", "leash", "harness"]):
-        return f"Dog collar or leash, {product.get('name')}, adjustable and stylish, durable hardware, clean white background, professional product photography, realistic"
+    # ── TRAVEL PILLAR ───────────────────────────────────────────────────────
+    if pillar == "travel" or any(x in name_lower for x in ["carrier", "crate", "travel", "portable bowl"]):
+        return f"Premium pet travel product, '{name}', durable stylish design, adventure-ready, {style}"
     
-    if any(x in name for x in ["bowl", "feeder", "water"]):
-        return f"Dog bowl or feeder, {product.get('name')}, modern design, pet-safe materials, clean white background, professional product photography, realistic"
+    # ── FIT PILLAR ──────────────────────────────────────────────────────────
+    if pillar == "fit" or any(x in name_lower for x in ["leash", "harness", "collar", "toy", "ball", "rope"]):
+        return f"Premium dog fitness and play product, '{name}', durable colourful design, active lifestyle, {style}"
     
-    if any(x in name for x in ["shampoo", "grooming", "brush", "comb"]):
-        return f"Dog grooming product, {product.get('name')}, professional quality, clean white background, professional product photography, realistic"
+    # ── BED / HOME ──────────────────────────────────────────────────────────
+    if any(x in name_lower for x in ["bed", "mat", "blanket", "cushion", "crate"]):
+        return f"Luxurious dog bed or comfort product, '{name}', soft premium materials, cozy home setting, {style}"
     
-    if any(x in name for x in ["folder", "document", "adoption"]):
-        return f"Elegant pet document folder, {product.get('name')}, premium leather-look cover with paw print emboss, professional organizer, clean white background, product photography, realistic"
+    # ── ACCESSORIES / CLOTHING ──────────────────────────────────────────────
+    if any(x in name_lower for x in ["collar", "tag", "bandana", "sweater", "coat", "jacket"]):
+        return f"Stylish dog accessory, '{name}', premium quality materials, elegant design, {style}"
     
-    if any(x in name for x in ["supplement", "vitamin", "health"]):
-        return f"Pet health supplement, {product.get('name')}, veterinary grade packaging, clean white background, professional product photography, realistic"
-    
-    if any(x in name for x in ["carrier", "crate", "travel"]):
-        return f"Pet carrier or travel crate, {product.get('name')}, comfortable and secure design, clean white background, professional product photography, realistic"
-    
-    if any(x in name for x in ["sweater", "coat", "jacket", "clothes"]):
-        return f"Dog clothing, {product.get('name')}, stylish and comfortable, clean white background, professional product photography, realistic"
-    
-    if any(x in name for x in ["cake", "birthday", "party", "celebration"]):
-        return f"Dog birthday treat or party item, {product.get('name')}, festive and pet-safe, colorful design, clean white background, professional product photography, realistic"
-    
-    # Default prompt
-    return f"Premium pet product, {product.get('name')}, high quality, attractive packaging, clean white background, professional product photography, realistic"
+    # ── DEFAULT ─────────────────────────────────────────────────────────────
+    return f"Premium pet product '{name}', high quality, beautiful packaging and presentation, {style}"
 
 
 def get_bundle_image_prompt(bundle: dict) -> str:
@@ -254,7 +274,7 @@ async def upload_to_cloudinary(image_url: str, item_id: str, item_type: str, pil
 
 
 async def process_products_batch(pillar: Optional[str] = None):
-    """Process products without images in background"""
+    """Process products without images in background — queries products_master (SSOT)"""
     global generation_status
     
     if db is None:
@@ -262,23 +282,41 @@ async def process_products_batch(pillar: Optional[str] = None):
         return
     
     try:
-        # Build query for products without images
-        query = {
+        # Products needing AI images: missing image_url OR using Unsplash (never contextual)
+        no_image_condition = {
             "$or": [
                 {"image_url": {"$exists": False}},
                 {"image_url": None},
                 {"image_url": ""},
-                {"image": {"$exists": False}},
-                {"image": None},
-                {"image": ""}
+                {"image_url": {"$regex": "unsplash", "$options": "i"}},
             ]
         }
         
-        if pillar:
-            query["pillar"] = pillar
+        query = no_image_condition.copy()
         
-        # Get products
-        products = await db.products.find(query, {"_id": 0}).to_list(length=500)
+        if pillar:
+            query = {
+                "$and": [
+                    no_image_condition,
+                    {"$or": [
+                        {"pillar": pillar},
+                        {"pillars": pillar},
+                        {"primary_pillar": pillar}
+                    ]}
+                ]
+            }
+        
+        # Query products_master — this is the SSOT for all products
+        products = await db.products_master.find(query, {"_id": 0}).to_list(length=500)
+        
+        # Also grab from legacy products collection (Shopify products)
+        legacy_products = await db.products.find(query, {"_id": 0}).to_list(length=200)
+        
+        # Deduplicate by id
+        seen_ids = {p.get("id") for p in products}
+        for p in legacy_products:
+            if p.get("id") not in seen_ids:
+                products.append(p)
         
         generation_status["total"] = len(products)
         generation_status["type"] = "products"
@@ -301,8 +339,8 @@ async def process_products_batch(pillar: Optional[str] = None):
                 cloudinary_url = await generate_ai_image(prompt)
                 
                 if cloudinary_url:
-                    # Update product in database
-                    await db.products.update_one(
+                    # Update in products_master first (SSOT), then fallback to legacy products
+                    update_result = await db.products_master.update_one(
                         {"id": product_id},
                         {
                             "$set": {
@@ -314,6 +352,20 @@ async def process_products_batch(pillar: Optional[str] = None):
                             }
                         }
                     )
+                    if update_result.matched_count == 0:
+                        # Fallback: update legacy products collection
+                        await db.products.update_one(
+                            {"id": product_id},
+                            {
+                                "$set": {
+                                    "image_url": cloudinary_url,
+                                    "image": cloudinary_url,
+                                    "images": [cloudinary_url],
+                                    "ai_generated_image": True,
+                                    "image_updated_at": datetime.now(timezone.utc).isoformat()
+                                }
+                            }
+                        )
                     
                     generation_status["results"].append({
                         "id": product_id,
