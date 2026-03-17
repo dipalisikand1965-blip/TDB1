@@ -189,7 +189,7 @@ A percentage (0-100%) showing how well Mira "knows" a pet.
 ## 📱 HOW TO TEST
 
 ### On Preview (Safe to experiment):
-- URL: `https://mira-go-launch.preview.emergentagent.com`
+- URL: `https://go-pillar-launch.preview.emergentagent.com`
 - Test user: `dipali@clubconcierge.in` / `test123`
 - Admin: `aditya` / `lola4304`
 

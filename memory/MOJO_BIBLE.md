@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-go-launch.preview.emergentagent.com
+https://go-pillar-launch.preview.emergentagent.com
 ```
 
 ---
