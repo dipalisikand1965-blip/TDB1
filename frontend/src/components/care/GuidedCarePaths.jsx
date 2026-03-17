@@ -38,12 +38,15 @@ function capitalisedList(arr) {
 // ─────────────────────────────────────────────────────────────
 function buildPaths(pet) {
   const name      = pet.name;
-  const coat      = pet.coatType    || "their coat";
-  const comfort   = pet.groomingComfort || "comfortable";
-  const condition = pet.healthCondition;
+  // Use both snake_case (from API) and camelCase (legacy) for coat type
+  const rawCoat   = pet.coat_type || pet.coatType || pet.doggy_soul_answers?.coat_type || "";
+  const coat      = rawCoat.replace(/\bcoat\b/gi, "").trim() || ""; // strip "coat" suffix to avoid "coat coat"
+  const coatDisplay = coat ? `${coat} coat` : "their coat";         // e.g. "long silky coat"
+  const comfort   = pet.groomingComfort || pet.grooming_comfort || "comfortable";
+  const condition = pet.healthCondition || pet.health_condition || pet.health_data?.chronic_conditions?.[0];
   const breed     = pet.breed || "their breed";
-  const dental    = pet.dentalHealth || "good";
-  const anxiety   = (pet.anxietyTriggers || []).join(", ") || "none noted";
+  const dental    = pet.dentalHealth || pet.dental_health || "good";
+  const anxiety   = (pet.anxietyTriggers || pet.anxiety_triggers || []).join(", ") || "none noted";
 
   return [
     // ── PATH 1: GROOMING ─────────────────────────────────────
@@ -58,9 +61,9 @@ function buildPaths(pet) {
       badgeBg: "#C2185B",
       photoBg: "linear-gradient(135deg,#FCE4EC,#F8BBD9)",
       title: "Grooming Path",
-      desc: `${coat} coat · ${comfort} with grooming · Mira arranges the perfect grooming experience for ${name}.`,
+      desc: `${coatDisplay} · ${comfort} with grooming · Mira arranges the perfect grooming experience for ${name}.`,
       stepLabels: ["Grooming mode", "Frequency & schedule", "Products for home", "Your grooming plan"],
-      miraNote: `${name}'s ${coat.toLowerCase()} coat is already noted. Every recommendation here is matched to ${breed} coat needs and ${name}'s ${comfort.toLowerCase()} grooming temperament.`,
+      miraNote: `${name}'s ${coatDisplay} is already noted. Every recommendation here is matched to ${breed} coat needs and ${name}'s ${comfort.toLowerCase()} grooming temperament.`,
 
       step1: {
         title: "How would you like grooming arranged?",
@@ -90,10 +93,10 @@ function buildPaths(pet) {
 
       step3: {
         title: `Products for ${name}'s at-home care`,
-        desc: `Between grooming appointments, these keep ${name}'s ${coat.toLowerCase()} coat in the best condition.`,
+        desc: `Between grooming appointments, these keep ${name}'s ${coatDisplay} in the best condition.`,
         type: "multi_select",
         options: [
-          { icon:"🧴", name:"Coat-matched shampoo", desc:`Formulated for ${coat.toLowerCase()} coats` },
+          { icon:"🧴", name:"Coat-matched shampoo", desc:`Formulated for ${coatDisplay}` },
           { icon:"💧", name:"Detangling conditioner", desc:"Prevents mats between appointments" },
           { icon:"🪮", name:"Daily brush", desc:"5 minutes a day keeps matting away" },
           { icon:"🐾", name:"Paw balm", desc:"Keeps paws soft and protected" },

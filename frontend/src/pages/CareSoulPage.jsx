@@ -265,6 +265,53 @@ function resolvePickImage(pick) {
   return candidates.find(url => url && url.startsWith("http")) || null;
 }
 
+// ─────────────────────────────────────────────────────────────
+// MIRA IMAGINE CARD — dark green, "Mira Imagines" badge, Concierge CTA
+// ─────────────────────────────────────────────────────────────
+function MiraImagineCard({ item, pet, token }) {
+  const [state, setState] = useState("idle");
+  const petName = pet?.name || "your dog";
+  const send = async () => {
+    setState("sending");
+    try {
+      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          parent_id: storedUser?.id || storedUser?.email || "guest",
+          pet_id: pet?.id || "unknown",
+          pillar: "care",
+          intent_primary: "mira_imagines_request",
+          channel: "care_mira_picks_imagines",
+          initial_message: { sender: "parent", text: `I'd love "${item.name}" for ${petName}. Mira imagined this — please help source it!` },
+        }),
+      });
+    } catch {}
+    setState("sent");
+  };
+  return (
+    <div style={{ borderRadius:14, overflow:"hidden", background:"linear-gradient(135deg,#0D2818,#1B4332)", border:`1.5px solid rgba(64,145,108,0.30)`, display:"flex", flexDirection:"column", minHeight:220 }}>
+      <div style={{ position:"relative", height:110, background:"linear-gradient(135deg,#1B4332,#2D6A4F)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+        <span style={{ fontSize:40 }}>{item.emoji || "🌿"}</span>
+        <div style={{ position:"absolute", top:8, left:8, background:G.sage, color:"#fff", fontSize:9, fontWeight:700, padding:"3px 8px", borderRadius:20 }}>Mira Imagines</div>
+      </div>
+      <div style={{ flex:1, padding:"10px 12px 4px" }}>
+        <p style={{ fontWeight:800, color:"#fff", fontSize:12, lineHeight:1.3, marginBottom:4 }}>{item.name}</p>
+        <p style={{ color:"rgba(255,255,255,0.50)", fontSize:10, lineHeight:1.4, margin:0, fontStyle:"italic" }}>{item.description}</p>
+      </div>
+      <div style={{ padding:"0 12px 12px" }}>
+        {state === "sent"
+          ? <div style={{ textAlign:"center", fontSize:11, fontWeight:700, color:"#34D399" }}>✓ Sent to Concierge!</div>
+          : <button onClick={send} disabled={state==="sending"} style={{ width:"100%", background:`linear-gradient(135deg,${G.sage},${G.deepMid})`, color:"#fff", border:"none", borderRadius:10, padding:"9px", fontSize:11, fontWeight:700, cursor:"pointer", opacity:state==="sending"?0.7:1 }} data-testid={`mira-imagine-btn-${item.id}`}>
+              {state==="sending" ? "Sending…" : "Tap — Concierge →"}
+            </button>}
+      </div>
+    </div>
+  );
+}
+
+
 function MiraPicksSection({ pet }) {
   const [picks, setPicks]               = useState([]);
   const [loading, setLoading]           = useState(true);
@@ -321,7 +368,61 @@ function MiraPicksSection({ pet }) {
       .catch(() => setLoading(false));
   }, [pet?.id]);
 
-  if (loading || !picks.length) return null;
+  if (loading) return null;
+
+  // If no Mira-scored picks, always show Mira Imagines cards (never empty)
+  if (!picks.length) {
+    const petBreed   = pet?.breed || "";
+    const petCoat    = pet?.coat_type || pet?.coatType || pet?.doggy_soul_answers?.coat_type || "";
+    const petCondition = pet?.healthCondition || pet?.health_data?.chronic_conditions?.[0] || "";
+    const imagines = [
+      {
+        id: "care-imagine-1",
+        isImagined: true, emoji: "✂️",
+        name: petBreed ? `${petBreed} Grooming Kit` : `${petName}'s Grooming Set`,
+        description: `A complete grooming kit built for ${petBreed || petName}'s coat type — Mira would source this monthly.`,
+      },
+      petCoat ? {
+        id: "care-imagine-2",
+        isImagined: true, emoji: "🌿",
+        name: `${petCoat.replace(/\bcoat\b/gi,"").trim()} Coat Spa Pack`,
+        description: `Deep conditioning for ${petName}'s ${petCoat} — Mira's top coat health pick.`,
+      } : {
+        id: "care-imagine-2",
+        isImagined: true, emoji: "🌿",
+        name: `${petName}'s Monthly Coat Care`,
+        description: `Mira curates shampoo, conditioner, and a coat serum matched to ${petName}'s coat needs.`,
+      },
+      {
+        id: "care-imagine-3",
+        isImagined: true, emoji: "💊",
+        name: `${petName}'s Wellness Bundle`,
+        description: petCondition
+          ? `Vet-approved supplements for ${petCondition} — Mira imagines this as ${petName}'s monthly care pack.`
+          : `Mira's curated monthly care box — grooming, dental, and wellness tailored to ${petName}.`,
+      },
+    ];
+    return (
+      <section style={{ marginBottom: 32 }} data-testid="care-mira-picks-section">
+        <div style={{ display:"flex", alignItems:"baseline", gap:10, marginBottom:4 }}>
+          <h3 style={{ fontSize:"clamp(1.125rem,2.5vw,1.375rem)", fontWeight:800, color:G.darkText, margin:0, fontFamily:"Georgia,serif" }}>
+            Mira Imagines for <span style={{ color:G.sage }}>{petName}</span>
+          </h3>
+          <span style={{ fontSize:11, background:`linear-gradient(135deg,${G.sage},${G.deepMid})`, color:"#fff", borderRadius:20, padding:"2px 10px", fontWeight:700 }}>
+            Pet Specific
+          </span>
+        </div>
+        <p style={{ fontSize:12, color:"#888", marginBottom:16, lineHeight:1.5 }}>
+          These care picks don't exist in our range yet — but Mira imagined them for {petName}. Tap to request.
+        </p>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(min(190px,100%), 1fr))", gap:12 }}>
+          {imagines.map(item => (
+            <MiraImagineCard key={item.id} item={item} pet={pet} token={token} />
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section style={{ marginBottom: 32 }} data-testid="care-mira-picks-section">
@@ -523,7 +624,11 @@ function WellnessProfile({ pet, token }) {
                     ✦ GROW {petName.toUpperCase()}'S WELLNESS PROFILE
                   </p>
                   <p style={{ color:"rgba(255,255,255,0.50)", fontSize:12 }}>
-                    Answer quick questions · {petName}'s care profile is almost there
+                    {liveScore >= 95
+                      ? `${petName}'s wellness profile is complete — Mira has everything she needs`
+                      : liveScore >= 70
+                        ? `Answer a few more · ${petName}'s profile is looking great`
+                        : `Answer quick questions · ${petName}'s care profile is being built`}
                   </p>
                 </div>
                 <div style={{ display:"flex", alignItems:"flex-end", gap:2 }}>
@@ -557,8 +662,14 @@ function WellnessProfile({ pet, token }) {
               ) : visibleQuestions.length === 0 ? (
                 <div style={{ textAlign:"center", padding:"24px 0" }}>
                   <div style={{ fontSize:28, marginBottom:10 }}>🌿</div>
-                  <p style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:6 }}>{petName}'s wellness profile is complete!</p>
-                  <p style={{ fontSize:12, color:"#888" }}>All questions answered · Mira has everything she needs</p>
+                  <p style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:6 }}>
+                    {liveScore >= 95 ? `${petName}'s wellness profile is complete!` : `All current questions answered for ${petName}`}
+                  </p>
+                  <p style={{ fontSize:12, color:"#888" }}>
+                    {liveScore >= 95
+                      ? "Mira has everything she needs"
+                      : `Score: ${liveScore}% — some fields may be filled through daily interactions`}
+                  </p>
                 </div>
               ) : (
                 <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:14, marginBottom:24 }}>

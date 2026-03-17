@@ -372,7 +372,7 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
         const all = (data.products || []).filter(p => p.mira_score || p.mira_tag);
         const sorted = all.sort((a, b) => (b.mira_score || 0) - (a.mira_score || 0)).slice(0, 24);
         setProducts(sorted);
-        // Always generate Mira Imagines for care
+        // Always generate Mira Imagines for care — pet-specific, never empty
         setImagines(generateCareImagines(pet, sorted));
         return;
       }
@@ -564,8 +564,8 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
                   </div>
                 )}
 
-                {/* Mira Imagines — items not yet in catalog, shown for Mira's Picks */}
-                {category === 'mira' && imagines.length > 0 && !loading && (
+                {/* Mira Imagines — always show for Mira's Picks, even when no products */}
+                {category === 'mira' && !loading && (imagines.length > 0 || displayed.length === 0) && (
                   <>
                     <div style={{ marginTop: 24, marginBottom: 12 }}>
                       <div style={{ fontSize: 14, fontWeight: 800, color: G.darkText, fontFamily: 'Georgia, serif', marginBottom: 4 }}>
