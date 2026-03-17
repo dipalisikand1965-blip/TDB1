@@ -207,3 +207,154 @@ async def export_services_with_tags(format: str = "csv"):
             "Content-Disposition": f"attachment; filename=services_with_tags_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
         }
     )
+
+
+# ==================== CARE DATA EXPORTS ====================
+
+@router.get("/care-products")
+async def export_care_products():
+    """Export all care products as CSV"""
+    if db is None:
+        return {"error": "Database not connected"}
+
+    products = await db.products_master.find(
+        {"pillar": "care"},
+        {"_id": 0, "id": 1, "name": 1, "category": 1, "description": 1,
+         "short_description": 1, "price": 1, "base_price": 1, "in_stock": 1,
+         "pillar": 1, "pillars": 1, "image_url": 1, "breed_tags": 1,
+         "age_groups": 1, "life_stages": 1, "dietary_flags": 1, "sensitivities": 1,
+         "mira_hint": 1, "mira_can_reference": 1, "source": 1,
+         "shopify_id": 1, "tags": 1, "ai_image_generated": 1, "ai_generated_image": 1}
+    ).to_list(length=5000)
+
+    output = io.StringIO()
+    fields = ["id", "name", "category", "short_description", "description",
+              "price", "base_price", "in_stock", "pillar", "pillars",
+              "image_url", "image_type", "breed_tags", "age_groups",
+              "life_stages", "dietary_flags", "sensitivities", "mira_hint",
+              "mira_can_reference", "source", "shopify_id", "tags", "has_ai_image"]
+    writer = csv.DictWriter(output, fieldnames=fields, extrasaction="ignore")
+    writer.writeheader()
+    for p in products:
+        img = p.get("image_url", "")
+        if "cloudinary" in img:        img_type = "cloudinary"
+        elif "static.prod-images" in img: img_type = "dead_session_url"
+        elif "unsplash" in img:          img_type = "unsplash"
+        elif "shopify" in img:           img_type = "shopify_cdn"
+        elif img:                        img_type = "other"
+        else:                            img_type = "none"
+        writer.writerow({
+            "id": p.get("id", ""), "name": p.get("name", ""),
+            "category": p.get("category", ""),
+            "short_description": p.get("short_description", ""),
+            "description": (p.get("description", "") or "")[:200],
+            "price": p.get("price", 0), "base_price": p.get("base_price", 0),
+            "in_stock": p.get("in_stock", True),
+            "pillar": p.get("pillar", ""),
+            "pillars": "|".join(p.get("pillars", []) or []),
+            "image_url": img, "image_type": img_type,
+            "breed_tags": "|".join(p.get("breed_tags", []) or []),
+            "age_groups": "|".join(p.get("age_groups", []) or []),
+            "life_stages": "|".join(p.get("life_stages", []) or []),
+            "dietary_flags": "|".join(p.get("dietary_flags", []) or []),
+            "sensitivities": "|".join(p.get("sensitivities", []) or []),
+            "mira_hint": p.get("mira_hint", ""),
+            "mira_can_reference": p.get("mira_can_reference", ""),
+            "source": p.get("source", ""), "shopify_id": p.get("shopify_id", ""),
+            "tags": "|".join(p.get("tags", []) or []) if isinstance(p.get("tags"), list) else str(p.get("tags", "")),
+            "has_ai_image": p.get("ai_generated_image", p.get("ai_image_generated", False)),
+        })
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]), media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=care_products_{datetime.now().strftime('%Y%m%d')}.csv"}
+    )
+
+
+@router.get("/care-services")
+async def export_care_services():
+    """Export all care services as CSV"""
+    if db is None:
+        return {"error": "Database not connected"}
+
+    services = await db.services_master.find(
+        {"pillar": "care"}, {"_id": 0}
+    ).to_list(length=500)
+
+    if not services:
+        return {"error": "No care services found"}
+
+    all_keys = set()
+    for s in services:
+        all_keys.update(s.keys())
+
+    priority = ["id", "name", "tagline", "description", "pillar", "service_type",
+                "price", "is_active", "is_free", "is_urgent",
+                "image", "image_url", "watercolor_image",
+                "steps", "accent_color", "soul_profile_prefills",
+                "category", "sub_category", "features", "includes"]
+    extra = sorted(all_keys - set(priority))
+    fields = [f for f in priority if f in all_keys] + [f for f in extra if f not in priority]
+
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=fields, extrasaction="ignore")
+    writer.writeheader()
+    for s in services:
+        row = {}
+        for k in fields:
+            val = s.get(k, "")
+            if isinstance(val, list):  val = "|".join(str(v) for v in val)
+            elif isinstance(val, dict): val = str(val)[:200]
+            row[k] = val
+        writer.writerow(row)
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]), media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=care_services_{datetime.now().strftime('%Y%m%d')}.csv"}
+    )
+
+
+@router.get("/care-bundles")
+async def export_care_bundles():
+    """Export all care bundles (from care_bundles, product_bundles, bundles collections) as CSV"""
+    if db is None:
+        return {"error": "Database not connected"}
+
+    all_bundles = []
+    for col_name in ["care_bundles", "product_bundles", "bundles"]:
+        col = db[col_name]
+        docs = await col.find({"pillar": "care"}, {"_id": 0}).to_list(length=200)
+        for d in docs:
+            d["_source_collection"] = col_name
+        all_bundles.extend(docs)
+
+    if not all_bundles:
+        return {"error": "No care bundles found"}
+
+    all_keys = set()
+    for b in all_bundles:
+        all_keys.update(b.keys())
+
+    priority = ["_source_collection", "id", "name", "pillar", "description",
+                "price", "bundle_price", "individual_total", "saving",
+                "product_ids", "items", "mira_pick", "image_url",
+                "watercolor_image", "active", "is_active"]
+    extra = sorted(all_keys - set(priority))
+    fields = [f for f in priority if f in all_keys] + [f for f in extra if f not in priority]
+
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=fields, extrasaction="ignore")
+    writer.writeheader()
+    for b in all_bundles:
+        row = {}
+        for k in fields:
+            val = b.get(k, "")
+            if isinstance(val, list):  val = "|".join(str(v) for v in val)
+            elif isinstance(val, dict): val = str(val)[:300]
+            row[k] = val
+        writer.writerow(row)
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]), media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=care_bundles_{datetime.now().strftime('%Y%m%d')}.csv"}
+    )
