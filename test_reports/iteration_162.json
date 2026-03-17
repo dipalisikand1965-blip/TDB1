@@ -1,0 +1,41 @@
+{
+  "summary": "Frontend testing of 3 new fixes for Care page: (1) Lazy scroll in DimExpanded for Grooming, (2) Soul Care breed filter strict in DimExpanded, (3) Mira's Picks tab CareContentModal shows Mira Imagines cards. All 3 fixes verified PASSING.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Soul Care modal (All tab background)",
+        "issues": ["'Labrador' and 'Golden Retriever' text appears in background page elements (outside modal - inModal=false). These are from a breed comparison/selector component rendering behind the modal backdrop. NOT from Soul Care product names — product filter is correct. Minor: background content bleeding through modal backdrop visually noted but not a filter bug."]
+      }
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "CareContentModal soul category: 'Other' sub-category tab does not appear in the modal (only All, Care Essentials, Breed Collection, Personalised visible). This is correct — tabs are built from breedProducts sub_categories, and if 'Other' has no products after filtering, it won't appear. This is the desired behavior from Fix 2.",
+    "Soul Care modal shows 67 products (down from 262 total). This confirms breed filtering is working correctly — only Indie Breed Collection (3) + Care Essentials/Personalised products shown.",
+    "Mira Imagines card darkCard detection shows false in JS (parentCard property) because the linear-gradient background string '0D2818' is not found via el.closest('[style*=\"0D2818\"]') selector when the gradient string uses uppercase hex. Visual inspection confirms cards ARE dark green — this is a test script limitation, not a real issue."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend only test)",
+    "frontend": "100%"
+  },
+  "test_credentials": "dipali@clubconcierge.in / test123 | Mojo's breed: Indie | JWT via /api/auth/login → tdb_auth_token localStorage",
+  "seed_data_creation": "No seed data created",
+  "features_verified": {
+    "fix1_grooming_lazy_scroll": "PASS - DimExpanded opens with 20 products initially. IntersectionObserver triggers on scroll, loads 20 more (20→40). No 'Load more' button. No number labels. Sentinel div at bottom triggers progressive loading.",
+    "fix2_soul_care_breed_filter_dim_expanded": "PASS - Soul Care DimExpanded All tab: 40 products visible (Care Essentials, no other breeds). Breed Collection tab: exactly 3 products (Indie Bath Towel, Indie Drying Robe, Indie Grooming Apron). German Shepherd, Labrador, Poodle NOT visible in any DimExpanded tab.",
+    "fix3_miras_picks_modal_imagines": "PASS - CareContentModal opens for 'Mira's Picks' category. Shows regular product grid (18 products). Below grid: 'Mira Imagines for Mojo' section with 3 dark green cards. Each card has: 'Mira Imagines' badge, emoji, product name, description, 'Tap — Concierge →' button. Cards reference Mojo's traits: 'Indie Grooming Kit' (breed), 'Long, silky Coat Spa Pack' (coat), 'Mojo's Recovery Care Kit' (health condition lymphoma).",
+    "soul_care_modal_breed_filter": "PASS - Soul Care pill → CareContentModal shows 67 Soul Care products (not 262). Breed Collection tab: 3 Indie products only. No Labrador/Golden Retriever product NAMES in modal. 'Labrador'/'Golden Retriever' text detected in page body is outside modal (background page breed components), not from product filter.",
+    "tap_concierge_button": "PASS - All 3 Mira Imagines cards have 'Tap — Concierge →' button (verified via data-testid care-imagine-btn-* selectors). Button text confirmed: 'Tap — Concierge →'"
+  },
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Test user: dipali@clubconcierge.in / test123. Mojo's breed: Indie, coat: long silky, allergy: Chicken. All 3 fixes from this ticket verified working at 100%. Fix 1 lazy scroll: DimExpanded starts with 20 items, IntersectionObserver sentinel div loads 20 more on scroll. Fix 2 breed filter: Soul Care Breed Collection tab shows only 3 Indie products in both DimExpanded and CareContentModal. Fix 3 Mira Imagines: visible in Mira's Picks modal as dark green cards below product grid with 'Tap — Concierge →' button."
+}
