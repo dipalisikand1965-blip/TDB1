@@ -78,7 +78,7 @@ export default function GoCategoryStrip({ pet }) {
               <button key={s.id}
                 onClick={() => handleCategoryClick(s)}
                 data-testid={`go-category-${s.id}`}
-                style={{ display:"flex", flexDirection:"column", alignItems:"center", flexShrink:0, minWidth:82, height:72, padding:"10px 12px", cursor:"pointer", background:"transparent", border:"none", borderBottomWidth:3, borderBottomStyle:"solid", borderBottomColor:isActive?G.teal:"transparent", transition:"border-color 150ms ease" }}>
+                style={{ display:"flex", flexDirection:"column", alignItems:"center", flexShrink:0, minWidth:80, padding:"12px 10px", cursor:"pointer", background:"transparent", border:"none", borderBottomWidth:3, borderBottomStyle:"solid", borderBottomColor:isActive?G.teal:"transparent", transition:"border-color 150ms ease" }}>
                 <div style={{ width:34, height:34, borderRadius:10, background:s.iconBg, display:"flex", alignItems:"center", justifyContent:"center", marginBottom:4, flexShrink:0, fontSize:18 }}>
                   {s.icon}
                 </div>
