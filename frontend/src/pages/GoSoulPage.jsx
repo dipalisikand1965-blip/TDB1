@@ -452,6 +452,219 @@ function MiraPicksSection({ pet }) {
 }
 
 // ─────────────────────────────────────────────────────────────
+// BREED TRAVEL TIPS — lookup table (mirrors Care's BREED_CARE_INSIGHTS)
+// ─────────────────────────────────────────────────────────────
+const GO_BREED_TRAVEL_TIPS = {
+  default: {
+    tagline: "adaptable traveller · standard travel kit",
+    journey_desc: "Most dogs adjust well to travel with proper preparation and the right kit.",
+    tips: [
+      "Use a crash-tested harness for car travel — never let them roam free",
+      "Offer water every 2 hours; avoid food 2h before a long journey",
+      "Bring a familiar blanket or toy for comfort in new environments",
+      "Stop every 2–3 hours on road trips for a short walk and toilet break",
+    ],
+    watch_for: "Signs of motion sickness: drooling, yawning, lethargy — start with short trips to condition",
+    docs: "Carry vaccination certificate, health cert, and vet contact on every trip",
+  },
+  indie: {
+    tagline: "hardy street dog · natural traveller · heat-aware",
+    journey_desc: "Indies are adaptable and resilient, but their short coat means heat management is essential on long journeys.",
+    tips: [
+      "Short coat — manage heat: use a cooling mat on long car journeys, park in shade",
+      "Natural foragers — keep snacks in the carrier to reduce anxiety in new places",
+      "Highly alert and curious — a well-ventilated carrier helps them feel secure",
+      "Acclimatise to the carrier at home first — Indies bond strongly to familiar spaces",
+    ],
+    watch_for: "Heat stroke risk in confined spaces or long boot journeys — windows cracked, not AC blasting",
+    docs: "Vaccination certificate + microchip ID essential — Indies may be mistaken for strays at checkpoints",
+  },
+  'golden retriever': {
+    tagline: "eager traveller · loves new experiences · heat-sensitive",
+    journey_desc: "Goldens love adventure but their thick double coat makes them heat-sensitive. Plan rest stops wisely.",
+    tips: [
+      "Thick double coat — pre-cool the car before loading; avoid travel in peak afternoon heat",
+      "Very social — they do well in boarding if introduced gradually",
+      "Prone to motion sickness as puppies; condition with short trips first",
+      "Bring their own food for stays — diet changes cause digestive upset",
+    ],
+    watch_for: "Overheating and panting excessively — ensure plenty of cool water and air circulation",
+    docs: "Health certificate for air travel + vaccination records at all times",
+  },
+  labrador: {
+    tagline: "enthusiastic traveller · pack dog · water-prone",
+    journey_desc: "Labs love to travel and adapt quickly. Their enthusiasm means they need good containment in vehicles.",
+    tips: [
+      "Use a crash-tested harness or crate — Labs move around a lot and can distract the driver",
+      "Very food-motivated — keep treats accessible to reward calm behaviour during travel",
+      "Love water — pack a portable water bottle; they'll drink more than you expect",
+      "Boarding is usually easy — Labs are sociable and friendly with other dogs",
+    ],
+    watch_for: "Overeating before travel — Labs are prone to bloat; no food 2h before departure",
+    docs: "Standard vaccination records + microchip certificate",
+  },
+  beagle: {
+    tagline: "nose-led explorer · can be anxious · ear care critical",
+    journey_desc: "Beagles are curious and love exploring, but their nose-led behaviour means they need secure carriers.",
+    tips: [
+      "Secure carrier or boot barrier — Beagles will follow their nose and bolt if a door opens",
+      "Prone to separation anxiety — bring their favourite toy or worn clothing for comfort",
+      "Floppy ears trap moisture — clean ears before and after travel, especially in humid climates",
+      "Frequent toilet stops — Beagles have high sniff instinct and do better with short walks en route",
+    ],
+    watch_for: "Howling and barking when anxious — calming spray 15 min before journey helps significantly",
+    docs: "Vaccination and microchip records — Beagles are a commonly stolen breed",
+  },
+  'shih tzu': {
+    tagline: "brachycephalic · cabin-only travel · temperature-sensitive",
+    journey_desc: "Shih Tzus cannot be checked as cargo due to breathing risks. Cabin-only, temperature-controlled travel is essential.",
+    tips: [
+      "CABIN ONLY — never check Shih Tzus as cargo; flat faces cause breathing difficulty at altitude",
+      "Temperature-sensitive — avoid direct AC blasting; keep ambient temperature moderate",
+      "Short walks only at rest stops — overexertion in heat causes breathing distress",
+      "Well-padded carrier — they love comfort and familiar smells; line with a worn T-shirt",
+    ],
+    watch_for: "Brachycephalic breathing distress: snoring, laboured breathing, blue-tinged gums — vet immediately",
+    docs: "Vet health certificate confirming fitness to fly — required by all airlines for brachycephalic breeds",
+  },
+  pug: {
+    tagline: "brachycephalic · comfort-first travel · heat danger",
+    journey_desc: "Pugs are heat-sensitive and prone to breathing difficulties. Every travel decision must prioritise airflow and cool temperatures.",
+    tips: [
+      "Keep car fully air-conditioned; NEVER leave in a parked car even for minutes",
+      "Cabin-only air travel — cargo hold temperatures can be fatal for brachycephalic breeds",
+      "Short-distance trips preferred — build up tolerance gradually with short drives first",
+      "Wipe facial folds after travel — sweat and debris accumulate and cause infections",
+    ],
+    watch_for: "CRITICAL: heat stroke and respiratory distress — carry a cooling towel and wet cloth on all trips",
+    docs: "Vet fitness-to-travel certificate required for flights; brachycephalic breed documentation",
+  },
+  'german shepherd': {
+    tagline: "natural traveller · needs structure · large-crate required",
+    journey_desc: "GSDs travel well when given clear structure. Their size and intelligence mean they need the right containment and mental stimulation.",
+    tips: [
+      "Large IATA crate required for cargo — ensure at least 2 crate sessions at home before travel",
+      "Give a long walk before travel to reduce energy and anxiety in confined spaces",
+      "GSDs bond deeply — they may be anxious in boarding; pack familiar bedding",
+      "Check hips before long car trips — dysplasia risk means ergonomic seating matters",
+    ],
+    watch_for: "Bloat risk after eating near travel time — no food 3h before departure",
+    docs: "Vaccination, health cert, and proof of rabies vaccine — some regions require for large breeds",
+  },
+  husky: {
+    tagline: "high energy · adventure ready · never leave in warm car",
+    journey_desc: "Huskies are natural explorers but their thick double coat makes them temperature-sensitive, especially in warm climates.",
+    tips: [
+      "NEVER in a hot car — thick double coat means they overheat rapidly; always use AC",
+      "High energy pre-travel — a vigorous 45-min run before departure makes car travel calmer",
+      "Huskies howl and vocalise — bring headphones for other passengers on long trips",
+      "Strong prey drive — always on leash at rest stops; they can bolt in a second",
+    ],
+    watch_for: "Overheating despite cool environment — Huskies hide discomfort; watch for excessive panting",
+    docs: "Vaccination and health certificates; breed documentation for international travel",
+  },
+  poodle: {
+    tagline: "intelligent traveller · low-shedding · adaptable",
+    journey_desc: "Poodles are among the best travel companions — intelligent, adaptable, and low-shedding.",
+    tips: [
+      "Train carrier acceptance early — Poodles learn fast and carrier comfort becomes second nature",
+      "They read owner anxiety — stay calm during travel; they'll mirror your mood",
+      "Groom before boarding stays — matted coats at boarding facilities get stressed",
+      "Highly social — boarding with other dogs is generally very positive for Poodles",
+    ],
+    watch_for: "Ear infections from moisture in humid travel environments — dry ears after any water contact",
+    docs: "Standard vaccination and health certificates; toy Poodles fit cabin size requirements easily",
+  },
+  dachshund: {
+    tagline: "back-care essential · short trips preferred · ramp not stairs",
+    journey_desc: "Dachshund spines are fragile — every travel decision must eliminate jumping and rough handling.",
+    tips: [
+      "USE A RAMP — never allow jumping in/out of car; spine injuries are the #1 health risk for Dachshunds",
+      "Support the back when carrying to and from the carrier — always support the hindquarters",
+      "Short, frequent trips recommended — long journeys in awkward positions increase spinal strain",
+      "Boarding: inform the facility about no-stairs policy and low-level sleeping arrangements",
+    ],
+    watch_for: "Back pain, dragging hind legs — immediate vet attention; IVDD is a veterinary emergency",
+    docs: "Health certificate with any known IVDD history noted — some vets require a spine clearance for air travel",
+  },
+  'cocker spaniel': {
+    tagline: "gentle traveller · ear care critical · emotionally sensitive",
+    journey_desc: "Cocker Spaniels travel well but need extra ear care in transit and emotionally thrive with familiar comforts.",
+    tips: [
+      "Clean and dry ears the day before travel — long ear canals trap moisture during journeys",
+      "Emotionally sensitive — keep voice calm and use familiar blanket in carrier or boarding",
+      "Medium-sized, adaptable — fit in cabin-approved carriers for short-haul flights",
+      "Give gentle exercise before travel — they're energetic and calmer after a good walk",
+    ],
+    watch_for: "Ear infections and eye discharge after long journeys — inspect and clean on arrival",
+    docs: "Standard vaccination records; ear health certificate useful for international travel",
+  },
+  rottweiler: {
+    tagline: "confident traveller · large crate needed · socialisation matters",
+    journey_desc: "Rottweilers are naturally confident but their size and breed-specific restrictions require extra planning for air travel.",
+    tips: [
+      "Extra-large IATA crate required — ensure crate is well-ventilated and familiar before travel",
+      "Some airlines/countries have breed-specific restrictions — verify well in advance",
+      "Keep calm and assertive during travel — Rotties mirror owner confidence",
+      "Pre-book boarding carefully — some facilities have breed restrictions; call ahead",
+    ],
+    watch_for: "Bloat and overheating in warm conditions — large deep-chested breeds are high-risk",
+    docs: "Vaccination, health cert, microchip, and breed-specific clearance letters for airlines/countries",
+  },
+};
+
+function getGoBreedInsight(pet) {
+  const breedRaw = (pet?.breed || '').trim().toLowerCase();
+  return GO_BREED_TRAVEL_TIPS[breedRaw] || GO_BREED_TRAVEL_TIPS['default'];
+}
+
+// ─────────────────────────────────────────────────────────────
+// BREED TRAVEL INSIGHTS — always-visible section in TripProfile drawer
+// ─────────────────────────────────────────────────────────────
+function GoBreedTravelInsights({ pet }) {
+  const insight = getGoBreedInsight(pet);
+  const breed   = pet?.breed || "Your Dog";
+  const icons   = ["🎒", "💧", "🏡", "✈️"];
+
+  return (
+    <div style={{ marginBottom:22, borderRadius:16, overflow:"hidden", border:"1.5px solid rgba(26,188,156,0.30)" }}>
+      {/* Dark teal header */}
+      <div style={{ background:"linear-gradient(135deg,#081a26,#0D3349)", padding:"14px 18px 12px" }}>
+        <p style={{ margin:0, fontWeight:800, fontSize:11, textTransform:"uppercase", letterSpacing:"0.10em", color:"#76D7C4" }}>
+          Travel Tips · {breed}
+        </p>
+        <p style={{ margin:"4px 0 0", fontSize:11, color:"rgba(255,255,255,0.55)" }}>{insight.journey_desc}</p>
+      </div>
+      {/* Tips grid */}
+      <div style={{ background:"#E8F8F5", padding:"14px 18px" }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:8, marginBottom:12 }}>
+          {insight.tips.map((tip, i) => (
+            <div key={i} style={{ display:"flex", alignItems:"flex-start", gap:8, padding:"10px 12px", borderRadius:10, background:"#fff", border:"1px solid rgba(26,188,156,0.20)" }}>
+              <span style={{ fontSize:14, flexShrink:0, marginTop:1 }}>{icons[i] || "✦"}</span>
+              <p style={{ margin:0, fontSize:11, color:"#0D3349", lineHeight:1.5 }}>{tip}</p>
+            </div>
+          ))}
+        </div>
+        <div style={{ display:"flex", gap:10 }}>
+          {insight.watch_for && (
+            <div style={{ flex:1, padding:"8px 12px", borderRadius:10, background:"#FFF3E0", border:"1px solid #FFCC80" }}>
+              <p style={{ margin:0, fontSize:10, fontWeight:700, color:"#E65100", marginBottom:3 }}>Watch for</p>
+              <p style={{ margin:0, fontSize:10, color:"#BF360C", lineHeight:1.4 }}>{insight.watch_for}</p>
+            </div>
+          )}
+          {insight.docs && (
+            <div style={{ flex:1, padding:"8px 12px", borderRadius:10, background:"#E3F2FD", border:"1px solid #90CAF9" }}>
+              <p style={{ margin:0, fontSize:10, fontWeight:700, color:"#1565C0", marginBottom:3 }}>Documents</p>
+              <p style={{ margin:0, fontSize:10, color:"#0D47A1", lineHeight:1.4 }}>{insight.docs}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
 // TRIP PROFILE — compact bar + soul questions modal
 // Mirrors WellnessProfile in CareSoulPage exactly
 // ─────────────────────────────────────────────────────────────
@@ -586,6 +799,10 @@ function TripProfile({ pet, token }) {
                   <p style={{ fontSize:13, fontWeight:600, color:G.teal }}>+{totalPts} pts added · Mira is learning {petName}'s travel preferences</p>
                 </div>
               )}
+
+              {/* ── BREED TRAVEL INSIGHTS — always visible ── */}
+              <GoBreedTravelInsights pet={pet} />
+
               {qLoading ? (
                 <div style={{ textAlign:"center", padding:"32px 0", color:"#888", fontSize:13 }}>
                   <div style={{ width:20, height:20, border:`2px solid ${G.pale}`, borderTopColor:G.teal, borderRadius:"50%", animation:"spin 0.8s linear infinite", margin:"0 auto 10px" }} />

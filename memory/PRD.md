@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 17, 2026 (Session 68 — GO Pillar Feature Handover)
+## Last Updated: Mar 17, 2026 (Session 69 — GO Pillar P0/P1 Features Complete)
 
 ---
 
@@ -209,7 +209,7 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 | `GET /api/mira/claude-picks/{pet_id}?pillar=go&limit=10` | GET | AI-scored picks for pet |
 | `POST /api/mira/score-for-pet` | POST | Trigger background scoring |
 | `GET /api/mira/score-status/{pet_id}` | GET | Check if scoring complete |
-| `GET /api/service-box/services?pillar=go` | GET | Go services (currently 0) |
+| `GET /api/service-box/services?pillar=go` | GET | Go services (8 canonical — 6 travel, 2 stay) |
 | `GET /api/pet-soul/profile/{pet_id}/quick-questions` | GET | Unanswered soul questions |
 
 ### Soul / Auth APIs
@@ -241,6 +241,15 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 ---
 
 ## COMPLETED SESSION LOG
+
+### Session 69 (Mar 17, 2026) — GO Pillar P0/P1 Features Complete
+- **Soul Go + Mira's Picks pills**: Added 2 special AI-powered pills as first entries in GoCategoryStrip.jsx; wired to GoContentModal.jsx with special fetch logic for `/api/mira/claude-picks/{pet_id}?pillar=go`
+- **GoBreedTravelInsights**: Added always-visible breed travel insights to TripProfile drawer; dark teal header + 4-tip grid + Watch For + Documents cards; 12 breeds + Indie + default fallback
+- **Book a Service tab populated**: GoConciergeSection.jsx rewrote to show 2 separate sections — "Go, Personally — Travel" (6 services) + "Go, Personally — Stay & Board" (2 services)
+- **21 new Stay & Board products seeded**: GO-BC-001 to GO-SS-003 inserted into `products_master` (boarding_comfort, daycare_essentials, pet_sitting_kit, hotel_comfort, first_stay_anxiety, soul_stay)
+- **8 canonical Go services seeded**: GO-SVC-001 to GO-SVC-008 inserted into `services_master` with `pillar=go`
+- **AI images generated**: All 52 go products now have Cloudinary AI-generated images
+- **Continuous image generation**: `continuous_image_gen.py` + `auto_mockup_generator.py` running in background cycling through all pillars
 
 ### Session 68 (Mar 17, 2026) — Documentation & Handover
 - Created comprehensive PRD.md with full pending task specification
