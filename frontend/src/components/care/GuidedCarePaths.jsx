@@ -666,19 +666,15 @@ function ModalShell({ onClose, children, noPadding }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// MAIN EXPORT
-// ─────────────────────────────────────────────────────────────
+  // ── MAIN EXPORT ──────────────────────────────────────────────
 export default function GuidedCarePaths({ pet }) {
-  const [openPath,   setOpenPath]   = useState(null);
   const [activePath, setActivePath] = useState(null);
-  const [showAll,    setShowAll]    = useState(false);
 
   const allPaths = buildPaths(pet);
-  const paths    = showAll ? allPaths : allPaths.slice(0, 3);
+  const petName  = pet?.name || "your pet";
 
   return (
-    <div style={{ marginBottom:32 }}>
+    <section style={{ marginBottom: 32 }}>
 
       {activePath && (
         <PathFlowModal
@@ -688,61 +684,108 @@ export default function GuidedCarePaths({ pet }) {
         />
       )}
 
-      {/* Section header */}
-      <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:4 }}>
-        <div style={{ fontSize:20, fontWeight:800, color:"#1B4332", fontFamily:"Georgia,serif" }}>Guided Care Paths</div>
-        <button onClick={() => setShowAll(!showAll)} style={{ background:"none", border:"1.5px solid #A5D6A7", borderRadius:20, padding:"5px 14px", fontSize:12, fontWeight:600, color:"#2D6A4F", cursor:"pointer" }}>
-          {showAll ? "Show less" : `See all ${allPaths.length}`}
-        </button>
-      </div>
-      <div style={{ fontSize:12, color:"#52796F", marginBottom:18 }}>
-        Mira picked {allPaths.length} care paths for {pet.name}
+      {/* Section Header — matches GuidedNutritionPaths */}
+      <div style={{ marginBottom: 28 }}>
+        <h2 style={{
+          fontSize: "clamp(1.3rem,5vw,2rem)",
+          fontWeight: 800, color: "#1B4332",
+          fontFamily: "Georgia, serif",
+          marginBottom: 6, lineHeight: 1.2,
+        }}>
+          Guided Care Paths
+        </h2>
+        <p style={{ fontSize: 14, color: "#52796F", marginTop: 6, lineHeight: 1.5 }}>
+          Mira walks {petName} through every step. Each path ends with a plan you can keep.
+        </p>
       </div>
 
-      {/* Path list */}
-      <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-        {paths.map(path => (
-          <div key={path.id}>
-            {/* Path row */}
-            <div onClick={() => setOpenPath(openPath === path.id ? null : path.id)} style={{ background: openPath === path.id ? path.accentBg : "#fff", border:`1.5px solid ${openPath === path.id ? path.accentBorder : "#F0E8E0"}`, borderRadius: openPath === path.id ? "14px 14px 0 0" : 14, cursor:"pointer", overflow:"hidden", transition:"all 0.15s" }}>
-              {openPath !== path.id && (
-                <div style={{ height:64, background:path.photoBg, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                  <span style={{ fontSize:32, opacity:0.75 }}>{path.icon}</span>
-                </div>
-              )}
-              <div style={{ padding:"14px 18px", display:"flex", alignItems:"center", gap:14 }}>
-                <div style={{ width:40, height:40, borderRadius:10, background:path.iconBg, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>{path.icon}</div>
-                <div style={{ flex:1 }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:3 }}>
-                    <span style={{ fontSize:14, fontWeight:700, color:"#1A0A00" }}>{path.title}</span>
-                    <span style={{ background:path.badgeBg, color:"#fff", fontSize:10, fontWeight:700, borderRadius:20, padding:"2px 8px" }}>{path.badge}</span>
-                  </div>
-                  <div style={{ fontSize:12, color:"#555", lineHeight:1.5 }}>{path.desc}</div>
-                </div>
-                <span style={{ fontSize:16, color:"#ccc", flexShrink:0, transform: openPath === path.id ? "rotate(90deg)" : "none", transition:"transform 0.2s" }}>›</span>
-              </div>
-            </div>
-
-            {/* Expanded preview */}
-            {openPath === path.id && (
-              <div style={{ background:"#fff", border:`1.5px solid ${path.accentBorder}`, borderTop:"none", borderRadius:"0 0 14px 14px", padding:"16px 18px 20px" }}>
-                <div style={{ fontSize:10, fontWeight:700, color:path.accentColor, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:12 }}>Path Steps</div>
-                <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:18 }}>
-                  {path.stepLabels.map((label, i) => (
-                    <div key={label} style={{ display:"flex", alignItems:"center", gap:12 }}>
-                      <div style={{ width:26, height:26, borderRadius:"50%", border:`1.5px solid ${path.accentColor}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:path.accentColor, flexShrink:0 }}>{i + 1}</div>
-                      <span style={{ fontSize:13, color:"#1A0A00" }}>{label}</span>
-                    </div>
-                  ))}
-                </div>
-                <button onClick={() => { setOpenPath(null); setActivePath(path.id); }} style={{ width:"100%", background:path.accentColor, color:"#fff", border:"none", borderRadius:10, padding:"12px", fontSize:14, fontWeight:700, cursor:"pointer" }}>
-                  Start this path with Mira →
-                </button>
-              </div>
-            )}
-          </div>
+      {/* 3-column grid — identical to GuidedNutritionPaths */}
+      <style>{`
+        .guided-care-paths-grid { grid-template-columns: repeat(3,1fr); }
+        @media (max-width:767px)  { .guided-care-paths-grid { grid-template-columns: 1fr; } }
+        @media (min-width:768px) and (max-width:1023px) { .guided-care-paths-grid { grid-template-columns: repeat(2,1fr); } }
+      `}</style>
+      <div style={{ display: "grid", gap: 16 }} className="guided-care-paths-grid">
+        {allPaths.map(path => (
+          <CarePathCard
+            key={path.id}
+            path={path}
+            petName={petName}
+            onOpen={() => setActivePath(path.id)}
+          />
         ))}
       </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// CARE PATH CARD — mirrors NutritionPathCard exactly
+// ─────────────────────────────────────────────────────────────
+function CarePathCard({ path, petName, onOpen }) {
+  const [hovered, setHovered] = useState(false);
+  const visibleSteps = path.stepLabels.slice(0, 3);
+  const hiddenCount  = path.stepLabels.length - 3;
+
+  const alpha = (hex, pct) => {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${pct})`;
+  };
+  const a12 = alpha(path.accentColor, 0.12);
+  const a15 = alpha(path.accentColor, 0.15);
+  const a20 = alpha(path.accentColor, 0.20);
+  const a50 = alpha(path.accentColor, 0.50);
+
+  return (
+    <div
+      onClick={onOpen}
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => e.key === "Enter" && onOpen()}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: "relative", borderRadius: 20, padding: 24, cursor: "pointer",
+        background: path.accentBg,
+        border: `2px solid ${hovered ? path.accentColor : "transparent"}`,
+        boxShadow: hovered ? `0 8px 24px ${a12}` : "none",
+        transform: hovered ? "translateY(-3px)" : "none",
+        transition: "transform 200ms ease, box-shadow 200ms ease, border 200ms ease",
+        minHeight: 220,
+      }}
+      data-testid={`care-path-${path.id}`}
+    >
+      {/* Icon box */}
+      <div style={{ width:52, height:52, borderRadius:14, display:"flex", alignItems:"center", justifyContent:"center", fontSize:26, background:a20, marginBottom:16 }}>
+        {path.icon}
+      </div>
+
+      {/* Title */}
+      <h3 style={{ fontSize:18, fontWeight:800, color:"#1B4332", marginBottom:8 }}>{path.title}</h3>
+
+      {/* Description */}
+      <p style={{ fontSize:13, color:"#52796F", lineHeight:1.6, marginBottom:16, minHeight:60 }}>{path.desc}</p>
+
+      {/* Step chips */}
+      <div style={{ display:"flex", flexWrap:"wrap", gap:7, marginBottom:12 }}>
+        {visibleSteps.map((step, i) => (
+          <span key={i} style={{ borderRadius:9999, padding:"4px 12px", fontSize:12, fontWeight:500, background:a15, color:path.accentColor }}>{step}</span>
+        ))}
+        {hiddenCount > 0 && (
+          <span style={{ borderRadius:9999, padding:"4px 12px", fontSize:12, fontWeight:700, background:a15, color:path.accentColor }}>+{hiddenCount} more</span>
+        )}
+      </div>
+
+      {/* Mira badge */}
+      <div style={{ display:"inline-flex", alignItems:"center", gap:4, background:a15, borderRadius:9999, padding:"3px 10px" }}>
+        <span style={{ fontSize:10, color:path.accentColor }}>★</span>
+        <span style={{ fontSize:10, fontWeight:700, color:path.accentColor }}>Mira Pick</span>
+      </div>
+
+      {/* Chevron */}
+      <span style={{ position:"absolute", bottom:18, right:20, fontSize:20, color:hovered ? path.accentColor : a50, transition:"color 200ms ease", userSelect:"none" }}>›</span>
     </div>
   );
 }
