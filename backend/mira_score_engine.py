@@ -229,7 +229,9 @@ async def _run_full_scoring(pet_id: str, pillar: Optional[str], entity_types: Op
         all_items.extend(products)
 
     if "service" in types:
-        q = {"pillar": pillar} if pillar else {}
+        q = {"is_active": {"$ne": False}}
+        if pillar:
+            q["pillar"] = pillar
         cursor = _db.services_master.find(q, {"_id": 0})
         services = await cursor.to_list(length=1000)
         for s in services:
@@ -357,8 +359,8 @@ async def score_context(req: ScoreContextRequest):
     for p in items:
         p["entity_type"] = "product"
 
-    # Fetch services for this pillar
-    srv_cursor = _db.services_master.find({"pillar": req.pillar}, {"_id": 0})
+    # Fetch services for this pillar (active only)
+    srv_cursor = _db.services_master.find({"pillar": req.pillar, "is_active": {"$ne": False}}, {"_id": 0})
     services = await srv_cursor.to_list(length=20)
     for s in services:
         s["entity_type"] = "service"

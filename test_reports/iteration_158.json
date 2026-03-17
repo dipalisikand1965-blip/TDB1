@@ -1,0 +1,56 @@
+{
+  "summary": "Tested 5 bug fixes: celebrate images, inactive service filter, hard delete, wrongly-classified products removal, and Mira's picks filtering. Found and fixed a critical image priority bug in service_box_routes.py. All 15 backend tests pass.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "GET /api/service-box/services?pillar=celebrate",
+        "issue": "Image priority order was wrong: code used `image_url OR watercolor_image` but image_url had old dead static.prod-images URLs while watercolor_image had correct Cloudinary URLs. This caused celebrate services to show broken images instead of Cloudinary watercolor images. FIXED: reversed priority to `watercolor_image OR image_url OR image` in service_box_routes.py lines 172 and 199.",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": [
+      {
+        "endpoint": "GET /api/service-box/services?pillar=celebrate",
+        "issue": "21 of 43 active celebrate services still have old static.prod-images.emergentagent.com URLs and NO watercolor_image set. These services genuinely don't have Cloudinary alternatives yet - they need AI image generation or manual upload.",
+        "priority": "LOW"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_service_fixes.py",
+    "/app/test_reports/pytest/service_fixes_results.xml"
+  ],
+  "action_items": [
+    "21 celebrate services (and many other pillar services) still have old dead static.prod-images.emergentagent.com URLs with no Cloudinary alternative. These need AI image generation via /api/service-box/generate-all-images?pillar=celebrate or manual upload. Consider batch-generating images for all services without watercolor_image.",
+    "The `image_url or watercolor_image` priority bug is FIXED in service_box_routes.py. Backend hot-reload should apply the fix automatically."
+  ],
+  "critical_code_review_comments": [
+    "FIXED: service_box_routes.py lines 172-176 and 199-202: Changed priority from `image_url > watercolor_image > image` to `watercolor_image > image_url > image` to correctly return Cloudinary images over old static URLs",
+    "21/43 celebrate services + 165+ services across other pillars have no watercolor_image and old dead static.prod-images URLs - these need bulk AI image generation",
+    "ServiceBox admin shows 1094 total services (703 active, 391 inactive) - the admin correctly shows all services including inactive ones"
+  ],
+  "updated_files": [
+    "/app/backend/service_box_routes.py"
+  ],
+  "success_rate": {
+    "backend": "100% (15/15 tests pass)",
+    "frontend": "90% (services page loading, inactive filter working, celebrate pillar accessible)"
+  },
+  "test_results": {
+    "celebrate_cloudinary_images": "PASS - After fix: 20/43 celebrate services show Cloudinary images (was 4/43 before fix)",
+    "inactive_filter": "PASS - is_active=true filter correctly excludes 391 inactive services",
+    "hard_delete": "PASS - DELETE endpoint permanently removes service, returns 404 on subsequent GET",
+    "wrongly_classified_products": "PASS - Snuffle Mat, Airtight Travel Food Container, Gentle Oatmeal Shampoo NOT in services",
+    "mira_picks_active_filter": "PASS - mira_score_engine.py line 232 has is_active filter"
+  },
+  "seed_data_creation": "Created and deleted TEST-DELETE-SVC-001 and TEST-LIST-VERIFY-SVC during testing",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Key bugs fixed this iteration: (1) Image priority bug in service_box_routes.py - now prefers watercolor_image (Cloudinary) over image_url (old static URLs). All 5 reported fixes verified as working. 21 celebrate services + many others still lack Cloudinary images (no watercolor_image field) - these need AI image generation. Admin Service Box shows all 1094 services correctly.",
+  "rca_of_issue": "Root cause of celebrate watercolor images bug: The DB migration (copy watercolor_image -> image_url) was only partially executed OR never executed for many services. Services had watercolor_image = Cloudinary URL but image_url = old static URL. The list_services API used `image_url OR watercolor_image` priority which returned the OLD URL first. Fix: reversed priority to `watercolor_image OR image_url OR image` so Cloudinary always takes precedence."
+}
