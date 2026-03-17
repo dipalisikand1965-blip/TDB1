@@ -15,7 +15,7 @@ import requests
 import os
 import json
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://product-box-overhaul.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://care-dine-parity.preview.emergentagent.com').rstrip('/')
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # HEALTH CHECK TESTS
