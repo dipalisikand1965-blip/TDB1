@@ -29,6 +29,7 @@ import CareCategoryStrip from "../components/care/CareCategoryStrip";
 import GuidedCarePaths from "../components/care/GuidedCarePaths";
 import CareConciergeSection from "../components/care/CareConciergeSection";
 import CareConciergeModal from "../components/care/CareConciergeModal";
+import CareNearMe from "../components/care/CareNearMe";
 import { API_URL } from "../utils/api";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 
@@ -1171,7 +1172,11 @@ function CareTabBar({ active, onChange }) {
       style={{ display:"flex", justifyContent:"center", gap:8, padding:"12px 16px", background:"#F5FBF7", borderBottom:`1px solid ${G.borderLight}` }}
       data-testid="care-tab-bar"
     >
-      {[{ id:"care", icon:"🌿", label:"Care & Products" }, { id:"services", icon:"✂️", label:"Care Services" }].map(tab => (
+      {[
+        { id:"care",       icon:"🌿", label:"Care & Products" },
+        { id:"services",   icon:"✂️",  label:"Care Services" },
+        { id:"find-care",  icon:"📍", label:"Find Care" },
+      ].map(tab => (
         <button
           key={tab.id}
           onClick={() => onChange(tab.id)}
@@ -2135,6 +2140,10 @@ export default function CareSoulPage() {
               <CareConcierge pet={flowPet} token={token} />
               <CareConciergeSection pet={flowPet} />
             </>
+          )}
+
+          {activeTab === "find-care" && (
+            <CareNearMe pet={petData} token={token} />
           )}
 
         </div>
