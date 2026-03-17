@@ -1431,7 +1431,7 @@ function CareConcierge({ pet }) {
               {svc.free && <div style={{ display:"inline-block", background:"#E8F5E9", color:"#2E7D32", fontSize:10, fontWeight:700, borderRadius:8, padding:"2px 8px", marginBottom:6 }}>Complimentary</div>}
               <div style={{ fontSize:12, color:G.hintText, marginBottom:3 }}>{svc.tagline}</div>
               <div style={{ fontSize:13, fontWeight:700, color:svc.urgent?"#C62828":G.darkText, marginBottom:5, lineHeight:1.3 }}>{svc.name}</div>
-              <div style={{ fontSize:11, color:G.mutedText, lineHeight:1.5, marginBottom:10 }}>{svc.desc.replace("{petName}", pet.name)}</div>
+              <div style={{ fontSize:11, color:G.mutedText, lineHeight:1.5, marginBottom:10 }}>{svc.desc.replace(/\{petName\}/g, pet.name)}</div>
               <button style={{ fontSize:12, color:svc.urgent?"#C62828":G.sage, fontWeight:700, background:"none", border:"none", padding:0, cursor:"pointer" }} onClick={()=>setActiveService(svc.id)}>
                 {svc.urgent?"Get help now →":`Book ${svc.steps}-step flow →`}
               </button>
