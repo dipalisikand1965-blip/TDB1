@@ -424,6 +424,7 @@ async def get_pet_friendly_stays(
         "resort":   f"pet friendly resort in {city}",
         "homestay": f"pet friendly homestay Airbnb in {city}",
         "boarding": f"pet boarding kennel daycare in {city}",
+        "camping":  f"pet friendly camping campsite in {city}",
         "all":      f"pet friendly hotel resort boarding in {city}",
     }
     query_text = type_queries.get(type, type_queries["all"])
@@ -496,7 +497,8 @@ async def get_pet_friendly_stays(
 
     except Exception as e:
         logger.error(f"get_pet_friendly_stays error: {e}")
-        raise HTTPException(status_code=500, detail=f"Could not fetch stays: {str(e)}")
+        # Return mock data instead of 500 so UI doesn't break
+        return {"city": city, "places": [], "error": str(e)}
 
 
 @dine_router.get("/dine/restaurants")

@@ -358,7 +358,22 @@ function MiraPicksSection({ pet }) {
         Products &amp; services matched by Mira to {petName}'s travel profile.
       </p>
 
-      {showImagines ? (
+      {loading ? (
+        /* Loading skeleton — prevents blank gap while AI picks load */
+        <div style={{ display:"flex", gap:14, overflowX:"auto", paddingBottom:10 }}>
+          <style>{`@keyframes go-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
+          {[1,2,3,4].map(i => (
+            <div key={i} style={{ flexShrink:0, width:168, background:"#fff", borderRadius:14, border:`1.5px solid ${G.borderLight}`, overflow:"hidden" }}>
+              <div style={{ height:130, background:`linear-gradient(90deg,${G.cream} 25%,${G.pale} 50%,${G.cream} 75%)`, backgroundSize:"200% 100%", animation:"go-shimmer 1.5s infinite" }} />
+              <div style={{ padding:"10px 11px 12px" }}>
+                <div style={{ height:12, background:G.cream, borderRadius:6, marginBottom:8, width:"80%" }} />
+                <div style={{ height:8, background:G.cream, borderRadius:6, marginBottom:6, width:"60%" }} />
+                <div style={{ height:8, background:G.pale, borderRadius:6, width:"40%" }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : showImagines ? (
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))", gap:14 }}>
           {miraImagines.map((card, i) => <MiraImagineCard key={i} card={card} pet={pet} token={token} />)}
         </div>

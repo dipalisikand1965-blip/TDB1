@@ -272,18 +272,24 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
     return fn(petName);
   })();
 
-  // Fetch Go products, filter by category keywords
+  // Fetch Go products — deps use pet?.id to avoid re-fetch on every petData reference change
   useEffect(() => {
     if (!isOpen) return;
     setLoading(true);
     setActiveTab('All');
 
-    // Fetch all go products (paginate to get enough)
+    // Compute fresh values inside effect to avoid stale closure issues
+    const petAllergies = getPetAllergies(pet);
+    const petSize = getPetSize(pet);
+    const petCondition = getHealthCondition(pet);
+    const catConfig = CAT_CONFIG[category] || { keywords: [] };
+    const keywords = catConfig.keywords || [];
+
+    // Fetch all go products
     fetch(`${apiUrl}/api/admin/pillar-products?pillar=go&limit=200`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         const all = data?.products || [];
-        const keywords = config.keywords || [];
 
         // Filter by category keywords
         let filtered = all.filter(p => {
@@ -291,7 +297,7 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
           return keywords.some(kw => cat.includes(kw));
         });
 
-        // If "stay" category and few results, include stay-related services
+        // If "stay" category and few results, include stay-related items
         if (filtered.length < 3 && category === 'stay') {
           filtered = all.filter(p => {
             const cat = (p.category || '').toLowerCase();
@@ -301,7 +307,7 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
         }
 
         // Apply Mira intelligence
-        const intelligent = applyMiraFilter(filtered, allergies, size, condition);
+        const intelligent = applyMiraFilter(filtered, petAllergies, petSize, petCondition);
 
         // Build sub-category tabs
         const subCats = [...new Set(intelligent.map(p => p.sub_category).filter(Boolean))];
@@ -310,7 +316,7 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
       })
       .catch(err => console.error('[GoContentModal]', err))
       .finally(() => setLoading(false));
-  }, [isOpen, category, allergies, size, condition, apiUrl]);
+  }, [isOpen, category, pet?.id, apiUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const visibleProducts = activeTab === 'All'
     ? products
