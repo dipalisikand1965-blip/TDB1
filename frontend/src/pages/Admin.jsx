@@ -3393,33 +3393,62 @@ const Admin = () => {
                   const btn = document.getElementById('ai-gen-btn');
                   try {
                     btn.disabled = true;
-                    btn.innerHTML = '🎨 Starting...';
+                    btn.innerHTML = '🎨 Loading stats...';
                     
-                    // Get stats first
+                    // Get stats from products_master (SSOT)
                     const statsRes = await fetch(`${API_URL}/api/ai-images/stats`);
                     const stats = await statsRes.json();
                     
+                    // Build per-pillar breakdown for display
+                    const pillarLines = Object.entries(stats.by_pillar || {})
+                      .filter(([, v]) => v.products.needs_generation > 0)
+                      .map(([p, v]) => `  • ${p}: ${v.products.needs_generation} need images (${v.products.cloudinary} already done)`)
+                      .join('\n');
+                    
                     const choice = window.confirm(
-                      `📊 Image Stats:\n` +
-                      `Products: ${stats.products.missing_images} missing images\n` +
-                      `Services: ${stats.services.missing_images} missing watercolors\n\n` +
-                      `Click OK to generate PRODUCT images\n` +
-                      `Click Cancel to generate SERVICE watercolors`
+                      `📊 Image Generation Stats (products_master):\n\n` +
+                      `Products needing AI images: ${stats.products.needs_generation}\n` +
+                      `  ✅ Already have Cloudinary images: ${stats.products.with_cloudinary}\n` +
+                      `  🔄 Have Unsplash (need replacing): ${stats.products.with_unsplash}\n` +
+                      `  ❌ No image at all: ${stats.products.no_image}\n\n` +
+                      `By pillar (needs generation):\n${pillarLines || '  All pillars look good!'}\n\n` +
+                      `🔒 LOOP SAFE: Already-generated Cloudinary images are NEVER re-processed.\n\n` +
+                      `Services missing watercolors: ${stats.services.missing_images}\n\n` +
+                      `Click OK → Generate PRODUCT images (realistic contextual photos)\n` +
+                      `Click Cancel → Generate SERVICE watercolor illustrations`
                     );
                     
-                    const endpoint = choice ? 'generate-product-images' : 'generate-service-images';
-                    const type = choice ? 'product' : 'service';
-                    
-                    // Start generation
-                    const res = await fetch(`${API_URL}/api/ai-images/${endpoint}`, { method: 'POST' });
-                    const data = await res.json();
-                    
-                    if (data.status === 'running') {
-                      setShowAiProgress(true);
-                      btn.innerHTML = `🎨 Generating...`;
+                    if (choice) {
+                      // Products: use generate-pillar-images which correctly queries products_master
+                      const pillarChoice = window.prompt(
+                        'Which pillar? (leave blank for ALL)\n\nOptions: dine, celebrate, stay, travel, care, fit, learn, farewell, adopt, emergency, shop',
+                        'dine'
+                      );
+                      if (pillarChoice === null) { btn.disabled = false; btn.innerHTML = '🎨 AI IMAGES'; return; }
                       
-                      // Use state-based polling
-                      checkAiGenStatus();
+                      const url = new URL(`${API_URL}/api/ai-images/generate-pillar-images`);
+                      if (pillarChoice.trim()) url.searchParams.set('pillar', pillarChoice.trim().toLowerCase());
+                      url.searchParams.set('force_regenerate', 'false'); // NEVER re-generate Cloudinary images
+                      
+                      const res = await fetch(url.toString(), { method: 'POST' });
+                      const data = await res.json();
+                      
+                      if (data.status === 'running') {
+                        setShowAiProgress(true);
+                        btn.innerHTML = `🎨 Generating...`;
+                        checkAiGenStatus();
+                      } else {
+                        alert('Response: ' + JSON.stringify(data));
+                      }
+                    } else {
+                      // Services watercolor
+                      const res = await fetch(`${API_URL}/api/ai-images/generate-service-images`, { method: 'POST' });
+                      const data = await res.json();
+                      if (data.status === 'running') {
+                        setShowAiProgress(true);
+                        btn.innerHTML = `🎨 Generating...`;
+                        checkAiGenStatus();
+                      }
                     }
                     btn.disabled = false;
                   } catch (e) {
@@ -3472,9 +3501,10 @@ const Admin = () => {
                         </div>
                       </div>
                       <div className="text-xs text-gray-600 mb-2">
-                        <p><strong>Type:</strong> {aiGenStatus.type || 'Products'}</p>
+                        <p><strong>Type:</strong> {aiGenStatus.type || 'Products'} {aiGenStatus.pillar ? `(${aiGenStatus.pillar})` : '(all)'}</p>
                         <p className="truncate"><strong>Current:</strong> {aiGenStatus.current_item || 'Starting...'}</p>
                         <p><strong>Failed:</strong> {aiGenStatus.failed || 0}</p>
+                        <p className="text-green-600 text-xs mt-1">🔒 Cloudinary images are never re-processed</p>
                       </div>
                       <Button 
                         size="sm" 
