@@ -294,6 +294,7 @@ const UnifiedProductBox = () => {
       } else if (quickEditType === 'pillars') {
         updateData = {
           pillars: quickEditValue,
+          pillar: quickEditValue[0] || quickEditProduct.pillar,
           primary_pillar: quickEditValue[0] || quickEditProduct.primary_pillar
         };
       } else if (quickEditType === 'name') {
