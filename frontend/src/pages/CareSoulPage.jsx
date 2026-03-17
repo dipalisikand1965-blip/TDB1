@@ -651,7 +651,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const miraCtx = { includeText: "Add to Cart" };
 
   return (
-    <div style={{ background:"#fff", border:`2px solid ${G.sage}`, borderRadius:18, padding:22, marginBottom:16, gridColumn:"1 / -1" }} data-testid={`care-dim-expanded-${dim.id}`}>
+    <div style={{ background:"#fff", border:`2px solid ${G.sage}`, borderRadius:18, padding:22, marginBottom:16 }} data-testid={`care-dim-expanded-${dim.id}`}>
       {/* Header */}
       <div style={{ display:"flex", alignItems:"flex-start", gap:10, marginBottom:14, paddingBottom:12, borderBottom:`1px solid ${G.pale}` }}>
         <span style={{ fontSize:28 }}>{dim.icon}</span>
@@ -1601,7 +1601,7 @@ export default function CareSoulPage() {
               {/* Mira's Picks */}
               <MiraPicksSection pet={petData} />
 
-              {/* Dimension grid */}
+              {/* Dimension grid — cards only (mirrors DineSoulPage pattern) */}
               <div style={{ display:"grid", gap:10, marginBottom:8 }} className="care-dims-grid">
                 <style>{`
                   .care-dims-grid{grid-template-columns:repeat(2,1fr);}
@@ -1612,42 +1612,45 @@ export default function CareSoulPage() {
                 {careDims.map(dim => {
                   const isOpen = openDim === dim.id;
                   return (
-                    <div key={dim.id}>
-                      <div
-                        onClick={() => setOpenDim(isOpen ? null : dim.id)}
-                        style={{
-                          background: dim.glow ? G.cream : "#fff",
-                          border: isOpen ? `2px solid ${G.sage}` : "2px solid transparent",
-                          borderRadius: isOpen ? "12px 12px 0 0" : 12,
-                          padding:"16px 12px", cursor:"pointer",
-                          textAlign:"center", transition:"all 0.15s",
-                          minHeight:154,
-                          boxShadow: dim.glow && !isOpen ? `0 4px 20px ${dim.glowColor}` : "none",
-                          position:"relative",
-                          opacity: dim.glow ? 1 : 0.72,
-                        }}
-                        data-testid={`care-dim-${dim.id}`}
-                      >
-                        {dim.glow && !isOpen && (
-                          <div style={{ position:"absolute", top:8, right:8, width:8, height:8, borderRadius:"50%", background:G.light, boxShadow:`0 0 6px ${G.light}` }} />
-                        )}
-                        <div style={{ fontSize:28, marginBottom:10 }}>{dim.icon}</div>
-                        <div style={{ fontSize:14, fontWeight:800, color:G.darkText, marginBottom:4 }}>{dim.label}</div>
-                        <div style={{ fontSize:11, color:G.mutedText, marginBottom:8, lineHeight:1.3 }}>{t(dim.sub, petData.name)}</div>
-                        {dim.badge && (
-                          <div style={{ display:"inline-flex", alignItems:"center", background:dim.badgeBg, color:"#fff", borderRadius:20, padding:"2px 8px", fontSize:9, fontWeight:700 }}>
-                            {t(dim.badge, petData.name)}
-                          </div>
-                        )}
-                        <span style={{ position:"absolute", bottom:8, right:10, fontSize:14, color:"rgba(0,0,0,0.25)", transition:"transform 0.2s", transform:isOpen?"rotate(90deg)":"none" }}>›</span>
-                      </div>
-                      {isOpen && activeDim && (
-                        <DimExpanded dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
+                    <div
+                      key={dim.id}
+                      onClick={() => setOpenDim(isOpen ? null : dim.id)}
+                      style={{
+                        background: dim.glow ? G.cream : "#fff",
+                        border: isOpen ? `2px solid ${G.sage}` : "2px solid transparent",
+                        borderRadius: 12,
+                        padding:"16px 12px", cursor:"pointer",
+                        textAlign:"center", transition:"all 0.15s",
+                        minHeight:154,
+                        boxShadow: dim.glow && !isOpen ? `0 4px 20px ${dim.glowColor}` : "none",
+                        position:"relative",
+                        opacity: dim.glow ? 1 : 0.72,
+                      }}
+                      data-testid={`care-dim-${dim.id}`}
+                    >
+                      {dim.glow && !isOpen && (
+                        <div style={{ position:"absolute", top:8, right:8, width:8, height:8, borderRadius:"50%", background:G.light, boxShadow:`0 0 6px ${G.light}` }} />
                       )}
+                      <div style={{ fontSize:28, marginBottom:10 }}>{dim.icon}</div>
+                      <div style={{ fontSize:14, fontWeight:800, color:G.darkText, marginBottom:4 }}>{dim.label}</div>
+                      <div style={{ fontSize:11, color:G.mutedText, marginBottom:8, lineHeight:1.3 }}>{t(dim.sub, petData.name)}</div>
+                      {dim.badge && (
+                        <div style={{ display:"inline-flex", alignItems:"center", background:dim.badgeBg, color:"#fff", borderRadius:20, padding:"2px 8px", fontSize:9, fontWeight:700 }}>
+                          {t(dim.badge, petData.name)}
+                        </div>
+                      )}
+                      <span style={{ position:"absolute", bottom:8, right:10, fontSize:14, color:"rgba(0,0,0,0.25)", transition:"transform 0.2s", transform:isOpen?"rotate(90deg)":"none" }}>›</span>
                     </div>
                   );
                 })}
               </div>
+
+              {/* Expanded panel — OUTSIDE grid, full width (mirrors DineSoulPage) */}
+              {activeDim && (
+                <div style={{ display:"grid", gridTemplateColumns:"1fr", marginBottom:8 }}>
+                  <DimExpanded dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
+                </div>
+              )}
 
               <div style={{ marginTop:32 }}>
                 <GuidedCarePaths pet={flowPet} />
