@@ -28,6 +28,8 @@ const G = {
 
 // ─── Category config — maps strip ID → API category filter ───────────────────
 const CAT_CONFIG = {
+  soul:     { emoji: '✨', label: 'Soul Go Picks',         keywords: [], special: 'soul' },
+  mira:     { emoji: '🪄', label: "Mira's Go Picks",       keywords: [], special: 'mira' },
   safety:   { emoji: '🛡️', label: 'Safety & Security',   keywords: ['safety'] },
   calming:  { emoji: '😌', label: 'Calming & Comfort',    keywords: ['calm', 'travel-calm'] },
   carriers: { emoji: '🎒', label: 'Carriers & Crates',    keywords: ['carrier', 'travel-carrier'] },
@@ -278,10 +280,53 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
     setLoading(true);
     setActiveTab('All');
 
-    // Compute fresh values inside effect to avoid stale closure issues
     const petAllergies = getPetAllergies(pet);
     const petSize = getPetSize(pet);
     const petCondition = getHealthCondition(pet);
+
+    // ── Special: Soul Go — AI scored picks across all go categories ──
+    if (category === 'soul') {
+      if (!pet?.id) { setLoading(false); return; }
+      fetch(`${apiUrl}/api/mira/claude-picks/${pet.id}?pillar=go&limit=16&min_score=60&entity_type=product`)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          const picks = (data?.picks || []);
+          const intelligent = applyMiraFilter(picks, petAllergies, petSize, petCondition);
+          const subCats = [...new Set(intelligent.map(p => p.sub_category).filter(Boolean))];
+          setTabs(['All', ...subCats]);
+          setProducts(intelligent);
+        })
+        .catch(err => console.error('[GoContentModal soul]', err))
+        .finally(() => setLoading(false));
+      return;
+    }
+
+    // ── Special: Mira's Picks — same as soul but more products + services mixed ──
+    if (category === 'mira') {
+      if (!pet?.id) { setLoading(false); return; }
+      Promise.all([
+        fetch(`${apiUrl}/api/mira/claude-picks/${pet.id}?pillar=go&limit=12&min_score=60&entity_type=product`).then(r => r.ok ? r.json() : null),
+        fetch(`${apiUrl}/api/mira/claude-picks/${pet.id}?pillar=go&limit=6&min_score=60&entity_type=service`).then(r => r.ok ? r.json() : null),
+      ])
+        .then(([pData, sData]) => {
+          const prods = pData?.picks || [];
+          const svcs = sData?.picks || [];
+          const merged = [];
+          let pi = 0, si = 0;
+          while (pi < prods.length || si < svcs.length) {
+            if (pi < prods.length) merged.push(prods[pi++]);
+            if (pi < prods.length) merged.push(prods[pi++]);
+            if (si < svcs.length) merged.push(svcs[si++]);
+          }
+          const intelligent = applyMiraFilter(merged.slice(0, 18), petAllergies, petSize, petCondition);
+          setTabs(['All']);
+          setProducts(intelligent);
+        })
+        .catch(err => console.error('[GoContentModal mira]', err))
+        .finally(() => setLoading(false));
+      return;
+    }
+
     const catConfig = CAT_CONFIG[category] || { keywords: [] };
     const keywords = catConfig.keywords || [];
 

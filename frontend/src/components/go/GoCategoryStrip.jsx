@@ -12,6 +12,8 @@ import GoContentModal from "./GoContentModal";
 const G = { deep:"#0D3349", teal:"#1ABC9C", light:"#76D7C4", pale:"#D1F2EB", cream:"#E8F8F5", deepMid:"#1A5276", mutedText:"#5D6D7E", border:"rgba(26,188,156,0.18)" };
 
 const GO_STRIPS = [
+  { id:"soul",     icon:"✨", label:"Soul Go",        iconBg:"linear-gradient(135deg,#EDE7F6,#B39DDB)", special:true },
+  { id:"mira",     icon:"🪄", label:"Mira's Picks",  iconBg:"linear-gradient(135deg,#FCE4EC,#F48FB1)", special:true },
   { id:"safety",   icon:"🛡️", label:"Safety",        iconBg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)" },
   { id:"calming",  icon:"😌", label:"Calming",        iconBg:"linear-gradient(135deg,#E8F5E9,#A5D6A7)" },
   { id:"carriers", icon:"🎒", label:"Carriers",       iconBg:"linear-gradient(135deg,#E0F7FA,#80DEEA)" },
