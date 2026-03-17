@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://mira-go-launch.preview.emergentagent.com` |
+| **Preview** | `https://go-pillar-launch.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |

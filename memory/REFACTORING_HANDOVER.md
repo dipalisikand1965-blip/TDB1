@@ -229,7 +229,7 @@ useSession: sessionId, setSessionId, sessionRecovered, setSessionRecovered
 
 - **Email**: `dipali@clubconcierge.in`
 - **Password**: `lola4304`
-- **Preview URL**: `https://mira-go-launch.preview.emergentagent.com`
+- **Preview URL**: `https://go-pillar-launch.preview.emergentagent.com`
 
 ---
 
