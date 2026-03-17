@@ -235,7 +235,7 @@ const DinePage = lazy(() => import("./pages/DinePage"));
 const DineSoulPage = lazy(() => import("./pages/DineSoulPage"));
 const StayPage = lazy(() => import("./pages/StayPage"));
 const TravelPage = lazy(() => import("./pages/TravelPage"));
-const CarePage = lazy(() => import("./pages/CarePage"));
+const CareSoulPage = lazy(() => import("./pages/CareSoulPage"));
 const EnjoyPage = lazy(() => import("./pages/EnjoyPage"));
 const FitPage = lazy(() => import("./pages/FitPage"));
 const LearnPage = lazy(() => import("./pages/LearnPage"));
@@ -600,7 +600,7 @@ function MainLayout() {
         <Route path="/travel/outdoor" element={<ProductListing category="outdoor" pillar="travel" />} />
         <Route path="/travel/:category" element={<ProductListing pillar="travel" />} />
         
-        <Route path="/care" element={<CarePage />} />
+        <Route path="/care" element={<CareSoulPage />} />
         <Route path="/care/grooming" element={<ProductListing category="grooming" pillar="care" />} />
         <Route path="/care/health" element={<ProductListing category="health" pillar="care" />} />
         <Route path="/care/supplements" element={<ProductListing category="supplements" pillar="care" />} />
