@@ -106,6 +106,7 @@ export default function GoHero({ pet, soulScore, activeTab, onTabChange }) {
         <div style={{ background:"#fff", borderBottom:`1px solid rgba(26,188,156,0.10)`, display:"flex", padding:0, overflowX:"auto" }}>
           {[
             { id:"go",       label:"✈️ Go Essentials" },
+            { id:"stay",     label:"🏡 Find a Stay" },
             { id:"services", label:"🗺️ Book a Service" },
           ].map(tab => (
             <button key={tab.id} onClick={() => onTabChange?.(tab.id)}

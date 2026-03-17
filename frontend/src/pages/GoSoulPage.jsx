@@ -1561,6 +1561,17 @@ const GoSoulPage = () => {
     if (currentPet) { setPetData(currentPet); setSoulScore(currentPet.soul_score || currentPet.overall_score || 0); }
   }, [currentPet]);
 
+  // Auto-trigger Mira scoring for Go pillar on first visit
+  useEffect(() => {
+    if (!petData?.id) return;
+    // Fire and forget — triggers background scoring, picks available next visit
+    fetch(`${API_URL}/api/mira/score-for-pet`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify({ pet_id: petData.id, pillar: "go", entity_types: ["product", "service"] }),
+    }).catch(() => {}); // silent — non-critical
+  }, [petData?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     const handle = async e => {
       if (e.detail?.petId !== petData?.id) return;
@@ -1657,6 +1668,27 @@ const GoSoulPage = () => {
 
         {activeTab === "services" && (
           <GoConcierge pet={petData} token={token} />
+        )}
+
+        {activeTab === "stay" && (
+          <div style={{ paddingTop:24, paddingBottom:32 }}>
+            <div style={{ marginBottom:20 }}>
+              <h2 style={{ fontSize:"clamp(1.25rem,3vw,1.625rem)", fontWeight:800, color:G.darkText, marginBottom:6, fontFamily:"Georgia,'Times New Roman',serif" }}>
+                Pet-Friendly Stays near <span style={{ color:G.teal }}>{petData.name}</span>
+              </h2>
+              <p style={{ fontSize:13, color:"#888", lineHeight:1.6, marginBottom:0 }}>
+                Hotels, resorts, homestays &amp; boarding — powered by Google · Book via Concierge
+              </p>
+            </div>
+            <PetFriendlyStays
+              pet={petData}
+              onBook={(spot) => {
+                // Opens GoConcierge booking flow for travel planning
+                const evt = new CustomEvent("goOpenConcierge", { detail: { service:"planning", venue:spot?.name } });
+                window.dispatchEvent(evt);
+              }}
+            />
+          </div>
         )}
 
       </div>
