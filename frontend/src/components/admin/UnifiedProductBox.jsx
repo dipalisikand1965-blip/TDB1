@@ -1219,9 +1219,9 @@ const UnifiedProductBox = () => {
                             className="relative group"
                             title="Click to edit image"
                           >
-                            {product.image || product.mockup_url || product.thumbnail || product.image_url || product.images?.[0] ? (
+                            {product.image_url || product.mockup_url || product.image || product.thumbnail || product.images?.[0] ? (
                               <img 
-                                src={product.image || product.mockup_url || product.thumbnail || product.image_url || product.images?.[0]} 
+                                src={product.image_url || product.mockup_url || product.image || product.thumbnail || product.images?.[0]} 
                                 alt="" 
                                 className="w-10 h-10 rounded object-cover group-hover:opacity-70 transition-opacity" 
                               />
