@@ -15,7 +15,7 @@
 - **User:** `dipali@clubconcierge.in` / `test123`
 - **Admin:** `aditya` / `lola4304`
 - **Test URL:** `/mira-demo?debug=1`
-- **API URL:** `https://dine-places.preview.emergentagent.com`
+- **API URL:** `https://product-box-refactor.preview.emergentagent.com`
 
 ---
 

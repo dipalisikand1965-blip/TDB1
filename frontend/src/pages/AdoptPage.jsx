@@ -868,9 +868,9 @@ const AdoptPage = () => {
                         >
                           {/* Product Image */}
                           <div className="aspect-square bg-gray-100 relative overflow-hidden">
-                            {product.image || product.images?.[0] ? (
+                            {product.image_url || product.image || product.images?.[0] ? (
                               <img 
-                                src={product.image || product.images[0]} 
+                                src={product.image_url || product.image || product.images?.[0]} 
                                 alt={product.name}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                                 onError={(e) => { e.target.style.display = 'none'; }}

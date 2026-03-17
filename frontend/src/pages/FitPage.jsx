@@ -1109,8 +1109,7 @@ const FitPage = () => {
                 id: product.id,
                 name: product.name || product.title,
                 price: product.price,
-                image: product.image,
-                pillar: 'fit',
+                image: product.image_url || product.image,
                 type: 'product'
               });
               toast({ title: '🛒 Added to Cart!', description: `${product.name || product.title} added` });

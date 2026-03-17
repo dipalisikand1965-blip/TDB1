@@ -931,8 +931,8 @@ const KitEditorDialog = ({ open, kit, categories, products, onSave, onClose, onT
                     >
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded bg-gray-100 overflow-hidden">
-                          {(product.images?.[0] || product.image) && (
-                            <img src={product.images?.[0] || product.image} alt="" className="w-full h-full object-cover" />
+                          {(product.image_url || product.images?.[0] || product.image) && (
+                            <img src={product.image_url || product.images?.[0] || product.image} alt="" className="w-full h-full object-cover" />
                           )}
                         </div>
                         <span className="text-sm">{product.title || product.name}</span>
@@ -1054,8 +1054,8 @@ const PickEditorDialog = ({ open, pick, products, onSave, onClose, onTestVoice }
                   >
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded bg-gray-100 overflow-hidden">
-                        {(product.images?.[0] || product.image) && (
-                          <img src={product.images?.[0] || product.image} alt="" className="w-full h-full object-cover" />
+                        {(product.image_url || product.images?.[0] || product.image) && (
+                          <img src={product.image_url || product.images?.[0] || product.image} alt="" className="w-full h-full object-cover" />
                         )}
                       </div>
                       <span className="text-sm">{product.title || product.name}</span>

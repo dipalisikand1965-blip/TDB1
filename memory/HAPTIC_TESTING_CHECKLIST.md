@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://dine-places.preview.emergentagent.com/mira-demo**
+**https://product-box-refactor.preview.emergentagent.com/mira-demo**
 
 ---
 

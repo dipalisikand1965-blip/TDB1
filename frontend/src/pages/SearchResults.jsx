@@ -535,7 +535,7 @@ const SearchResults = () => {
                         {/* Image */}
                         <div className={viewMode === 'list' ? 'w-32 flex-shrink-0' : 'relative'}>
                           <img
-                            src={product.image || product.images?.[0] || 'https://via.placeholder.com/300x300?text=Product'}
+                            src={product.image_url || product.image || product.images?.[0] || 'https://via.placeholder.com/300x300?text=Product'}
                             alt={product.name}
                             className={`object-cover bg-gray-100 ${viewMode === 'list' ? 'w-32 h-32' : 'w-full aspect-square'}`}
                           />

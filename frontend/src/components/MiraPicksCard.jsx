@@ -62,7 +62,7 @@ const MiraPicksCard = ({
       id: product.id,
       name: product.name || product.title,
       price: product.price,
-      image: product.image || product.images?.[0],
+      image: product.image_url || product.image || product.images?.[0],
       quantity: 1
     });
   };
@@ -110,7 +110,7 @@ const MiraPicksCard = ({
               >
                 <div className="aspect-square rounded-lg bg-gray-100 mb-2 overflow-hidden">
                   <img 
-                    src={product.image || product.images?.[0] || '/placeholder-product.png'} 
+                    src={product.image_url || product.image || product.images?.[0] || '/placeholder-product.png'} 
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />
@@ -196,7 +196,7 @@ const MiraPicksCard = ({
               {/* Product Image */}
               <div className="aspect-square bg-gray-50 relative overflow-hidden">
                 <img 
-                  src={product.image || product.images?.[0] || '/placeholder-product.png'} 
+                  src={product.image_url || product.image || product.images?.[0] || '/placeholder-product.png'} 
                   alt={product.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                 />

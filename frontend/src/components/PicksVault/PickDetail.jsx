@@ -63,9 +63,9 @@ const PickDetail = ({
 
       {/* Product Image */}
       <div className="pd-image-section">
-        {product.image ? (
+        {product.image_url || product.image ? (
           <img 
-            src={product.image} 
+            src={product.image_url || product.image} 
             alt={product.name}
             className="pd-image"
           />

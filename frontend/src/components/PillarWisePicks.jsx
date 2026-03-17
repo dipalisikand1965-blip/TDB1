@@ -172,7 +172,7 @@ const PillarWisePicks = ({
       id: product.id,
       name: product.name || product.title,
       price: product.price,
-      image: product.image || product.images?.[0],
+      image: product.image_url || product.image || product.images?.[0],
       quantity: 1
     });
   };
@@ -278,7 +278,7 @@ const PillarWisePicks = ({
                     {/* Product Image */}
                     <div className="aspect-square bg-gray-50 relative overflow-hidden">
                       <img 
-                        src={product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200'} 
+                        src={product.image_url || product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200'} 
                         alt={product.name || product.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {

@@ -603,9 +603,7 @@ const CarePage = () => {
       id: product.id,
       name: product.name,
       price: product.price,
-      image: product.image,
-      quantity: 1,
-      category: 'care'
+      image: product.image_url || product.image,
     });
     toast({
       title: "Added to cart! 🛒",

@@ -12,7 +12,7 @@
 | **Mira OS** | `/mira-demo` (THE MAIN OS - NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` or `/my-pets` |
-| **Preview** | `https://dine-places.preview.emergentagent.com` |
+| **Preview** | `https://product-box-refactor.preview.emergentagent.com` |
 
 ## Test Credentials
 | Role | Email/Username | Password |
