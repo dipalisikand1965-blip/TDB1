@@ -96,7 +96,10 @@ const KNOWN_BREEDS = [
   'great dane','husky','indie','irish setter','italian greyhound',
   'jack russell','labrador','lhasa apso','maltese','pomeranian',
   'poodle','pug','rottweiler','schnoodle','scottish terrier',
-  'shih tzu','st bernard','yorkshire',
+  'shih tzu','st bernard','saint bernard','yorkshire',
+  // Extended — breeds with grooming kits in DB
+  'akita','australian shepherd','corgi','samoyed','spitz',
+  'bernese mountain dog','bulldog','shiba inu','weimaraner',
 ];
 
 function filterBreedProducts(products, petBreed) {
@@ -401,13 +404,18 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
         return !allergyTerms.some(a => !isFree(a) && hasAllergen(a));
       });
 
-      // Coat / condition sort
+      // Coat / condition sort — breed-specific products float to TOP
+      const petBreedLower = (pet?.breed || '').trim().toLowerCase();
       const scored = safe.map(p => {
         const text = `${p.name || ''} ${p.description || ''} ${p.sub_category || ''} ${p.mira_tag || ''}`.toLowerCase();
         const coatMatch = coat && text.includes((coat || '').toLowerCase());
         const healthSafe = condition && (text.includes('treatment') || (p.allergy_free || '').toLowerCase().includes('treatment-safe'));
-        return { ...p, _coatMatch: coatMatch, _healthSafe: healthSafe };
+        // Breed-match: product name contains the pet's breed → highest priority
+        const breedMatch = petBreedLower && (p.name || '').toLowerCase().includes(petBreedLower);
+        return { ...p, _coatMatch: coatMatch, _healthSafe: healthSafe, _breedMatch: breedMatch };
       }).sort((a, b) => {
+        if (a._breedMatch && !b._breedMatch) return -1;
+        if (!a._breedMatch && b._breedMatch) return 1;
         if (a._coatMatch && !b._coatMatch) return -1;
         if (!a._coatMatch && b._coatMatch) return 1;
         if (a._healthSafe && !b._healthSafe) return -1;

@@ -222,6 +222,7 @@ function applyMiraIntelligence(products, allergies, coat, condition, pet) {
   const petName = pet?.name || "your dog";
   const allergyTerms = allergies.map(a => a.toLowerCase().trim());
   const coatLower = (coat || "").toLowerCase();
+  const petBreedLower = (pet?.breed || "").trim().toLowerCase();
   return products
     .filter(p => {
       if (!allergyTerms.length) return true;
@@ -239,16 +240,21 @@ function applyMiraIntelligence(products, allergies, coat, condition, pet) {
       const coatMatch  = coatLower && (text.includes(coatLower) || tag.includes("coat match"));
       const healthSafe = condition && (tag.includes("treatment") || free.includes("treatment-safe"));
       const allergySafe = allergyTerms.length && allergyTerms.every(a => free.includes(`${a}-free`));
+      // Breed-match: product name includes the pet's breed → highest sort priority
+      const breedMatch = petBreedLower && (p.name || "").toLowerCase().includes(petBreedLower);
       let mira_hint = p.mira_hint || null;
       if (!mira_hint) {
-        if (coatMatch)    mira_hint = `Matched to ${petName}'s ${coat} coat`;
+        if (breedMatch)       mira_hint = `Made for ${petName}'s breed`;
+        else if (coatMatch)   mira_hint = `Matched to ${petName}'s ${coat} coat`;
         else if (healthSafe)  mira_hint = `Safe during ${petName}'s treatment`;
         else if (allergySafe) mira_hint = `Free from ${allergyTerms.join(" & ")} — safe for ${petName}`;
         else if (p.mira_tag)  mira_hint = p.mira_tag;
       }
-      return { ...p, mira_hint, _coatMatch: !!coatMatch, _healthSafe: !!healthSafe };
+      return { ...p, mira_hint, _breedMatch: !!breedMatch, _coatMatch: !!coatMatch, _healthSafe: !!healthSafe };
     })
     .sort((a, b) => {
+      if (a._breedMatch && !b._breedMatch) return -1;
+      if (!a._breedMatch && b._breedMatch) return 1;
       if (a._coatMatch && !b._coatMatch) return -1;
       if (!a._coatMatch && b._coatMatch) return 1;
       if (a._healthSafe && !b._healthSafe) return -1;
@@ -748,7 +754,10 @@ const KNOWN_BREEDS = [
   'great dane','husky','indie','irish setter','italian greyhound',
   'jack russell','labrador','lhasa apso','maltese','pomeranian',
   'poodle','pug','rottweiler','schnoodle','scottish terrier',
-  'shih tzu','st bernard','yorkshire',
+  'shih tzu','st bernard','saint bernard','yorkshire',
+  // Extended — breeds with grooming kits in DB
+  'akita','australian shepherd','corgi','samoyed','spitz',
+  'bernese mountain dog','bulldog','shiba inu','weimaraner',
 ];
 
 // Keeps only products without a breed name OR that match this pet's breed.
