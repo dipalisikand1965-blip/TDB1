@@ -14,7 +14,8 @@ export const PLAY_CATEGORIES = [
   { id: "walking",   label: "Dog Walking",       icon: "🦮", iconBg: "linear-gradient(135deg,#FFF3E0,#FFE0B2)" },
   { id: "fitness",   label: "Fitness",           icon: "💪", iconBg: "linear-gradient(135deg,#E3F2FD,#BBDEFB)" },
   { id: "swimming",  label: "Swimming",          icon: "🏊", iconBg: "linear-gradient(135deg,#E0F7FA,#B2EBF2)" },
-  { id: "soul",      label: "Soul Play",         icon: "✨", iconBg: "linear-gradient(135deg,#EDE7F6,#D1C4E9)" },
+  { id: "soul",      label: "Soul Picks",        icon: "✨", iconBg: "linear-gradient(135deg,#EDE7F6,#D1C4E9)" },
+  { id: "bundles",   label: "Bundles",           icon: "🎁", iconBg: "linear-gradient(135deg,#FFF8E1,#FFECB3)" },
   { id: "miras-picks", label: "Mira's Picks",   icon: "💫", iconBg: "linear-gradient(135deg,#FCE4EC,#FF6B9D)" },
 ];
 
