@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://soul-made-products.preview.emergentagent.com
+**Preview URL:** https://soul-page-sync.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
