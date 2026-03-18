@@ -1833,15 +1833,21 @@ const GoSoulPage = () => {
     }
   }, [petData, token]);
 
-  // Fetch Go products — group by dim.id using keyword matching (mirrors CareSoulPage)
+  // Fetch Go products — group by dim.id, filter soul products by breed
   useEffect(() => {
+    if (!petData) return;
+    const petBreed = (petData?.breed || "indie").toLowerCase().trim();
+
     fetch(`${API_URL}/api/admin/pillar-products?pillar=go&limit=300`)
       .then(r => r.ok ? r.json() : null)
-      .then(data => {
+      .then(async data => {
         if (!data?.products?.length) return;
         const grouped = {};
-        // Group each product into the matching dim bucket
         data.products.forEach(p => {
+          // Skip soul/breed products for other breeds
+          const productBreeds = (p.breed_tags || []).map(b => b.toLowerCase().trim());
+          if (productBreeds.length > 0 && !productBreeds.includes(petBreed)) return;
+
           const catLower = (p.category || "").toLowerCase();
           let matched = false;
           Object.entries(DIM_ID_TO_KEYWORDS).forEach(([dimId, keywords]) => {
@@ -1853,7 +1859,6 @@ const GoSoulPage = () => {
               matched = true;
             }
           });
-          // Fallback: put unmatched in safety
           if (!matched) {
             if (!grouped["safety"]) grouped["safety"] = {};
             const sub = p.sub_category || "Other";
@@ -1861,9 +1866,12 @@ const GoSoulPage = () => {
             grouped["safety"][sub].push(p);
           }
         });
+
+        // Breed-specific soul products for Go appear through GoContentModal's Personalised tab
+        // (no soul dim in goDims — handled by GoCategoryStrip → GoContentModal → PersonalisedBreedSection)
         setApiProducts(grouped);
       }).catch(e => console.error("[GoSoulPage] products fetch:", e));
-  }, []);
+  }, [petData]);
 
   useEffect(() => {
     if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
