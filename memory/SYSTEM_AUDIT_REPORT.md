@@ -423,7 +423,7 @@ const handleServiceComplete = async (ticket) => {
 | Admin URL | `/admin` |
 | Admin Username | `aditya` |
 | Admin Password | `lola4304` |
-| Preview URL | `https://go-pillar-launch.preview.emergentagent.com` |
+| Preview URL | `https://play-layout-fix.preview.emergentagent.com` |
 
 ---
 

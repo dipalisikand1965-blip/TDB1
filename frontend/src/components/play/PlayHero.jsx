@@ -1,15 +1,15 @@
 /**
  * PlayHero.jsx — /play pillar hero
- * Mirrors GoHero.jsx — vibrant green + energetic orange colour world
- * Props: pet, soulScore, activeTab, onTabChange
+ * Mirrors GoHero.jsx — orange + rust colour world
+ * NO tab bar here — tabs are rendered separately as PlayTabBar in PlaySoulPage.
+ * Props: pet, soulScore
  */
-import { useState } from "react";
 
 const G = {
-  deep:     "#1B4332", mid:      "#2D6A4F", green:    "#52B788",
-  light:    "#95D5B2", pale:     "#D8F3DC", cream:    "#F0FFF4",
-  orange:   "#E76F51", yellow:   "#FFB703", darkText: "#1B4332",
-  mutedText:"#4A7C6A", whiteDim: "rgba(255,255,255,0.65)",
+  deep:     "#7B2D00", mid:      "#7B3F00", orange:   "#E76F51",
+  light:    "#FFAD9B", pale:     "#FFF0EA", cream:    "#FFF8F5",
+  yellow:   "#FFB703", darkText: "#7B2D00",
+  mutedText:"#8B4513", whiteDim: "rgba(255,255,255,0.65)",
 };
 
 const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
@@ -39,7 +39,7 @@ function getPlayChips(pet) {
   return chips.slice(0, 4);
 }
 
-export default function PlayHero({ pet, soulScore, activeTab, onTabChange }) {
+export default function PlayHero({ pet, soulScore }) {
   const petName  = pet?.name || "your dog";
   const photoUrl = pet?.photo_url || pet?.avatar_url || null;
   const chips    = pet ? getPlayChips(pet) : [];
@@ -52,65 +52,67 @@ export default function PlayHero({ pet, soulScore, activeTab, onTabChange }) {
     : `Tell me about ${petName}'s energy and I'll build a play life that keeps them happy, healthy, and thoroughly tired out.`;
 
   return (
-    <div style={{ background:`linear-gradient(135deg,${G.deep} 0%,${G.mid} 55%,${G.green} 100%)`, padding:"32px 32px 0", position:"relative", overflow:"hidden" }}>
+    <section
+      style={{
+        background:`linear-gradient(135deg,${G.deep} 0%,${G.mid} 55%,${G.orange} 100%)`,
+        padding:"40px 32px 32px",
+        position:"relative", overflow:"hidden",
+      }}
+      data-testid="play-hero"
+    >
       {/* Glow orbs */}
-      <div style={{ position:"absolute", top:-50, right:-50, width:240, height:240, background:"radial-gradient(circle,rgba(149,213,178,0.20) 0%,transparent 70%)", borderRadius:"50%", pointerEvents:"none" }} />
-      <div style={{ position:"absolute", bottom:0, left:"30%", width:180, height:180, background:"radial-gradient(circle,rgba(231,111,81,0.12) 0%,transparent 70%)", borderRadius:"50%", pointerEvents:"none" }} />
+      <div style={{ position:"absolute", top:-50, right:-50, width:240, height:240, background:"radial-gradient(circle,rgba(255,173,155,0.20) 0%,transparent 70%)", borderRadius:"50%", pointerEvents:"none", zIndex:1 }} />
+      <div style={{ position:"absolute", bottom:0, left:"30%", width:180, height:180, background:"radial-gradient(circle,rgba(231,111,81,0.12) 0%,transparent 70%)", borderRadius:"50%", pointerEvents:"none", zIndex:1 }} />
 
-      <div style={{ maxWidth:1100, margin:"0 auto", position:"relative", zIndex:2 }}>
-        <div style={{ display:"flex", alignItems:"flex-start", gap:28, marginBottom:24 }}>
+      <div style={{ maxWidth:1100, margin:"0 auto", position:"relative", zIndex:2, display:"flex", flexDirection:"column", alignItems:"center", textAlign:"center", gap:16 }}>
 
-          {/* Avatar */}
-          <div style={{ position:"relative", flexShrink:0 }}>
-            <div style={{ width:96, height:96, borderRadius:"50%", background:`linear-gradient(135deg,${G.light},${G.green})`, border:"3px solid rgba(255,255,255,0.30)", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", fontSize:44 }}>
-              {photoUrl
-                ? <img src={photoUrl} alt={petName} style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
-                : <span>🐕</span>}
-            </div>
-            <div style={{ position:"absolute", bottom:-4, right:-4, background:G.yellow, borderRadius:20, padding:"2px 8px", fontSize:10, fontWeight:700, color:G.deep, border:"2px solid #fff" }}>
-              {soulScore || 0}%
-            </div>
+        {/* Avatar */}
+        <div style={{ position:"relative", flexShrink:0 }}>
+          <div style={{ width:96, height:96, borderRadius:"50%", background:`linear-gradient(135deg,${G.light},${G.orange})`, border:"3px solid rgba(255,255,255,0.30)", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", fontSize:44 }}>
+            {photoUrl
+              ? <img src={photoUrl} alt={petName} style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
+              : <span>🐕</span>}
           </div>
-
-          {/* Hero text */}
-          <div style={{ flex:1 }}>
-            <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(149,213,178,0.20)", border:"1px solid rgba(149,213,178,0.40)", borderRadius:20, padding:"4px 12px", color:G.light, fontSize:11, fontWeight:600, marginBottom:12 }}>
-              🌳 Play with {petName}
-            </div>
-            <div style={{ fontSize:34, fontWeight:900, color:"#FFFFFF", fontFamily:"Georgia,serif", marginBottom:10, lineHeight:1.1 }}>
-              Let <span style={{ color:G.yellow }}>{petName}</span> play.
-            </div>
-            <div style={{ marginBottom:18 }}>
-              {chips.length > 0
-                ? chips.map((c,i) => <SoulChip key={i}>{c}</SoulChip>)
-                : <SoulChip>✦ Tell Mira about {petName}'s energy</SoulChip>}
-            </div>
-
-            {/* Mira quote */}
-            <div style={{ background:"rgba(255,255,255,0.10)", border:"1px solid rgba(255,255,255,0.15)", borderRadius:10, padding:"12px 16px", display:"flex", alignItems:"flex-start", gap:8 }}>
-              <div style={{ width:26, height:26, borderRadius:"50%", background:MIRA_ORB, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, color:"#fff", flexShrink:0, marginTop:1 }}>✦</div>
-              <div>
-                <p style={{ fontSize:13, color:"#fff", lineHeight:1.55, fontStyle:"italic", margin:0 }}>"{miraQuote}"</p>
-                <span style={{ fontSize:10, color:G.light, display:"block", marginTop:4, fontWeight:600 }}>♥ Mira knows {petName}</span>
-              </div>
-            </div>
+          <div style={{ position:"absolute", bottom:-4, right:-4, background:G.yellow, borderRadius:20, padding:"2px 8px", fontSize:10, fontWeight:700, color:G.deep, border:"2px solid #fff" }}>
+            {soulScore || 0}%
           </div>
         </div>
 
-        {/* Tab bar */}
-        <div style={{ background:"#fff", borderBottom:`1px solid rgba(45,106,79,0.10)`, display:"flex", overflowX:"auto" }}>
-          {[
-            { id:"play",       label:"🌳 Play & Explore" },
-            { id:"find-play",  label:"📍 Find Play" },
-            { id:"services",   label:"💪 Book a Service" },
-          ].map(tab => (
-            <button key={tab.id} onClick={() => onTabChange?.(tab.id)}
-              style={{ padding:"14px 20px", background:"none", border:"none", borderBottom: activeTab===tab.id?`2.5px solid ${G.green}`:"2.5px solid transparent", color: activeTab===tab.id?G.mid:G.mutedText, fontSize:13, fontWeight: activeTab===tab.id?700:400, cursor:"pointer", whiteSpace:"nowrap", transition:"all 0.12s" }}>
-              {tab.label}
-            </button>
-          ))}
+        {/* Eyebrow */}
+        <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(255,173,155,0.20)", border:"1px solid rgba(255,173,155,0.40)", borderRadius:20, padding:"4px 12px", color:G.light, fontSize:11, fontWeight:600 }}>
+          🌳 Play & Explore for {petName}
+        </div>
+
+        {/* Title */}
+        <div style={{ lineHeight:1.1 }}>
+          <span style={{ display:"block", fontSize:"clamp(1.875rem,4vw,2.5rem)", fontWeight:900, color:G.light, fontFamily:"Georgia,serif" }}>Play & Explore</span>
+          <span style={{ display:"block", fontSize:"clamp(1.875rem,4vw,2.5rem)", fontWeight:900, fontFamily:"Georgia,serif" }}>
+            <span style={{ color:"#FFFFFF" }}>for </span>
+            <span style={{ color:"#FFE4DC" }}>{petName}</span>
+          </span>
+        </div>
+
+        {/* Subtitle */}
+        <p style={{ fontSize:14, color:"rgba(255,255,255,0.65)", maxWidth:540, margin:0 }}>
+          Parks, playdates, fitness & adventures — all personalised and arranged by Mira.
+        </p>
+
+        {/* Soul chips */}
+        <div style={{ display:"flex", flexWrap:"wrap", justifyContent:"center", gap:6 }}>
+          {chips.length > 0
+            ? chips.map((c,i) => <SoulChip key={i}>{c}</SoulChip>)
+            : <SoulChip>✦ Tell Mira about {petName}'s energy</SoulChip>}
+        </div>
+
+        {/* Mira quote */}
+        <div style={{ background:"rgba(255,255,255,0.10)", border:"1px solid rgba(255,255,255,0.15)", borderRadius:10, padding:"12px 16px", display:"flex", alignItems:"flex-start", gap:8, maxWidth:640, width:"100%" }}>
+          <div style={{ width:26, height:26, borderRadius:"50%", background:MIRA_ORB, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, color:"#fff", flexShrink:0, marginTop:1 }}>✦</div>
+          <div style={{ textAlign:"left" }}>
+            <p style={{ fontSize:13, color:"#fff", lineHeight:1.55, fontStyle:"italic", margin:0 }}>"{miraQuote}"</p>
+            <span style={{ fontSize:10, color:G.light, display:"block", marginTop:4, fontWeight:600 }}>♥ Mira knows {petName}</span>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
