@@ -320,14 +320,32 @@ function MiraPicksSection({ pet }) {
         setPicks(merged.slice(0,16));
         setLoading(false);
       } else {
-        // No AI picks yet — fall back to actual play products
+        // No AI picks yet — fall back to actual play products, filtered by breed
         try {
-          const fallbackRes = await fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=12`);
+          const fallbackRes = await fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=60`);
           if (fallbackRes.ok) {
             const fallbackData = await fallbackRes.json();
-            const fallbackPicks = (fallbackData.products||[]).map(p => ({
-              ...p, mira_score: p.mira_score||Math.floor(Math.random()*20+60), entity_type:"product", mira_reason: `Matched to ${pet?.name || 'your dog'}'s play profile`,
-            }));
+            const petBreed = (pet?.breed || '').toLowerCase().trim();
+            const fallbackPicks = (fallbackData.products||[])
+              .filter(p => {
+                const bt  = (p.breed_tags||[]).map(b=>b.toLowerCase());
+                const btr = (p.breed_targets||[]).map(b=>b.toLowerCase());
+                if (!petBreed) return true;
+                // breed_targets takes priority (if specific)
+                const hasSpecificTarget = btr.length > 0 && !btr.includes('all_breeds') && !btr.includes('all');
+                if (hasSpecificTarget) return btr.some(b => petBreed.includes(b) || b.includes(petBreed));
+                // No specific target → accept if breed_tags are generic/missing, or name matches
+                if (bt.includes('all_breeds') || bt.includes('all') || bt.length === 0) {
+                  const nm = (p.name||'').toLowerCase();
+                  const isBreedSpecificName = /bandana|playdate card|play date card|lookalike toy|plush lookalike/i.test(nm);
+                  if (isBreedSpecificName) return nm.includes(petBreed);
+                  return true;
+                }
+                return bt.includes(petBreed);
+              })
+              .map(p => ({
+                ...p, mira_score: p.mira_score||Math.floor(Math.random()*20+60), entity_type:"product", mira_reason: `Matched to ${pet?.name || 'your dog'}'s play profile`,
+              }));
             setPicks(fallbackPicks.slice(0,12));
           }
         } catch {}
@@ -504,7 +522,7 @@ const ACTIVITY_QUESTIONS_FALLBACK = [
 // ─────────────────────────────────────────────────────────────
 function ActivityProfile({ pet, token }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const petScore = pet?.soul_score ?? pet?.activity_score ?? pet?.soulScore ?? null;
+  const petScore = pet?.overall_score ?? pet?.soul_score ?? pet?.activity_score ?? pet?.soulScore ?? null;
   const initScore = petScore !== null ? Math.round(petScore > 1 ? petScore : petScore * 100) : null;
   const [liveScore, setLiveScore]   = useState(initScore);
   const [questions, setQuestions]   = useState([]);
@@ -517,7 +535,7 @@ function ActivityProfile({ pet, token }) {
 
   // Re-sync score when pet changes
   useEffect(() => {
-    const s = pet?.soul_score ?? pet?.activity_score ?? pet?.soulScore ?? null;
+    const s = pet?.overall_score ?? pet?.soul_score ?? pet?.activity_score ?? pet?.soulScore ?? null;
     if (s !== null) setLiveScore(Math.round(s > 1 ? s : s * 100));
   }, [pet]);
 
@@ -587,6 +605,7 @@ function ActivityProfile({ pet, token }) {
     question_id: q.id,
     question: q.question,
     dimension: q.dimension,
+    type: "select",
     options: q.options.map(o => o.label),
   }));
 
@@ -718,25 +737,29 @@ function ActivityProfile({ pet, token }) {
                           <span style={{ borderRadius:20, padding:"2px 8px", fontSize:9, fontWeight:700, background:G.greenBg, color:G.light, border:`1px solid ${G.greenBorder}` }}>+{q.weight||3} pts</span>
                         </div>
                         <p style={{ fontWeight:700, fontSize:12, color:"rgba(255,255,255,0.92)", marginBottom:10, lineHeight:1.4 }}>{q.question}</p>
-                        {q.type==="select" && (
-                          <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:8 }}>
-                            {(q.options||[]).map(opt => (
-                              <button key={opt} onClick={()=>handleAnswer(q.question_id,opt,"select")} style={{ borderRadius:20, padding:"5px 12px", fontSize:11, fontWeight:600, background:ans===opt?"rgba(231,111,81,0.25)":"rgba(255,255,255,0.07)", border:ans===opt?`1.5px solid ${G.green}`:"1px solid rgba(255,255,255,0.15)", color:ans===opt?G.pale:"rgba(255,255,255,0.72)", cursor:"pointer" }}>{opt}</button>
-                            ))}
-                          </div>
-                        )}
-                        {q.type==="multi_select" && (
-                          <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:8 }}>
-                            {(q.options||[]).slice(0,6).map(opt => {
-                              const selArr=ans||[];
-                              return <button key={opt} onClick={()=>handleAnswer(q.question_id,opt,"multi_select")} style={{ borderRadius:20, padding:"5px 12px", fontSize:11, fontWeight:600, background:selArr.includes(opt)?"rgba(231,111,81,0.25)":"rgba(255,255,255,0.07)", border:selArr.includes(opt)?`1.5px solid ${G.green}`:"1px solid rgba(255,255,255,0.15)", color:selArr.includes(opt)?G.pale:"rgba(255,255,255,0.72)", cursor:"pointer" }}>{opt}</button>;
-                            })}
-                          </div>
-                        )}
-                        {q.type==="text" && (
-                          <textarea value={ans||""} onChange={e=>handleAnswer(q.question_id,e.target.value,"text")} rows={2} placeholder="Type here…"
-                            style={{ width:"100%", borderRadius:10, padding:"8px 12px", fontSize:12, background:"rgba(255,255,255,0.08)", border:`1px solid ${G.greenBorder}`, color:"rgba(255,255,255,0.88)", outline:"none", resize:"none", boxSizing:"border-box" }} />
-                        )}
+                        {/* Determine type — API might not always return type field */}
+                        {(() => {
+                          const qType = q.type || (Array.isArray(q.options) && q.options.length > 0 ? "select" : "text");
+                          if (qType === "select") return (
+                            <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:8 }}>
+                              {(q.options||[]).map(opt => (
+                                <button key={opt} onClick={()=>handleAnswer(q.question_id,opt,"select")} style={{ borderRadius:20, padding:"5px 12px", fontSize:11, fontWeight:600, background:ans===opt?"rgba(231,111,81,0.25)":"rgba(255,255,255,0.07)", border:ans===opt?`1.5px solid ${G.green}`:"1px solid rgba(255,255,255,0.15)", color:ans===opt?G.pale:"rgba(255,255,255,0.72)", cursor:"pointer" }}>{opt}</button>
+                              ))}
+                            </div>
+                          );
+                          if (qType === "multi_select") return (
+                            <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:8 }}>
+                              {(q.options||[]).slice(0,6).map(opt => {
+                                const selArr=ans||[];
+                                return <button key={opt} onClick={()=>handleAnswer(q.question_id,opt,"multi_select")} style={{ borderRadius:20, padding:"5px 12px", fontSize:11, fontWeight:600, background:selArr.includes(opt)?"rgba(231,111,81,0.25)":"rgba(255,255,255,0.07)", border:selArr.includes(opt)?`1.5px solid ${G.green}`:"1px solid rgba(255,255,255,0.15)", color:selArr.includes(opt)?G.pale:"rgba(255,255,255,0.72)", cursor:"pointer" }}>{opt}</button>;
+                              })}
+                            </div>
+                          );
+                          return (
+                            <textarea value={ans||""} onChange={e=>handleAnswer(q.question_id,e.target.value,"text")} rows={2} placeholder="Type here…"
+                              style={{ width:"100%", borderRadius:10, padding:"8px 12px", fontSize:12, background:"rgba(255,255,255,0.08)", border:`1px solid ${G.greenBorder}`, color:"rgba(255,255,255,0.88)", outline:"none", resize:"none", boxSizing:"border-box" }} />
+                          );
+                        })()}
                         <button onClick={() => handleSubmit(q)} disabled={isSend||!hasAns}
                           style={{ marginTop:8, width:"100%", borderRadius:10, padding:8, fontSize:12, fontWeight:700, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", gap:6, background:!hasAns?`${G.green}33`:`linear-gradient(135deg,${G.green},${G.mid})`, border:"none", cursor:isSend?"wait":!hasAns?"not-allowed":"pointer" }}>
                           {isSend?<Loader2 size={12} style={{ animation:"spin 1s linear infinite" }} />:<Check size={12} />}
@@ -1386,7 +1409,7 @@ const PlaySoulPage = () => {
   }, [contextPets,currentPet,setCurrentPet]);
 
   useEffect(() => {
-    if (currentPet) { setPetData(currentPet); setSoulScore(currentPet.soul_score||currentPet.overall_score||0); }
+    if (currentPet) { setPetData(currentPet); setSoulScore(currentPet.overall_score||currentPet.soul_score||0); }
   }, [currentPet?.id]); // use id so primitive comparison is stable
 
   useEffect(() => {
