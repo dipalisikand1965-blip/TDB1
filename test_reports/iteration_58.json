@@ -25,7 +25,7 @@
     "frontend": "100% - 10/10 features verified working"
   },
   "test_credentials": {
-    "test_url": "https://pet-breed-catalog.preview.emergentagent.com/join",
+    "test_url": "https://soul-made-products.preview.emergentagent.com/join",
     "test_type": "Frontend UI Flow Testing"
   },
   "seed_data_creation": "None - UI flow testing only",

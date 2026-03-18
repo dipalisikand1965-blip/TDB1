@@ -12,6 +12,7 @@ import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import ProductCard from '../ProductCard';
 import PersonalisedBreedSection from '../common/PersonalisedBreedSection';
+import SoulMadeCollection from '../SoulMadeCollection';
 
 // Utility: boarding_comfort → Boarding Comfort
 const toLabel = s => s ? s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : s;
@@ -462,7 +463,12 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
             {/* Content */}
             <div style={{ flex: 1, overflowY: 'auto', padding: 20 }}>
               {goTab === "personalised" ? (
-                <PersonalisedBreedSection pet={pet} pillar="go" />
+                <div>
+                  <PersonalisedBreedSection pet={pet} pillar="go" />
+                  <div style={{ borderTop:"1px solid #f0f0f0", marginTop:16, paddingTop:16 }}>
+                    <SoulMadeCollection pillar="travel" maxItems={8} showTitle={true} />
+                  </div>
+                </div>
               ) : loading ? (
                 <div style={{ textAlign: 'center', padding: '48px 0', color: '#888' }}>
                   <div style={{ width: 24, height: 24, border: `2px solid ${G.pale}`, borderTopColor: G.teal, borderRadius: '50%', animation: 'go-spin 0.8s linear infinite', margin: '0 auto 12px' }} />

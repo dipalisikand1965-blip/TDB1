@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://pet-breed-catalog.preview.emergentagent.com
+https://soul-made-products.preview.emergentagent.com
 
 ---
 
