@@ -284,10 +284,20 @@ function MiraPicksSection({ pet }) {
 
   useEffect(() => {
     if (!pet?.id) { setLoading(false); return; }
-    Promise.all([
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=play&limit=12&min_score=60&entity_type=product`).then(r=>r.ok?r.json():null),
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=play&limit=6&min_score=60&entity_type=service`).then(r=>r.ok?r.json():null),
-    ]).then(([pData,sData])=>{
+    const makeAbortable = (url) => {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 5000);
+      return fetch(url, { signal: ctrl.signal })
+        .then(r => r.ok ? r.json() : null)
+        .finally(() => clearTimeout(timer))
+        .catch(() => null);
+    };
+    Promise.allSettled([
+      makeAbortable(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=play&limit=12&min_score=60&entity_type=product`),
+      makeAbortable(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=play&limit=6&min_score=60&entity_type=service`),
+    ]).then(([pRes, sRes]) => {
+      const pData = pRes.status === "fulfilled" ? pRes.value : null;
+      const sData = sRes.status === "fulfilled" ? sRes.value : null;
       const prods=pData?.picks||[]; const svcs=sData?.picks||[];
       const merged=[]; let pi=0,si=0;
       while(pi<prods.length||si<svcs.length){
@@ -297,7 +307,7 @@ function MiraPicksSection({ pet }) {
       }
       if(merged.length) setPicks(merged.slice(0,16));
       setLoading(false);
-    }).catch(()=>setLoading(false));
+    });
   }, [pet?.id]);
 
   const showImagines = !loading && picks.length === 0;
