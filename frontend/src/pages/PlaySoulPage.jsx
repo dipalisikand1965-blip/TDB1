@@ -611,7 +611,7 @@ function ActivityProfile({ pet, token }) {
 // ─────────────────────────────────────────────────────────────
 // DIM EXPANDED — inline panel (exactly mirrors DineSoulPage DimExpanded)
 // ─────────────────────────────────────────────────────────────
-function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
+function DimExpanded({ dim, pet, onClose, apiProducts = {}, apiLoading = false }) {
   const petName = pet?.name || "your dog";
 
   // Use pre-fetched products from parent — no internal fetch (same as Dine)
@@ -709,7 +709,12 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
           )}
 
           {/* Product grid */}
-          {products.length === 0 ? (
+          {apiLoading ? (
+            <div style={{ textAlign:"center", padding:"32px 0", color:"#888" }}>
+              <div style={{ width:28, height:28, border:`3px solid ${G.pale}`, borderTopColor:G.orange, borderRadius:"50%", animation:"spin 0.8s linear infinite", margin:"0 auto 12px" }} />
+              <div style={{ fontSize:13 }}>Loading products for {petName}…</div>
+            </div>
+          ) : products.length === 0 ? (
             <div style={{ textAlign:"center", padding:"24px 0", color:"#888", fontSize:13 }}>
               {allRaw.length === 0
                 ? <><div style={{ fontSize:28, marginBottom:10 }}>📦</div>No products found for {petName} in this category.</>
@@ -1186,6 +1191,7 @@ const PlaySoulPage = () => {
   const [petData, setPetData]         = useState(null);
   const [soulScore, setSoulScore]     = useState(0);
   const [apiProducts, setApiProducts] = useState({});
+  const [apiLoading, setApiLoading]   = useState(true); // true until products fetch completes
   const [conciergeToast, setConciergeToast] = useState(null);
 
   // handleNearMeBook — wires "Book via Concierge" on PlayNearMe cards
@@ -1232,11 +1238,12 @@ const PlaySoulPage = () => {
   useEffect(() => {
     if (!petData) return; // wait for pet data so we can filter by breed
     const petBreed = (petData?.breed || "indie").toLowerCase().trim();
+    setApiLoading(true);
 
     fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=500`)
       .then(r => r.ok ? r.json() : null)
       .then(async data => {
-        if (!data?.products?.length) return;
+        if (!data?.products?.length) { setApiLoading(false); return; }
         const DIM_IDS = ["outings", "playdates", "walking", "fitness", "swimming", "soul"];
         const grouped = {};
 
@@ -1282,7 +1289,8 @@ const PlaySoulPage = () => {
         } catch (e) { /* non-critical */ }
 
         setApiProducts(grouped);
-      }).catch(e => console.error("[PlaySoulPage] products fetch:", e));
+        setApiLoading(false);
+      }).catch(e => { console.error("[PlaySoulPage] products fetch:", e); setApiLoading(false); });
   }, [petData]);
   /* eslint-enable react-hooks/exhaustive-deps */
 
@@ -1339,7 +1347,10 @@ const PlaySoulPage = () => {
 
       <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>
 
-        <PlayCategoryStrip pet={petData} openDim={openDim} onSelect={setOpenDim} />
+        <PlayCategoryStrip pet={petData} openDim={openDim} onSelect={(id) => {
+          setOpenDim(id);
+          if (id) setActiveTab("play"); // always switch to play tab so DimExpanded is visible
+        }} />
 
         <PlayTabBar active={activeTab} onChange={setActiveTab} />
 
@@ -1407,7 +1418,7 @@ const PlaySoulPage = () => {
             {/* Inline expanded panel — exactly like Dine */}
             {activeDim && (
               <div style={{ display:"grid", gridTemplateColumns:"1fr", marginBottom:28 }}>
-                <DimExpanded dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
+                <DimExpanded dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} apiLoading={apiLoading} />
               </div>
             )}
 
