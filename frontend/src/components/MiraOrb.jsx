@@ -106,6 +106,8 @@ const PILLAR_THEMES = {
   emergency: { emoji: '🚨', color: '#DC2626', colorSecondary: '#B91C1C', label: 'Emergency' },
   farewell: { emoji: '🌈', color: '#9CA3AF', colorSecondary: '#6B7280', label: 'Farewell' },
   shop: { emoji: '🛍️', color: '#9333EA', colorSecondary: '#7E22CE', label: 'Shop' },
+  go: { emoji: '✈️', color: '#1ABC9C', colorSecondary: '#0D7A6B', label: 'Go' },
+  play: { emoji: '🌳', color: '#E76F51', colorSecondary: '#7B2D00', label: 'Play' },
   default: { emoji: '✨', color: '#9333EA', colorSecondary: '#EC4899', label: 'Mira' }
 };
 

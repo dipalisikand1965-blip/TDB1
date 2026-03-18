@@ -243,7 +243,7 @@ const MiraChatWidget = ({
     farewell: { icon: '🌈', name: 'Farewell', color: 'from-indigo-400 to-purple-400' },
     adopt: { icon: '🐾', name: 'Adopt', color: 'from-green-500 to-emerald-500' },
     shop: { icon: '🛒', name: 'Shop', color: 'from-indigo-500 to-purple-500' },
-    play: { icon: '🎮', name: 'Play', color: 'from-green-500 to-teal-500' }
+    play: { icon: '🌳', name: 'Play', color: 'from-orange-500 to-red-800' }
   };
   
   const config = pillarConfig[pillar] || pillarConfig.general;

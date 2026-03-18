@@ -17,7 +17,7 @@
  *   Fit:   walking(3) · fitness(4) · swimming(4) · agility(4)
  */
 
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { Loader2, Check } from "lucide-react";
@@ -602,7 +602,7 @@ function ActivityProfile({ pet, token }) {
 // ─────────────────────────────────────────────────────────────
 // DIM EXPANDED
 // ─────────────────────────────────────────────────────────────
-function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
+function DimExpandedModal({ dim, pet, onClose, apiProducts = {} }) {
   const petName   = pet?.name || "your dog";
   const rawByTab  = apiProducts[dim.id] || {};
   const allRaw    = Object.values(rawByTab).flat();
@@ -615,62 +615,79 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const miraCtx   = { includeText:"Add to Cart" };
   const products  = activeTab==="All" ? intelligent : intelligent.filter(p=>p.sub_category===activeTab);
 
+  // Prevent body scroll while modal is open
+  React.useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
   return (
-    <div style={{ background:"#fff", border:`2px solid ${G.green}`, borderRadius:18, padding:22, marginBottom:16, gridColumn:"1 / -1" }} data-testid={`play-dim-expanded-${dim.id}`}>
-      <div style={{ display:"flex", alignItems:"flex-start", gap:10, marginBottom:14, paddingBottom:12, borderBottom:`1px solid ${G.pale}` }}>
-        <span style={{ fontSize:28 }}>{dim.icon}</span>
-        <div style={{ flex:1 }}>
-          <div style={{ fontSize:16, fontWeight:800, color:G.darkText }}>{dim.label}</div>
-          <div style={{ fontSize:11, color:"#888" }}>
-            {allergies.map(a=>`${a}-free`).join(" · ")}{allergies.length>0?" · ":""}
-            {health?"Health-safe":`Personalised for ${petName}`}
-            {size?` · ${size} dog`:""}
+    <div
+      onClick={onClose}
+      style={{ position:"fixed", inset:0, zIndex:600, background:"rgba(0,0,0,0.65)", display:"flex", alignItems:"flex-end", justifyContent:"center", padding:0 }}
+      data-testid={`play-dim-expanded-${dim.id}`}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{ width:"100%", maxWidth:640, maxHeight:"88vh", background:"#fff", borderRadius:"20px 20px 0 0", overflow:"hidden", display:"flex", flexDirection:"column", boxShadow:"0 -8px 40px rgba(0,0,0,0.25)" }}
+      >
+        {/* Header */}
+        <div style={{ background:`linear-gradient(135deg,${G.deep},${G.mid})`, padding:"18px 20px 14px", flexShrink:0 }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:6 }}>
+            <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(255,255,255,0.18)", borderRadius:20, padding:"4px 12px" }}>
+              <span style={{ fontSize:18 }}>{dim.icon}</span>
+              <span style={{ fontSize:13, color:"#fff", fontWeight:700 }}>{dim.label}</span>
+            </div>
+            <button onClick={onClose} style={{ background:"rgba(255,255,255,0.20)", border:"none", borderRadius:"50%", width:28, height:28, cursor:"pointer", color:"#fff", fontSize:16, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
+          </div>
+          <div style={{ display:"flex", alignItems:"flex-start", gap:8 }}>
+            <div style={{ width:22, height:22, borderRadius:"50%", background:MIRA_ORB, display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#fff", flexShrink:0, marginTop:1 }}>✦</div>
+            <p style={{ fontSize:12, color:"rgba(255,255,255,0.80)", fontStyle:"italic", margin:0, lineHeight:1.5 }}>"{t(dim.mira, petName)}"</p>
           </div>
         </div>
-        <button onClick={onClose} style={{ background:G.pale, border:"none", borderRadius:20, padding:"4px 12px", fontSize:11, fontWeight:700, color:G.darkText, cursor:"pointer" }}>Close ✕</button>
-      </div>
 
-      <div style={{ display:"flex", alignItems:"flex-start", gap:8, background:`linear-gradient(135deg,${G.pale},${G.light}40)`, borderRadius:10, padding:"10px 14px", marginBottom:14 }}>
-        <div style={{ width:24, height:24, borderRadius:"50%", background:MIRA_ORB, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, color:"#fff", flexShrink:0 }}>✦</div>
-        <div>
-          <p style={{ fontSize:12, color:G.darkText, fontStyle:"italic", lineHeight:1.5, margin:0 }}>"{t(dim.mira, petName)}"</p>
-          <span style={{ fontSize:10, color:G.green, fontWeight:600 }}>♥ Mira knows {petName}</span>
-        </div>
-      </div>
+        {/* Sub-tab filter */}
+        {tabList.length > 1 && (
+          <div style={{ display:"flex", gap:6, flexWrap:"wrap", padding:"10px 16px 0", background:"#fff", flexShrink:0 }}>
+            {tabList.map(tab => (
+              <button key={tab} onClick={() => setActiveTab(tab)}
+                style={{ padding:"5px 12px", borderRadius:20, border:`1px solid ${activeTab===tab?G.orange:G.light}`, background:activeTab===tab?G.orange:G.cream, fontSize:11, fontWeight:600, color:activeTab===tab?"#fff":G.mid, cursor:"pointer" }}>
+                {tab}
+              </button>
+            ))}
+          </div>
+        )}
 
-      {tabList.length > 1 && (
-        <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
-          {tabList.map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)}
-              style={{ padding:"5px 12px", borderRadius:20, border:`1px solid ${activeTab===tab?G.green:G.light}`, background:activeTab===tab?G.green:G.cream, fontSize:11, fontWeight:600, color:activeTab===tab?"#fff":G.green, cursor:"pointer" }}>
-              {tab}
-            </button>
-          ))}
-        </div>
-      )}
+        {/* Stats bar */}
+        {allRaw.length > 0 && (
+          <div style={{ display:"flex", gap:12, padding:"8px 16px", flexWrap:"wrap", fontSize:11, color:"#888", background:"#fff", flexShrink:0 }}>
+            <span style={{ color:"#27AE60", fontWeight:700 }}>✓ {intelligent.length} safe for {petName}</span>
+            {allRaw.length-intelligent.length>0 && <span style={{ color:"#AD1457" }}>✗ {allRaw.length-intelligent.length} filtered</span>}
+            {intelligent.filter(p=>p._energyMatch).length>0 && <span style={{ color:G.mid, fontWeight:700 }}>⚡ energy-matched</span>}
+          </div>
+        )}
 
-      {allRaw.length > 0 && (
-        <div style={{ display:"flex", gap:12, flexWrap:"wrap", marginBottom:14, fontSize:11, color:"#888" }}>
-          <span style={{ color:"#27AE60", fontWeight:700 }}>✓ {intelligent.length} safe for {petName}</span>
-          {allRaw.length-intelligent.length>0 && <span style={{ color:"#AD1457" }}>✗ {allRaw.length-intelligent.length} filtered</span>}
-          {intelligent.filter(p=>p._energyMatch).length>0 && <span style={{ color:G.mid, fontWeight:700 }}>⚡ {intelligent.filter(p=>p._energyMatch).length} energy-matched</span>}
-        </div>
-      )}
-
-      {products.length === 0 ? (
-        <div style={{ textAlign:"center", padding:"24px 0", color:"#888", fontSize:13 }}>
-          {allRaw.length===0?`Loading ${dim.label} products for ${petName}…`:"No products match this filter."}
-        </div>
-      ) : (
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))", gap:12 }}>
-          {products.map(p => (
-            <div key={p.id} style={{ position:"relative" }} data-testid={`play-product-${p.id}`}>
-              {p._energyMatch && <div style={{ position:"absolute", top:-6, right:-6, zIndex:2, background:G.orange, borderRadius:"50%", width:18, height:18, display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#fff" }}>⚡</div>}
-              <SharedProductCard product={p} pillar="play" selectedPet={pet} miraContext={miraCtx} />
+        {/* Products grid */}
+        <div style={{ flex:1, overflowY:"auto", padding:"12px 16px 24px" }}>
+          {products.length === 0 ? (
+            <div style={{ textAlign:"center", padding:"40px 0", color:"#888", fontSize:13 }}>
+              {allRaw.length===0
+                ? <><div style={{ fontSize:28, marginBottom:12 }}>⏳</div>Products loading for {petName}…<br/><span style={{ fontSize:11, color:"#aaa" }}>Pull-to-refresh if this persists</span></>
+                : "No products match this filter."}
             </div>
-          ))}
+          ) : (
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(180px,100%),1fr))", gap:12 }}>
+              {products.map(p => (
+                <div key={p.id||p._id} style={{ position:"relative" }} data-testid={`play-product-${p.id||p._id}`}>
+                  {p._energyMatch && <div style={{ position:"absolute", top:-6, right:-6, zIndex:2, background:G.orange, borderRadius:"50%", width:18, height:18, display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#fff" }}>⚡</div>}
+                  {p.mira_score >= 75 && <div style={{ position:"absolute", top:-6, left:-6, zIndex:2, background:G.mid, borderRadius:20, padding:"1px 6px", fontSize:9, fontWeight:700, color:"#fff" }}>★ {p.mira_score}</div>}
+                  <SharedProductCard product={p} pillar="play" selectedPet={pet} miraContext={miraCtx} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -1280,13 +1297,6 @@ const PlaySoulPage = () => {
               })}
             </div>
 
-            {/* Expanded panel */}
-            {activeDim && (
-              <div style={{ display:"grid", gridTemplateColumns:"1fr", marginBottom:8 }}>
-                <DimExpanded dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
-              </div>
-            )}
-
             <div style={{ marginTop:32 }}>
               <GuidedPlayPaths pet={petData} />
             </div>
@@ -1297,9 +1307,6 @@ const PlaySoulPage = () => {
           <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
             <PlayConcierge pet={petData} token={token} />
             <PlayConciergeSection pet={petData} />
-            <div style={{ marginTop:40 }}>
-              <GuidedPlayPaths pet={petData} />
-            </div>
           </div>
         )}
 
@@ -1310,6 +1317,11 @@ const PlaySoulPage = () => {
         )}
 
       </div>
+
+      {/* DimExpanded modal — fixed overlay, outside overflow containers */}
+      {activeDim && (
+        <DimExpandedModal dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
+      )}
     </PillarPageLayout>
   );
 };

@@ -692,6 +692,54 @@ async def submit_nutrition_path(request: NutritionPathRequest):
     }
 
 
+@router.post("/play-path")
+async def submit_play_path(request: NutritionPathRequest):
+    """Submit a guided play path to the Concierge."""
+    db = get_db()
+    import uuid
+    intake_id      = f"PLAY-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+    ticket_id      = f"TKT-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
+    notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    inbox_id        = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
+    now_iso        = datetime.now(timezone.utc).isoformat()
+    path_title     = request.pathTitle or (request.pathId or "Play Path").replace("_", " ").title()
+    pet_name       = request.petName or "your pet"
+    subject        = f"Play Path — {path_title} for {pet_name}"
+
+    await db.concierge_intakes.insert_one({
+        "id": intake_id, "ticket_id": ticket_id, "type": "play_path",
+        "pet_id": request.petId, "pet_name": pet_name,
+        "path_id": request.pathId, "path_title": path_title,
+        "selections": request.selections, "source": "guided_play_paths",
+        "status": "new", "created_at": now_iso
+    })
+    await db.admin_notifications.insert_one({
+        "id": notification_id, "type": "play_path", "pillar": "play",
+        "title": f"Play Path: {path_title} — {pet_name}",
+        "message": f"Guided play path submitted for {pet_name}. Path: {path_title}.",
+        "read": False, "status": "unread", "urgency": "medium",
+        "ticket_id": ticket_id, "inbox_id": inbox_id, "intake_id": intake_id,
+        "pet": {"name": pet_name}, "link": f"/agent-portal?tab=service_desk&ticket={ticket_id}",
+        "created_at": now_iso, "read_at": None
+    })
+    await db.service_desk_tickets.insert_one({
+        "id": ticket_id, "ticket_id": ticket_id, "notification_id": notification_id,
+        "inbox_id": inbox_id, "intake_id": intake_id, "type": "concierge_inquiry",
+        "source": "guided_play_paths", "source_id": intake_id,
+        "pillar": "play", "category": "play", "subcategory": request.pathId or "general",
+        "subject": subject, "description": f"Play path completed: {path_title}",
+        "status": "new", "priority": 3, "urgency": "medium",
+        "pet": {"name": pet_name, "id": request.petId},
+        "path_id": request.pathId, "selections": request.selections,
+        "created_at": now_iso, "updated_at": now_iso,
+        "tags": ["play", "play_path", request.pathId or "general"],
+        "unified_flow_processed": True,
+    })
+
+    logger.info(f"[UNIFIED FLOW] Play path: {intake_id} | pet: {pet_name} | path: {request.pathId}")
+    return {"success": True, "message": f"{path_title} sent to Concierge.", "intakeId": intake_id}
+
+
 
     petId: Optional[str] = None
     petName: Optional[str] = "your pet"
