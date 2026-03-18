@@ -616,19 +616,22 @@ function DimExpandedModal({ dim, pet, onClose }) {
   const petBreed = (pet?.breed || "indie").toLowerCase().trim();
   const DIM_IDS  = ["outings","playdates","walking","fitness","swimming","soul"];
 
-  const [products, setProducts] = useState([]);
+  const [allRaw,   setAllRaw]   = useState([]);
   const [loading,  setLoading]  = useState(true);
+  const [activeTab, setActiveTab] = useState("All");
+  const miraCtx = { includeText:"Add to Cart" };
 
   useEffect(() => {
     if (dim.id === "mira") { setLoading(false); return; }
     setLoading(true);
-    setProducts([]);
+    setAllRaw([]);
+    setActiveTab("All");
 
     fetch(`/api/admin/pillar-products?pillar=play&limit=500`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         const all = data?.products || [];
-        const prods = all.filter(p => {
+        const filtered = all.filter(p => {
           const pb = (p.breed_tags || []).map(b => b.toLowerCase().trim());
           const isAll = pb.includes('all_breeds') || pb.includes('all');
           if (pb.length > 0 && !isAll && !pb.includes(petBreed)) return false;
@@ -640,14 +643,19 @@ function DimExpandedModal({ dim, pet, onClose }) {
           if (dim.id === "fitness") return cat === "fit";
           return false;
         });
-        const allergies = getAllergies(pet);
-        const size      = getSize(pet);
-        const health    = getHealth(pet);
-        setProducts(applyMiraIntelligence(prods, allergies, size, health, pet));
+        setAllRaw(filtered);
       })
-      .catch(() => setProducts([]))
+      .catch(() => setAllRaw([]))
       .finally(() => setLoading(false));
   }, [dim.id, petBreed]); // eslint-disable-line
+
+  const allergies   = getAllergies(pet);
+  const size        = getSize(pet);
+  const health      = getHealth(pet);
+  const intelligent = applyMiraIntelligence(allRaw, allergies, size, health, pet);
+  const subCats     = [...new Set(allRaw.map(p => p.sub_category).filter(Boolean))];
+  const tabList     = ["All", ...subCats];
+  const products    = activeTab === "All" ? intelligent : intelligent.filter(p => p.sub_category === activeTab);
 
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== "undefined" && window.innerWidth >= 768);
 
