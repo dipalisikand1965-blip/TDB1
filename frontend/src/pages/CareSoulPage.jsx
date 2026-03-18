@@ -30,6 +30,7 @@ import GuidedCarePaths from "../components/care/GuidedCarePaths";
 import CareConciergeSection from "../components/care/CareConciergeSection";
 import CareConciergeModal from "../components/care/CareConciergeModal";
 import CareNearMe from "../components/care/CareNearMe";
+import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
@@ -1137,7 +1138,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
             <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
               {tabList.map(tab => (
                 <button key={tab} onClick={() => setActiveTab(tab)} style={{ padding:"5px 12px", borderRadius:20, border:`1px solid ${activeTab===tab?G.sage:G.border}`, background:activeTab===tab?G.sage:"#FFF", fontSize:11, fontWeight:600, color:activeTab===tab?"#fff":G.mutedText, cursor:"pointer" }}>
-                  {tab}
+                  {tab.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
                 </button>
               ))}
             </div>
@@ -1988,6 +1989,47 @@ export default function CareSoulPage() {
   const [petData, setPetData]     = useState(null);
   const [soulScore, setSoulScore] = useState(0);
   const [apiProducts, setApiProducts] = useState({});
+  const [conciergeToast, setConciergeToast] = useState(null);
+
+  // handleNearMeBook — wires "Book via Concierge" on CareNearMe cards
+  const handleNearMeBook = useCallback(async (provider, city) => {
+    try {
+      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+      const venueName = provider?.name || (city ? `a provider in ${city}` : "a grooming/care provider");
+      const ticketResp = await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          parent_id: storedUser?.id || storedUser?.email || "care_guest",
+          pet_id:    petData?.id || "unknown",
+          pillar:    "care",
+          intent_primary: "GROOMING_BOOKING",
+          life_state: "active",
+          initial_message: {
+            sender: "parent",
+            source: "Mira_OS",
+            text: `Please help book ${venueName} for ${petData?.name || "my dog"}.`,
+          },
+        }),
+      });
+      if (ticketResp.ok) {
+        const tData = await ticketResp.json();
+        await fetch(`${API_URL}/api/service_desk/handoff_to_concierge`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+          body: JSON.stringify({
+            ticket_id: tData.ticket_id,
+            concierge_queue: "GROOMING",
+            latest_mira_summary: `${petData?.name || "Dog"} owner wants to book: ${venueName}.`,
+          }),
+        });
+        setConciergeToast({ name: venueName, ticketId: tData.ticket_id, pillar: "care" });
+      }
+    } catch (err) {
+      console.error("[CareSoulPage] handleNearMeBook:", err);
+      setConciergeToast({ name: provider?.name, pillar: "care" });
+    }
+  }, [petData, token]);
 
   // Fetch all care products on mount — grouped by dimension / sub_category
   // (care products use 'dimension' field, not 'category', for page grouping)
@@ -2160,11 +2202,12 @@ export default function CareSoulPage() {
           )}
 
           {activeTab === "find-care" && (
-            <CareNearMe pet={petData} token={token} />
+            <CareNearMe pet={petData} token={token} onBook={handleNearMeBook} />
           )}
 
         </div>
       </div>
+    <ConciergeToast toast={conciergeToast} onClose={() => setConciergeToast(null)} />
     </PillarPageLayout>
   );
 }

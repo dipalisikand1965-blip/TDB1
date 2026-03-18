@@ -245,12 +245,13 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 
 ## COMPLETED SESSION LOG
 
-### Session 72 (Feb 2026) — Personalised Tab All Pillars + Play Category Strip Fix
-- **Play Category Strip fix**: `PlayCategoryStrip` now lifts state to `PlaySoulPage` — clicking a category pill calls `setOpenDim` and opens `DimExpandedModal`. Added `data-testid` on all strip buttons.
-- **Personalised tab — Dine, Care, Go, Play**: Added "✦ Personalised" tab toggle to all four pillar `DimExpanded` components. Shows `PersonalisedBreedSection` (breed-specific soul products) when selected. Each pillar uses correct accent color.
-- **Imports**: Added `PersonalisedBreedSection` import to `DineSoulPage`, `CareSoulPage`, `GoSoulPage`.
-- **Documentation cleanup**: Deleted erroneous `/app/complete.html`. Updated PRD.md.
-- **Breed products in DB**: 396 breed-specific soul products seeded (100 dine, 96 care, 100 go, 100 play) via `seed_breed_products.py`.
+### Session 72 (Feb 2026) — Concierge CTAs + Sub-cat Formatting + Soul Go Personalised
+- **ConciergeToast**: New `/app/frontend/src/components/common/ConciergeToast.jsx` — bottom fixed toast slides up when "Book via Concierge" clicked on any nearby place card. Auto-dismisses in 5s.
+- **handleNearMeBook wired**: GoSoulPage (TRAVEL queue), CareSoulPage (GROOMING queue), PlaySoulPage (PLAY queue) all now POST to `/api/service_desk/attach_or_create_ticket` + `handoff_to_concierge` and show `ConciergeToast`.
+- **Sub-category names fixed**: All DimExpanded tab labels now use `.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())` — `boarding_comfort` → `Boarding Comfort` across all 4 pillars.
+- **GoContentModal Personalised tab**: Added Products/Personalised toggle to ALL GoContentModal categories (not just soul). Shows `PersonalisedBreedSection` with breed-specific go products when "Personalised" is selected.
+- **Play category strip connected** (carried over from Session 71): PlayCategoryStrip pills now trigger `setOpenDim` to open DimExpandedModal.
+- **Personalised tab in all DimExpanded**: All 4 pillars' inline DimExpanded panels now have Products/Personalised toggle showing PersonalisedBreedSection.
 
 ### Session 71 (Mar 18, 2026) — PLAY Pillar All 8 UI Issues Fixed
 - **Play Pillar `/play` route**: Full 3-tab page (Play & Explore | Find Play | Book a Service)

@@ -29,6 +29,7 @@ import PlayCategoryStrip from "../components/play/PlayCategoryStrip";
 import GuidedPlayPaths from "../components/play/GuidedPlayPaths";
 import PlayConciergeSection from "../components/play/PlayConciergeSection";
 import PlayNearMe from "../components/play/PlayNearMe";
+import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
@@ -655,7 +656,7 @@ function DimExpandedModal({ dim, pet, onClose, apiProducts = {} }) {
             {tabList.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
                 style={{ padding:"5px 12px", borderRadius:20, border:`1px solid ${activeTab===tab?G.orange:G.light}`, background:activeTab===tab?G.orange:G.cream, fontSize:11, fontWeight:600, color:activeTab===tab?"#fff":G.mid, cursor:"pointer" }}>
-                {tab}
+                {tab.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
               </button>
             ))}
           </div>
@@ -1158,6 +1159,47 @@ const PlaySoulPage = () => {
   const [petData, setPetData]         = useState(null);
   const [soulScore, setSoulScore]     = useState(0);
   const [apiProducts, setApiProducts] = useState({});
+  const [conciergeToast, setConciergeToast] = useState(null);
+
+  // handleNearMeBook — wires "Book via Concierge" on PlayNearMe cards
+  const handlePlayBook = useCallback(async (spot, city) => {
+    try {
+      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+      const venueName = spot?.name || (city ? `a park in ${city}` : "a play spot");
+      const ticketResp = await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          parent_id: storedUser?.id || storedUser?.email || "play_guest",
+          pet_id:    petData?.id || "unknown",
+          pillar:    "play",
+          intent_primary: "PLAY_BOOKING",
+          life_state: "active",
+          initial_message: {
+            sender: "parent",
+            source: "Mira_OS",
+            text: `Please help book or enquire about ${venueName} for ${petData?.name || "my dog"}.`,
+          },
+        }),
+      });
+      if (ticketResp.ok) {
+        const tData = await ticketResp.json();
+        await fetch(`${API_URL}/api/service_desk/handoff_to_concierge`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+          body: JSON.stringify({
+            ticket_id: tData.ticket_id,
+            concierge_queue: "PLAY",
+            latest_mira_summary: `${petData?.name || "Dog"} owner wants to visit: ${venueName}.`,
+          }),
+        });
+        setConciergeToast({ name: venueName, ticketId: tData.ticket_id, pillar: "play" });
+      }
+    } catch (err) {
+      console.error("[PlaySoulPage] handlePlayBook:", err);
+      setConciergeToast({ name: spot?.name, pillar: "play" });
+    }
+  }, [petData, token]);
 
   // Fetch ALL play products and group by dim.id (mirrors GoSoulPage pattern)
   useEffect(() => {
@@ -1328,7 +1370,7 @@ const PlaySoulPage = () => {
 
         {activeTab === "find-play" && (
           <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-            <PlayNearMe pet={petData} token={token} />
+            <PlayNearMe pet={petData} token={token} onBook={handlePlayBook} />
           </div>
         )}
 
@@ -1338,6 +1380,7 @@ const PlaySoulPage = () => {
       {activeDim && (
         <DimExpandedModal dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
       )}
+      <ConciergeToast toast={conciergeToast} onClose={() => setConciergeToast(null)} />
     </PillarPageLayout>
   );
 };

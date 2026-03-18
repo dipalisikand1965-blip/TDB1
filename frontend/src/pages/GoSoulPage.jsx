@@ -36,6 +36,7 @@ import GoCategoryStrip from "../components/go/GoCategoryStrip";
 import GuidedGoPaths from "../components/go/GuidedGoPaths";
 import GoConciergeSection from "../components/go/GoConciergeSection";
 import PetFriendlyStays from "../components/go/PetFriendlyStays";
+import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
@@ -944,7 +945,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
               {tabList.map(tab => (
                 <button key={tab} onClick={() => setActiveTab(tab)}
                   style={{ padding:"5px 12px", borderRadius:20, border:`1px solid ${activeTab===tab?G.teal:G.light}`, background:activeTab===tab?G.teal:G.cream, fontSize:11, fontWeight:600, color:activeTab===tab?"#fff":G.teal, cursor:"pointer" }}>
-                  {tab}
+                  {tab.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
                 </button>
               ))}
             </div>
@@ -1790,6 +1791,47 @@ const GoSoulPage = () => {
   const [petData, setPetData]       = useState(null);
   const [soulScore, setSoulScore]   = useState(0);
   const [apiProducts, setApiProducts] = useState({});
+  const [conciergeToast, setConciergeToast] = useState(null);
+
+  // handleNearMeBook — wires "Book via Concierge" on any nearby place card
+  const handleNearMeBook = useCallback(async (spot, city) => {
+    try {
+      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+      const venueName = spot?.name || (city ? `a spot in ${city}` : "a travel stay");
+      const ticketResp = await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          parent_id: storedUser?.id || storedUser?.email || "go_guest",
+          pet_id:    petData?.id || "unknown",
+          pillar:    "go",
+          intent_primary: "STAY_BOOKING",
+          life_state: "active",
+          initial_message: {
+            sender: "parent",
+            source: "Mira_OS",
+            text: `Please help book or enquire about ${venueName} for ${petData?.name || "my dog"}.`,
+          },
+        }),
+      });
+      if (ticketResp.ok) {
+        const tData = await ticketResp.json();
+        await fetch(`${API_URL}/api/service_desk/handoff_to_concierge`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+          body: JSON.stringify({
+            ticket_id: tData.ticket_id,
+            concierge_queue: "TRAVEL",
+            latest_mira_summary: `${petData?.name || "Dog"} owner wants to stay at: ${venueName}.`,
+          }),
+        });
+        setConciergeToast({ name: venueName, ticketId: tData.ticket_id, pillar: "go" });
+      }
+    } catch (err) {
+      console.error("[GoSoulPage] handleNearMeBook:", err);
+      setConciergeToast({ name: spot?.name, pillar: "go" });
+    }
+  }, [petData, token]);
 
   // Fetch Go products — group by dim.id using keyword matching (mirrors CareSoulPage)
   useEffect(() => {
@@ -1977,15 +2019,13 @@ const GoSoulPage = () => {
           <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
             <PetFriendlyStays
               pet={petData}
-              onBook={(spot) => {
-                const evt = new CustomEvent("goOpenConcierge", { detail: { service:"planning", venue:spot?.name } });
-                window.dispatchEvent(evt);
-              }}
+              onBook={handleNearMeBook}
             />
           </div>
         )}
 
       </div>
+    <ConciergeToast toast={conciergeToast} onClose={() => setConciergeToast(null)} />
     </PillarPageLayout>
   );
 };
