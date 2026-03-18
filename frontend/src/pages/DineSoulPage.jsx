@@ -1399,7 +1399,7 @@ const DineSoulPage = () => {
   }, [contextPets, currentPet, setCurrentPet]);
 
   useEffect(() => {
-    if (currentPet) { setPetData(currentPet); setSoulScore(currentPet.soul_score || currentPet.overall_score || 0); }
+    if (currentPet) { setPetData(currentPet); setSoulScore(currentPet.overall_score || currentPet.soul_score || 0); }
   }, [currentPet]);
 
   useEffect(() => {

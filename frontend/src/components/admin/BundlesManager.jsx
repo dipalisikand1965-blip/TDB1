@@ -610,7 +610,7 @@ const BundlesManager = () => {
       
       {/* Create/Edit Modal */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingBundle ? 'Edit Bundle' : 'Create New Bundle'}
