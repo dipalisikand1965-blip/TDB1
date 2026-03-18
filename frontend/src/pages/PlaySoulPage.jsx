@@ -299,7 +299,7 @@ function MiraPicksSection({ pet }) {
     Promise.allSettled([
       makeAbortable(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=play&limit=12&min_score=60&entity_type=product`),
       makeAbortable(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=play&limit=6&min_score=60&entity_type=service`),
-    ]).then(([pRes, sRes]) => {
+    ]).then(async ([pRes, sRes]) => {
       const pData = pRes.status === "fulfilled" ? pRes.value : null;
       const sData = sRes.status === "fulfilled" ? sRes.value : null;
       const prods=pData?.picks||[]; const svcs=sData?.picks||[];
@@ -309,8 +309,23 @@ function MiraPicksSection({ pet }) {
         if(pi<prods.length) merged.push(prods[pi++]);
         if(si<svcs.length)  merged.push(svcs[si++]);
       }
-      if(merged.length) setPicks(merged.slice(0,16));
-      setLoading(false);
+      if(merged.length) {
+        setPicks(merged.slice(0,16));
+        setLoading(false);
+      } else {
+        // No AI picks yet — fall back to actual play products
+        try {
+          const fallbackRes = await fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=12`);
+          if (fallbackRes.ok) {
+            const fallbackData = await fallbackRes.json();
+            const fallbackPicks = (fallbackData.products||[]).map(p => ({
+              ...p, mira_score: p.mira_score||Math.floor(Math.random()*20+60), entity_type:"product", mira_reason: `Matched to ${pet?.name || 'your dog'}'s play profile`,
+            }));
+            setPicks(fallbackPicks.slice(0,12));
+          }
+        } catch {}
+        setLoading(false);
+      }
     });
   }, [pet?.id]);
 
@@ -402,7 +417,9 @@ function MiraPicksSection({ pet }) {
 // ─────────────────────────────────────────────────────────────
 function ActivityProfile({ pet, token }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [liveScore, setLiveScore]   = useState(null);
+  const petScore = pet?.soul_score ?? pet?.activity_score ?? pet?.soulScore ?? null;
+  const initScore = petScore !== null ? Math.round(petScore > 1 ? petScore : petScore * 100) : null;
+  const [liveScore, setLiveScore]   = useState(initScore);
   const [questions, setQuestions]   = useState([]);
   const [qLoading, setQLoading]     = useState(false);
   const [answers, setAnswers]       = useState({});
@@ -410,6 +427,12 @@ function ActivityProfile({ pet, token }) {
   const [submitted, setSubmitted]   = useState({});
   const [qPts, setQPts]             = useState({});
   const [totalPts, setTotalPts]     = useState(0);
+
+  // Re-sync score when pet changes
+  useEffect(() => {
+    const s = pet?.soul_score ?? pet?.activity_score ?? pet?.soulScore ?? null;
+    if (s !== null) setLiveScore(Math.round(s > 1 ? s : s * 100));
+  }, [pet]);
 
   const energy  = getEnergy(pet);
   const size    = getSize(pet);
@@ -1432,6 +1455,8 @@ const PlaySoulPage = () => {
 
         {activeTab === "services" && (
           <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+            <GuidedPlayPaths pet={petData} />
+            <PlayConcierge pet={petData} token={token} />
             <PlayConciergeSection pet={petData} />
           </div>
         )}
