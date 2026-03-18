@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://soul-page-sync.preview.emergentagent.com/mira-demo**
+**https://play-breed-tips.preview.emergentagent.com/mira-demo**
 
 ---
 
