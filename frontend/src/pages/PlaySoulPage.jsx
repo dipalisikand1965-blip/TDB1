@@ -36,23 +36,23 @@ import SharedProductCard, { ProductDetailModal } from "../components/ProductCard
 // COLOUR SYSTEM — Vibrant Green + Orange
 // ─────────────────────────────────────────────────────────────
 const G = {
-  deep:       "#1B4332",
-  mid:        "#2D6A4F",
-  green:      "#52B788",
-  light:      "#95D5B2",
-  pale:       "#D8F3DC",
-  cream:      "#F0FFF4",
+  deep:       "#7B2D00",
+  mid:        "#7B3F00",
+  green:      "#E76F51",
+  light:      "#FFAD9B",
+  pale:       "#FFF0EA",
+  cream:      "#FFF8F5",
   orange:     "#E76F51",
   yellow:     "#FFB703",
-  pageBg:     "#F0FFF4",
-  border:     "rgba(82,183,136,0.18)",
-  borderLight:"rgba(82,183,136,0.10)",
-  darkText:   "#1B4332",
-  mutedText:  "#4A7C6A",
-  hintText:   "#6A9A7A",
+  pageBg:     "#FFF8F5",
+  border:     "rgba(231,111,81,0.18)",
+  borderLight:"rgba(231,111,81,0.10)",
+  darkText:   "#7B2D00",
+  mutedText:  "#8B4513",
+  hintText:   "#8B4513",
   whiteDim:   "rgba(255,255,255,0.65)",
-  greenBg:    "rgba(82,183,136,0.10)",
-  greenBorder:"rgba(82,183,136,0.28)",
+  greenBg:    "rgba(231,111,81,0.10)",
+  greenBorder:"rgba(231,111,81,0.28)",
 };
 
 const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
@@ -95,7 +95,7 @@ function getPlayDims(pet) {
     {
       id:"outings", icon:"🌳", label:"Outings & Parks",
       sub: energy ? `${cap(energy)} energy · parks & trails` : "Parks, beaches & adventures",
-      badge:"Explore", badgeBg:G.mid, glowColor:"rgba(82,183,136,0.28)", glow:true,
+      badge:"Explore", badgeBg:G.mid, glowColor:"rgba(231,111,81,0.28)", glow:true,
       mira: energy
         ? `${energy==="high"||energy==="very high"?"I've prioritised off-lead parks and adventure trails for {name}'s high energy.":"I've found calm parks and gentle trails that match {name}'s pace."}`
         : `Tell me {name}'s energy level and I'll find the perfect parks and trails nearby.`,
@@ -143,7 +143,7 @@ function getPlayDims(pet) {
     {
       id:"soul", icon:"✨", label:"Soul Play",
       sub: breed ? `${breed} bandana & playdate card` : "Breed bandana & playdate card",
-      badge:"Made for you", badgeBg:G.mid, glowColor:"rgba(82,183,136,0.22)", glow:true,
+      badge:"Made for you", badgeBg:G.mid, glowColor:"rgba(231,111,81,0.22)", glow:true,
       mira:`{name}'s breed bandana and personalised playdate card — wear on every outing, send before every playdate.`,
     },
   ];
@@ -230,7 +230,7 @@ function MiraImagineCard({ card, pet, token }) {
         <p style={{ fontSize:12, color:"rgba(255,255,255,0.60)", marginBottom:6, lineHeight:1.5, flex:1 }}>{card.desc}</p>
         <p style={{ fontSize:11, fontWeight:600, color:G.light, fontStyle:"italic", marginBottom:12 }}>{card.reason}</p>
         {requested
-          ? <div style={{ borderRadius:10, padding:8, fontSize:11, fontWeight:700, background:"rgba(149,213,178,0.20)", border:`1px solid ${G.light}40`, color:G.light, display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
+          ? <div style={{ borderRadius:10, padding:8, fontSize:11, fontWeight:700, background:"rgba(255,173,155,0.20)", border:`1px solid ${G.light}40`, color:G.light, display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
               <Check size={13} /> Sent to Concierge!
             </div>
           : <button onClick={handleRequest} disabled={sending} style={{ width:"100%", borderRadius:10, padding:8, fontSize:11, fontWeight:700, background:sending?`${G.green}60`:`linear-gradient(135deg,${G.green},${G.mid})`, border:"none", color:"#fff", cursor:sending?"wait":"pointer", opacity:sending?0.7:1, display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
@@ -260,12 +260,12 @@ function MiraPicksSection({ pet }) {
 
   const miraImagines = [
     energy==="high"||energy==="very high"
-      ? { emoji:"⚡", bg:`linear-gradient(135deg,${G.deep},#0a2a1a)`, name:`High-Energy Outlet Pack`, desc:`Agility set, longline lead, and fetch launcher — built to drain ${petName}'s energy the right way`, reason:`Because ${petName} has high energy` }
+      ? { emoji:"⚡", bg:`linear-gradient(135deg,${G.deep},#4A1800)`, name:`High-Energy Outlet Pack`, desc:`Agility set, longline lead, and fetch launcher — built to drain ${petName}'s energy the right way`, reason:`Because ${petName} has high energy` }
       : { emoji:"🌳", bg:`linear-gradient(135deg,${G.deep},${G.mid})`, name:`Park Day Starter Pack`, desc:`Everything for a perfect park day — bowl, treats, lead, and a toy`, reason:`Because every dog deserves a great park day` },
     senior
-      ? { emoji:"🌸", bg:`linear-gradient(135deg,#0a1a14,${G.deep})`, name:`Senior Active Living Kit`, desc:`Balance disc, paw wax, and post-swim towel — keeping ${petName} mobile and comfortable`, reason:`Because ${petName} is a senior dog` }
-      : { emoji:"💪", bg:`linear-gradient(135deg,#0a1a14,#1B4332)`, name:`Fitness Starter Kit`, desc:`4-week fitness plan + agility starter set — Mira's programme for ${petName}`, reason:`Because fitness changes everything` },
-    { emoji:"🐾", bg:`linear-gradient(135deg,${G.deep},#1a2a14)`, name:`Playdate Ready Bundle`, desc:`Playdate starter pack + personalised bandana + invitation cards — ${petName}'s social starter kit`, reason:`Because ${petName} deserves dog friends` },
+      ? { emoji:"🌸", bg:`linear-gradient(135deg,#4A1800,${G.deep})`, name:`Senior Active Living Kit`, desc:`Balance disc, paw wax, and post-swim towel — keeping ${petName} mobile and comfortable`, reason:`Because ${petName} is a senior dog` }
+      : { emoji:"💪", bg:`linear-gradient(135deg,#4A1800,#7B2D00)`, name:`Fitness Starter Kit`, desc:`4-week fitness plan + agility starter set — Mira's programme for ${petName}`, reason:`Because fitness changes everything` },
+    { emoji:"🐾", bg:`linear-gradient(135deg,${G.deep},#4A1800)`, name:`Playdate Ready Bundle`, desc:`Playdate starter pack + personalised bandana + invitation cards — ${petName}'s social starter kit`, reason:`Because ${petName} deserves dog friends` },
     { emoji:"🏊", bg:`linear-gradient(135deg,#0a1a26,#0d2a4a)`, name:`Swimming Safety Bundle`, desc:`Life jacket, microfibre towel, and ear protectors — swim safely anywhere`, reason:`Because swimming is the best workout` },
   ].filter(Boolean).slice(0,4);
 
@@ -552,7 +552,7 @@ function ActivityProfile({ pet, token }) {
                         {q.type==="select" && (
                           <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:8 }}>
                             {(q.options||[]).map(opt => (
-                              <button key={opt} onClick={()=>handleAnswer(q.question_id,opt,"select")} style={{ borderRadius:20, padding:"5px 12px", fontSize:11, fontWeight:600, background:ans===opt?"rgba(82,183,136,0.25)":"rgba(255,255,255,0.07)", border:ans===opt?`1.5px solid ${G.green}`:"1px solid rgba(255,255,255,0.15)", color:ans===opt?G.pale:"rgba(255,255,255,0.72)", cursor:"pointer" }}>{opt}</button>
+                              <button key={opt} onClick={()=>handleAnswer(q.question_id,opt,"select")} style={{ borderRadius:20, padding:"5px 12px", fontSize:11, fontWeight:600, background:ans===opt?"rgba(231,111,81,0.25)":"rgba(255,255,255,0.07)", border:ans===opt?`1.5px solid ${G.green}`:"1px solid rgba(255,255,255,0.15)", color:ans===opt?G.pale:"rgba(255,255,255,0.72)", cursor:"pointer" }}>{opt}</button>
                             ))}
                           </div>
                         )}
@@ -560,7 +560,7 @@ function ActivityProfile({ pet, token }) {
                           <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:8 }}>
                             {(q.options||[]).slice(0,6).map(opt => {
                               const selArr=ans||[];
-                              return <button key={opt} onClick={()=>handleAnswer(q.question_id,opt,"multi_select")} style={{ borderRadius:20, padding:"5px 12px", fontSize:11, fontWeight:600, background:selArr.includes(opt)?"rgba(82,183,136,0.25)":"rgba(255,255,255,0.07)", border:selArr.includes(opt)?`1.5px solid ${G.green}`:"1px solid rgba(255,255,255,0.15)", color:selArr.includes(opt)?G.pale:"rgba(255,255,255,0.72)", cursor:"pointer" }}>{opt}</button>;
+                              return <button key={opt} onClick={()=>handleAnswer(q.question_id,opt,"multi_select")} style={{ borderRadius:20, padding:"5px 12px", fontSize:11, fontWeight:600, background:selArr.includes(opt)?"rgba(231,111,81,0.25)":"rgba(255,255,255,0.07)", border:selArr.includes(opt)?`1.5px solid ${G.green}`:"1px solid rgba(255,255,255,0.15)", color:selArr.includes(opt)?G.pale:"rgba(255,255,255,0.72)", cursor:"pointer" }}>{opt}</button>;
                             })}
                           </div>
                         )}
@@ -594,8 +594,7 @@ function ActivityProfile({ pet, token }) {
 // ─────────────────────────────────────────────────────────────
 function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const petName   = pet?.name || "your dog";
-  const catName   = DIM_ID_TO_CATEGORY[dim.id] || "Play Essentials";
-  const rawByTab  = apiProducts[catName] || {};
+  const rawByTab  = apiProducts[dim.id] || {};
   const allRaw    = Object.values(rawByTab).flat();
   const allergies = getAllergies(pet);
   const size      = getSize(pet);
@@ -677,7 +676,7 @@ const PLAY_SERVICES = [
   { id:"weekend",  icon:"🌄", name:"Weekend Outing",        tagline:"Plan the perfect day out",           desc:"Beach, hills, forest or city — Mira plans the route, rest stops, and what to pack for {petName}.", accentColor:"#C9973A", steps:4, illustrationBg:`linear-gradient(135deg,#FFFDE7,#FFE082)`, category:"enjoy" },
   // FIT
   { id:"walking",  icon:"🦮", name:"Dog Walking",           tagline:"Daily, monthly & running options",   desc:"Book a professional dog walker or let Mira build {petName}'s perfect walking routine.", accentColor:"#2D6A4F", steps:3, illustrationBg:`linear-gradient(135deg,#D8F3DC,#95D5B2)`, free:true, category:"fit" },
-  { id:"fitness",  icon:"💪", name:"Fitness Assessment",    tagline:"Mira's personalised 4-week plan",    desc:"Complete fitness assessment → personalised programme → weekly check-ins. Built for {petName}.", accentColor:"#1B4332", steps:4, illustrationBg:`linear-gradient(135deg,#E8F5E9,#A5D6A7)`, category:"fit" },
+  { id:"fitness",  icon:"💪", name:"Fitness Assessment",    tagline:"Mira's personalised 4-week plan",    desc:"Complete fitness assessment → personalised programme → weekly check-ins. Built for {petName}.", accentColor:"#7B2D00", steps:4, illustrationBg:`linear-gradient(135deg,#E8F5E9,#A5D6A7)`, category:"fit" },
   { id:"swimming", icon:"🏊", name:"Swimming & Hydro",      tagline:"Pool, open water & hydrotherapy",    desc:"From first swim to therapeutic hydrotherapy — Mira finds the right session for {petName}.", accentColor:"#1565C0", steps:4, illustrationBg:`linear-gradient(135deg,#E3F2FD,#90CAF9)`, category:"fit" },
   { id:"agility",  icon:"🏃", name:"Agility & Training",    tagline:"Obstacle courses & sport training",  desc:"Foundation course to competition — Mira builds {petName}'s agility journey step by step.", accentColor:"#E76F51", steps:4, illustrationBg:`linear-gradient(135deg,#FFF3EE,#FFD6C8)`, category:"fit" },
 ];
@@ -1018,7 +1017,7 @@ function PlayConcierge({ pet, token }) {
       {/* Dark CTA */}
       <div style={{ background:G.deep, borderRadius:16, padding:24, display:"flex", alignItems:"flex-start", gap:20, marginTop:8 }}>
         <div style={{ flex:1 }}>
-          <div style={{ display:"inline-flex", alignItems:"center", gap:5, background:"rgba(149,213,178,0.20)", border:"1px solid rgba(149,213,178,0.40)", borderRadius:20, padding:"4px 12px", color:G.light, fontSize:11, fontWeight:600, marginBottom:12 }}>🌳 Play Concierge®</div>
+          <div style={{ display:"inline-flex", alignItems:"center", gap:5, background:"rgba(255,173,155,0.20)", border:"1px solid rgba(255,173,155,0.40)", borderRadius:20, padding:"4px 12px", color:G.light, fontSize:11, fontWeight:600, marginBottom:12 }}>🌳 Play Concierge®</div>
           <div style={{ fontSize:20, fontWeight:800, color:"#fff", marginBottom:10, fontFamily:"Georgia,serif", lineHeight:1.2 }}>
             Let <span style={{ color:G.yellow }}>{petName}</span> play. Every. Single. Day.
           </div>
@@ -1039,7 +1038,7 @@ function PlayConcierge({ pet, token }) {
           </div>
         </div>
         <div style={{ flexShrink:0, textAlign:"center", minWidth:80 }}>
-          <div style={{ width:72, height:72, borderRadius:"50%", background:"rgba(149,213,178,0.20)", border:`2px solid rgba(149,213,178,0.40)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:32, margin:"0 auto 8px" }}>🌳</div>
+          <div style={{ width:72, height:72, borderRadius:"50%", background:"rgba(255,173,155,0.20)", border:`2px solid rgba(255,173,155,0.40)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:32, margin:"0 auto 8px" }}>🌳</div>
           <div style={{ fontSize:18, fontWeight:900, color:G.yellow }}>100%</div>
           <div style={{ fontSize:10, color:G.whiteDim }}>joyful</div>
         </div>
@@ -1078,6 +1077,31 @@ function NoPetState({ onAddPet }) {
 }
 
 // ─────────────────────────────────────────────────────────────
+// PLAY TAB BAR — mirrors GoTabBar, separate from hero
+// ─────────────────────────────────────────────────────────────
+function PlayTabBar({ active, onChange }) {
+  const tabs = [
+    { id: "play",      label: "🌳 Play & Explore" },
+    { id: "find-play", label: "📍 Find Play" },
+    { id: "services",  label: "💪 Book a Service" },
+  ];
+  return (
+    <div style={{ background:"#fff", borderBottom:"1px solid #F0F0F0", display:"flex", justifyContent:"center", position:"sticky", top:58, zIndex:100, overflowX:"auto" }}>
+      {tabs.map(tab => {
+        const sel = active === tab.id;
+        return (
+          <button key={tab.id} onClick={() => onChange(tab.id)}
+            data-testid={`play-tab-${tab.id}`}
+            style={{ padding:"14px 20px", background:"none", border:"none", borderBottom:sel?`2.5px solid ${G.orange}`:"2.5px solid transparent", color:sel?G.mid:G.hintText, fontSize:13, fontWeight:sel?700:400, cursor:"pointer", whiteSpace:"nowrap" }}>
+            {tab.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
 // MAIN PAGE
 // ─────────────────────────────────────────────────────────────
 const PlaySoulPage = () => {
@@ -1092,26 +1116,37 @@ const PlaySoulPage = () => {
   const [soulScore, setSoulScore]     = useState(0);
   const [apiProducts, setApiProducts] = useState({});
 
+  // Fetch ALL play products and group by dim.id (mirrors GoSoulPage pattern)
   useEffect(() => {
-    const PLAY_CATS = ["Play Essentials", "Fitness & Training", "Soul Play Products"];
-    Promise.all(
-      PLAY_CATS.map(cat =>
-        fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=100&category=${encodeURIComponent(cat)}`)
-          .then(r=>r.ok?r.json():null).catch(()=>null)
-      )
-    ).then(results => {
-      const grouped = {};
-      results.forEach(data => {
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=500`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
         if (!data?.products?.length) return;
+        const DIM_IDS = ["outings", "playdates", "walking", "fitness", "swimming", "soul"];
+        const grouped = {};
         data.products.forEach(p => {
-          const cat=p.category||""; const sub=p.sub_category||"";
-          if (!grouped[cat]) grouped[cat]={};
-          if (!grouped[cat][sub]) grouped[cat][sub]=[];
-          grouped[cat][sub].push(p);
+          const cat = (p.category || "").toLowerCase().trim();
+          const sub = (p.sub_category || "").toLowerCase().trim();
+          let dimId = null;
+          // sub_category takes priority
+          if (sub === "soul") dimId = "soul";
+          else if (DIM_IDS.includes(sub)) dimId = sub;
+          // then category
+          else if (cat === "soul") dimId = "soul";
+          else if (DIM_IDS.includes(cat)) dimId = cat;
+          // special mappings
+          else if (cat === "breed-play_bandanas" || cat === "breed-playdate_cards") dimId = "soul";
+          else if (cat === "enjoy") dimId = "outings";
+          else if (cat === "fit") dimId = "fitness";
+          else if (cat === "toys" || cat === "gear" || cat === "accessories") dimId = "outings";
+          else dimId = "outings"; // fallback
+          if (!grouped[dimId]) grouped[dimId] = {};
+          const subKey = p.sub_category || "General";
+          if (!grouped[dimId][subKey]) grouped[dimId][subKey] = [];
+          grouped[dimId][subKey].push(p);
         });
-      });
-      setApiProducts(grouped);
-    }).catch(e=>console.error("[PlaySoulPage] products fetch error:",e));
+        setApiProducts(grouped);
+      }).catch(e => console.error("[PlaySoulPage] products fetch:", e));
   }, []);
 
   useEffect(() => {
@@ -1136,6 +1171,16 @@ const PlaySoulPage = () => {
     return () => window.removeEventListener("soulScoreUpdated",handle);
   }, [petData?.id,token]);
 
+  // Auto-trigger Mira scoring for play pillar on first visit
+  useEffect(() => {
+    if (!petData?.id) return;
+    fetch(`${API_URL}/api/mira/score-for-pet`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify({ pet_id: petData.id, pillar: "play", entity_types: ["product", "service"] }),
+    }).catch(() => {});
+  }, [petData?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleAddPet = useCallback(() => {
     navigate(isAuthenticated?"/dashboard/pets?action=add":"/login?redirect=/play");
   }, [isAuthenticated,navigate]);
@@ -1153,61 +1198,98 @@ const PlaySoulPage = () => {
         <meta name="description" content={`Parks, playdates, fitness and adventures for ${petData.name} — all arranged by Mira.`} />
       </Helmet>
 
-      <PlayHero pet={petData} soulScore={soulScore} activeTab={activeTab} onTabChange={setActiveTab} />
+      <PlayHero pet={petData} soulScore={soulScore} />
 
-      <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
+      <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>
 
         <PlayCategoryStrip pet={petData} />
 
-        {activeTab === "play" && (
-          <>
-            <ActivityProfile pet={petData} token={token} />
-            <MiraPicksSection pet={petData} />
+        <PlayTabBar active={activeTab} onChange={setActiveTab} />
 
-            <section style={{ paddingBottom:16 }}>
-              <h2 style={{ fontSize:"clamp(1.5rem,4vw,2rem)", fontWeight:800, color:G.darkText, marginBottom:6, fontFamily:"Georgia,'Times New Roman',serif" }}>
-                How does <span style={{ color:G.green }}>{petData.name}</span> love to play?
+        {activeTab === "play" && (
+          <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+            <ActivityProfile pet={petData} token={token} />
+
+            <section style={{ paddingBottom:16 }} data-testid="play-explore-section">
+              <h2 style={{ fontSize:"clamp(1.375rem,3vw,1.875rem)", fontWeight:800, color:G.darkText, marginBottom:6, fontFamily:"Georgia,serif", lineHeight:1.2 }}>
+                How does <span style={{ color:G.orange }}>{petData.name}</span> love to play?
               </h2>
-              <p style={{ fontSize:14, color:"#888", lineHeight:1.5 }}>
+              <p style={{ fontSize:13, color:G.mutedText, lineHeight:1.6 }}>
                 Choose a dimension — everything inside is matched to {petData.name}'s energy, size, and play style.{" "}
                 <span style={{ color:G.mid, fontWeight:600 }}>Glowing ones match what {petData.name} needs most.</span>
               </p>
             </section>
 
+            {/* Mira's Picks */}
+            <MiraPicksSection pet={petData} />
+
+            {/* "Play for [name]" label */}
+            <div style={{ fontSize:"clamp(1.125rem,2.5vw,1.375rem)", fontWeight:800, color:G.darkText, marginBottom:4, fontFamily:"Georgia,serif" }}>
+              Play for <span style={{ color:G.orange }}>{petData.name}</span>
+            </div>
+            <div style={{ fontSize:12, color:"#888", marginBottom:16 }}>
+              6 dimensions, matched to {petData.name}'s energy and play profile
+            </div>
+
             {/* Dimension grid — 2→3→6 */}
             <div style={{ display:"grid", gap:10, marginBottom:28 }} className="play-dims-grid">
               <style>{`
                 .play-dims-grid{grid-template-columns:repeat(2,1fr)}
-                @media(min-width:640px){.play-dims-grid{grid-template-columns:repeat(3,1fr)}}
-                @media(min-width:1024px){.play-dims-grid{grid-template-columns:repeat(6,1fr)}}
+                @media(min-width:480px){.play-dims-grid{grid-template-columns:repeat(4,1fr)}}
+                @media(min-width:768px){.play-dims-grid{grid-template-columns:repeat(4,1fr)}}
+                @keyframes spin{to{transform:rotate(360deg)}}
               `}</style>
-              {playDims.map(dim => (
-                <div key={dim.id}
-                  onClick={() => setOpenDim(openDim===dim.id?null:dim.id)}
-                  style={{ background:"#fff", borderRadius:12, padding:"14px 10px", cursor:"pointer", position:"relative", textAlign:"center", opacity:dim.glow?1:0.60, boxShadow:dim.glow&&openDim!==dim.id?`0 0 18px ${dim.glowColor}`:"none", border:openDim===dim.id?`2px solid ${G.green}`:"2px solid transparent", transition:"all 0.15s" }}
-                  data-testid={`play-dim-${dim.id}`}>
-                  {dim.glow && <div style={{ position:"absolute", top:8, right:8, width:7, height:7, borderRadius:"50%", background:G.light }} />}
-                  <div style={{ fontSize:22, marginBottom:8 }}>{dim.icon}</div>
-                  <div style={{ fontSize:12, fontWeight:700, color:G.darkText, marginBottom:3, lineHeight:1.2 }}>{dim.label}</div>
-                  <div style={{ fontSize:10, color:G.mutedText, lineHeight:1.3, marginBottom:6 }}>{t(dim.sub, petData.name)}</div>
-                  <span style={{ fontSize:9, fontWeight:700, borderRadius:20, padding:"2px 7px", display:"inline-block", background:`${dim.badgeBg}22`, color:dim.badgeBg }}>{dim.badge}</span>
-                  <span style={{ position:"absolute", bottom:8, right:8, fontSize:12, color:"rgba(0,0,0,0.20)", transform:openDim===dim.id?"rotate(90deg)":"none", transition:"transform 0.2s" }}>›</span>
-                </div>
-              ))}
+              {playDims.map(dim => {
+                const isOpen = openDim === dim.id;
+                return (
+                  <div key={dim.id}
+                    onClick={() => setOpenDim(isOpen ? null : dim.id)}
+                    style={{
+                      background: dim.glow ? G.cream : "#fff",
+                      border: isOpen ? `2px solid ${G.orange}` : "2px solid transparent",
+                      borderRadius:12, padding:"16px 12px", cursor:"pointer",
+                      textAlign:"center", transition:"all 0.15s", minHeight:154,
+                      boxShadow: dim.glow && !isOpen ? `0 4px 20px ${dim.glowColor}` : "none",
+                      position:"relative", opacity: dim.glow ? 1 : 0.72,
+                    }}
+                    data-testid={`play-dim-${dim.id}`}>
+                    {dim.glow && !isOpen && (
+                      <div style={{ position:"absolute", top:8, right:8, width:8, height:8, borderRadius:"50%", background:G.light, boxShadow:`0 0 6px ${G.light}` }} />
+                    )}
+                    <div style={{ fontSize:28, marginBottom:10 }}>{dim.icon}</div>
+                    <div style={{ fontSize:14, fontWeight:800, color:G.darkText, marginBottom:4 }}>{dim.label}</div>
+                    <div style={{ fontSize:11, color:G.mutedText, marginBottom:8, lineHeight:1.3 }}>{t(dim.sub, petData.name)}</div>
+                    {dim.badge && (
+                      <div style={{ display:"inline-flex", alignItems:"center", background:dim.badgeBg, color:"#fff", borderRadius:20, padding:"2px 8px", fontSize:9, fontWeight:700 }}>
+                        {t(dim.badge, petData.name)}
+                      </div>
+                    )}
+                    <span style={{ position:"absolute", bottom:8, right:10, fontSize:14, color:"rgba(0,0,0,0.25)", transition:"transform 0.2s", transform:isOpen?"rotate(90deg)":"none" }}>›</span>
+                  </div>
+                );
+              })}
             </div>
 
+            {/* Expanded panel */}
             {activeDim && (
-              <DimExpanded dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
+              <div style={{ display:"grid", gridTemplateColumns:"1fr", marginBottom:8 }}>
+                <DimExpanded dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
+              </div>
             )}
 
-            <GuidedPlayPaths pet={petData} />
-          </>
+            <div style={{ marginTop:32 }}>
+              <GuidedPlayPaths pet={petData} />
+            </div>
+          </div>
         )}
 
         {activeTab === "services" && (
           <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
             <PlayConcierge pet={petData} token={token} />
             <PlayConciergeSection pet={petData} />
+            <div style={{ marginTop:40 }}>
+              <GuidedPlayPaths pet={petData} />
+            </div>
           </div>
         )}
 
@@ -1216,6 +1298,7 @@ const PlaySoulPage = () => {
             <PlayNearMe pet={petData} token={token} />
           </div>
         )}
+
       </div>
     </PillarPageLayout>
   );

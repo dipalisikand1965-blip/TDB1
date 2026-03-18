@@ -8,7 +8,7 @@ import { useAuth } from "../../context/AuthContext";
 import { API_URL } from "../../utils/api";
 import PlayConciergeModal from "./PlayConciergeModal";
 
-const G = { deep:"#1B4332", mid:"#2D6A4F", green:"#52B788", light:"#95D5B2", pale:"#D8F3DC", darkText:"#1B4332", mutedText:"#4A7C6A" };
+const G = { deep:"#7B2D00", mid:"#7B3F00", green:"#E76F51", light:"#FFAD9B", pale:"#FFF0EA", darkText:"#7B2D00", mutedText:"#8B4513" };
 
 export default function PlayConciergeSection({ pet }) {
   const [services, setServices] = useState([]);
@@ -42,7 +42,7 @@ export default function PlayConciergeSection({ pet }) {
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(240px,100%),1fr))", gap:16 }}>
           {services.map((svc,i) => (
             <div key={svc.id||i}
-              style={{ background:"#fff", borderRadius:16, overflow:"hidden", border:`1px solid rgba(82,183,136,0.15)`, cursor:"pointer", transition:"transform 0.15s" }}
+              style={{ background:"#fff", borderRadius:16, overflow:"hidden", border:`1px solid rgba(231,111,81,0.15)`, cursor:"pointer", transition:"transform 0.15s" }}
               onMouseEnter={e=>e.currentTarget.style.transform="translateY(-3px)"}
               onMouseLeave={e=>e.currentTarget.style.transform="none"}
               onClick={() => setModalSvc(svc)}>

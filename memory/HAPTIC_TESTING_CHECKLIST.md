@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://go-pillar-launch.preview.emergentagent.com/mira-demo**
+**https://play-layout-fix.preview.emergentagent.com/mira-demo**
 
 ---
 
