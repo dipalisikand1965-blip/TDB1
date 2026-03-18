@@ -3,6 +3,63 @@
 
 ---
 
+## [Mar 18, 2026] Session 82 — Care Crash Fix + Pet Photo Fix + Soul Chip Visual Improvements ✅
+
+### Bug Fixes
+- **CRASH FIX: CareSoulPage `.join is not a function`** — `anxiety_triggers` stored as string `'None really '` in Mystique's `doggy_soul_answers`. Added safe normalizer: `Array.isArray(raw) ? raw : typeof raw === 'string' ? raw.split(',').map(s=>s.trim()).filter(Boolean) : []`
+- **FIX: Mystique photo not showing on Pet Home** — `PetHomePage.jsx` used `pet.photo` but API returns `pet.photo_url`. Fixed both avatar occurrences to `pet.photo || pet.photo_url`
+- **FIX: Soul question chips not visibly selectable** — Selected state was 25% transparent orange on dark brown = invisible. Now: solid `#E76F51` orange + white 2px border + `scale(1.04)` transform = unmistakably visible. Applied to both Play and Care pages
+- **FIX: Save button not clearly enabled** — Changed from 33% transparent to `opacity: 0.5` disabled / bright orange gradient enabled with glow shadow
+- **FIX: `e.stopPropagation()` + `e.preventDefault()`** added to ALL chip click handlers (Play + Care) to prevent any event bubbling interference
+
+### Files Changed
+- `frontend/src/pages/CareSoulPage.jsx` — anxiety_triggers normalizer, chip visual fix, stopPropagation
+- `frontend/src/pages/PlaySoulPage.jsx` — chip visual fix, stopPropagation
+- `frontend/src/pages/PetHomePage.jsx` — photo_url fallback in 2 places
+
+---
+
+## [Mar 18, 2026] Session 81 — 4 Play Page Fixes: Breed Filter, Soul Score, Question Types ✅
+
+### What Was Fixed
+- **FIX: MiraPicksSection shows all breeds** — Fallback (when AI picks fail) was fetching `pillar-products?pillar=play&limit=12` with NO breed filter. Now applies full breed filter: `breed_targets` priority over `breed_tags`. Bandanas/cards for wrong breeds excluded
+- **FIX: Soul question chips show no answer options** — Fallback questions (used when API returns 0 questions) were missing `type` field. Added `type: "select"` to fallback map. Also added dynamic type detection: `q.type || (Array.isArray(q.options) ? "select" : "text")`  
+- **FIX: Soul score showing 9% for Lola across all pillars** — All pillar pages (Play, Care, Dine, Go) were using `pet.soul_score` (stored as stale value, e.g. 9.0 for Lola) instead of `pet.overall_score` (94.0 correct). Fixed priority: `overall_score ?? soul_score ?? activity_score`
+- **FIX: Bundle admin modal not scrollable** — `DialogContent` lacked `max-h-[90vh] overflow-y-auto`. Added → image upload + AI generator button now reachable by scrolling
+
+### Root Cause of Soul Score Bug
+- Pet home computed score from `quick-questions` API (`current_score: 94`)  
+- Pillar pages read `pet.soul_score` directly from pet object (stale value: 9.0)
+- `overall_score` field = 94.0 (correct) was ignored
+- Fix: all 4 pillar pages now use `pet.overall_score` first
+
+### Files Changed
+- `frontend/src/pages/PlaySoulPage.jsx` — MiraPicksSection fallback breed filter, fallback question type fix, overall_score priority
+- `frontend/src/pages/CareSoulPage.jsx` — overall_score priority  
+- `frontend/src/pages/DineSoulPage.jsx` — overall_score priority
+- `frontend/src/pages/GoSoulPage.jsx` — overall_score priority
+- `frontend/src/components/admin/BundlesManager.jsx` — DialogContent scroll fix
+
+---
+
+## [Mar 18, 2026] Session 80 — Play Page: 5 Critical Issues Fixed ✅ (15/15 tests passed)
+
+### What Was Fixed
+1. **Soul Picks Breed Filtering** — Fixed `PlayContentModal.jsx` and `PlaySoulPage.jsx` prefetch to use `breed_targets` priority over `breed_tags='all_breeds'`. Some products had `breed_tags=['all_breeds']` + `breed_targets=['american bully']` — the `all_breeds` tag was bypassing the filter. Now: specific `breed_targets` always wins
+2. **Mira's Picks Pill → Full-Screen Modal** — Changed `onMiraPicks` in `PlaySoulPage.jsx` from `miraPicksRef.current?.scrollIntoView(...)` to `setModalCategory("miras-picks")`. Now opens `PlayContentModal` with full-screen modal
+3. **Bundles Pill shows real bundles** — `PlayContentModal.jsx` new `bundles` case: fetches from `GET /api/bundles?pillar=enjoy` + `GET /api/bundles?pillar=fit`. Added `BundleCard` component with savings badge, popular flag, CTA. Bundles dim card in grid also redirects to modal
+4. **Services section heading** — Changed from "Book a play experience for Mojo" to "Play, Personally" matching Care/Dine style. Font size updated to `clamp(1.3rem,5vw,2rem)`
+5. **Bundle admin image generation** — New backend endpoint `POST /api/admin/bundles/{bundle_id}/generate-image` uses `bundles` collection (not `celebrate_bundles`). `BundlesManager.jsx` updated to use new endpoint
+
+### Files Changed
+- `frontend/src/components/play/PlayContentModal.jsx` — breed filter fix, bundles case, BundleCard component  
+- `frontend/src/pages/PlaySoulPage.jsx` — onMiraPicks fix, breed filter in prefetch, bundles dim → modal
+- `frontend/src/components/play/PlayConciergeSection.jsx` — heading "Play, Personally"
+- `frontend/src/components/admin/BundlesManager.jsx` — new endpoint for generate-image
+- `backend/server.py` — new `/api/admin/bundles/{bundle_id}/generate-image` endpoint
+
+---
+
 ## [Mar 16, 2026] Session 40 — Product Box Category Filters + Soul Picks Fix + P0 Data Refactor + Bulk Assignment Tool ✅
 
 ### What Was Fixed/Built
