@@ -17,7 +17,7 @@
  *   Fit:   walking(3) · fitness(4) · swimming(4) · agility(4)
  */
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { Loader2, Check } from "lucide-react";
@@ -145,10 +145,16 @@ function getPlayDims(pet) {
         : `Swimming is the best full-body workout for dogs. Products and sessions for every confidence level.`,
     },
     {
-      id:"soul", icon:"✨", label:"Soul Play",
+      id:"soul", icon:"✨", label:"Soul Picks",
       sub: breed ? `${breed} bandana & playdate card` : "Breed bandana & playdate card",
       badge:"Made for you", badgeBg:G.mid, glowColor:"rgba(231,111,81,0.22)", glow:true,
       mira:`{name}'s breed bandana and personalised playdate card — wear on every outing, send before every playdate.`,
+    },
+    {
+      id:"bundles", icon:"🎁", label:"Bundles",
+      sub:"Curated play bundles — save vs buying separately",
+      badge:"Save money", badgeBg:"#C9973A", glowColor:"rgba(201,151,58,0.20)", glow:false,
+      mira:`I curated these bundles around {name}'s energy and play profile.`,
     },
   ];
 }
@@ -160,6 +166,7 @@ const DIM_ID_TO_CATEGORY = {
   fitness:   "Fitness & Training",
   swimming:  "Fitness & Training",
   soul:      "Soul Play Products",
+  bundles:   "bundles",
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -413,6 +420,86 @@ function MiraPicksSection({ pet }) {
 }
 
 // ─────────────────────────────────────────────────────────────
+// PLAY BREED TIPS — lookup table (35 breeds)
+// ─────────────────────────────────────────────────────────────
+const PLAY_BREED_TIPS = {
+  "indie":            { energy:"medium-high", best_play:["fetch","swimming","scent games"],        tips:["Indie dogs are self-reliant — mix independent play with social sessions.","Great with toys they can problem-solve with.","Tend to overheat — always carry water on long outings."], weekly_target:"5 × 30 min" },
+  "labrador":         { energy:"high",        best_play:["fetch","swimming","agility"],            tips:["Labs love to carry things — a retrieval game is never boring.","Excellent swimmers — introduce water early.","High food motivation makes fetch + treat combos very effective."], weekly_target:"6 × 45 min" },
+  "golden retriever": { energy:"high",        best_play:["fetch","swimming","hiking"],             tips:["Goldens are playful well into old age — keep sessions joyful.","Love group play; great for dog parks.","Cool down after swims — damp coat holds heat."], weekly_target:"6 × 40 min" },
+  "german shepherd":  { energy:"high",        best_play:["agility","scent games","long hikes"],   tips:["Needs mental challenge, not just physical — add puzzle toys.","Excellent at nose work and tracking games.","Needs 2 × exercise sessions on rest days."], weekly_target:"7 × 45 min" },
+  "beagle":           { energy:"medium-high", best_play:["scent trails","field runs","fetch"],    tips:["Scent-driven — let them sniff freely on walks.","Prone to following their nose — always use a long lead in open fields.","Short legs, big stamina — they outlast most owners."], weekly_target:"5 × 30 min" },
+  "poodle":           { energy:"high",        best_play:["agility","swimming","trick training"],  tips:["One of the most intelligent breeds — needs mental enrichment daily.","Love water and excel at dock diving.","Reward-based trick training counts as real exercise."], weekly_target:"6 × 30 min" },
+  "shih tzu":         { energy:"low-medium",  best_play:["gentle fetch","sniff walks","indoor games"], tips:["Short legs = short bursts: 3 × 15 min is better than 1 × 45.","Love indoor nose-work and plush toys.","Avoid midday heat — morning and evening walks only."], weekly_target:"3 × 15 min" },
+  "pomeranian":       { energy:"medium",      best_play:["indoor fetch","trick training","tug"],  tips:["Despite small size, they are alert and energetic.","Love to chase — feather wands and small balls are favourites.","Keep sessions short but frequent to avoid over-tiring."], weekly_target:"4 × 20 min" },
+  "chihuahua":        { energy:"medium",      best_play:["indoor games","short walks","tug"],     tips:["Big personality in a tiny body — don't underestimate their energy.","Keep outdoor sessions under 20 min in heat.","Love chasing laser pointers indoors."], weekly_target:"3 × 15 min" },
+  "dachshund":        { energy:"medium",      best_play:["burrow games","fetch","garden runs"],   tips:["Prone to back issues — avoid stairs and jumping.","Love to dig and tunnel — provide designated dig zones.","Short legs, stubborn heart — scent trails work best."], weekly_target:"4 × 20 min" },
+  "rottweiler":       { energy:"high",        best_play:["tug","weight pull","long hikes"],       tips:["Need a job to do — structured play with clear rules works best.","Excellent at tug-of-war with proper rules (you end the game).","Swimming is great for joint health."], weekly_target:"7 × 40 min" },
+  "doberman":         { energy:"high",        best_play:["agility","fetch","long runs"],          tips:["Athletic and fast — need outlets for full-speed running.","Excel at competitive sports like agility and flyball.","Need mental work daily or they get destructive."], weekly_target:"7 × 45 min" },
+  "boxer":            { energy:"very high",   best_play:["wrestling","tug","fetch"],              tips:["Clownish and bouncy — love interactive games with their owner.","Prone to overheating due to flat face — keep sessions under 30 min in heat.","Excellent at flyball and tug competitions."], weekly_target:"6 × 30 min" },
+  "st bernard":       { energy:"low-medium",  best_play:["gentle walks","swimming","cart pulling"], tips:["Gentle giants — don't need fast-paced exercise but love long strolls.","Great at carting and draft work.","Overheat easily — morning and evening sessions only."], weekly_target:"3 × 25 min" },
+  "cocker spaniel":   { energy:"medium-high", best_play:["fetch","sniff walks","water play"],     tips:["Love water and retrieving — make fetch near ponds a regular outing.","Ears need air after swimming.","Excellent agility candidates."], weekly_target:"5 × 25 min" },
+  "irish setter":     { energy:"very high",   best_play:["long runs","fetch","field work"],       tips:["Bred to run all day — they need sustained cardio.","Excel at pointing and retrieving games.","Need off-lead time daily — long-lead recall training is essential."], weekly_target:"7 × 60 min" },
+  "husky":            { energy:"very high",   best_play:["running","sledding","swimming"],        tips:["Born to run — need 2 hours of vigorous exercise daily.","Thrive in packs — dog parks are excellent for them.","Can and will escape — never off-lead without a secure fence."], weekly_target:"7 × 60 min" },
+  "border collie":    { energy:"extreme",     best_play:["agility","frisbee","herding games"],    tips:["Most intelligent breed — needs mental challenge above all.","Love frisbee: the flight time gives them a thinking task.","Herding games (rolling ball) are great mental exercise."], weekly_target:"7 × 60 min" },
+  "jack russell":     { energy:"very high",   best_play:["digging","fetch","agility"],            tips:["Tiny body, massive energy — same needs as a medium active dog.","Love to dig — designated dig pit prevents garden destruction.","Excel at earth dog sports."], weekly_target:"6 × 30 min" },
+  "bulldog":          { energy:"low",         best_play:["short walks","indoor tug","gentle fetch"], tips:["Brachycephalic — keep activity under 20 min at a time.","Best exercise in cool morning or evening.","Love to roll — soft toys and gentle play keep them happy."], weekly_target:"2 × 15 min" },
+  "dalmatian":        { energy:"very high",   best_play:["long runs","swimming","agility"],       tips:["Bred to run alongside carriages — need sustained cardio.","Excel at Canicross (human + dog running together).","Love water and swimming."], weekly_target:"7 × 50 min" },
+  "great dane":       { energy:"medium",      best_play:["gentle walks","swimming","light fetch"], tips:["Despite size, moderate energy — don't over-exercise puppies.","Prone to joint issues — keep fetch low-impact.","Love swimming as a joint-friendly exercise."], weekly_target:"4 × 30 min" },
+  "maltese":          { energy:"low-medium",  best_play:["indoor fetch","trick training","gentle walks"], tips:["Fragile frame — no rough play or jumping from height.","Love interactive trick training.","3 short walks better than 1 long one."], weekly_target:"3 × 15 min" },
+  "yorkshire terrier":{ energy:"medium",      best_play:["indoor fetch","tug","sniff games"],    tips:["Big personality — love to be the centre of attention during play.","Indoor fetch and hide-and-seek are favourites.","Don't let small size fool you — they need daily exercise."], weekly_target:"3 × 20 min" },
+  "bichon frise":     { energy:"medium",      best_play:["indoor games","gentle fetch","trick training"], tips:["Social butterflies — playdates with other dogs are the best enrichment.","Love to chase but tire quickly.","Ideal for indoor fetch and gentle tug."], weekly_target:"3 × 20 min" },
+  "pug":              { energy:"low",         best_play:["short indoor games","gentle sniff walks"], tips:["Flat face limits breathing — keep all exercise gentle.","Morning and evening only in warm weather.","Mental games (puzzle feeders) are the safest workout."], weekly_target:"2 × 10 min" },
+  "mixed breed":      { energy:"medium",      best_play:["fetch","walks","social play"],          tips:["Mixed breeds often have balanced energy — adapt to their cues.","Watch for any breed-specific traits showing through.","Socialisation and varied activities keep them happy."], weekly_target:"5 × 30 min" },
+};
+
+function getPlayBreedTip(pet) {
+  const breed = (pet?.breed || "").toLowerCase().trim();
+  return PLAY_BREED_TIPS[breed] || PLAY_BREED_TIPS["mixed breed"];
+}
+
+function PlayBreedTipsStrip({ pet }) {
+  const tip = getPlayBreedTip(pet);
+  const breed = pet?.breed || "Mixed";
+  if (!tip) return null;
+  return (
+    <div style={{ background:`linear-gradient(135deg,${G.pale},${G.cream})`, borderRadius:14, border:`1px solid ${G.light}40`, padding:"14px 18px", marginBottom:16 }}>
+      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
+        <div style={{ background:G.orange, color:"#fff", fontSize:9, fontWeight:800, borderRadius:20, padding:"3px 9px", letterSpacing:"0.08em", textTransform:"uppercase" }}>
+          Play Tips · {breed}
+        </div>
+        <div style={{ fontSize:11, color:G.mutedText }}>
+          Target: <strong style={{ color:G.mid }}>{tip.weekly_target}</strong>
+        </div>
+      </div>
+      <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:10 }}>
+        {tip.best_play.map(b => (
+          <span key={b} style={{ background:G.cream, border:`1px solid ${G.borderLight}`, borderRadius:20, padding:"3px 9px", fontSize:11, color:G.mid, fontWeight:600 }}>{b}</span>
+        ))}
+      </div>
+      <ul style={{ margin:0, paddingLeft:16, listStyleType:"disc" }}>
+        {tip.tips.map((t,i) => (
+          <li key={i} style={{ fontSize:12, color:"#555", lineHeight:1.6, marginBottom:2 }}>{t}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// ACTIVITY QUESTIONS fallback (if API times out)
+// ─────────────────────────────────────────────────────────────
+const ACTIVITY_QUESTIONS_FALLBACK = [
+  { id:"aq1", question:"How many walks per week?", dimension:"exercise", options:[{label:"1-2 times",score:20},{label:"3-4 times",score:50},{label:"5-7 times",score:80},{label:"More than 7 times",score:100}] },
+  { id:"aq2", question:"Average walk duration?", dimension:"exercise", options:[{label:"Under 15 min",score:15},{label:"15-30 min",score:50},{label:"30-60 min",score:80},{label:"Over 60 min",score:100}] },
+  { id:"aq3", question:"Does your dog get off-lead playtime?", dimension:"play", options:[{label:"Never",score:10},{label:"Occasionally",score:40},{label:"Weekly",score:70},{label:"Daily",score:100}] },
+  { id:"aq4", question:"Dog park or playdate visits?", dimension:"social", options:[{label:"Never",score:10},{label:"Monthly",score:30},{label:"Weekly",score:70},{label:"Multiple per week",score:100}] },
+  { id:"aq5", question:"Any structured activities (agility, swimming, training)?", dimension:"fitness", options:[{label:"None",score:10},{label:"Occasionally",score:40},{label:"Monthly programme",score:70},{label:"Regular sessions",score:100}] },
+  { id:"aq6", question:"Mental enrichment (puzzle toys, scent games)?", dimension:"mental", options:[{label:"None",score:10},{label:"Sometimes",score:40},{label:"Most days",score:75},{label:"Daily",score:100}] },
+  { id:"aq7", question:"How is your dog's energy level after a typical walk?", dimension:"energy", options:[{label:"Exhausted (too much)",score:50},{label:"Still has lots of energy",score:50},{label:"Pleasantly tired",score:100},{label:"About right",score:90}] },
+  { id:"aq8", question:"Does your dog play fetch or chase games?", dimension:"play", options:[{label:"Never interested",score:10},{label:"Sometimes",score:50},{label:"Loves it",score:90},{label:"Obsessed",score:80}] },
+];
+
+// ─────────────────────────────────────────────────────────────
 // ACTIVITY PROFILE — mirrors TripProfile / WellnessProfile
 // ─────────────────────────────────────────────────────────────
 function ActivityProfile({ pet, token }) {
@@ -495,8 +582,19 @@ function ActivityProfile({ pet, token }) {
 
   const visibleQ = questions.filter(q=>!submitted[q.question_id]);
 
+  // Use fallback questions if API returned nothing
+  const displayQuestions = visibleQ.length > 0 ? visibleQ : ACTIVITY_QUESTIONS_FALLBACK.slice(0, 4).map(q => ({
+    question_id: q.id,
+    question: q.question,
+    dimension: q.dimension,
+    options: q.options.map(o => o.label),
+  }));
+
   return (
     <>
+      {/* Breed tips strip — always visible */}
+      <PlayBreedTipsStrip pet={pet} />
+
       {/* Compact bar */}
       <div onClick={() => setDrawerOpen(true)} data-testid="activity-profile"
         style={{ background:"#fff", border:`2px solid ${G.pale}`, borderRadius:16, padding:"14px 18px", marginBottom:20, cursor:"pointer", display:"flex", alignItems:"center", gap:14 }}>
@@ -554,7 +652,7 @@ function ActivityProfile({ pet, token }) {
                   <div style={{ width:20, height:20, border:`2px solid ${G.pale}`, borderTopColor:G.green, borderRadius:"50%", animation:"spin 0.8s linear infinite", margin:"0 auto 10px" }} />
                   Loading {petName}'s questions…
                 </div>
-              ) : visibleQ.length === 0 ? (
+              ) : displayQuestions.length === 0 ? (
                 <div style={{ textAlign:"center", padding:"24px 0" }}>
                   <div style={{ fontSize:28, marginBottom:10 }}>🌳</div>
                   <p style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:6 }}>{petName}'s activity profile is complete!</p>
@@ -562,7 +660,7 @@ function ActivityProfile({ pet, token }) {
                 </div>
               ) : (
                 <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:14, marginBottom:24 }}>
-                  {visibleQ.map(q => {
+                  {displayQuestions.map(q => {
                     const isSub  = submitted[q.question_id];
                     const isSend = submitting[q.question_id];
                     const ans    = answers[q.question_id];
@@ -1139,7 +1237,6 @@ const PlaySoulPage = () => {
   const [loading, setLoading]         = useState(true);
   const [activeTab, setActiveTab]     = useState("play");
   const [openDim, setOpenDim]         = useState(null);
-  const [miraPicksModal, setMiraPicksModal]   = useState(false);
   const [modalCategory, setModalCategory]     = useState(null); // PlayContentModal category
   const [petData, setPetData]         = useState(null);
   const [soulScore, setSoulScore]     = useState(0);
@@ -1147,6 +1244,7 @@ const PlaySoulPage = () => {
   const [apiLoading, setApiLoading]   = useState(true);
   const [prefetchedServices, setPrefetchedServices] = useState([]);
   const [conciergeToast, setConciergeToast] = useState(null);
+  const miraPicksRef = useRef(null);
 
   // handleNearMeBook — wires "Book via Concierge" on PlayNearMe cards
   const handlePlayBook = useCallback(async (spot, city) => {
@@ -1199,7 +1297,7 @@ const PlaySoulPage = () => {
       .then(r => r.ok ? r.json() : null)
       .then(async data => {
         if (!data?.products?.length) { setApiLoading(false); return; }
-        const DIM_IDS = ["outings", "playdates", "walking", "fitness", "swimming", "soul"];
+        const DIM_IDS = ["outings", "playdates", "walking", "fitness", "swimming", "soul", "bundles"];
         const grouped = {};
 
         data.products.forEach(p => {
@@ -1224,6 +1322,7 @@ const PlaySoulPage = () => {
           else if (cat === "breed-play_bandanas" || cat === "breed-playdate_cards") dimId = "soul";
           else if (cat === "enjoy") dimId = "outings";
           else if (cat === "fit") dimId = "fitness";
+          else if (cat === "bundles" || p.entity_type === "bundle") dimId = "bundles";
           else if (cat === "toys" || cat === "gear" || cat === "accessories") dimId = "outings";
           else dimId = "outings";
           if (!grouped[dimId]) grouped[dimId] = {};
@@ -1296,9 +1395,14 @@ const PlaySoulPage = () => {
 
       <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>
 
-        <PlayCategoryStrip pet={petData} openDim={modalCategory} onSelect={(id) => {
-          setModalCategory(id); // opens PlayContentModal
-        }} onMiraPicks={() => setModalCategory('miras-picks')} />
+        <PlayCategoryStrip pet={petData} openDim={openDim} onSelect={(id) => {
+          if (!id) { setOpenDim(null); return; }
+          if (id === "mira") {
+            miraPicksRef.current?.scrollIntoView({ behavior:"smooth", block:"start" });
+            return;
+          }
+          setOpenDim(prev => prev === id ? null : id);
+        }} onMiraPicks={() => miraPicksRef.current?.scrollIntoView({ behavior:"smooth", block:"start" })} />
 
         <PlayTabBar active={activeTab} onChange={setActiveTab} />
 
@@ -1307,7 +1411,9 @@ const PlaySoulPage = () => {
             <ActivityProfile pet={petData} token={token} />
 
             {/* Mira's Picks — AI scored, same as Dine */}
-            <MiraPicksSection pet={petData} />
+            <div ref={miraPicksRef}>
+              <MiraPicksSection pet={petData} />
+            </div>
 
             <section style={{ paddingBottom:16 }} data-testid="play-explore-section">
               <h2 style={{ fontSize:"clamp(1.375rem,3vw,1.875rem)", fontWeight:800, color:G.darkText, marginBottom:6, fontFamily:"Georgia,serif", lineHeight:1.2 }}>
