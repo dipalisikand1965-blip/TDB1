@@ -436,6 +436,7 @@ async def get_top_picks(
     entity_type: Optional[str] = None,
     limit: int = 20,
     min_score: int = 60,
+    breed: Optional[str] = None,
 ):
     """Return top-scored items for a pet. Used by Mira's Picks UI."""
     if _db is None:
@@ -447,30 +448,47 @@ async def get_top_picks(
     if entity_type:
         q["entity_type"] = entity_type
 
-    cursor = _db.mira_product_scores.find(q, {"_id": 0}).sort("score", -1).limit(limit)
-    picks = await cursor.to_list(length=limit)
+    cursor = _db.mira_product_scores.find(q, {"_id": 0}).sort("score", -1).limit(limit * 3)
+    picks = await cursor.to_list(length=limit * 3)
 
     # Enrich with full product/service/bundle data
     enriched = []
     for pick in picks:
         entity_id = pick.get("entity_id")
-        entity_type = pick.get("entity_type", "product")
+        etype = pick.get("entity_type", "product")
         full = None
-        if entity_type == "product":
+        if etype == "product":
             full = await _db.products_master.find_one({"id": entity_id}, {"_id": 0})
-        elif entity_type == "service":
+        elif etype == "service":
             full = await _db.services_master.find_one({"id": entity_id}, {"_id": 0})
-        elif entity_type == "bundle":
+        elif etype == "bundle":
             full = await _db.bundles.find_one({"id": entity_id}, {"_id": 0})
         if full:
             full["mira_score"] = pick.get("score")
             full["mira_reason"] = pick.get("mira_reason")
-            full["entity_type"] = entity_type
+            full["entity_type"] = etype
             enriched.append(full)
 
+    # Breed filter — only for products, when breed is supplied
+    if breed and breed.strip():
+        breed_lower = breed.lower().strip()
+        filtered = []
+        for item in enriched:
+            if item.get("entity_type") != "product":
+                filtered.append(item)
+                continue
+            targets = [b.lower() for b in (item.get("breed_targets") or [])]
+            if not targets:
+                filtered.append(item)  # no targets = universal
+            elif "all" in targets or "all_breeds" in targets:
+                filtered.append(item)
+            elif any(breed_lower in t or t in breed_lower for t in targets):
+                filtered.append(item)
+        enriched = filtered
+
     return {
-        "picks": enriched,
-        "count": len(enriched),
+        "picks": enriched[:limit],
+        "count": len(enriched[:limit]),
         "pet_id": pet_id,
         "pillar": pillar,
     }
