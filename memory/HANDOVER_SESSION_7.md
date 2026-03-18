@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://soul-made-products.preview.emergentagent.com
+https://soul-page-sync.preview.emergentagent.com
 
 ---
 

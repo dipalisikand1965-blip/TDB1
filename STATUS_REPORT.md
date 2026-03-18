@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://soul-made-products.preview.emergentagent.com
+**Preview URL:** https://soul-page-sync.preview.emergentagent.com
 
 ---
 
