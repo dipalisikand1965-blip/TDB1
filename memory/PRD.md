@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 2026 (Session 79 — Play page: pill → full-screen modal, Activity Profile → dark modal with PLAY TIPS inside, breed tips removed from page)
+## Last Updated: Mar 2026 (Session 80 — Play page: all 6 user-reported issues fixed)
 
 ---
 
@@ -352,6 +352,7 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
   - Services: 8 play services seeded (Dog Park Outing, Playdate, Swim, Agility, etc.)
 
 ### P1 — Important Improvements
+- **Implement the "Adopt" pillar** — /adopt route, AdoptSoulPage
 - **Go service watercolour images** — Generate using admin → Soul Products tool or DALL-E
 - **Consolidate duplicate services** — 89+ travel/stay services in DB → 8 canonical ones
 - **Care soul product images** — 35 Care products in DB without images (use admin mockup tool)
