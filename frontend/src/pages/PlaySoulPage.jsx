@@ -149,6 +149,12 @@ function getPlayDims(pet) {
       badge:"Made for you", badgeBg:G.mid, glowColor:"rgba(231,111,81,0.22)", glow:true,
       mira:`{name}'s breed bandana and personalised playdate card — wear on every outing, send before every playdate.`,
     },
+    {
+      id:"mira", icon:"🪄", label:"Mira's Picks",
+      sub: `Curated for {name}'s play profile`,
+      badge:"✦ Mira Pick", badgeBg:G.deep, glowColor:"rgba(231,111,81,0.22)", glow:true,
+      mira:`These are my top picks across all play dimensions for {name} right now.`,
+    },
   ];
 }
 
@@ -658,8 +664,8 @@ function DimExpandedModal({ dim, pet, onClose, apiProducts = {} }) {
           </div>
         </div>
 
-        {/* Sub-tab filter */}
-        {tabList.length > 1 && dimTab === "products" && (
+        {/* Sub-tab filter — hidden for mira dim */}
+        {tabList.length > 1 && dimTab === "products" && dim.id !== "mira" && (
           <div style={{ display:"flex", gap:6, flexWrap:"wrap", padding:"10px 16px 0", background:"#fff", flexShrink:0 }}>
             {tabList.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
@@ -670,7 +676,8 @@ function DimExpandedModal({ dim, pet, onClose, apiProducts = {} }) {
           </div>
         )}
 
-        {/* Products / Personalised tab toggle */}
+        {/* Products / Personalised tab toggle — hidden for mira dim */}
+        {dim.id !== "mira" && (
         <div style={{ display:"flex", background:"#fff", borderBottom:"1px solid #F0F0F0", flexShrink:0, paddingTop:6 }}>
           {[["products", "🎯 All Products"], ["personalised", "✦ Personalised"]].map(([tid, label]) => (
             <button key={tid} onClick={() => setDimTab(tid)}
@@ -680,9 +687,10 @@ function DimExpandedModal({ dim, pet, onClose, apiProducts = {} }) {
             </button>
           ))}
         </div>
+        )}
 
-        {/* Stats bar (products tab only) */}
-        {dimTab === "products" && allRaw.length > 0 && (
+        {/* Stats bar (products tab only, not for mira dim) */}
+        {dim.id !== "mira" && dimTab === "products" && allRaw.length > 0 && (
           <div style={{ display:"flex", gap:12, padding:"8px 16px", flexWrap:"wrap", fontSize:11, color:"#888", background:"#fff", flexShrink:0 }}>
             <span style={{ color:"#27AE60", fontWeight:700 }}>✓ {intelligent.length} safe for {petName}</span>
             {allRaw.length-intelligent.length>0 && <span style={{ color:"#AD1457" }}>✗ {allRaw.length-intelligent.length} filtered</span>}
@@ -690,9 +698,11 @@ function DimExpandedModal({ dim, pet, onClose, apiProducts = {} }) {
           </div>
         )}
 
-        {/* Products grid / Personalised tab */}
+        {/* Products grid / Personalised tab — special: "mira" dim shows AI picks */}
         <div style={{ flex:1, overflowY:"auto", padding:"12px 16px 24px" }}>
-          {dimTab === "personalised" ? (
+          {dim.id === "mira" ? (
+            <MiraPicksSection pet={pet} />
+          ) : dimTab === "personalised" ? (
             <div>
               <PersonalisedBreedSection pet={pet} pillar="play" />
               <div style={{ borderTop:"1px solid #f0f0f0", marginTop:16, paddingTop:16 }}>
@@ -1227,9 +1237,11 @@ const PlaySoulPage = () => {
         const grouped = {};
 
         data.products.forEach(p => {
-          // Skip soul/breed products that don't match the pet's breed
+          // Skip breed-specific products that don't match the pet's breed
+          // BUT always include products tagged with 'all_breeds' or 'all'
           const productBreeds = (p.breed_tags || []).map(b => b.toLowerCase().trim());
-          if (productBreeds.length > 0 && !productBreeds.includes(petBreed)) return;
+          const isAllBreeds = productBreeds.includes('all_breeds') || productBreeds.includes('all');
+          if (productBreeds.length > 0 && !isAllBreeds && !productBreeds.includes(petBreed)) return;
 
           const cat = (p.category || "").toLowerCase().trim();
           const sub = (p.sub_category || "").toLowerCase().trim();
@@ -1340,15 +1352,12 @@ const PlaySoulPage = () => {
               </p>
             </section>
 
-            {/* Mira's Picks */}
-            <MiraPicksSection pet={petData} />
-
             {/* "Play for [name]" label */}
             <div style={{ fontSize:"clamp(1.125rem,2.5vw,1.375rem)", fontWeight:800, color:G.darkText, marginBottom:4, fontFamily:"Georgia,serif" }}>
               Play for <span style={{ color:G.orange }}>{petData.name}</span>
             </div>
             <div style={{ fontSize:12, color:"#888", marginBottom:16 }}>
-              6 dimensions, matched to {petData.name}'s energy and play profile
+              7 dimensions, matched to {petData.name}'s energy and play profile
             </div>
 
             {/* Dimension grid — 2→3→6 */}
