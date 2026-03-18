@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://play-ui-sync.preview.emergentagent.com
+**Preview URL:** https://care-soul-fixes.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
