@@ -26,6 +26,7 @@ import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
 import PlayHero from "../components/play/PlayHero";
 import PlayCategoryStrip from "../components/play/PlayCategoryStrip";
+import PlayContentModal from "../components/play/PlayContentModal";
 import GuidedPlayPaths from "../components/play/GuidedPlayPaths";
 import PlayConciergeSection from "../components/play/PlayConciergeSection";
 import PlayNearMe from "../components/play/PlayNearMe";
@@ -1182,7 +1183,8 @@ const PlaySoulPage = () => {
   const [loading, setLoading]         = useState(true);
   const [activeTab, setActiveTab]     = useState("play");
   const [openDim, setOpenDim]         = useState(null);
-  const [miraPicksModal, setMiraPicksModal] = useState(false);
+  const [miraPicksModal, setMiraPicksModal]   = useState(false);
+  const [modalCategory, setModalCategory]     = useState(null); // PlayContentModal category
   const [petData, setPetData]         = useState(null);
   const [soulScore, setSoulScore]     = useState(0);
   const [apiProducts, setApiProducts] = useState({});
@@ -1345,10 +1347,9 @@ const PlaySoulPage = () => {
 
       <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>
 
-        <PlayCategoryStrip pet={petData} openDim={openDim} onSelect={(id) => {
-          setOpenDim(id);
-          if (id) setActiveTab("play");
-        }} onMiraPicks={() => setMiraPicksModal(true)} />
+        <PlayCategoryStrip pet={petData} openDim={modalCategory} onSelect={(id) => {
+          setModalCategory(id); // opens PlayContentModal
+        }} onMiraPicks={() => setModalCategory('miras-picks')} />
 
         <PlayTabBar active={activeTab} onChange={setActiveTab} />
 
@@ -1431,40 +1432,6 @@ const PlaySoulPage = () => {
 
         {activeTab === "services" && (
           <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-            {/* Play, Personally — service cards like "Dine, Personally" */}
-            <div style={{ marginBottom:32 }}>
-              <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(231,111,81,0.12)", border:"1px solid rgba(231,111,81,0.30)", borderRadius:9999, padding:"5px 16px", marginBottom:20 }}>
-                <span style={{ fontSize:11, color:G.orange }}>★</span>
-                <span style={{ fontSize:11, fontWeight:600, color:G.orange, letterSpacing:"0.06em", textTransform:"uppercase" }}>{petData.name}'s Play Concierge</span>
-              </div>
-              <h2 style={{ fontSize:"clamp(1.4rem,3vw,2rem)", fontWeight:900, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:12, lineHeight:1.25 }}>
-                Play with <span style={{ color:G.orange }}>{petData.name}</span> the way only you know how.
-              </h2>
-              <p style={{ fontSize:14, color:"#888", lineHeight:1.65, marginBottom:24, maxWidth:520 }}>
-                From finding the perfect park to organising a playdate and booking a swim session — we handle every detail so you and {petData.name} just show up.
-              </p>
-              <div style={{ display:"grid", gap:16, gridTemplateColumns:"repeat(auto-fill,minmax(min(260px,100%),1fr))", marginBottom:32 }}>
-                {[
-                  { icon:"🦮", title:"Dog Walking", desc:`Daily or on-demand walks tailored to ${petData.name}'s pace and energy level`, cta:"Book a Walker" },
-                  { icon:"💪", title:"Fitness & Training", desc:`4-week fitness plan + agility coaching for ${petData.name}'s breed and health profile`, cta:"Start Training" },
-                  { icon:"🏊", title:"Swimming & Hydro", desc:`Pool access, hydrotherapy sessions, and supervised swim — perfect for joint care`, cta:"Book a Session" },
-                  { icon:"🐾", title:"Playdate Coordination", desc:`Breed-matched playdates and social events curated for ${petData.name}'s personality`, cta:"Find Playmates" },
-                ].map((svc,i) => (
-                  <div key={i} style={{ background:"#fff", border:`1.5px solid ${G.border}`, borderRadius:16, padding:"20px 18px", display:"flex", flexDirection:"column", gap:10 }}>
-                    <div style={{ fontSize:32, marginBottom:4 }}>{svc.icon}</div>
-                    <div style={{ fontSize:15, fontWeight:800, color:G.darkText }}>{svc.title}</div>
-                    <div style={{ fontSize:13, color:"#888", lineHeight:1.5, flex:1 }}>{svc.desc}</div>
-                    <button
-                      onClick={() => setConciergeToast({ message:`Booking ${svc.title} for ${petData.name} — our team will reach out within 48h` })}
-                      style={{ background:`linear-gradient(135deg,${G.orange},${G.mid})`, color:"#fff", border:"none", borderRadius:10, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:"pointer", textAlign:"left" }}
-                      data-testid={`play-service-book-${i}`}>
-                      Book {petData.name}'s {svc.title} →
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <PlayConcierge pet={petData} token={token} />
             <PlayConciergeSection pet={petData} />
           </div>
         )}
@@ -1479,23 +1446,13 @@ const PlaySoulPage = () => {
 
       <ConciergeToast toast={conciergeToast} onClose={() => setConciergeToast(null)} />
 
-      {/* Mira's Picks full-screen modal — opened from category strip */}
-      {miraPicksModal && (
-        <div onClick={() => setMiraPicksModal(false)} style={{ position:"fixed", inset:0, zIndex:600, background:"rgba(0,0,0,0.65)", display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}>
-          <div onClick={e => e.stopPropagation()} style={{ width:"min(860px,96vw)", maxHeight:"90vh", background:"#fff", borderRadius:20, overflow:"hidden", display:"flex", flexDirection:"column", boxShadow:"0 32px 80px rgba(0,0,0,0.35)" }}>
-            <div style={{ background:`linear-gradient(135deg,${G.deep},${G.mid})`, padding:"16px 20px", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
-              <div>
-                <span style={{ fontSize:13, fontWeight:800, color:"#fff" }}>💫 Mira's Picks</span>
-                <div style={{ fontSize:11, color:"rgba(255,255,255,0.65)", marginTop:2 }}>AI-scored products & services for {petData?.name}</div>
-              </div>
-              <button onClick={() => setMiraPicksModal(false)} style={{ background:"rgba(255,255,255,0.2)", border:"none", borderRadius:"50%", width:30, height:30, cursor:"pointer", color:"#fff", fontSize:18, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
-            </div>
-            <div style={{ flex:1, overflowY:"auto", padding:"16px 20px 24px" }}>
-              <MiraPicksSection pet={petData} />
-            </div>
-          </div>
-        </div>
-      )}
+      {/* PlayContentModal — opens when category strip pill is clicked (mirrors DineContentModal) */}
+      <PlayContentModal
+        isOpen={!!modalCategory}
+        category={modalCategory}
+        pet={petData}
+        onClose={() => setModalCategory(null)}
+      />
     </PillarPageLayout>
   );
 };

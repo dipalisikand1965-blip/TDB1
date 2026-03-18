@@ -1,0 +1,402 @@
+/**
+ * PlayContentModal.jsx — /play pillar
+ * Mirrors DineContentModal exactly — opens when a category strip pill is clicked.
+ * Breed-specific soul picks + AI Mira's Picks + sub-category tabs + product grid.
+ */
+
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Loader2, Check, Send, Star } from 'lucide-react';
+import { toast } from 'sonner';
+import SharedProductCard from '../ProductCard';
+import { useAuth } from '../../context/AuthContext';
+import { API_URL } from '../../utils/api';
+
+const getApiUrl = () => API_URL;
+
+// ── Pet helpers ───────────────────────────────────────────────────────────────
+const ALLERGY_CLEAN = /^(no|none|none_confirmed|no_allergies|no allergies|na|n\/a|unknown)$/i;
+const getAllergies = (pet) => {
+  const s = new Set();
+  const push = (v) => {
+    if (!v) return;
+    (Array.isArray(v) ? v : v.split(/,|;/).map(x => x.trim())).forEach(a => {
+      if (a && !ALLERGY_CLEAN.test(a.trim())) s.add(a.toLowerCase());
+    });
+  };
+  push(pet?.allergies); push(pet?.allergy1); push(pet?.allergy2);
+  push(pet?.health_data?.allergies); push(pet?.health?.allergies);
+  push(pet?.doggy_soul_answers?.food_allergies);
+  return [...s];
+};
+
+// ── Category config ────────────────────────────────────────────────────────────
+const CATEGORY_CONFIG = {
+  'outings':     { emoji:'🌳', label:'Outings & Parks',   apiCategory:'outings'   },
+  'playdates':   { emoji:'🐾', label:'Playdates',          apiCategory:'playdates' },
+  'walking':     { emoji:'🦮', label:'Dog Walking',        apiCategory:'walking'   },
+  'fitness':     { emoji:'💪', label:'Fitness & Training', apiCategory:'fitness'   },
+  'swimming':    { emoji:'🏊', label:'Swimming',           apiCategory:'swimming'  },
+  'soul':        { emoji:'✨', label:'Soul Play',          apiCategory:null        },
+  'miras-picks': { emoji:'💫', label:"Mira's Picks",       apiCategory:null        },
+};
+
+// ── Mira quote builder ────────────────────────────────────────────────────────
+const buildMiraQuote = (pet, category) => {
+  const name = pet?.name || 'your dog';
+  const breed = pet?.breed || null;
+  const energy = pet?.energy_level || null;
+  const QUOTES = {
+    outings:     breed ? `${name}'s ${breed} spirit thrives outdoors. I picked everything for a perfect park day.` : `Everything here is built for ${name}'s outdoor adventures.`,
+    playdates:   `${name} deserves the best playdates. I matched these to ${name}'s social energy and size.`,
+    walking:     breed ? `${breed}s need the right walk kit. Everything here is matched to ${name}'s gait and pace.` : `Walk essentials matched to ${name}'s routine and energy.`,
+    fitness:     energy ? `${name}'s energy level: ${energy}. I picked fitness tools that channel it right.` : `Fitness tools matched to ${name}'s body, breed, and energy.`,
+    swimming:    `${name} and water — I built this list around safety, fun, and ${breed || 'their'} swimming ability.`,
+    soul:        breed ? `${name} is a ${breed}. These are the Soul Play items made specifically for ${name}.` : `Every piece in Soul Play is made for ${name} — personalised, not generic.`,
+    'miras-picks': `These are my top picks across all of ${name}'s play profile — energy, breed, and lifestyle matched.`,
+  };
+  return QUOTES[category] || `Personalised for ${name}.`;
+};
+
+// ── Mira Imagines card (items not yet in catalog) ─────────────────────────────
+const MiraImaginesCard = ({ item, pet, token }) => {
+  const [sent, setSent] = useState(false);
+  const petName = pet?.name || 'your dog';
+  return (
+    <div style={{ borderRadius:14, overflow:'hidden', background:'linear-gradient(135deg,#1A0A00,#2D1A00)', border:'1.5px solid rgba(255,140,66,0.25)', display:'flex', flexDirection:'column', minHeight:200 }}>
+      <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'18px 14px 6px' }}>
+        <span style={{ fontSize:34 }}>{item.emoji}</span>
+        <div style={{ margin:'6px 0 0', background:'rgba(255,140,66,0.2)', border:'1px solid rgba(255,140,66,0.4)', borderRadius:20, padding:'2px 10px', fontSize:9, color:'#FFC080', fontWeight:700, letterSpacing:'0.05em' }}>MIRA IMAGINES</div>
+        <p style={{ fontWeight:800, color:'#fff', textAlign:'center', fontSize:12, marginTop:8, lineHeight:1.3 }}>{item.name}</p>
+        <p style={{ color:'rgba(255,255,255,0.50)', fontSize:10, textAlign:'center', marginTop:4, lineHeight:1.5 }}>{item.description}</p>
+      </div>
+      <div style={{ padding:'0 12px 14px' }}>
+        {sent ? (
+          <div style={{ textAlign:'center', fontSize:11, fontWeight:700, color:'#32C878' }}><Check size={12} style={{ display:'inline', marginRight:4 }} /> Sent to Concierge!</div>
+        ) : (
+          <button onClick={() => setSent(true)} style={{ width:'100%', background:'linear-gradient(135deg,#FF8C42,#C44400)', color:'#fff', border:'none', borderRadius:10, padding:'9px', fontSize:11, fontWeight:700, cursor:'pointer' }}>
+            Request a Quote →
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ── Generate Mira Imagines for play ───────────────────────────────────────────
+const generatePlayImagines = (pet, existingProducts) => {
+  const petName = pet?.name || 'your dog';
+  const breed   = (pet?.breed || '').trim();
+  const imagines = [];
+
+  const hasBreedProduct = breed && existingProducts.some(p => (p.name||'').toLowerCase().includes(breed.toLowerCase()));
+  if (!hasBreedProduct) {
+    imagines.push({ id:`imagine-play-${breed||'custom'}`, isImagined:true, emoji:'🎯', name: breed ? `${breed} Play Pack` : `${petName}'s Play Pack`, description: breed ? `A curated play bundle built around what ${breed}s love most.` : `A personalised play kit built around ${petName}'s energy and style.` });
+  }
+
+  imagines.push({ id:'imagine-fitness-plan', isImagined:true, emoji:'💪', name:`${petName}'s 4-Week Fitness Plan`, description:`Mira builds a breed-specific training plan — agility, strength, and endurance sessions.` });
+  imagines.push({ id:'imagine-park-pass', isImagined:true, emoji:'🌳', name:`Monthly Park Pass for ${petName}`, description:`Unlimited access to premium dog parks near you — curated by Mira for ${petName}'s location.` });
+
+  return imagines.slice(0, 4);
+};
+
+// ── Main Modal ────────────────────────────────────────────────────────────────
+const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
+  const [products, setProducts] = useState([]);
+  const [imagines, setImagines] = useState([]);
+  const [loading,  setLoading]  = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
+  const [tabs,      setTabs]     = useState([]);
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
+  const { token } = useAuth();
+
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= 768);
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  const config   = CATEGORY_CONFIG[category] || { emoji:'🎾', label:category, apiCategory:null };
+  const petName  = pet?.name  || 'your dog';
+  const petBreed = (pet?.breed || '').toLowerCase().trim();
+  const allergies = useMemo(() => getAllergies(pet), [pet]);
+  const miraQuote = buildMiraQuote(pet, category);
+
+  const fetchData = useCallback(async () => {
+    if (!isOpen || !category) return;
+    setLoading(true);
+    setProducts([]);
+    setImagines([]);
+    setTabs([]);
+    setActiveTab('all');
+
+    const apiUrl = getApiUrl();
+
+    try {
+      // ── Soul Play — breed-specific bandanas + cards + soul products ──────────
+      if (category === 'soul') {
+        const [r1, r2, r3] = await Promise.all([
+          fetch(`${apiUrl}/api/products?category=breed-play_bandanas&limit=60`).then(r=>r.ok?r.json():{products:[]}).catch(()=>({products:[]})),
+          fetch(`${apiUrl}/api/products?category=breed-playdate_cards&limit=60`).then(r=>r.ok?r.json():{products:[]}).catch(()=>({products:[]})),
+          fetch(`${apiUrl}/api/admin/pillar-products?pillar=play&category=soul&limit=30`).then(r=>r.ok?r.json():{products:[]}).catch(()=>({products:[]})),
+        ]);
+        const all = [...(r1.products||[]), ...(r2.products||[]), ...(r3.products||[])];
+        // Show ONLY this breed's products (exact breed match in name or breed_tags)
+        const breedFiltered = all.filter(p => {
+          const bt = (p.breed_tags||[]).map(b=>b.toLowerCase());
+          const nm = (p.name||'').toLowerCase();
+          if (!petBreed) return true;
+          return bt.includes('all_breeds') || bt.includes('all') || bt.includes(petBreed) || nm.includes(petBreed);
+        });
+        // Deduplicate by name
+        const seen = new Map();
+        breedFiltered.forEach(p => { const k=(p.name||'').toLowerCase().trim(); if(!seen.has(k)) seen.set(k,p); });
+        setProducts([...seen.values()]);
+        setImagines(generatePlayImagines(pet, [...seen.values()]));
+        return;
+      }
+
+      // ── Mira's Picks — AI-scored, breed + allergen filtered ──────────────────
+      if (category === 'miras-picks') {
+        const petId = pet?.id;
+        let preScored = [];
+        if (petId) {
+          const statusRes = await fetch(`${apiUrl}/api/mira/score-status/${petId}`).catch(()=>null);
+          if (statusRes?.ok) {
+            const status = await statusRes.json();
+            if (status.has_scores && status.count > 5) {
+              const topRes = await fetch(`${apiUrl}/api/mira/claude-picks/${petId}?pillar=play&limit=24&min_score=40`).catch(()=>null);
+              if (topRes?.ok) { const d = await topRes.json(); preScored = d.picks||[]; }
+            }
+          }
+        }
+        // Fetch all play categories in parallel
+        const PLAY_CATS = ['outings','playdates','walking','fitness','swimming','soul'];
+        const results = await Promise.all(
+          PLAY_CATS.map(cat => fetch(`${apiUrl}/api/admin/pillar-products?pillar=play&category=${cat}&limit=40`).then(r=>r.ok?r.json():{products:[]}).catch(()=>({products:[]})))
+        );
+        const allByName = new Map();
+        results.forEach(d => (d.products||[]).forEach(p => { const k=(p.name||p.id||'').toLowerCase(); if(!allByName.has(k)) allByName.set(k,p); }));
+        const allRaw = [...allByName.values()];
+
+        // Breed-filter soul items, keep all_breeds for rest
+        const filtered = allRaw.filter(p => {
+          const bt = (p.breed_tags||[]).map(b=>b.toLowerCase());
+          const isAll = bt.includes('all_breeds') || bt.includes('all') || bt.length===0;
+          if (isAll) return true;
+          return petBreed ? bt.includes(petBreed) : true;
+        });
+
+        // Allergen filter
+        const safe = filtered.filter(p => {
+          if (!allergies.length) return true;
+          const text = `${p.name} ${p.description||''}`.toLowerCase();
+          return !allergies.some(a => text.includes(a) && !text.includes(`${a}-free`));
+        });
+
+        // Merge with pre-scored AI picks
+        const scoreById = {};
+        preScored.forEach(p => { scoreById[p.id]=p; });
+        const enriched = safe.map(p => ({ ...p, mira_score: scoreById[p.id]?.mira_score||p.mira_score, mira_hint: scoreById[p.id]?.mira_reason||p.mira_hint||null }));
+        const sorted = preScored.length > 0
+          ? [...enriched].sort((a,b)=>(b.mira_score||0)-(a.mira_score||0))
+          : enriched;
+
+        setProducts(sorted.slice(0, 24));
+        setImagines(generatePlayImagines(pet, sorted));
+
+        if (petId && preScored.length===0) {
+          fetch(`${apiUrl}/api/mira/score-for-pet`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({pet_id:petId, pillar:'play'}) }).catch(()=>{});
+        }
+        return;
+      }
+
+      // ── Standard category (outings, playdates, walking, fitness, swimming) ───
+      if (config.apiCategory) {
+        // Also fetch toys for outings (they map to outings dim)
+        const requests = [fetch(`${apiUrl}/api/admin/pillar-products?pillar=play&category=${config.apiCategory}&limit=60`)];
+        if (category === 'outings') requests.push(fetch(`${apiUrl}/api/admin/pillar-products?pillar=play&category=toys&limit=40`));
+        if (category === 'fitness') requests.push(fetch(`${apiUrl}/api/admin/pillar-products?pillar=play&category=fit&limit=30`));
+
+        const results = await Promise.all(requests.map(r => r.then(res=>res.ok?res.json():{products:[]}).catch(()=>({products:[]}))));
+        const allByName = new Map();
+        results.forEach(d => (d.products||[]).forEach(p => { const k=(p.name||'').toLowerCase(); if(!allByName.has(k)) allByName.set(k,p); }));
+        const prods = [...allByName.values()];
+
+        // Breed filter — show all_breeds + empty + this breed
+        const filtered = prods.filter(p => {
+          const bt = (p.breed_tags||[]).map(b=>b.toLowerCase());
+          if (bt.length===0) return true;
+          if (bt.includes('all_breeds') || bt.includes('all')) return true;
+          return petBreed ? bt.includes(petBreed) : true;
+        });
+
+        const uniqueTabs = [...new Set(filtered.map(p=>p.sub_category).filter(Boolean))];
+        setTabs(uniqueTabs);
+        setProducts(filtered);
+      }
+    } catch(err) {
+      console.error('[PlayContentModal]', err);
+    } finally {
+      setLoading(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, category, pet, petBreed]);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
+
+  const filteredProducts = activeTab === 'all'
+    ? products
+    : products.filter(p => p.sub_category === activeTab || p.category === activeTab);
+
+  if (!isOpen) return null;
+
+  const G = { orange:'#E76F51', mid:'#7B3F00', deep:'#7B2D00', pale:'#FFF0EA', cream:'#FFF8F5' };
+
+  const ModalContent = (
+    <motion.div
+      initial={{ opacity:0, y:isDesktop ? 0 : 60, scale:isDesktop ? 0.97 : 1 }}
+      animate={{ opacity:1, y:0, scale:1 }}
+      exit={{ opacity:0, y:isDesktop ? 0 : 60, scale:isDesktop ? 0.97 : 1 }}
+      transition={{ type:'spring', damping:28, stiffness:320 }}
+      style={isDesktop ? {
+        width:'92vw', maxWidth:1140, maxHeight:'90vh',
+        borderRadius:20, display:'flex', flexDirection:'column',
+        background:'#fff', boxShadow:'0 24px 64px rgba(0,0,0,0.20)',
+        overflow:'hidden',
+      } : {
+        position:'fixed', left:0, right:0, bottom:0,
+        maxHeight:'93vh', borderTopLeftRadius:24, borderTopRightRadius:24,
+        display:'flex', flexDirection:'column', zIndex:56, background:'#fff',
+      }}
+      data-testid={`play-modal-${category}`}
+    >
+      {/* Drag handle (mobile) */}
+      {!isDesktop && (
+        <div style={{ display:'flex', justifyContent:'center', paddingTop:10, flexShrink:0 }}>
+          <div style={{ width:40, height:4, borderRadius:2, background:'#e0e0e0' }} />
+        </div>
+      )}
+
+      {/* ── Header ──────────────────────────────────────────────────────────── */}
+      <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', padding:'16px 20px', borderBottom:'1px solid #F0E8E0', flexShrink:0 }}>
+        <div style={{ display:'flex', gap:14, alignItems:'flex-start' }}>
+          <div style={{ width:44, height:44, borderRadius:12, flexShrink:0, background:`linear-gradient(135deg,${G.pale},#FFE0B2)`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22 }}>
+            {config.emoji}
+          </div>
+          <div>
+            <h2 style={{ fontWeight:900, fontSize:18, color:G.deep, margin:0 }}>{config.label}</h2>
+            <p style={{ margin:'3px 0 0', fontSize:12, color:'#888' }}>Personalised for {petName}</p>
+          </div>
+        </div>
+        <button onClick={onClose} style={{ display:'flex', alignItems:'center', gap:6, background:G.pale, color:'#C44400', border:'none', borderRadius:20, padding:'7px 14px', fontSize:12, fontWeight:700, cursor:'pointer', flexShrink:0 }} data-testid="play-modal-close">
+          Close <X size={13} />
+        </button>
+      </div>
+
+      {/* ── Mira Quote ──────────────────────────────────────────────────────── */}
+      <div style={{ margin:'12px 16px 0', background:'linear-gradient(90deg,#FFF8F0,#FFF3E8)', border:'1px solid #FFE0C0', borderRadius:14, padding:'12px 14px', display:'flex', gap:12, alignItems:'flex-start', flexShrink:0 }}>
+        <div style={{ width:28, height:28, borderRadius:'50%', flexShrink:0, background:'linear-gradient(135deg,#FF8C42,#C44400)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13 }}>✦</div>
+        <div>
+          <p style={{ fontSize:13, color:'#4A2000', fontStyle:'italic', margin:0, lineHeight:1.5 }}>"{miraQuote}"</p>
+          <p style={{ fontSize:11, color:'#C44400', fontWeight:700, margin:'5px 0 0' }}>♥ Mira knows {petName}</p>
+        </div>
+      </div>
+
+      {/* ── Sub-category tabs ────────────────────────────────────────────────── */}
+      {tabs.length > 1 && (
+        <div style={{ display:'flex', gap:8, overflowX:'auto', padding:'12px 16px 4px', flexShrink:0, scrollbarWidth:'none' }}>
+          {['all', ...tabs].map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab)} style={{ flexShrink:0, borderRadius:20, padding:'6px 16px', fontSize:12.5, fontWeight:700, border: activeTab===tab ? 'none' : `1.5px solid #FFCC99`, background: activeTab===tab ? `linear-gradient(135deg,${G.orange},#C44400)` : G.pale, color: activeTab===tab ? '#fff' : '#C44400', cursor:'pointer' }} data-testid={`play-tab-${tab}`}>
+              {tab === 'all' ? 'All' : tab}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* ── Product Grid ─────────────────────────────────────────────────────── */}
+      <div style={{ flex:1, overflowY:'auto' }}>
+        {loading ? (
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', padding:'64px 0' }}>
+            <Loader2 style={{ width:28, height:28, color:G.orange, animation:'spin 1s linear infinite' }} />
+            <span style={{ marginLeft:12, color:'#888', fontSize:14 }}>Finding the best for {petName}…</span>
+            <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+          </div>
+        ) : (
+          <div style={{ padding:'16px 16px 24px' }}>
+            {/* Product count */}
+            {(filteredProducts.length > 0 || imagines.length > 0) && (
+              <p style={{ fontSize:11, fontWeight:700, color:G.orange, letterSpacing:'0.05em', textTransform:'uppercase', marginBottom:14 }}>
+                ✦ {filteredProducts.length} {config.label}{imagines.length>0?` + ${imagines.length} Mira Imagines`:''} — For {petName}
+              </p>
+            )}
+
+            {/* Mira Imagines */}
+            {imagines.length > 0 && (
+              <div style={{ marginBottom:20 }}>
+                <p style={{ fontSize:11, fontWeight:700, color:'rgba(255,140,66,0.85)', marginBottom:10, letterSpacing:'0.04em' }}>✦ MIRA IMAGINES — NOT YET IN CATALOG</p>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(200px,100%),1fr))', gap:14 }}>
+                  {imagines.map(item => <MiraImaginesCard key={item.id} item={item} pet={pet} token={token} />)}
+                </div>
+              </div>
+            )}
+
+            {/* Products */}
+            {filteredProducts.length > 0 ? (
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(220px,100%),1fr))', gap:16 }}>
+                {filteredProducts.map((p,i) => (
+                  <div key={p.id||p._id||i} style={{ position:'relative' }}>
+                    {p.mira_score >= 75 && (
+                      <div style={{ position:'absolute', top:-6, right:-6, zIndex:2, background:G.mid, borderRadius:20, padding:'1px 7px', fontSize:9, fontWeight:700, color:'#fff', display:'flex', alignItems:'center', gap:3 }}>
+                        <Star size={8} />★ {p.mira_score}
+                      </div>
+                    )}
+                    <SharedProductCard product={p} pillar="play" selectedPet={pet} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              !loading && imagines.length===0 && (
+                <div style={{ textAlign:'center', padding:'48px 0' }}>
+                  <p style={{ fontSize:36 }}>{config.emoji}</p>
+                  <p style={{ fontSize:14, color:'#888', marginTop:8 }}>Personalised picks for {petName} coming soon!</p>
+                </div>
+              )
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* ── Footer ──────────────────────────────────────────────────────────── */}
+      <div style={{ flexShrink:0, padding:'14px 20px', borderTop:'1px solid #F0E8E0', background:'#FFFAF6', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+        <p style={{ fontSize:12, color:'#888', margin:0 }}>Personalised for {petName}</p>
+        <button onClick={onClose} style={{ background:`linear-gradient(135deg,${G.orange},#FF6B9D)`, color:'#fff', border:'none', borderRadius:12, padding:'9px 18px', fontSize:13, fontWeight:700, cursor:'pointer' }} data-testid="play-modal-cta">
+          Explore {config.label} for {petName} →
+        </button>
+      </div>
+    </motion.div>
+  );
+
+  return createPortal(
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.50)', zIndex:55 }} />
+          {isDesktop ? (
+            <div style={{ position:'fixed', inset:0, display:'flex', alignItems:'center', justifyContent:'center', zIndex:56 }}>
+              {ModalContent}
+            </div>
+          ) : (
+            <div style={{ position:'fixed', inset:0, zIndex:56, pointerEvents:'none' }}>
+              <div style={{ pointerEvents:'auto' }}>{ModalContent}</div>
+            </div>
+          )}
+        </>
+      )}
+    </AnimatePresence>,
+    document.body
+  );
+};
+
+export default PlayContentModal;

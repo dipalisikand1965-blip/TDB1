@@ -59,8 +59,12 @@ export default function PlayCategoryStrip({ pet, openDim, onSelect, onMiraPicks 
       <div
         ref={scrollRef}
         className="flex overflow-x-auto"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch",
-          paddingLeft: canScrollLeft ? 32 : 0, paddingRight: canScrollRight ? 40 : 12 }}
+        style={{
+          scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch",
+          paddingLeft: canScrollLeft ? 32 : 8,
+          paddingRight: canScrollRight ? 40 : 8,
+          justifyContent: "center",
+        }}
       >
         <style>{`.play-cat-scroll::-webkit-scrollbar{display:none}`}</style>
         {PLAY_CATEGORIES.map(cat => {
