@@ -330,16 +330,18 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
   - Services: 8 play services seeded (Dog Park Outing, Playdate, Swim, Agility, etc.)
 
 ### P1 — Important Improvements
-5. **Go service watercolour images** — Generate using admin → Soul Products tool or DALL-E
-6. **Consolidate duplicate services** — 89+ travel/stay services in DB → 8 canonical ones (as per Excel's MERGE/DELETE guidance)
-7. **Care soul product images** — 35 Care products in DB without images (use admin mockup tool)
+- **Go service watercolour images** — Generate using admin → Soul Products tool or DALL-E
+- **Consolidate duplicate services** — 89+ travel/stay services in DB → 8 canonical ones
+- **Care soul product images** — 35 Care products in DB without images (use admin mockup tool)
+- **Add new mock product templates** to `batch_scorers.py` for the Soul Product Generator
+- **Implement CTAs from TDC_instructions.docx** — Read `/app/TDC_instructions.docx` and implement CTAs on frontend
 
 ### P2 — Future Pillars & Features
-8. **Razorpay checkout fix** — Known low-priority bug
-9. **LOVE pillar** — /love route, LoveSoulPage, Love Memory Drawer
-10. **Consolidate bundles collections** — Multiple bundles collections need merging
-11. **Generic shared components** — Reduce code duplication across DINE/CARE/GO/PLAY pillars
-12. **Complete.html documentation** — Update complete.html with current state of all 4 pillars
+- **Razorpay checkout fix** — Known low-priority bug
+- **LOVE pillar** — /love route, LoveSoulPage, Love Memory Drawer
+- **Consolidate bundles collections** — Multiple bundles collections need merging
+- **Generic shared components** — Reduce code duplication across DINE/CARE/GO/PLAY pillars (refactor DimExpanded into a truly shared component)
+- **complete-documentation.html** — Keep updated with each session (v18.0.0 current)
 
 ---
 
