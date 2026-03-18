@@ -245,6 +245,26 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 
 ## COMPLETED SESSION LOG
 
+### Session 82 (Mar 18, 2026) — Care Crash + Pet Photo + Soul Chip Visibility
+- **Care page crash fixed**: `anxiety_triggers` stored as string (`'None really '`) — normalised to always be an array in `CareSoulPage.jsx`
+- **Pet photo fix across ALL pets**: `PetHomePage.jsx` used `pet.photo` but API returns `pet.photo_url` — fixed both avatar instances with `pet.photo || pet.photo_url`
+- **Soul question chips now clearly selectable**: Selected state changed from 25% transparent orange (invisible on dark bg) → solid `#E76F51` + white 2px border + `scale(1.04)`. Same fix applied to both Play and Care pages
+- **`e.stopPropagation()` added** to all chip click handlers to prevent modal close interference
+- **Save button state clear**: disabled = faded 50%, enabled = bright orange gradient with glow
+
+### Session 81 (Mar 18, 2026) — Soul Score Consistency + Question Type Fix + Bundle Modal
+- **Soul score now consistent across ALL pillars**: Play, Care, Dine, Go now use `pet.overall_score` first (was using stale `pet.soul_score`). Lola: 94% everywhere (was 9%)
+- **Soul question chips now show options**: Fallback questions were missing `type: "select"` — added. Dynamic type detection: `q.type || (Array.isArray(q.options) ? "select" : "text")`
+- **MiraPicksSection breed filter fixed**: Fallback fetch now applies full `breed_targets`-priority filter — no more American Bully/Akita products for Indie Mojo
+- **Bundle admin modal scrollable**: `max-h-[90vh] overflow-y-auto` added to `DialogContent` — image upload + AI generator now reachable
+
+### Session 80 (Mar 18, 2026) — Play Page 5 Critical Issues Fixed (15/15 tests)
+- **Soul Picks breed filter**: Fixed `breed_targets` priority over `breed_tags='all_breeds'` in both `PlayContentModal.jsx` and prefetch
+- **Mira's Picks pill → full-screen modal**: `onMiraPicks` now calls `setModalCategory("miras-picks")` instead of scrolling
+- **Bundles pill shows real bundles**: Fetches from `bundles` collection (`enjoy` + `fit` pillars). New `BundleCard` component. Bundles dim card also opens modal
+- **Services heading**: "Play, Personally" (was "Book a play experience for Mojo")
+- **Bundle admin AI image generation**: New endpoint `POST /api/admin/bundles/{bundle_id}/generate-image` using `bundles` collection
+
 ### Session 73 (Feb 2026) — Breed Filtering Fix + Play DB Cleanup + Soul Products in Grids
 - **Breed filtering in All Products**: PlaySoulPage, GoSoulPage, CareSoulPage products fetch now depends on `[petData]` — soul products (breed_tags set) filtered to only show the current pet's breed. Generic products (no breed_tags) show for all pets.
 - **Soul products in Care/Play grids**: After loading products, also fetches `/api/breed-catalogue/products?pillar={pillar}&breed={petBreed}` and merges into the soul dimension group. Now Care "Soul Care" dim and Play "Soul Play" dim both show breed-specific products.
