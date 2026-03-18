@@ -51,20 +51,14 @@ export default function PlayConciergeSection({ pet, prefetchedServices }) {
       )}
 
       <div style={{ marginBottom:40 }} data-testid="play-personally-section">
-        {/* Header */}
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20 }}>
-          <div>
-            <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(231,111,81,0.12)", borderRadius:20, padding:"4px 12px", marginBottom:10 }}>
-              <div style={{ width:18, height:18, borderRadius:"50%", background:MIRA_ORB, display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:"#fff" }}>✦</div>
-              <span style={{ fontSize:11, color:G.mid, fontWeight:700 }}>Play, Personally</span>
-            </div>
-            <h2 style={{ fontSize:"clamp(1.25rem,3vw,1.625rem)", fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:6 }}>
-              Book a play experience for <span style={{ color:G.orange }}>{petName}</span>
-            </h2>
-            <p style={{ fontSize:13, color:G.mutedText, lineHeight:1.6, maxWidth:460 }}>
-              Parks, playdates, agility, and swim sessions — all arranged by Mira, personalised to {petName}'s energy and play profile.
-            </p>
-          </div>
+        {/* Header — matches Care/Dine "Play, Personally" style */}
+        <div style={{ marginBottom:24 }}>
+          <h2 style={{ fontSize:"clamp(1.3rem,5vw,2rem)", fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:6, lineHeight:1.2 }}>
+            Play, Personally
+          </h2>
+          <p style={{ fontSize:14, color:G.mutedText, lineHeight:1.6 }}>
+            Parks, playdates, agility, and swim sessions for <span style={{ color:G.orange, fontWeight:600 }}>{petName}</span> — all arranged by Mira.
+          </p>
         </div>
 
         {/* Horizontal service cards */}

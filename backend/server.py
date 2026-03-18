@@ -21153,6 +21153,79 @@ async def generate_bundle_image_sync(
         raise HTTPException(status_code=500, detail=f"Image generation failed: {str(e)}")
 
 
+@api_router.post("/admin/bundles/{bundle_id}/generate-image")
+async def generate_generic_bundle_image(
+    bundle_id: str,
+    username: str = Depends(verify_admin_auth),
+):
+    """Generate AI watercolor image for any bundle in the bundles collection."""
+    import os
+    import base64
+    import cloudinary
+    import cloudinary.uploader
+    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+
+    bundle = await db.bundles.find_one(
+        {"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"_id": 0}
+    )
+    if not bundle:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+
+    emergent_api_key = (
+        os.environ.get("EMERGENT_LLM_KEY")
+        or os.environ.get("EMERGENT_API_KEY")
+        or os.environ.get("EMERGENT_MODEL_API_KEY")
+    )
+    if not emergent_api_key:
+        raise HTTPException(status_code=500, detail="Image generation API key not configured")
+
+    if not os.environ.get("CLOUDINARY_CLOUD_NAME"):
+        raise HTTPException(status_code=500, detail="Cloudinary not configured")
+    cloudinary.config(
+        cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+        api_key=os.environ.get("CLOUDINARY_API_KEY"),
+        api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+    )
+
+    bundle_name = bundle.get("name", "Play Bundle")
+    pillar = bundle.get("pillar", "play")
+    items = bundle.get("items", "")
+    prompt = (
+        f"Soulful watercolor illustration of a dog {pillar} bundle called '{bundle_name}', "
+        f"containing {items[:80] if items else 'toys, accessories, and treats'}, "
+        "beautifully arranged, warm painterly brushstrokes, soft layered watercolor pigments, "
+        "premium editorial composition, elegant and emotive, white background, "
+        "professional illustration style, similar to premium pet brand art"
+    )
+
+    try:
+        image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
+        images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
+        if not images:
+            raise HTTPException(status_code=500, detail="Image generation returned no results")
+
+        img_b64 = base64.b64encode(images[0]).decode("utf-8")
+        upload_result = cloudinary.uploader.upload(
+            f"data:image/png;base64,{img_b64}",
+            folder="bundles/ai-generated",
+            public_id=f"bundle-{bundle_id}-watercolor",
+            overwrite=True,
+            resource_type="image",
+        )
+        image_url = upload_result.get("secure_url")
+        if not image_url:
+            raise HTTPException(status_code=500, detail="Cloudinary upload failed")
+
+        await db.bundles.update_one(
+            {"$or": [{"id": bundle_id}, {"_id": bundle_id}]},
+            {"$set": {"image_url": image_url, "watercolor_image": image_url}}
+        )
+        return {"success": True, "image_url": image_url, "bundle_id": bundle_id}
+    except Exception as e:
+        logger.error(f"Generic bundle image generation failed for {bundle_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Image generation failed: {str(e)}")
+
+
 # Include routers
 # NOTE: Pillar-specific routers must be registered BEFORE api_router
 # because api_router has a generic /{pillar}/page-config route that would

@@ -296,4 +296,4 @@ Password: test123
 
 **Audit Status:** COMPLETE
 **Generated:** February 9, 2026
-**Preview URL:** https://play-breed-tips.preview.emergentagent.com
+**Preview URL:** https://play-ui-sync.preview.emergentagent.com
