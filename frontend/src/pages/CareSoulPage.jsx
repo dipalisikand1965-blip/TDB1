@@ -111,7 +111,13 @@ function normalizePetForFlow(rawPet) {
     coatType: getCoatType(rawPet),
     groomingComfort: getGroomingComfort(rawPet) || "Comfortable",
     dentalHealth: getDentalHealth(rawPet) || "Good",
-    anxietyTriggers: rawPet.doggy_soul_answers?.anxiety_triggers || rawPet.anxiety_triggers || [],
+    anxietyTriggers: (() => {
+      const raw = rawPet.doggy_soul_answers?.anxiety_triggers || rawPet.anxiety_triggers;
+      if (!raw) return [];
+      if (Array.isArray(raw)) return raw;
+      if (typeof raw === 'string') return raw.split(',').map(s => s.trim()).filter(Boolean);
+      return [];
+    })(),
     lastVetVisit: rawPet.last_vet_visit || null,
     vaccinated: rawPet.vaccinated ?? true,
     healthCondition: getHealthCondition(rawPet),
