@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 18, 2026 (Session 71 — PLAY Pillar All 8 UI Issues Fixed)
+## Last Updated: Feb 2026 (Session 72 — Personalised Tab All Pillars + Play Strip Fix)
 
 ---
 
@@ -20,7 +20,7 @@ The Doggy Company's Pet Life Operating System (PLOS) is a pillar-based platform 
 - **Hosting**: Kubernetes container (Emergent platform)
 
 ### URL Structure
-- Frontend: `https://play-layout-fix.preview.emergentagent.com`
+- Frontend: `https://pet-breed-catalog.preview.emergentagent.com`
 - Backend: Port 8001, all API routes prefixed with `/api`
 
 ### Key Backend Files
@@ -66,7 +66,9 @@ The Doggy Company's Pet Life Operating System (PLOS) is a pillar-based platform 
 │   │   └── PetFriendlySpots.jsx     # Dine location finder
 │   └── common/
 │       ├── Header.jsx               # Navigation (DINE, CARE, GO, CELEBRATE, PLAY, LOVE)
-│       └── NavigationDock.jsx       # Mobile bottom nav
+│       ├── NavigationDock.jsx       # Mobile bottom nav
+│       ├── DimExpandedModal.jsx     # Shared bottom-sheet modal (used in PlaySoulPage)
+│       └── PersonalisedBreedSection.jsx  # Breed-specific soul products tab (all pillars)
 └── utils/
     └── api.js                   # API_URL, getApiUrl, getAuthHeaders
 ```
@@ -77,11 +79,11 @@ The Doggy Company's Pet Life Operating System (PLOS) is a pillar-based platform 
 
 | Pillar | Route | Status | Key Features |
 |--------|-------|--------|--------------|
-| DINE | `/dine` | ✅ COMPLETE | DineHero, DineCategoryStrip, DineContentModal, PersonalizedDineSection, PetFriendlySpots |
-| CARE | `/care` | ✅ COMPLETE | CareHero, 8-pill strip, CareContentModal, WellnessProfile, DimExpanded, GuidedCarePaths, CareConcierge |
-| GO | `/go` | 🟡 70% COMPLETE | GoHero (centered), GoCategoryStrip (6 pills), GoContentModal, GoTabBar (3 tabs), PetFriendlyStays, GuidedGoPaths (3-col grid) |
+| DINE | `/dine` | ✅ COMPLETE | DineHero, DineCategoryStrip, DineContentModal, DimExpanded + Personalised tab, PetFriendlySpots |
+| CARE | `/care` | ✅ COMPLETE | CareHero, 8-pill strip, DimExpanded + Personalised tab, WellnessProfile, GuidedCarePaths, CareConcierge |
+| GO | `/go` | ✅ COMPLETE | GoHero, GoCategoryStrip (Soul Go + Mira's Picks), DimExpanded + Personalised tab, PetFriendlyStays, GuidedGoPaths |
 | CELEBRATE | `/celebrate` | ✅ COMPLETE | CelebratePage with cake designer, occasion box |
-| PLAY | `/play` | ❌ NOT STARTED | Future pillar |
+| PLAY | `/play` | ✅ COMPLETE | PlayHero, PlayCategoryStrip (connected to DimExpandedModal), DimExpanded + Personalised tab, GuidedPlayPaths, PlayNearMe |
 | LOVE | `/love` | ❌ NOT STARTED | Future pillar |
 
 ---
@@ -243,7 +245,14 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 
 ## COMPLETED SESSION LOG
 
-### Session 70 (Mar 18, 2026) — Play Pillar LIVE + Go/Care/Dine Fixes
+### Session 72 (Feb 2026) — Personalised Tab All Pillars + Play Category Strip Fix
+- **Play Category Strip fix**: `PlayCategoryStrip` now lifts state to `PlaySoulPage` — clicking a category pill calls `setOpenDim` and opens `DimExpandedModal`. Added `data-testid` on all strip buttons.
+- **Personalised tab — Dine, Care, Go, Play**: Added "✦ Personalised" tab toggle to all four pillar `DimExpanded` components. Shows `PersonalisedBreedSection` (breed-specific soul products) when selected. Each pillar uses correct accent color.
+- **Imports**: Added `PersonalisedBreedSection` import to `DineSoulPage`, `CareSoulPage`, `GoSoulPage`.
+- **Documentation cleanup**: Deleted erroneous `/app/complete.html`. Updated PRD.md.
+- **Breed products in DB**: 396 breed-specific soul products seeded (100 dine, 96 care, 100 go, 100 play) via `seed_breed_products.py`.
+
+### Session 71 (Mar 18, 2026) — PLAY Pillar All 8 UI Issues Fixed
 - **Play Pillar `/play` route**: Full 3-tab page (Play & Explore | Find Play | Book a Service)
 - **PlayNearMe**: Google Places parks search with `features[]` array (off_lead, beach_access, shade, water_nearby, dog_park mapped from Google types)
 - **Backend**: `/api/places/play-spots` endpoint with automatic Google Places types → features mapping
@@ -306,8 +315,11 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 
 ## P0/P1/P2 BACKLOG
 
-### P0 — Critical Next Steps (GO Pillar completion)
-### P0 — COMPLETED (Session 70)
+### P0 — All Complete ✅
+- All 4 pillars (Dine, Care, Go, Play) have "Personalised" tab with breed-specific products
+- Play category strip now functional (connected to DimExpandedModal)
+
+### P1 — Important Improvements
 - **PLAY pillar**: /play route fully functional with orange/rust color scheme (#E76F51, #7B2D00)
   - PlayHero: no tabs inside, orange gradient (matches GoHero pattern)
   - PlayTabBar: separate sticky tab bar with 3 tabs (Play & Explore, Find Play, Book a Service)

@@ -24,6 +24,7 @@ import GuidedNutritionPaths from "../components/dine/GuidedNutritionPaths";
 import { PillarHelpBuckets, PillarGuidedPaths } from "../components/PillarGoldSections";
 import { API_URL } from "../utils/api";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
+import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 
 // ─── Dimension visual config — dynamic per pet ───────────────────────────────
 function getDineDims(pet) {
@@ -1062,6 +1063,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   // Dynamic tabs from actual sub_categories in API data
   const tabList = ['All', ...Object.keys(rawByTab)];
   const [activeTab, setActiveTab] = useState('All');
+  const [dimTab, setDimTab] = useState("products");
 
   const products = activeTab === 'All'
     ? intelligent
@@ -1094,51 +1096,67 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
         </div>
       </div>
 
-      {/* Dynamic sub-category tabs (from API, never hardcoded) */}
-      {tabList.length > 1 && (
-        <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
-          {tabList.map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} style={{padding:"5px 12px",borderRadius:20,border:`1px solid ${activeTab===tab?"#FF8C42":"#FFD0A0"}`,background:activeTab===tab?"#FF8C42":"#FFF8F0",fontSize:11,fontWeight:600,color:activeTab===tab?"#fff":"#C44400",cursor:"pointer"}}>
-              {tab}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* Products / Personalised tab toggle */}
+      <div style={{display:"flex",borderBottom:"1px solid #F0E8E0",marginBottom:14}}>
+        {[["products","🎯 All Products"],["personalised","✦ Personalised"]].map(([tid,label]) => (
+          <button key={tid} onClick={() => setDimTab(tid)} data-testid={`dine-dim-tab-${tid}`}
+            style={{flex:1,padding:"9px 0",background:"none",border:"none",borderBottom:dimTab===tid?"2.5px solid #FF8C42":"2.5px solid transparent",color:dimTab===tid?"#C44400":"#888",fontSize:12,fontWeight:dimTab===tid?700:400,cursor:"pointer"}}>
+            {label}
+          </button>
+        ))}
+      </div>
 
-      {/* Mira stats bar */}
-      {allRaw.length > 0 && (
-        <div style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:14,fontSize:11,color:"#888"}}>
-          <span style={{color:"#27AE60",fontWeight:700}}>✓ {intelligent.length} safe for {petName}</span>
-          {allRaw.length - intelligent.length > 0 && (
-            <span style={{color:"#E87722"}}>✗ {allRaw.length - intelligent.length} filtered (allergens)</span>
-          )}
-          {intelligent.filter(p => p._loved).length > 0 && (
-            <span style={{color:"#E91E63",fontWeight:700}}>♥ {intelligent.filter(p => p._loved).length} match {petName}'s loves</span>
-          )}
-        </div>
-      )}
-
-      {/* Product grid — real ProductCard with Add to Cart + ProductDetailModal */}
-      {products.length === 0 ? (
-        <div style={{textAlign:"center",padding:"24px 0",color:"#888",fontSize:13}}>
-          {allRaw.length === 0
-            ? `Loading ${dim.name} products for ${petName}…`
-            : `All ${dim.name} products were filtered — they contain ${allergies.join(', ')} which ${petName} is allergic to.`}
-        </div>
+      {dimTab === "personalised" ? (
+        <PersonalisedBreedSection pet={pet} pillar="dine" />
       ) : (
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(min(200px, 100%), 1fr))",gap:12}}>
-          {products.map(p => (
-            <div key={p.id} style={{opacity: p._dimmed ? 0.4 : 1, position:"relative"}} data-testid={`dim-product-${p.id}`}>
-              {p._loved && (
-                <div style={{position:"absolute",top:-6,right:-6,zIndex:2,background:"#E91E63",borderRadius:"50%",width:18,height:18,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:"#fff"}}>♥</div>
-              )}
-              {p._dimmed && (
-                <div style={{position:"absolute",top:4,left:4,zIndex:2,background:"rgba(0,0,0,0.6)",borderRadius:6,padding:"2px 6px",fontSize:9,color:"#fff",fontWeight:700}}>Conflicts goal</div>
-              )}
-              <SharedProductCard product={p} pillar="dine" selectedPet={pet} miraContext={miraCtx} />
+        <>
+          {/* Dynamic sub-category tabs (from API, never hardcoded) */}
+          {tabList.length > 1 && (
+            <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
+              {tabList.map(tab => (
+                <button key={tab} onClick={() => setActiveTab(tab)} style={{padding:"5px 12px",borderRadius:20,border:`1px solid ${activeTab===tab?"#FF8C42":"#FFD0A0"}`,background:activeTab===tab?"#FF8C42":"#FFF8F0",fontSize:11,fontWeight:600,color:activeTab===tab?"#fff":"#C44400",cursor:"pointer"}}>
+                  {tab}
+                </button>
+              ))}
             </div>
-          ))}
-        </div>
+          )}
+
+          {/* Mira stats bar */}
+          {allRaw.length > 0 && (
+            <div style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:14,fontSize:11,color:"#888"}}>
+              <span style={{color:"#27AE60",fontWeight:700}}>✓ {intelligent.length} safe for {petName}</span>
+              {allRaw.length - intelligent.length > 0 && (
+                <span style={{color:"#E87722"}}>✗ {allRaw.length - intelligent.length} filtered (allergens)</span>
+              )}
+              {intelligent.filter(p => p._loved).length > 0 && (
+                <span style={{color:"#E91E63",fontWeight:700}}>♥ {intelligent.filter(p => p._loved).length} match {petName}'s loves</span>
+              )}
+            </div>
+          )}
+
+          {/* Product grid */}
+          {products.length === 0 ? (
+            <div style={{textAlign:"center",padding:"24px 0",color:"#888",fontSize:13}}>
+              {allRaw.length === 0
+                ? `Loading ${dim.name} products for ${petName}…`
+                : `All ${dim.name} products were filtered — they contain ${allergies.join(', ')} which ${petName} is allergic to.`}
+            </div>
+          ) : (
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(min(200px, 100%), 1fr))",gap:12}}>
+              {products.map(p => (
+                <div key={p.id} style={{opacity: p._dimmed ? 0.4 : 1, position:"relative"}} data-testid={`dim-product-${p.id}`}>
+                  {p._loved && (
+                    <div style={{position:"absolute",top:-6,right:-6,zIndex:2,background:"#E91E63",borderRadius:"50%",width:18,height:18,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:"#fff"}}>♥</div>
+                  )}
+                  {p._dimmed && (
+                    <div style={{position:"absolute",top:4,left:4,zIndex:2,background:"rgba(0,0,0,0.6)",borderRadius:6,padding:"2px 6px",fontSize:9,color:"#fff",fontWeight:700}}>Conflicts goal</div>
+                  )}
+                  <SharedProductCard product={p} pillar="dine" selectedPet={pet} miraContext={miraCtx} />
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
