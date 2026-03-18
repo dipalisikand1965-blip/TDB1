@@ -149,12 +149,6 @@ function getPlayDims(pet) {
       badge:"Made for you", badgeBg:G.mid, glowColor:"rgba(231,111,81,0.22)", glow:true,
       mira:`{name}'s breed bandana and personalised playdate card — wear on every outing, send before every playdate.`,
     },
-    {
-      id:"mira", icon:"🪄", label:"Mira's Picks",
-      sub: `Curated for {name}'s play profile`,
-      badge:"✦ Mira Pick", badgeBg:G.deep, glowColor:"rgba(231,111,81,0.22)", glow:true,
-      mira:`These are my top picks across all play dimensions for {name} right now.`,
-    },
   ];
 }
 
@@ -1188,10 +1182,11 @@ const PlaySoulPage = () => {
   const [loading, setLoading]         = useState(true);
   const [activeTab, setActiveTab]     = useState("play");
   const [openDim, setOpenDim]         = useState(null);
+  const [miraPicksModal, setMiraPicksModal] = useState(false);
   const [petData, setPetData]         = useState(null);
   const [soulScore, setSoulScore]     = useState(0);
   const [apiProducts, setApiProducts] = useState({});
-  const [apiLoading, setApiLoading]   = useState(true); // true until products fetch completes
+  const [apiLoading, setApiLoading]   = useState(true);
   const [conciergeToast, setConciergeToast] = useState(null);
 
   // handleNearMeBook — wires "Book via Concierge" on PlayNearMe cards
@@ -1234,22 +1229,27 @@ const PlaySoulPage = () => {
     }
   }, [petData, token]);
 
-  // Fetch ALL play products and group by dim.id — filtered to pet's breed for soul items
+  // Fetch ALL play products — 3 parallel pages for faster load
   useEffect(() => {
-    if (!petData) return; // wait for pet data so we can filter by breed
+    if (!petData) return;
     const petBreed = (petData?.breed || "indie").toLowerCase().trim();
     setApiLoading(true);
 
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=500`)
-      .then(r => r.ok ? r.json() : null)
-      .then(async data => {
-        if (!data?.products?.length) { setApiLoading(false); return; }
+    Promise.all([
+      fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=100&page=1`).then(r=>r.ok?r.json():null).catch(()=>null),
+      fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=100&page=2`).then(r=>r.ok?r.json():null).catch(()=>null),
+      fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=100&page=3`).then(r=>r.ok?r.json():null).catch(()=>null),
+    ]).then(async ([d1, d2, d3]) => {
+        const all = [
+          ...(d1?.products||[]),
+          ...(d2?.products||[]),
+          ...(d3?.products||[]),
+        ];
+        if (!all.length) { setApiLoading(false); return; }
         const DIM_IDS = ["outings", "playdates", "walking", "fitness", "swimming", "soul"];
         const grouped = {};
 
-        data.products.forEach(p => {
-          // Skip breed-specific products that don't match the pet's breed
-          // BUT always include products tagged with 'all_breeds' or 'all'
+        all.forEach(p => {
           const productBreeds = (p.breed_tags || []).map(b => b.toLowerCase().trim());
           const isAllBreeds = productBreeds.includes('all_breeds') || productBreeds.includes('all');
           if (productBreeds.length > 0 && !isAllBreeds && !productBreeds.includes(petBreed)) return;
@@ -1272,7 +1272,7 @@ const PlaySoulPage = () => {
           grouped[dimId][subKey].push(p);
         });
 
-        // Also fetch breed-specific soul products from breed_products collection
+        // Also fetch breed-specific soul products
         try {
           const breedRes = await fetch(`${API_URL}/api/breed-catalogue/products?pillar=play&breed=${encodeURIComponent(petData.breed)}&limit=30`);
           if (breedRes.ok) {
@@ -1280,7 +1280,6 @@ const PlaySoulPage = () => {
             (breedData.products || []).forEach(p => {
               if (!grouped["soul"]) grouped["soul"] = {};
               if (!grouped["soul"]["soul"]) grouped["soul"]["soul"] = [];
-              // Avoid duplicates
               if (!grouped["soul"]["soul"].find(x => x.name === p.name)) {
                 grouped["soul"]["soul"].push({ ...p, sub_category: "soul", pillar: "play" });
               }
@@ -1291,8 +1290,7 @@ const PlaySoulPage = () => {
         setApiProducts(grouped);
         setApiLoading(false);
       }).catch(e => { console.error("[PlaySoulPage] products fetch:", e); setApiLoading(false); });
-  }, [petData]);
-  /* eslint-enable react-hooks/exhaustive-deps */
+  }, [petData]); // eslint-disable-line
 
   useEffect(() => {
     if (contextPets?.length>0&&!currentPet) setCurrentPet(contextPets[0]);
@@ -1349,14 +1347,17 @@ const PlaySoulPage = () => {
 
         <PlayCategoryStrip pet={petData} openDim={openDim} onSelect={(id) => {
           setOpenDim(id);
-          if (id) setActiveTab("play"); // always switch to play tab so DimExpanded is visible
-        }} />
+          if (id) setActiveTab("play");
+        }} onMiraPicks={() => setMiraPicksModal(true)} />
 
         <PlayTabBar active={activeTab} onChange={setActiveTab} />
 
         {activeTab === "play" && (
           <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
             <ActivityProfile pet={petData} token={token} />
+
+            {/* Mira's Picks — AI scored, same as Dine */}
+            <MiraPicksSection pet={petData} />
 
             <section style={{ paddingBottom:16 }} data-testid="play-explore-section">
               <h2 style={{ fontSize:"clamp(1.375rem,3vw,1.875rem)", fontWeight:800, color:G.darkText, marginBottom:6, fontFamily:"Georgia,serif", lineHeight:1.2 }}>
@@ -1373,7 +1374,7 @@ const PlaySoulPage = () => {
               Play for <span style={{ color:G.orange }}>{petData.name}</span>
             </div>
             <div style={{ fontSize:12, color:"#888", marginBottom:16 }}>
-              7 dimensions, matched to {petData.name}'s energy and play profile
+              6 dimensions, matched to {petData.name}'s energy and play profile
             </div>
 
             {/* Dimension grid — 2→4 col, inline expand like Dine */}
@@ -1430,6 +1431,39 @@ const PlaySoulPage = () => {
 
         {activeTab === "services" && (
           <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+            {/* Play, Personally — service cards like "Dine, Personally" */}
+            <div style={{ marginBottom:32 }}>
+              <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(231,111,81,0.12)", border:"1px solid rgba(231,111,81,0.30)", borderRadius:9999, padding:"5px 16px", marginBottom:20 }}>
+                <span style={{ fontSize:11, color:G.orange }}>★</span>
+                <span style={{ fontSize:11, fontWeight:600, color:G.orange, letterSpacing:"0.06em", textTransform:"uppercase" }}>{petData.name}'s Play Concierge</span>
+              </div>
+              <h2 style={{ fontSize:"clamp(1.4rem,3vw,2rem)", fontWeight:900, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:12, lineHeight:1.25 }}>
+                Play with <span style={{ color:G.orange }}>{petData.name}</span> the way only you know how.
+              </h2>
+              <p style={{ fontSize:14, color:"#888", lineHeight:1.65, marginBottom:24, maxWidth:520 }}>
+                From finding the perfect park to organising a playdate and booking a swim session — we handle every detail so you and {petData.name} just show up.
+              </p>
+              <div style={{ display:"grid", gap:16, gridTemplateColumns:"repeat(auto-fill,minmax(min(260px,100%),1fr))", marginBottom:32 }}>
+                {[
+                  { icon:"🦮", title:"Dog Walking", desc:`Daily or on-demand walks tailored to ${petData.name}'s pace and energy level`, cta:"Book a Walker" },
+                  { icon:"💪", title:"Fitness & Training", desc:`4-week fitness plan + agility coaching for ${petData.name}'s breed and health profile`, cta:"Start Training" },
+                  { icon:"🏊", title:"Swimming & Hydro", desc:`Pool access, hydrotherapy sessions, and supervised swim — perfect for joint care`, cta:"Book a Session" },
+                  { icon:"🐾", title:"Playdate Coordination", desc:`Breed-matched playdates and social events curated for ${petData.name}'s personality`, cta:"Find Playmates" },
+                ].map((svc,i) => (
+                  <div key={i} style={{ background:"#fff", border:`1.5px solid ${G.border}`, borderRadius:16, padding:"20px 18px", display:"flex", flexDirection:"column", gap:10 }}>
+                    <div style={{ fontSize:32, marginBottom:4 }}>{svc.icon}</div>
+                    <div style={{ fontSize:15, fontWeight:800, color:G.darkText }}>{svc.title}</div>
+                    <div style={{ fontSize:13, color:"#888", lineHeight:1.5, flex:1 }}>{svc.desc}</div>
+                    <button
+                      onClick={() => setConciergeToast({ message:`Booking ${svc.title} for ${petData.name} — our team will reach out within 48h` })}
+                      style={{ background:`linear-gradient(135deg,${G.orange},${G.mid})`, color:"#fff", border:"none", borderRadius:10, padding:"10px 16px", fontSize:13, fontWeight:700, cursor:"pointer", textAlign:"left" }}
+                      data-testid={`play-service-book-${i}`}>
+                      Book {petData.name}'s {svc.title} →
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
             <PlayConcierge pet={petData} token={token} />
             <PlayConciergeSection pet={petData} />
           </div>
@@ -1444,6 +1478,24 @@ const PlaySoulPage = () => {
       </div>
 
       <ConciergeToast toast={conciergeToast} onClose={() => setConciergeToast(null)} />
+
+      {/* Mira's Picks full-screen modal — opened from category strip */}
+      {miraPicksModal && (
+        <div onClick={() => setMiraPicksModal(false)} style={{ position:"fixed", inset:0, zIndex:600, background:"rgba(0,0,0,0.65)", display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}>
+          <div onClick={e => e.stopPropagation()} style={{ width:"min(860px,96vw)", maxHeight:"90vh", background:"#fff", borderRadius:20, overflow:"hidden", display:"flex", flexDirection:"column", boxShadow:"0 32px 80px rgba(0,0,0,0.35)" }}>
+            <div style={{ background:`linear-gradient(135deg,${G.deep},${G.mid})`, padding:"16px 20px", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
+              <div>
+                <span style={{ fontSize:13, fontWeight:800, color:"#fff" }}>💫 Mira's Picks</span>
+                <div style={{ fontSize:11, color:"rgba(255,255,255,0.65)", marginTop:2 }}>AI-scored products & services for {petData?.name}</div>
+              </div>
+              <button onClick={() => setMiraPicksModal(false)} style={{ background:"rgba(255,255,255,0.2)", border:"none", borderRadius:"50%", width:30, height:30, cursor:"pointer", color:"#fff", fontSize:18, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
+            </div>
+            <div style={{ flex:1, overflowY:"auto", padding:"16px 20px 24px" }}>
+              <MiraPicksSection pet={petData} />
+            </div>
+          </div>
+        </div>
+      )}
     </PillarPageLayout>
   );
 };

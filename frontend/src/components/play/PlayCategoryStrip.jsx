@@ -1,36 +1,116 @@
 /**
  * PlayCategoryStrip.jsx — /play pillar
- * Mirrors GoCategoryStrip.jsx — 6 play dimensions
+ * Mirrors DineCategoryStrip exactly: rounded-square icon tiles, scroll arrows,
+ * labels below, includes Mira's Picks as last pill.
+ * Clicking a play dim → onSelect(id) → opens inline DimExpanded
+ * Clicking Mira's Picks → onMiraPicks() → opens MiraPicksSection modal
  */
-// no local state needed — state is lifted to PlaySoulPage
 
-const G = { green:"#E76F51", mid:"#7B3F00", pale:"#FFF0EA", mutedText:"#8B4513" };
+import React, { useState, useRef, useEffect } from "react";
 
-const PLAY_STRIPS = [
-  { id:"outings",   icon:"🌳", label:"Outings & Parks" },
-  { id:"playdates", icon:"🐾", label:"Playdates" },
-  { id:"walking",   icon:"🦮", label:"Dog Walking" },
-  { id:"fitness",   icon:"💪", label:"Fitness" },
-  { id:"swimming",  icon:"🏊", label:"Swimming" },
-  { id:"soul",      icon:"✨", label:"Soul Play" },
+export const PLAY_CATEGORIES = [
+  { id: "outings",   label: "Outings & Parks",  icon: "🌳", iconBg: "linear-gradient(135deg,#E8F5E9,#C8E6C9)" },
+  { id: "playdates", label: "Playdates",         icon: "🐾", iconBg: "linear-gradient(135deg,#FCE4EC,#F8BBD0)" },
+  { id: "walking",   label: "Dog Walking",       icon: "🦮", iconBg: "linear-gradient(135deg,#FFF3E0,#FFE0B2)" },
+  { id: "fitness",   label: "Fitness",           icon: "💪", iconBg: "linear-gradient(135deg,#E3F2FD,#BBDEFB)" },
+  { id: "swimming",  label: "Swimming",          icon: "🏊", iconBg: "linear-gradient(135deg,#E0F7FA,#B2EBF2)" },
+  { id: "soul",      label: "Soul Play",         icon: "✨", iconBg: "linear-gradient(135deg,#EDE7F6,#D1C4E9)" },
+  { id: "miras-picks", label: "Mira's Picks",   icon: "💫", iconBg: "linear-gradient(135deg,#FCE4EC,#FF6B9D)" },
 ];
 
-export default function PlayCategoryStrip({ pet, openDim, onSelect }) {
+export default function PlayCategoryStrip({ pet, openDim, onSelect, onMiraPicks }) {
+  const [canScrollLeft,  setCanScrollLeft]  = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const scrollRef = useRef(null);
+
+  const updateScrollButtons = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    updateScrollButtons();
+    el.addEventListener("scroll", updateScrollButtons, { passive: true });
+    window.addEventListener("resize", updateScrollButtons);
+    return () => {
+      el.removeEventListener("scroll", updateScrollButtons);
+      window.removeEventListener("resize", updateScrollButtons);
+    };
+  }, []);
+
+  const scrollBy = (amount) => scrollRef.current?.scrollBy({ left: amount, behavior: "smooth" });
+
   return (
-    <div style={{ display:"flex", gap:8, overflowX:"auto", padding:"16px 12px 12px", scrollbarWidth:"none", marginBottom:4, justifyContent:"center" }} className="play-strip">
-      <style>{`.play-strip::-webkit-scrollbar{display:none}`}</style>
-      {PLAY_STRIPS.map(s => {
-        const sel = openDim === s.id;
-        return (
-          <button key={s.id} onClick={() => onSelect?.(sel ? null : s.id)}
-            data-testid={`play-strip-${s.id}`}
-            style={{ display:"inline-flex", alignItems:"center", gap:6, flexShrink:0, padding:"8px 16px", borderRadius:9999, border:`1.5px solid ${sel?"#E76F51":"rgba(231,111,81,0.28)"}`, background:sel?"#E76F51":"#fff", color:sel?"#fff":G.mutedText, fontSize:12, fontWeight:sel?700:400, cursor:"pointer", transition:"all 0.15s",
-              boxShadow: sel ? "0 2px 12px rgba(231,111,81,0.30)" : "none" }}>
-            <span style={{ fontSize:14 }}>{s.icon}</span>
-            {s.label}
-          </button>
-        );
-      })}
+    <div className="w-full bg-white relative" style={{ borderBottom: "1px solid #F0EBE5" }} data-testid="play-category-strip">
+      {canScrollLeft && (
+        <button
+          onClick={() => scrollBy(-240)}
+          className="hidden md:flex absolute left-0 top-0 bottom-0 z-10 items-center justify-center"
+          style={{ width: 32, background: "linear-gradient(to right, white 60%, transparent)", border: "none", cursor: "pointer" }}
+        >
+          <span style={{ fontSize: 14, color: "#888" }}>‹</span>
+        </button>
+      )}
+
+      <div
+        ref={scrollRef}
+        className="flex overflow-x-auto"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch",
+          paddingLeft: canScrollLeft ? 32 : 0, paddingRight: canScrollRight ? 40 : 12 }}
+      >
+        <style>{`.play-cat-scroll::-webkit-scrollbar{display:none}`}</style>
+        {PLAY_CATEGORIES.map(cat => {
+          const isMira   = cat.id === "miras-picks";
+          const isActive = isMira ? false : openDim === cat.id;
+          return (
+            <button
+              key={cat.id}
+              onClick={() => isMira ? onMiraPicks?.() : onSelect?.(isActive ? null : cat.id)}
+              className="flex flex-col items-center flex-shrink-0"
+              style={{
+                minWidth: 82, height: 72, padding: "10px 12px",
+                cursor: "pointer", background: "transparent", border: "none",
+                borderBottomWidth: 3, borderBottomStyle: "solid",
+                borderBottomColor: isActive ? "#E76F51" : "transparent",
+                transition: "border-color 150ms ease",
+              }}
+              data-testid={`play-strip-${cat.id}`}
+            >
+              <div
+                className="flex items-center justify-center mb-1 flex-shrink-0"
+                style={{ width: 34, height: 34, borderRadius: 10, background: cat.iconBg, fontSize: 18 }}
+              >
+                {cat.icon}
+              </div>
+              <span
+                className="text-center leading-tight"
+                style={{
+                  fontSize: 11, fontWeight: 500,
+                  color: isActive ? "#C44400" : isMira ? "#9B59B6" : "#555",
+                  whiteSpace: "nowrap", maxWidth: 84, overflow: "hidden", textOverflow: "ellipsis",
+                }}
+              >
+                {cat.label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {canScrollRight && (
+        <button
+          onClick={() => scrollBy(240)}
+          className="hidden md:flex absolute right-0 top-0 bottom-0 z-10 items-center justify-center"
+          style={{ width: 48, background: "linear-gradient(to left, white 50%, transparent)", border: "none", cursor: "pointer" }}
+          data-testid="play-category-strip-scroll-right"
+        >
+          <span style={{ fontSize: 16, color: "#E76F51", fontWeight: 700 }}>›</span>
+        </button>
+      )}
     </div>
   );
 }
