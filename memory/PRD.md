@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 2026 (Session 78 — Play Complete Instructions: breed tips, bundles, soul picks rename, backend scoring pre-filter, fallback questions, services tagged)
+## Last Updated: Mar 2026 (Session 79 — Play page: pill → full-screen modal, Activity Profile → dark modal with PLAY TIPS inside, breed tips removed from page)
 
 ---
 

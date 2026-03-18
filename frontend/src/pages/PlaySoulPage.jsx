@@ -592,9 +592,6 @@ function ActivityProfile({ pet, token }) {
 
   return (
     <>
-      {/* Breed tips strip — always visible */}
-      <PlayBreedTipsStrip pet={pet} />
-
       {/* Compact bar */}
       <div onClick={() => setDrawerOpen(true)} data-testid="activity-profile"
         style={{ background:"#fff", border:`2px solid ${G.pale}`, borderRadius:16, padding:"14px 18px", marginBottom:20, cursor:"pointer", display:"flex", alignItems:"center", gap:14 }}>
@@ -647,6 +644,43 @@ function ActivityProfile({ pet, token }) {
                   <p style={{ fontSize:13, fontWeight:600, color:G.green }}>+{totalPts} pts added · Mira is learning {petName}'s play preferences</p>
                 </div>
               )}
+
+              {/* ── PLAY TIPS · [BREED] — mirrors Care's BEST PRACTICES section ── */}
+              {(() => {
+                const tip = getPlayBreedTip(pet);
+                const breed = pet?.breed || "Your Dog";
+                const icons = ["🏃","🎾","🏊","🧠"];
+                return (
+                  <div style={{ marginBottom:22, borderRadius:16, overflow:"hidden", border:`1.5px solid ${G.greenBorder}` }}>
+                    <div style={{ background:`linear-gradient(135deg,${G.deep},${G.mid})`, padding:"14px 18px 12px" }}>
+                      <p style={{ margin:0, fontWeight:800, fontSize:11, textTransform:"uppercase", letterSpacing:"0.10em", color:G.pale }}>Play Tips · {breed}</p>
+                      <p style={{ margin:"4px 0 0", fontSize:11, color:"rgba(255,255,255,0.55)" }}>
+                        {tip.best_play.join(" · ")} · Target: {tip.weekly_target}
+                      </p>
+                    </div>
+                    <div style={{ background:"#F0FFF4", padding:"14px 18px" }}>
+                      <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:8, marginBottom:12 }}>
+                        {tip.tips.map((t, i) => (
+                          <div key={i} style={{ display:"flex", alignItems:"flex-start", gap:8, padding:"10px 12px", borderRadius:10, background:"#fff", border:`1px solid ${G.greenBorder}` }}>
+                            <span style={{ fontSize:14, flexShrink:0, marginTop:1 }}>{icons[i] || "✦"}</span>
+                            <p style={{ margin:0, fontSize:11, color:`${G.deep}`, lineHeight:1.5 }}>{t}</p>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ display:"flex", gap:10 }}>
+                        <div style={{ flex:1, padding:"8px 12px", borderRadius:10, background:"#FFF3E0", border:"1px solid #FFCC80" }}>
+                          <p style={{ margin:0, fontSize:10, fontWeight:700, color:"#E65100", marginBottom:3 }}>Energy</p>
+                          <p style={{ margin:0, fontSize:10, color:"#BF360C", lineHeight:1.4 }}>{tip.energy} energy · {tip.best_play[0]} is ideal</p>
+                        </div>
+                        <div style={{ flex:1, padding:"8px 12px", borderRadius:10, background:"#E0F2F1", border:"1px solid #80CBC4" }}>
+                          <p style={{ margin:0, fontSize:10, fontWeight:700, color:"#00695C", marginBottom:3 }}>Weekly Goal</p>
+                          <p style={{ margin:0, fontSize:10, color:"#004D40", lineHeight:1.4 }}>{tip.weekly_target} — consistency beats intensity</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
               {qLoading ? (
                 <div style={{ textAlign:"center", padding:"32px 0", color:"#888", fontSize:13 }}>
                   <div style={{ width:20, height:20, border:`2px solid ${G.pale}`, borderTopColor:G.green, borderRadius:"50%", animation:"spin 0.8s linear infinite", margin:"0 auto 10px" }} />
@@ -1395,13 +1429,8 @@ const PlaySoulPage = () => {
 
       <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>
 
-        <PlayCategoryStrip pet={petData} openDim={openDim} onSelect={(id) => {
-          if (!id) { setOpenDim(null); return; }
-          if (id === "mira") {
-            miraPicksRef.current?.scrollIntoView({ behavior:"smooth", block:"start" });
-            return;
-          }
-          setOpenDim(prev => prev === id ? null : id);
+        <PlayCategoryStrip pet={petData} openDim={modalCategory} onSelect={(id) => {
+          setModalCategory(id || null);
         }} onMiraPicks={() => miraPicksRef.current?.scrollIntoView({ behavior:"smooth", block:"start" })} />
 
         <PlayTabBar active={activeTab} onChange={setActiveTab} />
