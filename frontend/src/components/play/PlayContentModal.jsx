@@ -382,13 +382,13 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
     <AnimatePresence>
       {isOpen && (
         <>
-          <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.50)', zIndex:55 }} />
+          <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.50)', zIndex:700 }} />
           {isDesktop ? (
-            <div style={{ position:'fixed', inset:0, display:'flex', alignItems:'center', justifyContent:'center', zIndex:56 }}>
+            <div style={{ position:'fixed', inset:0, display:'flex', alignItems:'center', justifyContent:'center', zIndex:701 }}>
               {ModalContent}
             </div>
           ) : (
-            <div style={{ position:'fixed', inset:0, zIndex:56, pointerEvents:'none' }}>
+            <div style={{ position:'fixed', inset:0, zIndex:701, pointerEvents:'none' }}>
               <div style={{ pointerEvents:'auto' }}>{ModalContent}</div>
             </div>
           )}
