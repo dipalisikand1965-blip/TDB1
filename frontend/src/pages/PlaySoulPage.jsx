@@ -609,20 +609,46 @@ function ActivityProfile({ pet, token }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// DIM EXPANDED
+// DIM EXPANDED — self-contained product fetch (mirrors GoContentModal pattern)
 // ─────────────────────────────────────────────────────────────
-function DimExpandedModal({ dim, pet, onClose, apiProducts = {} }) {
-  const petName   = pet?.name || "your dog";
-  const rawByTab  = apiProducts[dim.id] || {};
-  const allRaw    = Object.values(rawByTab).flat();
-  const allergies = getAllergies(pet);
-  const size      = getSize(pet);
-  const health    = getHealth(pet);
-  const intelligent = applyMiraIntelligence(allRaw, allergies, size, health, pet);
-  const tabList   = ["All", ...Object.keys(rawByTab)];
-  const [activeTab, setActiveTab] = useState("All");
-  const miraCtx   = { includeText:"Add to Cart" };
-  const products  = activeTab==="All" ? intelligent : intelligent.filter(p=>p.sub_category===activeTab);
+function DimExpandedModal({ dim, pet, onClose }) {
+  const petName  = pet?.name || "your dog";
+  const petBreed = (pet?.breed || "indie").toLowerCase().trim();
+  const DIM_IDS  = ["outings","playdates","walking","fitness","swimming","soul"];
+
+  const [products, setProducts] = useState([]);
+  const [loading,  setLoading]  = useState(true);
+
+  useEffect(() => {
+    if (dim.id === "mira") { setLoading(false); return; }
+    setLoading(true);
+    setProducts([]);
+
+    fetch(`/api/admin/pillar-products?pillar=play&limit=500`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        const all = data?.products || [];
+        const prods = all.filter(p => {
+          const pb = (p.breed_tags || []).map(b => b.toLowerCase().trim());
+          const isAll = pb.includes('all_breeds') || pb.includes('all');
+          if (pb.length > 0 && !isAll && !pb.includes(petBreed)) return false;
+          const cat = (p.category || "").toLowerCase().trim();
+          const sub = (p.sub_category || "").toLowerCase().trim();
+          if (dim.id === "soul") return sub === "soul" || cat === "soul" || cat === "breed-play_bandanas" || cat === "breed-playdate_cards";
+          if (sub === dim.id || cat === dim.id) return true;
+          if (dim.id === "outings") return cat === "enjoy" || cat === "toys" || cat === "gear" || cat === "accessories" || (!DIM_IDS.includes(sub) && sub !== "soul");
+          if (dim.id === "fitness") return cat === "fit";
+          return false;
+        });
+        const allergies = getAllergies(pet);
+        const size      = getSize(pet);
+        const health    = getHealth(pet);
+        setProducts(applyMiraIntelligence(prods, allergies, size, health, pet));
+      })
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false));
+  }, [dim.id, petBreed]); // eslint-disable-line
+
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== "undefined" && window.innerWidth >= 768);
 
   // Prevent body scroll while modal is open
@@ -711,9 +737,11 @@ function DimExpandedModal({ dim, pet, onClose, apiProducts = {} }) {
             </div>
           ) : products.length === 0 ? (
             <div style={{ textAlign:"center", padding:"40px 0", color:"#888", fontSize:13 }}>
-              {allRaw.length===0
-                ? <><div style={{ fontSize:28, marginBottom:12 }}>⏳</div>Products loading for {petName}…<br/><span style={{ fontSize:11, color:"#aaa" }}>Pull-to-refresh if this persists</span></>
-                : "No products match this filter."}
+              {isLoading
+                ? <><div style={{ fontSize:28, marginBottom:12 }}>⏳</div>Loading products for {petName}…<br/><span style={{ fontSize:11, color:"#aaa" }}>Fetching Mira's picks</span></>
+                : allRaw.length===0
+                  ? <><div style={{ fontSize:28, marginBottom:12 }}>📦</div>No products found for {petName} in this category.</>
+                  : "No products match this filter."}
             </div>
           ) : (
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(180px,100%),1fr))", gap:12 }}>
@@ -1280,6 +1308,7 @@ const PlaySoulPage = () => {
         setApiProducts(grouped);
       }).catch(e => console.error("[PlaySoulPage] products fetch:", e));
   }, [petData]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   useEffect(() => {
     if (contextPets?.length>0&&!currentPet) setCurrentPet(contextPets[0]);
