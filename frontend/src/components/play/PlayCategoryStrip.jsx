@@ -59,7 +59,7 @@ export default function PlayCategoryStrip({ pet, openDim, onSelect, onMiraPicks 
       {/* Center when fits, scroll when overflows */}
       <div ref={scrollRef} style={{ overflowX:"auto", scrollbarWidth:"none", msOverflowStyle:"none", WebkitOverflowScrolling:"touch" }}>
         <style>{`[data-testid="play-category-strip"] ::-webkit-scrollbar{display:none}`}</style>
-        <div style={{ display:"flex", minWidth:"max-content", margin:"0 auto", padding:"0 12px" }}>
+        <div style={{ display:"flex", minWidth:"max-content", margin:"0 auto", padding:"0 12px", justifyContent:"center" }}>
         {PLAY_CATEGORIES.map(cat => {
           const isMira   = cat.id === "miras-picks";
           const isActive = isMira ? false : openDim === cat.id;

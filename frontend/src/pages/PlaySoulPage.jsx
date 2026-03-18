@@ -297,7 +297,7 @@ function MiraPicksSection({ pet }) {
         .catch(() => null);
     };
     Promise.allSettled([
-      makeAbortable(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=play&limit=12&min_score=60&entity_type=product`),
+      makeAbortable(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=play&limit=12&min_score=60&entity_type=product${pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : ""}`),
       makeAbortable(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=play&limit=6&min_score=60&entity_type=service`),
     ]).then(async ([pRes, sRes]) => {
       const pData = pRes.status === "fulfilled" ? pRes.value : null;
@@ -444,7 +444,7 @@ function ActivityProfile({ pet, token }) {
     if (!pet?.id) return;
     setQLoading(true);
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 8000);
+    const timer = setTimeout(() => controller.abort(), 5000);
     fetch(`${API_URL}/api/pet-soul/profile/${pet.id}/quick-questions?limit=4&context=play`, { signal:controller.signal })
       .then(r => r.ok ? r.json() : null)
       .then(data => {
@@ -1067,78 +1067,11 @@ function ServiceBookingModal({ service, pet, onClose }) {
   );
 }
 
-// ── Play Concierge section ────────────────────────────────────
-function PlayConcierge({ pet, token }) {
-  const [activeService, setActiveService] = useState(null);
-  const petName = pet?.name || "your dog";
-
-  return (
-    <div style={{ background:`linear-gradient(135deg,${G.cream},${G.pale})`, borderRadius:20, border:`1px solid ${G.border}`, padding:24, marginBottom:32 }}>
-      {activeService && (
-        <ServiceBookingModal service={PLAY_SERVICES.find(s=>s.id===activeService)} pet={pet} onClose={() => setActiveService(null)} />
-      )}
-
-      <div style={{ fontSize:20, fontWeight:800, color:G.darkText, marginBottom:4, fontFamily:"Georgia,serif" }}>Play, Personally</div>
-      <div style={{ fontSize:13, color:G.mutedText, marginBottom:20 }}>Tell us what {petName} loves. We'll plan the outings, book the walks, and build the fitness routine.</div>
-
-      {/* 8 service cards in 2 rows — enjoy top, fit bottom */}
-      {["enjoy","fit"].map(cat => (
-        <div key={cat} style={{ marginBottom:16 }}>
-          <div style={{ fontSize:11, fontWeight:700, color:G.mutedText, textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:10 }}>
-            {cat === "enjoy" ? "🌳 Enjoy — Outings & Social" : "💪 Fit — Active & Healthy"}
-          </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12 }}>
-            {PLAY_SERVICES.filter(s=>s.category===cat).map(svc => (
-              <div key={svc.id}
-                style={{ background:"#fff", borderRadius:14, border:`1px solid ${G.borderLight}`, overflow:"hidden", cursor:"pointer", transition:"transform 0.15s" }}
-                onMouseEnter={e=>e.currentTarget.style.transform="translateY(-3px)"}
-                onMouseLeave={e=>e.currentTarget.style.transform="none"}>
-                <div style={{ height:80, background:svc.illustrationBg, display:"flex", alignItems:"center", justifyContent:"center", fontSize:28 }}>{svc.icon}</div>
-                <div style={{ padding:"10px 12px 14px" }}>
-                  {svc.free && <div style={{ display:"inline-block", background:"#E8F5E9", color:"#2E7D32", fontSize:9, fontWeight:700, borderRadius:8, padding:"2px 7px", marginBottom:5 }}>Complimentary</div>}
-                  <div style={{ fontSize:12, fontWeight:700, color:G.darkText, marginBottom:4 }}>{svc.name}</div>
-                  <div style={{ fontSize:10, color:G.mutedText, lineHeight:1.5, marginBottom:8 }}>{svc.tagline.replace("{petName}",petName)}</div>
-                  <button style={{ fontSize:11, color:svc.accentColor, fontWeight:700, background:"none", border:"none", padding:0, cursor:"pointer" }} onClick={() => setActiveService(svc.id)}>
-                    Book {svc.steps}-step →
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-
-      {/* Dark CTA */}
-      <div style={{ background:G.deep, borderRadius:16, padding:24, display:"flex", alignItems:"flex-start", gap:20, marginTop:8 }}>
-        <div style={{ flex:1 }}>
-          <div style={{ display:"inline-flex", alignItems:"center", gap:5, background:"rgba(255,173,155,0.20)", border:"1px solid rgba(255,173,155,0.40)", borderRadius:20, padding:"4px 12px", color:G.light, fontSize:11, fontWeight:600, marginBottom:12 }}>🌳 Play Concierge®</div>
-          <div style={{ fontSize:20, fontWeight:800, color:"#fff", marginBottom:10, fontFamily:"Georgia,serif", lineHeight:1.2 }}>
-            Let <span style={{ color:G.yellow }}>{petName}</span> play. Every. Single. Day.
-          </div>
-          <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:14 }}>
-            {["Parks","Playdates","Dog Walking","Events","Fitness","Swimming","Agility","Weekend Adventures"].map(chip=>(
-              <span key={chip} style={{ background:"rgba(255,255,255,0.08)", border:"1px solid rgba(255,255,255,0.15)", borderRadius:20, padding:"3px 10px", color:"#fff", fontSize:11 }}>{chip}</span>
-            ))}
-          </div>
-          <div style={{ fontSize:13, color:G.whiteDim, lineHeight:1.7, marginBottom:20 }}>
-            You tell us what {petName} loves. We plan the parks, coordinate playdates, build the fitness programme, and arrange everything.
-          </div>
-          <div style={{ display:"flex", alignItems:"center", gap:16, flexWrap:"wrap" }}>
-            <div><span style={{ fontSize:22, fontWeight:900, color:G.yellow }}>8,400+</span><span style={{ fontSize:11, color:"rgba(255,255,255,0.45)", marginLeft:6 }}>play sessions arranged</span></div>
-            <button onClick={() => setActiveService("parks")} style={{ background:`linear-gradient(135deg,${G.green},${G.light})`, color:G.deep, border:"none", borderRadius:10, padding:"11px 20px", fontSize:13, fontWeight:800, cursor:"pointer" }}>
-              🌳 Talk to your Play Concierge
-            </button>
-            <span style={{ fontSize:11, color:"rgba(255,255,255,0.40)" }}>48h response guaranteed</span>
-          </div>
-        </div>
-        <div style={{ flexShrink:0, textAlign:"center", minWidth:80 }}>
-          <div style={{ width:72, height:72, borderRadius:"50%", background:"rgba(255,173,155,0.20)", border:`2px solid rgba(255,173,155,0.40)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:32, margin:"0 auto 8px" }}>🌳</div>
-          <div style={{ fontSize:18, fontWeight:900, color:G.yellow }}>100%</div>
-          <div style={{ fontSize:10, color:G.whiteDim }}>joyful</div>
-        </div>
-      </div>
-    </div>
-  );
+// ── Play Concierge section — REPLACED by PlayConciergeSection (watercolour cards)
+function PlayConcierge() { return null; }
+// eslint-disable-next-line no-unused-vars
+function _PlayConciergeOld({ pet, token }) {
+  return null;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1212,6 +1145,7 @@ const PlaySoulPage = () => {
   const [soulScore, setSoulScore]     = useState(0);
   const [apiProducts, setApiProducts] = useState({});
   const [apiLoading, setApiLoading]   = useState(true);
+  const [prefetchedServices, setPrefetchedServices] = useState([]);
   const [conciergeToast, setConciergeToast] = useState(null);
 
   // handleNearMeBook — wires "Book via Concierge" on PlayNearMe cards
@@ -1301,7 +1235,13 @@ const PlaySoulPage = () => {
         setApiProducts(grouped);
         setApiLoading(false);
       }).catch(e => { console.error("[PlaySoulPage] products fetch:", e); setApiLoading(false); });
-  }, [petData]); // eslint-disable-line
+
+    // Co-fetch services silently (pre-load for services tab)
+    fetch(`${API_URL}/api/service-box/services?pillar=play`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.services?.length) setPrefetchedServices(data.services); })
+      .catch(() => {});
+  }, [petData?.id]); // eslint-disable-line
 
   useEffect(() => {
     if (contextPets?.length>0&&!currentPet) setCurrentPet(contextPets[0]);
@@ -1310,7 +1250,7 @@ const PlaySoulPage = () => {
 
   useEffect(() => {
     if (currentPet) { setPetData(currentPet); setSoulScore(currentPet.soul_score||currentPet.overall_score||0); }
-  }, [currentPet]);
+  }, [currentPet?.id]); // use id so primitive comparison is stable
 
   useEffect(() => {
     const handle = async e => {
@@ -1442,8 +1382,7 @@ const PlaySoulPage = () => {
         {activeTab === "services" && (
           <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
             <GuidedPlayPaths pet={petData} />
-            <PlayConcierge pet={petData} token={token} />
-            <PlayConciergeSection pet={petData} />
+            <PlayConciergeSection pet={petData} prefetchedServices={prefetchedServices} />
           </div>
         )}
 
