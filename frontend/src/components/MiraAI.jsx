@@ -195,7 +195,7 @@ const MiraAI = () => {
   // But on mobile (< 768px), we need MiraAI available since the MobileNavBar FAB opens it
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const hiddenPaths = ['/admin', '/agent', '/login', '/mira'];
-  const pillarPaths = ['/care', '/celebrate', '/celebrate-soul', '/advisory', '/dine', '/stay', '/travel', '/emergency', '/enjoy', '/fit', '/learn', '/farewell', '/adopt', '/paperwork', '/shop', '/all', '/product', '/services', '/cakes', '/treats'];
+  const pillarPaths = ['/care', '/celebrate', '/celebrate-soul', '/advisory', '/dine', '/stay', '/travel', '/emergency', '/enjoy', '/fit', '/learn', '/farewell', '/adopt', '/paperwork', '/shop', '/all', '/product', '/services', '/cakes', '/treats', '/play', '/go'];
   
   // On mobile, only hide on admin/login paths - allow Mira on pillar pages via MobileNavBar FAB
   // The orb should ALWAYS be visible except on admin/login pages

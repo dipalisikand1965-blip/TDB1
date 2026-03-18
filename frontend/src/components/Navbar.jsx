@@ -674,7 +674,8 @@ const Navbar = () => {
   // UPDATED: Search bar now visible on ALL pages including pillar pages
   // User requested unified search experience across the platform
   // ============================================
-  const isPillarPage = false; // Always show search bar
+  // Hide "Ask Mira" navbar button on soul/pillar pages (widget FAB is shown instead)
+  const isPillarPage = ['/go', '/play', '/care', '/dine', '/celebrate'].some(p => location.pathname === p || location.pathname.startsWith(p + '/'));
 
   // Get dropdown position class
   const getDropdownPosition = (index) => {
