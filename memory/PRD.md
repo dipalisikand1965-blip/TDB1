@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 17, 2026 (Session 69 — GO Pillar P0/P1 Features Complete)
+## Last Updated: Mar 18, 2026 (Session 70 — PLAY Pillar Complete, Orange Color Scheme)
 
 ---
 
@@ -307,10 +307,15 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 ## P0/P1/P2 BACKLOG
 
 ### P0 — Critical Next Steps (GO Pillar completion)
-1. **TripProfile breed travel tips** — When drawer opens, show breed-specific travel insights (like Care's BEST PRACTICES · INDIE cards) — never show an empty state after the ✈️ emoji
-2. **Soul Go + Mira's Picks pills** — Add to GoCategoryStrip (purple sparkle + pink wand), wire to modals showing AI picks
-3. **Go service box seeding** — Insert 8 canonical Go services into MongoDB, build 2-section UI in Book a Service tab with watercolour illustration cards
-4. **New Go products (Excel)** — Insert 36 products + 21 sub-category products + 14 bundles
+### P0 — COMPLETED (Session 70)
+- **PLAY pillar**: /play route fully functional with orange/rust color scheme (#E76F51, #7B2D00)
+  - PlayHero: no tabs inside, orange gradient (matches GoHero pattern)
+  - PlayTabBar: separate sticky tab bar with 3 tabs (Play & Explore, Find Play, Book a Service)
+  - Products loading: fixed sub_category→dim.id grouping (241 products across 6 dimensions)
+  - Mira Picks: Promise.allSettled + AbortController (5s timeout) so fallback shows when slow
+  - GuidedPlayPaths: 6 paths seeded and displayed
+  - Find Play tab: PlayNearMe with Google Places map
+  - Services: 8 play services seeded (Dog Park Outing, Playdate, Swim, Agility, etc.)
 
 ### P1 — Important Improvements
 5. **Go service watercolour images** — Generate using admin → Soul Products tool or DALL-E
@@ -319,11 +324,10 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 
 ### P2 — Future Pillars & Features
 8. **Razorpay checkout fix** — Known low-priority bug
-9. **PLAY pillar** — /play route, PlaySoulPage, GamePaths, etc.
-10. **LOVE pillar** — /love route, LoveSoulPage, Love Memory Drawer
-11. **Consolidate bundles collections** — Multiple bundles collections need merging
-12. **Generic shared components** — Reduce code duplication across DINE/CARE/GO pillars
-13. **AI Score Engine for PLAY + LOVE** — Apply MiraScoreEngine to future pillars
+9. **LOVE pillar** — /love route, LoveSoulPage, Love Memory Drawer
+10. **Consolidate bundles collections** — Multiple bundles collections need merging
+11. **Generic shared components** — Reduce code duplication across DINE/CARE/GO/PLAY pillars
+12. **Complete.html documentation** — Update complete.html with current state of all 4 pillars
 
 ---
 
@@ -336,6 +340,7 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 | CARE | `#0A2A1A` (sage deep) | `#1A5E3A` | `#C9973A` (gold) |
 | GO | `#0D3349` (teal deep) | `#1A5276` | `#1ABC9C` (teal) |
 | CELEBRATE | `#1A0A2E` (purple deep) | `#4A1459` | `#C9973A` (gold) |
+| PLAY | `#7B2D00` (rust deep) | `#7B3F00` (brown) | `#E76F51` (orange) |
 
 ### Typography
 - **Headings**: Georgia / Times New Roman (serif) — `font-family: "Georgia,'Times New Roman',serif"`
