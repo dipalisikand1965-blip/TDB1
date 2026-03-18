@@ -609,161 +609,129 @@ function ActivityProfile({ pet, token }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// DIM EXPANDED — self-contained product fetch (mirrors GoContentModal pattern)
+// DIM EXPANDED — inline panel (exactly mirrors DineSoulPage DimExpanded)
 // ─────────────────────────────────────────────────────────────
-function DimExpandedModal({ dim, pet, onClose }) {
-  const petName  = pet?.name || "your dog";
-  const petBreed = (pet?.breed || "indie").toLowerCase().trim();
-  const DIM_IDS  = ["outings","playdates","walking","fitness","swimming","soul"];
+function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
+  const petName = pet?.name || "your dog";
 
-  const [allRaw,   setAllRaw]   = useState([]);
-  const [loading,  setLoading]  = useState(true);
-  const [activeTab, setActiveTab] = useState("All");
-  const miraCtx = { includeText:"Add to Cart" };
-
-  useEffect(() => {
-    if (dim.id === "mira") { setLoading(false); return; }
-    setLoading(true);
-    setAllRaw([]);
-    setActiveTab("All");
-
-    fetch(`/api/admin/pillar-products?pillar=play&limit=500`)
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        const all = data?.products || [];
-        const filtered = all.filter(p => {
-          const pb = (p.breed_tags || []).map(b => b.toLowerCase().trim());
-          const isAll = pb.includes('all_breeds') || pb.includes('all');
-          if (pb.length > 0 && !isAll && !pb.includes(petBreed)) return false;
-          const cat = (p.category || "").toLowerCase().trim();
-          const sub = (p.sub_category || "").toLowerCase().trim();
-          if (dim.id === "soul") return sub === "soul" || cat === "soul" || cat === "breed-play_bandanas" || cat === "breed-playdate_cards";
-          if (sub === dim.id || cat === dim.id) return true;
-          if (dim.id === "outings") return cat === "enjoy" || cat === "toys" || cat === "gear" || cat === "accessories" || (!DIM_IDS.includes(sub) && sub !== "soul");
-          if (dim.id === "fitness") return cat === "fit";
-          return false;
-        });
-        setAllRaw(filtered);
-      })
-      .catch(() => setAllRaw([]))
-      .finally(() => setLoading(false));
-  }, [dim.id, petBreed]); // eslint-disable-line
+  // Use pre-fetched products from parent — no internal fetch (same as Dine)
+  const rawByTab = apiProducts[dim.id] || {};
+  const allRaw   = Object.values(rawByTab).flat();
 
   const allergies   = getAllergies(pet);
   const size        = getSize(pet);
   const health      = getHealth(pet);
   const intelligent = applyMiraIntelligence(allRaw, allergies, size, health, pet);
-  const subCats     = [...new Set(allRaw.map(p => p.sub_category).filter(Boolean))];
-  const tabList     = ["All", ...subCats];
-  const products    = activeTab === "All" ? intelligent : intelligent.filter(p => p.sub_category === activeTab);
 
-  const [isDesktop, setIsDesktop] = useState(() => typeof window !== "undefined" && window.innerWidth >= 768);
+  // Dynamic tabs from actual sub_categories in pre-fetched data
+  const tabList = ["All", ...Object.keys(rawByTab)];
+  const [activeTab, setActiveTab] = useState("All");
+  const [dimTab, setDimTab]       = useState("products");
 
-  // Prevent body scroll while modal is open
-  React.useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
-  }, []);
+  const products = activeTab === "All"
+    ? intelligent
+    : intelligent.filter(p => p.sub_category === activeTab);
 
-  React.useEffect(() => {
-    const check = () => setIsDesktop(window.innerWidth >= 768);
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
-  const [dimTab, setDimTab] = useState("products"); // "products" | "personalised"
+  const miraCtx = { includeText: "Add to Cart" };
 
   return (
     <div
-      onClick={onClose}
-      style={{ position:"fixed", inset:0, zIndex:600, background:"rgba(0,0,0,0.65)", display:"flex", alignItems: isDesktop ? "center" : "flex-end", justifyContent:"center", padding: isDesktop ? 24 : 0 }}
+      style={{ background:"#fff", border:`2px solid ${G.orange}`, borderRadius:18, padding:22, marginBottom:16, gridColumn:"1 / -1" }}
       data-testid={`play-dim-expanded-${dim.id}`}
     >
-      <div
-        onClick={e => e.stopPropagation()}
-        style={{ width: isDesktop ? "min(860px, 92vw)" : "100%", maxHeight: isDesktop ? "90vh" : "88vh", background:"#fff", borderRadius: isDesktop ? 20 : "20px 20px 0 0", overflow:"hidden", display:"flex", flexDirection:"column", boxShadow: isDesktop ? "0 32px 80px rgba(0,0,0,0.35)" : "0 -8px 40px rgba(0,0,0,0.25)" }}
-      >
-        {/* Header */}
-        <div style={{ background:`linear-gradient(135deg,${G.deep},${G.mid})`, padding:"18px 20px 14px", flexShrink:0 }}>
-          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:6 }}>
-            <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(255,255,255,0.18)", borderRadius:20, padding:"4px 12px" }}>
-              <span style={{ fontSize:18 }}>{dim.icon}</span>
-              <span style={{ fontSize:13, color:"#fff", fontWeight:700 }}>{dim.label}</span>
-            </div>
-            <button onClick={onClose} style={{ background:"rgba(255,255,255,0.20)", border:"none", borderRadius:"50%", width:28, height:28, cursor:"pointer", color:"#fff", fontSize:16, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
-          </div>
-          <div style={{ display:"flex", alignItems:"flex-start", gap:8 }}>
-            <div style={{ width:22, height:22, borderRadius:"50%", background:MIRA_ORB, display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#fff", flexShrink:0, marginTop:1 }}>✦</div>
-            <p style={{ fontSize:12, color:"rgba(255,255,255,0.80)", fontStyle:"italic", margin:0, lineHeight:1.5 }}>"{t(dim.mira, petName)}"</p>
-          </div>
+      {/* Header */}
+      <div style={{ display:"flex", alignItems:"flex-start", gap:10, marginBottom:14, paddingBottom:12, borderBottom:`1px solid ${G.pale}` }}>
+        <span style={{ fontSize:28 }}>{dim.icon}</span>
+        <div style={{ flex:1 }}>
+          <div style={{ fontSize:16, fontWeight:800, color:G.darkText }}>{dim.label}</div>
+          <div style={{ fontSize:11, color:"#888" }}>Personalised for {petName}</div>
         </div>
+        <button onClick={onClose} style={{ background:G.pale, border:"none", borderRadius:20, padding:"4px 12px", fontSize:11, fontWeight:700, color:G.mid, cursor:"pointer" }}>
+          Close ✕
+        </button>
+      </div>
 
-        {/* Sub-tab filter — hidden for mira dim */}
-        {tabList.length > 1 && dimTab === "products" && dim.id !== "mira" && (
-          <div style={{ display:"flex", gap:6, flexWrap:"wrap", padding:"10px 16px 0", background:"#fff", flexShrink:0 }}>
-            {tabList.map(tab => (
-              <button key={tab} onClick={() => setActiveTab(tab)}
-                style={{ padding:"5px 12px", borderRadius:20, border:`1px solid ${activeTab===tab?G.orange:G.light}`, background:activeTab===tab?G.orange:G.cream, fontSize:11, fontWeight:600, color:activeTab===tab?"#fff":G.mid, cursor:"pointer" }}>
-                {tab.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
-              </button>
-            ))}
-          </div>
-        )}
+      {/* Mira quote */}
+      <div style={{ display:"flex", alignItems:"flex-start", gap:8, background:`linear-gradient(135deg,${G.pale},${G.cream})`, borderRadius:10, padding:"10px 14px", marginBottom:14 }}>
+        <div style={{ width:24, height:24, borderRadius:"50%", background:MIRA_ORB, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, color:"#fff", flexShrink:0 }}>✦</div>
+        <div>
+          <p style={{ fontSize:12, color:G.darkText, fontStyle:"italic", lineHeight:1.5, margin:0 }}>"{t(dim.mira, petName)}"</p>
+          <span style={{ fontSize:10, color:G.mid, fontWeight:600 }}>♥ Mira knows {petName}</span>
+        </div>
+      </div>
 
-        {/* Products / Personalised tab toggle — hidden for mira dim */}
-        {dim.id !== "mira" && (
-        <div style={{ display:"flex", background:"#fff", borderBottom:"1px solid #F0F0F0", flexShrink:0, paddingTop:6 }}>
-          {[["products", "🎯 All Products"], ["personalised", "✦ Personalised"]].map(([tid, label]) => (
-            <button key={tid} onClick={() => setDimTab(tid)}
-              data-testid={`dim-tab-${tid}`}
-              style={{ flex:1, padding:"10px 0", background:"none", border:"none", borderBottom: dimTab===tid ? `2.5px solid ${G.orange}` : "2.5px solid transparent", color: dimTab===tid ? G.mid : "#888", fontSize:12, fontWeight: dimTab===tid ? 700 : 400, cursor:"pointer" }}>
+      {/* Products / Personalised tab toggle — hidden for mira dim */}
+      {dim.id !== "mira" && (
+        <div style={{ display:"flex", borderBottom:`1px solid ${G.pale}`, marginBottom:14 }}>
+          {[["products","🎯 All Products"],["personalised","✦ Personalised"]].map(([tid,label]) => (
+            <button key={tid} onClick={() => setDimTab(tid)} data-testid={`play-dim-tab-${tid}`}
+              style={{ flex:1, padding:"9px 0", background:"none", border:"none", borderBottom:dimTab===tid?`2.5px solid ${G.orange}`:"2.5px solid transparent", color:dimTab===tid?G.mid:"#888", fontSize:12, fontWeight:dimTab===tid?700:400, cursor:"pointer" }}>
               {label}
             </button>
           ))}
         </div>
-        )}
+      )}
 
-        {/* Stats bar (products tab only, not for mira dim) */}
-        {dim.id !== "mira" && dimTab === "products" && allRaw.length > 0 && (
-          <div style={{ display:"flex", gap:12, padding:"8px 16px", flexWrap:"wrap", fontSize:11, color:"#888", background:"#fff", flexShrink:0 }}>
-            <span style={{ color:"#27AE60", fontWeight:700 }}>✓ {intelligent.length} safe for {petName}</span>
-            {allRaw.length-intelligent.length>0 && <span style={{ color:"#AD1457" }}>✗ {allRaw.length-intelligent.length} filtered</span>}
-            {intelligent.filter(p=>p._energyMatch).length>0 && <span style={{ color:G.mid, fontWeight:700 }}>⚡ energy-matched</span>}
+      {dim.id === "mira" ? (
+        <MiraPicksSection pet={pet} />
+      ) : dimTab === "personalised" ? (
+        <div>
+          <PersonalisedBreedSection pet={pet} pillar="play" />
+          <div style={{ borderTop:"1px solid #f0f0f0", marginTop:16, paddingTop:16 }}>
+            <SoulMadeCollection pillar="enjoy" maxItems={8} showTitle={true} />
           </div>
-        )}
-
-        {/* Products grid / Personalised tab — special: "mira" dim shows AI picks */}
-        <div style={{ flex:1, overflowY:"auto", padding:"12px 16px 24px" }}>
-          {dim.id === "mira" ? (
-            <MiraPicksSection pet={pet} />
-          ) : dimTab === "personalised" ? (
-            <div>
-              <PersonalisedBreedSection pet={pet} pillar="play" />
-              <div style={{ borderTop:"1px solid #f0f0f0", marginTop:16, paddingTop:16 }}>
-                <SoulMadeCollection pillar="enjoy" maxItems={8} showTitle={true} />
-              </div>
+        </div>
+      ) : (
+        <>
+          {/* Sub-category filter pills */}
+          {tabList.length > 1 && (
+            <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
+              {tabList.map(tab => (
+                <button key={tab} onClick={() => setActiveTab(tab)}
+                  style={{ padding:"5px 12px", borderRadius:20, border:`1px solid ${activeTab===tab?G.orange:G.light}`, background:activeTab===tab?G.orange:G.cream, fontSize:11, fontWeight:600, color:activeTab===tab?"#fff":G.mid, cursor:"pointer" }}>
+                  {tab.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
+                </button>
+              ))}
             </div>
-          ) : products.length === 0 ? (
-            <div style={{ textAlign:"center", padding:"40px 0", color:"#888", fontSize:13 }}>
-              {isLoading
-                ? <><div style={{ fontSize:28, marginBottom:12 }}>⏳</div>Loading products for {petName}…<br/><span style={{ fontSize:11, color:"#aaa" }}>Fetching Mira's picks</span></>
-                : allRaw.length===0
-                  ? <><div style={{ fontSize:28, marginBottom:12 }}>📦</div>No products found for {petName} in this category.</>
-                  : "No products match this filter."}
+          )}
+
+          {/* Mira stats bar */}
+          {allRaw.length > 0 && (
+            <div style={{ display:"flex", gap:12, flexWrap:"wrap", marginBottom:14, fontSize:11, color:"#888" }}>
+              <span style={{ color:"#27AE60", fontWeight:700 }}>✓ {intelligent.length} safe for {petName}</span>
+              {allRaw.length - intelligent.length > 0 && (
+                <span style={{ color:G.mid }}>✗ {allRaw.length - intelligent.length} filtered (allergens)</span>
+              )}
+              {intelligent.filter(p => p._energyMatch).length > 0 && (
+                <span style={{ color:G.mid, fontWeight:700 }}>⚡ energy-matched</span>
+              )}
+            </div>
+          )}
+
+          {/* Product grid */}
+          {products.length === 0 ? (
+            <div style={{ textAlign:"center", padding:"24px 0", color:"#888", fontSize:13 }}>
+              {allRaw.length === 0
+                ? <><div style={{ fontSize:28, marginBottom:10 }}>📦</div>No products found for {petName} in this category.</>
+                : "No products match this filter."}
             </div>
           ) : (
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(180px,100%),1fr))", gap:12 }}>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))", gap:12 }}>
               {products.map(p => (
-                <div key={p.id||p._id} style={{ position:"relative" }} data-testid={`play-product-${p.id||p._id}`}>
-                  {p._energyMatch && <div style={{ position:"absolute", top:-6, right:-6, zIndex:2, background:G.orange, borderRadius:"50%", width:18, height:18, display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#fff" }}>⚡</div>}
-                  {p.mira_score >= 75 && <div style={{ position:"absolute", top:-6, left:-6, zIndex:2, background:G.mid, borderRadius:20, padding:"1px 6px", fontSize:9, fontWeight:700, color:"#fff" }}>★ {p.mira_score}</div>}
+                <div key={p.id||p._id} style={{ position:"relative", opacity:p._dimmed?0.4:1 }} data-testid={`play-product-${p.id||p._id}`}>
+                  {p._energyMatch && (
+                    <div style={{ position:"absolute", top:-6, right:-6, zIndex:2, background:G.orange, borderRadius:"50%", width:18, height:18, display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#fff" }}>⚡</div>
+                  )}
+                  {p.mira_score >= 75 && (
+                    <div style={{ position:"absolute", top:-6, left:-6, zIndex:2, background:G.mid, borderRadius:20, padding:"1px 6px", fontSize:9, fontWeight:700, color:"#fff" }}>★ {p.mira_score}</div>
+                  )}
                   <SharedProductCard product={p} pillar="play" selectedPet={pet} miraContext={miraCtx} />
                 </div>
               ))}
             </div>
           )}
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 }
@@ -1397,8 +1365,8 @@ const PlaySoulPage = () => {
               7 dimensions, matched to {petData.name}'s energy and play profile
             </div>
 
-            {/* Dimension grid — 2→3→6 */}
-            <div style={{ display:"grid", gap:10, marginBottom:28 }} className="play-dims-grid">
+            {/* Dimension grid — 2→4 col, inline expand like Dine */}
+            <div style={{ display:"grid", gap:10, marginBottom:openDim ? 10 : 28 }} className="play-dims-grid">
               <style>{`
                 .play-dims-grid{grid-template-columns:repeat(2,1fr)}
                 @media(min-width:480px){.play-dims-grid{grid-template-columns:repeat(4,1fr)}}
@@ -1436,7 +1404,14 @@ const PlaySoulPage = () => {
               })}
             </div>
 
-            <div style={{ marginTop:32 }}>
+            {/* Inline expanded panel — exactly like Dine */}
+            {activeDim && (
+              <div style={{ display:"grid", gridTemplateColumns:"1fr", marginBottom:28 }}>
+                <DimExpanded dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
+              </div>
+            )}
+
+            <div style={{ marginTop: activeDim ? 0 : 32 }}>
               <GuidedPlayPaths pet={petData} />
             </div>
           </div>
@@ -1457,10 +1432,6 @@ const PlaySoulPage = () => {
 
       </div>
 
-      {/* DimExpanded modal — fixed overlay, outside overflow containers */}
-      {activeDim && (
-        <DimExpandedModal dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
-      )}
       <ConciergeToast toast={conciergeToast} onClose={() => setConciergeToast(null)} />
     </PillarPageLayout>
   );
