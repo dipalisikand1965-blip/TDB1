@@ -1115,7 +1115,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
             <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
               {tabList.map(tab => (
                 <button key={tab} onClick={() => setActiveTab(tab)} style={{padding:"5px 12px",borderRadius:20,border:`1px solid ${activeTab===tab?"#FF8C42":"#FFD0A0"}`,background:activeTab===tab?"#FF8C42":"#FFF8F0",fontSize:11,fontWeight:600,color:activeTab===tab?"#fff":"#C44400",cursor:"pointer"}}>
-                  {tab}
+                  {tab.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
                 </button>
               ))}
             </div>

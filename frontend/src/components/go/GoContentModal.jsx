@@ -11,6 +11,10 @@ import { X, Send, Check } from 'lucide-react';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import ProductCard from '../ProductCard';
+import PersonalisedBreedSection from '../common/PersonalisedBreedSection';
+
+// Utility: boarding_comfort → Boarding Comfort
+const toLabel = s => s ? s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : s;
 
 // ─── Teal palette ─────────────────────────────────────────────────────────────
 const G = {
@@ -245,9 +249,13 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
   const [loading, setLoading]   = useState(false);
   const [activeTab, setActiveTab] = useState('All');
   const [tabs, setTabs]         = useState(['All']);
+  const [goTab, setGoTab]       = useState("products"); // products | personalised
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
   const { token } = useAuth();
   const apiUrl = getApiUrl();
+
+  // Reset inner tab when category changes
+  useEffect(() => { if (isOpen) setGoTab("products"); }, [isOpen, category]);
 
   useEffect(() => {
     const check = () => setIsDesktop(window.innerWidth >= 768);
@@ -429,13 +437,23 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
               </div>
             </div>
 
+            {/* Products / Personalised tab toggle */}
+            <div style={{ display:'flex', borderBottom:`1px solid ${G.border}`, marginBottom:0, flexShrink:0, background:G.cream }}>
+              {[["products","🎯 All Products"],["personalised","✦ Personalised"]].map(([tid,label]) => (
+                <button key={tid} onClick={() => setGoTab(tid)} data-testid={`go-modal-tab-${tid}`}
+                  style={{ flex:1, padding:"10px 0", background:"none", border:"none", borderBottom:goTab===tid?`2.5px solid ${G.teal}`:"2.5px solid transparent", color:goTab===tid?G.teal:"#888", fontSize:12, fontWeight:goTab===tid?700:400, cursor:"pointer" }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+
             {/* Sub-category tabs */}
-            {tabs.length > 1 && (
+            {goTab === "products" && tabs.length > 1 && (
               <div style={{ display: 'flex', gap: 6, padding: '12px 20px', background: G.cream, borderBottom: `1px solid ${G.border}`, overflowX: 'auto', flexShrink: 0 }}>
                 {tabs.map(tab => (
                   <button key={tab} onClick={() => setActiveTab(tab)}
                     style={{ padding: '6px 14px', borderRadius: 20, border: `1px solid ${activeTab === tab ? G.teal : 'rgba(26,188,156,0.22)'}`, background: activeTab === tab ? G.teal : '#fff', fontSize: 11, fontWeight: 600, color: activeTab === tab ? '#fff' : G.mutedText, cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}>
-                    {tab}
+                    {toLabel(tab)}
                   </button>
                 ))}
               </div>
@@ -443,7 +461,9 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
 
             {/* Content */}
             <div style={{ flex: 1, overflowY: 'auto', padding: 20 }}>
-              {loading ? (
+              {goTab === "personalised" ? (
+                <PersonalisedBreedSection pet={pet} pillar="go" />
+              ) : loading ? (
                 <div style={{ textAlign: 'center', padding: '48px 0', color: '#888' }}>
                   <div style={{ width: 24, height: 24, border: `2px solid ${G.pale}`, borderTopColor: G.teal, borderRadius: '50%', animation: 'go-spin 0.8s linear infinite', margin: '0 auto 12px' }} />
                   <style>{`@keyframes go-spin{to{transform:rotate(360deg)}}`}</style>
