@@ -13,7 +13,7 @@ from datetime import datetime
 # Get the backend URL from environment
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://play-layout-fix.preview.emergentagent.com"
+    BASE_URL = "https://pet-breed-catalog.preview.emergentagent.com"
 
 # Admin credentials
 ADMIN_USERNAME = "aditya"

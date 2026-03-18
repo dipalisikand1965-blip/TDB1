@@ -454,7 +454,7 @@ const BREED_AVATARS = [
 
 - Test User: `dipali@clubconcierge.in` / `test123`
 - Admin: `aditya` / `lola4304`
-- Preview URL: `https://play-layout-fix.preview.emergentagent.com`
+- Preview URL: `https://pet-breed-catalog.preview.emergentagent.com`
 - Production URL: `https://thedoggycompany.com`
 
 ---

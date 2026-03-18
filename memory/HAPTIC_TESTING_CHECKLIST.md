@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://play-layout-fix.preview.emergentagent.com/mira-demo**
+**https://pet-breed-catalog.preview.emergentagent.com/mira-demo**
 
 ---
 
