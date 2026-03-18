@@ -175,7 +175,7 @@ const BundlesManager = () => {
     try {
       toast({ title: "Generating...", description: "Creating AI watercolor image for bundle" });
       const adminAuth = getAdminAuth();
-      const response = await fetch(`${API_URL}/api/admin/celebrate/bundles/${bundleId}/generate-image`, {
+      const response = await fetch(`${API_URL}/api/admin/bundles/${bundleId}/generate-image`, {
         method: 'POST',
         headers: { ...(adminAuth ? { 'Authorization': `Basic ${adminAuth}` } : {}) }
       });
@@ -200,7 +200,7 @@ const BundlesManager = () => {
     setGeneratingModalImage(true);
     try {
       const adminAuth = getAdminAuth();
-      const response = await fetch(`${API_URL}/api/admin/celebrate/bundles/${editingBundle.id}/generate-image`, {
+      const response = await fetch(`${API_URL}/api/admin/bundles/${editingBundle.id}/generate-image`, {
         method: 'POST',
         headers: { ...(adminAuth ? { 'Authorization': `Basic ${adminAuth}` } : {}) }
       });

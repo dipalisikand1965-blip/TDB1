@@ -1337,13 +1337,17 @@ const PlaySoulPage = () => {
         data.products.forEach(p => {
           const bt  = (p.breed_tags||[]).map(b=>b.toLowerCase().trim());
           const btr = (p.breed_targets||[]).map(b=>b.toLowerCase().trim());
-          const isAllBreeds = bt.includes('all_breeds') || bt.includes('all');
-          // Breed-filter: skip if breed-specific AND not this pet's breed
-          if (!isAllBreeds && (bt.length > 0 || btr.length > 0)) {
-            const breedMatch = btr.length > 0
-              ? btr.some(b => petBreed.includes(b) || b.includes(petBreed))
-              : bt.includes(petBreed);
+          // breed_targets takes priority: if it has a specific breed, always use it (even if breed_tags says 'all_breeds')
+          const hasSpecificTarget = btr.length > 0 && !btr.includes('all_breeds') && !btr.includes('all');
+          if (hasSpecificTarget) {
+            const breedMatch = btr.some(b => petBreed.includes(b) || b.includes(petBreed));
             if (!breedMatch) return;
+          } else {
+            // Fall back to breed_tags
+            const isAllBreeds = bt.includes('all_breeds') || bt.includes('all');
+            if (!isAllBreeds && bt.length > 0) {
+              if (!bt.includes(petBreed)) return;
+            }
           }
 
           const cat = (p.category || "").toLowerCase().trim();
@@ -1431,7 +1435,7 @@ const PlaySoulPage = () => {
 
         <PlayCategoryStrip pet={petData} openDim={modalCategory} onSelect={(id) => {
           setModalCategory(id || null);
-        }} onMiraPicks={() => miraPicksRef.current?.scrollIntoView({ behavior:"smooth", block:"start" })} />
+        }} onMiraPicks={() => setModalCategory("miras-picks")} />
 
         <PlayTabBar active={activeTab} onChange={setActiveTab} />
 
@@ -1472,9 +1476,14 @@ const PlaySoulPage = () => {
               `}</style>
               {playDims.map(dim => {
                 const isOpen = openDim === dim.id;
+                // Bundles and soul dims open the PlayContentModal instead of DimExpanded
+                const opensModal = dim.id === "bundles" || dim.id === "soul";
                 return (
                   <div key={dim.id}
-                    onClick={() => setOpenDim(isOpen ? null : dim.id)}
+                    onClick={() => {
+                      if (opensModal) { setModalCategory(dim.id); return; }
+                      setOpenDim(isOpen ? null : dim.id);
+                    }}
                     style={{
                       background: dim.glow ? G.cream : "#fff",
                       border: isOpen ? `2px solid ${G.orange}` : "2px solid transparent",

@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://play-breed-tips.preview.emergentagent.com
+https://play-ui-sync.preview.emergentagent.com
 ```
 
 ---
