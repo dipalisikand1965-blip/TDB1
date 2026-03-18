@@ -5,7 +5,7 @@ Update Dine products with generated images via API
 import requests
 import json
 
-API_URL = "https://play-ui-sync.preview.emergentagent.com"
+API_URL = "https://care-soul-fixes.preview.emergentagent.com"
 AUTH = ("aditya", "lola4304")
 
 # Generated images

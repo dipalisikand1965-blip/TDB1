@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://play-ui-sync.preview.emergentagent.com
+https://care-soul-fixes.preview.emergentagent.com
 
 ---
 
