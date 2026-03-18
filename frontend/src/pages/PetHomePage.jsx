@@ -179,8 +179,8 @@ const PetSelector = ({ pets, selectedPet, onPetChange }) => {
               touchAction: 'manipulation'
             }}
           >
-            {pet.photo ? (
-              <img src={pet.photo} alt={pet.name} className="w-6 h-6 rounded-full object-cover flex-shrink-0" style={{ pointerEvents: 'none' }} />
+            {(pet.photo || pet.photo_url) ? (
+              <img src={pet.photo || pet.photo_url} alt={pet.name} className="w-6 h-6 rounded-full object-cover flex-shrink-0" style={{ pointerEvents: 'none' }} />
             ) : (
               <PawPrint className="w-4 h-4 flex-shrink-0" style={{ pointerEvents: 'none' }} />
             )}
@@ -624,9 +624,9 @@ const PetHomePage = () => {
               <div className="relative shrink-0">
                 <div className="absolute inset-0 blur-xl bg-gradient-to-r from-pink-500/30 to-purple-600/30 rounded-full" />
                 <div className="relative">
-                  {pet?.photo ? (
+                  {(pet?.photo || pet?.photo_url) ? (
                     <img
-                      src={pet.photo}
+                      src={pet.photo || pet.photo_url}
                       alt={pet.name}
                       className="w-16 h-16 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-pink-500/50"
                     />
