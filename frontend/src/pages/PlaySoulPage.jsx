@@ -742,16 +742,44 @@ function ActivityProfile({ pet, token }) {
                           const qType = q.type || (Array.isArray(q.options) && q.options.length > 0 ? "select" : "text");
                           if (qType === "select") return (
                             <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:8 }}>
-                              {(q.options||[]).map(opt => (
-                                <button key={opt} onClick={()=>handleAnswer(q.question_id,opt,"select")} style={{ borderRadius:20, padding:"5px 12px", fontSize:11, fontWeight:600, background:ans===opt?"rgba(231,111,81,0.25)":"rgba(255,255,255,0.07)", border:ans===opt?`1.5px solid ${G.green}`:"1px solid rgba(255,255,255,0.15)", color:ans===opt?G.pale:"rgba(255,255,255,0.72)", cursor:"pointer" }}>{opt}</button>
-                              ))}
+                              {(q.options||[]).map(opt => {
+                                const isSelected = ans === opt;
+                                return (
+                                  <button key={opt}
+                                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleAnswer(q.question_id, opt, "select"); }}
+                                    style={{
+                                      borderRadius:20, padding:"6px 14px", fontSize:11, fontWeight:700,
+                                      background: isSelected ? "#E76F51" : "rgba(255,255,255,0.12)",
+                                      border: isSelected ? "2px solid #fff" : "1px solid rgba(255,255,255,0.25)",
+                                      color: isSelected ? "#fff" : "rgba(255,255,255,0.80)",
+                                      cursor:"pointer",
+                                      boxShadow: isSelected ? "0 2px 8px rgba(231,111,81,0.5)" : "none",
+                                      transform: isSelected ? "scale(1.04)" : "scale(1)",
+                                      transition: "all 0.15s ease",
+                                    }}>{opt}</button>
+                                );
+                              })}
                             </div>
                           );
                           if (qType === "multi_select") return (
                             <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:8 }}>
                               {(q.options||[]).slice(0,6).map(opt => {
                                 const selArr=ans||[];
-                                return <button key={opt} onClick={()=>handleAnswer(q.question_id,opt,"multi_select")} style={{ borderRadius:20, padding:"5px 12px", fontSize:11, fontWeight:600, background:selArr.includes(opt)?"rgba(231,111,81,0.25)":"rgba(255,255,255,0.07)", border:selArr.includes(opt)?`1.5px solid ${G.green}`:"1px solid rgba(255,255,255,0.15)", color:selArr.includes(opt)?G.pale:"rgba(255,255,255,0.72)", cursor:"pointer" }}>{opt}</button>;
+                                const isSelected = selArr.includes(opt);
+                                return (
+                                  <button key={opt}
+                                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleAnswer(q.question_id, opt, "multi_select"); }}
+                                    style={{
+                                      borderRadius:20, padding:"6px 14px", fontSize:11, fontWeight:700,
+                                      background: isSelected ? "#E76F51" : "rgba(255,255,255,0.12)",
+                                      border: isSelected ? "2px solid #fff" : "1px solid rgba(255,255,255,0.25)",
+                                      color: isSelected ? "#fff" : "rgba(255,255,255,0.80)",
+                                      cursor:"pointer",
+                                      boxShadow: isSelected ? "0 2px 8px rgba(231,111,81,0.5)" : "none",
+                                      transform: isSelected ? "scale(1.04)" : "scale(1)",
+                                      transition: "all 0.15s ease",
+                                    }}>{opt}</button>
+                                );
                               })}
                             </div>
                           );
@@ -760,9 +788,16 @@ function ActivityProfile({ pet, token }) {
                               style={{ width:"100%", borderRadius:10, padding:"8px 12px", fontSize:12, background:"rgba(255,255,255,0.08)", border:`1px solid ${G.greenBorder}`, color:"rgba(255,255,255,0.88)", outline:"none", resize:"none", boxSizing:"border-box" }} />
                           );
                         })()}
-                        <button onClick={() => handleSubmit(q)} disabled={isSend||!hasAns}
-                          style={{ marginTop:8, width:"100%", borderRadius:10, padding:8, fontSize:12, fontWeight:700, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", gap:6, background:!hasAns?`${G.green}33`:`linear-gradient(135deg,${G.green},${G.mid})`, border:"none", cursor:isSend?"wait":!hasAns?"not-allowed":"pointer" }}>
-                          {isSend?<Loader2 size={12} style={{ animation:"spin 1s linear infinite" }} />:<Check size={12} />}
+                        <button onClick={(e) => { e.stopPropagation(); handleSubmit(q); }} disabled={isSend||!hasAns}
+                          style={{ marginTop:8, width:"100%", borderRadius:10, padding:10, fontSize:12, fontWeight:800, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", gap:6,
+                            background: !hasAns ? "rgba(255,255,255,0.15)" : "linear-gradient(135deg,#E76F51,#C44400)",
+                            border: "none",
+                            cursor: isSend ? "wait" : !hasAns ? "not-allowed" : "pointer",
+                            opacity: !hasAns ? 0.5 : 1,
+                            transition:"all 0.2s ease",
+                            boxShadow: hasAns ? "0 2px 12px rgba(231,111,81,0.4)" : "none",
+                          }}>
+                          {isSend ? <Loader2 size={12} style={{ animation:"spin 1s linear infinite" }} /> : <Check size={12} />}
                           Save +{q.weight||3} pts
                         </button>
                       </div>
