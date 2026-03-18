@@ -8,9 +8,9 @@ import { useState } from "react";
 import { API_URL } from "../../utils/api";
 
 const G = {
-  deep:"#1B4332", mid:"#2D6A4F", green:"#52B788",
-  light:"#95D5B2", pale:"#D8F3DC", cream:"#F0FFF4",
-  darkText:"#1B4332", mutedText:"#4A7C6A",
+  deep:"#7B2D00", mid:"#7B3F00", green:"#E76F51",
+  light:"#FFAD9B", pale:"#FFF0EA", cream:"#FFF8F5",
+  darkText:"#7B2D00", mutedText:"#8B4513",
 };
 const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
 
@@ -37,8 +37,8 @@ function buildPaths(pet) {
     {
       id:"park_day", icon:"🌳",
       title:"Park & Playdate Path", badge:"Mira Pick", badgeBg:G.mid,
-      accentColor:"#2D6A4F", accentBorder:"#2D6A4F20", accentBg:"#D8F3DC",
-      iconBg:"#95D5B2", photoBg:`linear-gradient(135deg,#D8F3DC,#95D5B2)`,
+      accentColor:"#7B3F00", accentBorder:"#2D6A4F20", accentBg:"#FFF0EA",
+      iconBg:"#FFAD9B", photoBg:`linear-gradient(135deg,#D8F3DC,#95D5B2)`,
       desc:`Find the right park, set up a playdate, and give ${petName} the social life they deserve.`,
       miraNote: size ? `I know parks near you with ${size.toLowerCase()} dog sections and off-lead areas.` : `I'll find the best parks and playdates for ${petName}'s energy and personality.`,
       stepLabels:["Energy & park type","Who's joining","What to bring","Book or plan"],
@@ -69,8 +69,8 @@ function buildPaths(pet) {
     },
     {
       id:"fitness_plan", icon:"💪",
-      title:"Fitness & Training Path", badge:"Mira builds plan", badgeBg:"#1B4332",
-      accentColor:"#1B4332", accentBorder:"#1B433220", accentBg:"#E8F5E9",
+      title:"Fitness & Training Path", badge:"Mira builds plan", badgeBg:"#7B2D00",
+      accentColor:"#7B2D00", accentBorder:"#1B433220", accentBg:"#E8F5E9",
       iconBg:"#C8E6C9", photoBg:"linear-gradient(135deg,#E8F5E9,#A5D6A7)",
       desc:`Mira builds a personalised 4-week fitness plan for ${petName} — matched to their age, health, and goals.`,
       miraNote: health
@@ -146,9 +146,9 @@ function StepIndicator({ current, total, accentColor }) {
 
 function OptionRow({ label, selected, onSelect }) {
   return (
-    <div onClick={onSelect} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 14px", borderRadius:12, border:`1.5px solid ${selected?"#52B788":"#E8E0D8"}`, background:selected?"#D8F3DC":"#fff", cursor:"pointer", marginBottom:8, transition:"all 0.12s" }}>
-      <div style={{ width:20, height:20, borderRadius:"50%", border:`2px solid ${selected?"#52B788":"#ccc"}`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-        {selected && <div style={{ width:10, height:10, borderRadius:"50%", background:"#52B788" }} />}
+    <div onClick={onSelect} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 14px", borderRadius:12, border:`1.5px solid ${selected?"#E76F51":"#E8E0D8"}`, background:selected?"#FFF0EA":"#fff", cursor:"pointer", marginBottom:8, transition:"all 0.12s" }}>
+      <div style={{ width:20, height:20, borderRadius:"50%", border:`2px solid ${selected?"#E76F51":"#ccc"}`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+        {selected && <div style={{ width:10, height:10, borderRadius:"50%", background:"#E76F51" }} />}
       </div>
       <span style={{ fontSize:13, color:G.darkText, fontWeight:selected?600:400 }}>{label}</span>
     </div>
@@ -210,7 +210,7 @@ function PathFlowModal({ path, pet, onClose }) {
         <div style={{ width:72, height:72, borderRadius:"50%", background:`linear-gradient(135deg,${path.accentColor},${G.light})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:32, margin:"0 auto 20px" }}>{path.icon}</div>
         <div style={{ fontSize:22, fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:8 }}>Sent to your Play Concierge.</div>
         <div style={{ fontSize:14, color:G.mutedText, lineHeight:1.7, marginBottom:24 }}>Everything is in good hands.<br/>Your Concierge will reach out within 48 hours. ♥</div>
-        <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:G.pale, border:`1px solid rgba(82,183,136,0.30)`, borderRadius:20, padding:"6px 16px", fontSize:13, color:G.mid, fontWeight:600, marginBottom:20 }}>📥 Added to your Inbox</div>
+        <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:G.pale, border:`1px solid rgba(231,111,81,0.30)`, borderRadius:20, padding:"6px 16px", fontSize:13, color:G.mid, fontWeight:600, marginBottom:20 }}>📥 Added to your Inbox</div>
         <div><button onClick={onClose} style={{ background:path.accentColor, color:"#fff", border:"none", borderRadius:12, padding:"12px 28px", fontSize:14, fontWeight:700, cursor:"pointer" }}>View in Concierge® Inbox</button></div>
       </div>
     </Shell>
@@ -220,7 +220,7 @@ function PathFlowModal({ path, pet, onClose }) {
     <Shell>
       <div style={{ padding:"20px 24px", flex:1, overflowY:"auto" }}>
         <StepIndicator current={step} total={totalSteps} accentColor={path.accentColor} />
-        <div style={{ background:G.pale, border:"1px solid rgba(82,183,136,0.22)", borderRadius:10, padding:"10px 14px", display:"flex", alignItems:"flex-start", gap:8, marginBottom:18 }}>
+        <div style={{ background:G.pale, border:"1px solid rgba(231,111,81,0.22)", borderRadius:10, padding:"10px 14px", display:"flex", alignItems:"flex-start", gap:8, marginBottom:18 }}>
           <div style={{ width:22, height:22, borderRadius:"50%", background:MIRA_ORB, display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#fff", flexShrink:0 }}>✦</div>
           <div style={{ fontSize:13, color:G.mid }}><strong>Mira knows:</strong> {path.miraNote}</div>
         </div>
@@ -237,17 +237,17 @@ function PathFlowModal({ path, pet, onClose }) {
                     onSelect={() => handleSelect(opt)} />
                 ))
               : <textarea rows={4} placeholder={stepData.placeholder||"Type here…"} value={currentSel||""} onChange={e=>setSels(p=>({...p,[step]:e.target.value}))}
-                  style={{ width:"100%", border:"1.5px solid rgba(82,183,136,0.25)", borderRadius:10, padding:"12px 14px", fontSize:14, color:G.darkText, outline:"none", resize:"none", fontFamily:"inherit", boxSizing:"border-box" }} />}
+                  style={{ width:"100%", border:"1.5px solid rgba(231,111,81,0.25)", borderRadius:10, padding:"12px 14px", fontSize:14, color:G.darkText, outline:"none", resize:"none", fontFamily:"inherit", boxSizing:"border-box" }} />}
           </>
         )}
       </div>
-      <div style={{ padding:"16px 24px 20px", borderTop:"1px solid rgba(82,183,136,0.10)", display:"flex", gap:10, flexShrink:0 }}>
+      <div style={{ padding:"16px 24px 20px", borderTop:"1px solid rgba(231,111,81,0.10)", display:"flex", gap:10, flexShrink:0 }}>
         {step>1 && (
-          <button onClick={() => setStep(s=>s-1)} style={{ flex:1, background:"#fff", border:"1.5px solid rgba(82,183,136,0.20)", borderRadius:12, padding:"12px", fontSize:13, fontWeight:600, color:G.mutedText, cursor:"pointer" }}>← Back</button>
+          <button onClick={() => setStep(s=>s-1)} style={{ flex:1, background:"#fff", border:"1.5px solid rgba(231,111,81,0.20)", borderRadius:12, padding:"12px", fontSize:13, fontWeight:600, color:G.mutedText, cursor:"pointer" }}>← Back</button>
         )}
         {step<totalSteps
           ? <button onClick={() => hasAnswer||!stepData?setStep(s=>s+1):null} disabled={stepData&&!hasAnswer}
-              style={{ flex:2, background:stepData&&!hasAnswer?"#E8E0D8":`linear-gradient(135deg,${G.green},${G.mid})`, color:stepData&&!hasAnswer?"#999":"#fff", border:"none", borderRadius:12, padding:"12px", fontSize:14, fontWeight:800, cursor:stepData&&!hasAnswer?"not-allowed":"pointer" }}>
+              style={{ flex:2, background:stepData&&!hasAnswer?"#E8E0D8":`linear-gradient(135deg,${G.orange},${G.mid})`, color:stepData&&!hasAnswer?"#999":"#fff", border:"none", borderRadius:12, padding:"12px", fontSize:14, fontWeight:800, cursor:stepData&&!hasAnswer?"not-allowed":"pointer" }}>
               Continue →
             </button>
           : <button onClick={handleSend} disabled={sending}

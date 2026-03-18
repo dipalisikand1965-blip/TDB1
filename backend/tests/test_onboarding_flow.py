@@ -13,7 +13,7 @@ from datetime import datetime
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://go-pillar-launch.preview.emergentagent.com"
+    BASE_URL = "https://play-layout-fix.preview.emergentagent.com"
 
 
 class TestAuthLogin:

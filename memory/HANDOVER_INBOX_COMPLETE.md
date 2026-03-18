@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://go-pillar-launch.preview.emergentagent.com
+https://play-layout-fix.preview.emergentagent.com
 ```
 
 ---

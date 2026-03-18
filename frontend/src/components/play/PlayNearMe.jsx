@@ -51,16 +51,16 @@ import { API_URL } from "../../utils/api";
 
 // ─── Colour system — vibrant green + orange (mirrors PlaySoulPage) ──
 const G = {
-  deep:      "#1B4332",
-  mid:       "#2D6A4F",
-  green:     "#52B788",
-  light:     "#95D5B2",
-  pale:      "#D8F3DC",
-  cream:     "#F0FFF4",
+  deep:      "#7B2D00",
+  mid:       "#7B3F00",
+  orange:    "#E76F51",
+  light:     "#FFAD9B",
+  pale:      "#FFF0EA",
+  cream:     "#FFF8F5",
   orange:    "#E76F51",
   yellow:    "#FFB703",
-  darkText:  "#1B4332",
-  mutedText: "#4A7C6A",
+  darkText:  "#7B2D00",
+  mutedText: "#8B4513",
 };
 
 // ─── Play spot types ──────────────────────────────────────────
@@ -156,7 +156,7 @@ function OpenBadge({ openNow }) {
 function MiraTopPick({ spot, pet, onBook }) {
   const petName = pet?.name || "your dog";
   return (
-    <div style={{ background:`linear-gradient(135deg,${G.pale},${G.cream})`, border:`2px solid ${G.green}`, borderRadius:16, padding:20, marginBottom:20, display:"flex", alignItems:"flex-start", gap:16 }}>
+    <div style={{ background:`linear-gradient(135deg,${G.pale},${G.cream})`, border:`2px solid ${G.orange}`, borderRadius:16, padding:20, marginBottom:20, display:"flex", alignItems:"flex-start", gap:16 }}>
       <div style={{ width:88, height:88, borderRadius:12, overflow:"hidden", flexShrink:0, background:G.cream }}>
         {spot.photo_url
           ? <img src={spot.photo_url} alt={spot.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
@@ -166,7 +166,7 @@ function MiraTopPick({ spot, pet, onBook }) {
       </div>
       <div style={{ flex:1, minWidth:0 }}>
         <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4, flexWrap:"wrap" }}>
-          <span style={{ fontSize:10, fontWeight:700, background:`linear-gradient(135deg,${G.green},${G.mid})`, color:"#fff", borderRadius:20, padding:"3px 10px" }}>✦ Mira's Top Pick</span>
+          <span style={{ fontSize:10, fontWeight:700, background:`linear-gradient(135deg,${G.orange},${G.mid})`, color:"#fff", borderRadius:20, padding:"3px 10px" }}>✦ Mira's Top Pick</span>
           {spot.tdc_listed && <span style={{ fontSize:9, fontWeight:700, background:"#FFF8E1", color:"#C9973A", borderRadius:8, padding:"2px 8px" }}>✦ TDC Listed</span>}
           <OpenBadge openNow={spot.open_now} />
         </div>
@@ -180,7 +180,7 @@ function MiraTopPick({ spot, pet, onBook }) {
           <p style={{ fontSize:12, color:G.mid, fontStyle:"italic", margin:"0 0 10px", lineHeight:1.5 }}>"{spot.mira_note}"</p>
         )}
         <button onClick={() => onBook?.(spot, spot.city)}
-          style={{ background:`linear-gradient(135deg,${G.green},${G.mid})`, color:"#fff", border:"none", borderRadius:10, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
+          style={{ background:`linear-gradient(135deg,${G.orange},${G.mid})`, color:"#fff", border:"none", borderRadius:10, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
           Plan a visit for {petName} →
         </button>
       </div>
@@ -195,8 +195,8 @@ function SpotCard({ spot, pet, onBook }) {
   const typeConfig = PLAY_TYPES.find(t=>t.id===spot.type) || PLAY_TYPES[0];
 
   return (
-    <div style={{ background:"#fff", border:`1px solid rgba(82,183,136,0.15)`, borderRadius:14, overflow:"hidden", transition:"transform 0.15s, box-shadow 0.15s" }}
-      onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.boxShadow="0 8px 24px rgba(27,67,50,0.12)"; }}
+    <div style={{ background:"#fff", border:`1px solid rgba(231,111,81,0.15)`, borderRadius:14, overflow:"hidden", transition:"transform 0.15s, box-shadow 0.15s" }}
+      onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.boxShadow="0 8px 24px rgba(123,45,0,0.12)"; }}
       onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow=""; }}>
 
       {/* Photo */}
@@ -208,7 +208,7 @@ function SpotCard({ spot, pet, onBook }) {
             </div>}
 
         {/* Type badge */}
-        <div style={{ position:"absolute", top:10, left:10, background:G.green, color:G.deep, fontSize:9, fontWeight:700, borderRadius:20, padding:"3px 8px" }}>
+        <div style={{ position:"absolute", top:10, left:10, background:G.orange, color:G.deep, fontSize:9, fontWeight:700, borderRadius:20, padding:"3px 8px" }}>
           {typeConfig.icon} {typeConfig.label}
         </div>
 
@@ -241,7 +241,7 @@ function SpotCard({ spot, pet, onBook }) {
           </div>
         )}
         <button onClick={() => onBook?.(spot, spot.city)}
-          style={{ width:"100%", background:`linear-gradient(135deg,${G.green},${G.mid})`, color:"#fff", border:"none", borderRadius:10, padding:"9px", fontSize:12, fontWeight:700, cursor:"pointer", transition:"opacity 0.15s" }}
+          style={{ width:"100%", background:`linear-gradient(135deg,${G.orange},${G.mid})`, color:"#fff", border:"none", borderRadius:10, padding:"9px", fontSize:12, fontWeight:700, cursor:"pointer", transition:"opacity 0.15s" }}
           onMouseEnter={e=>e.currentTarget.style.opacity="0.88"}
           onMouseLeave={e=>e.currentTarget.style.opacity="1"}>
           Plan a visit →
@@ -254,7 +254,7 @@ function SpotCard({ spot, pet, onBook }) {
 // ─── Skeleton card ────────────────────────────────────────────
 function SkeletonCard() {
   return (
-    <div style={{ borderRadius:14, overflow:"hidden", border:`1px solid rgba(82,183,136,0.10)` }}>
+    <div style={{ borderRadius:14, overflow:"hidden", border:`1px solid rgba(231,111,81,0.10)` }}>
       <div style={{ height:160, background:`linear-gradient(90deg,${G.cream} 25%,${G.pale} 50%,${G.cream} 75%)`, backgroundSize:"200% 100%", animation:"shimmer 1.5s infinite" }} />
       <div style={{ padding:"12px 14px" }}>
         <div style={{ height:14, background:G.cream, borderRadius:8, marginBottom:8, width:"70%" }} />
@@ -389,14 +389,14 @@ export default function PlayNearMe({ pet, onBook }) {
       <style>{`
         @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
         @keyframes spin{to{transform:rotate(360deg)}}
-        .play-input:focus{outline:none!important;border-color:#52B788!important;box-shadow:0 0 0 3px rgba(82,183,136,0.15)!important}
+        .play-input:focus{outline:none!important;border-color:#E76F51!important;box-shadow:0 0 0 3px rgba(231,111,81,0.15)!important}
         .play-pills::-webkit-scrollbar,.play-type-strip::-webkit-scrollbar{display:none}
       `}</style>
 
       {/* Section header */}
       <div style={{ marginBottom:20 }}>
         <h3 style={{ fontSize:"clamp(1.125rem,2.5vw,1.375rem)", fontWeight:800, color:G.darkText, margin:"0 0 4px", fontFamily:"Georgia,serif" }}>
-          Play spots for <span style={{ color:G.green }}>{petName}</span> — anywhere in the world
+          Play spots for <span style={{ color:G.orange }}>{petName}</span> — anywhere in the world
         </h3>
         <p style={{ fontSize:12, color:"#888", margin:0, lineHeight:1.5 }}>
           Dog parks, beaches, trails, cafes, agility centres and swimming spots. Search any city.
@@ -420,15 +420,15 @@ export default function PlayNearMe({ pet, onBook }) {
               onFocus={()=>setShowSuggestions(true)}
               onBlur={()=>setTimeout(()=>setShowSuggestions(false),150)}
               placeholder="Bangalore, Goa, London, Bali — any city…"
-              style={{ width:"100%", height:"100%", borderRadius:12, border:`1.5px solid rgba(82,183,136,0.28)`, padding:"13px 14px 13px 42px", fontSize:14, color:G.darkText, outline:"none", boxSizing:"border-box", background:"#fff", fontFamily:"inherit" }}
+              style={{ width:"100%", height:"100%", borderRadius:12, border:`1.5px solid rgba(231,111,81,0.28)`, padding:"13px 14px 13px 42px", fontSize:14, color:G.darkText, outline:"none", boxSizing:"border-box", background:"#fff", fontFamily:"inherit" }}
             />
 
             {/* Dropdown */}
             {showSuggestions && suggestions.length > 0 && (
-              <div style={{ position:"absolute", top:"calc(100% + 4px)", left:0, right:0, background:"#fff", border:`1px solid rgba(82,183,136,0.20)`, borderRadius:12, boxShadow:"0 8px 32px rgba(27,67,50,0.12)", zIndex:200, overflow:"hidden", maxHeight:220, overflowY:"auto" }}>
+              <div style={{ position:"absolute", top:"calc(100% + 4px)", left:0, right:0, background:"#fff", border:`1px solid rgba(231,111,81,0.20)`, borderRadius:12, boxShadow:"0 8px 32px rgba(123,45,0,0.12)", zIndex:200, overflow:"hidden", maxHeight:220, overflowY:"auto" }}>
                 {suggestions.slice(0,7).map(s => (
                   <div key={s} onMouseDown={() => handleCity(s)}
-                    style={{ padding:"10px 16px", fontSize:13, color:G.darkText, cursor:"pointer", display:"flex", alignItems:"center", gap:8, borderBottom:`1px solid rgba(82,183,136,0.06)` }}
+                    style={{ padding:"10px 16px", fontSize:13, color:G.darkText, cursor:"pointer", display:"flex", alignItems:"center", gap:8, borderBottom:`1px solid rgba(231,111,81,0.06)` }}
                     onMouseEnter={e=>e.currentTarget.style.background=G.cream}
                     onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                     <span>📍</span>
@@ -444,15 +444,15 @@ export default function PlayNearMe({ pet, onBook }) {
 
           {/* Search */}
           <button onClick={handleSearch}
-            style={{ flexShrink:0, background:`linear-gradient(135deg,${G.green},${G.mid})`, color:"#fff", border:"none", borderRadius:12, padding:"0 22px", fontSize:14, fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}>
+            style={{ flexShrink:0, background:`linear-gradient(135deg,${G.orange},${G.mid})`, color:"#fff", border:"none", borderRadius:12, padding:"0 22px", fontSize:14, fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}>
             Search
           </button>
 
           {/* Near me */}
           <button onClick={handleNearMe} disabled={nearMeLoading}
-            style={{ flexShrink:0, background:"#fff", border:`1.5px solid rgba(82,183,136,0.28)`, borderRadius:12, padding:"0 14px", fontSize:13, fontWeight:600, color:G.mid, cursor:nearMeLoading?"wait":"pointer", display:"flex", alignItems:"center", gap:5, whiteSpace:"nowrap" }}>
+            style={{ flexShrink:0, background:"#fff", border:`1.5px solid rgba(231,111,81,0.28)`, borderRadius:12, padding:"0 14px", fontSize:13, fontWeight:600, color:G.mid, cursor:nearMeLoading?"wait":"pointer", display:"flex", alignItems:"center", gap:5, whiteSpace:"nowrap" }}>
             {nearMeLoading
-              ? <div style={{ width:13, height:13, border:`2px solid ${G.pale}`, borderTopColor:G.green, borderRadius:"50%", animation:"spin 0.8s linear infinite" }} />
+              ? <div style={{ width:13, height:13, border:`2px solid ${G.pale}`, borderTopColor:G.orange, borderRadius:"50%", animation:"spin 0.8s linear infinite" }} />
               : "📍"} Near me
           </button>
         </div>
@@ -462,7 +462,7 @@ export default function PlayNearMe({ pet, onBook }) {
           <span style={{ fontSize:11, color:"#aaa", whiteSpace:"nowrap", alignSelf:"center", flexShrink:0 }}>Popular:</span>
           {POPULAR_CITIES.slice(0,10).map(city => (
             <button key={city.name} onClick={() => handleCity(city.name)}
-              style={{ flexShrink:0, fontSize:11, fontWeight:activeQuery===city.name?700:400, color:activeQuery===city.name?G.deep:"#555", background:activeQuery===city.name?G.green:"rgba(82,183,136,0.07)", border:`1px solid ${activeQuery===city.name?"#52B788":"rgba(82,183,136,0.18)"}`, borderRadius:20, padding:"4px 11px", cursor:"pointer", transition:"all 0.12s", display:"flex", alignItems:"center", gap:4 }}>
+              style={{ flexShrink:0, fontSize:11, fontWeight:activeQuery===city.name?700:400, color:activeQuery===city.name?G.deep:"#555", background:activeQuery===city.name?G.orange:"rgba(231,111,81,0.07)", border:`1px solid ${activeQuery===city.name?"#E76F51":"rgba(231,111,81,0.18)"}`, borderRadius:20, padding:"4px 11px", cursor:"pointer", transition:"all 0.12s", display:"flex", alignItems:"center", gap:4 }}>
               <span style={{ fontSize:11 }}>{city.flag}</span>{city.name}
             </button>
           ))}
@@ -483,7 +483,7 @@ export default function PlayNearMe({ pet, onBook }) {
           const sel = activeType === type.id;
           return (
             <button key={type.id} onClick={() => setActiveType(type.id)}
-              style={{ display:"inline-flex", alignItems:"center", gap:5, flexShrink:0, padding:"7px 16px", borderRadius:9999, border:`1.5px solid ${sel?"#52B788":"rgba(82,183,136,0.22)"}`, background:sel?"#52B788":"#fff", color:sel?G.deep:G.mutedText, fontSize:12, fontWeight:sel?700:400, cursor:"pointer", transition:"all 0.15s" }}>
+              style={{ display:"inline-flex", alignItems:"center", gap:5, flexShrink:0, padding:"7px 16px", borderRadius:9999, border:`1.5px solid ${sel?"#E76F51":"rgba(231,111,81,0.22)"}`, background:sel?"#E76F51":"#fff", color:sel?G.deep:G.mutedText, fontSize:12, fontWeight:sel?700:400, cursor:"pointer", transition:"all 0.15s" }}>
               <span style={{ fontSize:14 }}>{type.icon}</span>{type.label}
             </button>
           );
@@ -494,7 +494,7 @@ export default function PlayNearMe({ pet, onBook }) {
 
       {/* Empty */}
       {!activeQuery && !loading && (
-        <div style={{ textAlign:"center", padding:"48px 24px", background:`linear-gradient(135deg,${G.pale},${G.cream})`, borderRadius:16, border:`1px solid rgba(82,183,136,0.12)` }}>
+        <div style={{ textAlign:"center", padding:"48px 24px", background:`linear-gradient(135deg,${G.pale},${G.cream})`, borderRadius:16, border:`1px solid rgba(231,111,81,0.12)` }}>
           <div style={{ fontSize:52, marginBottom:16 }}>🌍</div>
           <div style={{ fontSize:18, fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:8 }}>
             Where does {petName} want to play?
@@ -506,7 +506,7 @@ export default function PlayNearMe({ pet, onBook }) {
           <div style={{ display:"flex", flexWrap:"wrap", gap:8, justifyContent:"center" }}>
             {["Bangalore 🇮🇳","Mumbai 🇮🇳","Goa 🇮🇳","London 🇬🇧","Bali 🇮🇩","Sydney 🇦🇺"].map(c=>(
               <button key={c} onClick={()=>handleCity(c.split(" ")[0])}
-                style={{ background:G.green, color:G.deep, border:"none", borderRadius:20, padding:"8px 20px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
+                style={{ background:G.orange, color:G.deep, border:"none", borderRadius:20, padding:"8px 20px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
                 {c}
               </button>
             ))}
@@ -533,7 +533,7 @@ export default function PlayNearMe({ pet, onBook }) {
           <div style={{ fontSize:14, color:G.darkText, fontWeight:700, marginBottom:6 }}>Couldn't load results</div>
           <div style={{ fontSize:13, color:G.mutedText, marginBottom:16 }}>{error}</div>
           <div style={{ display:"flex", gap:10, justifyContent:"center", flexWrap:"wrap" }}>
-            <button onClick={()=>doFetch(activeQuery==="near_me"?null:activeQuery,activeQuery==="near_me"?userCoords:null,activeType)} style={{ background:G.green,color:G.deep,border:"none",borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Try again</button>
+            <button onClick={()=>doFetch(activeQuery==="near_me"?null:activeQuery,activeQuery==="near_me"?userCoords:null,activeType)} style={{ background:G.orange,color:G.deep,border:"none",borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Try again</button>
             <button onClick={()=>onBook?.(null, activeQuery==="near_me"?"your area":activeQuery)} style={{ background:G.pale,color:G.mid,border:`1px solid ${G.light}`,borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Ask Concierge</button>
           </div>
         </div>
@@ -541,7 +541,7 @@ export default function PlayNearMe({ pet, onBook }) {
 
       {/* No results */}
       {!loading && !error && activeQuery && spots.length === 0 && (
-        <div style={{ textAlign:"center", padding:"40px 20px", background:"#fff", borderRadius:16, border:`1px solid rgba(82,183,136,0.12)`, marginBottom:16 }}>
+        <div style={{ textAlign:"center", padding:"40px 20px", background:"#fff", borderRadius:16, border:`1px solid rgba(231,111,81,0.12)`, marginBottom:16 }}>
           <div style={{ fontSize:40, marginBottom:12 }}>🔍</div>
           <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:6 }}>
             No {PLAY_TYPES.find(t=>t.id===activeType)?.label.toLowerCase()||"spots"} found in {activeQuery==="near_me"?"your area":activeQuery}
@@ -550,7 +550,7 @@ export default function PlayNearMe({ pet, onBook }) {
             Google doesn't have full coverage here — but our Concierge researches personal recommendations too.
           </div>
           <div style={{ display:"flex", gap:10, justifyContent:"center", flexWrap:"wrap" }}>
-            <button onClick={()=>setActiveType("all")} style={{ background:G.green,color:G.deep,border:"none",borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Try all types</button>
+            <button onClick={()=>setActiveType("all")} style={{ background:G.orange,color:G.deep,border:"none",borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Try all types</button>
             <button onClick={()=>onBook?.(null, activeQuery==="near_me"?"your area":activeQuery)} style={{ background:G.pale,color:G.mid,border:`1px solid ${G.light}`,borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Ask Concierge</button>
           </div>
         </div>
@@ -561,7 +561,7 @@ export default function PlayNearMe({ pet, onBook }) {
         <>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14, flexWrap:"wrap", gap:8 }}>
             <div style={{ fontSize:12, color:G.mutedText }}>
-              <strong style={{ color:G.green }}>{spots.length}</strong>{" "}
+              <strong style={{ color:G.orange }}>{spots.length}</strong>{" "}
               {PLAY_TYPES.find(t=>t.id===activeType)?.label.toLowerCase()||"play spots"} in{" "}
               <strong style={{ color:G.darkText }}>{displayCity}</strong>
               {spots.filter(p=>p.tdc_listed).length > 0 && (
@@ -570,7 +570,7 @@ export default function PlayNearMe({ pet, onBook }) {
                 </span>
               )}
             </div>
-            <button onClick={openInMaps} style={{ background:"#fff", border:`1px solid rgba(82,183,136,0.22)`, borderRadius:20, padding:"5px 14px", fontSize:11, fontWeight:600, color:G.mid, cursor:"pointer", display:"flex", alignItems:"center", gap:5 }}>
+            <button onClick={openInMaps} style={{ background:"#fff", border:`1px solid rgba(231,111,81,0.22)`, borderRadius:20, padding:"5px 14px", fontSize:11, fontWeight:600, color:G.mid, cursor:"pointer", display:"flex", alignItems:"center", gap:5 }}>
               🗺️ Open in Google Maps
             </button>
           </div>
@@ -599,7 +599,7 @@ export default function PlayNearMe({ pet, onBook }) {
             </div>
           </div>
           <button onClick={() => onBook?.(null, displayCity)}
-            style={{ flexShrink:0, background:`linear-gradient(135deg,${G.green},${G.light})`, color:G.deep, border:"none", borderRadius:12, padding:"11px 22px", fontSize:13, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap" }}>
+            style={{ flexShrink:0, background:`linear-gradient(135deg,${G.orange},${G.light})`, color:G.deep, border:"none", borderRadius:12, padding:"11px 22px", fontSize:13, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap" }}>
             Plan via Concierge →
           </button>
         </div>

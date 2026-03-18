@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://go-pillar-launch.preview.emergentagent.com
+**Preview URL:** https://play-layout-fix.preview.emergentagent.com
 
 ---
 
