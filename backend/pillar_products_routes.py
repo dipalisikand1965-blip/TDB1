@@ -50,8 +50,13 @@ async def get_pillar_products(
         # Match either pillar == pillar OR pillars array contains pillar
         pillar_condition = {"$or": [{"pillar": pillar}, {"pillars": pillar}]}
 
-        # Build conditions
-        conditions = [pillar_condition]
+        # Build conditions — always exclude service-like records (svc- IDs or Bookable field)
+        conditions = [
+            pillar_condition,
+            {"Bookable": {"$exists": False}},  # Never return services from products endpoint
+            {"bookable": {"$exists": False}},
+            {"id": {"$not": {"$regex": "^svc-", "$options": "i"}}},  # Exclude svc- IDs
+        ]
 
         if active_only:
             conditions.append({"$or": [{"active": True}, {"is_active": True}]})
