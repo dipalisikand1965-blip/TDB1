@@ -281,7 +281,13 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 - **AI images generated**: All 52 go products now have Cloudinary AI-generated images
 - **Continuous image generation**: `continuous_image_gen.py` + `auto_mockup_generator.py` running in background cycling through all pillars
 
-### Session 73 (Mar 18, 2026) — Play Modal Centered + Soul Made Products in Personalised Tab
+### Session 73b (Mar 18, 2026) — Play Products Fixed + Mira's Picks Dim Card Added
+- **PlaySoulPage.jsx breed filter fix**: Products tagged with `breed_tags: ['all_breeds']` were being incorrectly filtered out. Fixed to allow `all_breeds`/`all` tagged products to show for all pets. Indie pets now see 109 play products (was broken before).
+- **Mira's Picks dim card added**: Play page now has 7 dimension cards (was 6). Added "Mira's Picks" (🪄) card to the grid matching Care/Dine pattern. Clicking it opens a centered modal showing MiraPicksSection (AI-scored products with breed/energy/size matching).
+- **Standalone MiraPicksSection removed** from Play page body (it's now exclusively inside the Mira's Picks dim card).
+- All 25 Excel play products confirmed present in DB.
+
+
 - **PlaySoulPage.jsx**: Fixed `DimExpandedModal` from bottom-sheet → centered full-screen modal on desktop (responsive: centered on ≥768px, bottom-sheet on mobile). Added `isDesktop` state with window resize listener.
 - **All 4 pillar pages**: Added `SoulMadeCollection` component below `PersonalisedBreedSection` in the "Personalised" tab. Pillar→pillar mapping: play→enjoy, go→travel, care→care, dine→dine
 - **GoContentModal.jsx**: Also updated with `SoulMadeCollection` in the Personalised tab (pillar=travel)
