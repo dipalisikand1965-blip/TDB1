@@ -617,6 +617,167 @@ async def get_care_providers(
         return {"location_name": city, "places": [], "error": str(e)}
 
 
+@dine_router.get("/places/play-spots")
+async def get_play_spots(
+    city: str = "Bengaluru",
+    lat: Optional[float] = None,
+    lng: Optional[float] = None,
+    type: str = "all",
+    radius: int = 6000,
+    query: Optional[str] = None,
+):
+    """
+    Fetch dog-friendly play spots via Google Places API.
+    Returns features array derived from Google Places types:
+    e.g. park → off_lead, campground → shade, beach → beach_access
+    """
+    import httpx
+    from math import radians, sin, cos, sqrt, atan2
+
+    GOOGLE_API_KEY = os.getenv("GOOGLE_PLACES_API_KEY") or os.getenv("GOOGLE_MAPS_API_KEY")
+
+    GOOGLE_TYPES_TO_FEATURES = {
+        "park":                  ["off_lead", "greenspace"],
+        "dog_park":              ["off_lead", "dog_park", "greenspace"],
+        "campground":            ["shade", "off_lead", "water_nearby"],
+        "natural_feature":       ["nature", "greenspace"],
+        "beach":                 ["beach_access", "water_nearby"],
+        "beach_volleyball_court":["beach_access"],
+        "lake":                  ["water_nearby"],
+        "river":                 ["water_nearby"],
+        "forest":                ["off_lead", "shade", "greenspace"],
+        "trail":                 ["off_lead", "shade"],
+        "sports_complex":        ["fitness", "structured"],
+        "gym":                   ["fitness"],
+        "stadium":               ["large_space"],
+        "zoo":                   ["pet_sighted"],
+        "pet_store":             ["pet_friendly"],
+        "veterinary_care":       ["pet_friendly", "vet_nearby"],
+        "aquarium":              ["water_nearby"],
+        "establishment":         [],
+    }
+
+    def infer_features(place: dict) -> list:
+        types = place.get("types", [])
+        features = set()
+        name_lower = (place.get("name","")).lower()
+        for t in types:
+            for feature in GOOGLE_TYPES_TO_FEATURES.get(t, []):
+                features.add(feature)
+        # Heuristic from name
+        if any(k in name_lower for k in ["beach", "sea", "ocean", "coast"]):
+            features.update(["beach_access", "water_nearby"])
+        if any(k in name_lower for k in ["lake", "river", "pond", "stream", "canal"]):
+            features.add("water_nearby")
+        if any(k in name_lower for k in ["forest", "jungle", "trail", "trek", "woods"]):
+            features.update(["shade", "off_lead", "greenspace"])
+        if any(k in name_lower for k in ["dog park", "dog garden", "pup park"]):
+            features.update(["off_lead", "dog_park"])
+        if any(k in name_lower for k in ["agility", "fitness", "gym", "training"]):
+            features.add("fitness")
+        if any(k in name_lower for k in ["open", "ground", "maidan", "field"]):
+            features.update(["off_lead", "large_space"])
+        # Ensure there's at least one feature
+        if not features:
+            features.add("explore")
+        return list(features)
+
+    def infer_spot_type(place: dict) -> str:
+        types = place.get("types", [])
+        name_lower = (place.get("name","")).lower()
+        if "dog_park" in types or "dog park" in name_lower: return "dog_park"
+        if "beach" in types or any(k in name_lower for k in ["beach","sea","coast"]): return "beach"
+        if "campground" in types or any(k in name_lower for k in ["camp","forest","trek"]): return "nature"
+        if "park" in types: return "park"
+        if "sports_complex" in types: return "sports"
+        return "outdoor"
+
+    if not GOOGLE_API_KEY:
+        return {
+            "location_name": city,
+            "places": [
+                {"place_id":"mock-p1","name":"Cubbon Park","vicinity":f"Kasturba Road, {city}","rating":4.7,"type":"park","features":["off_lead","greenspace","shade"],"photo_url":None,"distance":None,"open_now":True,"tdc_verified":True,"mira_note":"Huge lawns, great for fetch and morning runs"},
+                {"place_id":"mock-p2","name":"Lal Bagh Garden","vicinity":f"Mavalli, {city}","rating":4.6,"type":"park","features":["greenspace","shade","water_nearby"],"photo_url":None,"distance":None,"open_now":True,"tdc_verified":False,"mira_note":"Best for breed socialization"},
+                {"place_id":"mock-p3","name":"Freedom Park","vicinity":f"Rajajinagar, {city}","rating":4.5,"type":"park","features":["off_lead","large_space"],"photo_url":None,"distance":None,"open_now":True,"tdc_verified":True,"mira_note":"Wide open space for energetic dogs"},
+                {"place_id":"mock-p4","name":"Ulsoor Lake Walk","vicinity":f"Ulsoor, {city}","rating":4.4,"type":"nature","features":["water_nearby","greenspace","shade"],"photo_url":None,"distance":None,"open_now":True,"tdc_verified":False,"mira_note":"Peaceful lakeside walk, great for seniors"},
+            ]
+        }
+
+    type_queries = {
+        "park":    f"dog friendly park outdoor space in {city}",
+        "beach":   f"beach waterfront dog friendly in {city}",
+        "nature":  f"forest trail nature outdoor in {city}",
+        "sports":  f"sports ground open field dog friendly in {city}",
+        "all":     f"dog park outdoor play area in {city}",
+    }
+    if query:
+        query_text = query
+    else:
+        query_text = type_queries.get(type, type_queries["all"])
+
+    def haversine(lat1, lng1, lat2, lng2) -> str:
+        R = 6371
+        dlat = radians(lat2 - lat1)
+        dlng = radians(lng2 - lng1)
+        a = sin(dlat/2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlng/2)**2
+        return f"{R * 2 * atan2(sqrt(a), sqrt(1 - a)):.1f}km"
+
+    try:
+        params = {"query": query_text, "key": GOOGLE_API_KEY}
+        if lat and lng:
+            params["location"] = f"{lat},{lng}"
+            params["radius"] = str(radius)
+
+        async with httpx.AsyncClient(timeout=12.0) as http:
+            resp = await http.get(
+                "https://maps.googleapis.com/maps/api/place/textsearch/json",
+                params=params,
+            )
+            data = resp.json()
+
+        places = []
+        for p in data.get("results", [])[:15]:
+            photo_url = None
+            if p.get("photos"):
+                ref = p["photos"][0].get("photo_reference")
+                if ref:
+                    photo_url = (
+                        f"https://maps.googleapis.com/maps/api/place/photo"
+                        f"?maxwidth=400&photoreference={ref}&key={GOOGLE_API_KEY}"
+                    )
+            distance = None
+            if lat and lng and p.get("geometry", {}).get("location"):
+                ploc = p["geometry"]["location"]
+                distance = haversine(lat, lng, ploc["lat"], ploc["lng"])
+
+            features = infer_features(p)
+            spot_type = infer_spot_type(p)
+
+            places.append({
+                "place_id":    p.get("place_id"),
+                "name":        p.get("name"),
+                "vicinity":    p.get("formatted_address", p.get("vicinity", "")),
+                "distance":    distance,
+                "rating":      p.get("rating"),
+                "user_ratings_total": p.get("user_ratings_total"),
+                "photo_url":   photo_url,
+                "type":        spot_type,
+                "types":       p.get("types", []),
+                "features":    features,
+                "open_now":    p.get("opening_hours", {}).get("open_now"),
+                "price_level": p.get("price_level"),
+                "tdc_verified": False,
+                "mira_note":   None,
+                "mapsUrl":     f"https://www.google.com/maps/place/?q=place_id:{p.get('place_id')}",
+            })
+
+        return {"location_name": city, "places": places}
+
+    except Exception as e:
+        logger.error(f"get_play_spots error: {e}")
+        return {"location_name": city, "places": [], "error": str(e)}
+
+
 @dine_router.get("/dine/restaurants")
 async def get_restaurants(
     city: Optional[str] = None,

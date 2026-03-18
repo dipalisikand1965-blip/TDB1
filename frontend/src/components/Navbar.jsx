@@ -71,15 +71,15 @@ const PILLARS = [
     ]
   },
   {
-    id: 'enjoy',
-    name: 'Enjoy',
+    id: 'play',
+    name: 'Play',
     icon: '🎾',
-    path: '/enjoy',
+    path: '/play',
     dropdown: [
-      { name: 'Enjoy By Concierge®', path: '/enjoy', highlight: true },
-      { name: 'Events', path: '/enjoy?type=event' },
-      { name: 'Pet Parks', path: '/enjoy?type=park' },
-      { name: 'Playdates', path: '/enjoy?type=meetup' },
+      { name: 'Play By Concierge®', path: '/play', highlight: true },
+      { name: 'Find Play Spots', path: '/play', highlight: false },
+      { name: 'Playdates', path: '/play' },
+      { name: 'Fitness', path: '/play' },
     ]
   },
   {
