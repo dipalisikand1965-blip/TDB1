@@ -853,10 +853,14 @@ async def auto_tag_all_services():
 
 # Top 20 dog breeds for personalized products
 TOP_BREEDS = [
+    # Most popular Indian breeds (33 total)
     "Golden Retriever", "Labrador", "German Shepherd", "Beagle", "Shih Tzu",
     "Pug", "Rottweiler", "Doberman", "Husky", "Cocker Spaniel",
     "Boxer", "Poodle", "Dachshund", "French Bulldog", "Indie",
-    "Great Dane", "Dalmatian", "Chihuahua", "Pomeranian", "Border Collie"
+    "Great Dane", "Dalmatian", "Chihuahua", "Pomeranian", "Border Collie",
+    "Bulldog", "Maltese", "Yorkshire Terrier", "Akita", "Saint Bernard",
+    "Lhasa Apso", "Bichon Frise", "Corgi", "Samoyed", "Vizsla",
+    "Weimaraner", "Basenji", "Alaskan Malamute"
 ]
 
 # Product templates for each breed
@@ -932,7 +936,131 @@ BREED_PRODUCT_TEMPLATES = [
         "price": 249,
         "description_template": "The cutest party hat for your {breed}! Adjustable elastic strap ensures comfortable fit for birthday celebrations.",
         "mira_hint_template": "🎩 Party essential! Adorable {breed}-sized birthday hat"
-    }
+    },
+    # ── DINE ────────────────────────────────────────────────────────────────
+    {
+        "what_is": "Breed Food Mat",
+        "why_fits": "Mealtime Essential",
+        "category": "dine_accessories",
+        "pillars": ["dine"],
+        "price": 599,
+        "soul_tier": "soul_made",
+        "description_template": "A beautiful feeding mat designed for {breed}s — non-slip, easy-clean, and decorated with your dog's breed silhouette. Makes every mealtime special.",
+        "mira_hint_template": "🍽 Mealtime joy! {breed}-illustrated feeding mat — non-slip & easy-clean"
+    },
+    {
+        "what_is": "Breed Recipe Card",
+        "why_fits": "Nutrition Guide",
+        "category": "dine_accessories",
+        "pillars": ["dine"],
+        "price": 299,
+        "soul_tier": "soul_selected",
+        "description_template": "A personalised {breed} recipe card with Mira-curated meal ideas, feeding guidelines, and breed-specific nutritional notes.",
+        "mira_hint_template": "📋 Nutrition sorted! {breed}-specific recipe guide curated by Mira"
+    },
+    {
+        "what_is": "Breed Ceramic Bowl",
+        "why_fits": "Personalised Feed",
+        "category": "dine_accessories",
+        "pillars": ["dine", "shop"],
+        "price": 899,
+        "soul_tier": "soul_made",
+        "description_template": "Hand-painted {breed} ceramic bowl — the perfect feeding vessel for your dog. Dishwasher-safe with non-slip base.",
+        "mira_hint_template": "🥣 Eat in style! Personalised {breed} ceramic bowl"
+    },
+    # ── CARE ────────────────────────────────────────────────────────────────
+    {
+        "what_is": "Breed Grooming Guide",
+        "why_fits": "Care Essential",
+        "category": "care_accessories",
+        "pillars": ["care"],
+        "price": 399,
+        "soul_tier": "soul_selected",
+        "description_template": "A complete {breed} grooming guide — coat type, tools, frequency, and Mira's breed-specific care tips. Printed and illustrated.",
+        "mira_hint_template": "✂️ Grooming sorted! {breed}-specific care guide with Mira's tips"
+    },
+    {
+        "what_is": "Breed Portrait Frame",
+        "why_fits": "Vet Visit Companion",
+        "category": "care_accessories",
+        "pillars": ["care", "celebrate"],
+        "price": 799,
+        "soul_tier": "soul_made",
+        "description_template": "A beautiful portrait frame designed for {breed}s — perfect for displaying at the vet or at home. Includes breed fact card.",
+        "mira_hint_template": "🖼 Cherish your {breed}! Beautifully framed breed portrait"
+    },
+    {
+        "what_is": "Breed Wellness Kit",
+        "why_fits": "Health Essentials",
+        "category": "care_accessories",
+        "pillars": ["care"],
+        "price": 1299,
+        "soul_tier": "soul_selected",
+        "description_template": "A curated wellness kit for {breed}s — includes breed-specific supplements, grooming tool, dental chew, and care schedule from Mira.",
+        "mira_hint_template": "💊 Health first! {breed} wellness kit curated by Mira"
+    },
+    # ── GO (TRAVEL) ──────────────────────────────────────────────────────────
+    {
+        "what_is": "Breed Adventure Bandana",
+        "why_fits": "Travel Identity",
+        "category": "go_accessories",
+        "pillars": ["go"],
+        "price": 399,
+        "soul_tier": "soul_made",
+        "description_template": "Hit the trails in style — this adventure bandana is designed for {breed}s who love to explore. Soft, durable, and totally unique.",
+        "mira_hint_template": "🌍 Adventure ready! {breed} explorer bandana for every journey"
+    },
+    {
+        "what_is": "Breed Travel Tag",
+        "why_fits": "Safety Essential",
+        "category": "go_accessories",
+        "pillars": ["go"],
+        "price": 299,
+        "soul_tier": "soul_made",
+        "description_template": "A custom {breed} travel ID tag with your dog's name, breed, and emergency contact. Durable stainless steel with breed silhouette.",
+        "mira_hint_template": "🏷 Travel safe! Custom {breed} ID tag for every adventure"
+    },
+    {
+        "what_is": "Breed Trail Guide",
+        "why_fits": "Adventure Companion",
+        "category": "go_accessories",
+        "pillars": ["go"],
+        "price": 499,
+        "soul_tier": "soul_selected",
+        "description_template": "A personalised trail and travel guide for {breed}s — best parks, pet-friendly destinations, and Mira's adventure tips for your breed.",
+        "mira_hint_template": "🗺 Explore more! {breed} adventure trail guide by Mira"
+    },
+    # ── PLAY ────────────────────────────────────────────────────────────────
+    {
+        "what_is": "Breed Play Bandana",
+        "why_fits": "Play Identity",
+        "category": "play_accessories",
+        "pillars": ["play"],
+        "price": 399,
+        "soul_tier": "soul_made",
+        "description_template": "Express your dog's play personality with this custom {breed} play bandana. Made for the dog park, the playdate, and every adventure in between.",
+        "mira_hint_template": "🌳 Play in style! Custom {breed} play bandana"
+    },
+    {
+        "what_is": "Breed Playdate Card",
+        "why_fits": "Social Identity",
+        "category": "play_accessories",
+        "pillars": ["play"],
+        "price": 299,
+        "soul_tier": "soul_made",
+        "description_template": "Make friends at the dog park — custom {breed} calling cards with your dog's name, photo slot, and playdate details. Set of 20.",
+        "mira_hint_template": "🐾 Make friends! {breed} playdate cards — the coolest dog park accessory"
+    },
+    {
+        "what_is": "Breed Activity Print",
+        "why_fits": "Soul Expression",
+        "category": "play_accessories",
+        "pillars": ["play", "celebrate"],
+        "price": 899,
+        "soul_tier": "soul_made",
+        "description_template": "A stunning illustrated {breed} activity print — showing your dog's top play activities, energy level, and soul personality. Ready to frame.",
+        "mira_hint_template": "🎨 Soul art! {breed} personality print — frame-worthy and 100% personalised"
+    },
 ]
 
 # Placeholder images by category (beautiful icons)
@@ -956,6 +1084,22 @@ CATEGORY_IMAGES = {
     "celebration_addons": [
         "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=400",  # Party dog
         "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400"
+    ],
+    "dine_accessories": [
+        "https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=400",  # Dog bowl
+        "https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=400"   # Feeding
+    ],
+    "care_accessories": [
+        "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=400",  # Grooming
+        "https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?w=400"   # Care
+    ],
+    "go_accessories": [
+        "https://images.unsplash.com/photo-1534361960057-19f4434d58c5?w=400",  # Dog travel
+        "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400"      # Walking
+    ],
+    "play_accessories": [
+        "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400",  # Dog play
+        "https://images.unsplash.com/photo-1485290334039-a3c69043e517?w=400"   # Dog park
     ]
 }
 
@@ -1040,6 +1184,7 @@ async def seed_breed_products():
                 "primary_image": CATEGORY_IMAGES.get(template["category"], CATEGORY_IMAGES["accessories"])[0],
                 "mira_hint": template["mira_hint_template"].format(breed=breed),
                 "ai_tags": [breed.lower(), template["what_is"].lower(), "personalized", "breed-specific", "picks", "mira-picks"],
+                "soul_tier": template.get("soul_tier", "soul_selected"),
                 "is_active": True,
                 "created_at": datetime.now(timezone.utc),
                 "updated_at": datetime.now(timezone.utc),

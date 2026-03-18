@@ -31,6 +31,7 @@ import PlayConciergeSection from "../components/play/PlayConciergeSection";
 import PlayNearMe from "../components/play/PlayNearMe";
 import { API_URL } from "../utils/api";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
+import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Vibrant Green + Orange
@@ -621,6 +622,8 @@ function DimExpandedModal({ dim, pet, onClose, apiProducts = {} }) {
     return () => { document.body.style.overflow = ""; };
   }, []);
 
+  const [dimTab, setDimTab] = useState("products"); // "products" | "personalised"
+
   return (
     <div
       onClick={onClose}
@@ -647,7 +650,7 @@ function DimExpandedModal({ dim, pet, onClose, apiProducts = {} }) {
         </div>
 
         {/* Sub-tab filter */}
-        {tabList.length > 1 && (
+        {tabList.length > 1 && dimTab === "products" && (
           <div style={{ display:"flex", gap:6, flexWrap:"wrap", padding:"10px 16px 0", background:"#fff", flexShrink:0 }}>
             {tabList.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
@@ -658,8 +661,19 @@ function DimExpandedModal({ dim, pet, onClose, apiProducts = {} }) {
           </div>
         )}
 
-        {/* Stats bar */}
-        {allRaw.length > 0 && (
+        {/* Products / Personalised tab toggle */}
+        <div style={{ display:"flex", background:"#fff", borderBottom:"1px solid #F0F0F0", flexShrink:0, paddingTop:6 }}>
+          {[["products", "🎯 All Products"], ["personalised", "✦ Personalised"]].map(([tid, label]) => (
+            <button key={tid} onClick={() => setDimTab(tid)}
+              data-testid={`dim-tab-${tid}`}
+              style={{ flex:1, padding:"10px 0", background:"none", border:"none", borderBottom: dimTab===tid ? `2.5px solid ${G.orange}` : "2.5px solid transparent", color: dimTab===tid ? G.mid : "#888", fontSize:12, fontWeight: dimTab===tid ? 700 : 400, cursor:"pointer" }}>
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Stats bar (products tab only) */}
+        {dimTab === "products" && allRaw.length > 0 && (
           <div style={{ display:"flex", gap:12, padding:"8px 16px", flexWrap:"wrap", fontSize:11, color:"#888", background:"#fff", flexShrink:0 }}>
             <span style={{ color:"#27AE60", fontWeight:700 }}>✓ {intelligent.length} safe for {petName}</span>
             {allRaw.length-intelligent.length>0 && <span style={{ color:"#AD1457" }}>✗ {allRaw.length-intelligent.length} filtered</span>}
@@ -667,9 +681,11 @@ function DimExpandedModal({ dim, pet, onClose, apiProducts = {} }) {
           </div>
         )}
 
-        {/* Products grid */}
+        {/* Products grid / Personalised tab */}
         <div style={{ flex:1, overflowY:"auto", padding:"12px 16px 24px" }}>
-          {products.length === 0 ? (
+          {dimTab === "personalised" ? (
+            <PersonalisedBreedSection pet={pet} pillar="play" />
+          ) : products.length === 0 ? (
             <div style={{ textAlign:"center", padding:"40px 0", color:"#888", fontSize:13 }}>
               {allRaw.length===0
                 ? <><div style={{ fontSize:28, marginBottom:12 }}>⏳</div>Products loading for {petName}…<br/><span style={{ fontSize:11, color:"#aaa" }}>Pull-to-refresh if this persists</span></>
