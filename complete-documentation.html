@@ -3,16 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>The Doggy Company — Complete Documentation v16</title>
+<title>The Doggy Company — Complete Documentation v17</title>
 <style>
   :root {
     --teal: #1ABC9C; --teal-deep: #0D3349; --teal-mid: #1A5276;
+    --rust: #E76F51; --rust-deep: #7B2D00;
     --sage: #1A5E3A; --sage-deep: #0A2A1A; --gold: #C9973A;
+    --purple: #9B59B6; --purple-deep: #1A0A2E;
     --muted: #5D6D7E; --bg: #F8FAF9; --white: #FFFFFF;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: #1a2b1a; line-height: 1.6; }
-  .hero { background: linear-gradient(135deg, var(--teal-deep), var(--teal-mid), var(--teal)); color: white; padding: 60px 40px; text-align: center; }
+  .hero { background: linear-gradient(135deg, #1A0A2E 0%, #4A1459 50%, #9B59B6 100%); color: white; padding: 60px 40px; text-align: center; }
   .hero h1 { font-family: Georgia, serif; font-size: 2.8rem; font-weight: 900; margin-bottom: 12px; }
   .hero p { font-size: 1.1rem; opacity: 0.8; }
   .badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 5px 14px; font-size: 11px; font-weight: 700; margin: 8px 4px; }
@@ -33,33 +35,26 @@
   td { padding: 10px 14px; border-bottom: 1px solid rgba(26,188,156,0.08); vertical-align: top; }
   tr:nth-child(even) td { background: rgba(26,188,156,0.03); }
   .pill { display: inline-flex; align-items: center; gap: 5px; border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 700; white-space: nowrap; margin: 2px; }
-  .pill-green { background: #E8F5E9; color: #2E7D32; }
-  .pill-teal { background: #E0F7FA; color: #006064; }
+  .pill-green  { background: #E8F5E9; color: #2E7D32; }
+  .pill-teal   { background: #E0F7FA; color: #006064; }
   .pill-orange { background: #FFF3E0; color: #E65100; }
-  .pill-red { background: #FFEBEE; color: #C62828; }
+  .pill-red    { background: #FFEBEE; color: #C62828; }
   .pill-purple { background: #EDE7F6; color: #6A1B9A; }
-  .pill-blue { background: #E3F2FD; color: #1565C0; }
-  .pill-gold { background: #FFF8E1; color: #F57F17; }
+  .pill-blue   { background: #E3F2FD; color: #1565C0; }
+  .pill-gold   { background: #FFF8E1; color: #F57F17; }
+  .pill-rust   { background: #FFF0EA; color: #7B2D00; }
   code { background: #f0f4f8; border: 1px solid rgba(0,0,0,0.08); border-radius: 5px; padding: 2px 7px; font-size: 0.85rem; font-family: 'SF Mono','Courier New',monospace; color: #0D3349; }
   .code-block { background: #0D1117; color: #E6EDF3; border-radius: 12px; padding: 20px; font-family: 'SF Mono','Courier New',monospace; font-size: 0.82rem; line-height: 1.6; overflow-x: auto; margin: 12px 0; }
   .status-complete { color: #2E7D32; font-weight: 700; }
-  .status-partial { color: #F57F17; font-weight: 700; }
-  .status-pending { color: #C62828; font-weight: 700; }
+  .status-partial  { color: #F57F17; font-weight: 700; }
+  .status-pending  { color: #C62828; font-weight: 700; }
   .feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
   .feature-card { background: linear-gradient(135deg, rgba(26,188,156,0.07), rgba(26,82,118,0.05)); border: 1px solid rgba(26,188,156,0.2); border-radius: 12px; padding: 16px; }
-  .feature-card h4 { margin-top: 0; font-size: 0.85rem; }
   .pillar-bar { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
-  .pillar-chip { border-radius: 10px; padding: 8px 16px; font-size: 12px; font-weight: 700; }
-  .pillar-dine { background: #E8F5E9; color: #1A5E3A; border: 2px solid #1A5E3A; }
-  .pillar-care { background: #E8F5E9; color: #0A2A1A; border: 2px solid #0A2A1A; }
-  .pillar-go { background: #E0F7FA; color: #0D3349; border: 2px solid #0D3349; }
-  .pillar-celebrate { background: #EDE7F6; color: #4A1459; border: 2px solid #4A1459; }
-  .pillar-tbd { background: #F5F5F5; color: #999; border: 2px dashed #ccc; }
   .alert { border-radius: 10px; padding: 14px 18px; margin: 14px 0; font-size: 0.875rem; }
-  .alert-info { background: #E3F2FD; border-left: 4px solid #1565C0; color: #0D47A1; }
-  .alert-warn { background: #FFF3E0; border-left: 4px solid #E65100; color: #BF360C; }
+  .alert-info    { background: #E3F2FD; border-left: 4px solid #1565C0; color: #0D47A1; }
+  .alert-warn    { background: #FFF3E0; border-left: 4px solid #E65100; color: #BF360C; }
   .alert-success { background: #E8F5E9; border-left: 4px solid #2E7D32; color: #1B5E20; }
-  .alert-danger { background: #FFEBEE; border-left: 4px solid #C62828; color: #B71C1C; }
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   @media (max-width:768px) { .two-col { grid-template-columns: 1fr; } .hero h1 { font-size: 1.8rem; } }
 </style>
@@ -68,566 +63,472 @@
 
 <div class="hero">
   <h1>The Doggy Company® — Pet Life OS</h1>
-  <p>Complete Technical & Product Documentation · v16.0.0 · March 2026</p>
-  <div style="margin-top:16px;">
+  <p>Complete Technical &amp; Product Documentation · v17.0.0 · March 2026</p>
+  <div style="margin-top:16px">
     <span class="badge">✅ DINE Complete</span>
     <span class="badge">✅ CARE Complete</span>
-    <span class="badge">🟡 GO 70%</span>
+    <span class="badge">✅ GO Complete</span>
+    <span class="badge">✅ PLAY Complete</span>
     <span class="badge">✅ CELEBRATE Complete</span>
-    <span class="badge">❌ PLAY Future</span>
-    <span class="badge">❌ LOVE Future</span>
+    <span class="badge">🔜 LOVE — Next</span>
   </div>
 </div>
 
 <nav>
-  <a href="#overview">Overview</a>
-  <a href="#architecture">Architecture</a>
-  <a href="#go-pillar">GO Pillar</a>
-  <a href="#go-pending">GO Pending</a>
-  <a href="#care-pillar">CARE Pillar</a>
-  <a href="#dine-pillar">DINE Pillar</a>
-  <a href="#database">Database</a>
+  <a href="#pillars">Pillars</a>
+  <a href="#play">PLAY</a>
+  <a href="#breed-products">Breed Products</a>
+  <a href="#mira">Mira AI</a>
   <a href="#apis">APIs</a>
-  <a href="#mira-engine">Mira Engine</a>
-  <a href="#design">Design System</a>
-  <a href="#credentials">Credentials</a>
+  <a href="#db">Database</a>
+  <a href="#cta">CTA Chain</a>
+  <a href="#soul-generator">Soul Generator</a>
   <a href="#backlog">Backlog</a>
+  <a href="#credentials">Credentials</a>
 </nav>
 
 <div class="container">
 
-  <!-- OVERVIEW -->
-  <div class="section" id="overview">
-    <h2>Product Overview</h2>
-    <p>The Doggy Company's <strong>Pet Life Operating System</strong> is a pillar-based platform where each pillar (DINE, CARE, GO, CELEBRATE, etc.) is a fully personalised experience for a named dog — powered by <strong>Mira</strong>, the AI concierge who knows every dog by name, breed, size, health, and soul.</p>
+<!-- ── PILLAR STATUS ─────────────────────────────────────────────────────── -->
+<section class="section" id="pillars">
+  <h2>Pillar Status — All Live</h2>
+  <table>
+    <tr><th>Pillar</th><th>Route</th><th>Status</th><th>Products</th><th>Services</th><th>Breed Products</th><th>Color</th></tr>
+    <tr>
+      <td><strong>🍽 DINE</strong></td><td><code>/dine</code></td>
+      <td class="status-complete">✅ Complete</td><td>524</td><td>7</td><td>264</td>
+      <td><span class="pill pill-green">#1A2F1A / #C9973A gold</span></td>
+    </tr>
+    <tr>
+      <td><strong>💊 CARE</strong></td><td><code>/care</code></td>
+      <td class="status-complete">✅ Complete</td><td>467</td><td>3</td><td>330</td>
+      <td><span class="pill pill-teal">#0A2A1A / #2D9D78</span></td>
+    </tr>
+    <tr>
+      <td><strong>✈️ GO</strong></td><td><code>/go</code></td>
+      <td class="status-complete">✅ Complete</td><td>545</td><td>8</td><td>198</td>
+      <td><span class="pill pill-teal">#0D3349 / #1ABC9C teal</span></td>
+    </tr>
+    <tr>
+      <td><strong>🌳 PLAY</strong></td><td><code>/play</code></td>
+      <td class="status-complete">✅ Complete</td><td>241</td><td>8</td><td>198</td>
+      <td><span class="pill pill-rust">#7B2D00 / #E76F51 rust</span></td>
+    </tr>
+    <tr>
+      <td><strong>🎉 CELEBRATE</strong></td><td><code>/celebrate</code></td>
+      <td class="status-complete">✅ Complete</td><td>2,179</td><td>3</td><td>429</td>
+      <td><span class="pill pill-purple">#1A0A2E / #9B59B6</span></td>
+    </tr>
+    <tr>
+      <td><strong>❤️ LOVE</strong></td><td><code>/love</code></td>
+      <td class="status-pending">🔜 Next</td><td>—</td><td>—</td><td>—</td>
+      <td>—</td>
+    </tr>
+  </table>
+</section>
 
-    <div class="pillar-bar">
-      <div class="pillar-chip pillar-dine">🍽️ DINE</div>
-      <div class="pillar-chip pillar-care">🌿 CARE</div>
-      <div class="pillar-chip pillar-go">✈️ GO</div>
-      <div class="pillar-chip pillar-celebrate">🎂 CELEBRATE</div>
-      <div class="pillar-chip pillar-tbd">🏃 PLAY (Future)</div>
-      <div class="pillar-chip pillar-tbd">❤️ LOVE (Future)</div>
+<!-- ── PLAY PILLAR ───────────────────────────────────────────────────────── -->
+<section class="section" id="play">
+  <h2>🌳 PLAY Pillar — Full Spec</h2>
+  <div class="alert alert-success">All features complete and tested (10/10 testing agent pass — iteration_169.json)</div>
+
+  <h3>Layout &amp; Navigation</h3>
+  <ul>
+    <li><strong>PlayHero</strong> — Rust gradient (<code>#7B2D00→#E76F51</code>), centered, pet avatar + soul score chip, Mira quote, NO tabs inside hero</li>
+    <li><strong>PlayCategoryStrip</strong> — 6 centered pill buttons: Outings, Playdates, Walking, Fitness, Swimming, Soul Play</li>
+    <li><strong>PlayTabBar</strong> — Sticky tab bar below hero: <em>🌳 Play &amp; Explore · 📍 Find Play · 💪 Book a Service</em></li>
+  </ul>
+
+  <h3>Play &amp; Explore Tab</h3>
+  <ul>
+    <li><strong>ActivityProfile</strong> — Energy level, breed, size summary</li>
+    <li><strong>MiraPicksSection</strong> — AI-scored picks (Promise.allSettled + 5s AbortController). Fallback: "Mira Imagines" cards. Auto-triggers scoring on pet load</li>
+    <li><strong>6 Dimension Cards</strong> — Grid: Outings 🌳, Playdates 🐾, Dog Walking 🦮, Fitness ⚡, Swimming 🏊, Soul Play ✨. Glow on energy-matched dims</li>
+    <li><strong>DimExpandedModal</strong> — Fixed overlay bottom-sheet on dim card click. Two tabs: <em>🎯 All Products</em> and <em>✦ Personalised</em> (breed soul products). Products grouped by <code>sub_category→dim.id</code></li>
+    <li><strong>GuidedPlayPaths</strong> — 3-column card grid (matches GoPathCard): 6 paths with colored gradient headers, step chips, Mira Pick badge. PathFlowModal has Continue button (ModalShell defined outside render)</li>
+  </ul>
+
+  <h3>Find Play Tab</h3>
+  <ul>
+    <li><strong>PlayNearMe</strong> — Google Places: dog parks, trails, off-lead areas. Features array mapped from Google types (<code>park→off_lead</code>, etc.)</li>
+    <li>Backend: <code>GET /api/places/play-spots?lat=&amp;lng=&amp;radius=</code></li>
+  </ul>
+
+  <h3>Book a Service Tab</h3>
+  <ul>
+    <li><strong>PlayConcierge</strong> — Quick booking input</li>
+    <li><strong>PlayConciergeSection</strong> — "Play, Personally" horizontal scrollable watercolour service cards. 8 services: Dog Park Outing, Playdate Facilitation, Adventure Walk, Pool Swim, Agility Starter, Fitness Assessment, Trail Hike, Soul Play Photo</li>
+  </ul>
+
+  <h3>Mira Orb</h3>
+  <ul>
+    <li>Rust/orange (<code>#E76F51</code>) on /play — added <code>play</code> to <code>MiraOrb.jsx</code> PILLAR_THEMES</li>
+    <li>Single orb only — Navbar "Ask Mira" hidden on all pillar pages (<code>isPillarPage</code> fix)</li>
+    <li>MiraChatWidget <code>pillarConfig.play</code> updated to <code>from-orange-500 to-red-800</code></li>
+  </ul>
+
+  <h3>Data</h3>
+  <table>
+    <tr><th>Dim ID</th><th>Products</th><th>Sub-category</th></tr>
+    <tr><td>outings</td><td>88</td><td>outings + toys + accessories fallback</td></tr>
+    <tr><td>soul</td><td>136</td><td>soul + breed-play_bandanas + breed-playdate_cards</td></tr>
+    <tr><td>fitness</td><td>6</td><td>fitness</td></tr>
+    <tr><td>swimming</td><td>4</td><td>swimming</td></tr>
+    <tr><td>walking</td><td>4</td><td>walking</td></tr>
+    <tr><td>playdates</td><td>3</td><td>playdates</td></tr>
+  </table>
+</section>
+
+<!-- ── BREED PRODUCTS ────────────────────────────────────────────────────── -->
+<section class="section" id="breed-products">
+  <h2>Breed Products — Soul Made (33 Breeds × 19 Types)</h2>
+  <div class="alert alert-success">3,465 total breed products across all pillars. Shown in "✦ Personalised" tab inside every dim/category modal.</div>
+
+  <div class="two-col">
+    <div>
+      <h3>Breeds (33 total)</h3>
+      <p style="font-size:0.85rem;color:var(--muted)">Golden Retriever, Labrador, German Shepherd, Beagle, Shih Tzu, Pug, Rottweiler, Doberman, Husky, Cocker Spaniel, Boxer, Poodle, Dachshund, French Bulldog, Indie, Great Dane, Dalmatian, Chihuahua, Pomeranian, Border Collie, Bulldog, Maltese, Yorkshire Terrier, Akita, Saint Bernard, Lhasa Apso, Bichon Frise, Corgi, Samoyed, Vizsla, Weimaraner, Basenji, Alaskan Malamute</p>
     </div>
-
-    <div class="alert alert-success">
-      <strong>Core Philosophy:</strong> The soul profile is the dog's operating system. Every pillar reads from it and personalises everything — products, services, guided paths, and Mira's recommendations.
-    </div>
-
-    <div class="feature-grid">
-      <div class="feature-card">
-        <h4>🌟 Soul Profile</h4>
-        <p>94-question soul builder — breed, size, diet, anxiety, health, social preferences. Powers all pillar personalisation.</p>
-      </div>
-      <div class="feature-card">
-        <h4>🤖 Mira Score Engine</h4>
-        <p>Claude Sonnet scores products 0-100 for each pet. Auto-triggers on page load, cached in MongoDB.</p>
-      </div>
-      <div class="feature-card">
-        <h4>🏡 Guided Paths</h4>
-        <p>3-column card grid showing Mira-curated journeys. PathFlowModal with step-by-step guidance.</p>
-      </div>
-      <div class="feature-card">
-        <h4>📦 Concierge Booking</h4>
-        <p>All services booked via service desk tickets. "Hand to Concierge →" flow.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ARCHITECTURE -->
-  <div class="section" id="architecture">
-    <h2>Technical Architecture</h2>
-
-    <div class="two-col">
-      <div>
-        <h3>Tech Stack</h3>
-        <table>
-          <tr><th>Layer</th><th>Technology</th></tr>
-          <tr><td>Frontend</td><td>React 18, Tailwind CSS, Framer Motion</td></tr>
-          <tr><td>Components</td><td>Shadcn/UI, Lucide-React icons</td></tr>
-          <tr><td>Backend</td><td>FastAPI (Python 3.11)</td></tr>
-          <tr><td>Database</td><td>MongoDB (via MONGO_URL env var)</td></tr>
-          <tr><td>AI</td><td>Claude Sonnet (Emergent LLM Key), OpenAI DALL-E</td></tr>
-          <tr><td>Maps</td><td>Google Places API</td></tr>
-          <tr><td>Payments</td><td>Razorpay</td></tr>
-          <tr><td>Hosting</td><td>Kubernetes / Emergent Platform</td></tr>
-        </table>
-      </div>
-      <div>
-        <h3>Service Configuration</h3>
-        <table>
-          <tr><th>Service</th><th>Config</th></tr>
-          <tr><td>Frontend</td><td>Port 3000, hot reload</td></tr>
-          <tr><td>Backend</td><td>Port 8001, <code>/api/*</code> prefix</td></tr>
-          <tr><td>MongoDB</td><td><code>MONGO_URL</code> env var</td></tr>
-          <tr><td>Preview URL</td><td><code>REACT_APP_BACKEND_URL</code></td></tr>
-        </table>
-        <div class="alert alert-info" style="margin-top:12px;">
-          All backend routes must be prefixed with <code>/api</code>. Frontend uses <code>process.env.REACT_APP_BACKEND_URL</code>.
-        </div>
-      </div>
-    </div>
-
-    <h3>Key Backend Files</h3>
-    <div class="code-block">
-/app/backend/
-├── server.py                      # FastAPI app + router registration
-├── mira_score_engine.py           # AI scoring — /api/mira/claude-picks/{pet_id}
-├── mira_routes.py                 # General Mira endpoints
-├── dine_routes.py                 # Dine pillar + /api/places/pet-friendly-stays
-├── admin_routes.py                # Admin, pillar products, service box
-├── soul_routes.py                 # Soul profile, soul questions
-├── care_routes.py                 # Care pillar backend
-├── orders_routes.py               # Order management
-├── app/api/soul_products_routes.py  # Soul products admin
-└── app/api/mockup_routes.py       # Product image mockup generator
-    </div>
-
-    <h3>Key Frontend Files</h3>
-    <div class="code-block">
-/app/frontend/src/
-├── pages/
-│   ├── GoSoulPage.jsx         # GO pillar (~1,750 lines) — TripProfile, MiraPicksSection, DimExpanded, GoTabBar, GoConcierge
-│   ├── CareSoulPage.jsx       # CARE pillar (~2,145 lines)
-│   ├── DineSoulPage.jsx       # DINE pillar
-│   └── PetHomePage.jsx        # Pet dashboard / pillar selector
-├── components/go/
-│   ├── GoHero.jsx             # Centered column hero (matches DineHero)
-│   ├── GoCategoryStrip.jsx    # 6 scrollable pills → GoContentModal
-│   ├── GoContentModal.jsx     # Category product popup (teal, allergy-filtered, Mira Imagines)
-│   ├── GuidedGoPaths.jsx      # 3-column card grid (matches GuidedCarePaths)
-│   ├── GoConciergeSection.jsx # DB-driven service cards (needs data seeded)
-│   ├── GoConciergeModal.jsx   # Service booking modal
-│   └── PetFriendlyStays.jsx   # Worldwide stay search
-├── components/care/
-│   ├── CareHero.jsx           # Care hero (reference)
-│   ├── CareCategoryStrip.jsx  # 8 pills — has Soul Care + Mira's Picks at START
-│   ├── CareContentModal.jsx   # Reference for GoContentModal
-│   ├── CareConciergeSection.jsx  # Reference for service cards UI
-│   └── GuidedCarePaths.jsx    # Reference for GuidedGoPaths
-└── utils/api.js               # API_URL, getApiUrl, getAuthHeaders
-    </div>
-  </div>
-
-  <!-- GO PILLAR -->
-  <div class="section" id="go-pillar">
-    <h2>✈️ GO Pillar — Current State</h2>
-
-    <div class="alert alert-info">
-      Route: <code>/go</code> — Replaces legacy <code>/stay</code> and <code>/travel</code> routes. Both still exist as redirect/legacy pages.
-    </div>
-
-    <h3>Component Architecture</h3>
-    <table>
-      <tr><th>Component</th><th>File</th><th>Status</th><th>Description</th></tr>
-      <tr>
-        <td>GoHero</td><td><code>GoHero.jsx</code></td>
-        <td><span class="status-complete">✅ Complete</span></td>
-        <td>Centered column layout: avatar top-center, "Travel &amp; Go / for [name]" two-line serif title, soul chips, Mira quote, chevron</td>
-      </tr>
-      <tr>
-        <td>GoTabBar</td><td>(inline in <code>GoSoulPage.jsx</code>)</td>
-        <td><span class="status-complete">✅ Complete</span></td>
-        <td>3 centered pill tabs: ✈️ Go Essentials | 🏡 Find a Stay | 🗺️ Book a Service</td>
-      </tr>
-      <tr>
-        <td>GoCategoryStrip</td><td><code>GoCategoryStrip.jsx</code></td>
-        <td><span class="status-partial">🟡 Needs 2 pills</span></td>
-        <td>6 scrollable pills opening GoContentModal. MISSING: "Soul Go" + "Mira's Picks" pills at start of strip</td>
-      </tr>
-      <tr>
-        <td>GoContentModal</td><td><code>GoContentModal.jsx</code></td>
-        <td><span class="status-complete">✅ Complete</span></td>
-        <td>Teal popup with allergy-filtered products, Mira quote, sub-tabs, Mira Imagines cards</td>
-      </tr>
-      <tr>
-        <td>TripProfile</td><td>(inline in <code>GoSoulPage.jsx</code> ~line 443)</td>
-        <td><span class="status-partial">🟡 Needs breed tips</span></td>
-        <td>Compact bar shows breed+city+size chips ✅. Drawer shows score + questions ✅. MISSING: breed-specific travel tips when "profile complete"</td>
-      </tr>
-      <tr>
-        <td>MiraPicksSection</td><td>(inline in <code>GoSoulPage.jsx</code> ~line 285)</td>
-        <td><span class="status-complete">✅ Complete</span></td>
-        <td>AI-scored picks with shimmer skeleton + Mira Imagines fallback</td>
-      </tr>
-      <tr>
-        <td>GuidedGoPaths</td><td><code>GuidedGoPaths.jsx</code></td>
-        <td><span class="status-complete">✅ Complete</span></td>
-        <td>3-column card grid with GoPathCard (accent bg, icon, chips, Mira Pick badge)</td>
-      </tr>
-      <tr>
-        <td>PetFriendlyStays</td><td><code>PetFriendlyStays.jsx</code></td>
-        <td><span class="status-complete">✅ Complete</span></td>
-        <td>Worldwide search, 30-city autocomplete, 12 popular chips, 6 type filters, auto-fetches pet's city on mount</td>
-      </tr>
-      <tr>
-        <td>GoConciergeSection</td><td><code>GoConciergeSection.jsx</code></td>
-        <td><span class="status-partial">🟡 Needs DB data</span></td>
-        <td>Fetches <code>/api/service-box/services?pillar=go</code> — currently returns 0. Needs 8 canonical services seeded.</td>
-      </tr>
-      <tr>
-        <td>DimExpanded</td><td>(inline in <code>GoSoulPage.jsx</code> ~line 615)</td>
-        <td><span class="status-complete">✅ Complete</span></td>
-        <td>6 dimension cards expand inline. Uses DIM_ID_TO_KEYWORDS for product matching.</td>
-      </tr>
-    </table>
-
-    <h3>Go Tab Structure</h3>
-    <table>
-      <tr><th>Tab</th><th>Content</th><th>Status</th></tr>
-      <tr>
-        <td>✈️ Go Essentials</td>
-        <td>TripProfile → MiraPicksSection → "How would [name] love to travel?" header → Dimension cards (4-col grid) → DimExpanded → GuidedGoPaths</td>
-        <td><span class="status-complete">✅ Complete</span></td>
-      </tr>
-      <tr>
-        <td>🏡 Find a Stay</td>
-        <td>PetFriendlyStays — worldwide destination search with Google Places</td>
-        <td><span class="status-complete">✅ Complete</span></td>
-      </tr>
-      <tr>
-        <td>🗺️ Book a Service</td>
-        <td>GoConcierge (hardcoded cards) + GoConciergeSection (DB-driven, currently empty)</td>
-        <td><span class="status-partial">🟡 Needs service data</span></td>
-      </tr>
-    </table>
-
-    <h3>Products in Database</h3>
-    <table>
-      <tr><th>Category</th><th>Count</th><th>Category Filter</th></tr>
-      <tr><td>Safety</td><td>9</td><td><code>category includes "safety"</code></td></tr>
-      <tr><td>Calming</td><td>2</td><td><code>category includes "calm"</code></td></tr>
-      <tr><td>Carriers</td><td>34</td><td><code>category includes "carrier"</code></td></tr>
-      <tr><td>Feeding</td><td>6</td><td><code>category includes "feed"</code></td></tr>
-      <tr><td>Health &amp; First Aid</td><td>1</td><td><code>category includes "health"</code></td></tr>
-      <tr><td>Stay &amp; Board</td><td>3</td><td><code>category includes "boarding" or "stay"</code></td></tr>
-      <tr><td>Other / Unmatched</td><td>473</td><td>Tagged pillar:go but legacy categories</td></tr>
-      <tr><td><strong>Total</strong></td><td><strong>528</strong></td><td>Via <code>GET /api/admin/pillar-products?pillar=go</code></td></tr>
-    </table>
-  </div>
-
-  <!-- GO PENDING -->
-  <div class="section" id="go-pending">
-    <h2>🔴 GO Pillar — Pending Features</h2>
-
-    <div class="alert alert-danger">
-      These features were requested by the user in the latest session but NOT YET IMPLEMENTED. This is the priority work for the next agent.
-    </div>
-
-    <h3>1. TripProfile — Breed Travel Tips (P0)</h3>
-    <div class="alert alert-warn">
-      <strong>User request:</strong> "Pet Travel profile can never be empty (please see care) and do same on go (with breed travel tips etc) and mira cards below"
-    </div>
-    <p>Currently: When all soul questions are answered, the TripProfile drawer shows ✈️ emoji + "Mojo's trip profile is complete!" — then blank white space.</p>
-    <p><strong>Required</strong>: Below the completion state, show breed-specific travel insights like Care's "BEST PRACTICES · INDIE" section:</p>
-    <ul>
-      <li>Dark teal header card: <code>"TRAVEL TIPS · [BREED]"</code> — 1-line breed description for travel</li>
-      <li>4 insight cards in 2×2 grid: (1) Journey prep, (2) Comfort &amp; hydration, (3) Stay suitability, (4) Watch-out (orange)</li>
-      <li>1 documents card (blue): vaccination cert, health cert, microchip, pet passport reminder</li>
-      <li>Reference: <code>WellnessProfile.jsx</code> — look for <code>BreedInsightCard</code> function (with breed-specific care tips)</li>
-      <li>Build <code>GO_BREED_TRAVEL_TIPS</code> lookup for: Indie, Golden, Labrador, Beagle, Shih Tzu, Pug, GSD, Husky, Poodle, Dachshund, Rottweiler, Cocker Spaniel</li>
-    </ul>
-
-    <h3>2. Soul Go + Mira's Picks Pills (P0)</h3>
-    <div class="alert alert-warn">
-      <strong>User request:</strong> "Soul Picks and Mira Picks is missing from the top pill bar. Soul pick takes the AI soul products for travel and stay pet and breed wise. Mira Picks are the Mira top picks for the pet along with mira imaginary cards."
-    </div>
-    <p>Screenshot shows two icon pills at the START of the Care category strip: "Soul Care" (purple sparkle ✨) and "Mira's Picks" (pink wand 🪄).</p>
-    <p><strong>Required for Go strip</strong>:</p>
-    <ul>
-      <li><strong>Soul Go pill</strong> (position 0): Purple-to-lilac gradient bg, ✨ sparkle icon, label "Soul Go" — opens <code>SoulGoModal</code> (new file)</li>
-      <li><code>SoulGoModal</code>: Fetches <code>/api/mira/claude-picks/{petId}?pillar=go</code> → AI-scored products filtered by breed + allergies. Falls back to Mira Imagines if no scores.</li>
-      <li><strong>Mira's Picks pill</strong> (position 1): Pink gradient bg, 🪄 wand icon, label "Mira's Picks" — opens <code>MiraGoPicksModal</code> (new file)</li>
-      <li><code>MiraGoPicksModal</code>: Shows scored picks + Mira Imagines travel destination cards at bottom</li>
-      <li>Reference: <code>CareCategoryStrip.jsx</code> for exact implementation pattern</li>
-    </ul>
-
-    <h3>3. Book a Service — Two Service Blocks (P0)</h3>
-    <div class="alert alert-warn">
-      <strong>User request:</strong> "We have a services box in back end (travel and stay — around 12 each services). We need to make two blocks like care and add those here (into book service tab)"
-    </div>
-    <p>The Excel file provides 8 canonical Go services (GO-SVC-001 to GO-SVC-008) to seed into MongoDB, plus Travel and Stay services from the service-box Excel sheets.</p>
-
-    <h4>Backend work needed:</h4>
-    <ul>
-      <li>Create seeding script: <code>/app/backend/seed_go_services.py</code></li>
-      <li>Insert 8 canonical services into <code>service_box</code> collection with <code>pillar: 'go'</code></li>
-      <li>Also mark existing Travel/Stay services (KEEP status) with <code>pillar: 'go'</code></li>
-      <li>Each service needs: <code>id, name, pillar, sub_pillar(travel|stay), tagline, description, steps[], accent_colour, base_price, watercolour_image_url</code></li>
-    </ul>
-
-    <h4>Frontend work needed (update GoConciergeSection.jsx):</h4>
-    <ul>
-      <li>Split into 2 visual blocks: "Go, Personally — Travel" + "Go, Personally — Stay &amp; Board"</li>
-      <li>Same 4-column card grid as Care, Personally screenshot: watercolour image, category badge, service name, description, gold "Book →" link</li>
-      <li>Watercolour illustration images need to be generated (see Excel AI Image Prompt column)</li>
-    </ul>
-
-    <h4>8 Canonical Go Services (from Excel):</h4>
-    <table>
-      <tr><th>ID</th><th>Icon</th><th>Service</th><th>Sub-pillar</th><th>Accent</th></tr>
-      <tr><td>GO-SVC-001</td><td>✈️</td><td>Flight Coordination</td><td>travel</td><td>#1565C0</td></tr>
-      <tr><td>GO-SVC-002</td><td>🚗</td><td>Road &amp; Train Travel</td><td>travel</td><td>#2E7D32</td></tr>
-      <tr><td>GO-SVC-003</td><td>🏠</td><td>Boarding &amp; Daycare</td><td>stay</td><td>#2D6A4F</td></tr>
-      <tr><td>GO-SVC-004</td><td>🏘️</td><td>Pet Sitting</td><td>stay</td><td>#E65100</td></tr>
-      <tr><td>GO-SVC-005</td><td>📦</td><td>Relocation</td><td>travel</td><td>#6A1B9A</td></tr>
-      <tr><td>GO-SVC-006</td><td>🚕</td><td>Pet Taxi</td><td>travel</td><td>#C9973A</td></tr>
-      <tr><td>GO-SVC-007</td><td>🗺️</td><td>Travel Planning</td><td>travel</td><td>#00695C</td></tr>
-      <tr><td>GO-SVC-008</td><td>🚨</td><td>Emergency Travel</td><td>travel</td><td>#C62828</td></tr>
-    </table>
-
-    <h3>4. New Products from Excel (P1)</h3>
-    <p>Excel file: <strong>TDC_Go_Pillar_Database_v3.xlsx</strong></p>
-    <table>
-      <tr><th>Sheet</th><th>Count</th><th>Status</th></tr>
-      <tr><td>NEW Products to Add (Go Essentials)</td><td>23 products</td><td><span class="pill pill-red">ADD</span></td></tr>
-      <tr><td>Stay &amp; Board Sub-Categories</td><td>21 products across 6 sub-categories</td><td><span class="pill pill-red">ADD</span></td></tr>
-      <tr><td>Stay Products (NEW rows)</td><td>13 products</td><td><span class="pill pill-red">ADD</span></td></tr>
-      <tr><td>Go Pillar Bundles</td><td>14 bundles (6 travel + 8 stay)</td><td><span class="pill pill-red">ADD</span></td></tr>
-      <tr><td>Travel Services (KEEP)</td><td>~11 services</td><td><span class="pill pill-orange">KEEP/SEED</span></td></tr>
-      <tr><td>Stay Services (KEEP)</td><td>~11 services</td><td><span class="pill pill-orange">KEEP/SEED</span></td></tr>
-    </table>
-    <div class="alert alert-info">
-      Product images: Use <strong>Admin Panel → Soul Products → Mockup Generator</strong> to generate images. Do NOT use DALL-E script for these — the admin tool is the correct flow.
-    </div>
-
-    <h4>Sub-Category Structure (for DimExpanded tabs):</h4>
-    <table>
-      <tr><th>Sub-Category ID</th><th>Tab Label</th><th>Products</th></tr>
-      <tr><td>boarding_comfort</td><td>Boarding Comfort</td><td>4 products (GO-BC-001 to GO-BC-004)</td></tr>
-      <tr><td>daycare_essentials</td><td>Daycare Essentials</td><td>3 products (GO-DC-001 to GO-DC-003)</td></tr>
-      <tr><td>pet_sitting_kit</td><td>Pet Sitting Kit</td><td>3 products (GO-PS-001 to GO-PS-003)</td></tr>
-      <tr><td>hotel_comfort</td><td>Hotel &amp; Travel Comfort</td><td>4 products (GO-HT-001 to GO-HT-004)</td></tr>
-      <tr><td>first_stay_anxiety</td><td>First Stay Anxiety</td><td>4 products (GO-FA-001 to GO-FA-004)</td></tr>
-      <tr><td>soul_stay</td><td>Soul Stay Products</td><td>3 products (GO-SS-001 to GO-SS-003)</td></tr>
-    </table>
-  </div>
-
-  <!-- CARE PILLAR -->
-  <div class="section" id="care-pillar">
-    <h2>🌿 CARE Pillar — Complete</h2>
-
-    <div class="alert alert-success">Status: <strong>PRODUCTION READY</strong> — All P0/P1/P2 tests passing as of Session 65A</div>
-
-    <h3>Component Architecture</h3>
-    <table>
-      <tr><th>Component</th><th>File</th><th>Key Features</th></tr>
-      <tr><td>CareSoulPage</td><td><code>CareSoulPage.jsx</code> (~2,145 lines)</td><td>Main page, MiraPicksSection, WellnessProfile, DimExpanded, 8 service flows, CareConcierge</td></tr>
-      <tr><td>CareHero</td><td><code>CareHero.jsx</code></td><td>Breed chip + coat tagline, Mira quote breed-aware</td></tr>
-      <tr><td>CareCategoryStrip</td><td><code>CareCategoryStrip.jsx</code></td><td>8 scrollable pills + ✨ Soul Care + 🪄 Mira's Picks at START</td></tr>
-      <tr><td>CareContentModal</td><td><code>CareContentModal.jsx</code></td><td>Sage green popup, allergy-filtered products, Mira Imagines</td></tr>
-      <tr><td>WellnessProfile</td><td>(inline in CareSoulPage)</td><td>Compact bar, drawer with: score, progress bar, questions, breed-specific BEST PRACTICES cards</td></tr>
-      <tr><td>GuidedCarePaths</td><td><code>GuidedCarePaths.jsx</code></td><td>3-column card grid, PathFlowModal, breed-specific path content</td></tr>
-      <tr><td>CareConciergeSection</td><td><code>CareConciergeSection.jsx</code></td><td>DB-driven watercolour illustration service cards</td></tr>
-    </table>
-
-    <h3>WellnessProfile Drawer Pattern (Reference for TripProfile)</h3>
-    <p>The WellnessProfile when all questions answered shows:</p>
-    <ul>
-      <li>Score display (94%) + progress bar</li>
-      <li>"All current questions answered for Mojo" completion text + 🌿 leaf emoji</li>
-      <li><strong>BEST PRACTICES · INDIE</strong> — dark sage header card with breed description</li>
-      <li>4 care tip cards (2×2 grid): weekly brushing, monthly bath, ear cleaning, nail trim</li>
-      <li>"Watch for" card (orange): tick/flea infestations, skin infections</li>
-      <li>"Dental" card (blue): brushing frequency for breed</li>
-    </ul>
-    <p>This exact pattern should be replicated in GoSoulPage TripProfile as <strong>TRAVEL TIPS · [BREED]</strong> section.</p>
-  </div>
-
-  <!-- DINE PILLAR -->
-  <div class="section" id="dine-pillar">
-    <h2>🍽️ DINE Pillar — Complete</h2>
-
-    <div class="alert alert-success">Status: <strong>PRODUCTION READY</strong></div>
-
-    <table>
-      <tr><th>Component</th><th>File</th><th>Key Features</th></tr>
-      <tr><td>DineSoulPage</td><td><code>DineSoulPage.jsx</code></td><td>Main page, NutritionProfile, MiraPicksSection, DimExpanded, DineConcierge</td></tr>
-      <tr><td>DineHero</td><td><code>DineHero.jsx</code></td><td>Reference for centered column layout used in GoHero</td></tr>
-      <tr><td>DineTabBar</td><td><code>DineTabBar.jsx</code></td><td>Reference for centered pill tab bar used in GoTabBar</td></tr>
-      <tr><td>DineCategoryStrip</td><td><code>DineCategoryStrip.jsx</code></td><td>Category pills with Soul Dine + Mira's Picks at start</td></tr>
-      <tr><td>PetFriendlySpots</td><td><code>PetFriendlySpots.jsx</code></td><td>Dine equivalent of PetFriendlyStays (location search)</td></tr>
-    </table>
-  </div>
-
-  <!-- DATABASE -->
-  <div class="section" id="database">
-    <h2>Database</h2>
-
-    <h3>Key Collections</h3>
-    <table>
-      <tr><th>Collection</th><th>Count</th><th>Purpose</th></tr>
-      <tr><td>products_master</td><td>~2,000+</td><td>All products across all pillars. Filtered by <code>pillar</code> field.</td></tr>
-      <tr><td>service_box</td><td>200+</td><td>All bookable services. Currently only <code>adopt</code> + <code>advisory</code> pillars active for Go.</td></tr>
-      <tr><td>mira_product_scores</td><td>Variable</td><td>AI scoring results per pet per pillar</td></tr>
-      <tr><td>pet_soul_profile</td><td>Variable</td><td>Dog soul answers, soul score, chapter progress</td></tr>
-      <tr><td>users</td><td>Variable</td><td>Member accounts with JWT auth</td></tr>
-      <tr><td>pets</td><td>Variable</td><td>Pet data: breed, size, city, health, allergies</td></tr>
-      <tr><td>service_desk_tickets</td><td>Variable</td><td>Concierge booking requests</td></tr>
-      <tr><td>bundles_go / bundles</td><td>Variable</td><td>Product bundles — needs consolidation</td></tr>
-    </table>
-
-    <h3>Product Counts by Pillar</h3>
-    <table>
-      <tr><th>Pillar</th><th>Count</th><th>Query</th></tr>
-      <tr><td>DINE</td><td>524</td><td><code>GET /api/admin/pillar-products?pillar=dine</code></td></tr>
-      <tr><td>CARE</td><td>468</td><td><code>GET /api/admin/pillar-products?pillar=care</code></td></tr>
-      <tr><td>GO</td><td>528</td><td><code>GET /api/admin/pillar-products?pillar=go</code></td></tr>
-    </table>
-
-    <div class="alert alert-warn">
-      <strong>DB Issue</strong>: The <code>service_box</code> collection has NO <code>go</code> pillar services. 8 canonical Go services + Travel/Stay services from Excel need to be seeded before the "Book a Service" tab can show real content.
-    </div>
-
-    <div class="alert alert-warn">
-      <strong>Legacy issue</strong>: 36 travel services + 53 stay services exist as products in <code>products_master</code> with messy categories. Excel provides MERGE/DELETE guidance to consolidate to 8 canonical services.
+    <div>
+      <h3>Product Types by Pillar</h3>
+      <table>
+        <tr><th>Pillar</th><th>Types</th><th>Count</th></tr>
+        <tr><td>🍽 Dine</td><td>Food Mat, Ceramic Bowl, Recipe Card</td><td>264</td></tr>
+        <tr><td>💊 Care</td><td>Grooming Guide, Portrait Frame, Wellness Kit</td><td>330</td></tr>
+        <tr><td>✈️ Go</td><td>Adventure Bandana, Travel Tag, Trail Guide</td><td>198</td></tr>
+        <tr><td>🌳 Play</td><td>Play Bandana, Playdate Card, Activity Print</td><td>198</td></tr>
+        <tr><td>🎉 Celebrate</td><td>Bandana, Mug, Keychain, Frame, Party Hat, Tote, Canvas Print, Cake</td><td>429</td></tr>
+      </table>
     </div>
   </div>
 
-  <!-- APIs -->
-  <div class="section" id="apis">
-    <h2>Key API Endpoints</h2>
+  <h3>Frontend: PersonalisedBreedSection.jsx</h3>
+  <ul>
+    <li>Location: <code>/app/frontend/src/components/common/PersonalisedBreedSection.jsx</code></li>
+    <li>Accepts: <code>pet</code>, <code>pillar</code> props</li>
+    <li>Fetches: <code>GET /api/breed-catalogue/products?pillar={p}&amp;breed={breed}&amp;limit=20</code></li>
+    <li>Currently wired into: Play <code>DimExpandedModal</code> ("✦ Personalised" tab)</li>
+    <li><strong>TODO:</strong> Wire into Dine, Care, Go modals too</li>
+  </ul>
 
-    <h3>Authentication</h3>
-    <table>
-      <tr><th>Endpoint</th><th>Method</th><th>Body</th><th>Response</th></tr>
-      <tr><td>/api/auth/login</td><td>POST</td><td><code>{email, password}</code></td><td><code>{token, user}</code></td></tr>
-      <tr><td>/api/admin/login</td><td>POST</td><td><code>{username, password}</code></td><td><code>{token}</code></td></tr>
-    </table>
+  <h3>Admin: Soul Products Manager</h3>
+  <ul>
+    <li>Route: <code>/admin/soul-products</code> → "Mockup Generator" sub-tab</li>
+    <li>Generates AI mockup images per breed per product type</li>
+    <li>Seed endpoint: <code>POST /api/breed-catalogue/admin/seed-breed-products</code></li>
+    <li>Script: <code>/app/backend/src/scripts/seed_breed_products_all_pillars.py</code></li>
+  </ul>
+</section>
 
-    <h3>GO Pillar APIs</h3>
-    <table>
-      <tr><th>Endpoint</th><th>Method</th><th>Notes</th></tr>
-      <tr><td>/api/admin/pillar-products?pillar=go&amp;limit=200</td><td>GET</td><td>All Go products (528 total)</td></tr>
-      <tr><td>/api/places/pet-friendly-stays?city={city}&amp;type={type}</td><td>GET</td><td>Google Places — returns up to 10 pet-friendly places</td></tr>
-      <tr><td>/api/mira/claude-picks/{pet_id}?pillar=go&amp;limit=10&amp;min_score=60</td><td>GET</td><td>AI-scored picks. Empty if not yet scored.</td></tr>
-      <tr><td>/api/mira/score-for-pet</td><td>POST</td><td><code>{pet_id, pillar, entity_types}</code> — fires background scoring</td></tr>
-      <tr><td>/api/mira/score-status/{pet_id}</td><td>GET</td><td>Check scoring status: <code>{has_scores, count, last_scored}</code></td></tr>
-      <tr><td>/api/service-box/services?pillar=go</td><td>GET</td><td>Go services — currently returns 0 (needs seeding)</td></tr>
-      <tr><td>/api/pet-soul/profile/{pet_id}/quick-questions</td><td>GET</td><td>Unanswered questions for TripProfile drawer</td></tr>
-    </table>
-  </div>
-
-  <!-- MIRA ENGINE -->
-  <div class="section" id="mira-engine">
-    <h2>🤖 Mira Score Engine</h2>
-
-    <p>The Mira Score Engine uses Claude Sonnet (via Emergent LLM Key) to score each product 0-100 for relevance to a specific dog's soul profile.</p>
-
-    <h3>How It Works</h3>
-    <ol style="list-style:decimal; padding-left:24px;">
-      <li style="margin-bottom:8px; font-size:0.92rem;">GoSoulPage mounts → auto-fires <code>POST /api/mira/score-for-pet</code> (fire-and-forget)</li>
-      <li style="margin-bottom:8px; font-size:0.92rem;">Backend fetches pet soul profile + all <code>go</code> products</li>
-      <li style="margin-bottom:8px; font-size:0.92rem;">Claude Sonnet scores each product: <code>score (0-100)</code>, <code>reasoning</code>, <code>mira_hint</code></li>
-      <li style="margin-bottom:8px; font-size:0.92rem;">Scores stored in <code>mira_product_scores</code> MongoDB collection</li>
-      <li style="margin-bottom:8px; font-size:0.92rem;">Next page load: <code>GET /api/mira/claude-picks/{pet_id}?pillar=go</code> returns sorted picks</li>
-    </ol>
-
-    <h3>First Visit Behavior</h3>
-    <ul>
-      <li>MiraPicksSection shows shimmer skeleton (4 ghost cards) for ~14 seconds while scoring runs</li>
-      <li>If no picks after timeout → shows "Mira Imagines" cards (personalized travel destination suggestions)</li>
-      <li>Second visit: real AI-scored picks appear</li>
-    </ul>
-
-    <div class="alert alert-info">
-      Go pillar was added to <code>pillars_to_score</code> in Session 66. Scoring now covers: dine, celebrate, care, <strong>go</strong>, fit, adopt.
+<!-- ── MIRA AI ────────────────────────────────────────────────────────────── -->
+<section class="section" id="mira">
+  <h2>Mira AI — Intelligence Layer</h2>
+  <div class="two-col">
+    <div>
+      <h3>Mira Picks (per-pet scoring)</h3>
+      <ul>
+        <li>Engine: <code>/app/backend/mira_score_engine.py</code></li>
+        <li>Endpoint: <code>GET /api/mira/claude-picks/{pet_id}?pillar={p}&amp;limit=12&amp;min_score=60</code></li>
+        <li>LLM: Claude Sonnet 4.5 via Emergent Universal Key</li>
+        <li>Auto-trigger on page load (fire-and-forget POST)</li>
+        <li>Fallback: "Mira Imagines" gradient cards (never empty)</li>
+        <li>Fetch uses <code>Promise.allSettled</code> + 5s <code>AbortController</code></li>
+        <li>Active on: all 5 pillars (dine, care, go, play, celebrate)</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Mira Orb (FAB)</h3>
+      <ul>
+        <li>Component: <code>MiraOrb.jsx</code> → <code>PILLAR_THEMES</code></li>
+        <li>Play: <code>#E76F51</code> rust</li>
+        <li>Go: <code>#1ABC9C</code> teal</li>
+        <li>Default: <code>#9333EA</code> purple</li>
+        <li>Single orb — Navbar "Ask Mira" hidden on pillar pages</li>
+        <li><code>isPillarPage</code> fix in <code>Navbar.jsx</code> (was hardcoded <code>false</code>)</li>
+      </ul>
+      <h3>Mira Chat Widget</h3>
+      <ul>
+        <li>Component: <code>MiraChatWidget.jsx</code></li>
+        <li>pillarConfig updated: <code>play: from-orange-500 to-red-800</code></li>
+        <li>Rendered by <code>PillarPageLayout</code> with <code>pillar</code> prop</li>
+      </ul>
     </div>
   </div>
+</section>
 
-  <!-- DESIGN SYSTEM -->
-  <div class="section" id="design">
-    <h2>Design System</h2>
+<!-- ── KEY APIS ──────────────────────────────────────────────────────────── -->
+<section class="section" id="apis">
+  <h2>Key API Endpoints</h2>
+  <table>
+    <tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr>
+    <tr><td>GET</td><td><code>/api/admin/pillar-products?pillar={p}&amp;limit=500</code></td><td>All products for pillar. Filters: Bookable=false, no svc- IDs</td></tr>
+    <tr><td>GET</td><td><code>/api/breed-catalogue/products?pillar={p}&amp;breed={b}</code></td><td>Breed-specific soul products (PersonalisedBreedSection)</td></tr>
+    <tr><td>GET</td><td><code>/api/service-box/services?pillar={p}</code></td><td>Bookable services for a pillar</td></tr>
+    <tr><td>POST</td><td><code>/api/mira/score-for-pet</code></td><td>Trigger AI scoring. Body: {pet_id, pillar, entity_types}</td></tr>
+    <tr><td>GET</td><td><code>/api/mira/claude-picks/{pet_id}?pillar={p}&amp;limit=12&amp;min_score=60</code></td><td>AI-scored Mira Picks</td></tr>
+    <tr><td>GET</td><td><code>/api/places/play-spots?lat=&amp;lng=</code></td><td>Dog parks + trails via Google Places</td></tr>
+    <tr><td>GET</td><td><code>/api/places/care-providers?lat=&amp;lng=</code></td><td>Vets + groomers via Google Places</td></tr>
+    <tr><td>GET</td><td><code>/api/places/pet-friendly-stays?city=</code></td><td>Pet-friendly hotels via Google Places</td></tr>
+    <tr><td>POST</td><td><code>/api/concierge/play-path</code></td><td>Submit guided play path → creates ticket</td></tr>
+    <tr><td>POST</td><td><code>/api/concierge/nutrition-path</code></td><td>Submit guided dine path → creates ticket</td></tr>
+    <tr><td>POST</td><td><code>/api/ai-images/generate-pillar-images?pillar={p}</code></td><td>Generate realistic product images (background)</td></tr>
+    <tr><td>POST</td><td><code>/api/ai-images/generate-service-images?pillar={p}</code></td><td>Generate watercolour service images (background)</td></tr>
+    <tr><td>GET</td><td><code>/api/ai-images/status</code></td><td>Check generation progress</td></tr>
+    <tr><td>POST</td><td><code>/api/breed-catalogue/admin/seed-breed-products</code></td><td>Seed breed products (runs for all 33 breeds)</td></tr>
+    <tr><td>GET</td><td><code>/api/pet-soul/breed-products/{breed}</code></td><td>All products for a breed</td></tr>
+    <tr><td>POST</td><td><code>/api/auth/login</code></td><td>Login → JWT token</td></tr>
+    <tr><td>GET</td><td><code>/api/pets</code></td><td>Pet list for logged-in user</td></tr>
+  </table>
+</section>
 
-    <div class="two-col">
-      <div>
-        <h3>Color Palettes</h3>
-        <table>
-          <tr><th>Pillar</th><th>Deep</th><th>Mid</th><th>Accent</th></tr>
-          <tr><td>DINE</td><td style="background:#1A2F1A;color:#fff;">#1A2F1A</td><td style="background:#2D5016;color:#fff;">#2D5016</td><td style="background:#C9973A;color:#fff;">#C9973A gold</td></tr>
-          <tr><td>CARE</td><td style="background:#0A2A1A;color:#fff;">#0A2A1A</td><td style="background:#1A5E3A;color:#fff;">#1A5E3A</td><td style="background:#C9973A;color:#fff;">#C9973A gold</td></tr>
-          <tr><td>GO</td><td style="background:#0D3349;color:#fff;">#0D3349</td><td style="background:#1A5276;color:#fff;">#1A5276</td><td style="background:#1ABC9C;color:#fff;">#1ABC9C teal</td></tr>
-          <tr><td>CELEBRATE</td><td style="background:#1A0A2E;color:#fff;">#1A0A2E</td><td style="background:#4A1459;color:#fff;">#4A1459</td><td style="background:#C9973A;color:#fff;">#C9973A gold</td></tr>
-        </table>
-      </div>
-      <div>
-        <h3>Typography</h3>
-        <table>
-          <tr><th>Level</th><th>Size</th><th>Weight</th></tr>
-          <tr><td>H1 Hero</td><td><code>clamp(1.875rem,4vw,2.5rem)</code></td><td>900, Georgia serif</td></tr>
-          <tr><td>H2 Section</td><td><code>clamp(1.375rem,3vw,1.875rem)</code></td><td>800, Georgia serif</td></tr>
-          <tr><td>H3 Sub</td><td><code>1.1rem</code></td><td>700</td></tr>
-          <tr><td>Body</td><td><code>0.875rem–1rem</code></td><td>400</td></tr>
-          <tr><td>Chips</td><td><code>10-11px</code></td><td>600-700</td></tr>
-        </table>
-      </div>
+<!-- ── DATABASE ──────────────────────────────────────────────────────────── -->
+<section class="section" id="db">
+  <h2>Database Collections</h2>
+  <table>
+    <tr><th>Collection</th><th>~Count</th><th>Purpose</th><th>Key Fields</th></tr>
+    <tr><td><code>products_master</code></td><td>12,939</td><td>All pillar products</td><td>pillar, category, sub_category, price, mira_score, Bookable (MUST be absent)</td></tr>
+    <tr><td><code>breed_products</code></td><td>3,465</td><td>Breed-specific soul products</td><td>breed, pillar, what_is, soul_tier, mira_hint, price</td></tr>
+    <tr><td><code>services</code></td><td>46</td><td>Bookable services</td><td>pillar, price, duration_minutes, image_url, id (svc-pillar-xxx)</td></tr>
+    <tr><td><code>guided_paths</code></td><td>~20</td><td>Multi-step guided paths (backend)</td><td>pillar, path_id, steps[], energy_level</td></tr>
+    <tr><td><code>pet_soul_scores</code></td><td>dynamic</td><td>AI product scores per pet</td><td>pet_id, pillar, product_id, score, entity_type</td></tr>
+    <tr><td><code>service_desk_tickets</code></td><td>dynamic</td><td>Concierge tickets</td><td>type, pillar, pet, status, ticket_id</td></tr>
+    <tr><td><code>admin_notifications</code></td><td>dynamic</td><td>Admin inbox</td><td>type, pillar, urgency, read, ticket_id</td></tr>
+    <tr><td><code>concierge_intakes</code></td><td>dynamic</td><td>Guided path submissions</td><td>type, pet_id, path_id, selections</td></tr>
+  </table>
+
+  <div class="alert alert-info">
+    <strong>Data integrity rule:</strong> If a record has a <code>Bookable</code> field → it belongs in <code>db.services</code>. If it has a <code>Type</code> field (physical/digital/bundle) → it belongs in <code>db.products_master</code>. The <code>/api/admin/pillar-products</code> endpoint now filters out any record with <code>Bookable</code> field or <code>id</code> starting with <code>svc-</code>.
+  </div>
+</section>
+
+<!-- ── CTA CHAIN ─────────────────────────────────────────────────────────── -->
+<section class="section" id="cta">
+  <h2>CTA Chain — TDC Instructions</h2>
+  <div class="alert alert-warn">
+    <strong>Status: Planned (P1).</strong> Every "Book via Concierge" and "Find &amp; Book" button across all pillars must wire into the full service desk chain below.
+  </div>
+
+  <h3>The Chain</h3>
+  <table>
+    <tr><th>Step</th><th>Action</th><th>Component/API</th></tr>
+    <tr><td>1</td><td>User clicks Book / Find &amp; Book</td><td>Any pillar service card, NearMe map button, guided path submit</td></tr>
+    <tr><td>2</td><td>ConciergeToast shown (bottom notification)</td><td><code>ConciergeToast.jsx</code> — shared component (to be built)</td></tr>
+    <tr><td>3</td><td>API call to concierge endpoint</td><td><code>POST /api/concierge/{pillar}-service</code> or <code>/api/concierge/play-path</code></td></tr>
+    <tr><td>4</td><td>Backend creates intake + ticket + notification</td><td><code>concierge_routes.py</code> — unified flow</td></tr>
+    <tr><td>5</td><td>Admin inbox shows new ticket</td><td><code>/agent-portal?tab=service_desk</code></td></tr>
+    <tr><td>6</td><td>User sees confirmation</td><td>"Mira is on it" + ticket ID</td></tr>
+  </table>
+
+  <h3>NearMe Book Buttons (handleNearMeBook)</h3>
+  <ul>
+    <li><strong>PlayNearMe</strong> — "Book this spot" → <code>handleNearMeBook(spot, pet, token)</code> → creates play ticket</li>
+    <li><strong>CareNearMe</strong> — "Book care" → <code>handleNearMeBook(provider, pet, token)</code> → creates care ticket</li>
+    <li><strong>PetFriendlyStays (Go)</strong> — "Book Stay" → <code>handleNearMeBook(stay, pet, token)</code> → creates go ticket</li>
+    <li><strong>Status:</strong> All currently show placeholder UI. Wire-up is P1.</li>
+  </ul>
+</section>
+
+<!-- ── SOUL GENERATOR ────────────────────────────────────────────────────── -->
+<section class="section" id="soul-generator">
+  <h2>Soul Product Generator — Admin</h2>
+  <p>Admin panel at <code>/admin</code> → "Soul Products" tab → "Mockup Generator" sub-tab generates AI mockup images for breed products and maps them to pillar sub-categories.</p>
+
+  <h3>Current Sub-categories (19 product types across 5 pillars)</h3>
+  <table>
+    <tr><th>Pillar</th><th>Sub-category / Product Type</th><th>Soul Tier</th><th>Price Range</th></tr>
+    <tr><td rowspan="8">🎉 Celebrate</td><td>Birthday Cake</td><td>soul_made</td><td>₹599–999</td></tr>
+    <tr><td>Ceramic Mug</td><td>soul_made</td><td>₹799</td></tr>
+    <tr><td>Designer Bandana</td><td>soul_made</td><td>₹399</td></tr>
+    <tr><td>Photo Frame</td><td>soul_made</td><td>₹799</td></tr>
+    <tr><td>Treat Box</td><td>soul_selected</td><td>₹599</td></tr>
+    <tr><td>Canvas Print</td><td>soul_made</td><td>₹1,299</td></tr>
+    <tr><td>Breed Keychain</td><td>soul_made</td><td>₹349</td></tr>
+    <tr><td>Party Hat</td><td>soul_made</td><td>₹249</td></tr>
+    <tr><td rowspan="3">🍽 Dine</td><td>Breed Food Mat</td><td>soul_made</td><td>₹599</td></tr>
+    <tr><td>Breed Ceramic Bowl</td><td>soul_made</td><td>₹899</td></tr>
+    <tr><td>Breed Recipe Card</td><td>soul_selected</td><td>₹299</td></tr>
+    <tr><td rowspan="3">💊 Care</td><td>Breed Grooming Guide</td><td>soul_selected</td><td>₹399</td></tr>
+    <tr><td>Breed Portrait Frame</td><td>soul_made</td><td>₹799</td></tr>
+    <tr><td>Breed Wellness Kit</td><td>soul_selected</td><td>₹1,299</td></tr>
+    <tr><td rowspan="3">✈️ Go</td><td>Breed Adventure Bandana</td><td>soul_made</td><td>₹399</td></tr>
+    <tr><td>Breed Travel Tag</td><td>soul_made</td><td>₹299</td></tr>
+    <tr><td>Breed Trail Guide</td><td>soul_selected</td><td>₹499</td></tr>
+    <tr><td rowspan="2">🌳 Play</td><td>Breed Play Bandana</td><td>soul_made</td><td>₹399</td></tr>
+    <tr><td>Breed Playdate Card + Activity Print</td><td>soul_made</td><td>₹299–899</td></tr>
+  </table>
+
+  <h3>Additional Mocks to Add (Identified)</h3>
+  <table>
+    <tr><th>Pillar</th><th>Suggested Product Type</th><th>Rationale</th></tr>
+    <tr><td>🍽 Dine</td><td>Breed Placemat Print</td><td>Framed breed art for the dining area</td></tr>
+    <tr><td>💊 Care</td><td>Breed Health Journal</td><td>Printed health log book for vet visits</td></tr>
+    <tr><td>✈️ Go</td><td>Breed Passport Holder</td><td>Custom leather pet passport holder with breed emboss</td></tr>
+    <tr><td>🌳 Play</td><td>Breed Agility Kit</td><td>Branded agility mini-kit with breed name</td></tr>
+    <tr><td>❤️ Love</td><td>Breed Memory Book</td><td>Printed photo memory journal for the love pillar</td></tr>
+    <tr><td>All</td><td>Breed Tote Bag</td><td>Canvas tote with breed illustration (multi-pillar)</td></tr>
+  </table>
+
+  <h3>Running the Generator</h3>
+  <div class="code-block">
+# Seed all 33 breeds × 19 types (run locally — HTTP endpoint times out)
+python3 /app/backend/src/scripts/seed_breed_products_all_pillars.py
+
+# Or trigger via API (may timeout for large runs):
+POST /api/breed-catalogue/admin/seed-breed-products
+
+# Generate AI mockup images via admin panel:
+Admin → Soul Products → Mockup Generator → Select pillar + breed → Generate
+  </div>
+</section>
+
+<!-- ── BACKLOG ───────────────────────────────────────────────────────────── -->
+<section class="section" id="backlog">
+  <h2>Backlog — Prioritised</h2>
+  <table>
+    <tr><th>Priority</th><th>Item</th><th>Details</th><th>Status</th></tr>
+    <tr>
+      <td><span class="pill pill-red">P0</span></td>
+      <td>PersonalisedBreedSection in Dine/Care/Go modals</td>
+      <td>Already built (<code>PersonalisedBreedSection.jsx</code>). Wire into <code>DineContentModal</code>, <code>CareContentModal</code>, <code>GoContentModal</code> as a "✦ Personalised" tab — same pattern as Play's DimExpandedModal</td>
+      <td class="status-partial">Partial (Play only)</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-red">P0</span></td>
+      <td>CTA Chain / ConciergeToast</td>
+      <td>Build shared <code>ConciergeToast.jsx</code>. Wire all Book buttons in PlayNearMe, CareNearMe, PetFriendlyStays into <code>handleNearMeBook()</code> → creates service desk ticket. See CTA Chain section above.</td>
+      <td class="status-pending">Not started</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-orange">P1</span></td>
+      <td>Soul Product mockup images (AI)</td>
+      <td>Run Mockup Generator for all 33 breeds × 19 types. Currently breed products have Unsplash fallback images. Admin → Soul Products → Mockup Generator</td>
+      <td class="status-partial">Fallback images only</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-orange">P1</span></td>
+      <td>Go services in db.services</td>
+      <td>8 canonical Go services seeded but in wrong collection. Confirm <code>GET /api/service-box/services?pillar=go</code> returns 8 results</td>
+      <td class="status-partial">Check needed</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-orange">P1</span></td>
+      <td>LOVE pillar</td>
+      <td>New <code>/love</code> route. LoveSoulPage with Love Memory Drawer, bond tracking, relationship milestones. Follows Play/Go pattern.</td>
+      <td class="status-pending">Not started</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-orange">P1</span></td>
+      <td>Play product image generation</td>
+      <td>32 play products missing images. Background job running at time of writing. Check: <code>GET /api/ai-images/status</code></td>
+      <td class="status-partial">In progress</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-blue">P2</span></td>
+      <td>Razorpay checkout fix</td>
+      <td>Known low-priority bug — checkout flow fails at Razorpay step</td>
+      <td class="status-pending">Backlog</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-blue">P2</span></td>
+      <td>Shared component refactor</td>
+      <td>Dine/Care/Go/Play all have near-identical hero/tabbar/concierge patterns. Extract to shared components.</td>
+      <td class="status-pending">Backlog</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-blue">P2</span></td>
+      <td>Bundles consolidation</td>
+      <td>Multiple bundles collections in DB. Merge into single <code>bundles</code> collection with <code>pillar</code> field.</td>
+      <td class="status-pending">Backlog</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ── FILE REFERENCE ────────────────────────────────────────────────────── -->
+<section class="section">
+  <h2>Key File Reference</h2>
+  <div class="two-col">
+    <div>
+      <h3>Frontend — Pages</h3>
+      <ul>
+        <li><code>/pages/DineSoulPage.jsx</code> — Dine pillar</li>
+        <li><code>/pages/CareSoulPage.jsx</code> — Care pillar</li>
+        <li><code>/pages/GoSoulPage.jsx</code> — Go pillar (~1,976 lines)</li>
+        <li><code>/pages/PlaySoulPage.jsx</code> — Play pillar (~1,344 lines)</li>
+        <li><code>/pages/CelebratePage.jsx</code> — Celebrate pillar</li>
+      </ul>
+      <h3>Frontend — Play Components</h3>
+      <ul>
+        <li><code>/components/play/PlayHero.jsx</code></li>
+        <li><code>/components/play/PlayCategoryStrip.jsx</code></li>
+        <li><code>/components/play/GuidedPlayPaths.jsx</code></li>
+        <li><code>/components/play/PlayConciergeSection.jsx</code></li>
+        <li><code>/components/play/PlayNearMe.jsx</code></li>
+        <li><code>/components/play/PlayConciergeModal.jsx</code></li>
+      </ul>
+      <h3>Frontend — Shared</h3>
+      <ul>
+        <li><code>/components/common/PersonalisedBreedSection.jsx</code> — Breed soul products tab</li>
+        <li><code>/components/MiraOrb.jsx</code> — Pillar-colored FAB</li>
+        <li><code>/components/MiraChatWidget.jsx</code> — Chat widget</li>
+        <li><code>/components/Navbar.jsx</code> — isPillarPage fix</li>
+        <li><code>/components/PillarPageLayout.jsx</code> — Shared layout wrapper</li>
+      </ul>
     </div>
-
-    <h3>Key UI Patterns</h3>
-    <table>
-      <tr><th>Pattern</th><th>Description</th></tr>
-      <tr><td>Hero</td><td>Dark gradient, centered column, avatar top-center (96px), two-line serif title, soul chips row, Mira quote glass card, chevron bounce</td></tr>
-      <tr><td>Tab bars</td><td>Centered pill buttons: <code>border-radius:9999</code>, gradient background on active state, below category strip</td></tr>
-      <tr><td>Category strips</td><td>Horizontal scroll, icon pill buttons, <code>min-width:80px</code>, NO fixed height (let content expand), bottom border on active</td></tr>
-      <tr><td>Dimension cards</td><td>2→4 col grid (mobile→desktop), expand inline below grid (NOT popup), accent glow when recommended</td></tr>
-      <tr><td>Mira quote</td><td>Glass card with ✦ Mira avatar, italic quote, "♥ Mira knows [name]" footer</td></tr>
-      <tr><td>Mira Imagines</td><td>Dark gradient cards with emoji icon, name, description, "Request a Quote →" gold CTA</td></tr>
-      <tr><td>Service cards</td><td>Watercolour illustration (or gradient fallback), category badge, service name, description, gold "Book [name]'s [service] →" link</td></tr>
-      <tr><td>Path cards</td><td>3-col grid, <code>accentBg</code> background, 52px icon box, h3 title, step chips, ★ Mira Pick badge, hover translateY(-3px)</td></tr>
-    </table>
-  </div>
-
-  <!-- CREDENTIALS -->
-  <div class="section" id="credentials">
-    <h2>Test Credentials</h2>
-    <table>
-      <tr><th>Role</th><th>Email / Username</th><th>Password</th><th>Notes</th></tr>
-      <tr><td>Member</td><td>dipali@clubconcierge.in</td><td>test123</td><td>Pet: Mojo (Indie, 95% soul score, Goa, Chicken allergy)</td></tr>
-      <tr><td>Admin</td><td>aditya</td><td>lola4304</td><td>Full admin access — /admin panel</td></tr>
-    </table>
-    <div class="alert alert-info">
-      Login endpoint: <code>POST /api/auth/login</code> with <code>{email, password}</code> → returns JWT token for all subsequent requests via <code>Authorization: Bearer {token}</code> header.
+    <div>
+      <h3>Backend — Key Files</h3>
+      <ul>
+        <li><code>server.py</code> — FastAPI app + router registration</li>
+        <li><code>breed_catalogue.py</code> — 33 breeds, 19 product templates, seed endpoint</li>
+        <li><code>pillar_products_routes.py</code> — Bookable/svc- filter added</li>
+        <li><code>mira_score_engine.py</code> — Claude scoring</li>
+        <li><code>concierge_routes.py</code> — All guided path + service booking endpoints</li>
+        <li><code>ai_image_service.py</code> — Background image generation</li>
+        <li><code>dine_routes.py</code> — Includes Places endpoints (play-spots, care-providers)</li>
+      </ul>
+      <h3>Backend — Seed Scripts</h3>
+      <ul>
+        <li><code>src/scripts/seed_play_v2.py</code> — Play products + 8 services + 6 guided paths</li>
+        <li><code>src/scripts/seed_breed_products_all_pillars.py</code> — 33 breeds × 12 pillar types</li>
+        <li><code>src/scripts/seed_play_data.py</code> — Original play seed (v1)</li>
+      </ul>
     </div>
   </div>
+</section>
 
-  <!-- BACKLOG -->
-  <div class="section" id="backlog">
-    <h2>P0/P1/P2 Backlog</h2>
-
-    <h3>P0 — Immediate (GO Pillar completion)</h3>
-    <table>
-      <tr><th>#</th><th>Task</th><th>File</th><th>Complexity</th></tr>
-      <tr><td>1</td><td>TripProfile breed travel tips — never empty, show TRAVEL TIPS · [BREED] cards</td><td>GoSoulPage.jsx (TripProfile fn)</td><td>Medium</td></tr>
-      <tr><td>2</td><td>Soul Go + Mira's Picks pills in GoCategoryStrip</td><td>GoCategoryStrip.jsx + 2 new modal files</td><td>Medium</td></tr>
-      <tr><td>3</td><td>Seed 8 canonical Go services to service_box collection</td><td>seed_go_services.py (new backend script)</td><td>Easy</td></tr>
-      <tr><td>4</td><td>Build 2-section service UI in Book a Service tab</td><td>GoConciergeSection.jsx</td><td>Medium</td></tr>
-      <tr><td>5</td><td>Insert 36 new products from Excel</td><td>seed_go_products_v4.py (new backend script)</td><td>Easy</td></tr>
-    </table>
-
-    <h3>P1 — Important</h3>
-    <table>
-      <tr><th>#</th><th>Task</th><th>Notes</th></tr>
-      <tr><td>6</td><td>Go service watercolour images</td><td>Generate via admin panel or DALL-E</td></tr>
-      <tr><td>7</td><td>Care soul product images (35 products)</td><td>Use Admin → Soul Products mockup tool — user task</td></tr>
-      <tr><td>8</td><td>Fix Razorpay checkout failure</td><td>Known low-priority bug from previous session</td></tr>
-    </table>
-
-    <h3>P2 — Future</h3>
-    <table>
-      <tr><th>#</th><th>Task</th><th>Notes</th></tr>
-      <tr><td>9</td><td>PLAY pillar</td><td>/play route, PlaySoulPage, game paths</td></tr>
-      <tr><td>10</td><td>LOVE pillar</td><td>/love route, LoveSoulPage, Love Memory Drawer</td></tr>
-      <tr><td>11</td><td>Consolidate bundles collections</td><td>Multiple bundles_* collections → single unified</td></tr>
-      <tr><td>12</td><td>Generic shared components</td><td>Reduce DINE/CARE/GO code duplication</td></tr>
-      <tr><td>13</td><td>AI Score Engine for PLAY + LOVE</td><td>Add to pillars_to_score list when pillar built</td></tr>
-    </table>
+<!-- ── CREDENTIALS ───────────────────────────────────────────────────────── -->
+<section class="section" id="credentials">
+  <h2>Credentials &amp; Access</h2>
+  <table>
+    <tr><th>Role</th><th>Username / Email</th><th>Password</th><th>Notes</th></tr>
+    <tr><td>Admin</td><td>aditya</td><td>lola4304</td><td>Full admin access, all pillars</td></tr>
+    <tr><td>Member</td><td>dipali@clubconcierge.in</td><td>test123</td><td>Mojo (Indie), 95% soul score, Goa, Chicken allergy</td></tr>
+  </table>
+  <div class="alert alert-info">
+    <strong>Preview URL:</strong> <code>https://play-layout-fix.preview.emergentagent.com</code><br/>
+    <strong>API base:</strong> Same domain, all routes prefixed <code>/api</code>
   </div>
+</section>
 
-  <footer style="text-align:center; padding:40px; color:#999; font-size:12px;">
-    The Doggy Company® — Pet Life OS — Documentation v16.0.0 — March 2026
-    <br>App: <code>https://play-layout-fix.preview.emergentagent.com</code>
-  </footer>
+<!-- ── SESSION LOG ───────────────────────────────────────────────────────── -->
+<section class="section">
+  <h2>Session Log</h2>
+  <table>
+    <tr><th>Session</th><th>Date</th><th>Key Work</th></tr>
+    <tr><td>71</td><td>Mar 18</td><td>Play 8-bug fix: modal overlay, category centering, GuidedPlayPaths card grid, Continue button, Play Personally services, Mira orb rust, single orb</td></tr>
+    <tr><td>72</td><td>Mar 18</td><td>Breed products for all pillars (33×19=627 new), PersonalisedBreedSection.jsx, data integrity fix (4 svc- records moved), Bookable filter on pillar-products API, service watercolour images</td></tr>
+    <tr><td>70</td><td>Mar 18</td><td>Play pillar live: PlayHero, PlayTabBar, DimExpandedModal, GuidedPlayPaths, PlayNearMe, Play Personally, orange color scheme, products fetch fix, Mira Picks auto-trigger</td></tr>
+    <tr><td>69</td><td>Mar 17</td><td>Go: Soul Go + Mira's Picks pills, GoBreedTravelInsights, Book a Service tab, 21 products seeded, 8 Go services seeded</td></tr>
+    <tr><td>68</td><td>Mar 17</td><td>Documentation update v16, PRD.md</td></tr>
+    <tr><td>67</td><td>Mar 17</td><td>Go hero, tab bar, GuidedGoPaths card grid, PetFriendlyStays auto-city</td></tr>
+    <tr><td>66</td><td>Mar 17</td><td>Go category strip, content modal, scoring, skeleton loader</td></tr>
+    <tr><td>65</td><td>Mar 17</td><td>Go pillar scaffolding, 478 products, Care verification</td></tr>
+  </table>
+</section>
 
+</div>
+
+<div style="background:#0D3349;color:rgba(255,255,255,0.4);text-align:center;padding:24px;font-size:12px;margin-top:40px">
+  The Doggy Company® · Complete Documentation v17.0.0 · March 2026
 </div>
 </body>
 </html>
