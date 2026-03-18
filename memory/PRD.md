@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 2026 (Session 73 — Play Modal Centered + Soul Made Products in Personalised Tab)
+## Last Updated: Mar 2026 (Session 74 — Play page refactored to inline expansion, exactly matching /dine behavior)
 
 ---
 
