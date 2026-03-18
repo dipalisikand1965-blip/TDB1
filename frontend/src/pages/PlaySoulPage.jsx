@@ -290,7 +290,7 @@ function MiraPicksSection({ pet }) {
     if (!pet?.id) { setLoading(false); return; }
     const makeAbortable = (url) => {
       const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 5000);
+      const timer = setTimeout(() => ctrl.abort(), 3000);
       return fetch(url, { signal: ctrl.signal })
         .then(r => r.ok ? r.json() : null)
         .finally(() => clearTimeout(timer))
@@ -1254,30 +1254,31 @@ const PlaySoulPage = () => {
     }
   }, [petData, token]);
 
-  // Fetch ALL play products — 3 parallel pages for faster load
+  // Fetch ALL play products on page load — single fast query (pre-fetch before user clicks)
   useEffect(() => {
     if (!petData) return;
     const petBreed = (petData?.breed || "indie").toLowerCase().trim();
     setApiLoading(true);
 
-    Promise.all([
-      fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=100&page=1`).then(r=>r.ok?r.json():null).catch(()=>null),
-      fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=100&page=2`).then(r=>r.ok?r.json():null).catch(()=>null),
-      fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=100&page=3`).then(r=>r.ok?r.json():null).catch(()=>null),
-    ]).then(async ([d1, d2, d3]) => {
-        const all = [
-          ...(d1?.products||[]),
-          ...(d2?.products||[]),
-          ...(d3?.products||[]),
-        ];
-        if (!all.length) { setApiLoading(false); return; }
+    // Single fetch — faster than 3 parallel pages (less HTTP overhead)
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=250`)
+      .then(r => r.ok ? r.json() : null)
+      .then(async data => {
+        if (!data?.products?.length) { setApiLoading(false); return; }
         const DIM_IDS = ["outings", "playdates", "walking", "fitness", "swimming", "soul"];
         const grouped = {};
 
-        all.forEach(p => {
-          const productBreeds = (p.breed_tags || []).map(b => b.toLowerCase().trim());
-          const isAllBreeds = productBreeds.includes('all_breeds') || productBreeds.includes('all');
-          if (productBreeds.length > 0 && !isAllBreeds && !productBreeds.includes(petBreed)) return;
+        data.products.forEach(p => {
+          const bt  = (p.breed_tags||[]).map(b=>b.toLowerCase().trim());
+          const btr = (p.breed_targets||[]).map(b=>b.toLowerCase().trim());
+          const isAllBreeds = bt.includes('all_breeds') || bt.includes('all');
+          // Breed-filter: skip if breed-specific AND not this pet's breed
+          if (!isAllBreeds && (bt.length > 0 || btr.length > 0)) {
+            const breedMatch = btr.length > 0
+              ? btr.some(b => petBreed.includes(b) || b.includes(petBreed))
+              : bt.includes(petBreed);
+            if (!breedMatch) return;
+          }
 
           const cat = (p.category || "").toLowerCase().trim();
           const sub = (p.sub_category || "").toLowerCase().trim();
@@ -1296,21 +1297,6 @@ const PlaySoulPage = () => {
           if (!grouped[dimId][subKey]) grouped[dimId][subKey] = [];
           grouped[dimId][subKey].push(p);
         });
-
-        // Also fetch breed-specific soul products
-        try {
-          const breedRes = await fetch(`${API_URL}/api/breed-catalogue/products?pillar=play&breed=${encodeURIComponent(petData.breed)}&limit=30`);
-          if (breedRes.ok) {
-            const breedData = await breedRes.json();
-            (breedData.products || []).forEach(p => {
-              if (!grouped["soul"]) grouped["soul"] = {};
-              if (!grouped["soul"]["soul"]) grouped["soul"]["soul"] = [];
-              if (!grouped["soul"]["soul"].find(x => x.name === p.name)) {
-                grouped["soul"]["soul"].push({ ...p, sub_category: "soul", pillar: "play" });
-              }
-            });
-          }
-        } catch (e) { /* non-critical */ }
 
         setApiProducts(grouped);
         setApiLoading(false);
