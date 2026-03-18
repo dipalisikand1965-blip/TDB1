@@ -200,7 +200,7 @@ All features tested and verified (Test Report: `/app/test_reports/iteration_23.j
 | System | Username | Password |
 |--------|----------|----------|
 | Admin Panel | aditya | lola4304 |
-| Preview URL | https://soul-made-products.preview.emergentagent.com |
+| Preview URL | https://soul-page-sync.preview.emergentagent.com |
 
 ---
 

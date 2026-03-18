@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://soul-made-products.preview.emergentagent.com/mira-demo**
+**https://soul-page-sync.preview.emergentagent.com/mira-demo**
 
 ---
 

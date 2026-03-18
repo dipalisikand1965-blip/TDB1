@@ -5,7 +5,7 @@ Update Dine products with generated images via API
 import requests
 import json
 
-API_URL = "https://soul-made-products.preview.emergentagent.com"
+API_URL = "https://soul-page-sync.preview.emergentagent.com"
 AUTH = ("aditya", "lola4304")
 
 # Generated images
