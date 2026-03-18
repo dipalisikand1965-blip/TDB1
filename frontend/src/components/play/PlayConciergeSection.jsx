@@ -22,14 +22,15 @@ const FALLBACK_SERVICES = [
   { name:"Soul Play Session",    icon:"✨", desc:"Professional photo session capturing your dog's personality.", price:2499 },
 ];
 
-export default function PlayConciergeSection({ pet }) {
-  const [services, setServices] = useState([]);
-  const [loading,  setLoading]  = useState(true);
+export default function PlayConciergeSection({ pet, prefetchedServices }) {
+  const [services, setServices] = useState(prefetchedServices || []);
+  const [loading,  setLoading]  = useState(!prefetchedServices?.length);
   const [modalSvc, setModalSvc] = useState(null);
   const { token } = useAuth();
   const petName = pet?.name || "your dog";
 
   useEffect(() => {
+    if (prefetchedServices?.length) { setServices(prefetchedServices); setLoading(false); return; }
     fetch(`${API_URL}/api/service-box/services?pillar=play`, {
       headers: token ? { Authorization:`Bearer ${token}` } : {},
     })
@@ -39,7 +40,7 @@ export default function PlayConciergeSection({ pet }) {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [token]);
+  }, [prefetchedServices, token]);
 
   const displayServices = services.length > 0 ? services : FALLBACK_SERVICES;
 
