@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://play-breed-tips.preview.emergentagent.com
+https://play-ui-sync.preview.emergentagent.com
 ```
 
 ---

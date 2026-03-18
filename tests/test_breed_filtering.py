@@ -6,7 +6,7 @@ import asyncio
 import json
 from playwright.async_api import async_playwright
 
-BASE_URL = "https://play-breed-tips.preview.emergentagent.com"
+BASE_URL = "https://play-ui-sync.preview.emergentagent.com"
 
 async def run_tests():
     async with async_playwright() as p:

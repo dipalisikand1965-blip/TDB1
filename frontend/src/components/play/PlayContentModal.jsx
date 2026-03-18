@@ -39,6 +39,7 @@ const CATEGORY_CONFIG = {
   'fitness':     { emoji:'💪', label:'Fitness & Training', apiCategory:'fitness'   },
   'swimming':    { emoji:'🏊', label:'Swimming',           apiCategory:'swimming'  },
   'soul':        { emoji:'✨', label:'Soul Play',          apiCategory:null        },
+  'bundles':     { emoji:'🎁', label:'Play Bundles',       apiCategory:null        },
   'miras-picks': { emoji:'💫', label:"Mira's Picks",       apiCategory:null        },
 };
 
@@ -101,6 +102,58 @@ const generatePlayImagines = (pet, existingProducts) => {
   return imagines.slice(0, 4);
 };
 
+// ── Bundle Card component ─────────────────────────────────────────────────────
+const BundleCard = ({ bundle, petName }) => {
+  const [sent, setSent] = useState(false);
+  const img = bundle.image_url || bundle.watercolor_image || bundle.cloudinary_image_url;
+  const savings = bundle.original_price && bundle.bundle_price
+    ? Math.round(((bundle.original_price - bundle.bundle_price) / bundle.original_price) * 100)
+    : 0;
+  return (
+    <div style={{ background:'#fff', borderRadius:16, overflow:'hidden', border:'1.5px solid rgba(231,111,81,0.15)', boxShadow:'0 2px 12px rgba(123,45,0,0.07)' }}>
+      <div style={{ height:160, background:'linear-gradient(135deg,#FFF8F0,#FFE8D4)', position:'relative', overflow:'hidden' }}>
+        {img
+          ? <img src={img} alt={bundle.name} style={{ width:'100%', height:'100%', objectFit:'cover' }} onError={e=>{e.target.style.display='none';}} />
+          : <div style={{ width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:48 }}>{bundle.icon || '🎁'}</div>
+        }
+        {savings > 0 && (
+          <div style={{ position:'absolute', top:10, right:10, background:'#C44400', color:'#fff', borderRadius:20, padding:'3px 10px', fontSize:11, fontWeight:800 }}>
+            Save {savings}%
+          </div>
+        )}
+        {bundle.popular && (
+          <div style={{ position:'absolute', top:10, left:10, background:'linear-gradient(135deg,#E76F51,#C44400)', color:'#fff', borderRadius:20, padding:'3px 10px', fontSize:10, fontWeight:700 }}>
+            ★ Popular
+          </div>
+        )}
+      </div>
+      <div style={{ padding:'14px 16px 16px' }}>
+        <h4 style={{ fontSize:14, fontWeight:800, color:'#7B2D00', marginBottom:6, lineHeight:1.3 }}>{bundle.name}</h4>
+        {bundle.description && (
+          <p style={{ fontSize:12, color:'#666', lineHeight:1.5, marginBottom:10, display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>{bundle.description}</p>
+        )}
+        {bundle.items && (
+          <p style={{ fontSize:11, color:'#888', marginBottom:10, fontStyle:'italic' }}>Includes: {typeof bundle.items === 'string' ? bundle.items.slice(0,80) : bundle.items.slice?.(0,3).join(', ')}</p>
+        )}
+        <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
+          {bundle.bundle_price && (
+            <span style={{ fontSize:16, fontWeight:900, color:'#7B2D00' }}>₹{Number(bundle.bundle_price).toLocaleString('en-IN')}</span>
+          )}
+          {bundle.original_price && bundle.bundle_price && Number(bundle.original_price) > Number(bundle.bundle_price) && (
+            <span style={{ fontSize:12, color:'#aaa', textDecoration:'line-through' }}>₹{Number(bundle.original_price).toLocaleString('en-IN')}</span>
+          )}
+        </div>
+        {sent
+          ? <div style={{ textAlign:'center', fontSize:12, fontWeight:700, color:'#C44400', padding:'8px 0' }}>✓ Request sent to Concierge!</div>
+          : <button onClick={() => setSent(true)} style={{ width:'100%', background:'linear-gradient(135deg,#E76F51,#C44400)', color:'#fff', border:'none', borderRadius:10, padding:'9px 0', fontSize:12, fontWeight:700, cursor:'pointer' }}>
+              Get {petName ? `for ${petName}` : 'this bundle'} →
+            </button>
+        }
+      </div>
+    </div>
+  );
+};
+
 // ── Main Modal ────────────────────────────────────────────────────────────────
 const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
   const [products, setProducts] = useState([]);
@@ -142,14 +195,23 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
           fetch(`${apiUrl}/api/admin/pillar-products?pillar=play&category=soul&limit=30`).then(r=>r.ok?r.json():{products:[]}).catch(()=>({products:[]})),
         ]);
         const all = [...(r1.products||[]), ...(r2.products||[]), ...(r3.products||[])];
-        // Show ONLY this breed's products (check breed_targets first, then breed_tags, then name)
+        // Show ONLY this breed's products — breed_targets takes priority over breed_tags
         const breedFiltered = all.filter(p => {
           const bt  = (p.breed_tags||[]).map(b=>b.toLowerCase());
           const btr = (p.breed_targets||[]).map(b=>b.toLowerCase());
           const nm  = (p.name||'').toLowerCase();
           if (!petBreed) return true;
-          if (bt.includes('all_breeds') || bt.includes('all')) return true;
-          if (btr.length > 0) return btr.some(b => petBreed.includes(b) || b.includes(petBreed));
+          // breed_targets with specific breeds takes highest priority
+          const hasSpecificTarget = btr.length > 0 && !btr.includes('all_breeds') && !btr.includes('all');
+          if (hasSpecificTarget) return btr.some(b => petBreed.includes(b) || b.includes(petBreed));
+          // Then breed_tags
+          if (bt.includes('all_breeds') || bt.includes('all') || bt.length === 0) {
+            // Generic product — show only if name also doesn't contain a different breed keyword
+            // or if it's a general soul product (not a breed-specific bandana/card)
+            const isBreedSpecificByName = /bandana|playdate card|play date card/i.test(nm);
+            if (isBreedSpecificByName) return nm.includes(petBreed);
+            return true;
+          }
           return bt.includes(petBreed) || nm.includes(petBreed);
         });
         // Deduplicate by name
@@ -215,6 +277,28 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
         if (petId && preScored.length===0) {
           fetch(`${apiUrl}/api/mira/score-for-pet`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({pet_id:petId, pillar:'play'}) }).catch(()=>{});
         }
+        return;
+      }
+
+      // ── Bundles — fetch from enjoy + fit pillars in bundles collection ─────
+      if (category === 'bundles') {
+        const [enjoyRes, fitRes] = await Promise.all([
+          fetch(`${apiUrl}/api/bundles?pillar=enjoy&active_only=true&limit=20`).then(r=>r.ok?r.json():{bundles:[]}).catch(()=>({bundles:[]})),
+          fetch(`${apiUrl}/api/bundles?pillar=fit&active_only=true&limit=20`).then(r=>r.ok?r.json():{bundles:[]}).catch(()=>({bundles:[]})),
+        ]);
+        const allBundles = [...(enjoyRes.bundles||[]), ...(fitRes.bundles||[])];
+        // Convert bundle schema to product-compatible schema for rendering
+        const normalized = allBundles.map(b => ({
+          ...b,
+          entity_type: 'bundle',
+          image_url: b.image_url || b.watercolor_image || b.cloudinary_image_url || null,
+          price: b.bundle_price || b.price,
+          original_price: b.original_price,
+          description: b.description,
+          mira_hint: b.popular ? 'Popular bundle — great value' : null,
+        }));
+        setProducts(normalized);
+        setImagines([]);
         return;
       }
 
@@ -348,8 +432,15 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
               </div>
             )}
 
-            {/* Products */}
+            {/* Products / Bundles */}
             {filteredProducts.length > 0 ? (
+              category === 'bundles' ? (
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(240px,100%),1fr))', gap:20 }}>
+                  {filteredProducts.map((b,i) => (
+                    <BundleCard key={b.id||b._id||i} bundle={b} petName={petName} />
+                  ))}
+                </div>
+              ) : (
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(220px,100%),1fr))', gap:16 }}>
                 {filteredProducts.map((p,i) => (
                   <div key={p.id||p._id||i} style={{ position:'relative' }}>
@@ -362,6 +453,7 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
                   </div>
                 ))}
               </div>
+              )
             ) : (
               !loading && imagines.length===0 && (
                 <div style={{ textAlign:'center', padding:'48px 0' }}>
