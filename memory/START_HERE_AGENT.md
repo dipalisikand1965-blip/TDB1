@@ -179,7 +179,7 @@ curl "$API_URL/api/pet-soul/profile/pet-99a708f1722a/quick-questions"
 
 ## 🚀 PREVIEW URL
 ```
-https://soul-page-sync.preview.emergentagent.com
+https://play-breed-tips.preview.emergentagent.com
 ```
 
 Key pages:
