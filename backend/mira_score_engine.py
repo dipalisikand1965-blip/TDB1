@@ -224,6 +224,21 @@ async def _run_full_scoring(pet_id: str, pillar: Optional[str], entity_types: Op
         q = {"pillar": pillar} if pillar else {}
         cursor = _db.products_master.find(q, {"_id": 0})
         products = await cursor.to_list(length=2000)
+
+        # Breed pre-filter — only score breed-relevant products (huge speed gain)
+        pet_breed = (pet.get("breed") or "").lower().strip()
+        def _breed_ok(p):
+            targets = [b.lower() for b in (p.get("breed_targets") or [])]
+            if not targets:
+                return True  # universal product
+            if "all" in targets or "all_breeds" in targets:
+                return True
+            return any(pet_breed in t or t in pet_breed for t in targets)
+
+        before = len(products)
+        products = [p for p in products if _breed_ok(p)]
+        print(f"[MiraScoreEngine] Breed pre-filter ({pet_breed}): {before} → {len(products)} products")
+
         for p in products:
             p["entity_type"] = "product"
         all_items.extend(products)
