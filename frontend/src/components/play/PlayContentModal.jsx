@@ -142,12 +142,15 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
           fetch(`${apiUrl}/api/admin/pillar-products?pillar=play&category=soul&limit=30`).then(r=>r.ok?r.json():{products:[]}).catch(()=>({products:[]})),
         ]);
         const all = [...(r1.products||[]), ...(r2.products||[]), ...(r3.products||[])];
-        // Show ONLY this breed's products (exact breed match in name or breed_tags)
+        // Show ONLY this breed's products (check breed_targets first, then breed_tags, then name)
         const breedFiltered = all.filter(p => {
-          const bt = (p.breed_tags||[]).map(b=>b.toLowerCase());
-          const nm = (p.name||'').toLowerCase();
+          const bt  = (p.breed_tags||[]).map(b=>b.toLowerCase());
+          const btr = (p.breed_targets||[]).map(b=>b.toLowerCase());
+          const nm  = (p.name||'').toLowerCase();
           if (!petBreed) return true;
-          return bt.includes('all_breeds') || bt.includes('all') || bt.includes(petBreed) || nm.includes(petBreed);
+          if (bt.includes('all_breeds') || bt.includes('all')) return true;
+          if (btr.length > 0) return btr.some(b => petBreed.includes(b) || b.includes(petBreed));
+          return bt.includes(petBreed) || nm.includes(petBreed);
         });
         // Deduplicate by name
         const seen = new Map();
@@ -180,12 +183,15 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
         results.forEach(d => (d.products||[]).forEach(p => { const k=(p.name||p.id||'').toLowerCase(); if(!allByName.has(k)) allByName.set(k,p); }));
         const allRaw = [...allByName.values()];
 
-        // Breed-filter soul items, keep all_breeds for rest
+        // Breed-filter soul items, keep all_breeds for rest; check breed_targets first
         const filtered = allRaw.filter(p => {
-          const bt = (p.breed_tags||[]).map(b=>b.toLowerCase());
-          const isAll = bt.includes('all_breeds') || bt.includes('all') || bt.length===0;
+          const bt  = (p.breed_tags||[]).map(b=>b.toLowerCase());
+          const btr = (p.breed_targets||[]).map(b=>b.toLowerCase());
+          const isAll = bt.includes('all_breeds') || bt.includes('all') || (bt.length===0 && btr.length===0);
           if (isAll) return true;
-          return petBreed ? bt.includes(petBreed) : true;
+          if (!petBreed) return true;
+          if (btr.length > 0) return btr.some(b => petBreed.includes(b) || b.includes(petBreed));
+          return bt.includes(petBreed);
         });
 
         // Allergen filter
