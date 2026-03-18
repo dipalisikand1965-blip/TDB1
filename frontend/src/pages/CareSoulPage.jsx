@@ -107,7 +107,7 @@ function normalizePetForFlow(rawPet) {
     age: rawPet.age || null,
     avatar: rawPet.avatar || "🐕",
     avatarUrl: rawPet.photo_url || rawPet.avatar_url || null,
-    soulPercent: rawPet.soul_score || rawPet.overall_score || rawPet.profile_completion || 70,
+    soulPercent: rawPet.overall_score || rawPet.soul_score || rawPet.profile_completion || 70,
     coatType: getCoatType(rawPet),
     groomingComfort: getGroomingComfort(rawPet) || "Comfortable",
     dentalHealth: getDentalHealth(rawPet) || "Good",
@@ -2089,7 +2089,7 @@ export default function CareSoulPage() {
   useEffect(() => {
     if (currentPet) {
       setPetData(currentPet);
-      setSoulScore(currentPet.soul_score || currentPet.overall_score || 0);
+      setSoulScore(currentPet.overall_score || currentPet.soul_score || 0);
     } else if (contextPets !== undefined) {
       setPetData(null);
     }
