@@ -25,6 +25,7 @@ import { PillarHelpBuckets, PillarGuidedPaths } from "../components/PillarGoldSe
 import { API_URL } from "../utils/api";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
+import SoulMadeCollection from "../components/SoulMadeCollection";
 
 // ─── Dimension visual config — dynamic per pet ───────────────────────────────
 function getDineDims(pet) {
@@ -1107,7 +1108,12 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
       </div>
 
       {dimTab === "personalised" ? (
-        <PersonalisedBreedSection pet={pet} pillar="dine" />
+        <div>
+          <PersonalisedBreedSection pet={pet} pillar="dine" />
+          <div style={{ borderTop:"1px solid #f0f0f0", marginTop:16, paddingTop:16 }}>
+            <SoulMadeCollection pillar="dine" maxItems={8} showTitle={true} />
+          </div>
+        </div>
       ) : (
         <>
           {/* Dynamic sub-category tabs (from API, never hardcoded) */}

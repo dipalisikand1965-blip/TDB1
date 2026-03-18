@@ -10,7 +10,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pet-breed-catalog.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://soul-made-products.preview.emergentagent.com')
 TEST_EMAIL = "dipali@clubconcierge.in"
 TEST_PASSWORD = "test123"
 

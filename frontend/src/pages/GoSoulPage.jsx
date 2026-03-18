@@ -40,6 +40,7 @@ import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
+import SoulMadeCollection from "../components/SoulMadeCollection";
 
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Deep Teal + Travel Gold
@@ -937,7 +938,12 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
       </div>
 
       {dimTab === "personalised" ? (
-        <PersonalisedBreedSection pet={pet} pillar="go" />
+        <div>
+          <PersonalisedBreedSection pet={pet} pillar="go" />
+          <div style={{ borderTop:"1px solid #f0f0f0", marginTop:16, paddingTop:16 }}>
+            <SoulMadeCollection pillar="travel" maxItems={8} showTitle={true} />
+          </div>
+        </div>
       ) : (
         <>
           {tabList.length > 1 && (
