@@ -32,6 +32,7 @@ import CareConciergeModal from "../components/care/CareConciergeModal";
 import CareNearMe from "../components/care/CareNearMe";
 import { API_URL } from "../utils/api";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
+import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Sage Green
@@ -1065,6 +1066,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const filteredSubCats = [...new Set(intelligent.map(p => p.sub_category).filter(Boolean))];
   const tabList = ["All", ...filteredSubCats];
   const [activeTab, setActiveTab] = useState("All");
+  const [dimTab, setDimTab] = useState("products");
 
   const products = activeTab === "All"
     ? intelligent
@@ -1116,46 +1118,61 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
         </div>
       </div>
 
-      {/* Sub-category tabs — only tabs with products after filtering */}
-      {tabList.length > 1 && (
-        <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
-          {tabList.map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} style={{ padding:"5px 12px", borderRadius:20, border:`1px solid ${activeTab===tab?G.sage:G.border}`, background:activeTab===tab?G.sage:"#FFF", fontSize:11, fontWeight:600, color:activeTab===tab?"#fff":G.mutedText, cursor:"pointer" }}>
-              {tab}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* Products / Personalised tab toggle */}
+      <div style={{ display:"flex", borderBottom:`1px solid ${G.borderLight}`, marginBottom:14 }}>
+        {[["products","🎯 All Products"],["personalised","✦ Personalised"]].map(([tid,label]) => (
+          <button key={tid} onClick={() => setDimTab(tid)} data-testid={`care-dim-tab-${tid}`}
+            style={{ flex:1, padding:"9px 0", background:"none", border:"none", borderBottom:dimTab===tid?`2.5px solid ${G.sage}`:"2.5px solid transparent", color:dimTab===tid?G.sage:"#888", fontSize:12, fontWeight:dimTab===tid?700:400, cursor:"pointer" }}>
+            {label}
+          </button>
+        ))}
+      </div>
 
-      {/* Mira stats */}
-      {allRaw.length > 0 && (
-        <div style={{ display:"flex", gap:12, flexWrap:"wrap", marginBottom:14, fontSize:11, color:"#888" }}>
-          <span style={{ color:"#27AE60", fontWeight:700 }}>✓ {intelligent.length} for {petName}</span>
-          {allRaw.length - intelligent.length > 0 && (
-            <span style={{ color:"#E87722" }}>✗ {allRaw.length - intelligent.length} filtered</span>
-          )}
-        </div>
-      )}
-
-      {/* Product grid — lazy scroll, no count labels */}
-      {products.length === 0 ? (
-        <div style={{ textAlign:"center", padding:"24px 0", color:"#888", fontSize:13 }}>
-          {allRaw.length === 0
-            ? `Loading ${dim.label} products for ${petName}…`
-            : `All ${dim.label} products were filtered for ${petName}'s allergens.`}
-        </div>
+      {dimTab === "personalised" ? (
+        <PersonalisedBreedSection pet={pet} pillar="care" />
       ) : (
         <>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(min(200px, 100%), 1fr))", gap:12 }}>
-            {visibleProducts.map(p => (
-              <div key={p.id} style={{ position:"relative" }} data-testid={`care-dim-product-${p.id}`}>
-                <SharedProductCard product={p} pillar="care" selectedPet={pet} miraContext={miraCtx} />
+          {/* Sub-category tabs — only tabs with products after filtering */}
+          {tabList.length > 1 && (
+            <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
+              {tabList.map(tab => (
+                <button key={tab} onClick={() => setActiveTab(tab)} style={{ padding:"5px 12px", borderRadius:20, border:`1px solid ${activeTab===tab?G.sage:G.border}`, background:activeTab===tab?G.sage:"#FFF", fontSize:11, fontWeight:600, color:activeTab===tab?"#fff":G.mutedText, cursor:"pointer" }}>
+                  {tab}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Mira stats */}
+          {allRaw.length > 0 && (
+            <div style={{ display:"flex", gap:12, flexWrap:"wrap", marginBottom:14, fontSize:11, color:"#888" }}>
+              <span style={{ color:"#27AE60", fontWeight:700 }}>✓ {intelligent.length} for {petName}</span>
+              {allRaw.length - intelligent.length > 0 && (
+                <span style={{ color:"#E87722" }}>✗ {allRaw.length - intelligent.length} filtered</span>
+              )}
+            </div>
+          )}
+
+          {/* Product grid — lazy scroll */}
+          {products.length === 0 ? (
+            <div style={{ textAlign:"center", padding:"24px 0", color:"#888", fontSize:13 }}>
+              {allRaw.length === 0
+                ? `Loading ${dim.label} products for ${petName}…`
+                : `All ${dim.label} products were filtered for ${petName}'s allergens.`}
+            </div>
+          ) : (
+            <>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(min(200px, 100%), 1fr))", gap:12 }}>
+                {visibleProducts.map(p => (
+                  <div key={p.id} style={{ position:"relative" }} data-testid={`care-dim-product-${p.id}`}>
+                    <SharedProductCard product={p} pillar="care" selectedPet={pet} miraContext={miraCtx} />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          {/* Lazy sentinel — invisible div triggers load-more on scroll */}
-          {visibleCount < products.length && (
-            <div ref={loadMoreRef} style={{ height:1, marginTop:8 }} />
+              {visibleCount < products.length && (
+                <div ref={loadMoreRef} style={{ height:1, marginTop:8 }} />
+              )}
+            </>
           )}
         </>
       )}

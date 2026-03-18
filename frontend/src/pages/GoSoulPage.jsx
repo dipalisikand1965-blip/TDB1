@@ -38,6 +38,7 @@ import GoConciergeSection from "../components/go/GoConciergeSection";
 import PetFriendlyStays from "../components/go/PetFriendlyStays";
 import { API_URL } from "../utils/api";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
+import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Deep Teal + Travel Gold
@@ -894,6 +895,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const intelligent = applyMiraIntelligence(allRaw, allergies, size, condition, pet);
   const tabList   = ["All", ...Object.keys(rawByTab)];
   const [activeTab, setActiveTab] = useState("All");
+  const [dimTab, setDimTab] = useState("products");
   const miraCtx   = { includeText: "Add to Cart" };
 
   const products = activeTab === "All"
@@ -923,38 +925,54 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
         </div>
       </div>
 
-      {tabList.length > 1 && (
-        <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
-          {tabList.map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)}
-              style={{ padding:"5px 12px", borderRadius:20, border:`1px solid ${activeTab===tab?G.teal:G.light}`, background:activeTab===tab?G.teal:G.cream, fontSize:11, fontWeight:600, color:activeTab===tab?"#fff":G.teal, cursor:"pointer" }}>
-              {tab}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* Products / Personalised tab toggle */}
+      <div style={{ display:"flex", borderBottom:`1px solid ${G.light}40`, marginBottom:14 }}>
+        {[["products","🎯 All Products"],["personalised","✦ Personalised"]].map(([tid,label]) => (
+          <button key={tid} onClick={() => setDimTab(tid)} data-testid={`go-dim-tab-${tid}`}
+            style={{ flex:1, padding:"9px 0", background:"none", border:"none", borderBottom:dimTab===tid?`2.5px solid ${G.teal}`:"2.5px solid transparent", color:dimTab===tid?G.teal:"#888", fontSize:12, fontWeight:dimTab===tid?700:400, cursor:"pointer" }}>
+            {label}
+          </button>
+        ))}
+      </div>
 
-      {allRaw.length > 0 && (
-        <div style={{ display:"flex", gap:12, flexWrap:"wrap", marginBottom:14, fontSize:11, color:"#888" }}>
-          <span style={{ color:"#27AE60", fontWeight:700 }}>✓ {intelligent.length} safe for {petName}</span>
-          {allRaw.length-intelligent.length>0 && <span style={{ color:"#AD1457" }}>✗ {allRaw.length-intelligent.length} filtered</span>}
-          {intelligent.filter(p=>p._sizeMatch).length>0 && <span style={{ color:G.deepMid, fontWeight:700 }}>🎒 {intelligent.filter(p=>p._sizeMatch).length} size-matched</span>}
-        </div>
-      )}
-
-      {products.length === 0 ? (
-        <div style={{ textAlign:"center", padding:"24px 0", color:"#888", fontSize:13 }}>
-          {allRaw.length===0 ? `Loading ${dim.label} products for ${petName}…` : `No products available for this filter.`}
-        </div>
+      {dimTab === "personalised" ? (
+        <PersonalisedBreedSection pet={pet} pillar="go" />
       ) : (
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))", gap:12 }}>
-          {products.map(p => (
-            <div key={p.id} style={{ position:"relative" }} data-testid={`go-product-${p.id}`}>
-              {p._sizeMatch && <div style={{ position:"absolute", top:-6, right:-6, zIndex:2, background:G.teal, borderRadius:"50%", width:18, height:18, display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#fff" }}>🎒</div>}
-              <SharedProductCard product={p} pillar="go" selectedPet={pet} miraContext={miraCtx} />
+        <>
+          {tabList.length > 1 && (
+            <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
+              {tabList.map(tab => (
+                <button key={tab} onClick={() => setActiveTab(tab)}
+                  style={{ padding:"5px 12px", borderRadius:20, border:`1px solid ${activeTab===tab?G.teal:G.light}`, background:activeTab===tab?G.teal:G.cream, fontSize:11, fontWeight:600, color:activeTab===tab?"#fff":G.teal, cursor:"pointer" }}>
+                  {tab}
+                </button>
+              ))}
             </div>
-          ))}
-        </div>
+          )}
+
+          {allRaw.length > 0 && (
+            <div style={{ display:"flex", gap:12, flexWrap:"wrap", marginBottom:14, fontSize:11, color:"#888" }}>
+              <span style={{ color:"#27AE60", fontWeight:700 }}>✓ {intelligent.length} safe for {petName}</span>
+              {allRaw.length-intelligent.length>0 && <span style={{ color:"#AD1457" }}>✗ {allRaw.length-intelligent.length} filtered</span>}
+              {intelligent.filter(p=>p._sizeMatch).length>0 && <span style={{ color:G.deepMid, fontWeight:700 }}>🎒 {intelligent.filter(p=>p._sizeMatch).length} size-matched</span>}
+            </div>
+          )}
+
+          {products.length === 0 ? (
+            <div style={{ textAlign:"center", padding:"24px 0", color:"#888", fontSize:13 }}>
+              {allRaw.length===0 ? `Loading ${dim.label} products for ${petName}…` : `No products available for this filter.`}
+            </div>
+          ) : (
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))", gap:12 }}>
+              {products.map(p => (
+                <div key={p.id} style={{ position:"relative" }} data-testid={`go-product-${p.id}`}>
+                  {p._sizeMatch && <div style={{ position:"absolute", top:-6, right:-6, zIndex:2, background:G.teal, borderRadius:"50%", width:18, height:18, display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#fff" }}>🎒</div>}
+                  <SharedProductCard product={p} pillar="go" selectedPet={pet} miraContext={miraCtx} />
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

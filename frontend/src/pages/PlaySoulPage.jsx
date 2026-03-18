@@ -1245,7 +1245,7 @@ const PlaySoulPage = () => {
 
       <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>
 
-        <PlayCategoryStrip pet={petData} />
+        <PlayCategoryStrip pet={petData} openDim={openDim} onSelect={setOpenDim} />
 
         <PlayTabBar active={activeTab} onChange={setActiveTab} />
 
