@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 2026 (Session 80 — Play page: all 6 user-reported issues fixed)
+## Last Updated: Mar 2026 (Session 81 — 4 more Play page issues fixed: breed filter in Mira picks, soul question chips, soul score consistency across all pillars, bundle modal scrollable)
 
 ---
 
