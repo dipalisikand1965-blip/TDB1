@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Doggy Company® — Go & Play Pillars Complete Documentation</title>
+<style>
+  :root {
+    --go-teal: #1ABC9C;
+    --go-deep: #0D3349;
+    --play-green: #2D6A4F;
+    --play-mid: #52B788;
+    --text: #1a1a2e;
+    --muted: #555;
+    --bg: #fafaf8;
+    --card: #fff;
+    --border: rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Georgia', serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  .header { background: linear-gradient(135deg, var(--go-deep) 0%, #081a26 50%, var(--play-green) 100%); color: #fff; padding: 60px 40px; text-align: center; }
+  .header h1 { font-size: 2.8rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px; }
+  .header p { font-size: 1.1rem; opacity: 0.75; max-width: 600px; margin: 0 auto; }
+  .header .badge { display: inline-block; margin-top: 16px; padding: 6px 18px; background: rgba(26,188,156,0.25); border: 1px solid rgba(26,188,156,0.5); border-radius: 20px; font-size: 0.85rem; font-family: monospace; }
+  
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+  .toc { background: var(--card); border-radius: 16px; padding: 28px 32px; margin-bottom: 40px; box-shadow: 0 2px 12px var(--border); }
+  .toc h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(--go-teal); }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 6px 0; font-size: 0.95rem; }
+  .toc a { color: var(--go-teal); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  
+  h2.section { font-size: 1.8rem; font-weight: 800; margin: 50px 0 20px; padding-bottom: 12px; border-bottom: 3px solid; }
+  h2.go { border-color: var(--go-teal); color: var(--go-deep); }
+  h2.play { border-color: var(--play-mid); color: var(--play-green); }
+  h2.shared { border-color: #C9973A; color: #6B4C1E; }
+  
+  h3 { font-size: 1.2rem; font-weight: 700; margin: 28px 0 12px; color: var(--text); }
+  p { margin: 10px 0; color: var(--muted); font-size: 0.97rem; }
+  
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin: 20px 0; }
+  .card { background: var(--card); border-radius: 12px; padding: 20px; border: 1px solid var(--border); box-shadow: 0 2px 8px var(--border); }
+  .card .id { font-family: monospace; font-size: 0.75rem; color: var(--go-teal); font-weight: 700; margin-bottom: 6px; }
+  .card .name { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .card .desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+  .card .price { margin-top: 10px; font-weight: 700; color: var(--play-green); font-size: 0.9rem; }
+  .card .cat { display: inline-block; margin-top: 8px; padding: 2px 8px; background: rgba(26,188,156,0.1); color: var(--go-teal); border-radius: 10px; font-size: 0.72rem; font-weight: 700; }
+  
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.88rem; }
+  th { background: var(--go-deep); color: #fff; padding: 10px 14px; text-align: left; font-size: 0.82rem; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: rgba(0,0,0,0.02); }
+  td.mono { font-family: monospace; color: var(--go-teal); font-size: 0.82rem; }
+  
+  .api-block { background: #0D3349; color: #E0F7FA; border-radius: 10px; padding: 18px 22px; font-family: monospace; font-size: 0.82rem; margin: 14px 0; line-height: 1.8; }
+  .api-method { color: #4CAF50; font-weight: 700; }
+  .api-path { color: #80DEEA; }
+  
+  .status-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
+  .status-done { background: #E8F5E9; color: #1B5E20; }
+  .status-pending { background: #FFF3E0; color: #E65100; }
+  .status-planned { background: #E3F2FD; color: #1565C0; }
+  
+  .pillar-hero { border-radius: 16px; padding: 28px 32px; margin: 24px 0; color: #fff; }
+  .go-hero { background: linear-gradient(135deg, var(--go-deep), #0A4060); }
+  .play-hero { background: linear-gradient(135deg, var(--play-green), #1B4332); }
+  
+  .feature-tag { display: inline-block; padding: 3px 9px; background: rgba(45,106,79,0.12); color: var(--play-green); border-radius: 8px; font-size: 0.75rem; font-weight: 700; margin: 2px; }
+  
+  .note { background: #FFF8E1; border-left: 4px solid #FFC107; padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 0.9rem; color: #5D4037; }
+  
+  .footer { text-align: center; padding: 40px; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 60px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>The Doggy Company®</h1>
+  <p>GO & PLAY Pillar — Complete Product, Service & Architecture Documentation</p>
+  <div class="badge">Updated: March 2026 · Session 70</div>
+</div>
+
+<div class="container">
+
+  <!-- TABLE OF CONTENTS -->
+  <div class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+      <li><a href="#go-overview">GO Pillar — Overview & Architecture</a></li>
+      <li><a href="#go-products">GO Products (52 total)</a></li>
+      <li><a href="#go-services">GO Services (8 canonical)</a></li>
+      <li><a href="#go-components">GO Frontend Components</a></li>
+      <li><a href="#go-api">GO API Endpoints</a></li>
+      <li><a href="#play-overview">PLAY Pillar — Overview & Architecture</a></li>
+      <li><a href="#play-products">PLAY Products (25 new + 66 soul)</a></li>
+      <li><a href="#play-services">PLAY Services (8 canonical)</a></li>
+      <li><a href="#play-components">PLAY Frontend Components</a></li>
+      <li><a href="#play-api">PLAY API Endpoints</a></li>
+      <li><a href="#shared">Shared Infrastructure</a></li>
+      <li><a href="#roadmap">Roadmap & Next Steps</a></li>
+    </ol>
+  </div>
+
+  <!-- ═══════════════════════════════════ GO PILLAR ═══════════════════════════════════ -->
+  <h2 class="section go" id="go-overview">GO Pillar — Overview & Architecture</h2>
+
+  <div class="pillar-hero go-hero">
+    <h3 style="color:#1ABC9C; font-size:1.4rem; margin-bottom:10px;">✈️ Go — Pet Travel & Stay</h3>
+    <p style="color:rgba(255,255,255,0.8); font-size:0.95rem;">The Go pillar covers everything from flight coordination and road trips to boarding, daycare, and pet sitting. It integrates real-time hotel search (Google Places API) and Mira AI scoring.</p>
+    <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+      <span style="background:rgba(26,188,156,0.3); padding:4px 12px; border-radius:20px; font-size:0.8rem; color:#80DEEA;">Route: /go</span>
+      <span style="background:rgba(26,188,156,0.3); padding:4px 12px; border-radius:20px; font-size:0.8rem; color:#80DEEA;">52 Products</span>
+      <span style="background:rgba(26,188,156,0.3); padding:4px 12px; border-radius:20px; font-size:0.8rem; color:#80DEEA;">8 Services</span>
+      <span style="background:rgba(26,188,156,0.3); padding:4px 12px; border-radius:20px; font-size:0.8rem; color:#80DEEA;">Status: LIVE ✓</span>
+    </div>
+  </div>
+
+  <h3>Page Architecture — Tabs</h3>
+  <table>
+    <tr><th>Tab</th><th>Label</th><th>Key Components</th><th>Status</th></tr>
+    <tr><td>Tab 1</td><td>🌍 Go Essentials</td><td>TripProfile (with GoBreedTravelInsights), MiraPicksSection, GoCategoryStrip (8 pills), GuidedGoPaths</td><td><span class="status-badge status-done">LIVE</span></td></tr>
+    <tr><td>Tab 2</td><td>📍 Find a Stay</td><td>PetFriendlyStays (Google Places)</td><td><span class="status-badge status-done">LIVE</span></td></tr>
+    <tr><td>Tab 3</td><td>💼 Book a Service</td><td>GoConciergeSection (2 sections: Travel + Stay), GuidedGoPaths</td><td><span class="status-badge status-done">LIVE</span></td></tr>
+  </table>
+
+  <h3>Category Pills (GoCategoryStrip)</h3>
+  <table>
+    <tr><th>ID</th><th>Label</th><th>Type</th><th>Behaviour</th></tr>
+    <tr><td class="mono">soul</td><td>✨ Soul Go</td><td>Special / AI</td><td>Fetches AI-scored top go products via /api/mira/claude-picks</td></tr>
+    <tr><td class="mono">mira</td><td>🪄 Mira's Picks</td><td>Special / AI</td><td>Fetches mixed products + services via claude-picks</td></tr>
+    <tr><td class="mono">safety</td><td>🛡️ Safety</td><td>Regular</td><td>Filters products with category = safety</td></tr>
+    <tr><td class="mono">calming</td><td>😌 Calming</td><td>Regular</td><td>Filters products with category = calming</td></tr>
+    <tr><td class="mono">carriers</td><td>🎒 Carriers</td><td>Regular</td><td>Filters products with category = carrier</td></tr>
+    <tr><td class="mono">feeding</td><td>🥣 Feeding</td><td>Regular</td><td>Filters products with category = feeding</td></tr>
+    <tr><td class="mono">health</td><td>💊 Health & Docs</td><td>Regular</td><td>Filters products with category = health</td></tr>
+    <tr><td class="mono">stay</td><td>🏡 Stay & Board</td><td>Regular</td><td>Filters stay sub-category products</td></tr>
+  </table>
+
+  <h2 class="section go" id="go-products">GO Products (52 Total)</h2>
+  <p>All Go products are in <code>products_master</code> collection with <code>pillar: "go"</code>. All 52 have Cloudinary AI-generated realistic images.</p>
+
+  <h3>Travel Essentials (31 products)</h3>
+  <div class="card-grid">
+    <div class="card"><div class="id">GO-SAF-001 → GO-SAF-004</div><div class="name">Safety & Security</div><div class="desc">Crash-tested harness, GPS collar, reflective set, emergency ID tag</div><span class="cat">safety</span></div>
+    <div class="card"><div class="id">GO-CAL-001 → GO-CAL-004</div><div class="name">Calming & Comfort</div><div class="desc">Calming spray, anxiety wrap, pheromone collar, calming chews</div><span class="cat">calming</span></div>
+    <div class="card"><div class="id">GO-CAR-001 → GO-CAR-005</div><div class="name">Carriers & Crates</div><div class="desc">IATA crate, cabin carrier, car seat, boot barrier, foldable crate</div><span class="cat">carriers</span></div>
+    <div class="card"><div class="id">GO-FED-001 → GO-FED-004</div><div class="name">Feeding & Hydration</div><div class="desc">Travel bowl set, food container, hydration kit, slow feeder travel</div><span class="cat">feeding</span></div>
+    <div class="card"><div class="id">GO-HLT-001 → GO-HLT-002</div><div class="name">Health & Documents</div><div class="desc">Pet passport holder, travel first-aid kit</div><span class="cat">health</span></div>
+    <div class="card"><div class="id">GO-STY-001 → GO-STY-008</div><div class="name">Style & Accessories</div><div class="desc">Travel bandanas, waterproof collar, compact jacket, accessories</div><span class="cat">style</span></div>
+    <div class="card"><div class="id">GO-TK-001 → GO-TK-004</div><div class="name">Travel Kit Bundles</div><div class="desc">Starter kit, flight kit, road trip kit, adventure kit</div><span class="cat">kit</span></div>
+  </div>
+
+  <h3>Stay & Board Products (21 products — Added Mar 2026)</h3>
+  <div class="card-grid">
+    <div class="card"><div class="id">GO-BC-001 → GO-BC-004</div><div class="name">Boarding Comfort</div><div class="desc">Familiar scent blanket, comfort toy set, food containers, medication organiser</div><div class="price">₹399 – ₹799</div><span class="cat">boarding_comfort</span></div>
+    <div class="card"><div class="id">GO-DC-001 → GO-DC-003</div><div class="name">Daycare Essentials</div><div class="desc">Personalised daycare bag, QR ID tag, training treats pack</div><div class="price">₹349 – ₹899</div><span class="cat">daycare_essentials</span></div>
+    <div class="card"><div class="id">GO-PS-001 → GO-PS-003</div><div class="name">Pet Sitting Kit</div><div class="desc">Info card set, sitter welcome pack, home key tag + QR code</div><div class="price">₹299 – ₹1,299</div><span class="cat">pet_sitting_kit</span></div>
+    <div class="card"><div class="id">GO-HT-001 → GO-HT-004</div><div class="name">Hotel Comfort</div><div class="desc">Portable luxury bed, hotel room pet kit, room spray, waterproof mat</div><div class="price">₹599 – ₹1,899</div><span class="cat">hotel_comfort</span></div>
+    <div class="card"><div class="id">GO-FA-001 → GO-FA-004</div><div class="name">First Stay Anxiety</div><div class="desc">Calming kit, anxiety wrap, pheromone collar, night light</div><div class="price">₹499 – ₹1,899</div><span class="cat">first_stay_anxiety</span></div>
+    <div class="card"><div class="id">GO-SS-001 → GO-SS-003</div><div class="name">Soul Stay</div><div class="desc">Breed travel bandana, personalised boarding tag, Gotcha Day stay box</div><div class="price">₹399 – ₹1,499</div><span class="cat">soul_stay</span></div>
+  </div>
+
+  <h2 class="section go" id="go-services">GO Services (8 Canonical)</h2>
+  <div class="note">All 8 Go services are in <code>services_master</code> with <code>pillar: "go"</code>. All have Cloudinary watercolour AI-generated images.</div>
+  <table>
+    <tr><th>ID</th><th>Name</th><th>Category</th><th>Tagline</th><th>Base Price</th></tr>
+    <tr><td class="mono">GO-SVC-001</td><td>✈️ Flight Coordination</td><td>travel</td><td>Cabin policy, docs & airport coordination</td><td>₹500</td></tr>
+    <tr><td class="mono">GO-SVC-002</td><td>🚗 Road & Train Travel</td><td>travel</td><td>Route planning, safety kit & rest stops</td><td>Free</td></tr>
+    <tr><td class="mono">GO-SVC-003</td><td>🏡 Boarding & Daycare</td><td>stay</td><td>When you travel — we find the best stay</td><td>₹999</td></tr>
+    <tr><td class="mono">GO-SVC-004</td><td>🏠 Pet Sitting</td><td>stay</td><td>Sitter comes home — your dog never leaves</td><td>₹1,499</td></tr>
+    <tr><td class="mono">GO-SVC-005</td><td>📦 Relocation</td><td>travel</td><td>Complete domestic or international move</td><td>Free</td></tr>
+    <tr><td class="mono">GO-SVC-006</td><td>🚕 Pet Taxi</td><td>travel</td><td>Safe city transport to vet, airport or groomer</td><td>Free</td></tr>
+    <tr><td class="mono">GO-SVC-007</td><td>🗺️ Travel Planning</td><td>travel</td><td>Complete trip coordination — all arranged</td><td>Free</td></tr>
+    <tr><td class="mono">GO-SVC-008</td><td>🚨 Emergency Travel</td><td>travel</td><td>Urgent — we respond in 5 minutes</td><td>Free</td></tr>
+  </table>
+
+  <h2 class="section go" id="go-components">GO Frontend Components</h2>
+  <table>
+    <tr><th>File</th><th>Purpose</th><th>Key Features</th></tr>
+    <tr><td class="mono">GoSoulPage.jsx</td><td>Main /go page</td><td>3 tabs, TripProfile, MiraPicksSection, GoCategoryStrip</td></tr>
+    <tr><td class="mono">GoHero.jsx</td><td>Hero section</td><td>Mira score bar, breed art, pillar header</td></tr>
+    <tr><td class="mono">GoTabBar.jsx</td><td>3-tab navigation</td><td>Go Essentials | Find a Stay | Book a Service</td></tr>
+    <tr><td class="mono">GoCategoryStrip.jsx</td><td>8-pill category bar</td><td>Soul Go + Mira's Picks (special) + 6 regular categories</td></tr>
+    <tr><td class="mono">GoContentModal.jsx</td><td>Product modal</td><td>AI picks for soul/mira, regular category filtering</td></tr>
+    <tr><td class="mono">TripProfile (in GoSoulPage)</td><td>Trip soul drawer</td><td>Score bar, GoBreedTravelInsights, soul questions (12 breeds)</td></tr>
+    <tr><td class="mono">GoBreedTravelInsights</td><td>Breed-specific tips</td><td>4-tip grid + Watch For + Documents — always shows</td></tr>
+    <tr><td class="mono">PetFriendlyStays.jsx</td><td>Find a Stay tab</td><td>Google Places hotel search</td></tr>
+    <tr><td class="mono">GoConciergeSection.jsx</td><td>Book a Service tab</td><td>2 sections: Travel (6 svcs) + Stay & Board (2 svcs)</td></tr>
+    <tr><td class="mono">GuidedGoPaths.jsx</td><td>Guided path cards</td><td>3-column card grid of go journeys</td></tr>
+  </table>
+
+  <h2 class="section go" id="go-api">GO API Endpoints</h2>
+  <div class="api-block">
+    <span class="api-method">GET</span> <span class="api-path">/api/admin/pillar-products?pillar=go&limit=200</span><br>
+    → Returns all 52 go products from products_master<br><br>
+    <span class="api-method">GET</span> <span class="api-path">/api/service-box/services?pillar=go&limit=20</span><br>
+    → Returns 8 canonical go services (6 travel + 2 stay)<br><br>
+    <span class="api-method">GET</span> <span class="api-path">/api/places/pet-friendly-stays?city={city}&lat={lat}&lng={lng}&type={type}</span><br>
+    → Google Places hotel/stay search (requires GOOGLE_PLACES_API_KEY)<br><br>
+    <span class="api-method">GET</span> <span class="api-path">/api/mira/claude-picks/{pet_id}?pillar=go&limit=12&min_score=60</span><br>
+    → AI-scored picks for pet from mira_product_scores<br><br>
+    <span class="api-method">POST</span> <span class="api-path">/api/products/batch-score-pet</span><br>
+    → Trigger Mira AI scoring for a pet + pillar<br><br>
+    <span class="api-method">GET</span> <span class="api-path">/api/pet-soul/profile/{pet_id}/quick-questions?context=go</span><br>
+    → Unanswered go-context soul questions
+  </div>
+
+  <!-- ═══════════════════════════════════ PLAY PILLAR ═══════════════════════════════════ -->
+  <h2 class="section play" id="play-overview">PLAY Pillar — Overview & Architecture</h2>
+
+  <div class="pillar-hero play-hero">
+    <h3 style="color:#95D5B2; font-size:1.4rem; margin-bottom:10px;">🌳 Play — Parks, Playdates & Fitness</h3>
+    <p style="color:rgba(255,255,255,0.8); font-size:0.95rem;">The Play pillar merges the former Enjoy and Fit pillars. It covers dog parks, playdates, events, walking, fitness programmes, and swimming — all bookable through Mira concierge.</p>
+    <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+      <span style="background:rgba(149,213,178,0.25); padding:4px 12px; border-radius:20px; font-size:0.8rem; color:#95D5B2;">Route: /play</span>
+      <span style="background:rgba(149,213,178,0.25); padding:4px 12px; border-radius:20px; font-size:0.8rem; color:#95D5B2;">91 Products (25 new + 66 soul)</span>
+      <span style="background:rgba(149,213,178,0.25); padding:4px 12px; border-radius:20px; font-size:0.8rem; color:#95D5B2;">8 Services</span>
+      <span style="background:rgba(149,213,178,0.25); padding:4px 12px; border-radius:20px; font-size:0.8rem; color:#95D5B2;">Status: LIVE ✓</span>
+    </div>
+  </div>
+
+  <h3>Page Architecture — Tabs</h3>
+  <table>
+    <tr><th>Tab</th><th>Label</th><th>Key Components</th><th>Status</th></tr>
+    <tr><td>Tab 1</td><td>🌳 Play & Explore</td><td>PlayProfile, MiraPicksSection, PlayCategoryStrip (7 pills), GuidedPlayPaths</td><td><span class="status-badge status-done">LIVE</span></td></tr>
+    <tr><td>Tab 2</td><td>📍 Find Play</td><td>PlayNearMe (Google Places with features array)</td><td><span class="status-badge status-done">LIVE</span></td></tr>
+    <tr><td>Tab 3</td><td>💪 Book a Service</td><td>PlayConcierge, PlayConciergeSection (2 sections: Enjoy + Fit)</td><td><span class="status-badge status-done">LIVE</span></td></tr>
+  </table>
+
+  <h3>Category Pills (PlayCategoryStrip)</h3>
+  <table>
+    <tr><th>ID</th><th>Label</th><th>Type</th><th>Behaviour</th></tr>
+    <tr><td class="mono">soul</td><td>✨ Soul Play</td><td>Special / AI</td><td>Fetches AI-scored top play products</td></tr>
+    <tr><td class="mono">mira</td><td>🪄 Mira's Picks</td><td>Special / AI</td><td>Fetches mixed products + services</td></tr>
+    <tr><td class="mono">outings</td><td>🌳 Outings & Parks</td><td>Regular</td><td>Park kit, leads, vests</td></tr>
+    <tr><td class="mono">playdates</td><td>🐾 Playdates</td><td>Regular</td><td>Fetch, tug, squeaky toys</td></tr>
+    <tr><td class="mono">walking</td><td>🦮 Dog Walking</td><td>Regular</td><td>Leads, paw care, hydration</td></tr>
+    <tr><td class="mono">fitness</td><td>💪 Fitness</td><td>Regular</td><td>Agility, balance, nose work</td></tr>
+    <tr><td class="mono">swimming</td><td>🏊 Swimming</td><td>Regular</td><td>Life jacket, towel, ramp</td></tr>
+  </table>
+
+  <h3>Google Places Features Mapping (PlayNearMe)</h3>
+  <p>The <code>/api/places/play-spots</code> endpoint automatically maps Google Places <code>types</code> array to human-readable features:</p>
+  <div style="display:flex; flex-wrap:wrap; gap:8px; margin:16px 0;">
+    <span class="feature-tag">park → off_lead + greenspace</span>
+    <span class="feature-tag">dog_park → off_lead + dog_park</span>
+    <span class="feature-tag">campground → shade + water_nearby</span>
+    <span class="feature-tag">beach → beach_access + water_nearby</span>
+    <span class="feature-tag">natural_feature → nature</span>
+    <span class="feature-tag">forest → off_lead + shade</span>
+    <span class="feature-tag">sports_complex → fitness</span>
+    <span class="feature-tag">lake/river → water_nearby</span>
+  </div>
+
+  <h2 class="section play" id="play-products">PLAY Products</h2>
+
+  <h3>New Play Products (25 — Added Mar 2026)</h3>
+  <div class="card-grid">
+    <div class="card"><div class="id">PL-OUT-001 → PL-OUT-004</div><div class="name">Outings & Parks</div><div class="desc">Survival kit, longline lead, safety vest, splash pad</div><div class="price">₹699 – ₹1,099</div><span class="cat">outings</span></div>
+    <div class="card"><div class="id">PL-PD-001 → PL-PD-003</div><div class="name">Playdates</div><div class="desc">Starter pack, fetch launcher, squeaky ball set</div><div class="price">₹399 – ₹1,299</div><span class="cat">playdates</span></div>
+    <div class="card"><div class="id">PL-WK-001 → PL-WK-004</div><div class="name">Walking</div><div class="desc">Hands-free lead, paw wax, hydration bottle, treat pouch</div><div class="price">₹349 – ₹899</div><span class="cat">walking</span></div>
+    <div class="card"><div class="id">PL-FT-001 → PL-FT-006</div><div class="name">Fitness & Training</div><div class="desc">Agility set, balance disc, smart scale, nose work, weighted vest, puzzle feeder</div><div class="price">₹699 – ₹2,499</div><span class="cat">fitness</span></div>
+    <div class="card"><div class="id">PL-SW-001 → PL-SW-004</div><div class="name">Swimming</div><div class="desc">Life jacket, microfibre towel, pool ramp, ear protectors</div><div class="price">₹399 – ₹2,299</div><span class="cat">swimming</span></div>
+    <div class="card"><div class="id">PL-SL-001 → PL-SL-004</div><div class="name">Soul Play</div><div class="desc">Playdate invitation cards, park day bandana, milestone card, play passport</div><div class="price">₹199 – ₹699</div><span class="cat">soul</span></div>
+  </div>
+
+  <h3>Soul Play Products (66 — Updated Mar 2026)</h3>
+  <p>The <code>breed-play_bandanas</code> and <code>breed-playdate_cards</code> product categories (66 total) have been tagged with <code>pillar: "play"</code> and <code>dimension: "Soul Play Products"</code>.</p>
+
+  <h2 class="section play" id="play-services">PLAY Services (8 Canonical)</h2>
+  <div class="note">All 8 Play services are in <code>services_master</code> with <code>pillar: "play"</code>. Watercolour images being generated.</div>
+  <table>
+    <tr><th>ID</th><th>Name</th><th>Category</th><th>Tagline</th><th>Base Price</th></tr>
+    <tr><td class="mono">PL-SVC-001</td><td>🌳 Pet Parks Discovery</td><td>enjoy</td><td>Find the best dog parks near you</td><td>Free</td></tr>
+    <tr><td class="mono">PL-SVC-002</td><td>🐾 Playdate Coordination</td><td>enjoy</td><td>We find your dog's perfect playmate</td><td>₹300</td></tr>
+    <tr><td class="mono">PL-SVC-003</td><td>🎪 Pet Events & Experiences</td><td>enjoy</td><td>Festivals, shows, and dog-friendly events</td><td>₹500</td></tr>
+    <tr><td class="mono">PL-SVC-004</td><td>🗺️ Weekend Adventure Planning</td><td>enjoy</td><td>Mira plans the perfect weekend outing</td><td>₹400</td></tr>
+    <tr><td class="mono">PL-SVC-005</td><td>🦮 Dog Walking — Daily</td><td>fit</td><td>Professional daily walks, every morning</td><td>₹300</td></tr>
+    <tr><td class="mono">PL-SVC-006</td><td>💪 Fitness Assessment</td><td>fit</td><td>Mira builds a personalised fitness plan</td><td>₹999</td></tr>
+    <tr><td class="mono">PL-SVC-007</td><td>🏊 Swimming Sessions</td><td>fit</td><td>Hydrotherapy + fun swims, fully supervised</td><td>₹1,000</td></tr>
+    <tr><td class="mono">PL-SVC-008</td><td>🌱 Socialisation Planning</td><td>enjoy</td><td>Build confidence and make dog friends</td><td>₹800</td></tr>
+  </table>
+
+  <h2 class="section play" id="play-components">PLAY Frontend Components</h2>
+  <table>
+    <tr><th>File</th><th>Purpose</th><th>Key Features</th></tr>
+    <tr><td class="mono">PlaySoulPage.jsx</td><td>Main /play page (1,230 lines)</td><td>3 tabs, PlayProfile, MiraPicksSection, PlayCategoryStrip</td></tr>
+    <tr><td class="mono">PlayHero.jsx</td><td>Hero section</td><td>Mira score bar, green forest aesthetic, 3-tab bar</td></tr>
+    <tr><td class="mono">PlayCategoryStrip.jsx</td><td>7-pill category bar</td><td>Soul Play + Mira's Picks (special) + 5 regular categories</td></tr>
+    <tr><td class="mono">GuidedPlayPaths.jsx</td><td>6 play journey cards</td><td>Park day, playdate, fitness programme, swimming, adventure, socialisation</td></tr>
+    <tr><td class="mono">PlayNearMe.jsx</td><td>Find Play tab</td><td>Google Places with features array (off_lead, beach_access, etc.)</td></tr>
+    <tr><td class="mono">PlayConciergeSection.jsx</td><td>Book a Service tab</td><td>2 sections: Enjoy (4 svcs) + Fit (3 svcs)</td></tr>
+    <tr><td class="mono">PlayConciergeModal.jsx</td><td>Service booking modal</td><td>Full booking flow with dates, notes</td></tr>
+  </table>
+
+  <h2 class="section play" id="play-api">PLAY API Endpoints</h2>
+  <div class="api-block">
+    <span class="api-method">GET</span> <span class="api-path">/api/admin/pillar-products?pillar=play&limit=200</span><br>
+    → Returns all play products from products_master<br><br>
+    <span class="api-method">GET</span> <span class="api-path">/api/service-box/services?pillar=play&limit=20</span><br>
+    → Returns 8 canonical play services<br><br>
+    <span class="api-method">GET</span> <span class="api-path">/api/places/play-spots?city={city}&lat={lat}&lng={lng}&type={type}</span><br>
+    → Google Places park/outdoor search WITH features array mapping<br>
+    &nbsp;&nbsp;· park → ["off_lead", "greenspace"]<br>
+    &nbsp;&nbsp;· beach → ["beach_access", "water_nearby"]<br>
+    &nbsp;&nbsp;· campground → ["shade", "off_lead"]<br>
+    &nbsp;&nbsp;· sports_complex → ["fitness"]<br><br>
+    <span class="api-method">GET</span> <span class="api-path">/api/mira/claude-picks/{pet_id}?pillar=play&limit=12&min_score=60</span><br>
+    → AI-scored picks for pet (play pillar)<br><br>
+    <span class="api-method">POST</span> <span class="api-path">/api/products/batch-score-pet</span><br>
+    → Trigger Mira AI scoring for play pillar
+  </div>
+
+  <!-- ═══════════════════════════════════ SHARED INFRASTRUCTURE ═══════════════════════════════════ -->
+  <h2 class="section shared" id="shared">Shared Infrastructure</h2>
+
+  <h3>Image Generation System</h3>
+  <table>
+    <tr><th>Type</th><th>Collection</th><th>Style</th><th>Generator</th><th>Status</th></tr>
+    <tr><td>Products</td><td>products_master</td><td>Realistic AI photos</td><td>ai_image_service.py (DALL-E)</td><td><span class="status-badge status-done">Running continuously</span></td></tr>
+    <tr><td>Services</td><td>services_master</td><td>Watercolour illustrations</td><td>generate_go_service_images.py</td><td><span class="status-badge status-done">8 Go + 8 Play done</span></td></tr>
+    <tr><td>Soul Products</td><td>breed_products</td><td>Product mockups</td><td>auto_mockup_generator.py</td><td><span class="status-badge status-done">2409/2569 done</span></td></tr>
+    <tr><td>Bundles</td><td>bundles</td><td>Watercolour</td><td>TBD</td><td><span class="status-badge status-pending">Pending</span></td></tr>
+  </table>
+
+  <h3>Mira AI Scoring</h3>
+  <p>The <code>mira_product_scores</code> collection stores AI scores per pet per product. Mojo (Indie) has 7,162+ scores across dine (4,465), care (555), go (91), and play (scoring to run). Minimum score threshold for "Mira's Picks": 60/100.</p>
+
+  <h3>Google Places API Integration</h3>
+  <table>
+    <tr><th>Endpoint</th><th>Pillar</th><th>Query Type</th><th>Features Returned</th></tr>
+    <tr><td class="mono">/api/places/pet-friendly-stays</td><td>Go</td><td>Hotels, stays, boarding</td><td>N/A (basic)</td></tr>
+    <tr><td class="mono">/api/places/care-providers</td><td>Care</td><td>Vets, groomers, trainers, stores</td><td>N/A (basic)</td></tr>
+    <tr><td class="mono">/api/places/play-spots</td><td>Play</td><td>Parks, beaches, nature, sports</td><td>features[] array (off_lead, beach_access, shade, etc.)</td></tr>
+  </table>
+
+  <!-- ═══════════════════════════════════ ROADMAP ═══════════════════════════════════ -->
+  <h2 class="section shared" id="roadmap">Roadmap & Next Steps</h2>
+  <table>
+    <tr><th>Priority</th><th>Task</th><th>Status</th></tr>
+    <tr><td>P0</td><td>Play pillar — Mira scoring run for all pets</td><td><span class="status-badge status-pending">Pending</span></td></tr>
+    <tr><td>P0</td><td>Play services — Generate watercolour images</td><td><span class="status-badge status-pending">Running</span></td></tr>
+    <tr><td>P0</td><td>Play products — Generate realistic AI images via admin</td><td><span class="status-badge status-pending">Pending</span></td></tr>
+    <tr><td>P1</td><td>Soul products — Breed-specific play bandanas + playdate cards (admin AI mockup)</td><td><span class="status-badge status-pending">Pending</span></td></tr>
+    <tr><td>P1</td><td>Go bundles — Watercolour illustrations</td><td><span class="status-badge status-pending">Pending</span></td></tr>
+    <tr><td>P2</td><td>LOVE pillar (/love route)</td><td><span class="status-badge status-planned">Planned</span></td></tr>
+    <tr><td>P2</td><td>Love Memory Drawer feature</td><td><span class="status-badge status-planned">Planned</span></td></tr>
+    <tr><td>P3</td><td>Razorpay checkout fix</td><td><span class="status-badge status-planned">Planned</span></td></tr>
+    <tr><td>P3</td><td>Consolidate bundles, services collections</td><td><span class="status-badge status-planned">Planned</span></td></tr>
+  </table>
+
+</div>
+
+<div class="footer">
+  <p>The Doggy Company® — Pet Life OS · Internal Documentation</p>
+  <p>Generated: March 2026 · Go + Play Pillar Documentation v1.0</p>
+</div>
+
+</body>
+</html>
