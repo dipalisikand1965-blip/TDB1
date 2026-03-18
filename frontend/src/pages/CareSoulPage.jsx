@@ -2031,15 +2031,21 @@ export default function CareSoulPage() {
     }
   }, [petData, token]);
 
-  // Fetch all care products on mount — grouped by dimension / sub_category
-  // (care products use 'dimension' field, not 'category', for page grouping)
+  // Fetch all care products on mount — grouped by dimension / sub_category, breed-filtered for soul items
   useEffect(() => {
+    if (!petData) return;
+    const petBreed = (petData?.breed || "indie").toLowerCase().trim();
+
     fetch(`${API_URL}/api/admin/pillar-products?pillar=care&limit=600`)
       .then(r => r.ok ? r.json() : null)
-      .then(data => {
+      .then(async data => {
         if (!data?.products?.length) return;
         const grouped = {};
         data.products.forEach(p => {
+          // Skip soul/breed products for other breeds
+          const productBreeds = (p.breed_tags || []).map(b => b.toLowerCase().trim());
+          if (productBreeds.length > 0 && !productBreeds.includes(petBreed)) return;
+
           const dim = p.dimension || "";
           const sub = p.sub_category || "Other";
           if (!dim) return;
@@ -2047,9 +2053,26 @@ export default function CareSoulPage() {
           if (!grouped[dim][sub]) grouped[dim][sub] = [];
           grouped[dim][sub].push(p);
         });
+
+        // Merge breed-specific soul products from breed_products
+        try {
+          const breedRes = await fetch(`${API_URL}/api/breed-catalogue/products?pillar=care&breed=${encodeURIComponent(petData.breed)}&limit=30`);
+          if (breedRes.ok) {
+            const breedData = await breedRes.json();
+            (breedData.products || []).forEach(p => {
+              const dimKey = "Soul Care Products";
+              if (!grouped[dimKey]) grouped[dimKey] = {};
+              if (!grouped[dimKey]["soul"]) grouped[dimKey]["soul"] = [];
+              if (!grouped[dimKey]["soul"].find(x => x.name === p.name)) {
+                grouped[dimKey]["soul"].push({ ...p, sub_category: "soul", pillar: "care" });
+              }
+            });
+          }
+        } catch (e) { /* non-critical */ }
+
         setApiProducts(grouped);
       }).catch(err => console.error("[CareSoulPage] products:", err));
-  }, []);
+  }, [petData]);
 
   // Sync pet from context
   useEffect(() => {

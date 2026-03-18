@@ -245,6 +245,12 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 
 ## COMPLETED SESSION LOG
 
+### Session 73 (Feb 2026) — Breed Filtering Fix + Play DB Cleanup + Soul Products in Grids
+- **Breed filtering in All Products**: PlaySoulPage, GoSoulPage, CareSoulPage products fetch now depends on `[petData]` — soul products (breed_tags set) filtered to only show the current pet's breed. Generic products (no breed_tags) show for all pets.
+- **Soul products in Care/Play grids**: After loading products, also fetches `/api/breed-catalogue/products?pillar={pillar}&breed={petBreed}` and merges into the soul dimension group. Now Care "Soul Care" dim and Play "Soul Play" dim both show breed-specific products.
+- **DB cleanup**: Deleted 7 fake play products ("Outings & Parks", "Playdates", "Dog Walking", etc. with Rs.999). Remaining: 21 real play products + 8 services + 132 breed bandanas/cards.
+- **Multiple pets confirmed working**: Mojo (Indie), Mystique (Shih Tzu), Bruno (Labrador) — each sees their own breed's soul products.
+
 ### Session 72 (Feb 2026) — Concierge CTAs + Sub-cat Formatting + Soul Go Personalised
 - **ConciergeToast**: New `/app/frontend/src/components/common/ConciergeToast.jsx` — bottom fixed toast slides up when "Book via Concierge" clicked on any nearby place card. Auto-dismisses in 5s.
 - **handleNearMeBook wired**: GoSoulPage (TRAVEL queue), CareSoulPage (GROOMING queue), PlaySoulPage (PLAY queue) all now POST to `/api/service_desk/attach_or_create_ticket` + `handoff_to_concierge` and show `ConciergeToast`.

@@ -1201,38 +1201,60 @@ const PlaySoulPage = () => {
     }
   }, [petData, token]);
 
-  // Fetch ALL play products and group by dim.id (mirrors GoSoulPage pattern)
+  // Fetch ALL play products and group by dim.id — filtered to pet's breed for soul items
   useEffect(() => {
+    if (!petData) return; // wait for pet data so we can filter by breed
+    const petBreed = (petData?.breed || "indie").toLowerCase().trim();
+
     fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=500`)
       .then(r => r.ok ? r.json() : null)
-      .then(data => {
+      .then(async data => {
         if (!data?.products?.length) return;
         const DIM_IDS = ["outings", "playdates", "walking", "fitness", "swimming", "soul"];
         const grouped = {};
+
         data.products.forEach(p => {
+          // Skip soul/breed products that don't match the pet's breed
+          const productBreeds = (p.breed_tags || []).map(b => b.toLowerCase().trim());
+          if (productBreeds.length > 0 && !productBreeds.includes(petBreed)) return;
+
           const cat = (p.category || "").toLowerCase().trim();
           const sub = (p.sub_category || "").toLowerCase().trim();
           let dimId = null;
-          // sub_category takes priority
           if (sub === "soul") dimId = "soul";
           else if (DIM_IDS.includes(sub)) dimId = sub;
-          // then category
           else if (cat === "soul") dimId = "soul";
           else if (DIM_IDS.includes(cat)) dimId = cat;
-          // special mappings
           else if (cat === "breed-play_bandanas" || cat === "breed-playdate_cards") dimId = "soul";
           else if (cat === "enjoy") dimId = "outings";
           else if (cat === "fit") dimId = "fitness";
           else if (cat === "toys" || cat === "gear" || cat === "accessories") dimId = "outings";
-          else dimId = "outings"; // fallback
+          else dimId = "outings";
           if (!grouped[dimId]) grouped[dimId] = {};
           const subKey = p.sub_category || "General";
           if (!grouped[dimId][subKey]) grouped[dimId][subKey] = [];
           grouped[dimId][subKey].push(p);
         });
+
+        // Also fetch breed-specific soul products from breed_products collection
+        try {
+          const breedRes = await fetch(`${API_URL}/api/breed-catalogue/products?pillar=play&breed=${encodeURIComponent(petData.breed)}&limit=30`);
+          if (breedRes.ok) {
+            const breedData = await breedRes.json();
+            (breedData.products || []).forEach(p => {
+              if (!grouped["soul"]) grouped["soul"] = {};
+              if (!grouped["soul"]["soul"]) grouped["soul"]["soul"] = [];
+              // Avoid duplicates
+              if (!grouped["soul"]["soul"].find(x => x.name === p.name)) {
+                grouped["soul"]["soul"].push({ ...p, sub_category: "soul", pillar: "play" });
+              }
+            });
+          }
+        } catch (e) { /* non-critical */ }
+
         setApiProducts(grouped);
       }).catch(e => console.error("[PlaySoulPage] products fetch:", e));
-  }, []);
+  }, [petData]);
 
   useEffect(() => {
     if (contextPets?.length>0&&!currentPet) setCurrentPet(contextPets[0]);
