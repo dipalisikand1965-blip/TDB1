@@ -33,6 +33,7 @@ import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
+import SoulMadeCollection from "../components/SoulMadeCollection";
 
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Vibrant Green + Orange
@@ -616,6 +617,7 @@ function DimExpandedModal({ dim, pet, onClose, apiProducts = {} }) {
   const [activeTab, setActiveTab] = useState("All");
   const miraCtx   = { includeText:"Add to Cart" };
   const products  = activeTab==="All" ? intelligent : intelligent.filter(p=>p.sub_category===activeTab);
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== "undefined" && window.innerWidth >= 768);
 
   // Prevent body scroll while modal is open
   React.useEffect(() => {
@@ -623,17 +625,23 @@ function DimExpandedModal({ dim, pet, onClose, apiProducts = {} }) {
     return () => { document.body.style.overflow = ""; };
   }, []);
 
+  React.useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= 768);
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   const [dimTab, setDimTab] = useState("products"); // "products" | "personalised"
 
   return (
     <div
       onClick={onClose}
-      style={{ position:"fixed", inset:0, zIndex:600, background:"rgba(0,0,0,0.65)", display:"flex", alignItems:"flex-end", justifyContent:"center", padding:0 }}
+      style={{ position:"fixed", inset:0, zIndex:600, background:"rgba(0,0,0,0.65)", display:"flex", alignItems: isDesktop ? "center" : "flex-end", justifyContent:"center", padding: isDesktop ? 24 : 0 }}
       data-testid={`play-dim-expanded-${dim.id}`}
     >
       <div
         onClick={e => e.stopPropagation()}
-        style={{ width:"100%", maxWidth:640, maxHeight:"88vh", background:"#fff", borderRadius:"20px 20px 0 0", overflow:"hidden", display:"flex", flexDirection:"column", boxShadow:"0 -8px 40px rgba(0,0,0,0.25)" }}
+        style={{ width: isDesktop ? "min(860px, 92vw)" : "100%", maxHeight: isDesktop ? "90vh" : "88vh", background:"#fff", borderRadius: isDesktop ? 20 : "20px 20px 0 0", overflow:"hidden", display:"flex", flexDirection:"column", boxShadow: isDesktop ? "0 32px 80px rgba(0,0,0,0.35)" : "0 -8px 40px rgba(0,0,0,0.25)" }}
       >
         {/* Header */}
         <div style={{ background:`linear-gradient(135deg,${G.deep},${G.mid})`, padding:"18px 20px 14px", flexShrink:0 }}>
@@ -685,7 +693,12 @@ function DimExpandedModal({ dim, pet, onClose, apiProducts = {} }) {
         {/* Products grid / Personalised tab */}
         <div style={{ flex:1, overflowY:"auto", padding:"12px 16px 24px" }}>
           {dimTab === "personalised" ? (
-            <PersonalisedBreedSection pet={pet} pillar="play" />
+            <div>
+              <PersonalisedBreedSection pet={pet} pillar="play" />
+              <div style={{ borderTop:"1px solid #f0f0f0", marginTop:16, paddingTop:16 }}>
+                <SoulMadeCollection pillar="enjoy" maxItems={8} showTitle={true} />
+              </div>
+            </div>
           ) : products.length === 0 ? (
             <div style={{ textAlign:"center", padding:"40px 0", color:"#888", fontSize:13 }}>
               {allRaw.length===0

@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://pet-breed-catalog.preview.emergentagent.com
+https://soul-made-products.preview.emergentagent.com
 ```
 
 ---

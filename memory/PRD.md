@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Feb 2026 (Session 72 — Personalised Tab All Pillars + Play Strip Fix)
+## Last Updated: Mar 2026 (Session 73 — Play Modal Centered + Soul Made Products in Personalised Tab)
 
 ---
 
@@ -20,7 +20,7 @@ The Doggy Company's Pet Life Operating System (PLOS) is a pillar-based platform 
 - **Hosting**: Kubernetes container (Emergent platform)
 
 ### URL Structure
-- Frontend: `https://pet-breed-catalog.preview.emergentagent.com`
+- Frontend: `https://soul-made-products.preview.emergentagent.com`
 - Backend: Port 8001, all API routes prefixed with `/api`
 
 ### Key Backend Files
@@ -281,7 +281,14 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 - **AI images generated**: All 52 go products now have Cloudinary AI-generated images
 - **Continuous image generation**: `continuous_image_gen.py` + `auto_mockup_generator.py` running in background cycling through all pillars
 
-### Session 68 (Mar 17, 2026) — Documentation & Handover
+### Session 73 (Mar 18, 2026) — Play Modal Centered + Soul Made Products in Personalised Tab
+- **PlaySoulPage.jsx**: Fixed `DimExpandedModal` from bottom-sheet → centered full-screen modal on desktop (responsive: centered on ≥768px, bottom-sheet on mobile). Added `isDesktop` state with window resize listener.
+- **All 4 pillar pages**: Added `SoulMadeCollection` component below `PersonalisedBreedSection` in the "Personalised" tab. Pillar→pillar mapping: play→enjoy, go→travel, care→care, dine→dine
+- **GoContentModal.jsx**: Also updated with `SoulMadeCollection` in the Personalised tab (pillar=travel)
+- Imported `SoulMadeCollection` in GoSoulPage, CareSoulPage, DineSoulPage, PlaySoulPage
+- All 5 files passed lint checks (0 errors)
+
+
 - Created comprehensive PRD.md with full pending task specification
 - Updated complete-documentation.html to v16.0.0
 
@@ -325,6 +332,8 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 ### P0 — All Complete ✅
 - All 4 pillars (Dine, Care, Go, Play) have "Personalised" tab with breed-specific products
 - Play category strip now functional (connected to DimExpandedModal)
+- **Play modal is now centered** (was bottom-sheet, now centered full-screen on desktop)
+- **Soul Made (AI) products** now appear in Personalised tabs across all 4 pillars via `SoulMadeCollection`
 
 ### P1 — Important Improvements
 - **PLAY pillar**: /play route fully functional with orange/rust color scheme (#E76F51, #7B2D00)
