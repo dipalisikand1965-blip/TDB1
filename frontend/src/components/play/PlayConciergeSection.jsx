@@ -1,6 +1,6 @@
 /**
- * PlayConciergeSection.jsx — /play pillar
- * "Play, Personally" — mirrors GoConciergeSection.jsx
+ * PlayConciergeSection.jsx — "Play, Personally"
+ * Horizontal watercolour service cards — mirrors CareConciergeSection
  * GET /api/service-box/services?pillar=play
  */
 import { useState, useEffect } from "react";
@@ -8,56 +8,114 @@ import { useAuth } from "../../context/AuthContext";
 import { API_URL } from "../../utils/api";
 import PlayConciergeModal from "./PlayConciergeModal";
 
-const G = { deep:"#7B2D00", mid:"#7B3F00", green:"#E76F51", light:"#FFAD9B", pale:"#FFF0EA", darkText:"#7B2D00", mutedText:"#8B4513" };
+const G = { deep:"#7B2D00", mid:"#7B3F00", orange:"#E76F51", light:"#FFAD9B", pale:"#FFF0EA", cream:"#FFF8F5", darkText:"#7B2D00", mutedText:"#8B4513" };
+const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
+
+const FALLBACK_SERVICES = [
+  { name:"Dog Park Outing",      icon:"🌳", desc:"Private park session with a Mira-matched play companion.",    price:599  },
+  { name:"Playdate Facilitation",icon:"🐾", desc:"Mira finds a matched play partner and arranges the date.",   price:799  },
+  { name:"Adventure Walk",       icon:"🦮", desc:"Guided trail walk through parks and open green spaces.",      price:499  },
+  { name:"Pool Swim Session",    icon:"🏊", desc:"Private pool session with a trained swim guide.",             price:999  },
+  { name:"Agility Starter",      icon:"⚡", desc:"Intro agility — tunnels, jumps, and weave poles.",           price:899  },
+  { name:"Fitness Assessment",   icon:"💪", desc:"Certified trainer assesses strength & energy profile.",      price:1299 },
+  { name:"Trail Hike",           icon:"🏔️", desc:"Guided nature trail hike for dogs that love to explore.",    price:699  },
+  { name:"Soul Play Session",    icon:"✨", desc:"Professional photo session capturing your dog's personality.", price:2499 },
+];
 
 export default function PlayConciergeSection({ pet }) {
   const [services, setServices] = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [modalSvc, setModalSvc] = useState(null);
   const { token } = useAuth();
+  const petName = pet?.name || "your dog";
 
   useEffect(() => {
     fetch(`${API_URL}/api/service-box/services?pillar=play`, {
       headers: token ? { Authorization:`Bearer ${token}` } : {},
     })
       .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data?.services?.length) setServices(data.services.slice(0,8)); setLoading(false); })
+      .then(data => {
+        if (data?.services?.length) setServices(data.services.slice(0,8));
+        setLoading(false);
+      })
       .catch(() => setLoading(false));
   }, [token]);
 
-  if (loading || !services.length) return null;
+  const displayServices = services.length > 0 ? services : FALLBACK_SERVICES;
 
   return (
     <>
-      {modalSvc && <PlayConciergeModal pet={pet} service={modalSvc} token={token} onClose={() => setModalSvc(null)} />}
-      <div style={{ marginBottom:32 }}>
-        <div style={{ textAlign:"center", marginBottom:24 }}>
-          <h2 style={{ fontSize:"clamp(1.5rem,4vw,2rem)", fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:6 }}>
-            Play, Personally
-          </h2>
-          <p style={{ fontSize:14, color:G.mutedText, maxWidth:540, margin:"0 auto", lineHeight:1.6 }}>
-            Tell us what {pet?.name||"your dog"} loves. We'll plan the outings, book the walks, and build the fitness routine.
-          </p>
-        </div>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(240px,100%),1fr))", gap:16 }}>
-          {services.map((svc,i) => (
-            <div key={svc.id||i}
-              style={{ background:"#fff", borderRadius:16, overflow:"hidden", border:`1px solid rgba(231,111,81,0.15)`, cursor:"pointer", transition:"transform 0.15s" }}
-              onMouseEnter={e=>e.currentTarget.style.transform="translateY(-3px)"}
-              onMouseLeave={e=>e.currentTarget.style.transform="none"}
-              onClick={() => setModalSvc(svc)}>
-              {(svc.cloudinary_image_url||svc.watercolor_image||svc.image_url)
-                ? <img src={svc.cloudinary_image_url||svc.watercolor_image||svc.image_url} alt={svc.name} style={{ width:"100%", height:180, objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
-                : <div style={{ height:180, background:`linear-gradient(135deg,${G.pale},${G.light})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:48 }}>🌳</div>}
-              <div style={{ padding:"14px 16px 18px" }}>
-                <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:6 }}>{svc.name}</div>
-                {svc.description && <div style={{ fontSize:13, color:G.mutedText, lineHeight:1.5, marginBottom:12, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{svc.description}</div>}
-                <button style={{ fontSize:13, fontWeight:700, color:G.mid, background:"none", border:"none", padding:0, cursor:"pointer" }}>
-                  Book this service →
-                </button>
-              </div>
+      {modalSvc && (
+        <PlayConciergeModal pet={pet} service={modalSvc} token={token} onClose={() => setModalSvc(null)} />
+      )}
+
+      <div style={{ marginBottom:40 }} data-testid="play-personally-section">
+        {/* Header */}
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20 }}>
+          <div>
+            <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(231,111,81,0.12)", borderRadius:20, padding:"4px 12px", marginBottom:10 }}>
+              <div style={{ width:18, height:18, borderRadius:"50%", background:MIRA_ORB, display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:"#fff" }}>✦</div>
+              <span style={{ fontSize:11, color:G.mid, fontWeight:700 }}>Play, Personally</span>
             </div>
-          ))}
+            <h2 style={{ fontSize:"clamp(1.25rem,3vw,1.625rem)", fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:6 }}>
+              Book a play experience for <span style={{ color:G.orange }}>{petName}</span>
+            </h2>
+            <p style={{ fontSize:13, color:G.mutedText, lineHeight:1.6, maxWidth:460 }}>
+              Parks, playdates, agility, and swim sessions — all arranged by Mira, personalised to {petName}'s energy and play profile.
+            </p>
+          </div>
+        </div>
+
+        {/* Horizontal service cards */}
+        <div style={{ overflowX:"auto", WebkitOverflowScrolling:"touch", marginLeft:-4, paddingLeft:4, marginRight:-4, paddingRight:4 }} className="play-svc-scroll">
+          <style>{`.play-svc-scroll::-webkit-scrollbar{height:3px}.play-svc-scroll::-webkit-scrollbar-thumb{background:rgba(231,111,81,0.3);border-radius:3px}`}</style>
+          <div style={{ display:"flex", gap:16, paddingBottom:8 }}>
+            {displayServices.map((svc, i) => {
+              const imgUrl = svc.cloudinary_image_url || svc.watercolor_image || svc.image_url;
+              return (
+                <div
+                  key={svc.id || svc._id || i}
+                  onClick={() => setModalSvc(svc)}
+                  data-testid={`play-service-card-${i}`}
+                  style={{ flexShrink:0, width:220, background:"#fff", borderRadius:18, overflow:"hidden", cursor:"pointer", border:"1px solid rgba(231,111,81,0.14)", transition:"transform 0.18s, box-shadow 0.18s", boxShadow:"0 2px 12px rgba(123,45,0,0.07)" }}
+                  onMouseEnter={e => { e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 8px 24px rgba(123,45,0,0.14)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform="none"; e.currentTarget.style.boxShadow="0 2px 12px rgba(123,45,0,0.07)"; }}
+                >
+                  {/* Image / fallback */}
+                  <div style={{ height:160, position:"relative", overflow:"hidden", flexShrink:0 }}>
+                    {imgUrl
+                      ? <img src={imgUrl} alt={svc.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{e.target.style.display="none"; e.target.nextSibling.style.display="flex";}} />
+                      : null}
+                    <div style={{ display: imgUrl ? "none" : "flex", position: imgUrl ? "absolute" : "static", inset:0, background:`linear-gradient(135deg,${G.pale},${G.light})`, alignItems:"center", justifyContent:"center", fontSize:44, height: imgUrl ? "100%" : 160 }}>
+                      {svc.icon || "🌳"}
+                    </div>
+                    {/* Price chip */}
+                    {svc.price && (
+                      <div style={{ position:"absolute", bottom:8, right:8, background:"rgba(123,45,0,0.85)", color:"#fff", borderRadius:20, padding:"3px 10px", fontSize:11, fontWeight:700 }}>
+                        ₹{svc.price?.toLocaleString?.() ?? svc.price}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div style={{ padding:"14px 14px 16px" }}>
+                    <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:5, lineHeight:1.3 }}>{svc.name}</div>
+                    {(svc.description || svc.desc) && (
+                      <div style={{ fontSize:12, color:G.mutedText, lineHeight:1.5, marginBottom:10, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>
+                        {svc.description || svc.desc}
+                      </div>
+                    )}
+                    {svc.duration_minutes && (
+                      <div style={{ fontSize:11, color:"#888", marginBottom:8 }}>⏱ {svc.duration_minutes} min session</div>
+                    )}
+                    <button style={{ width:"100%", padding:"8px 0", borderRadius:10, background:G.orange, border:"none", color:"#fff", fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                      Book this →
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </>
