@@ -19,6 +19,7 @@ import ConciergeToast from "../components/common/ConciergeToast";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
 import GuidedAdoptPaths from "../components/adopt/GuidedAdoptPaths";
+import AdoptNearMe from "../components/adopt/AdoptNearMe";
 import { API_URL } from "../utils/api";
 
 const G = {
@@ -236,7 +237,7 @@ const AdoptSoulPage = () => {
       <Helmet><title>Adopt · The Doggy Company</title></Helmet>
 
       {/* HERO */}
-      <div style={{background:`linear-gradient(160deg,${G.deep} 0%,${G.mid} 55%,#BE185D 100%)`,padding:"28px 20px 0",position:"relative",overflow:"hidden",textAlign:"center"}}>
+      <div style={{background:`linear-gradient(160deg,${G.deep} 0%,${G.mid} 55%,#BE185D 100%)`,padding:"28px 20px 0",position:"relative",overflow:"hidden",textAlign:"center",boxSizing:"border-box",width:"100%"}}>
         <div style={{position:"absolute",top:20,right:20,width:44,height:44,borderRadius:"50%",background:MIRA_ORB,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,boxShadow:"0 0 24px rgba(212,83,126,0.50)"}}>✦</div>
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:12}}>
           <div style={{width:80,height:80,borderRadius:"50%",background:`linear-gradient(135deg,${G.light},${G.rose})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:44,border:"3px solid rgba(255,255,255,0.30)"}}>🐾</div>
@@ -266,7 +267,7 @@ const AdoptSoulPage = () => {
         <div style={{textAlign:"center",paddingBottom:6}}><ChevronDown size={22} style={{color:"rgba(255,255,255,0.35)"}}/></div>
       </div>
 
-      <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{background:G.pageBg,fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"}}>
+      <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{background:G.pageBg,fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",overflowX:"hidden",boxSizing:"border-box"}}>
         {/* Tab bar */}
         <div style={{display:"flex",background:"#fff",borderBottom:`1.5px solid ${G.borderLight}`,marginBottom:24}}>
           {[{id:"adopt",label:"🐾 Find Your Dog"},{id:"services",label:"💌 Book Guidance"},{id:"find",label:"📍 Find Rescue"}].map(tab=>{const a=activeTab===tab.id;return<button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{flex:1,padding:"14px 4px",background:"none",border:"none",borderBottom:a?`3px solid ${G.rose}`:"3px solid transparent",color:a?G.rose:"#888",fontSize:13,fontWeight:a?700:500,cursor:"pointer",transition:"all 0.15s",whiteSpace:"nowrap"}}>{tab.label}</button>;})}
@@ -327,15 +328,8 @@ const AdoptSoulPage = () => {
 
         {/* Find Rescue tab */}
         {activeTab==="find" && (
-          <div style={{marginTop:24}}>
-            <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:4,fontFamily:"Georgia,serif"}}>Find a rescue partner near you</h2>
-            <p style={{fontSize:13,color:"#888",marginBottom:20}}>Verified rescue centres, shelters, and adoption events — all curated by Mira.</p>
-            <div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:14,padding:"24px 28px",textAlign:"center"}}>
-              <div style={{fontSize:40,marginBottom:12}}>🐾</div>
-              <p style={{fontSize:14,fontWeight:700,color:G.darkText,marginBottom:8}}>Rescue network launching soon</p>
-              <p style={{fontSize:13,color:"#888",marginBottom:16}}>Mira is building verified rescue partner connections near you.</p>
-              <button onClick={()=>setConciergeOpen(true)} style={{background:`linear-gradient(135deg,${G.rose},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"10px 24px",fontSize:13,fontWeight:700,cursor:"pointer"}}>Connect with Rescues Now →</button>
-            </div>
+          <div style={{marginTop:8}}>
+            <AdoptNearMe pet={petData} onBook={(svc)=>{setConciergeSvc(svc?.name||"");setConciergeOpen(true);}}/>
           </div>
         )}
       </div>
