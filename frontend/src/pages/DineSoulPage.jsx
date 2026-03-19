@@ -25,9 +25,11 @@ import { PillarHelpBuckets, PillarGuidedPaths } from "../components/PillarGoldSe
 import { API_URL } from "../utils/api";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
+import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
+import { usePlatformTracking } from "../hooks/usePlatformTracking";
 
 // ─── Dimension visual config — dynamic per pet ───────────────────────────────
 function getDineDims(pet) {
@@ -825,14 +827,7 @@ function TummyProfile({ pet, token }) {
                   <p style={{ fontSize: 12, color: '#888', marginBottom: 14, lineHeight: 1.5 }}>
                     Based on {petName}'s soul profile — not in range yet, but Mira can request these specially.
                   </p>
-                  <div style={{ display:"flex", gap:12, overflowX:"auto", paddingBottom:8, scrollbarWidth:"none" }}>
-                    {miraFoodCards.slice(0,3).map((card, idx) => (
-                      <MiraImaginesCard key={idx}
-                        item={{ id:`dine-${idx}`, emoji:card.emoji||"🍽️", name:card.title||card.name||"Dine Pick", description:card.description||card.reason||"" }}
-                        pet={pet} token={token} pillar="dine"
-                      />
-                    ))}
-                  </div>
+                  <MiraImaginesBreed pet={pet} pillar="dine" colour="#FF8C42" onConcierge={()=>{}}/>
                 </div>
               )}
             </div>
