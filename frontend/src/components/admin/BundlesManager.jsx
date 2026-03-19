@@ -28,7 +28,7 @@ import {
 import { 
   Package, Plus, Edit2, Trash2, Save, X, Loader2, Upload,
   Gift, Star, AlertCircle, CheckCircle2, RefreshCw, Sparkles, Image,
-  Search, ChevronLeft, ChevronRight
+  Search, ChevronLeft, ChevronRight, Download
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
@@ -396,6 +396,46 @@ const BundlesManager = () => {
     }
     return 0;
   };
+
+  const exportToCSV = async () => {
+    try {
+      // Fetch all bundles (no pagination limit)
+      let url = `${API_URL}/api/bundles?active_only=false&limit=1000`;
+      if (selectedPillar !== 'all') url += `&pillar=${selectedPillar}`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch bundles');
+      const data = await response.json();
+      const allBundles = data.bundles || [];
+      if (!allBundles.length) {
+        toast({ title: 'No Data', description: 'No bundles to export', variant: 'destructive' });
+        return;
+      }
+      const headers = ['ID', 'Name', 'Pillar', 'Description', 'Items', 'Original Price', 'Bundle Price', 'Discount %', 'Popular', 'Active', 'Image URL', 'Icon'];
+      const rows = allBundles.map(b => [
+        b.id || '',
+        `"${(b.name || '').replace(/"/g, '""')}"`,
+        b.pillar || '',
+        `"${(b.description || '').replace(/"/g, '""')}"`,
+        `"${(b.items || []).map(i => (typeof i === 'object' ? i.name || JSON.stringify(i) : i)).join(', ')}"`,
+        b.original_price || '',
+        b.bundle_price || '',
+        b.discount || Math.round((1 - (b.bundle_price || 0) / (b.original_price || 1)) * 100),
+        b.popular ? 'Yes' : 'No',
+        b.active !== false ? 'Yes' : 'No',
+        b.image_url || '',
+        b.icon || ''
+      ]);
+      const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `bundles_${selectedPillar}_${new Date().toISOString().slice(0,10)}.csv`;
+      link.click();
+      toast({ title: 'Exported!', description: `${allBundles.length} bundles exported to CSV` });
+    } catch (err) {
+      toast({ title: 'Export Failed', description: err.message, variant: 'destructive' });
+    }
+  };
   
   return (
     <div className="p-6 space-y-6" data-testid="bundles-manager">
@@ -422,6 +462,10 @@ const BundlesManager = () => {
           <Button variant="outline" onClick={syncToProduction} className="bg-green-50 hover:bg-green-100 border-green-300">
             <CheckCircle2 className="w-4 h-4 mr-2 text-green-600" />
             Sync → Prod
+          </Button>
+          <Button variant="outline" onClick={exportToCSV} className="bg-blue-50 hover:bg-blue-100 border-blue-300">
+            <Download className="w-4 h-4 mr-2 text-blue-600" />
+            Export CSV
           </Button>
           <Button onClick={openCreateModal}>
             <Plus className="w-4 h-4 mr-2" />

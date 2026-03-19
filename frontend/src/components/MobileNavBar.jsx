@@ -49,7 +49,7 @@ const MobileNavBar = () => {
       '/stay': 'stay',
       '/travel': 'travel',
       '/dine': 'dine',
-      '/fit': 'fit',
+
       '/enjoy': 'enjoy',
       '/learn': 'learn',
       '/paperwork': 'paperwork',
