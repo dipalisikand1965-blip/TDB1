@@ -454,6 +454,36 @@ function LearnProfile({ pet, token }) {
 }
 
 
+// ─── BREED FILTER (matches Care/Play exactly — never show wrong breeds) ──────
+const KNOWN_BREEDS = [
+  'american bully','beagle','border collie','boxer','cavalier','chihuahua',
+  'chow chow','cocker spaniel','dachshund','dalmatian','doberman',
+  'english bulldog','french bulldog','german shepherd','golden retriever',
+  'great dane','husky','indie','irish setter','italian greyhound',
+  'jack russell','labrador','lhasa apso','maltese','pomeranian',
+  'poodle','pug','rottweiler','schnoodle','scottish terrier',
+  'shih tzu','st bernard','saint bernard','yorkshire',
+  'akita','australian shepherd','corgi','samoyed','spitz',
+  'bernese mountain dog','bulldog','shiba inu','weimaraner',
+];
+
+function filterBreedProducts(products, petBreed) {
+  const petLower = (petBreed || '').trim().toLowerCase();
+  const petWords = petLower.split(/\s+/).filter(w => w.length > 2);
+  return products.filter(p => {
+    const nameLower = (p.name || '').toLowerCase();
+    for (const breed of KNOWN_BREEDS) {
+      if (nameLower.includes(breed)) {
+        if (!petLower) return false;
+        if (nameLower.includes(petLower)) return true;
+        if (petWords.some(w => breed.includes(w) || breed.startsWith(w))) return true;
+        return false;
+      }
+    }
+    return true;
+  });
+}
+
 // ─── LEARN CATEGORY CONFIG (for strip pills + content modal) ────────────────
 const LEARN_CATS = [
   { id:"foundations", icon:"🎓", label:"Foundations",    dimKey:"Learn Foundations",   bg:"#EDE9FE", accent:"#7C3AED" },
@@ -490,18 +520,32 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
   const quote   = miraQ ? miraQ(petName, breed) : `Personalised for ${petName}.`;
 
   useEffect(() => {
-    if (!isOpen || !catCfg.dimKey) return;
+    if (!isOpen) return;
     setLoading(true);
+    if (category === "mira") {
+      // Mira's Picks pill → fetch AI-scored claude-picks (PET FIRST, BREED NEXT)
+      if (!pet?.id) { setLoading(false); return; }
+      const breedParam = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : "";
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=learn&limit=16&min_score=40${breedParam}`, {
+        headers: token ? { Authorization:`Bearer ${token}` } : {}
+      })
+        .then(r => r.json())
+        .then(d => setProducts(filterBreedProducts(d.picks || [], pet?.breed)))
+        .catch(() => setProducts([]))
+        .finally(() => setLoading(false));
+      return;
+    }
+    if (!catCfg.dimKey) { setLoading(false); return; }
     const params = new URLSearchParams({ pillar:"learn", category:catCfg.dimKey, limit:12 });
     if (pet?.breed) params.set("breed", pet.breed);
     fetch(`${API_URL}/api/admin/pillar-products?${params}`, {
       headers: token ? { Authorization:`Bearer ${token}` } : {}
     })
       .then(r => r.json())
-      .then(d => setProducts(d.products || []))
+      .then(d => setProducts(filterBreedProducts(d.products || [], pet?.breed)))
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
-  }, [isOpen, category, pet?.breed]);
+  }, [isOpen, category, pet?.id, pet?.breed]);
 
   if (!isOpen) return null;
   return (
@@ -612,7 +656,8 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
   // Products from pre-fetched apiProducts
   const catName = DIM_ID_TO_CATEGORY[dim.id]||"Learn Foundations";
   const catData = apiProducts[catName]||{};
-  const allRaw  = Object.values(catData).flat().filter(p => {
+  const allRaw  = filterBreedProducts(
+    Object.values(catData).flat().filter(p => {
     const sub=(p.sub_category||"").toLowerCase();
     const cat=(p.category||"").toLowerCase();
     if (dim.id==="soul")       return sub==="soul"||cat.includes("training_log")||cat.includes("treat_pouch")||cat.includes("treat_jar");
@@ -620,7 +665,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
     if (dim.id==="tricks")     return sub==="tricks";
     if (dim.id==="enrichment") return sub==="enrichment";
     return sub===dim.id||cat===dim.id||cat==="learn-essentials";
-  });
+  }), pet?.breed);
 
   const intelligent = applyMiraIntelligence(allRaw, allergies, pet);
   const subCats     = [...new Set(allRaw.map(p=>p.sub_category).filter(Boolean))];
@@ -910,7 +955,10 @@ function MiraPicksSection({ pet }) {
       fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=learn&limit=12&min_score=60&entity_type=product&breed=${breed}`).then(r=>r.ok?r.json():null),
       fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=learn&limit=6&min_score=60&entity_type=service`).then(r=>r.ok?r.json():null),
     ]).then(([pD,sD])=>{
-      const prods=pD?.picks||[],svcs=sD?.picks||[];
+      // PET FIRST, BREED NEXT: always filter results by pet's breed
+      const allProds = filterBreedProducts(pD?.picks||[], pet?.breed);
+
+      const prods=allProds,svcs=sD?.picks||[];
       const merged=[];let pi=0,si=0;
       while(pi<prods.length||si<svcs.length){
         if(pi<prods.length)merged.push(prods[pi++]);
@@ -1155,7 +1203,6 @@ const LearnSoulPage = () => {
               return(
                 <button key={cat.id} data-testid={`learn-cat-${cat.id}`}
                   onClick={()=>{
-                    if(cat.id==="mira"){miraPicksRef.current?.scrollIntoView({behavior:"smooth",block:"start"});return;}
                     setCatModal(cat.id);
                   }}
                   style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0,

@@ -363,16 +363,21 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
           }
         }
         if (preScored.length > 0) {
-          setProducts(preScored);
+          // ✅ PET FIRST: apply breed filter — never show other breed products
+          const breedFiltered = filterBreedProducts(preScored, pet?.breed);
+          setProducts(breedFiltered);
           // Generate Mira Imagines alongside real products
-          const imagines = generateCareImagines(pet, preScored);
+          const imagines = generateCareImagines(pet, breedFiltered);
           setImagines(imagines);
           return;
         }
-        // Fallback: fetch all care products, sort by mira_score
+        // Fallback: fetch all care products, sort by mira_score, apply breed filter
         const r = await fetch(`${apiUrl}/api/admin/pillar-products?pillar=care&limit=600`);
         const data = r.ok ? await r.json() : { products: [] };
-        const all = (data.products || []).filter(p => p.mira_score || p.mira_tag);
+        const all = filterBreedProducts(
+          (data.products || []).filter(p => p.mira_score || p.mira_tag),
+          pet?.breed
+        );
         const sorted = all.sort((a, b) => (b.mira_score || 0) - (a.mira_score || 0)).slice(0, 24);
         setProducts(sorted);
         // Always generate Mira Imagines for care — pet-specific, never empty
