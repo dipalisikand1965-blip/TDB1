@@ -73,24 +73,23 @@ const Footer = () => {
                 onClick={() => toggleSection('pillars')}
                 className="w-full flex items-center justify-between px-4 py-3 bg-gray-800/50 hover:bg-gray-800 transition-colors"
               >
-                <span className="font-semibold text-white text-sm">Explore Pillars</span>
+                <span className="font-semibold text-white text-sm">Pet Life Pillars</span>
                 {expandedSection === 'pillars' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </button>
               {expandedSection === 'pillars' && (
                 <div className="grid grid-cols-2 gap-2 p-4">
-                  <Link to="/celebrate" className="text-sm py-2 hover:text-pink-400 transition-colors">🎂 Celebrate</Link>
-                  <Link to="/dine" className="text-sm py-2 hover:text-pink-400 transition-colors">🍽️ Dine</Link>
-                  <Link to="/stay" className="text-sm py-2 hover:text-pink-400 transition-colors">🏨 Stay</Link>
-                  <Link to="/travel" className="text-sm py-2 hover:text-pink-400 transition-colors">✈️ Travel</Link>
-                  <Link to="/care" className="text-sm py-2 hover:text-pink-400 transition-colors">💊 Care</Link>
-                  <Link to="/enjoy" className="text-sm py-2 hover:text-pink-400 transition-colors">🎾 Enjoy</Link>
-                  <Link to="/learn" className="text-sm py-2 hover:text-pink-400 transition-colors">🎓 Learn</Link>
-                  <Link to="/paperwork" className="text-sm py-2 hover:text-pink-400 transition-colors">📄 Paperwork</Link>
-                  <Link to="/advisory" className="text-sm py-2 hover:text-pink-400 transition-colors">📋 Advisory</Link>
-                  <Link to="/emergency" className="text-sm py-2 hover:text-pink-400 transition-colors">🚨 Emergency</Link>
-                  <Link to="/farewell" className="text-sm py-2 hover:text-pink-400 transition-colors">🌈 Farewell</Link>
-                  <Link to="/adopt" className="text-sm py-2 hover:text-pink-400 transition-colors">🐾 Adopt</Link>
-                  <Link to="/shop" className="text-sm py-2 hover:text-pink-400 transition-colors">🛒 Shop</Link>
+                  <Link to="/celebrate"  className="text-sm py-2 hover:text-pink-400 transition-colors">🎂 Celebrate</Link>
+                  <Link to="/care"       className="text-sm py-2 hover:text-pink-400 transition-colors">🌿 Care</Link>
+                  <Link to="/dine"       className="text-sm py-2 hover:text-pink-400 transition-colors">🍽️ Dine</Link>
+                  <Link to="/go"         className="text-sm py-2 hover:text-pink-400 transition-colors">✈️ Go</Link>
+                  <Link to="/play"       className="text-sm py-2 hover:text-pink-400 transition-colors">🎾 Play</Link>
+                  <Link to="/learn"      className="text-sm py-2 hover:text-pink-400 transition-colors">🎓 Learn</Link>
+                  <Link to="/shop"       className="text-sm py-2 hover:text-pink-400 transition-colors">🛒 Shop</Link>
+                  <Link to="/paperwork"  className="text-sm py-2 hover:text-pink-400 transition-colors">📄 Paperwork</Link>
+                  <Link to="/emergency"  className="text-sm py-2 hover:text-pink-400 transition-colors">🚨 Emergency</Link>
+                  <Link to="/adopt"      className="text-sm py-2 hover:text-pink-400 transition-colors">🐾 Adopt</Link>
+                  <Link to="/farewell"   className="text-sm py-2 hover:text-pink-400 transition-colors">🌷 Farewell</Link>
+                  <Link to="/services"   className="text-sm py-2 hover:text-pink-400 transition-colors">🤝 Services</Link>
                 </div>
               )}
             </div>
@@ -276,21 +275,20 @@ const Footer = () => {
 
             {/* COLUMN 2 — PILLARS */}
             <div>
-              <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Pillars</h3>
+              <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Pet Life Pillars</h3>
               <ul className="space-y-2 text-sm">
-                <li><Link to="/celebrate" className="hover:text-pink-400 transition-colors">🎂 Celebrate</Link></li>
-                <li><Link to="/dine" className="hover:text-pink-400 transition-colors">🍽️ Dine</Link></li>
-                <li><Link to="/stay" className="hover:text-pink-400 transition-colors">🏨 Stay</Link></li>
-                <li><Link to="/travel" className="hover:text-pink-400 transition-colors">✈️ Travel</Link></li>
-                <li><Link to="/care" className="hover:text-pink-400 transition-colors">💊 Care</Link></li>
-                <li><Link to="/enjoy" className="hover:text-pink-400 transition-colors">🎾 Enjoy</Link></li>
-                <li><Link to="/learn" className="hover:text-pink-400 transition-colors">🎓 Learn</Link></li>
-                <li><Link to="/paperwork" className="hover:text-pink-400 transition-colors">📄 Paperwork</Link></li>
-                <li><Link to="/advisory" className="hover:text-pink-400 transition-colors">📋 Advisory</Link></li>
-                <li><Link to="/emergency" className="hover:text-pink-400 transition-colors">🚨 Emergency</Link></li>
-                <li><Link to="/farewell" className="hover:text-pink-400 transition-colors">🌈 Farewell</Link></li>
-                <li><Link to="/adopt" className="hover:text-pink-400 transition-colors">🐾 Adopt</Link></li>
-                <li><Link to="/shop" className="hover:text-pink-400 transition-colors">🛒 Shop</Link></li>
+                <li><Link to="/celebrate"  className="hover:text-pink-400 transition-colors">🎂 Celebrate</Link></li>
+                <li><Link to="/care"       className="hover:text-pink-400 transition-colors">🌿 Care</Link></li>
+                <li><Link to="/dine"       className="hover:text-pink-400 transition-colors">🍽️ Dine</Link></li>
+                <li><Link to="/go"         className="hover:text-pink-400 transition-colors">✈️ Go</Link></li>
+                <li><Link to="/play"       className="hover:text-pink-400 transition-colors">🎾 Play</Link></li>
+                <li><Link to="/learn"      className="hover:text-pink-400 transition-colors">🎓 Learn</Link></li>
+                <li><Link to="/shop"       className="hover:text-pink-400 transition-colors">🛒 Shop</Link></li>
+                <li><Link to="/paperwork"  className="hover:text-pink-400 transition-colors">📄 Paperwork</Link></li>
+                <li><Link to="/emergency"  className="hover:text-pink-400 transition-colors">🚨 Emergency</Link></li>
+                <li><Link to="/adopt"      className="hover:text-pink-400 transition-colors">🐾 Adopt</Link></li>
+                <li><Link to="/farewell"   className="hover:text-pink-400 transition-colors">🌷 Farewell</Link></li>
+                <li><Link to="/services"   className="hover:text-pink-400 transition-colors">🤝 Services</Link></li>
               </ul>
             </div>
 

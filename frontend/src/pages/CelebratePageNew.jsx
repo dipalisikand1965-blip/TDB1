@@ -44,9 +44,70 @@ import MiraSoulNudge from '../components/celebrate/MiraSoulNudge';
 import MiraBirthdayBox from '../components/celebrate/MiraBirthdayBox';
 import BirthdayBoxBuilder from '../components/celebrate/BirthdayBoxBuilder';
 import BirthdayBoxBrowseDrawer from '../components/celebrate/BirthdayBoxBrowseDrawer';
+import CelebrateNearMe from '../components/celebrate/CelebrateNearMe';
+import MiraImaginesCard from '../components/common/MiraImaginesCard';
+import { useMiraIntelligence, getMiraIntelligenceSubtitle } from '../hooks/useMiraIntelligence';
 
 // API utilities
-import { getApiUrl } from '../utils/api';
+import { getApiUrl, API_URL } from '../utils/api';
+
+// ─── KNOWN BREEDS (breed filter — PET FIRST, BREED NEXT) ────────────
+const KNOWN_BREEDS = ['american bully','beagle','border collie','boxer','cavalier','chihuahua','chow chow','dachshund','dalmatian','doberman','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','jack russell','labrador','lhasa apso','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
+function filterBreedProducts(products, petBreed) {
+  const petLower=(petBreed||"").toLowerCase(); const petWords=petLower.split(/\s+/).filter(w=>w.length>2);
+  return products.filter(p=>{const nm=(p.name||"").toLowerCase();for(const b of KNOWN_BREEDS){if(nm.includes(b)){if(!petLower)return false;if(nm.includes(petLower))return true;if(petWords.some(w=>b.includes(w)))return true;return false;}}return true;});
+}
+
+// ─── MIRA PICKS SECTION ───────────────────────────────────────────────
+function CelebrateMiraPicksSection({ pet, token }) {
+  const [picks, setPicks]         = useState([]);
+  const [picksLoading, setPicksLoading] = useState(true);
+  const { note, orderCount, topInterest } = useMiraIntelligence(pet?.id, token);
+  const petName = pet?.name || "your dog";
+  const breed   = (pet?.breed||"").split("(")[0].trim();
+  const subtitle = getMiraIntelligenceSubtitle(petName, note, orderCount, topInterest);
+  const imagines = [
+    {id:"cel-1",emoji:"🎂",name:`${petName}'s Birthday Cake`,description:breed?`A custom ${breed} birthday cake from The Doggy Bakery — made for ${petName}'s breed.`:`A custom birthday cake made just for ${petName} — baked with love.`},
+    {id:"cel-2",emoji:"🎁",name:`${petName}'s Celebration Box`,description:`Curated birthday box: cake, bandana, toy and treats — personalised for ${breed||petName}.`},
+    {id:"cel-3",emoji:"📸",name:`${petName}'s Memory Portrait`,description:breed?`A watercolour portrait of ${petName} the ${breed} — capture this moment forever.`:`A personalised watercolour portrait of ${petName} to keep forever.`},
+  ];
+  useEffect(()=>{
+    if(!pet?.id){setPicksLoading(false);return;}
+    setPicks([]);setPicksLoading(true);
+    const breedParam=encodeURIComponent((pet?.breed||"").toLowerCase().trim());
+    fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=celebrate&limit=12&min_score=60&breed=${breedParam}`)
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{const f=filterBreedProducts(d?.picks||[],pet?.breed);if(f.length)setPicks(f.slice(0,12));setPicksLoading(false);})
+      .catch(()=>setPicksLoading(false));
+  },[pet?.id,pet?.breed]);
+  return (
+    <section style={{marginBottom:32}}>
+      <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:4}}>
+        <h3 style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:"#1a0a2e",margin:0,fontFamily:"Georgia,serif"}}>
+          Mira's Picks for <span style={{color:"#C44DFF"}}>{petName}</span>
+        </h3>
+        <span style={{fontSize:11,background:"linear-gradient(135deg,#C44DFF,#FF6B9D)",color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>{picks.length>0?"AI Scored":"Pet Specific"}</span>
+      </div>
+      <p style={{fontSize:13,color:"#888",marginBottom:16,lineHeight:1.5}}>{subtitle}</p>
+      {!picksLoading&&picks.length===0&&(
+        <div style={{display:"flex",gap:12,overflowX:"auto",paddingBottom:8,scrollbarWidth:"none"}}>
+          {imagines.map(item=><MiraImaginesCard key={item.id} item={item} pet={pet} token={token} pillar="celebrate"/>)}
+        </div>
+      )}
+      {picksLoading&&<div style={{fontSize:12,color:"#aaa",padding:"8px 0"}}>Mira is scoring celebration picks for {petName}…</div>}
+      {!picksLoading&&picks.length>0&&(
+        <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}}>
+          {picks.map((pick,i)=>{const score=pick.mira_score||0;const col=score>=80?"#16A34A":score>=70?"#C44DFF":"#6B7280";const img=[pick.image_url,pick.image].find(u=>u&&u.startsWith("http"))||null;return(
+            <div key={i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:"1.5px solid rgba(196,77,255,0.15)",overflow:"hidden",cursor:"pointer",transition:"transform 0.15s"}} onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e=>e.currentTarget.style.transform=""}>
+              <div style={{width:"100%",height:130,background:"#FAF5FF",overflow:"hidden",position:"relative"}}>{img?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>:<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#3B0764,#7C3AED)",color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,18)}</div>}</div>
+              <div style={{padding:"10px 11px 12px"}}><div style={{fontSize:12,fontWeight:700,color:"#1a0a2e",lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||"—"}</div><div style={{display:"flex",alignItems:"center",gap:5}}><div style={{flex:1,height:4,background:"#FAF5FF",borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:col,borderRadius:4}}/></div><span style={{fontSize:10,fontWeight:800,color:col,minWidth:26}}>{score}</span></div></div>
+            </div>
+          );})}
+        </div>
+      )}
+    </section>
+  );
+}
 
 // Empty State when no pet
 const NoPetState = ({ onAddPet }) => (
@@ -324,6 +385,9 @@ const CelebratePageNew = () => {
           onCategorySelect={handleCategorySelect}
         />
 
+        {/* MIRA'S CELEBRATION PICKS — imagines immediately + AI scored below */}
+        <CelebrateMiraPicksSection pet={selectedPet} token={token}/>
+
         {/* 3. SOUL CELEBRATION PILLARS — "How would Mojo love to celebrate?" */}
         <SoulCelebrationPillars 
           pet={selectedPet}
@@ -353,6 +417,15 @@ const CelebratePageNew = () => {
           pet={selectedPet}
           onSelectPath={handleSelectPath}
         />
+
+        {/* FIND CELEBRATE — Google Places: venues, photographers, groomers */}
+        <section style={{marginBottom:32}}>
+          <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:"#1a0a2e",marginBottom:4,fontFamily:"Georgia,serif"}}>
+            Find celebration help for <span style={{color:"#C44DFF"}}>{selectedPet?.name||"your dog"}</span>
+          </h2>
+          <p style={{fontSize:13,color:"#888",marginBottom:16}}>Pet photographers, venues, groomers and boutiques near you — curated by Mira.</p>
+          <CelebrateNearMe pet={selectedPet} token={token}/>
+        </section>
 
         {/* 7. CELEBRATION WALL */}
         <CelebrationMemoryWall 

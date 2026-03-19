@@ -1498,7 +1498,7 @@ function LearnPetBadge({ pet }) {
         display:'flex', alignItems:'center', justifyContent:'center',
         fontSize:22, overflow:'hidden', flexShrink:0 }}>
         {(pet?.photo_url||pet?.avatar_url)
-          ? <img src={pet.photo_url||pet.avatar_url} alt={pet?.name||""} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+          ? <img src={pet.photo_url||pet.avatar_url} alt={pet?.name||""} style={{ width:'100%', height:'100%', objectFit:'cover' }} loading="eager" decoding="sync"/>
           : <span>{pet?.avatar||'🐕'}</span>}
       </div>
       <div>
@@ -1789,7 +1789,7 @@ const LearnSoulPage = () => {
             background:`linear-gradient(135deg,${G.pale},${G.violet})`,
             display:"flex",alignItems:"center",justifyContent:"center",fontSize:32,color:"#fff"}}>
             {(petData?.photo_url || petData?.avatar_url)
-              ? <img src={petData.photo_url||petData.avatar_url} alt={petName} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
+              ? <img src={petData.photo_url||petData.avatar_url} alt={petName} style={{width:"100%",height:"100%",objectFit:"cover"}} loading="eager" onError={e=>{e.target.style.display="none";}}/>
               : <span>{petData?.avatar||"🐕"}</span>}
           </div>
           <div style={{marginTop:-8,background:`linear-gradient(135deg,#1A1363,${G.violet})`,
