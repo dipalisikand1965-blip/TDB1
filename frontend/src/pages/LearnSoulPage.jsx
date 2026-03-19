@@ -417,7 +417,7 @@ function LearnProfile({ pet, token }) {
                             {q.options.map(opt => {
                               const sel = q.type==="single"?qAns[0]===opt:qAns.includes(opt);
                               return (
-                                <button key={opt} onClick={e=>{e.stopPropagation();toggle(q.id,opt,q.type==="single");}}
+                                <button key={opt} onClick={e=>{e.stopPropagation();e.preventDefault();toggle(q.id,opt,q.type==="single");}}
                                   style={{ borderRadius:20, padding:"5px 12px", fontSize:11, fontWeight:sel?700:400,
                                     cursor:"pointer", background:sel?G.pale:"#F5F5F5",
                                     border:sel?`1.5px solid ${G.violet}`:"1px solid #E0E0E0",
@@ -427,7 +427,7 @@ function LearnProfile({ pet, token }) {
                               );
                             })}
                           </div>
-                          <button onClick={e=>{e.stopPropagation();save(q);}} disabled={isSend||!hasAns}
+                          <button onClick={e=>{e.stopPropagation();e.preventDefault();save(q);}} disabled={isSend||!hasAns}
                             style={{ width:"100%", borderRadius:10, padding:"9px", fontSize:12, fontWeight:700,
                               color:"#fff", border:"none", cursor:isSend?"wait":!hasAns?"not-allowed":"pointer",
                               background:!hasAns?`${G.violet}44`:`linear-gradient(135deg,${G.violet},${G.mid})`,
@@ -454,7 +454,116 @@ function LearnProfile({ pet, token }) {
 }
 
 
-// ─── VIDEO CARD ───────────────────────────────────────────────
+// ─── LEARN CATEGORY CONFIG (for strip pills + content modal) ────────────────
+const LEARN_CATS = [
+  { id:"foundations", icon:"🎓", label:"Foundations",    dimKey:"Learn Foundations",   bg:"#EDE9FE", accent:"#7C3AED" },
+  { id:"behaviour",   icon:"🧠", label:"Behaviour",      dimKey:"Behaviour & Impulse",  bg:"#FFF3E0", accent:"#F57C00" },
+  { id:"training",    icon:"🏆", label:"Training",       dimKey:"Training Basics",      bg:"#E3F2FD", accent:"#1565C0" },
+  { id:"tricks",      icon:"✨", label:"Tricks & Fun",   dimKey:"Tricks & Games",       bg:"#FCE4EC", accent:"#C2185B" },
+  { id:"enrichment",  icon:"🧩", label:"Enrichment",     dimKey:"Enrichment & IQ",      bg:"#E8F5E9", accent:"#2E7D32" },
+  { id:"breed",       icon:"📚", label:"Know Your Breed",dimKey:"Breed Knowledge",      bg:"#FFF8E1", accent:"#FF8F00" },
+  { id:"soul",        icon:"🌟", label:"Soul Learn",     dimKey:"Soul Learn Products",  bg:"#F3E5F5", accent:"#7B1FA2" },
+  { id:"mira",        icon:"✦",  label:"Mira's Picks",  dimKey:null,                   bg:"#E8EAF6", accent:"#3949AB" },
+];
+
+const LEARN_MIRA_QUOTES = {
+  foundations: (n,b) => b ? `I built ${n}'s foundation plan around ${b} traits — short, rewarding sessions.` : `Every great learner starts here. ${n}'s foundation programme is ready.`,
+  behaviour:   (n) => `Behaviour shapes everything. I picked the gentlest, most effective tools for ${n}.`,
+  training:    (n,b) => b ? `${b}s respond best to specific techniques — I filtered everything for ${n}.` : `Training unlocks connection. These are ranked for ${n}'s energy and age.`,
+  tricks:      (n) => `Learning through play is the fastest path. ${n} will love these.`,
+  enrichment:  (n) => `Mental enrichment is as important as physical. These are top-rated for ${n}'s IQ.`,
+  breed:       (n,b) => b ? `Everything I know about ${b}s — in one place, personalised for ${n}.` : `Know your breed, know your dog. Personalised for ${n}.`,
+  soul:        (n,b) => b ? `${n}'s ${b} soul — journals, pouches, and guides made just for your breed.` : `Soulful learning tools made just for ${n}.`,
+  mira:        (n) => `My top learning picks for ${n} — ranked by fit, not popularity.`,
+};
+
+// ─── LEARN CONTENT MODAL (opens from category strip pill) ───────────────────
+function LearnContentModal({ isOpen, onClose, category, pet }) {
+  const [products, setProducts]   = useState([]);
+  const [loading,  setLoading]    = useState(false);
+  const [selProd,  setSelProd]    = useState(null);
+  const { token } = useAuth();
+  const catCfg = LEARN_CATS.find(c => c.id === category) || {};
+  const petName = pet?.name || "your dog";
+  const breed   = pet?.breed ? pet.breed.split("(")[0].trim() : "";
+  const miraQ   = LEARN_MIRA_QUOTES[category];
+  const quote   = miraQ ? miraQ(petName, breed) : `Personalised for ${petName}.`;
+
+  useEffect(() => {
+    if (!isOpen || !catCfg.dimKey) return;
+    setLoading(true);
+    const params = new URLSearchParams({ pillar:"learn", category:catCfg.dimKey, limit:12 });
+    if (pet?.breed) params.set("breed", pet.breed);
+    fetch(`${API_URL}/api/admin/pillar-products?${params}`, {
+      headers: token ? { Authorization:`Bearer ${token}` } : {}
+    })
+      .then(r => r.json())
+      .then(d => setProducts(d.products || []))
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false));
+  }, [isOpen, category, pet?.breed]);
+
+  if (!isOpen) return null;
+  return (
+    <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:11000,background:"rgba(0,0,0,0.72)",
+      display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+      <div onClick={e=>e.stopPropagation()} data-testid={`learn-cat-modal-${category}`}
+        style={{width:"min(700px,100%)",maxHeight:"88vh",overflowY:"auto",borderRadius:20,
+          background:"#fff",boxShadow:"0 24px 80px rgba(0,0,0,0.45)",display:"flex",flexDirection:"column"}}>
+        {/* Header */}
+        <div style={{borderRadius:"20px 20px 0 0",padding:"20px 22px 16px",
+          background:`linear-gradient(135deg,#1A1363 0%,${G.deep} 70%,${G.mid} 100%)`,
+          flexShrink:0,position:"sticky",top:0,zIndex:2}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              <div style={{width:38,height:38,borderRadius:10,background:catCfg.bg||"#EDE9FE",
+                display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}}>
+                {catCfg.icon}
+              </div>
+              <div>
+                <p style={{fontWeight:800,color:"#fff",fontSize:15,margin:0}}>{catCfg.label}</p>
+                <p style={{color:"rgba(255,255,255,0.55)",fontSize:11,margin:0}}>For {petName}{breed?` · ${breed}`:""}</p>
+              </div>
+            </div>
+            <button onClick={onClose} style={{background:"rgba(255,255,255,0.10)",border:"1px solid rgba(255,255,255,0.15)",
+              borderRadius:20,width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",
+              cursor:"pointer",color:"rgba(255,255,255,0.70)",fontSize:16}}>✕</button>
+          </div>
+          {/* Mira quote */}
+          <div style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",
+            borderRadius:10,padding:"8px 12px",display:"flex",alignItems:"flex-start",gap:8}}>
+            <span style={{fontSize:13,color:G.light,flexShrink:0}}>✦</span>
+            <p style={{fontSize:12,color:"rgba(255,255,255,0.80)",fontStyle:"italic",margin:0,lineHeight:1.5}}>{quote}</p>
+          </div>
+        </div>
+        {/* Body */}
+        <div style={{padding:"18px 20px"}}>
+          {loading && (
+            <div style={{textAlign:"center",padding:"32px 0"}}>
+              <Loader2 size={24} style={{color:G.violet,animation:"spin 1s linear infinite"}}/>
+            </div>
+          )}
+          {!loading && products.length === 0 && (
+            <div style={{textAlign:"center",padding:"32px 0",color:"#888"}}>
+              <div style={{fontSize:32,marginBottom:10}}>📦</div>
+              <p style={{fontWeight:600,marginBottom:4}}>Products being added</p>
+              <p style={{fontSize:12}}>Mira is curating {petName}'s {catCfg.label} kit — check back soon.</p>
+            </div>
+          )}
+          {!loading && products.length > 0 && (
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))",gap:12}}>
+              {products.map(p => (
+                <SharedProductCard key={p.id||p._id} product={p} pet={pet}
+                  onViewDetails={() => setSelProd(p)} accentColor={catCfg.accent||G.violet}/>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+      {selProd && <ProductDetailModal product={selProd} pet={pet} onClose={()=>setSelProd(null)}/>}
+    </div>
+  );
+}
 function VideoCard({ video, onPlay }) {
   const views = video.view_count
     ? parseInt(video.view_count)>1000000 ? `${(parseInt(video.view_count)/1000000).toFixed(1)}M views`
@@ -806,6 +915,7 @@ const LearnSoulPage = () => {
   const [loading,     setLoading]     = useState(true);
   const [activeTab,   setActiveTab]   = useState("learn");
   const [openDim,     setOpenDim]     = useState(null);
+  const [catModal,    setCatModal]    = useState(null);
   const [petData,     setPetData]     = useState(null);
   const [soulScore,   setSoulScore]   = useState(0);
   const [apiProducts, setApiProducts] = useState({});
@@ -919,8 +1029,8 @@ const LearnSoulPage = () => {
           </span>
         </div>
 
-        {/* H1 */}
-        <h1 style={{fontSize:"clamp(1.5rem,4.5vw,2.2rem)",fontWeight:900,color:"#fff",
+        {/* H1 — same size as Care hero */}
+        <h1 style={{fontSize:"clamp(1.875rem,4vw,2.5rem)",fontWeight:900,color:"#fff",
           marginBottom:12,lineHeight:1.15,fontFamily:"Georgia,'Times New Roman',serif",textAlign:"center"}}>
           Learn & Grow for <span style={{color:G.light}}>{petName}</span>
         </h1>
@@ -957,39 +1067,34 @@ const LearnSoulPage = () => {
 
       <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{background:G.pageBg,fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"}}>
 
-        {/* Category strip — scrollable pill row */}
-        <div style={{background:"#fff",borderBottom:`1px solid ${G.borderLight}`,padding:"0 4px"}}>
-          <div style={{display:"flex",gap:6,overflowX:"auto",padding:"10px 8px",scrollbarWidth:"none"}}>
-            <style>{`.learn-strip::-webkit-scrollbar{display:none}`}</style>
-            <div className="learn-strip" style={{display:"flex",gap:6,flexWrap:"nowrap"}}>
-            {[
-              {id:"foundations",icon:"🎓",label:"Foundations"},
-              {id:"behaviour",  icon:"🧠",label:"Behaviour"},
-              {id:"training",   icon:"🏆",label:"Training"},
-              {id:"tricks",     icon:"✨",label:"Tricks & Fun"},
-              {id:"enrichment", icon:"🧩",label:"Enrichment"},
-              {id:"breed",      icon:"📚",label:"Know Your Breed"},
-              {id:"soul",       icon:"🌟",label:"Soul Learn"},
-              {id:"mira",       icon:"✦", label:"Mira's Picks"},
-            ].map(s=>{
-              const sel=openDim===s.id;
+        {/* Category strip — Care-style icon+label pills with content modal */}
+        <div style={{background:"#fff",borderBottom:`1px solid ${G.borderLight}`,position:"relative"}}>
+          <div style={{display:"flex",overflowX:"auto",scrollbarWidth:"none",padding:"8px 12px",gap:4}}>
+            {LEARN_CATS.map(cat=>{
+              const isActive=openDim===cat.id;
               return(
-                <button key={s.id}
+                <button key={cat.id} data-testid={`learn-cat-${cat.id}`}
                   onClick={()=>{
-                    if(s.id==="mira"){miraPicksRef.current?.scrollIntoView({behavior:"smooth",block:"start"});return;}
-                    setOpenDim(sel?null:s.id);
-                    setActiveTab("learn");
+                    if(cat.id==="mira"){miraPicksRef.current?.scrollIntoView({behavior:"smooth",block:"start"});return;}
+                    setCatModal(cat.id);
                   }}
-                  style={{display:"inline-flex",alignItems:"center",gap:5,flexShrink:0,padding:"7px 14px",
-                    borderRadius:9999,border:`1.5px solid ${sel?G.violet:"rgba(124,58,237,0.25)"}`,
-                    background:sel?G.violet:"#fff",color:sel?"#fff":G.mutedText,
-                    fontSize:12,fontWeight:sel?700:400,cursor:"pointer",transition:"all 0.15s",
-                    whiteSpace:"nowrap"}}>
-                  <span style={{fontSize:13}}>{s.icon}</span>{s.label}
+                  style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0,
+                    minWidth:82,height:72,padding:"10px 12px",cursor:"pointer",background:"transparent",
+                    border:"none",borderBottom:`3px solid ${isActive?G.violet:"transparent"}`,
+                    transition:"border-color 150ms ease"}}>
+                  <div style={{width:34,height:34,borderRadius:10,background:cat.bg,
+                    display:"flex",alignItems:"center",justifyContent:"center",
+                    fontSize:18,marginBottom:4,flexShrink:0}}>
+                    {cat.icon}
+                  </div>
+                  <span style={{fontSize:10,fontWeight:isActive?700:500,color:isActive?G.violet:"#555",
+                    whiteSpace:"nowrap",maxWidth:80,overflow:"hidden",textOverflow:"ellipsis",
+                    textAlign:"center",lineHeight:1.2}}>
+                    {cat.label}
+                  </span>
                 </button>
               );
             })}
-            </div>
           </div>
         </div>
 
@@ -1099,6 +1204,12 @@ const LearnSoulPage = () => {
     <ConciergeToast
       toast={toastVisible ? { name: toastSvc, pillar: "learn" } : null}
       onClose={()=>setToastVisible(false)}
+    />
+    <LearnContentModal
+      isOpen={!!catModal}
+      onClose={()=>setCatModal(null)}
+      category={catModal}
+      pet={petData}
     />
     </>
   );
