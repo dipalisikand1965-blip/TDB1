@@ -28,7 +28,7 @@ function getAllergies(pet) {
 // ── SoulChip ───────────────────────────────────────────────────
 const SoulChip = ({ icon, label, value, chipStyle }) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.9 }}
+    initial={{ opacity: 1, scale: 1 }}
     animate={{ opacity: 1, scale: 1 }}
     className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs text-white"
     style={chipStyle}
@@ -74,7 +74,7 @@ const MiraQuoteCard = ({ pet }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 1, y: 0 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
       className="inline-flex items-start gap-2.5 rounded-xl p-3 mt-4"
@@ -189,7 +189,7 @@ const CareHero = ({ pet, soulScore }) => {
       >
         {/* Avatar */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={{ opacity: 1, scale: 1 }}
           animate={{ opacity: 1, scale: 1 }}
           className="flex-shrink-0 flex flex-col items-center"
         >
@@ -231,7 +231,7 @@ const CareHero = ({ pet, soulScore }) => {
         <div className="flex-1 flex flex-col items-center text-center">
           {/* Eyebrow chip */}
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 mb-3 text-[11px]"
             style={{
@@ -245,7 +245,7 @@ const CareHero = ({ pet, soulScore }) => {
 
           {/* Title */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
             style={{ lineHeight: 1.1, marginBottom: 8 }}
           >
@@ -273,7 +273,7 @@ const CareHero = ({ pet, soulScore }) => {
 
           {/* Subtitle */}
           <motion.p
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1 }}
             className="text-sm mb-4"
@@ -285,7 +285,7 @@ const CareHero = ({ pet, soulScore }) => {
           {/* Soul chips */}
           {soulChips.length > 0 && (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 1, y: 0 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="flex flex-wrap justify-center gap-2 mb-2"

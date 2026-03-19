@@ -246,6 +246,8 @@ const PaperworkSoulPage = lazy(() => import("./pages/PaperworkSoulPage"));
 const EmergencySoulPage = lazy(() => import("./pages/EmergencySoulPage"));
 const AdoptSoulPage     = lazy(() => import("./pages/AdoptSoulPage"));
 const FarewellSoulPage  = lazy(() => import("./pages/FarewellSoulPage"));
+const ShopSoulPage      = lazy(() => import("./pages/ShopSoulPage"));
+const ServicesSoulPage  = lazy(() => import("./pages/ServicesSoulPage"));
 const LearnTopicPage = lazy(() => import("./pages/LearnTopicPage"));
 const AdvisoryPage = lazy(() => import("./pages/AdvisoryPage"));
 const PaperworkPage = lazy(() => import("./pages/PaperworkPage"));
@@ -636,6 +638,8 @@ function MainLayout() {
         <Route path="/emergency" element={<ProtectedRoute><EmergencySoulPage /></ProtectedRoute>} />
         <Route path="/adopt"     element={<ProtectedRoute><AdoptSoulPage /></ProtectedRoute>} />
         <Route path="/farewell"  element={<ProtectedRoute><FarewellSoulPage /></ProtectedRoute>} />
+        <Route path="/shop"      element={<ProtectedRoute><ShopSoulPage /></ProtectedRoute>} />
+        <Route path="/services"  element={<ProtectedRoute><ServicesSoulPage /></ProtectedRoute>} />
         <Route path="/learn/topic/:topicSlug" element={<LearnTopicPage />} />
         <Route path="/learn/training" element={<ProductListing category="training" pillar="learn" />} />
         <Route path="/learn/puzzles" element={<ProductListing category="puzzles" pillar="learn" />} />

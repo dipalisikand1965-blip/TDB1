@@ -346,7 +346,7 @@ const EmergencySoulPage = () => {
         <div style={{position:"absolute",top:20,right:20,width:44,height:44,borderRadius:"50%",background:MIRA_ORB,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,boxShadow:"0 0 24px rgba(220,38,38,0.50)"}}>✦</div>
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:10}}>
           <div style={{width:80,height:80,borderRadius:"50%",overflow:"hidden",border:"3px solid rgba(255,255,255,0.30)",boxShadow:"0 0 0 3px rgba(220,38,38,0.40)",background:`linear-gradient(135deg,${G.light},${G.crimson})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:32,color:"#fff"}}>
-            {(petData?.photo_url)?<img src={petData.photo_url} alt={petName} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>:<span>{petData?.avatar||"🐕"}</span>}
+            {(petData?.photo_url)?<img src={petData.photo_url} alt={petName} loading="eager" style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>:<span>{petData?.avatar||"🐕"}</span>}
           </div>
           <div style={{marginTop:-8,background:`linear-gradient(135deg,${G.deep},${G.crimson})`,borderRadius:20,padding:"3px 10px",fontSize:9,fontWeight:700,color:"#fff",border:"1.5px solid rgba(255,255,255,0.25)",whiteSpace:"nowrap"}}>
             Readiness {readinessScore}%

@@ -18,160 +18,73 @@ const PILLARS = [
     id: 'celebrate',
     name: 'Celebrate',
     icon: '🎂',
-    path: '/celebrate',
-    dropdown: [
-      { name: 'Celebrate By Concierge®', path: '/celebrate', highlight: true },
-      { name: 'Birthday Cakes', path: '/celebrate/cakes' },
-      { name: 'Custom Cake', path: '/custom-cake' },
-      { name: 'Breed Cakes', path: '/celebrate/breed-cakes' },
-      { name: 'Pupcakes & Dognuts', path: '/celebrate/pupcakes' },
-      { name: 'Treats', path: '/celebrate/treats' },
-      { name: 'Desi Treats', path: '/celebrate/desi' },
-      { name: 'Gift Hampers', path: '/celebrate/hampers' },
-      { name: 'Accessories', path: '/celebrate/accessories' },
-    ]
+    path: '/celebrate'
   },
   {
     id: 'dine',
     name: 'Dine',
     icon: '🍽️',
-    path: '/dine',
-    dropdown: [
-      { name: 'Dine By Concierge®', path: '/dine', highlight: true },
-      { name: 'Pet Restaurants', path: '/dine' },
-      { name: 'Fresh Meals', path: '/dine/meals' },
-      { name: 'Meal Plans', path: '/meal-plan' },
-    ]
+    path: '/dine'
   },
   {
     id: 'go',
     name: 'Go',
     icon: '✈️',
-    path: '/go',
-    dropdown: [
-      { name: 'Go By Concierge®', path: '/go', highlight: true },
-      { name: 'Flight Coordination', path: '/go?type=flight' },
-      { name: 'Pet Taxi & Road', path: '/go?type=taxi' },
-      { name: 'Boarding & Stay', path: '/go?type=boarding' },
-      { name: 'Relocation', path: '/go?type=relocation' },
-      { name: 'Travel Planning', path: '/go?type=planning' },
-    ]
+    path: '/go'
   },
   {
     id: 'care',
     name: 'Care',
     icon: '💊',
-    path: '/care',
-    dropdown: [
-      { name: 'Care By Concierge®', path: '/care', highlight: true },
-      { name: 'Grooming', path: '/care?type=grooming' },
-      { name: 'Vet Care', path: '/care?type=vet' },
-      { name: 'Pet Sitting', path: '/care?type=sitting' },
-      { name: 'Dog Walking', path: '/care?type=walking' },
-    ]
+    path: '/care'
   },
   {
     id: 'play',
     name: 'Play',
     icon: '🎾',
-    path: '/play',
-    dropdown: [
-      { name: 'Play By Concierge®', path: '/play', highlight: true },
-      { name: 'Find Play Spots', path: '/play', highlight: false },
-      { name: 'Playdates', path: '/play' },
-      { name: 'Fitness', path: '/play' },
-    ]
+    path: '/play'
   },
   {
     id: 'learn',
     name: 'Learn',
     icon: '🎓',
-    path: '/learn',
-    dropdown: [
-      { name: 'Learn By Concierge®', path: '/learn', highlight: true },
-      { name: 'Training Classes', path: '/learn' },
-      { name: 'Puppy School', path: '/learn?type=puppy' },
-      { name: 'Behaviour', path: '/learn?type=behaviour' },
-    ]
+    path: '/learn'
   },
   {
     id: 'paperwork',
     name: 'Paperwork',
     icon: '📄',
-    path: '/paperwork',
-    dropdown: [
-      { name: 'Pet Passport', path: '/paperwork?type=passport' },
-      { name: 'Health Records', path: '/paperwork?type=records' },
-      { name: 'Registration', path: '/paperwork?type=registration' },
-    ]
-  },
-  {
-    id: 'advisory',
-    name: 'Advisory',
-    icon: '📋',
-    path: '/advisory',
-    dropdown: [
-      { name: 'Expert Consult', path: '/advisory' },
-      { name: 'Nutrition', path: '/advisory?type=nutrition' },
-      { name: 'Behaviour', path: '/advisory?type=behaviour' },
-    ]
+    path: '/paperwork'
   },
   {
     id: 'emergency',
     name: 'Emergency',
     icon: '🚨',
-    path: '/emergency',
-    dropdown: [
-      { name: '24/7 Helpline', path: '/emergency' },
-      { name: 'Emergency Vets', path: '/emergency?type=vet' },
-      { name: 'First Aid', path: '/emergency?type=firstaid' },
-    ]
+    path: '/emergency'
   },
   {
     id: 'farewell',
     name: 'Farewell',
     icon: '🌈',
-    path: '/farewell',
-    dropdown: [
-      { name: 'Memorial', path: '/farewell' },
-      { name: 'Cremation', path: '/farewell?type=cremation' },
-      { name: 'Grief Support', path: '/farewell?type=support' },
-    ]
+    path: '/farewell'
   },
   {
     id: 'adopt',
     name: 'Adopt',
     icon: '🐾',
-    path: '/adopt',
-    dropdown: [
-      { name: 'Find a Pet', path: '/adopt' },
-      { name: 'Foster', path: '/adopt?type=foster' },
-      { name: 'Shelters', path: '/adopt?type=shelter' },
-    ]
+    path: '/adopt'
   },
   {
     id: 'shop',
     name: 'Shop',
     icon: '🛒',
-    path: '/shop',
-    dropdown: [
-      { name: 'All Products', path: '/shop' },
-      { name: 'Food & Treats', path: '/shop?category=food' },
-      { name: 'Toys', path: '/shop?category=toys' },
-      { name: 'Accessories', path: '/shop?category=accessories' },
-    ]
+    path: '/shop'
   },
   {
     id: 'services',
     name: 'Services',
     icon: '✨',
-    path: '/services',
-    dropdown: [
-      { name: 'All Services', path: '/services', highlight: true },
-      { name: 'Care & Grooming', path: '/services?pillar=care' },
-      { name: 'Training', path: '/services?pillar=learn' },
-      { name: 'Travel & Stay', path: '/services?pillar=travel' },
-    ]
+    path: '/services'
   },
 ];
 
@@ -998,8 +911,8 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Right Side Actions */}
-            <div className="flex items-center gap-2">
+            {/* Right Side Actions — pushed to right */}
+            <div className="flex items-center gap-2 ml-auto">
               
               {/* Account - Cleaner single-line design */}
               <Link 
@@ -1161,27 +1074,24 @@ const Navbar = () => {
       {/* Pillars Navigation Row - Clean text only */}
       <nav className="hidden lg:block bg-slate-800 text-white text-sm border-t border-slate-700" ref={dropdownRef}>
         <div className="max-w-7xl mx-auto px-2">
-          <ul className="flex items-center">
+          <ul className="flex items-center justify-center">
             {PILLARS.map((pillar, index) => (
               <li 
                 key={pillar.id} 
                 className="relative"
-                onMouseEnter={() => handleMouseEnter(pillar.id)}
-                onMouseLeave={handleMouseLeave}
               >
                 <Link
                   to={pillar.path}
-                  className={`flex items-center gap-1 px-3 py-2.5 transition-all font-medium hover:bg-slate-700 hover:text-pink-400 ${
+                  className={`flex items-center gap-1 px-3 py-2.5 transition-colors font-medium hover:bg-slate-700 hover:text-pink-400 ${
                     isActive(pillar.path) ? 'bg-slate-700 text-pink-400' : ''
                   }`}
                   data-testid={`nav-${pillar.id}`}
                 >
                   {pillar.name}
-                  <ChevronDown className="w-3 h-3 opacity-60" />
                 </Link>
 
-                {/* Beautiful Dropdown Menu - Dark theme to match nav */}
-                {pillar.dropdown && activeDropdown === pillar.id && (
+                {/* Dropdowns hidden — pillars use their own pages */}
+                {false && pillar.dropdown && activeDropdown === pillar.id && (
                   <div 
                     data-testid={`dropdown-${pillar.id}`}
                     className={`absolute top-full ${getDropdownPosition(index)} w-52 shadow-2xl rounded-lg py-2 z-[9999]`}
@@ -1424,8 +1334,8 @@ const Navbar = () => {
                     </div>
                     <ChevronRight className="w-4 h-4 text-gray-400" />
                   </Link>
-                  {/* Mobile Sub-Items */}
-                  {pillar.dropdown && pillar.dropdown.length > 0 && (
+                  {/* Mobile sub-items hidden — pillars use their own pages */}
+                  {false && pillar.dropdown && pillar.dropdown.length > 0 && (
                     <div className="border-t border-gray-100 bg-gray-50/50 px-3 py-2 space-y-1">
                       {pillar.dropdown.slice(0, 4).map((item) => (
                         <Link

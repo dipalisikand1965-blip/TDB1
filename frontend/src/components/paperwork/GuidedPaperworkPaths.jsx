@@ -321,39 +321,53 @@ function PathFlowModal({ path, pet, onClose }) {
   </ModalShell>);
 }
 
-// ─── EXPORT ──────────────────────────────────────────────────
-export default function GuidedPaperworkPaths({ pet }) {
-  const [openPath,setOpenPath]=useState(null); const [activePath,setActivePath]=useState(null); const [showAll,setShowAll]=useState(false);
-  const allPaths=buildPaths(pet); const paths=showAll?allPaths:allPaths.slice(0,3); const petName=pet?.name||"your dog";
+// ─── PATH CARD — Care/Learn 3-column style ───────────────────
+function PathCard({ path, pet, onOpen }) {
+  const petName = pet?.name || 'your dog';
   return (
-    <div style={{ marginBottom:32 }}>
-      {activePath&&<PathFlowModal path={allPaths.find(p=>p.id===activePath)} pet={pet} onClose={()=>setActivePath(null)}/>}
-      <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:4 }}>
-        <div style={{ fontSize:20, fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif" }}>Guided Document Paths</div>
-        <button onClick={()=>setShowAll(!showAll)} style={{ background:"none", border:`1.5px solid ${G.light}`, borderRadius:20, padding:"5px 14px", fontSize:12, fontWeight:600, color:G.teal, cursor:"pointer" }}>{showAll?"Show less":`See all ${allPaths.length}`}</button>
+    <div onClick={onOpen}
+      style={{ background:'#fff', borderRadius:16, border:`2px solid rgba(13,148,136,0.14)`,
+        padding:'20px', cursor:'pointer', transition:'all 0.18s',
+        ...(path.miraPick?{boxShadow:`0 4px 20px ${path.accentColor}25`}:{}) }}
+      onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow=`0 8px 24px ${path.accentColor}20`;}}
+      onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow=path.miraPick?`0 4px 20px ${path.accentColor}25`:'none';}}>
+      <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:12}}>
+        <div style={{width:50,height:50,borderRadius:14,background:path.iconBg||G.pale,display:'flex',alignItems:'center',justifyContent:'center',fontSize:26}}>{path.icon}</div>
+        {path.badge&&<span style={{fontSize:9,fontWeight:700,padding:'3px 9px',borderRadius:20,background:path.badgeBg||path.accentColor,color:'#fff',flexShrink:0}}>{path.badge}</span>}
       </div>
-      <div style={{ fontSize:12, color:G.mutedText, marginBottom:18 }}>{allPaths.length} document and safety paths for {petName}</div>
-      <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-        {paths.map(path=>(
-          <div key={path.id}>
-            <div onClick={()=>setOpenPath(openPath===path.id?null:path.id)} style={{ background:openPath===path.id?path.accentBg:"#fff", border:`1.5px solid ${openPath===path.id?path.accentBorder:"#F0E8E0"}`, borderRadius:openPath===path.id?"14px 14px 0 0":14, cursor:"pointer", overflow:"hidden", transition:"all 0.15s" }}>
-              {openPath!==path.id&&<div style={{ height:64, background:path.photoBg, display:"flex", alignItems:"center", justifyContent:"center" }}><span style={{ fontSize:32, opacity:0.75 }}>{path.icon}</span></div>}
-              <div style={{ padding:"14px 18px", display:"flex", alignItems:"center", gap:14 }}>
-                <div style={{ width:40, height:40, borderRadius:10, background:path.iconBg, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>{path.icon}</div>
-                <div style={{ flex:1 }}><div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:3 }}><span style={{ fontSize:14, fontWeight:700, color:"#1A0A00" }}>{path.title}</span><span style={{ background:path.badgeBg, color:"#fff", fontSize:10, fontWeight:700, borderRadius:20, padding:"2px 8px" }}>{path.badge}</span></div><div style={{ fontSize:12, color:"#555", lineHeight:1.5 }}>{path.desc}</div></div>
-                <span style={{ fontSize:16, color:"#ccc", flexShrink:0, transform:openPath===path.id?"rotate(90deg)":"none", transition:"transform 0.2s" }}>›</span>
-              </div>
-            </div>
-            {openPath===path.id&&(
-              <div style={{ background:"#fff", border:`1.5px solid ${path.accentBorder}`, borderTop:"none", borderRadius:"0 0 14px 14px", padding:"16px 18px 20px" }}>
-                <div style={{ fontSize:10, fontWeight:700, color:path.accentColor, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:12 }}>Path Steps</div>
-                <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:18 }}>{path.stepLabels.map((label,i)=><div key={label} style={{ display:"flex", alignItems:"center", gap:12 }}><div style={{ width:26, height:26, borderRadius:"50%", border:`1.5px solid ${path.accentColor}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:path.accentColor, flexShrink:0 }}>{i+1}</div><span style={{ fontSize:13, color:"#1A0A00" }}>{label}</span></div>)}</div>
-                <button onClick={()=>{setOpenPath(null);setActivePath(path.id);}} style={{ width:"100%", background:path.accentColor, color:"#fff", border:"none", borderRadius:10, padding:"12px", fontSize:14, fontWeight:700, cursor:"pointer" }}>Start this path with Mira →</button>
-              </div>
-            )}
+      <div style={{fontSize:15,fontWeight:800,color:G.darkText,marginBottom:6,fontFamily:'Georgia,serif'}}>{path.title}</div>
+      <div style={{fontSize:13,color:'#888',lineHeight:1.6,marginBottom:14}}>{path.desc}</div>
+      <div style={{display:'flex',gap:5,marginBottom:12}}>
+        {(path.stepLabels||[]).map((label,i)=>(
+          <div key={i} style={{flex:1}}>
+            <div style={{height:3,borderRadius:3,marginBottom:3,background:i===0?path.accentColor:'rgba(13,148,136,0.15)'}}/>
+            <div style={{fontSize:9,color:'#aaa',textAlign:'center',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{label}</div>
           </div>
         ))}
       </div>
+      <div style={{fontSize:13,color:path.accentColor,fontWeight:700}}>Start for {petName} →</div>
     </div>
+  );
+}
+
+// ─── EXPORT ──────────────────────────────────────────────────
+export default function GuidedPaperworkPaths({ pet }) {
+  const [activePath,setActivePath]=useState(null);
+  const allPaths=buildPaths(pet);
+  const activePathData=allPaths.find(p=>p.id===activePath);
+  const petName=pet?.name||'your dog';
+  return (
+    <section style={{marginBottom:36}}>
+      <div style={{display:'flex',alignItems:'baseline',gap:10,marginBottom:6}}>
+        <h3 style={{fontSize:'clamp(1.125rem,2.5vw,1.375rem)',fontWeight:800,color:G.darkText,margin:0,fontFamily:'Georgia,serif'}}>Guided Document Paths</h3>
+        <span style={{fontSize:11,background:`linear-gradient(135deg,${G.teal||'#0D9488'},${G.mid||'#334155'})`,color:'#fff',borderRadius:20,padding:'2px 10px',fontWeight:700}}>{allPaths.length} paths</span>
+      </div>
+      <p style={{fontSize:13,color:'#888',marginBottom:20,lineHeight:1.5}}>Step-by-step document protection arranged by Concierge® — each personalised for {petName}.</p>
+      <div style={{display:'grid',gap:14}} className="gpp-grid">
+        <style>{`.gpp-grid{grid-template-columns:1fr}@media(min-width:480px){.gpp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(min-width:960px){.gpp-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}`}</style>
+        {allPaths.map(path=><PathCard key={path.id} path={path} pet={pet} onOpen={()=>setActivePath(path.id)}/>)}
+      </div>
+      {activePath&&activePathData&&<PathFlowModal path={activePathData} pet={pet} onClose={()=>setActivePath(null)}/>}
+    </section>
   );
 }

@@ -21,6 +21,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
+import { ChevronDown, Loader2, Check } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
@@ -227,7 +228,7 @@ function ServiceBookingModal({ service, pet, onClose }) {
           <div style={{display:"flex",alignItems:"center",gap:10,paddingBottom:14,marginBottom:14,borderBottom:`0.5px solid ${G.pale}`}}>
             <div style={{width:40,height:40,borderRadius:"50%",background:G.pale,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,overflow:"hidden",flexShrink:0}}>
               {(pet?.photo_url||pet?.avatar_url)
-                ? <img src={pet.photo_url||pet.avatar_url} alt={petName} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+                ? <img src={pet.photo_url||pet.avatar_url} alt={petName} style={{width:"100%",height:"100%",objectFit:"cover"}} loading="eager" decoding="sync"/>
                 : <span>{pet?.avatar||"🐕"}</span>}
             </div>
             <div>
@@ -522,10 +523,81 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
 }
 
 // ─── LOADING / NO PET ──────────────────────────────────────
+
+// ─── PAPERWORK CONTENT MODAL (category pill → products) ──────
+function PaperworkContentModal({ isOpen, onClose, category, pet }) {
+  const [products,setProducts]=useState([]); const [loading,setLoading]=useState(false); const [selProd,setSelProd]=useState(null);
+  const { token } = useAuth();
+  const petName=pet?.name||"your dog"; const breed=pet?.breed?pet.breed.split("(")[0].trim():"";
+  const CAT_CONFIG = {
+    identity:  {label:"Identity & Safety",  bg:"#EDE9FE",icon:"🪪", accent:G.mid},
+    health:    {label:"Health Records",     bg:"#E0F2FE",icon:"🏥", accent:G.teal},
+    travel:    {label:"Travel Documents",   bg:"#E8F5E9",icon:"✈️",  accent:G.mid},
+    insurance: {label:"Insurance",         bg:"#FFF3E0",icon:"🛡️", accent:G.teal},
+    breeds:    {label:"Breed & Advisory",   bg:"#FFF8E1",icon:"📚", accent:G.mid},
+    advisory:  {label:"Expert Advisory",   bg:"#F3E5F5",icon:"💡", accent:G.teal},
+    soul:      {label:"Soul Documents",     bg:"#F0FDFA",icon:"🌟", accent:G.teal},
+    mira:      {label:"Mira's Picks",       bg:"#E8EAF6",icon:"✦",  accent:G.mid},
+  };
+  const cfg=CAT_CONFIG[category]||CAT_CONFIG.identity;
+  const miraQuotes={identity:`I picked these for ${petName}'s complete identity protection.`,health:`${petName}'s health records — organised, accessible, and up to date.`,travel:breed?`Travelling with a ${breed}? I've selected every document you'll need.`:`Everything ${petName} needs for safe, documented travel.`,insurance:`${petName}'s insurance and financial documents — organised and claim-ready.`,breeds:breed?`I've curated the complete ${breed} care guide set for ${petName}.`:`Breed-specific guides tailored to ${petName}'s heritage.`,advisory:`Expert guidance resources and life planning for ${petName}.`,soul:`${petName}'s soul documents — their identity and story, beautifully held.`,mira:`My top picks across all document categories for ${petName}.`};
+  useEffect(()=>{
+    if(!isOpen)return; setLoading(true);
+    if(category==="mira"){
+      if(!pet?.id){setLoading(false);return;}
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=16&min_score=40`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
+        .then(r=>r.json()).then(d=>{
+          const scored=d.picks||[];
+          if(scored.length>0){setProducts(scored);setLoading(false);return;}
+          return fetch(`${API_URL}/api/admin/pillar-products?pillar=paperwork&limit=100`,{headers:token?{Authorization:`Bearer ${token}`}:{}}).then(r=>r.json()).then(pd=>setProducts((pd.products||[]).slice(0,16)));
+        }).catch(()=>setProducts([])).finally(()=>setLoading(false));
+      return;
+    }
+    const catLabel={identity:"Identity & Safety",health:"Health Records",travel:"Travel Documents",insurance:"Insurance & Finance",breeds:"Breed & Advisory",advisory:"Expert Advisory",soul:"Soul Documents"}[category]||category;
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=paperwork&category=${encodeURIComponent(catLabel)}&limit=16`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
+      .then(r=>r.json()).then(d=>setProducts(d.products||[])).catch(()=>setProducts([])).finally(()=>setLoading(false));
+  },[isOpen,category,pet?.id]);
+  if(!isOpen)return null;
+  return(
+    <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:11000,background:"rgba(0,0,0,0.72)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+      <div onClick={e=>e.stopPropagation()} style={{width:"min(700px,100%)",maxHeight:"88vh",overflowY:"auto",borderRadius:20,background:"#fff",boxShadow:"0 24px 80px rgba(0,0,0,0.45)",display:"flex",flexDirection:"column"}}>
+        <div style={{borderRadius:"20px 20px 0 0",padding:"20px 22px 16px",background:`linear-gradient(135deg,${G.deep} 0%,${G.mid} 70%,#0F766E 100%)`,flexShrink:0,position:"sticky",top:0,zIndex:2}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              <div style={{width:38,height:38,borderRadius:10,background:cfg.bg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}}>{cfg.icon}</div>
+              <div><p style={{fontWeight:800,color:"#fff",fontSize:15,margin:0}}>{cfg.label}</p><p style={{color:"rgba(255,255,255,0.55)",fontSize:11,margin:0}}>For {petName}{breed?` · ${breed}`:""}</p></div>
+            </div>
+            <button onClick={onClose} style={{background:"rgba(255,255,255,0.10)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:20,width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:"rgba(255,255,255,0.70)",fontSize:16}}>✕</button>
+          </div>
+          <div style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:10,padding:"8px 12px",display:"flex",alignItems:"flex-start",gap:8}}>
+            <span style={{fontSize:13,color:G.light,flexShrink:0}}>✦</span>
+            <p style={{fontSize:12,color:"rgba(255,255,255,0.80)",fontStyle:"italic",margin:0,lineHeight:1.5}}>{miraQuotes[category]||miraQuotes.identity}</p>
+          </div>
+        </div>
+        <div style={{padding:"18px 20px"}}>
+          {loading&&<div style={{textAlign:"center",padding:"32px 0"}}><Loader2 size={24} style={{color:G.teal,animation:"spin 1s linear infinite"}}/></div>}
+          {!loading&&products.length===0&&<div style={{textAlign:"center",padding:"32px 0",color:"#888"}}><div style={{fontSize:32,marginBottom:10}}>📦</div><p style={{fontWeight:600}}>Products being curated</p><p style={{fontSize:13}}>Mira is sourcing {petName}'s {cfg.label} kit — check back soon.</p></div>}
+          {!loading&&products.length>0&&<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))",gap:12}}>{products.map(p=><SharedProductCard key={p.id||p._id} product={p} pet={pet} onViewDetails={()=>setSelProd(p)} accentColor={cfg.accent||G.teal}/>)}</div>}
+        </div>
+      </div>
+      {selProd&&<ProductDetailModal product={selProd} pet={pet} onClose={()=>setSelProd(null)}/>}
+    </div>
+  );
+}
+
+
 function LoadingState(){return(<div style={{textAlign:"center",padding:"80px 20px"}}><div style={{width:48,height:48,borderRadius:"50%",background:MIRA_ORB,margin:"0 auto 16px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,color:"#fff"}}>✦</div><div style={{fontSize:16,color:G.darkText,fontWeight:600}}>Preparing <span style={{color:G.teal}}>your safety documents…</span></div></div>);}
 function NoPetState({onAddPet}){return(<div style={{textAlign:"center",padding:"80px 20px"}}><div style={{fontSize:48,marginBottom:16}}>📋</div><div style={{fontSize:18,fontWeight:800,color:G.darkText,marginBottom:8}}>Add a pet to manage documents</div><p style={{fontSize:14,color:G.mutedText,marginBottom:24}}>Mira keeps every document, record and certificate organised.</p><button onClick={onAddPet} style={{background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",border:"none",borderRadius:9999,padding:"12px 28px",fontSize:16,fontWeight:600,cursor:"pointer"}}>Add your dog →</button></div>);}
 
-function SoulChip({ children }){return(<span style={{display:"inline-flex",alignItems:"center",gap:4,background:"rgba(153,246,228,0.20)",border:"1px solid rgba(153,246,228,0.35)",borderRadius:20,padding:"3px 10px",fontSize:11,color:"rgba(255,255,255,0.85)",fontWeight:500}}>{children}</span>);}
+function SoulChip({ icon, label, value, children }){
+  return(
+    <span style={{display:"inline-flex",alignItems:"center",gap:4,background:"rgba(153,246,228,0.20)",border:"1px solid rgba(153,246,228,0.35)",borderRadius:20,padding:"3px 10px",fontSize:11,color:"rgba(255,255,255,0.85)",fontWeight:500}}>
+      {icon&&<span>{icon}</span>}
+      {label&&<span style={{opacity:0.75}}>{label}:</span>}
+      {value||children}
+    </span>
+  );
+}
 
 // ─── MAIN PAGE ─────────────────────────────────────────────
 const PaperworkSoulPage = () => {
@@ -536,6 +608,7 @@ const PaperworkSoulPage = () => {
   const [loading,       setLoading]       = useState(true);
   const [activeTab,     setActiveTab]     = useState("documents");
   const [openDim,       setOpenDim]       = useState(null);
+  const [catModal,      setCatModal]      = useState(null);
   const [petData,       setPetData]       = useState(null);
   const [docScore,      setDocScore]      = useState(0);
   const [apiProducts,   setApiProducts]   = useState({});
@@ -609,96 +682,102 @@ const PaperworkSoulPage = () => {
         <meta name="description" content={`All of ${petName}'s documents, records and expert guidance — organised by Mira.`}/>
       </Helmet>
 
-      {/* ── HERO ── */}
-      <div style={{background:`linear-gradient(160deg,${G.deep} 0%,${G.mid} 55%,#0F766E 100%)`,padding:"28px 24px 0",position:"relative",overflow:"hidden"}}>
-        <div style={{maxWidth:1100,margin:"0 auto",position:"relative",zIndex:2}}>
+      {/* ── HERO — centered, Care/Play/Go parity ── */}
+      <div style={{background:`linear-gradient(160deg,${G.deep} 0%,${G.mid} 55%,#0F766E 100%)`,padding:"28px 20px 0",position:"relative",overflow:"hidden",textAlign:"center",boxSizing:"border-box",width:"100%"}}>
+        <div style={{position:"absolute",top:20,right:20,width:44,height:44,borderRadius:"50%",background:MIRA_ORB,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,boxShadow:"0 0 24px rgba(13,148,136,0.50)"}}>✦</div>
 
-          {/* Avatar + text row */}
-          <div style={{display:"flex",alignItems:"flex-start",gap:24,marginBottom:20}}>
-
-            {/* Avatar + doc score badge */}
-            <div style={{position:"relative",flexShrink:0}}>
-              <div style={{width:88,height:88,borderRadius:"50%",background:`linear-gradient(135deg,${G.light},${G.teal})`,border:"3px solid rgba(255,255,255,0.30)",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",fontSize:40}}>
-                {petData.photo_url
-                  ? <img src={petData.photo_url} alt={petName} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-                  : <span>{petData.avatar||"🐕"}</span>}
-              </div>
-              <div style={{position:"absolute",bottom:-4,right:-4,background:G.light,borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700,color:G.deep,border:"2px solid #fff"}}>
-                {docScore}%
-              </div>
-            </div>
-
-            {/* Hero text */}
-            <div style={{flex:1}}>
-              <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(153,246,228,0.20)",border:"1px solid rgba(153,246,228,0.35)",borderRadius:20,padding:"4px 12px",color:G.light,fontSize:11,fontWeight:600,marginBottom:10}}>
-                📋 {petName}'s Safety Profile
-              </div>
-              <h1 style={{fontSize:"clamp(1.5rem,4vw,2.2rem)",fontWeight:900,color:"#fff",marginBottom:8,lineHeight:1.1,fontFamily:"Georgia,'Times New Roman',serif"}}>
-                Keep <span style={{color:G.light}}>{petName}</span> safe,<br/>documented & protected
-              </h1>
-              {/* Profile chips */}
-              {(()=>{
-                const chips=[], ans=petData?.doggy_soul_answers||{};
-                if(breed)                chips.push("📚 "+breed.split("(")[0].trim());
-                if(petData?.vaccinated)  chips.push("💉 Vaccinated");
-                if(ans.microchipped)     chips.push("🔬 Microchipped");
-                if(ans.insurance)        chips.push("🛡️ Insured");
-                if(ans.is_rescue===true) chips.push("🐾 Rescue");
-                if(!chips.length) return null;
-                return(<div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:12}}>{chips.map(chip=><SoulChip key={chip}>{chip}</SoulChip>)}</div>);
-              })()}
-              <div style={{background:"rgba(255,255,255,0.10)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:12,padding:"10px 14px",display:"flex",gap:10,alignItems:"flex-start",maxWidth:500}}>
-                <div style={{width:24,height:24,borderRadius:"50%",background:MIRA_ORB,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:"#fff",flexShrink:0}}>✦</div>
-                <div>
-                  <p style={{fontSize:12,color:"rgba(255,255,255,0.85)",fontStyle:"italic",lineHeight:1.55,margin:0}}>
-                    "I keep {petName}'s documents organised, flag what's missing, and handle the paperwork so you don't have to."
-                  </p>
-                  <span style={{fontSize:10,color:G.light,fontWeight:600}}>♥ Mira knows {petName}</span>
-                </div>
-              </div>
-            </div>
+        {/* Pet avatar + doc score badge */}
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:10}}>
+          <div style={{width:80,height:80,borderRadius:"50%",overflow:"hidden",border:"3px solid rgba(255,255,255,0.30)",boxShadow:`0 0 0 3px rgba(13,148,136,0.40)`,background:`linear-gradient(135deg,${G.light},${G.teal})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:32,color:"#fff"}}>
+            {petData.photo_url?<img src={petData.photo_url} alt={petName} style={{width:"100%",height:"100%",objectFit:"cover"}} loading="eager" onError={e=>{e.target.style.display="none";}}/>:<span>{petData.avatar||"🐕"}</span>}
           </div>
-
-          {/* Tab bar */}
-          <div style={{display:"flex",gap:0}}>
-            {[["documents","📄 Documents"],["advisory","🧠 Expert Advisory"],["find","📍 Find Help"]].map(([id,label])=>{
-              const a=activeTab===id;
-              return(<button key={id} onClick={()=>setActiveTab(id)} style={{flex:1,padding:"12px 0",background:"none",border:"none",borderBottom:a?`3px solid ${G.light}`:"3px solid transparent",color:a?"#fff":"rgba(255,255,255,0.50)",fontSize:13,fontWeight:a?700:400,cursor:"pointer",transition:"all 0.15s"}}>{label}</button>);
-            })}
+          <div style={{marginTop:-8,background:`linear-gradient(135deg,${G.deep},${G.teal})`,borderRadius:20,padding:"3px 10px",fontSize:9,fontWeight:700,color:"#fff",border:"1.5px solid rgba(255,255,255,0.25)",whiteSpace:"nowrap"}}>
+            Protected {docScore}%
           </div>
         </div>
-      </div>
 
+        {/* Eyebrow chip */}
+        <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(153,246,228,0.18)",borderRadius:20,padding:"4px 14px",marginBottom:14}}>
+          <span style={{fontSize:11,color:G.light,fontWeight:700}}>
+            {docScore>=80?`✦ ${petName} is fully protected — Mira has everything.`:`📋 Paperwork & Advisory · ${petName}`}
+          </span>
+        </div>
+
+        {/* H1 — same size as Care/Play/Go */}
+        <h1 style={{fontSize:"clamp(1.875rem,4vw,2.5rem)",fontWeight:900,color:"#fff",marginBottom:8,lineHeight:1.15,fontFamily:"Georgia,'Times New Roman',serif",textAlign:"center"}}>
+          Keep <span style={{color:G.light}}>{petName}</span> safe,<br/>documented & protected
+        </h1>
+        <p style={{fontSize:14,color:"rgba(255,255,255,0.72)",textAlign:"center",marginBottom:14,maxWidth:480,margin:"0 auto 14px",lineHeight:1.6}}>
+          Identity, health, travel, insurance & expert advisory — all in one place, arranged by Mira.
+        </p>
+
+        {/* Breed chips */}
+        <div style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:8,marginBottom:16}}>
+          {breed&&<SoulChip icon="🐾" label="Breed" value={breed.split("(")[0].trim()}/>}
+          {petData?.vaccinated&&<SoulChip value="💉 Vaccinated"/>}
+          {petData?.doggy_soul_answers?.microchipped&&<SoulChip value="🔬 Microchipped"/>}
+          {petData?.doggy_soul_answers?.insurance&&<SoulChip value="🛡️ Insured"/>}
+          {getMissingDocs(petData).length>0&&<SoulChip value={`⚠ ${getMissingDocs(petData).length} action${getMissingDocs(petData).length>1?"s":""} needed`}/>}
+        </div>
+
+        {/* Mira quote */}
+        <div style={{background:"rgba(255,255,255,0.10)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:12,padding:"12px 18px",maxWidth:480,margin:"0 auto 16px",textAlign:"left"}}>
+          <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+            <div style={{width:28,height:28,borderRadius:"50%",background:MIRA_ORB,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,color:"#fff",flexShrink:0}}>✦</div>
+            <div>
+              <p style={{fontSize:13,color:"rgba(255,255,255,0.85)",fontStyle:"italic",lineHeight:1.6,margin:0}}>
+                "I keep {petName}'s documents organised, flag what's missing, and handle the paperwork so you don't have to."
+              </p>
+              <span style={{fontSize:11,color:G.light,fontWeight:600}}>♥ Mira knows {petName}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Chevron */}
+        <div style={{textAlign:"center",paddingBottom:6}}>
+          <ChevronDown size={22} style={{color:"rgba(255,255,255,0.35)"}}/>
+        </div>
+      </div>
       {/* ── PAGE BODY ── */}
       <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{background:G.pageBg,fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",overflowX:"hidden",boxSizing:"border-box"}}>
 
         {/* Booking modal */}
         {activeService && <ServiceBookingModal service={activeService} pet={petData} onClose={()=>setActiveService(null)}/>}
 
-        {/* Category strip */}
-        <div style={{display:"flex",gap:8,flexWrap:"wrap",justifyContent:"center",padding:"16px 0 12px",marginBottom:4}}>
-          {[
-            {id:"identity", icon:"🪪",  label:"Identity"},
-            {id:"health",   icon:"🏥",  label:"Health Records"},
-            {id:"travel",   icon:"✈️",   label:"Travel"},
-            {id:"insurance",icon:"🛡️",  label:"Insurance"},
-            {id:"breeds",   icon:"📚",  label:"Breed Guides"},
-            {id:"advisory", icon:"💡",  label:"Advisory"},
-            {id:"soul",     icon:"🌟",  label:"Soul Docs"},
-            {id:"mira",     icon:"✦",   label:"Mira's Review"},
-          ].map(s=>{
-            const sel=openDim===s.id;
-            return(
-              <button key={s.id}
-                onClick={()=>{
-                  if(s.id==="mira"){miraRef.current?.scrollIntoView({behavior:"smooth",block:"start"});return;}
-                  setOpenDim(sel?null:s.id);
-                }}
-                style={{display:"inline-flex",alignItems:"center",gap:5,flexShrink:0,padding:"7px 14px",borderRadius:9999,border:`1.5px solid ${sel?G.teal:"rgba(13,148,136,0.28)"}`,background:sel?G.teal:"#fff",color:sel?"#fff":G.mutedText,fontSize:12,fontWeight:sel?700:400,cursor:"pointer",transition:"all 0.15s"}}>
-                <span style={{fontSize:13}}>{s.icon}</span>{s.label}
-              </button>
-            );
-          })}
+        {/* Category strip — Care-style 82×72px icon+label pills */}
+        <div style={{background:"#fff",borderBottom:`1px solid ${G.borderLight}`,position:"relative"}}>
+          <div style={{display:"flex",overflowX:"auto",scrollbarWidth:"none",padding:"8px 12px",gap:4}}>
+            {[
+              {id:"identity",  icon:"🪪", label:"Identity",       bg:"#EDE9FE", accent:G.mid},
+              {id:"health",    icon:"🏥", label:"Health Records", bg:"#E0F2FE", accent:G.teal},
+              {id:"travel",    icon:"✈️",  label:"Travel",         bg:"#E8F5E9", accent:G.mid},
+              {id:"insurance", icon:"🛡️", label:"Insurance",      bg:"#FFF3E0", accent:G.teal},
+              {id:"breeds",    icon:"📚", label:"Breed Guides",   bg:"#FFF8E1", accent:G.mid},
+              {id:"advisory",  icon:"💡", label:"Advisory",       bg:"#F3E5F5", accent:G.teal},
+              {id:"soul",      icon:"🌟", label:"Soul Docs",      bg:"#F0FDFA", accent:G.teal},
+              {id:"mira",      icon:"✦",  label:"Mira's Picks",   bg:"#E8EAF6", accent:G.mid},
+            ].map(cat=>{
+              const isA = catModal===cat.id;
+              return(
+                <button key={cat.id} data-testid={`paperwork-cat-${cat.id}`}
+                  onClick={()=>setCatModal(cat.id)}
+                  style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0,
+                    minWidth:82,height:72,padding:"10px 12px",cursor:"pointer",background:"transparent",
+                    border:"none",borderBottom:`3px solid ${isA?G.teal:"transparent"}`,
+                    transition:"border-color 150ms ease"}}>
+                  <div style={{width:34,height:34,borderRadius:10,background:cat.bg,
+                    display:"flex",alignItems:"center",justifyContent:"center",
+                    fontSize:18,marginBottom:4,flexShrink:0}}>
+                    {cat.icon}
+                  </div>
+                  <span style={{fontSize:10,fontWeight:isA?700:500,color:isA?G.teal:"#555",
+                    whiteSpace:"nowrap",textAlign:"center"}}>
+                    {cat.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {activeTab==="documents" && (
@@ -723,24 +802,40 @@ const PaperworkSoulPage = () => {
             </section>
 
             {/* Dim grid */}
-            <div style={{display:"grid",gap:10,marginBottom:28}} className="paperwork-dims-grid">
+            <div style={{display:"grid",gap:16,marginBottom:32}} className="paperwork-dims-grid">
               <style>{`
-                .paperwork-dims-grid{grid-template-columns:repeat(2,1fr)}
-                @media(min-width:640px){.paperwork-dims-grid{grid-template-columns:repeat(4,1fr)}}
-                @media(min-width:1024px){.paperwork-dims-grid{grid-template-columns:repeat(7,1fr)}}
+                .paperwork-dims-grid{grid-template-columns:1fr}
+                @media(min-width:560px){.paperwork-dims-grid{grid-template-columns:repeat(2,1fr)}}
+                @media(min-width:900px){.paperwork-dims-grid{grid-template-columns:repeat(3,1fr)}}
               `}</style>
               {dims.map(dim=>{
                 const isOpen=openDim===dim.id;
                 return(
                   <div key={dim.id} style={{gridColumn:isOpen?"1 / -1":"auto"}}>
                     <div onClick={()=>setOpenDim(isOpen?null:dim.id)}
-                      style={{background:"#fff",borderRadius:isOpen?"14px 14px 0 0":12,padding:"14px 10px",cursor:"pointer",position:"relative",textAlign:"center",opacity:dim.glow?1:0.70,boxShadow:dim.glow&&!isOpen?`0 0 18px ${dim.glowColor}`:"none",border:isOpen?`2px solid ${G.teal}`:"2px solid transparent",transition:"all 0.15s"}}>
-                      {dim.glow&&<div style={{position:"absolute",top:8,right:8,width:7,height:7,borderRadius:"50%",background:G.light}}/>}
-                      <div style={{fontSize:22,marginBottom:8}}>{dim.icon}</div>
-                      <div style={{fontSize:12,fontWeight:700,color:G.darkText,marginBottom:3,lineHeight:1.2}}>{dim.label}</div>
-                      <div style={{fontSize:10,color:G.mutedText,lineHeight:1.3,marginBottom:6}}>{t(dim.sub,petName)}</div>
-                      <span style={{fontSize:9,fontWeight:700,borderRadius:20,padding:"2px 7px",display:"inline-block",background:`${dim.badgeBg}22`,color:dim.badgeBg}}>{t(dim.badge,petName)}</span>
-                      <span style={{position:"absolute",bottom:8,right:8,fontSize:12,color:"rgba(0,0,0,0.20)",transform:isOpen?"rotate(90deg)":"none",transition:"transform 0.2s"}}>›</span>
+                      data-testid={`paperwork-dim-${dim.id}`}
+                      style={{background:"#fff",borderRadius:isOpen?"16px 16px 0 0":16,cursor:"pointer",
+                        overflow:"hidden",border:isOpen?`2px solid ${G.teal}`:`2px solid ${G.borderLight}`,
+                        boxShadow:dim.glow&&!isOpen?`0 4px 24px ${dim.glowColor}`:"0 2px 8px rgba(0,0,0,0.06)",
+                        transition:"all 0.2s"}}>
+                      <div style={{height:6,background:isOpen?G.teal:(dim.glowColor||G.mid),borderRadius:"16px 16px 0 0"}}/>
+                      <div style={{padding:"20px 20px 18px"}}>
+                        <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:14}}>
+                          <div style={{width:52,height:52,borderRadius:14,background:dim.glow?`${G.teal}22`:G.pale,
+                            display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,flexShrink:0}}>{dim.icon}</div>
+                          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
+                            <span style={{fontSize:10,fontWeight:700,borderRadius:20,padding:"3px 10px",
+                              background:`${dim.badgeBg}20`,color:dim.badgeBg,border:`1px solid ${dim.badgeBg}40`}}>{t(dim.badge,petName)}</span>
+                            {dim.glow&&<div style={{width:8,height:8,borderRadius:"50%",background:G.light}}/>}
+                          </div>
+                        </div>
+                        <h3 style={{fontSize:16,fontWeight:800,color:G.darkText,marginBottom:6,lineHeight:1.25,fontFamily:"Georgia,serif"}}>{dim.label}</h3>
+                        <p style={{fontSize:13,color:G.mutedText,lineHeight:1.55,marginBottom:16,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{t(dim.sub,petName)}</p>
+                        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                          <span style={{fontSize:12,color:G.teal,fontWeight:700}}>{isOpen?"Close ↑":"Explore →"}</span>
+                          <span style={{fontSize:11,color:"#aaa"}}>Products · Services</span>
+                        </div>
+                      </div>
                     </div>
                     {isOpen&&<DimExpanded dim={dim} pet={petData} onClose={()=>setOpenDim(null)} apiProducts={apiProducts} services={services} onBook={handleBook}/>}
                   </div>
@@ -796,6 +891,8 @@ const PaperworkSoulPage = () => {
         toast={toastVisible?{name:toastSvc,pillar:"paperwork"}:null}
         onClose={()=>setToastVisible(false)}
       />
+      <PaperworkContentModal isOpen={!!catModal} onClose={()=>setCatModal(null)} category={catModal} pet={petData}/>
+
     </PillarPageLayout>
   );
 };
