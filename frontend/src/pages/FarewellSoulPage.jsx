@@ -250,7 +250,7 @@ const FarewellSoulPage = () => {
       <Helmet><title>Farewell · {petName} · The Doggy Company</title></Helmet>
 
       {/* HERO — gentle, sacred */}
-      <div style={{background:`linear-gradient(160deg,${G.deep} 0%,${G.mid} 55%,#3730A3 100%)`,padding:"28px 20px 0",position:"relative",overflow:"hidden",textAlign:"center"}}>
+      <div style={{background:`linear-gradient(160deg,${G.deep} 0%,${G.mid} 55%,#3730A3 100%)`,padding:"28px 20px 0",position:"relative",overflow:"hidden",textAlign:"center",boxSizing:"border-box",width:"100%"}}>
         <div style={{position:"absolute",top:20,right:20,width:44,height:44,borderRadius:"50%",background:MIRA_ORB,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,boxShadow:"0 0 24px rgba(99,102,241,0.50)"}}>✦</div>
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:12}}>
           <div style={{width:80,height:80,borderRadius:"50%",overflow:"hidden",border:"3px solid rgba(255,255,255,0.30)",boxShadow:"0 0 0 3px rgba(99,102,241,0.40)",background:`linear-gradient(135deg,${G.light},${G.indigo})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:32,color:"#fff"}}>
@@ -282,7 +282,7 @@ const FarewellSoulPage = () => {
         <div style={{textAlign:"center",paddingBottom:6}}><ChevronDown size={22} style={{color:"rgba(255,255,255,0.35)"}}/></div>
       </div>
 
-      <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{background:G.pageBg,fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"}}>
+      <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{background:G.pageBg,fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",overflowX:"hidden",boxSizing:"border-box"}}>
         {/* Tab bar */}
         <div style={{display:"flex",background:"#fff",borderBottom:`1.5px solid ${G.borderLight}`,marginBottom:24}}>
           {[{id:"farewell",label:"🌷 Legacy & Memorial"},{id:"services",label:"💙 Get Support"},{id:"find",label:"📍 Find Care"}].map(tab=>{const a=activeTab===tab.id;return<button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{flex:1,padding:"14px 4px",background:"none",border:"none",borderBottom:a?`3px solid ${G.indigo}`:"3px solid transparent",color:a?G.indigo:"#888",fontSize:13,fontWeight:a?700:500,cursor:"pointer",transition:"all 0.15s",whiteSpace:"nowrap"}}>{tab.label}</button>;})}

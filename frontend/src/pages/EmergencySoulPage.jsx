@@ -21,6 +21,7 @@ import ConciergeToast from "../components/common/ConciergeToast";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
 import GuidedEmergencyPaths from "../components/emergency/GuidedEmergencyPaths";
+import EmergencyNearMe from "../components/emergency/EmergencyNearMe";
 import { API_URL } from "../utils/api";
 
 const G = {
@@ -340,8 +341,8 @@ const EmergencySoulPage = () => {
     <PillarPageLayout pillar="emergency" hideHero hideNavigation>
       <Helmet><title>Emergency · {petName} · The Doggy Company</title></Helmet>
 
-      {/* HERO */}
-      <div style={{background:`linear-gradient(160deg,${G.deep} 0%,${G.mid} 55%,#B91C1C 100%)`,padding:"28px 20px 0",position:"relative",overflow:"hidden",textAlign:"center"}}>
+      {/* ── HERO ── */}
+      <div style={{background:`linear-gradient(160deg,${G.deep} 0%,${G.mid} 55%,#B91C1C 100%)`,padding:"28px 20px 0",position:"relative",overflow:"hidden",textAlign:"center",boxSizing:"border-box",width:"100%"}}>
         <div style={{position:"absolute",top:20,right:20,width:44,height:44,borderRadius:"50%",background:MIRA_ORB,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,boxShadow:"0 0 24px rgba(220,38,38,0.50)"}}>✦</div>
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:10}}>
           <div style={{width:80,height:80,borderRadius:"50%",overflow:"hidden",border:"3px solid rgba(255,255,255,0.30)",boxShadow:"0 0 0 3px rgba(220,38,38,0.40)",background:`linear-gradient(135deg,${G.light},${G.crimson})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:32,color:"#fff"}}>
@@ -375,7 +376,8 @@ const EmergencySoulPage = () => {
         <div style={{textAlign:"center",paddingBottom:6}}><ChevronDown size={22} style={{color:"rgba(255,255,255,0.35)"}}/></div>
       </div>
 
-      <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{background:G.pageBg,fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"}}>
+      {/* ── PAGE BODY ── */}
+      <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{background:G.pageBg,fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",overflowX:"hidden",boxSizing:"border-box"}}>
         {/* Category strip */}
         <div style={{background:"#fff",borderBottom:`1px solid ${G.borderLight}`,position:"relative"}}>
           <div style={{display:"flex",overflowX:"auto",scrollbarWidth:"none",padding:"8px 12px",gap:4}}>
@@ -466,15 +468,8 @@ const EmergencySoulPage = () => {
 
         {/* Find Vet tab */}
         {activeTab==="find" && (
-          <div style={{marginTop:24}}>
-            <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:4,fontFamily:"Georgia,serif"}}>Find an emergency vet for <span style={{color:G.crimson}}>{petName}</span></h2>
-            <p style={{fontSize:13,color:"#888",marginBottom:20}}>24-hour emergency vets, poison control centres, and critical care clinics near you.</p>
-            <div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:14,padding:"24px 28px",textAlign:"center"}}>
-              <div style={{fontSize:40,marginBottom:12}}>🏥</div>
-              <p style={{fontSize:14,fontWeight:700,color:G.darkText,marginBottom:8}}>Emergency vet finder</p>
-              <p style={{fontSize:13,color:"#888",marginBottom:16}}>Mira is loading emergency vet locations near you.</p>
-              <button onClick={()=>setConciergeOpen(true)} style={{background:`linear-gradient(135deg,${G.crimson},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"10px 24px",fontSize:13,fontWeight:700,cursor:"pointer"}}>Find Emergency Vet Now →</button>
-            </div>
+          <div style={{marginTop:8}}>
+            <EmergencyNearMe pet={petData} onBook={(svc)=>{setConciergeSvc(svc?.name||"");setConciergeOpen(true);}}/>
           </div>
         )}
       </div>
