@@ -21,7 +21,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
-import { Loader2, Check } from "lucide-react";
+import { Loader2, Check, ChevronDown } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
@@ -29,7 +29,21 @@ import SharedProductCard, { ProductDetailModal } from "../components/ProductCard
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import ConciergeToast from "../components/common/ConciergeToast";
+import LearnNearMe from "../components/learn/LearnNearMe";
 import { API_URL } from "../utils/api";
+
+// ─── SOUL CHIP (hero chips — same as CareHero) ───────────────
+function SoulChip({ icon, label, value }) {
+  return (
+    <span style={{display:"inline-flex",alignItems:"center",gap:4,borderRadius:9999,
+      padding:"4px 12px",fontSize:11,fontWeight:600,color:"#fff",
+      background:"rgba(255,255,255,0.14)",border:"1px solid rgba(255,255,255,0.25)"}}>
+      {icon && <span>{icon}</span>}
+      {label && <span style={{opacity:0.75}}>{label}:</span>}
+      <span>{value}</span>
+    </span>
+  );
+}
 
 // ─── COLOUR SYSTEM ───────────────────────────────────────────
 const G = {
@@ -209,16 +223,19 @@ const BREED_LEARN_TIPS = {
   "husky":          { style:"Intelligent but will test every boundary", path:"Challenging; high patience needed; never punish", enrichment:"Complex scent work, running with owner", watch:"Will ignore commands if uninterested; make training genuinely fun" },
 };
 
-// ─── LEARN PROFILE COMPONENT ──────────────────────────────────
+// ─── LEARN PROFILE COMPONENT (collapsed bar → modal, matches Care's WellnessProfile) ──
 function LearnProfile({ pet, token }) {
   const petName    = pet?.name || "your dog";
   const breedKey   = (pet?.breed||"indie").toLowerCase().replace(/\s*\(.*\)/,"").trim();
   const breedLabel = (pet?.breed||"Indie").split("(")[0].trim();
   const tip        = BREED_LEARN_TIPS[breedKey] || BREED_LEARN_TIPS["indie"];
+  const energy     = getEnergy(pet);
 
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [answers,    setAnswers]    = useState({});
   const [saved,      setSaved]      = useState({});
   const [submitting, setSubmitting] = useState({});
+  const [totalPts,   setTotalPts]   = useState(0);
   const [liveScore,  setLiveScore]  = useState(pet?.overall_score||pet?.soul_score||0);
 
   const remaining = LEARN_QUESTIONS.filter(q => !saved[q.id]);
@@ -243,120 +260,199 @@ function LearnProfile({ pet, token }) {
       });
       if (res.ok) { const d=await res.json(); if(d.scores?.overall) setLiveScore(d.scores.overall); }
       setSaved(p=>({...p,[q.id]:true}));
+      setTotalPts(p => p + q.pts);
     } catch { setSaved(p=>({...p,[q.id]:true})); }
     finally { setSubmitting(p=>({...p,[q.id]:false})); }
   };
 
   return (
     <>
-      {/* Header bar */}
-      <div style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,borderRadius:"16px 16px 0 0",padding:"16px 20px"}}>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-          <div style={{flex:1}}>
-            <div style={{fontSize:10,fontWeight:700,color:G.light,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:4}}>
-              ✦ GROW {petName.toUpperCase()}'S LEARNING PROFILE
-            </div>
-            <div style={{fontSize:12,color:"rgba(255,255,255,0.65)",marginBottom:10}}>
-              Answer quick questions · Mira tailors every recommendation to {petName}
-            </div>
-            <div style={{width:"100%",height:4,background:"rgba(255,255,255,0.15)",borderRadius:4,overflow:"hidden"}}>
-              <div style={{height:"100%",width:`${Math.max(liveScore,4)}%`,background:`linear-gradient(90deg,${G.light},${G.violet})`,borderRadius:4,transition:"width 0.4s"}}/>
-            </div>
-          </div>
-          <div style={{textAlign:"right",marginLeft:16}}>
-            <span style={{fontSize:48,fontWeight:900,color:G.light,lineHeight:1}}>{liveScore}</span>
-            <span style={{fontSize:16,color:G.light,fontWeight:700}}>%</span>
+      {/* ── COLLAPSED BAR (always visible) ── */}
+      <div onClick={() => setDrawerOpen(true)} data-testid="learn-profile-bar"
+        style={{ background:"#fff", border:`2px solid ${G.pale}`, borderRadius:16,
+          padding:"14px 18px", marginBottom:20, cursor:"pointer",
+          display:"flex", alignItems:"center", gap:14,
+          boxShadow:`0 2px 12px rgba(124,58,237,0.08)` }}>
+        <div style={{ width:40, height:40, borderRadius:10, flexShrink:0, fontSize:20,
+          background:`linear-gradient(135deg,${G.pale},${G.light})`,
+          display:"flex", alignItems:"center", justifyContent:"center" }}>🎓</div>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ fontSize:14, fontWeight:700, color:G.darkText }}>{petName}'s Learning Profile</div>
+          <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginTop:4 }}>
+            {pet?.breed && <span style={{ fontSize:10, fontWeight:600, color:"#1A1363", background:"#EDE9FE", border:"1px solid #A78BFA", borderRadius:20, padding:"2px 8px" }}>🐾 {pet.breed} · {tip.style.slice(0,28)}…</span>}
+            {energy && <span style={{ fontSize:10, fontWeight:600, color:G.mid, background:G.pale, border:`1px solid ${G.light}`, borderRadius:20, padding:"2px 8px" }}>⚡ {energy}</span>}
+            {isPuppy(pet) && <span style={{ fontSize:10, fontWeight:600, color:"#1565C0", background:"#E3F2FD", border:"1px solid #90CAF9", borderRadius:20, padding:"2px 8px" }}>🐾 Puppy programme</span>}
+            {isSenior(pet) && <span style={{ fontSize:10, fontWeight:600, color:"#C62828", background:"#FFEBEE", border:"1px solid #EF9A9A", borderRadius:20, padding:"2px 8px" }}>🐾 Senior enrichment</span>}
+            {!pet?.breed && !energy && <span style={{ fontSize:10, color:"#999" }}>Tap to tell Mira about {petName}'s learning style</span>}
           </div>
         </div>
+        <span style={{ fontSize:11, color:G.violet, fontWeight:700, whiteSpace:"nowrap", flexShrink:0 }}>Mira's picks →</span>
       </div>
 
-      {/* Body */}
-      <div style={{background:"#0F0C29",borderRadius:"0 0 16px 16px",padding:"16px 20px 20px",maxHeight:"70vh",overflowY:"auto"}}>
-        {/* Breed tips — always shown */}
-        <div style={{background:`linear-gradient(135deg,#1A1363,#0F0C29)`,border:`1px solid ${G.greenBorder}`,borderRadius:12,padding:"12px 16px",marginBottom:16}}>
-          <div style={{fontSize:10,fontWeight:700,color:G.light,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>
-            📚 LEARNING TIPS · {breedLabel.toUpperCase()}
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-            {[
-              {label:"🎓 Learning style",value:tip.style,col:G.violet},
-              {label:"🏆 Training path",value:tip.path,col:G.mid},
-              {label:"🧩 Enrichment",value:tip.enrichment,col:"#1565C0"},
-            ].map(({label,value,col})=>(
-              <div key={label} style={{background:"rgba(255,255,255,0.05)",borderRadius:8,padding:"8px 10px"}}>
-                <div style={{fontSize:9,fontWeight:700,color:col,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:3}}>{label}</div>
-                <div style={{fontSize:11,color:"rgba(255,255,255,0.80)",lineHeight:1.4}}>{value}</div>
+      {/* ── MODAL ── */}
+      {drawerOpen && (
+        <div onClick={() => setDrawerOpen(false)}
+          style={{ position:"fixed", inset:0, zIndex:10002, background:"rgba(0,0,0,0.72)",
+            display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}>
+          <div onClick={e => e.stopPropagation()} data-testid="learn-profile-drawer"
+            style={{ width:"min(780px,100%)", maxHeight:"90vh", overflowY:"auto",
+              borderRadius:24, background:"#fff",
+              boxShadow:"0 24px 80px rgba(0,0,0,0.55)",
+              display:"flex", flexDirection:"column" }}>
+
+            {/* Dark indigo header — sticky */}
+            <div style={{ borderRadius:"24px 24px 0 0", padding:"24px 28px 20px",
+              background:`linear-gradient(135deg,#0A0A3C 0%,${G.deep} 60%,${G.mid} 100%)`,
+              flexShrink:0, position:"sticky", top:0, zIndex:2 }}>
+              <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:10 }}>
+                <div>
+                  <p style={{ fontWeight:800, textTransform:"uppercase", letterSpacing:"0.12em",
+                    color:`${G.light}E6`, fontSize:10, marginBottom:5 }}>
+                    ✦ GROW {petName.toUpperCase()}'S LEARNING PROFILE
+                  </p>
+                  <p style={{ color:"rgba(255,255,255,0.50)", fontSize:12 }}>
+                    {liveScore >= 95
+                      ? `${petName}'s learning profile is complete — Mira has everything she needs`
+                      : liveScore >= 70
+                        ? `Answer a few more · ${petName}'s profile is looking great`
+                        : `Answer quick questions · ${petName}'s learning profile is being built`}
+                  </p>
+                </div>
+                <div style={{ display:"flex", alignItems:"flex-end", gap:2 }}>
+                  <span style={{ fontSize:72, fontWeight:900, lineHeight:1,
+                    color:liveScore>=80?G.pale:G.light,
+                    textShadow:`0 0 20px ${G.light}80` }}>
+                    {liveScore ?? "—"}
+                  </span>
+                  <span style={{ color:"rgba(255,255,255,0.40)", fontSize:18, marginBottom:8 }}>%</span>
+                </div>
               </div>
-            ))}
-            <div style={{background:"rgba(255,179,0,0.10)",border:"1px solid rgba(255,179,0,0.25)",borderRadius:8,padding:"8px 10px"}}>
-              <div style={{fontSize:9,fontWeight:700,color:"#FFB300",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:3}}>⚠️ Watch for</div>
-              <div style={{fontSize:11,color:"rgba(255,220,100,0.85)",lineHeight:1.4}}>{tip.watch}</div>
+              {/* Progress bar */}
+              <div style={{ height:5, borderRadius:5, background:"rgba(255,255,255,0.10)", overflow:"hidden" }}>
+                <div style={{ height:"100%", width:`${liveScore||0}%`, borderRadius:5,
+                  background:`linear-gradient(90deg,${G.violet},${G.light})`,
+                  transition:"width 0.9s ease-out" }} />
+              </div>
+              {/* Close button */}
+              <button onClick={() => setDrawerOpen(false)} data-testid="learn-profile-drawer-close"
+                style={{ position:"absolute", top:16, right:20,
+                  background:"rgba(255,255,255,0.10)", border:"1px solid rgba(255,255,255,0.15)",
+                  borderRadius:20, width:32, height:32, display:"flex", alignItems:"center",
+                  justifyContent:"center", fontSize:16, cursor:"pointer",
+                  color:"rgba(255,255,255,0.70)" }}>✕</button>
             </div>
-          </div>
-        </div>
 
-        {/* Questions */}
-        {remaining.length===0 ? (
-          <div style={{textAlign:"center",padding:"20px 0"}}>
-            <div style={{fontSize:32,marginBottom:8}}>✦</div>
-            <div style={{fontSize:14,fontWeight:700,color:G.light,marginBottom:4}}>Mira knows {petName}'s learning style</div>
-            <div style={{fontSize:12,color:"rgba(255,255,255,0.50)"}}>Learning profile complete · {liveScore}% soul score</div>
-          </div>
-        ) : (
-          <>
-            <div style={{fontSize:11,fontWeight:600,color:"rgba(255,255,255,0.40)",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>
-              {remaining.length} questions remaining
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-              {remaining.slice(0,4).map(q => {
-                const qAns=answers[q.id]||[], isSaved=saved[q.id], isSend=submitting[q.id];
-                const label=q.question.replace(/{name}/g,petName), hasAns=qAns.length>0;
-                if (isSaved) return (
-                  <div key={q.id} style={{borderRadius:16,padding:16,minHeight:120,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:6,background:`linear-gradient(135deg,#0F0C29,${G.deep})`,border:`2px solid ${G.light}60`}}>
-                    <div style={{width:36,height:36,borderRadius:"50%",background:"rgba(167,139,250,0.18)",border:`2px solid ${G.light}80`,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                      <span style={{color:G.light,fontSize:16}}>✓</span>
-                    </div>
-                    <p style={{fontWeight:800,color:G.light,fontSize:13,textAlign:"center"}}>Soul score growing!</p>
-                    <div style={{borderRadius:20,padding:"3px 10px",fontSize:10,fontWeight:700,background:"rgba(167,139,250,0.20)",color:G.light,border:`1px solid ${G.light}50`}}>+{q.pts} pts</div>
+            {/* Body */}
+            <div style={{ padding:"24px 28px", background:"#fff" }}>
+              {totalPts > 0 && (
+                <div style={{ marginBottom:14, display:"flex", alignItems:"center", gap:8,
+                  padding:"10px 14px", borderRadius:12,
+                  background:"rgba(124,58,237,0.08)", border:`1px solid rgba(124,58,237,0.25)` }}>
+                  <Check size={14} style={{ color:G.light, flexShrink:0 }} />
+                  <p style={{ fontSize:13, fontWeight:600, color:G.light }}>Answers saved · +{totalPts} pts added to soul score</p>
+                </div>
+              )}
+
+              {/* Breed tips */}
+              <div style={{ marginBottom:22, borderRadius:16, overflow:"hidden", border:`1.5px solid ${G.borderLight}` }}>
+                <div style={{ background:`linear-gradient(135deg,#0A0A3C,${G.deep})`, padding:"14px 18px 12px" }}>
+                  <p style={{ margin:0, fontWeight:800, fontSize:11, textTransform:"uppercase", letterSpacing:"0.10em", color:G.light }}>Learning Tips · {breedLabel}</p>
+                  <p style={{ margin:"4px 0 0", fontSize:11, color:"rgba(255,255,255,0.55)" }}>{tip.style}</p>
+                </div>
+                <div style={{ background:G.cream, padding:"14px 18px" }}>
+                  <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:8, marginBottom:12 }}>
+                    {[
+                      {label:"🏆 Training path",  text:tip.path,       color:"#7C3AED"},
+                      {label:"🧩 Enrichment",     text:tip.enrichment, color:"#1565C0"},
+                    ].map((item,i) => (
+                      <div key={i} style={{ display:"flex", alignItems:"flex-start", gap:8, padding:"10px 12px", borderRadius:10, background:"#fff", border:`1px solid ${G.borderLight}` }}>
+                        <p style={{ margin:0, fontSize:11, color:G.darkText, lineHeight:1.5 }}><strong style={{color:item.color}}>{item.label}</strong><br/>{item.text}</p>
+                      </div>
+                    ))}
                   </div>
-                );
-                return (
-                  <div key={q.id} style={{borderRadius:16,padding:"14px 14px 12px",background:`linear-gradient(135deg,#0F0C29,${G.deep})`,border:`1.5px solid ${G.greenBorder}`,minHeight:120}}>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-                      <span style={{fontSize:10,fontWeight:600,color:"rgba(167,139,250,0.85)"}}>{q.chapter}</span>
-                      <span style={{borderRadius:20,padding:"2px 8px",fontSize:9,fontWeight:700,background:"rgba(124,58,237,0.20)",color:G.light,border:`1px solid rgba(124,58,237,0.35)`}}>+{q.pts} pts</span>
+                  {tip.watch && (
+                    <div style={{ padding:"8px 12px", borderRadius:10, background:"#FFF3E0", border:"1px solid #FFCC80" }}>
+                      <p style={{ margin:0, fontSize:10, fontWeight:700, color:"#E65100", marginBottom:3 }}>Watch for</p>
+                      <p style={{ margin:0, fontSize:10, color:"#BF360C", lineHeight:1.4 }}>{tip.watch}</p>
                     </div>
-                    <p style={{fontWeight:700,fontSize:12,color:"rgba(255,255,255,0.92)",marginBottom:10,lineHeight:1.4}}>{label}</p>
-                    <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:10}}>
-                      {q.options.map(opt => {
-                        const sel=q.type==="single"?qAns[0]===opt:qAns.includes(opt);
-                        return (
-                          <button key={opt} onClick={()=>toggle(q.id,opt,q.type==="single")}
-                            style={{borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:sel?600:400,cursor:"pointer",background:sel?"rgba(124,58,237,0.25)":"rgba(255,255,255,0.07)",border:sel?`1.5px solid ${G.violet}`:"1px solid rgba(255,255,255,0.15)",color:sel?G.pale:"rgba(255,255,255,0.72)",transition:"all 0.12s"}}>
-                            {opt.replace(/{name}/g,petName)}
+                  )}
+                </div>
+              </div>
+
+              {/* Questions */}
+              {remaining.length === 0 ? (
+                <div style={{ textAlign:"center", padding:"24px 0" }}>
+                  <div style={{ fontSize:28, marginBottom:10 }}>🎓</div>
+                  <p style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:6 }}>
+                    {liveScore >= 95 ? `${petName}'s learning profile is complete!` : `All current questions answered for ${petName}`}
+                  </p>
+                  <p style={{ fontSize:12, color:"#888" }}>
+                    {liveScore >= 95 ? "Mira has everything she needs" : `Score: ${liveScore}%`}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div style={{ fontSize:11, fontWeight:600, color:"#999", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:12 }}>
+                    {remaining.length} questions remaining
+                  </div>
+                  <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(320px,100%),1fr))", gap:14 }}>
+                    {remaining.slice(0,6).map(q => {
+                      const qAns=answers[q.id]||[], isSaved=saved[q.id], isSend=submitting[q.id];
+                      const label=q.question.replace(/{name}/g,petName), hasAns=qAns.length>0;
+                      if (isSaved) return (
+                        <div key={q.id} style={{ borderRadius:14, padding:16, background:G.cream, border:`2px solid ${G.light}60`, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6, minHeight:100 }}>
+                          <Check size={18} style={{color:G.violet}} />
+                          <p style={{ fontWeight:700, color:G.violet, fontSize:13, textAlign:"center" }}>Soul score growing!</p>
+                          <div style={{ borderRadius:20, padding:"3px 10px", fontSize:10, fontWeight:700, background:G.pale, color:G.mid }}>+{q.pts} pts</div>
+                        </div>
+                      );
+                      return (
+                        <div key={q.id} style={{ borderRadius:14, padding:"14px 16px 12px", background:"#fff", border:`1.5px solid ${G.borderLight}` }}>
+                          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
+                            <span style={{ fontSize:10, fontWeight:600, color:G.mutedText }}>{q.chapter}</span>
+                            <span style={{ borderRadius:20, padding:"2px 8px", fontSize:9, fontWeight:700, background:G.pale, color:G.violet }}>+{q.pts} pts</span>
+                          </div>
+                          <p style={{ fontWeight:700, fontSize:13, color:G.darkText, marginBottom:10, lineHeight:1.4 }}>{label}</p>
+                          <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:10 }}>
+                            {q.options.map(opt => {
+                              const sel = q.type==="single"?qAns[0]===opt:qAns.includes(opt);
+                              return (
+                                <button key={opt} onClick={e=>{e.stopPropagation();toggle(q.id,opt,q.type==="single");}}
+                                  style={{ borderRadius:20, padding:"5px 12px", fontSize:11, fontWeight:sel?700:400,
+                                    cursor:"pointer", background:sel?G.pale:"#F5F5F5",
+                                    border:sel?`1.5px solid ${G.violet}`:"1px solid #E0E0E0",
+                                    color:sel?G.violet:"#555", transition:"all 0.12s" }}>
+                                  {opt.replace(/{name}/g,petName)}
+                                </button>
+                              );
+                            })}
+                          </div>
+                          <button onClick={e=>{e.stopPropagation();save(q);}} disabled={isSend||!hasAns}
+                            style={{ width:"100%", borderRadius:10, padding:"9px", fontSize:12, fontWeight:700,
+                              color:"#fff", border:"none", cursor:isSend?"wait":!hasAns?"not-allowed":"pointer",
+                              background:!hasAns?`${G.violet}44`:`linear-gradient(135deg,${G.violet},${G.mid})`,
+                              opacity:isSend?0.7:1 }}>
+                            {isSend ? "Saving…" : `Save +${q.pts} pts`}
                           </button>
-                        );
-                      })}
-                    </div>
-                    <button onClick={()=>save(q)} disabled={isSend||!hasAns}
-                      style={{marginTop:4,width:"100%",borderRadius:10,padding:"8px",fontSize:12,fontWeight:700,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",gap:5,background:!hasAns?`${G.violet}22`:`linear-gradient(135deg,${G.violet},${G.mid})`,border:"none",cursor:isSend?"wait":!hasAns?"not-allowed":"pointer",opacity:isSend?0.7:1}}>
-                      {isSend?"Saving…":`Save +${q.pts} pts`}
-                    </button>
+                        </div>
+                      );
+                    })}
                   </div>
-                );
-              })}
+                </>
+              )}
+              <div style={{ textAlign:"center", marginTop:16 }}>
+                <a href={`/pet-soul/${pet?.id}`} style={{ fontSize:12, fontWeight:600, color:G.violet, textDecoration:"none" }}>
+                  See full soul profile →
+                </a>
+              </div>
             </div>
-          </>
-        )}
-        <div style={{textAlign:"center",marginTop:14}}>
-          <a href={`/pet-soul/${pet?.id}`} style={{fontSize:12,fontWeight:600,color:`${G.light}BB`,textDecoration:"none"}}>
-            See full soul profile →
-          </a>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }
+
 
 // ─── VIDEO CARD ───────────────────────────────────────────────
 function VideoCard({ video, onPlay }) {
@@ -451,6 +547,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
     { id:"products",    label:"📦 Products" },
     ...( dim.ytQuery ? [{ id:"videos", label:"🎬 Videos" }] : [] ),
     { id:"personalised",label:"✦ Personalised" },
+    ...( dim.id !== "soul" ? [{ id:"find", label:"📍 Find" }] : [] ),
     { id:"services",    label:"📋 Book" },
   ];
 
@@ -558,6 +655,11 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
       )}
 
       {/* ── SERVICES TAB ── */}
+      {dimTab==="find" && (
+        <div style={{padding:"12px 16px 20px"}}>
+          <LearnNearMe pet={pet} dimId={dim.id} onBook={onBook} />
+        </div>
+      )}
       {dimTab==="services" && (
         <div style={{padding:"12px 16px 20px"}}>
           {dimServices.length===0 ? (
@@ -781,24 +883,63 @@ const LearnSoulPage = () => {
         <meta name="description" content={`Training, behaviour, and breed knowledge for ${petName} — personalised by Mira.`}/>
       </Helmet>
 
-      {/* ── HERO ── */}
-      <div style={{background:`linear-gradient(160deg,${G.deep} 0%,${G.mid} 55%,${G.violet} 100%)`,padding:"32px 20px 0",position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",top:20,right:20,width:48,height:48,borderRadius:"50%",background:MIRA_ORB,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,boxShadow:"0 0 24px rgba(155,89,182,0.50)"}}>✦</div>
-        <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(255,255,255,0.12)",borderRadius:20,padding:"4px 14px",marginBottom:16}}>
-          <span style={{fontSize:11,color:G.light,fontWeight:700}}>✦ {petName}'s Learning Journey</span>
-          <span style={{fontSize:11,color:"rgba(255,255,255,0.70)"}}>·</span>
-          <span style={{fontSize:13,fontWeight:900,color:G.light}}>{soulScore}%</span>
+      {/* ── HERO — centered, Care-style ── */}
+      <div style={{background:`linear-gradient(160deg,${G.deep} 0%,${G.mid} 55%,${G.violet} 100%)`,
+        padding:"28px 20px 0",position:"relative",overflow:"hidden",textAlign:"center"}}>
+
+        {/* Mira ORB — top right */}
+        <div style={{position:"absolute",top:20,right:20,width:44,height:44,borderRadius:"50%",
+          background:MIRA_ORB,display:"flex",alignItems:"center",justifyContent:"center",
+          fontSize:20,boxShadow:"0 0 24px rgba(155,89,182,0.50)"}}>✦</div>
+
+        {/* Pet avatar + soul badge */}
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:10}}>
+          <div style={{width:80,height:80,borderRadius:"50%",overflow:"hidden",
+            border:`3px solid rgba(255,255,255,0.30)`,
+            boxShadow:`0 0 0 3px rgba(124,58,237,0.40)`,
+            background:`linear-gradient(135deg,${G.pale},${G.violet})`,
+            display:"flex",alignItems:"center",justifyContent:"center",fontSize:32,color:"#fff"}}>
+            {(petData?.photo_url || petData?.avatar_url)
+              ? <img src={petData.photo_url||petData.avatar_url} alt={petName} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
+              : <span>{petData?.avatar||"🐕"}</span>}
+          </div>
+          <div style={{marginTop:-8,background:`linear-gradient(135deg,#1A1363,${G.violet})`,
+            borderRadius:20,padding:"3px 10px",fontSize:9,fontWeight:700,color:"#fff",
+            border:"1.5px solid rgba(255,255,255,0.25)",whiteSpace:"nowrap"}}>
+            Soul {soulScore}%
+          </div>
         </div>
-        <h1 style={{fontSize:"clamp(1.6rem,5vw,2.4rem)",fontWeight:900,color:"#fff",marginBottom:8,lineHeight:1.15,fontFamily:"Georgia,'Times New Roman',serif"}}>
-          Grow <span style={{color:G.light}}>{petName}</span><br/>one skill at a time
+
+        {/* Eyebrow chip */}
+        <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(255,255,255,0.12)",
+          borderRadius:20,padding:"4px 14px",marginBottom:14}}>
+          <span style={{fontSize:11,color:G.light,fontWeight:700}}>
+            {soulScore>=95 ? `✦ ${petName}'s learning profile is complete. Mira knows everything.`
+              : `✦ Learn & Grow · ${petName}`}
+          </span>
+        </div>
+
+        {/* H1 */}
+        <h1 style={{fontSize:"clamp(1.5rem,4.5vw,2.2rem)",fontWeight:900,color:"#fff",
+          marginBottom:12,lineHeight:1.15,fontFamily:"Georgia,'Times New Roman',serif",textAlign:"center"}}>
+          Learn & Grow for <span style={{color:G.light}}>{petName}</span>
         </h1>
-        <p style={{fontSize:14,color:"rgba(255,255,255,0.65)",marginBottom:16,maxWidth:480}}>
-          Training, behaviour, tricks, and enrichment —{" "}
-          <span style={{color:G.light,fontWeight:600}}>all personalised for {breed||petName}.</span>
-        </p>
-        <div style={{background:"rgba(255,255,255,0.10)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:12,padding:"10px 16px",marginBottom:20,maxWidth:520}}>
+
+        {/* Breed chips */}
+        <div style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:8,marginBottom:16}}>
+          {breed && <SoulChip icon="🐾" label="Breed" value={breed}/>}
+          {isPuppy(petData) ? <SoulChip value="Puppy Programme"/>
+            : isSenior(petData) ? <SoulChip value="Senior Enrichment"/>
+            : <SoulChip value="Adult Training"/>}
+          {getEnergy(petData) && <SoulChip icon="⚡" label="Energy" value={getEnergy(petData)}/>}
+        </div>
+
+        {/* Mira quote */}
+        <div style={{background:"rgba(255,255,255,0.10)",border:"1px solid rgba(255,255,255,0.15)",
+          borderRadius:12,padding:"10px 16px",maxWidth:440,margin:"0 auto 16px",textAlign:"left"}}>
           <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
-            <div style={{width:26,height:26,borderRadius:"50%",background:MIRA_ORB,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:"#fff",flexShrink:0}}>✦</div>
+            <div style={{width:26,height:26,borderRadius:"50%",background:MIRA_ORB,
+              display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:"#fff",flexShrink:0}}>✦</div>
             <div>
               <p style={{fontSize:13,color:"rgba(255,255,255,0.85)",fontStyle:"italic",lineHeight:1.55,margin:0}}>
                 "Every dog can learn. I've built {petName}'s programme around {breed?`what works for ${breed}s`:"their personality and energy"}."
@@ -807,41 +948,66 @@ const LearnSoulPage = () => {
             </div>
           </div>
         </div>
-        <div style={{display:"flex",gap:0,marginTop:4}}>
-          {[["learn","🎓 Learn & Grow"],["services","📋 Book a Session"]].map(([id,label])=>{
-            const a=activeTab===id;
-            return(
-              <button key={id} onClick={()=>setActiveTab(id)} style={{flex:1,padding:"12px 0",background:"none",border:"none",borderBottom:a?`3px solid ${G.light}`:"3px solid transparent",color:a?"#fff":"rgba(255,255,255,0.50)",fontSize:13,fontWeight:a?700:400,cursor:"pointer",transition:"all 0.15s"}}>
-                {label}
-              </button>
-            );
-          })}
+
+        {/* Scroll chevron */}
+        <div style={{textAlign:"center",paddingBottom:6}}>
+          <ChevronDown size={22} style={{color:"rgba(255,255,255,0.35)"}}/>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{background:G.pageBg,fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"}}>
 
-        {/* Category strip */}
-        <div style={{display:"flex",gap:8,flexWrap:"wrap",justifyContent:"center",padding:"16px 0 12px",marginBottom:4}}>
+        {/* Category strip — scrollable pill row */}
+        <div style={{background:"#fff",borderBottom:`1px solid ${G.borderLight}`,padding:"0 4px"}}>
+          <div style={{display:"flex",gap:6,overflowX:"auto",padding:"10px 8px",scrollbarWidth:"none"}}>
+            <style>{`.learn-strip::-webkit-scrollbar{display:none}`}</style>
+            <div className="learn-strip" style={{display:"flex",gap:6,flexWrap:"nowrap"}}>
+            {[
+              {id:"foundations",icon:"🎓",label:"Foundations"},
+              {id:"behaviour",  icon:"🧠",label:"Behaviour"},
+              {id:"training",   icon:"🏆",label:"Training"},
+              {id:"tricks",     icon:"✨",label:"Tricks & Fun"},
+              {id:"enrichment", icon:"🧩",label:"Enrichment"},
+              {id:"breed",      icon:"📚",label:"Know Your Breed"},
+              {id:"soul",       icon:"🌟",label:"Soul Learn"},
+              {id:"mira",       icon:"✦", label:"Mira's Picks"},
+            ].map(s=>{
+              const sel=openDim===s.id;
+              return(
+                <button key={s.id}
+                  onClick={()=>{
+                    if(s.id==="mira"){miraPicksRef.current?.scrollIntoView({behavior:"smooth",block:"start"});return;}
+                    setOpenDim(sel?null:s.id);
+                    setActiveTab("learn");
+                  }}
+                  style={{display:"inline-flex",alignItems:"center",gap:5,flexShrink:0,padding:"7px 14px",
+                    borderRadius:9999,border:`1.5px solid ${sel?G.violet:"rgba(124,58,237,0.25)"}`,
+                    background:sel?G.violet:"#fff",color:sel?"#fff":G.mutedText,
+                    fontSize:12,fontWeight:sel?700:400,cursor:"pointer",transition:"all 0.15s",
+                    whiteSpace:"nowrap"}}>
+                  <span style={{fontSize:13}}>{s.icon}</span>{s.label}
+                </button>
+              );
+            })}
+            </div>
+          </div>
+        </div>
+
+        {/* ── TAB BAR — 3 tabs, below strip ── */}
+        <div style={{display:"flex",background:"#fff",borderBottom:`1.5px solid ${G.borderLight}`,marginBottom:20}}>
           {[
-            {id:"foundations",icon:"🎓",label:"Foundations"},
-            {id:"behaviour",  icon:"🧠",label:"Behaviour"},
-            {id:"training",   icon:"🏆",label:"Training"},
-            {id:"tricks",     icon:"✨",label:"Tricks & Fun"},
-            {id:"enrichment", icon:"🧩",label:"Enrichment"},
-            {id:"breed",      icon:"📚",label:"Know Your Breed"},
-            {id:"soul",       icon:"🌟",label:"Soul Learn"},
-            {id:"mira",       icon:"✦", label:"Mira's Picks"},
-          ].map(s=>{
-            const sel=openDim===s.id;
+            {id:"learn",        label:"🎓 Learn & Products"},
+            {id:"services",     label:"📋 Book a Session"},
+            {id:"find-learn",   label:"📍 Find Learn"},
+          ].map(tab=>{
+            const a=activeTab===tab.id;
             return(
-              <button key={s.id}
-                onClick={()=>{
-                  if(s.id==="mira"){miraPicksRef.current?.scrollIntoView({behavior:"smooth",block:"start"});return;}
-                  setOpenDim(sel?null:s.id);
-                }}
-                style={{display:"inline-flex",alignItems:"center",gap:6,flexShrink:0,padding:"8px 16px",borderRadius:9999,border:`1.5px solid ${sel?G.violet:"rgba(124,58,237,0.28)"}`,background:sel?G.violet:"#fff",color:sel?"#fff":G.mutedText,fontSize:12,fontWeight:sel?700:400,cursor:"pointer",transition:"all 0.15s"}}>
-                <span style={{fontSize:14}}>{s.icon}</span>{s.label}
+              <button key={tab.id} onClick={()=>setActiveTab(tab.id)}
+                style={{flex:1,padding:"12px 4px",background:"none",border:"none",
+                  borderBottom:a?`3px solid ${G.violet}`:"3px solid transparent",
+                  color:a?G.violet:"#888",fontSize:12,fontWeight:a?700:500,
+                  cursor:"pointer",transition:"all 0.15s",whiteSpace:"nowrap"}}>
+                {tab.label}
               </button>
             );
           })}
@@ -849,7 +1015,7 @@ const LearnSoulPage = () => {
 
         {activeTab==="learn" && (
           <>
-            {/* Learn Profile */}
+            {/* Learn Profile — collapsed bar */}
             <div style={{marginBottom:24}}>
               <LearnProfile pet={petData} token={token}/>
             </div>
@@ -895,6 +1061,12 @@ const LearnSoulPage = () => {
               })}
             </div>
           </>
+        )}
+
+        {activeTab==="find-learn" && (
+          <div style={{marginTop:8}}>
+            <LearnNearMe pet={petData} onBook={handleBook} />
+          </div>
         )}
 
         {activeTab==="services" && (
