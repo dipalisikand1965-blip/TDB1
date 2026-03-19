@@ -19,11 +19,8 @@ import { API_URL } from "./utils/api";
 
 // Loading fallback component
 const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50">
-    <div className="text-center">
-      <div className="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
-      <p className="text-gray-600">Loading...</p>
-    </div>
+  <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"#1a1a2e"}}>
+    <div style={{width:40,height:40,borderRadius:"50%",border:"3px solid rgba(168,85,247,0.20)",borderTopColor:"#A855F7",animation:"spin 0.8s linear infinite"}}/>
   </div>
 );
 
@@ -248,6 +245,7 @@ const AdoptSoulPage     = lazy(() => import("./pages/AdoptSoulPage"));
 const FarewellSoulPage  = lazy(() => import("./pages/FarewellSoulPage"));
 const ShopSoulPage      = lazy(() => import("./pages/ShopSoulPage"));
 const ServicesSoulPage  = lazy(() => import("./pages/ServicesSoulPage"));
+const MyRequestsPage    = lazy(() => import("./pages/MyRequestsPage"));
 const LearnTopicPage = lazy(() => import("./pages/LearnTopicPage"));
 const AdvisoryPage = lazy(() => import("./pages/AdvisoryPage"));
 const PaperworkPage = lazy(() => import("./pages/PaperworkPage"));
@@ -638,8 +636,9 @@ function MainLayout() {
         <Route path="/emergency" element={<ProtectedRoute><EmergencySoulPage /></ProtectedRoute>} />
         <Route path="/adopt"     element={<ProtectedRoute><AdoptSoulPage /></ProtectedRoute>} />
         <Route path="/farewell"  element={<ProtectedRoute><FarewellSoulPage /></ProtectedRoute>} />
-        <Route path="/shop"      element={<ProtectedRoute><ShopSoulPage /></ProtectedRoute>} />
-        <Route path="/services"  element={<ProtectedRoute><ServicesSoulPage /></ProtectedRoute>} />
+        <Route path="/shop"       element={<ProtectedRoute><ShopSoulPage /></ProtectedRoute>} />
+        <Route path="/services"   element={<ProtectedRoute><ServicesSoulPage /></ProtectedRoute>} />
+        <Route path="/my-requests" element={<ProtectedRoute><MyRequestsPage /></ProtectedRoute>} />
         <Route path="/learn/topic/:topicSlug" element={<LearnTopicPage />} />
         <Route path="/learn/training" element={<ProductListing category="training" pillar="learn" />} />
         <Route path="/learn/puzzles" element={<ProductListing category="puzzles" pillar="learn" />} />

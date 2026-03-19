@@ -33,7 +33,9 @@ import LearnNearMe from "../components/learn/LearnNearMe";
 import GuidedLearnPaths from "../components/learn/GuidedLearnPaths";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
+import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import { API_URL } from "../utils/api";
+import { usePlatformTracking } from "../hooks/usePlatformTracking";
 
 // ─── SOUL CHIP (hero chips — same as CareHero) ───────────────
 function SoulChip({ icon, label, value }) {
@@ -1253,13 +1255,9 @@ function MiraPicksSection({ pet }) {
         {intelligenceSubtitle}
       </p>
 
-      {/* 3 imagines as teaser when no picks yet — full 8 inside Mira's Picks pill */}
+      {/* Breed-intelligent imagines — Maltipoo, Indie, unknown breeds all handled */}
       {!picksLoading && picks.length === 0 && (
-        <div style={{display:"flex",gap:12,overflowX:"auto",paddingBottom:8,scrollbarWidth:"none",marginBottom:8}}>
-          {miraImagines.slice(0,3).map(item=>(
-            <MiraImaginesCard key={item.id} item={item} pet={pet} token={token} pillar="learn"/>
-          ))}
-        </div>
+        <MiraImaginesBreed pet={pet} pillar="learn" colour={G.violet} onConcierge={()=>{}}/>
       )}
       {picksLoading && (
         <div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 0",color:G.mutedText}}>

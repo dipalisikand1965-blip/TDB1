@@ -39,9 +39,11 @@ import PetFriendlyStays from "../components/go/PetFriendlyStays";
 import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
-import MiraImaginesCard from "../components/common/MiraImaginesCard";import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
+import MiraImaginesCard from "../components/common/MiraImaginesCard";
+import MiraImaginesBreed from "../components/common/MiraImaginesBreed";import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
+import { usePlatformTracking } from "../hooks/usePlatformTracking";
 
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Deep Teal + Travel Gold
@@ -233,6 +235,7 @@ function MiraImagineCard({ card, pet, token }) {
   const [requested, setRequested] = useState(false);
   const [imgUrl,    setImgUrl]    = useState(null);
   const breedKey = (pet?.breed||"indie").toLowerCase().replace(/\s+/g,"_").replace(/-/g,"_").replace(/\s*\(.*\)/,"");
+
   useEffect(() => {
     fetch(`${API_URL}/api/ai-images/pipeline/mira-imagines/go/${breedKey}`)
       .then(r=>r.ok?r.json():null).then(d=>{ if(d?.url) setImgUrl(d.url); }).catch(()=>{});
@@ -392,11 +395,7 @@ function MiraPicksSection({ pet }) {
           ))}
         </div>
       ) : showImagines ? (
-        <div style={{ display:"flex", gap:12, overflowX:"auto", paddingBottom:8, scrollbarWidth:"none" }}>
-          {miraImagines.slice(0,3).map((card,i) => (
-            <MiraImaginesCard key={i} item={{id:`go-${i}`,emoji:card.emoji,name:card.name,description:card.reason||card.desc||""}} pet={pet} token={token} pillar="go"/>
-          ))}
-        </div>
+        <MiraImaginesBreed pet={pet} pillar="go" colour={G.teal} onConcierge={()=>{}}/>
       ) : (
         <div style={{ display:"flex", gap:14, overflowX:"auto", paddingBottom:10, scrollbarWidth:"thin" }} className="go-picks-scroll">
           <style>{`.go-picks-scroll::-webkit-scrollbar{height:4px}.go-picks-scroll::-webkit-scrollbar-thumb{background:${G.teal}50;border-radius:4px}`}</style>
