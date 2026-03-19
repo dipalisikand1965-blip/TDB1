@@ -20,6 +20,7 @@ import SoulMadeCollection from "../components/SoulMadeCollection";
 import ConciergeToast from "../components/common/ConciergeToast";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
+import GuidedEmergencyPaths from "../components/emergency/GuidedEmergencyPaths";
 import { API_URL } from "../utils/api";
 
 const G = {
@@ -240,9 +241,15 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, onBook }) {
 }
 
 // ── EMERGENCY CONCIERGE MODAL ─────────────────────────────────
-function EmergencyConciergeModal({ isOpen, onClose, petName, petId, token }) {
+function EmergencyConciergeModal({ isOpen, onClose, petName, petId, token, preSelected }) {
   const [sel,setSel]=useState(""); const [notes,setNotes]=useState(""); const [sending,setSending]=useState(false); const [sent,setSent]=useState(false);
-  useEffect(()=>{if(isOpen){setSel("");setSent(false);setNotes("");}}, [isOpen]);
+  useEffect(()=>{
+    if(isOpen){
+      setSent(false);setNotes("");
+      const map={"Emergency Vet Finder":"Find emergency vet","After-Hours Care Guidance":"Accident response","Accident & Poison Response":"Poisoning advice","Lost Pet Response":"Lost pet","Emergency Transport":"Emergency transport","Pet First Aid Course":"First aid guidance"};
+      setSel(preSelected?map[preSelected]||preSelected:"");
+    }
+  }, [isOpen, preSelected]);
   if(!isOpen)return null;
   const send=async()=>{if(!sel||sending)return;setSending(true);try{const u=JSON.parse(localStorage.getItem("user")||"{}");await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({parent_id:u?.id||u?.email||"guest",pet_id:petId||"unknown",pillar:"emergency",intent_primary:"emergency_concierge",channel:"emergency_modal",initial_message:{sender:"parent",text:`I need help with: ${sel}. ${notes?"Notes: "+notes:""}`}})});}catch{}setSending(false);setSent(true);};
   return(
@@ -284,6 +291,7 @@ const EmergencySoulPage = () => {
   const [services, setServices]     = useState([]);
   const [activeService, setActiveService] = useState(null);
   const [conciergeOpen, setConciergeOpen] = useState(false);
+  const [conciergeSvc,  setConciergeSvc]  = useState("");
   const [toastVisible, setToastVisible] = useState(false);
   const [toastSvc, setToastSvc]     = useState("");
 
@@ -396,6 +404,7 @@ const EmergencySoulPage = () => {
               <button onClick={()=>setConciergeOpen(true)} style={{background:`linear-gradient(135deg,${G.crimson},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"9px 20px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Fix these now with Concierge →</button>
             </div>)}
             <MiraPicksSection pet={petData}/>
+            <GuidedEmergencyPaths pet={petData}/>
             <section style={{paddingBottom:16}}>
               <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:6,fontFamily:"Georgia,serif"}}>Is <span style={{color:G.crimson}}>{petName}</span> really ready?</h2>
               <p style={{fontSize:14,color:"#888",lineHeight:1.5}}>Every dim below has the tools, kit, and service. <span style={{color:G.mid,fontWeight:600}}>Glowing dims need urgent attention.</span></p>
@@ -433,8 +442,13 @@ const EmergencySoulPage = () => {
             <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:4,fontFamily:"Georgia,serif"}}>Get emergency help for <span style={{color:G.crimson}}>{petName}</span></h2>
             <p style={{fontSize:13,color:"#888",marginBottom:20}}>All services are arranged by Concierge® — some are free, all are immediate.</p>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(240px,100%),1fr))",gap:14}}>
-              {EMERG_SERVICES.map(svc=><div key={svc.id} style={{background:"#fff",borderRadius:16,border:`2px solid rgba(220,38,38,0.12)`,overflow:"hidden",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${svc.accentColor}20`;}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
-                <div style={{height:100,background:`linear-gradient(135deg,${G.pale},${G.cream})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:40}}>{svc.icon}</div>
+              {EMERG_SERVICES.map(svc=>{
+                const dbSvc=services.find(s=>s.name===svc.name||s.id===svc.id)||{};
+                const img=dbSvc.watercolor_image||dbSvc.image_url||null;
+                return(<div key={svc.id} style={{background:"#fff",borderRadius:16,border:`2px solid rgba(220,38,38,0.12)`,overflow:"hidden",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${svc.accentColor}20`;}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
+                <div style={{height:120,background:`linear-gradient(135deg,${G.pale},${G.cream})`,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
+                  {img?<img src={img} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>:<span style={{fontSize:40}}>{svc.icon}</span>}
+                </div>
                 <div style={{padding:"14px 16px 16px"}}>
                   <div style={{fontSize:11,color:G.mutedText,marginBottom:3}}>{svc.tagline}</div>
                   <div style={{fontSize:14,fontWeight:800,color:G.darkText,marginBottom:3}}>{svc.name}</div>
@@ -442,10 +456,10 @@ const EmergencySoulPage = () => {
                   {svc.miraKnows&&<div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:8,padding:"6px 10px",marginBottom:8,display:"flex",alignItems:"flex-start",gap:5}}><span style={{fontSize:11,color:G.crimson,flexShrink:0}}>✦</span><span style={{fontSize:10,color:G.mid,lineHeight:1.4}}>{svc.miraKnows.replace(/{petName}/g,petName)}</span></div>}
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                     <span style={{fontSize:14,fontWeight:800,color:G.deep}}>{svc.price}</span>
-                    <button onClick={()=>handleBook(svc)} style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Book →</button>
+                    <button onClick={()=>{setConciergeSvc(svc.name);setConciergeOpen(true);}} style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Book →</button>
                   </div>
                 </div>
-              </div>)}
+              </div>);})}
             </div>
           </div>
         )}
@@ -466,7 +480,7 @@ const EmergencySoulPage = () => {
       </div>
 
       <ConciergeToast toast={toastVisible?{name:toastSvc,pillar:"emergency"}:null} onClose={()=>setToastVisible(false)}/>
-      <EmergencyConciergeModal isOpen={conciergeOpen} onClose={()=>setConciergeOpen(false)} petName={petName} petId={petData?.id} token={token}/>
+      <EmergencyConciergeModal isOpen={conciergeOpen} onClose={()=>setConciergeOpen(false)} petName={petName} petId={petData?.id} token={token} preSelected={conciergeSvc}/>
     </PillarPageLayout>
     </>
   );
