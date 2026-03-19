@@ -30,6 +30,7 @@ import PersonalisedBreedSection from "../components/common/PersonalisedBreedSect
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import ConciergeToast from "../components/common/ConciergeToast";
 import LearnNearMe from "../components/learn/LearnNearMe";
+import GuidedLearnPaths from "../components/learn/GuidedLearnPaths";
 import { API_URL } from "../utils/api";
 
 // ─── SOUL CHIP (hero chips — same as CareHero) ───────────────
@@ -172,13 +173,13 @@ function getLearnDims(pet) {
 }
 
 const DIM_ID_TO_CATEGORY = {
-  foundations: "Learn Foundations",
-  behaviour:   "Behaviour & Mind",
-  training:    "Training & Skills",
-  tricks:      "Tricks & Enrichment",
-  enrichment:  "Tricks & Enrichment",
-  breed:       "Breed Knowledge",
-  soul:        "Soul Learn Products",
+  foundations: "training",
+  behaviour:   "behavior",
+  training:    "training",
+  tricks:      "tricks",
+  enrichment:  "enrichment",
+  breed:       "breed-training_logs",
+  soul:        "breed-treat_pouchs",
   bundles:     "bundles",
 };
 
@@ -484,16 +485,18 @@ function filterBreedProducts(products, petBreed) {
   });
 }
 
-// ─── LEARN CATEGORY CONFIG (for strip pills + content modal) ────────────────
+// ─── LEARN CATEGORY CONFIG (strip pills + content modal) ────────────────────
+// dbCategory must match actual 'category' field in MongoDB (not dimension, which is unset until DB scripts run)
 const LEARN_CATS = [
-  { id:"foundations", icon:"🎓", label:"Foundations",    dimKey:"Learn Foundations",   bg:"#EDE9FE", accent:"#7C3AED" },
-  { id:"behaviour",   icon:"🧠", label:"Behaviour",      dimKey:"Behaviour & Impulse",  bg:"#FFF3E0", accent:"#F57C00" },
-  { id:"training",    icon:"🏆", label:"Training",       dimKey:"Training Basics",      bg:"#E3F2FD", accent:"#1565C0" },
-  { id:"tricks",      icon:"✨", label:"Tricks & Fun",   dimKey:"Tricks & Games",       bg:"#FCE4EC", accent:"#C2185B" },
-  { id:"enrichment",  icon:"🧩", label:"Enrichment",     dimKey:"Enrichment & IQ",      bg:"#E8F5E9", accent:"#2E7D32" },
-  { id:"breed",       icon:"📚", label:"Know Your Breed",dimKey:"Breed Knowledge",      bg:"#FFF8E1", accent:"#FF8F00" },
-  { id:"soul",        icon:"🌟", label:"Soul Learn",     dimKey:"Soul Learn Products",  bg:"#F3E5F5", accent:"#7B1FA2" },
-  { id:"mira",        icon:"✦",  label:"Mira's Picks",  dimKey:null,                   bg:"#E8EAF6", accent:"#3949AB" },
+  { id:"foundations", icon:"🎓", label:"Foundations",    dbCategory:"training",                bg:"#EDE9FE", accent:"#7C3AED" },
+  { id:"behaviour",   icon:"🧠", label:"Behaviour",      dbCategory:"behavior",                bg:"#FFF3E0", accent:"#F57C00" },
+  { id:"training",    icon:"🏆", label:"Training",       dbCategory:"training",                bg:"#E3F2FD", accent:"#1565C0" },
+  { id:"tricks",      icon:"✨", label:"Tricks & Fun",   dbCategory:"tricks",                  bg:"#FCE4EC", accent:"#C2185B" },
+  { id:"enrichment",  icon:"🧩", label:"Enrichment",     dbCategory:"classes",                 bg:"#E8F5E9", accent:"#2E7D32" },
+  { id:"breed",       icon:"📚", label:"Know Your Breed",dbCategory:"breed-training_logs",     bg:"#FFF8E1", accent:"#FF8F00" },
+  { id:"soul",        icon:"🌟", label:"Soul Learn",     dbCategory:"breed-treat_pouchs",      bg:"#F3E5F5", accent:"#7B1FA2" },
+  { id:"bundles",     icon:"🎁", label:"Bundles",        dbCategory:"bundles",                 bg:"#E8F5E9", accent:"#2E7D32" },
+  { id:"mira",        icon:"✦",  label:"Mira's Picks",  dbCategory:null,                      bg:"#E8EAF6", accent:"#3949AB" },
 ];
 
 const LEARN_MIRA_QUOTES = {
@@ -551,9 +554,32 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
         .finally(() => setLoading(false));
       return;
     }
-    if (!catCfg.dimKey) { setLoading(false); return; }
-    const params = new URLSearchParams({ pillar:"learn", category:catCfg.dimKey, limit:12 });
-    if (pet?.breed) params.set("breed", pet.breed);
+    // Bundles — fetch and deduplicate by name
+    if (category === "bundles") {
+      fetch(`${API_URL}/api/bundles?pillar=learn&active_only=true&limit=30`, {
+        headers: token ? { Authorization:`Bearer ${token}` } : {}
+      })
+        .then(r => r.json())
+        .then(d => {
+          const all = d.bundles || d.items || [];
+          // Deduplicate by name (keep first occurrence)
+          const seen = new Set();
+          const deduped = all.filter(b => {
+            const key = (b.name||"").toLowerCase().trim();
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+          setProducts(deduped.map(b=>({...b, isBundle:true})));
+        })
+        .catch(() => setProducts([]))
+        .finally(() => setLoading(false));
+      return;
+    }
+    // Use larger limit for breed-specific categories so filterBreedProducts finds the right breed
+    const breedLimit = ["breed-training_logs","breed-treat_pouchs","breed-treat_jars","breed-care-guide"].includes(catCfg.dbCategory) ? 100 : 12;
+    const params = new URLSearchParams({ pillar:"learn", category:catCfg.dbCategory, limit:breedLimit });
+    // Don't pass breed to API — filterBreedProducts handles it client-side by product name
     fetch(`${API_URL}/api/admin/pillar-products?${params}`, {
       headers: token ? { Authorization:`Bearer ${token}` } : {}
     })
@@ -603,14 +629,72 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
               <Loader2 size={24} style={{color:G.violet,animation:"spin 1s linear infinite"}}/>
             </div>
           )}
-          {!loading && products.length === 0 && (
+
+          {/* MIRA PICKS — imagines AT TOP (PET FIRST, BREED NEXT), then real products */}
+          {!loading && category === "mira" && (
+            <>
+              {/* Imagines at top — always show in Mira Picks modal */}
+              <div style={{marginBottom:20}}>
+                <p style={{fontSize:11,fontWeight:700,color:G.violet,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:10}}>✦ Mira Imagines for {petName}</p>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(160px,100%),1fr))",gap:10}}>
+                  {[
+                    {id:"mi-1",emoji:"🎓",name:`${petName}'s ${isPuppy(pet)?"Puppy":"Adult"} Foundations Kit`,description:`Clicker, treat pouch, training log — ${breed?`built for ${breed}s`:"built for "+petName}.`},
+                    ...(breed?[{id:"mi-2",emoji:"📚",name:`${breed} Learning Pack`,description:`Breed-specific flashcards, care guide, and enrichment toys — because ${petName} is a ${breed}.`}]:[{id:"mi-2",emoji:"📚",name:`${petName}'s Brain Games Set`,description:`Puzzle feeder, snuffle mat, IQ toy — Mira's weekly enrichment picks for ${petName}.`}]),
+                    {id:"mi-3",emoji:"🌟",name:`${petName}'s Soul Learn Kit`,description:breed?`Training journal, treat jar, and ${breed} breed guide.`:`Training journal, treat jar, and enrichment guide.`},
+                  ].map(item=>(
+                    <MiraLearnImagineCard key={item.id} item={item} pet={pet} token={token}/>
+                  ))}
+                </div>
+              </div>
+              {/* Divider */}
+              {products.length > 0 && (
+                <div style={{borderTop:`1px solid ${G.borderLight}`,paddingTop:16,marginBottom:12}}>
+                  <p style={{fontSize:11,fontWeight:700,color:G.mutedText,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:12}}>Mira's Scored Products for {petName}</p>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))",gap:12}}>
+                    {products.map(p=>(
+                      <SharedProductCard key={p.id||p._id} product={p} pet={pet}
+                        onViewDetails={()=>setSelProd(p)} accentColor={G.violet}/>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* BUNDLES display */}
+          {!loading && category === "bundles" && products.length > 0 && (
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(280px,100%),1fr))",gap:14}}>
+              {products.map(b=>(
+                <div key={b.id||b._id} style={{borderRadius:14,border:`1.5px solid ${G.borderLight}`,padding:"16px",background:"#fff"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+                    <span style={{fontSize:28}}>{b.icon||"🎁"}</span>
+                    <div>
+                      <p style={{fontWeight:800,fontSize:14,color:G.darkText,margin:0}}>{b.name}</p>
+                      {b.discount>0&&<span style={{fontSize:10,fontWeight:700,color:"#16A34A",background:"#DCFCE7",borderRadius:20,padding:"2px 8px"}}>{b.discount}% off</span>}
+                    </div>
+                  </div>
+                  <p style={{fontSize:12,color:G.mutedText,lineHeight:1.5,marginBottom:10}}>{b.description}</p>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div>
+                      {b.original_price&&<span style={{fontSize:11,color:"#aaa",textDecoration:"line-through",marginRight:6}}>₹{b.original_price}</span>}
+                      <span style={{fontSize:15,fontWeight:800,color:G.violet}}>₹{b.bundle_price}</span>
+                    </div>
+                    <button style={{background:`linear-gradient(135deg,${G.violet},${G.mid})`,color:"#fff",border:"none",borderRadius:10,padding:"7px 14px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Add →</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Standard category products */}
+          {!loading && category !== "mira" && category !== "bundles" && products.length === 0 && (
             <div style={{textAlign:"center",padding:"32px 0",color:"#888"}}>
               <div style={{fontSize:32,marginBottom:10}}>📦</div>
               <p style={{fontWeight:600,marginBottom:4}}>Products being added</p>
-              <p style={{fontSize:12}}>Mira is curating {petName}'s {catCfg.label} kit — check back soon.</p>
+              <p style={{fontSize:13}}>Mira is curating {petName}'s {catCfg.label} kit — check back soon.</p>
             </div>
           )}
-          {!loading && products.length > 0 && (
+          {!loading && category !== "mira" && category !== "bundles" && products.length > 0 && (
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))",gap:12}}>
               {products.map(p => (
                 <SharedProductCard key={p.id||p._id} product={p} pet={pet}
@@ -676,11 +760,14 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
     Object.values(catData).flat().filter(p => {
     const sub=(p.sub_category||"").toLowerCase();
     const cat=(p.category||"").toLowerCase();
-    if (dim.id==="soul")       return sub==="soul"||cat.includes("training_log")||cat.includes("treat_pouch")||cat.includes("treat_jar");
-    if (dim.id==="breed")      return sub==="breed_guides"||cat.includes("care_guide");
-    if (dim.id==="tricks")     return sub==="tricks";
-    if (dim.id==="enrichment") return sub==="enrichment";
-    return sub===dim.id||cat===dim.id||cat==="learn-essentials";
+    if (dim.id==="soul")       return cat.includes("treat_pouch")||cat.includes("treat_jar")||cat.includes("training_log")||sub==="soul";
+    if (dim.id==="breed")      return cat.includes("breed-training_log")||cat.includes("breed-care")||sub==="breed_guides";
+    if (dim.id==="tricks")     return cat==="tricks"||sub==="tricks";
+    if (dim.id==="enrichment") return cat==="enrichment"||sub==="enrichment"||cat==="classes";
+    if (dim.id==="behaviour")  return cat==="behavior"||sub==="behaviour";
+    if (dim.id==="foundations") return sub==="foundations"||cat==="training";
+    if (dim.id==="training")   return cat==="training"||sub==="foundations"||sub==="training";
+    return true; // catch-all
   }), pet?.breed);
 
   const intelligent = applyMiraIntelligence(allRaw, allergies, pet);
@@ -780,12 +867,67 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
         </div>
       )}
 
-      {/* ── PERSONALISED TAB (Fix 7+8) ── */}
+      {/* ── PERSONALISED TAB ── */}
       {dimTab==="personalised" && (
         <div style={{padding:"12px 16px 20px"}}>
-          <PersonalisedBreedSection pet={pet} pillar="learn" />
-          <div style={{borderTop:"1px solid #f0f0f0",marginTop:16,paddingTop:16}}>
-            <SoulMadeCollection pillar="learn" maxItems={6} showTitle={true} />
+          {/* Breed tip for this dim */}
+          {(() => {
+            const breedKey = (pet?.breed||"indie").toLowerCase().replace(/\s*\(.*\)/,"").trim();
+            const tip = BREED_LEARN_TIPS[breedKey] || BREED_LEARN_TIPS["indie"];
+            const breedLabel = (pet?.breed||"Indie").split("(")[0].trim();
+            return (
+              <div style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,
+                borderRadius:14,padding:"14px 18px",marginBottom:18}}>
+                <p style={{fontSize:10,fontWeight:700,color:G.light,textTransform:"uppercase",
+                  letterSpacing:"0.08em",marginBottom:6}}>
+                  ✦ Personalised for {petName} · {breedLabel}
+                </p>
+                <p style={{fontSize:13,color:"rgba(255,255,255,0.85)",lineHeight:1.55,margin:0,fontStyle:"italic"}}>
+                  {dim.id==="training"  ? tip.path
+                   :dim.id==="enrichment"? tip.enrichment
+                   :dim.id==="breed"    ? tip.style
+                   :`${breedLabel}s ${dim.id==="behaviour"?"need clear, consistent signals":"thrive with the right approach"}.`}
+                </p>
+              </div>
+            );
+          })()}
+
+          {/* Breed-filtered products for this dim */}
+          {(() => {
+            const catKey = DIM_ID_TO_CATEGORY[dim.id] || "training";
+            const catData = apiProducts[catKey] || {};
+            const dimProds = filterBreedProducts(
+              Object.values(catData).flat().filter(p=>{
+                const cat=(p.category||"").toLowerCase();
+                const sub=(p.sub_category||"").toLowerCase();
+                return cat===catKey || sub===dim.id || sub==="foundations";
+              }).slice(0,8),
+              pet?.breed
+            );
+            if (dimProds.length === 0) return (
+              <div style={{textAlign:"center",padding:"24px 0",color:"#888",fontSize:12}}>
+                <div style={{fontSize:28,marginBottom:8}}>🌟</div>
+                <p style={{fontWeight:600}}>Soul products for {petName} coming soon</p>
+                <p>Mira is curating breed-specific products for {pet?.breed||"your breed"}.</p>
+              </div>
+            );
+            return (
+              <>
+                <p style={{fontSize:11,fontWeight:700,color:G.mutedText,textTransform:"uppercase",
+                  letterSpacing:"0.06em",marginBottom:12}}>
+                  {pet?.breed || "Breed"} picks for {petName}
+                </p>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(180px,100%),1fr))",gap:12}}>
+                  {dimProds.map(p=>(
+                    <SharedProductCard key={p.id||p._id} product={p} pillar="learn" selectedPet={pet}/>
+                  ))}
+                </div>
+              </>
+            );
+          })()}
+          {/* SoulMadeCollection below */}
+          <div style={{borderTop:"1px solid #EDE9FE",marginTop:20,paddingTop:16}}>
+            <SoulMadeCollection pillar="learn" maxItems={6} showTitle={true}/>
           </div>
         </div>
       )}
@@ -832,40 +974,81 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
       )}
       {dimTab==="services" && (
         <div style={{padding:"12px 16px 20px"}}>
+          {/* Dim-specific intro + chip prompt */}
+          <div style={{background:G.cream,border:`1px solid ${G.border}`,borderRadius:12,
+            padding:"14px 16px",marginBottom:18}}>
+            <p style={{fontSize:14,fontWeight:700,color:G.darkText,marginBottom:4}}>
+              What does {petName} need from {dim.label}?
+            </p>
+            <p style={{fontSize:12,color:G.mutedText,margin:0}}>
+              Our Concierge® will arrange the right session and trainer for {petName}'s level and breed.
+            </p>
+          </div>
+
           {dimServices.length===0 ? (
             <div style={{textAlign:"center",padding:"24px 0",color:"#888",fontSize:13}}>
               <div style={{fontSize:28,marginBottom:8}}>📋</div>
-              Book a session with our concierge team for {petName}'s {dim.label.toLowerCase()} programme.
-              <div style={{marginTop:16}}>
-                <button style={{background:`linear-gradient(135deg,${G.violet},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"10px 24px",fontSize:13,fontWeight:700,cursor:"pointer"}}>
-                  Ask Mira →
-                </button>
-              </div>
+              <p style={{fontWeight:600,marginBottom:4}}>Book {dim.label} for {petName}</p>
+              <p style={{marginBottom:16}}>Our concierge will find the right trainer for {petName}'s level.</p>
+              <button onClick={()=>onBook?.({name:dim.label,icon:dim.icon,accentColor:G.violet,base_price:0,description:`${dim.label} session for ${petName}`,steps:3})}
+                style={{background:`linear-gradient(135deg,${G.violet},${G.mid})`,color:"#fff",
+                  border:"none",borderRadius:20,padding:"11px 28px",fontSize:13,fontWeight:700,cursor:"pointer"}}>
+                Book {dim.label} →
+              </button>
             </div>
           ) : (
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(220px,100%),1fr))",gap:14}}>
-              {dimServices.map((svc,i)=>(
-                <div key={svc.id||i} style={{background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer"}}>
-                  <div style={{height:110,background:`linear-gradient(135deg,${G.pale},${G.cream})`,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
-                    {(svc.watercolor_image||svc.image_url)
-                      ? <img src={svc.watercolor_image||svc.image_url} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>
-                      : <span style={{fontSize:32}}>🎓</span>}
-                  </div>
-                  <div style={{padding:"12px 14px"}}>
-                    <div style={{fontSize:13,fontWeight:700,color:G.darkText,marginBottom:3}}>{svc.name}</div>
-                    <div style={{fontSize:11,color:G.mutedText,marginBottom:10,lineHeight:1.4,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{svc.description}</div>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                      <span style={{fontSize:13,fontWeight:700,color:G.deep}}>
-                        {svc.base_price>0?`₹${parseInt(svc.base_price).toLocaleString("en-IN")}`:"Free"}
-                      </span>
-                      <button onClick={()=>onBook?.(svc)}
-                        style={{background:G.violet,color:"#fff",border:"none",borderRadius:20,padding:"6px 14px",fontSize:11,fontWeight:700,cursor:"pointer"}}>
-                        Book →
-                      </button>
+              {dimServices.map((svc,i)=>{
+                const accent = svc.accentColor || G.violet;
+                return (
+                  <div key={svc.id||i}
+                    style={{background:"#fff",borderRadius:14,border:`2px solid rgba(124,58,237,0.12)`,
+                      overflow:"hidden",cursor:"pointer",transition:"all 0.15s",
+                      boxShadow:"0 2px 8px rgba(124,58,237,0.06)"}}
+                    onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${accent}20`;}}
+                    onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 2px 8px rgba(124,58,237,0.06)";}}>
+                    <div style={{height:100,background:`linear-gradient(135deg,${G.pale},${G.cream})`,
+                      display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
+                      {(svc.watercolor_image||svc.image_url)
+                        ? <img src={svc.watercolor_image||svc.image_url} alt={svc.name}
+                            style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>
+                        : <span style={{fontSize:36}}>{svc.icon||dim.icon||"🎓"}</span>}
+                      {svc.popular&&<span style={{position:"absolute",top:7,right:7,background:accent,color:"#fff",
+                        fontSize:9,fontWeight:700,borderRadius:20,padding:"2px 8px"}}>Popular</span>}
+                    </div>
+                    <div style={{padding:"12px 14px 14px"}}>
+                      <div style={{fontSize:13,fontWeight:800,color:G.darkText,marginBottom:3}}>{svc.name}</div>
+                      <div style={{fontSize:11,color:G.mutedText,marginBottom:8,lineHeight:1.4,
+                        display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>
+                        {svc.description}
+                      </div>
+                      {svc.miraKnows && (
+                        <div style={{background:"#EDE9FE",border:"1px solid rgba(124,58,237,0.20)",borderRadius:8,
+                          padding:"6px 9px",marginBottom:8,display:"flex",alignItems:"flex-start",gap:5}}>
+                          <span style={{fontSize:11,color:G.violet,flexShrink:0}}>✦</span>
+                          <span style={{fontSize:10,color:"#3730A3",lineHeight:1.4}}>
+                            {svc.miraKnows.replace(/{petName}/g,petName).replace(/{breed}/g,breed||"your dog")}
+                          </span>
+                        </div>
+                      )}
+                      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                        <div>
+                          <span style={{fontSize:13,fontWeight:800,color:G.deep}}>
+                            {svc.base_price>0?`₹${parseInt(svc.base_price).toLocaleString("en-IN")}`:svc.price||"Free"}
+                          </span>
+                          {svc.duration&&<span style={{fontSize:10,color:"#aaa",marginLeft:5}}>{svc.duration}</span>}
+                        </div>
+                        <button onClick={()=>onBook?.({...svc,accentColor:accent})}
+                          style={{background:`linear-gradient(135deg,${accent},${G.mid})`,
+                            color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",
+                            fontSize:11,fontWeight:700,cursor:"pointer"}}>
+                          Book →
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -929,10 +1112,9 @@ function MiraLearnImagineCard({ item, pet, token }) {
 
 function MiraPicksSection({ pet }) {
   const [picks, setPicks]   = useState([]);
-  const [loading,setLoading]= useState(true);
-  const [selectedPick,setSelectedPick] = useState(null);
+  const [picksLoading, setPicksLoading] = useState(true); // async — imagines show immediately
+  const [selectedPick, setSelectedPick] = useState(null);
   const petName = pet?.name || "your dog";
-
   const { token } = useAuth();
 
   const miraImagines = (() => {
@@ -940,111 +1122,354 @@ function MiraPicksSection({ pet }) {
     const stage       = isPuppy(pet) ? "Puppy" : isSenior(pet) ? "Senior" : "Adult";
     const trainingTip = breedLabel ? `designed around ${breedLabel} learning style` : "personalised to their personality";
     return [
-      {
-        id:"learn-imagine-1", isImagined:true, emoji:"🎓",
+      { id:"learn-imagine-1", isImagined:true, emoji:"🎓",
         name: `${petName}'s ${stage} Foundations Kit`,
-        description: `Everything ${petName} needs to begin — clicker, treat pouch, training log and guide, ${trainingTip}.`,
-      },
-      breedLabel ? {
-        id:"learn-imagine-2", isImagined:true, emoji:"📚",
-        name: `${breedLabel} Learning Pack`,
-        description: `Breed-specific flashcards, care guide, and enrichment toys chosen because ${petName} is a ${breedLabel}.`,
-      } : {
-        id:"learn-imagine-2", isImagined:true, emoji:"📚",
-        name: `${petName}'s Brain Games Set`,
-        description: `Puzzle feeder, snuffle mat, and IQ toy — Mira imagines this as ${petName}'s weekly enrichment kit.`,
-      },
-      {
-        id:"learn-imagine-3", isImagined:true, emoji:"🌟",
+        description: `Everything ${petName} needs to begin — clicker, treat pouch, training log and guide, ${trainingTip}.` },
+      breedLabel
+        ? { id:"learn-imagine-2", isImagined:true, emoji:"📚",
+            name: `${breedLabel} Learning Pack`,
+            description: `Breed-specific flashcards, care guide, and enrichment toys chosen because ${petName} is a ${breedLabel}.` }
+        : { id:"learn-imagine-2", isImagined:true, emoji:"📚",
+            name: `${petName}'s Brain Games Set`,
+            description: `Puzzle feeder, snuffle mat, and IQ toy — Mira imagines this as ${petName}'s weekly enrichment kit.` },
+      { id:"learn-imagine-3", isImagined:true, emoji:"🌟",
         name: `${petName}'s Soul Learn Kit`,
         description: breedLabel
           ? `${petName}'s training journal, treat jar, and ${breedLabel} breed guide — Mira's top soul-building picks.`
-          : `${petName}'s personal training journal, treat jar, and enrichment guide — soul-building essentials.`,
-      },
+          : `${petName}'s personal training journal, treat jar, and enrichment guide — soul-building essentials.` },
     ];
   })();
 
+  // Async picks — imagines show immediately, scored picks load in background
   useEffect(()=>{
-    if(!pet?.id){setLoading(false);return;}
-    const breed=encodeURIComponent(pet?.breed?.toLowerCase().trim()||"");
+    if(!pet?.id){ setPicksLoading(false); return; }
+    const breed = encodeURIComponent(pet?.breed?.toLowerCase().trim()||"");
     Promise.all([
       fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=learn&limit=12&min_score=60&entity_type=product&breed=${breed}`).then(r=>r.ok?r.json():null),
       fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=learn&limit=6&min_score=60&entity_type=service`).then(r=>r.ok?r.json():null),
     ]).then(([pD,sD])=>{
-      // PET FIRST, BREED NEXT: always filter results by pet's breed
       const allProds = filterBreedProducts(pD?.picks||[], pet?.breed);
-
-      const prods=allProds,svcs=sD?.picks||[];
-      const merged=[];let pi=0,si=0;
-      while(pi<prods.length||si<svcs.length){
-        if(pi<prods.length)merged.push(prods[pi++]);
-        if(pi<prods.length)merged.push(prods[pi++]);
-        if(si<svcs.length)merged.push(svcs[si++]);
+      const svcs = sD?.picks||[];
+      const merged = []; let pi=0, si=0;
+      while(pi<allProds.length||si<svcs.length){
+        if(pi<allProds.length) merged.push(allProds[pi++]);
+        if(pi<allProds.length) merged.push(allProds[pi++]);
+        if(si<svcs.length)     merged.push(svcs[si++]);
       }
-      if(merged.length)setPicks(merged.slice(0,16));
-      setLoading(false);
-    }).catch(()=>setLoading(false));
+      if(merged.length) setPicks(merged.slice(0,16));
+      setPicksLoading(false);
+    }).catch(()=>setPicksLoading(false));
   },[pet?.id]);
 
   return (
     <section style={{marginBottom:32}} data-testid="learn-mira-picks-section">
       <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:4}}>
         <h3 style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:G.darkText,margin:0,fontFamily:"Georgia,serif"}}>
-          {picks.length===0 ? <>Mira Imagines for <span style={{color:G.violet}}>{petName}</span></>
-            : <>Mira's Learn Picks for <span style={{color:G.violet}}>{petName}</span></>}
-        </h3>
-        <span style={{fontSize:11,background:`linear-gradient(135deg,${G.violet},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>
-          {picks.length===0 ? "Pet Specific" : "AI Scored"}
-        </span>
+        Mira Imagines for <span style={{color:G.violet}}>{petName}</span>
+      </h3>
+      <span style={{fontSize:11,background:`linear-gradient(135deg,${G.violet},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>
+        Pet Specific
+      </span>
       </div>
       <p style={{fontSize:12,color:"#888",marginBottom:16,lineHeight:1.5}}>
-        {picks.length===0
-          ? `These learning picks don't exist in our range yet — but Mira imagined them for ${petName}. Tap to request.`
-          : `Products and sessions matched to ${petName}'s learning level and style — updated as ${petName} grows.`}
+        Mira imagined these for {petName} — tap to request. AI scored products load below as Mira matches them.
       </p>
-      {!loading && picks.length===0 && (
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(190px,100%),1fr))",gap:12}}>
-          {miraImagines.map(item=>(
-            <MiraLearnImagineCard key={item.id} item={item} pet={pet} token={token}/>
-          ))}
-        </div>
-      )}
-      {!loading && picks.length>0 && (
-        <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}} className="learn-picks-scroll">
-          <style>{`.learn-picks-scroll::-webkit-scrollbar{height:4px}.learn-picks-scroll::-webkit-scrollbar-thumb{background:${G.violet}50;border-radius:4px}`}</style>
-          {picks.map((pick,i)=>{
-            const isService=pick.entity_type==="service";
-            const img=[pick.image_url,pick.image,...(pick.images||[])].find(u=>u&&u.startsWith("http"))||null;
-            const score=pick.mira_score||0;
-            const scoreColor=score>=80?"#16A34A":score>=70?G.violet:"#6B7280";
-            return (
-              <div key={pick.id||i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer",transition:"transform 0.15s,box-shadow 0.15s"}}
-                onClick={()=>!isService&&setSelectedPick(pick)}
-                onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px rgba(124,58,237,0.12)`;}}
-                onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
-                <div style={{width:"100%",height:130,background:G.cream,overflow:"hidden",position:"relative"}}>
-                  {img?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
-                      :<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${G.deep},${G.violet})`,color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,18)}</div>}
-                  <span style={{position:"absolute",top:7,left:7,fontSize:9,fontWeight:700,background:isService?G.mid:G.violet,color:"#fff",borderRadius:20,padding:"2px 7px"}}>{isService?"SERVICE":"PRODUCT"}</span>
-                </div>
-                <div style={{padding:"10px 11px 12px"}}>
-                  <div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||pick.entity_name||"—"}</div>
-                  <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:5}}>
-                    <div style={{flex:1,height:4,background:G.pale,borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:scoreColor,borderRadius:4}}/></div>
-                    <span style={{fontSize:10,fontWeight:800,color:scoreColor,minWidth:26}}>{score}</span>
+      {/* Imagines — always show immediately (optimistic UI, PET FIRST BREED NEXT) */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(190px,100%),1fr))",gap:12,marginBottom: picks.length>0 ? 20 : 0}}>
+        {miraImagines.map(item=>(
+          <MiraLearnImagineCard key={item.id} item={item} pet={pet} token={token}/>
+        ))}
+      </div>
+
+      {/* AI Scored picks — load in async, appear below imagines */}
+      {picks.length>0 && (
+        <>
+          <div style={{borderTop:`1px solid ${G.borderLight}`,paddingTop:14,marginBottom:12}}>
+            <p style={{fontSize:11,fontWeight:700,color:G.mutedText,textTransform:"uppercase",letterSpacing:"0.08em",margin:0}}>
+              Mira's AI Scored Picks for {petName}
+            </p>
+          </div>
+          <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}} className="learn-picks-scroll">
+            <style>{`.learn-picks-scroll::-webkit-scrollbar{height:4px}.learn-picks-scroll::-webkit-scrollbar-thumb{background:${G.violet}50;border-radius:4px}`}</style>
+            {picks.map((pick,i)=>{
+              const isService=pick.entity_type==="service";
+              const img=[pick.image_url,pick.image,...(pick.images||[])].find(u=>u&&u.startsWith("http"))||null;
+              const score=pick.mira_score||0;
+              const scoreColor=score>=80?"#16A34A":score>=70?G.violet:"#6B7280";
+              return (
+                <div key={pick.id||i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer",transition:"transform 0.15s,box-shadow 0.15s"}}
+                  onClick={()=>!isService&&setSelectedPick(pick)}
+                  onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px rgba(124,58,237,0.12)`;}}
+                  onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
+                  <div style={{width:"100%",height:130,background:G.cream,overflow:"hidden",position:"relative"}}>
+                    {img?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
+                        :<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${G.deep},${G.violet})`,color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,18)}</div>}
+                    <span style={{position:"absolute",top:7,left:7,fontSize:9,fontWeight:700,background:isService?G.mid:G.violet,color:"#fff",borderRadius:20,padding:"2px 7px"}}>{isService?"SERVICE":"PRODUCT"}</span>
                   </div>
-                  {pick.mira_reason&&<p style={{fontSize:10,color:"#888",lineHeight:1.4,margin:0,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden",fontStyle:"italic"}}>{pick.mira_reason}</p>}
-                  <p style={{fontSize:9,color:isService?G.mid:G.violet,fontWeight:700,margin:"6px 0 0"}}>{isService?"Tap → Book via Concierge":"Tap → View & Add"}</p>
+                  <div style={{padding:"10px 11px 12px"}}>
+                    <div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||pick.entity_name||"—"}</div>
+                    <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:5}}>
+                      <div style={{flex:1,height:4,background:G.pale,borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:scoreColor,borderRadius:4}}/></div>
+                      <span style={{fontSize:10,fontWeight:800,color:scoreColor,minWidth:26}}>{score}</span>
+                    </div>
+                    {pick.mira_reason&&<p style={{fontSize:10,color:"#888",lineHeight:1.4,margin:0,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden",fontStyle:"italic"}}>{pick.mira_reason}</p>}
+                    <p style={{fontSize:9,color:isService?G.mid:G.violet,fontWeight:700,margin:"6px 0 0"}}>{isService?"Tap → Book via Concierge":"Tap → View & Add"}</p>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+        </>
+      )}
+      {picksLoading && picks.length===0 && (
+        <div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 0",color:G.mutedText}}>
+          <Loader2 size={14} style={{animation:"spin 1s linear infinite",color:G.violet}}/>
+          <span style={{fontSize:12}}>Mira is scoring picks for {petName}…</span>
         </div>
       )}
       {selectedPick && <ProductDetailModal product={selectedPick} pillar="learn" selectedPet={pet} onClose={()=>setSelectedPick(null)}/>}
     </section>
   );
 }
+
+// ─── SERVICE BOOKING COMPONENTS (from docx Section 1) ────────────────────────
+function LearnBookingHeader({ service, step, totalSteps, pet, onClose }) {
+  const accent = service.accentColor || G.violet;
+  return (
+    <div style={{ background:`linear-gradient(135deg,${accent},${accent}CC)`,
+      padding:'20px 24px 16px', borderRadius:'16px 16px 0 0', flexShrink:0 }}>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
+        <div style={{ display:'inline-flex', alignItems:'center', gap:6,
+          background:'rgba(255,255,255,0.20)', borderRadius:20, padding:'3px 10px' }}>
+          <span style={{ fontSize:14 }}>{service.icon||"🎓"}</span>
+          <span style={{ fontSize:12, color:'#fff', fontWeight:600 }}>{service.name}</span>
+        </div>
+        <button onClick={onClose} style={{ background:'rgba(255,255,255,0.20)', border:'none',
+          borderRadius:'50%', width:28, height:28, cursor:'pointer', color:'#fff',
+          fontSize:16, display:'flex', alignItems:'center', justifyContent:'center' }}>✕</button>
+      </div>
+      <div style={{ fontSize:20, fontWeight:800, color:'#fff', fontFamily:'Georgia,serif', marginBottom:4 }}>
+        {service.name} for {pet?.name||"your dog"}
+      </div>
+      <div style={{ fontSize:13, color:'rgba(255,255,255,0.75)', marginBottom:10 }}>
+        Personalised for {pet?.breed||'your dog'} · arranged by Mira
+      </div>
+      <div style={{ height:4, background:'rgba(255,255,255,0.25)', borderRadius:4, overflow:'hidden', marginBottom:6 }}>
+        <div style={{ height:'100%', width:`${(step/totalSteps)*100}%`,
+          background:'#fff', borderRadius:4, transition:'width 0.3s' }}/>
+      </div>
+      <div style={{ fontSize:12, color:'rgba(255,255,255,0.75)' }}>Step {step} of {totalSteps}</div>
+    </div>
+  );
+}
+
+function LearnPetBadge({ pet }) {
+  return (
+    <div style={{ display:'flex', alignItems:'center', gap:12, padding:'14px 0',
+      marginBottom:16, borderBottom:'1px solid #EDE9FE' }}>
+      <div style={{ width:44, height:44, borderRadius:'50%',
+        background:'linear-gradient(135deg,#EDE9FE,#A78BFA)',
+        display:'flex', alignItems:'center', justifyContent:'center',
+        fontSize:22, overflow:'hidden', flexShrink:0 }}>
+        {(pet?.photo_url||pet?.avatar_url)
+          ? <img src={pet.photo_url||pet.avatar_url} alt={pet?.name||""} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+          : <span>{pet?.avatar||'🐕'}</span>}
+      </div>
+      <div>
+        <div style={{ fontSize:15, fontWeight:700, color:'#1A1363' }}>For {pet?.name||"your dog"}</div>
+        <div style={{ fontSize:13, color:'#5B21B6' }}>{pet?.breed||""}</div>
+      </div>
+    </div>
+  );
+}
+
+function LearnMiraKnows({ text }) {
+  return (
+    <div style={{ background:'#EDE9FE', border:'1px solid rgba(124,58,237,0.28)',
+      borderRadius:10, padding:'10px 14px', display:'flex',
+      alignItems:'flex-start', gap:8, marginBottom:20 }}>
+      <span style={{ fontSize:14, flexShrink:0 }}>✦</span>
+      <div style={{ fontSize:13, color:'#3730A3' }}>
+        <strong style={{ color:'#1A1363' }}>Mira knows: </strong>{text}
+      </div>
+    </div>
+  );
+}
+
+function LearnNavButtons({ onBack, onNext, onSend, nextDisabled, isLast, accentColor, sending }) {
+  const col = accentColor || G.violet;
+  return (
+    <div style={{ display:'flex', gap:10, paddingTop:16, borderTop:'1px solid #EDE9FE' }}>
+      {onBack && (
+        <button onClick={onBack} style={{ flex:1, background:'#fff',
+          border:'1.5px solid rgba(124,58,237,0.25)', borderRadius:12, padding:'12px',
+          fontSize:13, fontWeight:600, color:'#5B21B6', cursor:'pointer' }}>
+          ← Back
+        </button>
+      )}
+      <button onClick={isLast ? onSend : onNext} disabled={nextDisabled||sending}
+        style={{ flex:2, background: nextDisabled ? '#E0D8F0'
+          : isLast ? `linear-gradient(135deg,${col},#3730A3)`
+          : 'linear-gradient(135deg,#7C3AED,#3730A3)',
+          color: nextDisabled ? '#999' : '#fff', border:'none', borderRadius:12,
+          padding:'12px', fontSize:14, fontWeight:800,
+          cursor: nextDisabled ? 'not-allowed' : 'pointer',
+          display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+        {sending ? 'Sending…' : isLast ? '✦ Send to Concierge®' : 'Continue →'}
+      </button>
+    </div>
+  );
+}
+
+function LearnBookingConfirmed({ service, pet, onClose }) {
+  const accent = service.accentColor || G.violet;
+  return (
+    <div style={{ textAlign:'center', padding:'40px 32px' }}>
+      <div style={{ width:72, height:72, borderRadius:'50%',
+        background:`linear-gradient(135deg,${accent},#7C3AED)`,
+        display:'flex', alignItems:'center', justifyContent:'center',
+        fontSize:32, margin:'0 auto 20px' }}>✦</div>
+      <div style={{ fontSize:22, fontWeight:800, color:'#1A1363',
+        fontFamily:'Georgia,serif', marginBottom:8 }}>Request Sent to Concierge®</div>
+      <div style={{ fontSize:14, color:'#5B21B6', lineHeight:1.7, marginBottom:8 }}>
+        Your {service.name.toLowerCase()} request for {pet?.name||"your dog"} has been received.
+      </div>
+      <div style={{ fontSize:13, color:'#888', lineHeight:1.7, marginBottom:24 }}>
+        Our Concierge® team will review and contact you within 2 hours.
+      </div>
+      <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#EDE9FE',
+        border:'1px solid rgba(124,58,237,0.25)', borderRadius:20,
+        padding:'6px 16px', fontSize:13, color:'#7C3AED', fontWeight:600, marginBottom:24 }}>
+        📥 Added to your Inbox
+      </div>
+      <div>
+        <button onClick={onClose} style={{ background:'#7C3AED', color:'#fff', border:'none',
+          borderRadius:12, padding:'12px 28px', fontSize:14, fontWeight:700, cursor:'pointer' }}>
+          Done ✓
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function LearnServiceFlow({ svc, pet, onClose, token }) {
+  const [step, setStep]         = useState(1);
+  const [level, setLevel]       = useState('');
+  const [schedule, setSchedule] = useState('');
+  const [notes, setNotes]       = useState('');
+  const [sent, setSent]         = useState(false);
+  const [sending, setSending]   = useState(false);
+  const petName  = pet?.name || 'your dog';
+  const totalSteps = svc.steps || 3;
+  const canNext  = [!!level, !!schedule, true][step - 1];
+  const miraText = (svc.miraKnows || '')
+    .replace(/{petName}/g, petName)
+    .replace(/{breed}/g, pet?.breed || 'your breed');
+
+  const send = async () => {
+    setSending(true);
+    try {
+      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},
+        body:JSON.stringify({
+          parent_id: storedUser?.id || storedUser?.email || 'guest',
+          pet_id: pet?.id || 'unknown',
+          pillar: 'learn',
+          intent_primary: 'service_booking',
+          channel: 'learn_book_a_session',
+          initial_message: {
+            sender:'parent',
+            text:`I'd like to book ${svc.name} for ${petName}. Level: ${level}. Schedule: ${schedule}. ${notes ? 'Notes: '+notes : ''}`.trim(),
+          },
+        }),
+      });
+    } catch(e) { console.error('[LearnServiceFlow]', e); }
+    setSending(false);
+    setSent(true);
+  };
+
+  if (sent) return <LearnBookingConfirmed service={svc} pet={pet} onClose={onClose} />;
+
+  return (
+    <>
+      <LearnBookingHeader service={svc} step={step} totalSteps={totalSteps} pet={pet} onClose={onClose}/>
+      <div style={{ padding:'20px 24px', overflowY:'auto', flex:1 }}>
+        <LearnPetBadge pet={pet}/>
+        {miraText && <LearnMiraKnows text={miraText}/>}
+        {step === 1 && (
+          <>
+            <div style={{ fontSize:14, fontWeight:700, color:'#1A1363', marginBottom:12 }}>
+              {petName}'s current level?
+            </div>
+            {['Beginner — starting fresh','Some experience — knows basics','Intermediate — solid commands','Advanced — wants to go further'].map(o=>(
+              <div key={o} onClick={()=>setLevel(o)}
+                style={{ background:level===o?'#EDE9FE':'#fff',
+                  border:`1.5px solid ${level===o?'#7C3AED':'rgba(124,58,237,0.20)'}`,
+                  borderRadius:12, padding:'12px 16px', cursor:'pointer',
+                  display:'flex', alignItems:'center', justifyContent:'space-between',
+                  marginBottom:8, transition:'all 0.12s' }}>
+                <span style={{ fontSize:14, fontWeight:500, color:'#1A1363' }}>{o}</span>
+                {level===o && <span style={{ color:'#7C3AED', fontWeight:700 }}>✓</span>}
+              </div>
+            ))}
+          </>
+        )}
+        {step === 2 && (
+          <>
+            <div style={{ fontSize:14, fontWeight:700, color:'#1A1363', marginBottom:12 }}>
+              When works best for you?
+            </div>
+            {['Weekday mornings','Weekday evenings','Weekend mornings','Weekend afternoons','Flexible'].map(o=>(
+              <div key={o} onClick={()=>setSchedule(o)}
+                style={{ background:schedule===o?'#EDE9FE':'#fff',
+                  border:`1.5px solid ${schedule===o?'#7C3AED':'rgba(124,58,237,0.20)'}`,
+                  borderRadius:12, padding:'12px 16px', cursor:'pointer',
+                  display:'flex', alignItems:'center', justifyContent:'space-between',
+                  marginBottom:8, transition:'all 0.12s' }}>
+                <span style={{ fontSize:14, fontWeight:500, color:'#1A1363' }}>{o}</span>
+                {schedule===o && <span style={{ color:'#7C3AED', fontWeight:700 }}>✓</span>}
+              </div>
+            ))}
+          </>
+        )}
+        {step === 3 && (
+          <>
+            <div style={{ fontSize:14, fontWeight:700, color:'#1A1363', marginBottom:8 }}>Mira's on it ✦</div>
+            <div style={{ background:'#EDE9FE', borderRadius:12, padding:'16px', marginBottom:16 }}>
+              <div style={{ fontSize:13, color:'#1A1363', lineHeight:1.6 }}>
+                Our concierge will contact you within 2 hours to arrange {petName}'s {svc.name}.
+              </div>
+              <div style={{ fontSize:12, color:'#5B21B6', marginTop:8 }}>
+                Level: {level} · Schedule: {schedule}
+                {svc.base_price>0 ? ` · ₹${parseInt(svc.base_price).toLocaleString('en-IN')}` : svc.price ? ` · ${svc.price}` : ''}
+              </div>
+            </div>
+            <textarea placeholder={`Any notes for Mira? (optional)`}
+              value={notes} onChange={e=>setNotes(e.target.value)}
+              style={{ width:'100%', border:'1.5px solid rgba(124,58,237,0.25)',
+                borderRadius:10, padding:'11px 14px', fontSize:13, color:'#1A1363',
+                outline:'none', resize:'none', minHeight:80, boxSizing:'border-box' }}/>
+          </>
+        )}
+      </div>
+      <div style={{ padding:'0 24px 20px', flexShrink:0 }}>
+        <LearnNavButtons
+          onBack={step>1 ? ()=>setStep(s=>s-1) : null}
+          onNext={()=>setStep(s=>s+1)}
+          onSend={send}
+          nextDisabled={!canNext}
+          isLast={step===totalSteps}
+          accentColor={svc.accentColor||G.violet}
+          sending={sending}
+        />
+      </div>
+    </>
+  );
+}
+
+
 
 // ─── LOADING / NO PET ─────────────────────────────────────────
 function LoadingState(){return(<div style={{textAlign:"center",padding:"80px 20px"}}><div style={{width:48,height:48,borderRadius:"50%",background:MIRA_ORB,margin:"0 auto 16px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,color:"#fff"}}>✦</div><div style={{fontSize:16,color:G.darkText,fontWeight:600}}>Preparing <span style={{color:G.violet}}>your learning journey…</span></div></div>);}
@@ -1064,38 +1489,19 @@ const LearnSoulPage = () => {
   const [soulScore,   setSoulScore]   = useState(0);
   const [apiProducts, setApiProducts] = useState({});
   const [services,    setServices]    = useState([]);
-  const [toastVisible,setToastVisible]= useState(false);
+  const [activeBooking, setActiveBooking] = useState(null);
+  const [toastVisible,  setToastVisible]  = useState(false);
   const [toastSvc,    setToastSvc]    = useState("");
   const miraPicksRef = useRef(null);
 
-  const handleBook = useCallback(async (svc) => {
-    const petName = petData?.name || "your dog";
-    const svcName = svc?.name || "this service";
-    const text = `Hi! ${petName}'s parent would like to book ${svcName}. Please arrange and confirm.`;
-    try {
-      const user = JSON.parse(localStorage.getItem("user")||"{}");
-      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
-        method:"POST",
-        headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
-        body:JSON.stringify({
-          parent_id: user?.id||user?.email||"guest",
-          pet_id:    petData?.id||"unknown",
-          pillar:    "learn",
-          intent_primary:   "service_request",
-          intent_secondary: [svcName, "learn_booking"],
-          life_state:  "learn",
-          channel:     "learn_booking",
-          initial_message: { sender:"parent", source:"learn_page", text },
-        }),
-      });
-    } catch(e) { console.error("[LearnSoulPage] handleBook", e); }
-    setToastSvc(svcName);
-    setToastVisible(true);
-  }, [petData, token]);
+  const handleBook = useCallback((svc) => {
+    if (!svc) return;
+    setActiveBooking({ ...svc, accentColor: svc.accentColor || G.violet });
+  }, []);
 
   // Pre-fetch everything on page load
   useEffect(()=>{
-    const CATS=["Learn Foundations","Behaviour & Mind","Training & Skills","Tricks & Enrichment","Breed Knowledge","Soul Learn Products","bundles"];
+    const CATS=["training","behavior","tricks","enrichment","classes","breed-training_logs","breed-treat_pouchs","breed-care-guide","breed-treat_jars"];
     Promise.all([
       ...CATS.map(cat=>fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&limit=100&category=${encodeURIComponent(cat)}`).then(r=>r.ok?r.json():null).catch(()=>null)),
       fetch(`${API_URL}/api/service-box/services?pillar=learn`).then(r=>r.ok?r.json():null).catch(()=>null),
@@ -1175,9 +1581,14 @@ const LearnSoulPage = () => {
 
         {/* H1 — same size as Care hero */}
         <h1 style={{fontSize:"clamp(1.875rem,4vw,2.5rem)",fontWeight:900,color:"#fff",
-          marginBottom:14,lineHeight:1.15,fontFamily:"Georgia,'Times New Roman',serif",textAlign:"center"}}>
+          marginBottom:8,lineHeight:1.15,fontFamily:"Georgia,'Times New Roman',serif",textAlign:"center"}}>
           Learn & Grow for <span style={{color:G.light}}>{petName}</span>
         </h1>
+        {/* Subtitle — matches Care/Play hero height */}
+        <p style={{fontSize:14,color:"rgba(255,255,255,0.72)",textAlign:"center",
+          marginBottom:14,maxWidth:480,margin:"0 auto 14px",lineHeight:1.6}}>
+          Training, behaviour, tricks & enrichment — all personalised and arranged by Mira.
+        </p>
 
         {/* Breed chips */}
         <div style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:8,marginBottom:18}}>
@@ -1271,6 +1682,9 @@ const LearnSoulPage = () => {
             {/* Mira Picks */}
             <div ref={miraPicksRef}><MiraPicksSection pet={petData}/></div>
 
+            {/* Guided Learning Paths */}
+            <GuidedLearnPaths pet={petData} />
+
             {/* Dims section heading */}
             <section style={{paddingBottom:16}}>
               <h2 style={{fontSize:"clamp(1.5rem,4vw,2rem)",fontWeight:800,color:G.darkText,marginBottom:6,fontFamily:"Georgia,'Times New Roman',serif"}}>
@@ -1354,26 +1768,82 @@ const LearnSoulPage = () => {
 
         {activeTab==="services" && (
           <div style={{marginTop:24}}>
-            <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:16,fontFamily:"Georgia,serif"}}>
+            <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:4,fontFamily:"Georgia,serif"}}>
               Book a learning experience for <span style={{color:G.violet}}>{petName}</span>
             </h2>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(220px,100%),1fr))",gap:14}}>
-              {services.map((svc,i)=>(
-                <div key={svc.id||i} style={{background:"#fff",borderRadius:16,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer"}}>
-                  <div style={{height:120,background:`linear-gradient(135deg,${G.pale},${G.cream})`,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
-                    {(svc.watercolor_image||svc.image_url)?<img src={svc.watercolor_image||svc.image_url} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>:<span style={{fontSize:36}}>🎓</span>}
-                  </div>
-                  <div style={{padding:"12px 14px 14px"}}>
-                    <div style={{fontSize:13,fontWeight:700,color:G.darkText,marginBottom:4}}>{svc.name}</div>
-                    <div style={{fontSize:11,color:G.mutedText,lineHeight:1.4,marginBottom:10,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{svc.description}</div>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                      <span style={{fontSize:13,fontWeight:700,color:G.deep}}>{svc.base_price>0?`₹${parseInt(svc.base_price).toLocaleString("en-IN")}`:"Free"}</span>
-                      <button onClick={()=>handleBook(svc)}
-                        style={{background:G.violet,color:"#fff",border:"none",borderRadius:20,padding:"6px 14px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Book →</button>
+            <p style={{fontSize:13,color:G.mutedText,marginBottom:20}}>Arranged by Concierge® · all sessions are personalised for {petName}</p>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(240px,100%),1fr))",gap:14}}>
+              {services.map((svc,i)=>{
+                const accent = svc.accentColor || G.violet;
+                return (
+                  <div key={svc.id||i} style={{background:"#fff",borderRadius:16,
+                    border:`2px solid rgba(124,58,237,0.12)`,
+                    overflow:"hidden",cursor:"pointer",transition:"all 0.15s",
+                    boxShadow:"0 2px 8px rgba(124,58,237,0.06)"}}
+                    onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${accent}20`;}}
+                    onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 2px 8px rgba(124,58,237,0.06)";}}>
+                    {/* Image / Watercolour */}
+                    <div style={{height:110,background:`linear-gradient(135deg,${G.pale},${G.cream})`,
+                      display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
+                      {(svc.watercolor_image||svc.image_url)
+                        ? <img src={svc.watercolor_image||svc.image_url} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>
+                        : <span style={{fontSize:38}}>{svc.icon||"🎓"}</span>}
+                      {svc.popular&&<span style={{position:"absolute",top:8,right:8,background:accent,color:"#fff",fontSize:9,fontWeight:700,borderRadius:20,padding:"2px 8px"}}>Popular</span>}
+                    </div>
+                    {/* Content */}
+                    <div style={{padding:"14px 16px 16px"}}>
+                      <div style={{fontSize:14,fontWeight:800,color:G.darkText,marginBottom:3}}>{svc.name}</div>
+                      <div style={{fontSize:11,color:G.mutedText,lineHeight:1.45,marginBottom:10,
+                        display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{svc.description}</div>
+                      {/* Mira knows bar */}
+                      {svc.miraKnows && (
+                        <div style={{background:"#EDE9FE",border:"1px solid rgba(124,58,237,0.20)",borderRadius:8,
+                          padding:"7px 10px",marginBottom:10,display:"flex",alignItems:"flex-start",gap:6}}>
+                          <span style={{fontSize:12,flexShrink:0}}>✦</span>
+                          <span style={{fontSize:11,color:"#3730A3",lineHeight:1.4}}>
+                            {svc.miraKnows.replace(/{petName}/g,petName).replace(/{breed}/g,breed||"your dog")}
+                          </span>
+                        </div>
+                      )}
+                      {/* Price + Book */}
+                      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                        <div>
+                          <span style={{fontSize:14,fontWeight:800,color:G.deep}}>
+                            {svc.base_price>0?`₹${parseInt(svc.base_price).toLocaleString("en-IN")}`:svc.price||"Free"}
+                          </span>
+                          {svc.duration&&<span style={{fontSize:10,color:"#aaa",marginLeft:6}}>{svc.duration}</span>}
+                        </div>
+                        <button onClick={()=>setActiveBooking(svc)}
+                          style={{background:`linear-gradient(135deg,${accent},#3730A3)`,
+                            color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",
+                            fontSize:12,fontWeight:700,cursor:"pointer"}}>
+                          Book →
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
+            </div>
+            {services.length===0 && (
+              <div style={{textAlign:"center",padding:"40px 0",color:"#aaa"}}>
+                <div style={{fontSize:32,marginBottom:10}}>📋</div>
+                <p style={{fontWeight:600}}>Services coming soon</p>
+                <p style={{fontSize:12}}>Mira is curating {petName}'s learning service providers.</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── SERVICE BOOKING MODAL ── */}
+        {activeBooking && (
+          <div onClick={()=>setActiveBooking(null)}
+            style={{position:"fixed",inset:0,zIndex:10005,background:"rgba(0,0,0,0.72)",
+              display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+            <div onClick={e=>e.stopPropagation()}
+              style={{width:"min(480px,100%)",maxHeight:"88vh",borderRadius:20,background:"#fff",
+                boxShadow:"0 24px 80px rgba(0,0,0,0.45)",display:"flex",flexDirection:"column",overflow:"hidden"}}>
+              <LearnServiceFlow svc={activeBooking} pet={petData} onClose={()=>setActiveBooking(null)} token={token}/>
             </div>
           </div>
         )}

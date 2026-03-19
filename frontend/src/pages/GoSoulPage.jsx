@@ -332,23 +332,8 @@ function MiraPicksSection({ pet }) {
       fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=go&limit=6&min_score=60&entity_type=service`).then(r => r.ok ? r.json() : null),
     ])
       .then(([pData, sData]) => {
-        // PET FIRST, BREED NEXT: filter breed-specific products
-        const breedLower = (pet?.breed || "").toLowerCase();
-        const breedWords = breedLower.split(/\s+/).filter(w => w.length > 2);
-        const knownBreeds = ['american bully','beagle','border collie','boxer','chow chow','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','labrador','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire','lhasa apso','dalmatian','dachshund','chihuahua','doberman','cavalier'];
-        const filterBreed = (arr) => arr.filter(p => {
-          const nm = (p.name||"").toLowerCase();
-          for (const b of knownBreeds) {
-            if (nm.includes(b)) {
-              if (!breedLower) return false;
-              if (nm.includes(breedLower)) return true;
-              if (breedWords.some(w => b.includes(w))) return true;
-              return false;
-            }
-          }
-          return true;
-        });
-        const prods = filterBreed(pData?.picks || []);
+        // Keep all products for go pillar — travel items are NOT breed-specific
+        const prods = pData?.picks || [];
         const svcs  = sData?.picks || [];
         const merged = [];
         let pi = 0, si = 0;
@@ -357,7 +342,7 @@ function MiraPicksSection({ pet }) {
           if (pi < prods.length) merged.push(prods[pi++]);
           if (si < svcs.length)  merged.push(svcs[si++]);
         }
-        if (merged.length) setPicks(merged.slice(0, 16));
+        setPicks(merged.slice(0, 16)); // always set (empty → imagines show)
         setLoading(false);
       })
       .catch(() => setLoading(false));
