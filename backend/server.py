@@ -2096,6 +2096,43 @@ def api_health_check():
     return health_check()
 
 
+@app.get("/api/public/inventory-csv")
+async def get_inventory_csv():
+    """Public endpoint — returns full product/service/bundle inventory as CSV text"""
+    import csv, io
+    from motor.motor_asyncio import AsyncIOMotorClient
+    client = AsyncIOMotorClient(os.environ.get("MONGO_URL","mongodb://localhost:27017"))
+    db_name = os.environ.get("DB_NAME","pet-os-live-test_database")
+    db_pub = client[db_name]
+    rows = []
+    async for p in db_pub.products_master.find({},{"_id":0,"name":1,"pillar":1,"category":1,"sub_category":1,"price":1,"image_url":1,"description":1}):
+        rows.append({"Type":"Product","Name":p.get("name",""),"Pillar":p.get("pillar",""),"Category":p.get("category",""),"SubCategory":p.get("sub_category",""),"Price":p.get("price",""),"HasImage":"Yes" if p.get("image_url") else "No","Description":(p.get("description","") or "")[:80]})
+    async for s in db_pub.services_master.find({},{"_id":0,"name":1,"pillar":1,"category":1,"sub_category":1,"base_price":1,"price":1,"watercolor_image":1,"image_url":1,"description":1}):
+        rows.append({"Type":"Service","Name":s.get("name",""),"Pillar":s.get("pillar",""),"Category":s.get("category",""),"SubCategory":s.get("sub_category",""),"Price":s.get("base_price") or s.get("price",""),"HasImage":"Yes" if (s.get("watercolor_image") or s.get("image_url")) else "No","Description":(s.get("description","") or "")[:80]})
+    async for b in db_pub.care_bundles.find({},{"_id":0,"name":1,"pillar":1,"bundle_price":1,"image_url":1,"description":1,"items":1}):
+        rows.append({"Type":"Bundle","Name":b.get("name",""),"Pillar":b.get("pillar",""),"Category":"Bundle","SubCategory":"","Price":b.get("bundle_price",""),"HasImage":"Yes" if b.get("image_url") else "No","Description":(b.get("description","") or "")[:80]})
+    client.close()
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=["Type","Name","Pillar","Category","SubCategory","Price","HasImage","Description"])
+    writer.writeheader()
+    writer.writerows(rows)
+    csv_content = output.getvalue()
+    from fastapi.responses import Response
+    return Response(content=csv_content, media_type="text/csv", headers={"Content-Disposition":"attachment; filename=tdc_inventory.csv","Access-Control-Allow-Origin":"*"})
+
+
+@app.get("/api/public/system-overview")
+async def get_system_overview():
+    """Public endpoint — returns SYSTEM_OVERVIEW.md content"""
+    import pathlib
+    from fastapi.responses import Response
+    md_path = pathlib.Path("/app/memory/SYSTEM_OVERVIEW.md")
+    if md_path.exists():
+        content = md_path.read_text(encoding="utf-8")
+        return Response(content=content, media_type="text/plain", headers={"Access-Control-Allow-Origin":"*"})
+    return {"error": "File not found"}
+
+
 @app.get("/api/admin/site-status")
 async def get_site_status():
     """

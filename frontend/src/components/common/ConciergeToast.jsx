@@ -21,6 +21,8 @@ const PILLAR_COLOR = {
   adopt:      "#D4537E",
   farewell:   "#6366F1",
   celebrate:  "#A855F7",
+  shop:       "#C9973A",
+  services:   "#334155",
 };
 
 export default function ConciergeToast({ toast, onClose }) {

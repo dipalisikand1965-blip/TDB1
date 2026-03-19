@@ -1069,7 +1069,7 @@ function PetBadge({ pet }) {
   return (
     <div style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 0", marginBottom:16, borderBottom:`1px solid ${G.borderLight}` }}>
       <div style={{ width:44, height:44, borderRadius:"50%", background:`linear-gradient(135deg,${G.pale},${G.light})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, overflow:"hidden", flexShrink:0 }}>
-        {pet?.photo_url?<img src={pet.photo_url} alt={pet.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />:"🐕"}
+        {pet?.photo_url?<img src={pet.photo_url} alt={pet.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} loading="eager" decoding="sync" />:"🐕"}
       </div>
       <div>
         <div style={{ fontSize:15, fontWeight:700, color:G.darkText }}>For {pet?.name||"your dog"}</div>

@@ -185,7 +185,6 @@ const MemberMobileNav = () => {
         { path: '/travel', label: 'Travel', icon: Plane },
         { path: '/learn', label: 'Learn', icon: GraduationCap },
         { path: '/enjoy', label: 'Enjoy', icon: Music },
-        { path: '/advisory', label: 'Advisory', icon: Stethoscope },
         { path: '/paperwork', label: 'Paperwork', icon: FileCheck },
         { path: '/emergency', label: 'Emergency', icon: AlertTriangle },
         { path: '/adopt', label: 'Adopt', icon: Dog },
