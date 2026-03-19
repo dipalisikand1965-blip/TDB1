@@ -46,23 +46,34 @@ import {
   Users,
   Dog,
   Gift,
-  Download
+  Download,
+  FileText,
+  AlertTriangle,
+  BookOpen,
+  Briefcase,
+  Rainbow,
+  HeartHandshake
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import { getWrappedApiBase } from '../utils/api';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
-// Life Pillars with icons (9 main pillars)
+// Life Pillars with icons — full set (no Fit)
 const PILLARS = [
   { id: 'celebrate', name: 'Celebrate', icon: Cake, color: 'from-pink-500 to-rose-500', path: '/celebrate' },
   { id: 'care', name: 'Care', icon: Stethoscope, color: 'from-emerald-500 to-teal-500', path: '/care' },
   { id: 'dine', name: 'Dine', icon: Utensils, color: 'from-amber-500 to-orange-500', path: '/dine' },
   { id: 'go', name: 'Go', icon: Plane, color: 'from-blue-500 to-indigo-500', path: '/go' },
   { id: 'enjoy', name: 'Enjoy', icon: Heart, color: 'from-red-500 to-pink-500', path: '/enjoy' },
-  { id: 'fit', name: 'Fit', icon: Activity, color: 'from-green-500 to-emerald-500', path: '/fit' },
   { id: 'learn', name: 'Learn', icon: GraduationCap, color: 'from-indigo-500 to-blue-500', path: '/learn' },
   { id: 'shop', name: 'Shop', icon: ShoppingBag, color: 'from-fuchsia-500 to-pink-500', path: '/shop' },
+  { id: 'adopt', name: 'Adopt', icon: Dog, color: 'from-amber-400 to-yellow-500', path: '/adopt' },
+  { id: 'paperwork', name: 'Paperwork', icon: FileText, color: 'from-slate-500 to-gray-600', path: '/paperwork' },
+  { id: 'advisory', name: 'Advisory', icon: BookOpen, color: 'from-teal-500 to-cyan-500', path: '/advisory' },
+  { id: 'emergency', name: 'Emergency', icon: AlertTriangle, color: 'from-red-600 to-orange-500', path: '/emergency' },
+  { id: 'farewell', name: 'Farewell', icon: Rainbow, color: 'from-purple-400 to-indigo-400', path: '/farewell' },
+  { id: 'services', name: 'Services', icon: Briefcase, color: 'from-cyan-500 to-blue-500', path: '/services' },
 ];
 
 // Soul Ring Component
