@@ -1,0 +1,61 @@
+{
+  "summary": "Frontend testing of Learn Pillar P0/P1 features (iteration 178). All 8 key features from review_request tested and confirmed working for user Mojo (Indie). LearnServiceFlow modal, GuidedLearnPaths, Training dim expansion (Products/Book/Personalised tabs), Book a Session tab, and hero subtitle all verified.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Hero - Puppy Programme chip",
+        "issue": "Mojo shows 'Puppy Programme' chip in hero because pet.age=null → getAge()=0 → isPuppy()=true. Mojo is an adult Indie, not a puppy. Data issue: age_years not set in doggy_soul_answers for Mojo.",
+        "selector": "hero breed chips",
+        "priority": "LOW"
+      },
+      {
+        "component": "Training dim Book tab - services filter",
+        "issue": "Training dim Book tab shows ALL learn services (New Pet Parent Onboarding, Breed Education, etc.) not just Training-specific ones. Services don't have category='training' set in DB, so filter falls back to pillar='learn'&&!category = all learn services. Chip prompt 'What does Mojo need from Training?' correctly shows, but service cards aren't training-specific.",
+        "selector": "[data-testid='learn-dim-training'] .book-tab",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Category strip pill",
+        "issues": ["Training pill stays highlighted/active state after navigating away from the dim and clicking Book a Session tab (minor visual state bleed)"]
+      }
+    ]
+  },
+  "test_report_links": ["/app/test_reports/iteration_178.json"],
+  "action_items": [
+    "Optional: Set age_years in Mojo's doggy_soul_answers to avoid 'Puppy Programme' misclassification",
+    "Optional: Add category='training' (or relevant dim IDs) to learn services in DB for better dim-specific filtering in Book tabs"
+  ],
+  "critical_code_review_comments": [
+    "DimExpanded Book tab: dimServices filter `s.category===dim.id` works but requires service DB entries to have category=dim.id. Currently all learn services have no category, so all services show in every dim's Book tab - minor UX issue.",
+    "isPuppy() uses getAge() which returns parseInt(pet?.doggy_soul_answers?.age_years||'0') — age=null becomes 0 which triggers puppy logic. Consider adding null guard: if age===0 and no birthday, treat as unknown not puppy."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend-only test)",
+    "frontend": "95%"
+  },
+  "test_credentials": "dipali@clubconcierge.in / test123 (pet: Mojo, breed: Indie)",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "All 8 P0/P1 features PASS. Hero subtitle ✅, 3 tabs ✅, 6 guided paths with modal ✅, LearnServiceFlow 3-step modal ✅ (Level/Schedule/Confirm + pet badge + progress bar + ✕ close), Training dim Products=26, Book=chip+services, Personalised=breed tip+products ✅, Book a Session watercolour cards ✅. Two minor notes: Mojo shows 'Puppy Programme' (null age→0→isPuppy=true), Training Book tab shows all learn services (no category set in DB). H1=40px matches Care/Play.",
+  "test_results_detail": {
+    "1_hero_subtitle": "PASS - 'Training, behaviour, tricks & enrichment — all personalised and arranged by Mira.' visible. H1='Learn & Grow for Mojo' at 40px.",
+    "2_tab_bar": "PASS - 3 tabs: Learn & Products, Book a Session, Find Learn all visible and clickable",
+    "3_guided_paths_section": "PASS - 'Guided Learning Paths' heading + '6 paths' badge + all 6 'Start for Mojo →' CTAs. All 6 path titles (New Puppy Start, New Rescue & Rehome, Basic Training, Behaviour & Impulse, Mental Enrichment, Senior Dog Care) visible.",
+    "4_guided_path_modal": "PASS - Modal opens with step flow (Step 1 of 3), 'For Mojo' pet badge with 'Indie' breed, ✕ close button, step navigation works (Step 1→Step 2→closed)",
+    "5_learn_service_flow_modal": "PASS - Opens from Book a Session tab 'Book →'. Shows service name in header, 'Personalised for Indie · arranged by Mira' subtitle, progress bar, Step 1 of 3 indicator, 'For Mojo' pet badge, level options (4 choices), Step 2 schedule picker, Step 3 Mira's on it ✦ confirm with 'Send to Concierge®' button. ✕ close works.",
+    "6_training_dim_products": "PASS - Training dim expanded: '✓ 26 safe for Mojo' shown. Sub-category filters: All, Foundations, Care Essentials. Products loaded with images.",
+    "7_training_dim_book_tab": "PASS - 'What does Mojo need from Training?' chip prompt + 'Our Concierge® will arrange...' text + service cards with Book → buttons that open LearnServiceFlow modal",
+    "8_training_dim_personalised": "PASS - '✦ PERSONALISED FOR MOJO · INDIE' header + Indie breed tip ('Nose work and exploration; calm confident guidance') + 'INDIE PICKS FOR MOJO' products grid",
+    "9_book_session_watercolour_cards": "PASS - Watercolour illustrated service cards: New Pet Parent Onboarding (₹1,500), Breed Education Session (₹800), Puppy Transition Guidance (₹2,000), Senior Pet Care Education (₹1,000) + more. Each card has Book → button.",
+    "puppy_programme_note": "MINOR - Mojo shows 'Puppy Programme' in hero (age=null→0→isPuppy=true). Not functionally breaking but semantically wrong."
+  }
+}
