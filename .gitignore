@@ -1088,3 +1088,9 @@ backend/data/mockup_backup.json.gz
 frontend/node_modules/.cache/default-development/27.pack
 frontend/node_modules/.cache/default-development/41.pack
 frontend/node_modules/.cache/default-development/26.pack
+-e 
+# Environment files
+*.env
+*.env.*
+frontend/node_modules/.cache/default-development/43.pack
+frontend/node_modules/.cache/default-development/42.pack
