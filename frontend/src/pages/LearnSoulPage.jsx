@@ -814,18 +814,94 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
 }
 
 // ─── MIRA PICKS ───────────────────────────────────────────────
+// ─── MIRA LEARN IMAGINE CARD (Care-parity, violet palette) ─────────────────
+function MiraLearnImagineCard({ item, pet, token }) {
+  const [state, setState] = useState("idle");
+  const petName = pet?.name || "your dog";
+  const send = async () => {
+    setState("sending");
+    try {
+      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          parent_id: storedUser?.id || storedUser?.email || "guest",
+          pet_id: pet?.id || "unknown",
+          pillar: "learn",
+          intent_primary: "mira_imagines_request",
+          channel: "learn_mira_picks_imagines",
+          initial_message: { sender: "parent", text: `I'd love "${item.name}" for ${petName}. Mira imagined this — please help source it!` },
+        }),
+      });
+    } catch {}
+    setState("sent");
+  };
+  return (
+    <div style={{ borderRadius:14, overflow:"hidden",
+      background:"linear-gradient(135deg,#0A0A3C,#1A1363)", border:`1.5px solid rgba(124,58,237,0.30)`,
+      display:"flex", flexDirection:"column", minHeight:220 }}>
+      <div style={{ position:"relative", height:110,
+        background:"linear-gradient(135deg,#1A1363,#2D1B69)",
+        display:"flex", alignItems:"center", justifyContent:"center" }}>
+        <span style={{ fontSize:40 }}>{item.emoji || "🎓"}</span>
+        <div style={{ position:"absolute", top:8, left:8, background:G.violet, color:"#fff",
+          fontSize:9, fontWeight:700, padding:"3px 8px", borderRadius:20 }}>Mira Imagines</div>
+      </div>
+      <div style={{ flex:1, padding:"10px 12px 4px" }}>
+        <p style={{ fontWeight:800, color:"#fff", fontSize:12, lineHeight:1.3, marginBottom:4 }}>{item.name}</p>
+        <p style={{ color:"rgba(255,255,255,0.50)", fontSize:10, lineHeight:1.4, margin:0, fontStyle:"italic" }}>{item.description}</p>
+      </div>
+      <div style={{ padding:"0 12px 12px" }}>
+        {state === "sent"
+          ? <div style={{ textAlign:"center", fontSize:11, fontWeight:700, color:G.light }}>✓ Sent to Concierge!</div>
+          : <button onClick={send} disabled={state==="sending"}
+              style={{ width:"100%", background:`linear-gradient(135deg,${G.violet},${G.mid})`,
+                color:"#fff", border:"none", borderRadius:10, padding:"9px",
+                fontSize:11, fontWeight:700, cursor:"pointer", opacity:state==="sending"?0.7:1 }}>
+              {state==="sending" ? "Sending…" : "Tap — Concierge →"}
+            </button>}
+      </div>
+    </div>
+  );
+}
+
 function MiraPicksSection({ pet }) {
   const [picks, setPicks]   = useState([]);
   const [loading,setLoading]= useState(true);
   const [selectedPick,setSelectedPick] = useState(null);
   const petName = pet?.name || "your dog";
 
-  const miraImagines = [
-    {emoji:"🎓",bg:`linear-gradient(135deg,${G.deep},${G.mid})`,name:"Puppy Starter Kit",desc:"Everything to start right",reason:"Because every journey starts here"},
-    {emoji:"🧠",bg:`linear-gradient(135deg,#1a0a2e,${G.deep})`,name:"Calm & Confident Bundle",desc:"Anxiety wrap + diffuser + journal",reason:"Because understanding comes first"},
-    {emoji:"🏆",bg:`linear-gradient(135deg,${G.deep},#1a2a4a)`,name:"Training Essentials Kit",desc:"Pouch + target stick + log + flashcards",reason:"Because the right tools matter"},
-    {emoji:"🧩",bg:`linear-gradient(135deg,#0a1a2a,${G.mid})`,name:"Mental Gym Bundle",desc:"Puzzle + snuffle mat + nose work",reason:"Because a tired mind is a happy dog"},
-  ];
+  const { token } = useAuth();
+
+  const miraImagines = (() => {
+    const breedLabel  = pet?.breed ? pet.breed.split("(")[0].trim() : "";
+    const stage       = isPuppy(pet) ? "Puppy" : isSenior(pet) ? "Senior" : "Adult";
+    const trainingTip = breedLabel ? `designed around ${breedLabel} learning style` : "personalised to their personality";
+    return [
+      {
+        id:"learn-imagine-1", isImagined:true, emoji:"🎓",
+        name: `${petName}'s ${stage} Foundations Kit`,
+        description: `Everything ${petName} needs to begin — clicker, treat pouch, training log and guide, ${trainingTip}.`,
+      },
+      breedLabel ? {
+        id:"learn-imagine-2", isImagined:true, emoji:"📚",
+        name: `${breedLabel} Learning Pack`,
+        description: `Breed-specific flashcards, care guide, and enrichment toys chosen because ${petName} is a ${breedLabel}.`,
+      } : {
+        id:"learn-imagine-2", isImagined:true, emoji:"📚",
+        name: `${petName}'s Brain Games Set`,
+        description: `Puzzle feeder, snuffle mat, and IQ toy — Mira imagines this as ${petName}'s weekly enrichment kit.`,
+      },
+      {
+        id:"learn-imagine-3", isImagined:true, emoji:"🌟",
+        name: `${petName}'s Soul Learn Kit`,
+        description: breedLabel
+          ? `${petName}'s training journal, treat jar, and ${breedLabel} breed guide — Mira's top soul-building picks.`
+          : `${petName}'s personal training journal, treat jar, and enrichment guide — soul-building essentials.`,
+      },
+    ];
+  })();
 
   useEffect(()=>{
     if(!pet?.id){setLoading(false);return;}
@@ -847,39 +923,43 @@ function MiraPicksSection({ pet }) {
   },[pet?.id]);
 
   return (
-    <section style={{marginBottom:32}}>
+    <section style={{marginBottom:32}} data-testid="learn-mira-picks-section">
       <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:4}}>
         <h3 style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:G.darkText,margin:0,fontFamily:"Georgia,serif"}}>
-          Mira's Learn Picks for <span style={{color:G.violet}}>{petName}</span>
+          {picks.length===0 ? <>Mira Imagines for <span style={{color:G.violet}}>{petName}</span></>
+            : <>Mira's Learn Picks for <span style={{color:G.violet}}>{petName}</span></>}
         </h3>
-        <span style={{fontSize:11,background:`linear-gradient(135deg,${G.violet},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>AI Scored</span>
+        <span style={{fontSize:11,background:`linear-gradient(135deg,${G.violet},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>
+          {picks.length===0 ? "Pet Specific" : "AI Scored"}
+        </span>
       </div>
-      <p style={{fontSize:12,color:"#888",marginBottom:16}}>Products and sessions matched to {petName}'s learning level and style.</p>
-
-      {!loading && picks.length===0 ? (
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))",gap:14}}>
-          {miraImagines.map((c,i)=>(
-            <div key={i} style={{background:c.bg,borderRadius:16,padding:"20px 16px 16px",position:"relative"}}>
-              <div style={{position:"absolute",top:12,left:12,background:"rgba(255,255,255,0.18)",borderRadius:20,padding:"3px 10px",fontSize:10,fontWeight:700,color:"#fff"}}>Mira Imagines</div>
-              <div style={{fontSize:44,textAlign:"center",marginTop:20,marginBottom:12}}>{c.emoji}</div>
-              <div style={{fontSize:14,fontWeight:700,color:"#fff",textAlign:"center",marginBottom:5}}>{c.name}</div>
-              <div style={{fontSize:12,color:"rgba(255,255,255,0.60)",textAlign:"center",marginBottom:4}}>{c.desc}</div>
-              <div style={{fontSize:11,color:G.light,fontStyle:"italic",textAlign:"center",marginBottom:14}}>{c.reason}</div>
-              <button style={{width:"100%",background:`linear-gradient(135deg,${G.violet},${G.mid})`,color:"#fff",border:"none",borderRadius:10,padding:"9px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Request a Quote →</button>
-            </div>
+      <p style={{fontSize:12,color:"#888",marginBottom:16,lineHeight:1.5}}>
+        {picks.length===0
+          ? `These learning picks don't exist in our range yet — but Mira imagined them for ${petName}. Tap to request.`
+          : `Products and sessions matched to ${petName}'s learning level and style — updated as ${petName} grows.`}
+      </p>
+      {!loading && picks.length===0 && (
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(190px,100%),1fr))",gap:12}}>
+          {miraImagines.map(item=>(
+            <MiraLearnImagineCard key={item.id} item={item} pet={pet} token={token}/>
           ))}
         </div>
-      ) : (
-        <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}}>
+      )}
+      {!loading && picks.length>0 && (
+        <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}} className="learn-picks-scroll">
+          <style>{`.learn-picks-scroll::-webkit-scrollbar{height:4px}.learn-picks-scroll::-webkit-scrollbar-thumb{background:${G.violet}50;border-radius:4px}`}</style>
           {picks.map((pick,i)=>{
             const isService=pick.entity_type==="service";
             const img=[pick.image_url,pick.image,...(pick.images||[])].find(u=>u&&u.startsWith("http"))||null;
             const score=pick.mira_score||0;
             const scoreColor=score>=80?"#16A34A":score>=70?G.violet:"#6B7280";
             return (
-              <div key={pick.id||i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer"}} onClick={()=>!isService&&setSelectedPick(pick)}>
+              <div key={pick.id||i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer",transition:"transform 0.15s,box-shadow 0.15s"}}
+                onClick={()=>!isService&&setSelectedPick(pick)}
+                onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px rgba(124,58,237,0.12)`;}}
+                onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
                 <div style={{width:"100%",height:130,background:G.cream,overflow:"hidden",position:"relative"}}>
-                  {img?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+                  {img?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
                       :<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${G.deep},${G.violet})`,color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,18)}</div>}
                   <span style={{position:"absolute",top:7,left:7,fontSize:9,fontWeight:700,background:isService?G.mid:G.violet,color:"#fff",borderRadius:20,padding:"2px 7px"}}>{isService?"SERVICE":"PRODUCT"}</span>
                 </div>
@@ -897,7 +977,7 @@ function MiraPicksSection({ pet }) {
           })}
         </div>
       )}
-      {selectedPick&&<ProductDetailModal product={selectedPick} pillar="learn" selectedPet={pet} onClose={()=>setSelectedPick(null)}/>}
+      {selectedPick && <ProductDetailModal product={selectedPick} pillar="learn" selectedPet={pet} onClose={()=>setSelectedPick(null)}/>}
     </section>
   );
 }
