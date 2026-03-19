@@ -183,7 +183,6 @@ const MemberMobileNav = () => {
         { path: '/care', label: 'Care', icon: Heart },
         { path: '/stay', label: 'Stay', icon: Hotel },
         { path: '/travel', label: 'Travel', icon: Plane },
-        { path: '/fit', label: 'Fit', icon: Dumbbell },
         { path: '/learn', label: 'Learn', icon: GraduationCap },
         { path: '/enjoy', label: 'Enjoy', icon: Music },
         { path: '/advisory', label: 'Advisory', icon: Stethoscope },

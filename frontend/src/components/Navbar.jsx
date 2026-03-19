@@ -83,18 +83,6 @@ const PILLARS = [
     ]
   },
   {
-    id: 'fit',
-    name: 'Fit',
-    icon: '🏃',
-    path: '/fit',
-    dropdown: [
-      { name: 'Fit By Concierge®', path: '/fit', highlight: true },
-      { name: 'Fitness Plans', path: '/fit#plans' },
-      { name: 'Weight Programs', path: '/fit?type=weight' },
-      { name: 'Exercise', path: '/fit?type=exercise' },
-    ]
-  },
-  {
     id: 'learn',
     name: 'Learn',
     icon: '🎓',
@@ -183,7 +171,6 @@ const PILLARS = [
       { name: 'Care & Grooming', path: '/services?pillar=care' },
       { name: 'Training', path: '/services?pillar=learn' },
       { name: 'Travel & Stay', path: '/services?pillar=travel' },
-      { name: 'Fitness', path: '/services?pillar=fit' },
     ]
   },
 ];
