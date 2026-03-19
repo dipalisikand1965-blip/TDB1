@@ -23,6 +23,8 @@ import PetFriendlySpots from "../components/dine/PetFriendlySpots";
 import GuidedNutritionPaths from "../components/dine/GuidedNutritionPaths";
 import { PillarHelpBuckets, PillarGuidedPaths } from "../components/PillarGoldSections";
 import { API_URL } from "../utils/api";
+import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
+import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
@@ -814,18 +816,21 @@ function TummyProfile({ pet, token }) {
                 onScoreUpdated={(s) => setLiveScore(s)}
               />
 
-              {/* Mira Imagines section */}
+              {/* Mira Imagines — 3 teaser cards, consistent with all pillars */}
               {miraFoodCards.length > 0 && (
                 <div style={{ marginTop: 8 }}>
                   <p style={{ fontWeight: 800, color: '#1A0A00', fontSize: 16, marginBottom: 4 }}>
                     Mira Imagines for <span style={{ color: '#FF8C42' }}>{petName}</span>
                   </p>
-                  <p style={{ fontSize: 12, color: '#888', marginBottom: 16, lineHeight: 1.5 }}>
+                  <p style={{ fontSize: 12, color: '#888', marginBottom: 14, lineHeight: 1.5 }}>
                     Based on {petName}'s soul profile — not in range yet, but Mira can request these specially.
                   </p>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))', gap: 14 }}>
-                    {miraFoodCards.map((card, idx) => (
-                      <MiraTummyImaginesCard key={idx} card={card} pet={pet} token={token} />
+                  <div style={{ display:"flex", gap:12, overflowX:"auto", paddingBottom:8, scrollbarWidth:"none" }}>
+                    {miraFoodCards.slice(0,3).map((card, idx) => (
+                      <MiraImaginesCard key={idx}
+                        item={{ id:`dine-${idx}`, emoji:card.emoji||"🍽️", name:card.title||card.name||"Dine Pick", description:card.description||card.reason||"" }}
+                        pet={pet} token={token} pillar="dine"
+                      />
                     ))}
                   </div>
                 </div>
@@ -853,6 +858,8 @@ function MiraPicksSection({ pet }) {
   const [conciergeSent, setConciergeSent] = useState(false);
   const { token } = useAuth();
   const petName = pet?.name || "your dog";
+  const { note, orderCount, topInterest } = useMiraIntelligence(pet?.id, token);
+  const intelligenceLine = getMiraIntelligenceSubtitle(petName, note, orderCount, topInterest);
 
   const handleServiceConcierge = async (service) => {
     setConciergeSending(true);
@@ -887,7 +894,21 @@ function MiraPicksSection({ pet }) {
       fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=dine&limit=6&min_score=60&entity_type=service`).then(r => r.ok ? r.json() : null),
     ])
       .then(([pData, sData]) => {
-        const prods = pData?.picks || [];
+        const prods = (pData?.picks||[]).filter(p => {
+          const name = (p.name||"").toLowerCase();
+          const knownBreeds = ['american bully','beagle','border collie','boxer','chow chow','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','labrador','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire','lhasa apso','dalmatian','dachshund','chihuahua','doberman','cavalier','jack russell','cocker spaniel','samoyed','corgi','pomeranian','schnauzer'];
+          const petBreed = (pet?.breed||"").toLowerCase();
+          const breedWords = petBreed.split(/\s+/).filter(w=>w.length>2);
+          for (const b of knownBreeds) {
+            if (name.includes(b)) {
+              if (!petBreed) return false;
+              if (name.includes(petBreed)) return true;
+              if (breedWords.some(w=>b.includes(w))) return true;
+              return false;
+            }
+          }
+          return true;
+        });
         const svcs = sData?.picks || [];
         // Interleave: product, product, service, product, product, service…
         const merged = [];
@@ -915,8 +936,8 @@ function MiraPicksSection({ pet }) {
           AI Scored
         </span>
       </div>
-      <p style={{ fontSize: 12, color: '#888', marginBottom: 16, lineHeight: 1.5 }}>
-        Products &amp; services matched by Mira to {petName}'s soul profile — updated as {petName} grows.
+      <p style={{ fontSize: 13, color: '#888', marginBottom: 16, lineHeight: 1.5 }}>
+        {intelligenceLine}
       </p>
       {/* Horizontal scroll */}
       <div style={{ display: 'flex', gap: 14, overflowX: 'auto', paddingBottom: 10, scrollbarWidth: 'thin' }} className="mira-picks-scroll">
@@ -1301,7 +1322,11 @@ function TabBar({ active, onChange }) {
       style={{ display: "flex", justifyContent: "center", gap: 8, padding: "12px 16px", background: "#FDF6EE", borderBottom: "1px solid #F0E8E0" }}
       data-testid="dine-tab-bar"
     >
-      {[{ id: "eat", icon: "🍽️", label: "Eat & Nourish" }, { id: "out", icon: "🗺️", label: "Dine Out" }].map(tab => (
+      {[
+        { id: "eat", icon: "🍽️", label: "Eat & Nourish" },
+        { id: "out", icon: "🗺️", label: "Dine Out" },
+        { id: "find", icon: "📍", label: "Find Dine" },
+      ].map(tab => (
         <button
           key={tab.id}
           onClick={() => onChange(tab.id)}
@@ -1362,6 +1387,7 @@ const DineSoulPage = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("eat");
   const [openDim, setOpenDim] = useState(null);
+  const [dineConciergeOpen, setDineConciergeOpen] = useState(false);
   const [petData, setPetData] = useState(null);
   const [soulScore, setSoulScore] = useState(0);
   const [apiProducts, setApiProducts] = useState({});
@@ -1513,6 +1539,13 @@ const DineSoulPage = () => {
         )}
 
         {activeTab === "out" && (
+          <>
+          <div style={{display:"flex",justifyContent:"flex-end",padding:"12px 0 0"}}>
+            <button onClick={()=>setDineConciergeOpen(true)}
+              style={{background:"linear-gradient(135deg,#FF8C42,#C44400)",color:"#fff",border:"none",borderRadius:20,padding:"9px 20px",fontSize:12,fontWeight:700,cursor:"pointer"}}>
+              ✦ Book Dine Concierge →
+            </button>
+          </div>
           <PetFriendlySpots
             pet={petData}
             onReserve={(spot, city) => {
@@ -1521,6 +1554,58 @@ const DineSoulPage = () => {
               setDineOutIntakeOpen(true);
             }}
           />
+          </>
+        )}
+
+        {/* Find Dine — nearby pet-friendly restaurants & delivery */}
+        {activeTab === "find" && (
+          <div style={{marginTop:24}}>
+            <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:"#C44400",marginBottom:4,fontFamily:"Georgia,serif"}}>
+              Find Dine for <span style={{color:"#FF8C42"}}>{petData?.name||"your dog"}</span>
+            </h2>
+            <p style={{fontSize:13,color:"#888",marginBottom:20}}>Pet-friendly restaurants, home delivery, and dining options near you — curated by Mira.</p>
+            <PetFriendlySpots
+              pet={petData}
+              onReserve={(spot, city) => {
+                setDineOutVenue(spot?.name || null);
+                setDineOutCity(city || null);
+                setDineOutIntakeOpen(true);
+              }}
+            />
+          </div>
+        )}
+
+        {/* Dine Concierge Modal */}
+        {dineConciergeOpen && (
+          <div onClick={()=>setDineConciergeOpen(false)}
+            style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.50)",zIndex:10006,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+            <div onClick={e=>e.stopPropagation()}
+              style={{background:"#fff",borderRadius:20,padding:32,maxWidth:480,width:"100%",maxHeight:"90vh",overflowY:"auto",position:"relative"}}>
+              <button onClick={()=>setDineConciergeOpen(false)}
+                style={{position:"absolute",top:16,right:16,background:"none",border:"none",cursor:"pointer",color:"#999",fontSize:18}}>✕</button>
+              <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(255,140,66,0.10)",border:"1px solid rgba(255,140,66,0.30)",borderRadius:9999,padding:"4px 14px",marginBottom:20}}>
+                <span style={{fontSize:11,fontWeight:600,color:"#C44400",letterSpacing:"0.06em",textTransform:"uppercase"}}>★ {petData?.name||"your dog"}'s Dine Concierge</span>
+              </div>
+              <h2 style={{fontSize:22,fontWeight:800,color:"#3d1200",fontFamily:"Georgia,serif",lineHeight:1.2,marginBottom:8}}>
+                What should <span style={{color:"#FF8C42"}}>{petData?.name||"your dog"}</span>'s dining experience be?
+              </h2>
+              <p style={{fontSize:14,color:"#888",marginBottom:24}}>Three questions. Then your Concierge takes over.</p>
+              <p style={{fontSize:13,fontWeight:700,color:"#3d1200",marginBottom:12}}>What are we planning?</p>
+              <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:24}}>
+                {["Home delivery","Pet-friendly restaurant","Special diet plan","Allergy-free meal","Birthday cake","Treat box","Nutrition consult","Just exploring"].map(opt=>(
+                  <button key={opt}
+                    style={{borderRadius:9999,padding:"8px 16px",fontSize:13,cursor:"pointer",background:"#FFF8F0",border:"1.5px solid #FFCC99",color:"#C44400"}}
+                    onClick={e=>{e.currentTarget.style.background="#FF8C42";e.currentTarget.style.color="#fff";}}>
+                    {opt}
+                  </button>
+                ))}
+              </div>
+              <button onClick={()=>setDineConciergeOpen(false)}
+                style={{width:"100%",background:"linear-gradient(135deg,#FF8C42,#C44400)",color:"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:15,fontWeight:800,cursor:"pointer"}}>
+                ✦ Send to {petData?.name||"your dog"}'s Concierge
+              </button>
+            </div>
+          </div>
         )}
 
         {/* Dining Out Concierge Modal */}

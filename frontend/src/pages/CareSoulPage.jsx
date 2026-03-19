@@ -33,6 +33,8 @@ import CareNearMe from "../components/care/CareNearMe";
 import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
+import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
+import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
 
@@ -285,8 +287,16 @@ function resolvePickImage(pick) {
 // MIRA IMAGINE CARD — dark green, "Mira Imagines" badge, Concierge CTA
 // ─────────────────────────────────────────────────────────────
 function MiraImagineCard({ item, pet, token }) {
-  const [state, setState] = useState("idle");
-  const petName = pet?.name || "your dog";
+  const [state,  setState]  = useState("idle");
+  const [imgUrl, setImgUrl] = useState(null);
+  const petName  = pet?.name || "your dog";
+  const breedKey = (pet?.breed||"indie").toLowerCase().replace(/\s+/g,"_").replace(/-/g,"_").replace(/\s*\(.*\)/,"");
+  useEffect(() => {
+    fetch(`${API_URL}/api/ai-images/pipeline/mira-imagines/care/${breedKey}`)
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{ if(d?.url) setImgUrl(d.url); })
+      .catch(()=>{});
+  }, [breedKey]);
   const send = async () => {
     setState("sending");
     try {
@@ -308,8 +318,10 @@ function MiraImagineCard({ item, pet, token }) {
   };
   return (
     <div style={{ borderRadius:14, overflow:"hidden", background:"linear-gradient(135deg,#0D2818,#1B4332)", border:`1.5px solid rgba(64,145,108,0.30)`, display:"flex", flexDirection:"column", minHeight:220 }}>
-      <div style={{ position:"relative", height:110, background:"linear-gradient(135deg,#1B4332,#2D6A4F)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-        <span style={{ fontSize:40 }}>{item.emoji || "🌿"}</span>
+      <div style={{ position:"relative", height:130, background:"linear-gradient(135deg,#1B4332,#2D6A4F)", display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden" }}>
+        {imgUrl
+          ? <img src={imgUrl} alt={item.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={()=>setImgUrl(null)}/>
+          : <span style={{ fontSize:40 }}>{item.emoji || "🌿"}</span>}
         <div style={{ position:"absolute", top:8, left:8, background:G.sage, color:"#fff", fontSize:9, fontWeight:700, padding:"3px 8px", borderRadius:20 }}>Mira Imagines</div>
       </div>
       <div style={{ flex:1, padding:"10px 12px 4px" }}>
@@ -337,6 +349,8 @@ function MiraPicksSection({ pet }) {
   const [conciergeSent, setConciergeSent]       = useState(false);
   const { token } = useAuth();
   const petName = pet?.name || "your dog";
+  const { note, orderCount, topInterest } = useMiraIntelligence(pet?.id, token);
+  const intelligenceLine = getMiraIntelligenceSubtitle(petName, note, orderCount, topInterest);
 
   const handleServiceConcierge = async service => {
     setConciergeSending(true);
@@ -422,18 +436,17 @@ function MiraPicksSection({ pet }) {
       <section style={{ marginBottom: 32 }} data-testid="care-mira-picks-section">
         <div style={{ display:"flex", alignItems:"baseline", gap:10, marginBottom:4 }}>
           <h3 style={{ fontSize:"clamp(1.125rem,2.5vw,1.375rem)", fontWeight:800, color:G.darkText, margin:0, fontFamily:"Georgia,serif" }}>
-            Mira Imagines for <span style={{ color:G.sage }}>{petName}</span>
+            Mira's Care Picks for <span style={{ color:G.sage }}>{petName}</span>
           </h3>
           <span style={{ fontSize:11, background:`linear-gradient(135deg,${G.sage},${G.deepMid})`, color:"#fff", borderRadius:20, padding:"2px 10px", fontWeight:700 }}>
-            Pet Specific
+            {intelligenceLine.includes("order") ? "AI Scored" : "Pet Specific"}
           </span>
         </div>
-        <p style={{ fontSize:12, color:"#888", marginBottom:16, lineHeight:1.5 }}>
-          These care picks don't exist in our range yet — but Mira imagined them for {petName}. Tap to request.
-        </p>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(min(190px,100%), 1fr))", gap:12 }}>
-          {imagines.map(item => (
-            <MiraImagineCard key={item.id} item={item} pet={pet} token={token} />
+        <p style={{ fontSize:13, color:"#888", marginBottom:16, lineHeight:1.5 }}>{intelligenceLine}</p>
+        {/* 3 imagines as teaser when no picks — full set inside Mira's Picks pill */}
+        <div style={{ display:"flex", gap:12, overflowX:"auto", paddingBottom:8, scrollbarWidth:"none" }}>
+          {imagines.slice(0,3).map(item => (
+            <MiraImaginesCard key={item.id} item={item} pet={pet} token={token} pillar="care"/>
           ))}
         </div>
       </section>

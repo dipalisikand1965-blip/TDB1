@@ -94,6 +94,7 @@ const SoulProductsManager = () => {
   const [generationLimit, setGenerationLimit] = useState(10);
   const [selectedBreed, setSelectedBreed] = useState('');
   const [selectedProductType, setSelectedProductType] = useState('');
+  const [selectedPillar, setSelectedPillar] = useState('');
   
   // Cloud storage state
   const [cloudStatus, setCloudStatus] = useState(null);
@@ -309,7 +310,9 @@ const SoulProductsManager = () => {
       const body = {
         limit: generationLimit > 0 ? generationLimit : null,
         breed_filter: selectedBreed || null,
-        product_type_filter: selectedProductType || null
+        product_type_filter: selectedProductType || null,
+        pillar: selectedPillar || null,    // ← pillar-aware
+        tag_pillar: selectedPillar || null, // ← tags generated products with pillar
       };
       
       const res = await fetch(`${API_URL}/api/mockups/generate-batch`, {
@@ -1101,6 +1104,25 @@ const SoulProductsManager = () => {
                   ))}
                 </select>
               </div>
+              {/* ── PILLAR SELECTOR (new) ── */}
+              <div>
+                <label className="text-xs font-medium text-purple-600 block mb-1">🎯 Target Pillar (Product Inbox)</label>
+                <select
+                  value={selectedPillar}
+                  onChange={e => setSelectedPillar(e.target.value)}
+                  className="w-full px-3 py-2 border-2 border-purple-200 rounded-lg text-sm font-medium"
+                >
+                  <option value="">All Pillars (General)</option>
+                  {['learn','care','dine','go','celebrate','play','shop','adopt','paperwork','advisory','emergency','farewell'].map(p => (
+                    <option key={p} value={p}>{p.charAt(0).toUpperCase()+p.slice(1)}</option>
+                  ))}
+                </select>
+                {selectedPillar && (
+                  <p className="text-xs text-purple-500 mt-1">
+                    ✦ Generated products will be tagged with pillar="{selectedPillar}" and appear in the {selectedPillar} product inbox.
+                  </p>
+                )}
+              </div>
               <div className="flex items-end gap-2">
                 <Button 
                   onClick={startMockupGeneration}
@@ -1108,7 +1130,7 @@ const SoulProductsManager = () => {
                   className="bg-purple-600 hover:bg-purple-700"
                 >
                   <Play className="w-4 h-4 mr-2" />
-                  Generate
+                  {selectedPillar ? `Generate → ${selectedPillar.charAt(0).toUpperCase()+selectedPillar.slice(1)}` : 'Generate'}
                 </Button>
                 <Button onClick={seedBreedProducts} variant="outline">
                   Seed Products
