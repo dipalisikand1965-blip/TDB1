@@ -3,7 +3,83 @@
 
 ---
 
-## [Mar 18, 2026] Session 82 — Care Crash Fix + Pet Photo Fix + Soul Chip Visual Improvements ✅
+## [Mar 19, 2026] Session 83 — Learn Pillar Launch + Breed Filtering System-wide ✅
+
+### New Features
+- **LEARN PILLAR — Full Implementation** (`LearnSoulPage.jsx`, 1300+ lines)
+  - Dropped in user-authored `LearnSoulPage.jsx` (935 lines, 9 self-fixes included)
+  - Added JSX fragment fix (ConciergeToast sibling return)
+  - Wired App.js route: `<LearnSoulPage />` with ProtectedRoute (replaced old `<LearnPage />`)
+  - Added `learn: "#7C3AED"` to `ConciergeToast.jsx` PILLAR_COLOR map
+  - `LearnNearMe.jsx` deployed at `/app/frontend/src/components/learn/`
+
+- **LEARN HERO — Care-parity redesign**
+  - Centered hero with pet avatar/photo + Soul % badge (matches Care exactly)
+  - `clamp(1.875rem,4vw,2.5rem)` h1 — exact Care size match
+  - Eyebrow chip: "✦ {petName}'s learning profile is complete. Mira knows everything."
+  - Breed chips: Breed, stage (Puppy/Senior/Adult), Energy
+  - Mira quote card + scroll chevron
+
+- **LEARN PROFILE MODAL — Care WellnessProfile parity**
+  - Collapsed bar (always visible): breed chip + "Mira's picks →"
+  - Click → full-screen modal with dark indigo header, big % score, progress bar, ✕ close
+  - Header: "GROW {PET}'S LEARNING PROFILE" (exact Care match)
+  - Questions: e.stopPropagation() + e.preventDefault() — chips now clickable, soul score updates
+
+- **LEARN CATEGORY STRIP — Care-parity icon+label pills**
+  - 8 pills: Foundations, Behaviour, Training, Tricks & Fun, Enrichment, Know Your Breed, Soul Learn, Mira's Picks
+  - Each 82px wide × 72px tall, 34px icon in colored bg + label (exact Care format)
+  - Each pill opens `LearnContentModal` (per-category product grid with Mira quote)
+  - "Mira's Picks" pill fetches claude-picks with breed filter + shows Mira Imagines fallback
+
+- **TAB BAR — 3 tabs below category strip**
+  - Learn & Products | Book a Session | Find Learn
+  - "Find Learn" tab renders `LearnNearMe` component (Google Places)
+
+- **MIRA PICKS — PET FIRST, BREED NEXT**
+  - Empty state: `MiraLearnImagineCard` (dark indigo, "Tap — Concierge →")
+  - Cards personalised: "{petName}'s Puppy Foundations Kit", "{breed} Learning Pack", "{petName}'s Soul Learn Kit"
+  - Header: "Mira Imagines for {petName}" (not generic "Mira's Picks")
+  - When real picks exist → AI scored cards with score bar
+
+- **BREED FILTERING — System-wide fix (PET FIRST, BREED NEXT)**
+  - `CareContentModal.jsx` — breed filter NOW applied to "mira" category claude-picks
+  - `DineSoulPage.jsx` — breed param added to claude-picks API call
+  - `GoSoulPage.jsx` — breed param + inline `filterBreed()` applied to results
+  - `LearnSoulPage.jsx` — `KNOWN_BREEDS` + `filterBreedProducts()` added, applied in DimExpanded + MiraPicksSection
+  - Rule: American Bully products NEVER shown to Indie. Chow Chow products NEVER shown to Labrador.
+
+- **ADMIN BUNDLES — CSV Export**
+  - New "Export CSV" button (blue) next to "Sync → Prod"
+  - Exports all bundles respecting active pillar filter
+  - Columns: ID, Name, Pillar, Description, Items, Original Price, Bundle Price, Discount %, Popular, Active, Image URL, Icon
+
+- **PET HOME — Pillar grid updated**
+  - Removed: Fit
+  - Added: Adopt, Paperwork, Advisory, Emergency, Farewell, Services (13 total pillars)
+
+- **FIT hidden from all navigation**
+  - Removed from: Navbar.jsx, MemberMobileNav.jsx, PillarNav.jsx, MobileNavBar.jsx, Footer.jsx (both occurrences)
+
+### Files Changed
+- `frontend/src/pages/LearnSoulPage.jsx` — full rewrite (Care-parity hero, profile modal, category strip, tabs, breed filter, imagines)
+- `frontend/src/components/learn/LearnNearMe.jsx` — NEW file
+- `frontend/src/App.js` — route `/learn` → `LearnSoulPage`, added lazy import
+- `frontend/src/components/common/ConciergeToast.jsx` — added `learn: "#7C3AED"` to PILLAR_COLOR
+- `frontend/src/components/care/CareContentModal.jsx` — breed filter on "mira" category picks
+- `frontend/src/pages/DineSoulPage.jsx` — breed param in claude-picks call
+- `frontend/src/pages/GoSoulPage.jsx` — breed param + client-side filterBreed
+- `frontend/src/components/admin/BundlesManager.jsx` — CSV export button + exportToCSV function
+- `frontend/src/pages/PetHomePage.jsx` — 13-pillar grid, removed Fit
+- `frontend/src/components/Navbar.jsx` — Fit removed
+- `frontend/src/components/MemberMobileNav.jsx` — Fit removed
+- `frontend/src/components/PillarNav.jsx` — Fit removed
+- `frontend/src/components/MobileNavBar.jsx` — /fit removed from pillarMap
+- `frontend/src/components/Footer.jsx` — Fit removed from both footer sections
+
+---
+
+
 
 ### Bug Fixes
 - **CRASH FIX: CareSoulPage `.join is not a function`** — `anxiety_triggers` stored as string `'None really '` in Mystique's `doggy_soul_answers`. Added safe normalizer: `Array.isArray(raw) ? raw : typeof raw === 'string' ? raw.split(',').map(s=>s.trim()).filter(Boolean) : []`

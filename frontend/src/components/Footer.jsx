@@ -84,7 +84,6 @@ const Footer = () => {
                   <Link to="/travel" className="text-sm py-2 hover:text-pink-400 transition-colors">✈️ Travel</Link>
                   <Link to="/care" className="text-sm py-2 hover:text-pink-400 transition-colors">💊 Care</Link>
                   <Link to="/enjoy" className="text-sm py-2 hover:text-pink-400 transition-colors">🎾 Enjoy</Link>
-                  <Link to="/fit" className="text-sm py-2 hover:text-pink-400 transition-colors">🏃 Fit</Link>
                   <Link to="/learn" className="text-sm py-2 hover:text-pink-400 transition-colors">🎓 Learn</Link>
                   <Link to="/paperwork" className="text-sm py-2 hover:text-pink-400 transition-colors">📄 Paperwork</Link>
                   <Link to="/advisory" className="text-sm py-2 hover:text-pink-400 transition-colors">📋 Advisory</Link>
@@ -285,7 +284,6 @@ const Footer = () => {
                 <li><Link to="/travel" className="hover:text-pink-400 transition-colors">✈️ Travel</Link></li>
                 <li><Link to="/care" className="hover:text-pink-400 transition-colors">💊 Care</Link></li>
                 <li><Link to="/enjoy" className="hover:text-pink-400 transition-colors">🎾 Enjoy</Link></li>
-                <li><Link to="/fit" className="hover:text-pink-400 transition-colors">🏃 Fit</Link></li>
                 <li><Link to="/learn" className="hover:text-pink-400 transition-colors">🎓 Learn</Link></li>
                 <li><Link to="/paperwork" className="hover:text-pink-400 transition-colors">📄 Paperwork</Link></li>
                 <li><Link to="/advisory" className="hover:text-pink-400 transition-colors">📋 Advisory</Link></li>
