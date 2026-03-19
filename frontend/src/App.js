@@ -241,6 +241,7 @@ const CareSoulPage = lazy(() => import("./pages/CareSoulPage"));
 const EnjoyPage = lazy(() => import("./pages/EnjoyPage"));
 const FitPage = lazy(() => import("./pages/FitPage"));
 const LearnPage = lazy(() => import("./pages/LearnPage"));
+const LearnSoulPage = lazy(() => import("./pages/LearnSoulPage"));
 const LearnTopicPage = lazy(() => import("./pages/LearnTopicPage"));
 const AdvisoryPage = lazy(() => import("./pages/AdvisoryPage"));
 const PaperworkPage = lazy(() => import("./pages/PaperworkPage"));
@@ -625,7 +626,7 @@ function MainLayout() {
         <Route path="/fit/apparel" element={<ProductListing category="apparel" pillar="fit" />} />
         <Route path="/fit/:category" element={<ProductListing pillar="fit" />} />
         
-        <Route path="/learn" element={<LearnPage />} />
+        <Route path="/learn" element={<ProtectedRoute><LearnSoulPage /></ProtectedRoute>} />
         <Route path="/learn/topic/:topicSlug" element={<LearnTopicPage />} />
         <Route path="/learn/training" element={<ProductListing category="training" pillar="learn" />} />
         <Route path="/learn/puzzles" element={<ProductListing category="puzzles" pillar="learn" />} />
