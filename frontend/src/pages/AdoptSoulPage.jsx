@@ -18,6 +18,7 @@ import SharedProductCard, { ProductDetailModal } from "../components/ProductCard
 import ConciergeToast from "../components/common/ConciergeToast";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
+import GuidedAdoptPaths from "../components/adopt/GuidedAdoptPaths";
 import { API_URL } from "../utils/api";
 
 const G = {
@@ -166,9 +167,15 @@ function MiraPicksSection({ pet }) {
   );
 }
 
-function AdoptConciergeModal({ isOpen, onClose, token }) {
+function AdoptConciergeModal({ isOpen, onClose, token, preSelected }) {
   const [sel,setSel]=useState(""); const [notes,setNotes]=useState(""); const [sending,setSending]=useState(false); const [sent,setSent]=useState(false);
-  useEffect(()=>{if(isOpen){setSel("");setSent(false);setNotes("");}}, [isOpen]);
+  useEffect(()=>{
+    if(isOpen){
+      setSent(false);setNotes("");
+      const map={"Breed Suitability Advisory":"Finding the right breed","Home Readiness Assessment":"Home preparation","Rescue Partner Network":"Connecting with rescues","Post-Adoption Support":"Post-adoption support","Adoption Paperwork Guidance":"Adoption paperwork","Multi-Pet Integration":"Multi-pet household"};
+      setSel(preSelected?map[preSelected]||"":"");
+    }
+  }, [isOpen, preSelected]);
   if(!isOpen)return null;
   const send=async()=>{if(!sel||sending)return;setSending(true);try{const u=JSON.parse(localStorage.getItem("user")||"{}");await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({parent_id:u?.id||u?.email||"guest",pet_id:"adopt-enquiry",pillar:"adopt",intent_primary:"adoption_enquiry",channel:"adopt_concierge_modal",initial_message:{sender:"parent",text:`Adoption enquiry: ${sel}. ${notes?"Notes: "+notes:""}`}})});}catch{}setSending(false);setSent(true);};
   return(
@@ -203,7 +210,9 @@ const AdoptSoulPage = () => {
   const [activeTab, setActiveTab] = useState("adopt");
   const [petData,  setPetData]  = useState(null);
   const [apiProducts, setApiProducts] = useState({});
+  const [services,    setServices]    = useState([]);
   const [conciergeOpen, setConciergeOpen] = useState(false);
+  const [conciergeSvc,  setConciergeSvc]  = useState("");
   const [toastVisible, setToastVisible] = useState(false);
   const [toastSvc, setToastSvc] = useState("");
 
@@ -213,6 +222,7 @@ const AdoptSoulPage = () => {
     fetch(`${API_URL}/api/admin/pillar-products?pillar=adopt&limit=100`).then(r=>r.ok?r.json():null).then(d=>{
       const grouped={};(d?.products||[]).forEach(p=>{const c=p.category||"";if(!grouped[c])grouped[c]={};const s=p.sub_category||"";if(!grouped[c][s])grouped[c][s]=[];grouped[c][s].push(p);});setApiProducts(grouped);
     }).catch(()=>{});
+    fetch(`${API_URL}/api/service-box/services?pillar=adopt`).then(r=>r.ok?r.json():null).then(d=>{if(d?.services)setServices(d.services);}).catch(()=>{});
   },[]);
 
   const petName = petData?.name || "you";
@@ -278,6 +288,7 @@ const AdoptSoulPage = () => {
             </div>
             <div style={{marginBottom:20}}><AdoptProfile pet={petData} token={token}/></div>
             <MiraPicksSection pet={petData}/>
+            <GuidedAdoptPaths pet={petData}/>
             <div style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,borderRadius:16,padding:"24px 28px",marginBottom:24,textAlign:"center"}}>
               <p style={{fontSize:18,fontWeight:800,color:"#fff",fontFamily:"Georgia,serif",marginBottom:8}}>Ready to start? Mira finds your perfect dog.</p>
               <p style={{fontSize:13,color:"rgba(255,255,255,0.70)",marginBottom:16}}>Breed match, rescue connections, home readiness — all in one conversation with Mira.</p>
@@ -292,8 +303,13 @@ const AdoptSoulPage = () => {
             <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:4,fontFamily:"Georgia,serif"}}>Expert adoption guidance — <span style={{color:G.rose}}>all free</span></h2>
             <p style={{fontSize:13,color:"#888",marginBottom:20}}>Mira guides every stage of your adoption journey.</p>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(240px,100%),1fr))",gap:14}}>
-              {ADOPT_SERVICES.map(svc=><div key={svc.id} style={{background:"#fff",borderRadius:16,border:`2px solid rgba(212,83,126,0.12)`,overflow:"hidden",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${svc.accentColor}20`;}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
-                <div style={{height:100,background:`linear-gradient(135deg,${G.pale},${G.cream})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:38}}>{svc.icon}</div>
+              {ADOPT_SERVICES.map(svc=>{
+                const dbSvc=services.find(s=>s.name===svc.name||s.id===svc.id)||{};
+                const img=dbSvc.watercolor_image||dbSvc.image_url||null;
+                return(<div key={svc.id} style={{background:"#fff",borderRadius:16,border:`2px solid rgba(212,83,126,0.12)`,overflow:"hidden",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${svc.accentColor}20`;}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
+                <div style={{height:120,background:`linear-gradient(135deg,${G.pale},${G.cream})`,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
+                  {img?<img src={img} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>:<span style={{fontSize:38}}>{svc.icon}</span>}
+                </div>
                 <div style={{padding:"14px 16px 16px"}}>
                   <div style={{fontSize:11,color:G.mutedText,marginBottom:3}}>{svc.tagline}</div>
                   <div style={{fontSize:14,fontWeight:800,color:G.darkText,marginBottom:3}}>{svc.name}</div>
@@ -301,10 +317,10 @@ const AdoptSoulPage = () => {
                   <div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:8,padding:"6px 10px",marginBottom:8}}><span style={{fontSize:10,color:G.rose}}>✦ </span><span style={{fontSize:10,color:G.mid,lineHeight:1.4}}>{svc.miraKnows}</span></div>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                     <span style={{fontSize:14,fontWeight:800,color:G.deep}}>{svc.price}</span>
-                    <button onClick={()=>setConciergeOpen(true)} style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Book →</button>
+                    <button onClick={()=>{setConciergeSvc(svc.name);setConciergeOpen(true);}} style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Book →</button>
                   </div>
                 </div>
-              </div>)}
+              </div>);})}
             </div>
           </div>
         )}
@@ -325,7 +341,7 @@ const AdoptSoulPage = () => {
       </div>
 
       <ConciergeToast toast={toastVisible?{name:toastSvc,pillar:"adopt"}:null} onClose={()=>setToastVisible(false)}/>
-      <AdoptConciergeModal isOpen={conciergeOpen} onClose={()=>setConciergeOpen(false)} token={token}/>
+      <AdoptConciergeModal isOpen={conciergeOpen} onClose={()=>setConciergeOpen(false)} token={token} preSelected={conciergeSvc}/>
     </PillarPageLayout>
     </>
   );

@@ -19,6 +19,8 @@ import SharedProductCard, { ProductDetailModal } from "../components/ProductCard
 import ConciergeToast from "../components/common/ConciergeToast";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
+import FarewellNearMe from "../components/farewell/FarewellNearMe";
+import GuidedFarewellPaths from "../components/farewell/GuidedFarewellPaths";
 import { API_URL } from "../utils/api";
 
 const G = {
@@ -167,9 +169,25 @@ function MiraPicksSection({ pet }) {
   );
 }
 
-function FarewellConciergeModal({ isOpen, onClose, petName, petId, token }) {
+function FarewellConciergeModal({ isOpen, onClose, petName, petId, token, preSelected }) {
   const [sel,setSel]=useState(""); const [notes,setNotes]=useState(""); const [sending,setSending]=useState(false); const [sent,setSent]=useState(false);
-  useEffect(()=>{if(isOpen){setSel("");setSent(false);setNotes("");}}, [isOpen]);
+  useEffect(()=>{
+    if(isOpen){
+      setSent(false);setNotes("");
+      // Pre-select from service name if provided
+      if(preSelected) {
+        const map = {
+          "End-of-Life Care Planning":"End-of-life care guidance",
+          "Euthanasia Support & Guidance":"Saying goodbye — when and how",
+          "Cremation Arrangement":"Cremation arrangement",
+          "Memorial Product Creation":"Memorial creation",
+          "Rainbow Bridge Ceremony":"Ceremony planning",
+          "Grief Counselling Referral":"Grief support referral",
+        };
+        setSel(map[preSelected]||"");
+      } else { setSel(""); }
+    }
+  }, [isOpen, preSelected]);
   if(!isOpen)return null;
   const send=async()=>{if(!sel||sending)return;setSending(true);try{const u=JSON.parse(localStorage.getItem("user")||"{}");await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({parent_id:u?.id||u?.email||"guest",pet_id:petId||"unknown",pillar:"farewell",intent_primary:"farewell_guidance",channel:"farewell_concierge_modal",initial_message:{sender:"parent",text:`Farewell guidance needed for ${petName}: ${sel}. ${notes?"Notes: "+notes:""}`}})});}catch{}setSending(false);setSent(true);};
   return(
@@ -203,9 +221,12 @@ const FarewellSoulPage = () => {
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
   const [loading,  setLoading]  = useState(true);
   const [activeTab, setActiveTab] = useState("farewell");
+  const [prodTab,  setProdTab]  = useState("Memorial & Legacy");
   const [petData,  setPetData]  = useState(null);
   const [apiProducts, setApiProducts] = useState({});
+  const [services, setServices]       = useState([]);
   const [conciergeOpen, setConciergeOpen] = useState(false);
+  const [conciergeSvc,  setConciergeSvc]  = useState("");
   const [toastVisible, setToastVisible] = useState(false);
   const [toastSvc, setToastSvc] = useState("");
 
@@ -215,6 +236,7 @@ const FarewellSoulPage = () => {
     fetch(`${API_URL}/api/admin/pillar-products?pillar=farewell&limit=100`).then(r=>r.ok?r.json():null).then(d=>{
       const grouped={};(d?.products||[]).forEach(p=>{const c=p.category||"";if(!grouped[c])grouped[c]={};const s=p.sub_category||"";if(!grouped[c][s])grouped[c][s]=[];grouped[c][s].push(p);});setApiProducts(grouped);
     }).catch(()=>{});
+    fetch(`${API_URL}/api/service-box/services?pillar=farewell`).then(r=>r.ok?r.json():null).then(d=>{if(d?.services)setServices(d.services);}).catch(()=>{});
   },[]);
 
   const petName = petData?.name || "your dog";
@@ -271,6 +293,7 @@ const FarewellSoulPage = () => {
           <>
             <div style={{marginBottom:20}}><FarewellProfile pet={petData} token={token}/></div>
             <MiraPicksSection pet={petData}/>
+            <GuidedFarewellPaths pet={petData}/>
 
             {/* Products — tab layout, breed-filtered */}
             <section style={{paddingBottom:16}}>
@@ -286,7 +309,6 @@ const FarewellSoulPage = () => {
                 { id:"Cremation & Burial",  label:"🌿 Cremation",  icon:"🌿" },
                 ...(breed ? [{ id:"breed", label:`🐾 ${breed.split(" ")[0]}`, icon:"🐾" }] : []),
               ];
-              const [prodTab, setProdTab] = petData ? useState("Memorial & Legacy") : [null, ()=>{}]; // eslint-disable-line
 
               // Flatten all farewell products with breed filter
               const allProds = filterBreedProducts(
@@ -338,8 +360,15 @@ const FarewellSoulPage = () => {
             <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:4,fontFamily:"Georgia,serif"}}>Support for <span style={{color:G.indigo}}>{petName}</span>'s family</h2>
             <p style={{fontSize:13,color:"#888",marginBottom:20}}>All services arranged with gentleness — no rush, no pressure.</p>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(240px,100%),1fr))",gap:14}}>
-              {FAREWELL_SERVICES.map(svc=><div key={svc.id} style={{background:"#fff",borderRadius:16,border:`2px solid rgba(99,102,241,0.12)`,overflow:"hidden",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${svc.accentColor}20`;}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
-                <div style={{height:100,background:`linear-gradient(135deg,${G.pale},${G.cream})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:38}}>{svc.icon}</div>
+              {FAREWELL_SERVICES.map(svc=>{
+                const dbSvc = services.find(s=>s.name===svc.name||s.id===svc.id)||{};
+                const img = dbSvc.watercolor_image||dbSvc.image_url||null;
+                return(<div key={svc.id} style={{background:"#fff",borderRadius:16,border:`2px solid rgba(99,102,241,0.12)`,overflow:"hidden",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${svc.accentColor}20`;}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
+                <div style={{height:120,background:`linear-gradient(135deg,${G.pale},${G.cream})`,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
+                  {img
+                    ? <img src={img} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
+                    : <span style={{fontSize:38}}>{svc.icon}</span>}
+                </div>
                 <div style={{padding:"14px 16px 16px"}}>
                   <div style={{fontSize:11,color:G.mutedText,marginBottom:3}}>{svc.tagline}</div>
                   <div style={{fontSize:14,fontWeight:800,color:G.darkText,marginBottom:3}}>{svc.name}</div>
@@ -347,31 +376,25 @@ const FarewellSoulPage = () => {
                   <div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:8,padding:"6px 10px",marginBottom:8}}><span style={{fontSize:10,color:G.indigo}}>✦ </span><span style={{fontSize:10,color:G.mid,lineHeight:1.4}}>{t(svc.miraKnows,petName)}</span></div>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                     <span style={{fontSize:14,fontWeight:800,color:G.deep}}>{svc.price}</span>
-                    <button onClick={()=>setConciergeOpen(true)} style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Reach out →</button>
+                    <button onClick={()=>{setConciergeSvc(svc.name);setConciergeOpen(true);}}
+                    style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Reach out →</button>
                   </div>
                 </div>
-              </div>)}
+              </div>);})}
             </div>
           </div>
         )}
 
         {/* Find Care tab */}
         {activeTab==="find" && (
-          <div style={{marginTop:24}}>
-            <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:4,fontFamily:"Georgia,serif"}}>Find care for <span style={{color:G.indigo}}>{petName}</span></h2>
-            <p style={{fontSize:13,color:"#888",marginBottom:20}}>Vets, palliative care specialists, and memorial services near you.</p>
-            <div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:14,padding:"24px 28px",textAlign:"center"}}>
-              <div style={{fontSize:40,marginBottom:12}}>🌷</div>
-              <p style={{fontSize:14,fontWeight:700,color:G.darkText,marginBottom:8}}>Palliative and memorial care near you</p>
-              <p style={{fontSize:13,color:"#888",marginBottom:16}}>Mira is curating verified palliative vets and memorial services.</p>
-              <button onClick={()=>setConciergeOpen(true)} style={{background:`linear-gradient(135deg,${G.indigo},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"10px 24px",fontSize:13,fontWeight:700,cursor:"pointer"}}>Reach out to Mira →</button>
-            </div>
+          <div style={{marginTop:8}}>
+            <FarewellNearMe pet={petData} onBook={(svc)=>setConciergeOpen(true)}/>
           </div>
         )}
       </div>
 
       <ConciergeToast toast={toastVisible?{name:toastSvc,pillar:"farewell"}:null} onClose={()=>setToastVisible(false)}/>
-      <FarewellConciergeModal isOpen={conciergeOpen} onClose={()=>setConciergeOpen(false)} petName={petName} petId={petData?.id} token={token}/>
+      <FarewellConciergeModal isOpen={conciergeOpen} onClose={()=>setConciergeOpen(false)} petName={petName} petId={petData?.id} token={token} preSelected={conciergeSvc}/>
     </PillarPageLayout>
     </>
   );
