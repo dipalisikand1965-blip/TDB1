@@ -880,9 +880,10 @@ function MiraPicksSection({ pet }) {
 
   useEffect(() => {
     if (!pet?.id) { setLoading(false); return; }
+    const breedParam = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : "";
     // Fetch both products+services picks in parallel for diversity
     Promise.all([
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=dine&limit=12&min_score=60&entity_type=product`).then(r => r.ok ? r.json() : null),
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=dine&limit=12&min_score=60&entity_type=product${breedParam}`).then(r => r.ok ? r.json() : null),
       fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=dine&limit=6&min_score=60&entity_type=service`).then(r => r.ok ? r.json() : null),
     ])
       .then(([pData, sData]) => {

@@ -328,11 +328,27 @@ function MiraPicksSection({ pet }) {
   useEffect(() => {
     if (!pet?.id) { setLoading(false); return; }
     Promise.all([
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=go&limit=12&min_score=60&entity_type=product`).then(r => r.ok ? r.json() : null),
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=go&limit=12&min_score=60&entity_type=product${pet?.breed?`&breed=${encodeURIComponent(pet.breed)}`:"" }`).then(r => r.ok ? r.json() : null),
       fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=go&limit=6&min_score=60&entity_type=service`).then(r => r.ok ? r.json() : null),
     ])
       .then(([pData, sData]) => {
-        const prods = pData?.picks || [];
+        // PET FIRST, BREED NEXT: filter breed-specific products
+        const breedLower = (pet?.breed || "").toLowerCase();
+        const breedWords = breedLower.split(/\s+/).filter(w => w.length > 2);
+        const knownBreeds = ['american bully','beagle','border collie','boxer','chow chow','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','labrador','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire','lhasa apso','dalmatian','dachshund','chihuahua','doberman','cavalier'];
+        const filterBreed = (arr) => arr.filter(p => {
+          const nm = (p.name||"").toLowerCase();
+          for (const b of knownBreeds) {
+            if (nm.includes(b)) {
+              if (!breedLower) return false;
+              if (nm.includes(breedLower)) return true;
+              if (breedWords.some(w => b.includes(w))) return true;
+              return false;
+            }
+          }
+          return true;
+        });
+        const prods = filterBreed(pData?.picks || []);
         const svcs  = sData?.picks || [];
         const merged = [];
         let pi = 0, si = 0;
