@@ -3,7 +3,39 @@
 
 ---
 
-## [Mar 19, 2026] Session 83 — Learn Pillar Launch + Breed Filtering System-wide ✅
+## [Mar 19, 2026] Session 83c — Learn DB Scripts Run ✅
+
+### DB Changes (ran directly in MongoDB `pet-os-live-test_database`)
+- **66 training journals** (`breed-training_logs`) → dimension=Soul Learn Products, sub_category=soul, price=399
+- **66 treat pouches** (`breed-treat_pouchs`) → dimension=Soul Learn Products, sub_category=soul, price=299
+- **33 training starter kits** → dimension=Training Basics, sub_category=foundations, category=training
+- **99 training flashcards** (33 breeds × 3 products) → category=training, dimension=Training Basics
+- **1 tricks, 1 behavior, 1 puppy product** → correct dimensions set
+- **7 service products** → dimension=Learn Services
+- **10 learn bundles inserted** (BUN-LRN-001 to BUN-LRN-010) into `care_bundles` collection
+- **services_master learn canonical services** → pillar=learn tagged
+
+### Result
+- Learn category pills now show real products (Training modal: Advanced Training Program, Agility Courses, etc.)
+- Breed filtering working: Indie-specific photos and products shown to Mojo
+- Soul Learn Products (66 journals + 66 pouches) ready for soul tab
+- Breed Knowledge tab shows 33 breed-specific care guides
+
+---
+
+
+
+### Fixes
+- **Mira Picks pill modal** — falls back to real DB products when claude-picks=0; shows 57 training products, 10 classes, etc.
+- **Category strip `dbCategory` mapping** — updated to use actual DB `category` field values (`training`, `behavior`, `breed-training_logs`, etc.) instead of dimension names that don't exist yet
+- **Font sizes** — bumped up across hero (14px quote, 12px attribution), tab bar (13px), profile bar (15px title, 11px chips), section headings
+- **7 Dimension cards** — GuidedCarePaths-style large 3-col cards (52px icon, 16px bold title, description, "Explore →" CTA, colored top bar)
+- **Hero Mira quote** — padded to 12px 18px, font 14px, max-width 480px (matches Care)
+- **Footer** — Fit removed from both sections (line 87 + section 2)
+
+---
+
+
 
 ### New Features
 - **LEARN PILLAR — Full Implementation** (`LearnSoulPage.jsx`, 1300+ lines)
