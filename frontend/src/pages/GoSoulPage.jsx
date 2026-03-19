@@ -38,7 +38,8 @@ import GoConciergeSection from "../components/go/GoConciergeSection";
 import PetFriendlyStays from "../components/go/PetFriendlyStays";
 import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
-import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
+import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
+import MiraImaginesCard from "../components/common/MiraImaginesCard";import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
 
@@ -230,6 +231,12 @@ function applyMiraIntelligence(products, allergies, size, condition, pet) {
 function MiraImagineCard({ card, pet, token }) {
   const [sending,   setSending]   = useState(false);
   const [requested, setRequested] = useState(false);
+  const [imgUrl,    setImgUrl]    = useState(null);
+  const breedKey = (pet?.breed||"indie").toLowerCase().replace(/\s+/g,"_").replace(/-/g,"_").replace(/\s*\(.*\)/,"");
+  useEffect(() => {
+    fetch(`${API_URL}/api/ai-images/pipeline/mira-imagines/go/${breedKey}`)
+      .then(r=>r.ok?r.json():null).then(d=>{ if(d?.url) setImgUrl(d.url); }).catch(()=>{});
+  }, [breedKey]);
 
   const handleRequest = async () => {
     setSending(true);
@@ -260,7 +267,12 @@ function MiraImagineCard({ card, pet, token }) {
       <div style={{ position:"absolute", top:12, left:12, zIndex:2, borderRadius:20, padding:"4px 12px", fontSize:10, fontWeight:700, background:`linear-gradient(135deg,${G.teal},${G.light})`, color:G.deep }}>
         Mira Imagines
       </div>
-      <div style={{ height:120, display:"flex", alignItems:"center", justifyContent:"center", fontSize:44, paddingTop:28 }}>{card.emoji}</div>
+      <div style={{ height:150, display:"flex", alignItems:"center", justifyContent:"center", fontSize:44, paddingTop:28, overflow:"hidden", position:"relative" }}>
+        {imgUrl
+          ? <img src={imgUrl} alt={card.name} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",zIndex:1}} onError={()=>setImgUrl(null)}/>
+          : <span style={{zIndex:2}}>{card.emoji}</span>}
+        {imgUrl && <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.25)",zIndex:1}}/>}
+      </div>
       <div style={{ padding:"12px 16px 16px", textAlign:"center", flex:1, display:"flex", flexDirection:"column" }}>
         <p style={{ fontWeight:700, color:"#fff", fontSize:14, marginBottom:6, lineHeight:1.3 }}>{card.name}</p>
         <p style={{ fontSize:12, color:"rgba(255,255,255,0.60)", marginBottom:6, lineHeight:1.5, flex:1 }}>{card.desc}</p>
@@ -295,6 +307,8 @@ function MiraPicksSection({ pet }) {
   const [conciergeSent, setConciergeSent]       = useState(false);
   const { token } = useAuth();
   const petName = pet?.name || "your dog";
+  const { note, orderCount, topInterest } = useMiraIntelligence(pet?.id, token);
+  const intelligenceLine = getMiraIntelligenceSubtitle(petName, note, orderCount, topInterest);
 
   // Generate Mira Imagines from pet profile
   const miraImagines = (() => {
@@ -378,8 +392,10 @@ function MiraPicksSection({ pet }) {
           ))}
         </div>
       ) : showImagines ? (
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))", gap:14 }}>
-          {miraImagines.map((card, i) => <MiraImagineCard key={i} card={card} pet={pet} token={token} />)}
+        <div style={{ display:"flex", gap:12, overflowX:"auto", paddingBottom:8, scrollbarWidth:"none" }}>
+          {miraImagines.slice(0,3).map((card,i) => (
+            <MiraImaginesCard key={i} item={{id:`go-${i}`,emoji:card.emoji,name:card.name,description:card.reason||card.desc||""}} pet={pet} token={token} pillar="go"/>
+          ))}
         </div>
       ) : (
         <div style={{ display:"flex", gap:14, overflowX:"auto", paddingBottom:10, scrollbarWidth:"thin" }} className="go-picks-scroll">
@@ -1794,6 +1810,7 @@ const GoSoulPage = () => {
 
   const [loading, setLoading]       = useState(true);
   const [activeTab, setActiveTab]   = useState("go");
+  const [goConciergOpen, setGoConciergOpen] = useState(false);
   const [openDim, setOpenDim]       = useState(null);
   const [petData, setPetData]       = useState(null);
   const [soulScore, setSoulScore]   = useState(0);
@@ -2041,6 +2058,39 @@ const GoSoulPage = () => {
 
       </div>
     <ConciergeToast toast={conciergeToast} onClose={() => setConciergeToast(null)} />
+
+    {/* Go Concierge Modal — Care-style chip selector */}
+    {goConciergOpen && (
+      <div onClick={()=>setGoConciergOpen(false)}
+        style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.50)",zIndex:10006,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+        <div onClick={e=>e.stopPropagation()}
+          style={{background:"#fff",borderRadius:20,padding:32,maxWidth:480,width:"100%",maxHeight:"90vh",overflowY:"auto",position:"relative"}}>
+          <button onClick={()=>setGoConciergOpen(false)}
+            style={{position:"absolute",top:16,right:16,background:"none",border:"none",cursor:"pointer",color:"#999",fontSize:18}}>✕</button>
+          <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(26,188,156,0.10)",border:"1px solid rgba(26,188,156,0.30)",borderRadius:9999,padding:"4px 14px",marginBottom:20}}>
+            <span style={{fontSize:11,fontWeight:600,color:"#0d6e5a",letterSpacing:"0.06em",textTransform:"uppercase"}}>★ {petData?.name||"your dog"}'s Go Concierge</span>
+          </div>
+          <h2 style={{fontSize:22,fontWeight:800,color:"#0d2b22",fontFamily:"Georgia,serif",lineHeight:1.2,marginBottom:8}}>
+            Where is <span style={{color:G.teal}}>{petData?.name||"your dog"}</span> heading?
+          </h2>
+          <p style={{fontSize:14,color:"#888",marginBottom:24}}>Three questions. Then your Concierge takes over.</p>
+          <p style={{fontSize:13,fontWeight:700,color:G.deep,marginBottom:12}}>What are we planning?</p>
+          <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:24}}>
+            {["Pet-friendly hotel","Overnight boarding","Day care","Road trip","Flight with pet","Pet sitter at home","International travel","Local staycation","Just exploring"].map(opt=>(
+              <button key={opt}
+                style={{borderRadius:9999,padding:"8px 16px",fontSize:13,cursor:"pointer",background:"#E8FBF7",border:"1.5px solid #A7DFCF",color:G.deep}}
+                onClick={e=>{e.currentTarget.style.background=G.teal;e.currentTarget.style.color="#fff";}}>
+                {opt}
+              </button>
+            ))}
+          </div>
+          <button onClick={()=>setGoConciergOpen(false)}
+            style={{width:"100%",background:`linear-gradient(135deg,${G.teal},${G.deep})`,color:"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:15,fontWeight:800,cursor:"pointer"}}>
+            ✦ Send to {petData?.name||"your dog"}'s Concierge
+          </button>
+        </div>
+      </div>
+    )}
     </PillarPageLayout>
   );
 };

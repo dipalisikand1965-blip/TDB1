@@ -81,6 +81,8 @@ class BatchGenerationRequest(BaseModel):
     limit: Optional[int] = None
     breed_filter: Optional[str] = None
     product_type_filter: Optional[str] = None
+    pillar: Optional[str] = None        # filter products by pillar
+    tag_pillar: Optional[str] = None    # tag generated products with this pillar
 
 
 @router.post("/generate")
@@ -318,7 +320,7 @@ async def _generate_mockup_image(prompt: str, slug: str, breed: str = "unknown")
         return None
 
 
-async def _batch_generate_mockups(db, limit: Optional[int] = None, breed_filter: Optional[str] = None, product_type_filter: Optional[str] = None):
+async def _batch_generate_mockups(db, limit: Optional[int] = None, breed_filter: Optional[str] = None, product_type_filter: Optional[str] = None, tag_pillar: Optional[str] = None):
     """Background task to generate mockups for all pending products."""
     global _generation_status
     
@@ -372,15 +374,34 @@ async def _batch_generate_mockups(db, limit: Optional[int] = None, breed_filter:
                 mockup_url = await _generate_mockup_image(prompt, slug, product.get("breed", "unknown"))
                 
                 if mockup_url:
+                    update_fields = {
+                        "mockup_url": mockup_url,
+                        "mockup_generated_at": datetime.utcnow().isoformat(),
+                        "image_url": mockup_url,      # also set as main image_url
+                    }
+                    if tag_pillar:
+                        update_fields["pillar"] = tag_pillar
                     await db.breed_products.update_one(
                         {"_id": product["_id"]},
-                        {"$set": {
-                            "mockup_url": mockup_url,
-                            "mockup_generated_at": datetime.utcnow().isoformat()
-                        }}
+                        {"$set": update_fields}
                     )
+                    # Also upsert into products_master with pillar tag
+                    if tag_pillar:
+                        prod_doc = dict(product)
+                        prod_doc.pop("_id", None)
+                        prod_doc["mockup_url"] = mockup_url
+                        prod_doc["image_url"] = mockup_url
+                        prod_doc["pillar"] = tag_pillar
+                        prod_doc["soul_product"] = True
+                        prod_id = prod_doc.get("id")
+                        if prod_id:
+                            await db.products_master.update_one(
+                                {"id": prod_id},
+                                {"$set": prod_doc},
+                                upsert=True
+                            )
                     _generation_status["generated"] += 1
-                    logger.info(f"✓ Generated mockup for {slug}")
+                    logger.info(f"✓ Generated mockup for {slug}{' → '+tag_pillar if tag_pillar else ''}")
                 else:
                     _generation_status["failed"] += 1
                     logger.warning(f"✗ Failed to generate {slug}")
@@ -433,6 +454,8 @@ async def start_batch_generation(request: BatchGenerationRequest, background_tas
         query["$and"].append({"breed": request.breed_filter})
     if request.product_type_filter:
         query["$and"].append({"product_type": request.product_type_filter})
+    if request.pillar:
+        query["$and"].append({"$or": [{"pillar": request.pillar}, {"pillars": {"$in": [request.pillar]}}]})
     
     pending_count = await db.breed_products.count_documents(query)
     
@@ -445,7 +468,8 @@ async def start_batch_generation(request: BatchGenerationRequest, background_tas
         db, 
         request.limit, 
         request.breed_filter, 
-        request.product_type_filter
+        request.product_type_filter,
+        request.tag_pillar or request.pillar   # tag generated products with pillar
     )
     
     return {
