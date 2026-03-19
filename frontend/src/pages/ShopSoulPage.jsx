@@ -25,8 +25,10 @@ import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
 import ConciergeToast from "../components/common/ConciergeToast";
+import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import { API_URL } from "../utils/api";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
+import { usePlatformTracking } from "../hooks/usePlatformTracking";
 
 // ── Colour system — warm gold, The Doggy Bakery amber ─────────
 const G = {
@@ -171,25 +173,13 @@ function MiraPicksSection({ pet }) {
       </p>
 
       {showImagines ? (
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))", gap:14 }}>
-          {imagines.map((card,i) => (
-            <div key={i} style={{ background:card.bg, borderRadius:16, padding:"20px 16px 16px", position:"relative" }}>
-              <div style={{ position:"absolute", top:12, left:12, background:"rgba(255,255,255,0.18)",
-                            borderRadius:20, padding:"3px 10px", fontSize:10, fontWeight:700, color:"#fff" }}>
-                Mira Imagines
-              </div>
-              <div style={{ fontSize:44, textAlign:"center", marginTop:20, marginBottom:12 }}>{card.emoji}</div>
-              <div style={{ fontSize:14, fontWeight:700, color:"#fff", textAlign:"center", marginBottom:5 }}>{card.name}</div>
-              <div style={{ fontSize:12, color:"rgba(255,255,255,0.60)", textAlign:"center", marginBottom:4 }}>{card.desc}</div>
-              <div style={{ fontSize:11, color:G.light, fontStyle:"italic", textAlign:"center", marginBottom:14 }}>{card.reason}</div>
-              <button style={{ width:"100%", background:`linear-gradient(135deg,${G.gold},${G.mid})`,
-                               color:"#fff", border:"none", borderRadius:10, padding:"9px",
-                               fontSize:12, fontWeight:700, cursor:"pointer" }}>
-                Shop Now →
-              </button>
-            </div>
-          ))}
-        </div>
+        <MiraImaginesBreed pet={pet} pillar="shop" colour={G.gold||"#C9973A"}
+          onConcierge={(card)=>{
+            // Birthday/cake items route to Celebrate page
+            if(card?.name?.toLowerCase().includes('cake')||card?.name?.toLowerCase().includes('birthday')||card?.name?.toLowerCase().includes('hamper')) {
+              window.location.href='/celebrate';
+            }
+          }}/>
       ) : (
         <div style={{ display:"flex", gap:14, overflowX:"auto", paddingBottom:10, scrollbarWidth:"thin" }}>
           {picks.map((pick,i) => {
@@ -391,20 +381,25 @@ function BreedCollectionSection({ pet }) {
   const petName = pet?.name || "your dog";
 
   useEffect(() => {
-    const breed = encodeURIComponent(getBreed(pet));
-    Promise.all([
-      fetch(`${API_URL}/api/admin/pillar-products?pillar=shop&category=breed-bandanas&limit=10&breed=${breed}`).then(r=>r.ok?r.json():null),
-      fetch(`${API_URL}/api/admin/pillar-products?pillar=shop&category=breed-mugs&limit=10&breed=${breed}`).then(r=>r.ok?r.json():null),
-      fetch(`${API_URL}/api/admin/pillar-products?pillar=shop&category=breed-keychains&limit=10&breed=${breed}`).then(r=>r.ok?r.json():null),
-      fetch(`${API_URL}/api/admin/pillar-products?pillar=shop&category=breed-frames&limit=10&breed=${breed}`).then(r=>r.ok?r.json():null),
-      fetch(`${API_URL}/api/admin/pillar-products?pillar=shop&category=breed-tote_bags&limit=10&breed=${breed}`).then(r=>r.ok?r.json():null),
-    ]).then(results => {
-      const all = results.flatMap(r => r?.products || []);
-      const seen = new Set();
-      setProducts(all.filter(p => { const id=p.id||p._id; if(seen.has(id)) return false; seen.add(id); return true; }));
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, [pet?.id]);
+    const breed = encodeURIComponent((pet?.breed || "Indie").split("(")[0].trim());
+    // Query breed_products collection (soul-made mockups — bandanas, mugs, keychains, tote bags, frames)
+    fetch(`${API_URL}/api/admin/breed-products?breed=${breed}&is_active=true&limit=50`)
+      .then(r=>r.ok?r.json():null)
+      .then(data => {
+        const all = data?.products || [];
+        // Deduplicate by id
+        const seen = new Set();
+        const deduped = all.filter(p => {
+          const id = p.id || p._id || p.slug;
+          if (seen.has(id)) return false;
+          seen.add(id);
+          return true;
+        });
+        setProducts(deduped);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [pet?.id, pet?.breed]);
 
   const TYPES = ["All", "Bandana", "Mug", "Keychain", "Frame", "Tote Bag"];
   const [activeType, setActiveType] = useState("All");
@@ -455,12 +450,24 @@ function BreedCollectionSection({ pet }) {
         </div>
       ) : (
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(180px,100%),1fr))", gap:12 }}>
-          {filtered.map(p => (
-            <div key={p.id||p._id}>
-              <SharedProductCard product={p} pillar="shop" selectedPet={pet}
-                miraContext={{ includeText:"Add to Cart" }}/>
+          {filtered.map(p => {
+            const img = p.mockup_url || p.image_url || p.cloudinary_url || null;
+            return (
+            <div key={p.id||p._id||p.slug} style={{background:"#fff",borderRadius:14,border:`1.5px solid ${G.border}`,overflow:"hidden",cursor:"pointer",transition:"transform 0.15s"}}
+              onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"}
+              onMouseLeave={e=>e.currentTarget.style.transform=""}>
+              <div style={{height:160,background:`linear-gradient(135deg,${G.pale},#F5F3FF)`,overflow:"hidden",position:"relative",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                {img
+                  ? <img src={img} alt={p.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
+                  : <span style={{fontSize:44}}>🐾</span>}
+                <div style={{position:"absolute",top:8,left:8,background:"#7C3AED",color:"#fff",fontSize:9,fontWeight:700,padding:"3px 8px",borderRadius:20}}>Soul Made</div>
+              </div>
+              <div style={{padding:"10px 12px 12px"}}>
+                <div style={{fontSize:12,fontWeight:700,color:G.darkText,marginBottom:4,lineHeight:1.3}}>{p.name||p.product_type||"Breed Item"}</div>
+                {p.price&&<div style={{fontSize:13,fontWeight:800,color:"#7C3AED"}}>₹{p.price}</div>}
+              </div>
             </div>
-          ))}
+          );})}
         </div>
       )}
     </div>

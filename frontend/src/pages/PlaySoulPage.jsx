@@ -34,9 +34,11 @@ import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
+import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
+import { usePlatformTracking } from "../hooks/usePlatformTracking";
 
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Vibrant Green + Orange
@@ -222,6 +224,7 @@ function MiraImagineCard({ card, pet, token }) {
   const [requested, setRequested] = useState(false);
   const [imgUrl,    setImgUrl]    = useState(null);
   const breedKey = (pet?.breed||"indie").toLowerCase().replace(/\s+/g,"_").replace(/-/g,"_").replace(/\s*\(.*\)/,"");
+
   useEffect(() => {
     fetch(`${API_URL}/api/ai-images/pipeline/mira-imagines/play/${breedKey}`)
       .then(r=>r.ok?r.json():null).then(d=>{ if(d?.url) setImgUrl(d.url); }).catch(()=>{});
@@ -404,11 +407,7 @@ function MiraPicksSection({ pet }) {
         </div>
       )}
       {showImagines ? (
-        <div style={{ display:"flex", gap:12, overflowX:"auto", paddingBottom:8, scrollbarWidth:"none" }}>
-          {miraImagines.slice(0,3).map((card,i) => (
-            <MiraImaginesCard key={i} item={{id:`play-${i}`,emoji:card.emoji,name:card.name,description:card.reason||card.desc||""}} pet={pet} token={token} pillar="play"/>
-          ))}
-        </div>
+        <MiraImaginesBreed pet={pet} pillar="play" colour="#E76F51" onConcierge={()=>{}}/>
       ) : (
         <div style={{ display:"flex", gap:14, overflowX:"auto", paddingBottom:10, scrollbarWidth:"thin" }} className="play-picks-scroll">
           <style>{`.play-picks-scroll::-webkit-scrollbar{height:4px}.play-picks-scroll::-webkit-scrollbar-thumb{background:${G.green}50;border-radius:4px}`}</style>

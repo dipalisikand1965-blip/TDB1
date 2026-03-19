@@ -35,8 +35,10 @@ import { API_URL } from "../utils/api";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
+import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
+import { usePlatformTracking } from "../hooks/usePlatformTracking";
 
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Sage Green
@@ -291,6 +293,7 @@ function MiraImagineCard({ item, pet, token }) {
   const [imgUrl, setImgUrl] = useState(null);
   const petName  = pet?.name || "your dog";
   const breedKey = (pet?.breed||"indie").toLowerCase().replace(/\s+/g,"_").replace(/-/g,"_").replace(/\s*\(.*\)/,"");
+
   useEffect(() => {
     fetch(`${API_URL}/api/ai-images/pipeline/mira-imagines/care/${breedKey}`)
       .then(r=>r.ok?r.json():null)
@@ -443,11 +446,9 @@ function MiraPicksSection({ pet }) {
           </span>
         </div>
         <p style={{ fontSize:13, color:"#888", marginBottom:16, lineHeight:1.5 }}>{intelligenceLine}</p>
-        {/* 3 imagines as teaser when no picks — full set inside Mira's Picks pill */}
+        {/* Mira Imagines — breed-specific intelligence */}
         <div style={{ display:"flex", gap:12, overflowX:"auto", paddingBottom:8, scrollbarWidth:"none" }}>
-          {imagines.slice(0,3).map(item => (
-            <MiraImaginesCard key={item.id} item={item} pet={pet} token={token} pillar="care"/>
-          ))}
+          <MiraImaginesBreed pet={pet} pillar="care" colour={G.sage} onConcierge={(card)=>setConciergeService(card)}/>
         </div>
       </section>
     );

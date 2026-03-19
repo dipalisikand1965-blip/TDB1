@@ -914,6 +914,16 @@ const Navbar = () => {
             {/* Right Side Actions — pushed to right */}
             <div className="flex items-center gap-2 ml-auto">
               
+              {/* My Requests — desktop quick link */}
+              {user && (
+                <Link to="/my-requests"
+                  className="hidden sm:flex items-center gap-1.5 text-sm hover:bg-white/10 rounded-lg px-3 py-2 transition-colors"
+                  data-testid="navbar-my-requests">
+                  <span>📋</span>
+                  <span className="font-medium">My Requests</span>
+                </Link>
+              )}
+
               {/* Account - Cleaner single-line design */}
               <Link 
                 to={user ? "/dashboard" : "/login"}
@@ -1190,6 +1200,14 @@ const Navbar = () => {
                   </div>
                 </Link>
                 
+                {/* Mobile: My Pets Section with Scores */}
+                <Link to="/my-requests" onClick={()=>setIsMenuOpen(false)}
+                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-purple-50 transition-colors"
+                  data-testid="mobile-my-requests-link">
+                  <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-sm">📋</div>
+                  <div><div className="font-medium text-gray-900 text-sm">My Requests</div><div className="text-xs text-gray-500">Bookings, orders & Mira chats</div></div>
+                </Link>
+
                 {/* Mobile: My Pets Section with Scores */}
                 {allPets.length > 0 && (
                   <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
