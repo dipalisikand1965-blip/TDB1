@@ -277,13 +277,13 @@ function LearnProfile({ pet, token }) {
           background:`linear-gradient(135deg,${G.pale},${G.light})`,
           display:"flex", alignItems:"center", justifyContent:"center" }}>🎓</div>
         <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ fontSize:14, fontWeight:700, color:G.darkText }}>{petName}'s Learning Profile</div>
-          <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginTop:4 }}>
-            {pet?.breed && <span style={{ fontSize:10, fontWeight:600, color:"#1A1363", background:"#EDE9FE", border:"1px solid #A78BFA", borderRadius:20, padding:"2px 8px" }}>🐾 {pet.breed} · {tip.style.slice(0,28)}…</span>}
-            {energy && <span style={{ fontSize:10, fontWeight:600, color:G.mid, background:G.pale, border:`1px solid ${G.light}`, borderRadius:20, padding:"2px 8px" }}>⚡ {energy}</span>}
-            {isPuppy(pet) && <span style={{ fontSize:10, fontWeight:600, color:"#1565C0", background:"#E3F2FD", border:"1px solid #90CAF9", borderRadius:20, padding:"2px 8px" }}>🐾 Puppy programme</span>}
-            {isSenior(pet) && <span style={{ fontSize:10, fontWeight:600, color:"#C62828", background:"#FFEBEE", border:"1px solid #EF9A9A", borderRadius:20, padding:"2px 8px" }}>🐾 Senior enrichment</span>}
-            {!pet?.breed && !energy && <span style={{ fontSize:10, color:"#999" }}>Tap to tell Mira about {petName}'s learning style</span>}
+          <div style={{ fontSize:15, fontWeight:700, color:G.darkText }}>{petName}'s Learning Profile</div>
+          <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginTop:5 }}>
+            {pet?.breed && <span style={{ fontSize:11, fontWeight:600, color:"#1A1363", background:"#EDE9FE", border:"1px solid #A78BFA", borderRadius:20, padding:"3px 10px" }}>🐾 {pet.breed} · {tip.style.slice(0,28)}…</span>}
+            {energy && <span style={{ fontSize:11, fontWeight:600, color:G.mid, background:G.pale, border:`1px solid ${G.light}`, borderRadius:20, padding:"3px 10px" }}>⚡ {energy}</span>}
+            {isPuppy(pet) && <span style={{ fontSize:11, fontWeight:600, color:"#1565C0", background:"#E3F2FD", border:"1px solid #90CAF9", borderRadius:20, padding:"3px 10px" }}>🐾 Puppy programme</span>}
+            {isSenior(pet) && <span style={{ fontSize:11, fontWeight:600, color:"#C62828", background:"#FFEBEE", border:"1px solid #EF9A9A", borderRadius:20, padding:"3px 10px" }}>🐾 Senior enrichment</span>}
+            {!pet?.breed && !energy && <span style={{ fontSize:12, color:"#999" }}>Tap to tell Mira about {petName}'s learning style</span>}
           </div>
         </div>
         <span style={{ fontSize:11, color:G.violet, fontWeight:700, whiteSpace:"nowrap", flexShrink:0 }}>Mira's picks →</span>
@@ -523,14 +523,30 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
     if (!isOpen) return;
     setLoading(true);
     if (category === "mira") {
-      // Mira's Picks pill → fetch AI-scored claude-picks (PET FIRST, BREED NEXT)
       if (!pet?.id) { setLoading(false); return; }
       const breedParam = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : "";
+      // Try claude-picks first; fall back to pillar-products sorted by mira_score
       fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=learn&limit=16&min_score=40${breedParam}`, {
         headers: token ? { Authorization:`Bearer ${token}` } : {}
       })
         .then(r => r.json())
-        .then(d => setProducts(filterBreedProducts(d.picks || [], pet?.breed)))
+        .then(d => {
+          const scored = filterBreedProducts(d.picks || [], pet?.breed);
+          if (scored.length > 0) { setProducts(scored); setLoading(false); return; }
+          // Fallback: fetch all learn products, sort by mira_score
+          return fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&limit=400`, {
+            headers: token ? { Authorization:`Bearer ${token}` } : {}
+          })
+            .then(r => r.json())
+            .then(pd => {
+              const all = filterBreedProducts(pd.products || [], pet?.breed);
+              const withScore = all.filter(p => p.mira_score || p.mira_tag);
+              const sorted = withScore.length > 0
+                ? withScore.sort((a,b)=>(b.mira_score||0)-(a.mira_score||0)).slice(0,16)
+                : filterBreedProducts(all, pet?.breed).slice(0,16);
+              setProducts(sorted);
+            });
+        })
         .catch(() => setProducts([]))
         .finally(() => setLoading(false));
       return;
@@ -1159,12 +1175,12 @@ const LearnSoulPage = () => {
 
         {/* H1 — same size as Care hero */}
         <h1 style={{fontSize:"clamp(1.875rem,4vw,2.5rem)",fontWeight:900,color:"#fff",
-          marginBottom:12,lineHeight:1.15,fontFamily:"Georgia,'Times New Roman',serif",textAlign:"center"}}>
+          marginBottom:14,lineHeight:1.15,fontFamily:"Georgia,'Times New Roman',serif",textAlign:"center"}}>
           Learn & Grow for <span style={{color:G.light}}>{petName}</span>
         </h1>
 
         {/* Breed chips */}
-        <div style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:8,marginBottom:16}}>
+        <div style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:8,marginBottom:18}}>
           {breed && <SoulChip icon="🐾" label="Breed" value={breed}/>}
           {isPuppy(petData) ? <SoulChip value="Puppy Programme"/>
             : isSenior(petData) ? <SoulChip value="Senior Enrichment"/>
@@ -1174,15 +1190,15 @@ const LearnSoulPage = () => {
 
         {/* Mira quote */}
         <div style={{background:"rgba(255,255,255,0.10)",border:"1px solid rgba(255,255,255,0.15)",
-          borderRadius:12,padding:"10px 16px",maxWidth:440,margin:"0 auto 16px",textAlign:"left"}}>
+          borderRadius:12,padding:"12px 18px",maxWidth:480,margin:"0 auto 20px",textAlign:"left"}}>
           <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
-            <div style={{width:26,height:26,borderRadius:"50%",background:MIRA_ORB,
-              display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:"#fff",flexShrink:0}}>✦</div>
+            <div style={{width:28,height:28,borderRadius:"50%",background:MIRA_ORB,
+              display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,color:"#fff",flexShrink:0}}>✦</div>
             <div>
-              <p style={{fontSize:13,color:"rgba(255,255,255,0.85)",fontStyle:"italic",lineHeight:1.55,margin:0}}>
+              <p style={{fontSize:14,color:"rgba(255,255,255,0.90)",fontStyle:"italic",lineHeight:1.6,margin:0}}>
                 "Every dog can learn. I've built {petName}'s programme around {breed?`what works for ${breed}s`:"their personality and energy"}."
               </p>
-              <span style={{fontSize:11,color:G.light,fontWeight:600}}>♥ Mira knows {petName}</span>
+              <span style={{fontSize:12,color:G.light,fontWeight:600}}>♥ Mira knows {petName}</span>
             </div>
           </div>
         </div>
@@ -1226,7 +1242,7 @@ const LearnSoulPage = () => {
         </div>
 
         {/* ── TAB BAR — 3 tabs, below strip ── */}
-        <div style={{display:"flex",background:"#fff",borderBottom:`1.5px solid ${G.borderLight}`,marginBottom:20}}>
+        <div style={{display:"flex",background:"#fff",borderBottom:`1.5px solid ${G.borderLight}`,marginBottom:24}}>
           {[
             {id:"learn",        label:"🎓 Learn & Products"},
             {id:"services",     label:"📋 Book a Session"},
@@ -1235,9 +1251,9 @@ const LearnSoulPage = () => {
             const a=activeTab===tab.id;
             return(
               <button key={tab.id} onClick={()=>setActiveTab(tab.id)}
-                style={{flex:1,padding:"12px 4px",background:"none",border:"none",
+                style={{flex:1,padding:"14px 4px",background:"none",border:"none",
                   borderBottom:a?`3px solid ${G.violet}`:"3px solid transparent",
-                  color:a?G.violet:"#888",fontSize:12,fontWeight:a?700:500,
+                  color:a?G.violet:"#888",fontSize:13,fontWeight:a?700:500,
                   cursor:"pointer",transition:"all 0.15s",whiteSpace:"nowrap"}}>
                 {tab.label}
               </button>
@@ -1267,25 +1283,60 @@ const LearnSoulPage = () => {
             </section>
 
             {/* Dim grid */}
-            <div style={{display:"grid",gap:10,marginBottom:28}} className="learn-dims-grid">
+            {/* ── 7 DIMENSION CARDS — GuidedCarePaths-style large cards ── */}
+            <div style={{display:"grid",gap:16,marginBottom:32}} className="learn-dims-grid">
               <style>{`
-                .learn-dims-grid{grid-template-columns:repeat(2,1fr)}
-                @media(min-width:640px){.learn-dims-grid{grid-template-columns:repeat(4,1fr)}}
-                @media(min-width:1024px){.learn-dims-grid{grid-template-columns:repeat(7,1fr)}}
+                .learn-dims-grid{grid-template-columns:1fr}
+                @media(min-width:560px){.learn-dims-grid{grid-template-columns:repeat(2,1fr)}}
+                @media(min-width:900px){.learn-dims-grid{grid-template-columns:repeat(3,1fr)}}
               `}</style>
               {learnDims.map(dim=>{
                 const isOpen=openDim===dim.id;
                 return(
                   <div key={dim.id} style={{gridColumn:isOpen?"1 / -1":"auto"}}>
+                    {/* Card */}
                     <div onClick={()=>setOpenDim(isOpen?null:dim.id)}
-                      style={{background:"#fff",borderRadius:isOpen?"14px 14px 0 0":12,padding:"14px 10px",cursor:"pointer",position:"relative",textAlign:"center",opacity:dim.glow?1:0.65,boxShadow:dim.glow&&!isOpen?`0 0 18px ${dim.glowColor}`:"none",border:isOpen?`2px solid ${G.violet}`:"2px solid transparent",transition:"all 0.15s"}}
-                      data-testid={`learn-dim-${dim.id}`}>
-                      {dim.glow&&<div style={{position:"absolute",top:8,right:8,width:7,height:7,borderRadius:"50%",background:G.light}}/>}
-                      <div style={{fontSize:22,marginBottom:8}}>{dim.icon}</div>
-                      <div style={{fontSize:12,fontWeight:700,color:G.darkText,marginBottom:3,lineHeight:1.2}}>{dim.label}</div>
-                      <div style={{fontSize:10,color:G.mutedText,lineHeight:1.3,marginBottom:6}}>{t(dim.sub,petName)}</div>
-                      <span style={{fontSize:9,fontWeight:700,borderRadius:20,padding:"2px 7px",display:"inline-block",background:`${dim.badgeBg}22`,color:dim.badgeBg}}>{dim.badge}</span>
-                      <span style={{position:"absolute",bottom:8,right:8,fontSize:12,color:"rgba(0,0,0,0.20)",transform:isOpen?"rotate(90deg)":"none",transition:"transform 0.2s"}}>›</span>
+                      data-testid={`learn-dim-${dim.id}`}
+                      style={{background:"#fff",borderRadius:isOpen?"16px 16px 0 0":16,
+                        cursor:"pointer",position:"relative",overflow:"hidden",
+                        border:isOpen?`2px solid ${G.violet}`:`2px solid ${G.borderLight}`,
+                        boxShadow:dim.glow&&!isOpen?`0 4px 24px ${dim.glowColor}40`:"0 2px 8px rgba(0,0,0,0.06)",
+                        transition:"all 0.2s"}}>
+                      {/* Coloured top bar */}
+                      <div style={{height:6,background:isOpen?G.violet:(dim.glowColor||G.mid),borderRadius:"16px 16px 0 0"}}/>
+                      <div style={{padding:"20px 20px 18px"}}>
+                        {/* Icon + badges row */}
+                        <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:14}}>
+                          <div style={{width:52,height:52,borderRadius:14,
+                            background:dim.glow?`linear-gradient(135deg,${dim.glowColor}22,${dim.glowColor}44)`:`${G.pale}`,
+                            display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,flexShrink:0}}>
+                            {dim.icon}
+                          </div>
+                          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
+                            <span style={{fontSize:10,fontWeight:700,borderRadius:20,padding:"3px 10px",
+                              background:`${dim.badgeBg}20`,color:dim.badgeBg,border:`1px solid ${dim.badgeBg}40`}}>
+                              {dim.badge}
+                            </span>
+                            {dim.glow&&<div style={{width:8,height:8,borderRadius:"50%",background:G.light}}/>}
+                          </div>
+                        </div>
+                        {/* Title */}
+                        <h3 style={{fontSize:16,fontWeight:800,color:G.darkText,marginBottom:6,lineHeight:1.25,fontFamily:"Georgia,serif"}}>
+                          {dim.label}
+                        </h3>
+                        {/* Description */}
+                        <p style={{fontSize:13,color:G.mutedText,lineHeight:1.55,marginBottom:16,
+                          display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>
+                          {t(dim.sub,petName)}
+                        </p>
+                        {/* CTA */}
+                        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                          <span style={{fontSize:12,color:G.violet,fontWeight:700}}>
+                            {isOpen?"Close ↑":"Explore →"}
+                          </span>
+                          <span style={{fontSize:11,color:"#aaa"}}>{dim.ytQuery?"Products · Videos · Book":"Products · Book"}</span>
+                        </div>
+                      </div>
                     </div>
                     {isOpen&&<DimExpanded dim={dim} pet={petData} onClose={()=>setOpenDim(null)} apiProducts={apiProducts} services={services} onBook={handleBook}/>}
                   </div>

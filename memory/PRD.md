@@ -1,6 +1,232 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 2026 (Session 81 — 4 more Play page issues fixed: breed filter in Mira picks, soul question chips, soul score consistency across all pillars, bundle modal scrollable)
+## Last Updated: Mar 19, 2026 (Session 83 — Learn Pillar Live, Breed Filtering System-wide, Fit Hidden)
+
+---
+
+## PRODUCT VISION
+The Doggy Company's Pet Life Operating System (PLOS) is a pillar-based platform where each pillar (DINE, CARE, GO, CELEBRATE, LEARN, etc.) is a fully personalised experience for a named dog, powered by Mira — the AI concierge who knows every dog by name, breed, size, health and soul. Every product recommendation, every guided path, every service booking is filtered through Mira's knowledge of the pet.
+
+**Core Philosophy**: PET FIRST, BREED NEXT. The soul profile is the dog's operating system. Every pillar reads from it and personalises everything.
+
+---
+
+## APPLICATION ARCHITECTURE
+
+### Tech Stack
+- **Frontend**: React 18, Tailwind CSS, Framer Motion, Lucide-React icons, Shadcn/UI components
+- **Backend**: FastAPI (Python), MongoDB, LiteLLM (Claude Sonnet via Emergent LLM Key)
+- **Services**: Google Places API, OpenAI DALL-E (Emergent LLM Key), Razorpay, YouTube Data API v3
+- **Hosting**: Kubernetes container (Emergent platform)
+
+### URL Structure
+- Frontend: `https://care-soul-fixes.preview.emergentagent.com`
+- Backend: Port 8001, all API routes prefixed with `/api`
+
+### Key Backend Files
+```
+/app/backend/
+├── server.py                   # Main FastAPI app, router registration
+├── mira_routes.py              # General Mira endpoints
+├── mira_score_engine.py        # AI product scoring — /api/mira/claude-picks/{pet_id}
+├── dine_routes.py              # Dine + Places (pet-friendly-stays endpoint)
+├── admin_routes.py             # Admin, pillar products, service box
+├── soul_routes.py              # Soul profile, soul questions
+├── care_routes.py              # Care pillar backend
+├── learn_routes.py             # Learn pillar backend (APIs, programs, trainers)
+├── services/youtube_service.py # YouTube Data API v3 integration
+└── app/api/soul_products_routes.py  # Soul products admin
+```
+
+### Key Frontend Files
+```
+/app/frontend/src/
+├── pages/
+│   ├── GoSoulPage.jsx          # GO pillar (~1,800 lines)
+│   ├── CareSoulPage.jsx        # CARE pillar (~2,281 lines)
+│   ├── DineSoulPage.jsx        # DINE pillar
+│   ├── PlaySoulPage.jsx        # PLAY pillar
+│   ├── LearnSoulPage.jsx       # LEARN pillar (~1,300 lines) — LIVE as of Session 83
+│   └── PetHomePage.jsx         # Pet dashboard / 13-pillar selector
+├── components/
+│   ├── learn/
+│   │   └── LearnNearMe.jsx     # NEW — Find Learn Near Me (Google Places)
+│   ├── care/
+│   │   ├── CareHero.jsx
+│   │   ├── CareCategoryStrip.jsx
+│   │   └── CareContentModal.jsx  # Breed filter now applied to Mira picks
+│   ├── admin/
+│   │   └── BundlesManager.jsx  # CSV export added
+│   ├── common/
+│   │   └── ConciergeToast.jsx  # learn: "#7C3AED" added to PILLAR_COLOR
+│   ├── Navbar.jsx              # Fit removed
+│   ├── MemberMobileNav.jsx     # Fit removed
+│   ├── PillarNav.jsx           # Fit removed
+│   ├── MobileNavBar.jsx        # Fit removed from pillarMap
+│   └── Footer.jsx              # Fit removed from both sections
+├── App.js                      # /learn → LearnSoulPage (ProtectedRoute)
+└── context/
+    ├── AuthContext.jsx
+    └── PillarContext.jsx
+```
+
+---
+
+## ACTIVE PILLARS STATUS
+
+| Pillar | Status | Notes |
+|--------|--------|-------|
+| CELEBRATE | ✅ Live | Full pillar, products/services/bundles |
+| CARE | ✅ Live | Full pillar, 8 dims, CareContentModal, breed filter |
+| DINE | ✅ Live | Full pillar, TummyProfile, breed filter |
+| GO | ✅ Live | Full pillar, PetFriendlyStays, breed filter |
+| PLAY | ✅ Live | Full pillar, ActivityProfile, breed filter |
+| LEARN | ✅ Live | Full pillar launched Session 83, 7 dims + YouTube per dim |
+| ENJOY | ⚠️ Partial | Basic page exists |
+| SHOP | ⚠️ Partial | Basic page exists |
+| ADOPT | 🔴 Stub | Route exists, no content |
+| PAPERWORK | 🔴 Stub | Route exists, no content |
+| ADVISORY | 🔴 Stub | Route exists, no content |
+| EMERGENCY | 🔴 Stub | Route exists, no content |
+| FAREWELL | 🔴 Stub | Route exists, no content |
+| SERVICES | 🔴 Stub | Route exists, no content |
+| FIT | ❌ Hidden | Removed from all navigation & footer |
+
+---
+
+## PILLAR ARCHITECTURE PATTERN (Care-parity standard)
+
+Every pillar MUST follow this pattern:
+1. **Hero** — centered, pet avatar + Soul % badge, h1 `clamp(1.875rem,4vw,2.5rem)`, breed chips, Mira quote, chevron
+2. **Category strip** — 82px × 72px icon+label pills, each opens ContentModal
+3. **Tab bar** — 3 tabs below strip: `{Pillar} & Products | Book a Session | Find {Pillar}`
+4. **Soul Profile bar** — collapsed → click → modal with dark header, big %, progress bar, ✕ close
+5. **Mira Picks** — `MiraImagineCard` fallback (PET FIRST, BREED NEXT naming)
+6. **Breed filter** — `filterBreedProducts()` applied at every product fetch point
+
+---
+
+## BREED FILTERING — SYSTEM-WIDE RULE
+
+**"PET FIRST, BREED NEXT" — Never show wrong breed products**
+
+Applied in:
+- `CareContentModal.jsx` — mira category picks filtered by breed
+- `CareSoulPage.jsx` — `filterBreedProducts()` in MiraPicksSection
+- `PlaySoulPage.jsx` — breed param in claude-picks API call
+- `DineSoulPage.jsx` — breed param added (Session 83)
+- `GoSoulPage.jsx` — breed param + client-side filterBreed (Session 83)
+- `LearnSoulPage.jsx` — `KNOWN_BREEDS` + `filterBreedProducts()` (Session 83)
+
+Rule: If a product name contains a specific breed (e.g. "American Bully Grooming Kit"), it will ONLY show to pets of that breed. General products show to all.
+
+---
+
+## SOUL SCORE CONSISTENCY
+
+**All pillars use `pet.overall_score || pet.soul_score || 0`** (NOT `soul_score` alone)
+
+Fixed in Session 81 for: Care, Dine, Play, Go
+Fixed in Session 83 for: Learn (added to LearnProfile component)
+
+---
+
+## KEY APIS
+
+### Pet & Soul
+- `GET /api/pets/my-pets` — user's pets list
+- `GET /api/pet-soul/profile/{pet_id}` — full soul profile + questions
+- `POST /api/pet-soul/profile/{pet_id}/answer` — save soul answer, returns updated score
+
+### Mira
+- `GET /api/mira/claude-picks/{pet_id}?pillar={p}&limit=12&min_score=60&entity_type=product&breed={b}` — AI scored picks
+- `POST /api/mira/ask` — Mira AI chat
+
+### Products & Services
+- `GET /api/admin/pillar-products?pillar={p}&category={c}&breed={b}&limit={n}` — products by pillar/category
+- `GET /api/service-box/services?pillar={p}` — services by pillar
+- `GET /api/bundles?pillar={p}&active_only=true` — bundles
+
+### Learn
+- `GET /api/learn/page-config` — CMS config
+- `GET /api/learn/programs` — training programs
+- `GET /api/learn/products` — training products
+- `GET /api/learn/bundles` — training bundles
+- `GET /api/test/youtube?query={q}&max_results={n}` — YouTube videos (response: `{success, query, videos: [{id, title, thumbnail, channel, url}]}`)
+
+### Admin
+- `GET /api/admin/site-status` — system health
+- `POST /api/service_desk/attach_or_create_ticket` — concierge booking
+
+---
+
+## ADMIN CREDENTIALS
+- **Admin login**: `aditya` / `lola4304`
+- **Test user**: `dipali@clubconcierge.in` / `test123`
+
+---
+
+## LEARN PILLAR — DB SCRIPTS PENDING (Aditya runs in MongoDB)
+
+```js
+// Script 1 — tag 33 training journals
+db.products.find({category:'breed-training_logs'}).forEach(p => {
+  db.products.updateOne({_id:p._id},{$set:{pillar:'learn',dimension:'Soul Learn Products',sub_category:'soul',price:399}});
+});
+// Script 2 — tag 33 treat pouches
+db.products.find({category:'breed-treat_pouchs'}).forEach(p => {
+  db.products.updateOne({_id:p._id},{$set:{pillar:'learn',dimension:'Soul Learn Products',sub_category:'soul',price:299}});
+});
+// Script 3 — tag 33 treat jars
+db.products.find({category:'breed-treat_jars'}).forEach(p => {
+  db.products.updateOne({_id:p._id},{$set:{pillar:'learn',dimension:'Soul Learn Products',sub_category:'soul',price:349}});
+});
+// Script 4 — tag 198 care guide books
+db.products.find({name:/Care Guide Book/}).forEach(p => {
+  db.products.updateOne({_id:p._id},{$set:{pillar:'learn',dimension:'Breed Knowledge',sub_category:'breed_guides',price:0}});
+});
+// Script 5 — merge 32 services → 8 canonical learn services
+db.services.updateMany(
+  {name:{$in:['Puppy Foundations Class','New Pet Parent Onboarding','Behaviour Consultation','Behaviour Modification Programme','Obedience Training','Advanced Training & Tricks','Breed Education Session','Senior Pet Care Education']}},
+  {$set:{pillar:'learn'}}
+);
+```
+
+---
+
+## UPCOMING TASKS (P0 → P2)
+
+### P0 — Immediate
+- Run DB scripts 1-5 above (unlocks Learn products + services)
+- Learn: Insert 25 new products from TDC_Learn_Pillar_Database_v1.xlsx Sheet 4
+- Learn: Insert 10 bundles (BUN-LRN-001 to BUN-LRN-010) from Sheet 5
+
+### P1 — Next Sprint
+- **Adopt Pillar** — full implementation
+- **Razorpay checkout failure** — known low-priority bug
+
+### P2 — Future
+- **Love Pillar** + Love Memory Drawer
+- Refactor DB schema (`bundles` / `services` / `products_master` consistency)
+- Consolidate pillar content modals into single reusable component
+- Stub pillars: Paperwork, Advisory, Emergency, Farewell, Services — full implementation
+
+---
+
+## KNOWN ISSUES / TECHNICAL DEBT
+- Razorpay checkout failure (low priority, not addressed)
+- DB schema inconsistency: `products_master` vs `bundles` vs `services` collections
+- Learn YouTube API quota: 10,000 units/day on free tier — cached per session
+
+---
+
+## TEST CREDENTIALS
+```
+Test User:  dipali@clubconcierge.in / test123
+Admin:      aditya / lola4304
+Pets:       Mojo (Indie), Mystique (Indie), Bruno (German Shepherd)
+```
+
 
 ---
 

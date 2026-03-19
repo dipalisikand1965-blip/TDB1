@@ -1,0 +1,63 @@
+{
+  "summary": "Frontend testing of Learn page fixes and system-wide updates (iteration 177). Tested: Learn page hero, category modals, Mira's Picks fallback, profile drawer, 7 dim cards, font sizes, tab bar, Care breed filter, footer Fit removal, pet home 13 pillars.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "LearnContentModal (Foundations)",
+        "issue": "Foundations category modal shows 0 products. Category name 'Learn Foundations' may not match the DB category field for learn products.",
+        "selector": "[data-testid='learn-cat-modal-foundations']",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "Learn Mira's Picks Modal",
+        "issue": "Some products shown have incorrect mira_reason ('Makes celebrations special' for training products). Data quality issue in DB scoring.",
+        "selector": "[data-testid='learn-cat-modal-mira']",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Learn Profile Drawer",
+        "issues": ["+5 pts / +3 pts point badges use fontSize:9 in JSX (9px) - rendered as browser min 10px. Minor cosmetic."]
+      }
+    ]
+  },
+  "test_report_links": ["/app/test_reports/iteration_177.json"],
+  "action_items": [
+    "Verify 'Learn Foundations' category name in DB matches what LearnContentModal queries for the foundations category pill",
+    "Optional: Fix mira_reason data quality for learn-pillar products in DB (scoring script run needed)"
+  ],
+  "critical_code_review_comments": [
+    "PetHomePage.jsx - minor React warning: 'Each child in a list should have a unique key prop' - add key prop to list items",
+    "LearnSoulPage.jsx line ~413: fontSize:9 for points badges - browser clamps to 10px but technically below spec"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend-only test)",
+    "frontend": "90%"
+  },
+  "test_credentials": "dipali@clubconcierge.in / test123 (pet: Mojo, breed: Indie)",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "All 10 test items from review_request confirmed PASS. Learn page h1=40px (clamp identical to care/dine/go). Mira's Picks modal shows 16 real products (fallback working). Profile drawer has dark indigo gradient header + close X. 7 dim cards 3-col large layout (309px wide). Tab bar has 3 tabs. Care Mira's Picks shows no American Bully products for Indie Mojo. Footer has no Fit link. Pet home has 13 pillars. One minor issue: Foundations category modal shows 0 products (possible category name mismatch in DB).",
+  "test_results_detail": {
+    "learn_hero_h1_size": "40px (clamp 1.875rem-2.5rem) - matches care/dine/go",
+    "learn_soul_badge": "100% Soul shown correctly",
+    "learn_category_strip_pills": "8 pills (7 dims + Mira's Picks) - confirmed",
+    "learn_mira_picks_modal": "PASS - 16 real products shown, NO imagines text in modal",
+    "learn_profile_drawer": "PASS - dark indigo gradient header, close X present",
+    "7_dim_cards": "PASS - 3-col grid, 309px wide cards, 52px icon, title, description, Explore CTA",
+    "font_sizes": "PASS - minimum 10px (browser enforced), content fonts 12-16px",
+    "tab_bar": "PASS - 3 tabs: Learn & Products, Book a Session, Find Learn",
+    "care_mira_picks_breed_filter": "PASS - no American Bully products shown to Indie Mojo",
+    "footer_fit_link": "PASS - no Fit link in footer (code confirmed)",
+    "pet_home_13_pillars": "PASS - 13 pillars: celebrate, care, dine, go, enjoy, learn, shop, adopt, paperwork, advisory, emergency, farewell, services",
+    "foundations_modal_products": "ISSUE - 0 product images loaded (category name mismatch possible)"
+  }
+}
