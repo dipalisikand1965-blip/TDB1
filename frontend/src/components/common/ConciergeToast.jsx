@@ -11,11 +11,16 @@
 import { useEffect } from "react";
 
 const PILLAR_COLOR = {
-  go:    "#1ABC9C",
-  dine:  "#FF8C42",
-  care:  "#4CAF8D",
-  play:  "#E76F51",
-  learn: "#7C3AED",
+  go:         "#1ABC9C",
+  dine:       "#FF8C42",
+  care:       "#4CAF8D",
+  play:       "#E76F51",
+  learn:      "#7C3AED",
+  paperwork:  "#0D9488",
+  emergency:  "#DC2626",
+  adopt:      "#D4537E",
+  farewell:   "#6366F1",
+  celebrate:  "#A855F7",
 };
 
 export default function ConciergeToast({ toast, onClose }) {

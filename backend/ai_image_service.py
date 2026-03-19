@@ -985,3 +985,228 @@ async def get_image_stats():
         },
         "by_pillar": pillar_stats
     }
+
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FULL CLOUDINARY PIPELINE ENDPOINTS
+# Covers: migration + services_master + care_bundles + mira_imagines_cache
+# ─────────────────────────────────────────────────────────────────────────────
+
+@ai_image_router.post("/pipeline/migrate")
+async def run_migration_pipeline(background_tasks: BackgroundTasks):
+    """Migrate all existing non-Cloudinary images to Cloudinary."""
+    async def _run():
+        import cloudinary.uploader
+        if db is None: return
+        migrated = 0
+        for collection, id_field, img_field in [
+            ("products_master", "id", "image_url"),
+            ("services_master",  "id", "image_url"),
+            ("care_bundles",     "id", "image_url"),
+        ]:
+            col = db[collection]
+            cursor = col.find(
+                {img_field: {"$exists": True, "$ne": "", "$nin": [None, ""]}},
+                {"_id": 0, id_field: 1, img_field: 1, "pillar": 1}
+            )
+            items = await cursor.to_list(length=5000)
+            to_migrate = [i for i in items if i.get(img_field) and "cloudinary.com" not in i.get(img_field, "")]
+            logger.info(f"[migrate] {collection}: {len(to_migrate)} to migrate")
+            for item in to_migrate:
+                item_id = item.get(id_field, "unknown")
+                url = item.get(img_field, "")
+                if not url or not url.startswith("http"): continue
+                pillar = item.get("pillar", "general")
+                pub_id = f"tdc/{collection}/{pillar}/{item_id}"
+                try:
+                    result = cloudinary.uploader.upload(
+                        url, public_id=pub_id, overwrite=False,
+                        resource_type="image", format="webp",
+                        transformation=[{"width": 800, "height": 800, "crop": "limit"}, {"quality": "auto:good"}]
+                    )
+                    new_url = result.get("secure_url")
+                    if new_url:
+                        await col.update_one({id_field: item_id}, {"$set": {img_field: new_url}})
+                        migrated += 1
+                except Exception as e:
+                    logger.warning(f"[migrate] {item_id}: {e}")
+                await asyncio.sleep(0.2)
+        logger.info(f"[migrate] Complete: {migrated} images migrated to Cloudinary")
+    background_tasks.add_task(_run)
+    return {"status": "migration_started", "message": "Migrating existing images to Cloudinary in background"}
+
+
+@ai_image_router.post("/pipeline/services-master")
+async def run_services_master_watercolour(
+    background_tasks: BackgroundTasks,
+    pillar: Optional[str] = None,
+    limit: int = 100
+):
+    """Generate watercolour illustrations for services_master (not services collection)."""
+    async def _run():
+        if db is None: return
+        query = {"$or": [
+            {"watercolor_image": {"$exists": False}},
+            {"watercolor_image": None},
+            {"watercolor_image": ""},
+        ]}
+        if pillar: query["pillar"] = pillar
+        services = await db.services_master.find(query, {"_id": 0}).to_list(length=limit)
+        logger.info(f"[services-master] {len(services)} services to process")
+        done = 0
+        STYLE = "soft watercolour illustration, warm pastel tones, gentle brushstrokes, artistic pet illustration, minimal clean background"
+        pillar_prompts = {
+            "learn": "dog learning to sit with a trainer, treats and reward, attentive pose",
+            "care": "dog being lovingly groomed, caring hands, wellness scene",
+            "dine": "dog with a beautiful healthy meal, nutritious food bowl",
+            "go": "dog in a travel carrier, adventure accessories, excited to explore",
+            "celebrate": "dog at birthday celebration, balloons and cake, festive joy",
+            "play": "dog playing joyfully with toys, pure happiness",
+            "farewell": "peaceful rainbow bridge scene, gentle and serene",
+            "adopt": "hopeful dog finding a loving home, heartwarming moment",
+            "emergency": "caring veterinary assistance, gentle and reassuring",
+        }
+        for svc in services:
+            svc_id = svc.get("id", "unknown")
+            svc_pillar = (svc.get("pillar") or "general").lower()
+            pub_id = f"tdc/services-master/{svc_pillar}/{svc_id}"
+            scene = pillar_prompts.get(svc_pillar, "happy dog receiving professional pet care")
+            prompt = f"Watercolour illustration of a {scene}. {STYLE}."
+            url = await generate_ai_image(prompt)
+            if url:
+                await db.services_master.update_one(
+                    {"id": svc_id},
+                    {"$set": {"watercolor_image": url, "image_url": url, "ai_generated_image": True}}
+                )
+                done += 1
+                logger.info(f"[services-master] ✓ {svc.get('name','?')[:40]}")
+            await asyncio.sleep(4)
+        logger.info(f"[services-master] Complete: {done}/{len(services)}")
+    background_tasks.add_task(_run)
+    return {"status": "started", "pillar": pillar or "all", "limit": limit}
+
+
+@ai_image_router.post("/pipeline/bundles")
+async def run_bundles_watercolour(
+    background_tasks: BackgroundTasks,
+    pillar: Optional[str] = None
+):
+    """Generate watercolour illustrations for bundles missing images."""
+    async def _run():
+        if db is None: return
+        query = {"$or": [
+            {"image_url": {"$exists": False}},
+            {"image_url": None}, {"image_url": ""}
+        ]}
+        if pillar: query["pillar"] = pillar
+        bundles = await db.care_bundles.find(query, {"_id": 0}).to_list(length=100)
+        logger.info(f"[bundles] {len(bundles)} bundles to process")
+        done = 0
+        STYLE = "soft watercolour illustration, warm pastel tones, premium pet lifestyle, minimal clean background"
+        for b in bundles:
+            b_id = b.get("id", "unknown")
+            b_pillar = (b.get("pillar") or "learn").lower()
+            items = b.get("items", [])
+            items_str = ", ".join(
+                (i if isinstance(i, str) else i.get("name", "")) for i in items[:3]
+            )
+            pub_id = f"tdc/bundles/{b_pillar}/{b_id}"
+            prompt = f"Watercolour illustration of a curated pet gift box with {items_str or 'pet care essentials'}, beautiful packaging, warm and inviting. {STYLE}."
+            url = await generate_ai_image(prompt)
+            if url:
+                await db.care_bundles.update_one(
+                    {"id": b_id},
+                    {"$set": {"image_url": url, "watercolor_image": url, "ai_generated_image": True}}
+                )
+                done += 1
+                logger.info(f"[bundles] ✓ {b.get('name','?')[:40]}")
+            await asyncio.sleep(4)
+        logger.info(f"[bundles] Complete: {done}/{len(bundles)}")
+    background_tasks.add_task(_run)
+    return {"status": "started", "pillar": pillar or "all"}
+
+
+@ai_image_router.post("/pipeline/mira-imagines")
+async def run_mira_imagines_generation(
+    background_tasks: BackgroundTasks,
+    pillar: Optional[str] = None,
+    breed: Optional[str] = None,
+    limit: int = 20
+):
+    """Generate breed × pillar watercolours for Mira Imagines cards."""
+    BREEDS = [
+        "labrador", "golden_retriever", "german_shepherd", "indie",
+        "french_bulldog", "beagle", "shih_tzu", "poodle", "rottweiler",
+        "husky", "cocker_spaniel", "boxer", "chihuahua", "pug", "maltese",
+        "yorkshire_terrier", "dachshund", "border_collie", "lhasa_apso",
+        "jack_russell", "cavalier", "american_bully", "samoyed", "corgi",
+        "pomeranian", "schnauzer", "great_dane", "dalmatian", "akita",
+        "shiba_inu", "australian_shepherd", "chow_chow", "doberman"
+    ]
+    BREED_NAMES = {
+        "labrador":"Labrador Retriever","golden_retriever":"Golden Retriever",
+        "german_shepherd":"German Shepherd","indie":"Indian Street Dog",
+        "french_bulldog":"French Bulldog","beagle":"Beagle","shih_tzu":"Shih Tzu",
+        "poodle":"Poodle","rottweiler":"Rottweiler","husky":"Siberian Husky",
+        "cocker_spaniel":"Cocker Spaniel","boxer":"Boxer","chihuahua":"Chihuahua",
+        "pug":"Pug","maltese":"Maltese","yorkshire_terrier":"Yorkshire Terrier",
+        "dachshund":"Dachshund","border_collie":"Border Collie","lhasa_apso":"Lhasa Apso",
+        "jack_russell":"Jack Russell Terrier","cavalier":"Cavalier King Charles Spaniel",
+        "american_bully":"American Bully","samoyed":"Samoyed","corgi":"Welsh Corgi",
+        "pomeranian":"Pomeranian","schnauzer":"Schnauzer","great_dane":"Great Dane",
+        "dalmatian":"Dalmatian","akita":"Akita","shiba_inu":"Shiba Inu",
+        "australian_shepherd":"Australian Shepherd","chow_chow":"Chow Chow","doberman":"Doberman Pinscher"
+    }
+    PILLAR_SCENES = {
+        "learn":     "learning to sit with a trainer, treat pouch and training journal nearby",
+        "care":      "being lovingly groomed, wellness scene, caring and gentle",
+        "dine":      "enjoying a healthy gourmet meal from a beautiful ceramic bowl",
+        "go":        "exploring on an adventure, travel carrier and accessories",
+        "celebrate": "at a birthday party, festive balloons and cake",
+        "play":      "playing joyfully with toys in a park, pure happiness",
+    }
+    STYLE = "soft watercolour illustration, warm pastel tones, artistic brushstrokes, soulful pet portrait, minimal background, premium pet lifestyle"
+
+    async def _run():
+        if db is None: return
+        breeds_to_run = [breed] if breed else BREEDS
+        pillars_to_run = [pillar] if pillar else list(PILLAR_SCENES.keys())
+        done = 0; total_cap = limit
+        for p in pillars_to_run:
+            if done >= total_cap: break
+            scene = PILLAR_SCENES.get(p, "receiving professional pet care")
+            for b_key in breeds_to_run:
+                if done >= total_cap: break
+                existing = await db.mira_imagines_cache.find_one({"pillar": p, "breed": b_key})
+                if existing and existing.get("url"): continue
+                breed_full = BREED_NAMES.get(b_key, b_key.replace("_"," ").title())
+                pub_id = f"tdc/mira-imagines/{p}/{b_key}"
+                prompt = (
+                    f"Watercolour illustration of a beautiful {breed_full} dog {scene}. "
+                    f"The dog looks healthy, happy and soulful. {STYLE}. No text in image."
+                )
+                url = await generate_ai_image(prompt)
+                if url:
+                    await db.mira_imagines_cache.update_one(
+                        {"pillar": p, "breed": b_key},
+                        {"$set": {"pillar": p, "breed": b_key, "url": url,
+                                  "updated_at": datetime.now(timezone.utc).isoformat()}},
+                        upsert=True
+                    )
+                    done += 1
+                    logger.info(f"[mira-imagines] ✓ {p}/{b_key}")
+                await asyncio.sleep(5)
+        logger.info(f"[mira-imagines] Complete: {done} generated")
+    background_tasks.add_task(_run)
+    return {"status": "started", "pillar": pillar or "all", "breed": breed or "all", "limit": limit}
+
+
+@ai_image_router.get("/pipeline/mira-imagines/{pillar}/{breed}")
+async def get_mira_imagines_url(pillar: str, breed: str):
+    """Get cached Mira Imagines watercolour URL for a pillar+breed combo."""
+    if db is None:
+        return {"url": None}
+    breed_key = breed.lower().replace(" ", "_").replace("-", "_")
+    doc = await db.mira_imagines_cache.find_one({"pillar": pillar, "breed": breed_key}, {"_id": 0})
+    return {"url": doc.get("url") if doc else None, "pillar": pillar, "breed": breed_key}

@@ -31,6 +31,8 @@ import SoulMadeCollection from "../components/SoulMadeCollection";
 import ConciergeToast from "../components/common/ConciergeToast";
 import LearnNearMe from "../components/learn/LearnNearMe";
 import GuidedLearnPaths from "../components/learn/GuidedLearnPaths";
+import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
+import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import { API_URL } from "../utils/api";
 
 // ─── SOUL CHIP (hero chips — same as CareHero) ───────────────
@@ -83,9 +85,13 @@ function getHealth(pet) {
   const s = Array.isArray(raw) ? raw.join(", ") : String(raw);
   return s.toLowerCase()==="none"||s.trim()===""?null:s;
 }
-function getAge(pet)    { return parseInt(pet?.doggy_soul_answers?.age_years||"0")||0; }
-function isSenior(pet)  { return getAge(pet) >= 7; }
-function isPuppy(pet)   { return getAge(pet) <= 1; }
+function getAge(pet)    { 
+  const raw = pet?.doggy_soul_answers?.age_years ?? pet?.age ?? null;
+  if (raw === null || raw === undefined || raw === "" || raw === 0) return null;
+  return parseInt(raw) || null;
+}
+function isSenior(pet)  { const a = getAge(pet); return a !== null && a >= 7; }
+function isPuppy(pet)   { const a = getAge(pet); return a !== null && a <= 1; }
 function getEnergy(pet) { return pet?.doggy_soul_answers?.energy_level||null; }
 function isRescue(pet)  { return !!(pet?.doggy_soul_answers?.is_rescue||(""+pet?.origin).toLowerCase().includes("rescue")); }
 
@@ -212,16 +218,43 @@ const LEARN_QUESTIONS = [
 
 // ─── BREED LEARN TIPS ─────────────────────────────────────────
 const BREED_LEARN_TIPS = {
-  "labrador":       { style:"Food-motivated — fastest learner with treats", path:"Retrieval + obedience; eager to please any task", enrichment:"Needs mental challenges daily to prevent boredom destruction", watch:"Distracted by food; short focused sessions work best" },
-  "indie":          { style:"Independent thinker — best with patience and positive reinforcement", path:"Nose work and exploration; calm confident guidance", enrichment:"Natural foraging — snuffle mats and nose work ideal", watch:"Can be stubborn; never respond to harsh training" },
-  "golden retriever":{ style:"One of the most trainable breeds — loves learning", path:"Any method works; excellent at complex multi-step tasks", enrichment:"Advanced puzzles + trick chains; needs mental outlet", watch:"Matures slowly; keep sessions playful not serious" },
-  "german shepherd":{ style:"Highly intelligent — needs a job or becomes anxious", path:"Structured obedience, tracking, protection sport", enrichment:"Advanced puzzles + scent work + agility daily", watch:"Under-stimulation causes destructive behaviour; 2h+ mental work needed" },
-  "shih tzu":       { style:"Can be independent — patience and small treats work best", path:"Short 5-10 min sessions; very food-motivated", enrichment:"Indoor puzzle toys; not highly driven for active enrichment", watch:"Stubborn streak; quit if sessions too long or harsh" },
-  "poodle":         { style:"Exceptionally intelligent — learns complex tasks quickly", path:"Trick training, agility, advanced commands; learns very fast", enrichment:"Level 2-3 puzzles; mental challenge is essential", watch:"Gets bored with repetition; rotate exercises frequently" },
-  "beagle":         { style:"Scent-driven — nose overrides most training commands", path:"Scent work and nose work is the natural training path", enrichment:"Snuffle mats, nose work kits — 30+ min daily", watch:"Recall very difficult due to scent; always practise in enclosed area" },
-  "border collie":  { style:"Most intelligent breed — needs constant mental stimulation", path:"Agility, herding, complex command chains, advanced tricks", enrichment:"Level 3+ puzzles, nose work, agility every day", watch:"Without 2h+ mental work daily → anxiety, obsessive behaviour" },
-  "french bulldog": { style:"Moderate intelligence — learns basics quickly", path:"Short positive sessions; clicker training works well", enrichment:"Food puzzles + interactive toys; not highly active", watch:"Brachycephalic — no extended training in heat" },
-  "husky":          { style:"Intelligent but will test every boundary", path:"Challenging; high patience needed; never punish", enrichment:"Complex scent work, running with owner", watch:"Will ignore commands if uninterested; make training genuinely fun" },
+  "labrador":             { style:"Food-motivated — fastest learner with treats", path:"Retrieval + obedience; eager to please any task", enrichment:"Mental challenges daily to prevent boredom destruction", watch:"Distracted by food; short focused sessions work best" },
+  "labrador retriever":   { style:"Food-motivated — fastest learner with treats", path:"Retrieval + obedience; eager to please any task", enrichment:"Mental challenges daily to prevent boredom destruction", watch:"Distracted by food; short focused sessions work best" },
+  "indie":                { style:"Independent thinker — patience and positive reinforcement", path:"Nose work and exploration; calm confident guidance", enrichment:"Natural foraging — snuffle mats and nose work ideal", watch:"Can be stubborn; never respond to harsh training" },
+  "indian street dog":    { style:"Independent thinker — patience and positive reinforcement", path:"Nose work and exploration; calm confident guidance", enrichment:"Natural foraging — snuffle mats and nose work ideal", watch:"Can be stubborn; never respond to harsh training" },
+  "golden retriever":     { style:"One of the most trainable breeds — loves learning", path:"Any method works; excellent at complex multi-step tasks", enrichment:"Advanced puzzles + trick chains; needs mental outlet", watch:"Matures slowly; keep sessions playful not serious" },
+  "german shepherd":      { style:"Highly intelligent — needs a job or becomes anxious", path:"Structured obedience, tracking, protection sport", enrichment:"Advanced puzzles + scent work + agility daily", watch:"Under-stimulation causes destructive behaviour" },
+  "shih tzu":             { style:"Can be independent — patience and small treats work best", path:"Short 5-10 min sessions; very food-motivated", enrichment:"Indoor puzzle toys; not highly driven for active enrichment", watch:"Stubborn streak; quit if sessions too long" },
+  "poodle":               { style:"Exceptionally intelligent — learns complex tasks quickly", path:"Trick training, agility, advanced commands; learns very fast", enrichment:"Level 2-3 puzzles; mental challenge is essential", watch:"Gets bored with repetition; rotate exercises frequently" },
+  "beagle":               { style:"Scent-driven — nose overrides most training commands", path:"Scent work and nose work is the natural training path", enrichment:"Snuffle mats, nose work kits — 30+ min daily", watch:"Recall very difficult due to scent; always use enclosed area" },
+  "border collie":        { style:"Most intelligent breed — needs constant mental stimulation", path:"Agility, herding, complex command chains, advanced tricks", enrichment:"Level 3+ puzzles, nose work, agility every day", watch:"Without 2h+ mental work daily → anxiety, obsessive behaviour" },
+  "french bulldog":       { style:"Moderate intelligence — learns basics quickly", path:"Short positive sessions; clicker training works well", enrichment:"Food puzzles + interactive toys; not highly active", watch:"Brachycephalic — no extended training in heat" },
+  "husky":                { style:"Intelligent but will test every boundary", path:"Challenging; high patience needed; never punish", enrichment:"Complex scent work, running with owner", watch:"Will ignore commands if uninterested; make training genuinely fun" },
+  "rottweiler":           { style:"Confident and intelligent — needs clear leadership", path:"Obedience, impulse control, structured leadership programme", enrichment:"Nose work, advanced obedience, weight pull activities", watch:"Needs consistent, firm but positive handling" },
+  "boxer":                { style:"Playful and energetic — responds well to fun training", path:"Obedience through play; trick training keeps them engaged", enrichment:"Physical + mental combo — fetch + puzzles", watch:"Can be boisterous; impulse control is priority" },
+  "cocker spaniel":       { style:"Eager to please — gentle and responsive", path:"Basic obedience; responds to quiet, positive guidance", enrichment:"Nose work and gentle enrichment; very scent-driven", watch:"Can be sensitive; harsh corrections cause shutdown" },
+  "doberman":             { style:"Highly intelligent and alert — takes to training very quickly", path:"Advanced obedience, agility, protection sport", enrichment:"Complex nose work + agility + trick chains", watch:"Needs early socialisation; boredom leads to anxiety" },
+  "chihuahua":            { style:"Intelligent but can be wilful — small dog big personality", path:"Short 5-min sessions; high-value treats essential", enrichment:"Mini puzzles, lick mats, indoor nose work", watch:"Can develop fear-based behaviour; never force socialisation" },
+  "pug":                  { style:"Food-motivated but low endurance — make it fun and short", path:"Positive reinforcement with treats; basic obedience", enrichment:"Puzzle feeders and lick mats; no vigorous activity", watch:"Brachycephalic — monitor breathing during all activity" },
+  "maltese":              { style:"Smart and eager to please — learns quickly with praise", path:"Trick training and basic obedience; responds to voice + treats", enrichment:"Indoor puzzles and gentle enrichment", watch:"Can be anxious; calm training environment essential" },
+  "yorkshire terrier":    { style:"Alert and feisty — more capable than their size suggests", path:"Short consistent sessions; trick training works well", enrichment:"Puzzle toys and indoor nose work", watch:"Stubborn streak; patience and positive only" },
+  "dachshund":            { style:"Independent and persistent — was bred to think alone", path:"Short 5-10 min sessions; scent work natural for them", enrichment:"Snuffle mats + nose work + burrowing activities", watch:"Back problems — avoid high-jump tricks; recall challenging" },
+  "lhasa apso":           { style:"Independent and watchful — takes time to trust", path:"Patience-first; build trust before commands", enrichment:"Indoor puzzles; not highly active", watch:"Can be aloof; never force; let them come to you" },
+  "dalmatian":            { style:"High energy and intelligent — needs physical + mental", path:"Active obedience + agility; needs an outlet", enrichment:"Running + complex tasks + agility", watch:"Can be hyperactive; exercise BEFORE training sessions" },
+  "great dane":           { style:"Gentle giant — responds to calm, consistent guidance", path:"Basic obedience + impulse control; size management important", enrichment:"Slow-feeder puzzles + calm enrichment", watch:"Short sessions; joints vulnerable; no high-impact tricks" },
+  "american bully":       { style:"Eager to please — strong food drive makes training rewarding", path:"Positive reinforcement obedience; impulse control priority", enrichment:"Tug + food puzzles + structured play", watch:"Needs early socialisation with people and dogs" },
+  "jack russell":         { style:"High energy, quick learner — can be wilful without structure", path:"Fast-paced trick training + recall + agility", enrichment:"High-energy enrichment: agility, fetch, nose work", watch:"Boredom causes destruction; 30+ min mental work daily" },
+  "jack russell terrier": { style:"High energy, quick learner — can be wilful without structure", path:"Fast-paced trick training + recall + agility", enrichment:"High-energy enrichment: agility, fetch, nose work", watch:"Boredom causes destruction; 30+ min mental work daily" },
+  "cavalier":             { style:"Gentle and eager to please — responds beautifully to positive training", path:"Basic obedience and trick training; calm environment", enrichment:"Gentle enrichment + sniff walks + lick mats", watch:"Can be very sensitive; gentle approach always" },
+  "cavalier king charles":{ style:"Gentle and eager to please — responds beautifully to positive training", path:"Basic obedience and trick training; calm environment", enrichment:"Gentle enrichment + sniff walks + lick mats", watch:"Can be very sensitive; gentle approach always" },
+  "samoyed":              { style:"Friendly and intelligent — distracted by everything interesting", path:"Obedience + nose work + agility; keep varied", enrichment:"Scent games + pulling activities (if fit)", watch:"Easily distracted outdoors; indoor training first" },
+  "corgi":                { style:"Intelligent herder — learns quickly, has strong opinions", path:"Herding instinct outlets + advanced obedience + agility", enrichment:"High-energy mental tasks + nose work", watch:"Can be bossy; set clear boundaries early" },
+  "akita":                { style:"Independent and strong-willed — requires experienced handling", path:"Basic obedience + impulse control; respect-based training", enrichment:"Nose work and calm enrichment", watch:"Needs experienced handler; not for first-time owners" },
+  "shiba inu":            { style:"Cat-like independence — will only engage if they see value", path:"Short sessions; high-value reward; recall is challenging", enrichment:"Puzzle feeders + indoor nose work", watch:"Escape artists; never off-lead without recall mastered" },
+  "australian shepherd":  { style:"Highly intelligent working dog — needs purpose every day", path:"Agility, herding, advanced tricks, complex command chains", enrichment:"2h+ mental work minimum; level 3 puzzles", watch:"Without a job becomes anxious and destructive" },
+  "chow chow":            { style:"Aloof and independent — bonds strongly with family only", path:"Trust-building first; gentle consistent guidance", enrichment:"Calm indoor enrichment; not highly active", watch:"Can be aggressive with strangers; heavy socialisation needed" },
+  "pomeranian":           { style:"Alert and intelligent — bigger personality than body", path:"Trick training + basic obedience; thrives on praise", enrichment:"Indoor puzzles + trick chains", watch:"Barky if under-stimulated; nose work helps" },
+  "schnauzer":            { style:"Smart and spirited — responds well to consistent guidance", path:"Obedience + nose work + agility; versatile learner", enrichment:"Scent work + complex puzzles", watch:"Can be stubborn; clear leadership needed" },
 };
 
 // ─── LEARN PROFILE COMPONENT (collapsed bar → modal, matches Care's WellnessProfile) ──
@@ -776,7 +809,13 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
   const products    = activeTab==="All" ? intelligent : intelligent.filter(p=>p.sub_category===activeTab);
 
   // Services for this dim
-  const dimServices = services.filter(s => s.category===dim.id||(s.pillar==="learn"&&!s.category));
+  const dimServices = services.filter(s => {
+    if (s.dim === dim.id) return true;
+    if (s.category === DIM_ID_TO_CATEGORY[dim.id]) return true;
+    // Fallback: show untagged learn services only in foundations
+    if (!s.dim && !s.category && dim.id === "foundations") return true;
+    return false;
+  });
 
   // YouTube fetch — only when Videos tab is clicked
   const fetchVideos = useCallback(async () => {
@@ -1058,37 +1097,53 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
 }
 
 // ─── MIRA PICKS ───────────────────────────────────────────────
-// ─── MIRA LEARN IMAGINE CARD (Care-parity, violet palette) ─────────────────
+// ─── MIRA LEARN IMAGINE CARD (dark indigo + dynamic Cloudinary watercolour) ─
 function MiraLearnImagineCard({ item, pet, token }) {
-  const [state, setState] = useState("idle");
-  const petName = pet?.name || "your dog";
+  const [state,    setState]    = useState("idle");
+  const [imgUrl,   setImgUrl]   = useState(null);
+  const petName  = pet?.name || "your dog";
+  const breedKey = (pet?.breed||"indie").toLowerCase().replace(/\s+/g,"_").replace(/-/g,"_").replace(/\s*\(.*\)/,"");
+  const pillar   = "learn";
+
+  // Fetch cached watercolour from Cloudinary pipeline
+  useEffect(() => {
+    fetch(`${API_URL}/api/ai-images/pipeline/mira-imagines/${pillar}/${breedKey}`)
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{ if(d?.url) setImgUrl(d.url); })
+      .catch(()=>{});
+  }, [breedKey]);
+
   const send = async () => {
     setState("sending");
     try {
       const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
       await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        headers: { "Content-Type":"application/json", ...(token?{Authorization:`Bearer ${token}`}:{}) },
         body: JSON.stringify({
           parent_id: storedUser?.id || storedUser?.email || "guest",
           pet_id: pet?.id || "unknown",
           pillar: "learn",
           intent_primary: "mira_imagines_request",
           channel: "learn_mira_picks_imagines",
-          initial_message: { sender: "parent", text: `I'd love "${item.name}" for ${petName}. Mira imagined this — please help source it!` },
+          initial_message: { sender:"parent", text:`I'd love "${item.name}" for ${petName}. Mira imagined this — please help source it!` },
         }),
       });
     } catch {}
     setState("sent");
   };
+
   return (
     <div style={{ borderRadius:14, overflow:"hidden",
       background:"linear-gradient(135deg,#0A0A3C,#1A1363)", border:`1.5px solid rgba(124,58,237,0.30)`,
       display:"flex", flexDirection:"column", minHeight:220 }}>
-      <div style={{ position:"relative", height:110,
-        background:"linear-gradient(135deg,#1A1363,#2D1B69)",
-        display:"flex", alignItems:"center", justifyContent:"center" }}>
-        <span style={{ fontSize:40 }}>{item.emoji || "🎓"}</span>
+      <div style={{ position:"relative", height:130,
+        background: imgUrl ? "transparent" : "linear-gradient(135deg,#1A1363,#2D1B69)",
+        display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden" }}>
+        {imgUrl
+          ? <img src={imgUrl} alt={item.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}
+              onError={()=>setImgUrl(null)}/>
+          : <span style={{ fontSize:40 }}>{item.emoji || "🎓"}</span>}
         <div style={{ position:"absolute", top:8, left:8, background:G.violet, color:"#fff",
           fontSize:9, fontWeight:700, padding:"3px 8px", borderRadius:20 }}>Mira Imagines</div>
       </div>
@@ -1098,7 +1153,7 @@ function MiraLearnImagineCard({ item, pet, token }) {
       </div>
       <div style={{ padding:"0 12px 12px" }}>
         {state === "sent"
-          ? <div style={{ textAlign:"center", fontSize:11, fontWeight:700, color:G.light }}>✓ Sent to Concierge!</div>
+          ? <div style={{ fontSize:11, fontWeight:700, color:G.light }}>✓ Sent to Concierge!</div>
           : <button onClick={send} disabled={state==="sending"}
               style={{ width:"100%", background:`linear-gradient(135deg,${G.violet},${G.mid})`,
                 color:"#fff", border:"none", borderRadius:10, padding:"9px",
@@ -1111,11 +1166,13 @@ function MiraLearnImagineCard({ item, pet, token }) {
 }
 
 function MiraPicksSection({ pet }) {
-  const [picks, setPicks]   = useState([]);
-  const [picksLoading, setPicksLoading] = useState(true); // async — imagines show immediately
-  const [selectedPick, setSelectedPick] = useState(null);
+  const [picks,       setPicks]       = useState([]);
+  const [picksLoading,setPicksLoading]= useState(true);
+  const [selectedPick,setSelectedPick]= useState(null);
   const petName = pet?.name || "your dog";
   const { token } = useAuth();
+  const { note, orderCount, topInterest } = useMiraIntelligence(pet?.id, token);
+  const intelligenceSubtitle = getMiraIntelligenceSubtitle(petName, note, orderCount, topInterest);
 
   const miraImagines = (() => {
     const breedLabel  = pet?.breed ? pet.breed.split("(")[0].trim() : "";
@@ -1123,27 +1180,48 @@ function MiraPicksSection({ pet }) {
     const trainingTip = breedLabel ? `designed around ${breedLabel} learning style` : "personalised to their personality";
     return [
       { id:"learn-imagine-1", isImagined:true, emoji:"🎓",
-        name: `${petName}'s ${stage} Foundations Kit`,
-        description: `Everything ${petName} needs to begin — clicker, treat pouch, training log and guide, ${trainingTip}.` },
+        name:`${petName}'s ${stage} Foundations Kit`,
+        description:`Clicker, treat pouch, training log, and guide — ${trainingTip}.` },
       breedLabel
         ? { id:"learn-imagine-2", isImagined:true, emoji:"📚",
-            name: `${breedLabel} Learning Pack`,
-            description: `Breed-specific flashcards, care guide, and enrichment toys chosen because ${petName} is a ${breedLabel}.` }
+            name:`${breedLabel} Learning Pack`,
+            description:`Breed-specific flashcards, care guide, and enrichment toys for ${petName} the ${breedLabel}.` }
         : { id:"learn-imagine-2", isImagined:true, emoji:"📚",
-            name: `${petName}'s Brain Games Set`,
-            description: `Puzzle feeder, snuffle mat, and IQ toy — Mira imagines this as ${petName}'s weekly enrichment kit.` },
+            name:`${petName}'s Brain Games Set`,
+            description:`Puzzle feeder, snuffle mat, and IQ toy — Mira imagines ${petName}'s weekly enrichment kit.` },
       { id:"learn-imagine-3", isImagined:true, emoji:"🌟",
-        name: `${petName}'s Soul Learn Kit`,
+        name:`${petName}'s Soul Learn Kit`,
         description: breedLabel
           ? `${petName}'s training journal, treat jar, and ${breedLabel} breed guide — Mira's top soul-building picks.`
-          : `${petName}'s personal training journal, treat jar, and enrichment guide — soul-building essentials.` },
+          : `${petName}'s training journal, treat jar, and enrichment guide.` },
+      { id:"learn-imagine-4", isImagined:true, emoji:"🧠",
+        name:`${petName}'s Behaviour Bundle`,
+        description:`Calming treats, anxiety wrap, Mira's behaviour guide — ${breedLabel||petName}'s confidence toolkit.` },
+      { id:"learn-imagine-5", isImagined:true, emoji:"🧩",
+        name:`${petName}'s Mental Gym Box`,
+        description:`Snuffle mat, puzzle feeder, lick mat, and nose-work kit — 30 min of daily enrichment sorted.` },
+      { id:"learn-imagine-6", isImagined:true, emoji:"✨",
+        name:`${petName}'s Tricks & Fun Kit`,
+        description:`Target stick, agility cones, frisbee, and trick training cards — learning through play.` },
+      { id:"learn-imagine-7", isImagined:true, emoji: isPuppy(pet) ? "🐶" : isSenior(pet) ? "🐕" : "🏆",
+        name: isPuppy(pet) ? `${petName}'s Puppy Confidence Kit`
+          : isSenior(pet) ? `${petName}'s Senior Enrichment Pack`
+          : `${petName}'s Recall & Leash Mastery Set`,
+        description: isPuppy(pet)
+          ? `First-week essentials: crate liner, puppy journal, socialisation guide, and calming treats.`
+          : isSenior(pet) ? `Lick mat, gentle puzzle, senior dog guide, and joint-support treats for ${petName}.`
+          : `Long line, treat pouch, whistle, and recall training guide — the freedom to run safely.` },
+      { id:"learn-imagine-8", isImagined:true, emoji:"📋",
+        name:`Private Training Session for ${petName}`,
+        description:`Mira imagines a 1-on-1 session built around ${breedLabel||petName}'s exact level and learning style. Book via Concierge.` },
     ];
   })();
 
-  // Async picks — imagines show immediately, scored picks load in background
+  // Async picks — breed filters applied, refetch when pet OR breed changes
   useEffect(()=>{
     if(!pet?.id){ setPicksLoading(false); return; }
-    const breed = encodeURIComponent(pet?.breed?.toLowerCase().trim()||"");
+    setPicks([]); setPicksLoading(true); // reset on pet/breed switch
+    const breed = encodeURIComponent((pet?.breed||"").toLowerCase().trim()||"");
     Promise.all([
       fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=learn&limit=12&min_score=60&entity_type=product&breed=${breed}`).then(r=>r.ok?r.json():null),
       fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=learn&limit=6&min_score=60&entity_type=service`).then(r=>r.ok?r.json():null),
@@ -1159,72 +1237,67 @@ function MiraPicksSection({ pet }) {
       if(merged.length) setPicks(merged.slice(0,16));
       setPicksLoading(false);
     }).catch(()=>setPicksLoading(false));
-  },[pet?.id]);
+  },[pet?.id, pet?.breed]); // ← both in deps to fix race on pet switch
 
   return (
     <section style={{marginBottom:32}} data-testid="learn-mira-picks-section">
       <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:4}}>
         <h3 style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:G.darkText,margin:0,fontFamily:"Georgia,serif"}}>
-        Mira Imagines for <span style={{color:G.violet}}>{petName}</span>
+        Mira's Learn Picks for <span style={{color:G.violet}}>{petName}</span>
       </h3>
       <span style={{fontSize:11,background:`linear-gradient(135deg,${G.violet},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>
-        Pet Specific
+        AI Scored
       </span>
       </div>
-      <p style={{fontSize:12,color:"#888",marginBottom:16,lineHeight:1.5}}>
-        Mira imagined these for {petName} — tap to request. AI scored products load below as Mira matches them.
+      <p style={{fontSize:13,color:"#888",marginBottom:16,lineHeight:1.5}}>
+        {intelligenceSubtitle}
       </p>
-      {/* Imagines — always show immediately (optimistic UI, PET FIRST BREED NEXT) */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(190px,100%),1fr))",gap:12,marginBottom: picks.length>0 ? 20 : 0}}>
-        {miraImagines.map(item=>(
-          <MiraLearnImagineCard key={item.id} item={item} pet={pet} token={token}/>
-        ))}
-      </div>
 
-      {/* AI Scored picks — load in async, appear below imagines */}
-      {picks.length>0 && (
-        <>
-          <div style={{borderTop:`1px solid ${G.borderLight}`,paddingTop:14,marginBottom:12}}>
-            <p style={{fontSize:11,fontWeight:700,color:G.mutedText,textTransform:"uppercase",letterSpacing:"0.08em",margin:0}}>
-              Mira's AI Scored Picks for {petName}
-            </p>
-          </div>
-          <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}} className="learn-picks-scroll">
-            <style>{`.learn-picks-scroll::-webkit-scrollbar{height:4px}.learn-picks-scroll::-webkit-scrollbar-thumb{background:${G.violet}50;border-radius:4px}`}</style>
-            {picks.map((pick,i)=>{
-              const isService=pick.entity_type==="service";
-              const img=[pick.image_url,pick.image,...(pick.images||[])].find(u=>u&&u.startsWith("http"))||null;
-              const score=pick.mira_score||0;
-              const scoreColor=score>=80?"#16A34A":score>=70?G.violet:"#6B7280";
-              return (
-                <div key={pick.id||i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer",transition:"transform 0.15s,box-shadow 0.15s"}}
-                  onClick={()=>!isService&&setSelectedPick(pick)}
-                  onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px rgba(124,58,237,0.12)`;}}
-                  onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
-                  <div style={{width:"100%",height:130,background:G.cream,overflow:"hidden",position:"relative"}}>
-                    {img?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
-                        :<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${G.deep},${G.violet})`,color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,18)}</div>}
-                    <span style={{position:"absolute",top:7,left:7,fontSize:9,fontWeight:700,background:isService?G.mid:G.violet,color:"#fff",borderRadius:20,padding:"2px 7px"}}>{isService?"SERVICE":"PRODUCT"}</span>
-                  </div>
-                  <div style={{padding:"10px 11px 12px"}}>
-                    <div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||pick.entity_name||"—"}</div>
-                    <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:5}}>
-                      <div style={{flex:1,height:4,background:G.pale,borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:scoreColor,borderRadius:4}}/></div>
-                      <span style={{fontSize:10,fontWeight:800,color:scoreColor,minWidth:26}}>{score}</span>
-                    </div>
-                    {pick.mira_reason&&<p style={{fontSize:10,color:"#888",lineHeight:1.4,margin:0,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden",fontStyle:"italic"}}>{pick.mira_reason}</p>}
-                    <p style={{fontSize:9,color:isService?G.mid:G.violet,fontWeight:700,margin:"6px 0 0"}}>{isService?"Tap → Book via Concierge":"Tap → View & Add"}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </>
+      {/* 3 imagines as teaser when no picks yet — full 8 inside Mira's Picks pill */}
+      {!picksLoading && picks.length === 0 && (
+        <div style={{display:"flex",gap:12,overflowX:"auto",paddingBottom:8,scrollbarWidth:"none",marginBottom:8}}>
+          {miraImagines.slice(0,3).map(item=>(
+            <MiraImaginesCard key={item.id} item={item} pet={pet} token={token} pillar="learn"/>
+          ))}
+        </div>
       )}
-      {picksLoading && picks.length===0 && (
+      {picksLoading && (
         <div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 0",color:G.mutedText}}>
           <Loader2 size={14} style={{animation:"spin 1s linear infinite",color:G.violet}}/>
           <span style={{fontSize:12}}>Mira is scoring picks for {petName}…</span>
+        </div>
+      )}
+      {/* AI Scored picks — horizontal scroll */}
+      {!picksLoading && picks.length > 0 && (
+        <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}} className="learn-picks-scroll">
+          <style>{`.learn-picks-scroll::-webkit-scrollbar{height:4px}.learn-picks-scroll::-webkit-scrollbar-thumb{background:${G.violet}50;border-radius:4px}`}</style>
+          {picks.map((pick,i)=>{
+            const isService=pick.entity_type==="service";
+            const img=[pick.image_url,pick.image,...(pick.images||[])].find(u=>u&&u.startsWith("http"))||null;
+            const score=pick.mira_score||0;
+            const scoreColor=score>=80?"#16A34A":score>=70?G.violet:"#6B7280";
+            return (
+              <div key={pick.id||i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer",transition:"transform 0.15s,box-shadow 0.15s"}}
+                onClick={()=>!isService&&setSelectedPick(pick)}
+                onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px rgba(124,58,237,0.12)`;}}
+                onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
+                <div style={{width:"100%",height:130,background:G.cream,overflow:"hidden",position:"relative"}}>
+                  {img?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
+                      :<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${G.deep},${G.violet})`,color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,18)}</div>}
+                  <span style={{position:"absolute",top:7,left:7,fontSize:9,fontWeight:700,background:isService?G.mid:G.violet,color:"#fff",borderRadius:20,padding:"2px 7px"}}>{isService?"SERVICE":"PRODUCT"}</span>
+                </div>
+                <div style={{padding:"10px 11px 12px"}}>
+                  <div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||pick.entity_name||"—"}</div>
+                  <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:5}}>
+                    <div style={{flex:1,height:4,background:G.pale,borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:scoreColor,borderRadius:4}}/></div>
+                    <span style={{fontSize:10,fontWeight:800,color:scoreColor,minWidth:26}}>{score}</span>
+                  </div>
+                  {pick.mira_reason&&<p style={{fontSize:10,color:"#888",lineHeight:1.4,margin:0,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden",fontStyle:"italic"}}>{pick.mira_reason}</p>}
+                  <p style={{fontSize:9,color:isService?G.mid:G.violet,fontWeight:700,margin:"6px 0 0"}}>{isService?"Tap → Book via Concierge":"Tap → View & Add"}</p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
       {selectedPick && <ProductDetailModal product={selectedPick} pillar="learn" selectedPet={pet} onClose={()=>setSelectedPick(null)}/>}
@@ -1232,7 +1305,160 @@ function MiraPicksSection({ pet }) {
   );
 }
 
-// ─── SERVICE BOOKING COMPONENTS (from docx Section 1) ────────────────────────
+// ─── LEARN CONCIERGE MODAL (matches CareConciergeModal exactly) ──────────────
+const LEARN_OPTIONS = [
+  { id:'basic_training',   label:'Basic Training' },
+  { id:'behaviour',        label:'Behaviour & Impulse' },
+  { id:'breed_education',  label:'Breed Education' },
+  { id:'enrichment',       label:'Mental Enrichment' },
+  { id:'tricks',           label:'Tricks & Fun' },
+  { id:'recall_leash',     label:'Recall & Leash Mastery' },
+  { id:'puppy_foundations',label:'Puppy Foundations' },
+  { id:'senior_learning',  label:'Senior Learning' },
+  { id:'new_parent',       label:'New Pet Parent' },
+  { id:'rescue_rehome',    label:'Rescue & Rehome' },
+  { id:'just_because',     label:'Just because' },
+];
+
+function LearnConciergeModal({ isOpen, onClose, serviceType, petName, petId, token }) {
+  const [selected,    setSelected]    = useState(serviceType || '');
+  const [date,        setDate]        = useState('');
+  const [notSure,     setNotSure]     = useState(false);
+  const [notes,       setNotes]       = useState('');
+  const [submitting,  setSubmitting]  = useState(false);
+  const [submitted,   setSubmitted]   = useState(false);
+
+  useEffect(() => { if (isOpen) { setSelected(serviceType||''); setSubmitted(false); } }, [isOpen, serviceType]);
+
+  if (!isOpen) return null;
+  const name = petName || 'your dog';
+
+  const handleSubmit = async () => {
+    if (!selected || submitting) return;
+    setSubmitting(true);
+    try {
+      const storedUser = JSON.parse(localStorage.getItem('user')||'{}');
+      await fetch(`${API_URL}/api/concierge/learn-intake`, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', ...(token?{Authorization:`Bearer ${token}`}:{}) },
+        body: JSON.stringify({ petId, petName:name, occasion:selected, date:notSure?null:date||null, notes:notes.trim()||null, source:'learn_concierge_modal' }),
+      });
+    } catch(e) { console.error('[LearnConciergeModal]', e); }
+    setSubmitting(false);
+    setSubmitted(true);
+  };
+
+  const handleClose = () => { setSubmitted(false); setSelected(serviceType||''); setDate(''); setNotSure(false); setNotes(''); onClose(); };
+
+  return (
+    <div onClick={handleClose}
+      style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.50)', zIndex:10006,
+        display:'flex', alignItems:'center', justifyContent:'center', padding:16 }}>
+      <div onClick={e=>e.stopPropagation()}
+        style={{ background:'#fff', borderRadius:20, padding:32, maxWidth:480, width:'100%',
+          maxHeight:'90vh', overflowY:'auto', position:'relative' }}>
+
+        {submitted ? (
+          <div style={{ textAlign:'center', padding:'16px 0' }}>
+            <div style={{ width:64, height:64, borderRadius:'50%', background:'rgba(124,58,237,0.12)',
+              border:'2px solid rgba(124,58,237,0.30)', display:'flex', alignItems:'center',
+              justifyContent:'center', fontSize:28, margin:'0 auto 16px' }}>✦</div>
+            <h3 style={{ fontSize:18, fontWeight:800, color:G.deep, marginBottom:10 }}>
+              {name}'s learning plan is in good hands.
+            </h3>
+            <p style={{ fontSize:14, color:'#666', lineHeight:1.6, marginBottom:24 }}>
+              Your Concierge has everything they need.<br/>Expect a message within 48 hours. ✦
+            </p>
+            <button onClick={handleClose}
+              style={{ background:`linear-gradient(135deg,${G.violet},${G.mid})`,
+                color:'#fff', border:'none', borderRadius:12, padding:'12px 28px', fontSize:14, fontWeight:700, cursor:'pointer' }}>
+              Done
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* Close */}
+            <button onClick={handleClose}
+              style={{ position:'absolute', top:16, right:16, background:'none', border:'none',
+                cursor:'pointer', color:'#999', width:28, height:28, borderRadius:'50%',
+                display:'flex', alignItems:'center', justifyContent:'center', fontSize:18 }}>✕</button>
+
+            {/* Eyebrow */}
+            <div style={{ display:'inline-flex', alignItems:'center', gap:6,
+              background:'rgba(124,58,237,0.10)', border:'1px solid rgba(124,58,237,0.25)',
+              borderRadius:9999, padding:'4px 14px', marginBottom:20 }}>
+              <span style={{ fontSize:11, color:G.violet }}>★</span>
+              <span style={{ fontSize:11, fontWeight:600, color:G.violet, letterSpacing:'0.06em', textTransform:'uppercase' }}>
+                {name}'s Learn Concierge
+              </span>
+            </div>
+
+            {/* Title */}
+            <h2 style={{ fontSize:22, fontWeight:800, color:G.darkText, fontFamily:'Georgia,serif',
+              lineHeight:1.2, marginBottom:8 }}>
+              What should <span style={{ color:G.violet }}>{name}</span>'s learning experience feel like?
+            </h2>
+            <p style={{ fontSize:14, color:'#888', lineHeight:1.6, marginBottom:24 }}>
+              Three questions. Then your Concierge takes over.
+            </p>
+
+            {/* Q1: What are we planning? */}
+            <p style={{ fontSize:13, fontWeight:700, color:G.darkText, marginBottom:12 }}>What are we planning?</p>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:24 }}>
+              {LEARN_OPTIONS.map(opt=>(
+                <button key={opt.id} onClick={()=>setSelected(opt.id)}
+                  style={{ borderRadius:9999, padding:'8px 16px', fontSize:13, fontWeight:500,
+                    cursor:'pointer', transition:'all 0.15s',
+                    background: selected===opt.id ? G.pale : '#fff',
+                    border: `1.5px solid ${selected===opt.id ? G.violet : 'rgba(124,58,237,0.25)'}`,
+                    color: selected===opt.id ? G.violet : '#555' }}>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Q2: When? */}
+            <p style={{ fontSize:13, fontWeight:700, color:G.darkText, marginBottom:12 }}>When?</p>
+            <div style={{ display:'flex', gap:10, marginBottom:24 }}>
+              <input type="date" value={date} onChange={e=>{setDate(e.target.value);setNotSure(false);}}
+                disabled={notSure}
+                style={{ flex:1, border:'1.5px solid rgba(124,58,237,0.25)', borderRadius:12,
+                  padding:'12px 14px', fontSize:14, color:G.darkText, outline:'none',
+                  background:notSure?'#F5F5F5':'#fff' }}/>
+              <button onClick={()=>{setNotSure(n=>!n);setDate('');}}
+                style={{ borderRadius:12, padding:'12px 16px', fontSize:13, fontWeight:600,
+                  cursor:'pointer', transition:'all 0.15s', whiteSpace:'nowrap',
+                  background:notSure?G.pale:'#fff',
+                  border:`1.5px solid ${notSure?G.violet:'rgba(124,58,237,0.25)'}`,
+                  color:notSure?G.violet:'#555' }}>
+                Not sure yet
+              </button>
+            </div>
+
+            {/* Q3: Notes */}
+            <p style={{ fontSize:13, fontWeight:700, color:G.darkText, marginBottom:10 }}>
+              Anything about {name} we should know?
+            </p>
+            <textarea placeholder="Optional — allergies, fears, specific goals, trainer preferences…"
+              value={notes} onChange={e=>setNotes(e.target.value)}
+              style={{ width:'100%', border:'1.5px solid rgba(124,58,237,0.25)', borderRadius:12,
+                padding:'12px 14px', fontSize:13, color:G.darkText, outline:'none', resize:'none',
+                minHeight:80, marginBottom:24, boxSizing:'border-box' }}/>
+
+            {/* Submit */}
+            <button onClick={handleSubmit} disabled={!selected||submitting}
+              style={{ width:'100%', background: !selected?'#E0D8F0':`linear-gradient(135deg,${G.violet},${G.mid})`,
+                color: !selected?'#999':'#fff', border:'none', borderRadius:12, padding:'14px',
+                fontSize:15, fontWeight:800, cursor:!selected?'not-allowed':'pointer',
+                display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
+              {submitting ? 'Sending…' : `✦ Send to ${name}'s Concierge`}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
 function LearnBookingHeader({ service, step, totalSteps, pet, onClose }) {
   const accent = service.accentColor || G.violet;
   return (
@@ -1489,14 +1715,17 @@ const LearnSoulPage = () => {
   const [soulScore,   setSoulScore]   = useState(0);
   const [apiProducts, setApiProducts] = useState({});
   const [services,    setServices]    = useState([]);
-  const [activeBooking, setActiveBooking] = useState(null);
-  const [toastVisible,  setToastVisible]  = useState(false);
+  const [activeBooking,  setActiveBooking]  = useState(null);
+  const [conciergeOpen,  setConciergeOpen]  = useState(false);
+  const [conciergeType,  setConciergeType]  = useState('');
+  const [toastVisible,   setToastVisible]   = useState(false);
   const [toastSvc,    setToastSvc]    = useState("");
   const miraPicksRef = useRef(null);
 
   const handleBook = useCallback((svc) => {
     if (!svc) return;
-    setActiveBooking({ ...svc, accentColor: svc.accentColor || G.violet });
+    setConciergeType(svc.concierge_type || svc.id || svc.category || '');
+    setConciergeOpen(true);
   }, []);
 
   // Pre-fetch everything on page load
@@ -1813,7 +2042,7 @@ const LearnSoulPage = () => {
                           </span>
                           {svc.duration&&<span style={{fontSize:10,color:"#aaa",marginLeft:6}}>{svc.duration}</span>}
                         </div>
-                        <button onClick={()=>setActiveBooking(svc)}
+                        <button onClick={()=>handleBook(svc)}
                           style={{background:`linear-gradient(135deg,${accent},#3730A3)`,
                             color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",
                             fontSize:12,fontWeight:700,cursor:"pointer"}}>
@@ -1835,18 +2064,15 @@ const LearnSoulPage = () => {
           </div>
         )}
 
-        {/* ── SERVICE BOOKING MODAL ── */}
-        {activeBooking && (
-          <div onClick={()=>setActiveBooking(null)}
-            style={{position:"fixed",inset:0,zIndex:10005,background:"rgba(0,0,0,0.72)",
-              display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
-            <div onClick={e=>e.stopPropagation()}
-              style={{width:"min(480px,100%)",maxHeight:"88vh",borderRadius:20,background:"#fff",
-                boxShadow:"0 24px 80px rgba(0,0,0,0.45)",display:"flex",flexDirection:"column",overflow:"hidden"}}>
-              <LearnServiceFlow svc={activeBooking} pet={petData} onClose={()=>setActiveBooking(null)} token={token}/>
-            </div>
-          </div>
-        )}
+        {/* ── LEARN CONCIERGE MODAL (Care-parity) ── */}
+        <LearnConciergeModal
+          isOpen={conciergeOpen}
+          onClose={()=>setConciergeOpen(false)}
+          serviceType={conciergeType}
+          petName={petName}
+          petId={petData?.id}
+          token={token}
+        />
       </div>
     </PillarPageLayout>
     <ConciergeToast
