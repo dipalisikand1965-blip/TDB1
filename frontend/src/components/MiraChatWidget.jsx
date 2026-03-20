@@ -990,8 +990,81 @@ const MiraChatWidget = ({
         historyLength: historyMessages.length 
       });
       
-      // Mira chat — stream attempted async, direct fallback on failure
+      // ── Try streaming first, fall back to standard chat ──────────────
       clearTimeout(timeoutId);
+
+      let streamingWorked = false;
+
+      try {
+        const streamResponse = await fetch(`${getApiUrl()}/api/mira/os/stream`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` })
+          },
+          body: requestBodyStr,
+          signal: controller.signal,
+        });
+
+        if (streamResponse.ok && streamResponse.body) {
+          streamingWorked = true;
+          const reader = streamResponse.body.getReader();
+          const decoder = new TextDecoder();
+          let fullText = '';
+
+          // Add empty streaming message immediately
+          const streamMsgId = Date.now();
+          setMessages(prev => [...prev, {
+            id: streamMsgId,
+            role: 'assistant',
+            content: '',
+            streaming: true,
+            timestamp: new Date().toISOString(),
+          }]);
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value, { stream: true });
+            const lines = chunk.split('\n');
+
+            for (const line of lines) {
+              if (!line.startsWith('data: ')) continue;
+              const data = line.slice(6).trim();
+              if (data === '[DONE]') break;
+              try {
+                const parsed = JSON.parse(data);
+                const tok = parsed.text || parsed.delta || parsed.content || '';
+                if (!tok) continue;
+                fullText += tok;
+                setMessages(prev => prev.map(m =>
+                  m.id === streamMsgId ? { ...m, content: fullText } : m
+                ));
+              } catch {}
+            }
+          }
+
+          // Mark streaming complete
+          setMessages(prev => prev.map(m =>
+            m.id === streamMsgId ? { ...m, streaming: false, content: fullText } : m
+          ));
+
+          // ── ElevenLabs / TTS — speak the FULL completed text once ──
+          if (voiceEnabled && fullText) {
+            speakText(fullText);
+          }
+
+          // tdc.chat tracking
+          tdc.chat({ message: messageToSend, reply: fullText, pillar: pillar || 'mira_os', pet: selectedPet, channel: 'mira_chat_widget_stream' });
+
+          setIsSending(false);
+          return;
+        }
+      } catch (streamError) {
+        if (streamError.name === 'AbortError') throw streamError;
+        console.log('[Mira] Stream failed, falling back to standard chat:', streamError.message);
+      }
 
       // ── FALLBACK: standard non-streaming chat ─────────────────────────
       let response;
@@ -1060,7 +1133,7 @@ const MiraChatWidget = ({
               serviceType: action.action_type || pillar
             }]);
             
-            if (voiceEnabled) {
+            if (voiceEnabled && !streamingWorked) {
               speakText(data.response);
             }
             setIsSending(false);
@@ -1145,7 +1218,7 @@ const MiraChatWidget = ({
           }, 800);
         }
         
-        if (voiceEnabled) {
+        if (voiceEnabled && !streamingWorked) {
           speakText(data.response);
         }
       } else {

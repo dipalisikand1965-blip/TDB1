@@ -540,6 +540,7 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "id":            ticket_id,
         "ticket_id":     ticket_id,
         "type":          request.intent_primary or "service_booking",
+        "intent_primary": request.intent_primary or "service_booking",  # alias for my-requests tab filtering
         "category":      request.pillar,
         "sub_category":  service_name.lower().replace(" ","_"),
         "subject":       subject,
@@ -1017,20 +1018,34 @@ async def get_ticket(ticket_id: str):
 
 
 @service_desk_router.get("/tickets/by_parent/{parent_id}")
-async def get_tickets_by_parent(parent_id: str, limit: int = 20):
-    """Get all tickets for a parent, most recent first."""
+async def get_tickets_by_parent(parent_id: str, limit: int = 100):
+    """Get all tickets for a parent from service_desk_tickets, most recent first.
+    Matches on both id and email variants of parent_id."""
     db = get_db()
     if db is None:
         raise HTTPException(status_code=500, detail="Database not available")
-    
-    cursor = db.mira_conversations.find(
+
+    query = {"$or": [
         {"parent_id": parent_id},
-        {"_id": 0}
-    ).sort("updated_at", -1).limit(limit)
-    
+        {"parent_email": parent_id},
+        {"user_id": parent_id},
+    ]}
+
+    cursor = db.service_desk_tickets.find(
+        query, {"_id": 0}
+    ).sort("created_at", -1).limit(limit)
+
     tickets = await cursor.to_list(length=limit)
-    
-    return {"tickets": tickets, "total": len(tickets)}
+
+    # Sanitize ObjectId fields + normalize intent_primary (stored as "type" in older tickets)
+    clean = []
+    for t in tickets:
+        t.pop("_id", None)
+        if not t.get("intent_primary") and t.get("type"):
+            t["intent_primary"] = t["type"]
+        clean.append(t)
+
+    return {"tickets": clean, "total": len(clean)}
 
 
 @service_desk_router.get("/tickets/queue/{queue_name}")

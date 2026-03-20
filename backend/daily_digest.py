@@ -8,9 +8,6 @@ import os
 import asyncio
 from datetime import datetime, timedelta, timezone
 from pymongo import MongoClient
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -19,11 +16,9 @@ logger = logging.getLogger(__name__)
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
 DB_NAME   = os.environ.get("DB_NAME",   "pet-os-live-test_database")
 
-DIGEST_TO   = os.environ.get("DIGEST_EMAIL_TO",   "aditya@thedoggycompany.com")
-SMTP_HOST   = os.environ.get("SMTP_HOST",          "smtp.gmail.com")
-SMTP_PORT   = int(os.environ.get("SMTP_PORT",       "587"))
-SMTP_USER   = os.environ.get("SMTP_USER",          "")
-SMTP_PASS   = os.environ.get("SMTP_PASS",          "")
+DIGEST_TO      = os.environ.get("DIGEST_EMAIL_TO",   "aditya@thedoggycompany.com")
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+SENDER_EMAIL   = os.environ.get("SENDER_EMAIL",    "woof@thedoggycompany.com")
 
 
 def get_db():
@@ -83,6 +78,31 @@ def build_digest_html(stats: dict, top_tickets: list, today_str: str) -> str:
           <p style="color:#EF4444;font-weight:700;margin:0;">🚨 {stats['urgent']} URGENT ticket(s) require immediate attention</p>
         </div>"""
 
+    tickets_table = (
+        f'<table style="width:100%;border-collapse:collapse;">'
+        f'<thead><tr style="border-bottom:2px solid #334155;">'
+        f'<th style="padding:8px 4px;text-align:left;font-size:11px;color:#64748B;text-transform:uppercase;">Pillar</th>'
+        f'<th style="padding:8px 4px;text-align:left;font-size:11px;color:#64748B;text-transform:uppercase;">Pet</th>'
+        f'<th style="padding:8px 4px;text-align:left;font-size:11px;color:#64748B;text-transform:uppercase;">Request</th>'
+        f'<th style="padding:8px 4px;text-align:left;font-size:11px;color:#64748B;text-transform:uppercase;">Priority</th>'
+        f'<th style="padding:8px 4px;text-align:left;font-size:11px;color:#64748B;text-transform:uppercase;">Time</th>'
+        f'</tr></thead><tbody style="color:#E2E8F0;">{ticket_rows}</tbody></table>'
+        if top_tickets else '<p style="color:#64748B;font-size:13px;">No new tickets today.</p>'
+    )
+
+    kpi_row = "".join([
+        f'<div style="background:#1E293B;border:1px solid #334155;border-radius:16px;padding:20px;text-align:center;">'
+        f'<p style="color:{c};font-size:28px;font-weight:800;margin:0;">{stats.get(k,0)}</p>'
+        f'<p style="color:#64748B;font-size:11px;margin:4px 0 0;text-transform:uppercase;letter-spacing:1px;">{label}</p>'
+        f'</div>'
+        for k, label, c in [
+            ("new_tickets","New Tickets","#9333EA"),
+            ("urgent","Urgent","#EF4444"),
+            ("active_members","Active Members","#10B981"),
+            ("new_members_today","New Today","#3B82F6"),
+        ]
+    ])
+
     return f"""<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
@@ -100,16 +120,7 @@ def build_digest_html(stats: dict, top_tickets: list, today_str: str) -> str:
 
   <!-- KPI Row -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;">
-    {''.join([f"""
-    <div style="background:#1E293B;border:1px solid #334155;border-radius:16px;padding:20px;text-align:center;">
-      <p style="color:{c};font-size:28px;font-weight:800;margin:0;">{stats.get(k,0)}</p>
-      <p style="color:#64748B;font-size:11px;margin:4px 0 0;text-transform:uppercase;letter-spacing:1px;">{label}</p>
-    </div>""" for k,label,c in [
-        ("new_tickets","New Tickets","#9333EA"),
-        ("urgent","Urgent","#EF4444"),
-        ("active_members","Active Members","#10B981"),
-        ("new_members_today","New Today","#3B82F6"),
-    ]])}
+    {kpi_row}
   </div>
 
   <!-- Pillar Breakdown -->
@@ -121,19 +132,7 @@ def build_digest_html(stats: dict, top_tickets: list, today_str: str) -> str:
   <!-- Top Tickets -->
   <div style="background:#1E293B;border:1px solid #334155;border-radius:16px;padding:24px;margin-bottom:24px;">
     <h2 style="color:#F8FAFC;font-size:16px;font-weight:700;margin:0 0 16px;">Today's Tickets</h2>
-    {"" if not top_tickets else f"""
-    <table style="width:100%;border-collapse:collapse;">
-      <thead>
-        <tr style="border-bottom:2px solid #334155;">
-          <th style="padding:8px 4px;text-align:left;font-size:11px;color:#64748B;text-transform:uppercase;">Pillar</th>
-          <th style="padding:8px 4px;text-align:left;font-size:11px;color:#64748B;text-transform:uppercase;">Pet</th>
-          <th style="padding:8px 4px;text-align:left;font-size:11px;color:#64748B;text-transform:uppercase;">Request</th>
-          <th style="padding:8px 4px;text-align:left;font-size:11px;color:#64748B;text-transform:uppercase;">Priority</th>
-          <th style="padding:8px 4px;text-align:left;font-size:11px;color:#64748B;text-transform:uppercase;">Time</th>
-        </tr>
-      </thead>
-      <tbody style="color:#E2E8F0;">{ticket_rows}</tbody>
-    </table>""" if top_tickets else '<p style="color:#64748B;font-size:13px;">No new tickets today.</p>'}
+    {tickets_table}
   </div>
 
   <!-- CTA -->
@@ -196,24 +195,23 @@ def run_digest(dry_run=False):
         logger.info(f"Dry run — saved to /tmp/digest_preview.html | stats={stats}")
         return stats
 
-    if not SMTP_USER or not SMTP_PASS:
-        logger.warning("SMTP_USER/SMTP_PASS not configured — skipping send. Set in backend/.env to enable.")
+    if not RESEND_API_KEY:
+        logger.warning("RESEND_API_KEY not configured — skipping email send. Set in backend/.env to enable.")
         logger.info(f"Digest stats: {stats}")
         return stats
 
-    # Send email
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"☀️ Morning Brief — {new_tickets} tickets, {urgent_tickets} urgent | {today_str}"
-    msg["From"]    = f"Mira OS <{SMTP_USER}>"
-    msg["To"]      = DIGEST_TO
-    msg.attach(MIMEText(html, "html"))
-
+    # Send via Resend
     try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
-            server.starttls()
-            server.login(SMTP_USER, SMTP_PASS)
-            server.sendmail(SMTP_USER, DIGEST_TO, msg.as_string())
-        logger.info(f"Digest sent to {DIGEST_TO} | {new_tickets} tickets")
+        import resend
+        resend.api_key = RESEND_API_KEY
+        subject = f"☀️ Morning Brief — {new_tickets} tickets, {urgent_tickets} urgent | {today_str}"
+        response = resend.Emails.send({
+            "from":    f"Mira OS <{SENDER_EMAIL}>",
+            "to":      [DIGEST_TO],
+            "subject": subject,
+            "html":    html,
+        })
+        logger.info(f"Digest sent via Resend to {DIGEST_TO} | id={response.get('id')} | {new_tickets} tickets")
     except Exception as e:
         logger.error(f"Digest send failed: {e}")
 

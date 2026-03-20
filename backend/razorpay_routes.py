@@ -45,14 +45,14 @@ MEMBERSHIP_PLANS = {
     },
     "essential_monthly": {
         "name": "Essential Monthly",
-        "amount": 24900,  # ₹249 in paise
+        "amount": 25000,  # ₹250 in paise
         "currency": "INR",
         "period": "monthly",
         "features": ["Mira full", "Mira OS", "Concierge chat", "Paw Points", "Health Vault"]
     },
     "essential_yearly": {
         "name": "Essential Yearly",
-        "amount": 249900,  # ₹2,499 in paise
+        "amount": 299900,  # ₹2,999 in paise
         "currency": "INR",
         "period": "yearly",
         "features": ["Mira full", "Mira OS", "Concierge chat", "Paw Points", "Health Vault"]
@@ -282,7 +282,9 @@ async def handle_webhook(request: Request):
             payment = payload.get("payload", {}).get("payment", {}).get("entity", {})
             order_id = payment.get("order_id")
             payment_id = payment.get("id")
-            
+            amount_paise = payment.get("amount", 0)
+            amount_rupees = amount_paise / 100
+
             # Update order status
             await db.payment_orders.update_one(
                 {"order_id": order_id},
@@ -294,6 +296,65 @@ async def handle_webhook(request: Request):
                     }
                 }
             )
+
+            # ── Notify admin + create ticket on successful payment ────────
+            try:
+                order = await db.payment_orders.find_one({"order_id": order_id})
+                if order:
+                    parent_id  = order.get("user_id") or order.get("parent_id") or order.get("email")
+                    pet_name   = order.get("pet_name", "")
+                    amount     = payment.get("amount", 0) / 100
+                    currency   = payment.get("currency", "INR")
+                    notes      = payment.get("notes", {})
+                    pet_id     = order.get("pet_id") or notes.get("pet_id")
+                    order_type = order.get("order_type", "product")
+                    item_name  = order.get("item_name") or order.get("plan_name") or "Order"
+
+                    subject = f"Payment confirmed: {item_name}"
+                    if pet_name: subject += f" for {pet_name}"
+
+                    msg = (f"Payment of ₹{amount:,.0f} confirmed via Razorpay.\n"
+                           f"Order ID: {order_id}\nPayment ID: {payment_id}\nItem: {item_name}\n")
+                    if pet_name: msg += f"Pet: {pet_name}\n"
+
+                    now = datetime.now(timezone.utc).isoformat()
+                    ticket_id = f"TDC-PAY-{int(datetime.now(timezone.utc).timestamp())}"
+
+                    ticket = {
+                        "ticket_id":     ticket_id,
+                        "parent_id":     parent_id,
+                        "pet_id":        pet_id,
+                        "pet_name":      pet_name,
+                        "pillar":        "membership" if order_type == "membership" else "shop",
+                        "intent_primary":"payment_confirmed",
+                        "channel":       "razorpay_webhook",
+                        "subject":       subject,
+                        "status":        "resolved",  # payment done = auto resolved
+                        "urgency":       "normal",
+                        "thread": [{"sender":"system","text":msg,"timestamp":now,"message_type":"payment_confirmation"}],
+                        "metadata": {"order_id":order_id,"payment_id":payment_id,"amount":amount,"currency":currency,"order_type":order_type},
+                        "created_at": now, "updated_at": now,
+                    }
+                    await db.service_desk_tickets.insert_one(ticket)
+
+                    # Admin bell
+                    await db.admin_notifications.insert_one({
+                        "type":"payment_confirmed","ticket_id":ticket_id,"subject":subject,
+                        "amount":amount,"parent_id":parent_id,"pet_name":pet_name,
+                        "order_type":order_type,"read":False,"created_at":now,
+                    })
+
+                    # Member notification
+                    if parent_id:
+                        await db.member_notifications.insert_one({
+                            "type":"payment_confirmed","parent_id":parent_id,"subject":subject,
+                            "message":f"Your payment of ₹{amount:,.0f} was confirmed. {item_name} is on its way!",
+                            "read":False,"created_at":now,
+                        })
+
+                    logger.info(f"[RAZORPAY] Payment ticket created: {ticket_id} — ₹{amount}")
+            except Exception as ticket_err:
+                logger.error(f"[RAZORPAY] Ticket creation failed: {ticket_err}")
             
         elif event == "payment.failed":
             payment = payload.get("payload", {}).get("payment", {}).get("entity", {})
@@ -302,14 +363,23 @@ async def handle_webhook(request: Request):
             
             await db.payment_orders.update_one(
                 {"order_id": order_id},
-                {
-                    "$set": {
-                        "status": "failed",
-                        "error": error,
-                        "failed_at": datetime.now(timezone.utc)
-                    }
-                }
+                {"$set": {"status": "failed", "error": error, "failed_at": datetime.now(timezone.utc)}}
             )
+
+            # Admin notification for failed payment
+            try:
+                order = await db.payment_orders.find_one({"order_id": order_id})
+                parent_id = (order or {}).get("user_id") or (order or {}).get("parent_id")
+                await db.admin_notifications.insert_one({
+                    "type": "payment_failed",
+                    "subject": f"Payment failed: {error}",
+                    "order_id": order_id,
+                    "parent_id": parent_id,
+                    "read": False,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                })
+            except Exception as e:
+                logger.error(f"[RAZORPAY] Failed notification error: {e}")
             
         return {"status": "processed"}
         

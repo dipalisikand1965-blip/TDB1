@@ -9,7 +9,7 @@ import { createPortal } from "react-dom";
 import { bookViaConcierge } from "../../utils/MiraCardActions";
 import { useAuth } from "../../context/AuthContext";
 
-const G = { deep:"#7B2D00", mid:"#7B3F00", green:"#E76F51", light:"#FFAD9B", pale:"#FFF0EA", cream:"#FFF8F5", darkText:"#7B2D00", mutedText:"#8B4513" };
+const G = { deep:"#7B2D00", mid:"#7B3F00", orange:"#E76F51", green:"#E76F51", light:"#FFAD9B", pale:"#FFF0EA", cream:"#FFF8F5", darkText:"#7B2D00", mutedText:"#8B4513" };
 
 const PLAY_OCCASIONS = [
   "Find a dog park nearby",
@@ -105,9 +105,26 @@ export default function PlayConciergeModal({ pet, service, token, onClose }) {
               placeholder={`Energy level, health conditions, favourite activities, location…`}
               style={{ width:"100%", border:"1.5px solid #E8E0D8", borderRadius:10, padding:"12px 14px", fontSize:14, color:G.darkText, outline:"none", resize:"none", fontFamily:"inherit", lineHeight:1.6, marginBottom:24, boxSizing:"border-box" }} />
 
-            <button onClick={canSend&&!sending?handleSend:undefined}
-              style={{ width:"100%", background:canSend?`linear-gradient(135deg,${G.orange},${G.mid})`:"#E8E0D8", color:canSend?"#fff":"#999", border:"none", borderRadius:40, padding:"15px", fontSize:16, fontWeight:800, cursor:canSend&&!sending?"pointer":"not-allowed", marginBottom:10, opacity:sending?0.7:1 }}>
-              {sending?"Sending…":"Send to my Play Concierge →"}
+            <button
+              onClick={canSend && !sending ? handleSend : undefined}
+              data-testid="play-concierge-send-btn"
+              style={{
+                width: "100%",
+                background: canSend
+                  ? `linear-gradient(135deg,${G.orange},${G.mid})`
+                  : "#F0EBE5",
+                color: canSend ? "#fff" : "#B08060",
+                border: canSend ? "none" : `1.5px solid #E8D8C8`,
+                borderRadius: 40,
+                padding: "15px",
+                fontSize: 16,
+                fontWeight: 800,
+                cursor: canSend && !sending ? "pointer" : "not-allowed",
+                marginBottom: 10,
+                opacity: sending ? 0.7 : 1,
+                transition: "all 0.2s",
+              }}>
+              {sending ? "Sending…" : canSend ? "Send to my Play Concierge →" : "Select an activity above to continue →"}
             </button>
             <div style={{ fontSize:12, color:"#888", textAlign:"center" }}>
               We already have your contact details. Your Concierge will reach out — you don't need to chase.

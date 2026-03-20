@@ -6,6 +6,8 @@
  */
 
 import React, { useState } from 'react';
+import { tdc } from '../utils/tdc_intent';
+import { bookViaConcierge } from '../utils/MiraCardActions';
 import { X, Plus, Minus, ShoppingCart, Sparkles, Heart, Check, Star } from 'lucide-react';
 import { useResizeMobile } from '../../hooks/useResizeMobile';
 
@@ -92,6 +94,8 @@ const ProductDetailModal = ({
 
   const handleSendToConcierge = async () => {
     setIsAdding(true);
+    // ── tdc.book — canonical intent ──
+    tdc.book({ service: product?.name, pillar: product?.pillar || 'platform', channel: 'product_detail_modal' });
     
     const result = await sendToConcierge({
       requestType: product.category || 'service_request',

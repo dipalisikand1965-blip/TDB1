@@ -10,6 +10,7 @@ confirmed facts vs variable items.
 """
 
 from fastapi import APIRouter, HTTPException, Depends, Header, Request, Body, Query
+from fastapi.responses import StreamingResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
@@ -18680,6 +18681,104 @@ What would you prefer? 🐾"""
             "error": str(e),
             "end_state": "FAILED_VISIBLE_ERROR"  # Valid end state per Mira doctrine
         }
+
+
+
+@router.post("/os/stream")
+async def mira_chat_stream(request: Request, authorization: str = Header(None)):
+    """
+    Streaming Mira chat — SSE token by token.
+    Uses EMERGENT_LLM_KEY + litellm with stream=True.
+    X-Accel-Buffering: no = critical for nginx SSE.
+    """
+    import litellm, asyncio, json
+
+    # Parse body
+    try:
+        body = await request.json()
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid body")
+
+    message     = body.get("message", "")
+    pet_id      = body.get("pet_id")
+    pet_name    = body.get("pet_name", "your dog")
+    soul_answers = body.get("soul_answers", {})
+    history     = body.get("history", [])
+
+    if not message:
+        raise HTTPException(status_code=400, detail="Message required")
+
+    # EMERGENT_LLM_KEY — same pattern as /chat
+    api_key = os.environ.get("EMERGENT_LLM_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="LLM key not configured")
+
+    # Build pet context
+    pet_context = f"You are Mira, {pet_name}'s Soul Mate at The Doggy Company. Be warm, personal and specific. Always use their name."
+    if pet_id:
+        try:
+            db = get_db()
+            pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+            if pet:
+                soul = pet.get("doggy_soul_answers", {}) or soul_answers
+                allergies = soul.get("food_allergies", [])
+                allergy_str = ", ".join(a for a in allergies if a not in ["none","none known","no_allergies"]) or "none known"
+                pet_context = (
+                    f"You are Mira, {pet_name}'s Soul Mate at The Doggy Company.\n"
+                    f"About {pet_name}: Breed={pet.get('breed','unknown')}, "
+                    f"Soul score={pet.get('overall_score',0)}%, "
+                    f"Allergies={allergy_str} — NEVER suggest these.\n"
+                    f"Be warm, personal and specific. Always use {pet_name}'s name."
+                )
+        except Exception:
+            pass
+
+    # Build messages
+    messages = [{"role": "system", "content": pet_context}]
+    for h in history[-10:]:
+        role = h.get("role", "user")
+        content = h.get("content") or h.get("text", "")
+        if content and role in ["user", "assistant"]:
+            messages.append({"role": role, "content": content})
+    messages.append({"role": "user", "content": message})
+
+    async def generate():
+        try:
+            # Get full response via LlmChat (EMERGENT_LLM_KEY)
+            from emergentintegrations.llm.chat import LlmChat, UserMessage
+            chat = LlmChat(
+                api_key=api_key,
+                session_id=f"mira-stream-{pet_id or 'anon'}",
+                system_message=pet_context,
+            ).with_model("anthropic", "claude-sonnet-4-20250514")
+
+            full_response = await chat.send_message(UserMessage(text=message))
+
+            # Stream word-by-word for progressive display effect
+            words = full_response.split(" ")
+            for i, word in enumerate(words):
+                chunk = word + (" " if i < len(words) - 1 else "")
+                yield f"data: {json.dumps({'text': chunk})}\n\n"
+                await asyncio.sleep(0.03)  # ~33 words/sec — crisp and natural
+
+            yield "data: [DONE]\n\n"
+        except asyncio.CancelledError:
+            yield "data: [DONE]\n\n"
+        except Exception as e:
+            logger.error(f"[Mira Stream] Error: {e}")
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+            yield "data: [DONE]\n\n"
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control":      "no-cache",
+            "Connection":         "keep-alive",
+            "X-Accel-Buffering":  "no",
+        },
+    )
+
 
 @router.get("/ticket-session/{session_id}")
 async def get_mira_ticket_session(session_id: str):

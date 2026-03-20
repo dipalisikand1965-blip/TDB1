@@ -16,6 +16,8 @@
  */
 
 import React, { useState } from 'react';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
+import { tdc } from '../../utils/tdc_intent';
 import { X, Send, Users, Sparkles } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 
@@ -37,6 +39,9 @@ const QuickConciergeModal = ({
   const handleSendToConcierge = async () => {
     setSending(true);
     setError(null);
+    // ── tdc.book ──
+    tdc.book({ service: selectedService || message || "concierge request", pillar: "platform", channel: "quick_concierge_modal" });
+
 
     try {
       // Create service request via UNIFIED SERVICE FLOW

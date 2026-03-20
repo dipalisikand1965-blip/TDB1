@@ -2050,9 +2050,49 @@ async def lifespan(app: FastAPI):
         id="pet_wrapped_annual",
         replace_existing=True
     )
-    
+
+    # ── Daily Morning Digest — 8:00 AM IST = 2:30 AM UTC ──────────────────
+    def run_daily_digest():
+        try:
+            import sys
+            sys.path.insert(0, '/app/backend')
+            from daily_digest import run_digest
+            run_digest(dry_run=False)
+            logger.info("☀️ Daily digest sent successfully")
+        except Exception as e:
+            logger.error(f"Daily digest failed: {e}")
+
+    scheduler.add_job(
+        run_daily_digest,
+        CronTrigger(hour=2, minute=30, timezone="UTC"),  # 8:00 AM IST
+        id="daily_morning_digest",
+        replace_existing=True
+    )
+
+
+    # Daily Morning Digest - 8:00 AM IST = 2:30 AM UTC
+    def run_daily_digest():
+        try:
+            from daily_digest import run_digest
+            run_digest(dry_run=False)
+            logger.info("Daily digest sent")
+        except Exception as e:
+            logger.error(f"Daily digest failed: {e}")
+
+    scheduler.add_job(run_daily_digest, CronTrigger(hour=2, minute=30, timezone="UTC"), id="daily_morning_digest", replace_existing=True)
+
+
+    # Daily Digest 8AM IST
+    def _run_digest():
+        try:
+            from daily_digest import run_digest
+            run_digest(dry_run=False)
+        except Exception as e:
+            logger.error(f"Daily digest failed: {e}")
+    scheduler.add_job(_run_digest, CronTrigger(hour=2, minute=30, timezone="UTC"), id="daily_digest", replace_existing=True)
+
     scheduler.start()
-    logger.info("Schedulers started: celebration reminders, abandoned cart, feedback, daily reports, escalation checks (15 min), health reminders (daily 9 AM), Mira nudges (daily 10 AM), PET WRAPPED birthday (daily 9 AM), PET WRAPPED annual (Dec 10)")
+    logger.info("Schedulers started: celebration reminders, abandoned cart, feedback, daily reports, escalation checks (15 min), health reminders (daily 9 AM), Mira nudges (daily 10 AM), PET WRAPPED birthday (daily 9 AM), PET WRAPPED annual (Dec 10), DAILY DIGEST (8 AM IST)")
     
     yield
     
@@ -14055,26 +14095,21 @@ async def get_my_pets(current_user: dict = Depends(get_current_user)):
     pets_raw = await db.pets.find({"owner_email": current_user["email"]}, {"_id": 0}).to_list(50)
     pets = [sanitize_objectids(p) for p in pets_raw]
     
-    # Calculate overall_score using the same weighted scoring as /api/pet-score/{id}/score_state
-    # This ensures consistency across all frontend components
-    # IMPORTANT: Use the stored score if it's higher (conversation-based growth)
     for pet in pets:
-        # Get the stored overall_score (may have grown through conversations)
         stored_score = pet.get("overall_score", 0) or 0
-        
         answers = pet.get("doggy_soul_answers", {}) or pet.get("soul_answers", {})
-        if answers:
-            # Use the weighted scoring system (single source of truth)
+
+        # Fast path: use stored score if already calculated (skip CPU-intensive recalc)
+        if stored_score > 0:
+            pet["overall_score"] = stored_score
+            pet["score_tier"] = pet.get("score_tier", "explorer")
+        elif answers:
+            # Only recalculate if no stored score
             score_data = calculate_pet_soul_score(answers)
-            calculated_score = score_data["total_score"]
-            
-            # Use the HIGHER of stored vs calculated score
-            # This ensures conversation-based soul growth is reflected
-            pet["overall_score"] = max(stored_score, calculated_score)
+            pet["overall_score"] = score_data["total_score"]
             pet["score_tier"] = score_data["tier"]["key"] if score_data["tier"] else "newcomer"
         else:
-            # No answers yet, use stored score (from conversations) or 0
-            pet["overall_score"] = stored_score
+            pet["overall_score"] = 0
             pet["score_tier"] = "newcomer"
     
     return {"pets": pets}
@@ -14185,6 +14220,37 @@ async def get_pet_profile(pet_id: str):
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     return sanitize_objectids(pet)
+
+
+
+@api_router.get("/pets/{pet_id}/soul")
+async def get_pet_soul(pet_id: str):
+    """Get pet soul score, answers and chapter progress."""
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0,
+        "id": 1, "name": 1, "breed": 1, "overall_score": 1,
+        "doggy_soul_answers": 1, "doggy_soul_meta": 1})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    answers = pet.get("doggy_soul_answers") or {}
+    answered = len([v for v in answers.values() if v])
+    return {
+        "pet_id": pet_id,
+        "name": pet.get("name"),
+        "breed": pet.get("breed"),
+        "overall_score": pet.get("overall_score", 0),
+        "answered_count": answered,
+        "total_questions": 51,
+        "soul_percentage": min(round((answered / 51) * 100), 100),
+        "chapters": {
+            "identity":   len([k for k in answers if k.startswith("q1")]),
+            "behaviour":  len([k for k in answers if k.startswith("q2")]),
+            "health":     len([k for k in answers if k.startswith("q3")]),
+            "social":     len([k for k in answers if k.startswith("q4")]),
+            "nutrition":  len([k for k in answers if k.startswith("q5")]),
+            "learning":   len([k for k in answers if k.startswith("q6")]),
+        }
+    }
+
 
 
 @api_router.put("/pets/{pet_id}")
@@ -23769,13 +23835,4 @@ async def build_birthday_box(pet_id: str, payload: dict):
     slots, allergy_confirmed = payload.get("slots", []), payload.get("allergyConfirmed", False)
     allergies = pet.get("allergies", [])
     allergy1, allergy2 = pet.get("allergy1", ""), pet.get("allergy2", "")
-    all_allergies = [a for a in (allergies or []) + [allergy1, allergy2] if a]
-    
-    if all_allergies and not allergy_confirmed:
-        return {"success": False, "error": "allergy_confirmation_required", "message": f"Please confirm allergy safety for {pet.get('name')}. Known allergies: {', '.join(all_allergies)}"}
-    
-    box_order = {"id": f"bbox-{uuid.uuid4().hex[:8]}", "pet_id": pet_id, "pet_name": pet.get("name"), "slots": slots, "allergy_confirmed": allergy_confirmed, "allergies": all_allergies, "status": "pending", "created_at": get_utc_timestamp()}
-    await db.birthday_box_orders.insert_one(box_order)
-    logger.info(f"[BirthdayBox] Created box order {box_order['id']} for {pet.get('name')}")
-    return {"success": True, "orderId": box_order["id"], "message": f"Birthday box for {pet.get('name')} is ready!"}
-
+    all_allergies

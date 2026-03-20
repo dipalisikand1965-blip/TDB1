@@ -1,614 +1,407 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '../components/ui/button';
-import { 
-  Heart, Sparkles, PawPrint, Crown, ArrowRight,
-  Globe, Cake, Building2, Cpu, Users, Quote,
-  Calendar, Target, Shield
-} from 'lucide-react';
-import { motion } from 'framer-motion';
-import SEOHead from '../components/SEOHead';
+/**
+ * AboutPage.jsx — /about
+ * The Doggy Company
+ *
+ * The story. Mystique. Kouros. Dipali. Aditya.
+ * "We built this from grief, fuelled by love."
+ */
 
-// Brand images
-const BRAND_IMAGES = {
-  // Kouros - The beautiful BLACK dog with golden eyes - the soul behind The Doggy Company
-  kouros: 'https://customer-assets.emergentagent.com/job_b6abcc1b-6413-431e-bf32-8399a0ee6fd9/artifacts/cj78ybnk_image.png',
-  // Mystique - The Shih Tzu whose memory we honor
-  mystique: 'https://customer-assets.emergentagent.com/job_cd02345e-97d9-4ea2-a1d7-1a248ceced0d/artifacts/t980z9hw_image.png',
-  // Mira - The AI assistant
-  mira: 'https://customer-assets.emergentagent.com/job_2dad3d7e-c3ab-4896-a445-d39e2953ce1d/artifacts/hfy5z95e_Mira%20Aunty.png',
-  // Team/Legacy images
-  team: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/q0alj5za_dog-1194087_1920%20%281%29.jpg',
+import { useNavigate } from "react-router-dom";
+
+const FONTS = `@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');`;
+
+const C = {
+  night:"#0A0A0F",deep:"#0F0A1E",
+  amber:"#C9973A",amberL:"#E8B84B",
+  ivory:"#F5F0E8",ivoryD:"#D4C9B0",
+  muted:"rgba(245,240,232,0.55)",
+  border:"rgba(201,151,58,0.2)",
+  sage:"#40916C",
 };
 
-// Timeline data for the heritage journey
-const timelineData = [
-  {
-    year: '1998',
-    title: 'LesConcierges® Founded',
-    description: 'Dipali Sikand builds LesConcierges® — with Mrs. Mira Sikand as the quiet force behind the philosophy of care.',
-    icon: Crown,
-    color: 'from-indigo-500 to-blue-600'
-  },
-  {
-    year: '2008',
-    title: 'Club Concierge® Expands',
-    description: 'Dipali carries the legacy forward globally, serving over 1 million customers with premium Concierge® excellence.',
-    icon: Globe,
-    color: 'from-purple-500 to-indigo-600'
-  },
-  {
-    year: '2020',
-    title: 'The Doggy Bakery® Born',
-    description: 'Aditya launches handcrafted pet treats — celebrating pets like family, milestone by milestone. Grandma Mira\'s hands in the early work.',
-    icon: Cake,
-    color: 'from-amber-500 to-orange-600'
-  },
-  {
-    year: '2024',
-    title: '45,000+ Pets Celebrated',
-    description: 'The Doggy Bakery® becomes synonymous with celebrating pets across India — not just with products, but with meaning.',
-    icon: Heart,
-    color: 'from-pink-500 to-rose-600'
-  },
-  {
-    year: '2025',
-    title: 'The Doggy Company® Launches',
-    description: 'Three decades of Concierge® expertise and lived pet experience converge into India\'s first Pet Life Operating System.',
-    icon: Building2,
-    color: 'from-violet-500 to-purple-600'
-  },
-  {
-    year: '2025',
-    title: 'Pet Soul™ & Mira AI Go Live',
-    description: 'Dipali\'s concierge lineage meets pet parenting — with Mira\'s spirit inside it. Every recommendation remembered, not generated.',
-    icon: Cpu,
-    color: 'from-emerald-500 to-teal-600'
-  }
+const DOGS = [
+  "Meister","Mercury","Mynx","Mahi","Miracle",
+  "Mojo","Max","Mars","Moon","Mia","Magica","Maya",
 ];
 
-// Values
-const values = [
-  {
-    icon: Heart,
-    title: 'Love First',
-    description: 'Every decision starts with what\'s best for the pet. Not the business. Not the convenience. The pet.',
-    color: 'from-pink-500 to-rose-500'
-  },
-  {
-    icon: Shield,
-    title: 'Trust Always',
-    description: 'We handle your pet\'s care like they\'re our own. Because in many ways, they are.',
-    color: 'from-blue-500 to-cyan-500'
-  },
-  {
-    icon: Sparkles,
-    title: 'Magic in Details',
-    description: 'We remember the small things. The favorite treat. The quirky habit. The special date.',
-    color: 'from-purple-500 to-indigo-500'
-  },
-  {
-    icon: Users,
-    title: 'Human + AI',
-    description: 'Technology amplifies care, never replaces it. Real humans, real Concierges®, real love.',
-    color: 'from-green-500 to-emerald-500'
-  }
-];
+export default function AboutPage() {
+  const navigate = useNavigate();
 
-const AboutPage = () => {
   return (
-    <>
-      <SEOHead 
-        title="About Us - The Doggy Company | Our Story"
-        description="Meet the team behind India's first Pet Life Operating System. Born from concierge heritage and deep pet love."
-      />
-      
-      <div className="min-h-screen bg-gradient-to-b from-[#0f0720] via-[#1a0a2e] to-[#0f0720]">
-        {/* Navigation */}
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0f0720]/80 backdrop-blur-lg border-b border-white/5">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <Link to="/" className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                  <PawPrint className="w-5 h-5 text-white" />
+    <div style={{
+      background:C.night,color:C.ivory,
+      fontFamily:"DM Sans,sans-serif",minHeight:"100vh",
+    }}>
+      <style>{`${FONTS} *{box-sizing:border-box;margin:0;padding:0;}`}</style>
+
+      {/* Navbar */}
+      <nav style={{
+        padding:"16px clamp(20px,5vw,60px)",
+        display:"flex",alignItems:"center",justifyContent:"space-between",
+        borderBottom:`1px solid ${C.border}`,
+      }}>
+        <button onClick={()=>navigate("/")} style={{
+          background:"none",border:"none",cursor:"pointer",
+          fontFamily:"Cormorant Garamond,Georgia,serif",
+          fontSize:20,fontWeight:600,color:C.ivory,
+        }}>
+          The Doggy Company<span style={{color:C.amber}}>®</span>
+        </button>
+        <button onClick={()=>navigate("/join")} style={{
+          padding:"9px 22px",borderRadius:999,
+          border:`1px solid ${C.amber}`,
+          background:"transparent",color:C.amber,
+          fontSize:13,fontWeight:600,cursor:"pointer",
+        }}>
+          Join Now
+        </button>
+      </nav>
+
+      {/* Hero */}
+      <section style={{
+        padding:"100px clamp(20px,6vw,80px) 80px",
+        textAlign:"center",
+        background:`radial-gradient(ellipse at 50% 0%,#1A1040 0%,${C.night} 70%)`,
+      }}>
+        <div style={{
+          fontSize:11,fontWeight:600,color:C.amber,
+          letterSpacing:"0.14em",marginBottom:20,
+        }}>
+          OUR STORY
+        </div>
+        <h1 style={{
+          fontFamily:"Cormorant Garamond,Georgia,serif",
+          fontSize:"clamp(2.5rem,7vw,5.5rem)",
+          fontWeight:300,color:C.ivory,lineHeight:1.1,
+          marginBottom:24,
+        }}>
+          Built from grief.
+          <br/>
+          <em style={{color:C.amber}}>Fuelled by love.</em>
+        </h1>
+        <p style={{
+          fontSize:"clamp(15px,2.5vw,18px)",color:C.muted,
+          lineHeight:1.8,maxWidth:580,margin:"0 auto",fontWeight:300,
+        }}>
+          Every other pet company is built around human convenience.
+          We built around your dog's inner life.
+        </p>
+      </section>
+
+      {/* Mystique */}
+      <section style={{
+        padding:"80px clamp(20px,6vw,80px)",
+        borderTop:`1px solid ${C.border}`,
+        background:C.deep,
+      }}>
+        <div style={{maxWidth:780,margin:"0 auto"}}>
+          <div style={{
+            fontSize:11,fontWeight:600,color:C.amber,
+            letterSpacing:"0.14em",marginBottom:24,
+          }}>
+            IN LOVING MEMORY
+          </div>
+          <div style={{
+            display:"flex",gap:32,alignItems:"flex-start",
+            flexWrap:"wrap",
+          }}>
+            <div style={{
+              width:80,height:80,borderRadius:"50%",
+              background:"linear-gradient(135deg,#2D1B69,#4A2C8F)",
+              display:"flex",alignItems:"center",justifyContent:"center",
+              fontSize:36,flexShrink:0,
+            }}>
+              🌷
+            </div>
+            <div style={{flex:1,minWidth:260}}>
+              <h2 style={{
+                fontFamily:"Cormorant Garamond,Georgia,serif",
+                fontSize:"clamp(1.8rem,4vw,2.8rem)",
+                fontWeight:400,color:C.ivory,marginBottom:16,lineHeight:1.2,
+              }}>
+                Mystique
+              </h2>
+              <p style={{
+                fontSize:16,color:C.muted,lineHeight:1.8,
+                fontWeight:300,marginBottom:16,
+              }}>
+                She was a Shih Tzu. She was family. She left too soon.
+                And in leaving, she taught us what it truly means to know a dog —
+                not their breed, not their age, but their soul.
+              </p>
+              <p style={{
+                fontSize:16,color:C.muted,lineHeight:1.8,fontWeight:300,
+              }}>
+                The Doggy Company was built in her memory.
+                Her birthday — May 15th — lives in every order we process.
+                Every cake from The Doggy Bakery on her birthday
+                feeds a street animal through Streaties.
+              </p>
+              <div style={{
+                marginTop:20,padding:"14px 18px",
+                background:"rgba(201,151,58,0.08)",
+                border:`1px solid ${C.border}`,borderRadius:12,
+                fontSize:13,color:C.ivoryD,fontStyle:"italic",lineHeight:1.6,
+              }}>
+                "In loving memory of Kouros & Mystique —
+                They taught us that to know a pet is to know a soul."
+                <div style={{
+                  fontSize:11,color:C.amber,marginTop:8,fontStyle:"normal",
+                  fontWeight:600,letterSpacing:"0.08em",
+                }}>
+                  — THE LOGIN PAGE · EVERY PERSON SEES THIS FIRST
                 </div>
-                <span className="text-white font-bold text-lg">thedoggycompany</span>
-              </Link>
-              <div className="flex items-center gap-3">
-                <Link to="/login">
-                  <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10">
-                    Login
-                  </Button>
-                </Link>
-                <Link to="/join">
-                  <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
-                    Join Now
-                  </Button>
-                </Link>
               </div>
             </div>
           </div>
-        </nav>
+        </div>
+      </section>
 
-        {/* Hero Section */}
-        <section className="relative pt-32 pb-20 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl" />
-          
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-center"
-            >
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-6">
-                <Heart className="w-4 h-4 text-pink-400" />
-                <span className="text-white/70 text-sm">Our Story</span>
-              </div>
-              
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-                Born from{' '}
-                <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">
-                  Concierge® Heritage
-                </span>
-                <br />
-                Built with{' '}
-                <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-                  Pet Love
-                </span>
-              </h1>
-              
-              <p className="text-lg text-white/60 max-w-3xl mx-auto leading-relaxed">
-                We're not a pet startup that learned about service. We're a service family that fell in love with pets. 
-                Three decades of Concierge® excellence meets a lifetime of pet parenting — 
-                creating something the world hasn't seen before.
-              </p>
-            </motion.div>
+      {/* Kouros */}
+      <section style={{padding:"80px clamp(20px,6vw,80px)",maxWidth:780,margin:"0 auto"}}>
+        <div style={{
+          fontSize:11,fontWeight:600,color:C.amber,
+          letterSpacing:"0.14em",marginBottom:24,
+        }}>
+          THE BEGINNING
+        </div>
+        <div style={{
+          display:"flex",gap:32,alignItems:"flex-start",flexWrap:"wrap",
+        }}>
+          <div style={{
+            width:80,height:80,borderRadius:"50%",
+            background:"linear-gradient(135deg,#1B4332,#2D6A4F)",
+            display:"flex",alignItems:"center",justifyContent:"center",
+            fontSize:36,flexShrink:0,
+          }}>
+            🐾
           </div>
-        </section>
-
-        {/* The Origin Story */}
-        <section className="py-20 relative">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="grid lg:grid-cols-2 gap-12 items-center"
-            >
-              <div>
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/30 rounded-full mb-6">
-                  <Crown className="w-4 h-4 text-purple-400" />
-                  <span className="text-purple-300 text-sm">The Origin</span>
-                </div>
-                
-                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-                  Why We Built This
-                </h2>
-                
-                <div className="space-y-4 text-white/70 leading-relaxed">
-                  <p>
-                    It started with <strong className="text-white">Dipali Sikand</strong> — and the 
-                    concierge belief that real service means remembering, anticipating, and caring before being asked.
-                  </p>
-                  <p>
-                    Behind her was <strong className="text-amber-300">Mrs. Mira Sikand</strong>: 
-                    the spirit, the standard, and the quiet force that shaped how Dipali understood 
-                    what care really looks like in practice.
-                  </p>
-                  <p>
-                    <strong className="text-white">Dipali</strong> carried that legacy forward through 
-                    LesConcierges® and Club Concierge® — three decades of service excellence, serving millions, 
-                    with one non-negotiable principle: <em className="text-purple-300">every yes must feel personal.</em>
-                  </p>
-                  <p>
-                    <strong className="text-white">Aditya</strong> built The Doggy Bakery®, celebrating 
-                    45,000+ pets — not just baking treats, but baking meaning into milestones. 
-                    And yes, Grandma Mira's hands were in those early batches.
-                  </p>
-                  <p>
-                    When they looked at the pet industry, they saw what was missing: 
-                    <em className="text-purple-300"> a system that truly knows your pet</em>. 
-                    Not just sells to them. Knows them.
-                  </p>
-                  <p>
-                    That's why <strong className="text-white">The Doggy Company®</strong> was born — 
-                    to build a pet-first world where everything is personalised to the life you share: 
-                    what your dog eats, loves, needs, fears, enjoys, and is growing into.
-                  </p>
-                  <p className="text-white font-medium">
-                    And that's why we're building Mira AI — to bring concierge-grade memory and judgement 
-                    into pet parenting, so every recommendation feels like it came from someone who 
-                    genuinely understands your pet.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="relative">
-                <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur-lg opacity-30" />
-                {/* Kouros - The beautiful black dog who inspired it all */}
-                <div className="relative rounded-3xl border border-white/10 overflow-hidden">
-                  <img 
-                    src={BRAND_IMAGES.kouros} 
-                    alt="Kouros - Built for him, carried forward by Mystique" 
-                    className="w-full h-auto"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6">
-                    <p className="text-white font-semibold text-lg">Kouros</p>
-                    <p className="text-white/70 text-sm italic">"Built for him. Carried forward by Mystique."</p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+          <div style={{flex:1,minWidth:260}}>
+            <h2 style={{
+              fontFamily:"Cormorant Garamond,Georgia,serif",
+              fontSize:"clamp(1.8rem,4vw,2.8rem)",
+              fontWeight:400,color:C.ivory,marginBottom:16,lineHeight:1.2,
+            }}>
+              Kouros
+            </h2>
+            <p style={{
+              fontSize:16,color:C.muted,lineHeight:1.8,fontWeight:300,marginBottom:12,
+            }}>
+              A Newfoundland. Dipali's first own dog. The one who came home
+              the day she started working — and never left her side.
+              He raised Aditya with her.
+            </p>
+            <p style={{
+              fontSize:16,color:C.muted,lineHeight:1.8,fontWeight:300,
+            }}>
+              Kouros taught us that a dog isn't a pet.
+              A dog is a life lived alongside yours.
+              That's the philosophy behind everything we've built.
+            </p>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* THE PHILOSOPHY - The Heart of Everything */}
-        <section className="py-20 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0612] via-purple-950/20 to-[#0a0612]" />
-          
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center"
-            >
-              <span className="inline-block px-4 py-1 bg-amber-500/10 border border-amber-500/30 rounded-full text-amber-300 text-sm mb-6">
-                Our Philosophy
+      {/* Dipali */}
+      <section style={{
+        padding:"80px clamp(20px,6vw,80px)",
+        background:C.deep,
+        borderTop:`1px solid ${C.border}`,
+        borderBottom:`1px solid ${C.border}`,
+      }}>
+        <div style={{maxWidth:780,margin:"0 auto"}}>
+          <div style={{
+            fontSize:11,fontWeight:600,color:C.amber,
+            letterSpacing:"0.14em",marginBottom:24,
+          }}>
+            THE FOUNDER
+          </div>
+          <h2 style={{
+            fontFamily:"Cormorant Garamond,Georgia,serif",
+            fontSize:"clamp(1.8rem,4vw,2.8rem)",
+            fontWeight:400,color:C.ivory,marginBottom:20,lineHeight:1.2,
+          }}>
+            Dipali Sikand
+          </h2>
+          <p style={{
+            fontSize:16,color:C.muted,lineHeight:1.8,fontWeight:300,marginBottom:16,
+          }}>
+            Thirty years running Les Concierges® and Club Concierge® —
+            a luxury concierge service trusted by the world's most discerning clients.
+            Over 1,000 trained professionals. A philosophy built on knowing what
+            someone needs before they ask.
+          </p>
+          <p style={{
+            fontSize:16,color:C.muted,lineHeight:1.8,fontWeight:300,marginBottom:16,
+          }}>
+            She applied that same philosophy to dogs.
+            Because dogs deserve to be known the way the best hotels know their guests.
+            Not by breed. Not by age. By soul.
+          </p>
+          <p style={{
+            fontSize:16,color:C.muted,lineHeight:1.8,fontWeight:300,marginBottom:28,
+          }}>
+            Today she has twelve dogs — all starting with M.
+          </p>
+          <div style={{
+            display:"flex",flexWrap:"wrap",gap:8,
+          }}>
+            {DOGS.map(name => (
+              <span key={name} style={{
+                background:"rgba(201,151,58,0.1)",
+                border:`1px solid ${C.border}`,
+                borderRadius:999,padding:"4px 14px",
+                fontSize:13,fontWeight:500,color:C.amber,
+              }}>
+                {name}
               </span>
-              
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8">
-                A dog is not in your life.<br />
-                <span className="bg-gradient-to-r from-amber-300 via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                  You are in theirs.
-                </span>
-              </h2>
-              
-              <div className="space-y-6 text-white/70 leading-relaxed text-left">
-                <p className="text-lg">
-                  They don't experience ownership. They experience <em className="text-white">relationship</em>. 
-                  They experience being known — or not known. Being seen — or not seen. 
-                  Being loved with accuracy — or loved carelessly.
-                </p>
-                
-                <p>
-                  Every other pet company is built around the human's convenience. 
-                  What <em>you</em> want to buy. When <em>you</em> want to book. How <em>you</em> want to be served.
-                </p>
-                
-                <p className="text-white font-medium">
-                  We built something different. Something built around your dog's inner life. 
-                  What they prefer. What lights them up. What they have forgiven. 
-                  Who they <em>are</em> — not what breed they are.
-                </p>
-                
-                <div className="py-6 border-l-2 border-purple-500/50 pl-6 my-8 bg-white/5 rounded-r-lg">
-                  <p className="text-white/80 italic">
-                    "A dog cannot speak, but they can be known. Love without attention is just affection. 
-                    And they don't live long enough — so know them better, while you have them."
-                  </p>
-                </div>
-                
-                {/* Mystique Memorial */}
-                <div className="flex justify-center my-8">
-                  <div className="text-center">
-                    <div className="relative inline-block">
-                      <div className="absolute -inset-2 bg-gradient-to-tr from-amber-400/30 via-pink-500/20 to-purple-500/30 rounded-full blur-lg opacity-60" />
-                      <img 
-                        src={BRAND_IMAGES.mystique}
-                        alt="Mystique"
-                        className="relative w-24 h-24 rounded-full object-cover border-2 border-purple-500/30 shadow-xl"
-                      />
-                    </div>
-                    <p className="text-amber-300/70 text-xs mt-3">In loving memory of</p>
-                    <p className="text-white font-semibold bg-gradient-to-r from-amber-300 via-pink-400 to-purple-400 bg-clip-text text-transparent">Mystique</p>
-                    <p className="text-white/50 text-xs mt-1 italic">Her eyes held a universe of love</p>
-                  </div>
-                </div>
-                
-                <p className="text-center text-lg text-white">
-                  They can't tell you what they need.<br />
-                  <span className="text-purple-300">So we built something that remembers everything,</span><br />
-                  <span className="text-pink-300">so you can love them the way they deserve.</span>
-                </p>
-              </div>
-            </motion.div>
+            ))}
           </div>
-        </section>
+          <p style={{
+            fontSize:13,color:C.muted,marginTop:12,fontStyle:"italic",
+          }}>
+            Twelve reasons The Doggy Company exists.
+          </p>
+        </div>
+      </section>
 
-        {/* Timeline */}
-        <section className="py-20 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 to-pink-900/20" />
-          
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-16"
-            >
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-                Our Heritage Journey
-              </h2>
-              <p className="text-white/60 text-lg max-w-2xl mx-auto">
-                30 years of building relationships. Now, we're building them for pets.
-              </p>
-            </motion.div>
-            
-            <div className="relative">
-              {/* Timeline line */}
-              <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-purple-500 via-pink-500 to-indigo-500 hidden lg:block" />
-              
-              <div className="space-y-12">
-                {timelineData.map((item, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    className={`flex flex-col lg:flex-row items-center gap-8 ${
-                      index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'
-                    }`}
-                  >
-                    <div className={`flex-1 ${index % 2 === 0 ? 'lg:text-right' : 'lg:text-left'}`}>
-                      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
-                        <span className="text-sm text-purple-400 font-mono">{item.year}</span>
-                        <h3 className="text-xl font-semibold text-white mt-2 mb-2">{item.title}</h3>
-                        <p className="text-white/60 text-sm">{item.description}</p>
-                      </div>
-                    </div>
-                    
-                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center flex-shrink-0 shadow-lg`}>
-                      <item.icon className="w-8 h-8 text-white" />
-                    </div>
-                    
-                    <div className="flex-1 hidden lg:block" />
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+      {/* Aditya */}
+      <section style={{padding:"80px clamp(20px,6vw,80px)",maxWidth:780,margin:"0 auto"}}>
+        <div style={{
+          fontSize:11,fontWeight:600,color:C.amber,
+          letterSpacing:"0.14em",marginBottom:24,
+        }}>
+          THE CO-FOUNDER
+        </div>
+        <h2 style={{
+          fontFamily:"Cormorant Garamond,Georgia,serif",
+          fontSize:"clamp(1.8rem,4vw,2.8rem)",
+          fontWeight:400,color:C.ivory,marginBottom:16,lineHeight:1.2,
+        }}>
+          Aditya
+        </h2>
+        <p style={{
+          fontSize:16,color:C.muted,lineHeight:1.8,fontWeight:300,marginBottom:16,
+        }}>
+          Raised by Kouros. Grew up with dogs as family.
+          Built the technology that makes Mira possible — every API,
+          every soul question, every pillar page, every Concierge® connection.
+        </p>
+        <p style={{
+          fontSize:16,color:C.muted,lineHeight:1.8,fontWeight:300,
+        }}>
+          He also runs The Doggy Bakery — where his grandmother Mira's
+          handcrafted treat philosophy lives on in every peanut butter cake
+          and birthday hamper.
+        </p>
+      </section>
 
-        {/* Mira's Story */}
-        <section className="py-20 relative">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="order-2 lg:order-1"
-              >
-                <div className="relative flex justify-center">
-                  {/* Ethereal halo effect - outer glow */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-80 h-80 bg-gradient-to-r from-amber-400/40 via-purple-400/30 to-pink-400/40 rounded-full blur-3xl animate-pulse" />
-                  </div>
-                  {/* Secondary halo ring */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-72 h-72 bg-gradient-to-br from-amber-300/50 to-orange-400/30 rounded-full blur-2xl" />
-                  </div>
-                  {/* Inner warm glow */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-64 h-64 bg-amber-200/20 rounded-full blur-xl" />
-                  </div>
-                  
-                  {/* Photo with ethereal border */}
-                  <div className="relative">
-                    <div className="absolute -inset-2 bg-gradient-to-r from-amber-400 via-purple-300 to-pink-400 rounded-full blur opacity-60" />
-                    <div className="absolute -inset-1 bg-gradient-to-br from-amber-200/80 to-orange-300/60 rounded-full" />
-                    <img 
-                      src={BRAND_IMAGES.mira} 
-                      alt="Mrs. Mira Sikand - The Soul Behind Mira AI" 
-                      className="relative rounded-full w-64 h-64 object-cover border-4 border-amber-100/50 shadow-2xl"
-                      style={{
-                        filter: 'drop-shadow(0 0 30px rgba(251, 191, 36, 0.4)) drop-shadow(0 0 60px rgba(192, 132, 252, 0.2))'
-                      }}
-                    />
-                  </div>
-                  
-                  {/* Floating quote below */}
-                  <div className="absolute -bottom-8 left-4 right-4 bg-[#1a0a2e]/90 backdrop-blur-lg rounded-2xl p-4 border border-amber-400/30">
-                    <Quote className="w-6 h-6 text-amber-400 mb-2" />
-                    <p className="text-white/80 text-sm italic">
-                      "The quiet force. The spirit behind the service."
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="order-1 lg:order-2"
-              >
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/20 border border-amber-500/30 rounded-full mb-6">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                  <span className="text-amber-300 text-sm">The Soul Behind the Name</span>
-                </div>
-                
-                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-                  Who is Mira?
-                </h2>
-                
-                <div className="space-y-4 text-white/70 leading-relaxed">
-                  <p>
-                    Mira is <strong className="text-amber-300">Mrs. Mira Sikand</strong> — 
-                    <span className="text-white">Dipali's mother</span> and 
-                    <span className="text-pink-300"> Aditya and Diya's beloved grandmother</span>.
-                  </p>
-                  <p>
-                    She wasn't the headline. She was the <em className="text-purple-300">quiet force</em> — 
-                    the person whose instincts, standards, and way of looking after people shaped the kind 
-                    of service that became LesConcierges® and Club Concierge®.
-                  </p>
-                  <p>
-                    Long before search engines existed, she was a <em className="text-purple-300">living reference desk</em>: 
-                    an encyclopedia, a solutionist, and the warm force behind every "yes" the Concierge® team delivered.
-                    Her wisdom still guides every decision we make.
-                  </p>
-                  <p>
-                    At <strong className="text-pink-300">The Doggy Bakery®</strong>, Grandma Mira's hands were 
-                    right there in the early work — part of the care, the making, the doing. 
-                    This wasn't just inspiration in theory.
-                  </p>
-                  <p>
-                    That is why <strong className="text-white">Mira AI</strong> exists on The Doggy Company®: 
-                    <span className="text-white font-medium"> to bring Dipali's concierge lineage into pet parenting — 
-                    with Mira's spirit inside it — so every recommendation feels remembered, not generated.</span>
-                  </p>
-                  <p className="text-white font-medium border-l-4 border-amber-400 pl-4 mt-6">
-                    "Mira was the spirit. Dipali was the builder."
-                  </p>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
+      {/* Mira AI */}
+      <section style={{
+        padding:"60px clamp(20px,6vw,80px)",
+        background:C.deep,
+        borderTop:`1px solid ${C.border}`,
+        borderBottom:`1px solid ${C.border}`,
+        textAlign:"center",
+      }}>
+        <div style={{maxWidth:600,margin:"0 auto"}}>
+          <div style={{
+            width:56,height:56,borderRadius:"50%",
+            background:"linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)",
+            display:"flex",alignItems:"center",justifyContent:"center",
+            fontSize:24,color:"#fff",margin:"0 auto 20px",
+          }}>✦</div>
+          <h3 style={{
+            fontFamily:"Cormorant Garamond,Georgia,serif",
+            fontSize:"clamp(1.5rem,3vw,2.2rem)",
+            fontWeight:400,color:C.ivory,marginBottom:12,
+          }}>
+            Mira
+          </h3>
+          <p style={{
+            fontSize:15,color:C.muted,lineHeight:1.7,fontWeight:300,
+          }}>
+            Named after Aditya's grandmother — the woman whose hands made
+            the first treats, whose care philosophy lives in every recommendation
+            Mira makes today. The AI. The memory. The soul-keeper.
+          </p>
+        </div>
+      </section>
 
-        {/* Our Values */}
-        <section className="py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-16"
-            >
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-                What We Believe
-              </h2>
-              <p className="text-white/60 text-lg max-w-2xl mx-auto">
-                Four principles that guide every decision we make.
-              </p>
-            </motion.div>
-            
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {values.map((value, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="group"
-                >
-                  <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 h-full hover:border-white/20 transition-all duration-300">
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${value.color} flex items-center justify-center mb-4`}>
-                      <value.icon className="w-6 h-6 text-white" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-white mb-2">{value.title}</h3>
-                    <p className="text-white/60 text-sm leading-relaxed">{value.description}</p>
-                  </div>
-                </motion.div>
-              ))}
+      {/* Streaties + Hill of Flowers */}
+      <section style={{padding:"80px clamp(20px,6vw,80px)",maxWidth:780,margin:"0 auto"}}>
+        <div style={{
+          fontSize:11,fontWeight:600,color:C.sage,
+          letterSpacing:"0.14em",marginBottom:24,
+        }}>
+          GIVING BACK
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:24}}>
+          <div style={{
+            background:"rgba(64,145,108,0.08)",
+            border:"1px solid rgba(64,145,108,0.2)",
+            borderRadius:16,padding:"24px 20px",
+          }}>
+            <div style={{
+              fontSize:16,fontWeight:600,color:C.ivory,marginBottom:8,
+            }}>
+              🐾 Streaties
             </div>
+            <p style={{fontSize:14,color:C.muted,lineHeight:1.7}}>
+              10% of every The Doggy Bakery purchase feeds a street animal.
+              Your dog's joy feeds another dog's survival.
+            </p>
           </div>
-        </section>
+          <div style={{
+            background:"rgba(64,145,108,0.08)",
+            border:"1px solid rgba(64,145,108,0.2)",
+            borderRadius:16,padding:"24px 20px",
+          }}>
+            <div style={{
+              fontSize:16,fontWeight:600,color:C.ivory,marginBottom:8,
+            }}>
+              🌸 Hill of Flowers · Nilgiris
+            </div>
+            <p style={{fontSize:14,color:C.muted,lineHeight:1.7}}>
+              ₹100 plants one flower. Employs women as Flower Guardians in
+              Arakadu village, Nilgiris. Every purchase here helps build
+              a rabies-free district — one of India's most meaningful
+              animal welfare initiatives.
+            </p>
+          </div>
+        </div>
+      </section>
 
-        {/* CTA */}
-        <section className="py-20 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/50 to-pink-900/50" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/30 rounded-full blur-3xl" />
-          
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-                Ready to experience the difference?
-              </h2>
-              
-              <p className="text-white/60 text-lg mb-8 max-w-2xl mx-auto">
-                Join thousands of pet parents who've discovered what it means to have a true partner in pet care.
-              </p>
-              
-              <div className="flex flex-wrap justify-center gap-4">
-                <Link to="/join">
-                  <Button size="lg" className="bg-white text-purple-900 hover:bg-white/90 px-8 py-6 text-lg rounded-xl">
-                    Meet Mira® <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
-                </Link>
-                <Link to="/">
-                  <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-xl">
-                    Back to Home
-                  </Button>
-                </Link>
-              </div>
-            </motion.div>
-          </div>
-        </section>
+      {/* CTA */}
+      <section style={{
+        background:`linear-gradient(135deg,${C.deep},#0A1A12)`,
+        borderTop:`1px solid ${C.border}`,
+        padding:"80px clamp(20px,6vw,80px)",
+        textAlign:"center",
+      }}>
+        <h2 style={{
+          fontFamily:"Cormorant Garamond,Georgia,serif",
+          fontSize:"clamp(2rem,5vw,3.5rem)",
+          fontWeight:300,color:C.ivory,marginBottom:16,
+        }}>
+          Let Mira meet your dog.
+        </h2>
+        <p style={{
+          fontSize:15,color:C.muted,marginBottom:36,lineHeight:1.7,fontWeight:300,
+        }}>
+          This is what we built Mystique and Kouros for.
+        </p>
+        <button onClick={()=>navigate("/join")} style={{
+          padding:"16px 48px",borderRadius:999,border:"none",
+          background:`linear-gradient(135deg,${C.amber},${C.amberL})`,
+          color:C.night,fontSize:16,fontWeight:600,
+          cursor:"pointer",fontFamily:"DM Sans,sans-serif",
+          boxShadow:`0 8px 40px ${C.amber}40`,
+        }}>
+          I want to be part of this →
+        </button>
+      </section>
 
-        {/* Footer */}
-        <footer className="py-12 border-t border-white/5">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Navigation Links */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-              <div>
-                <h4 className="text-white font-semibold mb-4">Explore</h4>
-                <div className="space-y-2">
-                  <Link to="/" className="block text-white/50 hover:text-white transition-colors text-sm">Home</Link>
-                  <Link to="/join" className="block text-white/50 hover:text-white transition-colors text-sm">Join Mira®</Link>
-                  <Link to="/login" className="block text-white/50 hover:text-white transition-colors text-sm">Member Login</Link>
-                </div>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-4">Services</h4>
-                <div className="space-y-2">
-                  <Link to="/mira-os" className="block text-white/50 hover:text-white transition-colors text-sm">Meet Mira AI</Link>
-                  <Link to="/products" className="block text-white/50 hover:text-white transition-colors text-sm">Shop Products</Link>
-                  <Link to="/services" className="block text-white/50 hover:text-white transition-colors text-sm">Concierge® Services</Link>
-                </div>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-4">Heritage</h4>
-                <div className="space-y-2">
-                  <a href="https://thedoggybakery.com" target="_blank" rel="noopener noreferrer" className="block text-white/50 hover:text-white transition-colors text-sm">The Doggy Bakery®</a>
-                  <a href="https://clubconcierge.in" target="_blank" rel="noopener noreferrer" className="block text-white/50 hover:text-white transition-colors text-sm">Club Concierge®</a>
-                  <a href="https://lesconcierges.co.in" target="_blank" rel="noopener noreferrer" className="block text-white/50 hover:text-white transition-colors text-sm">LesConcierges®</a>
-                </div>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-4">Connect</h4>
-                <div className="space-y-2">
-                  <a href="mailto:hello@thedoggycompany.in" className="block text-white/50 hover:text-white transition-colors text-sm">hello@thedoggycompany.in</a>
-                  <a href="https://instagram.com/thedoggybakery" target="_blank" rel="noopener noreferrer" className="block text-white/50 hover:text-white transition-colors text-sm">Instagram</a>
-                  <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="block text-white/50 hover:text-white transition-colors text-sm">WhatsApp</a>
-                </div>
-              </div>
-            </div>
-            
-            {/* Bottom Bar */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-white/5">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                  <PawPrint className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-white font-bold">thedoggycompany</span>
-              </div>
-              
-              <div className="flex items-center gap-6 text-white/50 text-sm">
-                <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy</Link>
-                <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
-                <Link to="/about" className="hover:text-white transition-colors">About</Link>
-              </div>
-              
-              <p className="text-white/30 text-sm">
-                © 2025 The Doggy Company®. Made with <Heart className="w-4 h-4 inline text-pink-500" /> for pets everywhere.
-              </p>
-            </div>
-          </div>
-        </footer>
-      </div>
-    </>
+    </div>
   );
-};
-
-export default AboutPage;
+}

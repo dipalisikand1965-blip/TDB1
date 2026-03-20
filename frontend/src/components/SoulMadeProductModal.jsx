@@ -1,4 +1,5 @@
 /**
+import { tdc } from '../utils/tdc_intent';
  * SoulMadeProductModal.jsx
  * 
  * Product detail modal for Soul Made personalized products.
@@ -164,6 +165,8 @@ const SoulMadeProductModal = ({
       }
     };
 
+    // tdc.cart — soul product added to cart
+    tdc.cart({ product: cartItem, pillar: 'shop', channel: 'soul_made_product_modal', amount: cartItem.total_price });
     onAddToCart?.(cartItem);
     onClose();
   };

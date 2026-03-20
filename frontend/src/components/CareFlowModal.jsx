@@ -13,6 +13,8 @@
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { bookViaConcierge } from '../utils/MiraCardActions';
+import { tdc } from '../utils/tdc_intent';
 import { X, ChevronRight, ChevronLeft, Check, Loader2, Sparkles, AlertCircle, Info, Inbox } from 'lucide-react';
 import { Dialog, DialogContent } from './ui/dialog';
 import { Button } from './ui/button';
@@ -229,6 +231,9 @@ const CareFlowModal = ({
   
   // Submit
   const handleSubmit = async () => {
+    // ── tdc.book — canonical intent ticket ──
+    tdc.book({ service: service?.name || service?.type || 'a service', pillar: "care", pet, channel: "care_flow_modal" });
+
     setIsSubmitting(true);
     
     try {

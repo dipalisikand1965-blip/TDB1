@@ -11,6 +11,8 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
+import { tdc } from '../../utils/tdc_intent';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogTitle } from '../ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
@@ -487,6 +489,8 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
   
   // Handle "Send to Concierge" button - creates service desk ticket
   const handleSendToConcierge = async () => {
+    // ── tdc.book ──
+    tdc.book({ service: topic?.title || "learning session", pillar: "learn", channel: "learn_topic_modal" });
     try {
       await submitRequest({
         type: REQUEST_TYPES.HELP_REQUEST,
