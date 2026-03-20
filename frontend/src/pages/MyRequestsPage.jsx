@@ -206,7 +206,7 @@ function TicketCard({ ticket, onExpand, expanded }) {
             lineHeight: 1.4, marginBottom: 4,
             overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
           }}>
-            {ticket.thread?.[0]?.text || ticket.initial_message?.text || "Request received"}
+            {ticket.thread?.[0]?.text || ticket.initial_message?.text || ticket.subject || "Mira is on it →"}
           </div>
           {lastMsg && lastMsg !== ticket.thread?.[0] && !isBrowse && (
             <div style={{
@@ -231,17 +231,37 @@ function TicketCard({ ticket, onExpand, expanded }) {
         </div>
       </div>
 
-      {/* Expanded thread */}
-      {expanded && ticket.thread && ticket.thread.length > 0 && (
+      {/* Expanded thread — shows thread messages OR initial_message fallback */}
+      {expanded && (
         <div style={{
           borderTop: "1px solid var(--color-border-tertiary)",
           padding: "14px 16px",
           background: "var(--color-background-secondary)",
           maxHeight: 400, overflowY: "auto",
         }}>
-          {ticket.thread.map((msg, i) => (
-            <ThreadMessage key={i} msg={msg} pillarColour={meta.colour}/>
-          ))}
+          {ticket.thread && ticket.thread.length > 0
+            ? ticket.thread.map((msg, i) => (
+                <ThreadMessage key={i} msg={msg} pillarColour={meta.colour}/>
+              ))
+            : ticket.initial_message
+              ? <ThreadMessage msg={ticket.initial_message} pillarColour={meta.colour}/>
+              : <p style={{ fontSize:13, color:"var(--color-text-muted)", margin:0 }}>
+                  Mira has noted your {meta.label} request. Your concierge will follow up shortly.
+                </p>
+          }
+
+          {/* Mira briefing — show if present */}
+          {ticket.mira_briefing && (
+            <div style={{ marginTop:12, background:`${meta.colour}08`, borderRadius:10, padding:"10px 12px",
+                          border:`1px solid ${meta.colour}20` }}>
+              <p style={{ fontSize:11, fontWeight:700, color:meta.colour, margin:"0 0 6px", textTransform:"uppercase", letterSpacing:1 }}>
+                Mira's Briefing
+              </p>
+              <p style={{ fontSize:12, color:"var(--color-text-secondary)", margin:0, lineHeight:1.6 }}>
+                {ticket.mira_briefing}
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
