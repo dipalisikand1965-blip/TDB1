@@ -15,6 +15,20 @@ const NOTIFICATION_ICONS = {
   ticket: Ticket,
   system: AlertCircle,
   stock: AlertCircle,
+  // Canonical intent types from tdc_intent.js
+  new_ticket:         Ticket,
+  booking_intent:     Sparkles,
+  service_request:    Sparkles,
+  service_booking:    Sparkles,
+  product_interest:   ShoppingCart,
+  cart_intent:        ShoppingCart,
+  order_placed:       ShoppingCart,
+  payment_confirmed:  ShoppingCart,
+  mira_chat_intent:   MessageCircle,
+  emergency_alert:    Ambulance,
+  farewell_detected:  PawPrint,
+  guided_path_booking:GraduationCap,
+  imagine_interest:   Sparkles,
   // Pillar-specific icons
   concierge_request: Sparkles,
   travel: Plane,
@@ -45,6 +59,20 @@ const NOTIFICATION_COLORS = {
   ticket: 'bg-indigo-100 text-indigo-700',
   system: 'bg-red-100 text-red-700',
   stock: 'bg-amber-100 text-amber-700',
+  // Canonical intent types
+  new_ticket:         'bg-violet-100 text-violet-700',
+  booking_intent:     'bg-violet-100 text-violet-700',
+  service_request:    'bg-violet-100 text-violet-700',
+  service_booking:    'bg-violet-100 text-violet-700',
+  product_interest:   'bg-green-100 text-green-700',
+  cart_intent:        'bg-green-100 text-green-700',
+  order_placed:       'bg-green-100 text-green-700',
+  payment_confirmed:  'bg-emerald-100 text-emerald-700',
+  mira_chat_intent:   'bg-blue-100 text-blue-700',
+  emergency_alert:    'bg-red-100 text-red-700',
+  farewell_detected:  'bg-gray-100 text-gray-700',
+  guided_path_booking:'bg-indigo-100 text-indigo-700',
+  imagine_interest:   'bg-pink-100 text-pink-700',
   // Pillar-specific colors
   concierge_request: 'bg-violet-100 text-violet-700',
   travel: 'bg-violet-100 text-violet-700',
@@ -311,7 +339,7 @@ const NotificationBell = ({ credentials, onNavigate }) => {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
                               <p className={`text-sm ${!notification.read ? 'font-semibold' : ''}`}>
-                                {notification.title}
+                                {notification.subject || notification.title || `New ${notification.type || 'request'}`}
                               </p>
                               <div className="flex items-center gap-1 flex-shrink-0">
                                 {!notification.read && (
@@ -331,7 +359,9 @@ const NotificationBell = ({ credentials, onNavigate }) => {
                               </div>
                             </div>
                             <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">
-                              {notification.message}
+                              {notification.message || 
+                               (notification.pet_name ? `${notification.pet_name}'s parent — ${notification.pillar || 'request'}` : '') ||
+                               notification.details || ''}
                             </p>
                             <div className="flex items-center gap-2 mt-1">
                               <span className="text-xs text-gray-400">

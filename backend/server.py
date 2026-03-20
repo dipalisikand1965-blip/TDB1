@@ -17052,7 +17052,30 @@ async def get_admin_notifications(
     ]
     
     notifications = await db.admin_notifications.aggregate(pipeline).to_list(limit)
-    
+
+    # ── Normalize fields: ensure title + message always present ──────────
+    for n in notifications:
+        # title: use subject, title, or generate from type + pet_name
+        if not n.get("title"):
+            if n.get("subject"):
+                n["title"] = n["subject"]
+            else:
+                intent = (n.get("type") or "request").replace("_", " ").title()
+                pet = n.get("pet_name") or n.get("petName") or ""
+                n["title"] = f"{intent} — {pet}" if pet else intent
+        # message: use message, pet context, or fallback
+        if not n.get("message"):
+            pet = n.get("pet_name") or n.get("petName") or ""
+            pillar = n.get("pillar") or n.get("category") or ""
+            parent = n.get("parent_id") or n.get("parent_email") or ""
+            n["message"] = (
+                f"{pet}'s parent via {pillar}" if pet and pillar
+                else pet or parent or "New request received"
+            )
+        # type: fall back to intent_primary if type missing
+        if not n.get("type") and n.get("intent_primary"):
+            n["type"] = n["intent_primary"]
+
     # Get unread count
     unread_count = await db.admin_notifications.count_documents({"read": False})
     
