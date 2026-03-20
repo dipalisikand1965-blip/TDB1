@@ -17,12 +17,24 @@ import { createPortal } from 'react-dom';
 import { CELEBRATION_PATHS } from './celebrationPaths';
 import GuidedPathCard from './GuidedPathCard';
 import GuidedPathExpansion from './GuidedPathExpansion';
+import { tdc } from '../../utils/tdc_intent';
 
 const GuidedCelebrationPaths = ({ pet }) => {
   const [expandedId, setExpandedId] = useState(null);
 
-  const handleToggle = (pathId) => {
+  const handleToggle = (pathId, pathObj) => {
+    const isOpening = expandedId !== pathId;
     setExpandedId(prev => (prev === pathId ? null : pathId));
+    // Fire tdc only when OPENING a path
+    if (isOpening && pathObj) {
+      tdc.request({
+        text: `Started guided celebration path: ${pathObj.title || pathId}`,
+        name: pathObj.title || pathId,
+        pillar: "celebrate",
+        pet,
+        channel: "celebrate_guided_paths_start",
+      });
+    }
   };
 
   // Mobile floating close button — rendered via portal to ESCAPE parent CSS transforms
@@ -90,7 +102,7 @@ const GuidedCelebrationPaths = ({ pet }) => {
             key={path.id}
             path={path}
             isExpanded={expandedId === path.id}
-            onToggle={() => handleToggle(path.id)}
+            onToggle={() => handleToggle(path.id, path)}
             petName={pet?.name}
           />
         ))}

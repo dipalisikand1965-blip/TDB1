@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, RefreshCw, Truck, Gift, Info, Tag, ChevronRight, Sparkles, Package, MessageCircle, Clock, Heart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { Button } from './ui/button';
@@ -7,6 +7,116 @@ import { useNavigate } from 'react-router-dom';
 import { Badge } from './ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '../hooks/use-toast';
+import { usePillarContext } from '../context/PillarContext';
+import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../utils/api';
+import { tdc } from '../utils/tdc_intent';
+
+// ── Allergen keyword map ───────────────────────────────────────────────────
+const ALLERGEN_MAP = {
+  chicken:  ["chicken", "poultry"],
+  beef:     ["beef", "lamb", "mutton"],
+  grain:    ["wheat", "grain", "gluten", "flour"],
+  dairy:    ["milk", "dairy", "cheese", "yogurt", "curd"],
+  fish:     ["fish", "salmon", "tuna", "sardine"],
+  soy:      ["soy", "soya"],
+  eggs:     ["egg"],
+};
+
+// ── Smart cart recommendations fetch ────────────────────────────────────────
+async function fetchCartRecommendations(cartItems, selectedPet, token) {
+  if (!selectedPet?.id || cartItems.length === 0) return [];
+  const petId    = selectedPet.id || selectedPet._id;
+  const breed    = (selectedPet.breed || "").toLowerCase();
+  const soul     = selectedPet.doggy_soul_answers || {};
+  const allergies = soul.food_allergies || [];
+  const cartPillar = cartItems[0]?.pillar || "shop";
+
+  try {
+    const res = await fetch(
+      `${API_URL}/api/mira/claude-picks/${petId}?pillar=${cartPillar}&limit=8`,
+      { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    const picks = data.picks || data.products || [];
+
+    return picks.filter(product => {
+      // Rule 1 — breed match
+      const productBreed = (product.breed || "").toLowerCase();
+      const breedOk =
+        !productBreed ||
+        productBreed === "all" ||
+        productBreed === "none" ||
+        breed.includes(productBreed) ||
+        productBreed.includes(breed.split(" ")[0]);
+      if (!breedOk) return false;
+
+      // Rule 2 — allergen filter
+      const combined = `${product.name || ""} ${product.description || ""} ${product.category || ""}`.toLowerCase();
+      for (const allergy of allergies) {
+        if (!allergy || allergy === "none" || allergy === "none known") continue;
+        const keywords = ALLERGEN_MAP[allergy] || [allergy];
+        if (keywords.some(kw => combined.includes(kw))) return false;
+      }
+
+      // Rule 3 — not already in cart
+      if (cartItems.some(ci => (ci.id || ci._id) === (product.id || product._id))) return false;
+
+      return true;
+    }).slice(0, 4);
+  } catch {
+    return [];
+  }
+}
+
+// ── Cart Recommendation Card ────────────────────────────────────────────────
+function CartRecommendationCard({ product, pet, onAdd }) {
+  const [added, setAdded] = useState(false);
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", gap: 10,
+      padding: "8px 10px", borderRadius: 12,
+      border: "1px solid #F3E8FF", background: "#FDFAFF",
+    }}>
+      <div style={{
+        width: 44, height: 44, borderRadius: 10, overflow: "hidden", flexShrink: 0,
+        background: "#F3E8FF", display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        {product.image_url
+          ? <img src={product.image_url} alt={product.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
+          : <span style={{ fontSize: 20 }}>✦</span>}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "#1A1A2E", lineHeight: 1.3,
+          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{product.name}</div>
+        {product.mira_reason && (
+          <div style={{ fontSize: 10, color: "#7B5EA7", marginTop: 2, lineHeight: 1.3,
+            overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box",
+            WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+            {product.mira_reason}
+          </div>
+        )}
+        <div style={{ fontSize: 11, fontWeight: 800, color: "#9B59B6", marginTop: 2 }}>
+          ₹{product.price}
+        </div>
+      </div>
+      <button
+        onClick={() => { onAdd(product); setAdded(true); }}
+        disabled={added}
+        style={{
+          padding: "6px 12px", borderRadius: 20, border: "none", flexShrink: 0,
+          background: added ? "#E8F5E9" : "#9B59B6",
+          color: added ? "#16A34A" : "#fff",
+          fontSize: 11, fontWeight: 700, cursor: added ? "default" : "pointer",
+        }}
+        data-testid={`cart-rec-add-${product.id || product._id}`}
+      >
+        {added ? "✓" : "Add"}
+      </button>
+    </div>
+  );
+}
 
 const CartSidebar = () => {
   const { 
@@ -17,14 +127,27 @@ const CartSidebar = () => {
     isCartOpen, 
     setIsCartOpen, 
     autoshipSummary,
+    addToCart,
     // Concierge requests
     conciergeRequests,
     removeConciergeRequest,
     submitConciergeRequests
   } = useCart();
+  const { currentPet } = usePillarContext();
+  const { token } = useAuth();
   const navigate = useNavigate();
   const [removingItem, setRemovingItem] = useState(null);
   const [submittingConcierge, setSubmittingConcierge] = useState(false);
+  const [recommendations, setRecommendations] = useState([]);
+
+  // ── Fetch smart cart recommendations whenever pet or cart changes ──
+  useEffect(() => {
+    if (!currentPet?.id || cartItems.length === 0) {
+      setRecommendations([]);
+      return;
+    }
+    fetchCartRecommendations(cartItems, currentPet, token).then(setRecommendations);
+  }, [currentPet?.id, cartItems.length, token]);
 
   const handleCheckout = () => {
     setIsCartOpen(false);
@@ -372,6 +495,32 @@ const CartSidebar = () => {
               </AnimatePresence>
             </div>
               )}
+            </div>
+          )}
+
+          {/* ✦ Mira Also Recommends — breed-safe, allergen-filtered */}
+          {recommendations.length > 0 && cartItems.length > 0 && (
+            <div className="px-4 py-3 border-t border-purple-50" data-testid="cart-recommendations-section">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-4 h-4 text-purple-500" />
+                <span className="text-sm font-semibold text-purple-700">
+                  Mira also recommends for {currentPet?.name}
+                </span>
+                <span className="text-xs text-gray-400 ml-auto">AI Scored</span>
+              </div>
+              <div className="space-y-2">
+                {recommendations.map(rec => (
+                  <CartRecommendationCard
+                    key={rec.id || rec._id}
+                    product={rec}
+                    pet={currentPet}
+                    onAdd={(p) => {
+                      addToCart && addToCart(p);
+                      tdc.cart({ product: p, pillar: p.pillar || "shop", pet: currentPet, channel: "cart_recommendation", amount: p.price });
+                    }}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>
