@@ -1,4 +1,5 @@
 /**
+import { tdc } from '../utils/tdc_intent';
  * SoulMadeCollection.jsx
  * 
  * "SOUL MADE" - Fully personalized products driven by pet data
@@ -295,6 +296,7 @@ const SoulMadeProductCard = ({ product, petName, archetype, onViewDetails }) => 
         <button
           onClick={(e) => {
             e.stopPropagation(); // Prevent card click
+            tdc.view({ product, pillar: product?.pillar || 'shop', channel: 'soul_made_collection_card' });
             onViewDetails?.(product);
           }}
           className="w-full mt-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:from-purple-700 hover:to-pink-700 transition-all duration-200 flex items-center justify-center gap-2"

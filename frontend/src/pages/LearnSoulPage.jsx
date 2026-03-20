@@ -35,6 +35,7 @@ import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMi
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import { API_URL } from "../utils/api";
+import { MiraPicksSkeleton, ProductGridSkeleton } from "../components/common/ProductSkeleton";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 

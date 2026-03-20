@@ -703,8 +703,8 @@ const Navbar = () => {
             </div>
           </div>
           
-          {/* Mobile: Mira Search Bar Row (below main header) - HIDDEN on pillar pages per doctrine */}
-          {!isPillarPage && (
+          {/* Mobile: Mira Search Bar Row — HIDDEN everywhere (Mira orb handles this) */}
+          {false && !isPillarPage && (
             <div className="sm:hidden pb-3 relative z-10">
               <MiraSearchPanel 
                 variant="hero"
@@ -730,8 +730,8 @@ const Navbar = () => {
               </div>
             </Link>
 
-            {/* Mira-Powered Search Bar - Desktop - HIDDEN on pillar pages per doctrine */}
-            {!isPillarPage && (
+            {/* Mira-Powered Search Bar — HIDDEN everywhere (Mira orb handles this) */}
+            {false && !isPillarPage && (
               <div className="flex-1 max-w-xl">
                 <MiraSearchPanel 
                   variant="navbar"
@@ -1092,8 +1092,8 @@ const Navbar = () => {
               >
                 <Link
                   to={pillar.path}
-                  className={`flex items-center gap-1 px-3 py-2.5 transition-colors font-medium hover:bg-slate-700 hover:text-pink-400 ${
-                    isActive(pillar.path) ? 'bg-slate-700 text-pink-400' : ''
+                  className={`flex items-center gap-1 px-3 py-2.5 transition-colors font-medium hover:text-pink-400 ${
+                    isActive(pillar.path) ? 'text-pink-400 border-b-2 border-pink-400' : 'border-b-2 border-transparent'
                   }`}
                   data-testid={`nav-${pillar.id}`}
                 >

@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -118,8 +119,9 @@ const MiraPillarRecommendations = ({
             <p className="text-gray-500 text-sm">
               Add your pet's details for personalized recommendations
             </p>
-            <Button variant="outline" size="sm" className="mt-3">
-              Complete Profile
+            <Button variant="outline" size="sm" className="mt-3"
+              onClick={() => { const nav = document.createElement('a'); nav.href='/pet-home'; nav.click(); }}>
+              Complete Profile →
             </Button>
           </div>
         ) : (

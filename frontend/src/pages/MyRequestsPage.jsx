@@ -277,13 +277,17 @@ export default function MyRequestsPage() {
   const fetchTickets = useCallback(async () => {
     setLoading(true);
     try {
+      // Use user email or ID as parent_id — matches service_desk_tickets collection
+      const parentId = user?.id || user?.email || user?._id;
+      if (!parentId) { setError("Please log in to view your requests."); setLoading(false); return; }
+
       const res = await fetch(
-        `${API_URL}/api/tickets/my-tickets?limit=100`,
+        `${API_URL}/api/service_desk/tickets/by_parent/${encodeURIComponent(parentId)}?limit=100`,
         { headers: { "Authorization": `Bearer ${token}` } }
       );
       if (res.ok) {
         const data = await res.json();
-        setTickets(data.tickets || data.items || data || []);
+        setTickets(data.tickets || data.items || (Array.isArray(data) ? data : []) || []);
       } else {
         setError("Could not load your requests.");
       }
@@ -291,22 +295,26 @@ export default function MyRequestsPage() {
       setError("Could not load your requests.");
     }
     setLoading(false);
-  }, [token]);
+  }, [token, user]);
 
   const handleExpand = (ticketId) => {
     setExpandedId(prev => prev === ticketId ? null : ticketId);
   };
 
   // Filter by tab
-  const BROWSE_INTENTS = ["browse_intent","search_intent","nearme_search","product_interest","onboarding_progress"];
-  const BOOKING_INTENTS = ["service_booking","product_inquiry","mira_imagines_request"];
+  const BROWSE_INTENTS   = ["browse_intent","search_intent","nearme_search","product_interest","onboarding_progress"];
+  const BOOKING_INTENTS  = ["booking_intent","service_booking","service_request","product_order","guided_path_booking","imagine_intent","cart_intent","order_placed","farewell","farewell_detected"];
+  const MIRA_INTENTS     = ["mira_chat_intent","mira_os","mira_imagines"];
 
   const filtered = tickets.filter(t => {
-    if (search && !t.thread?.[0]?.text?.toLowerCase().includes(search.toLowerCase()) &&
-        !t.pillar?.toLowerCase().includes(search.toLowerCase())) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      const text = (t.thread?.[0]?.text || t.initial_message?.text || t.subject || "").toLowerCase();
+      if (!text.includes(q) && !(t.pillar||"").toLowerCase().includes(q) && !(t.pet_name||"").toLowerCase().includes(q)) return false;
+    }
     if (activeTab === "booking")  return BOOKING_INTENTS.includes(t.intent_primary);
     if (activeTab === "browse")   return BROWSE_INTENTS.includes(t.intent_primary);
-    if (activeTab === "mira")     return t.channel === "mira_os" || t.intent_primary === "mira_chat_intent";
+    if (activeTab === "mira")     return MIRA_INTENTS.includes(t.intent_primary) || t.channel?.includes("mira");
     if (activeTab === "resolved") return t.status === "resolved" || t.status === "closed";
     return true;
   });

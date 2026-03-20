@@ -24,6 +24,8 @@
  */
 
 import { useState } from "react";
+import { guidedPathComplete } from "../../utils/MiraCardActions";
+import { tdc } from "../../utils/tdc_intent";
 
 // ─────────────────────────────────────────────────────────────
 // HELPERS
@@ -714,7 +716,10 @@ export default function GuidedCarePaths({ pet }) {
             key={path.id}
             path={path}
             petName={petName}
-            onOpen={() => setActivePath(path.id)}
+            onOpen={() => {
+              tdc.request({ text: `Started guided care path: ${path.title}`, name: path.title, pillar: "care", pet, channel: "care_guided_paths_start" });
+              setActivePath(path.id);
+            }}
           />
         ))}
       </div>

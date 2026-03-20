@@ -29,6 +29,7 @@ import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
 import ConciergeToast from "../components/common/ConciergeToast";
+import ProductModal from "../components/common/ProductModal";
 import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
@@ -230,7 +231,7 @@ function BookingModal({ service, pet, user, onClose, onBooked }) {
 }
 
 // ── Service card ──────────────────────────────────────────────
-function ServiceCard({ service, groupColour, pet, onBook }) {
+function ServiceCard({ service, groupColour, pet, onBook, onView }) {
   const price = parseFloat(service.base_price || service.price || 0);
   const img   = service.watercolour_image || service.image_url || service.image || null;
 
@@ -270,10 +271,17 @@ function ServiceCard({ service, groupColour, pet, onBook }) {
           </div>
         )}
         <button onClick={() => onBook(service)}
+          data-testid={`service-card-book-${service._id || service.id}`}
           style={{ width:"100%", padding:"8px", borderRadius:10, fontSize:12, fontWeight:700,
                    background:`linear-gradient(135deg,${groupColour},${G.slate})`,
                    color:"#fff", border:"none", cursor:"pointer" }}>
           Book via Concierge →
+        </button>
+        <button onClick={() => onView && onView(service)}
+          style={{ width:"100%", padding:"6px", borderRadius:10, fontSize:11, fontWeight:500,
+                   background:"transparent", color:groupColour, border:`1px solid ${groupColour}40`,
+                   cursor:"pointer", marginTop:4 }}>
+          View details
         </button>
       </div>
     </div>
@@ -281,7 +289,7 @@ function ServiceCard({ service, groupColour, pet, onBook }) {
 }
 
 // ── Service Group ─────────────────────────────────────────────
-function ServiceGroup({ group, services, pet, onBook }) {
+function ServiceGroup({ group, services, pet, onBook, onView }) {
   const [expanded, setExpanded] = useState(false);
   const show = expanded ? services : services.slice(0, 4);
 
@@ -313,7 +321,7 @@ function ServiceGroup({ group, services, pet, onBook }) {
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(240px,100%),1fr))", gap:14 }}>
         {show.map((svc,i) => (
           <ServiceCard key={svc.id||svc._id||i} service={svc}
-            groupColour={group.colour} pet={pet} onBook={onBook}/>
+            groupColour={group.colour} pet={pet} onBook={onBook} onView={onView}/>
         ))}
       </div>
 
@@ -359,6 +367,7 @@ const ServicesSoulPage = () => {
   const [svcLoading,    setSvcLoading]    = useState(true);
   const [activeGroup,   setActiveGroup]   = useState(null);
   const [bookingService,setBookingService]= useState(null);
+  const [selectedItem,  setSelectedItem]  = useState(null); // ProductModal
   const [toastVisible,  setToastVisible]  = useState(false);
   const [toastSvc,      setToastSvc]      = useState("");
   const [search,        setSearch]        = useState("");
@@ -545,7 +554,10 @@ const ServicesSoulPage = () => {
         ) : (
           activeGroups.map(group => (
             <ServiceGroup key={group.id} group={group} services={group.services}
-              pet={petData} onBook={handleBook}/>
+              pet={petData} onBook={handleBook} onView={(svc) => {
+                tdc.view({ name: svc.name, pillar: svc.pillar || "services", pet: petData, channel: "services_card" });
+                setSelectedItem(svc);
+              }}/>
           ))
         )}
 
@@ -570,6 +582,18 @@ const ServicesSoulPage = () => {
           user={user}
           onClose={() => setBookingService(null)}
           onBooked={handleBooked}
+        />
+      )}
+
+      {/* Product detail modal — opens on "View details" tap */}
+      {selectedItem && (
+        <ProductModal
+          item={selectedItem}
+          pet={petData}
+          pillar={selectedItem?.pillar || "services"}
+          isService={true}
+          onClose={() => setSelectedItem(null)}
+          onBook={(svc) => { setSelectedItem(null); handleBook(svc); }}
         />
       )}
 

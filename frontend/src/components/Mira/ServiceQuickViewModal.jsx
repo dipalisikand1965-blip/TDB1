@@ -7,6 +7,8 @@
  */
 
 import React, { useState } from 'react';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
+import { tdc } from '../../utils/tdc_intent';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Clock, MapPin, Star, Check, Shield, Award, Users,
@@ -62,6 +64,9 @@ const ServiceQuickViewModal = ({
   const handleBook = async () => {
     hapticFeedback.success();
     setIsLoading(true);
+    // ── tdc.book ──
+    tdc.book({ service: service?.name, pillar: service?.pillar || "platform", channel: "service_quick_view_modal" });
+
     try {
       await onBook?.(service);
     } finally {

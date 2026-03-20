@@ -28,6 +28,7 @@ import ConciergeToast from "../components/common/ConciergeToast";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
+import { ProductGridSkeleton } from "../components/common/ProductSkeleton";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 
@@ -478,34 +479,54 @@ function BreedCollectionSection({ pet }) {
 
 // ── Full Shop Browse ──────────────────────────────────────────
 function ShopBrowseSection({ pet }) {
-  const [products, setProducts]   = useState([]);
-  const [loading,  setLoading]    = useState(true);
-  const [search,   setSearch]     = useState("");
+  const [products,     setProducts]     = useState([]);
+  const [loading,      setLoading]      = useState(true);
+  const [loadingMore,  setLoadingMore]  = useState(false);
+  const [search,       setSearch]       = useState("");
   const [pillarFilter, setPillarFilter] = useState("all");
+  const [page,         setPage]         = useState(0);
+  const [hasMore,      setHasMore]      = useState(true);
+  const LIMIT = 24;
 
   const PILLARS = [
-    { id:"all",       label:"Everything" },
-    { id:"shop",      label:"Shop" },
-    { id:"celebrate", label:"Celebrate" },
-    { id:"care",      label:"Care" },
-    { id:"play",      label:"Play" },
-    { id:"learn",     label:"Learn" },
+    { id:"all",       label:"Everything",  emoji:"🛍️" },
+    { id:"shop",      label:"Shop",        emoji:"🎁" },
+    { id:"celebrate", label:"Celebrate",   emoji:"🎂" },
+    { id:"care",      label:"Care",        emoji:"🌿" },
+    { id:"play",      label:"Play",        emoji:"🎾" },
+    { id:"learn",     label:"Learn",       emoji:"📚" },
+    { id:"dine",      label:"Dine",        emoji:"🍖" },
   ];
 
-  useEffect(() => {
-    const pillar = pillarFilter === "all" ? "shop" : pillarFilter;
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=${pillar}&limit=100`)
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        setProducts(data?.products || []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [pillarFilter]);
+  const fetchProducts = useCallback(async (pillar, pageNum, append = false) => {
+    if (!append) setLoading(true); else setLoadingMore(true);
+    try {
+      const pageNum1  = pageNum + 1; // endpoint uses 1-indexed page
+      const pillarParam = pillar === "all" ? "" : `&pillar=${pillar}`;
+      const breedParam  = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : "";
+      const searchParam = search.trim() ? `&search=${encodeURIComponent(search.trim())}` : "";
+      const url = `${API_URL}/api/admin/pillar-products?limit=${LIMIT}&page=${pageNum1}${pillarParam}${breedParam}${searchParam}&sort_by=mira_score`;
+      const res = await fetch(url, { headers: { Authorization: `Bearer ${localStorage.getItem("tdb_auth_token")||""}` } });
+      if (!res.ok) throw new Error("Failed");
+      const data = await res.json();
+      const newProducts = data?.products || [];
+      setProducts(prev => append ? [...prev, ...newProducts] : newProducts);
+      setHasMore(newProducts.length === LIMIT);
+      setPage(pageNum);
+    } catch { setProducts(prev => append ? prev : []); }
+    finally { setLoading(false); setLoadingMore(false); }
+  }, [pet?.breed, search]);
 
-  const filtered = search.trim()
-    ? products.filter(p => (p.name||"").toLowerCase().includes(search.toLowerCase()))
-    : products;
+  // Re-fetch when tab or pet changes
+  useEffect(() => {
+    setPage(0); setHasMore(true);
+    fetchProducts(pillarFilter, 0, false);
+  }, [pillarFilter, pet?.id]);
+
+  const handleTabChange = (id) => {
+    setPillarFilter(id);
+    setSearch("");
+  };
 
   return (
     <div>
@@ -513,45 +534,59 @@ function ShopBrowseSection({ pet }) {
       <div style={{ display:"flex", gap:10, marginBottom:14 }}>
         <input
           value={search} onChange={e => setSearch(e.target.value)}
+          onKeyDown={e => e.key==="Enter" && fetchProducts(pillarFilter, 0, false)}
           placeholder="Search products…"
           style={{ flex:1, padding:"10px 14px", borderRadius:10, fontSize:13, outline:"none",
                    border:`1.5px solid ${G.border}`, color:G.darkText, background:"#fff" }}/>
+        <button onClick={() => fetchProducts(pillarFilter, 0, false)}
+          style={{ padding:"10px 16px", borderRadius:10, background:G.gold, color:"#fff", border:"none", fontWeight:700, fontSize:13, cursor:"pointer" }}>
+          Search
+        </button>
       </div>
 
       {/* Pillar filters */}
       <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:16 }}>
         {PILLARS.map(p => (
-          <button key={p.id} onClick={() => setPillarFilter(p.id)}
+          <button key={p.id} onClick={() => handleTabChange(p.id)}
+            data-testid={`shop-tab-${p.id}`}
             style={{ padding:"5px 14px", borderRadius:20, fontSize:11, fontWeight:600,
                      border:`1px solid ${pillarFilter===p.id?G.gold:G.border}`,
                      background:pillarFilter===p.id?G.gold:G.pale,
                      color:pillarFilter===p.id?"#fff":G.mid, cursor:"pointer" }}>
-            {p.label}
+            {p.emoji} {p.label}
           </button>
         ))}
       </div>
 
       {loading ? (
-        <div style={{ textAlign:"center", padding:"32px 0", color:"#888" }}>
-          <div style={{ fontSize:28, marginBottom:8 }}>🛍️</div>Loading shop…
-        </div>
-      ) : filtered.length === 0 ? (
-        <div style={{ textAlign:"center", padding:"32px 0", color:"#888" }}>
-          No products found.
-        </div>
+        <ProductGridSkeleton count={12} />
+      ) : products.length === 0 ? (
+        <div style={{ textAlign:"center", padding:"32px 0", color:"#888" }}>No products found.</div>
       ) : (
         <>
           <div style={{ fontSize:12, color:"#888", marginBottom:12 }}>
-            {filtered.length} products
+            Showing {products.length} products{pillarFilter !== "all" ? ` in ${PILLARS.find(t=>t.id===pillarFilter)?.label}` : ""} · Sorted by Mira's score
           </div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(180px,100%),1fr))", gap:12 }}>
-            {filtered.slice(0,48).map(p => (
+            {products.map(p => (
               <div key={p.id||p._id}>
-                <SharedProductCard product={p} pillar="shop" selectedPet={pet}
+                <SharedProductCard product={p} pillar={p.pillar||"shop"} selectedPet={pet}
                   miraContext={{ includeText:"Add to Cart" }}/>
               </div>
             ))}
           </div>
+
+          {/* Load more */}
+          {hasMore && (
+            <div style={{ textAlign:"center", marginTop:24 }}>
+              <button onClick={() => fetchProducts(pillarFilter, page+1, true)}
+                disabled={loadingMore}
+                style={{ padding:"10px 32px", borderRadius:999, border:`1.5px solid ${G.gold}`,
+                         background:"#fff", color:G.gold, fontSize:14, fontWeight:600, cursor:"pointer" }}>
+                {loadingMore ? "Loading…" : "Load more →"}
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>

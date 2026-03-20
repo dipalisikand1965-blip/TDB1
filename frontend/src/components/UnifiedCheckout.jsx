@@ -446,6 +446,17 @@ const UnifiedCheckout = () => {
           ...data,
           gst_details: gstDetails
         });
+        // ── tdc.order() — fire order_placed ticket to admin inbox ──
+        try {
+          const { tdc } = await import('../utils/tdc_intent');
+          tdc.order({
+            items: cartItems,
+            total: cartItems.reduce((s, i) => s + (i.price || 0) * (i.quantity || 1), 0),
+            pillar: cartItems[0]?.pillar || 'shop',
+            pet: null,   // UnifiedCheckout doesn't have pet context — tdc will use stored user
+            channel: 'checkout',
+          });
+        } catch {}
         setOrderComplete(true);
         clearCart();
         toast({ title: 'Payment Successful!', description: `Order ${orderId} confirmed` });

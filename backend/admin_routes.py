@@ -1297,3 +1297,27 @@ async def export_database(request: Request):
     except Exception as e:
         logger.error(f"[DB Export] Failed: {e}")
         raise HTTPException(status_code=500, detail=f"Export failed: {str(e)}")
+
+
+
+
+@fulfilment_router.post("/send-digest")
+async def send_daily_digest(username: str = Depends(verify_admin)):
+    """Manually trigger the daily morning digest email."""
+    try:
+        from daily_digest import run_digest
+        stats = run_digest(dry_run=False)
+        return {"status": "sent", "stats": stats}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Digest failed: {str(e)}")
+
+
+@fulfilment_router.post("/send-digest/preview")
+async def preview_daily_digest(username: str = Depends(verify_admin)):
+    """Generate digest HTML preview."""
+    try:
+        from daily_digest import run_digest
+        stats = run_digest(dry_run=True)
+        return {"status": "preview_generated", "stats": stats}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Preview failed: {str(e)}")

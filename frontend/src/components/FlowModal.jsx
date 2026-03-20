@@ -19,6 +19,8 @@
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { bookViaConcierge } from '../utils/MiraCardActions';
+import { tdc } from '../utils/tdc_intent';
 import { useNavigate } from 'react-router-dom';
 import { X, ChevronRight, ChevronLeft, Check, AlertCircle, Loader2, Plus } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
@@ -459,6 +461,9 @@ const FlowModal = ({
   
   // Handle submit (ONLY creates ticket here)
   const handleSubmit = async () => {
+    // ── tdc.book — canonical intent ticket ──
+    tdc.book({ service: service?.name || service?.type || 'a service', pillar: "platform", pet, channel: "flow_modal" });
+
     if (!validateStep()) return;
     
     setIsSubmitting(true);

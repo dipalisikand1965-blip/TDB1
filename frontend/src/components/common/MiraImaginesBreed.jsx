@@ -597,7 +597,10 @@ export default function MiraImaginesBreed({
           </div>
         </div>
         <button
-          onClick={() => onConcierge?.({ type: "soul_profile", petName, pillar })}
+          onClick={() => {
+            // Navigate to Pet Home to complete soul profile
+            if (typeof window !== "undefined") window.location.href = "/pet-home";
+          }}
           style={{
             background: "rgba(255,255,255,0.15)",
             border: "1px solid rgba(255,255,255,0.25)",

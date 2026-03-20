@@ -369,7 +369,12 @@ const FarewellSoulPage = () => {
               {FAREWELL_SERVICES.map(svc=>{
                 const dbSvc = services.find(s=>s.name===svc.name||s.id===svc.id)||{};
                 const img = dbSvc.watercolor_image||dbSvc.image_url||null;
-                return(<div key={svc.id} style={{background:"#fff",borderRadius:16,border:`2px solid rgba(99,102,241,0.12)`,overflow:"hidden",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${svc.accentColor}20`;}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
+                return(<div key={svc.id}
+                  onClick={()=>{
+                    tdc.track("farewell", { service: svc.name, text: svc.name, pillar: "farewell", pet: petData, channel: "farewell_pillar", urgency: "high", amount: svc.price });
+                    setConciergeSvc(svc.name); setConciergeOpen(true);
+                  }}
+                  style={{background:"#fff",borderRadius:16,border:`2px solid rgba(99,102,241,0.12)`,overflow:"hidden",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${svc.accentColor}20`;}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
                 <div style={{height:120,background:`linear-gradient(135deg,${G.pale},${G.cream})`,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
                   {img
                     ? <img src={img} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
