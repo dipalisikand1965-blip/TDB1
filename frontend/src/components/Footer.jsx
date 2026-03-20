@@ -141,6 +141,7 @@ const Footer = () => {
                     🔄 Autoship &amp; Save
                   </Link>
                   <Link to="/about" className="text-sm py-2 block hover:text-pink-400 transition-colors">About Us</Link>
+                  <Link to="/my-requests" className="text-sm py-2 block hover:text-pink-400 transition-colors">📋 My Requests</Link>
                   <Link to="/faqs" className="text-sm py-2 block hover:text-pink-400 transition-colors">FAQs</Link>
                 </div>
               )}
@@ -330,6 +331,7 @@ const Footer = () => {
                   >
                     ▶️ How Pet Soul™ Works
                   </button>
+                  <Link to="/my-requests" className="hover:text-pink-400 transition-colors">📋 My Requests</Link>
                 </li>
                 <li><Link to="/autoship" className="hover:text-blue-400 transition-colors">🔄 Autoship &amp; Save</Link></li>
                 <li><Link to="/about" className="hover:text-pink-400 transition-colors">About Us</Link></li>

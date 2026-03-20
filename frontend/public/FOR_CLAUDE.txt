@@ -1,79 +1,17 @@
-THE DOGGY COMPANY — SYSTEM CONTEXT FOR CLAUDE
-==============================================
-Preview: https://care-soul-fixes.preview.emergentagent.com
-Test login: dipali@clubconcierge.in / test123
-Admin: aditya / lola4304
-DB: MongoDB pet-os-live-test_database
-Stack: React 18 + FastAPI + MongoDB + Cloudinary
 
-PILLARS (14 total):
-✅ Care (/care) — 364 products, 27 services — sage green
-✅ Dine (/dine) — 433 products, 22 services — amber  
-✅ Go (/go) — 50 products, 22 services — teal
-✅ Play (/play) — 171 products, 28 services — red-orange
-✅ Learn (/learn) — 274 products, 33 services — indigo
-✅ Paperwork (/paperwork + /advisory) — 235 products, 35 services — slate+teal
-✅ Emergency (/emergency) — 279 products, 27 services — crimson red
-✅ Adopt (/adopt) — 147 products, 23 services — mauve
-✅ Farewell (/farewell) — 275 products, 22 services — midnight indigo
-🔴 Celebrate (/celebrate) — 2,058 products (Shopify: thedoggybakery.com)
-🔴 Shop (/shop) — 3,027 products — needs building
-🔴 Stay (/stay) — 4,700 products — needs building
-🔴 Services (/services) — needs building
-🔴 Love — future
+ADMIN GUIDE (membership, rewards, all admin tabs):
+/app/memory/ADMIN_GUIDE.md
 
-ARCHITECTURE STANDARD (every pillar must have):
-1. Centered hero: pet avatar + % badge + h1 clamp(1.875rem,4vw,2.5rem) + chips + Mira quote + chevron
-2. Category strip: 82×72px icon+label pills → ContentModal
-3. Tab bar: Products | Book a Session | Find [Pillar]  
-4. Soul profile: collapsed bar → dark modal, ✕ close, questions
-5. MiraPicksSection: 3 MiraImaginesCard (instant) + AI scored picks (async)
-6. Breed filter: filterBreedProducts() on ALL API picks — PET FIRST, BREED NEXT
-7. useMiraIntelligence hook in MiraPicksSection
-8. Concierge Modal: chip selector + date + notes + ConciergeToast
-9. Guided Paths: 3-col PathCard → step modal → service desk ticket
-10. All service cards: watercolour image + concierge modal on Book →
+MEMBERSHIP PLANS:
+Free: 5 chats/day | Monthly ₹99 | Annual ₹999 | Premium ₹1,999 | VIP ₹4,999 (incl. 18% GST)
 
-KEY FILES:
-- /app/frontend/src/pages/*SoulPage.jsx — pillar pages
-- /app/frontend/src/components/common/MiraImaginesCard.jsx — shared imagines card
-- /app/frontend/src/hooks/useMiraIntelligence.js — intelligence hook
-- /app/frontend/src/components/common/ConciergeToast.jsx — toast (register pillar colours here)
-- /app/memory/PILLAR_ARCHITECTURE_STANDARD.md — 13-point checklist
-- /app/backend/mira_service_desk.py — ticket/inbox system
-- /app/backend/ai_image_service.py — Cloudinary pipeline
+PAW POINTS TIERS: Bronze(0+) Silver(500+) Gold(1500+) Platinum(5000+)
+Earn: orders, soul questions, referrals, streaks
+Redeem: GET /api/paw-points/balance | POST /api/paw-points/redeem
 
-SOUL SCORE (overall_score field on pet):
-- Saved via: POST /api/pet-soul/profile/{pet_id}/answer {question_id, answer[]}
-- 8 chapters: Identity(20pts) Health(20) Behaviour(15) Nutrition(15) Social(10) Travel(10) Learning(10)
-- ALWAYS use: pet.overall_score || pet.soul_score || 0
-
-CONCIERGE SYSTEM:
-- Every "Book →" button → POST /api/service_desk/attach_or_create_ticket
-- Body: {parent_id, pet_id, pillar, intent_primary, channel, initial_message}
-- Creates ticket in service_desk_tickets collection
-- WhatsApp (Meta + GupShup) inbound → webhook → ticket → Mira/Concierge → reply
-
-CLOUDINARY (all images go here):
-- Products: realistic photos | Services/Bundles: watercolour | Imagines: breed watercolour
-- Generate: POST /api/ai-images/pipeline/services-master?pillar=X
-- Mira Imagines: POST /api/ai-images/pipeline/mira-imagines?pillar=X&breed=Y
-- Get cached: GET /api/ai-images/pipeline/mira-imagines/{pillar}/{breed}
-
-MIRA AI SCORING:
-- Trigger: POST /api/mira/score-for-pet {pet_id, pillar}
-- Fetch: GET /api/mira/claude-picks/{pet_id}?pillar=X&min_score=60&breed=Y
-
-INVENTORY TOTALS:
-Products: 12,986 | Services: 1,025 | Bundles: 27 | TOTAL: 14,038
-
-
-MIRA OS (/mira-os):
-- MiraDemoPage.jsx (5,419 lines) — primary chat UI, Apple iMessage quality
-- MiraOSPage.jsx — 7-dimension Header Shell (MOJO/TODAY/PICKS/SERVICES/INSIGHTS/LEARN/CONCIERGE)
-- MiraOSModal.jsx — pillar-embedded modal
-- 16 hooks (useChatSubmit, useStreamingChat, useSession, useVault, useVoice, useMiraShell...)
-- 60+ components (ChatMessage, ConciergeButton, MiraTray, VaultManager...)
-- POST /api/mira/chat — main AI (Claude Sonnet, Emergent Key)
-- POST /api/mira/os/stream — streaming version
-- Philosophy: Mira is the Brain, Concierge® is the Hands
+ADMIN TABS (5 groups):
+Operations: Dashboard, Service Desk, Unified Inbox, Finance, Pillar Queues, Orders, Fulfilment, Autoship
+Members: Pet Parents, Pet Profiles, Membership, Loyalty, Engagement, Celebrations
+Commerce: Product Box, Service Box, Pricing, Experiences, Soul Products, Bundles
+Content: Learn CMS, Paperwork CMS, Care CMS, Fit CMS, Pillar CMS
+Intelligence: Analytics, Reports, Comms, Mira Memory
