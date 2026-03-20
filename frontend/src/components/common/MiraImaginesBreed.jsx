@@ -45,6 +45,7 @@
 import { useState, useEffect } from "react";
 import { API_URL } from "../../utils/api";
 import { useAuth } from "../../context/AuthContext";
+import { tdc } from "../../utils/tdc_intent";
 
 const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
 
@@ -337,6 +338,8 @@ function ImagineCard({ card, petName, index, onConcierge, colour, pet, pillar, t
   const handleSource = async (e) => {
     e.stopPropagation();
     if (sending || sent) return;
+    // Fire tdc.imagine — tracks every "Source this for me" tap
+    tdc.imagine({ name: card.name, service: card.desc, pillar, pet, channel: "mira_imagines_breed" });
     // Call parent handler first (for pillar-specific modals like /celebrate)
     if (onConcierge) onConcierge(card);
     // Direct ticket creation + toast

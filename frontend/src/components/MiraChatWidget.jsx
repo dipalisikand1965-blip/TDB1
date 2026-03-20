@@ -26,6 +26,7 @@ import MiraConciergeCards, { parseMiraRecommendations } from './MiraConciergeCar
 import PersonalizedPicksPanel from './Mira/PersonalizedPicksPanel';
 import ReactMarkdown from 'react-markdown';
 import '../styles/mira-universal.css';
+import { tdc } from '../utils/tdc_intent';
 import { 
   X, Send, Loader2, Mic, MicOff, Volume2, VolumeX, 
   ChevronDown, Sparkles, PawPrint, MessageCircle, Zap,
@@ -1109,6 +1110,15 @@ const MiraChatWidget = ({
           serviceConfirmation: data.service_confirmation,
           nearbyPlaces: data.nearby_places // Restaurant, vet, park results from Mira
         }]);
+
+        // ── tdc.chat — fire intent ticket for every Mira widget conversation ──
+        tdc.chat({
+          message: messageToSend,
+          reply: data.response,
+          pillar: pillar || 'mira_os',
+          pet: selectedPet,
+          channel: 'mira_chat_widget',
+        });
         
         // Schedule product card reveal — 800ms after response renders, only if safe
         if (shouldShowProducts(displayContent)) {

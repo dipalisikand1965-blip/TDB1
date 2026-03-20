@@ -21,6 +21,8 @@ import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMi
 import GuidedAdoptPaths from "../components/adopt/GuidedAdoptPaths";
 import AdoptNearMe from "../components/adopt/AdoptNearMe";
 import { API_URL } from "../utils/api";
+import { tdc } from "../utils/tdc_intent";
+import { usePlatformTracking } from "../hooks/usePlatformTracking";
 
 const G = {
   deep:"#4A0E2E", mid:"#7B1D4E", rose:"#D4537E", light:"#F9A8C9",
@@ -178,7 +180,7 @@ function AdoptConciergeModal({ isOpen, onClose, token, preSelected }) {
     }
   }, [isOpen, preSelected]);
   if(!isOpen)return null;
-  const send=async()=>{if(!sel||sending)return;setSending(true);try{const u=JSON.parse(localStorage.getItem("user")||"{}");await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({parent_id:u?.id||u?.email||"guest",pet_id:"adopt-enquiry",pillar:"adopt",intent_primary:"adoption_enquiry",channel:"adopt_concierge_modal",initial_message:{sender:"parent",text:`Adoption enquiry: ${sel}. ${notes?"Notes: "+notes:""}`}})});}catch{}setSending(false);setSent(true);};
+  const send=async()=>{if(!sel||sending)return;setSending(true);try{const u=JSON.parse(localStorage.getItem("user")||"{}");await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({parent_id:u?.id||u?.email||"guest",pet_id:"adopt-enquiry",pillar:"adopt",intent_primary:"adoption_enquiry",life_state:"EXPLORE",channel:"adopt_concierge_modal",initial_message:{sender:"parent",text:`Adoption enquiry: ${sel}. ${notes?"Notes: "+notes:""}`}})});}catch{}setSending(false);setSent(true);};
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.50)",zIndex:10006,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:20,padding:32,maxWidth:480,width:"100%",maxHeight:"90vh",overflowY:"auto",position:"relative"}}>
@@ -207,6 +209,10 @@ const AdoptSoulPage = () => {
   const navigate = useNavigate();
   const { token, isAuthenticated } = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
+
+  // ── Universal visit tracking ──────────────────────────────────
+  usePlatformTracking({ pillar: "adopt", pet: currentPet });
+
   const [loading,  setLoading]  = useState(true);
   const [activeTab, setActiveTab] = useState("adopt");
   const [petData,  setPetData]  = useState(null);

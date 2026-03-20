@@ -51,9 +51,10 @@ import { useMiraIntelligence, getMiraIntelligenceSubtitle } from '../hooks/useMi
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import { ProductDetailModal } from '../components/ProductCard';
 
-
 // API utilities
 import { getApiUrl, API_URL } from '../utils/api';
+import { tdc } from '../utils/tdc_intent';
+import { usePlatformTracking } from '../hooks/usePlatformTracking';
 
 // ─── KNOWN BREEDS (breed filter — PET FIRST, BREED NEXT) ────────────
 const KNOWN_BREEDS = ['american bully','beagle','border collie','boxer','cavalier','chihuahua','chow chow','dachshund','dalmatian','doberman','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','jack russell','labrador','lhasa apso','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
@@ -235,6 +236,9 @@ const CelebratePageNew = () => {
   const { user, token, isAuthenticated } = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
   
+  // ── Universal visit tracking ──────────────────────────────────
+  usePlatformTracking({ pillar: "celebrate", pet: currentPet });
+
   // Use currentPet from context
   const selectedPet = currentPet;
   
@@ -351,8 +355,15 @@ const CelebratePageNew = () => {
 
   // Handle category selection from strip
   const handleCategorySelect = useCallback((categoryId, categoryObj) => {
+    // Track category pill tap
+    tdc.view({
+      name: categoryObj?.label || categoryId,
+      pillar: "celebrate",
+      pet: selectedPet,
+      channel: "celebrate_category_strip",
+    });
     setCelebrateCatModal({ id: categoryId, obj: categoryObj });
-  }, []);
+  }, [selectedPet]);
 
   // Show loading state
   if (loading) {

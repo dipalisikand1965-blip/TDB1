@@ -32,6 +32,7 @@ import PlayConciergeSection from "../components/play/PlayConciergeSection";
 import PlayNearMe from "../components/play/PlayNearMe";
 import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
+import { tdc } from "../utils/tdc_intent";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
@@ -300,6 +301,7 @@ function MiraPicksSection({ pet }) {
 
   const handleServiceConcierge = async service => {
     setConciergeSending(true);
+    tdc.book({ service: service.name || service.entity_name, pillar: "play", pet, channel: "play_miras_picks", amount: service.price });
     try {
       const storedUser = JSON.parse(localStorage.getItem("user")||"{}");
       await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {

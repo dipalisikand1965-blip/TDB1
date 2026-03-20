@@ -32,6 +32,7 @@ import CareConciergeModal from "../components/care/CareConciergeModal";
 import CareNearMe from "../components/care/CareNearMe";
 import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
+import { tdc } from "../utils/tdc_intent";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
@@ -309,9 +310,10 @@ function MiraImagineCard({ item, pet, token }) {
         headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({
           parent_id: storedUser?.id || storedUser?.email || "guest",
-          pet_id: pet?.id || "unknown",
+          pet_id: pet?.id || "",
           pillar: "care",
           intent_primary: "mira_imagines_request",
+          life_state: "EXPLORE",
           channel: "care_mira_picks_imagines",
           initial_message: { sender: "parent", text: `I'd love "${item.name}" for ${petName}. Mira imagined this — please help source it!` },
         }),
@@ -364,11 +366,11 @@ function MiraPicksSection({ pet }) {
         headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({
           parent_id: storedUser?.id || storedUser?.email || "guest",
-          pet_id: pet?.id || "unknown",
+          pet_id: pet?.id || "",
           pillar: "care",
           intent_primary: "service_request",
           intent_secondary: [service.name || service.entity_name],
-          life_state: "care",
+          life_state: "PLAN",
           channel: "miras_picks",
           initial_message: { sender: "parent", source: "care_miras_picks", text: `I'd like "${service.name || service.entity_name}" for ${petName}. Mira scored it ${service.mira_score || "?"}/100. Please help!` },
         }),
@@ -2049,20 +2051,25 @@ export default function CareSoulPage() {
   const [apiProducts, setApiProducts] = useState({});
   const [conciergeToast, setConciergeToast] = useState(null);
 
+  // ── tdc page visit tracking ──────────────────────────────────────────────
+  usePlatformTracking({ pillar: "care", pet: currentPet });
+
   // handleNearMeBook — wires "Book via Concierge" on CareNearMe cards
   const handleNearMeBook = useCallback(async (provider, city) => {
+    const venueName = provider?.name || (city ? `a provider in ${city}` : "a grooming/care provider");
+    // Fire tdc intent
+    tdc.nearme({ query: venueName, pillar: "care", pet: petData, channel: "care_nearme" });
     try {
       const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-      const venueName = provider?.name || (city ? `a provider in ${city}` : "a grooming/care provider");
       const ticketResp = await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({
           parent_id: storedUser?.id || storedUser?.email || "care_guest",
-          pet_id:    petData?.id || "unknown",
+          pet_id:    petData?.id || "",
           pillar:    "care",
           intent_primary: "GROOMING_BOOKING",
-          life_state: "active",
+          life_state: "PLAN",
           initial_message: {
             sender: "parent",
             source: "Mira_OS",
