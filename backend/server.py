@@ -15342,9 +15342,23 @@ async def recalculate_all_pet_scores():
 
 
 
+
+@app.get("/api/pet-photo/{pet_id}")
+async def get_pet_photo_public(pet_id: str):
+    """Public endpoint — serve pet photo from base64 DB storage (no auth required for img tags)"""
+    import base64
+    from fastapi.responses import Response
+    pet = await db.pets.find_one({"id": pet_id}, {"photo_base64": 1, "photo_content_type": 1, "_id": 0})
+    if not pet or not pet.get("photo_base64"):
+        raise HTTPException(status_code=404, detail="Photo not found")
+    image_data = base64.b64decode(pet["photo_base64"])
+    content_type = pet.get("photo_content_type", "image/jpeg")
+    return Response(content=image_data, media_type=content_type,
+                    headers={"Cache-Control":"public, max-age=86400","Access-Control-Allow-Origin":"*"})
+
+
 @api_router.post("/pets/{pet_id}/photo")
 async def upload_pet_photo(pet_id: str, photo: UploadFile = File(...)):
-    """Upload or update a pet's photo - stores as base64 in database for persistence"""
     import base64
     import os
     

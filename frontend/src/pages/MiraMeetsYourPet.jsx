@@ -1,1260 +1,898 @@
 /**
- * MiraMeetsYourPet.jsx - Streamlined Multi-Pet Onboarding
- * 
- * Flow: 5 screens total (+ optional 6th)
- * 1. Pet Count - How many pets?
- * 2. Meet Your Pack - All pets basic info on ONE screen
- * 3. Soul Snapshot - 5 key pillar questions for ALL pets
- * 4. Parent Info - Account details
- * 5. Welcome - Success & invite to complete full Soul Profile
- * 6. (Optional) Full Soul Questions - Deep questions for selected pet
- * 
- * Philosophy: /app/memory/SOUL_PHILOSOPHY_SSOT.md
+ * MiraMeetsYourPet.jsx — /join
+ * The Doggy Company
+ *
+ * The first thing a new parent sees. Four screens:
+ *
+ *   Screen 1 — "How many furry friends?" (pet count 1–8+)
+ *   Screen 2 — Per-pet profile (name + photo + breed) — repeats per pet
+ *   Screen 3 — Soul snapshot (5 quick questions for all pets)
+ *   Screen 4 — Parent account (name, email, phone, WhatsApp, password)
+ *
+ * On completion → navigate('/soul-builder') for deep 10-step per-pet onboarding.
+ *
+ * PHILOSOPHY:
+ *   - Mira responds personally on every screen
+ *   - No generic form labels — always Mira's voice
+ *   - Breed search is fuzzy (5-tier matching) — no grid of initials
+ *   - WhatsApp opt-in framed as Mira keeping you informed, not marketing
+ *   - "8+" triggers the pack response: "A whole pack — Mira can't wait to meet them all 🌷"
+ *
+ * API:
+ *   POST /api/auth/register  — creates parent account
+ *   POST /api/pets           — creates each pet
+ *   POST /api/upload/pet-photo — Cloudinary upload
+ *
+ * ROUTE: /join (public, no auth required)
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ChevronLeft, ChevronRight, Camera, Upload, X, Check, 
-  Heart, Star, Sparkles, Calendar, User, Mail, Phone, 
-  MapPin, Lock, MessageCircle, PawPrint, AlertCircle,
-  Plus, Minus
-} from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { API_URL } from '../utils/api';
+import { useState, useRef, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { API_URL } from "../utils/api";
 
-// ============================================================
-// CONSTANTS
-// ============================================================
+// ── Colour system ──────────────────────────────────────────────────────
+const G = {
+  deep:    "#0F0A1E",
+  mid:     "#1A1363",
+  purple:  "#9B59B6",
+  pink:    "#E91E8C",
+  gold:    "#C9973A",
+  pale:    "#F5F3FF",
+  light:   "#DDD6FE",
+  muted:   "#6B46C1",
+  text:    "#1A1A2E",
+  sub:     "#64748B",
+};
+const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
+const MIRA_BTN = "linear-gradient(135deg,#9B59B6,#E91E8C)";
 
-const BREED_AVATARS = [
-  // Most Popular in India (in order of popularity)
-  { breed: 'Golden Retriever', initials: 'GR', color: 'from-yellow-300 to-amber-400' },
-  { breed: 'Labrador', initials: 'LB', color: 'from-yellow-400 to-amber-500' },
-  { breed: 'German Shepherd', initials: 'GS', color: 'from-amber-700 to-stone-800' },
-  { breed: 'Shih Tzu', initials: 'ST', color: 'from-white to-amber-100' },
-  { breed: 'Pug', initials: 'PG', color: 'from-amber-200 to-amber-400' },
-  { breed: 'Beagle', initials: 'BG', color: 'from-amber-200 to-white' },
-  { breed: 'Pomeranian', initials: 'PM', color: 'from-orange-300 to-amber-500' },
-  { breed: 'Indie', initials: 'IN', color: 'from-amber-400 to-orange-500' },
-  { breed: 'Rottweiler', initials: 'RW', color: 'from-stone-800 to-amber-700' },
-  { breed: 'Doberman', initials: 'DB', color: 'from-stone-900 to-amber-700' },
-  { breed: 'Cocker Spaniel', initials: 'CS', color: 'from-amber-400 to-amber-600' },
-  { breed: 'Great Dane', initials: 'GD', color: 'from-slate-600 to-slate-800' },
-  { breed: 'Boxer', initials: 'BX', color: 'from-amber-500 to-amber-700' },
-  { breed: 'Dachshund', initials: 'DH', color: 'from-amber-600 to-amber-800' },
-  { breed: 'Lhasa Apso', initials: 'LA', color: 'from-amber-200 to-white' },
-  { breed: 'Dalmatian', initials: 'DL', color: 'from-white to-slate-900' },
-  { breed: 'Saint Bernard', initials: 'SB', color: 'from-amber-600 to-white' },
-  { breed: 'Husky', initials: 'HK', color: 'from-slate-400 to-white' },
-  { breed: 'French Bulldog', initials: 'FB', color: 'from-slate-400 to-amber-200' },
-  { breed: 'English Bulldog', initials: 'EB', color: 'from-amber-100 to-amber-300' },
-  { breed: 'Poodle', initials: 'PD', color: 'from-slate-200 to-white' },
-  { breed: 'Maltese', initials: 'MT', color: 'from-white to-slate-100' },
-  { breed: 'Yorkshire Terrier', initials: 'YT', color: 'from-amber-500 to-slate-600' },
-  { breed: 'Chihuahua', initials: 'CH', color: 'from-amber-300 to-amber-500' },
-  { breed: 'Border Collie', initials: 'BC', color: 'from-stone-900 to-white' },
-  { breed: 'Corgi', initials: 'CG', color: 'from-amber-400 to-white' },
-  { breed: 'Pit Bull', initials: 'PB', color: 'from-slate-500 to-amber-400' },
-  { breed: 'Akita', initials: 'AK', color: 'from-amber-500 to-white' },
-  // Large & Giant Breeds
-  { breed: 'Newfoundland', initials: 'NF', color: 'from-stone-900 to-stone-700' },
-  { breed: 'Bernese Mountain', initials: 'BM', color: 'from-stone-900 to-amber-500' },
-  { breed: 'Irish Setter', initials: 'IS', color: 'from-red-700 to-amber-600' },
-  { breed: 'Weimaraner', initials: 'WM', color: 'from-slate-400 to-slate-500' },
-  { breed: 'Vizsla', initials: 'VZ', color: 'from-amber-500 to-amber-600' },
-  { breed: 'Rhodesian Ridgeback', initials: 'RR', color: 'from-amber-500 to-amber-700' },
-  // More Popular Breeds
-  { breed: 'Australian Shepherd', initials: 'AS', color: 'from-slate-600 to-amber-400' },
-  { breed: 'Cavalier King Charles', initials: 'CK', color: 'from-amber-300 to-white' },
-  { breed: 'Miniature Schnauzer', initials: 'MS', color: 'from-slate-500 to-slate-300' },
-  { breed: 'Shiba Inu', initials: 'SI', color: 'from-orange-400 to-white' },
-  { breed: 'Boston Terrier', initials: 'BT', color: 'from-stone-900 to-white' },
-  { breed: 'Havanese', initials: 'HV', color: 'from-amber-200 to-white' },
-  { breed: 'Springer Spaniel', initials: 'SS', color: 'from-amber-700 to-white' },
-  { breed: 'Bichon Frise', initials: 'BF', color: 'from-white to-slate-50' },
-  { breed: 'Samoyed', initials: 'SM', color: 'from-white to-slate-100' },
-  { breed: 'Chow Chow', initials: 'CC', color: 'from-amber-600 to-amber-800' },
-  { breed: 'Shar Pei', initials: 'SP', color: 'from-amber-400 to-amber-600' },
-  { breed: 'Basenji', initials: 'BJ', color: 'from-amber-500 to-white' },
-  { breed: 'Whippet', initials: 'WH', color: 'from-slate-300 to-white' },
-  { breed: 'Greyhound', initials: 'GH', color: 'from-slate-400 to-slate-200' },
-  { breed: 'Jack Russell', initials: 'JR', color: 'from-white to-amber-300' },
-  { breed: 'Scottish Terrier', initials: 'SC', color: 'from-stone-900 to-stone-800' },
-  { breed: 'West Highland', initials: 'WE', color: 'from-white to-slate-100' },
-  { breed: 'Tibetan Mastiff', initials: 'TM', color: 'from-stone-800 to-amber-700' },
-  // Indian Breeds
-  { breed: 'Rajapalayam', initials: 'RP', color: 'from-slate-100 to-slate-300' },
-  { breed: 'Mudhol Hound', initials: 'MH', color: 'from-amber-600 to-amber-800' },
-  { breed: 'Chippiparai', initials: 'CP', color: 'from-amber-200 to-amber-400' },
-  { breed: 'Kombai', initials: 'KM', color: 'from-amber-700 to-amber-900' },
-  { breed: 'Kanni', initials: 'KN', color: 'from-stone-800 to-amber-600' },
-  { breed: 'Rampur Greyhound', initials: 'RG', color: 'from-slate-400 to-slate-600' },
-  { breed: 'Gaddi Kutta', initials: 'GK', color: 'from-stone-700 to-amber-600' },
-  { breed: 'Bakharwal', initials: 'BK', color: 'from-stone-800 to-stone-600' },
-  // Always Last
-  { breed: 'Mixed Breed', initials: 'MX', color: 'from-purple-400 to-pink-400' },
+// ── Breed list (fuzzy search) ──────────────────────────────────────────
+const BREEDS = [
+  "Labrador Retriever","Golden Retriever","German Shepherd","French Bulldog",
+  "Bulldog","Poodle","Beagle","Rottweiler","Boxer","Doberman Pinscher",
+  "Pembroke Welsh Corgi","Australian Shepherd","Dachshund","Yorkshire Terrier",
+  "Siberian Husky","Cavalier King Charles Spaniel","Great Dane",
+  "Miniature Schnauzer","Shih Tzu","Border Collie","Bernese Mountain Dog",
+  "Pomeranian","Havanese","Shetland Sheepdog","Cocker Spaniel","Maltese",
+  "Chihuahua","Pug","Boston Terrier","Bichon Frise","Lhasa Apso",
+  "Maltipoo","Goldendoodle","Labradoodle","Cockapoo","Cavapoo","Morkie",
+  "Indian Pariah Dog (Indie)","Rajapalayam","Mudhol Hound","Chippiparai",
+  "Spitz","Tibetan Mastiff","Samoyed","Dalmatian","Weimaraner",
+  "Irish Setter","Saint Bernard","Newfoundland","Great Pyrenees",
+  "Akita","Shiba Inu","Mixed Breed / Other",
 ];
 
-const PROTEIN_OPTIONS = ['Chicken', 'Lamb', 'Fish', 'Beef', 'Vegetarian', 'No preference'];
-const EATING_STYLE_OPTIONS = ['Very picky', 'Somewhat picky', 'Not picky', 'Eats anything'];
-const APPROXIMATE_AGES = [
-  '< 1 year', '~1 year', '~2 years', '~3 years', '~4 years', '~5 years',
-  '~6 years', '~7 years', '~8 years', '~9 years', '~10 years', '~11 years',
-  '~12 years', '~13 years', '~14 years', '15+ years'
-];
-
-const INDIAN_CITIES = [
-  'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata',
-  'Pune', 'Ahmedabad', 'Jaipur', 'Surat', 'Lucknow', 'Kanpur',
-  'Nagpur', 'Indore', 'Thane', 'Bhopal', 'Visakhapatnam', 'Patna',
-  'Vadodara', 'Ghaziabad', 'Ludhiana', 'Agra', 'Nashik', 'Faridabad',
-  'Meerut', 'Rajkot', 'Varanasi', 'Srinagar', 'Aurangabad', 'Dhanbad',
-  'Amritsar', 'Allahabad', 'Ranchi', 'Howrah', 'Coimbatore', 'Jabalpur',
-  'Gwalior', 'Vijayawada', 'Jodhpur', 'Madurai', 'Raipur', 'Kota',
-  'Gurugram', 'Chandigarh', 'Guwahati', 'Solapur', 'Noida', 'Other'
-];
-
-// ============================================================
-// HELPER FUNCTIONS
-// ============================================================
-
-const createEmptyPet = (index) => ({
-  index,
-  name: '',
-  avatar: null,
-  photo: null,
-  photoPreview: null,
-  gender: '',
-  birthdayType: 'approximate',
-  birthday: '',
-  approximateAge: '',
-  // Soul snapshot
-  allergies: { has: false, details: '' },
-  healthConditions: { has: false, details: '' },
-  foodProtein: '',
-  eatingStyle: '',
-  carRides: '',
-  activityLevel: ''
-});
-
-// ============================================================
-// MAIN COMPONENT
-// ============================================================
-
-const MiraMeetsYourPet = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { loginWithToken } = useAuth();
-  const fileInputRefs = useRef({});
-  
-  // Check if adding pet to existing account
-  const isAddingPet = searchParams.get('add') === 'true';
-  
-  // Screen state
-  const [currentScreen, setCurrentScreen] = useState('petCount');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
-  
-  // Screen 1: Pet Count
-  const [petCount, setPetCount] = useState(1);
-  
-  // Screen 2 & 3: Pets data
-  const [pets, setPets] = useState([createEmptyPet(0)]);
-  
-  // Screen 4: Parent data
-  const [parentData, setParentData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    whatsapp: '',
-    city: '',
-    password: '',
-    whatsappOptIn: true
-  });
-  
-  // Initialize pets array when count changes
-  useEffect(() => {
-    setPets(prev => {
-      const newPets = [];
-      for (let i = 0; i < petCount; i++) {
-        newPets.push(prev[i] || createEmptyPet(i));
-      }
-      return newPets;
-    });
-  }, [petCount]);
-  
-  // Handle photo upload for a specific pet
-  const handlePhotoUpload = (petIndex, event) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPets(prev => prev.map((pet, i) => 
-          i === petIndex 
-            ? { ...pet, photo: file, photoPreview: reader.result, avatar: null }
-            : pet
-        ));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-  
-  // Handle avatar selection for a specific pet
-  const handleAvatarSelect = (petIndex, avatar) => {
-    setPets(prev => prev.map((pet, i) => 
-      i === petIndex 
-        ? { ...pet, avatar, photo: null, photoPreview: null }
-        : pet
-    ));
-  };
-  
-  // Update pet field
-  const updatePet = (petIndex, field, value) => {
-    setPets(prev => prev.map((pet, i) => 
-      i === petIndex ? { ...pet, [field]: value } : pet
-    ));
-  };
-  
-  // Validate Screen 2
-  const validateBasicInfo = () => {
-    for (let i = 0; i < pets.length; i++) {
-      const pet = pets[i];
-      if (!pet.name.trim()) return `Please enter a name for Pet ${i + 1}`;
-      if (!pet.avatar && !pet.photoPreview) return `Please select an avatar or upload a photo for ${pet.name || `Pet ${i + 1}`}`;
-      if (!pet.gender) return `Please select gender for ${pet.name || `Pet ${i + 1}`}`;
-      if (pet.birthdayType === 'approximate' && !pet.approximateAge) {
-        return `Please select approximate age for ${pet.name || `Pet ${i + 1}`}`;
-      }
-      if ((pet.birthdayType === 'exact' || pet.birthdayType === 'gotcha') && !pet.birthday) {
-        return `Please select a date for ${pet.name || `Pet ${i + 1}`}`;
-      }
-    }
-    return null;
-  };
-  
-  // Validate Screen 3
-  const validateSoulSnapshot = () => {
-    for (let i = 0; i < pets.length; i++) {
-      const pet = pets[i];
-      if (!pet.foodProtein) return `Please select food preference for ${pet.name}`;
-      if (!pet.carRides) return `Please select how ${pet.name} feels about car rides`;
-      if (!pet.activityLevel) return `Please select activity level for ${pet.name}`;
-    }
-    return null;
-  };
-  
-  // Validate Screen 4
-  const validateParentInfo = () => {
-    if (!parentData.name.trim()) return 'Please enter your name';
-    if (!parentData.email.trim()) return 'Please enter your email';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parentData.email)) return 'Please enter a valid email';
-    if (!parentData.phone.trim()) return 'Please enter your phone number';
-    if (!/^\d{10}$/.test(parentData.phone.replace(/\D/g, ''))) return 'Please enter a valid 10-digit phone number';
-    if (!parentData.city) return 'Please select your city';
-    if (!parentData.password) return 'Please create a password';
-    if (parentData.password.length < 6) return 'Password must be at least 6 characters';
-    return null;
-  };
-  
-  // Submit to API
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    setError('');
-    
-    try {
-      const payload = {
-        parent: {
-          name: parentData.name,
-          email: parentData.email,
-          phone: parentData.phone,
-          whatsapp: parentData.whatsapp || parentData.phone,
-          city: parentData.city,
-          password: parentData.password,
-          whatsapp_opt_in: parentData.whatsappOptIn
-        },
-        pets: pets.map(pet => ({
-          name: pet.name,
-          gender: pet.gender,
-          breed: pet.avatar?.breed || 'Mixed Breed',
-          species: 'dog',
-          photo: pet.photoPreview || null,
-          avatar: pet.avatar || null,
-          birthday: pet.birthday || null,
-          birthday_type: pet.birthdayType,
-          approximate_age: pet.approximateAge || null,
-          soul_snapshot: {
-            allergies: pet.allergies.has ? [pet.allergies.details] : [],
-            health_conditions: pet.healthConditions.has ? [pet.healthConditions.details] : [],
-            food_preference: {
-              protein: pet.foodProtein,
-              eating_style: pet.eatingStyle
-            },
-            car_rides: pet.carRides,
-            activity_level: pet.activityLevel
-          }
-        }))
-      };
-      
-      // Use XMLHttpRequest to avoid Emergent's fetch interceptor consuming the response body
-      const data = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', `${API_URL}/api/auth/membership/onboard`);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.onload = function() {
-          try {
-            const response = JSON.parse(xhr.responseText);
-            if (xhr.status >= 200 && xhr.status < 300) {
-              resolve(response);
-            } else {
-              reject(new Error(response.detail || 'Failed to create account'));
-            }
-          } catch (e) {
-            reject(new Error('Failed to parse response'));
-          }
-        };
-        xhr.onerror = function() {
-          reject(new Error('Network error. Please try again.'));
-        };
-        xhr.send(JSON.stringify(payload));
-      });
-      
-      // Login the user
-      if (data.access_token) {
-        loginWithToken(data.access_token, data.user);
-      }
-      
-      // Go to welcome screen
-      setCurrentScreen('welcome');
-      
-    } catch (err) {
-      setError(err.message || 'Something went wrong. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  
-  // ============================================================
-  // SCREEN 1: PET COUNT
-  // ============================================================
-  
-  const renderPetCountScreen = () => (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="flex flex-col items-center justify-center min-h-screen p-6"
-    >
-      {/* Mira Logo */}
-      <div className="flex items-center gap-2 mb-8">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
-          <Sparkles className="w-6 h-6 text-white" />
-        </div>
-        <span className="text-2xl font-bold text-white">Mira</span>
-      </div>
-      
-      <h1 className="text-3xl md:text-4xl font-bold text-white text-center mb-3">
-        How many furry friends do you have?
-      </h1>
-      <p className="text-white/80 text-center mb-8">
-        We'll get to know each one personally
-      </p>
-      
-      {/* Quick select buttons */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
-        {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
-          <button
-            key={num}
-            onClick={() => setPetCount(num)}
-            className={`w-14 h-14 rounded-xl text-xl font-bold transition-all ${
-              petCount === num
-                ? 'bg-gradient-to-br from-pink-500 to-purple-600 text-white scale-110 shadow-lg shadow-pink-500/30'
-                : 'bg-slate-800 text-white hover:bg-slate-700'
-            }`}
-          >
-            {num}
-          </button>
-        ))}
-      </div>
-      
-      {/* Custom number input */}
-      <div className="flex items-center gap-3 mb-8">
-        <span className="text-slate-400">or enter:</span>
-        <input
-          type="number"
-          min="1"
-          max="50"
-          value={petCount}
-          onChange={(e) => setPetCount(Math.min(50, Math.max(1, parseInt(e.target.value) || 1)))}
-          className="w-20 px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-center text-lg"
-        />
-        <span className="text-slate-400">pets</span>
-      </div>
-      
-      {/* Dog emoji */}
-      <div className="text-4xl mb-8">🐕</div>
-      
-      {/* Continue button */}
-      <button
-        onClick={() => setCurrentScreen('basicInfo')}
-        className="px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-pink-500/30 hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2"
-      >
-        Let's Go! <ChevronRight className="w-5 h-5" />
-      </button>
-    </motion.div>
-  );
-  
-  // ============================================================
-  // SCREEN 2: MEET YOUR PACK (Basic Info)
-  // ============================================================
-  
-  const renderBasicInfoScreen = () => (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      className="min-h-screen p-4 md:p-6"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={() => setCurrentScreen('petCount')}
-          className="p-2 rounded-full bg-slate-800 hover:bg-slate-700"
-        >
-          <ChevronLeft className="w-5 h-5 text-white" />
-        </button>
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-pink-500" />
-          <span className="text-white font-medium">Mira</span>
-        </div>
-        <div className="w-9" /> {/* Spacer */}
-      </div>
-      
-      <h1 className="text-2xl md:text-3xl font-bold text-white text-center mb-2">
-        Let's meet your babies!
-      </h1>
-      <p className="text-slate-400 text-center mb-6">
-        {petCount} {petCount === 1 ? 'pet' : 'pets'} to introduce
-      </p>
-      
-      {/* Pet Cards */}
-      <div className="max-w-2xl mx-auto space-y-6 pb-32">
-        {pets.map((pet, index) => (
-          <div
-            key={index}
-            className="bg-slate-800/50 rounded-2xl p-4 md:p-6 border border-slate-700"
-          >
-            <div className="flex items-center gap-2 mb-4">
-              <PawPrint className="w-5 h-5 text-pink-500" />
-              <span className="text-white font-medium">Pet {index + 1} of {petCount}</span>
-            </div>
-            
-            {/* Name */}
-            <div className="mb-4">
-              <label className="text-sm text-slate-400 mb-1 block">Name</label>
-              <input
-                type="text"
-                placeholder="What's their name?"
-                value={pet.name}
-                onChange={(e) => updatePet(index, 'name', e.target.value)}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500"
-              />
-            </div>
-            
-            {/* Avatar/Photo Selection */}
-            <div className="mb-4">
-              <label className="text-sm text-slate-400 mb-2 block">Choose an avatar or upload a photo</label>
-              
-              {/* Photo preview or upload button */}
-              {pet.photoPreview ? (
-                <div className="relative w-20 h-20 mb-3">
-                  <img
-                    src={pet.photoPreview}
-                    alt="Pet"
-                    className="w-20 h-20 rounded-full object-cover border-2 border-pink-500"
-                  />
-                  <button
-                    onClick={() => updatePet(index, 'photoPreview', null)}
-                    className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center"
-                  >
-                    <X className="w-4 h-4 text-white" />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => fileInputRefs.current[index]?.click()}
-                  className="flex items-center gap-2 px-4 py-2 bg-slate-900 border border-dashed border-slate-600 rounded-xl text-slate-400 hover:border-pink-500 hover:text-pink-400 transition-colors mb-3"
-                >
-                  <Camera className="w-5 h-5" />
-                  <span>Upload Photo</span>
-                </button>
-              )}
-              <input
-                ref={el => fileInputRefs.current[index] = el}
-                type="file"
-                accept="image/*"
-                onChange={(e) => handlePhotoUpload(index, e)}
-                className="hidden"
-              />
-              
-              {/* Avatar grid - larger on mobile for touch */}
-              <div className="text-xs text-white/70 mb-2">Choose a breed:</div>
-              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 max-h-56 overflow-y-auto p-1 -mx-1">
-                {BREED_AVATARS.map((avatar, avatarIndex) => (
-                  <button
-                    key={avatarIndex}
-                    onClick={() => handleAvatarSelect(index, avatar)}
-                    className={`flex flex-col items-center p-2 rounded-xl transition-all ${
-                      pet.avatar?.breed === avatar.breed
-                        ? 'bg-pink-500/20 ring-2 ring-pink-500 scale-105'
-                        : 'bg-slate-800/50 hover:bg-slate-700/50 active:scale-95'
-                    }`}
-                    title={avatar.breed}
-                  >
-                    <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${avatar.color} flex items-center justify-center mb-1 shadow-lg`}>
-                      <span className="text-xs font-bold text-slate-800">{avatar.initials}</span>
-                    </div>
-                    <span className="text-[10px] text-white/70 text-center leading-tight truncate w-full">{avatar.breed}</span>
-                  </button>
-                ))}
-              </div>
-              
-              {/* Custom breed input */}
-              <div className="mt-3 flex items-center gap-2">
-                <span className="text-xs text-white/50">Can't find your breed?</span>
-                <input
-                  type="text"
-                  placeholder="Type breed name..."
-                  className="flex-1 bg-slate-800/50 border border-slate-600/50 rounded-lg px-3 py-1.5 text-sm text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none"
-                  onChange={(e) => {
-                    if (e.target.value.trim()) {
-                      handleAvatarSelect(index, {
-                        breed: e.target.value.trim(),
-                        initials: e.target.value.trim().substring(0, 2).toUpperCase(),
-                        color: 'from-purple-400 to-pink-400'
-                      });
-                    }
-                  }}
-                  data-testid="custom-breed-input"
-                />
-              </div>
-              
-              {pet.avatar && (
-                <p className="text-xs text-pink-400 mt-2">Selected: {pet.avatar.breed}</p>
-              )}
-            </div>
-            
-            {/* Gender */}
-            <div className="mb-4">
-              <label className="text-sm text-slate-400 mb-2 block">Gender</label>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => updatePet(index, 'gender', 'boy')}
-                  className={`flex-1 py-3 rounded-xl font-medium transition-all ${
-                    pet.gender === 'boy'
-                      ? 'bg-blue-500/20 text-blue-400 border-2 border-blue-500'
-                      : 'bg-slate-900 text-slate-400 border border-slate-700 hover:border-slate-600'
-                  }`}
-                >
-                  ♂️ Boy
-                </button>
-                <button
-                  onClick={() => updatePet(index, 'gender', 'girl')}
-                  className={`flex-1 py-3 rounded-xl font-medium transition-all ${
-                    pet.gender === 'girl'
-                      ? 'bg-pink-500/20 text-pink-400 border-2 border-pink-500'
-                      : 'bg-slate-900 text-slate-400 border border-slate-700 hover:border-slate-600'
-                  }`}
-                >
-                  ♀️ Girl
-                </button>
-              </div>
-            </div>
-            
-            {/* Birthday */}
-            <div>
-              <label className="text-sm text-slate-400 mb-2 block">Birthday / Age</label>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name={`birthday-type-${index}`}
-                    checked={pet.birthdayType === 'exact'}
-                    onChange={() => updatePet(index, 'birthdayType', 'exact')}
-                    className="text-pink-500"
-                  />
-                  <span className="text-slate-300 text-sm">I know the exact birthday</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name={`birthday-type-${index}`}
-                    checked={pet.birthdayType === 'gotcha'}
-                    onChange={() => updatePet(index, 'birthdayType', 'gotcha')}
-                    className="text-pink-500"
-                  />
-                  <span className="text-slate-300 text-sm">I know their Gotcha Day</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name={`birthday-type-${index}`}
-                    checked={pet.birthdayType === 'approximate'}
-                    onChange={() => updatePet(index, 'birthdayType', 'approximate')}
-                    className="text-pink-500"
-                  />
-                  <span className="text-slate-300 text-sm">I only know approximately</span>
-                </label>
-              </div>
-              
-              {(pet.birthdayType === 'exact' || pet.birthdayType === 'gotcha') && (
-                <input
-                  type="date"
-                  value={pet.birthday}
-                  onChange={(e) => updatePet(index, 'birthday', e.target.value)}
-                  className="mt-2 w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white"
-                />
-              )}
-              
-              {pet.birthdayType === 'approximate' && (
-                <select
-                  value={pet.approximateAge}
-                  onChange={(e) => updatePet(index, 'approximateAge', e.target.value)}
-                  className="mt-2 w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white"
-                >
-                  <option value="">Select approximate age</option>
-                  {APPROXIMATE_AGES.map(age => (
-                    <option key={age} value={age}>{age}</option>
-                  ))}
-                </select>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      {/* Fixed bottom button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 safe-area-bottom bg-gradient-to-t from-slate-900 via-slate-900 to-transparent">
-        <div className="max-w-2xl mx-auto">
-          {error && (
-            <div className="mb-3 p-3 bg-red-500/20 border border-red-500/50 rounded-xl text-red-400 text-sm text-center">
-              {error}
-            </div>
-          )}
-          <button
-            onClick={() => {
-              const validationError = validateBasicInfo();
-              if (validationError) {
-                setError(validationError);
-                return;
-              }
-              setError('');
-              setCurrentScreen('soulSnapshot');
-            }}
-            className="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-pink-500/30 flex items-center justify-center gap-2"
-          >
-            Continue <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-    </motion.div>
-  );
-  
-  // ============================================================
-  // SCREEN 3: SOUL SNAPSHOT (Key Pillar Questions)
-  // ============================================================
-  
-  const renderSoulSnapshotScreen = () => (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      className="min-h-screen p-4 md:p-6"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={() => setCurrentScreen('basicInfo')}
-          className="p-2 rounded-full bg-slate-800 hover:bg-slate-700"
-        >
-          <ChevronLeft className="w-5 h-5 text-white" />
-        </button>
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-pink-500" />
-          <span className="text-white font-medium">Mira</span>
-        </div>
-        <div className="w-9" />
-      </div>
-      
-      <h1 className="text-2xl md:text-3xl font-bold text-white text-center mb-2">
-        A few quick questions
-      </h1>
-      <p className="text-slate-400 text-center mb-6">
-        So I can help from day one 💜
-      </p>
-      
-      {/* Pet Soul Cards */}
-      <div className="max-w-2xl mx-auto space-y-6 pb-32">
-        {pets.map((pet, index) => (
-          <div
-            key={index}
-            className="bg-slate-800/50 rounded-2xl p-4 md:p-6 border border-slate-700"
-          >
-            {/* Pet header */}
-            <div className="flex items-center gap-3 mb-4">
-              {pet.photoPreview ? (
-                <img src={pet.photoPreview} alt={pet.name} className="w-12 h-12 rounded-full object-cover" />
-              ) : pet.avatar ? (
-                <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${pet.avatar.color} flex items-center justify-center text-2xl`}>
-                  {pet.avatar.emoji}
-                </div>
-              ) : (
-                <div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center">
-                  <PawPrint className="w-6 h-6 text-slate-500" />
-                </div>
-              )}
-              <span className="text-white font-medium text-lg">{pet.name}</span>
-            </div>
-            
-            {/* Allergies */}
-            <div className="mb-4">
-              <label className="text-sm text-slate-400 mb-2 flex items-center gap-2">
-                💊 Any allergies?
-              </label>
-              <div className="flex gap-3 mb-2">
-                <button
-                  onClick={() => updatePet(index, 'allergies', { has: false, details: '' })}
-                  className={`flex-1 py-2 rounded-lg text-sm transition-all ${
-                    !pet.allergies.has
-                      ? 'bg-green-500/20 text-green-400 border border-green-500'
-                      : 'bg-slate-900 text-slate-400 border border-slate-700'
-                  }`}
-                >
-                  None known
-                </button>
-                <button
-                  onClick={() => updatePet(index, 'allergies', { has: true, details: pet.allergies.details })}
-                  className={`flex-1 py-2 rounded-lg text-sm transition-all ${
-                    pet.allergies.has
-                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500'
-                      : 'bg-slate-900 text-slate-400 border border-slate-700'
-                  }`}
-                >
-                  Yes
-                </button>
-              </div>
-              {pet.allergies.has && (
-                <input
-                  type="text"
-                  placeholder="e.g., chicken, grain..."
-                  value={pet.allergies.details}
-                  onChange={(e) => updatePet(index, 'allergies', { has: true, details: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                />
-              )}
-            </div>
-            
-            {/* Health Conditions */}
-            <div className="mb-4">
-              <label className="text-sm text-slate-400 mb-2 flex items-center gap-2">
-                🏥 Any health conditions?
-              </label>
-              <div className="flex gap-3 mb-2">
-                <button
-                  onClick={() => updatePet(index, 'healthConditions', { has: false, details: '' })}
-                  className={`flex-1 py-2 rounded-lg text-sm transition-all ${
-                    !pet.healthConditions.has
-                      ? 'bg-green-500/20 text-green-400 border border-green-500'
-                      : 'bg-slate-900 text-slate-400 border border-slate-700'
-                  }`}
-                >
-                  None known
-                </button>
-                <button
-                  onClick={() => updatePet(index, 'healthConditions', { has: true, details: pet.healthConditions.details })}
-                  className={`flex-1 py-2 rounded-lg text-sm transition-all ${
-                    pet.healthConditions.has
-                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500'
-                      : 'bg-slate-900 text-slate-400 border border-slate-700'
-                  }`}
-                >
-                  Yes
-                </button>
-              </div>
-              {pet.healthConditions.has && (
-                <input
-                  type="text"
-                  placeholder="e.g., arthritis, diabetes..."
-                  value={pet.healthConditions.details}
-                  onChange={(e) => updatePet(index, 'healthConditions', { has: true, details: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                />
-              )}
-            </div>
-            
-            {/* Food Preference */}
-            <div className="mb-4">
-              <label className="text-sm text-slate-400 mb-2 flex items-center gap-2">
-                🍖 Food preference
-              </label>
-              <div className="grid grid-cols-2 gap-3">
-                <select
-                  value={pet.foodProtein}
-                  onChange={(e) => updatePet(index, 'foodProtein', e.target.value)}
-                  className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                >
-                  <option value="">Favorite protein</option>
-                  {PROTEIN_OPTIONS.map(opt => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
-                <select
-                  value={pet.eatingStyle}
-                  onChange={(e) => updatePet(index, 'eatingStyle', e.target.value)}
-                  className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm"
-                >
-                  <option value="">Eating style</option>
-                  {EATING_STYLE_OPTIONS.map(opt => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            
-            {/* Car Rides */}
-            <div className="mb-4">
-              <label className="text-sm text-slate-400 mb-2 flex items-center gap-2">
-                🚗 How do they feel about car rides?
-              </label>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => updatePet(index, 'carRides', 'anxious')}
-                  className={`flex-1 py-2 rounded-lg text-sm transition-all ${
-                    pet.carRides === 'anxious'
-                      ? 'bg-red-500/20 text-red-400 border border-red-500'
-                      : 'bg-slate-900 text-slate-400 border border-slate-700'
-                  }`}
-                >
-                  😰 Anxious
-                </button>
-                <button
-                  onClick={() => updatePet(index, 'carRides', 'okay')}
-                  className={`flex-1 py-2 rounded-lg text-sm transition-all ${
-                    pet.carRides === 'okay'
-                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500'
-                      : 'bg-slate-900 text-slate-400 border border-slate-700'
-                  }`}
-                >
-                  😐 Okay
-                </button>
-                <button
-                  onClick={() => updatePet(index, 'carRides', 'loves')}
-                  className={`flex-1 py-2 rounded-lg text-sm transition-all ${
-                    pet.carRides === 'loves'
-                      ? 'bg-green-500/20 text-green-400 border border-green-500'
-                      : 'bg-slate-900 text-slate-400 border border-slate-700'
-                  }`}
-                >
-                  🥰 Loves it!
-                </button>
-              </div>
-            </div>
-            
-            {/* Activity Level */}
-            <div>
-              <label className="text-sm text-slate-400 mb-2 flex items-center gap-2">
-                🏃 Activity level
-              </label>
-              <div className="flex gap-2">
-                {[
-                  { value: 'low', label: '🛋 Couch Potato' },
-                  { value: 'moderate', label: '🚶 Moderate' },
-                  { value: 'high', label: '⚡ Very Active' }
-                ].map(opt => (
-                  <button
-                    key={opt.value}
-                    onClick={() => updatePet(index, 'activityLevel', opt.value)}
-                    className={`flex-1 py-2 rounded-lg text-sm transition-all ${
-                      pet.activityLevel === opt.value
-                        ? 'bg-purple-500/20 text-purple-400 border border-purple-500'
-                        : 'bg-slate-900 text-slate-400 border border-slate-700'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      {/* Fixed bottom button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 safe-area-bottom bg-gradient-to-t from-slate-900 via-slate-900 to-transparent">
-        <div className="max-w-2xl mx-auto">
-          {error && (
-            <div className="mb-3 p-3 bg-red-500/20 border border-red-500/50 rounded-xl text-red-400 text-sm text-center">
-              {error}
-            </div>
-          )}
-          <button
-            onClick={() => {
-              const validationError = validateSoulSnapshot();
-              if (validationError) {
-                setError(validationError);
-                return;
-              }
-              setError('');
-              setCurrentScreen('parentInfo');
-            }}
-            className="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-pink-500/30 flex items-center justify-center gap-2"
-          >
-            Continue <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-    </motion.div>
-  );
-  
-  // ============================================================
-  // SCREEN 4: PARENT INFO
-  // ============================================================
-  
-  const renderParentInfoScreen = () => (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      className="min-h-screen p-4 md:p-6"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={() => setCurrentScreen('soulSnapshot')}
-          className="p-2 rounded-full bg-slate-800 hover:bg-slate-700"
-        >
-          <ChevronLeft className="w-5 h-5 text-white" />
-        </button>
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-pink-500" />
-          <span className="text-white font-medium">Mira</span>
-        </div>
-        <div className="w-9" />
-      </div>
-      
-      <h1 className="text-2xl md:text-3xl font-bold text-white text-center mb-2">
-        Now, a little about you!
-      </h1>
-      <p className="text-slate-400 text-center mb-6">
-        So we can keep in touch 💜
-      </p>
-      
-      <div className="max-w-md mx-auto space-y-4 pb-32">
-        {/* Name */}
-        <div>
-          <label className="text-sm text-slate-400 mb-1 flex items-center gap-2">
-            <User className="w-4 h-4" /> Your Name
-          </label>
-          <input
-            type="text"
-            placeholder="What should we call you?"
-            value={parentData.name}
-            onChange={(e) => setParentData(prev => ({ ...prev, name: e.target.value }))}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500"
-          />
-        </div>
-        
-        {/* Email */}
-        <div>
-          <label className="text-sm text-slate-400 mb-1 flex items-center gap-2">
-            <Mail className="w-4 h-4" /> Email
-          </label>
-          <input
-            type="email"
-            placeholder="your@email.com"
-            value={parentData.email}
-            onChange={(e) => setParentData(prev => ({ ...prev, email: e.target.value }))}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500"
-          />
-        </div>
-        
-        {/* Phone */}
-        <div>
-          <label className="text-sm text-slate-400 mb-1 flex items-center gap-2">
-            <Phone className="w-4 h-4" /> Phone
-          </label>
-          <input
-            type="tel"
-            placeholder="10-digit mobile number"
-            value={parentData.phone}
-            onChange={(e) => setParentData(prev => ({ ...prev, phone: e.target.value }))}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500"
-          />
-        </div>
-        
-        {/* WhatsApp */}
-        <div>
-          <label className="text-sm text-slate-400 mb-1 flex items-center gap-2">
-            <MessageCircle className="w-4 h-4" /> WhatsApp (optional)
-          </label>
-          <input
-            type="tel"
-            placeholder="Same as phone? Leave blank"
-            value={parentData.whatsapp}
-            onChange={(e) => setParentData(prev => ({ ...prev, whatsapp: e.target.value }))}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500"
-          />
-        </div>
-        
-        {/* City */}
-        <div>
-          <label className="text-sm text-slate-400 mb-1 flex items-center gap-2">
-            <MapPin className="w-4 h-4" /> City
-          </label>
-          <select
-            value={parentData.city}
-            onChange={(e) => setParentData(prev => ({ ...prev, city: e.target.value }))}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
-          >
-            <option value="">Select your city</option>
-            {INDIAN_CITIES.map(city => (
-              <option key={city} value={city}>{city}</option>
-            ))}
-          </select>
-        </div>
-        
-        {/* Password */}
-        <div>
-          <label className="text-sm text-slate-400 mb-1 flex items-center gap-2">
-            <Lock className="w-4 h-4" /> Create Password
-          </label>
-          <input
-            type="password"
-            placeholder="At least 6 characters"
-            value={parentData.password}
-            onChange={(e) => setParentData(prev => ({ ...prev, password: e.target.value }))}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500"
-          />
-        </div>
-        
-        {/* WhatsApp Opt-in */}
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={parentData.whatsappOptIn}
-            onChange={(e) => setParentData(prev => ({ ...prev, whatsappOptIn: e.target.checked }))}
-            className="w-5 h-5 rounded text-pink-500"
-          />
-          <span className="text-slate-300 text-sm">
-            Send me updates about my pets on WhatsApp
-          </span>
-        </label>
-      </div>
-      
-      {/* Fixed bottom button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 safe-area-bottom bg-gradient-to-t from-slate-900 via-slate-900 to-transparent">
-        <div className="max-w-md mx-auto">
-          {error && (
-            <div className="mb-3 p-3 bg-red-500/20 border border-red-500/50 rounded-xl text-red-400 text-sm text-center">
-              {error}
-            </div>
-          )}
-          <button
-            onClick={() => {
-              const validationError = validateParentInfo();
-              if (validationError) {
-                setError(validationError);
-                return;
-              }
-              setError('');
-              handleSubmit();
-            }}
-            disabled={isSubmitting}
-            className="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-pink-500/30 flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            {isSubmitting ? (
-              <>
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Creating your account...
-              </>
-            ) : (
-              <>
-                Create Account <ChevronRight className="w-5 h-5" />
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-    </motion.div>
-  );
-  
-  // ============================================================
-  // SCREEN 5: WELCOME
-  // ============================================================
-  
-  const [selectedPetForSoul, setSelectedPetForSoul] = useState(null);
-  
-  // Calculate soul profile completion
-  const getSoulCompletion = (pet) => {
-    // 5 quick questions = 30% base
-    // Full soul = 13 more questions = 70% more
-    // Currently they have 5/18 questions done = ~28%
-    return 30; // They've done the 5 pillar questions
-  };
-  
-  const renderWelcomeScreen = () => (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="flex flex-col items-center justify-center min-h-screen p-6"
-    >
-      {/* Success animation */}
-      <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: 'spring', delay: 0.2 }}
-        className="w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center mb-4"
-      >
-        <Check className="w-10 h-10 text-white" />
-      </motion.div>
-      
-      <h1 className="text-2xl md:text-3xl font-bold text-white text-center mb-2">
-        🎉 Welcome to the family!
-      </h1>
-      
-      <p className="text-slate-400 text-center mb-6">
-        You're in! Here's how well I know your babies:
-      </p>
-      
-      {/* Pet cards with soul completion */}
-      <div className="w-full max-w-md space-y-3 mb-6">
-        {pets.map((pet, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 + index * 0.1 }}
-            className="bg-slate-800/50 rounded-xl p-4 border border-slate-700"
-          >
-            <div className="flex items-center gap-3">
-              {pet.photoPreview ? (
-                <img src={pet.photoPreview} alt={pet.name} className="w-12 h-12 rounded-full object-cover border-2 border-pink-500/30" />
-              ) : pet.avatar ? (
-                <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${pet.avatar.color} flex items-center justify-center text-2xl border-2 border-pink-500/30`}>
-                  {pet.avatar.emoji}
-                </div>
-              ) : null}
-              
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-white font-medium">{pet.name}</span>
-                  <span className="text-pink-400 text-sm font-medium">{getSoulCompletion(pet)}% Soul</span>
-                </div>
-                
-                {/* Progress bar */}
-                <div className="mt-1 h-2 bg-slate-700 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${getSoulCompletion(pet)}%` }}
-                    transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
-                    className="h-full bg-gradient-to-r from-pink-500 to-purple-500 rounded-full"
-                  />
-                </div>
-                
-                <p className="text-xs text-slate-500 mt-1">
-                  +70% more with full soul profile
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-      
-      {/* Call to action - Complete Soul Profile */}
-      <div className="w-full max-w-md bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/30 rounded-xl p-4 mb-6">
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center flex-shrink-0">
-            <Heart className="w-5 h-5 text-pink-400" />
-          </div>
-          <div>
-            <h3 className="text-white font-medium mb-1">
-              Want me to really know {pets.length === 1 ? pets[0].name : 'them'}?
-            </h3>
-            <p className="text-slate-400 text-sm mb-3">
-              Complete the full Soul Profile and I'll give you personalized recommendations for food, health, travel, celebrations & more!
-            </p>
-            
-            {/* Pet selection for soul completion */}
-            <div className="flex flex-wrap gap-2 mb-3">
-              {pets.map((pet, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedPetForSoul(index)}
-                  className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
-                    selectedPetForSoul === index
-                      ? 'bg-pink-500 text-white'
-                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                  }`}
-                >
-                  {pet.avatar?.emoji || '🐕'} {pet.name}
-                </button>
-              ))}
-            </div>
-            
-            <button
-              onClick={() => {
-                // Navigate to Soul Builder for the selected pet
-                navigate('/soul-builder');
-              }}
-              disabled={selectedPetForSoul === null}
-              data-testid="complete-soul-profile-btn"
-              className={`w-full py-2.5 rounded-lg font-medium text-sm transition-all ${
-                selectedPetForSoul !== null
-                  ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/20'
-                  : 'bg-slate-700 text-slate-400 cursor-not-allowed'
-              }`}
-            >
-              {selectedPetForSoul !== null 
-                ? `Complete ${pets[selectedPetForSoul].name}'s Soul Profile →`
-                : 'Select a pet above to continue'
-              }
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      {/* Or skip for now */}
-      <button
-        onClick={() => navigate('/pet-home')}
-        data-testid="skip-to-dashboard-btn"
-        className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-medium transition-all flex items-center gap-2"
-      >
-        Skip for now → Go to Pet Home
-      </button>
-      
-      <p className="text-slate-500 text-xs mt-4 text-center max-w-sm">
-        Don't worry, I'll remind you! You can complete Soul Profiles anytime from the pet's profile page.
-      </p>
-    </motion.div>
-  );
-  
-  // ============================================================
-  // MAIN RENDER
-  // ============================================================
-  
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-purple-900/20 to-slate-900 safe-area-inset">
-      <AnimatePresence mode="wait">
-        {currentScreen === 'petCount' && renderPetCountScreen()}
-        {currentScreen === 'basicInfo' && renderBasicInfoScreen()}
-        {currentScreen === 'soulSnapshot' && renderSoulSnapshotScreen()}
-        {currentScreen === 'parentInfo' && renderParentInfoScreen()}
-        {currentScreen === 'welcome' && renderWelcomeScreen()}
-      </AnimatePresence>
-    </div>
-  );
+// ── Mira's count responses ─────────────────────────────────────────────
+const MIRA_COUNT = {
+  1: "Just the one — Mira will know them completely.",
+  2: "Two dogs — twice the love. Mira will know them both.",
+  3: "A beautiful trio. Mira will build a profile for each one.",
+  4: "A proper pack! Mira is already excited to meet all four.",
+  5: "Five dogs — you are a true pack parent. Mira is ready.",
+  6: "Six souls to know. Mira takes this seriously.",
+  7: "Seven! Your home must be full of joy. Mira will know every one.",
+  8: "A whole pack — Mira can't wait to meet them all. 🌷",
 };
 
-export default MiraMeetsYourPet;
-// Build timestamp: 1772789343
+// ── Fuzzy breed search ─────────────────────────────────────────────────
+function searchBreeds(query) {
+  if (!query.trim()) return [];
+  const q = query.toLowerCase().replace(/\s+/g, "");
+  return BREEDS.map(b => {
+    const bn = b.toLowerCase(), bnc = bn.replace(/\s+/g, "");
+    let score = 0;
+    if (bn.startsWith(query.toLowerCase()) || bnc.startsWith(q))   score = 100;
+    else if (bn.includes(query.toLowerCase()) || bnc.includes(q))  score = 80;
+    else if (bn.split(" ").some(w => w.startsWith(q.slice(0, 4)))) score = 60;
+    else {
+      let m = 0;
+      for (let i = 0; i < Math.min(q.length, 5); i++) if (bnc.includes(q[i])) m++;
+      score = m >= 4 ? 30 : 0;
+    }
+    return { b, score };
+  })
+  .filter(x => x.score > 0)
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 6)
+  .map(x => x.b);
+}
+
+// ── Progress dots ──────────────────────────────────────────────────────
+function Dots({ total, current }) {
+  return (
+    <div style={{ display:"flex", justifyContent:"center", gap:6, marginTop:20 }}>
+      {Array.from({ length: total }).map((_, i) => (
+        <div key={i} style={{
+          height: 6, borderRadius: 999,
+          width: i === current ? 20 : 6,
+          background: i < current ? G.purple : i === current ? MIRA_BTN : "rgba(107,70,193,0.2)",
+          transition: "all 0.3s",
+        }}/>
+      ))}
+    </div>
+  );
+}
+
+// ── Mira orb bar ──────────────────────────────────────────────────────
+function MiraBar({ label }) {
+  return (
+    <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:22 }}>
+      <div style={{
+        width:34, height:34, borderRadius:"50%", background:MIRA_ORB,
+        display:"flex", alignItems:"center", justifyContent:"center",
+        fontSize:15, color:"#fff", flexShrink:0,
+      }}>✦</div>
+      <div style={{ fontSize:13, fontWeight:700, color:G.muted }}>
+        The Doggy Company · Mira
+      </div>
+      {label && (
+        <div style={{ marginLeft:"auto", fontSize:11, color:"rgba(107,70,193,0.5)", fontWeight:600 }}>
+          {label}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Chip component ─────────────────────────────────────────────────────
+function Chip({ label, emoji, selected, onToggle }) {
+  return (
+    <button onClick={onToggle} style={{
+      padding:"8px 14px", borderRadius:999, margin:3,
+      border:`1.5px solid ${selected ? G.purple : "rgba(107,70,193,0.2)"}`,
+      background: selected ? G.purple : "#fff",
+      color: selected ? "#fff" : G.text,
+      fontSize:12, fontWeight: selected ? 700 : 400,
+      cursor:"pointer", transition:"all 0.15s",
+      display:"inline-flex", alignItems:"center", gap:5,
+    }}>
+      {emoji && <span style={{ fontSize:14 }}>{emoji}</span>}
+      {label}
+    </button>
+  );
+}
+
+// ── Next button ────────────────────────────────────────────────────────
+function NextBtn({ label, onClick, disabled }) {
+  return (
+    <button onClick={onClick} disabled={disabled} style={{
+      width:"100%", padding:"15px",
+      borderRadius:12, border:"none",
+      background: disabled ? "rgba(107,70,193,0.15)" : MIRA_BTN,
+      color: disabled ? G.muted : "#fff",
+      fontSize:15, fontWeight:700,
+      cursor: disabled ? "not-allowed" : "pointer",
+      marginTop:18, transition:"all 0.2s",
+    }}>
+      {label}
+    </button>
+  );
+}
+
+// ── Divider ────────────────────────────────────────────────────────────
+function Divider() {
+  return <div style={{ height:1, background:"rgba(107,70,193,0.1)", margin:"18px 0" }}/>;
+}
+
+// ── Section heading ────────────────────────────────────────────────────
+function SectionHead({ title, sub }) {
+  return (
+    <>
+      <div style={{ fontSize:14, fontWeight:700, color:G.text, margin:"0 0 4px" }}>{title}</div>
+      {sub && <div style={{ fontSize:11, color:G.sub, margin:"0 0 10px", lineHeight:1.5 }}>{sub}</div>}
+    </>
+  );
+}
+
+// ── Breed selector ─────────────────────────────────────────────────────
+function BreedSelector({ value, onChange, petName }) {
+  const [query,   setQuery]   = useState(value || "");
+  const [results, setResults] = useState([]);
+  const [open,    setOpen]    = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    setResults(query.length > 0 ? searchBreeds(query) : []);
+  }, [query]);
+
+  useEffect(() => {
+    const h = e => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, []);
+
+  return (
+    <div ref={ref}>
+      <SectionHead
+        title={petName ? `What breed is ${petName}?` : "What breed are they?"}
+        sub="Mira uses this to personalise everything — from food to farewell."
+      />
+      <div style={{ position:"relative" }}>
+        <input
+          value={query}
+          onChange={e => { setQuery(e.target.value); setOpen(true); onChange(""); }}
+          onFocus={() => setOpen(true)}
+          placeholder="Search… Indie, Labrador, Maltipoo"
+          style={{
+            width:"100%", padding:"14px 16px", borderRadius:12, fontSize:15,
+            border:`2px solid ${query ? G.purple : "rgba(107,70,193,0.2)"}`,
+            outline:"none", boxSizing:"border-box", color:G.text,
+            fontFamily:"inherit",
+          }}
+        />
+        {open && results.length > 0 && (
+          <div style={{
+            position:"absolute", top:"100%", left:0, right:0, zIndex:200,
+            background:"#fff", border:"1.5px solid rgba(107,70,193,0.2)",
+            borderRadius:12, boxShadow:"0 8px 24px rgba(0,0,0,0.1)",
+            marginTop:4, overflow:"hidden",
+          }}>
+            {results.map(b => (
+              <div key={b} onClick={() => { setQuery(b); onChange(b); setOpen(false); }}
+                style={{
+                  padding:"11px 16px", fontSize:14, cursor:"pointer",
+                  color:G.text, borderBottom:"1px solid rgba(107,70,193,0.07)",
+                  display:"flex", alignItems:"center", gap:8,
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = G.pale}
+                onMouseLeave={e => e.currentTarget.style.background = "#fff"}
+              >
+                🐾 {b}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      {value && (
+        <div style={{
+          background:G.pale, border:"1.5px solid rgba(107,70,193,0.25)",
+          borderRadius:10, padding:"10px 14px",
+          display:"flex", alignItems:"center", gap:8, marginTop:8,
+        }}>
+          <span style={{ fontSize:16 }}>🐾</span>
+          <div>
+            <div style={{ fontSize:13, fontWeight:700, color:G.muted }}>{value}</div>
+            <div style={{ fontSize:11, color:G.sub }}>Mira knows this breed ✓</div>
+          </div>
+        </div>
+      )}
+      <div style={{ fontSize:11, color:G.sub, marginTop:8, fontStyle:"italic" }}>
+        Don't see your breed? Type it — Mira is always learning.
+      </div>
+    </div>
+  );
+}
+
+// ── Photo uploader ─────────────────────────────────────────────────────
+function PhotoUploader({ petName, onPhoto }) {
+  const [preview,   setPreview]   = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [skipped,   setSkipped]   = useState(false);
+  const inputRef = useRef(null);
+
+  const handleFile = async (file) => {
+    if (!file || !file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = e => setPreview(e.target.result);
+    reader.readAsDataURL(file);
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch(`${API_URL}/api/upload/pet-photo-noop`, { method:"POST", body:form });
+      if (res.ok) {
+        const data = await res.json();
+        onPhoto(data.url || data.photo_url, rawFile);
+      } else {
+        onPhoto(null);
+      }
+    } catch { onPhoto(null); }
+    setUploading(false);
+  };
+
+  const name = petName || "your dog";
+
+  if (skipped) return (
+    <div style={{ fontSize:11, color:G.sub, fontStyle:"italic", marginBottom:4 }}>
+      Photo skipped — you can add one any time from the profile page.
+    </div>
+  );
+
+  return (
+    <div>
+      <SectionHead
+        title={petName ? `Add ${petName}'s photo` : "Add a photo"}
+        sub="Mira loves to see who she's helping"
+      />
+      <div
+        onClick={() => inputRef.current?.click()}
+        style={{
+          border:`2px dashed ${preview ? G.purple : "rgba(107,70,193,0.25)"}`,
+          borderRadius:14, padding: preview ? 0 : "22px 16px",
+          textAlign:"center", cursor:"pointer",
+          background: preview ? G.pale : "#fafafa",
+          overflow:"hidden", transition:"all 0.2s",
+          minHeight: preview ? 160 : "auto",
+          display:"flex", alignItems:"center", justifyContent:"center",
+        }}
+        onDragOver={e => e.preventDefault()}
+        onDrop={e => { e.preventDefault(); handleFile(e.dataTransfer.files[0]); }}
+      >
+        {preview ? (
+          <img src={preview} alt={name}
+            style={{ width:"100%", maxHeight:200, objectFit:"cover", borderRadius:12 }}/>
+        ) : (
+          <div>
+            <div style={{ fontSize:28, marginBottom:8 }}>📸</div>
+            <div style={{ fontSize:13, fontWeight:600, color:G.text, marginBottom:4 }}>
+              Add {petName ? `${petName}'s` : "a"} photo
+            </div>
+            <div style={{ fontSize:11, color:G.sub }}>Tap to choose · use camera on mobile</div>
+          </div>
+        )}
+      </div>
+      <input ref={inputRef} type="file" accept="image/*" capture="environment"
+        style={{ display:"none" }} onChange={e => handleFile(e.target.files[0])}/>
+      {uploading && (
+        <div style={{ fontSize:11, color:G.muted, textAlign:"center", marginTop:6 }}>Uploading…</div>
+      )}
+      {preview && !uploading && (
+        <div style={{ fontSize:11, color:G.purple, textAlign:"center", marginTop:6, fontStyle:"italic" }}>
+          Perfect. Mira will always recognise {name} now ♥
+        </div>
+      )}
+      {!preview && (
+        <div style={{ textAlign:"center", marginTop:8 }}>
+          <span onClick={() => setSkipped(true)}
+            style={{ fontSize:12, color:G.purple, cursor:"pointer", textDecoration:"underline" }}>
+            Skip for now →
+          </span>
+        </div>
+      )}
+      {preview && (
+        <button onClick={() => { setPreview(null); onPhoto(null); }}
+          style={{
+            marginTop:8, width:"100%", padding:"7px",
+            borderRadius:8, background:"none",
+            border:"1px solid rgba(107,70,193,0.2)",
+            color:G.sub, fontSize:12, cursor:"pointer",
+          }}>
+          Choose a different photo
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ── SCREEN 1: Pet count ────────────────────────────────────────────────
+function Screen1({ onNext }) {
+  const [count, setCount] = useState(0);
+
+  const counts = [1,2,3,4,5,6,7,8];
+
+  return (
+    <div>
+      <MiraBar/>
+      <h2 style={{ fontSize:"clamp(1.3rem,3vw,1.6rem)", fontWeight:800, color:G.text, fontFamily:"Georgia,serif", margin:"0 0 6px", lineHeight:1.3 }}>
+        How many furry friends do you have?
+      </h2>
+      <p style={{ fontSize:13, color:G.sub, margin:"0 0 20px", lineHeight:1.5 }}>
+        Mira will get to know each one personally.
+      </p>
+
+      <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:8 }}>
+        {counts.map(n => (
+          <button key={n} onClick={() => setCount(n)} style={{
+            width:52, height:52, borderRadius:12,
+            border:`2px solid ${count === n ? G.purple : "rgba(107,70,193,0.2)"}`,
+            background: count === n ? G.pale : "#fff",
+            fontSize: n === 8 ? 13 : 18,
+            fontWeight:700, color: count === n ? G.purple : G.text,
+            cursor:"pointer", transition:"all 0.15s",
+            display:"flex", alignItems:"center", justifyContent:"center",
+          }}>
+            {n === 8 ? "8+" : n}
+          </button>
+        ))}
+      </div>
+
+      {count > 0 && (
+        <div style={{
+          background:"linear-gradient(135deg,#1A0530,#2D1B69)",
+          borderRadius:12, padding:"14px 16px",
+          display:"flex", gap:10, alignItems:"flex-start",
+          marginBottom:4,
+        }}>
+          <div style={{ width:28, height:28, borderRadius:"50%", background:MIRA_ORB, display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, color:"#fff", flexShrink:0 }}>✦</div>
+          <div style={{ fontSize:13, color:"rgba(255,255,255,0.85)", fontStyle:"italic", lineHeight:1.6 }}>
+            {MIRA_COUNT[count] || MIRA_COUNT[8]}
+          </div>
+        </div>
+      )}
+
+      <NextBtn label="Let's meet them →" disabled={!count} onClick={() => onNext(count)}/>
+      <Dots total={4} current={0}/>
+    </div>
+  );
+}
+
+// ── SCREEN 2: Per-pet profile ──────────────────────────────────────────
+function Screen2({ petCount, onNext }) {
+  const [currentPetIndex, setCurrentPetIndex] = useState(0);
+  const [pets, setPets] = useState(
+    Array.from({ length: Math.min(petCount, 8) }, () => ({
+      name: "", breed: "", photo_url: null, photo_file: null,
+    }))
+  );
+
+  const pet = pets[currentPetIndex];
+  const updatePet = (field, value) => {
+    const updated = [...pets];
+    updated[currentPetIndex] = { ...updated[currentPetIndex], [field]: value };
+    setPets(updated);
+  };
+
+  const isLast = currentPetIndex >= pets.length - 1;
+  const btnLabel = pet.name
+    ? isLast ? `Mira, meet ${pet.name} — next step →` : `Next — tell Mira about dog ${currentPetIndex + 2} →`
+    : isLast ? "Next step →" : `Next dog →`;
+
+  const handleNext = () => {
+    if (isLast) {
+      onNext(pets);
+    } else {
+      setCurrentPetIndex(i => i + 1);
+    }
+  };
+
+  return (
+    <div>
+      <MiraBar label={pets.length > 1 ? `Dog ${currentPetIndex + 1} of ${pets.length}` : null}/>
+
+      <h2 style={{ fontSize:"clamp(1.2rem,3vw,1.4rem)", fontWeight:800, color:G.text, fontFamily:"Georgia,serif", margin:"0 0 6px", lineHeight:1.3 }}>
+        {pet.name ? `Tell Mira about ${pet.name}` : `Tell Mira about your ${currentPetIndex === 0 ? "first" : `dog ${currentPetIndex + 1}`}`}
+      </h2>
+      <p style={{ fontSize:13, color:G.sub, margin:"0 0 20px", lineHeight:1.5 }}>
+        Mira will remember everything you share.
+      </p>
+
+      {/* Name */}
+      <div style={{ marginBottom:16 }}>
+        <input
+          value={pet.name}
+          onChange={e => updatePet("name", e.target.value)}
+          placeholder="What do you call them?"
+          style={{
+            width:"100%", padding:"15px 16px", borderRadius:12,
+            fontSize:20, fontWeight:600,
+            border:`2px solid ${pet.name ? G.purple : "rgba(107,70,193,0.2)"}`,
+            outline:"none", boxSizing:"border-box", color:G.text,
+            fontFamily:"inherit",
+          }}
+        />
+        <div style={{ fontSize:11, color:G.sub, marginTop:5 }}>
+          This is how Mira will always address your dog
+        </div>
+      </div>
+
+      <Divider/>
+
+      {/* Photo */}
+      <div style={{ marginBottom:16 }}>
+        <PhotoUploader petName={pet.name} onPhoto={(url, file) => { updatePet("photo_url", url); updatePet("photo_file", file || null); }}/>
+      </div>
+
+      <Divider/>
+
+      {/* Breed */}
+      <BreedSelector
+        value={pet.breed}
+        petName={pet.name}
+        onChange={breed => updatePet("breed", breed)}
+      />
+
+      <NextBtn label={btnLabel} onClick={handleNext}/>
+      <Dots total={4} current={1}/>
+    </div>
+  );
+}
+
+// ── SCREEN 3: Soul snapshot ────────────────────────────────────────────
+function Screen3({ pets, onNext }) {
+  const [allergies,    setAllergies]    = useState(["none"]);
+  const [conditions,   setConditions]   = useState(["healthy"]);
+  const [carRide,      setCarRide]      = useState("");
+  const [dogFriendly,  setDogFriendly]  = useState("");
+  const [lifestyle,    setLifestyle]    = useState("");
+
+  const toggleAllergy = id => {
+    if (id === "none") { setAllergies(["none"]); return; }
+    const cur = allergies.filter(x => x !== "none");
+    setAllergies(cur.includes(id) ? cur.filter(x => x !== id) : [...cur, id]);
+  };
+  const toggleCondition = id => {
+    if (id === "healthy") { setConditions(["healthy"]); return; }
+    const cur = conditions.filter(x => x !== "healthy");
+    setConditions(cur.includes(id) ? cur.filter(x => x !== id) : [...cur, id]);
+  };
+
+  const petLabel = pets.length > 1 ? "your dogs" : (pets[0]?.name || "your dog");
+
+  return (
+    <div>
+      <MiraBar/>
+      <h2 style={{ fontSize:"clamp(1.2rem,3vw,1.4rem)", fontWeight:800, color:G.text, fontFamily:"Georgia,serif", margin:"0 0 6px", lineHeight:1.3 }}>
+        Quick soul snapshot
+      </h2>
+      <p style={{ fontSize:13, color:G.sub, margin:"0 0 20px", lineHeight:1.5 }}>
+        5 questions for {petLabel} — takes 60 seconds. Mira starts learning straight away.
+      </p>
+
+      {/* Allergies */}
+      <SectionHead
+        title="Any food allergies to know about? 🍖"
+        sub="Mira will never suggest food containing these"
+      />
+      <div style={{ display:"flex", flexWrap:"wrap", margin:"-3px 0 16px" }}>
+        {[
+          {id:"none",    label:"None known",   emoji:"✅"},
+          {id:"chicken", label:"Chicken",       emoji:"🍗"},
+          {id:"beef",    label:"Beef",          emoji:"🥩"},
+          {id:"grain",   label:"Grain / wheat", emoji:"🌾"},
+          {id:"dairy",   label:"Dairy",         emoji:"🥛"},
+          {id:"fish",    label:"Fish",          emoji:"🐟"},
+          {id:"soy",     label:"Soy",           emoji:"🫘"},
+          {id:"eggs",    label:"Eggs",          emoji:"🥚"},
+        ].map(opt => (
+          <Chip key={opt.id} label={opt.label} emoji={opt.emoji}
+            selected={allergies.includes(opt.id)}
+            onToggle={() => toggleAllergy(opt.id)}/>
+        ))}
+      </div>
+
+      <Divider/>
+
+      {/* Health conditions */}
+      <SectionHead
+        title="Any health conditions? 🏥"
+        sub="Mira filters recommendations accordingly"
+      />
+      <div style={{ display:"flex", flexWrap:"wrap", margin:"-3px 0 16px" }}>
+        {[
+          {id:"healthy",   label:"All healthy",   emoji:"✅"},
+          {id:"joint",     label:"Joint issues",   emoji:"🦴"},
+          {id:"anxiety",   label:"Anxiety",        emoji:"🌸"},
+          {id:"dental",    label:"Dental",         emoji:"🦷"},
+          {id:"weight",    label:"Weight",         emoji:"⚖️"},
+          {id:"heart",     label:"Heart",          emoji:"❤️"},
+          {id:"digestive", label:"Digestive",      emoji:"🥗"},
+          {id:"senior",    label:"Senior care",    emoji:"🌷"},
+        ].map(opt => (
+          <Chip key={opt.id} label={opt.label} emoji={opt.emoji}
+            selected={conditions.includes(opt.id)}
+            onToggle={() => toggleCondition(opt.id)}/>
+        ))}
+      </div>
+
+      <Divider/>
+
+      {/* Car rides */}
+      <SectionHead
+        title="How do they feel about car rides? 🚗"
+        sub="Helps Mira with travel and Go recommendations"
+      />
+      <div style={{ display:"flex", flexWrap:"wrap", margin:"-3px 0 16px" }}>
+        {[
+          {id:"love",     label:"Love it",     emoji:"😍"},
+          {id:"okay",     label:"Okay with it", emoji:"😐"},
+          {id:"nervous",  label:"Nervous",      emoji:"😰"},
+          {id:"refuses",  label:"Refuses",      emoji:"🚫"},
+        ].map(opt => (
+          <Chip key={opt.id} label={opt.label} emoji={opt.emoji}
+            selected={carRide === opt.id}
+            onToggle={() => setCarRide(opt.id)}/>
+        ))}
+      </div>
+
+      <Divider/>
+
+      {/* Dog friendly */}
+      <SectionHead
+        title={`How ${pets.length > 1 ? "are they" : `is ${pets[0]?.name || "your dog"}`} with other dogs?`}
+        sub="Mira uses this for social and play recommendations"
+      />
+      <div style={{ display:"flex", flexWrap:"wrap", margin:"-3px 0 16px" }}>
+        {[
+          {id:"loves",     label:"Loves everyone",  emoji:"🤗"},
+          {id:"selective", label:"Selective",        emoji:"🤔"},
+          {id:"shy",       label:"Shy",              emoji:"🌸"},
+          {id:"reactive",  label:"Can be reactive",  emoji:"⚡"},
+        ].map(opt => (
+          <Chip key={opt.id} label={opt.label} emoji={opt.emoji}
+            selected={dogFriendly === opt.id}
+            onToggle={() => setDogFriendly(opt.id)}/>
+        ))}
+      </div>
+
+      <Divider/>
+
+      {/* Lifestyle */}
+      <SectionHead
+        title="What's the home vibe? 🏠"
+        sub="Helps Mira understand daily life"
+      />
+      <div style={{ display:"flex", flexWrap:"wrap", margin:"-3px 0 4px" }}>
+        {[
+          {id:"apartment",  label:"Apartment life",   emoji:"🏢"},
+          {id:"house",      label:"House + garden",   emoji:"🏡"},
+          {id:"farm",       label:"Farm / rural",     emoji:"🌾"},
+          {id:"travel",     label:"Always travelling", emoji:"✈️"},
+        ].map(opt => (
+          <Chip key={opt.id} label={opt.label} emoji={opt.emoji}
+            selected={lifestyle === opt.id}
+            onToggle={() => setLifestyle(opt.id)}/>
+        ))}
+      </div>
+
+      <NextBtn
+        label="Almost there →"
+        onClick={() => onNext({ allergies, conditions, carRide, dogFriendly, lifestyle })}
+      />
+      <Dots total={4} current={2}/>
+    </div>
+  );
+}
+
+// ── SCREEN 4: Parent account ───────────────────────────────────────────
+function Screen4({ pets, snapshot, onComplete, loading }) {
+  const [form, setForm] = useState({
+    name:"", email:"", phone:"", whatsapp:"", password:"", wa_updates:true,
+  });
+
+  const set = (field, val) => setForm(f => ({ ...f, [field]: val }));
+  const ready = form.name && form.email && form.phone && form.password;
+
+  const firstPetName = pets[0]?.name;
+
+  return (
+    <div>
+      <MiraBar/>
+      <h2 style={{ fontSize:"clamp(1.2rem,3vw,1.4rem)", fontWeight:800, color:G.text, fontFamily:"Georgia,serif", margin:"0 0 6px", lineHeight:1.3 }}>
+        Last step — it's about you
+      </h2>
+      <p style={{ fontSize:13, color:G.sub, margin:"0 0 20px", lineHeight:1.5 }}>
+        So Mira can reach you on WhatsApp with updates about your pack.
+      </p>
+
+      <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+        {[
+          { field:"name",     placeholder:"What should we call you?",    type:"text",     label:"Your name" },
+          { field:"email",    placeholder:"your@email.com",              type:"email",    label:"Email" },
+          { field:"phone",    placeholder:"10-digit mobile number",      type:"tel",      label:"Mobile" },
+        ].map(f => (
+          <div key={f.field}>
+            <label style={{ fontSize:12, fontWeight:700, color:G.muted, display:"block", marginBottom:5 }}>
+              {f.label}
+            </label>
+            <input
+              type={f.type}
+              placeholder={f.placeholder}
+              value={form[f.field]}
+              onChange={e => set(f.field, e.target.value)}
+              style={{
+                width:"100%", padding:"13px 14px", borderRadius:10,
+                fontSize:14, border:`1.5px solid ${form[f.field] ? G.purple : "rgba(107,70,193,0.2)"}`,
+                outline:"none", boxSizing:"border-box", color:G.text, fontFamily:"inherit",
+              }}
+            />
+          </div>
+        ))}
+
+        {/* WhatsApp — only if different */}
+        <div>
+          <label style={{ fontSize:12, fontWeight:700, color:G.muted, display:"block", marginBottom:5 }}>
+            WhatsApp <span style={{ fontWeight:400, color:G.sub }}>(leave blank if same as mobile)</span>
+          </label>
+          <input
+            type="tel" placeholder="Different WhatsApp number?"
+            value={form.whatsapp}
+            onChange={e => set("whatsapp", e.target.value)}
+            style={{
+              width:"100%", padding:"13px 14px", borderRadius:10,
+              fontSize:14, border:"1.5px solid rgba(107,70,193,0.2)",
+              outline:"none", boxSizing:"border-box", color:G.text, fontFamily:"inherit",
+            }}
+          />
+        </div>
+
+        <div>
+          <label style={{ fontSize:12, fontWeight:700, color:G.muted, display:"block", marginBottom:5 }}>
+            Password
+          </label>
+          <input
+            type="password" placeholder="Choose a password"
+            value={form.password}
+            onChange={e => set("password", e.target.value)}
+            style={{
+              width:"100%", padding:"13px 14px", borderRadius:10,
+              fontSize:14, border:`1.5px solid ${form.password ? G.purple : "rgba(107,70,193,0.2)"}`,
+              outline:"none", boxSizing:"border-box", color:G.text, fontFamily:"inherit",
+            }}
+          />
+        </div>
+
+        {/* WhatsApp opt-in */}
+        <div style={{
+          background:G.pale, borderRadius:10, padding:"12px 14px",
+          display:"flex", alignItems:"flex-start", gap:10,
+        }}>
+          <input type="checkbox" id="wa-opt"
+            checked={form.wa_updates}
+            onChange={e => set("wa_updates", e.target.checked)}
+            style={{ marginTop:2, accentColor:G.purple, cursor:"pointer" }}
+          />
+          <label htmlFor="wa-opt" style={{ fontSize:12, color:G.text, lineHeight:1.6, cursor:"pointer" }}>
+            Send me updates about {pets.length > 1 ? "my dogs" : firstPetName || "my dog"} on WhatsApp — Mira will keep me informed about bookings, recommendations and care reminders
+          </label>
+        </div>
+      </div>
+
+      <NextBtn
+        label={loading ? "Setting up your pack…" : "Mira is ready to meet your pack →"}
+        disabled={!ready || loading}
+        onClick={() => onComplete(form)}
+      />
+      <Dots total={4} current={3}/>
+    </div>
+  );
+}
+
+// ── Main export ────────────────────────────────────────────────────────
+export default function MiraMeetsYourPet() {
+  const navigate = useNavigate();
+
+  const [screen,   setScreen]   = useState(1);
+  const [petCount, setPetCount] = useState(0);
+  const [pets,     setPets]     = useState([]);
+  const [snapshot, setSnapshot] = useState(null);
+  const [loading,  setLoading]  = useState(false);
+  const [error,    setError]    = useState("");
+
+  const handleCount = (count) => {
+    setPetCount(count);
+    setScreen(2);
+  };
+
+  const handlePets = (petData) => {
+    setPets(petData);
+    setScreen(3);
+  };
+
+  const handleSnapshot = (snap) => {
+    setSnapshot(snap);
+    setScreen(4);
+  };
+
+  const handleComplete = async (form) => {
+    setLoading(true);
+    setError("");
+    try {
+      // Register parent
+      const regRes = await fetch(`${API_URL}/api/auth/membership/onboard`, {
+        method: "POST",
+        headers: { "Content-Type":"application/json" },
+        body: JSON.stringify({
+          name:       form.name,
+          email:      form.email,
+          password:   form.password,
+          phone:      form.phone,
+          whatsapp:   form.whatsapp || form.phone,
+          wa_updates: form.wa_updates,
+        }),
+      });
+
+      if (!regRes.ok) {
+        const err = await regRes.json();
+        setError(err.detail || "Something went wrong. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      const { access_token, user } = await regRes.json();
+      localStorage.setItem("tdb_auth_token", access_token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Create pets and collect their IDs for photo upload
+      const createdPets = [];
+      for (const pet of pets) {
+        if (!pet.name) continue;
+        try {
+          const petRes = await fetch(`${API_URL}/api/pets`, {
+            method: "POST",
+            headers: {
+              "Content-Type":"application/json",
+              "Authorization": `Bearer ${access_token}`,
+            },
+            body: JSON.stringify({
+              name:      pet.name,
+              breed:     pet.breed || "",
+              photo_url: null,
+              species:   "dog",
+              doggy_soul_answers: {
+                food_allergies:    snapshot?.allergies || [],
+                health_conditions: snapshot?.conditions || [],
+                car_comfort:       snapshot?.carRide || "",
+                dog_social:        snapshot?.dogFriendly || "",
+                home_type:         snapshot?.lifestyle || "",
+              },
+            }),
+          });
+          if (petRes.ok) {
+            const petData = await petRes.json();
+            createdPets.push({ ...pet, id: petData.id || petData.pet_id || petData._id });
+          }
+        } catch {}
+      }
+
+      // Option A: upload photos after pet creation (need pet IDs from response)
+      for (let i = 0; i < createdPets.length; i++) {
+        const pet = form.pets[i];
+        const petId = createdPets[i]?.id;
+        if (pet.photo_file && petId && access_token) {
+          try {
+            const photoForm = new FormData();
+            photoForm.append("photo", pet.photo_file);
+            await fetch(`${API_URL}/api/pets/${petId}/photo`, {
+              method: "POST",
+              headers: { Authorization: `Bearer ${access_token}` },
+              body: photoForm,
+            });
+          } catch(e) { console.warn("Photo upload failed for", petId, e); }
+        }
+      }
+      navigate("/soul-builder");
+    } catch {
+      setError("Could not connect. Please check your connection and try again.");
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div style={{
+      minHeight:"100vh",
+      background:`linear-gradient(135deg,${G.deep} 0%,${G.mid} 100%)`,
+      display:"flex", alignItems:"flex-start", justifyContent:"center",
+      padding:"24px 16px 60px",
+    }}>
+      <div style={{
+        background:"#fff", borderRadius:24,
+        padding:"28px 24px", maxWidth:460, width:"100%",
+        boxShadow:"0 24px 80px rgba(0,0,0,0.35)",
+      }}>
+
+        {error && (
+          <div style={{
+            background:"#FEF2F2", border:"1px solid #FECACA",
+            borderRadius:10, padding:"10px 14px",
+            fontSize:13, color:"#B91C1C", marginBottom:16,
+          }}>
+            {error}
+          </div>
+        )}
+
+        {screen === 1 && <Screen1 onNext={handleCount}/>}
+        {screen === 2 && <Screen2 petCount={petCount} onNext={handlePets}/>}
+        {screen === 3 && <Screen3 pets={pets} onNext={handleSnapshot}/>}
+        {screen === 4 && (
+          <Screen4
+            pets={pets}
+            snapshot={snapshot}
+            onComplete={handleComplete}
+            loading={loading}
+          />
+        )}
+
+      </div>
+    </div>
+  );
+}
