@@ -1661,14 +1661,30 @@ const PlaySoulPage = () => {
             <p style={{fontSize:13,fontWeight:700,color:G.deep,marginBottom:12}}>What are we planning?</p>
             <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:24}}>
               {["Find a dog park nearby","Coordinate a playdate","Book agility training","Book a swim session","Find indoor play","Socialisation class","Off-lead adventure","Puppy play session","Just exploring"].map(opt=>(
-                <button key={opt}
+                <button key={opt} id={`play-opt-${opt}`}
                   style={{borderRadius:9999,padding:"8px 16px",fontSize:13,cursor:"pointer",background:"#F0FFF4",border:"1.5px solid #A8D5B5",color:G.deep}}
-                  onClick={e=>{e.currentTarget.style.background=G.light;e.currentTarget.style.color="#fff";}}>
+                  onClick={e=>{
+                    document.querySelectorAll('[id^="play-opt-"]').forEach(b=>{b.style.background="#F0FFF4";b.style.color=G.deep;});
+                    e.currentTarget.style.background=G.light;e.currentTarget.style.color="#fff";
+                    e.currentTarget.dataset.selected="true";
+                  }}>
                   {opt}
                 </button>
               ))}
             </div>
-            <button onClick={()=>setPlayConciergOpen(false)}
+            <button onClick={async ()=>{
+              const sel = document.querySelector('[id^="play-opt-"][data-selected="true"]');
+              const choice = sel?.innerText || "Play activity";
+              const u=JSON.parse(localStorage.getItem('user')||'{}');
+              await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`,{
+                method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},
+                body:JSON.stringify({parent_id:u?.id||u?.email||'guest',pet_id:petData?.id||'unknown',
+                  pillar:'play',intent_primary:'service_booking',intent_secondary:[choice],
+                  life_state:'play',channel:'play_concierge_modal',
+                  initial_message:{sender:'parent',text:`I'd like to: ${choice} for ${petData?.name||'my dog'}`}})
+              }).catch(()=>{});
+              setPlayConciergOpen(false);
+            }}
               style={{width:"100%",background:`linear-gradient(135deg,${G.light},${G.deep})`,color:"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:15,fontWeight:800,cursor:"pointer"}}>
               ✦ Send to {petData?.name||"your dog"}'s Concierge
             </button>

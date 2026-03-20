@@ -2076,14 +2076,30 @@ const GoSoulPage = () => {
           <p style={{fontSize:13,fontWeight:700,color:G.deep,marginBottom:12}}>What are we planning?</p>
           <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:24}}>
             {["Pet-friendly hotel","Overnight boarding","Day care","Road trip","Flight with pet","Pet sitter at home","International travel","Local staycation","Just exploring"].map(opt=>(
-              <button key={opt}
+              <button key={opt} id={`go-opt-${opt.replace(/\s+/g,'-')}`}
                 style={{borderRadius:9999,padding:"8px 16px",fontSize:13,cursor:"pointer",background:"#E8FBF7",border:"1.5px solid #A7DFCF",color:G.deep}}
-                onClick={e=>{e.currentTarget.style.background=G.teal;e.currentTarget.style.color="#fff";}}>
+                onClick={e=>{
+                  document.querySelectorAll('[id^="go-opt-"]').forEach(b=>{b.style.background="#E8FBF7";b.style.color=G.deep;});
+                  e.currentTarget.style.background=G.teal;e.currentTarget.style.color="#fff";
+                  e.currentTarget.dataset.selected="true";
+                }}>
                 {opt}
               </button>
             ))}
           </div>
-          <button onClick={()=>setGoConciergOpen(false)}
+          <button onClick={async ()=>{
+            const sel = document.querySelector('[id^="go-opt-"][data-selected="true"]');
+            const choice = sel?.innerText || "Travel service";
+            const u=JSON.parse(localStorage.getItem('user')||'{}');
+            await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`,{
+              method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},
+              body:JSON.stringify({parent_id:u?.id||u?.email||'guest',pet_id:petData?.id||'unknown',
+                pillar:'go',intent_primary:'service_booking',intent_secondary:[choice],
+                life_state:'go',channel:'go_concierge_modal',
+                initial_message:{sender:'parent',text:`I'd like: ${choice} for ${petData?.name||'my dog'}`}})
+            }).catch(()=>{});
+            setGoConciergOpen(false);
+          }}
             style={{width:"100%",background:`linear-gradient(135deg,${G.teal},${G.deep})`,color:"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:15,fontWeight:800,cursor:"pointer"}}>
             ✦ Send to {petData?.name||"your dog"}'s Concierge
           </button>

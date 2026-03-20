@@ -191,7 +191,7 @@ const UnifiedCheckout = () => {
     }
   };
   
-  // Fetch smart recommendations based on cart items AND user's pet profile (Mira-powered)
+  // Fetch smart recommendations — PET FIRST, BREED NEXT (Mira-powered)
   useEffect(() => {
     const fetchRecommendations = async () => {
       if (cartItems.length === 0) return;
@@ -199,19 +199,39 @@ const UnifiedCheckout = () => {
       try {
         const categories = [...new Set(cartItems.map(item => item.category).filter(Boolean))];
         const cartIds = cartItems.map(item => item.id).join(',');
-        
-        // Use Mira-powered personalized endpoint if user is logged in
+        // Get active pet context for breed filtering
+        const activePet = JSON.parse(localStorage.getItem('activePet') || '{}');
+        const petBreed = activePet?.breed || orderInfo?.petBreed || '';
+        const petId = activePet?.id || user?.pet_id || '';
+
         let endpoint = `${API_URL}/api/products/recommendations?categories=${categories.join(',')}&limit=6&exclude_ids=${cartIds}`;
-        
-        // If user is logged in, use personalised recommendations
+
+        // Personalised + breed-filtered if logged in
         if (user?.id) {
           endpoint = `${API_URL}/api/products/recommendations/personalized?user_id=${user.id}&categories=${categories.join(',')}&limit=6&exclude_ids=${cartIds}`;
+          if (petId) endpoint += `&pet_id=${encodeURIComponent(petId)}`;
+          if (petBreed) endpoint += `&breed=${encodeURIComponent(petBreed)}`;
         }
-        
-        const response = await fetch(endpoint);
+
+        const response = await fetch(endpoint, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
         if (response.ok) {
           const data = await response.json();
-          setRecommendations((data.products || []).slice(0, 4));
+          // Client-side breed filter — PET FIRST, BREED NEXT
+          const breedLower = petBreed.toLowerCase();
+          const known = ['american bully','beagle','border collie','boxer','chow chow','french bulldog','german shepherd','golden retriever','husky','indie','labrador','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
+          const filtered = (data.products||[]).filter(p => {
+            const nm = (p.name||'').toLowerCase();
+            for (const b of known) {
+              if (nm.includes(b)) {
+                if (!breedLower) return false;
+                return nm.includes(breedLower) || breedLower.split(/\s+/).some(w=>w.length>2&&b.includes(w));
+              }
+            }
+            return true;
+          });
+          setRecommendations(filtered.slice(0, 4));
         }
       } catch (err) {
         console.error('Error fetching recommendations:', err);
@@ -220,7 +240,7 @@ const UnifiedCheckout = () => {
       }
     };
     fetchRecommendations();
-  }, [cartItems, user]);
+  }, [cartItems, user, token, orderInfo?.petBreed]);
 
   // Calculate shipping fee (delivery only - store pickup removed)
   const shippingFee = useMemo(() => {
@@ -766,7 +786,7 @@ const UnifiedCheckout = () => {
                   <div className="mt-6 pt-6 border-t">
                     <h3 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-amber-500" />
-                      Frequently Bought Together
+                      Mira also recommends for {orderInfo?.petName || "your dog"}
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
                       {recommendations.map((rec) => (

@@ -45,8 +45,12 @@ import MiraBirthdayBox from '../components/celebrate/MiraBirthdayBox';
 import BirthdayBoxBuilder from '../components/celebrate/BirthdayBoxBuilder';
 import BirthdayBoxBrowseDrawer from '../components/celebrate/BirthdayBoxBrowseDrawer';
 import CelebrateNearMe from '../components/celebrate/CelebrateNearMe';
+import CelebrateContentModal from '../components/celebrate/CelebrateContentModal';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from '../hooks/useMiraIntelligence';
+import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
+import { ProductDetailModal } from '../components/ProductCard';
+
 
 // API utilities
 import { getApiUrl, API_URL } from '../utils/api';
@@ -62,6 +66,7 @@ function filterBreedProducts(products, petBreed) {
 function CelebrateMiraPicksSection({ pet, token }) {
   const [picks, setPicks]         = useState([]);
   const [picksLoading, setPicksLoading] = useState(true);
+  const [selPick,  setSelPick]    = useState(null);
   const { note, orderCount, topInterest } = useMiraIntelligence(pet?.id, token);
   const petName = pet?.name || "your dog";
   const breed   = (pet?.breed||"").split("(")[0].trim();
@@ -98,13 +103,17 @@ function CelebrateMiraPicksSection({ pet, token }) {
       {!picksLoading&&picks.length>0&&(
         <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}}>
           {picks.map((pick,i)=>{const score=pick.mira_score||0;const col=score>=80?"#16A34A":score>=70?"#C44DFF":"#6B7280";const img=[pick.image_url,pick.image].find(u=>u&&u.startsWith("http"))||null;return(
-            <div key={i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:"1.5px solid rgba(196,77,255,0.15)",overflow:"hidden",cursor:"pointer",transition:"transform 0.15s"}} onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e=>e.currentTarget.style.transform=""}>
+            <div key={pick.id||i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:"1.5px solid rgba(196,77,255,0.15)",overflow:"hidden",cursor:"pointer",transition:"transform 0.15s"}}
+              onClick={()=>setSelPick(pick)}
+              onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e=>e.currentTarget.style.transform=""}>
               <div style={{width:"100%",height:130,background:"#FAF5FF",overflow:"hidden",position:"relative"}}>{img?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>:<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#3B0764,#7C3AED)",color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,18)}</div>}</div>
               <div style={{padding:"10px 11px 12px"}}><div style={{fontSize:12,fontWeight:700,color:"#1a0a2e",lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||"—"}</div><div style={{display:"flex",alignItems:"center",gap:5}}><div style={{flex:1,height:4,background:"#FAF5FF",borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:col,borderRadius:4}}/></div><span style={{fontSize:10,fontWeight:800,color:col,minWidth:26}}>{score}</span></div></div>
             </div>
           );})}
         </div>
       )}
+      {selPick && <ProductDetailModal product={selPick} pillar="celebrate" selectedPet={pet} onClose={()=>setSelPick(null)}/>}
+
     </section>
   );
 }
@@ -231,6 +240,7 @@ const CelebratePageNew = () => {
   
   const [soulScore, setSoulScore] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [celebrateCatModal, setCelebrateCatModal] = useState(null);
 
   // Wait for pet data to load from context
   useEffect(() => {
@@ -340,9 +350,8 @@ const CelebratePageNew = () => {
   }, [selectedPet?.name]);
 
   // Handle category selection from strip
-  const handleCategorySelect = useCallback((categoryId) => {
-    console.log('[CelebratePageNew] Category selected:', categoryId);
-    // The modal is handled inside CelebrateCategoryStrip
+  const handleCategorySelect = useCallback((categoryId, categoryObj) => {
+    setCelebrateCatModal({ id: categoryId, obj: categoryObj });
   }, []);
 
   // Show loading state
@@ -440,6 +449,16 @@ const CelebratePageNew = () => {
 
       {/* BIRTHDAY BOX BROWSE DRAWER — listens to openBirthdayBoxBrowse event */}
       <BirthdayBoxBrowseDrawer />
+
+      {/* CATEGORY STRIP MODAL — rendered here (outside Framer Motion tree) to fix fixed positioning */}
+      {celebrateCatModal && (
+        <CelebrateContentModal
+          isOpen={true}
+          onClose={() => setCelebrateCatModal(null)}
+          category={celebrateCatModal.id}
+          pet={selectedPet}
+        />
+      )}
     </PillarPageLayout>
   );
 };

@@ -100,7 +100,7 @@ class RouteIntentResponse(BaseModel):
 
 class InitialMessage(BaseModel):
     sender: str
-    source: str
+    source: str = "pillar_page"
     text: str
 
 class AttachOrCreateTicketRequest(BaseModel):
@@ -332,6 +332,39 @@ async def route_intent(request: RouteIntentRequest):
 # TICKET MANAGEMENT
 # ============================================
 
+
+def generate_mira_briefing(pet: dict, service_name: str, pillar: str) -> str:
+    """Generates a Concierge briefing from pet soul profile — prepended to every ticket."""
+    if not pet:
+        return ""
+    soul = pet.get("doggy_soul_answers", {})
+    name = pet.get("name", "this dog")
+    breed = pet.get("breed", "Mixed breed")
+    soul_score = pet.get("overall_score") or pet.get("soul_score") or 0
+    age_map = {"puppy":"Puppy (<1yr)","young":"Young (1-3yr)","adult":"Adult (3-7yr)","senior":"Senior (7+yr)"}
+    age_label = age_map.get(soul.get("age_stage",""), soul.get("age_stage","Unknown age"))
+    allergies = soul.get("food_allergies",[])
+    allergy_clean = [a for a in (allergies if isinstance(allergies,list) else [allergies]) if a not in ["none","none known","","None"]]
+    allergy_line = f"⚠️ ALLERGIES: {', '.join(a.title() for a in allergy_clean)} — never suggest these" if allergy_clean else "No known food allergies"
+    conditions = soul.get("health_conditions",[])
+    cond_clean = [c.replace("_"," ").title() for c in (conditions if isinstance(conditions,list) else [conditions]) if c not in ["none","healthy","all_healthy","","None"]]
+    health_line = ", ".join(cond_clean) if cond_clean else "No known health conditions"
+    energy = soul.get("energy_level","") or soul.get("energy","")
+    city = pet.get("city","") or soul.get("location","")
+    briefing = f"""
+━━━ ✦ MIRA'S BRIEFING FOR CONCIERGE ━━━
+🐾 Pet: {name} | Breed: {breed} | {age_label} | Soul Score: {soul_score}%
+📍 Location: {city or 'Not set'}
+🍽️ Allergies: {allergy_line}
+💊 Health: {health_line}
+⚡ Energy: {energy.replace('_',' ').title() if energy else 'Not set'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Request: {service_name} | Pillar: {pillar.title()}
+Mira says: Concierge, please respond to {name}'s parent with full context above.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
+    return briefing.strip()
+
+
 async def generate_ticket_id() -> str:
     """Generate a unique ticket ID like TCK-2026-000321"""
     db = get_db()
@@ -347,6 +380,13 @@ async def generate_ticket_id() -> str:
         })
     
     return f"TCK-{year}-{str(count + 1).zfill(6)}"
+
+
+def get_parent_id_from_request(request_parent_id: str, db) -> str:
+    """Always returns a non-empty parent_id"""
+    if request_parent_id and request_parent_id != "guest":
+        return request_parent_id
+    return "anonymous"
 
 
 async def find_existing_ticket(
@@ -437,10 +477,45 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
     # Create new ticket
     ticket_id = await generate_ticket_id()
     
+    # ── Generate smart subject line ─────────────────────────────────
+    service_name = (request.intent_secondary or [request.intent_primary or request.pillar.title()])[0]
+    service_name = service_name.replace("_"," ").replace("-"," ").title()
+    pet_name = ""
+    pet_doc = None
+    if request.pet_id:
+        pet_doc = await db.pets.find_one({"id": request.pet_id}, {"name":1,"breed":1,"doggy_soul_answers":1,"overall_score":1,"soul_score":1,"city":1})
+        if pet_doc:
+            pet_name = pet_doc.get("name","")
+    subject = f"{service_name} for {pet_name}" if pet_name else f"{service_name} — {request.pillar.title()} Request"
+
+    # ── Generate Mira briefing from soul profile ─────────────────────
+    mira_briefing = ""
+    if request.pet_id and pet_doc:
+        mira_briefing = generate_mira_briefing(pet_doc, service_name, request.pillar)
+
+    # ── Build conversation with briefing prepended ───────────────────
+    conversation = []
+    if mira_briefing:
+        conversation.append({
+            "sender": "mira",
+            "source": "soul_profile_briefing",
+            "text": mira_briefing,
+            "timestamp": now.isoformat(),
+            "is_briefing": True,
+        })
+    conversation.append({
+        "sender": request.initial_message.sender,
+        "source": getattr(request.initial_message, "source", request.channel),
+        "text": request.initial_message.text,
+        "timestamp": now.isoformat()
+    })
+
     ticket_doc = {
         "ticket_id": ticket_id,
+        "subject": subject,
         "parent_id": request.parent_id,
         "pet_id": request.pet_id,
+        "pet_name": pet_name,
         "pillar": request.pillar,
         "intent_primary": request.intent_primary,
         "intent_secondary": request.intent_secondary,
@@ -449,25 +524,61 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "status": "open_mira_only",
         "handoff_to_concierge": False,
         "concierge_queue": None,
-        # New: Step tracking for anti-loop
-        "completed_steps": [],  # List of step_ids that have been answered
-        "current_step": None,  # Currently open step_id waiting for answer
-        "step_history": [],  # Full history of steps with questions and answers
-        "conversation": [
-            {
-                "sender": request.initial_message.sender,
-                "source": request.initial_message.source,
-                "text": request.initial_message.text,
-                "timestamp": now.isoformat()
-            }
-        ],
+        "completed_steps": [],
+        "current_step": None,
+        "step_history": [],
+        "mira_briefing": mira_briefing,
+        "conversation": conversation,
         "created_at": now.isoformat(),
         "updated_at": now.isoformat()
     }
     
     await db.mira_conversations.insert_one(ticket_doc)
-    
-    logger.info(f"[SERVICE_DESK] Created new ticket: {ticket_id} for pillar: {request.pillar}")
+
+    # ── ALSO write to service_desk_tickets (admin inbox collection) ──────
+    admin_ticket = {
+        "id":            ticket_id,
+        "ticket_id":     ticket_id,
+        "type":          request.intent_primary or "service_booking",
+        "category":      request.pillar,
+        "sub_category":  service_name.lower().replace(" ","_"),
+        "subject":       subject,
+        "description":   f"{mira_briefing}\n\n{request.initial_message.text}" if mira_briefing else request.initial_message.text,
+        "status":        "open",
+        "priority":      "normal",
+        "channel":       request.channel,
+        "pillar":        request.pillar,
+        "pet_id":        request.pet_id,
+        "pet_name":      pet_name,
+        "parent_id":     request.parent_id,
+        "user_email":    request.parent_id if "@" in (request.parent_id or "") else None,
+        "mira_briefing": mira_briefing,
+        "life_state":    request.life_state,
+        "created_at":    now.isoformat(),
+        "updated_at":    now.isoformat(),
+        "assigned_to":   None,
+        "activity_log":  [{"action": "created", "timestamp": now.isoformat(), "details": f"Ticket created via {request.channel}"}],
+        "conversation":  ticket_doc.get("conversation", []),
+    }
+    await db.service_desk_tickets.insert_one(admin_ticket)
+
+    # ── Admin notification ─────────────────────────────────────────
+    await db.admin_notifications.insert_one({
+        "type": "new_ticket", "ticket_id": ticket_id,
+        "subject": subject, "pillar": request.pillar,
+        "pet_name": pet_name, "parent_id": request.parent_id,
+        "read": False, "created_at": now.isoformat(),
+    })
+
+    # ── Member notification ────────────────────────────────────────
+    await db.member_notifications.insert_one({
+        "type": "ticket_created", "ticket_id": ticket_id,
+        "parent_id": request.parent_id, "subject": subject,
+        "message": f"Your request for {service_name} has been received. Concierge® will be in touch shortly.",
+        "pillar": request.pillar, "read": False, "created_at": now.isoformat(),
+    })
+
+    logger.info(f"[SERVICE_DESK] Created enriched ticket: {ticket_id} — '{subject}' | briefing={'yes' if mira_briefing else 'no'}")
     
     return AttachOrCreateTicketResponse(
         ticket_id=ticket_id,

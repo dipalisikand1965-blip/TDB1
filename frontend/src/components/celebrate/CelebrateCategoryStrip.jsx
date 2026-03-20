@@ -91,8 +91,8 @@ const CelebrateCategoryStrip = ({ pet, onCategorySelect }) => {
 
   const handleCategoryClick = (cat) => {
     setActiveCategory(cat);
-    setShowModal(true);
-    if (onCategorySelect) onCategorySelect(cat);
+    setShowModal(false); // modal handled by parent — outside Framer Motion tree
+    if (onCategorySelect) onCategorySelect(cat.id, cat);
   };
 
   const updateScrollButtons = () => {
