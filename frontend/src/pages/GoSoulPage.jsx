@@ -305,6 +305,7 @@ function resolvePickImage(pick) {
 }
 
 function MiraPicksSection({ pet }) {
+  const [scoringPending, setScoringPending] = useState(false);
   const [picks, setPicks]               = useState([]);
   const [loading, setLoading]           = useState(true);
   const [selectedPick, setSelectedPick] = useState(null);

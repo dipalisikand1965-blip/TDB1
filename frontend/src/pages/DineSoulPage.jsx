@@ -847,6 +847,7 @@ function resolvePickImage(pick) {
   return candidates.find(url => url && url.startsWith('http')) || null;
 }
 function MiraPicksSection({ pet }) {
+  const [scoringPending, setScoringPending] = useState(false);
   const [picks, setPicks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPick, setSelectedPick] = useState(null);
@@ -918,6 +919,7 @@ function MiraPicksSection({ pet }) {
           if (si < svcs.length) merged.push(svcs[si++]);
         }
         if (merged.length) setPicks(merged.slice(0, 16));
+          if (merged?.some?.(p=>p?.is_fallback)) setScoringPending(true);
         setLoading(false);
       })
       .catch(() => setLoading(false));

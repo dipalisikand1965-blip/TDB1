@@ -339,15 +339,17 @@ async def process_products_batch(pillar: Optional[str] = None):
                 cloudinary_url = await generate_ai_image(prompt)
                 
                 if cloudinary_url:
-                    # Update in products_master first (SSOT), then fallback to legacy products
+                    # Update in products_master — set both image_url AND cloudinary_image_url
                     update_result = await db.products_master.update_one(
                         {"id": product_id},
                         {
                             "$set": {
                                 "image_url": cloudinary_url,
+                                "cloudinary_image_url": cloudinary_url,
                                 "image": cloudinary_url,
                                 "images": [cloudinary_url],
                                 "ai_generated_image": True,
+                                "needs_image_generation": False,
                                 "image_updated_at": datetime.now(timezone.utc).isoformat()
                             }
                         }
