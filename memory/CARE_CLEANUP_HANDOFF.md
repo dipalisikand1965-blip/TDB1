@@ -264,7 +264,7 @@ When user does action on `/care` page:
 | Admin | aditya | lola4304 |
 
 ## URLs
-- Preview: https://care-soul-fixes.preview.emergentagent.com
+- Preview: https://intent-ticket-flow.preview.emergentagent.com
 - Production: https://thedoggycompany.com (currently down - Nginx issue)
 
 ---

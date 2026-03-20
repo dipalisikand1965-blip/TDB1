@@ -6,7 +6,7 @@ Iteration 126 - Follow-up to iteration_125.
 
 import asyncio
 
-BASE_URL = "https://care-soul-fixes.preview.emergentagent.com"
+BASE_URL = "https://intent-ticket-flow.preview.emergentagent.com"
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 

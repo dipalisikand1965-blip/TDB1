@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://care-soul-fixes.preview.emergentagent.com
+**Preview URL:** https://intent-ticket-flow.preview.emergentagent.com
 
 ---
 
