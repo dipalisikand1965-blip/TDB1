@@ -136,22 +136,13 @@ function MiraPicksSection({ pet }) {
   useEffect(() => {
     if (!pet?.id) { setLoading(false); return; }
     const breed = encodeURIComponent(getBreed(pet));
-    Promise.all([
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=shop&limit=12&min_score=60&entity_type=product&breed=${breed}`).then(r=>r.ok?r.json():null),
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=shop&limit=6&min_score=60&entity_type=service`).then(r=>r.ok?r.json():null),
-    ]).then(([pData, sData]) => {
-      const prods = pData?.picks || [];
-      const svcs  = sData?.picks || [];
-      const merged = [];
-      let pi=0, si=0;
-      while (pi<prods.length || si<svcs.length) {
-        if (pi<prods.length) merged.push(prods[pi++]);
-        if (pi<prods.length) merged.push(prods[pi++]);
-        if (si<svcs.length)  merged.push(svcs[si++]);
-      }
-      if (merged.length) setPicks(merged.slice(0,16));
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=shop&limit=12&min_score=60&entity_type=product&breed=${breed}`)
+      .then(r=>r.ok?r.json():null)
+      .then(pData => {
+        const prods = filterBreedProducts(pData?.picks||[], pet?.breed);
+        if (prods.length) setPicks(prods.slice(0,12));
+        setLoading(false);
+      }).catch(() => setLoading(false));
   }, [pet?.id]);
 
   const showImagines = !loading && picks.length === 0;
@@ -182,7 +173,7 @@ function MiraPicksSection({ pet }) {
           }}/>
       ) : (
         <div style={{ display:"flex", gap:14, overflowX:"auto", paddingBottom:10, scrollbarWidth:"thin" }}>
-          {picks.map((pick,i) => {
+          {picks.filter(p => p.entity_type !== "service").map((pick,i) => {
             const isService = pick.entity_type === "service";
             const img = [pick.image_url, pick.image, ...(pick.images||[])].find(u=>u&&u.startsWith("http")) || null;
             const score = pick.mira_score || 0;
@@ -375,8 +366,9 @@ function DoggyBakerySection({ pet }) {
 
 // ── Breed Collection Section ──────────────────────────────────
 function BreedCollectionSection({ pet }) {
-  const [products, setProducts] = useState([]);
-  const [loading,  setLoading]  = useState(true);
+  const [products, setProducts]     = useState([]);
+  const [loading,  setLoading]      = useState(true);
+  const [selPick,  setSelPick]      = useState(null);
   const breedDisplay = (pet?.breed || "").split("(")[0].trim();
   const petName = pet?.name || "your dog";
 
@@ -451,25 +443,29 @@ function BreedCollectionSection({ pet }) {
       ) : (
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(180px,100%),1fr))", gap:12 }}>
           {filtered.map(p => {
-            const img = p.mockup_url || p.image_url || p.cloudinary_url || null;
+            // Normalise breed_product fields for SharedProductCard
+            const normalised = {
+              ...p,
+              id: p.id || p._id || p.slug,
+              name: p.name || p.product_type || "Soul Made Item",
+              image_url: p.mockup_url || p.image_url || p.cloudinary_url || "",
+              price: p.price || 0,
+              pillar: "shop",
+            };
             return (
-            <div key={p.id||p._id||p.slug} style={{background:"#fff",borderRadius:14,border:`1.5px solid ${G.border}`,overflow:"hidden",cursor:"pointer",transition:"transform 0.15s"}}
-              onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"}
-              onMouseLeave={e=>e.currentTarget.style.transform=""}>
-              <div style={{height:160,background:`linear-gradient(135deg,${G.pale},#F5F3FF)`,overflow:"hidden",position:"relative",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                {img
-                  ? <img src={img} alt={p.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
-                  : <span style={{fontSize:44}}>🐾</span>}
-                <div style={{position:"absolute",top:8,left:8,background:"#7C3AED",color:"#fff",fontSize:9,fontWeight:700,padding:"3px 8px",borderRadius:20}}>Soul Made</div>
-              </div>
-              <div style={{padding:"10px 12px 12px"}}>
-                <div style={{fontSize:12,fontWeight:700,color:G.darkText,marginBottom:4,lineHeight:1.3}}>{p.name||p.product_type||"Breed Item"}</div>
-                {p.price&&<div style={{fontSize:13,fontWeight:800,color:"#7C3AED"}}>₹{p.price}</div>}
-              </div>
-            </div>
-          );})}
+              <SharedProductCard
+                key={normalised.id}
+                product={normalised}
+                pillar="shop"
+                selectedPet={pet}
+                onViewDetails={() => setSelPick(normalised)}
+                miraContext={{ includeText:"Add to Cart" }}
+              />
+            );
+          })}
         </div>
       )}
+      {selPick && <ProductDetailModal product={selPick} pillar="shop" selectedPet={pet} onClose={() => setSelPick(null)}/>}
     </div>
   );
 }

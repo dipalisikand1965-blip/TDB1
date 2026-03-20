@@ -269,8 +269,8 @@ const MembershipOnboarding = lazy(() => import("./pages/MembershipOnboarding"));
 const MiraMeetsYourPet = lazy(() => import("./pages/MiraMeetsYourPet")); // New world-class onboarding
 const PetHomePage = lazy(() => import("./pages/PetHomePage")); // Pet-first landing page after onboarding
 const AddPetPage = lazy(() => import("./pages/AddPetPage")); // Add pet flow for existing users
-// Soul Builder - 8-chapter onboarding (lazy loaded)
-import SoulBuilder from "./pages/SoulBuilder"; // Direct import for debugging
+// Soul Builder - upgraded 10-step onboarding with pts flash (lazy loaded)
+const PetSoulOnboarding = lazy(() => import("./pages/PetSoulOnboarding"));
 const Policies = lazy(() => import("./pages/Policies"));
 const FAQs = lazy(() => import("./pages/FAQs"));
 const Insights = lazy(() => import("./pages/Insights"));
@@ -426,8 +426,9 @@ function AppRouter() {
         <Route path="/join" element={<MiraMeetsYourPet />} />
         <Route path="/join-old" element={<MembershipOnboarding />} />
         
-        {/* NEW: Magical Soul Builder - 8-chapter onboarding */}
-        <Route path="/soul-builder" element={<SoulBuilder />} />
+        {/* NEW: Magical Soul Builder - 10-step onboarding with pts flash */}
+        <Route path="/soul-builder" element={<ProtectedRoute><PetSoulOnboarding /></ProtectedRoute>} />
+        <Route path="/onboarding" element={<ProtectedRoute><PetSoulOnboarding /></ProtectedRoute>} />
         
         {/* Pet Home - Default landing page after onboarding */}
         <Route path="/pet-home" element={<ProtectedRoute><PetHomePage /></ProtectedRoute>} />
