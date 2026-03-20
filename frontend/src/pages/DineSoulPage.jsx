@@ -23,6 +23,7 @@ import PetFriendlySpots from "../components/dine/PetFriendlySpots";
 import GuidedNutritionPaths from "../components/dine/GuidedNutritionPaths";
 import { PillarHelpBuckets, PillarGuidedPaths } from "../components/PillarGoldSections";
 import { API_URL } from "../utils/api";
+import { MiraPicksSkeleton, ProductGridSkeleton } from "../components/common/ProductSkeleton";
 import { tdc } from "../utils/tdc_intent";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";

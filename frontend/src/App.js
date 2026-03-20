@@ -280,6 +280,7 @@ const Contact = lazy(() => import("./pages/Contact"));
 const PetProfile = lazy(() => import("./pages/PetProfile"));
 const PetSoulPage = lazy(() => import("./pages/PetSoulPage"));
 const PetSoulDemo = lazy(() => import("./pages/PetSoulDemo"));
+const PetSoulPublicPage = lazy(() => import("./pages/PetSoulPublicPage"));
 const MiraEmbed = lazy(() => import("./pages/MiraEmbed"));
 const MiraLandingEmbed = lazy(() => import("./pages/MiraLandingEmbed"));
 const MiraPage = lazy(() => import("./pages/MiraPage"));
@@ -519,6 +520,7 @@ function MainLayout() {
         <Route path="/my-tickets" element={<ProtectedRoute><MyTickets /></ProtectedRoute>} />
         <Route path="/pet-soul/:petId" element={<PetSoulPage />} />
         <Route path="/pet-soul" element={<PetSoulPage />} />
+        <Route path="/pet-soul-public" element={<PetSoulPublicPage />} />
         <Route path="/pet-profile" element={<ProtectedRoute><PetProfile /></ProtectedRoute>} />
         {/* Redirect old pet-soul-journey URL to unified pet page */}
         <Route path="/pet-soul-journey/:petId" element={<PetSoulJourneyRedirect />} />

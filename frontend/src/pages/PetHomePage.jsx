@@ -680,6 +680,42 @@ const PetHomePage = () => {
               </div>
             </div>
             
+            {/* Soul Chapter Pills — clickable, navigate to soul-builder */}
+            {soulScore > 0 && (
+              <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginTop:12, marginBottom:4 }}>
+                {[
+                  { id:"identity",   label:"Identity",   emoji:"✦", color:"#9333EA" },
+                  { id:"behaviour",  label:"Behaviour",  emoji:"🧠", color:"#EC4899" },
+                  { id:"health",     label:"Health",     emoji:"❤️", color:"#EF4444" },
+                  { id:"social",     label:"Social",     emoji:"🐾", color:"#F59E0B" },
+                  { id:"nutrition",  label:"Nutrition",  emoji:"🍖", color:"#10B981" },
+                  { id:"learning",   label:"Learning",   emoji:"📚", color:"#3B82F6" },
+                ].map(ch => (
+                  <button
+                    key={ch.id}
+                    onClick={() => navigate(`/soul-builder?chapter=${ch.id}`)}
+                    data-testid={`soul-chapter-pill-${ch.id}`}
+                    style={{
+                      background: `${ch.color}18`,
+                      border: `1px solid ${ch.color}40`,
+                      color: ch.color,
+                      borderRadius: 20,
+                      padding: "3px 10px",
+                      fontSize: 11,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 4,
+                      transition: "all 0.15s",
+                    }}
+                  >
+                    <span>{ch.emoji}</span> {ch.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {/* Teach Mira More - ALWAYS show if soul score < 80 */}
             {soulScore < 80 && (
               <button

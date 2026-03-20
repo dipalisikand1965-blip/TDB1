@@ -5,6 +5,8 @@
  */
 
 import React, { useState } from 'react';
+import { bookViaConcierge } from '../utils/MiraCardActions';
+import { tdc } from '../utils/tdc_intent';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -50,6 +52,9 @@ const CallbackRequestModal = ({ isOpen, onClose, initialReason = '' }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // ── tdc.book ──
+    tdc.book({ service: formData.subject || "callback request", pillar: "platform", channel: "callback_request_modal" });
+
     
     if (!formData.name || !formData.phone) {
       toast({

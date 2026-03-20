@@ -32,6 +32,7 @@ import CareConciergeModal from "../components/care/CareConciergeModal";
 import CareNearMe from "../components/care/CareNearMe";
 import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
+import { MiraPicksSkeleton, ProductGridSkeleton } from "../components/common/ProductSkeleton";
 import { tdc } from "../utils/tdc_intent";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";

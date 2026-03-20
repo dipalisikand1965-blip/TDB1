@@ -33,31 +33,35 @@ def get_db():
 
 @router.get("")
 async def get_pillar_products(
-    pillar: str,
+    pillar: Optional[str] = None,
     page: int = 1,
     limit: int = 50,
     search: Optional[str] = None,
     category: Optional[str] = None,
-    active_only: bool = False
+    active_only: bool = False,
+    sort_by: str = "name",  # "name" | "mira_score" | "price"
+    breed: Optional[str] = None,
 ):
     """
     Get products for a specific pillar from products_master.
-    Single unified endpoint used by all pillar admin pages.
-    Checks both pillar (string) and pillars (array) fields.
+    pillar=None returns ALL products (for "Everything" tab).
     """
     db = get_db()
     try:
-        # Match either pillar == pillar OR pillars array contains pillar
-        pillar_condition = {"$or": [{"pillar": pillar}, {"pillars": pillar}]}
+        # Pillar filter — if None/empty, return all
+        if pillar:
+            pillar_condition = {"$or": [{"pillar": pillar}, {"pillars": pillar}]}
+        else:
+            pillar_condition = {}  # All products
 
-        # Build conditions — always exclude service-like records (svc- IDs or Bookable field)
+        # Build conditions
         conditions = [
-            pillar_condition,
-            {"Bookable": {"$exists": False}},  # Never return services from products endpoint
+            {"Bookable": {"$exists": False}},
             {"bookable": {"$exists": False}},
-            {"id": {"$not": {"$regex": "^svc-", "$options": "i"}}},  # Exclude svc- IDs
+            {"id": {"$not": {"$regex": "^svc-", "$options": "i"}}},
         ]
-
+        if pillar:
+            conditions.append(pillar_condition)
         if active_only:
             conditions.append({"$or": [{"active": True}, {"is_active": True}]})
         if search:
@@ -67,13 +71,27 @@ async def get_pillar_products(
             ]})
         if category:
             conditions.append({"category": category})
+        if breed:
+            conditions.append({"$or": [
+                {"breed": {"$in": [breed, "all", "All", ""]}},
+                {"breed": {"$exists": False}},
+                {"breeds": breed},
+            ]})
 
-        query = {"$and": conditions} if len(conditions) > 1 else pillar_condition
+        query = {"$and": conditions} if conditions else {}
 
         total = await db.products_master.count_documents(query)
         skip = (page - 1) * limit
 
-        cursor = db.products_master.find(query, {"_id": 0}).sort("name", 1).skip(skip).limit(limit)
+        # Sort options
+        sort_map = {
+            "mira_score": [("mira_score", -1), ("name", 1)],
+            "price":      [("price", 1), ("name", 1)],
+            "name":       [("name", 1)],
+        }
+        sort_order = sort_map.get(sort_by, [("name", 1)])
+
+        cursor = db.products_master.find(query, {"_id": 0}).sort(sort_order).skip(skip).limit(limit)
         products = await cursor.to_list(length=limit)
 
         # Get unique categories for filter

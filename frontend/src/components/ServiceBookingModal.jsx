@@ -5,6 +5,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { bookViaConcierge } from '../utils/MiraCardActions';
+import { tdc } from '../utils/tdc_intent';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -188,6 +190,9 @@ const ServiceBookingModal = ({
   
   // Submit booking
   const handleSubmit = async () => {
+    // ── tdc.book — canonical intent ticket ──
+    tdc.book({ service: service?.name || 'a service', pillar: "services", pet, channel: "service_booking_modal" });
+
     setIsSubmitting(true);
     try {
       const bookingPayload = {

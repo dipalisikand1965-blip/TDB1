@@ -12,6 +12,8 @@ import { toast } from 'sonner';
 import SharedProductCard from '../ProductCard';
 import { useAuth } from '../../context/AuthContext';
 import { API_URL } from '../../utils/api';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
+import { tdc } from '../../utils/tdc_intent';
 
 const getApiUrl = () => API_URL;
 
@@ -63,7 +65,24 @@ const buildMiraQuote = (pet, category) => {
 // ── Mira Imagines card (items not yet in catalog) ─────────────────────────────
 const MiraImaginesCard = ({ item, pet, token }) => {
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
   const petName = pet?.name || 'your dog';
+
+  const handleSource = async () => {
+    if (sending || sent) return;
+    setSending(true);
+    tdc.imagine({ name: item.name, pillar: 'play', pet, channel: 'play_content_modal_imagine' });
+    await bookViaConcierge({
+      service: item.name,
+      pillar: 'play',
+      pet,
+      token,
+      channel: 'play_content_modal_imagine',
+      onSuccess: () => setSent(true),
+    });
+    setSending(false);
+  };
+
   return (
     <div style={{ borderRadius:14, overflow:'hidden', background:'linear-gradient(135deg,#1A0A00,#2D1A00)', border:'1.5px solid rgba(255,140,66,0.25)', display:'flex', flexDirection:'column', minHeight:200 }}>
       <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'18px 14px 6px' }}>
@@ -76,8 +95,8 @@ const MiraImaginesCard = ({ item, pet, token }) => {
         {sent ? (
           <div style={{ textAlign:'center', fontSize:11, fontWeight:700, color:'#32C878' }}><Check size={12} style={{ display:'inline', marginRight:4 }} /> Sent to Concierge!</div>
         ) : (
-          <button onClick={() => setSent(true)} style={{ width:'100%', background:'linear-gradient(135deg,#FF8C42,#C44400)', color:'#fff', border:'none', borderRadius:10, padding:'9px', fontSize:11, fontWeight:700, cursor:'pointer' }}>
-            Request a Quote →
+          <button onClick={handleSource} disabled={sending} style={{ width:'100%', background:'linear-gradient(135deg,#FF8C42,#C44400)', color:'#fff', border:'none', borderRadius:10, padding:'9px', fontSize:11, fontWeight:700, cursor:'pointer', opacity: sending ? 0.7 : 1 }}>
+            {sending ? 'Sending…' : 'Request a Quote →'}
           </button>
         )}
       </div>
@@ -103,12 +122,28 @@ const generatePlayImagines = (pet, existingProducts) => {
 };
 
 // ── Bundle Card component ─────────────────────────────────────────────────────
-const BundleCard = ({ bundle, petName }) => {
+const BundleCard = ({ bundle, petName, pet, token }) => {
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
   const img = bundle.image_url || bundle.watercolor_image || bundle.cloudinary_image_url;
   const savings = bundle.original_price && bundle.bundle_price
     ? Math.round(((bundle.original_price - bundle.bundle_price) / bundle.original_price) * 100)
     : 0;
+
+  const handleGet = async () => {
+    if (sending || sent) return;
+    setSending(true);
+    await bookViaConcierge({
+      service: bundle.name,
+      pillar: 'play',
+      pet,
+      token,
+      channel: 'play_bundle_card',
+      amount: bundle.bundle_price,
+      onSuccess: () => setSent(true),
+    });
+    setSending(false);
+  };
   return (
     <div style={{ background:'#fff', borderRadius:16, overflow:'hidden', border:'1.5px solid rgba(231,111,81,0.15)', boxShadow:'0 2px 12px rgba(123,45,0,0.07)' }}>
       <div style={{ height:160, background:'linear-gradient(135deg,#FFF8F0,#FFE8D4)', position:'relative', overflow:'hidden' }}>
@@ -145,8 +180,8 @@ const BundleCard = ({ bundle, petName }) => {
         </div>
         {sent
           ? <div style={{ textAlign:'center', fontSize:12, fontWeight:700, color:'#C44400', padding:'8px 0' }}>✓ Request sent to Concierge!</div>
-          : <button onClick={() => setSent(true)} style={{ width:'100%', background:'linear-gradient(135deg,#E76F51,#C44400)', color:'#fff', border:'none', borderRadius:10, padding:'9px 0', fontSize:12, fontWeight:700, cursor:'pointer' }}>
-              Get {petName ? `for ${petName}` : 'this bundle'} →
+          : <button onClick={handleGet} disabled={sending} style={{ width:'100%', background:'linear-gradient(135deg,#E76F51,#C44400)', color:'#fff', border:'none', borderRadius:10, padding:'9px 0', fontSize:12, fontWeight:700, cursor: sending ? 'wait' : 'pointer', opacity: sending ? 0.7 : 1 }}>
+              {sending ? 'Sending…' : `Get ${petName ? `for ${petName}` : 'this bundle'} →`}
             </button>
         }
       </div>
@@ -437,7 +472,7 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
               category === 'bundles' ? (
                 <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(240px,100%),1fr))', gap:20 }}>
                   {filteredProducts.map((b,i) => (
-                    <BundleCard key={b.id||b._id||i} bundle={b} petName={petName} />
+                    <BundleCard key={b.id||b._id||i} bundle={b} petName={petName} pet={pet} token={token} />
                   ))}
                 </div>
               ) : (
@@ -469,8 +504,14 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
       <div style={{ flexShrink:0, padding:'14px 20px', borderTop:'1px solid #F0E8E0', background:'#FFFAF6', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <p style={{ fontSize:12, color:'#888', margin:0 }}>Personalised for {petName}</p>
-        <button onClick={onClose} style={{ background:`linear-gradient(135deg,${G.orange},#FF6B9D)`, color:'#fff', border:'none', borderRadius:12, padding:'9px 18px', fontSize:13, fontWeight:700, cursor:'pointer' }} data-testid="play-modal-cta">
-          Explore {config.label} for {petName} →
+        <button
+          onClick={() => {
+            tdc.book({ service: config.label, pillar: 'play', pet, channel: 'play_content_modal_footer' });
+            onClose();
+          }}
+          style={{ background:`linear-gradient(135deg,${G.orange},#FF6B9D)`, color:'#fff', border:'none', borderRadius:12, padding:'9px 18px', fontSize:13, fontWeight:700, cursor:'pointer' }}
+          data-testid="play-modal-cta">
+          Book {config.label} for {petName} →
         </button>
       </div>
     </motion.div>
