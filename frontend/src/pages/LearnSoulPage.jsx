@@ -1350,16 +1350,18 @@ function LearnConciergeModal({ isOpen, onClose, serviceType, petName, petId, tok
   const handleSubmit = async () => {
     if (!selected || submitting) return;
     setSubmitting(true);
-    try {
-      const storedUser = JSON.parse(localStorage.getItem('user')||'{}');
-      await fetch(`${API_URL}/api/concierge/learn-intake`, {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json', ...(token?{Authorization:`Bearer ${token}`}:{}) },
-        body: JSON.stringify({ petId, petName:name, occasion:selected, date:notSure?null:date||null, notes:notes.trim()||null, source:'learn_concierge_modal' }),
-      });
-    } catch(e) { console.error('[LearnConciergeModal]', e); }
+    const { bookViaConcierge } = await import('../utils/MiraCardActions');
+    await bookViaConcierge({
+      service: selected,
+      pillar: "learn",
+      pet: { id: petId, name: petName || 'your pet' },
+      token,
+      channel: "learn_concierge_modal",
+      notes: notes.trim() || null,
+      date: notSure ? null : (date || null),
+      onSuccess: () => setSubmitted(true),
+    });
     setSubmitting(false);
-    setSubmitted(true);
   };
 
   const handleClose = () => { setSubmitted(false); setSelected(serviceType||''); setDate(''); setNotSure(false); setNotes(''); onClose(); };

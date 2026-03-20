@@ -39,6 +39,7 @@ import PetFriendlyStays from "../components/go/PetFriendlyStays";
 import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
+import { bookViaConcierge } from "../utils/MiraCardActions";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
@@ -1202,7 +1203,7 @@ function FlightFlow({ pet, service, onClose }) {
         )}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ try{await fetch(`${API_URL}/api/concierge/go-booking`,{method:"POST",headers:{"Content-Type":"application/json",...({}? {Authorization:`Bearer `}:{})},body:JSON.stringify({petId:pet.id,serviceId:service.id,steps:{route,cabinOrCargo,docs,airport,notes}})})}catch{} setSent(true); }} nextDisabled={!canNext} isLast={step===5} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ await bookViaConcierge({service:service.name,pillar:"go",pet,token:localStorage.getItem("tdb_auth_token"),channel:"go_service_booking",notes:notes||null,onSuccess:()=>setSent(true)}); }} nextDisabled={!canNext} isLast={step===5} accentColor={service.accentColor} />
       </div>
     </>
   );
@@ -1262,7 +1263,7 @@ function RoadTripFlow({ pet, service, onClose }) {
         )}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ try{await fetch(`${API_URL}/api/concierge/go-booking`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({petId:pet.id,serviceId:service.id,steps:{mode,distance,needs,notes}})})}catch{} setSent(true); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ await bookViaConcierge({service:service.name,pillar:"go",pet,token:localStorage.getItem("tdb_auth_token"),channel:"go_service_booking",notes:notes||null,onSuccess:()=>setSent(true)}); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
       </div>
     </>
   );
@@ -1332,7 +1333,7 @@ function BoardingFlow({ pet, service, onClose }) {
         )}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ try{await fetch(`${API_URL}/api/concierge/go-booking`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({petId:pet.id,serviceId:service.id,steps:{type,dates,reqs,prefs}})})}catch{} setSent(true); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ await bookViaConcierge({service:service.name,pillar:"go",pet,token:localStorage.getItem("tdb_auth_token"),channel:"go_service_booking",notes:notes||null,onSuccess:()=>setSent(true)}); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
       </div>
     </>
   );
@@ -1394,7 +1395,7 @@ function SittingFlow({ pet, service, onClose }) {
         )}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ try{await fetch(`${API_URL}/api/concierge/go-booking`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({petId:pet.id,serviceId:service.id,steps:{type,when,needs,notes}})})}catch{} setSent(true); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ await bookViaConcierge({service:service.name,pillar:"go",pet,token:localStorage.getItem("tdb_auth_token"),channel:"go_service_booking",notes:notes||null,onSuccess:()=>setSent(true)}); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
       </div>
     </>
   );
@@ -1465,7 +1466,7 @@ function RelocationFlow({ pet, service, onClose }) {
         )}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ try{await fetch(`${API_URL}/api/concierge/go-booking`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({petId:pet.id,serviceId:service.id,steps:{scope,docs,transport,timeline,notes}})})}catch{} setSent(true); }} nextDisabled={!canNext} isLast={step===5} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ await bookViaConcierge({service:service.name,pillar:"go",pet,token:localStorage.getItem("tdb_auth_token"),channel:"go_service_booking",notes:notes||null,onSuccess:()=>setSent(true)}); }} nextDisabled={!canNext} isLast={step===5} accentColor={service.accentColor} />
       </div>
     </>
   );
@@ -1519,7 +1520,7 @@ function TaxiFlow({ pet, service, onClose }) {
         )}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ try{await fetch(`${API_URL}/api/concierge/go-booking`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({petId:pet.id,serviceId:service.id,steps:{purpose,when,notes}})})}catch{} setSent(true); }} nextDisabled={!canNext} isLast={step===3} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ await bookViaConcierge({service:service.name,pillar:"go",pet,token:localStorage.getItem("tdb_auth_token"),channel:"go_service_booking",notes:notes||null,onSuccess:()=>setSent(true)}); }} nextDisabled={!canNext} isLast={step===3} accentColor={service.accentColor} />
       </div>
     </>
   );
@@ -1579,7 +1580,7 @@ function TravelPlanningFlow({ pet, service, onClose }) {
         )}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ try{await fetch(`${API_URL}/api/concierge/go-booking`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({petId:pet.id,serviceId:service.id,steps:{destination,duration,needs,notes}})})}catch{} setSent(true); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ await bookViaConcierge({service:service.name,pillar:"go",pet,token:localStorage.getItem("tdb_auth_token"),channel:"go_service_booking",notes:notes||null,onSuccess:()=>setSent(true)}); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
       </div>
     </>
   );
@@ -1642,7 +1643,7 @@ function EmergencyTravelFlow({ pet, service, onClose }) {
         )}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ try{await fetch(`${API_URL}/api/concierge/go-booking`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({petId:pet.id,serviceId:service.id,steps:{situation,location}})})}catch{} setSent(true); }} nextDisabled={!canNext} isLast={step===2} accentColor="#C62828" />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ await bookViaConcierge({service:service.name,pillar:"go",pet,token:localStorage.getItem("tdb_auth_token"),channel:"go_service_booking",notes:notes||null,onSuccess:()=>setSent(true)}); }} nextDisabled={!canNext} isLast={step===2} accentColor="#C62828" />
       </div>
     </>
   );

@@ -6,7 +6,8 @@
  */
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { API_URL } from "../../utils/api";
+import { bookViaConcierge } from "../../utils/MiraCardActions";
+import { useAuth } from "../../context/AuthContext";
 
 const G = { deep:"#7B2D00", mid:"#7B3F00", green:"#E76F51", light:"#FFAD9B", pale:"#FFF0EA", cream:"#FFF8F5", darkText:"#7B2D00", mutedText:"#8B4513" };
 
@@ -31,19 +32,24 @@ export default function PlayConciergeModal({ pet, service, token, onClose }) {
   const [notes,       setNotes]       = useState("");
   const [sent,        setSent]        = useState(false);
   const [sending,     setSending]     = useState(false);
+  const { token: authToken } = useAuth();
   const petName = pet?.name || "your dog";
   const canSend = occasion !== null;
 
   const handleSend = async () => {
+    if (sending) return;
     setSending(true);
-    try {
-      await fetch(`${API_URL}/api/concierge/play-intake`, {
-        method:"POST",
-        headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
-        body: JSON.stringify({ petId:pet?.id, occasion, date:notSureDate?null:date, notes, serviceId:service?.id||null }),
-      });
-    } catch {}
-    setSending(false); setSent(true);
+    await bookViaConcierge({
+      service: occasion,
+      pillar: "play",
+      pet,
+      token: token || authToken,
+      channel: "play_concierge_modal",
+      notes,
+      date: notSureDate ? null : date,
+      onSuccess: () => setSent(true),
+    });
+    setSending(false);
   };
 
   const modal = (

@@ -16,6 +16,7 @@ import { X } from 'lucide-react';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import { useResizeMobile } from '../../hooks/useResizeMobile';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
 
 const CELEBRATION_OPTIONS = [
   { id: 'birthday_party', label: 'Birthday' },
@@ -52,41 +53,20 @@ const ConciergeIntakeModal = ({ isOpen, onClose, serviceType, petName, petId }) 
 
   const handleSubmit = async () => {
     setSubmitting(true);
-    try {
-      const apiUrl = getApiUrl();
-      const payload = {
-        petId: petId || null,
-        petName: petName || 'your pet',
-        serviceType: selectedType || 'general',
-        celebrationDate: notSureDate ? null : (celebrationDate || null),
-        notes: notes.trim() || null,
-        source: 'concierge_intake_modal'
-      };
-
-      const headers = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-
-      const res = await fetch(`${apiUrl}/api/concierge/intake`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setIntakeId(data.intakeId || data.intake_id);
+    await bookViaConcierge({
+      service: selectedType || 'general celebration',
+      pillar: "celebrate",
+      pet: { id: petId, name: petName || 'your pet' },
+      token,
+      channel: "celebrate_concierge_intake_modal",
+      notes: notes.trim() || null,
+      date: notSureDate ? null : (celebrationDate || null),
+      onSuccess: (data) => {
+        setIntakeId(data?.ticket_id || data?.intakeId || null);
         setSubmitted(true);
-      } else {
-        // Graceful fallback — show confirmation anyway
-        setSubmitted(true);
-      }
-    } catch (err) {
-      console.error('[ConciergeIntakeModal] Error:', err);
-      // Graceful fallback — show confirmation
-      setSubmitted(true);
-    } finally {
-      setSubmitting(false);
-    }
+      },
+    });
+    setSubmitting(false);
   };
 
   const handleClose = () => {

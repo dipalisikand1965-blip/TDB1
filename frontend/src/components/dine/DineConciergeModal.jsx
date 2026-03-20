@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import { useResizeMobile } from '../../hooks/useResizeMobile';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
 
 const DINE_OPTIONS = [
   { id: 'restaurant_discovery',  label: 'Restaurant Discovery' },
@@ -50,30 +51,20 @@ const DineConciergeModal = ({ isOpen, onClose, serviceType, petName, petId }) =>
   const handleSubmit = async () => {
     if (!selectedType || submitting) return;
     setSubmitting(true);
-    try {
-      const apiUrl = getApiUrl();
-      const headers = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-
-      await fetch(`${apiUrl}/api/concierge/dining-intake`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          petId:    petId   || null,
-          petName:  petName || 'your pet',
-          occasion: selectedType,
-          date:     notSureDate ? null : (diningDate || null),
-          notes:    notes.trim() || null,
-          source:   'dine_service_grid',
-        }),
-      });
-    } catch (err) {
-      console.error('[DineConciergeModal]', err);
-    } finally {
-      setSubmitting(false);
-      setSubmitted(true);
-      toast.success(`Sent to ${displayName}'s Concierge`, { description: "We will reach out within 48 hours." });
-    }
+    await bookViaConcierge({
+      service: selectedType,
+      pillar: "dine",
+      pet: { id: petId, name: petName || 'your pet' },
+      token,
+      channel: "dine_concierge_modal",
+      notes: notes.trim() || null,
+      date: notSureDate ? null : (diningDate || null),
+      onSuccess: () => {
+        setSubmitted(true);
+        toast.success(`Sent to ${displayName}'s Concierge`, { description: "We will reach out within 48 hours." });
+      },
+    });
+    setSubmitting(false);
   };
 
   const handleClose = () => {

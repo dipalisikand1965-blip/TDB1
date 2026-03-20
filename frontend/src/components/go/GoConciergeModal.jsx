@@ -14,7 +14,8 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { API_URL } from "../../utils/api";
+import { bookViaConcierge } from "../../utils/MiraCardActions";
+import { useAuth } from "../../context/AuthContext";
 
 const G = { deep:"#0D3349", deepMid:"#1A5276", teal:"#1ABC9C", light:"#76D7C4", pale:"#D1F2EB", cream:"#E8F8F5", gold:"#C9973A", darkText:"#0D3349", mutedText:"#5D6D7E" };
 
@@ -38,29 +39,25 @@ export default function GoConciergeModal({ pet, service, token, onClose }) {
   const [notes,       setNotes]       = useState("");
   const [sent,        setSent]        = useState(false);
   const [sending,     setSending]     = useState(false);
+  const { token: authToken } = useAuth();
 
   const petName   = pet?.name || "your dog";
   const canSend   = occasion !== null;
 
   const handleSend = async () => {
+    if (sending) return;
     setSending(true);
-    let user = {};
-    try { user = JSON.parse(localStorage.getItem("user") || "{}"); } catch {}
-    try {
-      await fetch(`${API_URL}/api/concierge/go-intake`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({
-          petId:    pet?.id,
-          occasion,
-          date:     notSureDate ? null : date,
-          notes,
-          serviceId: service?.id || null,
-        }),
-      });
-    } catch (err) { console.error("[GoConciergeModal]", err); }
+    await bookViaConcierge({
+      service: occasion,
+      pillar: "go",
+      pet,
+      token: token || authToken,
+      channel: "go_concierge_modal",
+      notes,
+      date: notSureDate ? null : date,
+      onSuccess: () => setSent(true),
+    });
     setSending(false);
-    setSent(true);
   };
 
   const modal = (

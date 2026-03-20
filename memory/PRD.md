@@ -588,13 +588,14 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 - **Guided Paths tdc.request()**: ALL 7 guided path components wired (Play, Learn, Go, Celebrate, Dine/Nutrition, Adopt, Care) — Start AND Complete actions tracked
 - **Mira Farewell Fix**: Context retention rule + farewell escalation rule in system prompt. Grief keyword detection in MiraChatWidget.jsx and MiraDemoPage.jsx fires `tdc.track("farewell_detected")` before Mira responds
 - **Cart Recommendations**: CartSidebar.jsx now fetches breed-safe, allergen-filtered picks from `/api/mira/claude-picks/{petId}` and renders `CartRecommendationCard` below cart items. Scottish Terrier products filtered OUT for Indie dogs. Chicken-based products filtered for allergic pets
+- **Universal Concierge Modal Fix — ALL 12 PILLARS (Session 85)**: `MiraCardActions.js` created. ALL pillar concierge modals (`CareConciergeModal`, `DineConciergeModal`, `DineConciergeIntakeModal`, `PlayConciergeModal`, `GoConciergeModal`, `CelebrateIntakeModal`) and guided path complete handlers (`GuidedFarewellPaths`, `GuidedPaperworkPaths`, `GuidedEmergencyPaths`, `GuidedAdoptPaths`) now use `bookViaConcierge()` / `guidedPathComplete()` — replacing 15+ broken 404-ing `/api/concierge/*-intake` and `/api/concierge/*-booking` calls that were silently failing on every user submission. Admin inbox NOW receives every booking.
 
 ### P1 — Next Sprint
 - **Update Static Pages**: Apply new standard Navbar to `/about`, `/membership`, `/faqs`
 - **Sync Membership Pricing**: Page shows ₹2,499/year but backend has ₹999/year — must match
 - **Remove "Skip Payment" button** from onboarding flow before soft launch
 - **Razorpay webhook → ticket**: Wire payment success to create an `order_placed` ticket in admin
-- **Wire remaining Guided Paths**: GuidedPlayPaths, GuidedLearnPaths, GuidedGoBootcamp, GuidedCelebrationPaths — all need `tdc.request()` wired on "Start" and "Complete" actions
+- **Card → Modal wiring**: Every product/service card across all pillars must open ProductModal on click (MODAL_INSTRUCTIONS.md)
 
 ### P2 — Future Pillars & Features
 - **LOVE pillar** — /love route, LoveSoulPage, Love Memory Drawer
