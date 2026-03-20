@@ -33,6 +33,7 @@ import PlayNearMe from "../components/play/PlayNearMe";
 import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
+import { bookViaConcierge } from "../utils/MiraCardActions";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
@@ -1129,7 +1130,7 @@ function GenericFlow3({ pet, service, onClose }) {
         {step===3 && <><div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:8 }}>Anything else? <span style={{ fontSize:12, color:"#BBB", fontWeight:400 }}>Optional</span></div><textarea rows={4} value={notes} onChange={e=>setNotes(e.target.value)} placeholder={`Location, date, specific needs for ${pet?.name||"your dog"}…`} style={{ width:"100%", border:`1.5px solid ${G.border}`, borderRadius:10, padding:"12px 14px", fontSize:14, color:G.darkText, outline:"none", resize:"none", fontFamily:"inherit", lineHeight:1.6, boxSizing:"border-box" }} /></>}
       </div>
       <div style={{ padding:"0 20px 18px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ try{await fetch(`${API_URL}/api/concierge/play-booking`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({petId:pet?.id,serviceId:service.id,steps:{q1,q2,notes}})})}catch{}setSent(true); }} nextDisabled={!canNext} isLast={step===3} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ await bookViaConcierge({service:service.name,pillar:"play",pet,token:localStorage.getItem("tdb_auth_token"),channel:"play_park_booking",notes,onSuccess:()=>setSent(true)}); }} nextDisabled={!canNext} isLast={step===3} accentColor={service.accentColor} />
       </div>
     </>
   );
@@ -1157,7 +1158,7 @@ function SocialFlow({ pet, service, onClose }) {
         {step===4 && <><div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:8 }}>Notes <span style={{ fontSize:12, color:"#BBB", fontWeight:400 }}>Optional</span></div><textarea rows={4} value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Location, breed preferences, any concerns…" style={{ width:"100%", border:`1.5px solid ${G.border}`, borderRadius:10, padding:"12px 14px", fontSize:14, color:G.darkText, outline:"none", resize:"none", fontFamily:"inherit", lineHeight:1.6, boxSizing:"border-box" }} /></>}
       </div>
       <div style={{ padding:"0 20px 18px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ try{await fetch(`${API_URL}/api/concierge/play-booking`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({petId:pet?.id,serviceId:service.id,steps:{exp,type,goal,notes}})})}catch{}setSent(true); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ await bookViaConcierge({service:service.name,pillar:"play",pet,token:localStorage.getItem("tdb_auth_token"),channel:"play_social_booking",notes,onSuccess:()=>setSent(true)}); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
       </div>
     </>
   );
@@ -1186,7 +1187,7 @@ function WeekendFlow({ pet, service, onClose }) {
         {step===4 && <><div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:12 }}>What to prepare?</div><ChipSelect options={["Route planning","Emergency vet en route","Pet-friendly cafe stops","First aid kit","Activity gear","Overnight pack","Mira handles everything"]} selected={prep} onToggle={togglePrep} accentColor={service.accentColor} /></>}
       </div>
       <div style={{ padding:"0 20px 18px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ try{await fetch(`${API_URL}/api/concierge/play-booking`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({petId:pet?.id,serviceId:service.id,steps:{adventure,distance,who,prep}})})}catch{}setSent(true); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ await bookViaConcierge({service:service.name,pillar:"play",pet,token:localStorage.getItem("tdb_auth_token"),channel:"play_adventure_booking",notes:prep,onSuccess:()=>setSent(true)}); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
       </div>
     </>
   );
@@ -1215,7 +1216,7 @@ function FitnessFlow({ pet, service, onClose }) {
         {step===4 && <><div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:12 }}>Favourite activities?</div><ChipSelect options={["Agility course","Nose work","Balance training","Weighted walks","Swimming","Treadmill","Let Mira decide"]} selected={types} onToggle={toggleType} accentColor={service.accentColor} /></>}
       </div>
       <div style={{ padding:"0 20px 18px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ try{await fetch(`${API_URL}/api/concierge/play-booking`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({petId:pet?.id,serviceId:service.id,steps:{goal,current,health,types}})})}catch{}setSent(true); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ await bookViaConcierge({service:service.name,pillar:"play",pet,token:localStorage.getItem("tdb_auth_token"),channel:"play_fitness_booking",notes,onSuccess:()=>setSent(true)}); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
       </div>
     </>
   );
@@ -1243,7 +1244,7 @@ function SwimmingFlow({ pet, service, onClose }) {
         {step===4 && <><div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:12 }}>Session preference?</div>{["Open water / beach","Private pool session","Hydrotherapy centre","Home paddling pool","Mira recommends best option"].map(o=><StepCard key={o} label={o} selected={type===o} onClick={()=>setType(o)} />)}</>}
       </div>
       <div style={{ padding:"0 20px 18px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ try{await fetch(`${API_URL}/api/concierge/play-booking`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({petId:pet?.id,serviceId:service.id,steps:{exp,why,safety,type}})})}catch{}setSent(true); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ await bookViaConcierge({service:service.name,pillar:"play",pet,token:localStorage.getItem("tdb_auth_token"),channel:"play_agility_booking",notes,onSuccess:()=>setSent(true)}); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
       </div>
     </>
   );
@@ -1272,7 +1273,7 @@ function AgilityFlow({ pet, service, onClose }) {
         {step===4 && <><div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:8 }}>Notes <span style={{ fontSize:12, color:"#BBB", fontWeight:400 }}>Optional</span></div><textarea rows={4} value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Location preference, schedule, any breed-specific concerns…" style={{ width:"100%", border:`1.5px solid ${G.border}`, borderRadius:10, padding:"12px 14px", fontSize:14, color:G.darkText, outline:"none", resize:"none", fontFamily:"inherit", lineHeight:1.6, boxSizing:"border-box" }} /></>}
       </div>
       <div style={{ padding:"0 20px 18px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ try{await fetch(`${API_URL}/api/concierge/play-booking`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({petId:pet?.id,serviceId:service.id,steps:{level,goal,types,notes}})})}catch{}setSent(true); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={async()=>{ await bookViaConcierge({service:service.name,pillar:"play",pet,token:localStorage.getItem("tdb_auth_token"),channel:"play_training_booking",notes,onSuccess:()=>setSent(true)}); }} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
       </div>
     </>
   );

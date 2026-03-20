@@ -23,6 +23,7 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { API_URL } from "../../utils/api";
+import { bookViaConcierge } from "../../utils/MiraCardActions";
 
 // --- Data & Constants ---
 const OCCASIONS = [
@@ -56,33 +57,25 @@ export default function ConciergeIntakeModal({
   const allergies = (pet?.allergies || pet?.preferences?.allergies || []).join(", ");
   const canSend   = occasion !== null;
 
-  // --- TODO: POST /api/concierge/dining-intake ---
+  // ── Canonical concierge submit — fires tdc.book + service_desk ticket ──
   const handleSend = async () => {
     if (!canSend || sending) return;
     setSending(true);
-    try {
-      await fetch(`${API_URL}/api/concierge/dining-intake`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          petId:     pet?.id,
-          petName:   pet?.name,
-          occasion,
-          date:      notSureDate ? null : date,
-          notes,
-          allergies,
-        }),
-      });
-    } catch (err) {
-      console.error("[ConciergeIntakeModal] dining-intake error:", err);
-    } finally {
-      setSending(false);
-      setSent(true);
-      if (typeof window !== 'undefined') {
-        const { toast } = await import('sonner');
+    const token = localStorage.getItem("tdb_auth_token");
+    await bookViaConcierge({
+      service: occasion,
+      pillar: "dine",
+      pet,
+      token,
+      channel: "dine_concierge_intake_modal",
+      notes,
+      date: notSureDate ? null : date,
+      onSuccess: () => {
+        setSent(true);
         toast.success(`Sent to your Concierge`, { description: "We'll reach out within 48 hours." });
-      }
-    }
+      },
+    });
+    setSending(false);
   };
 
   // ── SENT CONFIRMATION UI ──────────────────────────────────────────────
