@@ -19137,15 +19137,15 @@ MEMBERSHIP_PLANS = {
     "monthly": {
         "id": "plan_monthly",
         "name": "Monthly Membership",
-        "base_amount": 8390,  # ₹83.90 base -> ₹99 with GST
+        "base_amount": 21186,  # ₹211.86 base -> ₹250 with GST
         "currency": "INR",
         "duration_days": 30,
         "tier": "pawsome"
     },
     "annual": {
-        "id": "plan_annual", 
-        "name": "Annual Membership",
-        "base_amount": 84661,  # ₹846.61 base -> ₹999 with GST
+        "id": "plan_annual",
+        "name": "TDC Membership",
+        "base_amount": 254152,  # ₹2,541.52 base -> ₹2,999 with GST
         "currency": "INR",
         "duration_days": 365,
         "tier": "pawsome"
