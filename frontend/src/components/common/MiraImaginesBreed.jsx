@@ -44,6 +44,7 @@
 
 import { useState, useEffect } from "react";
 import { API_URL } from "../../utils/api";
+import { useAuth } from "../../context/AuthContext";
 
 const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
 
@@ -327,24 +328,50 @@ function generateImagineCards(petName, breed, traits, pillar) {
 }
 
 // ── Imagine Card ───────────────────────────────────────────────────────
-function ImagineCard({ card, petName, index, onConcierge, colour }) {
+function ImagineCard({ card, petName, index, onConcierge, colour, pet, pillar, token }) {
   const [imageUrl, setImageUrl] = useState(null);
-  const [hovered, setHovered] = useState(false);
+  const [hovered,  setHovered]  = useState(false);
+  const [sending,  setSending]  = useState(false);
+  const [sent,     setSent]     = useState(false);
+
+  const handleSource = async (e) => {
+    e.stopPropagation();
+    if (sending || sent) return;
+    // Call parent handler first (for pillar-specific modals like /celebrate)
+    if (onConcierge) onConcierge(card);
+    // Direct ticket creation + toast
+    setSending(true);
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const tdbSession = JSON.parse(localStorage.getItem('tdb_auth_token') ? JSON.stringify({id: localStorage.getItem('tdb_user_id'), email: localStorage.getItem('tdb_user_email')}) : '{}');
+        await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', ...(token ? { Authorization:`Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          parent_id:     user?.id || user?.email || user?.user_id || tdbSession?.id || tdbSession?.email || 'guest',
+          pet_id:        pet?.id || 'unknown',
+          pillar,
+          intent_primary:'mira_imagines_request',
+          channel:       `${pillar}_mira_imagines`,
+          life_state:    pillar,
+          initial_message: { sender:'parent', text:`I'd love "${card.name}" for ${petName}. Mira imagined this — please help source it.` },
+        }),
+      });
+      setSent(true);
+    } catch { setSent(true); } // still show success even if offline
+    finally { setSending(false); }
+  };
 
   return (
     <div
       style={{
-        borderRadius: 16,
-        overflow: "hidden",
-        background: card.bg,
-        cursor: "pointer",
-        transition: "transform 0.15s",
-        transform: hovered ? "translateY(-4px)" : "none",
-        position: "relative",
+        borderRadius: 16, overflow: "hidden", background: card.bg,
+        cursor: "pointer", transition: "transform 0.15s",
+        transform: hovered ? "translateY(-4px)" : "none", position: "relative",
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={() => onConcierge?.(card)}
+      onClick={handleSource}
     >
       {/* Watercolour image or icon */}
       <div style={{
@@ -401,18 +428,20 @@ function ImagineCard({ card, petName, index, onConcierge, colour }) {
           {card.reason}
         </div>
         <button
-          onClick={e => { e.stopPropagation(); onConcierge?.(card); }}
+          onClick={handleSource}
+          disabled={sending || sent}
           style={{
             width: "100%",
-            background: "rgba(255,255,255,0.18)",
+            background: sent ? "rgba(255,255,255,0.30)" : "rgba(255,255,255,0.18)",
             border: "1px solid rgba(255,255,255,0.30)",
             borderRadius: 20,
             padding: "8px",
             fontSize: 12, fontWeight: 700, color: "#fff",
-            cursor: "pointer",
+            cursor: sent ? "default" : "pointer",
+            opacity: sending ? 0.7 : 1,
           }}
         >
-          {card.cta}
+          {sent ? "✓ Sent to Concierge!" : sending ? "Sending…" : card.cta}
         </button>
       </div>
     </div>
@@ -434,6 +463,7 @@ export default function MiraImaginesBreed({
   const traits     = BREED_TRAITS[breedKey] || null;
   const breedDisplay = (pet?.breed || "").split("(")[0].trim();
   const isKnown    = !!traits;
+  const { token }  = useAuth();
 
   const cards = generateImagineCards(petName, breedDisplay, traits, pillar);
 
@@ -532,6 +562,9 @@ export default function MiraImaginesBreed({
             index={i}
             onConcierge={handleConcierge}
             colour={colour}
+            pet={pet}
+            pillar={pillar}
+            token={token}
           />
         ))}
       </div>

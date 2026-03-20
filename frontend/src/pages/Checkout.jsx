@@ -118,8 +118,8 @@ const Checkout = () => {
     
     // Order Details
     deliveryDate: '',
-    deliveryTime: 'afternoon',
     specialInstructions: '',
+    cakeInscription: '',
     giftMessage: '',
     isGift: false,
     
@@ -651,7 +651,6 @@ ${cartItems.map(item => `
 
 🚚 *PREFERENCE:*
 • Date: ${formData.deliveryDate ? new Date(formData.deliveryDate).toDateString() : 'ASAP'}
-• Time: ${formData.deliveryTime === 'morning' ? '9AM-12PM' : formData.deliveryTime === 'afternoon' ? '12PM-4PM' : '4PM-8PM'}
 
 ${formData.specialInstructions ? `📝 *SPECIAL INSTRUCTIONS:*\n${formData.specialInstructions}\n` : ''}
 ${formData.isGift ? `🎁 *GIFT MESSAGE:*\n${formData.giftMessage || 'No message'}\n` : ''}
@@ -1768,20 +1767,8 @@ _GST applicable on final invoice_
                       min={new Date().toISOString().split('T')[0]}
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="deliveryTime">Preferred Time Slot</Label>
-                    <select
-                      id="deliveryTime"
-                      name="deliveryTime"
-                      value={formData.deliveryTime}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border rounded-lg"
-                    >
-                      <option value="morning">Morning (9 AM - 12 PM)</option>
-                      <option value="afternoon">Afternoon (12 PM - 4 PM)</option>
-                      <option value="evening">Evening (4 PM - 8 PM)</option>
-                    </select>
-                  </div>
+                {/* Delivery Date only — time slot removed (third-party delivery) */}
+                
                 </div>
               </Card>
 
@@ -1804,6 +1791,23 @@ _GST applicable on final invoice_
                       data-testid="checkout-instructions"
                     />
                   </div>
+
+                  {/* Cake Inscription — shown when bakery/cake items in cart */}
+                  {cartItems.some(item => DEFAULT_BAKERY_CATEGORIES.includes(item.category) || (item.pillar||'').toLowerCase()==='celebrate') && (
+                    <div>
+                      <Label htmlFor="cakeInscription">🎂 Cake Inscription (text written on the cake)</Label>
+                      <input
+                        id="cakeInscription"
+                        name="cakeInscription"
+                        value={formData.cakeInscription || ''}
+                        onChange={handleInputChange}
+                        placeholder={`e.g. "Happy Birthday ${formData.petName || 'Mojo'}! 🐾"`}
+                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                        maxLength={40}
+                      />
+                      <p className="text-xs text-gray-400 mt-1">Max 40 characters · Edible ink inscription</p>
+                    </div>
+                  )}
                   
                   <div className="flex items-center gap-3">
                     <input
