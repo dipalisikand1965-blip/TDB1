@@ -14,6 +14,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { X, Loader2, Sparkles, ChevronRight, ShoppingBag, Check, ChevronDown, Share2, Calendar } from 'lucide-react';
 import ProductCard from '../ProductCard';
@@ -1730,11 +1731,11 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
     </motion.div>
   );
 
-  return (
+  return ReactDOM.createPortal(
     <>
-      {/* Backdrop */}
+      {/* Backdrop — rendered directly in document.body to escape any CSS transform stacking context */}
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" style={{ zIndex: 55 }} onClick={onClose} />
-      {/* Desktop: use flex centering wrapper so Framer Motion scale doesn't fight transform */}
+      {/* Desktop: flex centering wrapper */}
       {isDesktop ? (
         <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 56, pointerEvents: 'none' }}>
           <div style={{ pointerEvents: 'auto' }}>{ModalContent}</div>
@@ -1742,7 +1743,8 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
       ) : (
         ModalContent
       )}
-    </>
+    </>,
+    document.body
   );
 };
 

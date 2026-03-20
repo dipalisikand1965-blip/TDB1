@@ -44,7 +44,7 @@ export default function useBookConcierge(pet, pillar, token) {
         pillar,
         intent_primary:   "service_booking",
         intent_secondary: intentSecondary || [serviceName],
-        life_state:    pillar,
+        life_state:    "PLAN",
         channel:       ch,
         initial_message: {
           sender: "parent",

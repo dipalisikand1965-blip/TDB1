@@ -24,6 +24,7 @@
  */
 
 import { useState } from "react";
+import { tdc } from "../utils/tdc_intent";
 
 // ─────────────────────────────────────────────────────────────
 // HELPERS
@@ -514,6 +515,14 @@ function PathFlowModal({ path, pet, onClose }) {
   };
 
   const handleSubmit = () => {
+    // Fire tdc.request for guided path completion
+    tdc.request({
+      text: `Completed guided path: ${path.title}`,
+      name: path.title,
+      pillar: "care",
+      pet,
+      channel: "guided_paths_complete",
+    });
     // TODO: POST /api/concierge/care-path
     // body: { petId: pet.id, pathId: path.id, selections }
     setSubmitted(true);
@@ -735,7 +744,10 @@ export default function GuidedCarePaths({ pet }) {
                     </div>
                   ))}
                 </div>
-                <button onClick={() => { setOpenPath(null); setActivePath(path.id); }} style={{ width:"100%", background:path.accentColor, color:"#fff", border:"none", borderRadius:10, padding:"12px", fontSize:14, fontWeight:700, cursor:"pointer" }}>
+                <button onClick={() => { 
+                  tdc.request({ text: `Started guided path: ${path.title}`, name: path.title, pillar: "care", pet, channel: "guided_paths" });
+                  setOpenPath(null); setActivePath(path.id); 
+                }} style={{ width:"100%", background:path.accentColor, color:"#fff", border:"none", borderRadius:10, padding:"12px", fontSize:14, fontWeight:700, cursor:"pointer" }}>
                   Start this path with Mira →
                 </button>
               </div>

@@ -30,6 +30,8 @@ import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
 import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
+import { tdc } from "../utils/tdc_intent";
+import { usePlatformTracking } from "../hooks/usePlatformTracking";
 
 // ── Colour — clean slate, every pillar's colour shows through ─
 const G = {
@@ -115,14 +117,19 @@ function BookingModal({ service, pet, user, onClose, onBooked }) {
   const handleBook = async () => {
     setLoading(true);
     try {
+      const token = localStorage.getItem('tdb_auth_token');
       const res = await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
         method: "POST",
-        headers: { "Content-Type":"application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           parent_id: user?.id || user?.email || "guest",
-          pet_id: pet?.id || pet?._id,
+          pet_id: pet?.id || pet?._id || "",
           pillar: service.pillar || "services",
           intent_primary: "service_booking",
+          life_state: "PLAN",
           channel: "services_page",
           initial_message: {
             sender: "parent",
@@ -342,6 +349,9 @@ const ServicesSoulPage = () => {
   const { token, isAuthenticated, user }                  = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets }  = usePillarContext();
 
+  // ── Universal visit tracking ──────────────────────────────────
+  usePlatformTracking({ pillar: "services", pet: currentPet });
+
   const [loading,       setLoading]       = useState(true);
   const [petData,       setPetData]       = useState(null);
   const [soulScore,     setSoulScore]     = useState(0);
@@ -389,6 +399,14 @@ const ServicesSoulPage = () => {
   }, [isAuthenticated, navigate]);
 
   const handleBook = (service) => {
+    tdc.book({
+      service: service?.name || service,
+      product_id: service?._id || service?.id,
+      pillar: service?.pillar || "services",
+      pet: petData,
+      channel: "services_page",
+      amount: service?.base_price || service?.price,
+    });
     setBookingService(service);
   };
 

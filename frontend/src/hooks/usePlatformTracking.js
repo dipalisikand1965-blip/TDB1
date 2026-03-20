@@ -103,12 +103,13 @@ async function fireIntent({
   try {
     const body = {
       parent_id,
-      pet_id: pet_id || null,
+      pet_id: pet_id || "",
       pillar,
       intent_primary,
       intent_secondary: [query ? "search_query" : "browse_intent", entity_name ? "product_interest" : null].filter(Boolean),
       channel,
       urgency,
+      life_state: pillar === "emergency" ? "CONCERN" : pillar === "celebrate" ? "CELEBRATE" : "EXPLORE",
       status: "open",
       initial_message: {
         sender: "system",

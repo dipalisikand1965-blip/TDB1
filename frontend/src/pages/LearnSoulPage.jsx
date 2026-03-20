@@ -35,6 +35,7 @@ import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMi
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import { API_URL } from "../utils/api";
+import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 
 // ─── SOUL CHIP (hero chips — same as CareHero) ───────────────
@@ -1737,9 +1738,10 @@ const LearnSoulPage = () => {
 
   const handleBook = useCallback((svc) => {
     if (!svc) return;
+    tdc.book({ service: svc.name || svc.id, pillar: "learn", pet: petData, channel: "learn_pillar", amount: svc.base_price || svc.price });
     setConciergeType(svc.concierge_type || svc.id || svc.category || '');
     setConciergeOpen(true);
-  }, []);
+  }, [petData]);
 
   // Pre-fetch everything on page load
   useEffect(()=>{
