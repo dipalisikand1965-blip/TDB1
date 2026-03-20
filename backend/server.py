@@ -2129,8 +2129,36 @@ async def get_system_overview():
     md_path = pathlib.Path("/app/memory/SYSTEM_OVERVIEW.md")
     if md_path.exists():
         content = md_path.read_text(encoding="utf-8")
-        return Response(content=content, media_type="text/plain", headers={"Access-Control-Allow-Origin":"*"})
+        return Response(content=content, media_type="text/plain", headers={"Access-Control-Allow-Origin":"*","Content-Disposition":"attachment; filename=SYSTEM_OVERVIEW.md"})
     return {"error": "File not found"}
+
+
+@app.get("/api/public/docs-zip")
+async def download_all_docs():
+    """Public endpoint — returns ZIP of all 5 Claude context files + complete documentation"""
+    import zipfile, io, pathlib
+    from fastapi.responses import StreamingResponse
+    
+    files_to_zip = [
+        ("/app/memory/SYSTEM_OVERVIEW.md", "SYSTEM_OVERVIEW.md"),
+        ("/app/memory/ADMIN_GUIDE.md", "ADMIN_GUIDE.md"),
+        ("/app/memory/MIRA_OS_ARCHITECTURE.md", "MIRA_OS_ARCHITECTURE.md"),
+        ("/app/memory/PAGES_ARCHITECTURE.md", "PAGES_ARCHITECTURE.md"),
+        ("/app/memory/PILLAR_ARCHITECTURE_STANDARD.md", "PILLAR_ARCHITECTURE_STANDARD.md"),
+        ("/app/frontend/public/FOR_CLAUDE.txt", "FOR_CLAUDE.txt"),
+        ("/app/frontend/public/complete-documentation.html", "complete-documentation.html"),
+    ]
+    
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        for fpath, arcname in files_to_zip:
+            p = pathlib.Path(fpath)
+            if p.exists():
+                zf.writestr(arcname, p.read_text(encoding="utf-8", errors="ignore"))
+    buf.seek(0)
+    return StreamingResponse(buf, media_type="application/zip",
+        headers={"Content-Disposition": "attachment; filename=TDC_Claude_Context.zip",
+                 "Access-Control-Allow-Origin": "*"})
 
 
 @app.get("/api/admin/site-status")

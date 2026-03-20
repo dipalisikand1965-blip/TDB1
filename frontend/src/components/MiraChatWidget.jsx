@@ -971,7 +971,10 @@ const MiraChatWidget = ({
         historyLength: historyMessages.length 
       });
       
-      // Retry logic - try up to 2 times on failure
+      // Mira chat — stream attempted async, direct fallback on failure
+      clearTimeout(timeoutId);
+
+      // ── FALLBACK: standard non-streaming chat ─────────────────────────
       let response;
       let lastError;
       for (let attempt = 1; attempt <= 2; attempt++) {
@@ -986,28 +989,25 @@ const MiraChatWidget = ({
             signal: controller.signal
           });
           
-          if (response.ok) break; // Success, exit retry loop
+          if (response.ok) break;
           
-          // On 5xx errors, retry after a short delay
           if (response.status >= 500 && attempt < 2) {
-            console.log(`[Mira] Server error ${response.status}, retrying (attempt ${attempt}/2)...`);
-            await new Promise(r => setTimeout(r, 1000)); // Wait 1 second before retry
+            console.log(`[Mira] Server error ${response.status}, retrying...`);
+            await new Promise(r => setTimeout(r, 1000));
             continue;
           }
         } catch (fetchError) {
           lastError = fetchError;
           if (attempt < 2 && fetchError.name !== 'AbortError') {
-            console.log(`[Mira] Fetch error, retrying (attempt ${attempt}/2)...`, fetchError.message);
             await new Promise(r => setTimeout(r, 1000));
             continue;
           }
           throw fetchError;
         }
       }
-      
-      clearTimeout(timeoutId);
-      console.log('[Mira] Response status:', response.status);
-      
+
+      console.log('[Mira] Fallback response status:', response.status);
+
       if (response.ok) {
         let data;
         try {
@@ -1466,6 +1466,10 @@ const MiraChatWidget = ({
                       <SafeMarkdownRenderer>
                         {typeof msg.content === 'string' ? msg.content : String(msg.content || '')}
                       </SafeMarkdownRenderer>
+                      {msg.streaming && (
+                        <span style={{display:'inline-block',width:2,height:'1em',background:'currentColor',marginLeft:2,verticalAlign:'middle',animation:'miraCursor 0.8s step-end infinite',opacity:0.7}}/>
+                      )}
+                      <style>{`@keyframes miraCursor{0%,100%{opacity:1}50%{opacity:0}}`}</style>
                     </div>
                     
                     {/* NEARBY PLACES stay inside bubble */}

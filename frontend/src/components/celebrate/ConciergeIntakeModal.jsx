@@ -10,6 +10,8 @@
  */
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
+
 import { X } from 'lucide-react';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
@@ -98,7 +100,7 @@ const ConciergeIntakeModal = ({ isOpen, onClose, serviceType, petName, petId }) 
 
   const displayName = petName || 'your pet';
 
-  return (
+  return createPortal(
     <>
       {/* Overlay */}
       <div
@@ -362,7 +364,8 @@ const ConciergeIntakeModal = ({ isOpen, onClose, serviceType, petName, petId }) 
           )}
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 };
 
