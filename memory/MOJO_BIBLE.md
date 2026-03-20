@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://care-soul-fixes.preview.emergentagent.com
+https://intent-ticket-flow.preview.emergentagent.com
 ```
 
 ---
