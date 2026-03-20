@@ -216,7 +216,7 @@ async def _run_full_scoring(pet_id: str, pillar: Optional[str], entity_types: Op
                 scored_at = scored_at.replace(tzinfo=timezone.utc) if scored_at.tzinfo is None else scored_at
             except Exception:
                 scored_at = None
-        if scored_at and (datetime.now(timezone.utc) - scored_at) < timedelta(hours=1):
+        if scored_at and (datetime.now(timezone.utc) - scored_at) < timedelta(hours=6):
             print(f"[MiraScoreEngine] Skipping scoring for pet={pet_id} — scored <1hr ago")
             return
 
@@ -286,12 +286,12 @@ async def _run_full_scoring(pet_id: str, pillar: Optional[str], entity_types: Op
 
     print(f"[MiraScoreEngine] Scoring {len(all_items)} items for {pet_profile['name']}")
 
-    # Batch and score
+    # Batch and score — yield to event loop between batches so API calls get through
     batches = [all_items[i:i+BATCH_SIZE] for i in range(0, len(all_items), BATCH_SIZE)]
     scored_at = datetime.now(timezone.utc).isoformat()
     session_id = f"mira-score-{pet_id}-{uuid.uuid4().hex[:8]}"
 
-    # Process batches (2 at a time to avoid rate limits)
+    # Process batches (2 at a time) — yield between each pair to prevent event loop starvation
     all_scores = []
     for i in range(0, len(batches), 2):
         chunk = batches[i:i+2]
@@ -302,6 +302,8 @@ async def _run_full_scoring(pet_id: str, pillar: Optional[str], entity_types: Op
         results = await asyncio.gather(*tasks)
         for result in results:
             all_scores.extend(result)
+        # Yield to event loop so other API requests can be served while scoring
+        await asyncio.sleep(0)
 
     # Build lookup from scored results
     score_map = {s["id"]: s for s in all_scores if s.get("id")}
@@ -485,19 +487,39 @@ async def get_top_picks(
     cursor = _db.mira_product_scores.find(q, {"_id": 0}).sort("score", -1).limit(limit * 3)
     picks = await cursor.to_list(length=limit * 3)
 
-    # Enrich with full product/service/bundle data
+    # Enrich with full product/service/bundle data — BULK fetch, not 60 individual find_one
+    entity_ids = [pick.get("entity_id") for pick in picks if pick.get("entity_id")]
+    
+    # Single bulk fetch per collection
+    products_map, services_map, bundles_map = {}, {}, {}
+    product_ids  = [p["entity_id"] for p in picks if p.get("entity_type","product") == "product"]
+    service_ids  = [p["entity_id"] for p in picks if p.get("entity_type") == "service"]
+    bundle_ids   = [p["entity_id"] for p in picks if p.get("entity_type") == "bundle"]
+
+    if product_ids:
+        async for doc in _db.products_master.find({"id": {"$in": product_ids}}, {"_id": 0}):
+            products_map[doc["id"]] = doc
+    if service_ids:
+        async for doc in _db.services_master.find({"id": {"$in": service_ids}}, {"_id": 0}):
+            services_map[doc["id"]] = doc
+    if bundle_ids:
+        async for doc in _db.bundles.find({"id": {"$in": bundle_ids}}, {"_id": 0}):
+            bundles_map[doc["id"]] = doc
+
     enriched = []
     for pick in picks:
         entity_id = pick.get("entity_id")
         etype = pick.get("entity_type", "product")
-        full = None
         if etype == "product":
-            full = await _db.products_master.find_one({"id": entity_id}, {"_id": 0})
+            full = products_map.get(entity_id)
         elif etype == "service":
-            full = await _db.services_master.find_one({"id": entity_id}, {"_id": 0})
+            full = services_map.get(entity_id)
         elif etype == "bundle":
-            full = await _db.bundles.find_one({"id": entity_id}, {"_id": 0})
+            full = bundles_map.get(entity_id)
+        else:
+            full = None
         if full:
+            full = dict(full)  # copy to avoid mutating cached map
             full["mira_score"] = pick.get("score")
             full["mira_reason"] = pick.get("mira_reason")
             full["entity_type"] = etype
@@ -519,6 +541,20 @@ async def get_top_picks(
             elif any(breed_lower in t or t in breed_lower for t in targets):
                 filtered.append(item)
         enriched = filtered
+
+    # ── Fallback: if no scored picks, return top products for pillar ──────────
+    if not enriched and pillar:
+        import asyncio
+        asyncio.create_task(_run_full_scoring(pet_id, pillar, None))
+        fallback_cursor = _db.products_master.find(
+            {"$or": [{"pillar": pillar}, {"pillars": pillar}], "active": {"$ne": False}},
+            {"_id": 0}
+        ).sort([("mira_score", -1), ("price", 1)]).limit(limit)
+        fallback = await fallback_cursor.to_list(length=limit)
+        for p in fallback:
+            p["mira_reason"] = f"Mira is personalising picks for {breed or 'your pet'} — these are top {pillar} picks meanwhile."
+            p["is_fallback"] = True
+        return {"picks": fallback, "count": len(fallback), "scoring_pending": True}
 
     return {
         "picks": enriched[:limit],

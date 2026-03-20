@@ -65,6 +65,7 @@ function filterBreedProducts(products, petBreed) {
 
 // ─── MIRA PICKS SECTION ───────────────────────────────────────────────
 function CelebrateMiraPicksSection({ pet, token }) {
+  const [scoringPending, setScoringPending] = useState(false);
   const [picks, setPicks]         = useState([]);
   const [picksLoading, setPicksLoading] = useState(true);
   const [selPick,  setSelPick]    = useState(null);
