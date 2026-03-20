@@ -20,7 +20,7 @@ The Doggy Company's Pet Life Operating System (PLOS) is a pillar-based platform 
 - **Hosting**: Kubernetes container (Emergent platform)
 
 ### URL Structure
-- Frontend: `https://care-soul-fixes.preview.emergentagent.com`
+- Frontend: `https://intent-ticket-flow.preview.emergentagent.com`
 - Backend: Port 8001, all API routes prefixed with `/api`
 
 ### Key Backend Files
@@ -246,7 +246,7 @@ The Doggy Company's Pet Life Operating System (PLOS) is a pillar-based platform 
 - **Hosting**: Kubernetes container (Emergent platform)
 
 ### URL Structure
-- Frontend: `https://care-soul-fixes.preview.emergentagent.com`
+- Frontend: `https://intent-ticket-flow.preview.emergentagent.com`
 - Backend: Port 8001, all API routes prefixed with `/api`
 
 ### Key Backend Files
