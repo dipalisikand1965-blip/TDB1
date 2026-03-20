@@ -276,6 +276,7 @@ function MiraImagineCard({ card, pet, token }) {
 // MIRA PICKS SECTION
 // ─────────────────────────────────────────────────────────────
 function MiraPicksSection({ pet }) {
+  const [scoringPending, setScoringPending] = useState(false);
   const [picks, setPicks]       = useState([]);
   const [loading, setLoading]   = useState(true);
   const [selectedPick, setSelectedPick] = useState(null);
@@ -319,8 +320,8 @@ function MiraPicksSection({ pet }) {
     if (!pet?.id) { setLoading(false); return; }
     const makeAbortable = (url) => {
       const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 3000);
-      return fetch(url, { signal: ctrl.signal })
+      const timer = setTimeout(() => ctrl.abort(), 8000); // 8s — handles scoring job blocking
+      return fetch(url, { signal: ctrl.signal, headers: { Authorization: `Bearer ${token || ""}` } })
         .then(r => r.ok ? r.json() : null)
         .finally(() => clearTimeout(timer))
         .catch(() => null);
@@ -962,7 +963,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {}, apiLoading = false }
           {apiLoading ? (
             <div style={{ textAlign:"center", padding:"32px 0", color:"#888" }}>
               <div style={{ width:28, height:28, border:`3px solid ${G.pale}`, borderTopColor:G.orange, borderRadius:"50%", animation:"spin 0.8s linear infinite", margin:"0 auto 12px" }} />
-              <div style={{ fontSize:13 }}>Loading products for {petName}…</div>
+              <ProductGridSkeleton count={6} />
             </div>
           ) : products.length === 0 ? (
             <div style={{ textAlign:"center", padding:"24px 0", color:"#888", fontSize:13 }}>

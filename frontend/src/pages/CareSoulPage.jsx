@@ -348,6 +348,7 @@ function MiraImagineCard({ item, pet, token }) {
 
 function MiraPicksSection({ pet }) {
   const [picks, setPicks]               = useState([]);
+  const [scoringPending, setScoringPending] = useState(false);
   const [loading, setLoading]           = useState(true);
   const [selectedPick, setSelectedPick] = useState(null);
   const [conciergeService, setConciergeService] = useState(null);
@@ -398,7 +399,12 @@ function MiraPicksSection({ pet }) {
           if (pi < prods.length) merged.push(prods[pi++]);
           if (si < svcs.length)  merged.push(svcs[si++]);
         }
-        if (merged.length) setPicks(merged.slice(0, 16));
+        if (merged.length) { 
+          setPicks(merged.slice(0, 16));
+          // Check if any results are fallback (scoring pending)
+          const hasFallback = merged.some(p => p.is_fallback);
+          setScoringPending(hasFallback);
+        }
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -470,6 +476,12 @@ function MiraPicksSection({ pet }) {
       <p style={{ fontSize:12, color:"#888", marginBottom:16, lineHeight:1.5 }}>
         Products &amp; services matched by Mira to {petName}'s wellness profile — updated as {petName} grows.
       </p>
+      {scoringPending && (
+        <div style={{ background:"rgba(45,106,79,0.06)", border:"1px solid rgba(45,106,79,0.2)", borderRadius:10, padding:"8px 14px", marginBottom:12, display:"flex", alignItems:"center", gap:8, fontSize:12, color:G.sage }}>
+          <span style={{ fontSize:16 }}>✨</span>
+          Mira is personalising these picks for {petName} — tailored scores ready soon.
+        </div>
+      )}
       <div style={{ display:"flex", gap:14, overflowX:"auto", paddingBottom:10, scrollbarWidth:"thin" }} className="care-picks-scroll">
         <style>{`.care-picks-scroll::-webkit-scrollbar{height:4px}.care-picks-scroll::-webkit-scrollbar-thumb{background:${G.sage}50;border-radius:4px}`}</style>
         {picks.map((pick, i) => {
