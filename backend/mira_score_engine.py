@@ -201,6 +201,25 @@ async def _run_full_scoring(pet_id: str, pillar: Optional[str], entity_types: Op
     """Background task: score ALL items for a pet and persist to DB."""
     if _db is None:
         return
+
+    # ── Cooldown: skip if scored within the last 60 minutes ──────────────
+    from datetime import datetime, timezone, timedelta
+    recent = await _db.mira_product_scores.find_one(
+        {"pet_id": pet_id},
+        sort=[("scored_at", -1)]
+    )
+    if recent:
+        scored_at = recent.get("scored_at")
+        if isinstance(scored_at, str):
+            try:
+                scored_at = datetime.fromisoformat(scored_at.replace("Z",""))
+                scored_at = scored_at.replace(tzinfo=timezone.utc) if scored_at.tzinfo is None else scored_at
+            except Exception:
+                scored_at = None
+        if scored_at and (datetime.now(timezone.utc) - scored_at) < timedelta(hours=1):
+            print(f"[MiraScoreEngine] Skipping scoring for pet={pet_id} — scored <1hr ago")
+            return
+
     print(f"[MiraScoreEngine] Starting scoring for pet={pet_id} pillar={pillar}")
 
     # Fetch pet
