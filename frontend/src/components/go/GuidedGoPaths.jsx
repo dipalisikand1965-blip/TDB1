@@ -19,6 +19,7 @@
 
 import { useState } from "react";
 import { API_URL } from "../../utils/api";
+import { tdc } from "../../utils/tdc_intent";
 
 const G = {
   deep:"#0D3349", deepMid:"#1A5276", teal:"#1ABC9C", light:"#76D7C4",
@@ -242,6 +243,8 @@ function PathFlowModal({ path, pet, onClose }) {
 
   const handleSend = async () => {
     setSending(true);
+    // Fire tdc on path completion
+    tdc.request({ text: `Completed guided path: ${path.title}`, name: path.title, pillar: "go", pet, channel: "go_guided_paths_complete" });
     try {
       await fetch(`${API_URL}/api/concierge/go-path`, {
         method: "POST",
@@ -377,7 +380,10 @@ export default function GuidedGoPaths({ pet }) {
             key={path.id}
             path={path}
             petName={petName}
-            onOpen={() => setActivePath(path.id)}
+            onOpen={() => {
+              tdc.request({ text: `Started guided path: ${path.title}`, name: path.title, pillar: "go", pet, channel: "go_guided_paths_start" });
+              setActivePath(path.id);
+            }}
           />
         ))}
       </div>

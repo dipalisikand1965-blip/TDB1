@@ -881,7 +881,25 @@ const MiraChatWidget = ({
   const sendMessage = async (directMessage = null) => {
     const messageToSend = directMessage || inputValue.trim();
     if (!messageToSend || isSending) return;
-    
+
+    // ── Grief / Farewell keyword detection — fire ticket BEFORE Mira responds ──
+    const FAREWELL_KEYWORDS = [
+      "crematorium", "cremation", "put to sleep", "put down",
+      "euthanasia", "passed away", "died", "death", "lost my dog",
+      "gone", "farewell", "memorial", "burial", "rainbow bridge",
+      "no longer with us", "last days", "end of life",
+    ];
+    const lowerMsg = messageToSend.toLowerCase();
+    if (FAREWELL_KEYWORDS.some(kw => lowerMsg.includes(kw))) {
+      tdc.track("farewell_detected", {
+        text: messageToSend,
+        pillar: "farewell",
+        pet: selectedPet,
+        urgency: "high",
+        channel: "mira_widget_farewell_detection",
+      });
+    }
+
     const userMessage = {
       id: Date.now().toString(),
       role: 'user',

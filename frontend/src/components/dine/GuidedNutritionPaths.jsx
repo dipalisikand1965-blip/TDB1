@@ -14,6 +14,7 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { getApiUrl } from "../../utils/api";
+import { tdc } from "../../utils/tdc_intent";
 
 // ─────────────────────────────────────────────────────────────
 // HELPERS
@@ -578,6 +579,8 @@ function PathFlowModal({ path, pet, onClose }) {
 
   const handleSubmit = async () => {
     setSubmitting(true);
+    // Fire tdc.request on nutrition path completion
+    tdc.request({ text: `Completed guided nutrition path: ${path.title}`, name: path.title, pillar: "dine", pet, channel: "dine_guided_paths_complete" });
     try {
       const apiUrl = getApiUrl();
       await fetch(`${apiUrl}/api/concierge/nutrition-path`, {
@@ -809,7 +812,10 @@ export default function GuidedNutritionPaths({ pet }) {
   const allPaths    = buildPaths(pet);
   const petName     = pet?.name || "your pet";
 
-  const openModal  = (pathId) => setActivePath(pathId);
+  const openModal  = (pathId, pathObj) => {
+    if (pathObj) tdc.request({ text: `Started guided nutrition path: ${pathObj.title}`, name: pathObj.title, pillar: "dine", pet, channel: "dine_guided_paths_start" });
+    setActivePath(pathId);
+  };
   const closeModal = () => setActivePath(null);
 
   return (
@@ -861,7 +867,7 @@ export default function GuidedNutritionPaths({ pet }) {
             key={path.id}
             path={path}
             petName={petName}
-            onOpen={() => openModal(path.id)}
+            onOpen={() => openModal(path.id, path)}
           />
         ))}
       </div>

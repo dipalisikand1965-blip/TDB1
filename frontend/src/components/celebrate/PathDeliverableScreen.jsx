@@ -9,6 +9,7 @@
 import React, { useState } from 'react';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
+import { tdc } from '../../utils/tdc_intent';
 
 const PathDeliverableScreen = ({ path, petName, pet, userChoices, onReset }) => {
   const { token } = useAuth();
@@ -18,6 +19,14 @@ const PathDeliverableScreen = ({ path, petName, pet, userChoices, onReset }) => 
 
   const handleHandToConcierge = async () => {
     setSending(true);
+    // Fire tdc.request on guided path completion (hand to concierge)
+    tdc.request({
+      text: `Completed guided celebration path: ${path.deliverableName || path.id}`,
+      name: path.deliverableName || path.title || path.id,
+      pillar: "celebrate",
+      pet,
+      channel: "celebrate_guided_paths_complete",
+    });
     try {
       const apiUrl = getApiUrl();
       const notesLines = Object.entries(userChoices || {}).map(([k, v]) => `${k}: ${v}`);
