@@ -1,6 +1,6 @@
 # The Doggy Company® — Pet Life Operating System
 ## Product Requirements Document — MASTER
-## Last Updated: Mar 19, 2026 (Session 83 — Learn Pillar Live, Breed Filtering System-wide, Fit Hidden)
+## Last Updated: Mar 20, 2026 (Session 84 — Universal Intent-to-Ticket Flow COMPLETE, Celebrate Modal Fixed)
 
 ---
 
@@ -581,36 +581,27 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 
 ## P0/P1/P2 BACKLOG
 
-### P0 — All Complete ✅
-- All 4 pillars (Dine, Care, Go, Play) have "Personalised" tab with breed-specific products
-- Play category strip now functional (connected to DimExpandedModal)
-- **Play modal is now centered** (was bottom-sheet, now centered full-screen on desktop)
-- **Soul Made (AI) products** now appear in Personalised tabs across all 4 pillars via `SoulMadeCollection`
+### P0 — Complete ✅ (Session 84)
+- **Universal Intent-to-Ticket Flow**: `tdc_intent.js` created — single canonical utility with `tdc.book()`, `tdc.view()`, `tdc.chat()`, `tdc.urgent()`, `tdc.imagine()`, `tdc.nearme()`, `tdc.request()` etc.
+- All 13 pillar pages now wire every CTA to `service_desk_tickets` (admin inbox + member inbox)
+- `ProductModal.jsx`, `MiraImaginesBreed.jsx`, `MiraChatWidget.jsx`, `GuidedCarePaths.jsx` all wired
+- **Celebrate Category Modal Fixed**: `CelebrateContentModal.jsx` now uses `ReactDOM.createPortal` — no more grey overlay
+- Testing agent fixed 6 critical bugs (life_state validation, urgency propagation, etc.)
 
-### P1 — Important Improvements
-- **PLAY pillar**: /play route fully functional with orange/rust color scheme (#E76F51, #7B2D00)
-  - PlayHero: no tabs inside, orange gradient (matches GoHero pattern)
-  - PlayTabBar: separate sticky tab bar with 3 tabs (Play & Explore, Find Play, Book a Service)
-  - Products loading: fixed sub_category→dim.id grouping (241 products across 6 dimensions)
-  - Mira Picks: Promise.allSettled + AbortController (5s timeout) so fallback shows when slow
-  - GuidedPlayPaths: 6 paths seeded and displayed
-  - Find Play tab: PlayNearMe with Google Places map
-  - Services: 8 play services seeded (Dog Park Outing, Playdate, Swim, Agility, etc.)
-
-### P1 — Important Improvements
-- **Implement the "Adopt" pillar** — /adopt route, AdoptSoulPage
-- **Go service watercolour images** — Generate using admin → Soul Products tool or DALL-E
-- **Consolidate duplicate services** — 89+ travel/stay services in DB → 8 canonical ones
-- **Care soul product images** — 35 Care products in DB without images (use admin mockup tool)
-- **Add new mock product templates** to `batch_scorers.py` for the Soul Product Generator
-- **Implement CTAs from TDC_instructions.docx** — Read `/app/TDC_instructions.docx` and implement CTAs on frontend
+### P1 — Next Sprint
+- **Update Static Pages**: Apply new standard Navbar to `/about`, `/membership`, `/faqs`
+- **Sync Membership Pricing**: Page shows ₹2,499/year but backend has ₹999/year — must match
+- **Remove "Skip Payment" button** from onboarding flow before soft launch
+- **Razorpay webhook → ticket**: Wire payment success to create an `order_placed` ticket in admin
+- **Wire remaining Guided Paths**: GuidedPlayPaths, GuidedLearnPaths, GuidedGoBootcamp, GuidedCelebrationPaths — all need `tdc.request()` wired on "Start" and "Complete" actions
 
 ### P2 — Future Pillars & Features
-- **Razorpay checkout fix** — Known low-priority bug
 - **LOVE pillar** — /love route, LoveSoulPage, Love Memory Drawer
-- **Consolidate bundles collections** — Multiple bundles collections need merging
-- **Generic shared components** — Reduce code duplication across DINE/CARE/GO/PLAY pillars (refactor DimExpanded into a truly shared component)
-- **complete-documentation.html** — Keep updated with each session (v18.0.0 current)
+- **Mira Streaming**: Make streaming responses the default in MiraDemoPage.jsx (5,400+ lines)
+- **Dine MiraImaginesCard**: Update to use shared `MiraImaginesBreed` component with Cloudinary watercolour images
+- **Mira Intelligence**: Use order history and interaction history for recommendations
+- **Adopt pillar**: Wired but needs full product catalog
+- **Farewell pillar**: Wired but could use more content
 
 ---
 
