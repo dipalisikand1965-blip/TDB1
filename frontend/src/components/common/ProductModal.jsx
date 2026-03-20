@@ -12,6 +12,7 @@
  */
 import { useState } from "react";
 import { API_URL } from "../../utils/api";
+import { tdc } from "../../utils/tdc_intent";
 
 export default function ProductModal({ item, pet, pillar, onClose, onBook, colour = "#9B59B6" }) {
   const [booked,  setBooked]  = useState(false);
@@ -29,6 +30,15 @@ export default function ProductModal({ item, pet, pillar, onClose, onBook, colou
   const handleBook = async () => {
     if (booking || booked) return;
     setBooking(true);
+    // Fire tdc tracking immediately — before async ops
+    tdc.book({
+      service: item.name,
+      product_id: item._id || item.id,
+      pillar: pillar || "platform",
+      pet,
+      channel: `${pillar || "platform"}_product_modal`,
+      amount: item.price,
+    });
     try {
       if (onBook) {
         await onBook(item);

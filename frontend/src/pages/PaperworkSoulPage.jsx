@@ -31,6 +31,8 @@ import PersonalisedBreedSection from "../components/common/PersonalisedBreedSect
 import ConciergeToast from "../components/common/ConciergeToast";
 import GuidedPaperworkPaths from "../components/paperwork/GuidedPaperworkPaths";
 import { API_URL } from "../utils/api";
+import { tdc } from "../utils/tdc_intent";
+import { usePlatformTracking } from "../hooks/usePlatformTracking";
 
 // ─── COLOUR SYSTEM ─────────────────────────────────────────
 const G = {
@@ -605,6 +607,9 @@ const PaperworkSoulPage = () => {
   const {token,isAuthenticated}                       = useAuth();
   const {currentPet,setCurrentPet,pets:contextPets}  = usePillarContext();
 
+  // ── Universal visit tracking ──────────────────────────────────
+  usePlatformTracking({ pillar: "paperwork", pet: currentPet });
+
   const [loading,       setLoading]       = useState(true);
   const [activeTab,     setActiveTab]     = useState("documents");
   const [openDim,       setOpenDim]       = useState(null);
@@ -621,6 +626,8 @@ const PaperworkSoulPage = () => {
   const handleBook = useCallback(async (svc) => {
     const petName = petData?.name||"your dog";
     const svcName = svc?.name||"this service";
+    // Fire tdc tracking immediately
+    tdc.book({ service: svcName, pillar: "paperwork", pet: petData, channel: "paperwork_page", amount: svc?.base_price||svc?.price });
     const knownSvc = PAPER_SERVICES.find(s=>s.name===svcName||s.id===svc?.id);
     if (knownSvc) { setActiveService(knownSvc); return; }
     // Fallback: fire ticket
@@ -629,7 +636,7 @@ const PaperworkSoulPage = () => {
       await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`,{
         method:"POST",
         headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
-        body:JSON.stringify({parent_id:user?.id||"guest",pet_id:petData?.id||"unknown",pillar:"paperwork",intent_primary:"service_request",intent_secondary:[svcName],initial_message:{sender:"parent",source:"paperwork_page",text:`Hi! ${petName}'s parent would like to book ${svcName}. Please arrange and confirm.`}}),
+        body:JSON.stringify({parent_id:user?.id||"guest",pet_id:petData?.id||"",pillar:"paperwork",intent_primary:"service_request",life_state:"PLAN",intent_secondary:[svcName],initial_message:{sender:"parent",source:"paperwork_page",text:`Hi! ${petName}'s parent would like to book ${svcName}. Please arrange and confirm.`}}),
       });
     } catch(e){console.error("[PaperworkSoulPage] handleBook",e);}
     setToastSvc(svcName); setToastVisible(true);

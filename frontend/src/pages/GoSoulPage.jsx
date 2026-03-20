@@ -38,6 +38,7 @@ import GoConciergeSection from "../components/go/GoConciergeSection";
 import PetFriendlyStays from "../components/go/PetFriendlyStays";
 import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
+import { tdc } from "../utils/tdc_intent";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
@@ -329,6 +330,8 @@ function MiraPicksSection({ pet }) {
 
   const handleServiceConcierge = async service => {
     setConciergeSending(true);
+    // Fire tdc.book immediately
+    tdc.book({ service: service.name || service.entity_name, pillar: "go", pet, channel: "go_miras_picks", amount: service.price });
     try {
       const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
       await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {

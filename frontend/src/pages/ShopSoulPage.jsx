@@ -27,6 +27,7 @@ import PillarPageLayout from "../components/PillarPageLayout";
 import ConciergeToast from "../components/common/ConciergeToast";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import { API_URL } from "../utils/api";
+import { tdc } from "../utils/tdc_intent";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 
@@ -182,7 +183,12 @@ function MiraPicksSection({ pet }) {
               <div key={pick.id||i}
                 style={{ flexShrink:0, width:168, background:"#fff", borderRadius:14,
                          border:`1.5px solid ${G.borderLight}`, overflow:"hidden", cursor:"pointer" }}
-                onClick={() => !isService && setSelected(pick)}>
+                onClick={() => {
+                  if (!isService) {
+                    tdc.view({ product: pick, pillar: "shop", pet, channel: "shop_mira_picks" });
+                    setSelected(pick);
+                  }
+                }}>
                 <div style={{ width:"100%", height:130, background:G.pale, overflow:"hidden", position:"relative" }}>
                   {img
                     ? <img src={img} alt={pick.name||""} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>

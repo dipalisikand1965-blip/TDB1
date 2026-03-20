@@ -23,6 +23,8 @@ import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMi
 import GuidedEmergencyPaths from "../components/emergency/GuidedEmergencyPaths";
 import EmergencyNearMe from "../components/emergency/EmergencyNearMe";
 import { API_URL } from "../utils/api";
+import { tdc } from "../utils/tdc_intent";
+import { usePlatformTracking } from "../hooks/usePlatformTracking";
 
 const G = {
   deep:"#7F1D1D", mid:"#991B1B", crimson:"#DC2626", light:"#FCA5A5",
@@ -252,7 +254,7 @@ function EmergencyConciergeModal({ isOpen, onClose, petName, petId, token, preSe
     }
   }, [isOpen, preSelected]);
   if(!isOpen)return null;
-  const send=async()=>{if(!sel||sending)return;setSending(true);try{const u=JSON.parse(localStorage.getItem("user")||"{}");await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({parent_id:u?.id||u?.email||"guest",pet_id:petId||"unknown",pillar:"emergency",intent_primary:"emergency_concierge",channel:"emergency_modal",initial_message:{sender:"parent",text:`I need help with: ${sel}. ${notes?"Notes: "+notes:""}`}})});}catch{}setSending(false);setSent(true);};
+  const send=async()=>{if(!sel||sending)return;setSending(true);try{const u=JSON.parse(localStorage.getItem("user")||"{}");await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({parent_id:u?.id||u?.email||"guest",pet_id:petId||"",pillar:"emergency",intent_primary:"emergency_concierge",life_state:"CONCERN",channel:"emergency_modal",initial_message:{sender:"parent",text:`I need help with: ${sel}. ${notes?"Notes: "+notes:""}`}})});}catch{}setSending(false);setSent(true);};
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.50)",zIndex:10006,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:20,padding:32,maxWidth:480,width:"100%",maxHeight:"90vh",overflowY:"auto",position:"relative"}}>
@@ -283,6 +285,10 @@ const EmergencySoulPage = () => {
   const navigate = useNavigate();
   const { token, isAuthenticated } = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
+
+  // ── Universal visit tracking ──────────────────────────────────
+  usePlatformTracking({ pillar: "emergency", pet: currentPet });
+
   const [loading, setLoading]       = useState(true);
   const [activeTab, setActiveTab]   = useState("emergency");
   const [openDim, setOpenDim]       = useState(null);
@@ -298,10 +304,12 @@ const EmergencySoulPage = () => {
 
   const handleBook = useCallback((svc) => {
     if(!svc)return;
+    // EMERGENCY — always fire urgent ticket immediately
+    tdc.urgent({ text: svc?.name || "Emergency help needed", pet: petData, channel: "emergency_pillar" });
     const known = EMERG_SERVICES.find(s=>s.name===svc?.name||s.id===svc?.id);
     if(known){setActiveService(known);return;}
     setConciergeOpen(true);
-  },[]);
+  },[petData]);
 
   useEffect(()=>{
     const CATS=["First Aid","Lost Pet","Vet Emergency","Evacuation Readiness","Soul Emergency"];

@@ -22,6 +22,8 @@ import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMi
 import FarewellNearMe from "../components/farewell/FarewellNearMe";
 import GuidedFarewellPaths from "../components/farewell/GuidedFarewellPaths";
 import { API_URL } from "../utils/api";
+import { tdc } from "../utils/tdc_intent";
+import { usePlatformTracking } from "../hooks/usePlatformTracking";
 
 const G = {
   deep:"#1A1A2E", mid:"#4B4B6E", indigo:"#6366F1", light:"#C7D2FE",
@@ -219,6 +221,10 @@ const FarewellSoulPage = () => {
   const navigate = useNavigate();
   const { token, isAuthenticated } = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
+
+  // ── Universal visit tracking ──────────────────────────────────
+  usePlatformTracking({ pillar: "farewell", pet: currentPet });
+
   const [loading,  setLoading]  = useState(true);
   const [activeTab, setActiveTab] = useState("farewell");
   const [prodTab,  setProdTab]  = useState("Memorial & Legacy");
@@ -376,7 +382,10 @@ const FarewellSoulPage = () => {
                   <div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:8,padding:"6px 10px",marginBottom:8}}><span style={{fontSize:10,color:G.indigo}}>✦ </span><span style={{fontSize:10,color:G.mid,lineHeight:1.4}}>{t(svc.miraKnows,petName)}</span></div>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                     <span style={{fontSize:14,fontWeight:800,color:G.deep}}>{svc.price}</span>
-                    <button onClick={()=>{setConciergeSvc(svc.name);setConciergeOpen(true);}}
+                    <button onClick={()=>{
+                      tdc.track("farewell", { service: svc.name, text: svc.name, pillar: "farewell", pet: petData, channel: "farewell_pillar", amount: svc.price });
+                      setConciergeSvc(svc.name);setConciergeOpen(true);
+                    }}
                     style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Reach out →</button>
                   </div>
                 </div>
