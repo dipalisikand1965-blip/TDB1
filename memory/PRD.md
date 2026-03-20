@@ -581,12 +581,13 @@ The `service_box` collection has NO `go` pillar services. 8 canonical services f
 
 ## P0/P1/P2 BACKLOG
 
-### P0 — Complete ✅ (Session 84)
-- **Universal Intent-to-Ticket Flow**: `tdc_intent.js` created — single canonical utility with `tdc.book()`, `tdc.view()`, `tdc.chat()`, `tdc.urgent()`, `tdc.imagine()`, `tdc.nearme()`, `tdc.request()` etc.
-- All 13 pillar pages now wire every CTA to `service_desk_tickets` (admin inbox + member inbox)
-- `ProductModal.jsx`, `MiraImaginesBreed.jsx`, `MiraChatWidget.jsx`, `GuidedCarePaths.jsx` all wired
-- **Celebrate Category Modal Fixed**: `CelebrateContentModal.jsx` now uses `ReactDOM.createPortal` — no more grey overlay
-- Testing agent fixed 6 critical bugs (life_state validation, urgency propagation, etc.)
+### P0 — Complete ✅ (Session 84-85)
+- **Universal Intent-to-Ticket Flow**: `tdc_intent.js` created — single canonical utility
+- All 13 pillar pages + ProductModal + MiraImaginesBreed + MiraChatWidget wired
+- **Celebrate Category Modal Fixed**: `CelebrateContentModal.jsx` createPortal
+- **Guided Paths tdc.request()**: ALL 7 guided path components wired (Play, Learn, Go, Celebrate, Dine/Nutrition, Adopt, Care) — Start AND Complete actions tracked
+- **Mira Farewell Fix**: Context retention rule + farewell escalation rule in system prompt. Grief keyword detection in MiraChatWidget.jsx and MiraDemoPage.jsx fires `tdc.track("farewell_detected")` before Mira responds
+- **Cart Recommendations**: CartSidebar.jsx now fetches breed-safe, allergen-filtered picks from `/api/mira/claude-picks/{petId}` and renders `CartRecommendationCard` below cart items. Scottish Terrier products filtered OUT for Indie dogs. Chicken-based products filtered for allergic pets
 
 ### P1 — Next Sprint
 - **Update Static Pages**: Apply new standard Navbar to `/about`, `/membership`, `/faqs`

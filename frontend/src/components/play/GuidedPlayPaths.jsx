@@ -13,6 +13,7 @@
 
 import { useState } from "react";
 import { API_URL } from "../../utils/api";
+import { tdc } from "../../utils/tdc_intent";
 
 const G = {
   deep:     "#7B2D00", mid:      "#7B3F00", orange:   "#E76F51",
@@ -177,6 +178,8 @@ function PathFlowModal({ path, pet, onClose }) {
 
   const handleSubmit = async () => {
     setSent(true);
+    // Fire tdc on path completion
+    tdc.request({ text: `Completed guided path: ${path.title}`, name: path.title, pillar: "play", pet, channel: "play_guided_paths_complete" });
     try {
       await fetch(`${API_URL}/api/concierge/play-path`, {
         method:"POST",
@@ -343,7 +346,7 @@ export default function GuidedPlayPaths({ pet }) {
               </div>
               <button
                 style={{ width:"100%", padding:"9px 0", borderRadius:12, border:"none", background:path.badgeBg, color:"#fff", fontSize:12, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}
-                onClick={e => { e.stopPropagation(); setActivePath(path); }}
+                onClick={e => { e.stopPropagation(); tdc.request({ text: `Started guided path: ${path.title}`, name: path.title, pillar: "play", pet, channel: "play_guided_paths_start" }); setActivePath(path); }}
               >
                 Start path → <span style={{ fontSize:10, background:"rgba(255,255,255,0.25)", borderRadius:20, padding:"2px 7px" }}>★ Mira</span>
               </button>

@@ -15,6 +15,7 @@
 import { useState } from 'react';
 import { API_URL } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
+import { tdc } from '../../utils/tdc_intent';
 
 // ── Colour system ────────────────────────────────────────────
 const G = {
@@ -375,6 +376,8 @@ function PathFlowModal({ path, pet, onClose }) {
 
   const send = async () => {
     setSending(true);
+    // Fire tdc immediately on path completion
+    tdc.request({ text: `Completed guided path: ${path.title}`, name: path.title, pillar: "learn", pet, channel: "learn_guided_paths_complete" });
     try {
       const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
       const summary = path.steps.map((s,i) =>
@@ -387,6 +390,7 @@ function PathFlowModal({ path, pet, onClose }) {
           parent_id: storedUser?.id || storedUser?.email || 'guest',
           pet_id: pet?.id || 'unknown',
           pillar: 'learn',
+          life_state: 'PLAN',
           intent_primary: 'guided_path_booking',
           channel: `learn_guided_${path.id}`,
           initial_message: {
@@ -622,7 +626,10 @@ export default function GuidedLearnPaths({ pet }) {
           @media(min-width:900px){ .glp-grid { grid-template-columns: repeat(3,1fr); } }
         `}</style>
         {paths.map(path => (
-          <PathCard key={path.id} path={path} pet={pet} onOpen={() => setActivePath(path.id)}/>
+          <PathCard key={path.id} path={path} pet={pet} onOpen={() => {
+            tdc.request({ text: `Started guided path: ${path.title}`, name: path.title, pillar: "learn", pet, channel: "learn_guided_paths_start" });
+            setActivePath(path.id);
+          }}/>
         ))}
       </div>
 

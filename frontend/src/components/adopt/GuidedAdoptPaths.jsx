@@ -16,6 +16,7 @@
  * WIRING: POST /api/concierge/adopt-path
  */
 import { useState } from "react";
+import { tdc } from "../../utils/tdc_intent";
 
 const G = { deep:"#4A0E2E", mid:"#7B1D4A", mauve:"#D4537E", light:"#F4C0D1", pale:"#FFF0F5", cream:"#FFF5F8", darkText:"#4A0E2E", mutedText:"#7B1D4A" };
 const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
@@ -315,7 +316,10 @@ function PathFlowModal({ path, pet, onClose }) {
   const handleSel1=(val)=>{ if(path.step1.type==="confirm_condition"){setSelections(prev=>({...prev,step1:[val]}));}else{setSelections(prev=>{const cur=prev.step1;return{...prev,step1:cur.includes(val)?cur.filter(v=>v!==val):[...cur,val]};});}};
   const handleSel2=(val)=>setSelections(prev=>({...prev,step2:val}));
   const handleSel3=(val)=>setSelections(prev=>{const cur=prev.step3;if(path.step3.type==="select_one")return{...prev,step3:[val]};return{...prev,step3:cur.includes(val)?cur.filter(v=>v!==val):[...cur,val]};});
-  const handleSubmit=()=>setSubmitted(true); // TODO: POST /api/concierge/adopt-path
+  const handleSubmit = () => {
+    tdc.request({ text: `Completed adopt guided path: ${path?.title || "Adopt"}`, pillar: "adopt", pet, channel: "adopt_guided_paths_complete" });
+    setSubmitted(true);
+  }; // TODO: POST /api/concierge/adopt-path
 
   if(submitted)return(<ModalShell onClose={onClose} noPadding><div style={{ background:`linear-gradient(135deg,${G.deep},${G.mid})`, borderRadius:20, padding:"48px 40px", textAlign:"center", minHeight:320, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}><div style={{ width:64, height:64, borderRadius:"50%", background:`linear-gradient(135deg,${path.accentColor},${G.light})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, marginBottom:20 }}>♥</div><div style={{ fontSize:22, fontWeight:800, color:"#fff", fontFamily:"Georgia,serif", marginBottom:10 }}>{path.title.replace(" Path","")} sent to your Concierge.</div><div style={{ fontSize:14, color:"rgba(255,255,255,0.55)", marginBottom:28, lineHeight:1.6 }}>Everything is in good hands.<br/>Your Concierge will reach out within 48 hours. ♥</div><button onClick={onClose} style={{ background:"rgba(255,255,255,0.12)", border:"1px solid rgba(255,255,255,0.20)", color:"#fff", borderRadius:20, padding:"10px 24px", fontSize:13, fontWeight:600, cursor:"pointer" }}>Done</button></div></ModalShell>);
 

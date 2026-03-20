@@ -3277,6 +3277,25 @@ const MiraDemoPage = () => {
   const handleSubmit = useCallback((e, overrideQuery) => {
     // Clear the draft when message is sent
     clearDraft();
+    // ── Grief / Farewell keyword detection in Mira OS page ──
+    const query = typeof overrideQuery === "string" ? overrideQuery : (e?.target?.value || "");
+    if (query) {
+      const FAREWELL_KEYWORDS = [
+        "crematorium", "cremation", "put to sleep", "put down",
+        "euthanasia", "passed away", "died", "death", "lost my dog",
+        "gone", "farewell", "memorial", "burial", "rainbow bridge",
+        "no longer with us", "last days", "end of life",
+      ];
+      if (FAREWELL_KEYWORDS.some(kw => query.toLowerCase().includes(kw))) {
+        import("../utils/tdc_intent").then(({ tdc }) => {
+          tdc.track("farewell_detected", {
+            text: query,
+            pillar: "farewell",
+            channel: "mira_os_farewell_detection",
+          });
+        });
+      }
+    }
     // Call the original handler
     return originalHandleSubmit(e, overrideQuery);
   }, [originalHandleSubmit, clearDraft]);
