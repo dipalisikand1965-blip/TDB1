@@ -21,6 +21,7 @@
  *   body: { petId, pathId, selections }
  */
 import { useState } from "react";
+import { guidedPathComplete } from "../../utils/MiraCardActions";
 
 const G = {
   deep:"#7F1D1D", mid:"#991B1B", crimson:"#DC2626", light:"#FCA5A5",
@@ -405,7 +406,10 @@ function PathFlowModal({ path, pet, onClose }) {
       return { ...prev, step3: cur.includes(val) ? cur.filter(v=>v!==val) : [...cur,val] };
     });
   };
-  const handleSubmit = () => setSubmitted(true); // TODO: POST /api/concierge/emergency-path
+  const handleSubmit = () => {
+    guidedPathComplete({ pathTitle: path?.title || "Emergency Path", pillar: "emergency", pet, channel: "emergency_guided_paths_complete", onSuccess: () => setSubmitted(true) });
+    setSubmitted(true);
+  }; // POST /api/concierge/emergency-path
 
   if (submitted) return (
     <ModalShell onClose={onClose} noPadding>
