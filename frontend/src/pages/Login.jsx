@@ -7,10 +7,11 @@ import { useToast } from '../hooks/use-toast';
 import { Lock, Mail, PawPrint, Heart, Shield, Sparkles, ArrowRight, Eye, EyeOff, Star } from 'lucide-react';
 
 // Mystique's soulful image - in loving memory 👑
-const MYSTIQUE_IMAGE = "https://customer-assets.emergentagent.com/job_cd02345e-97d9-4ea2-a1d7-1a248ceced0d/artifacts/t980z9hw_image.png";
-
-// Kouros - The beautiful BLACK Newfoundland with golden eyes
-const KOUROS_IMAGE = "https://customer-assets.emergentagent.com/job_b6abcc1b-6413-431e-bf32-8399a0ee6fd9/artifacts/cj78ybnk_image.png";
+const MYSTIQUE_IMAGE = "https://res.cloudinary.com/duoapcx1p/image/upload/v1774081084/tdc_pets/mystique_real.jpg";
+const MYSTIQUE_GYAN  = "https://res.cloudinary.com/duoapcx1p/image/upload/v1774081084/tdc_pets/mystique_real.jpg";
+const KOUROS_IMAGE   = "https://res.cloudinary.com/duoapcx1p/image/upload/v1774080461/tdc_pets/kouros_teal.jpg";
+const KOUROS_PURPLE  = "https://res.cloudinary.com/duoapcx1p/image/upload/v1774080464/tdc_pets/kouros_purple.jpg";
+// Kouros - The beautiful black dog
 
 const Login = () => {
   const [email, setEmail] = useState('');

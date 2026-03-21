@@ -1307,6 +1307,23 @@ async def concierge_reply(
         logger.error(f"[SERVICE_DESK] Failed to create member notification: {e}")
     
     logger.info(f"[SERVICE_DESK] Concierge {concierge_name} replied to ticket: {ticket_id}")
+
+    # ── WhatsApp notification to member on concierge reply ─────────────────
+    try:
+        # Get member's phone from pets/users collection
+        pet_doc = await db.pets.find_one({"id": ticket.get("pet_id","")}) if ticket else None
+        member_phone = None
+        if pet_doc:
+            owner_email = pet_doc.get("owner_email","")
+            user_doc = await db.users.find_one({"email": owner_email}, {"_id":0,"phone":1,"mobile":1,"whatsapp":1})
+            member_phone = (user_doc or {}).get("phone") or (user_doc or {}).get("mobile") or (user_doc or {}).get("whatsapp")
+        if member_phone:
+            from whatsapp_notifications import send_whatsapp_message
+            wa_msg = f"Hi! Your TDC Concierge has replied to your request 🐾\n\n{message[:200]}\n\nView full reply: thedoggycompany.com/my-requests"
+            await send_whatsapp_message(member_phone, wa_msg)
+            logger.info(f"[SERVICE_DESK] WhatsApp sent to {member_phone}")
+    except Exception as wa_err:
+        logger.warning(f"[SERVICE_DESK] WhatsApp notification failed: {wa_err}")
     
     # ═══════════════════════════════════════════════════════════════════
     # SEND WHATSAPP & EMAIL NOTIFICATIONS

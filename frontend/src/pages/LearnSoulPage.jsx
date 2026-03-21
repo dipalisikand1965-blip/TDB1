@@ -716,7 +716,16 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
                       {b.original_price&&<span style={{fontSize:11,color:"#aaa",textDecoration:"line-through",marginRight:6}}>₹{b.original_price}</span>}
                       <span style={{fontSize:15,fontWeight:800,color:G.violet}}>₹{b.bundle_price}</span>
                     </div>
-                    <button style={{background:`linear-gradient(135deg,${G.violet},${G.mid})`,color:"#fff",border:"none",borderRadius:10,padding:"7px 14px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Add →</button>
+                    <button
+                      onClick={async () => {
+                        tdc.cart({ product: b, pillar: "learn", pet: petData, channel: "learn_bundles", amount: b.bundle_price });
+                        const { bookViaConcierge } = await import('../utils/MiraCardActions');
+                        await bookViaConcierge({ service: b.name, pillar: "learn", pet: petData, channel: "learn_bundle_add", amount: b.bundle_price });
+                      }}
+                      data-testid={`learn-bundle-add-${b.id||b._id}`}
+                      style={{background:`linear-gradient(135deg,${G.violet},${G.mid})`,color:"#fff",border:"none",borderRadius:10,padding:"7px 14px",fontSize:11,fontWeight:700,cursor:"pointer"}}>
+                      Add →
+                    </button>
                   </div>
                 </div>
               ))}
@@ -1052,7 +1061,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
                     onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 2px 8px rgba(124,58,237,0.06)";}}>
                     <div style={{height:100,background:`linear-gradient(135deg,${G.pale},${G.cream})`,
                       display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
-                      {(svc.watercolor_image||svc.image_url)
+                      {(svc.watercolor_image||svc.image_url) && !(svc.watercolor_image||svc.image_url||"").includes("bandana") && !(svc.watercolor_image||svc.image_url||"").includes("default")
                         ? <img src={svc.watercolor_image||svc.image_url} alt={svc.name}
                             style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>
                         : <span style={{fontSize:36}}>{svc.icon||dim.icon||"🎓"}</span>}
@@ -2032,7 +2041,7 @@ const LearnSoulPage = () => {
                     {/* Image / Watercolour */}
                     <div style={{height:110,background:`linear-gradient(135deg,${G.pale},${G.cream})`,
                       display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
-                      {(svc.watercolor_image||svc.image_url)
+                      {(svc.watercolor_image||svc.image_url) && !(svc.watercolor_image||svc.image_url||"").includes("bandana")
                         ? <img src={svc.watercolor_image||svc.image_url} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>
                         : <span style={{fontSize:38}}>{svc.icon||"🎓"}</span>}
                       {svc.popular&&<span style={{position:"absolute",top:8,right:8,background:accent,color:"#fff",fontSize:9,fontWeight:700,borderRadius:20,padding:"2px 8px"}}>Popular</span>}

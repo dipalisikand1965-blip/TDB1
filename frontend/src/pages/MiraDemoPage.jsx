@@ -28,6 +28,9 @@ import {
   Award, RefreshCw, MapPin, Navigation, Play
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { SoulChips, useSoulChips } from '../hooks/mira/useSoulChips';
+import { usePicksCount, PicksBadge } from '../hooks/mira/usePicksCount';
+import { SoulRadarBackground } from '../components/Mira/SoulRadar';
 import { API_URL } from '../utils/api';
 import hapticFeedback from '../utils/haptic';
 import { correctSpelling } from '../utils/spellCorrect';
@@ -327,6 +330,10 @@ const MiraDemoPage = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
+  // ── Live picks count from API (Bible §4.1 — not hardcoded) ───────────────────
+  const activePetId = user?.activePetId || user?.pets?.[0]?.id;
+  const { picksCount } = usePicksCount(activePetId, token);
   
   // ═══════════════════════════════════════════════════════════════════════════════
   // NAVIGATION CONTEXT - Track where user came from for "Back to Pillar" feature
@@ -641,6 +648,7 @@ const MiraDemoPage = () => {
     setShowTodayPanel(false);
     setShowTopPicksPanel(false);
     setShowServicesPanel(false);
+    setShowNearMePanel(false);
     setShowLearnPanel(false);
     setShowConciergeHome(false);
     setConciergeThread({ isOpen: false, threadId: null, thread: null, messages: [] });
@@ -658,6 +666,12 @@ const MiraDemoPage = () => {
         break;
       case 'services':
         setShowServicesPanel(true);
+        break;
+      case 'nearme':
+        setShowNearMePanel(true);
+        import('../utils/tdc_intent').then(({ tdc }) =>
+          tdc.nearme({ query: `near me for ${pet?.name || 'my dog'}`, pillar: 'platform', pet, channel: 'mira_os_nearme_tab' })
+        );
         break;
       case 'learn':
         setShowLearnPanel(true);
@@ -767,6 +781,7 @@ const MiraDemoPage = () => {
   const [showTodayPanel, setShowTodayPanel] = useState(false);
   // SERVICES PANEL: Execution Layer - Active requests and service launchers
   const [showServicesPanel, setShowServicesPanel] = useState(false);
+  const [showNearMePanel, setShowNearMePanel] = useState(false);
   // SERVICES TAB PULSE: Visual feedback when AI creates a ticket
   // Using a ref + forceUpdate pattern to avoid re-render cascades
   const servicesPulseRef = useRef(false);
@@ -939,7 +954,7 @@ const MiraDemoPage = () => {
     return {
       ...apiCounts,
       // Override picks counts with local state if Mira just added picks
-      picksCount: Math.max(apiCounts?.picksCount || 0, localPicksCount),
+      picksCount: Math.max(apiCounts?.picksCount || 0, localPicksCount, picksCount || 0),
       newPicksSinceLastView: hasLocalNewPicks ? localPicksCount : (apiCounts?.newPicksSinceLastView || 0),
       // CONCIERGE GLOW: Pass actionable suggestion state
       hasActionableSuggestion,
@@ -1720,34 +1735,34 @@ const MiraDemoPage = () => {
             
             // Transform pets to include soul traits
             const transformedPets = data.pets.map(p => {
-              // Generate soul traits from doggy_soul_answers
+              // ── Deduplicated soul traits (Bible §2.3) ────────────────────────
               const soulAnswers = p.doggy_soul_answers || {};
               const soulTraits = [];
-              
-              if (soulAnswers.general_nature) {
-                soulTraits.push({ 
-                  label: `${soulAnswers.general_nature} soul`, 
-                  icon: '⭐', 
-                  color: '#f59e0b' 
-                });
-              }
-              if (soulAnswers.describe_3_words) {
-                const words = soulAnswers.describe_3_words.split(',')[0]?.trim();
-                if (words) {
-                  soulTraits.push({ 
-                    label: words, 
-                    icon: '🎀', 
-                    color: '#ec4899' 
-                  });
-                }
-              }
-              if (p.soul?.love_language) {
-                soulTraits.push({ 
-                  label: `${p.soul.love_language} lover`, 
-                  icon: '❤️', 
-                  color: '#ef4444' 
-                });
-              }
+              const _seen = new Set();
+              const _addChip = (label, icon, color) => {
+                const key = label?.toLowerCase().trim();
+                if (key && !_seen.has(key)) { _seen.add(key); soulTraits.push({ label, icon, color }); }
+              };
+              // Health first
+              const _allergies = soulAnswers.food_allergies;
+              const _allergyList = Array.isArray(_allergies) ? _allergies : (_allergies ? [_allergies] : []);
+              const _allergyFiltered = _allergyList.filter(a => {
+                const v = String(a).toLowerCase().trim();
+                return v && !['none','none known','no_allergies','no','na','n/a','not sure','unknown','no allergies','not known'].includes(v);
+              });
+              if (_allergyFiltered.length > 0) _addChip(`${_allergyFiltered[0]}-free`, '🌿', '#10b981');
+              const _energy = soulAnswers.energy_level;
+              // Truncate + clean: remove "energy", "and", extra words
+              const _energyClean = _energy
+                ? _energy.split(',')[0].replace(/\benergy\b/gi,'').replace(/\band\b/gi,' ').replace(/[,;:.]/g,'').replace(/\s+/g,' ').trim().split(' ').slice(0,2).join(' ').trim()
+                : null;
+              if (_energyClean) _addChip(`${_energyClean} energy`, '⚡', '#f59e0b');
+              const _nature = soulAnswers.general_nature;
+              if (_nature && _nature.toLowerCase() !== String(_energy).toLowerCase()) _addChip(`${_nature} nature`, '⭐', '#8b5cf6');
+              const _words = soulAnswers.describe_3_words?.split(',')[0]?.trim();
+              if (_words && _words.toLowerCase() !== _nature?.toLowerCase()) _addChip(_words, '🎀', '#ec4899');
+              if (soulAnswers.other_pets === 'yes' || soulAnswers.other_pets === true) _addChip('social butterfly', '🐾', '#3b82f6');
+              if (soulTraits.length === 0 && p.name) soulTraits.push({ label: `${p.name}'s soul`, icon: '✨', color: '#9333ea' });
               
               // Get sensitivities/allergies
               const sensitivities = [];
@@ -4858,6 +4873,65 @@ const MiraDemoPage = () => {
         }}
       />
       
+      {/* ── NEAR ME PANEL — Google Places quick search ────────────────── */}
+      {showNearMePanel && (
+        <div className="fixed inset-x-0 bottom-24 mx-auto max-w-lg z-30 px-4">
+          <div style={{
+            background: '#fff', borderRadius: 20, padding: '20px 20px 16px',
+            boxShadow: '0 8px 40px rgba(0,0,0,0.12)', border: '1px solid #F0E8FF',
+          }}>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
+              <div style={{ fontWeight:800, fontSize:15, color:'#1A1A2E' }}>
+                📍 Near {pet?.name || 'you'}
+              </div>
+              <button onClick={() => { setShowNearMePanel(false); setActiveOSTab('today'); }}
+                style={{ background:'none', border:'none', cursor:'pointer', color:'#888', fontSize:18 }}>×</button>
+            </div>
+            <p style={{ fontSize:12, color:'#888', marginBottom:12 }}>
+              Ask Mira to find nearby vets, groomers, cafés, parks or pet stores
+            </p>
+            {['Find a vet near me', 'Dog-friendly cafés nearby', 'Groomers near me', 'Pet parks nearby'].map(query => (
+              <button key={query}
+                onClick={() => {
+                  setShowNearMePanel(false);
+                  handleSubmit(null, query);
+                }}
+                style={{
+                  display:'block', width:'100%', textAlign:'left', padding:'10px 14px',
+                  marginBottom:6, borderRadius:10, border:'1px solid #E0D8FF',
+                  background:'#FAFAFF', fontSize:13, cursor:'pointer', fontWeight:500,
+                  color:'#4A3F8F', transition:'background 0.15s',
+                }}>
+                🔍 {query}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Go to Pet Home — always visible shortcut ─────────────────── */}
+      <div style={{ position:'fixed', top:16, right:16, zIndex:50 }}>
+        <a href="/pet-home"
+          data-testid="mira-os-pet-home-btn"
+          style={{
+            display:'flex', alignItems:'center', gap:6,
+            background:'rgba(255,255,255,0.9)', backdropFilter:'blur(8px)',
+            border:'1px solid rgba(147,51,234,0.2)', borderRadius:50,
+            padding:'6px 14px', fontSize:12, fontWeight:700,
+            color:'#7B2FBE', textDecoration:'none',
+            boxShadow:'0 2px 12px rgba(0,0,0,0.08)',
+          }}>
+          🐾 Pet Home →
+        </a>
+      </div>
+
+      {/* Soul Radar — ambient background behind chat input (score ≥ 30 only) */}
+      {pet && (pet.overall_score || 0) >= 30 && (
+        <div style={{ position:'fixed', bottom:0, left:'50%', transform:'translateX(-50%)', pointerEvents:'none', zIndex:0 }}>
+          <SoulRadarBackground pet={pet} size={420} opacity={0.15} />
+        </div>
+      )}
+
       {/* Input Composer - Extracted to ChatInputBar component */}
       <ChatInputBar
         inputRef={inputRef}

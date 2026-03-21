@@ -1,584 +1,380 @@
-/**
- * MyRequestsPage.jsx — /my-requests
- * The Doggy Company
- *
- * The member-facing inbox. Every ticket, order, Mira conversation,
- * and service request in one place. Mobile and desktop.
- *
- * Tabs:
- *   All · Bookings · Orders · Mira Chats · Browse History
- *
- * Each ticket shows:
- *   - Pillar colour + icon
- *   - What was asked / what happened
- *   - Status (open / in_progress / resolved)
- *   - Last message from Concierge
- *   - Timestamp
- *   - Tap to expand full thread
- *
- * API:
- *   GET /api/service_desk/tickets?parent_id={user.id}&limit=50
- *   GET /api/service_desk/tickets/{ticket_id}  — full thread
- *
- * ROUTE: /my-requests (ProtectedRoute)
- */
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { usePillarContext } from '../context/PillarContext';
 
-import { useState, useEffect, useCallback } from "react";
-import { Helmet } from "react-helmet-async";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { API_URL } from "../utils/api";
+// ─── MyRequestsPage.jsx ───────────────────────────────────────────────────────
+// Path: /app/frontend/src/pages/MyRequestsPage.jsx
+//
+// FIX: Auto-polls every 15 seconds for new messages.
+// Members see concierge replies without manual page reload.
+// Unread badge updates automatically.
+// New message notification toast appears when reply arrives.
 
-// ── Pillar colours ────────────────────────────────────────────────────
-const PILLAR_META = {
-  care:       { colour:"#40916C", icon:"🌿", label:"Care" },
-  dine:       { colour:"#C9973A", icon:"🍽️", label:"Dine" },
-  celebrate:  { colour:"#9B59B6", icon:"🎂", label:"Celebrate" },
-  go:         { colour:"#1D9E75", icon:"✈️", label:"Go" },
-  play:       { colour:"#E76F51", icon:"🎾", label:"Play" },
-  learn:      { colour:"#7C3AED", icon:"🎓", label:"Learn" },
-  shop:       { colour:"#C9973A", icon:"🛍️", label:"Shop" },
-  paperwork:  { colour:"#0F6E56", icon:"📄", label:"Paperwork" },
-  emergency:  { colour:"#DC2626", icon:"🚨", label:"Emergency" },
-  adopt:      { colour:"#7B3FA0", icon:"🐾", label:"Adopt" },
-  farewell:   { colour:"#334155", icon:"🌷", label:"Farewell" },
-  services:   { colour:"#334155", icon:"✦",  label:"Services" },
-  fit:        { colour:"#E76F51", icon:"🏃", label:"Fitness" },
-  advisory:   { colour:"#0F6E56", icon:"💡", label:"Advisory" },
-  mira_os:    { colour:"#9B59B6", icon:"✦",  label:"Mira" },
-  default:    { colour:"#64748B", icon:"✦",  label:"Request" },
+const API = (path) => `/api${path}`;
+const POLL_INTERVAL_MS = 15000; // 15 seconds
+
+const TABS = [
+  { id: 'all',       label: 'All',      icon: '📬' },
+  { id: 'open',      label: 'Active',   icon: '⚡' },
+  { id: 'bookings',  label: 'Bookings', icon: '📅' },
+  { id: 'mira',      label: 'Mira',     icon: '✦' },
+  { id: 'resolved',  label: 'Resolved', icon: '✓' },
+];
+
+const PILLAR_COLORS = {
+  celebrate: '#A855F7', dine: '#FF8C42', care: '#40916C',
+  go: '#1ABC9C', play: '#E76F51', learn: '#7C3AED',
+  shop: '#F59E0B', paperwork: '#0D9488', emergency: '#EF4444',
+  adopt: '#65A30D', farewell: '#8B5CF6', advisory: '#0D9488',
+  general: '#C96D9E',
 };
 
-const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
+function timeAgo(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  const diff = (Date.now() - d.getTime()) / 1000;
+  if (diff < 60)  return 'just now';
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+}
 
-// ── Intent labels ─────────────────────────────────────────────────────
-const INTENT_LABELS = {
-  service_booking:    "Booking request",
-  product_inquiry:    "Product enquiry",
-  browse_intent:      "Browsed",
-  search_intent:      "Searched",
-  nearme_search:      "Searched nearby",
-  product_interest:   "Viewed product",
-  mira_chat_intent:   "Mira chat",
-  onboarding_progress:"Onboarding",
-  mira_imagines_request:"Mira imagines",
-};
-
-// ── Status badge ──────────────────────────────────────────────────────
 function StatusBadge({ status }) {
-  const configs = {
-    open:               { bg:"#EFF6FF", color:"#1D4ED8", label:"Open" },
-    awaiting_concierge: { bg:"#FEF3C7", color:"#92400E", label:"With Concierge" },
-    in_progress:        { bg:"#F0FDF4", color:"#166534", label:"In Progress" },
-    resolved:           { bg:"#F0FDF4", color:"#15803D", label:"✓ Resolved" },
-    closed:             { bg:"#F1F5F9", color:"#475569", label:"Closed" },
+  const map = {
+    open:                { label: 'Open',       bg: 'rgba(59,130,246,0.12)', color: '#60A5FA' },
+    awaiting_concierge:  { label: 'Concierge',  bg: 'rgba(232,160,69,0.12)', color: '#E8A045' },
+    in_progress:         { label: 'In Progress',bg: 'rgba(77,191,168,0.12)', color: '#4DBFA8' },
+    resolved:            { label: 'Resolved',   bg: 'rgba(34,197,94,0.12)',  color: '#4ADE80' },
+    closed:              { label: 'Closed',     bg: 'rgba(244,239,230,0.06)',color: 'rgba(244,239,230,0.4)' },
   };
-  const c = configs[status] || configs.open;
+  const s = map[status] || map.open;
   return (
-    <span style={{
-      background: c.bg, color: c.color,
-      fontSize: 10, fontWeight: 700,
-      borderRadius: 20, padding: "2px 8px",
-    }}>
-      {c.label}
+    <span style={{ padding: '2px 8px', borderRadius: '10px', fontSize: '10px', fontWeight: 600, background: s.bg, color: s.color, letterSpacing: '0.04em' }}>
+      {s.label}
     </span>
   );
 }
 
-// ── Thread message ────────────────────────────────────────────────────
-function ThreadMessage({ msg, pillarColour }) {
-  const isConcierge = msg.sender === "concierge";
-  const isMira      = msg.sender === "mira";
-  const isSystem    = msg.sender === "system";
-
-  if (isSystem) return (
-    <div style={{
-      textAlign: "center", fontSize: 11,
-      color: "var(--color-text-tertiary)",
-      padding: "4px 0",
-    }}>
-      {msg.text}
-    </div>
-  );
+function NewMessageToast({ message, onDismiss }) {
+  useEffect(() => {
+    const t = setTimeout(onDismiss, 4000);
+    return () => clearTimeout(t);
+  }, [onDismiss]);
 
   return (
     <div style={{
-      display: "flex",
-      justifyContent: isConcierge || isMira ? "flex-start" : "flex-end",
-      marginBottom: 8,
+      position: 'fixed', bottom: '80px', left: '50%', transform: 'translateX(-50%)',
+      background: 'rgba(28,22,48,0.97)', border: '1px solid rgba(77,191,168,0.3)',
+      borderRadius: '14px', padding: '12px 20px',
+      display: 'flex', alignItems: 'center', gap: '10px',
+      zIndex: 1000, boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+      animation: 'slideUp 0.3s ease',
+      fontFamily: "'DM Sans', sans-serif",
     }}>
-      {(isConcierge || isMira) && (
-        <div style={{
-          width: 28, height: 28, borderRadius: "50%",
-          background: isMira ? MIRA_ORB : pillarColour,
-          display: "flex", alignItems: "center",
-          justifyContent: "center", fontSize: 12,
-          color: "#fff", flexShrink: 0, marginRight: 8, marginTop: 2,
-        }}>
-          {isMira ? "✦" : "C"}
-        </div>
-      )}
-      <div style={{
-        maxWidth: "75%",
-        background: isConcierge || isMira
-          ? "var(--color-background-secondary)"
-          : pillarColour,
-        color: isConcierge || isMira ? "var(--color-text-primary)" : "#fff",
-        borderRadius: isConcierge || isMira ? "4px 14px 14px 14px" : "14px 14px 4px 14px",
-        padding: "10px 14px",
-        fontSize: 13, lineHeight: 1.5,
-      }}>
-        {msg.text}
-        {msg.timestamp && (
-          <div style={{
-            fontSize: 10, opacity: 0.6, marginTop: 4,
-            textAlign: isConcierge || isMira ? "left" : "right",
-          }}>
-            {new Date(msg.timestamp).toLocaleTimeString("en-IN", { hour:"2-digit", minute:"2-digit" })}
-          </div>
-        )}
-      </div>
+      <style>{`@keyframes slideUp { from { opacity:0; transform:translateX(-50%) translateY(20px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }`}</style>
+      <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4DBFA8', flexShrink: 0, animation: 'pulse 1s infinite' }} />
+      <span style={{ fontSize: '13px', color: '#F4EFE6' }}>{message}</span>
+      <button onClick={onDismiss} style={{ background: 'none', border: 'none', color: 'rgba(244,239,230,0.4)', cursor: 'pointer', fontSize: '14px', marginLeft: '4px' }}>✕</button>
     </div>
   );
 }
 
-// ── Ticket card ───────────────────────────────────────────────────────
-function TicketCard({ ticket, onExpand, expanded, onMarkRead }) {
-  const meta    = PILLAR_META[ticket.pillar] || PILLAR_META.default;
-  const intent  = INTENT_LABELS[ticket.intent_primary] || ticket.intent_primary || "Request";
-  const lastMsg = ticket.thread?.[ticket.thread.length - 1];
-  const isBrowse = ["browse_intent","search_intent","nearme_search","product_interest"].includes(ticket.intent_primary);
-  const hasUnread = ticket.has_unread_concierge_reply === true;
-
-  const timeAgo = (ts) => {
-    if (!ts) return "";
-    const diff = Date.now() - new Date(ts).getTime();
-    const mins  = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days  = Math.floor(diff / 86400000);
-    if (mins < 1)   return "just now";
-    if (mins < 60)  return `${mins}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    return `${days}d ago`;
-  };
-
-  return (
-    <div style={{
-      background: "var(--color-background-primary)",
-      border: `1px solid ${hasUnread ? "#E91E8C40" : expanded ? meta.colour + "40" : "var(--color-border-tertiary)"}`,
-      borderLeft: `3px solid ${hasUnread ? "#E91E8C" : meta.colour}`,
-      borderRadius: 12, overflow: "hidden",
-      marginBottom: 10,
-      transition: "border-color 0.15s",
-      position: "relative",
-    }}>
-      {/* ── Unread concierge reply dot ── */}
-      {hasUnread && (
-        <div style={{
-          position: "absolute", top: 10, right: 10,
-          display: "flex", alignItems: "center", gap: 4,
-          background: "#E91E8C15", borderRadius: 20, padding: "3px 8px",
-          border: "1px solid #E91E8C40",
-        }}>
-          <div style={{
-            width: 7, height: 7, borderRadius: "50%",
-            background: "#E91E8C",
-            boxShadow: "0 0 6px #E91E8C80",
-          }}/>
-          <span style={{ fontSize: 10, fontWeight: 700, color: "#E91E8C" }}>
-            New reply
-          </span>
-        </div>
-      )}
-
-      {/* Card header */}
-      <div
-        onClick={() => { onExpand(); if (hasUnread) onMarkRead?.(ticket.ticket_id); }}
-        style={{
-          padding: "14px 16px",
-          cursor: "pointer",
-          display: "flex", alignItems: "flex-start", gap: 12,
-        }}
-      >
-        <div style={{
-          width: 36, height: 36, borderRadius: 10,
-          background: meta.colour + "18",
-          display: "flex", alignItems: "center",
-          justifyContent: "center", fontSize: 16, flexShrink: 0,
-        }}>
-          {meta.icon}
-        </div>
-
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{
-            display: "flex", alignItems: "center",
-            gap: 8, marginBottom: 4, flexWrap: "wrap",
-          }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: meta.colour }}>
-              {meta.label}
-            </span>
-            <span style={{ fontSize: 11, color: "var(--color-text-tertiary)" }}>
-              {intent}
-            </span>
-            <StatusBadge status={ticket.status}/>
-          </div>
-          <div style={{
-            fontSize: 13, color: "var(--color-text-primary)",
-            lineHeight: 1.4, marginBottom: 4,
-            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-          }}>
-            {ticket.thread?.[0]?.text || ticket.initial_message?.text || ticket.subject || "Mira is on it →"}
-          </div>
-          {lastMsg && lastMsg !== ticket.thread?.[0] && !isBrowse && (
-            <div style={{
-              fontSize: 12, color: "var(--color-text-secondary)",
-              fontStyle: "italic",
-              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-            }}>
-              {lastMsg.sender === "concierge" ? "Concierge: " : ""}
-              {lastMsg.text?.slice(0, 80)}
-            </div>
-          )}
-        </div>
-
-        <div style={{
-          fontSize: 11, color: "var(--color-text-tertiary)",
-          flexShrink: 0, textAlign: "right",
-        }}>
-          <div>{timeAgo(ticket.created_at)}</div>
-          <div style={{ marginTop: 4, fontSize: 16, color: "var(--color-text-tertiary)" }}>
-            {expanded ? "▾" : "▸"}
-          </div>
-        </div>
-      </div>
-
-      {/* Expanded thread — shows thread messages OR initial_message fallback */}
-      {expanded && (
-        <div style={{
-          borderTop: "1px solid var(--color-border-tertiary)",
-          padding: "14px 16px",
-          background: "var(--color-background-secondary)",
-          maxHeight: 400, overflowY: "auto",
-        }}>
-          {ticket.thread && ticket.thread.length > 0
-            ? ticket.thread.map((msg, i) => (
-                <ThreadMessage key={i} msg={msg} pillarColour={meta.colour}/>
-              ))
-            : ticket.initial_message
-              ? <ThreadMessage msg={ticket.initial_message} pillarColour={meta.colour}/>
-              : <p style={{ fontSize:13, color:"var(--color-text-muted)", margin:0 }}>
-                  Mira has noted your {meta.label} request. Your concierge will follow up shortly.
-                </p>
-          }
-
-          {/* Mira briefing — show if present */}
-          {ticket.mira_briefing && (
-            <div style={{ marginTop:12, background:`${meta.colour}08`, borderRadius:10, padding:"10px 12px",
-                          border:`1px solid ${meta.colour}20` }}>
-              <p style={{ fontSize:11, fontWeight:700, color:meta.colour, margin:"0 0 6px", textTransform:"uppercase", letterSpacing:1 }}>
-                Mira's Briefing
-              </p>
-              <p style={{ fontSize:12, color:"var(--color-text-secondary)", margin:0, lineHeight:1.6 }}>
-                {ticket.mira_briefing}
-              </p>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── Tab bar ───────────────────────────────────────────────────────────
-const TABS = [
-  { id:"all",     label:"All" },
-  { id:"booking", label:"Bookings" },
-  { id:"browse",  label:"Browse" },
-  { id:"mira",    label:"Mira" },
-  { id:"resolved",label:"Resolved" },
-];
-
-// ── Main page ─────────────────────────────────────────────────────────
 export default function MyRequestsPage() {
   const navigate = useNavigate();
-  const { token, user, isAuthenticated } = useAuth();
+  const { token } = useAuth();
+  const { currentPet } = usePillarContext();
+  const [tickets, setTickets]       = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [activeTab, setActiveTab]   = useState('all');
+  const [activeTicket, setActiveTicket] = useState(null);
+  const [unreadCount, setUnreadCount]   = useState(0);
+  const [toast, setToast]           = useState(null);
+  const [replyText, setReplyText]   = useState('');
+  const [sending, setSending]       = useState(false);
+  const prevTicketsRef              = useRef({});
+  const pollRef                     = useRef(null);
+  const threadEndRef                = useRef(null);
 
-  const [tickets,     setTickets]     = useState([]);
-  const [loading,     setLoading]     = useState(true);
-  const [error,       setError]       = useState(null);
-  const [activeTab,   setActiveTab]   = useState("all");
-  const [expandedId,  setExpandedId]  = useState(null);
-  const [search,      setSearch]      = useState("");
+  const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
 
-  useEffect(() => {
-    if (!isAuthenticated) { navigate("/login?redirect=/my-requests"); return; }
-    fetchTickets();
-  }, [isAuthenticated]);
-
-  const fetchTickets = useCallback(async () => {
-    setLoading(true);
+  // ── Fetch tickets ──
+  const fetchTickets = useCallback(async (silent = false) => {
+    if (!token) return;
+    if (!silent) setLoading(true);
     try {
-      // Use user email or ID as parent_id — matches service_desk_tickets collection
-      const parentId = user?.id || user?.email || user?._id;
-      if (!parentId) { setError("Please log in to view your requests."); setLoading(false); return; }
+      const res = await fetch(API('/mira/my-tickets'), { headers });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const list = Array.isArray(data) ? data : data.tickets || [];
 
-      const res = await fetch(
-        `${API_URL}/api/service_desk/tickets/by_parent/${encodeURIComponent(parentId)}?limit=100`,
-        { headers: { "Authorization": `Bearer ${token}` } }
-      );
-      if (res.ok) {
-        const data = await res.json();
-        setTickets(data.tickets || data.items || (Array.isArray(data) ? data : []) || []);
-      } else {
-        setError("Could not load your requests.");
-      }
-    } catch {
-      setError("Could not load your requests.");
-    }
-    setLoading(false);
-  }, [token, user]);
-
-  const handleExpand = (ticketId) => {
-    setExpandedId(prev => prev === ticketId ? null : ticketId);
-  };
-
-  const handleMarkRead = async (ticketId) => {
-    try {
-      await fetch(`${API_URL}/api/service_desk/mark_reply_read?ticket_id=${encodeURIComponent(ticketId)}`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+      // ── Detect new concierge messages ──
+      let newCount = 0;
+      list.forEach(ticket => {
+        const prev = prevTicketsRef.current[ticket.ticket_id];
+        const prevLen = prev ? prev.thread_length : 0;
+        const currLen = ticket.thread?.length || 0;
+        if (prevLen > 0 && currLen > prevLen) {
+          // Check if new message is from concierge
+          const newMsgs = (ticket.thread || []).slice(prevLen);
+          const hasConciergReply = newMsgs.some(m => m.sender === 'concierge' || m.sender === 'admin');
+          if (hasConciergReply) {
+            newCount++;
+            setToast(`Concierge replied to your ${ticket.pillar || 'request'} ✦`);
+          }
+        }
+        prevTicketsRef.current[ticket.ticket_id] = { thread_length: currLen };
       });
-      setTickets(prev => prev.map(t =>
-        (t.ticket_id || t.id) === ticketId ? { ...t, has_unread_concierge_reply: false } : t
-      ));
-    } catch { /* silent */ }
+
+      setTickets(list);
+
+      // Count unread (tickets with new concierge messages not seen)
+      const unread = list.filter(t => {
+        const last = (t.thread || []).slice(-1)[0];
+        return last && (last.sender === 'concierge' || last.sender === 'mira') && t.status !== 'resolved';
+      }).length;
+      setUnreadCount(unread);
+
+      // Update active ticket thread if open
+      if (activeTicket) {
+        const updated = list.find(t => t.ticket_id === activeTicket.ticket_id);
+        if (updated) setActiveTicket(updated);
+      }
+    } catch (e) {
+      console.error('Failed to fetch tickets:', e);
+    } finally {
+      setLoading(false);
+    }
+  }, [token, activeTicket]);
+
+  // ── Initial load ──
+  useEffect(() => {
+    fetchTickets(false);
+  }, [token]);
+
+  // ── Auto-poll every 15 seconds ──
+  useEffect(() => {
+    pollRef.current = setInterval(() => fetchTickets(true), POLL_INTERVAL_MS);
+    return () => clearInterval(pollRef.current);
+  }, [fetchTickets]);
+
+  // ── Scroll thread to bottom when new messages ──
+  useEffect(() => {
+    if (threadEndRef.current) {
+      threadEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [activeTicket?.thread?.length]);
+
+  // ── Send message from member ──
+  const sendMessage = async () => {
+    if (!replyText.trim() || !activeTicket) return;
+    setSending(true);
+    try {
+      await fetch(API('/service_desk/append_message'), {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          ticket_id: activeTicket.ticket_id,
+          message: {
+            sender: 'parent',
+            text: replyText.trim(),
+            timestamp: new Date().toISOString(),
+          },
+          send_whatsapp: false, // member sending in-app, not via WhatsApp
+        }),
+      });
+      setReplyText('');
+      fetchTickets(true);
+    } catch (e) {
+      console.error('Send failed:', e);
+    } finally {
+      setSending(false);
+    }
   };
 
-
-  // Filter by tab
-  const BROWSE_INTENTS   = ["browse_intent","search_intent","nearme_search","product_interest","onboarding_progress"];
-  const BOOKING_INTENTS  = ["booking_intent","service_booking","service_request","product_order","guided_path_booking","imagine_intent","cart_intent","order_placed","farewell","farewell_detected"];
-  const MIRA_INTENTS     = ["mira_chat_intent","mira_os","mira_imagines"];
-
+  // ── Filter tickets by tab ──
   const filtered = tickets.filter(t => {
-    if (search) {
-      const q = search.toLowerCase();
-      const text = (t.thread?.[0]?.text || t.initial_message?.text || t.subject || "").toLowerCase();
-      if (!text.includes(q) && !(t.pillar||"").toLowerCase().includes(q) && !(t.pet_name||"").toLowerCase().includes(q)) return false;
-    }
-    if (activeTab === "booking")  return BOOKING_INTENTS.includes(t.intent_primary);
-    if (activeTab === "browse")   return BROWSE_INTENTS.includes(t.intent_primary);
-    if (activeTab === "mira")     return MIRA_INTENTS.includes(t.intent_primary) || t.channel?.includes("mira");
-    if (activeTab === "resolved") return t.status === "resolved" || t.status === "closed";
+    if (activeTab === 'all')      return true;
+    if (activeTab === 'open')     return ['open', 'awaiting_concierge', 'in_progress'].includes(t.status);
+    if (activeTab === 'bookings') return t.intent_primary === 'service_booking';
+    if (activeTab === 'mira')     return t.channel?.includes('mira');
+    if (activeTab === 'resolved') return ['resolved', 'closed'].includes(t.status);
     return true;
   });
 
-  const counts = {
-    all:      tickets.length,
-    booking:  tickets.filter(t => BOOKING_INTENTS.includes(t.intent_primary)).length,
-    browse:   tickets.filter(t => BROWSE_INTENTS.includes(t.intent_primary)).length,
-    mira:     tickets.filter(t => t.channel === "mira_os" || t.intent_primary === "mira_chat_intent").length,
-    resolved: tickets.filter(t => t.status === "resolved" || t.status === "closed").length,
+  const c = {
+    page: { background: '#0D0A1A', minHeight: '100vh', color: '#F4EFE6', fontFamily: "'DM Sans', -apple-system, sans-serif", fontWeight: 300 },
+    header: { padding: '20px 20px 0', borderBottom: '1px solid rgba(244,239,230,0.07)' },
+    title: { fontSize: '20px', fontWeight: 700, color: '#F4EFE6', fontFamily: "'Playfair Display', Georgia, serif", marginBottom: '4px' },
+    sub: { fontSize: '13px', color: 'rgba(244,239,230,0.5)', marginBottom: '16px' },
+    tabs: { display: 'flex', gap: '0', overflowX: 'auto', scrollbarWidth: 'none' },
+    tab: (active) => ({ padding: '10px 16px', fontSize: '13px', fontWeight: active ? 500 : 400, color: active ? '#F4EFE6' : 'rgba(244,239,230,0.5)', borderBottom: `2px solid ${active ? '#C96D9E' : 'transparent'}`, cursor: 'pointer', whiteSpace: 'nowrap', background: 'none', border: 'none', borderBottomWidth: '2px', borderBottomStyle: 'solid', borderBottomColor: active ? '#C96D9E' : 'transparent', fontFamily: "'DM Sans', sans-serif' ", transition: 'all 0.15s' }),
+    list: { padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '8px' },
+    ticketCard: (active) => ({ background: active ? 'rgba(201,109,158,0.08)' : 'rgba(255,255,255,0.03)', border: `1px solid ${active ? 'rgba(201,109,158,0.25)' : 'rgba(244,239,230,0.07)'}`, borderRadius: '14px', padding: '14px 16px', cursor: 'pointer', transition: 'all 0.15s' }),
+    pillarDot: (pillar) => ({ width: '8px', height: '8px', borderRadius: '50%', background: PILLAR_COLORS[pillar] || PILLAR_COLORS.general, flexShrink: 0, marginTop: '4px' }),
+    empty: { textAlign: 'center', padding: '60px 20px', color: 'rgba(244,239,230,0.4)' },
   };
 
-  const openCount = tickets.filter(t => t.status === "open" || t.status === "awaiting_concierge").length;
+  // ── THREAD VIEW (when ticket selected) ──
+  if (activeTicket) {
+    const pillarColor = PILLAR_COLORS[activeTicket.pillar] || PILLAR_COLORS.general;
+    return (
+      <div style={c.page}>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+        {toast && <NewMessageToast message={toast} onDismiss={() => setToast(null)} />}
 
-  return (
-    <div style={{
-      minHeight: "100vh",
-      background: "var(--color-background-tertiary)",
-      fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",
-    }}>
-      <Helmet>
-        <title>My Requests · The Doggy Company</title>
-      </Helmet>
-
-      {/* Header */}
-      <div style={{
-        background: "var(--color-background-primary)",
-        borderBottom: "1px solid var(--color-border-tertiary)",
-        padding: "16px 20px",
-        position: "sticky", top: 0, zIndex: 100,
-      }}>
-        <div style={{ maxWidth: 640, margin: "0 auto" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-            <button
-              onClick={() => navigate(-1)}
-              style={{
-                background: "none", border: "none",
-                fontSize: 20, cursor: "pointer",
-                color: "var(--color-text-secondary)", padding: "0 4px",
-              }}
-            >←</button>
+        {/* Thread header */}
+        <div style={{ padding: '16px 16px 0', borderBottom: '1px solid rgba(244,239,230,0.07)', background: 'rgba(13,10,26,0.96)', position: 'sticky', top: 0, zIndex: 10, backdropFilter: 'blur(12px)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+            <button onClick={() => setActiveTicket(null)} style={{ background: 'rgba(244,239,230,0.06)', border: '1px solid rgba(244,239,230,0.1)', borderRadius: '8px', padding: '6px 10px', color: 'rgba(244,239,230,0.7)', cursor: 'pointer', fontSize: '13px', fontFamily: "'DM Sans', sans-serif" }}>← Back</button>
             <div style={{ flex: 1 }}>
-              <h1 style={{
-                fontSize: 18, fontWeight: 700,
-                color: "var(--color-text-primary)", margin: 0,
-                fontFamily: "Georgia, serif",
-              }}>
-                My Requests
-              </h1>
-              {openCount > 0 && (
-                <div style={{ fontSize: 12, color: "var(--color-text-secondary)", marginTop: 2 }}>
-                  {openCount} open · Concierge® is on it
-                </div>
-              )}
+              <div style={{ fontSize: '14px', fontWeight: 600, color: '#F4EFE6' }}>
+                <span style={{ color: pillarColor, textTransform: 'capitalize' }}>{activeTicket.pillar}</span>
+                {' — '}
+                {activeTicket.intent_primary?.replace(/_/g, ' ')}
+              </div>
+              <div style={{ fontSize: '11px', color: 'rgba(244,239,230,0.4)', marginTop: '2px' }}>#{activeTicket.ticket_id}</div>
             </div>
-            <div style={{
-              width: 36, height: 36, borderRadius: "50%",
-              background: MIRA_ORB,
-              display: "flex", alignItems: "center",
-              justifyContent: "center", fontSize: 16, color: "#fff",
-            }}>✦</div>
+            <StatusBadge status={activeTicket.status} />
           </div>
-
-          {/* Search */}
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search your requests…"
-            style={{
-              width: "100%", padding: "10px 14px",
-              borderRadius: 10, fontSize: 13,
-              border: "1px solid var(--color-border-tertiary)",
-              background: "var(--color-background-secondary)",
-              color: "var(--color-text-primary)",
-              outline: "none", boxSizing: "border-box",
-            }}
-          />
         </div>
-      </div>
 
-      {/* Tab bar */}
-      <div style={{
-        background: "var(--color-background-primary)",
-        borderBottom: "1px solid var(--color-border-tertiary)",
-        padding: "0 20px",
-      }}>
-        <div style={{
-          maxWidth: 640, margin: "0 auto",
-          display: "flex", gap: 0, overflowX: "auto",
-          scrollbarWidth: "none",
-        }}>
-          {TABS.map(tab => (
+        {/* Thread messages */}
+        <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '100px', minHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
+          {(activeTicket.thread || []).map((msg, i) => {
+            const isParent    = msg.sender === 'parent';
+            const isConcierge = msg.sender === 'concierge' || msg.sender === 'admin';
+            const isMira      = msg.sender === 'mira';
+            return (
+              <div key={i} style={{ display: 'flex', justifyContent: isParent ? 'flex-end' : 'flex-start', gap: '8px', alignItems: 'flex-end' }}>
+                {!isParent && (
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: isMira ? 'linear-gradient(135deg,#C96D9E,#9B3F7A)' : `${pillarColor}25`, border: `1px solid ${pillarColor}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', flexShrink: 0 }}>
+                    {isMira ? '✦' : '👤'}
+                  </div>
+                )}
+                <div style={{ maxWidth: '75%' }}>
+                  {!isParent && (
+                    <div style={{ fontSize: '10px', color: 'rgba(244,239,230,0.4)', marginBottom: '3px', paddingLeft: '4px' }}>
+                      {isMira ? 'Mira' : 'Concierge®'}
+                    </div>
+                  )}
+                  <div style={{
+                    padding: '10px 14px', borderRadius: isParent ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+                    background: isParent ? 'linear-gradient(135deg,#C96D9E,#9B3F7A)' : isMira ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.06)',
+                    border: isParent ? 'none' : `1px solid ${isMira ? 'rgba(139,92,246,0.2)' : 'rgba(244,239,230,0.08)'}`,
+                    fontSize: '14px', color: '#F4EFE6', lineHeight: 1.6,
+                  }}>
+                    {msg.text}
+                  </div>
+                  <div style={{ fontSize: '10px', color: 'rgba(244,239,230,0.3)', marginTop: '3px', textAlign: isParent ? 'right' : 'left', paddingLeft: isParent ? 0 : '4px' }}>
+                    {timeAgo(msg.timestamp)}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          <div ref={threadEndRef} />
+        </div>
+
+        {/* Reply input — fixed at bottom */}
+        {activeTicket.status !== 'resolved' && activeTicket.status !== 'closed' && (
+          <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '12px 16px', background: 'rgba(13,10,26,0.97)', borderTop: '1px solid rgba(244,239,230,0.08)', backdropFilter: 'blur(12px)', display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
+            <textarea
+              value={replyText}
+              onChange={e => setReplyText(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+              placeholder="Reply to your concierge..."
+              rows={1}
+              style={{ flex: 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(244,239,230,0.1)', borderRadius: '20px', padding: '10px 16px', color: '#F4EFE6', fontSize: '14px', fontFamily: "'DM Sans', sans-serif", resize: 'none', outline: 'none', lineHeight: 1.5, maxHeight: '100px', overflowY: 'auto' }}
+            />
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              style={{
-                background: "none", border: "none",
-                borderBottom: activeTab === tab.id
-                  ? "2.5px solid #9B59B6"
-                  : "2.5px solid transparent",
-                padding: "12px 16px",
-                fontSize: 13, fontWeight: activeTab === tab.id ? 700 : 400,
-                color: activeTab === tab.id ? "#9B59B6" : "var(--color-text-secondary)",
-                cursor: "pointer", whiteSpace: "nowrap",
-              }}
+              onClick={sendMessage}
+              disabled={sending || !replyText.trim()}
+              style={{ width: '40px', height: '40px', borderRadius: '50%', background: replyText.trim() ? 'linear-gradient(135deg,#C96D9E,#9B3F7A)' : 'rgba(255,255,255,0.06)', border: 'none', cursor: replyText.trim() ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0, transition: 'all 0.2s' }}
             >
+              {sending ? '⏳' : '→'}
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ── TICKET LIST VIEW ──
+  return (
+    <div style={c.page}>
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+      {toast && <NewMessageToast message={toast} onDismiss={() => setToast(null)} />}
+
+      <div style={c.header}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+          <div style={c.title}>My Requests</div>
+          {unreadCount > 0 && (
+            <div style={{ padding: '3px 10px', borderRadius: '12px', background: 'rgba(201,109,158,0.15)', border: '1px solid rgba(201,109,158,0.3)', fontSize: '12px', fontWeight: 600, color: '#C96D9E' }}>
+              {unreadCount} new
+            </div>
+          )}
+        </div>
+        <div style={c.sub}>Your concierge requests · Updates every 15 seconds</div>
+        <div style={c.tabs}>
+          {TABS.map(tab => (
+            <button key={tab.id} style={c.tab(activeTab === tab.id)} onClick={() => setActiveTab(tab.id)}>
               {tab.label}
-              {counts[tab.id] > 0 && (
-                <span style={{
-                  marginLeft: 6, fontSize: 10,
-                  background: activeTab === tab.id ? "#9B59B616" : "var(--color-background-secondary)",
-                  borderRadius: 20, padding: "1px 6px",
-                  color: activeTab === tab.id ? "#9B59B6" : "var(--color-text-tertiary)",
-                }}>
-                  {counts[tab.id]}
-                </span>
-              )}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Content */}
-      <div style={{ maxWidth: 640, margin: "0 auto", padding: "16px 20px" }}>
-
-        {loading ? (
-          <div style={{ textAlign: "center", padding: "60px 0" }}>
-            <div style={{
-              width: 40, height: 40, borderRadius: "50%",
-              background: MIRA_ORB,
-              display: "flex", alignItems: "center",
-              justifyContent: "center", fontSize: 18,
-              color: "#fff", margin: "0 auto 12px",
-            }}>✦</div>
-            <div style={{ fontSize: 14, color: "var(--color-text-secondary)" }}>
-              Loading your requests…
-            </div>
-          </div>
-        ) : error ? (
-          <div style={{
-            background: "var(--color-background-danger)",
-            border: "1px solid var(--color-border-danger)",
-            borderRadius: 10, padding: "14px 16px",
-            fontSize: 13, color: "var(--color-text-danger)",
-          }}>
-            {error}
-            <button onClick={fetchTickets} style={{
-              marginLeft: 12, fontSize: 12, fontWeight: 600,
-              background: "none", border: "none",
-              color: "var(--color-text-info)", cursor: "pointer",
-            }}>
-              Try again
-            </button>
-          </div>
-        ) : filtered.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "60px 0" }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>✦</div>
-            <div style={{
-              fontSize: 16, fontWeight: 600,
-              color: "var(--color-text-primary)", marginBottom: 8,
-              fontFamily: "Georgia, serif",
-            }}>
-              {activeTab === "all" ? "No requests yet" : `No ${TABS.find(t=>t.id===activeTab)?.label.toLowerCase()} yet`}
-            </div>
-            <div style={{
-              fontSize: 13, color: "var(--color-text-secondary)",
-              lineHeight: 1.6,
-            }}>
-              {activeTab === "all"
-                ? "Every booking, search and Mira conversation will appear here."
-                : "When you book or ask Mira, it'll show up here."}
-            </div>
-            <button
-              onClick={() => navigate("/pet-home")}
-              style={{
-                marginTop: 20, padding: "10px 24px",
-                borderRadius: 20, border: "none",
-                background: MIRA_ORB, color: "#fff",
-                fontSize: 14, fontWeight: 600, cursor: "pointer",
-              }}
-            >
-              Explore the platform →
-            </button>
-          </div>
-        ) : (
-          <>
-            <div style={{
-              fontSize: 12, color: "var(--color-text-tertiary)",
-              marginBottom: 12,
-            }}>
-              {filtered.length} {activeTab === "all" ? "total" : TABS.find(t=>t.id===activeTab)?.label.toLowerCase()}
-            </div>
-            {filtered.map(ticket => (
-              <TicketCard
-                key={ticket.ticket_id || ticket.id || ticket._id}
-                ticket={ticket}
-                expanded={expandedId === (ticket.ticket_id || ticket.id || ticket._id)}
-                onExpand={() => handleExpand(ticket.ticket_id || ticket.id || ticket._id)}
-                onMarkRead={handleMarkRead}
-              />
-            ))}
-            <div style={{
-              textAlign: "center", padding: "24px 0",
-              fontSize: 12, color: "var(--color-text-tertiary)",
-            }}>
-              ✦ Mira is the Brain · Concierge® is the Hands
-            </div>
-          </>
-        )}
-      </div>
+      {loading ? (
+        <div style={{ padding: '60px', textAlign: 'center', color: 'rgba(244,239,230,0.4)', fontSize: '14px' }}>Loading your requests...</div>
+      ) : filtered.length === 0 ? (
+        <div style={c.empty}>
+          <div style={{ fontSize: '40px', marginBottom: '12px' }}>📬</div>
+          <div style={{ fontSize: '15px', fontWeight: 500, marginBottom: '6px', color: '#F4EFE6' }}>No requests yet</div>
+          <div style={{ fontSize: '13px' }}>Tap any "Book →" or "Send to Concierge" button to get started</div>
+        </div>
+      ) : (
+        <div style={c.list}>
+          {filtered.map(ticket => {
+            const lastMsg  = (ticket.thread || []).slice(-1)[0];
+            const isUnread = lastMsg && (lastMsg.sender === 'concierge' || lastMsg.sender === 'mira') && ticket.status !== 'resolved';
+            const pillarColor = PILLAR_COLORS[ticket.pillar] || PILLAR_COLORS.general;
+            return (
+              <div
+                key={ticket.ticket_id}
+                style={c.ticketCard(activeTicket?.ticket_id === ticket.ticket_id)}
+                onClick={() => setActiveTicket(ticket)}
+              >
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: `${pillarColor}18`, border: `1px solid ${pillarColor}35`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>
+                    {ticket.pillar === 'celebrate' ? '🎂' : ticket.pillar === 'care' ? '🌿' : ticket.pillar === 'dine' ? '🍽️' : ticket.pillar === 'go' ? '✈️' : ticket.pillar === 'emergency' ? '🚨' : '🐾'}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '13px', fontWeight: 600, color: '#F4EFE6', textTransform: 'capitalize' }}>{ticket.pillar || 'General'}</span>
+                        {isUnread && <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#C96D9E' }} />}
+                      </div>
+                      <StatusBadge status={ticket.status} />
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'rgba(244,239,230,0.55)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '4px' }}>
+                      {lastMsg?.text || ticket.intent_primary?.replace(/_/g, ' ') || 'New request'}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: '10px', color: 'rgba(244,239,230,0.3)' }}>
+                        {(ticket.thread || []).length} messages
+                      </span>
+                      <span style={{ fontSize: '10px', color: 'rgba(244,239,230,0.3)' }}>
+                        {timeAgo(lastMsg?.timestamp || ticket.created_at)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
