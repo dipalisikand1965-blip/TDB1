@@ -367,7 +367,7 @@ async def generate_soul_whisper(pet_data: Dict) -> SoulWhisperMessage:
     pet_name = pet_data.get("name", "Your pet")
     
     # Analyze pet's soul data to determine message type
-    soul_answers = pet_data.get("doggy_soul_answers", {})
+    soul_answers = pet_data.get("doggy_soul_answers") or {}
     overall_score = pet_data.get("overall_score", 50)
     
     # Determine tip type based on pet's profile

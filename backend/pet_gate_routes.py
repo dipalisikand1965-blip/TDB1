@@ -405,7 +405,7 @@ async def get_pillar_preferences(pet_id: str):
         raise HTTPException(status_code=404, detail="Pet not found")
     
     pet_name = pet.get("name", "Pet")
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     preferences = pet.get("preferences", {})
     celebrations = pet.get("celebrations", [])
     vault = pet.get("vault", {})

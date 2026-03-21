@@ -1012,7 +1012,7 @@ async def get_multi_factor_products(request: MultiFactorFilterRequest):
         # Derive archetype on-the-fly
         try:
             from soul_archetype_engine import derive_archetype
-            soul_data = pet.get("doggy_soul_answers", {})
+            soul_data = pet.get("doggy_soul_answers") or {}
             archetype_key, archetype_details = derive_archetype(soul_data)
             product_affinity = archetype_details.get("product_affinity", [])
         except Exception as e:

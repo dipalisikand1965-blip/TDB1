@@ -70,7 +70,7 @@ async def get_pet_archetype(pet_id: str):
     # Derive archetype from soul data
     from soul_archetype_engine import derive_archetype, derive_all_archetypes_ranked
     
-    soul_data = pet.get("doggy_soul_answers", {})
+    soul_data = pet.get("doggy_soul_answers") or {}
     archetype_key, archetype_details = derive_archetype(soul_data)
     rankings = derive_all_archetypes_ranked(soul_data)
     

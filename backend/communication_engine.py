@@ -529,7 +529,7 @@ class CommunicationEngine:
             
         pet_data = pet["pets"][0]
         pet_name = pet_data.get("name", "your pet")
-        soul_answers = pet_data.get("doggy_soul_answers", {})
+        soul_answers = pet_data.get("doggy_soul_answers") or {}
         
         # Find unanswered questions
         for question in SOUL_QUESTIONS:

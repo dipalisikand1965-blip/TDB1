@@ -308,7 +308,7 @@ async def get_pet_context_pack(db, pet_id: str) -> Dict:
             
             # B. Soul Intelligence (deep profile)
             "soul_intelligence": {
-                **pet.get("doggy_soul_answers", {}),
+                **pet.get("doggy_soul_answers") or {},
                 **pet.get("soul", {}),
             },
             
@@ -401,7 +401,7 @@ def _extract_health_alerts(pet: Dict, memories: List[Dict]) -> List[Dict]:
         })
     
     # Check for known conditions
-    conditions = pet.get("doggy_soul_answers", {}).get("health_conditions")
+    conditions = pet.get("doggy_soul_answers") or {}.get("health_conditions")
     if conditions:
         alerts.append({
             "type": "known_conditions",
@@ -418,7 +418,7 @@ def _get_unanswered_fields(pet: Dict) -> List[str]:
         "handling_comfort", "behavior_with_dogs", "life_stage"
     ]
     
-    doggy_soul = pet.get("doggy_soul_answers", {})
+    doggy_soul = pet.get("doggy_soul_answers") or {}
     unanswered = []
     
     for field in important_fields:

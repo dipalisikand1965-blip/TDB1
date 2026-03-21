@@ -46,7 +46,7 @@ async def generate_welcome_wrapped(pet_id: str):
     
     # Calculate score using the same weighted scoring as dashboard
     stored_score = pet.get("overall_score", 0) or pet.get("soul_score", 0) or 0
-    answers = pet.get("doggy_soul_answers", {}) or pet.get("soul_answers", {})
+    answers = pet.get("doggy_soul_answers") or {} or pet.get("soul_answers", {})
     
     if answers:
         score_data = calculate_pet_soul_score(answers)
@@ -153,7 +153,7 @@ async def get_welcome_card_html(pet_id: str):
     
     # Calculate score using the same weighted scoring as dashboard
     stored_score = pet.get("overall_score", 0) or pet.get("soul_score", 0) or 0
-    answers = pet.get("doggy_soul_answers", {}) or pet.get("soul_answers", {})
+    answers = pet.get("doggy_soul_answers") or {} or pet.get("soul_answers", {})
     
     if answers:
         score_data = calculate_pet_soul_score(answers)

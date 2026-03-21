@@ -765,7 +765,7 @@ async def get_user_pets(credentials: HTTPAuthorizationCredentials = Depends(secu
                 "photo_url": pet.get("photo_url"),
                 "overall_score": pet.get("overall_score", 0),
                 "soul": pet.get("soul", {}),
-                "doggy_soul_answers": pet.get("doggy_soul_answers", {}),
+                "doggy_soul_answers": pet.get("doggy_soul_answers") or {},
                 "preferences": pet.get("preferences", {}),
                 "health_vault": pet.get("health_vault", {}),
                 "traits": pet.get("traits", [])

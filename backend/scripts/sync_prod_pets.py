@@ -69,7 +69,7 @@ def sync_pets_to_preview(pets):
                 "owner_email": owner_email,
                 "soul_score": pet.get("soul_score", 0),
                 "overall_score": pet.get("overall_score", 0),
-                "doggy_soul_answers": pet.get("doggy_soul_answers", {}),
+                "doggy_soul_answers": pet.get("doggy_soul_answers") or {},
                 "soul_persona": pet.get("soul_persona", {}),
                 "identity": pet.get("identity", {}),
                 "personality": pet.get("personality", {}),

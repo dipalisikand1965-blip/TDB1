@@ -289,7 +289,7 @@ async def migrate_existing_soul_data(db, pet_id: str) -> Dict:
         migrated = 0
         
         # Migrate doggy_soul_answers
-        soul_answers = pet.get("doggy_soul_answers", {})
+        soul_answers = pet.get("doggy_soul_answers") or {}
         for field, value in soul_answers.items():
             if value:  # Only migrate non-empty values
                 await storage.store_soul_answer(

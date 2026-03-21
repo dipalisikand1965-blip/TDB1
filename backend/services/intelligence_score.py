@@ -123,7 +123,7 @@ async def calculate_intelligence_score(db, pet_id: str) -> Dict:
         # COMPONENT 1: Base Soul Score (40 points max)
         # ═══════════════════════════════════════════════════════════════
         
-        soul_answers = pet.get("doggy_soul_answers", {})
+        soul_answers = pet.get("doggy_soul_answers") or {}
         soul_data = pet.get("soul", {})
         preferences = pet.get("preferences", {})
         
@@ -362,7 +362,7 @@ async def get_intelligence_breakdown(db, pet_id: str) -> Dict:
         }
         
         # Map soul answers to domains
-        soul = pet.get("doggy_soul_answers", {})
+        soul = pet.get("doggy_soul_answers") or {}
         
         # Temperament
         if soul.get("temperament") or soul.get("describe_3_words"):

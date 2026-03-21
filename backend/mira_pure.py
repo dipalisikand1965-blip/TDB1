@@ -123,7 +123,7 @@ async def get_pet_context(pet_id: str, pet_name: str = None) -> dict:
         # Build comprehensive context from ALL soul data sources
         soul = pet.get("soul_data", {})
         soul_simple = pet.get("soul", {})  # Simple soul data
-        doggy_answers = pet.get("doggy_soul_answers", {})  # Soul Builder answers
+        doggy_answers = pet.get("doggy_soul_answers") or {}  # Soul Builder answers
         health = pet.get("health_data", {})
         
         context_parts = []

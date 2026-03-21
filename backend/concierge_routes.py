@@ -2190,7 +2190,7 @@ async def get_item_detail(ticket_id: str):
         for pet in pets_snapshot:
             pet_full = await db.pets.find_one({"id": pet["id"]}, {"_id": 0})
             if pet_full:
-                soul = pet_full.get("soul", {}) or pet_full.get("doggy_soul_answers", {})
+                soul = pet_full.get("soul", {}) or pet_full.get("doggy_soul_answers") or {}
                 if soul:
                     mira_intelligence["pet_soul_insights"].append({
                         "pet_name": pet["name"],
@@ -4344,7 +4344,7 @@ async def get_member_full_profile(email: str):
         ).sort("created_at", -1).to_list(50)
         
         # Pet Soul answers (all responses)
-        pet["soul_answers"] = pet.get("doggy_soul_answers", {})
+        pet["soul_answers"] = pet.get("doggy_soul_answers") or {}
     
     # 3. Membership details
     membership = await db.memberships.find_one(
