@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Search, Sparkles } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { getApiUrl } from '../utils/api';
+import Navbar from '../components/Navbar';
 
 // Default FAQs (used if API fails or for seeding)
 const defaultFaqs = [
@@ -40,14 +42,6 @@ const defaultFaqs = [
     questions: [
       { q: 'How do I book a pet-friendly restaurant?', a: 'Simply ask Mira AI or browse our Dine section. We partner with verified pet-friendly restaurants across major cities.' },
       { q: 'Do restaurants have pet menus?', a: 'Many of our partner restaurants offer special pet menus! Look for the "Pet Menu Available" badge when browsing.' }
-    ]
-  },
-  {
-    category: 'Stay (Pet Hotels & Boarding)',
-    icon: '🏨',
-    questions: [
-      { q: 'How does pet hotel booking work?', a: 'Browse our Stay section or ask Mira for recommendations. We partner with verified pet-friendly hotels and boarding facilities.' },
-      { q: 'What amenities are included?', a: 'Partner facilities offer various amenities — private rooms, outdoor play areas, grooming, webcam access, and personalized care.' }
     ]
   },
   {
@@ -214,6 +208,7 @@ const FAQs = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white" data-testid="faqs-page">
+      <Navbar />
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 text-white py-16 overflow-hidden">
         <div className="absolute inset-0 opacity-10">

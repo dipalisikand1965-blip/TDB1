@@ -428,15 +428,20 @@ def get_pillar_usage(pet_id: str, year: int, owner_email: str = None) -> list:
     """Get pillar usage statistics for the year."""
     pillar_counts = {}
     
-    # Query service tickets
+    # Query service tickets — use both datetime and ISO string comparison
     start_date = datetime(year, 1, 1, tzinfo=timezone.utc)
     end_date = datetime(year, 12, 31, 23, 59, 59, tzinfo=timezone.utc)
+    start_iso = start_date.isoformat()
+    end_iso   = end_date.isoformat()
+    
+    # Match tickets for this year — handles both datetime and ISO string created_at
+    date_filter = {"$or": [
+        {"created_at": {"$gte": start_date, "$lte": end_date}},
+        {"created_at": {"$gte": start_iso, "$lte": end_iso}},
+    ]}
     
     # Check by pet_id
-    tickets = db.service_desk_tickets.find({
-        "pet_id": pet_id,
-        "created_at": {"$gte": start_date, "$lte": end_date}
-    })
+    tickets = db.service_desk_tickets.find({"pet_id": pet_id, **date_filter})
     
     pillar_icons = {
         # Core Learn categories (matching app)
@@ -455,23 +460,16 @@ def get_pillar_usage(pet_id: str, year: int, owner_email: str = None) -> list:
         if pillar:
             pillar_counts[pillar] = pillar_counts.get(pillar, 0) + 1
     
-    # Also check by owner email
+    # Also check by owner email (match by parent_id = email)
     if owner_email:
         email_tickets = db.service_desk_tickets.find({
-            "member.email": owner_email,
-            "created_at": {"$gte": start_date, "$lte": end_date}
+            "$or": [{"member.email": owner_email}, {"parent_id": owner_email}],
+            "$or": [
+                {"created_at": {"$gte": start_date, "$lte": end_date}},
+                {"created_at": {"$gte": start_iso, "$lte": end_iso}},
+            ]
         })
         for ticket in email_tickets:
-            pillar = ticket.get("pillar", "").lower()
-            if pillar:
-                pillar_counts[pillar] = pillar_counts.get(pillar, 0) + 1
-        
-        # Check tickets collection
-        all_tickets = db.tickets.find({
-            "member.email": owner_email,
-            "created_at": {"$gte": start_date, "$lte": end_date}
-        })
-        for ticket in all_tickets:
             pillar = ticket.get("pillar", "").lower()
             if pillar:
                 pillar_counts[pillar] = pillar_counts.get(pillar, 0) + 1

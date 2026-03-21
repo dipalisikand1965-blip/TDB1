@@ -143,11 +143,12 @@ function ThreadMessage({ msg, pillarColour }) {
 }
 
 // ── Ticket card ───────────────────────────────────────────────────────
-function TicketCard({ ticket, onExpand, expanded }) {
+function TicketCard({ ticket, onExpand, expanded, onMarkRead }) {
   const meta    = PILLAR_META[ticket.pillar] || PILLAR_META.default;
   const intent  = INTENT_LABELS[ticket.intent_primary] || ticket.intent_primary || "Request";
   const lastMsg = ticket.thread?.[ticket.thread.length - 1];
   const isBrowse = ["browse_intent","search_intent","nearme_search","product_interest"].includes(ticket.intent_primary);
+  const hasUnread = ticket.has_unread_concierge_reply === true;
 
   const timeAgo = (ts) => {
     if (!ts) return "";
@@ -164,15 +165,35 @@ function TicketCard({ ticket, onExpand, expanded }) {
   return (
     <div style={{
       background: "var(--color-background-primary)",
-      border: `1px solid ${expanded ? meta.colour + "40" : "var(--color-border-tertiary)"}`,
-      borderLeft: `3px solid ${meta.colour}`,
+      border: `1px solid ${hasUnread ? "#E91E8C40" : expanded ? meta.colour + "40" : "var(--color-border-tertiary)"}`,
+      borderLeft: `3px solid ${hasUnread ? "#E91E8C" : meta.colour}`,
       borderRadius: 12, overflow: "hidden",
       marginBottom: 10,
       transition: "border-color 0.15s",
+      position: "relative",
     }}>
+      {/* ── Unread concierge reply dot ── */}
+      {hasUnread && (
+        <div style={{
+          position: "absolute", top: 10, right: 10,
+          display: "flex", alignItems: "center", gap: 4,
+          background: "#E91E8C15", borderRadius: 20, padding: "3px 8px",
+          border: "1px solid #E91E8C40",
+        }}>
+          <div style={{
+            width: 7, height: 7, borderRadius: "50%",
+            background: "#E91E8C",
+            boxShadow: "0 0 6px #E91E8C80",
+          }}/>
+          <span style={{ fontSize: 10, fontWeight: 700, color: "#E91E8C" }}>
+            New reply
+          </span>
+        </div>
+      )}
+
       {/* Card header */}
       <div
-        onClick={onExpand}
+        onClick={() => { onExpand(); if (hasUnread) onMarkRead?.(ticket.ticket_id); }}
         style={{
           padding: "14px 16px",
           cursor: "pointer",
@@ -320,6 +341,19 @@ export default function MyRequestsPage() {
   const handleExpand = (ticketId) => {
     setExpandedId(prev => prev === ticketId ? null : ticketId);
   };
+
+  const handleMarkRead = async (ticketId) => {
+    try {
+      await fetch(`${API_URL}/api/service_desk/mark_reply_read?ticket_id=${encodeURIComponent(ticketId)}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setTickets(prev => prev.map(t =>
+        (t.ticket_id || t.id) === ticketId ? { ...t, has_unread_concierge_reply: false } : t
+      ));
+    } catch { /* silent */ }
+  };
+
 
   // Filter by tab
   const BROWSE_INTENTS   = ["browse_intent","search_intent","nearme_search","product_interest","onboarding_progress"];
@@ -533,6 +567,7 @@ export default function MyRequestsPage() {
                 ticket={ticket}
                 expanded={expandedId === (ticket.ticket_id || ticket.id || ticket._id)}
                 onExpand={() => handleExpand(ticket.ticket_id || ticket.id || ticket._id)}
+                onMarkRead={handleMarkRead}
               />
             ))}
             <div style={{
