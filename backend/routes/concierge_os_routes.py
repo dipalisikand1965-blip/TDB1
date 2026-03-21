@@ -1035,7 +1035,7 @@ async def get_thread(
             if pet:
                 # Build context drawer data
                 soul_answers = pet.get("doggy_soul_answers") or {}
-                preferences = pet.get("preferences", {})
+                preferences = pet.get("preferences") or {}
                 
                 # Calculate age stage
                 age_stage = "Adult"
@@ -2156,7 +2156,7 @@ async def get_admin_thread_detail(thread_id: str):
                     "name": pet_doc.get("name"),
                     "breed": pet_doc.get("breed"),
                     "photo_url": pet_doc.get("photo_url"),
-                    "allergies": pet_doc.get("preferences", {}).get("allergies", []),
+                    "allergies": pet_doc.get("preferences") or {}.get("allergies", []),
                     "temperament": pet_doc.get("temperament")
                 }
         

@@ -662,7 +662,7 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
                     "diet_restrictions": diet_restrictions if diet_restrictions else [],
                     "birthday": pet.get("birth_date") or pet.get("birthday") or pet.get("dob") or pet.get("date_of_birth"),
                     "temperament": pet.get("temperament") or pet.get("personality"),
-                    "preferences": pet.get("preferences", {})
+                    "preferences": pet.get("preferences") or {}
                 }
                 
                 # CELEBRATE picks to suggest based on context
@@ -7795,10 +7795,10 @@ async def get_default_picks_for_pet(
         pet_name = pet.get("name", "your pet") if pet else "your pet"
         breed = (pet.get("breed") or "").lower() if pet else ""
         breed_title = breed.title() if breed else ""
-        allergies = pet.get("sensitivities", []) or pet.get("health_vault", {}).get("allergies", []) if pet else []
+        allergies = pet.get("sensitivities", []) or pet.get("health_vault") or {}.get("allergies", []) if pet else []
         allergy_names = [a.get("allergen", a) if isinstance(a, dict) else a for a in allergies]
         size = pet.get("size", "medium").lower() if pet else "medium"
-        soul = pet.get("soul", {}) if pet else {}
+        soul = pet.get("soul") or {} if pet else {}
         doggy_answers = pet.get("doggy_soul_answers") or {} if pet else {}
         favorites = pet.get("favorites", []) if pet else []
         love_language = soul.get("love_language", doggy_answers.get("love_language", ""))
@@ -8287,7 +8287,7 @@ async def load_pet_soul(pet_id: str) -> Dict:
         # ═══════════════════════════════════════════════════════════════════════════
         "favorite_treats": preferences.get("favorite_treats", []) or doggy_soul.get("favorite_treats") or doggy_soul.get("treat_preference"),
         "favorite_flavors": preferences.get("favorite_flavors", []),
-        "dislikes": preferences.get("dislikes", []) or soul_data.get("dislikes", []) or (pet.get("soul_enrichments", {}).get("dislikes", []) if isinstance(pet.get("soul_enrichments"), dict) else []),
+        "dislikes": preferences.get("dislikes", []) or soul_data.get("dislikes", []) or (pet.get("soul_enrichments") or {}.get("dislikes", []) if isinstance(pet.get("soul_enrichments"), dict) else []),
         "diet_type": preferences.get("diet_type") or doggy_soul.get("diet_type") or doggy_soul.get("dietary_preference"),
         "activity_level": preferences.get("activity_level") or doggy_soul.get("energy_level"),
         # ═══════════════════════════════════════════════════════════════════════════
@@ -8341,7 +8341,7 @@ async def load_pet_soul(pet_id: str) -> Dict:
         # ═══════════════════════════════════════════════════════════════════════════
         # ENRICHMENTS (learned from conversations/tickets)
         # ═══════════════════════════════════════════════════════════════════════════
-        "soul_enrichments": pet.get("soul_enrichments", {}),
+        "soul_enrichments": pet.get("soul_enrichments") or {},
         # Learned facts from conversations (key for personalization!)
         "learned_facts": soul_data.get("learned_facts", []) or pet.get("learned_facts", []),
         # Preferences learned from interactions
@@ -12604,7 +12604,7 @@ async def mira_chat(
                     allergies=pet_ctx.get("allergies", []),
                     temperament=pet_ctx.get("temperament"),
                     grooming_preference=pet_ctx.get("grooming_preference"),
-                    soul=pet_ctx.get("soul", {}),
+                    soul=pet_ctx.get("soul") or {},
                 ),
                 ui_context=UIContext(
                     active_tab=ActiveTab(request.ui_context.get("active_tab", "chat")) if request.ui_context else ActiveTab.CHAT,
@@ -13264,7 +13264,7 @@ async def mira_chat(
                     response_text=response_text,
                     active_pet_id=selected_pet.get("id", "unknown"),
                     active_pet_name=selected_pet.get("name", "unknown"),
-                    active_pet_breed=selected_pet.get("breed") or selected_pet.get("identity", {}).get("breed", ""),
+                    active_pet_breed=selected_pet.get("breed") or selected_pet.get("identity") or {}.get("breed", ""),
                     request_context={
                         "session_id": session_id,
                         "ticket_id": response_dict.get("ticket_id"),
@@ -23828,7 +23828,7 @@ async def get_today_panel(pet_id: str, authorization: Optional[str] = Header(Non
         # 3. Get health alerts (from pet profile)
         pet = await db.pets.find_one({"id": pet_id})
         if pet:
-            health_vault = pet.get("health_vault", {})
+            health_vault = pet.get("health_vault") or {}
             health_alerts = health_vault.get("alerts", [])
             for alert in health_alerts[:3]:
                 items.append({
@@ -26471,7 +26471,7 @@ async def get_curated_set(
             # Include raw profile data for trait derivation
             "doggy_soul_answers": pet.get("doggy_soul_answers") or {},
             "personality": pet.get("personality", {}),
-            "soul": pet.get("soul", {}),
+            "soul": pet.get("soul") or {},
             "temperament": pet.get("temperament", ""),
             # 🌍 LOCATION-AWARE: Include user location for personalised recommendations
             "user_location": user_location

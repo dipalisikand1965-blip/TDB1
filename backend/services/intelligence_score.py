@@ -124,8 +124,8 @@ async def calculate_intelligence_score(db, pet_id: str) -> Dict:
         # ═══════════════════════════════════════════════════════════════
         
         soul_answers = pet.get("doggy_soul_answers") or {}
-        soul_data = pet.get("soul", {})
-        preferences = pet.get("preferences", {})
+        soul_data = pet.get("soul") or {}
+        preferences = pet.get("preferences") or {}
         
         # Combine all known data
         all_known = {**soul_answers, **soul_data, **preferences}

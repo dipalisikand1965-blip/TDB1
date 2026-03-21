@@ -586,7 +586,7 @@ def derive_traits_from_profile(pet_data: Dict[str, Any]) -> List[str]:
         derived.append("social")
     
     # Check soul data
-    soul = pet_data.get("soul", {}) or {}
+    soul = pet_data.get("soul") or {} or {}
     love_language = soul.get("love_language", "").lower()
     if love_language in ["velcro", "clingy"]:
         derived.append("pampered")

@@ -122,7 +122,7 @@ async def get_pet_context(pet_id: str, pet_name: str = None) -> dict:
         
         # Build comprehensive context from ALL soul data sources
         soul = pet.get("soul_data", {})
-        soul_simple = pet.get("soul", {})  # Simple soul data
+        soul_simple = pet.get("soul") or {}  # Simple soul data
         doggy_answers = pet.get("doggy_soul_answers") or {}  # Soul Builder answers
         health = pet.get("health_data", {})
         
@@ -162,7 +162,7 @@ async def get_pet_context(pet_id: str, pet_name: str = None) -> dict:
             context_parts.append(f"Energy level: {energy}")
         
         # Preferences from all sources
-        prefs = soul.get("preferences", {}) or soul_simple.get("preferences", {})
+        prefs = soul.get("preferences") or {} or soul_simple.get("preferences") or {}
         if prefs.get("favorite_activities"):
             context_parts.append(f"Loves: {', '.join(prefs.get('favorite_activities', [])[:5])}")
         if prefs.get("favorite_foods") or doggy_answers.get("favorite_treat"):

@@ -256,10 +256,10 @@ async def get_pet_recommendations(
     context = {
         "pet_id": pet_id,
         "pet_name": pet_name,
-        "breed": pet.get("breed") or pet.get("identity", {}).get("breed"),
-        "size": pet.get("identity", {}).get("size"),
-        "age": pet.get("age") or pet.get("identity", {}).get("age"),
-        "preferences": pet.get("preferences", {}),
+        "breed": pet.get("breed") or pet.get("identity") or {}.get("breed"),
+        "size": pet.get("identity") or {}.get("size"),
+        "age": pet.get("age") or pet.get("identity") or {}.get("age"),
+        "preferences": pet.get("preferences") or {},
         "health": pet.get("health", {}),
         "personality": pet.get("personality", {}),
         "soul_answers": pet.get("doggy_soul_answers") or {}
@@ -370,7 +370,7 @@ async def generate_care_recommendations(context: Dict, inferences: List, db) -> 
         })
     
     # Check health info
-    allergies = context.get("health", {}).get("allergies", []) or context.get("preferences", {}).get("allergies", [])
+    allergies = context.get("health", {}).get("allergies", []) or context.get("preferences") or {}.get("allergies", [])
     if allergies:
         recs.append({
             "id": f"rec-care-allergy-{context['pet_id']}",
@@ -427,7 +427,7 @@ async def generate_shop_recommendations(context: Dict, inferences: List, db) -> 
     pet_name = context.get("pet_name", "your pet")
     
     # Check treat preferences
-    favorite_treats = context.get("preferences", {}).get("favorite_treats", [])
+    favorite_treats = context.get("preferences") or {}.get("favorite_treats", [])
     
     if favorite_treats:
         for treat in favorite_treats[:2]:

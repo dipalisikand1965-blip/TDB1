@@ -527,7 +527,7 @@ def enrich_pets():
         # Add soul enrichments if present
         if "soul_enrichments" in enrichment_data:
             if pet.get("soul"):
-                update_data["soul"] = {**pet.get("soul", {}), **enrichment_data["soul_enrichments"]}
+                update_data["soul"] = {**(pet.get("soul") or {}), **enrichment_data["soul_enrichments"]}
             else:
                 update_data["soul"] = enrichment_data["soul_enrichments"]
         

@@ -313,8 +313,8 @@ async def get_pet_profile(pet_id: str) -> Optional[dict]:
     
     pet["age_category"] = age_category
     pet["size_category"] = size_category
-    pet["health_conditions"] = pet.get("preferences", {}).get("health_conditions", [])
-    pet["allergies"] = pet.get("preferences", {}).get("allergies", [])
+    pet["health_conditions"] = pet.get("preferences") or {}.get("health_conditions", [])
+    pet["allergies"] = pet.get("preferences") or {}.get("allergies", [])
     
     return pet
 

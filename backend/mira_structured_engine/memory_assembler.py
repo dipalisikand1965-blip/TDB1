@@ -110,7 +110,7 @@ def format_pet_soul(pet_context: Dict[str, Any]) -> str:
     """Format soul/personality data for LLM context"""
     
     name = pet_context.get("name", "Pet")
-    soul = pet_context.get("soul", {})
+    soul = pet_context.get("soul") or {}
     
     lines = [f"**{name}'s Soul Profile:**"]
     

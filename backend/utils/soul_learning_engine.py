@@ -105,7 +105,7 @@ def get_fields_to_recall(pet_soul: Dict, intent: str = None) -> Dict[str, Any]:
                 memory_values[field] = value
     
     # Check soul_enrichments
-    enrichments = pet_soul.get("soul_enrichments", {})
+    enrichments = pet_soul.get("soul_enrichments") or {}
     if enrichments:
         for field, value in enrichments.items():
             if value and isinstance(value, dict) and value.get("value"):
@@ -537,7 +537,7 @@ def build_memory_trace(
     # Get extraction results
     existing_enrichments = {}
     if pet_soul:
-        existing_enrichments = pet_soul.get("soul_enrichments", {})
+        existing_enrichments = pet_soul.get("soul_enrichments") or {}
         # Also include direct fields as "known"
         for field in ["dislikes", "allergies", "favorites", "anxiety_triggers"]:
             if pet_soul.get(field):
@@ -654,7 +654,7 @@ def get_known_facts_prompt(pet_soul: Dict) -> str:
             lines.append(f"  - {k.replace('_', ' ').title()}: {v}")
     
     # Enrichments from conversations
-    enrichments = pet_soul.get("soul_enrichments", {})
+    enrichments = pet_soul.get("soul_enrichments") or {}
     if enrichments:
         enrichment_items = []
         for k, v in enrichments.items():

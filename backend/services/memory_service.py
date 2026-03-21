@@ -308,8 +308,8 @@ async def get_pet_context_pack(db, pet_id: str) -> Dict:
             
             # B. Soul Intelligence (deep profile)
             "soul_intelligence": {
-                **pet.get("doggy_soul_answers") or {},
-                **pet.get("soul", {}),
+                **(pet.get("doggy_soul_answers") or {}),
+                **(pet.get("soul") or {}),
             },
             
             # C. Behavioural Observations (dynamic)
