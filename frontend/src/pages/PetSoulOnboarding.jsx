@@ -1,1480 +1,1397 @@
 /**
- * PetSoulOnboarding.jsx — /onboarding
+ * PetSoulOnboarding.jsx — The Soul Builder
  * The Doggy Company
  *
- * The moment a new parent adds their dog and Mira begins to know them.
- * 10 steps. Never feels like a form. Always feels like a conversation.
+ * 51 questions · 8 chapters · Live soul score ring
+ * Gamified — points, animations, Mira speaks personally
  *
- * PHILOSOPHY:
- *   - Progress shown as "Mira is learning about {petName}" not "Step X of Y"
- *   - Chips > dropdowns > free text
- *   - Every answer shows +pts earned instantly
- *   - Photo upload: drag/drop OR camera on mobile
- *   - Breed selector: search-as-you-type
- *   - Skip always available — adds to incomplete for later
+ * Route: /soul-builder AND /onboarding
+ * After completion: navigate('/pet-home')
  *
- * SOUL SCORE:
- *   welcome(0) photo(15) age(5) personality(15) health(20)
- *   social(10) comfort(10) food(15) training(10) home(5) = 105pts possible
- *
- * API:
- *   POST /api/pets                              — create pet
- *   POST /api/pet-soul/profile/{petId}/answer   — save each answer
- *   POST /api/mira/score-for-pet                — trigger scoring (background)
- *   POST /api/ai-images/pipeline/mira-imagines  — trigger watercolours (background)
- *
- * ROUTE: /onboarding (ProtectedRoute)
- * POST-ONBOARDING: navigate("/pet-home")
+ * API: POST /api/pet-soul/profile/{petId}/answer
+ *      { question_id, answer }
  */
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { usePillarContext } from "../context/PillarContext";
-import { API_URL } from "../utils/api";
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../utils/api';
 
-// ── Colour system ──────────────────────────────────────────────────────
-const G = {
-  deep:     "#0F0A1E",
-  mid:      "#1A1363",
-  purple:   "#9B59B6",
-  pink:     "#E91E8C",
-  gold:     "#C9973A",
-  light:    "#DDD6FE",
-  pale:     "#F5F3FF",
-  muted:    "#6B46C1",
-  text:     "#1A1A2E",
-  sub:      "#64748B",
+// ── Fonts ──────────────────────────────────────────────────────────────────
+const FONTS = `@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');`;
+
+// ── Colors ─────────────────────────────────────────────────────────────────
+const C = {
+  night:   "#0A0A0F",
+  deep:    "#0F0A1E",
+  mid:     "#1A1040",
+  amber:   "#C9973A",
+  amberL:  "#E8B84B",
+  ivory:   "#F5F0E8",
+  muted:   "rgba(245,240,232,0.55)",
+  dim:     "rgba(245,240,232,0.25)",
+  purple:  "#9B59B6",
+  pink:    "#E91E8C",
+  border:  "rgba(255,255,255,0.08)",
+  amberB:  "rgba(201,151,58,0.2)",
 };
-const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
 
-// ── Breed list (search-as-you-type) ────────────────────────────────────
-const BREEDS = [
-  "Labrador Retriever","Golden Retriever","German Shepherd","French Bulldog",
-  "Bulldog","Poodle","Beagle","Rottweiler","German Shorthaired Pointer",
-  "Pembroke Welsh Corgi","Australian Shepherd","Dachshund","Yorkshire Terrier",
-  "Boxer","Siberian Husky","Cavalier King Charles Spaniel","Great Dane",
-  "Miniature Schnauzer","Shih Tzu","Doberman Pinscher","Border Collie",
-  "Bernese Mountain Dog","Pomeranian","Havanese","Shetland Sheepdog",
-  "Cocker Spaniel","Maltese","Chihuahua","Pug","Boston Terrier",
-  "Maltipoo","Goldendoodle","Labradoodle","Cockapoo","Cavapoo",
-  "Sheepadoodle","Bernedoodle","Schnoodle","Puggle","Morkie",
-  "Indian Pariah Dog (Indie)","Rajapalayam","Mudhol Hound","Chippiparai",
-  "Kombai","Bakharwal","Rampur Greyhound","Gaddi Kutta","Spitz",
-  "Lhasa Apso","Tibetan Mastiff","Bichon Frise","Samoyed",
-  "Dalmatian","Weimaraner","Vizsla","Irish Setter","Bloodhound",
-  "Saint Bernard","Newfoundland","Great Pyrenees","Akita","Shiba Inu",
-  "Mixed Breed / Other",
+// ── 51 Questions across 8 chapters ────────────────────────────────────────
+const CHAPTERS = [
+  {
+    id:    "identity",
+    label: "Identity & Temperament",
+    emoji: "\u{1F3AD}",
+    color: "#9B59B6",
+    miraIntro: "Let's start with who {name} really is \u2014 their personality, their spirit.",
+    questions: [
+      {
+        key:   "age_stage",
+        pts:   10,
+        text:  "How old is {name}?",
+        mira:  "\"Age shapes everything \u2014 energy, diet, what Mira recommends.\"",
+        type:  "choice",
+        options: [
+          { label: "Puppy (0\u20131 year)",     value: "puppy",  emoji: "\u{1F436}" },
+          { label: "Young adult (1\u20133 yrs)", value: "young",  emoji: "\u{1F415}" },
+          { label: "Adult (3\u20137 years)",     value: "adult",  emoji: "\u{1F9AE}" },
+          { label: "Senior (7+ years)",     value: "senior", emoji: "\u{1F43E}" },
+        ]
+      },
+      {
+        key:   "gender",
+        pts:   5,
+        text:  "Is {name} a boy or a girl?",
+        mira:  "\"Just so I know how to refer to {name} \u2014 the right pronouns matter.\"",
+        type:  "choice",
+        options: [
+          { label: "Boy",   value: "male",   emoji: "\u{1F499}" },
+          { label: "Girl",  value: "female", emoji: "\u{1F497}" },
+        ]
+      },
+      {
+        key:   "energy_level",
+        pts:   10,
+        text:  "What's {name}'s energy like?",
+        mira:  "\"This tells me what play, walks, and activities will make {name} happiest.\"",
+        type:  "choice",
+        options: [
+          { label: "Very high \u2014 always on", value: "very_high", emoji: "\u26A1" },
+          { label: "High \u2014 loves activity",  value: "high",     emoji: "\u{1F3C3}" },
+          { label: "Medium \u2014 balanced",      value: "medium",   emoji: "\u{1F3AF}" },
+          { label: "Low \u2014 calm and steady",  value: "low",      emoji: "\u{1F33F}" },
+        ]
+      },
+      {
+        key:   "personality_primary",
+        pts:   10,
+        text:  "Which word best describes {name}?",
+        mira:  "\"One word can tell me so much about a dog's soul.\"",
+        type:  "choice",
+        options: [
+          { label: "Playful",    value: "playful",    emoji: "\u{1F3BE}" },
+          { label: "Gentle",     value: "gentle",     emoji: "\u{1F338}" },
+          { label: "Brave",      value: "brave",      emoji: "\u{1F981}" },
+          { label: "Curious",    value: "curious",    emoji: "\u{1F50D}" },
+        ]
+      },
+      {
+        key:   "neutered",
+        pts:   5,
+        text:  "Is {name} spayed or neutered?",
+        mira:  "\"This affects health recommendations and some behaviours I track.\"",
+        type:  "choice",
+        options: [
+          { label: "Yes",        value: "yes", emoji: "\u2713" },
+          { label: "No",         value: "no",  emoji: "\u2717" },
+          { label: "Not sure",   value: "unknown", emoji: "?" },
+        ]
+      },
+      {
+        key:   "weight_range",
+        pts:   5,
+        text:  "How much does {name} weigh?",
+        mira:  "\"Size matters for dosing, treats, and activity recommendations.\"",
+        type:  "choice",
+        options: [
+          { label: "Under 5 kg (Tiny)",  value: "tiny",   emoji: "\u{1F43E}" },
+          { label: "5\u201315 kg (Small)",    value: "small",  emoji: "\u{1F415}" },
+          { label: "15\u201330 kg (Medium)",  value: "medium", emoji: "\u{1F9AE}" },
+          { label: "30+ kg (Large)",     value: "large",  emoji: "\u{1F402}" },
+        ]
+      },
+    ]
+  },
+  {
+    id:    "family",
+    label: "Family & Pack",
+    emoji: "\u{1F468}\u200D\u{1F469}\u200D\u{1F467}\u200D\u{1F466}",
+    color: "#E91E8C",
+    miraIntro: "Tell me about {name}'s world \u2014 the people and animals they love.",
+    questions: [
+      {
+        key:   "social_with_dogs",
+        pts:   10,
+        text:  "How is {name} with other dogs?",
+        mira:  "\"I use this for play dates, boarding, and NearMe \u2014 to keep {name} safe and happy.\"",
+        type:  "choice",
+        options: [
+          { label: "Loves everyone",     value: "social",    emoji: "\u{1F970}" },
+          { label: "Selective",          value: "selective", emoji: "\u{1F914}" },
+          { label: "Can be reactive",    value: "reactive",  emoji: "\u26A0\uFE0F" },
+          { label: "Prefers solo",       value: "solo",      emoji: "\u{1F9D8}" },
+        ]
+      },
+      {
+        key:   "social_with_strangers",
+        pts:   10,
+        text:  "How does {name} react to new people?",
+        mira:  "\"So I know whether Concierge\u00AE should call ahead before a visit.\"",
+        type:  "choice",
+        options: [
+          { label: "Friendly immediately", value: "friendly",  emoji: "\u{1F604}" },
+          { label: "Warms up slowly",      value: "slow_warm", emoji: "\u{1F321}\uFE0F" },
+          { label: "Shy but curious",      value: "shy",       emoji: "\u{1FAE3}" },
+          { label: "Protective",           value: "protective",emoji: "\u{1F6E1}\uFE0F" },
+        ]
+      },
+      {
+        key:   "lives_with_children",
+        pts:   5,
+        text:  "Does {name} live with or spend time with children?",
+        mira:  "\"This shapes which products and services I recommend.\"",
+        type:  "choice",
+        options: [
+          { label: "Yes, regularly",   value: "yes",       emoji: "\u{1F476}" },
+          { label: "Occasionally",     value: "sometimes", emoji: "\u{1F388}" },
+          { label: "No",               value: "no",        emoji: "\u{1F6AB}" },
+        ]
+      },
+      {
+        key:   "lives_with_other_pets",
+        pts:   5,
+        text:  "Are there other pets in {name}'s home?",
+        mira:  "\"A multi-pet home changes what I recommend \u2014 I need to think about the whole pack.\"",
+        type:  "choice",
+        options: [
+          { label: "Other dogs",    value: "dogs",  emoji: "\u{1F415}" },
+          { label: "Cats",          value: "cats",  emoji: "\u{1F431}" },
+          { label: "Both",          value: "both",  emoji: "\u{1F43E}" },
+          { label: "Only child",    value: "none",  emoji: "\u{1F451}" },
+        ]
+      },
+      {
+        key:   "attachment_style",
+        pts:   10,
+        text:  "Is {name} your shadow \u2014 always by your side?",
+        mira:  "\"Velcro dogs need different care than independent ones. I want to know {name}'s attachment style.\"",
+        type:  "choice",
+        options: [
+          { label: "Total velcro dog",    value: "velcro",      emoji: "\u{1F9F2}" },
+          { label: "Loves company",       value: "social",      emoji: "\u{1F49E}" },
+          { label: "Independent",         value: "independent", emoji: "\u{1F5FA}\uFE0F" },
+          { label: "Depends on mood",     value: "mixed",       emoji: "\u{1F3AD}" },
+        ]
+      },
+      {
+        key:   "separation_anxiety",
+        pts:   10,
+        text:  "How does {name} handle being alone?",
+        mira:  "\"Separation anxiety is something I take seriously \u2014 and track carefully.\"",
+        type:  "choice",
+        options: [
+          { label: "Fine \u2014 very calm",     value: "calm",    emoji: "\u{1F60C}" },
+          { label: "A little anxious",     value: "mild",    emoji: "\u{1F61F}" },
+          { label: "Very anxious",         value: "severe",  emoji: "\u{1F630}" },
+          { label: "Hasn't been tested",   value: "unknown", emoji: "\u{1F937}" },
+        ]
+      },
+    ]
+  },
+  {
+    id:    "routine",
+    label: "Rhythm & Routine",
+    emoji: "\u23F0",
+    color: "#1ABC9C",
+    miraIntro: "Every dog has a rhythm. Tell me about {name}'s daily life.",
+    questions: [
+      {
+        key:   "active_time",
+        pts:   10,
+        text:  "When is {name} most active?",
+        mira:  "\"I schedule reminders and Concierge\u00AE check-ins around your dog's natural rhythm.\"",
+        type:  "choice",
+        options: [
+          { label: "Early morning",   value: "early_morning", emoji: "\u{1F305}" },
+          { label: "Morning",         value: "morning",       emoji: "\u2600\uFE0F" },
+          { label: "Evening",         value: "evening",       emoji: "\u{1F306}" },
+          { label: "Night owl",       value: "night",         emoji: "\u{1F319}" },
+        ]
+      },
+      {
+        key:   "walk_frequency",
+        pts:   10,
+        text:  "How many walks does {name} get per day?",
+        mira:  "\"This tells me if {name} needs more enrichment or is well-exercised.\"",
+        type:  "choice",
+        options: [
+          { label: "1 walk",   value: "one",   emoji: "\u{1F9B6}" },
+          { label: "2 walks",  value: "two",   emoji: "\u{1F9B6}\u{1F9B6}" },
+          { label: "3+ walks", value: "three", emoji: "\u{1F3C3}" },
+          { label: "Free roam / garden", value: "free", emoji: "\u{1F33F}" },
+        ]
+      },
+      {
+        key:   "grooming_frequency",
+        pts:   5,
+        text:  "How often does {name} get groomed?",
+        mira:  "\"So I know when to remind you \u2014 and which grooming products fit.\"",
+        type:  "choice",
+        options: [
+          { label: "Weekly",         value: "weekly",    emoji: "\u2702\uFE0F" },
+          { label: "Monthly",        value: "monthly",   emoji: "\u{1F4C5}" },
+          { label: "Every 2 months", value: "bimonthly", emoji: "\u{1F5D3}\uFE0F" },
+          { label: "Rarely",         value: "rarely",    emoji: "\u{1F937}" },
+        ]
+      },
+      {
+        key:   "sleep_location",
+        pts:   5,
+        text:  "Where does {name} sleep?",
+        mira:  "\"Even this tells me something about your bond with {name}.\"",
+        type:  "choice",
+        options: [
+          { label: "On the bed with me",   value: "bed",   emoji: "\u{1F6CF}\uFE0F" },
+          { label: "Own dog bed",          value: "dogbed",emoji: "\u{1FAB9}" },
+          { label: "Crate",                value: "crate", emoji: "\u{1F4E6}" },
+          { label: "Varies",               value: "varies",emoji: "\u{1F3B2}" },
+        ]
+      },
+      {
+        key:   "feeding_schedule",
+        pts:   5,
+        text:  "How many meals a day does {name} eat?",
+        mira:  "\"Feeding schedule matters for digestion, weight, and treat timing.\"",
+        type:  "choice",
+        options: [
+          { label: "Once a day",    value: "once",        emoji: "1\uFE0F\u20E3" },
+          { label: "Twice a day",   value: "twice",       emoji: "2\uFE0F\u20E3" },
+          { label: "Three times",   value: "three_times", emoji: "3\uFE0F\u20E3" },
+          { label: "Free feeding",  value: "free",        emoji: "\u267E\uFE0F" },
+        ]
+      },
+      {
+        key:   "vet_visit_frequency",
+        pts:   10,
+        text:  "How often does {name} visit the vet?",
+        mira:  "\"I'll send reminders and track their health schedule so nothing gets missed.\"",
+        type:  "choice",
+        options: [
+          { label: "Every 6 months",  value: "biannual", emoji: "\u{1F4CB}" },
+          { label: "Once a year",     value: "annual",   emoji: "\u{1F3E5}" },
+          { label: "Only when sick",  value: "as_needed",emoji: "\u{1F912}" },
+          { label: "More frequently", value: "frequent", emoji: "\u{1F489}" },
+        ]
+      },
+      {
+        key:   "car_comfort",
+        pts:   5,
+        text:  "How is {name} in the car?",
+        mira:  "\"Essential for travel recommendations \u2014 and Concierge\u00AE transport bookings.\"",
+        type:  "choice",
+        options: [
+          { label: "Loves it",         value: "loves",    emoji: "\u{1F697}" },
+          { label: "Fine with it",     value: "fine",     emoji: "\u{1F610}" },
+          { label: "Anxious",          value: "anxious",  emoji: "\u{1F61F}" },
+          { label: "Gets car sick",    value: "carsick",  emoji: "\u{1F922}" },
+        ]
+      },
+    ]
+  },
+  {
+    id:    "home",
+    label: "Home Comforts",
+    emoji: "\u{1F3E0}",
+    color: "#E76F51",
+    miraIntro: "Home is where {name}'s soul is. Let me understand their safe space.",
+    questions: [
+      {
+        key:   "home_type",
+        pts:   5,
+        text:  "What kind of home does {name} live in?",
+        mira:  "\"Apartment dogs and garden dogs have very different needs \u2014 I want to tailor everything.\"",
+        type:  "choice",
+        options: [
+          { label: "Apartment",       value: "apartment", emoji: "\u{1F3E2}" },
+          { label: "House with garden",value: "house",    emoji: "\u{1F3E1}" },
+          { label: "Villa / large home",value: "villa",   emoji: "\u{1F3F0}" },
+          { label: "Often moves",     value: "nomadic",   emoji: "\u{1F5FA}\uFE0F" },
+        ]
+      },
+      {
+        key:   "city",
+        pts:   5,
+        text:  "Which city does {name} live in?",
+        mira:  "\"I use this for NearMe searches, local vets, groomers, and events.\"",
+        type:  "choice",
+        options: [
+          { label: "Mumbai",     value: "mumbai",    emoji: "\u{1F30A}" },
+          { label: "Delhi",      value: "delhi",     emoji: "\u{1F3DB}\uFE0F" },
+          { label: "Bangalore",  value: "bangalore", emoji: "\u{1F33F}" },
+          { label: "Other city", value: "other",     emoji: "\u{1F4CD}" },
+        ]
+      },
+      {
+        key:   "fears",
+        pts:   10,
+        text:  "Does {name} have any fears?",
+        mira:  "\"So I never recommend something that could frighten {name}. This is important to me.\"",
+        type:  "choice",
+        options: [
+          { label: "Thunder / loud noises", value: "thunder",   emoji: "\u26C8\uFE0F" },
+          { label: "Fireworks",             value: "fireworks", emoji: "\u{1F386}" },
+          { label: "Strangers",             value: "strangers", emoji: "\u{1F465}" },
+          { label: "No known fears",        value: "none",      emoji: "\u{1F4AA}" },
+        ]
+      },
+      {
+        key:   "favourite_toy",
+        pts:   5,
+        text:  "What's {name}'s favourite type of toy?",
+        mira:  "\"For Play recommendations \u2014 and surprise gifts from Concierge\u00AE.\"",
+        type:  "choice",
+        options: [
+          { label: "Squeaky toys",   value: "squeaky",    emoji: "\u{1F423}" },
+          { label: "Tug ropes",      value: "tug",        emoji: "\u{1FAA2}" },
+          { label: "Puzzle feeders", value: "puzzle",     emoji: "\u{1F9E9}" },
+          { label: "Balls",          value: "ball",       emoji: "\u26BD" },
+        ]
+      },
+      {
+        key:   "indoor_outdoor",
+        pts:   5,
+        text:  "Is {name} more of an indoor or outdoor dog?",
+        mira:  "\"This shapes my recommendations for their whole lifestyle.\"",
+        type:  "choice",
+        options: [
+          { label: "Mostly indoors",      value: "indoor",  emoji: "\u{1F6CB}\uFE0F" },
+          { label: "Loves the outdoors",  value: "outdoor", emoji: "\u{1F332}" },
+          { label: "Both equally",        value: "both",    emoji: "\u{1F504}" },
+        ]
+      },
+    ]
+  },
+  {
+    id:    "travel",
+    label: "Travel Style",
+    emoji: "\u2708\uFE0F",
+    color: "#3498DB",
+    miraIntro: "Does {name} see the world with you? Let's find out.",
+    questions: [
+      {
+        key:   "travel_frequency",
+        pts:   10,
+        text:  "How often does {name} travel with you?",
+        mira:  "\"I'll find pet-friendly hotels, caf\u00E9s, and destinations that actually welcome {name}.\"",
+        type:  "choice",
+        options: [
+          { label: "Often \u2014 every trip",  value: "always",    emoji: "\u2708\uFE0F" },
+          { label: "Short trips only",    value: "sometimes", emoji: "\u{1F697}" },
+          { label: "Rarely",              value: "rarely",    emoji: "\u{1F3E0}" },
+          { label: "Never \u2014 stays home",  value: "never",     emoji: "\u{1F6CB}\uFE0F" },
+        ]
+      },
+      {
+        key:   "travel_style",
+        pts:   10,
+        text:  "What kind of trips do you take with {name}?",
+        mira:  "\"Beach dog or mountain dog? City explorer or nature lover? I want to know.\"",
+        type:  "choice",
+        options: [
+          { label: "Beach / resort",   value: "beach",    emoji: "\u{1F3D6}\uFE0F" },
+          { label: "Mountains / hills",value: "mountains",emoji: "\u26F0\uFE0F" },
+          { label: "City breaks",      value: "city",     emoji: "\u{1F3D9}\uFE0F" },
+          { label: "Countryside",      value: "nature",   emoji: "\u{1F33E}" },
+        ]
+      },
+      {
+        key:   "passport",
+        pts:   5,
+        text:  "Does {name} have a pet passport?",
+        mira:  "\"International travel needs paperwork \u2014 I can help you stay organised.\"",
+        type:  "choice",
+        options: [
+          { label: "Yes",          value: "yes",     emoji: "\u{1F4D8}" },
+          { label: "No",           value: "no",      emoji: "\u2717" },
+          { label: "In progress",  value: "pending", emoji: "\u{1F504}" },
+        ]
+      },
+      {
+        key:   "transport_preference",
+        pts:   5,
+        text:  "How does {name} usually travel?",
+        mira:  "\"So I recommend the right carriers, calming aids, and Concierge\u00AE transport options.\"",
+        type:  "choice",
+        options: [
+          { label: "Car",       value: "car",       emoji: "\u{1F697}" },
+          { label: "Train",     value: "train",     emoji: "\u{1F682}" },
+          { label: "Flight",    value: "flight",    emoji: "\u2708\uFE0F" },
+          { label: "Multiple",  value: "multiple",  emoji: "\u{1F5FA}\uFE0F" },
+        ]
+      },
+    ]
+  },
+  {
+    id:    "food",
+    label: "Taste & Treat",
+    emoji: "\u{1F356}",
+    color: "#E8A045",
+    miraIntro: "This chapter is critical. What {name} eats \u2014 and can't eat \u2014 is the most important thing I need to know.",
+    questions: [
+      {
+        key:   "food_allergies",
+        pts:   15,
+        text:  "Does {name} have any food allergies?",
+        mira:  "\"This is non-negotiable. I will NEVER suggest anything with {name}'s allergens. Ever.\"",
+        type:  "choice",
+        options: [
+          { label: "Chicken",                value: "chicken", emoji: "\u{1F6AB}\u{1F357}" },
+          { label: "Beef",                   value: "beef",    emoji: "\u{1F6AB}\u{1F969}" },
+          { label: "Grain / Gluten",         value: "grain",   emoji: "\u{1F6AB}\u{1F33E}" },
+          { label: "None that I know of",    value: "none",    emoji: "\u2713" },
+        ]
+      },
+      {
+        key:   "diet_type",
+        pts:   10,
+        text:  "What kind of diet is {name} on?",
+        mira:  "\"So every food recommendation fits perfectly.\"",
+        type:  "choice",
+        options: [
+          { label: "Kibble (dry food)",     value: "kibble",  emoji: "\u{1F7E4}" },
+          { label: "Wet / canned food",     value: "wet",     emoji: "\u{1F96B}" },
+          { label: "Raw / BARF diet",       value: "raw",     emoji: "\u{1F969}" },
+          { label: "Home cooked meals",     value: "homemade",emoji: "\u{1F373}" },
+        ]
+      },
+      {
+        key:   "favourite_treat",
+        pts:   10,
+        text:  "What does {name} go absolutely crazy for?",
+        mira:  "\"This is for birthday cakes, rewards, and surprise gifts from Concierge\u00AE.\"",
+        type:  "choice",
+        options: [
+          { label: "Peanut butter",        value: "peanut_butter", emoji: "\u{1F95C}" },
+          { label: "Cheese",               value: "cheese",        emoji: "\u{1F9C0}" },
+          { label: "Meat treats",          value: "meat",          emoji: "\u{1F969}" },
+          { label: "Fruits / vegetables",  value: "fruit_veg",     emoji: "\u{1F955}" },
+        ]
+      },
+      {
+        key:   "special_diet",
+        pts:   10,
+        text:  "Is {name} on any special diet for health reasons?",
+        mira:  "\"Kidney diet, low-fat, diabetic \u2014 these change everything I recommend.\"",
+        type:  "choice",
+        options: [
+          { label: "Grain-free",          value: "grain_free",  emoji: "\u{1F33E}" },
+          { label: "Low fat / cardiac",   value: "low_fat",     emoji: "\u2764\uFE0F" },
+          { label: "Kidney / renal",      value: "renal",       emoji: "\u{1F48A}" },
+          { label: "No special diet",     value: "none",        emoji: "\u2713" },
+        ]
+      },
+      {
+        key:   "treat_frequency",
+        pts:   5,
+        text:  "How often does {name} get treats?",
+        mira:  "\"I won't overwhelm you with treat recommendations if {name} is treat-limited.\"",
+        type:  "choice",
+        options: [
+          { label: "Every day",      value: "daily",     emoji: "\u{1F381}" },
+          { label: "A few times a week", value: "weekly",emoji: "\u{1F4C5}" },
+          { label: "Rarely",         value: "rarely",    emoji: "\u{1F90F}" },
+          { label: "Only for training", value: "training",emoji: "\u{1F393}" },
+        ]
+      },
+      {
+        key:   "water_drinker",
+        pts:   5,
+        text:  "Is {name} a good water drinker?",
+        mira:  "\"Hydration matters especially for seniors and dogs with health conditions.\"",
+        type:  "choice",
+        options: [
+          { label: "Drinks plenty",    value: "good",     emoji: "\u{1F4A7}" },
+          { label: "Average",          value: "average",  emoji: "\u{1FAD7}" },
+          { label: "Needs encouragement", value: "low",   emoji: "\u{1F605}" },
+        ]
+      },
+    ]
+  },
+  {
+    id:    "training",
+    label: "Training & Behaviour",
+    emoji: "\u{1F393}",
+    color: "#7C3AED",
+    miraIntro: "What has {name} learned? What are they still working on? This shapes the whole Learn pillar.",
+    questions: [
+      {
+        key:   "training_level",
+        pts:   10,
+        text:  "How trained is {name}?",
+        mira:  "\"So I know whether to recommend beginner classes or advanced enrichment.\"",
+        type:  "choice",
+        options: [
+          { label: "None yet",          value: "none",     emoji: "\u{1F331}" },
+          { label: "Basic (sit, stay)", value: "basic",    emoji: "\u{1F4DA}" },
+          { label: "Intermediate",      value: "intermediate",emoji:"\u{1F3AF}"},
+          { label: "Advanced",          value: "advanced", emoji: "\u{1F3C6}" },
+        ]
+      },
+      {
+        key:   "training_method",
+        pts:   10,
+        text:  "What training method works best for {name}?",
+        mira:  "\"Every trainer Concierge\u00AE recommends will use your preferred method.\"",
+        type:  "choice",
+        options: [
+          { label: "Positive reinforcement", value: "positive",  emoji: "\u{1F31F}" },
+          { label: "Clicker training",       value: "clicker",   emoji: "\u{1F514}" },
+          { label: "Treat-based",            value: "treats",    emoji: "\u{1F9B4}" },
+          { label: "Not sure yet",           value: "unknown",   emoji: "\u{1F937}" },
+        ]
+      },
+      {
+        key:   "behavioural_challenges",
+        pts:   10,
+        text:  "Does {name} have any behavioural challenges?",
+        mira:  "\"There's no judgment here \u2014 just information so I can help.\"",
+        type:  "choice",
+        options: [
+          { label: "Barking",        value: "barking",  emoji: "\u{1F50A}" },
+          { label: "Pulling on lead",value: "pulling",  emoji: "\u{1F9AE}" },
+          { label: "Jumping up",     value: "jumping",  emoji: "\u2B06\uFE0F" },
+          { label: "None really",    value: "none",     emoji: "\u{1F607}" },
+        ]
+      },
+      {
+        key:   "commands_known",
+        pts:   10,
+        text:  "Which commands does {name} know reliably?",
+        mira:  "\"This tells me exactly where {name} is in their training journey.\"",
+        type:  "choice",
+        options: [
+          { label: "Sit & Stay",              value: "basic",    emoji: "\u{1F64F}" },
+          { label: "Recall (comes when called)", value: "recall",emoji: "\u{1F4E3}" },
+          { label: "5+ commands",             value: "many",     emoji: "\u{1F393}" },
+          { label: "Still learning",          value: "learning", emoji: "\u{1F331}" },
+        ]
+      },
+      {
+        key:   "grooming_comfort",
+        pts:   5,
+        text:  "How does {name} feel about being groomed?",
+        mira:  "\"Anxious groomers need calm, patient handlers \u2014 I'll always flag this.\"",
+        type:  "choice",
+        options: [
+          { label: "Loves it",         value: "loves",   emoji: "\u{1F60D}" },
+          { label: "Tolerates it",     value: "tolerates",emoji:"\u{1F610}"},
+          { label: "Anxious",          value: "anxious", emoji: "\u{1F61F}" },
+          { label: "Needs desensitising", value: "needs_work",emoji:"\u{1F3AF}"},
+        ]
+      },
+      {
+        key:   "vet_comfort",
+        pts:   5,
+        text:  "How is {name} at the vet?",
+        mira:  "\"Vet-anxious dogs need special handling. I'll make sure every vet Concierge\u00AE recommends knows.\"",
+        type:  "choice",
+        options: [
+          { label: "Calm and cooperative", value: "calm",    emoji: "\u{1F60C}" },
+          { label: "A little nervous",     value: "nervous", emoji: "\u{1F61F}" },
+          { label: "Very anxious",         value: "anxious", emoji: "\u{1F630}" },
+          { label: "Needs sedation",       value: "sedation",emoji: "\u{1F48A}" },
+        ]
+      },
+    ]
+  },
+  {
+    id:    "horizon",
+    label: "Long Horizon",
+    emoji: "\u{1F305}",
+    color: "#C9973A",
+    miraIntro: "Last chapter. These questions help me think about {name}'s future \u2014 not just today.",
+    questions: [
+      {
+        key:   "birthday_quarter",
+        pts:   15,
+        text:  "When is {name}'s birthday?",
+        mira:  "\"I'll remind you 7 days before with cake ideas {name} can actually eat. I'll never forget it.\"",
+        type:  "choice",
+        options: [
+          { label: "January \u2013 March",    value: "q1", emoji: "\u2744\uFE0F" },
+          { label: "April \u2013 June",       value: "q2", emoji: "\u{1F338}" },
+          { label: "July \u2013 September",   value: "q3", emoji: "\u2600\uFE0F" },
+          { label: "October \u2013 December", value: "q4", emoji: "\u{1F342}" },
+        ]
+      },
+      {
+        key:   "health_conditions",
+        pts:   15,
+        text:  "Does {name} have any ongoing health conditions?",
+        mira:  "\"This is the most important health question. I'll make sure every recommendation respects {name}'s condition.\"",
+        type:  "choice",
+        options: [
+          { label: "Joint / arthritis",   value: "joints",   emoji: "\u{1F9B4}" },
+          { label: "Skin conditions",     value: "skin",     emoji: "\u{1FA79}" },
+          { label: "Heart / organ",       value: "cardiac",  emoji: "\u2764\uFE0F" },
+          { label: "Healthy \u2014 no issues", value: "healthy",  emoji: "\u{1F4AA}" },
+        ]
+      },
+      {
+        key:   "insurance",
+        pts:   5,
+        text:  "Does {name} have pet insurance?",
+        mira:  "\"If not, I can connect you with Concierge\u00AE to explore options.\"",
+        type:  "choice",
+        options: [
+          { label: "Yes",              value: "yes",     emoji: "\u2713" },
+          { label: "No",               value: "no",      emoji: "\u2717" },
+          { label: "Considering it",   value: "pending", emoji: "\u{1F914}" },
+        ]
+      },
+      {
+        key:   "adoption_story",
+        pts:   5,
+        text:  "How did {name} come into your life?",
+        mira:  "\"Every story matters. Rescues often need different care \u2014 I want to know {name}'s beginning.\"",
+        type:  "choice",
+        options: [
+          { label: "Adopted / rescued", value: "adopted",  emoji: "\u{1F43E}" },
+          { label: "Breeder",           value: "breeder",  emoji: "\u{1F3E0}" },
+          { label: "Friend / family",   value: "gifted",   emoji: "\u{1F381}" },
+          { label: "Stray I found",     value: "stray",    emoji: "\u{1F31F}" },
+        ]
+      },
+      {
+        key:   "goals",
+        pts:   10,
+        text:  "What's your biggest goal for {name} this year?",
+        mira:  "\"This tells me what to prioritise \u2014 health, happiness, training, or adventures.\"",
+        type:  "choice",
+        options: [
+          { label: "Better health",      value: "health",    emoji: "\u{1F4AA}" },
+          { label: "More socialisation", value: "social",    emoji: "\u{1F415}" },
+          { label: "Travel together",    value: "travel",    emoji: "\u2708\uFE0F" },
+          { label: "More joy and play",  value: "happiness", emoji: "\u{1F3BE}" },
+        ]
+      },
+    ]
+  },
 ];
 
-// ── Step config ────────────────────────────────────────────────────────
-const STEPS = [
-  { id:"welcome",     pts:0,  chapter:"Identity",   label:"Let's meet them" },
-  { id:"photo",       pts:15, chapter:"Identity",   label:"A face to the name" },
-  { id:"age",         pts:5,  chapter:"Identity",   label:"Life stage" },
-  { id:"personality", pts:15, chapter:"Behaviour",  label:"Who they are" },
-  { id:"health",      pts:20, chapter:"Health",     label:"Health & care" },
-  { id:"social",      pts:10, chapter:"Social",     label:"Their world" },
-  { id:"comfort",     pts:10, chapter:"Behaviour",  label:"What they love" },
-  { id:"food",        pts:15, chapter:"Nutrition",  label:"How they eat" },
-  { id:"training",    pts:10, chapter:"Learning",   label:"What they know" },
-  { id:"home",        pts:5,  chapter:"Identity",   label:"Where they live" },
-];
+// ── Flatten all questions ──────────────────────────────────────────────────
+const ALL_QUESTIONS = [];
+CHAPTERS.forEach((ch, ci) => {
+  ch.questions.forEach((q, qi) => {
+    ALL_QUESTIONS.push({ ...q, chapterIdx: ci, chapterLabel: ch.label, chapterEmoji: ch.emoji, chapterColor: ch.color, chapterMiraIntro: ch.miraIntro });
+  });
+});
+const TOTAL_PTS = ALL_QUESTIONS.reduce((s, q) => s + q.pts, 0);
 
-// ── Chip component ─────────────────────────────────────────────────────
-function Chip({ label, selected, onToggle, colour = G.purple, emoji }) {
-  return (
-    <button
-      onClick={onToggle}
-      style={{
-        padding: "8px 16px",
-        borderRadius: 999,
-        border: `1.5px solid ${selected ? colour : "rgba(107,70,193,0.25)"}`,
-        background: selected ? colour : "#fff",
-        color: selected ? "#fff" : G.text,
-        fontSize: 13, fontWeight: selected ? 700 : 400,
-        cursor: "pointer", transition: "all 0.15s",
-        display: "flex", alignItems: "center", gap: 6,
-      }}
-    >
-      {emoji && <span style={{ fontSize: 15 }}>{emoji}</span>}
-      {label}
-    </button>
-  );
-}
+// ── Glass orb CSS ─────────────────────────────────────────────────────────
+const ORB_CSS = `
+  .mira-orb {
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%,rgba(255,255,255,0.55) 0%,rgba(200,150,255,0.35) 35%,rgba(155,89,182,0.6) 65%,rgba(100,40,140,0.8) 100%);
+    box-shadow: inset 0 -3px 8px rgba(0,0,0,0.25),inset 0 2px 4px rgba(255,255,255,0.6),0 4px 24px rgba(155,89,182,0.6);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.95); position: relative; flex-shrink: 0;
+  }
+  .mira-orb::after {
+    content: ''; position: absolute; top: 22%; left: 26%;
+    width: 28%; height: 18%; background: rgba(255,255,255,0.7);
+    border-radius: 50%; transform: rotate(-30deg);
+  }
+  .soul-opt {
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 14px; padding: 14px 16px;
+    cursor: pointer; transition: all 0.2s;
+    color: #F5F0E8; font-family: 'DM Sans', sans-serif;
+    text-align: left; width: 100%;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .soul-opt:hover { background: rgba(155,89,182,0.15); border-color: rgba(155,89,182,0.4); }
+  .soul-opt.sel { background: rgba(155,89,182,0.25); border-color: #9B59B6; }
+  .soul-opt .opt-check {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.2s;
+  }
+  .soul-opt.sel .opt-check {
+    background: #9B59B6; border-color: #9B59B6;
+  }
+  .pts-pop {
+    position: fixed; top: 30%; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(201,151,58,0.95);
+    color: #0A0A0F; font-weight: 700; font-size: 18px;
+    padding: 8px 20px; border-radius: 999px;
+    animation: ptsAnim 1.2s ease forwards;
+    pointer-events: none; z-index: 9999;
+  }
+  @keyframes ptsAnim {
+    0%   { opacity:1; transform:translateX(-50%) translateY(0) scale(1); }
+    60%  { opacity:1; transform:translateX(-50%) translateY(-30px) scale(1.1); }
+    100% { opacity:0; transform:translateX(-50%) translateY(-60px) scale(0.9); }
+  }
+  @keyframes orbPulse {
+    0%,100% { box-shadow:inset 0 -3px 8px rgba(0,0,0,0.25),inset 0 2px 4px rgba(255,255,255,0.6),0 4px 24px rgba(155,89,182,0.6); }
+    50%     { box-shadow:inset 0 -3px 8px rgba(0,0,0,0.25),inset 0 2px 4px rgba(255,255,255,0.6),0 8px 48px rgba(155,89,182,0.9); }
+  }
+  @keyframes slideIn {
+    from { opacity:0; transform:translateX(24px); }
+    to   { opacity:1; transform:translateX(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(16px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes celebPop {
+    0%  { transform:scale(0.8); opacity:0; }
+    60% { transform:scale(1.05); }
+    100%{ transform:scale(1); opacity:1; }
+  }
+`;
 
-// ── Soul Growth Card — gamified progress with glowing score ──────────
-function SoulGrowthCard({ step, totalSteps, petName, ptsEarned, chapter }) {
-  const pct = Math.round((step / totalSteps) * 100);
-  const maxPts = STEPS.reduce((s, st) => s + st.pts, 0);
-  const scorePct = maxPts > 0 ? Math.min(Math.round((ptsEarned / maxPts) * 100), 100) : 0;
-
-  // Mira encouragements based on progress
-  const miraMessage = 
-    step === 0 ? `Every soul has a story. Let's begin ${petName}'s.` :
-    step === 1 ? `A face makes everything real. Mira sees ${petName} now.` :
-    step <= 3 ? `Mira is starting to feel ${petName}'s energy...` :
-    step <= 5 ? `The soul is taking shape. ${petName}'s profile is growing.` :
-    step <= 7 ? `Mira knows ${petName} better than most humans do now.` :
-    step <= 9 ? `Almost there. ${petName}'s soul profile is nearly complete.` :
-    `${petName}'s soul is fully known to Mira.`;
-
-  // Glow intensity increases with progress
-  const glowColor = scorePct < 30 ? 'rgba(155,89,182,0.3)' 
-    : scorePct < 60 ? 'rgba(155,89,182,0.5)' 
-    : 'rgba(201,151,58,0.6)';
-  const ringColor = scorePct < 30 ? '#9B59B6' 
-    : scorePct < 60 ? '#8E44AD' 
-    : '#C9973A';
-
-  // SVG arc calculation
-  const radius = 52;
-  const circumference = 2 * Math.PI * radius;
-  const dashOffset = circumference - (scorePct / 100) * circumference;
-
-  return (
-    <div style={{
-      background: 'linear-gradient(135deg, #0F0A1E, #1A1040)',
-      borderRadius: 20,
-      padding: '20px 16px',
-      marginBottom: 24,
-      textAlign: 'center',
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
-      {/* Ambient glow */}
-      <div style={{
-        position: 'absolute', top: '50%', left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 160, height: 160, borderRadius: '50%',
-        background: `radial-gradient(circle, ${glowColor}, transparent 70%)`,
-        filter: 'blur(20px)',
-        transition: 'all 0.6s ease',
-        pointerEvents: 'none',
-      }} />
-
-      {/* Soul Ring */}
-      <div style={{ position: 'relative', display: 'inline-block', marginBottom: 12 }}>
-        <svg width="128" height="128" viewBox="0 0 128 128" style={{ transform: 'rotate(-90deg)' }}>
-          {/* Background ring */}
-          <circle cx="64" cy="64" r={radius} fill="none" 
-            stroke="rgba(155,89,182,0.15)" strokeWidth="8" />
-          {/* Progress ring */}
-          <circle cx="64" cy="64" r={radius} fill="none"
-            stroke={ringColor} strokeWidth="8"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={dashOffset}
-            style={{ 
-              transition: 'stroke-dashoffset 0.8s ease, stroke 0.4s ease',
-              filter: `drop-shadow(0 0 6px ${glowColor})`,
-            }}
-          />
-        </svg>
-        {/* Score in center */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center',
-        }}>
-          <div style={{
-            fontSize: 32, fontWeight: 900,
-            background: ptsEarned > 0 
-              ? 'linear-gradient(135deg, #E8D5B7, #C9973A, #F5E6CC)' 
-              : 'linear-gradient(135deg, #9B59B6, #8E44AD)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            lineHeight: 1,
-            filter: ptsEarned > 0 ? `drop-shadow(0 0 8px ${glowColor})` : 'none',
-            transition: 'all 0.4s ease',
-          }}>
-            {ptsEarned}
-          </div>
-          <div style={{
-            fontSize: 10, fontWeight: 600,
-            color: 'rgba(245,240,232,0.5)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            marginTop: 2,
-          }}>
-            soul pts
-          </div>
-        </div>
-      </div>
-
-      {/* Mira message */}
-      <div style={{
-        fontSize: 13, fontWeight: 500,
-        color: 'rgba(245,240,232,0.7)',
-        fontStyle: 'italic',
-        lineHeight: 1.5,
-        maxWidth: 280, margin: '0 auto 12px',
-        transition: 'all 0.3s ease',
-      }}>
-        "{miraMessage}"
-      </div>
-
-      {/* Step progress bar */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        justifyContent: 'center',
-      }}>
-        <span style={{ fontSize: 10, fontWeight: 600, color: 'rgba(245,240,232,0.4)' }}>
-          {step + 1}/{totalSteps}
-        </span>
-        <div style={{
-          flex: 1, maxWidth: 160, height: 4, borderRadius: 999,
-          background: 'rgba(155,89,182,0.2)',
-          overflow: 'hidden',
-        }}>
-          <div style={{
-            height: '100%', borderRadius: 999,
-            background: 'linear-gradient(90deg, #9B59B6, #C9973A)',
-            width: `${pct}%`,
-            transition: 'width 0.4s ease',
-          }} />
-        </div>
-        <span style={{ fontSize: 10, fontWeight: 600, color: 'rgba(245,240,232,0.4)' }}>
-          {chapter}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-// ── +pts flash ─────────────────────────────────────────────────────────
-function PtsFlash({ pts, show }) {
-  if (!show || !pts) return null;
-  return (
-    <div style={{
-      position: "fixed", top: "50%", left: "50%",
-      transform: "translate(-50%,-50%)",
-      background: MIRA_ORB,
-      borderRadius: 20, padding: "10px 24px",
-      fontSize: 20, fontWeight: 900, color: "#fff",
-      zIndex: 9999,
-      animation: "fadeUp 0.8s ease forwards",
-      pointerEvents: "none",
-    }}>
-      +{pts} pts
-      <style>{`
-        @keyframes fadeUp {
-          0%   { opacity:1; transform:translate(-50%,-50%) scale(1); }
-          100% { opacity:0; transform:translate(-50%,-80%) scale(1.2); }
-        }
-      `}</style>
-    </div>
-  );
-}
-
-// ── Breed selector ─────────────────────────────────────────────────────
-function BreedSelector({ value, onChange }) {
-  const [query, setQuery]       = useState(value || "");
-  const [open,  setOpen]        = useState(false);
-  const [results, setResults]   = useState([]);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    if (query.length < 1) { setResults([]); return; }
-    const q = query.toLowerCase().replace(/\s+/g, '');
-    const scored = BREEDS.map(b => {
-      const bn = b.toLowerCase();
-      const bnc = bn.replace(/\s+/g, '');
-      // Tiered smart matching
-      if (bn === q || bnc === q) return { b, s: 100 };
-      if (bn.startsWith(query.toLowerCase()) || bnc.startsWith(q)) return { b, s: 95 };
-      if (bn.includes(query.toLowerCase()) || bnc.includes(q)) return { b, s: 80 };
-      // Word-start: "frenchbull" → "French Bulldog", "german" → "German Shepherd"
-      const words = bn.split(' ');
-      if (words.some(w => w.startsWith(q.slice(0, Math.min(4, q.length))))) return { b, s: 65 };
-      // Typo tolerance: allow 1 char off for queries ≥4 chars
-      if (q.length >= 4) {
-        for (let i = 0; i < bnc.length - q.length + 1; i++) {
-          const chunk = bnc.slice(i, i + q.length);
-          let diffs = 0;
-          for (let j = 0; j < q.length; j++) if (chunk[j] !== q[j]) diffs++;
-          if (diffs <= 1) return { b, s: 50 };
-        }
-      }
-      return { b, s: 0 };
-    }).filter(x => x.s > 0).sort((a, b) => b.s - a.s);
-    setResults(scored.slice(0, 8).map(x => x.b));
-  }, [query]);
-
-  useEffect(() => {
-    const handler = e => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  return (
-    <div ref={ref} style={{ position: "relative" }}>
-      <input
-        value={query}
-        onChange={e => { setQuery(e.target.value); setOpen(true); onChange(""); }}
-        onFocus={() => setOpen(true)}
-        placeholder="Search breed… e.g. Labrador, Indie, Maltipoo"
-        style={{
-          width: "100%", padding: "14px 16px",
-          borderRadius: 12, fontSize: 15,
-          border: `2px solid ${query ? G.purple : "rgba(107,70,193,0.25)"}`,
-          outline: "none", boxSizing: "border-box",
-          color: G.text, background: "#fff",
-        }}
-      />
-      {open && results.length > 0 && (
-        <div style={{
-          position: "absolute", top: "100%", left: 0, right: 0,
-          zIndex: 100, background: "#fff",
-          border: `1.5px solid rgba(107,70,193,0.2)`,
-          borderRadius: 12, boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-          marginTop: 4, overflow: "hidden",
-        }}>
-          {results.map(b => (
-            <div
-              key={b}
-              onClick={() => { setQuery(b); onChange(b); setOpen(false); }}
-              style={{
-                padding: "12px 16px", fontSize: 14,
-                cursor: "pointer", color: G.text,
-                borderBottom: "1px solid rgba(107,70,193,0.08)",
-                transition: "background 0.1s",
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = G.pale}
-              onMouseLeave={e => e.currentTarget.style.background = "#fff"}
-            >
-              🐾 {b}
-            </div>
-          ))}
-        </div>
-      )}
-      {value && (
-        <div style={{
-          marginTop: 8, display: "flex", alignItems: "center", gap: 8,
-          background: G.pale, borderRadius: 10, padding: "8px 12px",
-        }}>
-          <span style={{ fontSize: 13, color: G.purple, fontWeight: 600 }}>
-            ✓ {value}
-          </span>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── Photo uploader ─────────────────────────────────────────────────────
-function PhotoUploader({ petName, onPhoto }) {
-  const [preview, setPreview] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [dragOver, setDragOver] = useState(false);
-  const inputRef = useRef(null);
-
-  const handleFile = async (file) => {
-    if (!file || !file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onload = e => setPreview(e.target.result);
-    reader.readAsDataURL(file);
-    setUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await fetch(`${API_URL}/api/upload/pet-photo`, {
-        method: "POST", body: formData,
-      });
-      if (res.ok) {
-        const data = await res.json();
-        onPhoto(data.url || data.photo_url);
-      }
-    } catch(e) {
-      // Still show preview even if upload fails
-      onPhoto(preview);
-    }
-    setUploading(false);
-  };
-
-  return (
-    <div>
-      <div
-        onClick={() => inputRef.current?.click()}
-        onDrop={e => { e.preventDefault(); setDragOver(false); handleFile(e.dataTransfer.files[0]); }}
-        onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-        onDragLeave={() => setDragOver(false)}
-        style={{
-          border: `2px dashed ${dragOver ? G.purple : "rgba(107,70,193,0.30)"}`,
-          borderRadius: 16,
-          padding: preview ? "0" : "40px 20px",
-          textAlign: "center",
-          cursor: "pointer",
-          background: dragOver ? G.pale : "#fafafa",
-          transition: "all 0.2s",
-          overflow: "hidden",
-          minHeight: preview ? 220 : "auto",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {preview ? (
-          <img src={preview} alt={petName}
-            style={{ width: "100%", maxHeight: 280, objectFit: "cover", borderRadius: 14 }}/>
-        ) : (
-          <div>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>📸</div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: G.text, marginBottom: 6 }}>
-              Upload {petName ? `${petName}'s` : "a"} photo
-            </div>
-            <div style={{ fontSize: 13, color: G.sub }}>
-              Drag & drop or tap to choose
-            </div>
-            <div style={{ fontSize: 12, color: G.sub, marginTop: 4 }}>
-              or use your camera on mobile
-            </div>
-          </div>
-        )}
-      </div>
-      <input
-        ref={inputRef} type="file" accept="image/*" capture="environment"
-        style={{ display: "none" }}
-        onChange={e => handleFile(e.target.files[0])}
-      />
-      {uploading && (
-        <div style={{ textAlign: "center", marginTop: 10, fontSize: 12, color: G.muted }}>
-          Uploading…
-        </div>
-      )}
-      {preview && (
-        <button
-          onClick={() => { setPreview(null); onPhoto(null); }}
-          style={{
-            marginTop: 10, width: "100%", padding: "8px",
-            borderRadius: 10, background: "none",
-            border: "1px solid rgba(107,70,193,0.25)",
-            color: G.muted, fontSize: 12, cursor: "pointer",
-          }}
-        >
-          Choose a different photo
-        </button>
-      )}
-    </div>
-  );
-}
-
-// ── Individual step renderers ──────────────────────────────────────────
-
-function StepWelcome({ data, onChange }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <div>
-        <label style={{ fontSize: 13, fontWeight: 600, color: G.muted, display: "block", marginBottom: 8 }}>
-          What's their name?
-        </label>
-        <input
-          value={data.name || ""}
-          onChange={e => onChange({ ...data, name: e.target.value })}
-          placeholder="e.g. Mojo, Luna, Bruno…"
-          style={{
-            width: "100%", padding: "14px 16px", borderRadius: 12,
-            fontSize: 18, fontWeight: 600,
-            border: `2px solid ${data.name ? G.purple : "rgba(107,70,193,0.25)"}`,
-            outline: "none", boxSizing: "border-box", color: G.text,
-          }}
-        />
-      </div>
-      <div>
-        <label style={{ fontSize: 13, fontWeight: 600, color: G.muted, display: "block", marginBottom: 8 }}>
-          What breed are they?
-        </label>
-        <BreedSelector value={data.breed || ""} onChange={breed => onChange({ ...data, breed })}/>
-      </div>
-      <div>
-        <label style={{ fontSize: 13, fontWeight: 600, color: G.muted, display: "block", marginBottom: 8 }}>
-          Date of birth (or approximate)
-        </label>
-        <input
-          type="date"
-          value={data.dob || ""}
-          onChange={e => onChange({ ...data, dob: e.target.value })}
-          style={{
-            width: "100%", padding: "14px 16px", borderRadius: 12,
-            fontSize: 14, border: `2px solid ${data.dob ? G.purple : "rgba(107,70,193,0.25)"}`,
-            outline: "none", boxSizing: "border-box", color: G.text,
-          }}
-        />
-        <div style={{ fontSize: 12, color: G.sub, marginTop: 6 }}>
-          Don't know exactly? Just pick a rough date — Mira uses this for life stage, not birthdays.
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function StepPhoto({ data, onChange, petName }) {
-  return (
-    <div>
-      <div style={{
-        background: G.pale, borderRadius: 12, padding: "12px 16px",
-        marginBottom: 20, fontSize: 13, color: G.muted, lineHeight: 1.6,
-        fontStyle: "italic",
-      }}>
-        ✦ A photo adds 15 soul points — Mira uses it to personalise {petName || "their"} profile and generate breed-specific illustrations.
-      </div>
-      <PhotoUploader petName={petName} onPhoto={url => onChange({ ...data, photo_url: url })}/>
-    </div>
-  );
-}
-
-function StepAge({ data, onChange, petName }) {
-  const AGE_OPTIONS = [
-    { id:"puppy",  label:"Puppy",  sub:"Under 1 year",     emoji:"🐶" },
-    { id:"young",  label:"Young",  sub:"1–3 years",         emoji:"⚡" },
-    { id:"adult",  label:"Adult",  sub:"3–7 years",         emoji:"🌿" },
-    { id:"senior", label:"Senior", sub:"7+ years",          emoji:"🌷" },
-  ];
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-      {AGE_OPTIONS.map(opt => (
-        <div
-          key={opt.id}
-          onClick={() => onChange({ ...data, age_stage: opt.id })}
-          style={{
-            borderRadius: 14, padding: "20px 16px", textAlign: "center",
-            border: `2px solid ${data.age_stage === opt.id ? G.purple : "rgba(107,70,193,0.20)"}`,
-            background: data.age_stage === opt.id ? G.pale : "#fff",
-            cursor: "pointer", transition: "all 0.15s",
-          }}
-        >
-          <div style={{ fontSize: 36, marginBottom: 8 }}>{opt.emoji}</div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: G.text, marginBottom: 4 }}>{opt.label}</div>
-          <div style={{ fontSize: 12, color: G.sub }}>{opt.sub}</div>
-          {opt.id === "senior" && (
-            <div style={{ fontSize: 10, color: G.purple, marginTop: 6, fontStyle: "italic" }}>
-              Mira gives extra care to seniors 🌷
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function StepPersonality({ data, onChange, petName }) {
-  const ENERGY = [
-    { id:"couch",    label:"Couch potato",     emoji:"🛋️" },
-    { id:"moderate", label:"Moderate",          emoji:"🚶" },
-    { id:"active",   label:"Active & playful",  emoji:"🎾" },
-    { id:"intense",  label:"Non-stop energy",   emoji:"⚡" },
-  ];
-  const PERSONALITY = [
-    { id:"loyal",      label:"Deeply loyal",     emoji:"💛" },
-    { id:"social",     label:"Social butterfly",  emoji:"🦋" },
-    { id:"shy",        label:"Shy & gentle",      emoji:"🌸" },
-    { id:"curious",    label:"Always curious",    emoji:"🔍" },
-    { id:"stubborn",   label:"Strong-willed",     emoji:"💪" },
-    { id:"gentle",     label:"Calm & gentle",     emoji:"🕊️" },
-    { id:"playful",    label:"Loves to play",     emoji:"🎉" },
-    { id:"protective", label:"Protective",        emoji:"🛡️" },
-  ];
-
-  const togglePersonality = (id) => {
-    const current = data.personality || [];
-    const updated = current.includes(id) ? current.filter(x => x !== id) : [...current, id];
-    onChange({ ...data, personality: updated });
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: G.text, marginBottom: 12 }}>
-          How would you describe {petName || "their"} energy?
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-          {ENERGY.map(opt => (
-            <div
-              key={opt.id}
-              onClick={() => onChange({ ...data, energy: opt.id })}
-              style={{
-                borderRadius: 12, padding: "14px 16px",
-                border: `2px solid ${data.energy === opt.id ? G.purple : "rgba(107,70,193,0.20)"}`,
-                background: data.energy === opt.id ? G.pale : "#fff",
-                cursor: "pointer", transition: "all 0.15s",
-                display: "flex", alignItems: "center", gap: 10,
-              }}
-            >
-              <span style={{ fontSize: 20 }}>{opt.emoji}</span>
-              <span style={{ fontSize: 13, fontWeight: data.energy === opt.id ? 700 : 400, color: G.text }}>
-                {opt.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: G.text, marginBottom: 4 }}>
-          Their personality (pick all that fit)
-        </div>
-        <div style={{ fontSize: 12, color: G.sub, marginBottom: 12 }}>
-          Mira uses this to personalise her tone and recommendations.
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {PERSONALITY.map(opt => (
-            <Chip
-              key={opt.id}
-              label={opt.label}
-              emoji={opt.emoji}
-              selected={(data.personality || []).includes(opt.id)}
-              onToggle={() => togglePersonality(opt.id)}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function StepHealth({ data, onChange, petName }) {
-  const CONDITIONS = [
-    { id:"none",       label:"All healthy",         emoji:"✅" },
-    { id:"allergies",  label:"Skin allergies",       emoji:"🌿" },
-    { id:"food_allergy",label:"Food allergies",      emoji:"🍖" },
-    { id:"joint",      label:"Joint / mobility",     emoji:"🦴" },
-    { id:"heart",      label:"Heart condition",      emoji:"❤️" },
-    { id:"dental",     label:"Dental issues",        emoji:"🦷" },
-    { id:"eyes",       label:"Eye condition",        emoji:"👁️" },
-    { id:"anxiety",    label:"Anxiety / fear",       emoji:"🌸" },
-    { id:"digestive",  label:"Digestive sensitivity",emoji:"🥗" },
-    { id:"weight",     label:"Weight management",    emoji:"⚖️" },
-    { id:"senior_care",label:"Senior care needs",    emoji:"🌷" },
-    { id:"other",      label:"Other condition",      emoji:"📋" },
-  ];
-  const ALLERGIES = [
-    "Chicken","Beef","Soy","Wheat/Gluten","Dairy","Eggs",
-    "Fish","Corn","None known",
-  ];
-
-  const toggleCondition = (id) => {
-    if (id === "none") { onChange({ ...data, conditions: ["none"] }); return; }
-    const current = (data.conditions || []).filter(x => x !== "none");
-    const updated = current.includes(id) ? current.filter(x => x !== id) : [...current, id];
-    onChange({ ...data, conditions: updated });
-  };
-  const toggleAllergy = (a) => {
-    const current = data.food_allergies || [];
-    const updated = current.includes(a) ? current.filter(x => x !== a) : [...current, a];
-    onChange({ ...data, food_allergies: updated });
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: G.text, marginBottom: 4 }}>
-          Any health conditions? (select all that apply)
-        </div>
-        <div style={{ fontSize: 12, color: G.sub, marginBottom: 12 }}>
-          Mira uses this to filter products and flag what to avoid.
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {CONDITIONS.map(opt => (
-            <Chip
-              key={opt.id}
-              label={opt.label}
-              emoji={opt.emoji}
-              selected={(data.conditions || []).includes(opt.id)}
-              onToggle={() => toggleCondition(opt.id)}
-              colour={opt.id === "none" ? "#16A34A" : G.purple}
-            />
-          ))}
-        </div>
-      </div>
-      <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: G.text, marginBottom: 12 }}>
-          Any known food allergies?
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {ALLERGIES.map(a => (
-            <Chip
-              key={a} label={a}
-              selected={(data.food_allergies || []).includes(a)}
-              onToggle={() => toggleAllergy(a)}
-              colour={a === "None known" ? "#16A34A" : "#DC2626"}
-            />
-          ))}
-        </div>
-      </div>
-      <div style={{
-        background: "#FFF8E7", border: "1px solid rgba(201,151,58,0.30)",
-        borderRadius: 10, padding: "10px 14px",
-        fontSize: 12, color: "#7B3F00", lineHeight: 1.5,
-      }}>
-        ✦ Mira will never suggest products containing {petName || "their"}'s allergens — ever.
-      </div>
-    </div>
-  );
-}
-
-function StepSocial({ data, onChange, petName }) {
-  const OTHERS = [
-    { id:"only_dog",    label:`${petName || "They"}'re the only dog`, emoji:"👑" },
-    { id:"multi_dog",   label:"Lives with other dogs",                 emoji:"🐕🐕" },
-    { id:"cats_too",    label:"Lives with cats too",                   emoji:"🐕🐈" },
-    { id:"kids_home",   label:"Kids at home",                          emoji:"👶" },
-    { id:"calm_home",   label:"Calm, quiet household",                 emoji:"🏠" },
-  ];
-  const SOCIAL = [
-    { id:"loves_all",  label:"Loves everyone",    emoji:"🤗" },
-    { id:"selective",  label:"Selective with dogs",emoji:"🤔" },
-    { id:"shy_people", label:"Shy with strangers", emoji:"😶" },
-    { id:"reactive",   label:"Can be reactive",    emoji:"⚡" },
-    { id:"confident",  label:"Confident & social", emoji:"💪" },
-  ];
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: G.text, marginBottom: 12 }}>
-          Who else is in {petName || "their"}'s world?
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {OTHERS.map(opt => (
-            <Chip key={opt.id} label={opt.label} emoji={opt.emoji}
-              selected={(data.household || []).includes(opt.id)}
-              onToggle={() => {
-                const c = data.household || [];
-                onChange({ ...data, household: c.includes(opt.id) ? c.filter(x=>x!==opt.id) : [...c, opt.id] });
-              }}/>
-          ))}
-        </div>
-      </div>
-      <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: G.text, marginBottom: 12 }}>
-          How do they behave socially?
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {SOCIAL.map(opt => (
-            <Chip key={opt.id} label={opt.label} emoji={opt.emoji}
-              selected={data.social_style === opt.id}
-              onToggle={() => onChange({ ...data, social_style: opt.id })}/>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function StepComfort({ data, onChange, petName }) {
-  const ACTIVITIES = [
-    { id:"fetch",    label:"Fetch",          emoji:"🎾" },
-    { id:"walks",    label:"Long walks",     emoji:"🚶" },
-    { id:"swim",     label:"Swimming",       emoji:"🏊" },
-    { id:"cuddles",  label:"Cuddles",        emoji:"🤗" },
-    { id:"toys",     label:"Chewing toys",   emoji:"🦴" },
-    { id:"training", label:"Learning tricks",emoji:"🎓" },
-    { id:"sniffing", label:"Sniff walks",    emoji:"👃" },
-    { id:"car",      label:"Car rides",      emoji:"🚗" },
-    { id:"people",   label:"Meeting people", emoji:"👋" },
-  ];
-  const FEARS = [
-    { id:"none",      label:"No major fears",   emoji:"✅" },
-    { id:"loud",      label:"Loud sounds",       emoji:"🔊" },
-    { id:"strangers", label:"Strangers",         emoji:"👤" },
-    { id:"vet",       label:"Vet visits",        emoji:"🏥" },
-    { id:"car",       label:"Car rides",         emoji:"🚗" },
-    { id:"alone",     label:"Being left alone",  emoji:"😢" },
-    { id:"other_dogs",label:"Other dogs",        emoji:"🐕" },
-  ];
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: G.text, marginBottom: 12 }}>
-          What does {petName || "your dog"} absolutely love?
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {ACTIVITIES.map(opt => (
-            <Chip key={opt.id} label={opt.label} emoji={opt.emoji}
-              selected={(data.loves || []).includes(opt.id)}
-              onToggle={() => {
-                const c = data.loves || [];
-                onChange({ ...data, loves: c.includes(opt.id) ? c.filter(x=>x!==opt.id) : [...c, opt.id] });
-              }}/>
-          ))}
-        </div>
-      </div>
-      <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: G.text, marginBottom: 12 }}>
-          Any fears or anxieties?
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {FEARS.map(opt => (
-            <Chip key={opt.id} label={opt.label} emoji={opt.emoji}
-              selected={(data.fears || []).includes(opt.id)}
-              onToggle={() => {
-                const c = (data.fears || []).filter(x => x !== "none");
-                if (opt.id === "none") { onChange({ ...data, fears: ["none"] }); return; }
-                onChange({ ...data, fears: c.includes(opt.id) ? c.filter(x=>x!==opt.id) : [...c, opt.id] });
-              }}
-              colour={opt.id === "none" ? "#16A34A" : G.purple}/>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function StepFood({ data, onChange, petName }) {
-  const DIET = [
-    { id:"dry",      label:"Dry kibble",      emoji:"🥣" },
-    { id:"wet",      label:"Wet food",        emoji:"🥫" },
-    { id:"fresh",    label:"Fresh/cooked",    emoji:"🍖" },
-    { id:"raw",      label:"Raw diet",        emoji:"🥩" },
-    { id:"mixed",    label:"Mixed",           emoji:"🍽️" },
-    { id:"homemade", label:"Home cooked",     emoji:"👩‍🍳" },
-  ];
-  const PORTION = [
-    { id:"small",  label:"Small (< 5kg dog)",   emoji:"🤏" },
-    { id:"medium", label:"Medium (5–20kg)",      emoji:"🖐️" },
-    { id:"large",  label:"Large (20kg+)",        emoji:"✋" },
-  ];
-  const TREAT_PREF = [
-    { id:"soft",   label:"Soft treats",    emoji:"🍪" },
-    { id:"crunchy",label:"Crunchy treats", emoji:"🦴" },
-    { id:"meat",   label:"Meat-based",     emoji:"🥩" },
-    { id:"veggie", label:"Veggie treats",  emoji:"🥕" },
-    { id:"bakery", label:"Bakery style",   emoji:"🎂" },
-  ];
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: G.text, marginBottom: 12 }}>
-          Current diet
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {DIET.map(opt => (
-            <Chip key={opt.id} label={opt.label} emoji={opt.emoji}
-              selected={data.diet_type === opt.id}
-              onToggle={() => onChange({ ...data, diet_type: opt.id })}/>
-          ))}
-        </div>
-      </div>
-      <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: G.text, marginBottom: 12 }}>
-          Portion size (by weight)
-        </div>
-        <div style={{ display: "flex", gap: 10 }}>
-          {PORTION.map(opt => (
-            <div key={opt.id}
-              onClick={() => onChange({ ...data, portion_size: opt.id })}
-              style={{
-                flex: 1, borderRadius: 12, padding: "14px 10px", textAlign: "center",
-                border: `2px solid ${data.portion_size === opt.id ? G.purple : "rgba(107,70,193,0.20)"}`,
-                background: data.portion_size === opt.id ? G.pale : "#fff",
-                cursor: "pointer", transition: "all 0.15s",
-              }}>
-              <div style={{ fontSize: 24, marginBottom: 6 }}>{opt.emoji}</div>
-              <div style={{ fontSize: 12, fontWeight: data.portion_size === opt.id ? 700 : 400 }}>{opt.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: G.text, marginBottom: 12 }}>
-          Treat preferences
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {TREAT_PREF.map(opt => (
-            <Chip key={opt.id} label={opt.label} emoji={opt.emoji}
-              selected={(data.treat_pref || []).includes(opt.id)}
-              onToggle={() => {
-                const c = data.treat_pref || [];
-                onChange({ ...data, treat_pref: c.includes(opt.id) ? c.filter(x=>x!==opt.id) : [...c, opt.id] });
-              }}/>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function StepTraining({ data, onChange, petName }) {
-  const LEVELS = [
-    { id:"none",     label:"Just starting out",  sub:"No formal training yet",     emoji:"🌱" },
-    { id:"basic",    label:"Basic commands",      sub:"Sit, stay, come",            emoji:"⭐" },
-    { id:"good",     label:"Well trained",        sub:"Multiple commands, leash manners", emoji:"⭐⭐" },
-    { id:"advanced", label:"Advanced",            sub:"Complex commands, agility etc",    emoji:"⭐⭐⭐" },
-  ];
-  const GOALS = [
-    { id:"basic_obedience", label:"Basic obedience",  emoji:"🎯" },
-    { id:"socialisation",   label:"Socialisation",    emoji:"🤝" },
-    { id:"anxiety",         label:"Reduce anxiety",   emoji:"🌸" },
-    { id:"tricks",          label:"Fun tricks",       emoji:"🎪" },
-    { id:"agility",         label:"Agility / sport",  emoji:"🏃" },
-    { id:"none",            label:"Just maintaining", emoji:"✅" },
-  ];
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: G.text, marginBottom: 12 }}>
-          {petName || "Their"}'s training level
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {LEVELS.map(opt => (
-            <div key={opt.id}
-              onClick={() => onChange({ ...data, training_level: opt.id })}
-              style={{
-                borderRadius: 12, padding: "14px 16px",
-                border: `2px solid ${data.training_level === opt.id ? G.purple : "rgba(107,70,193,0.20)"}`,
-                background: data.training_level === opt.id ? G.pale : "#fff",
-                cursor: "pointer", transition: "all 0.15s",
-                display: "flex", alignItems: "center", gap: 14,
-              }}>
-              <span style={{ fontSize: 22, minWidth: 28 }}>{opt.emoji}</span>
-              <div>
-                <div style={{ fontSize: 14, fontWeight: data.training_level === opt.id ? 700 : 500, color: G.text }}>
-                  {opt.label}
-                </div>
-                <div style={{ fontSize: 12, color: G.sub }}>{opt.sub}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: G.text, marginBottom: 12 }}>
-          Training goals (optional)
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {GOALS.map(opt => (
-            <Chip key={opt.id} label={opt.label} emoji={opt.emoji}
-              selected={(data.training_goals || []).includes(opt.id)}
-              onToggle={() => {
-                const c = data.training_goals || [];
-                onChange({ ...data, training_goals: c.includes(opt.id) ? c.filter(x=>x!==opt.id) : [...c, opt.id] });
-              }}/>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function StepHome({ data, onChange, petName }) {
-  const HOME = [
-    { id:"apartment",  label:"Apartment",          sub:"No garden",         emoji:"🏢" },
-    { id:"house_small",label:"House with garden",  sub:"Small outdoor space",emoji:"🏡" },
-    { id:"house_large",label:"House with big yard", sub:"Lots of space",     emoji:"🌳" },
-    { id:"farm",       label:"Farm / rural",        sub:"Open land",         emoji:"🌾" },
-  ];
-  const OUTDOOR = [
-    { id:"1x",  label:"Once a day",     emoji:"☀️" },
-    { id:"2x",  label:"Twice a day",    emoji:"🌅" },
-    { id:"3x+", label:"3+ times a day", emoji:"⚡" },
-    { id:"free",label:"Free access",    emoji:"🌳" },
-  ];
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: G.text, marginBottom: 12 }}>
-          Where does {petName || "your dog"} live?
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-          {HOME.map(opt => (
-            <div key={opt.id}
-              onClick={() => onChange({ ...data, home_type: opt.id })}
-              style={{
-                borderRadius: 12, padding: "16px", textAlign: "center",
-                border: `2px solid ${data.home_type === opt.id ? G.purple : "rgba(107,70,193,0.20)"}`,
-                background: data.home_type === opt.id ? G.pale : "#fff",
-                cursor: "pointer", transition: "all 0.15s",
-              }}>
-              <div style={{ fontSize: 28, marginBottom: 6 }}>{opt.emoji}</div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: G.text }}>{opt.label}</div>
-              <div style={{ fontSize: 11, color: G.sub }}>{opt.sub}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: G.text, marginBottom: 12 }}>
-          How often do they go outside?
-        </div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {OUTDOOR.map(opt => (
-            <Chip key={opt.id} label={opt.label} emoji={opt.emoji}
-              selected={data.outdoor_frequency === opt.id}
-              onToggle={() => onChange({ ...data, outdoor_frequency: opt.id })}/>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Completion screen ──────────────────────────────────────────────────
-function CompletionScreen({ petName, totalPts, onDone, existingPetCount, existingPetNames }) {
-  const packSize = existingPetCount + 1; // including this new pet
-
-  // Headline — pack-aware
-  const headline = packSize === 1
-    ? `Mira knows ${petName} now`
-    : packSize <= 3
-    ? `Another soul in your pack. Mira knows ${petName} now.`
-    : packSize === 12
-    ? `Twelve souls. Mira knows every one of them now.`
-    : `${petName} is home. Mira has your whole pack now.`;
-
-  // Subtitle — pack-aware
-  const subtitle = packSize === 1
-    ? `${totalPts} soul points earned. ${petName}'s profile is live.`
-    : `${totalPts} soul points earned. Your pack now has ${packSize} souls in Mira's care.`;
-
-  // Mira quote — pack-aware
-  const quote = packSize === 1
-    ? `"Mira will remember everything you've shared — and get to know ${petName} better with every visit."`
-    : existingPetNames.length > 0
-    ? `"${petName} joins ${existingPetNames.slice(0,2).join(", ")}${existingPetNames.length > 2 ? ` and ${existingPetNames.length - 2} more` : ""}. Mira knows your whole pack now."`
-    : `"Every soul in your pack is known to Mira. She'll take care of all of them."`;
-
-  return (
-    <div style={{ textAlign: "center", padding: "40px 20px" }}>
-      <div style={{
-        width: 80, height: 80, borderRadius: "50%",
-        background: MIRA_ORB,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 36, margin: "0 auto 20px",
-        boxShadow: "0 8px 32px rgba(155,89,182,0.4)",
-      }}>
-        ✦
-      </div>
-      <h2 style={{
-        fontSize: "clamp(1.3rem,4vw,1.75rem)",
-        fontWeight: 800, color: G.text,
-        fontFamily: "Georgia, serif",
-        margin: "0 0 10px",
-        lineHeight: 1.3,
-      }}>
-        {headline}
-      </h2>
-      <p style={{ fontSize: 15, color: G.sub, lineHeight: 1.7, margin: "0 0 8px" }}>
-        {subtitle}
-      </p>
-      <p style={{ fontSize: 13, color: G.muted, fontStyle: "italic", margin: "0 0 32px", lineHeight: 1.6 }}>
-        {quote}
-      </p>
-
-      <div style={{
-        background: G.pale, borderRadius: 14,
-        padding: "16px 20px", marginBottom: 28, textAlign: "left",
-      }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: G.muted, marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-          What Mira now knows about {petName}
-        </div>
-        {[
-          "Breed, age and life stage",
-          "Energy level and personality",
-          "Health conditions and allergies",
-          "Diet preferences and treat loves",
-          "Social world and any fears",
-          "Training level and goals",
-        ].map((item, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-            <span style={{ color: "#16A34A", fontSize: 14 }}>✓</span>
-            <span style={{ fontSize: 13, color: G.text }}>{item}</span>
-          </div>
-        ))}
-      </div>
-
-      <button
-        onClick={onDone}
-        style={{
-          width: "100%", padding: "16px",
-          borderRadius: 14, border: "none",
-          background: MIRA_ORB,
-          color: "#fff", fontSize: 16, fontWeight: 700,
-          cursor: "pointer",
-          boxShadow: "0 4px 20px rgba(155,89,182,0.35)",
-        }}
-      >
-        Meet Mira → {petName}'s world
-      </button>
-    </div>
-  );
-}
-
-// ── Main page ──────────────────────────────────────────────────────────
 export default function PetSoulOnboarding() {
-  const navigate = useNavigate();
+  const navigate     = useNavigate();
+  const [params]     = useSearchParams();
   const { token, user } = useAuth();
-  const { setCurrentPet } = usePillarContext();
 
-  const [currentStep, setCurrentStep] = useState(0);
-  const [stepData,    setStepData]    = useState({});
-  const [petId,            setPetId]            = useState(null);
-  const [totalPts,         setTotalPts]         = useState(0);
-  const [showPts,          setShowPts]          = useState(false);
-  const [ptsToFlash,       setPtsToFlash]       = useState(0);
-  const [saving,           setSaving]           = useState(false);
-  const [done,             setDone]             = useState(false);
-  const [existingPetCount, setExistingPetCount] = useState(0);
-  const [existingPetNames, setExistingPetNames] = useState([]);
+  const [screen,       setScreen]       = useState('intro');    // intro | question | celebration
+  const [qIdx,         setQIdx]         = useState(0);
+  const [selected,     setSelected]     = useState(null);
+  const [score,        setScore]        = useState(0);
+  const [answers,      setAnswers]      = useState({});
+  const [saving,       setSaving]       = useState(false);
+  const [showPtsPop,   setShowPtsPop]   = useState(false);
+  const [ptsPop,       setPtsPop]       = useState(0);
+  const [animating,    setAnimating]    = useState(false);
+  const [pets,         setPets]         = useState([]);
+  const [currentPet,   setCurrentPet]   = useState(null);
+  const [petsLoaded,   setPetsLoaded]   = useState(false);
 
-  const petName = stepData.name || "your dog";
-  const step    = STEPS[currentStep];
+  const startChapterRef = useRef(null);
 
-  // Fetch how many pets this parent already has — drives completion message
+  // ── Load pets on mount ─────────────────────────────────────────────────
   useEffect(() => {
     if (!token) return;
     fetch(`${API_URL}/api/pets/my-pets`, {
-      headers: { "Authorization": `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then(r => r.ok ? r.json() : { pets: [] })
+      .then(r => r.json())
       .then(data => {
-        const pets = data.pets || data || [];
-        setExistingPetCount(pets.length);
-        setExistingPetNames(pets.map(p => p.name).filter(Boolean));
+        const petList = data.pets || data || [];
+        setPets(petList);
+        setPetsLoaded(true);
+        // Use pet from URL param or first pet
+        const paramPetId = params.get('pet_id');
+        const pet = paramPetId
+          ? petList.find(p => p.id === paramPetId) || petList[0]
+          : petList[0];
+        setCurrentPet(pet);
       })
-      .catch(() => {});
-  }, [token]);
+      .catch(() => { setPetsLoaded(true); });
+  }, [token, params]);
 
-  // Create pet after welcome step
-  const createPet = useCallback(async () => {
-    if (petId) return petId;
+  // ── No pets → redirect to /join ────────────────────────────────────────
+  useEffect(() => {
+    if (petsLoaded && pets.length === 0 && token) {
+      const timer = setTimeout(() => {
+        if (pets.length === 0) navigate('/join');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [pets, petsLoaded, token, navigate]);
+
+  const petName = currentPet?.name || 'your dog';
+  const petPhoto = currentPet?.photo_url || currentPet?.photo || null;
+  const q = ALL_QUESTIONS[qIdx];
+  const pct = Math.round((score / TOTAL_PTS) * 100);
+
+  // Replace {name} placeholder
+  const txt = (s) => s?.replace(/\{name\}/g, petName) || '';
+
+  // ── Save answer to backend (FIX: question_id not question) ─────────────
+  const saveAnswer = async (key, value, chapterLabel) => {
+    if (!currentPet?.id || !token) return;
     try {
-      const res = await fetch(`${API_URL}/api/pets`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+      await fetch(`${API_URL}/api/pet-soul/profile/${currentPet.id}/answer`, {
+        method:  'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify({
-          name:          stepData.name,
-          breed:         stepData.breed || "",
-          date_of_birth: stepData.dob || null,
-          species:       "dog",
+          question_id: key,
+          answer:      value,
         }),
       });
-      if (res.ok) {
-        const data = await res.json();
-        const id = data.pet?.id || data.pet?._id || data.id;
-        setPetId(id);
-        return id;
-      }
-    } catch(e) {}
-    return null;
-  }, [stepData, token, petId]);
-
-  // Save answer to soul profile
-  const saveAnswer = useCallback(async (pid, questionId, answers) => {
-    if (!pid) return;
-    try {
-      await fetch(`${API_URL}/api/pet-soul/profile/${pid}/answer`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-        body: JSON.stringify({ question_id: questionId, answer: Array.isArray(answers) ? answers : [answers] }),
-      });
-    } catch(e) {}
-  }, [token]);
-
-  const flashPts = (pts) => {
-    if (!pts) return;
-    setPtsToFlash(pts);
-    setShowPts(true);
-    setTimeout(() => setShowPts(false), 900);
-    setTotalPts(prev => prev + pts);
+    } catch {
+      // Silent — don't break the UX for a save failure
+    }
   };
 
+  // ── Select an option ───────────────────────────────────────────────────
+  const handleSelect = (opt) => {
+    if (animating) return;
+    if (selected?.value === opt.value) return;
+    setSelected(opt);
+  };
+
+  // ── Next question ──────────────────────────────────────────────────────
   const handleNext = async () => {
+    if (!selected || animating) return;
+    setAnimating(true);
     setSaving(true);
 
-    // Create pet on first step completion
-    let pid = petId;
-    if (currentStep === 0) {
-      pid = await createPet();
-    }
+    // Save to backend
+    await saveAnswer(q.key, selected.value, q.chapterLabel);
 
-    // Save this step's answers
-    if (pid && step) {
-      const answers = stepData;
-      const questionId = step.id;
+    // Update score
+    const newScore = score + q.pts;
+    setScore(newScore);
+    setAnswers(prev => ({ ...prev, [q.key]: selected.value }));
 
-      // Build answer payload per step
-      let payload = [];
-      switch(step.id) {
-        case "welcome":
-          if (stepData.breed)  await saveAnswer(pid, "breed",         [stepData.breed]);
-          if (stepData.dob)    await saveAnswer(pid, "date_of_birth", [stepData.dob]);
-          break;
-        case "photo":
-          if (stepData.photo_url) await saveAnswer(pid, "photo_url", [stepData.photo_url]);
-          break;
-        case "age":
-          if (stepData.age_stage) await saveAnswer(pid, "age_stage", [stepData.age_stage]);
-          break;
-        case "personality":
-          if (stepData.energy)      await saveAnswer(pid, "energy_level",    [stepData.energy]);
-          if (stepData.personality) await saveAnswer(pid, "personality",     stepData.personality);
-          break;
-        case "health":
-          if (stepData.conditions)    await saveAnswer(pid, "health_conditions", stepData.conditions);
-          if (stepData.food_allergies)await saveAnswer(pid, "food_allergies",   stepData.food_allergies);
-          break;
-        case "social":
-          if (stepData.household)   await saveAnswer(pid, "household",    stepData.household);
-          if (stepData.social_style)await saveAnswer(pid, "social_style", [stepData.social_style]);
-          break;
-        case "comfort":
-          if (stepData.loves) await saveAnswer(pid, "favourite_activities", stepData.loves);
-          if (stepData.fears) await saveAnswer(pid, "anxiety_triggers",     stepData.fears);
-          break;
-        case "food":
-          if (stepData.diet_type)   await saveAnswer(pid, "diet_type",   [stepData.diet_type]);
-          if (stepData.treat_pref)  await saveAnswer(pid, "treat_pref",  stepData.treat_pref);
-          if (stepData.portion_size)await saveAnswer(pid, "portion_size",[stepData.portion_size]);
-          break;
-        case "training":
-          if (stepData.training_level) await saveAnswer(pid, "training_level", [stepData.training_level]);
-          if (stepData.training_goals) await saveAnswer(pid, "training_goals", stepData.training_goals);
-          break;
-        case "home":
-          if (stepData.home_type)         await saveAnswer(pid, "home_type",         [stepData.home_type]);
-          if (stepData.outdoor_frequency) await saveAnswer(pid, "outdoor_frequency", [stepData.outdoor_frequency]);
-          break;
-      }
-    }
+    // Show pts popup
+    setPtsPop(q.pts);
+    setShowPtsPop(true);
+    setTimeout(() => setShowPtsPop(false), 1200);
 
-    flashPts(step.pts);
-
-    if (currentStep >= STEPS.length - 1) {
-      // Background: trigger Mira scoring
-      if (pid) {
-        if (!pet?.overall_score || pet.overall_score <= 0) { fetch(`${API_URL}/api/mira/score-for-pet`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-          body: JSON.stringify({ pet_id: pid, pillar: "all" }),
-        }).catch(()=>{}); }
-      }
-      setDone(true);
-    } else {
-      setCurrentStep(s => s + 1);
-    }
     setSaving(false);
-  };
 
-  const handleSkip = () => {
-    if (currentStep >= STEPS.length - 1) { setDone(true); return; }
-    setCurrentStep(s => s + 1);
-  };
-
-  const handleDone = () => {
-    if (petId) {
-      setCurrentPet({
-        id:            petId,
-        _id:           petId,
-        name:          stepData.name,
-        breed:         stepData.breed || "",
-        photo_url:     stepData.photo_url || null,
-        overall_score: totalPts,
-        soul_score:    totalPts,
-        doggy_soul_answers: {
-          breed:             stepData.breed,
-          age_stage:         stepData.age_stage,
-          energy_level:      stepData.energy,
-          health_conditions: stepData.conditions,
-          food_allergies:    stepData.food_allergies,
-          diet_type:         stepData.diet_type,
-          home_type:         stepData.home_type,
-        },
-      });
+    if (qIdx + 1 >= ALL_QUESTIONS.length) {
+      // Celebration!
+      setTimeout(() => {
+        setScreen('celebration');
+        setAnimating(false);
+      }, 400);
+      return;
     }
-    navigate("/pet-home");
+
+    // Slide to next question
+    setTimeout(() => {
+      setQIdx(prev => prev + 1);
+      setSelected(null);
+      setAnimating(false);
+    }, 350);
   };
 
-  // Step content
-  const renderStep = () => {
-    switch(step?.id) {
-      case "welcome":     return <StepWelcome data={stepData} onChange={setStepData}/>;
-      case "photo":       return <StepPhoto data={stepData} onChange={setStepData} petName={petName}/>;
-      case "age":         return <StepAge data={stepData} onChange={setStepData} petName={petName}/>;
-      case "personality": return <StepPersonality data={stepData} onChange={setStepData} petName={petName}/>;
-      case "health":      return <StepHealth data={stepData} onChange={setStepData} petName={petName}/>;
-      case "social":      return <StepSocial data={stepData} onChange={setStepData} petName={petName}/>;
-      case "comfort":     return <StepComfort data={stepData} onChange={setStepData} petName={petName}/>;
-      case "food":        return <StepFood data={stepData} onChange={setStepData} petName={petName}/>;
-      case "training":    return <StepTraining data={stepData} onChange={setStepData} petName={petName}/>;
-      case "home":        return <StepHome data={stepData} onChange={setStepData} petName={petName}/>;
-      default: return null;
+  // ── Skip to next chapter ───────────────────────────────────────────────
+  const handleSkipChapter = () => {
+    const nextChapterIdx = q.chapterIdx + 1;
+    const nextQIdx = ALL_QUESTIONS.findIndex(q => q.chapterIdx === nextChapterIdx);
+    if (nextQIdx === -1) {
+      setScreen('celebration');
+    } else {
+      setQIdx(nextQIdx);
+      setSelected(null);
     }
   };
 
-  // Step header text — always Mira's voice, never "Step X of Y"
-  const stepHeaders = {
-    welcome:     { title: "Tell Mira about your dog", sub: "Every great friendship starts with a name." },
-    photo:       { title: `A face to go with ${petName}'s name`, sub: "Mira uses this to personalise everything she shows you." },
-    age:         { title: `How old is ${petName}?`, sub: `Life stage changes what ${petName} needs.` },
-    personality: { title: `Who is ${petName}?`, sub: "This is how Mira will understand their energy and temperament." },
-    health:      { title: `${petName}'s health`, sub: "Mira will never recommend anything that isn't right for them." },
-    social:      { title: `${petName}'s world`, sub: "Who they live with shapes what they need." },
-    comfort:     { title: `What ${petName} loves`, sub: "And what makes them nervous. Mira remembers both." },
-    food:        { title: `How ${petName} eats`, sub: "Mira will never suggest anything with allergens." },
-    training:    { title: `What ${petName} knows`, sub: "Mira matches recommendations to where they are." },
-    home:        { title: `Where ${petName} lives`, sub: "Almost done. Mira is nearly ready." },
-  };
+  // ── Soul score ring path ───────────────────────────────────────────────
+  const ringPct = Math.round((score / TOTAL_PTS) * 100);
+  const RING_C = 314; // 2 * PI * 50
+  const ringOffset = RING_C - (RING_C * ringPct / 100);
 
-  const header = stepHeaders[step?.id] || { title: "", sub: "" };
-
-  if (done) {
+  // ── SCREEN: INTRO ──────────────────────────────────────────────────────
+  if (screen === 'intro') {
     return (
       <div style={{
-        minHeight: "100vh",
-        background: `linear-gradient(135deg, ${G.deep} 0%, ${G.mid} 100%)`,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "20px",
+        minHeight: '100vh', background: C.night,
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        padding: '40px 24px', textAlign: 'center',
+        fontFamily: "'DM Sans', sans-serif",
       }}>
+        <style>{`${FONTS}${ORB_CSS}`}</style>
+
+        {/* Pet photo or glass orb */}
         <div style={{
-          background: "#fff", borderRadius: 24,
-          padding: "32px 28px", maxWidth: 480, width: "100%",
-          boxShadow: "0 24px 80px rgba(0,0,0,0.3)",
+          width: 100, height: 100, borderRadius: '50%',
+          marginBottom: 28, position: 'relative',
+          border: '3px solid rgba(201,151,58,0.4)',
+          overflow: 'hidden', flexShrink: 0,
         }}>
-          <CompletionScreen
-            petName={petName}
-            totalPts={totalPts}
-            onDone={handleDone}
-            existingPetCount={existingPetCount}
-            existingPetNames={existingPetNames}
-          />
+          {petPhoto ? (
+            <img
+              src={petPhoto}
+              alt={petName}
+              style={{ width:'100%', height:'100%', objectFit:'cover' }}
+            />
+          ) : (
+            <div className="mira-orb" style={{
+              width:'100%', height:'100%', fontSize:36,
+              animation:'orbPulse 2s ease-in-out infinite',
+            }}>
+              {"\u{1F43E}"}
+            </div>
+          )}
+        </div>
+
+        <h1 style={{
+          fontFamily: "'Cormorant Garamond', Georgia, serif",
+          fontSize: 'clamp(1.8rem,5vw,3rem)',
+          fontWeight: 300, lineHeight: 1.2,
+          color: C.ivory, marginBottom: 16,
+        }}>
+          Hi. I'm Mira.<br/>
+          <em style={{ color: C.amber }}>Let me meet {petName}.</em>
+        </h1>
+
+        <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.8, maxWidth: 300, marginBottom: 32 }}>
+          {ALL_QUESTIONS.length} questions across {CHAPTERS.length} chapters. Every answer unlocks a piece of {petName}'s soul — and makes me smarter about everything I recommend.
+        </p>
+
+        {/* Preview soul score ring */}
+        <div style={{ position: 'relative', width: 120, height: 120, marginBottom: 12 }}>
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8"/>
+            <circle cx="60" cy="60" r="50" fill="none" strokeWidth="8" strokeLinecap="round"
+              stroke="url(#introGrad)"
+              strokeDasharray="314" strokeDashoffset="250"
+              style={{ transform: 'rotate(-90deg)', transformOrigin: '60px 60px', transition: 'stroke-dashoffset 1.5s ease' }}
+            />
+            <defs>
+              <linearGradient id="introGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#9B59B6"/>
+                <stop offset="100%" stopColor="#E91E8C"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div style={{
+            position: 'absolute', inset: 0,
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+          }}>
+            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 300, color: C.amber }}>0%</div>
+            <div style={{ fontSize: 10, color: C.dim, letterSpacing: '0.08em' }}>SOUL SCORE</div>
+          </div>
+        </div>
+
+        <p style={{ fontSize: 12, color: C.dim, marginBottom: 32 }}>
+          Watch {petName}'s score grow with every answer
+        </p>
+
+        {/* Chapter preview */}
+        <div style={{
+          display: 'flex', gap: 8, flexWrap: 'wrap',
+          justifyContent: 'center', maxWidth: 320, marginBottom: 36,
+        }}>
+          {CHAPTERS.map(ch => (
+            <div key={ch.id} style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 999, padding: '5px 12px',
+              fontSize: 12, color: C.muted,
+            }}>
+              <span style={{ fontSize: 14 }}>{ch.emoji}</span> {ch.label}
+            </div>
+          ))}
+        </div>
+
+        <button
+          onClick={() => setScreen('question')}
+          data-testid="soul-builder-start-btn"
+          style={{
+            padding: '16px 56px', borderRadius: 999, border: 'none',
+            background: `linear-gradient(135deg, ${C.purple}, ${C.pink})`,
+            color: '#fff', fontSize: 17, fontWeight: 700,
+            cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+            boxShadow: '0 8px 32px rgba(155,89,182,0.4)',
+            marginBottom: 16,
+          }}
+        >
+          Let's begin
+        </button>
+
+        <button
+          onClick={() => navigate('/pet-home')}
+          data-testid="soul-builder-skip-btn"
+          style={{
+            background: 'none', border: 'none',
+            color: C.dim, fontSize: 13, cursor: 'pointer',
+            fontFamily: "'DM Sans', sans-serif",
+          }}
+        >
+          Skip for now — fill in later
+        </button>
+      </div>
+    );
+  }
+
+  // ── SCREEN: QUESTIONS ──────────────────────────────────────────────────
+  if (screen === 'question') {
+    const isNewChapter = qIdx === 0 || ALL_QUESTIONS[qIdx - 1]?.chapterIdx !== q.chapterIdx;
+    const chProgress = ALL_QUESTIONS.filter(aq => aq.chapterIdx < q.chapterIdx).length;
+    const totalAnswered = Object.keys(answers).length;
+
+    return (
+      <div style={{
+        minHeight: '100vh', background: C.night,
+        display: 'flex', flexDirection: 'column',
+        fontFamily: "'DM Sans', sans-serif",
+        position: 'relative',
+      }}>
+        <style>{`${FONTS}${ORB_CSS}`}</style>
+
+        {/* Points popup */}
+        {showPtsPop && (
+          <div className="pts-pop">+{ptsPop} pts</div>
+        )}
+
+        {/* Header */}
+        <div style={{
+          padding: '14px 20px',
+          display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: `1px solid ${C.border}`,
+          background: C.deep,
+          position: 'sticky', top: 0, zIndex: 10,
+        }}>
+          {/* Chapter dots */}
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+            {CHAPTERS.map((ch, i) => {
+              const done = i < q.chapterIdx;
+              const active = i === q.chapterIdx;
+              return (
+                <div key={ch.id} style={{
+                  width: active ? 24 : 10,
+                  height: 10, borderRadius: 999,
+                  background: done ? C.amber : active ? C.purple : 'rgba(255,255,255,0.15)',
+                  transition: 'all 0.3s ease',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {active && <span style={{ fontSize: 8 }}>{ch.emoji}</span>}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Live soul score ring */}
+          <div style={{ position: 'relative', width: 52, height: 52 }}>
+            <svg width="52" height="52" viewBox="0 0 52 52">
+              <circle cx="26" cy="26" r="20" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="4"/>
+              <circle cx="26" cy="26" r="20" fill="none" strokeWidth="4" strokeLinecap="round"
+                stroke="url(#hGrad)"
+                strokeDasharray="126"
+                strokeDashoffset={126 - (126 * ringPct / 100)}
+                style={{ transform:'rotate(-90deg)', transformOrigin:'26px 26px', transition:'stroke-dashoffset 0.8s cubic-bezier(0.34,1.56,0.64,1)' }}
+              />
+              <defs>
+                <linearGradient id="hGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor={C.purple}/>
+                  <stop offset="100%" stopColor={C.pink}/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div style={{
+              position: 'absolute', inset: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: C.amber }}>{ringPct}%</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Chapter intro banner — shown on first question of each chapter */}
+        {isNewChapter && (
+          <div style={{
+            background: `linear-gradient(135deg, rgba(155,89,182,0.15), rgba(233,30,140,0.1))`,
+            borderBottom: '1px solid rgba(155,89,182,0.2)',
+            padding: '14px 20px',
+            display: 'flex', gap: 12, alignItems: 'center',
+            animation: 'fadeUp 0.4s ease',
+          }}>
+            <span style={{ fontSize: 24 }}>{q.chapterEmoji}</span>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.purple, letterSpacing: '0.1em', marginBottom: 2 }}>
+                CHAPTER {q.chapterIdx + 1} of 8
+              </div>
+              <div style={{ fontSize: 13, color: C.muted, fontStyle: 'italic' }}>
+                {txt(q.chapterMiraIntro)}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Mira message */}
+        <div style={{
+          padding: '14px 20px',
+          background: 'rgba(155,89,182,0.08)',
+          borderBottom: '1px solid rgba(155,89,182,0.12)',
+          display: 'flex', gap: 12, alignItems: 'flex-start',
+        }}>
+          <div className="mira-orb" style={{ width: 28, height: 28, fontSize: 11 }}>{"\u2726"}</div>
+          <div style={{ fontSize: 13, color: C.muted, lineHeight: 1.6, fontStyle: 'italic' }}>
+            {txt(q.mira)}
+          </div>
+        </div>
+
+        {/* Question + options */}
+        <div style={{
+          flex: 1, padding: '24px 20px',
+          animation: animating ? 'none' : 'slideIn 0.3s ease',
+        }}>
+          {/* Points badge */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            background: 'rgba(201,151,58,0.12)',
+            border: '1px solid rgba(201,151,58,0.25)',
+            borderRadius: 999, padding: '4px 12px',
+            fontSize: 11, fontWeight: 600, color: C.amber,
+            marginBottom: 16,
+          }}>
+            +{q.pts} pts · Q{qIdx + 1} of {ALL_QUESTIONS.length}
+          </div>
+
+          {/* Question */}
+          <h2 style={{
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontSize: 'clamp(1.3rem,4vw,1.8rem)',
+            fontWeight: 400, lineHeight: 1.3,
+            color: C.ivory, marginBottom: 24,
+          }}>
+            {txt(q.text)}
+          </h2>
+
+          {/* Options */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {q.options.map(opt => (
+              <button
+                key={opt.value}
+                className={`soul-opt${selected?.value === opt.value ? ' sel' : ''}`}
+                onClick={() => handleSelect(opt)}
+                data-testid={`soul-opt-${opt.value}`}
+              >
+                <div className="opt-check">
+                  {selected?.value === opt.value && (
+                    <span style={{ color: '#fff', fontSize: 12 }}>{"\u2713"}</span>
+                  )}
+                </div>
+                <span style={{ fontSize: 20 }}>{opt.emoji}</span>
+                <span style={{ fontSize: 14, fontWeight: 500 }}>{opt.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer buttons */}
+        <div style={{
+          padding: '16px 20px',
+          borderTop: `1px solid ${C.border}`,
+          background: C.deep,
+          display: 'flex', flexDirection: 'column', gap: 10,
+        }}>
+          <button
+            onClick={handleNext}
+            disabled={!selected || saving || animating}
+            data-testid="soul-builder-next-btn"
+            style={{
+              width: '100%', padding: '15px', borderRadius: 12, border: 'none',
+              background: selected && !saving
+                ? `linear-gradient(135deg, ${C.purple}, ${C.pink})`
+                : 'rgba(155,89,182,0.2)',
+              color: selected && !saving ? '#fff' : 'rgba(245,240,232,0.3)',
+              fontSize: 15, fontWeight: 700,
+              cursor: selected && !saving ? 'pointer' : 'not-allowed',
+              fontFamily: "'DM Sans', sans-serif",
+              transition: 'all 0.2s',
+            }}
+          >
+            {saving ? 'Saving\u2026' :
+             qIdx === ALL_QUESTIONS.length - 1 ? 'See my Soul Profile' : 'Next \u2192'}
+          </button>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <button
+              onClick={handleSkipChapter}
+              data-testid="soul-builder-skip-chapter-btn"
+              style={{
+                background: 'none', border: 'none',
+                color: C.dim, fontSize: 12, cursor: 'pointer',
+                fontFamily: "'DM Sans', sans-serif",
+              }}
+            >
+              Skip chapter {"\u2192"}
+            </button>
+            <button
+              onClick={() => navigate('/pet-home')}
+              data-testid="soul-builder-save-later-btn"
+              style={{
+                background: 'none', border: 'none',
+                color: C.dim, fontSize: 12, cursor: 'pointer',
+                fontFamily: "'DM Sans', sans-serif",
+              }}
+            >
+              Save & finish later
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  return (
-    <div style={{
-      minHeight: "100vh",
-      background: `linear-gradient(135deg, ${G.deep} 0%, ${G.mid} 100%)`,
-      display: "flex", alignItems: "flex-start", justifyContent: "center",
-      padding: "24px 16px 48px",
-    }}>
+  // ── SCREEN: CELEBRATION ────────────────────────────────────────────────
+  if (screen === 'celebration') {
+    const finalPct = Math.round((score / TOTAL_PTS) * 100);
+    const answered = Object.keys(answers).length;
+    const CELEB_C = 364; // 2 * PI * 58
+    const celebOffset = CELEB_C - (CELEB_C * finalPct / 100);
+
+    // Build "Mira now knows" summary
+    const knowsList = [];
+    if (answers.food_allergies && answers.food_allergies !== 'none')
+      knowsList.push(`Never suggests ${answers.food_allergies}`);
+    if (answers.age_stage) knowsList.push(`${petName} is a ${answers.age_stage}`);
+    if (answers.birthday_quarter) knowsList.push(`Birthday reminder set`);
+    if (answers.health_conditions && answers.health_conditions !== 'healthy')
+      knowsList.push(`Health condition noted`);
+    if (answers.favourite_treat) knowsList.push(`Favourite treat: ${answers.favourite_treat.replace('_',' ')}`);
+    knowsList.push(`${ALL_QUESTIONS.length - answered} more questions to reach 100%`);
+
+    return (
       <div style={{
-        background: "#fff", borderRadius: 24,
-        padding: "28px 24px", maxWidth: 520, width: "100%",
-        boxShadow: "0 24px 80px rgba(0,0,0,0.3)",
+        minHeight: '100vh', background: C.night,
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        padding: '40px 24px', textAlign: 'center',
+        fontFamily: "'DM Sans', sans-serif",
       }}>
+        <style>{`
+          ${FONTS}${ORB_CSS}
+          @keyframes celebPopIn { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+          @keyframes ringIn { from{stroke-dashoffset:${CELEB_C}} to{stroke-dashoffset:${celebOffset}} }
+        `}</style>
 
-        {/* Mira orb + branding */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: "50%",
-            background: MIRA_ORB,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 16, color: "#fff", flexShrink: 0,
-          }}>✦</div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: G.muted }}>
-            The Doggy Company · Mira
-          </div>
-        </div>
-
-        {/* Soul Growth Card — gamified progress */}
-        <SoulGrowthCard
-          step={currentStep}
-          totalSteps={STEPS.length}
-          petName={petName}
-          ptsEarned={totalPts}
-          chapter={step?.chapter}
-        />
-
-        {/* Step header */}
-        <div style={{ marginBottom: 24 }}>
-          <h2 style={{
-            fontSize: "clamp(1.25rem,3vw,1.5rem)",
-            fontWeight: 800, color: G.text,
-            fontFamily: "Georgia, serif",
-            margin: "0 0 6px",
-            lineHeight: 1.3,
-          }}>
-            {header.title}
-          </h2>
-          <p style={{ fontSize: 13, color: G.sub, margin: 0, lineHeight: 1.5 }}>
-            {header.sub}
-          </p>
-        </div>
-
-        {/* Chapter badge */}
+        {/* Pet photo or orb */}
         <div style={{
-          display: "inline-flex", alignItems: "center", gap: 6,
-          background: `${G.purple}18`,
-          border: `1px solid ${G.purple}30`,
-          borderRadius: 20, padding: "3px 12px",
-          fontSize: 11, fontWeight: 600, color: G.purple,
-          marginBottom: 20,
+          width: 80, height: 80, borderRadius: '50%',
+          marginBottom: 20, position: 'relative',
+          border: '3px solid rgba(201,151,58,0.5)',
+          overflow: 'hidden', flexShrink: 0,
+          animation: 'celebPopIn 0.5s ease',
         }}>
-          {step?.chapter} chapter
-          {step?.pts > 0 && (
-            <span style={{ color: G.gold, fontWeight: 700 }}>· +{step.pts} pts</span>
+          {petPhoto ? (
+            <img src={petPhoto} alt={petName} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+          ) : (
+            <div className="mira-orb" style={{
+              width:'100%', height:'100%', fontSize:28,
+              animation:'orbPulse 2s ease-in-out infinite',
+            }}>{"\u2726"}</div>
           )}
         </div>
 
-        {/* Step content */}
-        <div style={{ marginBottom: 28 }}>
-          {renderStep()}
-        </div>
-
-        {/* Navigation */}
-        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-          <button
-            onClick={handleNext}
-            disabled={saving || (currentStep === 0 && !stepData.name)}
-            data-testid="onboarding-next-btn"
-            style={{
-              flex: 1, padding: "16px",
-              borderRadius: 14, border: "none",
-              background: (saving || (currentStep === 0 && !stepData.name))
-                ? "rgba(107,70,193,0.2)"
-                : MIRA_ORB,
-              color: (saving || (currentStep === 0 && !stepData.name)) ? G.muted : "#fff",
-              fontSize: 16, fontWeight: 700,
-              cursor: (saving || (currentStep === 0 && !stepData.name)) ? "not-allowed" : "pointer",
-              transition: "all 0.2s",
-              boxShadow: (saving || (currentStep === 0 && !stepData.name)) ? "none" : "0 4px 20px rgba(155,89,182,0.35)",
-            }}
-          >
-            {saving ? "Saving…" : currentStep >= STEPS.length - 1 ? `Complete Soul Profile ✦` : "Continue →"}
-          </button>
-        </div>
-        {currentStep > 0 && (
-          <div style={{ textAlign: "center", marginTop: 10 }}>
-            <button
-              onClick={handleSkip}
-              data-testid="onboarding-skip-btn"
-              style={{
-                padding: "8px 16px",
-                borderRadius: 10,
-                background: "none",
-                border: "none",
-                color: "rgba(107,70,193,0.4)", fontSize: 12,
-                cursor: "pointer",
-              }}
-            >
-              skip for now
-            </button>
-          </div>
-        )}
-
-        {/* Step dots */}
-        <div style={{
-          display: "flex", justifyContent: "center",
-          gap: 6, marginTop: 20,
+        <h1 style={{
+          fontFamily: "'Cormorant Garamond', Georgia, serif",
+          fontSize: 'clamp(1.6rem,5vw,2.5rem)',
+          fontWeight: 300, color: C.ivory,
+          marginBottom: 12, lineHeight: 1.2,
         }}>
-          {STEPS.map((s, i) => (
-            <div key={i} style={{
-              width: i === currentStep ? 20 : 6,
-              height: 6, borderRadius: 999,
-              background: i < currentStep
-                ? G.purple
-                : i === currentStep
-                ? MIRA_ORB
-                : "rgba(107,70,193,0.20)",
-              transition: "all 0.3s",
-            }}/>
-          ))}
+          Mira knows {petName} now.<br/>
+          <em style={{ color: C.amber }}>Really knows {answers.gender === 'male' ? 'him' : answers.gender === 'female' ? 'her' : 'them'}.</em>
+        </h1>
+
+        <p style={{ fontSize: 14, color: C.muted, marginBottom: 32, lineHeight: 1.7, maxWidth: 300 }}>
+          {answered} questions answered. {petName}'s soul profile is taking shape — and Mira is already building personalised recommendations.
+        </p>
+
+        {/* Final soul score ring */}
+        <div style={{ position: 'relative', width: 140, height: 140, marginBottom: 28 }}>
+          <svg width="140" height="140" viewBox="0 0 140 140">
+            <circle cx="70" cy="70" r="58" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8"/>
+            <circle cx="70" cy="70" r="58" fill="none" strokeWidth="8" strokeLinecap="round"
+              stroke="url(#celebGrad)"
+              strokeDasharray={CELEB_C}
+              strokeDashoffset={celebOffset}
+              style={{
+                transform:'rotate(-90deg)', transformOrigin:'70px 70px',
+                transition:'stroke-dashoffset 1.8s cubic-bezier(0.34,1.56,0.64,1)',
+              }}
+            />
+            <defs>
+              <linearGradient id="celebGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor={C.amber}/>
+                <stop offset="50%" stopColor={C.purple}/>
+                <stop offset="100%" stopColor={C.pink}/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div style={{
+            position:'absolute', inset:0,
+            display:'flex', flexDirection:'column',
+            alignItems:'center', justifyContent:'center',
+          }}>
+            <div style={{
+              fontFamily:"'Cormorant Garamond', serif",
+              fontSize:36, fontWeight:300, color:C.amber,
+            }}>
+              {finalPct}%
+            </div>
+            <div style={{ fontSize:10, color:C.dim, letterSpacing:'0.08em' }}>SOUL SCORE</div>
+          </div>
+        </div>
+
+        {/* What Mira now knows */}
+        <div style={{
+          background: 'rgba(155,89,182,0.1)',
+          border: '1px solid rgba(155,89,182,0.2)',
+          borderRadius: 16, padding: '16px 20px',
+          marginBottom: 28, maxWidth: 300, width: '100%',
+          textAlign: 'left',
+          animation: 'fadeUp 0.6s ease 0.3s both',
+        }}>
+          <div style={{
+            fontSize: 11, fontWeight: 700, color: C.purple,
+            letterSpacing: '0.08em', marginBottom: 12,
+          }}>
+            MIRA NOW KNOWS
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {knowsList.map((item, i) => (
+              <div key={i} style={{ fontSize: 13, color: 'rgba(245,240,232,0.7)', lineHeight: 1.5 }}>
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* CTAs */}
+        <button
+          onClick={() => navigate('/pet-home')}
+          data-testid="soul-builder-complete-btn"
+          style={{
+            padding: '16px 40px', borderRadius: 999, border: 'none',
+            background: `linear-gradient(135deg, ${C.amber}, ${C.amberL})`,
+            color: C.night, fontSize: 16, fontWeight: 700,
+            cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+            marginBottom: 12, width: '100%', maxWidth: 300,
+            boxShadow: `0 8px 32px rgba(201,151,58,0.3)`,
+          }}
+        >
+          Meet my Pet Home {"\u2192"}
+        </button>
+
+        <div style={{ fontSize: 12, color: C.dim }}>
+          Answer more questions anytime to reach 100%
         </div>
 
       </div>
+    );
+  }
 
-      {/* +pts flash */}
-      <PtsFlash pts={ptsToFlash} show={showPts}/>
-    </div>
-  );
+  return null;
 }
