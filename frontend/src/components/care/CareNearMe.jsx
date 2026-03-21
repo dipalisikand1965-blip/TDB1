@@ -1,4 +1,5 @@
 /**
+import NearMeConciergeModal from '../common/NearMeConciergeModal';
  * CareNearMe.jsx — /care pillar
  * The Doggy Company
  *
@@ -32,6 +33,8 @@
  *
  * USAGE in CareSoulPage.jsx:
  *   import CareNearMe from "../components/care/CareNearMe";
+import { bookViaConcierge } from '../../utils/MiraCardActions';
+import { tdc } from '../../utils/tdc_intent';
  *
  *   // Add tab to CareTabBar:
  *   { id:"near_me", label:"📍 Near Me" }
@@ -283,6 +286,14 @@ function MiraTopPick({ provider, pet, onBook }) {
           )}
         </div>
       </div>
+    
+      <NearMeConciergeModal
+        isOpen={!!selectedVendor}
+        venue={selectedVendor}
+        pet={pet}
+        pillar="care"
+        onClose={() => setSelectedVendor(null)}
+      />
     </div>
   );
 }
@@ -290,6 +301,7 @@ function MiraTopPick({ provider, pet, onBook }) {
 // ─── MAIN COMPONENT ───────────────────────────────────────────
 export default function CareNearMe({ pet, onBook }) {
   const [searchInput, setSearchInput]         = useState("");
+  const [selectedVendor, setSelectedVendor] = useState(null);
   const [activeQuery, setActiveQuery]         = useState("");
   const [activeType, setActiveType]           = useState("all");
   const [providers, setProviders]             = useState([]);
@@ -498,7 +510,7 @@ export default function CareNearMe({ pet, onBook }) {
         {CARE_TYPES.map(type => {
           const sel = activeType === type.id;
           return (
-            <button key={type.id} onClick={() => setActiveType(type.id)}
+    <button key={type.id} onClick={() => setActiveType(type.id)}
               style={{ display:"inline-flex", alignItems:"center", gap:5, flexShrink:0, padding:"7px 16px", borderRadius:9999, border:`1.5px solid ${sel?"#52B788":"rgba(82,183,136,0.22)"}`, background:sel?"#52B788":"#fff", color:sel?G.deep:G.mutedText, fontSize:12, fontWeight:sel?700:400, cursor:"pointer", transition:"all 0.15s" }}>
               <span style={{ fontSize:14 }}>{type.icon}</span>{type.label}
             </button>
@@ -550,7 +562,7 @@ export default function CareNearMe({ pet, onBook }) {
           <div style={{ fontSize:13, color:G.mutedText, marginBottom:16 }}>{error}</div>
           <div style={{ display:"flex", gap:10, justifyContent:"center", flexWrap:"wrap" }}>
             <button onClick={()=>doFetch(activeQuery==="near_me"?null:activeQuery,activeQuery==="near_me"?userCoords:null,activeType)} style={{ background:G.sage,color:G.deep,border:"none",borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Try again</button>
-            <button onClick={()=>onBook?.(null, activeQuery==="near_me"?"your area":activeQuery)} style={{ background:G.pale,color:G.mid,border:`1px solid ${G.light}`,borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Ask Concierge</button>
+            <button onClick={()=>{ tdc.nearme({ query: "venue", pillar:"care", pet }); bookViaConcierge({ service: "venue", pillar:"care", pet, channel:"care_nearme" }); onBook?.(null, activeQuery==="near_me"?"your area":activeQuery)}}   style={{ background:G.pale,color:G.mid,border:`1px solid ${G.light}`,borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Ask Concierge</button>
           </div>
         </div>
       )}
@@ -567,7 +579,7 @@ export default function CareNearMe({ pet, onBook }) {
           </div>
           <div style={{ display:"flex", gap:10, justifyContent:"center", flexWrap:"wrap" }}>
             <button onClick={()=>setActiveType("all")} style={{ background:G.sage,color:G.deep,border:"none",borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Try all types</button>
-            <button onClick={()=>onBook?.(null, activeQuery==="near_me"?"your area":activeQuery)} style={{ background:G.pale,color:G.mid,border:`1px solid ${G.light}`,borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Ask Concierge</button>
+            <button onClick={()=>{ tdc.nearme({ query: "venue", pillar:"care", pet }); bookViaConcierge({ service: "venue", pillar:"care", pet, channel:"care_nearme" }); onBook?.(null, activeQuery==="near_me"?"your area":activeQuery)}}   style={{ background:G.pale,color:G.mid,border:`1px solid ${G.light}`,borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Ask Concierge</button>
           </div>
         </div>
       )}
@@ -622,6 +634,5 @@ export default function CareNearMe({ pet, onBook }) {
           </button>
         </div>
       )}
-    </div>
-  );
+    </div>  );
 }

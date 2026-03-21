@@ -543,16 +543,60 @@ async def get_top_picks(
         enriched = filtered
 
     # ── Fallback: if no scored picks, return top products for pillar ──────────
+    # Critical: filter by pet's BREED and ALLERGIES so first impression feels personal
     if not enriched and pillar:
         import asyncio
         asyncio.create_task(_run_full_scoring(pet_id, pillar, None))
+
+        # Build breed-aware query
+        breed_clean = (breed or "").strip()
+        breed_filter = {"$or": [
+            {"breed": breed_clean} if breed_clean else {"breed": {"$exists": False}},
+            {"breed": {"$in": ["all", "All", "", None]}},
+            {"breed": {"$exists": False}},
+        ]}
+
+        # Build allergen exclusion — never show allergenic products on first impression
+        conditions: list = [
+            {"$or": [{"pillar": pillar}, {"pillars": pillar}]},
+            {"active": {"$ne": False}},
+            {"price": {"$gt": 0}},
+            breed_filter,
+        ]
+
+        # Get pet allergies from DB
+        try:
+            pet_doc = await _db.pets.find_one({"id": pet_id}, {"_id": 0, "doggy_soul_answers": 1})
+            if pet_doc:
+                soul = pet_doc.get("doggy_soul_answers", {}) or {}
+                allergies = [
+                    a.lower() for a in soul.get("food_allergies", [])
+                    if a and a.lower() not in ["none", "none known", "no_allergies", ""]
+                ]
+                ALLERGEN_MAP = {
+                    "chicken": ["chicken", "poultry"],
+                    "beef":    ["beef", "lamb"],
+                    "grain":   ["wheat", "grain", "gluten"],
+                    "dairy":   ["milk", "dairy", "cheese"],
+                    "fish":    ["fish", "salmon", "tuna"],
+                }
+                for allergen in allergies:
+                    kws = ALLERGEN_MAP.get(allergen, [allergen])
+                    for kw in kws:
+                        conditions.append({
+                            "name": {"$not": {"$regex": kw, "$options": "i"}}
+                        })
+        except Exception:
+            pass
+
         fallback_cursor = _db.products_master.find(
-            {"$or": [{"pillar": pillar}, {"pillars": pillar}], "active": {"$ne": False}},
-            {"_id": 0}
-        ).sort([("mira_score", -1), ("price", 1)]).limit(limit)
+            {"$and": conditions}, {"_id": 0}
+        ).sort([("mira_score", -1), ("name", 1)]).limit(limit)
+
         fallback = await fallback_cursor.to_list(length=limit)
+        pet_breed_label = f" ({breed_clean})" if breed_clean else ""
         for p in fallback:
-            p["mira_reason"] = f"Mira is personalising picks for {breed or 'your pet'} — these are top {pillar} picks meanwhile."
+            p["mira_reason"] = f"Mira is personalising picks for {pet_id.split('-')[2].title() if pet_id else 'your pet'}{pet_breed_label} — best {pillar} picks while she learns more."
             p["is_fallback"] = True
         return {"picks": fallback, "count": len(fallback), "scoring_pending": True}
 
