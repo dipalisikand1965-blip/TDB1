@@ -580,8 +580,8 @@ async def get_pet_score_state(pet_id: str):
     
     # Get answers and additional data
     answers = pet.get("doggy_soul_answers") or {}
-    preferences = pet.get("preferences", {})
-    soul = pet.get("soul", {})
+    preferences = pet.get("preferences") or {}
+    soul = pet.get("soul") or {}
     
     # Calculate score with all available data
     score_data = calculate_pet_soul_score(answers, preferences, soul)

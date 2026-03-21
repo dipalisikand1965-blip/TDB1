@@ -3119,12 +3119,12 @@ async def ai_draft_reply(request: AIReplyRequest):
                 # Extract Pet Soul data
                 pet_soul_context = {
                     "name": pet_doc.get("name"),
-                    "breed": pet_doc.get("breed") or pet_doc.get("identity", {}).get("breed"),
+                    "breed": pet_doc.get("breed") or pet_doc.get("identity") or {}.get("breed"),
                     "age": pet_doc.get("age") or pet_doc.get("birth_date"),
-                    "gender": pet_doc.get("gender") or pet_doc.get("identity", {}).get("gender"),
+                    "gender": pet_doc.get("gender") or pet_doc.get("identity") or {}.get("gender"),
                     "preferences": {
-                        "favorite_treats": pet_doc.get("preferences", {}).get("favorite_treats", []),
-                        "allergies": pet_doc.get("preferences", {}).get("allergies", []),
+                        "favorite_treats": pet_doc.get("preferences") or {}.get("favorite_treats", []),
+                        "allergies": pet_doc.get("preferences") or {}.get("allergies", []),
                     },
                     "personality": {
                         "anxiety_triggers": pet_doc.get("personality", {}).get("anxiety_triggers", []),

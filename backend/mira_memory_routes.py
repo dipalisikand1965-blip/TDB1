@@ -305,10 +305,10 @@ async def get_what_mira_knows(
     
     # Get all profile sections
     soul_answers = pet.get("doggy_soul_answers") or {}
-    preferences = pet.get("preferences", {})
-    soul = pet.get("soul", {})
-    identity = pet.get("identity", {})
-    enrichments = pet.get("soul_enrichments", {})
+    preferences = pet.get("preferences") or {}
+    soul = pet.get("soul") or {}
+    identity = pet.get("identity") or {}
+    enrichments = pet.get("soul_enrichments") or {}
     
     # Calculate soul score consistently - now with cross-referenced data
     score_data = calculate_pet_soul_score(soul_answers, preferences, soul)

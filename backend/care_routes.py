@@ -318,7 +318,7 @@ async def create_care_request(request: CareRequestCreate):
             pet_doc = await db.pets.find_one({"id": request.pet_id}, {"_id": 0})
             if pet_doc:
                 pet_profile = pet_doc
-                soul = pet_doc.get("soul", {})
+                soul = pet_doc.get("soul") or {}
                 
                 # Check what profile fields we need vs what we have
                 for field in care_config.get("profile_fields_needed", []):
@@ -360,7 +360,7 @@ async def create_care_request(request: CareRequestCreate):
                 "id": request.pet_id or "",
                 "name": pet_name,
                 "breed": pet_breed,
-                "profile_score": pet_profile.get("soul", {}).get("profile_score") if pet_profile else None
+                "profile_score": pet_profile.get("soul") or {}.get("profile_score") if pet_profile else None
             },
             
             # Care context (from profile + request)
@@ -1728,7 +1728,7 @@ async def get_care_products_for_pet(pet_id: str, intent: Optional[str] = None):
     from care_products_master import get_products_for_pet, get_bundles_for_pet, get_bundles_for_intent
     
     # Build pet data for filtering
-    soul = pet.get("soul", {})
+    soul = pet.get("soul") or {}
     pet_data = {
         "pet_name": pet.get("name", "Your pet"),
         "size": soul.get("size") or pet.get("size") or "medium",

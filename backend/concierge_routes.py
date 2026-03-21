@@ -2124,12 +2124,12 @@ async def get_item_detail(ticket_id: str):
                         "id": pet.get("id"),
                         "pet_pass_number": pet.get("pet_pass_number"),
                         "name": pet.get("name"),
-                        "breed": pet.get("breed") or pet.get("identity", {}).get("breed"),
+                        "breed": pet.get("breed") or pet.get("identity") or {}.get("breed"),
                         "species": pet.get("species", "dog"),
-                        "age": pet.get("age") or pet.get("identity", {}).get("age"),
+                        "age": pet.get("age") or pet.get("identity") or {}.get("age"),
                         "gender": pet.get("gender"),
-                        "weight": pet.get("weight") or pet.get("identity", {}).get("weight"),
-                        "allergies": pet.get("allergies") or pet.get("preferences", {}).get("allergies", []),
+                        "weight": pet.get("weight") or pet.get("identity") or {}.get("weight"),
+                        "allergies": pet.get("allergies") or pet.get("preferences") or {}.get("allergies", []),
                         "photo_url": pet.get("photo_url")
                     })
     
@@ -2190,15 +2190,15 @@ async def get_item_detail(ticket_id: str):
         for pet in pets_snapshot:
             pet_full = await db.pets.find_one({"id": pet["id"]}, {"_id": 0})
             if pet_full:
-                soul = pet_full.get("soul", {}) or pet_full.get("doggy_soul_answers") or {}
+                soul = pet_full.get("soul") or {} or pet_full.get("doggy_soul_answers") or {}
                 if soul:
                     mira_intelligence["pet_soul_insights"].append({
                         "pet_name": pet["name"],
                         "persona": soul.get("persona"),
                         "love_language": soul.get("love_language"),
-                        "favorite_flavors": pet_full.get("preferences", {}).get("favorite_flavors", []),
-                        "favorite_treats": pet_full.get("preferences", {}).get("favorite_treats", []),
-                        "activity_level": pet_full.get("preferences", {}).get("activity_level")
+                        "favorite_flavors": pet_full.get("preferences") or {}.get("favorite_flavors", []),
+                        "favorite_treats": pet_full.get("preferences") or {}.get("favorite_treats", []),
+                        "activity_level": pet_full.get("preferences") or {}.get("activity_level")
                     })
     
     # ============== TIMELINE ==============
