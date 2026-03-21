@@ -16,7 +16,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import {
   Sparkles,
@@ -25,25 +25,18 @@ import {
   Stethoscope,
   Utensils,
   Plane,
-  Home,
   Scissors,
   GraduationCap,
   ShoppingBag,
-  Bell,
   ChevronRight,
   MessageCircle,
-  Calendar,
   Shield,
-  Activity,
   Loader2,
-  Settings,
   Plus,
   Star,
   AlertCircle,
   Clock,
   PawPrint,
-  LayoutDashboard,
-  Users,
   Dog,
   Gift,
   Download,
@@ -54,7 +47,6 @@ import {
   Rainbow,
   HeartHandshake
 } from 'lucide-react';
-import Navbar from '../components/Navbar';
 import { getWrappedApiBase } from '../utils/api';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
@@ -120,40 +112,7 @@ const SoulRing = ({ percentage, size = 100, strokeWidth = 6 }) => {
   );
 };
 
-// Tab Navigation Component
-const TabNavigation = ({ activeTab, onTabChange }) => {
-  const tabs = [
-    { id: 'home', label: 'Pet Home', icon: Home },
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'my-pets', label: 'My Pets', icon: PawPrint },
-  ];
-  
-  return (
-    <div className="flex border-b border-slate-700">
-      {tabs.map(tab => {
-        const TabIcon = tab.icon;
-        const isActive = activeTab === tab.id;
-        return (
-          <button
-            key={tab.id}
-            onClick={() => onTabChange(tab.id)}
-            data-testid={`tab-${tab.id}`}
-            className={`flex-1 py-3 px-4 flex items-center justify-center gap-2 text-sm font-medium transition-all border-b-2 ${
-              isActive 
-                ? 'text-white border-pink-500 bg-pink-500/10' 
-                : 'text-slate-400 border-transparent hover:text-white hover:bg-slate-800/50'
-            }`}
-          >
-            <TabIcon className="w-4 h-4" />
-            {tab.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-};
-
-// Pet Selector Component (for multi-pet) - Shows each pet's soul score
+// Pet Selector Component (for multi-pet)
 const PetSelector = ({ pets, selectedPet, onPetChange }) => {
   if (!pets || pets.length <= 1) return null;
   
@@ -196,7 +155,6 @@ const PetSelector = ({ pets, selectedPet, onPetChange }) => {
               <PawPrint className="w-4 h-4 flex-shrink-0" style={{ pointerEvents: 'none' }} />
             )}
             <span className="text-sm font-medium truncate max-w-[80px]" style={{ pointerEvents: 'none' }}>{pet.name}</span>
-            {/* Show soul score badge */}
             <span className={`text-xs px-1.5 py-0.5 rounded-full flex-shrink-0 ${
               petScore >= 50 
                 ? 'bg-emerald-500/30 text-emerald-300' 
@@ -225,7 +183,6 @@ const PetSelector = ({ pets, selectedPet, onPetChange }) => {
         <span className="text-sm" style={{ pointerEvents: 'none' }}>Add</span>
       </div>
     </div>
-    {/* Right-edge fade hint — shows when there are more pets off-screen */}
     {pets && pets.length > 2 && (
       <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-900 to-transparent pointer-events-none rounded-r-lg" />
     )}
@@ -237,15 +194,6 @@ const PetHomePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Determine initial tab from URL or default to 'home'
-  const getInitialTab = () => {
-    const path = location.pathname;
-    if (path === '/dashboard') return 'dashboard';
-    if (path === '/my-pets') return 'my-pets';
-    return 'home';
-  };
-  
-  const [activeTab, setActiveTab] = useState(getInitialTab());
   const [loading, setLoading] = useState(true);
   const [pets, setPets] = useState([]);
   const [selectedPet, setSelectedPet] = useState(null);
@@ -254,18 +202,6 @@ const PetHomePage = () => {
   const [openRequests, setOpenRequests] = useState([]);
   const [soulScore, setSoulScore] = useState(0);
   const [traits, setTraits] = useState([]);
-  
-  // Handle tab change - navigate to appropriate route
-  const handleTabChange = (tabId) => {
-    setActiveTab(tabId);
-    if (tabId === 'dashboard') {
-      navigate('/dashboard');
-    } else if (tabId === 'my-pets') {
-      navigate('/my-pets');
-    } else {
-      navigate('/pet-home');
-    }
-  };
   
   // Generate proactive alerts based on pet data
   const generateAlerts = useCallback((petData) => {
@@ -569,48 +505,7 @@ const PetHomePage = () => {
   const pet = selectedPet;
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-purple-950">
-      {/* Main Site Navbar - for navigation to other pillars */}
-      <Navbar />
-      
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800">
-        {/* Top bar with logo and actions */}
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-lg font-bold text-white">Mira</span>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => navigate('/notifications')}
-              className="relative p-2 rounded-full bg-slate-800 hover:bg-slate-700"
-              data-testid="notifications-btn"
-            >
-              <Bell className="w-5 h-5 text-slate-400" />
-              {alerts.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-pink-500 rounded-full text-xs text-white flex items-center justify-center">
-                  {alerts.length}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => navigate('/settings')}
-              className="p-2 rounded-full bg-slate-800 hover:bg-slate-700"
-              data-testid="settings-btn"
-            >
-              <Settings className="w-5 h-5 text-slate-400" />
-            </button>
-          </div>
-        </div>
-        
-        {/* Tab Navigation */}
-        <TabNavigation activeTab={activeTab} onTabChange={handleTabChange} />
-      </div>
-      
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-purple-950 pb-24">
       {/* Main Content */}
       <div className="p-4 md:p-6">
         {/* Pet Selector (multi-pet) */}
@@ -862,24 +757,6 @@ const PetHomePage = () => {
           </div>
         </div>
       </div>
-      
-      {/* Talk to Mira FAB */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <motion.button
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => navigate('/mira-os')}
-          className="w-16 h-16 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 shadow-lg shadow-pink-500/50 flex items-center justify-center"
-          data-testid="talk-to-mira-fab"
-        >
-          <MessageCircle className="w-7 h-7 text-white" />
-        </motion.button>
-      </div>
-      
-      {/* Bottom padding for FAB */}
-      <div className="h-24" />
     </div>
   );
 };

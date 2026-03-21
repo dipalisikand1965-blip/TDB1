@@ -21,6 +21,7 @@
  */
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -110,7 +111,7 @@ const GLASS_ORB_CSS = `
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.5);
-    z-index: 999;
+    z-index: 99999;
     animation: tdc-fade-in 0.2s ease;
   }
   .tdc-menu-panel {
@@ -120,7 +121,7 @@ const GLASS_ORB_CSS = `
     bottom: 0;
     width: min(85vw, 320px);
     background: #fff;
-    z-index: 1000;
+    z-index: 100000;
     overflow-y: auto;
     animation: tdc-slide-in 0.25s cubic-bezier(0.16,1,0.3,1);
     -webkit-overflow-scrolling: touch;
@@ -245,7 +246,7 @@ export default function MobileMenu({
 
   const firstName = userName?.split(" ")[0] || "there";
 
-  return (
+  return createPortal(
     <>
       <style>{GLASS_ORB_CSS}</style>
 
@@ -448,6 +449,7 @@ export default function MobileMenu({
         </div>
 
       </div>
-    </>
+    </>,
+    document.body
   );
 }

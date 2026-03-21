@@ -432,8 +432,7 @@ function AppRouter() {
         <Route path="/soul-builder" element={<ProtectedRoute><PetSoulOnboarding /></ProtectedRoute>} />
         <Route path="/onboarding" element={<ProtectedRoute><PetSoulOnboarding /></ProtectedRoute>} />
         
-        {/* Pet Home - Default landing page after onboarding */}
-        <Route path="/pet-home" element={<ProtectedRoute><PetHomePage /></ProtectedRoute>} />
+        {/* Pet Home - moved to MainLayout for shared Navbar + MobileNavBar */}
         
         {/* Add Pet - For existing logged-in users */}
         <Route path="/add-pet" element={<ProtectedRoute><AddPetPage /></ProtectedRoute>} />
@@ -483,6 +482,9 @@ function MainLayout() {
       <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Home is now outside MainLayout for clean landing experience */}
+          
+          {/* Pet Home - Inside MainLayout for shared Navbar + MobileNavBar */}
+          <Route path="/pet-home" element={<ProtectedRoute><PetHomePage /></ProtectedRoute>} />
           
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
