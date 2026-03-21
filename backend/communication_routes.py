@@ -171,6 +171,39 @@ def setup_communication_routes(app, db):
         }
     
     # ============================================
+    # RUN SCHEDULER NOW
+    # ============================================
+
+    @app.post("/api/admin/communications/run-scheduler")
+    async def run_scheduler_now():
+        """Trigger the reminder scheduler immediately — check all pending reminders and send them."""
+        try:
+            # Get all pending reminders for next 30 days
+            reminders = await comm_engine.get_pending_reminders(30)
+            sent_count = 0
+            errors = []
+
+            for reminder in reminders[:50]:  # Cap at 50 per run
+                try:
+                    pet_id = reminder.get("pet_id")
+                    reminder_type = reminder.get("type","vaccination")
+                    if pet_id and reminder_type:
+                        await comm_engine.send_reminder(pet_id, reminder_type)
+                        sent_count += 1
+                except Exception as e:
+                    errors.append(str(e))
+
+            return {
+                "success": True,
+                "pending_found": len(reminders),
+                "sent": sent_count,
+                "errors": errors[:5],
+                "message": f"Scheduler ran: {sent_count} reminders sent, {len(reminders)} total pending"
+            }
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    # ============================================
     # SEND / SCHEDULE COMMUNICATION
     # ============================================
     
