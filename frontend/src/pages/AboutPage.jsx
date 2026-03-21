@@ -7,7 +7,6 @@
  */
 
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
 
 const FONTS = `@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');`;
 
@@ -35,8 +34,28 @@ export default function AboutPage() {
     }}>
       <style>{`${FONTS} *{box-sizing:border-box;margin:0;padding:0;}`}</style>
 
-      {/* Standard Navbar */}
-      <Navbar />
+      {/* Navbar */}
+      <nav style={{
+        padding:"16px clamp(20px,5vw,60px)",
+        display:"flex",alignItems:"center",justifyContent:"space-between",
+        borderBottom:`1px solid ${C.border}`,
+      }}>
+        <button onClick={()=>navigate("/")} style={{
+          background:"none",border:"none",cursor:"pointer",
+          fontFamily:"Cormorant Garamond,Georgia,serif",
+          fontSize:20,fontWeight:600,color:C.ivory,
+        }}>
+          The Doggy Company<span style={{color:C.amber}}>®</span>
+        </button>
+        <button onClick={()=>navigate("/join")} style={{
+          padding:"9px 22px",borderRadius:999,
+          border:`1px solid ${C.amber}`,
+          background:"transparent",color:C.amber,
+          fontSize:13,fontWeight:600,cursor:"pointer",
+        }}>
+          Join Now
+        </button>
+      </nav>
 
       {/* Hero */}
       <section style={{

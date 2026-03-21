@@ -29,7 +29,9 @@ const PILLAR_COLORS = {
   platform:   { gradient: "linear-gradient(135deg,#37474F,#78909C)", light: "#ECEFF1" },
 };
 
-export default function NearMeConciergeModal({ isOpen, venue, pet, pillar = "platform", onClose }) {
+export default function NearMeConciergeModal({ isOpen, venue, place, pet, pillar = "platform", onClose }) {
+  // Accept either 'venue' or 'place' prop for compatibility
+  const actualVenue = venue || place;
   const [date,     setDate]    = useState("");
   const [notSure,  setNotSure] = useState(false);
   const [notes,    setNotes]   = useState("");
@@ -37,7 +39,7 @@ export default function NearMeConciergeModal({ isOpen, venue, pet, pillar = "pla
   const [sent,     setSent]    = useState(false);
 
   const petName   = pet?.name || "your pet";
-  const venueName = venue?.name || "this venue";
+  const venueName = actualVenue?.name || "this venue";
   const colors    = PILLAR_COLORS[pillar] || PILLAR_COLORS.platform;
 
   const handleSend = async () => {
@@ -50,8 +52,8 @@ export default function NearMeConciergeModal({ isOpen, venue, pet, pillar = "pla
       pet,
       channel: `${pillar}_nearme_modal`,
       notes: [
-        venue?.vicinity ? `Address: ${venue.vicinity}` : "",
-        venue?.rating   ? `Rating: ${venue.rating}★` : "",
+        actualVenue?.vicinity ? `Address: ${actualVenue.vicinity}` : "",
+        actualVenue?.rating   ? `Rating: ${actualVenue.rating}★` : "",
         notes.trim()    ? `Notes: ${notes}` : "",
       ].filter(Boolean).join(" | "),
       date: notSure ? null : (date || null),
@@ -87,14 +89,14 @@ export default function NearMeConciergeModal({ isOpen, venue, pet, pillar = "pla
               <h2 style={{ fontSize: 18, fontWeight: 800, color: "#fff", margin: 0, lineHeight: 1.3 }}>
                 {venueName}
               </h2>
-              {venue?.vicinity && (
+              {actualVenue?.vicinity && (
                 <p style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", margin: "4px 0 0" }}>
-                  📍 {venue.vicinity}
+                  📍 {actualVenue.vicinity}
                 </p>
               )}
-              {venue?.rating && (
+              {actualVenue?.rating && (
                 <p style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", margin: "2px 0 0" }}>
-                  ⭐ {venue.rating}
+                  ⭐ {actualVenue.rating}
                 </p>
               )}
             </div>

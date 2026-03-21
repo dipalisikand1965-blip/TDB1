@@ -532,12 +532,14 @@ async def get_care_providers(
 
     # Build search query
     type_queries = {
-        "groomer":  f"dog grooming pet groomer in {city}",
-        "vet":      f"veterinary clinic vet hospital in {city}",
-        "trainer":  f"dog training obedience school in {city}",
-        "petstore": f"pet store pet supplies shop in {city}",
-        "daycare":  f"dog daycare pet boarding in {city}",
-        "all":      f"dog groomer vet pet store in {city}",
+        "groomer":   f"dog grooming pet groomer in {city}",
+        "vet":       f"veterinary clinic vet hospital in {city}",
+        "trainer":   f"dog training obedience school in {city}",
+        "petstore":  f"pet store pet supplies shop in {city}",
+        "daycare":   f"dog daycare pet boarding in {city}",
+        "shelter":   f"dog shelter animal rescue adoption centre in {city}",
+        "cremation": f"pet cremation memorial service funeral in {city}",
+        "all":       f"dog groomer vet pet store in {city}",
     }
     if query:
         query_text = query

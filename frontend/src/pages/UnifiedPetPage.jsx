@@ -2376,53 +2376,6 @@ const UnifiedPetPage = () => {
         onClose={() => setShowShareModal(false)} 
       />
       
-      {/* QUICK ACTIONS FLOATING BUTTON */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <div className="relative group">
-          {/* Action buttons - appear on hover */}
-          <div className="absolute bottom-16 right-0 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto space-y-2">
-            <Button
-              size="sm"
-              className="w-full bg-white shadow-lg border text-gray-700 hover:bg-purple-50 hover:text-purple-700 flex items-center justify-end gap-2"
-              onClick={() => navigate(`/pet/${pet.id}`)}
-            >
-              <span className="text-xs">Answer Questions</span>
-              <Sparkles className="w-4 h-4" />
-            </Button>
-            <Button
-              size="sm"
-              className="w-full bg-white shadow-lg border text-gray-700 hover:bg-green-50 hover:text-green-700 flex items-center justify-end gap-2"
-              onClick={() => navigate(`/pet-vault/${pet.id}`)}
-            >
-              <span className="text-xs">Health Vault</span>
-              <Stethoscope className="w-4 h-4" />
-            </Button>
-            <Button
-              size="sm"
-              className="w-full bg-white shadow-lg border text-gray-700 hover:bg-pink-50 hover:text-pink-700 flex items-center justify-end gap-2"
-              onClick={() => navigate('/cakes')}
-            >
-              <span className="text-xs">Order Cake</span>
-              <Gift className="w-4 h-4" />
-            </Button>
-            <Button
-              size="sm"
-              className="w-full bg-white shadow-lg border text-gray-700 hover:bg-blue-50 hover:text-blue-700 flex items-center justify-end gap-2"
-              onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
-            >
-              <span className="text-xs">Ask Mira</span>
-              <MessageCircle className="w-4 h-4" />
-            </Button>
-          </div>
-          
-          {/* Main FAB */}
-          <Button
-            className="w-14 h-14 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 shadow-xl hover:shadow-2xl hover:scale-110 transition-all"
-          >
-            <PawPrint className="w-6 h-6" />
-          </Button>
-        </div>
-      </div>
       
       {/* Soul Explainer Modal */}
       {showSoulExplainer && (

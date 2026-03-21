@@ -106,10 +106,13 @@ const Modal = ({ onClose, children }) => createPortal(
       <motion.div
         initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }}
         transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-        className="w-full max-w-md rounded-2xl overflow-hidden"
-        style={{ background: '#1a0a12', border: '1px solid rgba(196,77,255,0.20)', maxHeight: '92vh', overflowY: 'auto' }}
+        className="w-full max-w-md rounded-2xl overflow-hidden flex flex-col"
+        style={{ background: '#1a0a12', border: '1px solid rgba(196,77,255,0.20)', maxHeight: '92vh' }}
       >
-        {children}
+        {/* Scrollable content area */}
+        <div style={{ overflowY: 'auto', flex: 1, WebkitOverflowScrolling: 'touch' }}>
+          {children}
+        </div>
       </motion.div>
     </motion.div>
   </AnimatePresence>,
@@ -234,6 +237,17 @@ export default function MealBoxCard() {
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
+      // ── Canonical flow: tdc.book + bookViaConcierge → admin inbox ──
+      const { tdc } = await import('../../utils/tdc_intent');
+      const { bookViaConcierge } = await import('../../utils/MiraCardActions');
+      tdc.book({ service: `${petName}'s Meal Box`, pillar: 'dine', pet, channel: 'dine_meal_box_builder' });
+      await bookViaConcierge({
+        service: `${petName}'s Custom Meal Box — ${mealsPerDay}x/day, ${deliveryFreq} delivery`,
+        pillar: 'dine', channel: 'dine_meal_box_builder',
+        notes: `Allergies confirmed: ${allergiesConfirmed}. Slots: ${slots.map(s=>s.pick?.name||s.label).join(', ')}`,
+      });
+
+      // Also try the concierge endpoint (if it exists)
       const res = await fetch(`${API}/api/concierge/meal-box`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

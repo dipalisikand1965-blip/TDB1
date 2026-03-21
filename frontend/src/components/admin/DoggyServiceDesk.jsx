@@ -2497,8 +2497,9 @@ const DoggyServiceDesk = ({ authHeaders }) => {
               <div className="text-[10px] text-slate-500 uppercase tracking-wider px-3 mb-2">Pillars</div>
               <div className="space-y-0.5 px-1">
                 {/* First 7 pillars (main) */}
-                {['celebrate', 'dine', 'go', 'travel', 'care', 'play', 'services'].map(key => {
+                {['celebrate', 'dine', 'stay', 'travel', 'care', 'enjoy', 'fit'].map(key => {
                   const pillar = PILLARS[key];
+                  if (!pillar) return null;
                   const Icon = pillar.icon;
                   const count = stats.by_pillar[key] || 0;
                   return (
@@ -4996,8 +4997,20 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                             </div>
                           </div>
                           
-                          {/* Conversation messages with Golden Standard labels */}
-                          {selectedTicket.messages?.map((msg, idx) => {
+                          {/* Conversation — merge thread (concierge replies) + messages (legacy) */}
+                          {[
+                            ...(selectedTicket.thread || []).map(m => ({
+                              ...m,
+                              text: m.text || m.content,
+                              sender: m.sender,
+                              direction: m.sender === 'concierge' ? 'outgoing' : 'incoming',
+                              is_agent_reply: m.sender === 'concierge',
+                              timestamp: m.timestamp || m.created_at,
+                            })),
+                            ...(selectedTicket.messages || []).filter(m => !m.from_thread),
+                          ]
+                            .sort((a, b) => new Date(a.timestamp || 0) - new Date(b.timestamp || 0))
+                            .map((msg, idx) => {
                             const isAgent = msg.direction === 'outgoing' || msg.is_agent_reply || msg.sender === 'concierge';
                             const hasAttachments = msg.attachments?.length > 0;
                             // Golden Standard: Label for message sender - Priority: pet_info > petProfile > pet_names > member name > Member

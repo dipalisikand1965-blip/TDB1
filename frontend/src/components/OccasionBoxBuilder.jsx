@@ -173,13 +173,22 @@ const OccasionBoxBuilder = ({
     return allItems;
   };
 
-  const handleAddAllToCart = () => {
+  const handleAddAllToCart = async () => {
     const allItems = getAllSelectedItems();
     if (allItems.length === 0) {
       toast.error('Please select at least one item');
       return;
     }
-    
+
+    // ── Canonical flow: fire tdc + service desk ticket ──────────────────────
+    try {
+      const { tdc } = await import('../../utils/tdc_intent');
+      const { bookViaConcierge } = await import('../../utils/MiraCardActions');
+      const total = allItems.reduce((s, i) => s + (i.price || 0) * (i.quantity || 1), 0);
+      allItems.forEach(item => tdc.cart({ product: item, pillar: 'celebrate', channel: 'occasion_box_builder', amount: item.price }));
+      await bookViaConcierge({ service: `Occasion Box — ${allItems.length} items`, pillar: 'celebrate', channel: 'occasion_box_builder', amount: total });
+    } catch {}
+
     if (onAddToCart) {
       onAddToCart(allItems);
     }
