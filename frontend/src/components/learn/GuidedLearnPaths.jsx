@@ -391,6 +391,7 @@ function PathFlowModal({ path, pet, onClose }) {
           pet_id: pet?.id || 'unknown',
           pillar: 'learn',
           life_state: 'PLAN',
+          force_new: true,
           intent_primary: 'guided_path_booking',
           channel: `learn_guided_${path.id}`,
           initial_message: {

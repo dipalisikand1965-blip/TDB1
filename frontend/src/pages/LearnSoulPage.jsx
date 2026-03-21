@@ -702,9 +702,18 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
           {!loading && category === "bundles" && products.length > 0 && (
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(280px,100%),1fr))",gap:14}}>
               {products.map(b=>(
-                <div key={b.id||b._id} style={{borderRadius:14,border:`1.5px solid ${G.borderLight}`,padding:"16px",background:"#fff"}}>
-                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
-                    <span style={{fontSize:28}}>{b.icon||"🎁"}</span>
+                <div key={b.id||b._id} style={{borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",background:"#fff"}}>
+                  {/* Bundle watercolour image */}
+                  {(b.watercolor_image||b.image_url||b.mockup_url) ? (
+                    <div style={{height:120,overflow:"hidden"}}>
+                      <img src={b.watercolor_image||b.image_url||b.mockup_url} alt={b.name}
+                        style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
+                    </div>
+                  ) : (
+                    <div style={{height:100,background:`linear-gradient(135deg,${G.violet}22,${G.mid}11)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:48}}>{b.icon||"🎁"}</div>
+                  )}
+                  <div style={{padding:"12px 16px"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
                     <div>
                       <p style={{fontWeight:800,fontSize:14,color:G.darkText,margin:0}}>{b.name}</p>
                       {b.discount>0&&<span style={{fontSize:10,fontWeight:700,color:"#16A34A",background:"#DCFCE7",borderRadius:20,padding:"2px 8px"}}>{b.discount}% off</span>}
@@ -718,15 +727,27 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
                     </div>
                     <button
                       onClick={async () => {
-                        tdc.cart({ product: b, pillar: "learn", pet: petData, channel: "learn_bundles", amount: b.bundle_price });
-                        const { bookViaConcierge } = await import('../utils/MiraCardActions');
-                        await bookViaConcierge({ service: b.name, pillar: "learn", pet: petData, channel: "learn_bundle_add", amount: b.bundle_price });
+                        // Bundles are bespoke — request via concierge, not add to cart
+                        const { sendToAdminInbox } = await import('../utils/sendToAdminInbox');
+                        await sendToAdminInbox({
+                          service: `Bundle: ${b.name}`,
+                          pillar: "learn",
+                          pet,
+                          channel: "learn_bundle_add",
+                          notes: `Bundle price: ₹${b.bundle_price}. ${b.description || ''}`,
+                          urgency: "high",
+                        });
+                        tdc.cart({ product: b, pillar: "learn", pet, channel: "learn_bundles", amount: b.bundle_price });
+                        // Show confirmation
+                        const btn = document.querySelector(`[data-testid="learn-bundle-add-${b.id||b._id}"]`);
+                        if (btn) { btn.textContent = "✓ Requested!"; btn.style.background = "#10B981"; setTimeout(() => { if(btn){btn.textContent="Add →";btn.style.background=`linear-gradient(135deg,${G.violet},${G.mid})`;}},2000); }
                       }}
                       data-testid={`learn-bundle-add-${b.id||b._id}`}
                       style={{background:`linear-gradient(135deg,${G.violet},${G.mid})`,color:"#fff",border:"none",borderRadius:10,padding:"7px 14px",fontSize:11,fontWeight:700,cursor:"pointer"}}>
                       Add →
                     </button>
                   </div>
+                </div>
                 </div>
               ))}
             </div>

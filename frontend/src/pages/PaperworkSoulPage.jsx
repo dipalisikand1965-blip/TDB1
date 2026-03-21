@@ -341,7 +341,7 @@ function DocCompletnessBar({ pet, docScore, onOpen }) {
 }
 
 // ─── MIRA PICKS ────────────────────────────────────────────
-function MiraPicksSection({ pet }) {
+function MiraPicksSection({ pet, onSelectProd }) {
   const [picks,setpicks]=useState([]); const [loading,setLoading]=useState(true);
   const petName=pet?.name||"your dog";
   const miraImagines=[
@@ -388,15 +388,27 @@ function MiraPicksSection({ pet }) {
             const score=pick.mira_score||0;
             const scoreColor=score>=80?"#16A34A":score>=70?G.teal:"#6B7280";
             return (
-              <div key={i} style={{flexShrink:0,width:160,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden"}}>
-                <div style={{height:100,background:G.pale,display:"flex",alignItems:"center",justifyContent:"center",fontSize:32}}>📋</div>
+              <div key={i} 
+                style={{flexShrink:0,width:160,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer"}}
+                onClick={() => onSelectProd && onSelectProd(pick)}>
+                {/* Real product image — NOT hardcoded emoji */}
+                <div style={{height:100,background:G.pale,display:"flex",alignItems:"center",justifyContent:"center",fontSize:32,overflow:"hidden"}}>
+                  {(pick.cloudinary_image_url||pick.image_url)
+                    ? <img src={pick.cloudinary_image_url||pick.image_url} alt={pick.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
+                    : <span>📋</span>}
+                </div>
                 <div style={{padding:"9px 10px 11px"}}>
                   <div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:5}}>{pick.name||"—"}</div>
                   <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:4}}>
                     <div style={{flex:1,height:3,background:G.pale,borderRadius:3}}><div style={{width:`${score}%`,height:"100%",background:scoreColor,borderRadius:3}}/></div>
                     <span style={{fontSize:10,fontWeight:800,color:scoreColor}}>{score}</span>
                   </div>
-                  {pick.mira_reason&&<p style={{fontSize:10,color:"#888",lineHeight:1.4,margin:0,fontStyle:"italic"}}>{pick.mira_reason}</p>}
+                  {pick.mira_reason && !pick.mira_reason.toLowerCase().includes('celebrat') && <p style={{fontSize:10,color:"#888",lineHeight:1.4,margin:0,fontStyle:"italic"}}>{pick.mira_reason}</p>}
+                  <button
+                    onClick={async(e)=>{e.stopPropagation();const{tdc}=await import('../utils/tdc_intent');tdc.book({service:pick.name,pillar:"paperwork",pet,channel:"paperwork_safety_picks"});const{bookViaConcierge}=await import('../utils/MiraCardActions');bookViaConcierge({service:pick.name,pillar:"paperwork",pet,channel:"paperwork_safety_picks",amount:pick.price});}}
+                    style={{marginTop:6,width:"100%",padding:"5px 0",background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",border:"none",borderRadius:8,fontSize:10,fontWeight:700,cursor:"pointer"}}>
+                    Book →
+                  </button>
                 </div>
               </div>
             );
@@ -408,7 +420,7 @@ function MiraPicksSection({ pet }) {
 }
 
 // ─── DIM EXPANDED ──────────────────────────────────────────
-function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook }) {
+function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook, onViewDetails }) {
   const petName = pet?.name||"your dog";
   const miraCtx = { includeText:"Add" };
   const [dimTab,    setDimTab]    = useState("products");
@@ -473,7 +485,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
           ) : (
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(170px,100%),1fr))",gap:12}}>
               {products.map(p=>(
-                <div key={p.id||p._id}><SharedProductCard product={p} pillar="paperwork" selectedPet={pet} miraContext={miraCtx}/></div>
+                <div key={p.id||p._id}><SharedProductCard product={p} pillar="paperwork" selectedPet={pet} miraContext={miraCtx} onViewDetails={onViewDetails}/></div>
               ))}
             </div>
           )}
@@ -621,6 +633,7 @@ const PaperworkSoulPage = () => {
   const [activeService, setActiveService] = useState(null);
   const [toastVisible,  setToastVisible]  = useState(false);
   const [toastSvc,      setToastSvc]      = useState("");
+  const [selProd,       setSelProd]       = useState(null); // ProductDetailModal
   const miraRef = useRef(null);
 
   const handleBook = useCallback(async (svc) => {
@@ -790,10 +803,10 @@ const PaperworkSoulPage = () => {
         {activeTab==="documents" && (
           <>
             {/* Doc completeness bar */}
-            <DocCompletnessBar pet={petData} docScore={docScore} onOpen={()=>setOpenDim("health")}/>
+            <DocCompletnessBar pet={petData} docScore={docScore} onOpen={()=>navigate(`/pet-vault/${petData?.id||petData?._id}`)}/>
 
             {/* Mira picks */}
-            <div ref={miraRef}><MiraPicksSection pet={petData}/></div>
+            <div ref={miraRef}><MiraPicksSection pet={petData} onSelectProd={setSelProd}/></div>
 
             <GuidedPaperworkPaths pet={petData}/>
 
@@ -844,7 +857,7 @@ const PaperworkSoulPage = () => {
                         </div>
                       </div>
                     </div>
-                    {isOpen&&<DimExpanded dim={dim} pet={petData} onClose={()=>setOpenDim(null)} apiProducts={apiProducts} services={services} onBook={handleBook}/>}
+                    {isOpen&&<DimExpanded dim={dim} pet={petData} onClose={()=>setOpenDim(null)} apiProducts={apiProducts} services={services} onBook={handleBook} onViewDetails={(p)=>setSelProd(p)}/>}
                   </div>
                 );
               })}
@@ -900,8 +913,18 @@ const PaperworkSoulPage = () => {
       />
       <PaperworkContentModal isOpen={!!catModal} onClose={()=>setCatModal(null)} category={catModal} pet={petData}/>
 
-    </PillarPageLayout>
-  );
+      {/* ProductDetailModal — opens when card is tapped */}
+      {selProd && (
+        <ProductDetailModal
+          product={selProd}
+          pet={petData}
+          pillar="paperwork"
+          onClose={() => setSelProd(null)}
+          onBook={(svc) => { setSelProd(null); handleBook(svc); }}
+        />
+      )}
+
+    </PillarPageLayout>  );
 };
 
 export default PaperworkSoulPage;

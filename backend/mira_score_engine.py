@@ -498,24 +498,12 @@ async def get_top_picks(
     results = []
     breed_clean = (breed or "").strip()
 
-    # ── LAYER 1: Breed-specific soul products ─────────────────────────────────
-    # These are the personalised watercolour products (bandanas, portraits, etc.)
-    layer1_limit = min(limit // 2, 8)  # Up to 8 soul products
-    breed_q: dict = {"active": {"$ne": False}}
-    if breed_clean:
-        breed_q["breed_name"] = breed_clean
-    if pillar:
-        breed_q["$or"] = [{"pillar": pillar}, {"pillars": pillar}]
+    # ── LAYER 1: DISABLED — soul products shown via MiraImaginesBreed component ─
+    # Each pillar page already has MiraImaginesBreed which shows breed-specific
+    # imagine cards in a separate dedicated section. Don't duplicate them here.
+    layer1_limit = 0
+    soul_products = []
 
-    soul_cursor = _db.breed_products.find(breed_q, {"_id": 0}).limit(layer1_limit)
-    soul_products = await soul_cursor.to_list(length=layer1_limit)
-
-    for p in soul_products:
-        p["mira_score"]  = p.get("mira_score", 92)  # Soul products are always highly recommended
-        p["mira_reason"] = p.get("mira_hint") or f"Personalised for {breed_clean or 'your dog'} — made by Mira just for them"
-        p["entity_type"] = "soul_product"
-        p["source"]      = "breed_products"
-        results.append(p)
 
     # ── LAYER 2: Pillar services ───────────────────────────────────────────────
     # Services that can be booked via concierge for this pillar
@@ -580,8 +568,8 @@ async def get_top_picks(
                 already_ids.add(entity_id)
                 layer3_count += 1
 
-    # ── Fallback: if still empty, return top soul products for pillar ──────────
-    if not results and pillar:
+    # ── Fallback: if not enough results, fill with breed-neutral top products ──────────
+    if len(results) < limit // 2 and pillar:
         import asyncio
         asyncio.create_task(_run_full_scoring(pet_id, pillar, None))
         fb_q: dict = {"$or": [{"pillar": pillar}, {"pillars": pillar}], "active": {"$ne": False}, "price": {"$gt": 0}}
@@ -590,7 +578,20 @@ async def get_top_picks(
                 {"breed_name": breed_clean}, {"breed_name": {"$in": ["all","All",""]}},
                 {"$or": [{"pillar": pillar}, {"pillars": pillar}]},
             ]
-        fb_cursor = _db.products_master.find({"$and": [{"$or": [{"pillar": pillar}, {"pillars": pillar}]}, {"active": {"$ne": False}}, {"price": {"$gt": 0}}]}, {"_id": 0}).sort([("mira_score", -1)]).limit(limit)
+        fb_cursor = _db.products_master.find(
+            {"$and": [
+                {"$or": [{"pillar": pillar}, {"pillars": pillar}]},
+                {"active": {"$ne": False}},
+                {"price": {"$gt": 0}},
+                # ← BREED FILTER: never show wrong breed products in fallback
+                {"$or": [
+                    {"breed": breed_clean} if breed_clean else {"breed": {"$exists": False}},
+                    {"breed": {"$in": ["all", "All", "", None, "none", "None"]}},
+                    {"breed": {"$exists": False}},
+                ]},
+            ]},
+            {"_id": 0}
+        ).sort([("mira_score", -1)]).limit(limit)
         fallback = await fb_cursor.to_list(length=limit)
         for p in fallback:
             p["mira_reason"] = f"Top {pillar} pick — Mira is personalising scores for you."

@@ -1,5 +1,4 @@
 /**
-import NearMeConciergeModal from '../common/NearMeConciergeModal';
  * FarewellNearMe.jsx — /farewell pillar
  * The Doggy Company
  *
@@ -13,6 +12,7 @@ import NearMeConciergeModal from '../common/NearMeConciergeModal';
  *
  * Colour world: Deep Midnight #1A1A2E + Soft Indigo #6366F1
  */
+import NearMeConciergeModal from '../common/NearMeConciergeModal';
 import { useState, useCallback } from "react";
 import { bookViaConcierge } from '../../utils/MiraCardActions';
 import { tdc } from '../../utils/tdc_intent';
@@ -40,7 +40,7 @@ const POPULAR_CITIES = [
 
 export default function FarewellNearMe({ pet, onBook }) {
   const [city,       setCity]       = useState("");
-  const [selectedVendor, setSelectedVendor] = useState(null);
+  const [selectedPlace, setSelectedPlace] = useState(null);
   const [cityInput,  setCityInput]  = useState("");
   const [searchType, setSearchType] = useState("all");
   const [results,    setResults]    = useState([]);
@@ -270,7 +270,7 @@ export default function FarewellNearMe({ pet, onBook }) {
                         📞 Call
                       </a>
                     )}
-                    <button onClick={() => handleBook(place)}
+                    <button onClick={() => { setSelectedPlace(place); handleBook(place); }}
                       style={{ flex: 2, background: `linear-gradient(135deg,${G.indigo},${G.mid})`, color: "#fff",
                         border: "none", borderRadius: 10, padding: "8px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                       ✦ Arrange via Concierge
@@ -291,13 +291,5 @@ export default function FarewellNearMe({ pet, onBook }) {
           <p style={{ fontSize: 13 }}>Search by city above or tap Near me — Mira will handle all arrangements.</p>
         </div>
       )}
-    
-      <NearMeConciergeModal
-        isOpen={!!selectedVendor}
-        venue={selectedVendor}
-        pet={pet}
-        pillar="farewell"
-        onClose={() => setSelectedVendor(null)}
-      />
-    </div>  );
+</div>  );
 }

@@ -213,7 +213,7 @@ const MemberMobileNav = () => {
   const getColorClasses = (color, isActive) => {
     const colors = {
       purple: isActive ? 'bg-purple-600 text-white' : 'hover:bg-purple-50',
-      teal: isActive ? 'bg-teal-600 text-white' : 'hover:bg-teal-50',
+      teal: isActive ? 'bg-amber-50 border-amber-400 text-amber-800' : 'hover:bg-slate-50 border-slate-200',
       blue: isActive ? 'bg-blue-600 text-white' : 'hover:bg-blue-50',
       gray: isActive ? 'bg-gray-700 text-white' : 'hover:bg-gray-100',
     };
@@ -223,7 +223,7 @@ const MemberMobileNav = () => {
   const getTitleColorClass = (color) => {
     const colors = {
       purple: 'text-purple-700',
-      teal: 'text-teal-700',
+      teal: 'text-amber-700',
       blue: 'text-blue-700',
       gray: 'text-gray-600',
     };
@@ -233,7 +233,7 @@ const MemberMobileNav = () => {
   const getBgColorClass = (color) => {
     const colors = {
       purple: 'bg-purple-50',
-      teal: 'bg-teal-50',
+      teal: 'bg-amber-50',
       blue: 'bg-blue-50',
       gray: 'bg-gray-50',
     };
@@ -250,7 +250,7 @@ const MemberMobileNav = () => {
         className={`hidden fixed left-0 top-1/2 -translate-y-1/2 z-[9998] p-2.5 rounded-r-xl shadow-lg transition-all duration-300 ${
           isOpen 
             ? 'bg-gray-800' 
-            : 'bg-gradient-to-r from-teal-600 to-teal-700'
+            : 'bg-gradient-to-r from-amber-600 to-amber-700'
         }`}
         data-testid="member-nav-toggle"
         aria-label="Toggle navigation menu"
@@ -285,9 +285,11 @@ const MemberMobileNav = () => {
         data-testid="member-nav-drawer"
       >
         {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-teal-600 to-teal-700 p-4 flex items-center justify-between safe-area-inset-top">
-          <span className="font-bold text-white flex items-center gap-2">
-            <PawPrint className="w-5 h-5" />
+        <div className="sticky top-0 bg-white border-b border-slate-100 p-4 flex items-center justify-between safe-area-inset-top shadow-sm">
+          <span className="font-bold text-slate-800 flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background:"linear-gradient(135deg,#C9973A,#1A1A2E)"}}>
+              <PawPrint className="w-4 h-4 text-white" />
+            </div>
             Quick Nav
           </span>
           <button
@@ -296,7 +298,7 @@ const MemberMobileNav = () => {
               e.preventDefault();
               setIsOpen(false);
             }}
-            className="p-1.5 hover:bg-white/20 rounded-lg text-white transition-colors touch-manipulation active:bg-white/30"
+            className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors touch-manipulation active:bg-slate-200"
             style={{ WebkitTapHighlightColor: 'transparent' }}
             data-testid="member-nav-close"
           >

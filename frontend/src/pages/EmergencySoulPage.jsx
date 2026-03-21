@@ -9,6 +9,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import ReactDOM from "react-dom";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown, Loader2, Check } from "lucide-react";
@@ -391,7 +392,7 @@ const EmergencySoulPage = () => {
           <div style={{display:"flex",overflowX:"auto",scrollbarWidth:"none",padding:"8px 12px",gap:4}}>
             {EMERG_CATS.map(cat=>{
               const isA=openDim===cat.id;
-              return<button key={cat.id} data-testid={`emergency-cat-${cat.id}`} onClick={()=>setOpenDim(isA?null:cat.id)} style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0,minWidth:82,height:72,padding:"10px 12px",cursor:"pointer",background:"transparent",border:"none",borderBottom:`3px solid ${isA?G.crimson:"transparent"}`,transition:"border-color 150ms ease"}}>
+              return<button key={cat.id} data-testid={`emergency-cat-${cat.id}`} onClick={()=>setOpenDim(cat.id)} style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0,minWidth:82,height:72,padding:"10px 12px",cursor:"pointer",background:"transparent",border:"none",borderBottom:`3px solid ${isA?G.crimson:"transparent"}`,transition:"border-color 150ms ease"}}>
                 <div style={{width:34,height:34,borderRadius:10,background:cat.bg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,marginBottom:4}}>{cat.icon}</div>
                 <span style={{fontSize:10,fontWeight:isA?700:500,color:isA?G.crimson:"#555",whiteSpace:"nowrap",textAlign:"center"}}>{cat.label}</span>
               </button>;
@@ -440,7 +441,23 @@ const EmergencySoulPage = () => {
                     </div>
                   </div>
                 </div>
-                {isOpen&&<DimExpanded dim={dim} pet={petData} onClose={()=>setOpenDim(null)} apiProducts={apiProducts} onBook={handleBook}/>}
+                {/* DimExpanded renders as a FULL-SCREEN MODAL — same as Dine/Care content modals */}
+                {isOpen && ReactDOM.createPortal(
+                  <>
+                    <div onClick={()=>setOpenDim(null)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:200}}/>
+                    <div style={{position:"fixed",top:"50%",left:"50%",transform:"translate(-50%,-50%)",zIndex:201,width:"min(640px,96vw)",maxHeight:"88vh",overflowY:"auto",borderRadius:20,background:"#fff",boxShadow:"0 24px 80px rgba(0,0,0,0.25)"}}>
+                      <div style={{position:"sticky",top:0,background:`linear-gradient(135deg,${G.crimson},${G.mid})`,padding:"16px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",borderRadius:"20px 20px 0 0"}}>
+                        <div>
+                          <div style={{fontSize:11,color:"rgba(255,255,255,0.75)",textTransform:"uppercase",letterSpacing:2,marginBottom:4}}>{dim.label}</div>
+                          <div style={{fontSize:15,fontWeight:700,color:"#fff"}}>{dim.sub}</div>
+                        </div>
+                        <button onClick={()=>setOpenDim(null)} style={{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:32,height:32,cursor:"pointer",color:"#fff",fontSize:18,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>
+                      </div>
+                      <DimExpanded dim={dim} pet={petData} onClose={()=>setOpenDim(null)} apiProducts={apiProducts} onBook={handleBook}/>
+                    </div>
+                  </>,
+                  document.body
+                )}
               </div>;})}
             </div>
           </>

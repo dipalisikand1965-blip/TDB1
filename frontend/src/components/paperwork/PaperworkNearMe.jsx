@@ -11,7 +11,7 @@
  *   import PaperworkNearMe from "../components/paperwork/PaperworkNearMe";
  *   <PaperworkNearMe pet={petData} onBook={handleBook} />
  */
-
+import NearMeConciergeModal from '../common/NearMeConciergeModal';
 import { useState, useCallback, useRef } from "react";
 import { API_URL } from "../../utils/api";
 
@@ -52,6 +52,7 @@ function OpenBadge({ openNow }) {
 
 function ProviderCard({ provider, pet, onBook }) {
   const [imgErr,setImgErr]=useState(false);
+  const [selectedPlace, setSelectedPlace] = useState(null);
   const petName=pet?.name||"your dog";
   const type = PAPER_TYPES.find(t=>t.id===provider.type)||PAPER_TYPES[0];
   return (
@@ -75,7 +76,7 @@ function ProviderCard({ provider, pet, onBook }) {
         {provider.mira_note&&<div style={{fontSize:11,color:G.teal,fontStyle:"italic",marginBottom:8,lineHeight:1.4}}>✦ {provider.mira_note}</div>}
         <div style={{display:"flex",gap:8,alignItems:"center",marginTop:10}}>
           {provider.phone&&<a href={`tel:${provider.phone}`} style={{fontSize:11,color:G.mid,fontWeight:600,textDecoration:"none",background:G.pale,borderRadius:20,padding:"5px 12px"}}>📞 Call</a>}
-          <button onClick={()=>onBook?.(provider,provider.city||provider.vicinity)}
+          <button onClick={()=>{ tdc.nearme({ query: "venue", pillar:"paperwork", pet }); setSelectedPlace({name:"venue near you"}); }}
             style={{flex:1,background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 14px",fontSize:11,fontWeight:700,cursor:"pointer"}}>
             Arrange via Concierge →
           </button>
@@ -95,7 +96,7 @@ function MiraTopPick({ provider, pet, onBook }) {
         <div style={{fontSize:12,color:"rgba(255,255,255,0.65)",marginBottom:8}}>{provider.vicinity}</div>
         <StarRating rating={provider.rating} count={provider.review_count}/>
       </div>
-      <button onClick={()=>onBook?.(provider,provider.city||provider.vicinity)}
+      <button onClick={()=>{ tdc.nearme({ query: "venue", pillar:"paperwork", pet }); setSelectedPlace({name:"venue near you"}); }}
         style={{background:G.light,color:G.deep,border:"none",borderRadius:20,padding:"10px 20px",fontSize:12,fontWeight:700,cursor:"pointer",flexShrink:0,whiteSpace:"nowrap"}}>
         Arrange via Concierge →
       </button>
@@ -152,7 +153,9 @@ export default function PaperworkNearMe({ pet, onBook }) {
   const restList  = topPick?providers.filter(p=>p!==topPick):providers;
 
   return (
-    <div>
+    <>
+<>
+      <div>
       <div style={{marginBottom:16}}>
         <div style={{fontSize:14,fontWeight:700,color:G.darkText,marginBottom:4}}>
           Find {PAPER_TYPES.find(t=>t.id===activeType)?.label||"Services"} near you
@@ -245,5 +248,14 @@ export default function PaperworkNearMe({ pet, onBook }) {
         </div>
       )}
     </div>
+</>
+      <NearMeConciergeModal
+        isOpen={!!selectedPlace}
+        place={selectedPlace}
+        pet={pet}
+        pillar="paperwork"
+        onClose={() => setSelectedPlace(null)}
+      />
+    </>
   );
 }

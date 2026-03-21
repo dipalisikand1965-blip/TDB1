@@ -1,329 +1,376 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+/**
+ * LoginPage.jsx — /login and /register
+ * The Doggy Company
+ *
+ * Design: Deep midnight luxury.
+ * Cormorant Garamond headlines. DM Sans body.
+ * Amber gold accents.
+ * Mystique dedication at the bottom.
+ *
+ * API:
+ *   POST /api/auth/login    { email, password } → { access_token, user }
+ *   POST /api/auth/register { email, password, name }
+ *   Google OAuth via Emergent
+ */
 
-// ─── LoginPage.jsx ────────────────────────────────────────────────────────────
-// Path: /app/frontend/src/pages/LoginPage.jsx (or Login.jsx)
-// Replaces the existing Login.jsx
-// Preserves: POST /api/auth/login + POST /api/auth/register + Google OAuth
-// Design: deep midnight + amber + Playfair Display — matches new design language
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { API_URL } from "../utils/api";
+
+const FONTS = `@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');`;
+
+const C = {
+  night:  "#0A0A0F",
+  deep:   "#0F0A1E",
+  mid:    "#1A1040",
+  amber:  "#C9973A",
+  amberL: "#E8B84B",
+  ivory:  "#F5F0E8",
+  ivoryD: "#D4C9B0",
+  muted:  "rgba(245,240,232,0.55)",
+  border: "rgba(201,151,58,0.2)",
+  purple: "#9B59B6",
+  pink:   "#E91E8C",
+};
+
+const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
 
 export default function LoginPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { login, isAuthenticated } = useAuth();
+  const navigate  = useNavigate();
+  const location  = useLocation();
+  const { login } = useAuth();
 
-  const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [isLogin,  setIsLogin]  = useState(true);
+  const [name,     setName]     = useState("");
+  const [email,    setEmail]    = useState("");
+  const [password, setPassword] = useState("");
+  const [loading,  setLoading]  = useState(false);
+  const [error,    setError]    = useState("");
 
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      const next = new URLSearchParams(location.search).get('next') || '/pet-home';
-      navigate(next, { replace: true });
-    }
-  }, [isAuthenticated, navigate, location]);
+  const redirectTo = location.state?.from || "/pet-home";
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
+    e?.preventDefault();
+    if (!email || !password) return;
     setLoading(true);
+    setError("");
 
     try {
-      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+      const endpoint = isLogin
+        ? `${API_URL}/api/auth/login`
+        : `${API_URL}/api/auth/membership/onboard`;
+
       const body = isLogin
         ? { email, password }
         : { email, password, name };
 
       const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(body),
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
-        throw new Error(data.detail || data.message || (isLogin ? 'Login failed' : 'Registration failed'));
+        const err = await res.json().catch(() => ({}));
+        setError(err.detail || (isLogin
+          ? "Invalid email or password."
+          : "Could not create account. Please try again."));
+        setLoading(false);
+        return;
       }
 
-      // Use auth context login
-      await login(data.access_token, data.user || { email });
+      const data = await res.json();
+      const token = data.access_token || data.token;
+      const user  = data.user || data;
 
-      const next = new URLSearchParams(location.search).get('next') || '/pet-home';
-      navigate(next, { replace: true });
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      localStorage.setItem("tdb_auth_token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      if (login) await login(token, user);
+
+      navigate(isLogin ? redirectTo : "/join");
+    } catch {
+      setError("Something went wrong. Please check your connection.");
     }
+    setLoading(false);
   };
 
-  const handleGoogleAuth = () => {
-    // Emergent-managed Google OAuth — preserve existing flow
-    const next = new URLSearchParams(location.search).get('next') || '/pet-home';
-    window.location.href = `/api/auth/google?next=${encodeURIComponent(next)}`;
-  };
-
-  const c = {
-    midnight: '#0D0A1A', deep: '#130F24', surface: '#1C1630', surface2: '#251E40',
-    amber: '#E8A045', amberSoft: '#F5C57A', amberGlow: 'rgba(232,160,69,0.1)',
-    ivory: '#F4EFE6', ivoryDim: 'rgba(244,239,230,0.6)', ivoryFaint: 'rgba(244,239,230,0.1)',
-    pink: '#C96D9E', border: 'rgba(244,239,230,0.08)', borderWarm: 'rgba(232,160,69,0.2)',
-  };
-
-  const serif = { fontFamily: "'Playfair Display', Georgia, serif" };
+  const inputStyle = (filled) => ({
+    width:        "100%",
+    padding:      "14px 16px",
+    borderRadius: 12,
+    fontSize:     15,
+    border:       `1.5px solid ${filled ? C.amber : "rgba(245,240,232,0.15)"}`,
+    background:   "rgba(255,255,255,0.05)",
+    color:        C.ivory,
+    outline:      "none",
+    boxSizing:    "border-box",
+    fontFamily:   "DM Sans, sans-serif",
+    transition:   "border-color 0.2s",
+  });
 
   return (
     <div style={{
-      minHeight: '100vh',
-      background: c.midnight,
-      color: c.ivory,
-      fontFamily: "'DM Sans', -apple-system, sans-serif",
-      fontWeight: 300,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '40px 24px',
-      position: 'relative',
-      overflow: 'hidden',
+      minHeight:       "100vh",
+      background:      `radial-gradient(ellipse at 30% 30%, #1A1040 0%, ${C.night} 65%)`,
+      display:         "flex",
+      flexDirection:   "column",
+      alignItems:      "center",
+      justifyContent:  "center",
+      padding:         "24px 16px",
+      fontFamily:      "DM Sans, sans-serif",
     }}>
-      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+      <style>{`
+        ${FONTS}
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        ::placeholder { color: rgba(245,240,232,0.3); }
+        input:-webkit-autofill {
+          -webkit-box-shadow: 0 0 0 1000px #1A1040 inset !important;
+          -webkit-text-fill-color: #F5F0E8 !important;
+        }
+      `}</style>
 
-      {/* Background glows */}
-      <div style={{ position: 'absolute', top: '-20%', left: '50%', transform: 'translateX(-50%)', width: '700px', height: '500px', background: 'radial-gradient(ellipse, rgba(201,109,158,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: '-10%', right: '10%', width: '400px', height: '400px', background: 'radial-gradient(ellipse, rgba(232,160,69,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
-      {/* Memorial header — Kouros & Mystique */}
-      <div style={{ textAlign: 'center', marginBottom: '40px', position: 'relative', zIndex: 1 }}>
-        {/* Dog portraits */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0px', marginBottom: '20px' }}>
-          <div style={{
-            width: '88px', height: '88px', borderRadius: '50%',
-            background: 'linear-gradient(135deg, rgba(232,160,69,0.3), rgba(139,92,246,0.2))',
-            border: '3px solid rgba(232,160,69,0.4)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '40px', position: 'relative', zIndex: 2,
-            boxShadow: '0 0 24px rgba(232,160,69,0.15)',
-          }}>🐕</div>
-          <div style={{
-            width: '28px', height: '28px', borderRadius: '50%',
-            background: 'linear-gradient(135deg, #C96D9E, #E8A045)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '13px', position: 'relative', zIndex: 3, margin: '0 -8px',
-            boxShadow: '0 2px 12px rgba(201,109,158,0.4)',
-          }}>♡</div>
-          <div style={{
-            width: '88px', height: '88px', borderRadius: '50%',
-            background: 'linear-gradient(135deg, rgba(201,109,158,0.3), rgba(139,92,246,0.2))',
-            border: '3px solid rgba(201,109,158,0.4)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '40px', position: 'relative', zIndex: 2,
-            boxShadow: '0 0 24px rgba(201,109,158,0.15)',
-          }}>🐶</div>
-        </div>
-
-        <p style={{ fontSize: '13px', color: 'rgba(244,239,230,0.5)', letterSpacing: '0.06em', marginBottom: '6px' }}>
-          In loving memory of
-        </p>
-        <h2 style={{ ...serif, fontSize: '22px', fontWeight: 600, marginBottom: '10px' }}>
-          <span style={{ color: c.amberSoft }}>Kouros</span>
-          <span style={{ color: c.ivoryDim }}> & </span>
-          <span style={{ color: '#D4A8FF' }}>Mystique</span>
-        </h2>
-        <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: c.ivoryDim }}>
-          "They taught us to know a pet is to know a soul"
-        </p>
-      </div>
-
-      {/* Brand */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '36px', position: 'relative', zIndex: 1 }}>
-        <div style={{ width: '36px', height: '36px', background: 'linear-gradient(135deg, #C96D9E, #9B3F7A)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🐾</div>
-        <div>
-          <div style={{ fontSize: '15px', fontWeight: 600, color: c.ivory, lineHeight: 1 }}>thedoggycompany</div>
-          <div style={{ fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: c.amber, marginTop: '2px' }}>Pet Concierge®</div>
-        </div>
-      </div>
-
-      {/* Login / Register card */}
-      <div style={{
-        width: '100%', maxWidth: '440px',
-        background: `linear-gradient(135deg, rgba(28,22,48,0.95) 0%, rgba(37,30,64,0.95) 100%)`,
-        border: `1px solid ${c.borderWarm}`,
-        borderRadius: '24px',
-        padding: '40px 36px',
-        position: 'relative', zIndex: 1,
-        boxShadow: '0 32px 64px rgba(0,0,0,0.4)',
+      {/* Logo */}
+      <div onClick={() => navigate("/")} style={{
+        marginBottom: 32, cursor: "pointer", textAlign: "center",
       }}>
-        {/* Top accent bar */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'linear-gradient(to right, #C96D9E, #E8A045)', borderRadius: '24px 24px 0 0' }} />
+        <div style={{
+          fontFamily:  "Cormorant Garamond, Georgia, serif",
+          fontSize:    26, fontWeight: 600, color: C.ivory,
+          letterSpacing: "0.02em",
+        }}>
+          The Doggy Company
+          <span style={{ color: C.amber }}>®</span>
+        </div>
+        <div style={{
+          fontSize: 11, color: C.muted,
+          letterSpacing: "0.1em", marginTop: 4,
+        }}>
+          MIRA · PET LIFE OPERATING SYSTEM
+        </div>
+      </div>
 
-        {/* Heading */}
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <h1 style={{ ...serif, fontSize: '28px', fontWeight: 700, color: c.ivory, marginBottom: '6px' }}>
-            {isLogin ? 'Welcome Back' : 'Join The Pack'}
+      {/* Card */}
+      <div style={{
+        background:   "rgba(15,10,30,0.92)",
+        border:       `1px solid ${C.border}`,
+        borderRadius: 24,
+        padding:      "36px 32px",
+        width:        "100%",
+        maxWidth:     420,
+        backdropFilter: "blur(20px)",
+      }}>
+
+        {/* Mira orb */}
+        <div style={{
+          width:        48, height: 48, borderRadius: "50%",
+          background:   MIRA_ORB,
+          display:      "flex", alignItems: "center",
+          justifyContent: "center",
+          fontSize:     22, color: "#fff",
+          margin:       "0 auto 20px",
+          boxShadow:    "0 0 32px rgba(155,89,182,0.3)",
+        }}>
+          ✦
+        </div>
+
+        {/* Headline */}
+        <div style={{ textAlign: "center", marginBottom: 28 }}>
+          <h1 style={{
+            fontFamily:  "Cormorant Garamond, Georgia, serif",
+            fontSize:    "clamp(1.5rem,4vw,2rem)",
+            fontWeight:  400, color: C.ivory,
+            lineHeight:  1.2, marginBottom: 8,
+          }}>
+            {isLogin ? "Welcome back" : "Meet Mira"}
           </h1>
-          <p style={{ fontSize: '14px', color: c.ivoryDim }}>
-            {isLogin ? 'Sign in to access your pet dashboard' : 'Create your account to get started'}
+          <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.6 }}>
+            {isLogin
+              ? "Mira has been keeping an eye on your pack."
+              : "Mira is ready to get to know your dog."}
           </p>
         </div>
 
         {/* Error */}
         {error && (
-          <div style={{ padding: '10px 14px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '10px', color: '#FCA5A5', fontSize: '13px', marginBottom: '20px', lineHeight: 1.5 }}>
+          <div style={{
+            background:   "rgba(220,38,38,0.12)",
+            border:       "1px solid rgba(220,38,38,0.3)",
+            borderRadius: 10, padding: "10px 14px",
+            fontSize: 13, color: "#FCA5A5",
+            marginBottom: 20, lineHeight: 1.5,
+          }}>
             {error}
           </div>
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit}>
-          {/* Name (register only) */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+
+          {/* Name — register only */}
           {!isLogin && (
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(244,239,230,0.5)', marginBottom: '7px' }}>
-                Your Name
+            <div>
+              <label style={{
+                fontSize: 11, fontWeight: 600, color: C.amber,
+                letterSpacing: "0.08em", display: "block", marginBottom: 6,
+              }}>
+                YOUR NAME
               </label>
-              <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(244,239,230,0.3)', fontSize: '15px' }}>👤</span>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  placeholder="Your name"
-                  required
-                  style={{ width: '100%', padding: '12px 14px 12px 40px', background: 'rgba(255,255,255,0.05)', border: `1px solid ${c.border}`, borderRadius: '12px', color: c.ivory, fontSize: '14px', fontFamily: "'DM Sans', sans-serif", outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
-                  onFocus={e => e.target.style.borderColor = c.borderWarm}
-                  onBlur={e => e.target.style.borderColor = c.border}
-                />
-              </div>
+              <input
+                type="text"
+                placeholder="What should Mira call you?"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                style={inputStyle(name)}
+              />
             </div>
           )}
 
           {/* Email */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(244,239,230,0.5)', marginBottom: '7px' }}>
-              Email Address
+          <div>
+            <label style={{
+              fontSize: 11, fontWeight: 600, color: C.amber,
+              letterSpacing: "0.08em", display: "block", marginBottom: 6,
+            }}>
+              EMAIL
             </label>
-            <div style={{ position: 'relative' }}>
-              <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(244,239,230,0.3)', fontSize: '15px' }}>✉</span>
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                style={{ width: '100%', padding: '12px 14px 12px 40px', background: 'rgba(255,255,255,0.05)', border: `1px solid ${c.border}`, borderRadius: '12px', color: c.ivory, fontSize: '14px', fontFamily: "'DM Sans', sans-serif", outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
-                onFocus={e => e.target.style.borderColor = c.borderWarm}
-                onBlur={e => e.target.style.borderColor = c.border}
-              />
-            </div>
+            <input
+              type="email"
+              placeholder="your@email.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && handleSubmit()}
+              style={inputStyle(email)}
+            />
           </div>
 
           {/* Password */}
-          <div style={{ marginBottom: isLogin ? '8px' : '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '7px' }}>
-              <label style={{ fontSize: '12px', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(244,239,230,0.5)' }}>
-                Password
-              </label>
-              {isLogin && (
-                <button type="button" onClick={() => navigate('/forgot-password')}
-                  style={{ fontSize: '12px', color: c.pink, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", padding: 0 }}>
-                  Forgot password?
-                </button>
-              )}
-            </div>
-            <div style={{ position: 'relative' }}>
-              <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(244,239,230,0.3)', fontSize: '15px' }}>🔒</span>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="Your password"
-                required
-                style={{ width: '100%', padding: '12px 44px 12px 40px', background: 'rgba(255,255,255,0.05)', border: `1px solid ${c.border}`, borderRadius: '12px', color: c.ivory, fontSize: '14px', fontFamily: "'DM Sans', sans-serif", outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
-                onFocus={e => e.target.style.borderColor = c.borderWarm}
-                onBlur={e => e.target.style.borderColor = c.border}
-              />
-              <button type="button" onClick={() => setShowPassword(!showPassword)}
-                style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(244,239,230,0.35)', fontSize: '14px' }}>
-                {showPassword ? '🙈' : '👁'}
-              </button>
-            </div>
+          <div>
+            <label style={{
+              fontSize: 11, fontWeight: 600, color: C.amber,
+              letterSpacing: "0.08em", display: "block", marginBottom: 6,
+            }}>
+              PASSWORD
+            </label>
+            <input
+              type="password"
+              placeholder={isLogin ? "Your password" : "Choose a password"}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && handleSubmit()}
+              style={inputStyle(password)}
+            />
           </div>
 
           {/* Submit */}
           <button
-            type="submit"
-            disabled={loading}
+            onClick={handleSubmit}
+            disabled={loading || !email || !password}
             style={{
-              width: '100%', padding: '14px',
-              background: loading ? 'rgba(201,109,158,0.5)' : 'linear-gradient(135deg, #C96D9E, #9B3F7A)',
-              color: 'white', border: 'none', borderRadius: '50px',
-              fontSize: '15px', fontWeight: 500, cursor: loading ? 'default' : 'pointer',
-              fontFamily: "'DM Sans', sans-serif",
-              transition: 'all 0.2s', marginTop: '8px',
-              letterSpacing: '0.01em',
+              width:        "100%",
+              padding:      "15px",
+              borderRadius: 12,
+              border:       "none",
+              background:   loading || !email || !password
+                ? "rgba(201,151,58,0.2)"
+                : `linear-gradient(135deg,${C.amber},${C.amberL})`,
+              color:        loading || !email || !password
+                ? "rgba(201,151,58,0.5)"
+                : C.night,
+              fontSize:     15, fontWeight: 700,
+              cursor:       loading || !email || !password ? "not-allowed" : "pointer",
+              fontFamily:   "DM Sans, sans-serif",
+              letterSpacing: "0.02em",
+              marginTop:    4,
+              transition:   "all 0.2s",
             }}
-            onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(201,109,158,0.4)'; } }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
           >
-            {loading ? '...' : isLogin ? 'Sign In →' : 'Create Account →'}
+            {loading
+              ? "Please wait…"
+              : isLogin
+              ? "Sign in →"
+              : "Create account →"}
           </button>
-        </form>
 
-        {/* Divider */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0' }}>
-          <div style={{ flex: 1, height: '1px', background: c.border }} />
-          <span style={{ fontSize: '12px', color: 'rgba(244,239,230,0.3)', letterSpacing: '0.06em' }}>or</span>
-          <div style={{ flex: 1, height: '1px', background: c.border }} />
+          {/* Divider */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: 12, margin: "4px 0",
+          }}>
+            <div style={{ flex: 1, height: 1, background: "rgba(245,240,232,0.08)" }}/>
+            <span style={{ fontSize: 11, color: C.muted }}>or</span>
+            <div style={{ flex: 1, height: 1, background: "rgba(245,240,232,0.08)" }}/>
+          </div>
+
+          {/* Google */}
+          <button
+            onClick={() => window.location.href = `${API_URL}/auth/google`}
+            style={{
+              width:        "100%",
+              padding:      "13px",
+              borderRadius: 12,
+              border:       "1.5px solid rgba(245,240,232,0.12)",
+              background:   "rgba(255,255,255,0.04)",
+              color:        C.ivory,
+              fontSize:     14,
+              cursor:       "pointer",
+              fontFamily:   "DM Sans, sans-serif",
+              display:      "flex", alignItems: "center",
+              justifyContent: "center", gap: 10,
+              transition:   "all 0.2s",
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.08)"}
+            onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+          >
+            <svg width="18" height="18" viewBox="0 0 48 48">
+              <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+              <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+              <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+              <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+            </svg>
+            Continue with Google
+          </button>
+
         </div>
 
-        {/* Google */}
-        <button
-          onClick={handleGoogleAuth}
-          style={{
-            width: '100%', padding: '13px',
-            background: 'rgba(255,255,255,0.04)',
-            color: c.ivoryDim, border: `1px solid ${c.border}`,
-            borderRadius: '50px', fontSize: '14px', cursor: 'pointer',
-            fontFamily: "'DM Sans', sans-serif",
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-            transition: 'all 0.2s',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = c.ivory; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = c.ivoryDim; }}
-        >
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
-            <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
-            <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-            <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-          </svg>
-          Continue with Google
-        </button>
-
         {/* Toggle login/register */}
-        <p style={{ textAlign: 'center', marginTop: '24px', fontSize: '13px', color: 'rgba(244,239,230,0.4)' }}>
-          {isLogin ? "Don't have an account? " : 'Already have an account? '}
+        <div style={{ textAlign: "center", marginTop: 24 }}>
+          <span style={{ fontSize: 13, color: C.muted }}>
+            {isLogin ? "New to The Doggy Company? " : "Already have an account? "}
+          </span>
           <button
-            onClick={() => { setIsLogin(!isLogin); setError(''); }}
-            style={{ color: c.amber, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontSize: '13px', fontWeight: 500, padding: 0 }}
+            onClick={() => { setIsLogin(!isLogin); setError(""); }}
+            style={{
+              background: "none", border: "none",
+              color: C.amber, fontSize: 13,
+              fontWeight: 600, cursor: "pointer",
+              fontFamily: "DM Sans, sans-serif",
+              textDecoration: "underline",
+            }}
           >
-            {isLogin ? 'Create account' : 'Sign in'}
+            {isLogin ? "Create account" : "Sign in"}
           </button>
+        </div>
+
+      </div>
+
+      {/* Mystique dedication */}
+      <div style={{
+        textAlign: "center", marginTop: 28,
+        maxWidth: 380,
+      }}>
+        <div style={{ fontSize: 20, marginBottom: 8 }}>🌷</div>
+        <p style={{
+          fontFamily:  "Cormorant Garamond, Georgia, serif",
+          fontSize:    14, fontStyle: "italic",
+          color:       "rgba(245,240,232,0.3)",
+          lineHeight:  1.7,
+        }}>
+          "In loving memory of Kouros & Mystique —<br/>
+          They taught us that to know a pet is to know a soul."
         </p>
       </div>
 
-      {/* Footer */}
-      <p style={{ marginTop: '32px', fontSize: '12px', color: 'rgba(244,239,230,0.2)', textAlign: 'center', letterSpacing: '0.04em', position: 'relative', zIndex: 1 }}>
-        © 2025 The Doggy Company® · Built in memory of Mystique
-      </p>
     </div>
   );
 }
