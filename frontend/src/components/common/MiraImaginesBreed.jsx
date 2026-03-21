@@ -473,11 +473,11 @@ export default function MiraImaginesBreed({
   // Fire background scoring so next visit has real picks
   useEffect(() => {
     if (!pet?.id) return;
-    fetch(`${API_URL}/api/mira/score-for-pet`, {
+    if (!pet?.overall_score || pet.overall_score <= 0) { fetch(`${API_URL}/api/mira/score-for-pet`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ pet_id: pet.id, pillar }),
-    }).catch(() => {}); // silent — this is background work
+    }).catch(() => {}); } // silent — this is background work
   }, [pet?.id, pillar]);
 
   const handleConcierge = (card) => {

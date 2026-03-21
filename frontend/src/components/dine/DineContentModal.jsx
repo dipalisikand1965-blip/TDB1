@@ -673,11 +673,11 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
 
         // 6. Fire-and-forget background scoring if no scores yet
         if (petId && !hasMiraScores) {
-          fetch(`${apiUrl}/api/mira/score-for-pet`, {
+          if (!pet?.overall_score || pet.overall_score <= 0) { fetch(`${apiUrl}/api/mira/score-for-pet`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ pet_id: petId, pillar: 'dine' }),
-          }).catch(() => {});
+          }).catch(() => {}); }
         }
         return;
       }

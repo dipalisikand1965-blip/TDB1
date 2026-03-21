@@ -12,7 +12,7 @@
 
 import React, { useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Crown, Package, PawPrint, Sparkles, Cake, UtensilsCrossed, Hotel, Plane, Heart, Gamepad2, Dumbbell, GraduationCap, FileText, MessageCircle, AlertTriangle, Rainbow, Dog, ShoppingBag, Inbox } from 'lucide-react';
+import { Home, Crown, Package, PawPrint, Sparkles, Cake, UtensilsCrossed, Hotel, Plane, Heart, Gamepad, Dumbbell, GraduationCap, FileText, MessageCircle, AlertTriangle, Rainbow, Dog, ShoppingBag, Inbox } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import hapticFeedback from '../utils/haptic';
 

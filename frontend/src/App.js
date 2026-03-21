@@ -363,8 +363,8 @@ function AppRouter() {
   
   return (
     <Suspense fallback={<PageLoader />}>
-      {/* MemberMobileNav at App level - Available on all routes for logged-in users */}
-      <MemberMobileNav />
+      {/* MemberMobileNav replaced by new MobileMenu in Navbar.jsx */}
+      {/* <MemberMobileNav /> */}
       <Routes>
         {/* Embed routes - NO navbar/footer for Shopify integration */}
         <Route path="/pet-soul-embed" element={<PetProfile isEmbed={true} />} />

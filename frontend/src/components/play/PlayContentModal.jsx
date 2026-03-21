@@ -310,7 +310,7 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
         setImagines(generatePlayImagines(pet, sorted));
 
         if (petId && preScored.length===0) {
-          fetch(`${apiUrl}/api/mira/score-for-pet`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({pet_id:petId, pillar:'play'}) }).catch(()=>{});
+          if (!pet?.overall_score || pet.overall_score <= 0) { fetch(`${apiUrl}/api/mira/score-for-pet`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({pet_id:petId, pillar:'play'}) }).catch(()=>{}); }
         }
         return;
       }

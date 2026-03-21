@@ -2055,6 +2055,8 @@ export default function CareSoulPage() {
   const navigate = useNavigate();
   const { token, isAuthenticated } = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
+  const pet = currentPet; // alias for sub-components
+
 
   const [loading, setLoading]     = useState(true);
   const [activeTab, setActiveTab] = useState("care");

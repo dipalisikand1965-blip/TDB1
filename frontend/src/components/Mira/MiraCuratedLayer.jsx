@@ -26,7 +26,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Crown, Sparkles, Heart, Plane, GraduationCap, Gamepad2, Dumbbell, FileText, Stethoscope, ShoppingBag, Scissors, Home, PawPrint } from 'lucide-react';
+import { Crown, Sparkles, Heart, Plane, GraduationCap, Gamepad, Dumbbell, FileText, Stethoscope, ShoppingBag, Scissors, Home, PawPrint } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import CuratedConciergeSection from './CuratedConciergeSection';
 import PersonalizedPillarSection from '../PersonalizedPillarSection';
@@ -100,7 +100,7 @@ const PILLAR_THEMES = {
   },
   enjoy: {
     name: 'Enjoy',
-    icon: Gamepad2,
+    icon: Gamepad,
     iconColor: 'text-yellow-500',
     badgeGradient: 'bg-gradient-to-r from-yellow-500 to-amber-500',
     containerGradient: 'bg-gradient-to-br from-slate-900 via-yellow-950/80 to-slate-900',
