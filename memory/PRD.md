@@ -13,36 +13,43 @@ Build a production-ready pet life management platform with 12 core pillars, AI c
 |-------|-----------|-------------|
 | /pet-home | PetHomePage | Pet parent dashboard (inside MainLayout) |
 | /mira-os | MiraDemoPage | Mira AI interface |
-| /soul-builder | SoulBuilder | 51-question soul profile builder |
-| /onboarding | PetSoulOnboarding | 10-step pet onboarding wizard |
-| /care, /dine, /go, /play, /learn, /celebrate, /shop, /paperwork, /emergency, /adopt, /farewell, /services, /advisory | *SoulPage | 13 Life Pillar pages |
+| /onboarding | PetSoulOnboarding | 45-question soul builder (8 chapters) |
+| /soul-builder | PetSoulOnboarding | Same soul builder (alternate URL) |
+| /join | Join flow | New user pet creation |
+| /care..advisory | *SoulPage | 13 Life Pillar pages |
 | /admin | Admin Portal | Service desk, product management |
 
 ## What's Been Implemented
 
-### Session Feb 2026 — Mobile Navigation & UX Overhaul
-- **MobileMenu portal fix:** Rendered via `createPortal` to `document.body` (z-99999/100000) for proper overlay stacking
-- **X close button:** Replaced glass orb in menu header with circular close button
-- **3-column pillar grid:** Changed from 4 columns to prevent text cutoff ("Paperwork", "Services")
-- **Removed duplicate navigation:** PetHomePage no longer imports its own Navbar, TabNavigation, or Mira FAB
-- **Moved /pet-home into MainLayout:** Gets shared Navbar + MobileNavBar automatically
-- **Removed PillarPageLayout duplicate header:** No more second hamburger (☰) on right side of pillar pages
-- **Hidden UniversalServiceButton:** Removed orange globe from /pet-home, /my-requests, /my-pets, /dashboard
-- **ProductDetailModal z-index fix:** z-50000 (was z-9999), now renders above LearnContentModal (z-11000)
-- **Soul Growth Card gamification:** New dark card with glowing SVG soul ring, animated score, Mira quotes, de-emphasized skip button
+### Session Feb 2026 — Soul Builder Rewrite
+- **45-question Soul Builder** across 8 chapters: Identity, Family, Routine, Home, Travel, Food, Training, Horizon
+- **3 screens:** Intro (pet photo + soul ring + chapter preview) → Questions (chapter dots, live score ring, Mira messages, option cards) → Celebration (final score, Mira summary)
+- **Gamification:** +pts popup on each answer, soul ring animates and grows, Mira messages change per question
+- **Pet photo** in intro screen (golden-bordered circle) and celebration screen
+- **No pets redirect:** `/join` if user has no pets
+- **API fix:** `question_id` field matches backend expectation
+- **Skip chapter + Save & finish later** options (skip de-emphasized)
+
+### Session Feb 2026 — Mobile Navigation Overhaul
+- MobileMenu via `createPortal` to body (z-99999/100000), X close button, 3-column pillar grid
+- Removed duplicate Navbar/tabs from PetHomePage, moved /pet-home into MainLayout
+- Removed PillarPageLayout duplicate header (no more ☰ on right)
+- Hidden UniversalServiceButton (orange globe) on logged-in pages
+- ProductDetailModal z-index: 50000 (above LearnContentModal's 11000)
 
 ### Previously Completed
 - Universal Intent-to-Ticket flow (tdc_intent.js + useConcierge.js)
 - Performance: score-for-pet bulk queries (3min → 45ms)
-- Admin Panel redesign (white UI, TDC amber)
-- Two-Way Inbox (Admin ↔ Member via WhatsApp/Gupshup)
-- Mobile UX: rebuilt hamburger menu, sendBeacon for mobile network safety
-- Google Places NearMe across 6 pillars
-- Mira streaming (simulated word-by-word)
-- 3-Layer Mira Picks (Breed Soul → Services → AI Scored)
-- Product catalog cleanup (237 dupes deleted, 5,074 mapped to Cloudinary)
-- Static pages (Landing, About, FAQs, Membership)
-- Membership pricing: ₹2,999/year
+- Admin Panel redesign, Two-Way Inbox (WhatsApp/Gupshup)
+- Google Places NearMe, Mira streaming, 3-Layer Mira Picks
+- Product catalog cleanup, Static pages, Membership ₹2,999/year
+
+## Soul Scoring System
+- **Backend:** `calculate_pet_soul_score()` in `pet_score_logic.py`
+- **Canonical mapping:** `canonical_answers.py` maps UI field names to scoring fields
+- **Weighted scoring:** Total possible = 100 (fixed), categories: personality, safety, nutrition, etc.
+- **Tiers:** Based on percentage: Seedling → Sprout → Bloom → Soul Master
+- **Storage:** `doggy_soul_answers` dict on pet document, `overall_score` float
 
 ## Prioritized Backlog
 
@@ -51,29 +58,21 @@ Build a production-ready pet life management platform with 12 core pillars, AI c
 - [ ] Run pillar name migration on production Atlas DB
 - [ ] Full E2E mobile test on real device
 
-### P1 — Service Flow Audit
+### P1 — Service Flow
 - [ ] Audit useConcierge.js integration across all pillar pages
-- [ ] Verify every "Book via Concierge" action creates admin ticket
-- [ ] Soul Product AI image generation (background jobs in progress)
+- [ ] Verify every pillar booking action creates admin ticket
+- [ ] Soul Product AI image generation (background)
 
 ### P2 — UX Polish
 - [ ] Backend pagination for Mira Picks
 - [ ] Production .env (SMTP/Resend credentials)
-- [ ] Pet Parent Dashboard mobile-first UX deep audit
-- [ ] Onboarding flow full mobile audit (Registration → Soul Builder → Pet Home)
 - [ ] Update complete-documentation.html
+- [ ] Add more questions to reach 51+ in Soul Builder
 
 ### P3 — Future
 - [ ] Build Love pillar
 - [ ] Refactor MiraDemoPage.jsx (5,400+ lines → modules)
 - [ ] Remove "Skip Payment" from onboarding (post soft-launch)
-
-## Key DB Collections
-- `service_desk_tickets`: ticket_id, parent_id, status, intent_primary, thread, messages, mira_briefing
-- `products_master`: id, pillar, category, price, cloudinary_image_url, active
-- `mira_product_scores`: pet_id, entity_id, score, scored_at
-- `breed_products`: product_type, breed_name, mockup_url
-- `pets`: health_vault, doggy_soul_answers (79+ keys for complete profiles)
 
 ## Test Credentials
 - User: dipali@clubconcierge.in / test123
