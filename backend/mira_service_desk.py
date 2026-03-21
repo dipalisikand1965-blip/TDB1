@@ -1037,6 +1037,29 @@ async def get_tickets_by_parent(parent_id: str, limit: int = 100):
 
     tickets = await cursor.to_list(length=limit)
 
+    # ── Deduplicate by ticket_id — keep richest document ──────────────────────
+    # Multiple docs with same ticket_id can exist (legacy vs new format)
+    # Pick the one with the most complete data (has thread, has unread flag, etc.)
+    seen_ids: dict = {}
+    for t in tickets:
+        tid = t.get("ticket_id") or t.get("id")
+        if not tid:
+            continue
+        existing = seen_ids.get(tid)
+        if existing is None:
+            seen_ids[tid] = t
+        else:
+            # Keep the one with more data (thread, replies, mira_briefing)
+            t_score = len(t.get("thread", []) or []) + (1 if t.get("has_unread_concierge_reply") else 0) + (1 if t.get("mira_briefing") else 0)
+            e_score = len(existing.get("thread", []) or []) + (1 if existing.get("has_unread_concierge_reply") else 0) + (1 if existing.get("mira_briefing") else 0)
+            if t_score > e_score:
+                # Merge: take richest but preserve parent_id from the user-linked one
+                merged = {**t, **{k: v for k, v in existing.items() if v and not t.get(k)}}
+                merged["parent_id"] = existing.get("parent_id") or t.get("parent_id")
+                seen_ids[tid] = merged
+
+    tickets = list(seen_ids.values())
+
     # Sanitize ObjectId fields + normalize intent_primary (stored as "type" in older tickets)
     clean = []
     for t in tickets:
@@ -1103,40 +1126,45 @@ async def concierge_reply(
         }
     }
     
-    # Update mira_conversations
-    result = await db.mira_conversations.update_one(
+    # ── Write to ALL 4 collections for full compatibility ─────────────────────
+    # mira_conversations (legacy)
+    await db.mira_conversations.update_one(
         {"ticket_id": ticket_id},
         {
             "$push": {"conversation": concierge_message},
             "$set": {"updated_at": now.isoformat()}
         }
     )
-    
-    # Also update mira_tickets (canonical spine) - set unread flag
+    # mira_tickets
     ticket_result = await db.mira_tickets.update_one(
         {"ticket_id": ticket_id},
         {
             "$push": {"messages": concierge_message},
-            "$set": {
-                "updated_at": now.isoformat(),
-                "has_unread_concierge_reply": True,
-                "last_concierge_reply_at": now.isoformat()
-            }
+            "$set": {"updated_at": now.isoformat(), "has_unread_concierge_reply": True, "last_concierge_reply_at": now.isoformat()}
         }
     )
-    
-    # Also update tickets collection (dual-write for compatibility)
+    # tickets (legacy)
     await db.tickets.update_one(
         {"ticket_id": ticket_id},
         {
             "$push": {"messages": concierge_message},
+            "$set": {"updated_at": now.isoformat(), "has_unread_concierge_reply": True}
+        }
+    )
+    # ── CANONICAL: service_desk_tickets ── update ALL docs with this ticket_id
+    result = await db.service_desk_tickets.update_many(
+        {"$or": [{"ticket_id": ticket_id}, {"id": ticket_id}]},
+        {
+            "$push": {"thread": concierge_message},
             "$set": {
                 "updated_at": now.isoformat(),
-                "has_unread_concierge_reply": True
+                "has_unread_concierge_reply": True,
+                "last_concierge_reply_at": now.isoformat(),
+                "status": "in_progress",
             }
         }
     )
-    
+
     if result.matched_count == 0 and ticket_result.matched_count == 0:
         raise HTTPException(status_code=404, detail=f"Ticket {ticket_id} not found")
     
@@ -1270,6 +1298,8 @@ async def concierge_reply(
                                         </p>
                                     </div>
                                 </div>
+
+
                             """,
                             "headers": {
                                 "X-Ticket-ID": ticket_id,
@@ -1288,6 +1318,19 @@ async def concierge_reply(
         "ticket_id": ticket_id,
         "has_unread_concierge_reply": True
     }
+
+
+@service_desk_router.post("/mark_reply_read")
+async def mark_reply_read(ticket_id: str):
+    """Member taps on a ticket — clear the unread concierge reply badge."""
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=500, detail="DB not available")
+    await db.service_desk_tickets.update_many(
+        {"$or": [{"ticket_id": ticket_id}, {"id": ticket_id}]},
+        {"$set": {"has_unread_concierge_reply": False}}
+    )
+    return {"success": True, "ticket_id": ticket_id}
 
 
 # ============================================

@@ -853,14 +853,16 @@ async def auto_tag_all_services():
 
 # Top 20 dog breeds for personalized products
 TOP_BREEDS = [
-    # Most popular Indian breeds (33 total)
+    # Most popular Indian breeds (36 total — updated Mar 2026)
     "Golden Retriever", "Labrador", "German Shepherd", "Beagle", "Shih Tzu",
     "Pug", "Rottweiler", "Doberman", "Husky", "Cocker Spaniel",
     "Boxer", "Poodle", "Dachshund", "French Bulldog", "Indie",
     "Great Dane", "Dalmatian", "Chihuahua", "Pomeranian", "Border Collie",
     "Bulldog", "Maltese", "Yorkshire Terrier", "Akita", "Saint Bernard",
     "Lhasa Apso", "Bichon Frise", "Corgi", "Samoyed", "Vizsla",
-    "Weimaraner", "Basenji", "Alaskan Malamute"
+    "Weimaraner", "Basenji", "Alaskan Malamute",
+    # Newly added (Mar 2026)
+    "Maltipoo", "Indian Spitz", "Labradoodle",
 ]
 
 # Product templates for each breed
@@ -1060,6 +1062,59 @@ BREED_PRODUCT_TEMPLATES = [
         "soul_tier": "soul_made",
         "description_template": "A stunning illustrated {breed} activity print — showing your dog's top play activities, energy level, and soul personality. Ready to frame.",
         "mira_hint_template": "🎨 Soul art! {breed} personality print — frame-worthy and 100% personalised"
+    },
+
+    # ── NEW PRODUCT TYPES (added Mar 2026) ─────────────────────────────────────
+
+    {
+        "what_is": "Custom Portrait",
+        "why_fits": "AI Breed Portrait",
+        "category": "breed-custom_portraits",
+        "pillars": ["celebrate", "farewell", "shop"],
+        "price": 2499,
+        "soul_tier": "soul_made",
+        "description_template": "A breathtaking AI-generated watercolour portrait of your {breed} — capturing their soul, personality and energy in stunning fine-art style. Ships as a museum-quality print.",
+        "mira_hint_template": "🖼 Highest value! Stunning watercolour portrait — every {breed} parent wants one"
+    },
+    {
+        "what_is": "Phone Case",
+        "why_fits": "Breed Design",
+        "category": "breed-phone_cases",
+        "pillars": ["shop", "celebrate"],
+        "price": 799,
+        "soul_tier": "soul_made",
+        "description_template": "Premium slim phone case featuring beautiful {breed} artwork — soft-touch finish, drop protection, and a design that shows the world you're a {breed} parent.",
+        "mira_hint_template": "📱 Everyone wants one! {breed} phone case — most impulse-purchased product"
+    },
+    {
+        "what_is": "Framed Wall Art",
+        "why_fits": "Home Décor",
+        "category": "breed-wall_art",
+        "pillars": ["shop", "celebrate"],
+        "price": 1899,
+        "soul_tier": "soul_made",
+        "description_template": "Museum-quality framed print of your {breed} — AI-generated watercolour illustration ready to hang. Makes the perfect gift for any {breed} lover.",
+        "mira_hint_template": "🏠 Statement piece! {breed} wall art — gifting bestseller, ships framed"
+    },
+    {
+        "what_is": "Memory Box",
+        "why_fits": "Tribute Collection",
+        "category": "breed-memory_boxes",
+        "pillars": ["farewell", "celebrate"],
+        "price": 3499,
+        "soul_tier": "soul_made",
+        "description_template": "A beautifully crafted {breed} memory box — hand-engraved with breed silhouette, lined with velvet, and made to hold paw prints, tags, fur, and your most precious memories.",
+        "mira_hint_template": "💜 Deeply meaningful. {breed} memory box — farewell's most treasured keepsake"
+    },
+    {
+        "what_is": "Birthday Cake Topper",
+        "why_fits": "Celebration Edition",
+        "category": "breed-birthday_cake_toppers",
+        "pillars": ["celebrate"],
+        "price": 499,
+        "soul_tier": "soul_made",
+        "description_template": "Custom {breed} birthday cake topper — laser-cut wood with breed silhouette and personalised name. Works on any cake and makes for the most adorable birthday photos.",
+        "mira_hint_template": "🎂 Easy add-on! {breed} cake topper — makes every birthday photo perfect"
     },
 ]
 
