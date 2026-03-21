@@ -47,7 +47,7 @@ const PILLARS = {
     sources: ['reservation', 'meal_order', 'dine_inquiry']
   },
   stay: { 
-    icon: Hotel, emoji: '🏨', color: 'bg-blue-500', name: 'Stay',
+    icon: Hotel, emoji: '🏨', color: 'bg-blue-500', name: 'Go',
     sources: ['booking', 'stay_inquiry', 'boarding', 'stay_booking']
   },
   travel: { 
@@ -59,11 +59,11 @@ const PILLARS = {
     sources: ['care_request', 'grooming', 'vet_coordination', 'health']
   },
   enjoy: { 
-    icon: Target, emoji: '🎾', color: 'bg-violet-500', name: 'Enjoy',
+    icon: Target, emoji: '🎾', color: 'bg-violet-500', name: 'Play',
     sources: ['activity_booking', 'playdate', 'event_registration']
   },
   fit: { 
-    icon: Dumbbell, emoji: '🏃', color: 'bg-green-500', name: 'Fit',
+    icon: Dumbbell, emoji: '🏃', color: 'bg-green-500', name: 'Services',
     sources: ['fitness_program', 'assessment_booking', 'training']
   },
   learn: { 
@@ -99,7 +99,7 @@ const PILLARS = {
 // Special sections (not pillars but important categories)
 const SPECIAL_SECTIONS = {
   mira: { icon: Sparkles, emoji: '✨', color: 'bg-gradient-to-r from-purple-500 to-pink-500', name: 'Mira AI', sources: ['mira_chat', 'ai_conversation'] },
-  membership: { icon: CreditCard, emoji: '💳', color: 'bg-emerald-500', name: 'Membership', sources: ['membership', 'subscription', 'upgrade'] },
+  membership: { icon: CreditCard, emoji: '💳', color: 'bg-amber-500', name: 'Membership', sources: ['membership', 'subscription', 'upgrade'] },
   pet_parent: { icon: User, emoji: '👤', color: 'bg-blue-400', name: 'Pet Parent', sources: ['member_inquiry', 'account'] },
   pet_profile: { icon: Dog, emoji: '🐕', color: 'bg-amber-400', name: 'Pet Profile', sources: ['pet_inquiry', 'pet_update'] }
 };
@@ -112,7 +112,7 @@ const STATUS_CONFIG = {
   waiting_on_member: { label: 'Awaiting Reply', color: 'bg-orange-500', textColor: 'text-orange-700', bgLight: 'bg-orange-100' },
   on_hold: { label: 'On Hold', color: 'bg-slate-500', textColor: 'text-slate-700', bgLight: 'bg-slate-100' },
   escalated: { label: 'Escalated', color: 'bg-red-500', textColor: 'text-red-700', bgLight: 'bg-red-100' },
-  resolved: { label: 'Resolved', color: 'bg-emerald-500', textColor: 'text-emerald-700', bgLight: 'bg-emerald-100' },
+  resolved: { label: 'Resolved', color: 'bg-amber-500', textColor: 'text-emerald-700', bgLight: 'bg-emerald-100' },
   closed: { label: 'Closed', color: 'bg-gray-400', textColor: 'text-gray-600', bgLight: 'bg-gray-100' },
   pending: { label: 'Pending', color: 'bg-yellow-500', textColor: 'text-yellow-700', bgLight: 'bg-yellow-100' },
   confirmed: { label: 'Confirmed', color: 'bg-green-500', textColor: 'text-green-700', bgLight: 'bg-green-100' },
@@ -150,8 +150,8 @@ const TICKET_TYPES = {
   
   // Reservations & Bookings
   reservation: { label: 'Dine Reservation', icon: Utensils, pillar: 'dine' },
-  stay_booking: { label: 'Stay Booking', icon: Hotel, pillar: 'stay' },
-  boarding: { label: 'Boarding Request', icon: Home, pillar: 'stay' },
+  stay_booking: { label: 'Stay Booking', icon: Hotel, pillar: 'go' },
+  boarding: { label: 'Boarding Request', icon: Home, pillar: 'go' },
   
   // Service Requests
   care_request: { label: 'Care Request', icon: Stethoscope, pillar: 'care' },
@@ -584,7 +584,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             description: `${b.guest_name} - ${b.check_in_date} to ${b.check_out_date}`,
             status: b.status,
             urgency: 'medium',
-            category: 'stay',
+            category: 'go',
             channel: 'booking',
             source: 'stay_booking',
             member: { name: b.guest_name, email: b.guest_email, phone: b.guest_phone },
@@ -2316,18 +2316,18 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       
       {/* Mobile Bottom Navigation */}
       {isMobile && (
-        <div className="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 z-50 safe-area-pb">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-50 safe-area-pb">
           <div className="flex items-center justify-around py-2">
             <button
               onClick={() => setMobileView('sidebar')}
-              className={`flex flex-col items-center p-2 rounded-lg ${mobileView === 'sidebar' ? 'text-emerald-400' : 'text-slate-400'}`}
+              className={`flex flex-col items-center p-2 rounded-lg ${mobileView === 'sidebar' ? 'text-amber-600' : 'text-slate-500'}`}
             >
               <Menu className="w-5 h-5" />
               <span className="text-[10px] mt-1">Menu</span>
             </button>
             <button
               onClick={() => setMobileView('list')}
-              className={`flex flex-col items-center p-2 rounded-lg relative ${mobileView === 'list' ? 'text-emerald-400' : 'text-slate-400'}`}
+              className={`flex flex-col items-center p-2 rounded-lg relative ${mobileView === 'list' ? 'text-amber-600' : 'text-slate-500'}`}
             >
               <Inbox className="w-5 h-5" />
               <span className="text-[10px] mt-1">Tickets</span>
@@ -2339,7 +2339,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             </button>
             <button
               onClick={() => selectedTicket && setMobileView('detail')}
-              className={`flex flex-col items-center p-2 rounded-lg ${mobileView === 'detail' ? 'text-emerald-400' : 'text-slate-400'} ${!selectedTicket ? 'opacity-50' : ''}`}
+              className={`flex flex-col items-center p-2 rounded-lg ${mobileView === 'detail' ? 'text-amber-600' : 'text-slate-500'} ${!selectedTicket ? 'opacity-50' : ''}`}
               disabled={!selectedTicket}
             >
               <FileText className="w-5 h-5" />
@@ -2347,7 +2347,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             </button>
             <button
               onClick={() => fetchAllTickets()}
-              className="flex flex-col items-center p-2 rounded-lg text-slate-400"
+              className="flex flex-col items-center p-2 rounded-lg text-slate-500"
             >
               <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
               <span className="text-[10px] mt-1">Refresh</span>
@@ -2372,24 +2372,24 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       
       {/* ==================== LEFT SIDEBAR ==================== */}
       <div className={`
-        bg-slate-800 text-white transition-all duration-300 flex flex-col
+        bg-white border-r border-slate-200 transition-all duration-300 flex flex-col shadow-sm
         ${isMobile 
           ? `fixed inset-y-0 left-0 z-40 w-72 transform ${mobileView === 'sidebar' ? 'translate-x-0' : '-translate-x-full'}` 
           : `${sidebarCollapsed ? 'w-16' : 'w-60'}`
         }
         ${isMobile ? 'pb-16' : ''}
       `}>
-        {/* Logo */}
-        <div className="p-4 border-b border-slate-700">
+        {/* Logo + Go to Platform */}
+        <div className="p-4 border-b border-slate-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{background:"linear-gradient(135deg,#C9973A,#1A1A2E)"}}>
                 <PawPrint className="w-5 h-5 text-white" />
               </div>
               {(!sidebarCollapsed || isMobile) && (
                 <div>
-                  <div className="font-bold text-sm">The Doggy Company</div>
-                  <div className="text-[10px] text-emerald-400 uppercase tracking-wider">Command Center</div>
+                  <div className="font-bold text-sm text-slate-800">The Doggy Company</div>
+                  <div className="text-[10px] text-amber-600 uppercase tracking-wider font-semibold">Command Center</div>
                 </div>
               )}
             </div>
@@ -2397,18 +2397,28 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             {isMobile && (
               <button
                 onClick={() => setMobileView('list')}
-                className="p-2 hover:bg-slate-700 rounded-lg"
+                className="p-2 hover:bg-slate-50 rounded-lg"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 text-slate-500" />
               </button>
             )}
           </div>
+          {/* Go to Platform button */}
+          {(!sidebarCollapsed || isMobile) && (
+            <a
+              href="/pet-home"
+              className="mt-3 flex items-center gap-2 text-xs font-semibold text-amber-700 hover:text-amber-900 transition-colors"
+              data-testid="go-to-platform-btn"
+            >
+              <span>Go to Platform →</span>
+            </a>
+          )}
         </div>
         
         {/* WebSocket Connection Status */}
         {!sidebarCollapsed && (
-          <div className="px-4 py-2 border-b border-slate-700">
-            <div className={`flex items-center gap-2 text-xs ${connected ? 'text-emerald-400' : 'text-amber-400'}`}>
+          <div className="px-4 py-2 border-b border-slate-100">
+            <div className={`flex items-center gap-2 text-xs ${connected ? 'text-amber-600' : 'text-amber-400'}`}>
               {connected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
               <span>{connected ? 'Live Updates Active' : 'Connecting...'}</span>
             </div>
@@ -2421,7 +2431,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           <button
             onClick={() => setActiveNav('dashboard')}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-colors ${
-              activeNav === 'dashboard' ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-700/50'
+              activeNav === 'dashboard' ? 'bg-amber-50 text-amber-800 border-l-2 border-amber-600 font-semibold' : 'text-slate-600 hover:bg-slate-50'
             }`}
           >
             <LayoutDashboard className="w-5 h-5" />
@@ -2433,7 +2443,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             <button
               onClick={() => { setActiveNav('tickets'); setTicketsExpanded(!ticketsExpanded); }}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
-                activeNav === 'tickets' ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-700/50'
+                activeNav === 'tickets' ? 'bg-amber-50 text-amber-800 border-l-2 border-amber-600 font-semibold' : 'text-slate-600 hover:bg-slate-50'
               }`}
             >
               <div className="flex items-center gap-3">
@@ -2450,7 +2460,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             
             {/* Tickets submenu */}
             {ticketsExpanded && activeNav === 'tickets' && !sidebarCollapsed && (
-              <div className="ml-4 mt-1 space-y-0.5 border-l border-slate-700 pl-2">
+              <div className="ml-4 mt-1 space-y-0.5 border-l border-slate-200 pl-2">
                 {[
                   { id: 'all', label: 'All', count: stats.total, icon: Inbox },
                   { id: 'open', label: 'Open', count: stats.open, icon: AlertCircle },
@@ -2467,7 +2477,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                       if (isMobile) setMobileView('list');
                     }}
                     className={`w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs transition-colors ${
-                      selectedView === item.id ? 'bg-white/10 text-white' : 'text-slate-400 hover:text-white'
+                      selectedView === item.id ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-white'
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -2487,7 +2497,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
               <div className="text-[10px] text-slate-500 uppercase tracking-wider px-3 mb-2">Pillars</div>
               <div className="space-y-0.5 px-1">
                 {/* First 7 pillars (main) */}
-                {['celebrate', 'dine', 'stay', 'travel', 'care', 'enjoy', 'fit'].map(key => {
+                {['celebrate', 'dine', 'go', 'travel', 'care', 'play', 'services'].map(key => {
                   const pillar = PILLARS[key];
                   const Icon = pillar.icon;
                   const count = stats.by_pillar[key] || 0;
@@ -2496,7 +2506,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                       key={key}
                       onClick={() => { setActiveNav('tickets'); setSelectedPillar(key); }}
                       className={`w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs transition-colors ${
-                        selectedPillar === key ? 'bg-emerald-600/80 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                        selectedPillar === key ? 'bg-emerald-600/80 text-white' : 'text-slate-500 hover:text-white hover:bg-slate-50'
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -2519,7 +2529,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         key={key}
                         onClick={() => { setActiveNav('tickets'); setSelectedPillar(key); }}
                         className={`w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs transition-colors ${
-                          selectedPillar === key ? 'bg-emerald-600/80 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                          selectedPillar === key ? 'bg-emerald-600/80 text-white' : 'text-slate-500 hover:text-white hover:bg-slate-50'
                         }`}
                       >
                         <div className="flex items-center gap-2">
@@ -2544,7 +2554,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 <button
                   onClick={() => { setActiveNav('tickets'); setSelectedPillar('mira'); }}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs transition-colors ${
-                    selectedPillar === 'mira' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                    selectedPillar === 'mira' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' : 'text-slate-500 hover:text-white hover:bg-slate-50'
                   }`}
                 >
                   <div className="flex items-center gap-2">
@@ -2557,11 +2567,11 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 <button
                   onClick={() => { setActiveNav('tickets'); setSelectedPillar('membership'); }}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs transition-colors ${
-                    selectedPillar === 'membership' ? 'bg-emerald-600/80 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                    selectedPillar === 'membership' ? 'bg-emerald-600/80 text-white' : 'text-slate-500 hover:text-white hover:bg-slate-50'
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-emerald-400" />
+                    <CreditCard className="w-4 h-4 text-amber-600" />
                     <span>Membership</span>
                   </div>
                 </button>
@@ -2570,7 +2580,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 <button
                   onClick={() => { setActiveNav('tickets'); setSelectedPillar('pet_parent'); }}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs transition-colors ${
-                    selectedPillar === 'pet_parent' ? 'bg-blue-600/80 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                    selectedPillar === 'pet_parent' ? 'bg-blue-600/80 text-white' : 'text-slate-500 hover:text-white hover:bg-slate-50'
                   }`}
                 >
                   <div className="flex items-center gap-2">
@@ -2586,7 +2596,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 <button
                   onClick={() => { setActiveNav('tickets'); setSelectedPillar('pet_profile'); }}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs transition-colors ${
-                    selectedPillar === 'pet_profile' ? 'bg-amber-600/80 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                    selectedPillar === 'pet_profile' ? 'bg-amber-600/80 text-white' : 'text-slate-500 hover:text-white hover:bg-slate-50'
                   }`}
                 >
                   <div className="flex items-center gap-2">
@@ -2611,7 +2621,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             <button
               onClick={() => setActiveNav('pet_parents')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
-                activeNav === 'pet_parents' ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-700/50'
+                activeNav === 'pet_parents' ? 'bg-amber-50 text-amber-800 border-l-2 border-amber-600 font-semibold' : 'text-slate-600 hover:bg-slate-50'
               }`}
             >
               <div className="flex items-center gap-3">
@@ -2627,7 +2637,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             <button
               onClick={() => setActiveNav('pet_profiles')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
-                activeNav === 'pet_profiles' ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-700/50'
+                activeNav === 'pet_profiles' ? 'bg-amber-50 text-amber-800 border-l-2 border-amber-600 font-semibold' : 'text-slate-600 hover:bg-slate-50'
               }`}
             >
               <div className="flex items-center gap-3">
@@ -2647,7 +2657,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             <button
               onClick={() => setActiveNav('orders')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
-                activeNav === 'orders' ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-700/50'
+                activeNav === 'orders' ? 'bg-amber-50 text-amber-800 border-l-2 border-amber-600 font-semibold' : 'text-slate-600 hover:bg-slate-50'
               }`}
             >
               <div className="flex items-center gap-3">
@@ -2663,7 +2673,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             <button
               onClick={() => setActiveNav('analytics')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
-                activeNav === 'analytics' ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-700/50'
+                activeNav === 'analytics' ? 'bg-amber-50 text-amber-800 border-l-2 border-amber-600 font-semibold' : 'text-slate-600 hover:bg-slate-50'
               }`}
             >
               <div className="flex items-center gap-3">
@@ -2675,7 +2685,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             {/* Agent Performance */}
             <button
               onClick={() => { fetchAgentPerformance(); setShowPerformanceModal(true); }}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors text-slate-300 hover:bg-slate-700/50"
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors text-slate-600 hover:bg-slate-50"
             >
               <div className="flex items-center gap-3">
                 <Users className="w-5 h-5" />
@@ -2686,7 +2696,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         </nav>
         
         {/* Bottom */}
-        <div className="p-2 border-t border-slate-700">
+        <div className="p-2 border-t border-slate-100">
           {/* SLA Breach Alert */}
           {(breachedTickets.length > 0 || approachingBreachTickets.length > 0) && !sidebarCollapsed && (
             <div className="mb-2 p-2 bg-red-900/30 rounded-lg">
@@ -2707,7 +2717,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           
           <button 
             onClick={() => setShowSettingsModal(true)}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-700/50 text-sm"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:bg-slate-50 text-sm"
           >
             <Settings className="w-5 h-5" />
             {!sidebarCollapsed && <span>Settings</span>}
@@ -2795,7 +2805,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                               }
                             } catch (err) { console.error(err); }
                           }}
-                          className="bg-emerald-500 hover:bg-emerald-600"
+                          className="bg-amber-500 hover:bg-emerald-600"
                         >
                           <Plus className="w-4 h-4 mr-1" /> Add
                         </Button>
@@ -2852,7 +2862,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                               }
                             } catch (err) { console.error(err); }
                           }}
-                          className="bg-emerald-500 hover:bg-emerald-600"
+                          className="bg-amber-500 hover:bg-emerald-600"
                         >
                           <Plus className="w-4 h-4 mr-1" /> Add
                         </Button>
@@ -2890,7 +2900,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                           setShowTemplateModal(true);
                         }}
                         size="sm"
-                        className="bg-emerald-500 hover:bg-emerald-600"
+                        className="bg-amber-500 hover:bg-emerald-600"
                       >
                         <Plus className="w-4 h-4 mr-1" /> New Template
                       </Button>
@@ -3021,7 +3031,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                             // Show success
                           } catch (err) { console.error(err); }
                         }}
-                        className="bg-emerald-500 hover:bg-emerald-600"
+                        className="bg-amber-500 hover:bg-emerald-600"
                       >
                         Save Automation Settings
                       </Button>
@@ -3051,7 +3061,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         {!notificationsEnabled ? (
                           <Button
                             onClick={requestNotificationPermission}
-                            className="bg-emerald-500 hover:bg-emerald-600"
+                            className="bg-amber-500 hover:bg-emerald-600"
                           >
                             Enable Notifications
                           </Button>
@@ -3115,7 +3125,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                     {/* Current Status Banner */}
                     <div className={`p-4 rounded-lg border-2 ${conciergeStatus.is_live ? 'border-emerald-200 bg-emerald-50' : 'border-amber-200 bg-amber-50'}`}>
                       <div className="flex items-center gap-3">
-                        <div className={`w-3 h-3 rounded-full ${conciergeStatus.is_live ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+                        <div className={`w-3 h-3 rounded-full ${conciergeStatus.is_live ? 'bg-amber-500 animate-pulse' : 'bg-amber-500'}`} />
                         <div>
                           <span className="font-semibold">{conciergeStatus.status_text || 'Loading...'}</span>
                           <p className="text-sm text-gray-600">{conciergeStatus.message || ''}</p>
@@ -3137,7 +3147,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                             onChange={(e) => setConciergeHours(prev => ({ ...prev, is_24x7: e.target.checked }))}
                             className="sr-only peer"
                           />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
                         </div>
                       </label>
                     </div>
@@ -3257,7 +3267,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                       <Button
                         onClick={saveConciergeHours}
                         disabled={conciergeHoursLoading}
-                        className="bg-emerald-500 hover:bg-emerald-600"
+                        className="bg-amber-500 hover:bg-emerald-600"
                         data-testid="save-concierge-hours"
                       >
                         {conciergeHoursLoading ? (
@@ -3554,7 +3564,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 <Button
                   onClick={handleSaveTemplate}
                   disabled={!templateForm.name.trim() || !templateForm.content.trim()}
-                  className="bg-emerald-500 hover:bg-emerald-600"
+                  className="bg-amber-500 hover:bg-emerald-600"
                 >
                   {editingTemplateId ? 'Update Template' : 'Create Template'}
                 </Button>
@@ -3634,7 +3644,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             <div className="relative">
               <Button 
                 onClick={() => setShowNewTicketModal(true)}
-                className="bg-emerald-500 hover:bg-emerald-600 gap-1 md:gap-2 shadow-sm text-xs md:text-sm px-2 md:px-4"
+                className="bg-amber-500 hover:bg-emerald-600 gap-1 md:gap-2 shadow-sm text-xs md:text-sm px-2 md:px-4"
                 data-testid="new-ticket-btn"
               >
                 <Plus className="w-4 h-4" /> 
@@ -3910,7 +3920,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                   <Button 
                     onClick={handleCreateTicket}
                     disabled={!newTicketForm.subject.trim() || sending}
-                    className="bg-emerald-500 hover:bg-emerald-600"
+                    className="bg-amber-500 hover:bg-emerald-600"
                   >
                     {sending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
                     Create Ticket
@@ -4458,7 +4468,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                             }}
                             autoFocus
                           />
-                          <Button size="sm" onClick={saveSubject} className="bg-emerald-500 hover:bg-emerald-600">
+                          <Button size="sm" onClick={saveSubject} className="bg-amber-500 hover:bg-emerald-600">
                             <CheckCircle className="w-4 h-4" />
                           </Button>
                           <Button size="sm" variant="ghost" onClick={() => setEditingSubject(false)}>
@@ -4763,7 +4773,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         </div>
                         <div className="flex justify-end gap-2 mt-6">
                           <Button variant="ghost" onClick={() => setIsEditingTicket(false)}>Cancel</Button>
-                          <Button onClick={saveTicketEdits} disabled={sending} className="bg-emerald-500 hover:bg-emerald-600">
+                          <Button onClick={saveTicketEdits} disabled={sending} className="bg-amber-500 hover:bg-emerald-600">
                             {sending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                             Save Changes
                           </Button>
@@ -5018,7 +5028,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                                     msg.is_internal
                                       ? 'bg-amber-50 border border-amber-200 text-left'
                                       : isAgent
-                                        ? 'bg-emerald-500 text-white text-left'
+                                        ? 'bg-amber-500 text-white text-left'
                                         : 'bg-gray-100'
                                   }`}>
                                     {msg.is_internal && (
@@ -5643,7 +5653,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         <Button
                           onClick={handleReply}
                           disabled={(!replyText || !replyText.replace(/<[^>]*>/g, '').trim()) && attachments.length === 0 || sending}
-                          className={`px-6 ${isInternal ? 'bg-amber-500 hover:bg-amber-600' : 'bg-emerald-500 hover:bg-emerald-600'}`}
+                          className={`px-6 ${isInternal ? 'bg-amber-500 hover:bg-amber-600' : 'bg-amber-500 hover:bg-emerald-600'}`}
                         >
                           {sending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
                           {isInternal ? 'Add Note' : 'Send Reply'}
@@ -5667,10 +5677,10 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-semibold flex items-center gap-2">
-                      <Clock className="w-5 h-5 text-emerald-400" />
+                      <Clock className="w-5 h-5 text-amber-600" />
                       Today&apos;s Ticket Ticker
                     </h3>
-                    <Badge className="bg-emerald-500 text-white">
+                    <Badge className="bg-amber-500 text-white">
                       {allTickets.filter(t => {
                         const today = new Date().toDateString();
                         return new Date(t.created_at).toDateString() === today;
@@ -5701,7 +5711,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                               <Badge className={`text-[10px] ${
                                 ticket.status === 'open' || ticket.status === 'new' ? 'bg-blue-500' :
                                 ticket.status === 'in_progress' ? 'bg-amber-500' :
-                                ticket.status === 'resolved' ? 'bg-emerald-500' :
+                                ticket.status === 'resolved' ? 'bg-amber-500' :
                                 'bg-slate-500'
                               }`}>
                                 {ticket.status}
@@ -5716,7 +5726,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         const daysDiff = (today - ticketDate) / (1000 * 60 * 60 * 24);
                         return daysDiff <= 1;
                       }).length === 0 && (
-                        <div className="flex-shrink-0 text-slate-400 px-4 py-2">
+                        <div className="flex-shrink-0 text-slate-500 px-4 py-2">
                           No tickets today yet - all quiet! 🎉
                         </div>
                       )}
@@ -5730,7 +5740,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 {[
                   { label: 'Open Tickets', value: stats.open, color: 'bg-blue-500', hoverColor: 'hover:bg-blue-600', view: 'open' },
                   { label: 'In Progress', value: stats.in_progress, color: 'bg-amber-500', hoverColor: 'hover:bg-amber-600', view: 'in_progress' },
-                  { label: 'Resolved', value: stats.resolved, color: 'bg-emerald-500', hoverColor: 'hover:bg-emerald-600', view: 'resolved' },
+                  { label: 'Resolved', value: stats.resolved, color: 'bg-amber-500', hoverColor: 'hover:bg-emerald-600', view: 'resolved' },
                   { label: 'Unassigned', value: stats.unassigned, color: 'bg-red-500', hoverColor: 'hover:bg-red-600', view: 'unassigned' }
                 ].map((stat, idx) => (
                   <Card 
@@ -6183,14 +6193,14 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         >
                           <div className="flex items-center gap-3">
                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                              isSelected ? 'border-emerald-500 bg-emerald-500' : 'border-gray-300'
+                              isSelected ? 'border-emerald-500 bg-amber-500' : 'border-gray-300'
                             }`}>
                               {isSelected && <CheckCircle className="w-3 h-3 text-white" />}
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <span className="font-mono text-xs text-gray-500">{id}</span>
-                                {isSelected && <Badge className="bg-emerald-500 text-white text-[10px]">MASTER</Badge>}
+                                {isSelected && <Badge className="bg-amber-500 text-white text-[10px]">MASTER</Badge>}
                               </div>
                               <p className="text-sm text-gray-700 truncate">{ticket.subject || ticket.description?.slice(0, 50)}</p>
                               <p className="text-xs text-gray-400">Status: {ticket.status} • {ticket.member?.name || 'Unknown'}</p>
@@ -6255,7 +6265,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 <Button variant="outline" onClick={() => { setShowMergeModal(false); setMergeReason(''); setMasterTicketId(null); }}>Cancel</Button>
                 <Button
                   onClick={mergeTickets}
-                  className="bg-emerald-500 hover:bg-emerald-600"
+                  className="bg-amber-500 hover:bg-emerald-600"
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
                   Merge {selectedTicketIds.length} Tickets
@@ -6722,7 +6732,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                     onClick={() => { setSelectedView(item.id); setShowMobileFilters(false); }}
                     className={`px-3 py-2 rounded-full text-sm flex items-center gap-2 ${
                       selectedView === item.id 
-                        ? 'bg-emerald-500 text-white' 
+                        ? 'bg-amber-500 text-white' 
                         : 'bg-gray-100 text-gray-700'
                     }`}
                   >
@@ -6743,7 +6753,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                   onClick={() => { setSelectedPillar('all'); setShowMobileFilters(false); }}
                   className={`px-3 py-2 rounded-full text-sm ${
                     selectedPillar === 'all' 
-                      ? 'bg-emerald-500 text-white' 
+                      ? 'bg-amber-500 text-white' 
                       : 'bg-gray-100 text-gray-700'
                   }`}
                 >
@@ -6755,7 +6765,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                     onClick={() => { setSelectedPillar(key); setShowMobileFilters(false); }}
                     className={`px-3 py-2 rounded-full text-sm flex items-center gap-1 ${
                       selectedPillar === key 
-                        ? 'bg-emerald-500 text-white' 
+                        ? 'bg-amber-500 text-white' 
                         : 'bg-gray-100 text-gray-700'
                     }`}
                   >
@@ -6774,7 +6784,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                   onClick={() => { setPriorityFilter('all'); setShowMobileFilters(false); }}
                   className={`px-3 py-2 rounded-full text-sm ${
                     priorityFilter === 'all' 
-                      ? 'bg-emerald-500 text-white' 
+                      ? 'bg-amber-500 text-white' 
                       : 'bg-gray-100 text-gray-700'
                   }`}
                 >
@@ -6786,7 +6796,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                     onClick={() => { setPriorityFilter(priority); setShowMobileFilters(false); }}
                     className={`px-3 py-2 rounded-full text-sm capitalize ${
                       priorityFilter === priority 
-                        ? 'bg-emerald-500 text-white' 
+                        ? 'bg-amber-500 text-white' 
                         : 'bg-gray-100 text-gray-700'
                     }`}
                   >
