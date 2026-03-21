@@ -474,31 +474,118 @@ async def get_top_picks(
     min_score: int = 60,
     breed: Optional[str] = None,
 ):
-    """Return top-scored items for a pet. Used by Mira's Picks UI."""
+    """
+    Return top picks for a pet using 3-layer approach:
+    Layer 1: Breed-specific soul products (breed_products) — always personalised, always fast
+    Layer 2: Services for the pillar — bookable via concierge
+    Layer 3: AI-scored products from mira_product_scores — fill remaining slots
+    """
     if _db is None:
         raise HTTPException(status_code=503, detail="DB not ready")
 
-    q = {"pet_id": pet_id, "score": {"$gte": min_score}}
+    results = []
+    breed_clean = (breed or "").strip()
+
+    # ── LAYER 1: Breed-specific soul products ─────────────────────────────────
+    # These are the personalised watercolour products (bandanas, portraits, etc.)
+    layer1_limit = min(limit // 2, 8)  # Up to 8 soul products
+    breed_q: dict = {"active": {"$ne": False}}
+    if breed_clean:
+        breed_q["breed_name"] = breed_clean
     if pillar:
-        q["pillar"] = pillar
-    if entity_type:
-        q["entity_type"] = entity_type
+        breed_q["$or"] = [{"pillar": pillar}, {"pillars": pillar}]
 
-    cursor = _db.mira_product_scores.find(q, {"_id": 0}).sort("score", -1).limit(limit * 3)
-    picks = await cursor.to_list(length=limit * 3)
+    soul_cursor = _db.breed_products.find(breed_q, {"_id": 0}).limit(layer1_limit)
+    soul_products = await soul_cursor.to_list(length=layer1_limit)
 
-    # Enrich with full product/service/bundle data — BULK fetch, not 60 individual find_one
-    entity_ids = [pick.get("entity_id") for pick in picks if pick.get("entity_id")]
-    
-    # Single bulk fetch per collection
-    products_map, services_map, bundles_map = {}, {}, {}
-    product_ids  = [p["entity_id"] for p in picks if p.get("entity_type","product") == "product"]
-    service_ids  = [p["entity_id"] for p in picks if p.get("entity_type") == "service"]
-    bundle_ids   = [p["entity_id"] for p in picks if p.get("entity_type") == "bundle"]
+    for p in soul_products:
+        p["mira_score"]  = p.get("mira_score", 92)  # Soul products are always highly recommended
+        p["mira_reason"] = p.get("mira_hint") or f"Personalised for {breed_clean or 'your dog'} — made by Mira just for them"
+        p["entity_type"] = "soul_product"
+        p["source"]      = "breed_products"
+        results.append(p)
 
-    if product_ids:
-        async for doc in _db.products_master.find({"id": {"$in": product_ids}}, {"_id": 0}):
-            products_map[doc["id"]] = doc
+    # ── LAYER 2: Pillar services ───────────────────────────────────────────────
+    # Services that can be booked via concierge for this pillar
+    layer2_limit = min(limit // 4, 4)  # Up to 4 services
+    if pillar and not entity_type:
+        svc_q: dict = {
+            "active": {"$ne": False},
+            "$or": [{"pillar": pillar}, {"pillars": pillar}],
+        }
+        svc_cursor = _db.services_master.find(svc_q, {"_id": 0}).limit(layer2_limit)
+        services = await svc_cursor.to_list(length=layer2_limit)
+        for s in services:
+            s["mira_score"]  = s.get("mira_score", 88)
+            s["mira_reason"] = f"Service Mira recommends for {breed_clean or 'your pet'} on /{pillar}"
+            s["entity_type"] = "service"
+            s["source"]      = "services_master"
+            results.append(s)
+
+    # ── LAYER 3: AI-scored products from mira_product_scores ──────────────────
+    # Fill remaining slots with traditionally scored products
+    remaining = limit - len(results)
+    if remaining > 0:
+        q = {"pet_id": pet_id, "score": {"$gte": min_score}}
+        if pillar:
+            q["pillar"] = pillar
+        if entity_type:
+            q["entity_type"] = entity_type
+
+        score_cursor = _db.mira_product_scores.find(q, {"_id": 0}).sort("score", -1).limit(remaining * 3)
+        picks = await score_cursor.to_list(length=remaining * 3)
+
+        products_map, services_map, bundles_map = {}, {}, {}
+        product_ids = [p["entity_id"] for p in picks if p.get("entity_type","product") == "product"]
+        service_ids = [p["entity_id"] for p in picks if p.get("entity_type") == "service"]
+        bundle_ids  = [p["entity_id"] for p in picks if p.get("entity_type") == "bundle"]
+
+        if product_ids:
+            async for doc in _db.products_master.find({"id": {"$in": product_ids}}, {"_id": 0}):
+                products_map[doc["id"]] = doc
+        if service_ids:
+            async for doc in _db.services_master.find({"id": {"$in": service_ids}}, {"_id": 0}):
+                services_map[doc["id"]] = doc
+        if bundle_ids:
+            async for doc in _db.bundles.find({"id": {"$in": bundle_ids}}, {"_id": 0}):
+                bundles_map[doc["id"]] = doc
+
+        already_ids = {p.get("id") or p.get("_id") for p in results}
+        layer3_count = 0
+        for pick in picks:
+            if layer3_count >= remaining:
+                break
+            entity_id = pick.get("entity_id")
+            etype = pick.get("entity_type", "product")
+            full = products_map.get(entity_id) or services_map.get(entity_id) or bundles_map.get(entity_id)
+            if full and entity_id not in already_ids:
+                full = dict(full)
+                full["mira_score"]  = pick.get("score")
+                full["mira_reason"] = pick.get("mira_reason")
+                full["entity_type"] = etype
+                full["source"]      = "mira_product_scores"
+                results.append(full)
+                already_ids.add(entity_id)
+                layer3_count += 1
+
+    # ── Fallback: if still empty, return top soul products for pillar ──────────
+    if not results and pillar:
+        import asyncio
+        asyncio.create_task(_run_full_scoring(pet_id, pillar, None))
+        fb_q: dict = {"$or": [{"pillar": pillar}, {"pillars": pillar}], "active": {"$ne": False}, "price": {"$gt": 0}}
+        if breed_clean:
+            fb_q["$or"] = [
+                {"breed_name": breed_clean}, {"breed_name": {"$in": ["all","All",""]}},
+                {"$or": [{"pillar": pillar}, {"pillars": pillar}]},
+            ]
+        fb_cursor = _db.products_master.find({"$and": [{"$or": [{"pillar": pillar}, {"pillars": pillar}]}, {"active": {"$ne": False}}, {"price": {"$gt": 0}}]}, {"_id": 0}).sort([("mira_score", -1)]).limit(limit)
+        fallback = await fb_cursor.to_list(length=limit)
+        for p in fallback:
+            p["mira_reason"] = f"Top {pillar} pick — Mira is personalising scores for you."
+            p["is_fallback"]  = True
+        return {"picks": fallback, "count": len(fallback), "scoring_pending": True}
+
+    return {"picks": results[:limit], "count": len(results[:limit]), "layers": {"soul": len(soul_products), "services": len(results) - len(soul_products) - layer3_count if "layer3_count" in dir() else 0, "scored": layer3_count if "layer3_count" in dir() else 0}}
     if service_ids:
         async for doc in _db.services_master.find({"id": {"$in": service_ids}}, {"_id": 0}):
             services_map[doc["id"]] = doc

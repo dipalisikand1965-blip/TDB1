@@ -137,9 +137,6 @@ const Footer = () => {
                   >
                     <Sparkles className="w-4 h-4" /> Mira AI
                   </button>
-                  <Link to="/autoship" className="flex items-center gap-2 text-sm py-2 hover:text-blue-400 transition-colors">
-                    🔄 Autoship &amp; Save
-                  </Link>
                   <Link to="/about" className="text-sm py-2 block hover:text-pink-400 transition-colors">About Us</Link>
                   <Link to="/my-requests" className="text-sm py-2 block hover:text-pink-400 transition-colors">📋 My Requests</Link>
                   <Link to="/faqs" className="text-sm py-2 block hover:text-pink-400 transition-colors">FAQs</Link>
@@ -158,13 +155,13 @@ const Footer = () => {
               </button>
               {expandedSection === 'contact' && (
                 <div className="p-4 space-y-3">
-                  <a href="tel:+919739982582" className="flex items-center gap-3 text-sm py-2 hover:text-white transition-colors">
+                  <a href="tel:+919739908844" className="flex items-center gap-3 text-sm py-2 hover:text-white transition-colors">
                     <Phone className="w-4 h-4 text-gray-500" />
-                    +91 9739982582
+                    +91 97399 08844
                   </a>
-                  <a href="mailto:woof@thedoggycompany.in" className="flex items-center gap-3 text-sm py-2 hover:text-white transition-colors">
+                  <a href="mailto:woof@thedoggycompany.com" className="flex items-center gap-3 text-sm py-2 hover:text-white transition-colors">
                     <Mail className="w-4 h-4 text-gray-500" />
-                    woof@thedoggycompany.in
+                    woof@thedoggycompany.com
                   </a>
                   <div className="flex items-start gap-3 text-sm py-2 text-gray-500">
                     <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
@@ -327,13 +324,13 @@ const Footer = () => {
                 <li>
                   <button 
                     onClick={() => window.dispatchEvent(new CustomEvent('openSoulExplainer'))}
-                    className="hover:text-teal-400 transition-colors flex items-center gap-1"
+                    className="hover:text-teal-400 transition-colors flex items-center gap-1 hidden"
                   >
                     ▶️ How Pet Soul™ Works
                   </button>
                   <Link to="/my-requests" className="hover:text-pink-400 transition-colors">📋 My Requests</Link>
                 </li>
-                <li><Link to="/autoship" className="hover:text-blue-400 transition-colors">🔄 Autoship &amp; Save</Link></li>
+                
                 <li><Link to="/about" className="hover:text-pink-400 transition-colors">About Us</Link></li>
                 <li><Link to="/faqs" className="hover:text-pink-400 transition-colors">FAQs</Link></li>
                 <li><Link to="/insights" className="hover:text-pink-400 transition-colors">TDC Insights</Link></li>
@@ -346,11 +343,11 @@ const Footer = () => {
               <ul className="space-y-3 text-sm">
                 <li className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-gray-500" />
-                  <span>+91 9739982582</span>
+                  <span>+91 97399 08844</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Mail className="w-4 h-4 text-gray-500" />
-                  <span>woof@thedoggycompany.in</span>
+                  <span>woof@thedoggycompany.com</span>
                 </li>
                 <li className="flex items-start gap-2 mt-4">
                   <MapPin className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />

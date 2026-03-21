@@ -357,11 +357,18 @@ export const PillarsCard = ({ data, petName }) => {
   const treatCount = data?.treat_count || 0;
   
   const pillarColors = {
-    Celebrate: { bg: 'rgba(201,151,58,0.15)', bar: 'linear-gradient(90deg,#C9973A,#F0C060)', text: '#F0C060' },
-    Farewell: { bg: 'rgba(196,96,122,0.15)', bar: 'linear-gradient(90deg,#C4607A,#E8A0B0)', text: '#E8A0B0' },
-    Care: { bg: 'rgba(75,38,128,0.2)', bar: 'linear-gradient(90deg,#7B4DB5,#A87ADB)', text: '#A87ADB' },
-    Dine: { bg: 'rgba(45,122,74,0.15)', bar: 'linear-gradient(90deg,#2D7A4A,#6BCB8B)', text: '#6BCB8B' },
-    Learn: { bg: 'rgba(201,151,58,0.1)', bar: 'linear-gradient(90deg,#8892A4,#C0C8D8)', text: '#C0C8D8' },
+    Celebrate:  { bg: 'rgba(201,151,58,0.15)',  bar: 'linear-gradient(90deg,#C9973A,#F0C060)',  text: '#F0C060' },
+    Farewell:   { bg: 'rgba(196,96,122,0.15)',  bar: 'linear-gradient(90deg,#C4607A,#E8A0B0)',  text: '#E8A0B0' },
+    Care:       { bg: 'rgba(75,38,128,0.2)',    bar: 'linear-gradient(90deg,#7B4DB5,#A87ADB)',  text: '#A87ADB' },
+    Dine:       { bg: 'rgba(45,122,74,0.15)',   bar: 'linear-gradient(90deg,#2D7A4A,#6BCB8B)',  text: '#6BCB8B' },
+    Learn:      { bg: 'rgba(201,151,58,0.1)',   bar: 'linear-gradient(90deg,#8892A4,#C0C8D8)',  text: '#C0C8D8' },
+    Go:         { bg: 'rgba(30,90,180,0.15)',   bar: 'linear-gradient(90deg,#1E5AB4,#5A9AEA)',  text: '#5A9AEA' },
+    Play:       { bg: 'rgba(231,111,81,0.15)',  bar: 'linear-gradient(90deg,#E76F51,#FF9878)',  text: '#FF9878' },
+    Shop:       { bg: 'rgba(155,89,182,0.15)',  bar: 'linear-gradient(90deg,#9B59B6,#C984E8)',  text: '#C984E8' },
+    Services:   { bg: 'rgba(52,152,219,0.15)',  bar: 'linear-gradient(90deg,#3498DB,#7FC4F0)',  text: '#7FC4F0' },
+    Paperwork:  { bg: 'rgba(100,116,139,0.15)', bar: 'linear-gradient(90deg,#64748B,#94A3B8)',  text: '#94A3B8' },
+    Emergency:  { bg: 'rgba(239,68,68,0.15)',   bar: 'linear-gradient(90deg,#EF4444,#FCA5A5)',  text: '#FCA5A5' },
+    Adopt:      { bg: 'rgba(236,72,153,0.15)',  bar: 'linear-gradient(90deg,#EC4899,#F9A8D4)',  text: '#F9A8D4' },
   };
   
   return (
