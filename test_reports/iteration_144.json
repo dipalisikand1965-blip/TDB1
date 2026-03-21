@@ -32,7 +32,7 @@
     "sent_to_concierge_confirmation": "PASS — 'Sent to Concierge!' shown as a div (not button) after successful POST",
     "sent_state_not_clickable": "PASS — Element tag=DIV, no additional API request made after clicking 'Sent to Concierge!'",
     "loader2_spinner_in_code": "PASS (code review) — {sending && <Loader2 size={11} style={{animation:'spin 1s linear infinite'}}/>} renders during POST (transient, can't screenshot)",
-    "pet_refetch_on_soul_score_updated": "PASS — soulScoreUpdated event → fetch /api/pets/pet-mojo-7327ad56 triggered. URL: https://intent-ticket-flow.preview.emergentagent.com/api/pets/pet-mojo-7327ad56",
+    "pet_refetch_on_soul_score_updated": "PASS — soulScoreUpdated event → fetch /api/pets/pet-mojo-7327ad56 triggered. URL: https://pet-soul-platform-1.preview.emergentagent.com/api/pets/pet-mojo-7327ad56",
     "soul_answer_persistence": "PASS — POST /api/pet-soul/profile/{id}/answer saves to doggy_soul_answers.{question_id}, verified via GET /api/pets/{id} response",
     "no_reappear_answered_questions": "PASS — quick-questions returns empty (0) for Mojo (100% answered), consistent with 'previously answered questions do NOT reappear'",
     "service_desk_backend": "PASS — /api/service_desk/attach_or_create_ticket returns {ticket_id, status, is_new} correctly for pillar=dine and pillar=celebrate"

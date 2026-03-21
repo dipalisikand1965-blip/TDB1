@@ -7,7 +7,7 @@ Viewport: 375x812 (iPhone SE / standard mobile)
 import asyncio
 import os
 
-BASE_URL = "https://intent-ticket-flow.preview.emergentagent.com"
+BASE_URL = "https://pet-soul-platform-1.preview.emergentagent.com"
 USER_EMAIL = "dipali@clubconcierge.in"
 USER_PASS = "test123"
 ADMIN_USER = "aditya"

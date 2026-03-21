@@ -4,7 +4,7 @@ Update Care products with generated images via API
 """
 import requests
 
-API_URL = "https://intent-ticket-flow.preview.emergentagent.com"
+API_URL = "https://pet-soul-platform-1.preview.emergentagent.com"
 AUTH = ("aditya", "lola4304")
 
 # Generated Care images

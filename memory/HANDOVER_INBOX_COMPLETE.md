@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://intent-ticket-flow.preview.emergentagent.com
+https://pet-soul-platform-1.preview.emergentagent.com
 ```
 
 ---
