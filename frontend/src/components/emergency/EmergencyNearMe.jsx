@@ -1,10 +1,10 @@
 /**
-import NearMeConciergeModal from '../common/NearMeConciergeModal';
  * EmergencyNearMe.jsx — /emergency pillar
  * The Doggy Company
  * Find 24hr vets, emergency clinics, poison control centres
  * Same Google Places pattern as FarewellNearMe/CareNearMe
  */
+import NearMeConciergeModal from '../common/NearMeConciergeModal';
 import { useState, useCallback } from "react";
 import { bookViaConcierge } from '../../utils/MiraCardActions';
 import { tdc } from '../../utils/tdc_intent';
@@ -31,7 +31,7 @@ const POPULAR_CITIES = [
 
 export default function EmergencyNearMe({ pet, onBook }) {
   const [city,       setCity]       = useState("");
-  const [selectedVendor, setSelectedVendor] = useState(null);
+  const [selectedPlace, setSelectedPlace] = useState(null);
   const [cityInput,  setCityInput]  = useState("");
   const [searchType, setSearchType] = useState("all");
   const [results,    setResults]    = useState([]);
@@ -139,7 +139,7 @@ export default function EmergencyNearMe({ pet, onBook }) {
                   {place.rating&&<div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}>{[1,2,3,4,5].map(s=><span key={s} style={{fontSize:11,color:s<=Math.round(place.rating)?"#F59E0B":"#D1D5DB"}}>★</span>)}<span style={{fontSize:11,fontWeight:600,color:G.mutedText}}>{place.rating}</span></div>}
                   <div style={{display:"flex",gap:8}}>
                     {place.phone&&<a href={`tel:${place.phone}`} style={{flex:1,textAlign:"center",padding:"8px",borderRadius:10,border:`1.5px solid ${G.border}`,fontSize:12,fontWeight:600,color:G.mid,textDecoration:"none",background:"#fff",cursor:"pointer"}}>📞 Call now</a>}
-                    <button onClick={()=>{ tdc.nearme({ query: "venue", pillar:"emergency", pet }); bookViaConcierge({ service: "venue", pillar:"emergency", pet, channel:"emergency_nearme" }); onBook?.({name:place.name,pillar:"emergency",id:"emergency_vet",accentColor:G.crimson,miraKnows:`Mira will coordinate with ${place.name} for ${petName}.`})}}   style={{flex:2,background:`linear-gradient(135deg,${G.crimson},${G.mid})`,color:"#fff",border:"none",borderRadius:10,padding:"8px",fontSize:12,fontWeight:700,cursor:"pointer"}}>🚨 Arrange via Concierge</button>
+                    <button onClick={()=>{ setSelectedPlace(place); tdc.nearme({ query: "venue", pillar:"emergency", pet }); bookViaConcierge({ service: place.name||"venue", pillar:"emergency", pet, channel:"emergency_nearme" }); onBook?.({name:place.name,pillar:"emergency",id:"emergency_vet",accentColor:G.crimson,miraKnows:`Mira will coordinate with ${place.name} for ${petName}.`})}}   style={{flex:2,background:`linear-gradient(135deg,${G.crimson},${G.mid})`,color:"#fff",border:"none",borderRadius:10,padding:"8px",fontSize:12,fontWeight:700,cursor:"pointer"}}>🚨 Arrange via Concierge</button>
                   </div>
                 </div>
               </div>
@@ -155,13 +155,5 @@ export default function EmergencyNearMe({ pet, onBook }) {
           <p style={{fontSize:13}}>Save the number before you need it — search your city above.</p>
         </div>
       )}
-    
-      <NearMeConciergeModal
-        isOpen={!!selectedVendor}
-        venue={selectedVendor}
-        pet={pet}
-        pillar="emergency"
-        onClose={() => setSelectedVendor(null)}
-      />
-    </div>  );
+</div>  );
 }

@@ -917,10 +917,11 @@ const Navbar = () => {
               {/* My Requests — desktop quick link */}
               {user && (
                 <Link to="/my-requests"
-                  className="hidden sm:flex items-center gap-1.5 text-sm hover:bg-white/10 rounded-lg px-3 py-2 transition-colors"
+                  className="hidden sm:flex items-center gap-1.5 text-sm text-slate-700 hover:bg-amber-50 hover:text-amber-700 rounded-lg px-3 py-2 transition-colors border border-transparent hover:border-amber-200 cursor-pointer"
+                  style={{ position: 'relative', zIndex: 10 }}
                   data-testid="navbar-my-requests">
                   <span>📋</span>
-                  <span className="font-medium">My Requests</span>
+                  <span className="font-semibold">My Requests</span>
                 </Link>
               )}
 
@@ -1175,217 +1176,125 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu — NO Framer Motion (causes iOS wobble) */}
       {isMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg max-h-[80vh] overflow-y-auto">
-          <div className="px-4 py-4 space-y-2">
-            
-            {/* Mobile Account */}
+        <div
+          className="lg:hidden bg-white border-t border-slate-100 shadow-xl"
+          style={{ maxHeight: '85vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}
+        >
+          <div className="px-4 py-4">
+
+            {/* ── 1. ALL 12 PILLAR PILLS — top, always visible ─────────────── */}
+            <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-3">Explore</p>
+            <div className="grid grid-cols-3 gap-2 mb-5">
+              {PILLARS.map(pillar => (
+                <Link
+                  key={pillar.path}
+                  to={pillar.path}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`flex flex-col items-center gap-1 p-3 rounded-xl border text-center transition-colors active:scale-95 ${
+                    isActive(pillar.path)
+                      ? 'border-amber-400 bg-amber-50 text-amber-800'
+                      : 'border-slate-100 bg-slate-50 text-slate-700 hover:bg-amber-50'
+                  }`}
+                  data-testid={`mobile-pillar-${pillar.id}`}
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
+                >
+                  <span className="text-xl">{pillar.emoji || '🐾'}</span>
+                  <span className="text-[10px] font-semibold leading-tight">{pillar.name}</span>
+                </Link>
+              ))}
+            </div>
+
+            {/* ── 2. ASK MIRA button ────────────────────────────────────────── */}
+            <button
+              onClick={() => { openMiraAI(); setIsMenuOpen(false); }}
+              className="w-full flex items-center justify-center gap-2 p-3 rounded-xl font-semibold text-white mb-4 active:opacity-80"
+              style={{ background: 'linear-gradient(135deg,#9333EA,#EC4899)', WebkitTapHighlightColor: 'transparent' }}
+            >
+              <Sparkles className="w-4 h-4" />
+              Ask Mira
+            </button>
+
+            <div className="border-t border-slate-100 mb-4" />
+
+            {/* ── 3. MY PETS — expandable ────────────────────────────────────── */}
             {user ? (
               <div className="space-y-2">
-                <Link
-                  to="/dashboard"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg active:bg-purple-100"
-                  data-testid="mobile-dashboard-link"
-                >
-                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                    <User className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-900">{user.name || 'Member'}</div>
-                    {primaryPet && (
-                      <div className="text-xs text-purple-600">{primaryPet.name} • {petSoulScore}% Soul</div>
-                    )}
-                  </div>
-                </Link>
-                
-                {/* Mobile: My Pets Section with Scores */}
-                <Link to="/my-requests" onClick={()=>setIsMenuOpen(false)}
-                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-purple-50 transition-colors"
-                  data-testid="mobile-my-requests-link">
-                  <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-sm">📋</div>
-                  <div><div className="font-medium text-gray-900 text-sm">My Requests</div><div className="text-xs text-gray-500">Bookings, orders & Mira chats</div></div>
-                </Link>
-
-                {/* Mobile: My Pets Section with Scores */}
+                {/* Pet switcher */}
                 {allPets.length > 0 && (
-                  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                    <div className="px-4 py-2 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-gray-100">
-                      <span className="font-bold text-gray-900 text-sm flex items-center gap-2">
-                        <PawPrint className="w-4 h-4 text-purple-600" />
-                        My Pets
-                      </span>
-                    </div>
-                    <div className="divide-y divide-gray-100">
+                  <details className="group">
+                    <summary
+                      className="flex items-center justify-between p-3 bg-slate-50 rounded-xl cursor-pointer list-none select-none active:bg-amber-50"
+                      style={{ WebkitTapHighlightColor: 'transparent' }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <PawPrint className="w-4 h-4 text-amber-600" />
+                        <span className="font-bold text-slate-800 text-sm">My Pets</span>
+                        {primaryPet && <span className="text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">{primaryPet.name}</span>}
+                      </div>
+                      <ChevronDown className="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" />
+                    </summary>
+                    <div className="mt-1 space-y-1 pl-1">
                       {allPets.map((pet) => (
                         <Link
                           key={pet.id}
-                          to={`/pet/${pet.id}`}
-                          onClick={() => setIsMenuOpen(false)}
-                          className="flex items-center justify-between px-4 py-3 hover:bg-purple-50 transition-colors"
+                          to="/pet-home"
+                          onClick={() => { setCurrentPet?.(pet); setIsMenuOpen(false); }}
+                          className="flex items-center justify-between px-3 py-2.5 bg-white rounded-lg border border-slate-100 hover:border-amber-300 hover:bg-amber-50 transition-colors"
                         >
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white overflow-hidden">
-                              {pet.profile_image ? (
-                                <img src={pet.profile_image} alt={pet.name} className="w-full h-full object-cover" />
-                              ) : (
-                                <PawPrint className="w-5 h-5" />
-                              )}
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white flex-shrink-0">
+                              {pet.profile_image
+                                ? <img src={pet.profile_image} alt={pet.name} className="w-full h-full object-cover" />
+                                : <PawPrint className="w-4 h-4" />}
                             </div>
                             <div>
-                              <p className="font-medium text-gray-900">{pet.name}</p>
-                              <p className="text-xs text-gray-500">{pet.breed || 'Pet'}</p>
+                              <p className="font-semibold text-slate-800 text-sm">{pet.name}</p>
+                              <p className="text-xs text-slate-500">{pet.breed || 'Pet'}</p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-1 bg-purple-100 px-3 py-1 rounded-full">
-                            <PawPrint className="w-3 h-3 text-purple-600" />
-                            <span className="font-bold text-purple-600 text-sm">{Math.round(pet.overall_score || 0)}%</span>
-                          </div>
+                          <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">{Math.round(pet.overall_score || 0)}%</span>
                         </Link>
                       ))}
                     </div>
-                  </div>
+                  </details>
                 )}
-                
+
+                {/* My Requests */}
+                <Link to="/my-requests" onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl hover:bg-amber-50 transition-colors"
+                  data-testid="mobile-my-requests-link">
+                  <span className="text-lg">📋</span>
+                  <div>
+                    <p className="font-medium text-slate-800 text-sm">My Requests</p>
+                    <p className="text-xs text-slate-500">Bookings, orders & chats</p>
+                  </div>
+                </Link>
+
+                {/* Sign Out */}
                 <button
                   onClick={() => { logout(); setIsMenuOpen(false); navigate('/'); }}
-                  className="w-full flex items-center justify-center gap-2 p-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 active:bg-gray-300"
+                  className="w-full flex items-center justify-center gap-2 p-3 bg-slate-100 text-slate-600 rounded-xl font-medium hover:bg-slate-200 active:bg-slate-300"
                   data-testid="mobile-logout-btn"
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
                 >
                   <LogOut className="w-4 h-4" />
                   Sign Out
                 </button>
               </div>
             ) : (
-              <div className="flex gap-2 mb-4">
-                <Link
-                  to="/login"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex-1 py-3 text-center bg-slate-900 text-white rounded-lg font-medium active:bg-slate-700"
-                  data-testid="mobile-signin-btn"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/membership"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex-1 py-3 text-center bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium active:opacity-80"
-                  data-testid="mobile-join-btn"
-                >
-                  Join Now
-                </Link>
+              <div className="flex gap-2">
+                <Link to="/login" onClick={() => setIsMenuOpen(false)}
+                  className="flex-1 py-3 text-center bg-slate-900 text-white rounded-xl font-medium"
+                  data-testid="mobile-signin-btn">Sign In</Link>
+                <Link to="/membership" onClick={() => setIsMenuOpen(false)}
+                  className="flex-1 py-3 text-center text-white rounded-xl font-medium"
+                  style={{ background: 'linear-gradient(135deg,#9333EA,#EC4899)' }}
+                  data-testid="mobile-join-btn">Join Now</Link>
               </div>
             )}
 
-            {/* Ask Mira Button - Mobile */}
-            <button
-              onClick={() => { openMiraAI(); setIsMenuOpen(false); }}
-              className="w-full flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium active:opacity-80"
-            >
-              <Sparkles className="w-4 h-4" />
-              Ask Mira
-            </button>
-
-            <div className="border-t border-gray-200 my-3"></div>
-
-            {/* Shop & Services - Mobile */}
-            <div className="space-y-2 mb-2">
-              <div className="rounded-lg border border-purple-200 overflow-hidden bg-purple-50/50">
-                <Link
-                  to="/shop"
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`flex items-center justify-between p-3 ${
-                    isActive('/shop') 
-                      ? 'bg-purple-100 text-purple-700' 
-                      : 'hover:bg-purple-100'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">🛒</span>
-                    <span className="font-semibold text-sm">Shop</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-purple-400" />
-                </Link>
-              </div>
-              
-              <div className="rounded-lg border border-purple-200 overflow-hidden bg-purple-50/50">
-                <Link
-                  to="/services"
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`flex items-center justify-between p-3 ${
-                    isActive('/services') 
-                      ? 'bg-purple-100 text-purple-700' 
-                      : 'hover:bg-purple-100'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">✨</span>
-                    <span className="font-semibold text-sm">Services</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-purple-400" />
-                </Link>
-                <div className="border-t border-purple-100 bg-white px-3 py-2 space-y-1">
-                  <Link to="/services?pillar=care" onClick={() => setIsMenuOpen(false)} className="block py-1.5 px-2 text-xs text-gray-600 hover:text-purple-600 rounded">Care & Grooming</Link>
-                  <Link to="/services?pillar=learn" onClick={() => setIsMenuOpen(false)} className="block py-1.5 px-2 text-xs text-gray-600 hover:text-purple-600 rounded">Training</Link>
-                  <Link to="/services?pillar=stay" onClick={() => setIsMenuOpen(false)} className="block py-1.5 px-2 text-xs text-gray-600 hover:text-purple-600 rounded">Boarding & Stay</Link>
-                </div>
-              </div>
-            </div>
-
-            {/* All Pillars - Mobile with Expandable Dropdowns */}
-            <div className="space-y-2">
-              {PILLARS.map((pillar) => (
-                <div key={pillar.id} className="rounded-lg border border-gray-100 overflow-hidden">
-                  <Link
-                    to={pillar.path}
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`flex items-center justify-between p-3 ${
-                      isActive(pillar.path) 
-                        ? 'bg-purple-50 text-purple-700' 
-                        : 'hover:bg-gray-50'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">{pillar.icon}</span>
-                      <span className="font-medium text-sm">{pillar.name}</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-gray-400" />
-                  </Link>
-                  {/* Mobile sub-items hidden — pillars use their own pages */}
-                  {false && pillar.dropdown && pillar.dropdown.length > 0 && (
-                    <div className="border-t border-gray-100 bg-gray-50/50 px-3 py-2 space-y-1">
-                      {pillar.dropdown.slice(0, 4).map((item) => (
-                        <Link
-                          key={item.path + item.name}
-                          to={item.path}
-                          onClick={() => setIsMenuOpen(false)}
-                          className={`block py-1.5 px-2 text-xs rounded ${
-                            item.highlight 
-                              ? 'text-purple-600 font-medium' 
-                              : 'text-gray-600 hover:text-purple-600'
-                          }`}
-                        >
-                          {item.name}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className="border-t border-gray-200 my-3"></div>
-
-            {/* Quick Links - Mobile */}
-            <Link
-              to="/membership"
-              onClick={() => setIsMenuOpen(false)}
-              className="flex items-center gap-2 p-3 text-purple-600 font-medium active:bg-purple-50 rounded-lg"
-            >
-              <PawPrint className="w-4 h-4" />
-              Pet Life Pass
-            </Link>
           </div>
         </div>
       )}

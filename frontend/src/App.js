@@ -193,6 +193,7 @@ import MiraAI from "./components/MiraAI";
 
 // Critical Pages (loaded immediately - main user journey)
 import Home from "./pages/Home";
+import LandingPage from "./pages/LandingPage";
 // AboutPage already imported via lazy loading below
 // Login - Lazy loaded to reduce initial bundle size
 const Login = lazy(() => import("./pages/Login"));
@@ -452,7 +453,8 @@ function AppRouter() {
         <Route path="/tickets/:ticketId" element={<ProtectedRoute><TicketThread /></ProtectedRoute>} />
         
         {/* Landing Page - Clean, no navbar for immersive experience */}
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/home" element={<Home />} />
         
         {/* About Page - Clean, same premium aesthetic */}
         <Route path="/about" element={<AboutPage />} />

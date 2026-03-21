@@ -39,6 +39,8 @@ import {
   GuidedCelebrationPaths,
   CelebrationMemoryWall
 } from '../components/celebrate';
+import ConciergeIntakeModal from '../components/celebrate/ConciergeIntakeModal';
+
 
 import MiraSoulNudge from '../components/celebrate/MiraSoulNudge';
 import MiraBirthdayBox from '../components/celebrate/MiraBirthdayBox';
@@ -334,15 +336,23 @@ const CelebratePageNew = () => {
     }));
   }, [selectedPet?.name]);
 
-  // Handle talk to concierge
-  const handleTalkToConcierge = useCallback(() => {
-    window.dispatchEvent(new CustomEvent('openMira', {
-      detail: {
-        context: 'celebrate-concierge',
-        message: `I want to plan a celebration for ${selectedPet?.name || 'my pet'}`
-      }
-    }));
-  }, [selectedPet?.name]);
+  // Handle talk to concierge — fires canonical flow + opens intake modal
+  const [showConciergeModal, setShowConciergeModal] = useState(false);
+  const handleTalkToConcierge = useCallback(async () => {
+    // Fire tdc tracking immediately
+    tdc.book({ service: 'Celebration Concierge', pillar: 'celebrate', pet: selectedPet, channel: 'celebrate_concierge_btn' });
+    // Bulletproof delivery — works on mobile + desktop regardless of network
+    const { sendToAdminInbox } = await import('../utils/sendToAdminInbox');
+    sendToAdminInbox({
+      service: `${selectedPet?.name || 'Your pet'}'s Celebration — Talk to Concierge`,
+      pillar: 'celebrate',
+      pet: selectedPet,
+      channel: 'celebrate_concierge_btn',
+      urgency: 'high',
+    });
+    // Open ConciergeIntakeModal for full booking flow
+    setShowConciergeModal(true);
+  }, [selectedPet]);
 
   // Handle select guided path
   const handleSelectPath = useCallback((path) => {
@@ -471,6 +481,16 @@ const CelebratePageNew = () => {
           pet={selectedPet}
         />
       )}
+
+      {/* CONCIERGE INTAKE MODAL — fires canonical flow to admin inbox */}
+      <ConciergeIntakeModal
+        isOpen={showConciergeModal}
+        onClose={() => setShowConciergeModal(false)}
+        petId={selectedPet?.id || selectedPet?._id}
+        petName={selectedPet?.name}
+        token={token}
+      />
+
     </PillarPageLayout>
   );
 };

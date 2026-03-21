@@ -1,5 +1,4 @@
 /**
-import NearMeConciergeModal from '../common/NearMeConciergeModal';
  * PlayNearMe.jsx — /play pillar
  * The Doggy Company
  *
@@ -48,7 +47,7 @@ import { tdc } from '../../utils/tdc_intent';
  *     />
  *   )}
  */
-
+import NearMeConciergeModal from '../common/NearMeConciergeModal';
 import { useState, useEffect, useCallback, useRef } from "react";
 import { API_URL } from "../../utils/api";
 
@@ -265,22 +264,14 @@ function SkeletonCard() {
         <div style={{ height:10, background:G.cream, borderRadius:8, marginBottom:12, width:"35%" }} />
         <div style={{ height:34, background:G.pale, borderRadius:10 }} />
       </div>
-    
-      <NearMeConciergeModal
-        isOpen={!!selectedVendor}
-        venue={selectedVendor}
-        pet={pet}
-        pillar="play"
-        onClose={() => setSelectedVendor(null)}
-      />
-    </div>
+</div>
   );
 }
 
 // ─── MAIN COMPONENT ───────────────────────────────────────────
 export default function PlayNearMe({ pet, onBook }) {
   const [searchInput, setSearchInput]         = useState("");
-  const [selectedVendor, setSelectedVendor] = useState(null);
+  const [selectedPlace, setSelectedPlace] = useState(null);
   const [activeQuery, setActiveQuery]         = useState("");
   const [activeType, setActiveType]           = useState("all");
   const [spots, setSpots]                     = useState([]);

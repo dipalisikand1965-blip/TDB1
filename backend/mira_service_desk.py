@@ -105,13 +105,16 @@ class InitialMessage(BaseModel):
 
 class AttachOrCreateTicketRequest(BaseModel):
     parent_id: str
-    pet_id: str
+    pet_id: Optional[str] = None
     pillar: str
     intent_primary: str
     intent_secondary: List[str] = []
-    life_state: str
+    life_state: str = "PLAN"
     channel: str = "Mira_OS"
-    initial_message: InitialMessage
+    urgency: str = "medium"
+    status: Optional[str] = None
+    force_new: bool = False  # ← when True, always creates a new ticket (no dedup)
+    initial_message: Optional[InitialMessage] = None
 
 class AttachOrCreateTicketResponse(BaseModel):
     ticket_id: str
@@ -333,54 +336,153 @@ async def route_intent(request: RouteIntentRequest):
 # ============================================
 
 
-def generate_mira_briefing(pet: dict, service_name: str, pillar: str) -> str:
-    """Generates a Concierge briefing from pet soul profile — prepended to every ticket."""
-    if not pet:
-        return ""
+def generate_mira_briefing(pet: dict, service_name: str, pillar: str, intent: str) -> str:
+    """
+    Generates a human-readable briefing from the pet's soul profile.
+    Prepended to every ticket thread so Concierge can respond immediately.
+    """
     soul = pet.get("doggy_soul_answers", {})
     name = pet.get("name", "this dog")
     breed = pet.get("breed", "Mixed breed")
     soul_score = pet.get("overall_score") or pet.get("soul_score") or 0
-    age_map = {"puppy":"Puppy (<1yr)","young":"Young (1-3yr)","adult":"Adult (3-7yr)","senior":"Senior (7+yr)"}
-    age_label = age_map.get(soul.get("age_stage",""), soul.get("age_stage","Unknown age"))
-    allergies = soul.get("food_allergies",[])
-    allergy_clean = [a for a in (allergies if isinstance(allergies,list) else [allergies]) if a not in ["none","none known","","None"]]
-    allergy_line = f"⚠️ ALLERGIES: {', '.join(a.title() for a in allergy_clean)} — never suggest these" if allergy_clean else "No known food allergies"
-    conditions = soul.get("health_conditions",[])
-    cond_clean = [c.replace("_"," ").title() for c in (conditions if isinstance(conditions,list) else [conditions]) if c not in ["none","healthy","all_healthy","","None"]]
-    health_line = ", ".join(cond_clean) if cond_clean else "No known health conditions"
-    energy = soul.get("energy_level","") or soul.get("energy","")
-    city = pet.get("city","") or soul.get("location","")
-    briefing = f"""
-━━━ ✦ MIRA'S BRIEFING FOR CONCIERGE ━━━
-🐾 Pet: {name} | Breed: {breed} | {age_label} | Soul Score: {soul_score}%
-📍 Location: {city or 'Not set'}
-🍽️ Allergies: {allergy_line}
-💊 Health: {health_line}
-⚡ Energy: {energy.replace('_',' ').title() if energy else 'Not set'}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Request: {service_name} | Pillar: {pillar.title()}
-Mira says: Concierge, please respond to {name}'s parent with full context above.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
-    return briefing.strip()
+
+    # Age stage
+    age_map = {
+        "puppy": "Puppy (under 1 year)",
+        "young": "Young (1–3 years)",
+        "adult": "Adult (3–7 years)",
+        "senior": "Senior (7+ years)",
+    }
+    age_label = age_map.get(soul.get("age_stage", ""), soul.get("age_stage", "Age unknown"))
+
+    # Allergies — CRITICAL for Concierge
+    allergies = soul.get("food_allergies", [])
+    if not allergies or allergies == ["none"] or allergies == ["none known"]:
+        allergy_line = "No known food allergies"
+    else:
+        allergy_line = f"⚠️ ALLERGIES: {', '.join(a.title() for a in allergies)} — never suggest these"
+
+    # Health conditions
+    conditions = soul.get("health_conditions", [])
+    conditions_clean = [c for c in conditions if c not in ["none", "healthy", "all_healthy"]]
+    if not conditions_clean:
+        health_line = "No known health conditions"
+    else:
+        health_line = ", ".join(c.replace("_", " ").title() for c in conditions_clean)
+
+    # Diet
+    diet_map = {
+        "dry": "Dry kibble",
+        "wet": "Wet food",
+        "fresh": "Fresh / cooked meals",
+        "raw": "Raw diet",
+        "mixed": "Mixed diet",
+        "homemade": "Home cooked",
+    }
+    diet = diet_map.get(soul.get("diet_type", ""), soul.get("diet_type", "Not specified"))
+
+    # Energy
+    energy_map = {
+        "couch": "Low energy (couch potato)",
+        "moderate": "Moderate energy",
+        "active": "Active and playful",
+        "intense": "Very high energy",
+    }
+    energy = energy_map.get(soul.get("energy_level", ""), soul.get("energy_level", "Not specified"))
+
+    # Personality
+    personality = soul.get("personality", [])
+    personality_str = ", ".join(p.replace("_", " ").title() for p in personality) if personality else "Not specified"
+
+    # Training level
+    training_map = {
+        "none": "Just starting out",
+        "basic": "Basic commands (sit, stay, come)",
+        "good": "Well trained",
+        "advanced": "Advanced training",
+    }
+    training = training_map.get(soul.get("training_level", ""), soul.get("training_level", "Not specified"))
+
+    # Home
+    home_map = {
+        "apartment": "Apartment",
+        "house_small": "House with small garden",
+        "house_large": "House with large yard",
+        "farm": "Farm / rural",
+    }
+    home = home_map.get(soul.get("home_type", ""), soul.get("home_type", "Not specified"))
+
+    # Fears / anxieties
+    fears = soul.get("anxiety_triggers", [])
+    fears_clean = [f for f in fears if f not in ["none", "no_fears"]]
+    fears_str = ", ".join(f.replace("_", " ").title() for f in fears_clean) if fears_clean else "No known fears"
+
+    # Favourite activities
+    activities = soul.get("favourite_activities", [])
+    activities_str = ", ".join(a.replace("_", " ").title() for a in activities) if activities else "Not specified"
+
+    # Soul score completeness
+    score_note = ""
+    if soul_score >= 80:
+        score_note = "Profile is comprehensive — Mira knows this dog well."
+    elif soul_score >= 50:
+        score_note = "Profile is partially complete — some details may be missing."
+    else:
+        score_note = "Profile is early — ask parent for more details if needed."
+
+    # Pillar-specific context
+    pillar_context = {
+        "care": f"Request is about grooming, wellness or care for {name}. Check coat type and grooming comfort from profile.",
+        "dine": f"Request is about food or nutrition for {name}. CRITICAL: Check allergies above before any food suggestion.",
+        "celebrate": f"Request is about celebrating {name}. Check upcoming birthday and favourite treats.",
+        "go": f"Request is about travel or stays with {name}. Check travel comfort and documents.",
+        "play": f"Request is about play or fitness for {name}. Check energy level and favourite activities.",
+        "learn": f"Request is about training {name}. Check current training level and goals.",
+        "shop": f"Request is about products for {name}. Check breed, size and any sensitivities.",
+        "emergency": f"⚠️ EMERGENCY request for {name}. Respond immediately. Check health conditions and primary vet.",
+        "farewell": f"🌷 Farewell request for {name}. Handle with the utmost care and compassion.",
+        "paperwork": f"Request is about documents or paperwork for {name}. Check insurance and registration status.",
+        "adopt": f"Request is about adoption guidance. They may be adding a new dog to their family.",
+        "services": f"General service request for {name}. Review full profile for context.",
+    }.get(pillar, f"Request is from the {pillar} pillar for {name}.")
+
+    briefing = f"""━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✦ MIRA'S BRIEFING FOR CONCIERGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SERVICE REQUESTED: {service_name}
+PILLAR: {pillar.title()}
+
+━━━ ABOUT {name.upper()} ━━━
+Breed:        {breed}
+Life stage:   {age_label}
+Soul score:   {soul_score}% — {score_note}
+
+━━━ HEALTH & DIET (read before responding) ━━━
+{allergy_line}
+Health:       {health_line}
+Diet:         {diet}
+Energy:       {energy}
+
+━━━ PERSONALITY & LIFESTYLE ━━━
+Personality:  {personality_str}
+Loves:        {activities_str}
+Fears:        {fears_str}
+Home:         {home}
+Training:     {training}
+
+━━━ CONCIERGE GUIDANCE ━━━
+{pillar_context}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+This briefing is auto-generated by Mira from {name}'s Soul Profile.
+The parent has not seen this message.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
+
+    return briefing
 
 
-async def generate_ticket_id() -> str:
-    """Generate a unique ticket ID like TCK-2026-000321"""
-    db = get_db()
-    now = datetime.now(timezone.utc)
-    year = now.strftime("%Y")
-    
-    # Count today's tickets
-    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    count = 0
-    if db is not None:
-        count = await db.mira_conversations.count_documents({
-            "created_at": {"$gte": today_start.isoformat()}
-        })
-    
-    return f"TCK-{year}-{str(count + 1).zfill(6)}"
-
+# ── Enriched ticket creation ───────────────────────────────────────────
 
 def get_parent_id_from_request(request_parent_id: str, db) -> str:
     """Always returns a non-empty parent_id"""
@@ -435,12 +537,14 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
     
     now = datetime.now(timezone.utc)
     
-    # Check for existing ticket
-    existing_ticket = await find_existing_ticket(
-        request.parent_id,
-        request.pet_id,
-        request.pillar
-    )
+    # Check for existing ticket — SKIP if force_new=True (always create fresh ticket)
+    existing_ticket = None
+    if not request.force_new:
+        existing_ticket = await find_existing_ticket(
+            request.parent_id,
+            request.pet_id,
+            request.pillar
+        )
     
     if existing_ticket:
         # Attach to existing ticket
@@ -1198,7 +1302,7 @@ async def concierge_reply(
         }
     }
     
-    # ── Write to ALL 4 collections for full compatibility ─────────────────────
+    # ── Write to ALL collections for full compatibility ─────────────────────
     # mira_conversations (legacy)
     await db.mira_conversations.update_one(
         {"ticket_id": ticket_id},
@@ -1211,7 +1315,7 @@ async def concierge_reply(
     ticket_result = await db.mira_tickets.update_one(
         {"ticket_id": ticket_id},
         {
-            "$push": {"messages": concierge_message},
+            "$push": {"messages": concierge_message},  # write to BOTH messages AND thread
             "$set": {"updated_at": now.isoformat(), "has_unread_concierge_reply": True, "last_concierge_reply_at": now.isoformat()}
         }
     )
@@ -1223,11 +1327,14 @@ async def concierge_reply(
             "$set": {"updated_at": now.isoformat(), "has_unread_concierge_reply": True}
         }
     )
-    # ── CANONICAL: service_desk_tickets ── update ALL docs with this ticket_id
+    # ── CANONICAL: service_desk_tickets ── write to BOTH thread AND messages
     result = await db.service_desk_tickets.update_many(
         {"$or": [{"ticket_id": ticket_id}, {"id": ticket_id}]},
         {
-            "$push": {"thread": concierge_message},
+            "$push": {
+                "thread": concierge_message,    # for /my-requests member view
+                "messages": {**concierge_message, "from_thread": True},  # for admin DoggyServiceDesk view
+            },
             "$set": {
                 "updated_at": now.isoformat(),
                 "has_unread_concierge_reply": True,
@@ -1598,3 +1705,221 @@ async def resolve_ticket(ticket_id: str, resolution_note: Optional[str] = None):
         "status": "resolved",
         "soul_enrichment": enrichment_result
     }
+
+
+async def create_enriched_ticket(
+    db,
+    parent_id: str,
+    pet_id: Optional[str],
+    pillar: str,
+    intent_primary: str,
+    channel: str,
+    service_name: str,
+    member_message: str,
+    urgency: str = "normal",
+    metadata: dict = None,
+):
+    """
+    Creates a service desk ticket enriched with Mira's briefing.
+
+    DROP-IN REPLACEMENT for the existing ticket creation logic in:
+    POST /api/service_desk/attach_or_create_ticket
+
+    Parameters:
+        db              — MongoDB database instance
+        parent_id       — user ID or email
+        pet_id          — pet ID (ObjectId string)
+        pillar          — pillar name (care, dine, celebrate etc.)
+        intent_primary  — intent type (service_booking, product_inquiry etc.)
+        channel         — source channel (care_pillar_page, mira_os etc.)
+        service_name    — human-readable service name ("Allergy-Safe Diet Planning")
+        member_message  — what the member actually requested
+        urgency         — low / normal / high / emergency
+        metadata        — any extra data (product_id, service_id etc.)
+
+    Returns:
+        dict with ticket_id and status
+    """
+    now = datetime.utcnow()
+
+    # ── Fetch pet data ─────────────────────────────────────────────────
+    pet = None
+    if pet_id:
+        try:
+            pet = await db.pets.find_one({"_id": ObjectId(pet_id)})
+        except Exception:
+            pet = await db.pets.find_one({"id": pet_id})
+
+    # ── Generate Mira briefing ─────────────────────────────────────────
+    mira_briefing = None
+    if pet:
+        mira_briefing = generate_mira_briefing(
+            pet=pet,
+            service_name=service_name,
+            pillar=pillar,
+            intent=intent_primary,
+        )
+
+    # ── Build ticket subject (fixes "Request received") ────────────────
+    pet_name = pet.get("name") if pet else None
+    if pet_name:
+        subject = f"{service_name} for {pet_name}"
+    else:
+        subject = service_name
+
+    # ── Build thread ───────────────────────────────────────────────────
+    thread = []
+
+    # 1. Mira briefing — first in thread, visible only to Concierge
+    if mira_briefing:
+        thread.append({
+            "sender":          "mira",
+            "text":            mira_briefing,
+            "timestamp":       now.isoformat(),
+            "visible_to":      "concierge_only",  # parent cannot see this
+            "message_type":    "briefing",
+        })
+
+    # 2. Member's request — what they actually asked for
+    thread.append({
+        "sender":       "member",
+        "text":         member_message,
+        "timestamp":    now.isoformat(),
+        "visible_to":   "all",
+        "message_type": "request",
+    })
+
+    # ── Build ticket ───────────────────────────────────────────────────
+    ticket = {
+        "ticket_id":       f"TDC-{int(now.timestamp())}",
+        "parent_id":       parent_id,
+        "pet_id":          str(pet_id) if pet_id else None,
+        "pet_name":        pet_name,
+        "pet_breed":       pet.get("breed") if pet else None,
+        "pillar":          pillar,
+        "intent_primary":  intent_primary,
+        "channel":         channel,
+        "subject":         subject,          # ← fixes "Request received"
+        "status":          "open",
+        "urgency":         urgency,
+        "thread":          thread,
+        "metadata":        metadata or {},
+        "created_at":      now.isoformat(),
+        "updated_at":      now.isoformat(),
+        "mira_briefing":   mira_briefing,    # also stored top-level for easy access
+        "soul_score":      pet.get("overall_score") or pet.get("soul_score") or 0 if pet else 0,
+    }
+
+    # ── Emergency escalation ───────────────────────────────────────────
+    if pillar == "emergency" or urgency == "emergency":
+        ticket["status"] = "urgent"
+        ticket["urgency"] = "emergency"
+
+    # ── Save to DB ─────────────────────────────────────────────────────
+    result = await db.service_desk_tickets.insert_one(ticket)
+    ticket_id = ticket["ticket_id"]
+
+    # ── Notify admin (bell notification) ──────────────────────────────
+    await db.admin_notifications.insert_one({
+        "type":       "new_ticket",
+        "ticket_id":  ticket_id,
+        "subject":    subject,
+        "pillar":     pillar,
+        "urgency":    urgency,
+        "pet_name":   pet_name,
+        "parent_id":  parent_id,
+        "read":       False,
+        "created_at": now.isoformat(),
+    })
+
+    # ── Member notification (their inbox) ─────────────────────────────
+    await db.member_notifications.insert_one({
+        "type":         "ticket_created",
+        "ticket_id":    ticket_id,
+        "parent_id":    parent_id,
+        "subject":      subject,
+        "message":      f"Your request for {service_name} has been received. Concierge® will be in touch shortly.",
+        "pillar":       pillar,
+        "read":         False,
+        "created_at":   now.isoformat(),
+    })
+
+    return {
+        "ticket_id":  ticket_id,
+        "subject":    subject,
+        "status":     "created",
+        "pet_name":   pet_name,
+        "has_briefing": mira_briefing is not None,
+    }
+
+
+# ── FastAPI route — drop-in replacement ───────────────────────────────
+"""
+REPLACE your existing POST /api/service_desk/attach_or_create_ticket
+with this route in service_desk_routes.py:
+
+@router.post("/attach_or_create_ticket")
+async def attach_or_create_ticket(
+    request: TicketRequest,
+    authorization: str = Header(None),
+    background_tasks: BackgroundTasks = None,
+):
+    user = await get_user_from_token(authorization)
+
+    result = await create_enriched_ticket(
+        db=db,
+        parent_id=user.get("id") or user.get("email"),
+        pet_id=request.pet_id,
+        pillar=request.pillar,
+        intent_primary=request.intent_primary,
+        channel=request.channel,
+        service_name=request.initial_message.get("text", request.pillar.title() + " Request"),
+        member_message=request.initial_message.get("text", "Service requested via " + request.channel),
+        urgency=request.urgency or "normal",
+        metadata=request.metadata or {},
+    )
+
+    # Send WhatsApp confirmation to member (background)
+    if background_tasks:
+        background_tasks.add_task(
+            send_whatsapp_confirmation,
+            user.get("phone") or user.get("whatsapp"),
+            result["subject"],
+            result["pet_name"],
+        )
+
+    return result
+"""
+
+
+# ── WhatsApp confirmation template ────────────────────────────────────
+async def send_whatsapp_confirmation(phone: str, service_name: str, pet_name: str):
+    """
+    Sends a WhatsApp confirmation to the member when their ticket is created.
+    Uses existing /api/whatsapp/send endpoint.
+    """
+    if not phone:
+        return
+
+    pet_str = f"for {pet_name}" if pet_name else ""
+    message = (
+        f"✦ *The Doggy Company*\n\n"
+        f"Your request for *{service_name}* {pet_str} has been received.\n\n"
+        f"Our Concierge® team will be in touch within a few hours to arrange everything.\n\n"
+        f"You can track this request in *My Requests* on the app.\n\n"
+        f"_Mira is the Brain · Concierge® is the Hands_ 🐾"
+    )
+
+    # Fire to existing WhatsApp endpoint
+    import httpx
+    try:
+        async with httpx.AsyncClient() as client:
+            await client.post(
+                "http://localhost:8000/api/whatsapp/send",
+                json={"to": phone, "message": message},
+                timeout=10,
+            )
+    except Exception:
+        pass  # WhatsApp failure should never break ticket creation
+
+

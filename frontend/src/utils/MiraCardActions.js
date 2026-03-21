@@ -71,6 +71,7 @@ export async function bookViaConcierge({
         life_state:     "PLAN",
         urgency:        "high",
         status:         "open",
+        force_new:      true,  // ← always create new ticket → admin always sees it
         initial_message: {
           sender: "parent",
           text: `${petName}'s parent wants to book: ${serviceName} via ${ch}.${dateNote}${notesNote}`,
