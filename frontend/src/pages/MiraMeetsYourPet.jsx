@@ -28,6 +28,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../utils/api";
 
 // ── Colour system ──────────────────────────────────────────────────────
@@ -750,6 +751,7 @@ function Screen4({ pets, snapshot, onComplete, loading }) {
 // ── Main export ────────────────────────────────────────────────────────
 export default function MiraMeetsYourPet() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [screen,   setScreen]   = useState(1);
   const [petCount, setPetCount] = useState(0);
@@ -777,17 +779,30 @@ export default function MiraMeetsYourPet() {
     setLoading(true);
     setError("");
     try {
-      // Register parent
+      // Register parent — matches MembershipOnboardModel schema exactly
       const regRes = await fetch(`${API_URL}/api/auth/membership/onboard`, {
         method: "POST",
         headers: { "Content-Type":"application/json" },
         body: JSON.stringify({
-          name:       form.name,
-          email:      form.email,
-          password:   form.password,
-          phone:      form.phone,
-          whatsapp:   form.whatsapp || form.phone,
-          wa_updates: form.wa_updates,
+          parent: {
+            name:               form.name,
+            email:              form.email,
+            password:           form.password,
+            phone:              form.phone,
+            whatsapp:           form.whatsapp || form.phone,
+            city:               form.city || "Mumbai",
+            pincode:            form.pincode || "400001",
+            accepted_terms:     true,
+            accepted_privacy:   true,
+            preferred_contact:  "whatsapp",
+          },
+          pets: pets.filter(p => p.name).map(p => ({
+            name:    p.name,
+            breed:   p.breed || "Indie",
+            species: "dog",
+          })),
+          plan_type: "annual",
+          pet_count: pets.filter(p => p.name).length || 1,
         }),
       });
 
@@ -801,6 +816,13 @@ export default function MiraMeetsYourPet() {
       const { access_token, user } = await regRes.json();
       localStorage.setItem("tdb_auth_token", access_token);
       localStorage.setItem("user", JSON.stringify(user));
+
+      // ── Refresh auth context so ProtectedRoute sees the new session ──────
+      try {
+        await login(form.email, form.password);
+      } catch {
+        // If login refresh fails, manual token is still set — proceed
+      }
 
       // Create pets and collect their IDs for photo upload
       const createdPets = [];

@@ -4909,21 +4909,7 @@ const MiraDemoPage = () => {
         </div>
       )}
 
-      {/* ── Go to Pet Home — always visible shortcut ─────────────────── */}
-      <div style={{ position:'fixed', top:16, right:16, zIndex:50 }}>
-        <a href="/pet-home"
-          data-testid="mira-os-pet-home-btn"
-          style={{
-            display:'flex', alignItems:'center', gap:6,
-            background:'rgba(255,255,255,0.9)', backdropFilter:'blur(8px)',
-            border:'1px solid rgba(147,51,234,0.2)', borderRadius:50,
-            padding:'6px 14px', fontSize:12, fontWeight:700,
-            color:'#7B2FBE', textDecoration:'none',
-            boxShadow:'0 2px 12px rgba(0,0,0,0.08)',
-          }}>
-          🐾 Pet Home →
-        </a>
-      </div>
+      {/* Pet Home → removed (pink Mira orb navigates home instead) */}
 
       {/* Soul Radar — ambient background behind chat input (score ≥ 30 only) */}
       {pet && (pet.overall_score || 0) >= 30 && (

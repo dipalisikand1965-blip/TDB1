@@ -11,7 +11,7 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { 
   Sparkles, ShoppingBag, Heart, ChevronRight, Star, Loader2,
-  Utensils, Gamepad2, Scissors, Stethoscope, GraduationCap, Home, Plane
+  Utensils, Gamepad, Scissors, Stethoscope, GraduationCap, Home, Plane
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
@@ -30,7 +30,7 @@ const PILLAR_CONFIG = {
   },
   enjoy: {
     label: 'Play',
-    icon: Gamepad2,
+    icon: Gamepad,
     emoji: '🎾',
     color: 'from-violet-500 to-purple-500',
     bgColor: 'bg-violet-50',

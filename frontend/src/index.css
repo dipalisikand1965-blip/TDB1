@@ -1372,3 +1372,13 @@ a[href*="emergent"][class*="badge"] {
 @media (min-width: 640px) {
   :root { --mira-top-offset: 0px; }
 }
+
+/* TDC Mobile Navigation Header — hidden on desktop, visible on mobile */
+.tdc-mobile-header {
+  display: none;
+}
+@media (max-width: 1024px) {
+  .tdc-mobile-header {
+    display: flex !important;
+  }
+}

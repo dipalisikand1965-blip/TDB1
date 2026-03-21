@@ -7,6 +7,7 @@ import { intelligentSearch } from '../utils/unifiedApi';
 import { API_URL } from '../utils/api';
 import MiraSearchPanel from './MiraSearchPanel';
 import NotificationBell from './Mira/NotificationBell';
+import MobileMenu from './MobileMenu';
 
 /**
  * Clean Navbar with all 14 Pillars
@@ -90,6 +91,13 @@ const PILLARS = [
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false); // New MobileMenu
+
+  // Global trigger so any page can open the new mobile menu
+  useEffect(() => {
+    window.__openMobileMenu = () => setMenuOpen(true);
+    return () => { delete window.__openMobileMenu; };
+  }, []);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchExpanded, setSearchExpanded] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -126,10 +134,7 @@ const Navbar = () => {
       e.preventDefault();
       e.stopPropagation();
       console.log('[Navbar] Native hamburger event fired');
-      window.dispatchEvent(new CustomEvent('openPetSidebar'));
-      if (typeof window.__openMemberMobileNav === 'function') {
-        window.__openMemberMobileNav();
-      }
+      setMenuOpen(true); // Open new MobileMenu
     };
     
     // User button handler - go to dashboard
@@ -595,7 +600,8 @@ const Navbar = () => {
           msOverflowStyle: 'none'
         }}
       >
-        <span>✨ The World's First Pet Life Operating System — Your Pet Concierge® </span>
+        {/* Announcement banner — hidden for launch */}
+        {false && <span>✨ The World's First Pet Life Operating System — Your Pet Concierge® </span>}
       </div>
 
       {/* Main Header Row */}
@@ -623,6 +629,7 @@ const Navbar = () => {
               }}
               data-testid="navbar-mobile-menu-btn"
               aria-label="Open navigation menu"
+              onClick={() => setMenuOpen(true)}
             >
               <Menu className="w-6 h-6" style={{ pointerEvents: 'none' }} />
             </div>
@@ -1298,6 +1305,17 @@ const Navbar = () => {
           </div>
         </div>
       )}
+
+      {/* ── New MobileMenu — glass orb, 4-col pillar grid, pet switcher ── */}
+      <MobileMenu
+        isOpen={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        currentPet={primaryPet}
+        pets={allPets}
+        onPetSwitch={(pet) => { setCurrentPet?.(pet); setMenuOpen(false); }}
+        userName={user?.name || user?.email}
+      />
+
     </header>
   );
 };

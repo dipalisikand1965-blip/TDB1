@@ -21,7 +21,7 @@ const OS_LAYERS = [
   { id: 'today',     label: 'TODAY',       icon: Calendar,       description: 'Time Layer' },
   { id: 'picks',     label: 'PICKS',       icon: Sparkles,       description: 'Intelligence Layer' },
   { id: 'services',  label: 'SERVICES',    icon: Briefcase,      description: 'Action Layer' },
-  { id: 'nearme',    label: 'NEAR ME',     icon: MapPin,         description: 'Location Layer' },
+  { id: 'nearme',    label: '📍',         icon: MapPin,         description: 'Location Layer' },
   { id: 'learn',     label: 'LEARN',       icon: GraduationCap,  description: 'Knowledge Layer' },
   { id: 'concierge', label: 'CONCIERGE®',  icon: Users,          description: 'Human Layer' },
 ];

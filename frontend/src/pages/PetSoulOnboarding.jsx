@@ -1137,11 +1137,11 @@ export default function PetSoulOnboarding() {
     if (currentStep >= STEPS.length - 1) {
       // Background: trigger Mira scoring
       if (pid) {
-        fetch(`${API_URL}/api/mira/score-for-pet`, {
+        if (!pet?.overall_score || pet.overall_score <= 0) { fetch(`${API_URL}/api/mira/score-for-pet`, {
           method: "POST",
           headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
           body: JSON.stringify({ pet_id: pid, pillar: "all" }),
-        }).catch(()=>{});
+        }).catch(()=>{}); }
       }
       setDone(true);
     } else {

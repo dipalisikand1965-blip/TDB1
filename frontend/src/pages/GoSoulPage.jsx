@@ -334,7 +334,7 @@ function MiraPicksSection({ pet }) {
   const handleServiceConcierge = async service => {
     setConciergeSending(true);
     // Fire tdc.book immediately
-    tdc.book({ service: service.name || service.entity_name, pillar: "go", pet, channel: "go_miras_picks", amount: service.price });
+    tdc.book({ service: service.name || service.entity_name, pillar: "go", pet: petData, channel: "go_miras_picks", amount: service.price });
     try {
       const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
       await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
@@ -1812,7 +1812,7 @@ const GoSoulPage = () => {
   const navigate = useNavigate();
   const { token, isAuthenticated }                    = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
-
+  const pet = currentPet; // alias so all sub-components can use pet directly
   const [loading, setLoading]       = useState(true);
   const [activeTab, setActiveTab]   = useState("go");
   const [goConciergOpen, setGoConciergOpen] = useState(false);
@@ -1917,11 +1917,11 @@ const GoSoulPage = () => {
   useEffect(() => {
     if (!petData?.id) return;
     // Fire and forget — triggers background scoring, picks available next visit
-    fetch(`${API_URL}/api/mira/score-for-pet`, {
+    if (!pet?.overall_score || pet.overall_score <= 0) { fetch(`${API_URL}/api/mira/score-for-pet`, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       body: JSON.stringify({ pet_id: petData.id, pillar: "go", entity_types: ["product", "service"] }),
-    }).catch(() => {}); // silent — non-critical
+    }).catch(() => {}); } // silent — non-critical
   }, [petData?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {

@@ -344,6 +344,11 @@ async def _run_full_scoring(pet_id: str, pillar: Optional[str], entity_types: Op
             # Upsert all scores
             await _db.mira_product_scores.delete_many({"pet_id": pet_id, **({"pillar": pillar} if pillar else {})})
             await _db.mira_product_scores.insert_many(ops, ordered=False)
+            # ── Update last_mira_scored_at so early-exit check works ─────────
+            await _db.pets.update_one(
+                {"id": pet_id},
+                {"$set": {"last_mira_scored_at": datetime.now(timezone.utc).isoformat()}}
+            )
             print(f"[MiraScoreEngine] Saved {len(ops)} scores for {pet_profile['name']}")
 
 
@@ -374,7 +379,45 @@ async def batch_score_all_pets(background_tasks: BackgroundTasks, pillar: Option
 
 @mira_score_router.post("/score-for-pet")
 async def score_for_pet(req: ScoreForPetRequest, background_tasks: BackgroundTasks):
-    """Trigger background scoring for a pet. Returns immediately."""
+    """Trigger background scoring for a pet. Returns instantly if already scored recently."""
+    if _db is None:
+        return {"status": "db_not_ready"}
+
+    # ── EARLY EXIT — return in 5ms if already scored within 6 hours ──────────
+    try:
+        pet = await _db.pets.find_one({"id": req.pet_id}, {"_id": 0, "overall_score": 1, "last_mira_scored_at": 1})
+        if pet:
+            overall = pet.get("overall_score", 0) or 0
+            last_scored = pet.get("last_mira_scored_at")
+            if overall > 0 and last_scored:
+                from datetime import datetime, timezone as tz
+                try:
+                    last_dt = datetime.fromisoformat(str(last_scored).replace("Z", "+00:00"))
+                    if last_dt.tzinfo is None:
+                        last_dt = last_dt.replace(tzinfo=tz.utc)
+                    hours_since = (datetime.now(tz.utc) - last_dt).total_seconds() / 3600
+                    if hours_since < 6:
+                        return {
+                            "status":         "already_scored",
+                            "score":          overall,
+                            "cached":         True,
+                            "next_in_hours":  round(6 - hours_since, 1),
+                            "message":        "Mira already has fresh scores for this pet.",
+                        }
+                except Exception:
+                    pass  # If date parse fails, proceed with scoring
+            elif overall > 0:
+                # Has score but no timestamp — still skip if score is good
+                return {
+                    "status":  "already_scored",
+                    "score":   overall,
+                    "cached":  True,
+                    "message": "Mira already has scores for this pet.",
+                }
+    except Exception:
+        pass  # If check fails, proceed with scoring (safe fallback)
+
+    # ── Proceed with scoring (new pet or stale scores) ─────────────────────────
     background_tasks.add_task(
         _run_full_scoring, req.pet_id, req.pillar, req.entity_types
     )
