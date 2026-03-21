@@ -1824,6 +1824,8 @@ const GoSoulPage = () => {
 
   // handleNearMeBook — wires "Book via Concierge" on any nearby place card
   const handleNearMeBook = useCallback(async (spot, city) => {
+    // Fire tdc.nearme immediately
+    tdc.nearme({ query: spot?.name || city || "travel stay", pillar: "go", pet: petData, channel: "go_nearme_card" });
     try {
       const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
       const venueName = spot?.name || (city ? `a spot in ${city}` : "a travel stay");
