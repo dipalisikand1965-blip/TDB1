@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://intent-ticket-flow.preview.emergentagent.com/mira-demo**
+**https://pet-soul-platform-1.preview.emergentagent.com/mira-demo**
 
 ---
 

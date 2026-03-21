@@ -26,7 +26,7 @@ from datetime import datetime
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 
 if not BASE_URL:
-    BASE_URL = "https://intent-ticket-flow.preview.emergentagent.com"
+    BASE_URL = "https://pet-soul-platform-1.preview.emergentagent.com"
 
 
 class TestNotificationDeepLink:
