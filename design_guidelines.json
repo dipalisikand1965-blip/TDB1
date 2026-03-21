@@ -1,162 +1,74 @@
 {
   "typography": {
-    "font_family": {
-      "display": "Manrope, sans-serif",
-      "body": "Inter, sans-serif",
-      "special": "Syne, sans-serif"
-    },
-    "scale": {
-      "h1": "text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight",
-      "h2": "text-3xl md:text-4xl font-bold tracking-tight",
-      "h3": "text-xl md:text-2xl font-bold",
-      "body_lg": "text-lg md:text-xl leading-relaxed text-gray-600",
-      "body_base": "text-base leading-relaxed text-gray-600",
-      "caption": "text-sm font-medium tracking-wide text-gray-500 uppercase"
-    }
+    "headings": "Manrope (Google Fonts)",
+    "body": "IBM Plex Sans (Google Fonts)",
+    "heading_weights": "font-semibold to font-bold",
+    "body_weights": "font-normal to font-medium",
+    "rules": "Never use Inter for headings. Use tight tracking (`tracking-tight`) on headings > 24px."
   },
   "colors": {
-    "palette": {
-      "primary": {
-        "DEFAULT": "#0F766E",
-        "light": "#14B8A6",
-        "dark": "#0D5C56",
-        "bg_soft": "#F0FDFA"
-      },
-      "secondary": {
-        "DEFAULT": "#D97706",
-        "light": "#FBBF24",
-        "dark": "#B45309",
-        "bg_soft": "#FFFBEB"
-      },
-      "accent": {
-        "DEFAULT": "#9333EA",
-        "light": "#C084FC",
-        "dark": "#7E22CE",
-        "bg_soft": "#FAF5FF"
-      },
-      "neutral": {
-        "bg_page": "#FAFAF9",
-        "bg_card": "#FFFFFF",
-        "border": "#E7E5E4",
-        "text_main": "#1C1917",
-        "text_muted": "#57534E"
-      }
-    },
-    "gradients": {
-      "hero": "bg-gradient-to-br from-teal-50 via-white to-amber-50",
-      "card_highlight": "bg-gradient-to-br from-white to-stone-50",
-      "mira_ai": "bg-gradient-to-r from-violet-600 to-fuchsia-600"
-    }
+    "background": "#FFFFFF",
+    "surface": "#F8FAFC",
+    "primary": "#1A1A2E",
+    "accent": "#C9973A",
+    "text_main": "#1A1A2E",
+    "text_muted": "#64748B",
+    "border": "#E2E8F0",
+    "urgency_critical": "#EF4444",
+    "urgency_high": "#F97316",
+    "urgency_medium": "#EAB308",
+    "urgency_low": "#94A3B8"
   },
-  "layout_strategies": {
-    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
-    "section_spacing": "py-16 md:py-24",
-    "grid_gap": "gap-6 md:gap-8",
-    "mobile_first": "stack vertically on mobile, grid on tablet+"
+  "visual_enhancers": {
+    "shadows": "Minimal. Avoid dark dropshadows. Use `shadow-sm` and `1px border` for definition.",
+    "borders": "border-slate-200 everywhere to define structure.",
+    "radius": "rounded-md for buttons, rounded-lg for cards.",
+    "textures": "Flat and clean. No gradients. Fast scanning is priority."
   },
-  "component_specs": {
-    "HeroSection": {
-      "height": "min-h-[60vh]",
-      "alignment": "center",
-      "elements": [
-        "Badge: 'New: Mira Learn AI'",
-        "H1: 'Master Pet Parenthood'",
-        "Subtext: 'Trusted guidance for every stage of your dog's life.'",
-        "Input: Large, shadow-lg, 'Ask anything...'",
-        "QuickChips: 'Puppy Biting', 'Potty Training', 'Diet'"
-      ]
-    },
-    "CoreActionBuckets": {
-      "layout": "grid-cols-1 md:grid-cols-3",
-      "style": "Bento Grid style, full height cards",
-      "buckets": [
-        {
-          "title": "Products & Routines",
-          "color": "amber",
-          "icon": "shopping-bag",
-          "items": ["Best Food", "Daily Schedule", "Grooming Tools"]
-        },
-        {
-          "title": "Life Stage & Care",
-          "color": "teal",
-          "icon": "heart",
-          "items": ["Puppy Guide", "Adult Care", "Senior Support"]
-        },
-        {
-          "title": "Support & Services",
-          "color": "violet",
-          "icon": "users",
-          "items": ["Book Trainer", "Vet Consult", "Grooming"]
-        }
-      ]
-    },
-    "LifeStageSection": {
-      "layout": "grid-cols-2 md:grid-cols-4",
-      "card_style": "Visual heavy, text overlay or bottom caption",
-      "images": {
-        "puppy": "https://images.unsplash.com/photo-1713699860321-91defa45527a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzV8MHwxfHNlYXJjaHwzfHxwdXBweSUyMHNvY2lhbGl6YXRpb24lMjBjbGFzc3xlbnwwfHx8fDE3NzMyMjM3NjZ8MA&ixlib=rb-4.1.0&q=85",
-        "adult": "https://images.unsplash.com/photo-1755259995123-8750240b866e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjd8MHwxfHNlYXJjaHwyfHxkb2clMjB0cmFpbmluZyUyMHBvc2l0aXZlJTIwcmVpbmZvcmNlbWVudHxlbnwwfHx8fDE3NzMyMjM3NjZ8MA&ixlib=rb-4.1.0&q=85",
-        "senior": "https://images.unsplash.com/photo-1765896387493-b473e1c0fb78?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwxfHxzZW5pb3IlMjBkb2clMjBjYXJlJTIwaG9tZXxlbnwwfHx8fDE3NzMyMjM3Njh8MA&ixlib=rb-4.1.0&q=85",
-        "adoption": "https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=800&q=80"
-      }
-    },
-    "ProductSection": {
-      "title": "Tools for Learning",
-      "layout": "carousel or 4-col grid",
-      "style": "Clean, minimal, no border, focus on image",
-      "images": [
-        "https://images.unsplash.com/photo-1741942732060-cf4b1058fc7f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwxfHxwcmVtaXVtJTIwZG9nJTIwdHJhaW5pbmclMjB0cmVhdHMlMjBwYWNrYWdpbmd8ZW58MHx8fHwxNzczMjIzNzc1fDA&ixlib=rb-4.1.0&q=85",
-        "https://images.unsplash.com/photo-1679689384991-35f609124c37?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2ODl8MHwxfHNlYXJjaHwyfHxkb2clMjBwdXp6bGUlMjB0b3klMjBpbnRlcmFjdGl2ZXxlbnwwfHx8fDE3NzMyMjM3NzZ8MA&ixlib=rb-4.1.0&q=85",
-        "https://images.unsplash.com/photo-1625006797371-e0622a7566f6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA5MDZ8MHwxfHNlYXJjaHwzfHxkb2clMjBjYWxtaW5nJTIwYmVkJTIwYWVzdGhldGljfGVufDB8fHx8MTc3MzIyMzc3N3ww&ixlib=rb-4.1.0&q=85",
-        "https://images.unsplash.com/photo-1659656384008-284dd92c8356?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzh8MHwxfHNlYXJjaHwyfHxkb2clMjBncm9vbWluZyUyMHNhbG9uJTIwcHJvZmVzc2lvbmFsfGVufDB8fHx8MTc3MzIyMzc2OXww&ixlib=rb-4.1.0&q=85"
-      ]
-    },
-    "ServiceSection": {
-      "title": "Expert Services",
-      "style": "Watercolor Illustration style (simulated via CSS or placeholders)",
-      "instruction": "Use soft, organic shapes and pastel colors to mimic watercolor if assets are missing. Use CSS blend modes.",
-      "images": [
-        "https://images.unsplash.com/photo-1722499724570-4a03e7bc9580?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjd8MHwxfHNlYXJjaHw0fHx3YXRlcmNvbG9yJTIwaWxsdXN0cmF0aW9uJTIwZG9nJTIwcGxheWluZ3xlbnwwfHx8fDE3NzMyMjM3Nzh8MA&ixlib=rb-4.1.0&q=85",
-        "https://images.unsplash.com/photo-1642569136274-d4ff0f757a64?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjd8MHwxfHNlYXJjaHwyfHx3YXRlcmNvbG9yJTIwaWxsdXN0cmF0aW9uJTIwZG9nJTIwcGxheWluZ3xlbnwwfHx8fDE3NzMyMjM3Nzh8MA&ixlib=rb-4.1.0&q=85"
-      ]
-    }
+  "grids": {
+    "dashboard_mode": "High Density Grid (Mode B). grid-cols-1 md:grid-cols-4. gap-4.",
+    "ticket_list": "flex flex-col gap-3 for rapid visual scanning."
   },
-  "motion_guidelines": {
-    "hover": "transform: translateY(-4px) scale(1.01)",
-    "transition": "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-    "entrance": "fade-in-up stagger-100"
+  "layouts": {
+    "sidebar": "Fixed left sidebar, w-64, bg-white, border-r border-slate-200. Clean list items. On mobile, ensure it collapses into a hamburger menu.",
+    "header": "Sticky top, h-16, bg-white, border-b border-slate-200, flex items-center justify-between px-6. 'Go to Platform \u2192' button goes here.",
+    "main_content": "ml-0 md:ml-64 bg-[#F8FAFC] min-h-screen p-4 md:p-6 overflow-y-auto."
+  },
+  "motion": {
+    "hover": "Cards: -translate-y-[1px] and shadow-md. Buttons: hover:border-[#C9973A] hover:text-[#C9973A].",
+    "transitions": "transition-colors duration-200 ease-in-out, transition-transform duration-200"
   },
   "accessibility": {
-    "contrast": "Ensure text-gray-500 is readable on colored backgrounds. Use text-gray-700 for better contrast.",
-    "focus": "ring-2 ring-teal-500 ring-offset-2"
+    "contrast": "Deep Navy (#1A1A2E) on White (#FFFFFF) passes WCAG AAA.",
+    "focus": "focus:ring-2 focus:ring-[#C9973A] focus:outline-none focus-visible:ring-2",
+    "test_ids": "All buttons, links, and forms MUST include data-testid (e.g., data-testid='ticket-card-reply-btn')"
   },
+  "media": {
+    "images": "Not primarily an image-heavy view, but any avatars or pet images should be rounded-full, object-cover, border border-slate-200."
+  },
+  "3d_libraries": null,
+  "image_urls": [],
+  "component_path": "/app/frontend/src/components/admin/DoggyServiceDesk.jsx",
   "instructions_to_main_agent": [
-    "Redesign /app/frontend/src/pages/LearnPage.jsx completely.",
-    "Use 'PillarPageLayout' as the wrapper.",
-    "Implement the 'Ask Mira' input as the main hero element.",
-    "Create the 3-bucket Core Action Cards section using the new 'Bento Grid' style.",
-    "Use the provided image URLs for Life Stage and Product sections to replace generic stock photos.",
-    "For Services, use the provided watercolor-style images or apply a 'mix-blend-multiply' effect on white backgrounds to simulate the look.",
-    "Ensure the 'Near Me' component is included.",
-    "Separate Products and Services into distinct, high-quality sections.",
-    "Make the page feel 'Soulful' - soft backgrounds, rounded corners (xl or 2xl), generous padding."
+    "CRITICAL: The target file is 6,874 lines. DO NOT attempt to rewrite the whole file. DO NOT output the whole file.",
+    "Use view_range with view_file tool to inspect specific sections, or use search_replace to target CSS class replacements directly.",
+    "1. THEME SWITCH: Replace 'bg-slate-900', 'bg-slate-800', 'bg-gray-900' with 'bg-white' or 'bg-slate-50'. Replace 'text-white' or 'text-slate-100' with 'text-[#1A1A2E]'.",
+    "2. HEADER: Inject a 'Go to Platform \u2192' button into the top header navigation. It must link to '/pet-home'. Use styling: px-4 py-2 border border-slate-200 text-[#1A1A2E] hover:text-[#C9973A] hover:border-[#C9973A] rounded-md transition-colors font-medium text-sm.",
+    "3. PILLAR NAMES: Search for occurrences of 'stay', 'enjoy', 'fit' in strings and UI labels. Replace them respectively with 'go', 'play', 'services'. (Watch out for case sensitivity like 'Stay' -> 'Go').",
+    "4. TICKETS: Update the ticket cards to have white background, subtle border, Deep Navy headings, and clear urgency indicators (\ud83d\udea8/\ud83d\udfe2/\ud83d\udfe1/\u26aa).",
+    "5. Keep existing application state, imports, and component methods strictly untouched."
   ],
   "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
-    "You tend to converge toward generic, 'on distribution' outputs. In frontend design, this creates what users call the 'AI slop' aesthetic. Avoid this: make creative, distinctive frontends that surprise and delight.",
-    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
-    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
-    "Create depth through layered design elements with z-index hierarchy",
-    "Use glass-morphism effects with backdrop filters (12-24px blur)",
-    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
-    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text",
-    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
-    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
-    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
-    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
-    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
-    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
-    "Component Reuse: Prioritize using pre-existing components from src/components/ui when applicable. Create new components that match the style and conventions of existing components when needed. Examine existing components to understand the project's component patterns before creating new ones",
-    "Export Conventions: Components MUST use named exports (export const ComponentName = ...). Pages MUST use default exports (export default function PageName() {...})",
-    "Toasts: Use sonner for toasts. Sonner component are located in /app/src/components/ui/sonner.tsx"
+    "You tend to converge toward generic outputs. Avoid this: make creative, distinctive frontends that surprise and delight.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts. Create depth through layered design elements with z-index hierarchy.",
+    "You MUST NOT apply universal transition (`transition: all`). Always add transitions for specific interactive elements.",
+    "You MUST NOT center align the app container. This disrupts the human natural reading flow of text.",
+    "Always use modern button styles.",
+    "NEVER: use AI assistant Emoji characters like \ud83e\udd16\ud83e\udde0\ud83d\udcad\ud83d\udca1\ud83d\udd2e\ud83c\udfaf for icons.",
+    "Every interaction needs micro-animations - hover states, transitions.",
+    "Components MUST use named exports, Pages MUST use default exports.",
+    "Use `sonner` for toasts if needed.",
+    "All interactive and key informational elements MUST include a `data-testid` attribute. Convention: kebab-case, role-based."
   ]
 }
