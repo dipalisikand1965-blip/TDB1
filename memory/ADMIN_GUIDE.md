@@ -272,3 +272,102 @@ Upload all 5 files directly to Claude (Pro/Teams file upload — they fit easily
 Copy: /app/frontend/public/FOR_CLAUDE.txt
 Paste at start of any Claude session → Claude instantly knows everything
 ```
+
+---
+## SESSION 85-86 UPDATES (Mar 20-21, 2026)
+
+### CP4 Fixed — Admin Inbox Now Shows Concierge Tickets
+The admin Service Desk now fetches from `service_desk_tickets` (PRIMARY) + `tickets` (SECONDARY/orders).
+- Endpoint: `GET /api/service_desk/tickets?limit=200`
+- Shows: booking_intent, service_request, mira_chat_intent, emergency_alert
+- Filters OUT: Pet Wrapped auto-generated tickets (wrapped-*, annual-*, birthday-*)
+
+### Two-Way Inbox — Concierge ↔ Member
+- Admin sends reply: `POST /api/service_desk/concierge_reply?ticket_id=X&concierge_name=Y&message=Z`
+- Reply lands in `service_desk_tickets.thread` (ALL docs with ticket_id)
+- Member sees pink "New reply" dot on /my-requests
+- Member taps → calls `POST /api/service_desk/mark_reply_read?ticket_id=X` → dot clears
+
+### Reminders "Refresh & Run" Button
+- Fixed: `POST /api/admin/communications/run-scheduler` endpoint created
+- Triggers pending reminder checks for next 30 days
+
+### Health Vault — Confirmed Working
+- Data persists in `pets.health_vault` (embedded in pet document)
+- Test: Mojo's Rabies vaccination (due 2027-03-21) saved and retrievable
+
+### Admin Panel Redesign
+- Sidebar: white background (was dark slate), amber/gold accent (#C9973A)
+- "Go to Platform →" button added to sidebar header
+- Old pillar names fixed: stay→go, enjoy→play, fit→services
+- All 80+ admin sections verified wired to real components
+
+### 3-Layer Mira Soul Picks
+- Layer 1: breed_products (soul products, always personalised)
+- Layer 2: services_master (pillar services, bookable)
+- Layer 3: mira_product_scores (AI-scored, fill remaining slots)
+- Speed: 45ms (was 2-3 minutes)
+
+### 5 New Soul Product Categories
+- breed-custom_portraits ₹2,499 | breed-phone_cases ₹799 | breed-wall_art ₹1,899
+- breed-memory_boxes ₹3,499 | breed-birthday_cake_toppers ₹499
+- 235 products seeded (47 breeds × 5 types) — images generating in background
+
+### Production Deployment Note
+⚠️ Current preview URL: intent-ticket-flow.preview.emergentagent.com
+⚠️ Production URL must be: thedoggycompany.com
+⚠️ Update REACT_APP_BACKEND_URL and all hardcoded references before going live
+
+---
+## SESSION 86 UPDATES (Mar 21, 2026)
+
+### Admin Panel — 3 New Pillar Managers
+- `ServicesManager.jsx` — full CRUD for Services pillar (424+ services in services_master)
+- `GoManager.jsx` — thin wrapper using PillarManager universal pattern for Go pillar
+- `PlayManager.jsx` — thin wrapper using PillarManager universal pattern for Play pillar
+- `PillarManager.jsx` — universal admin component (Products/Services/Bundles tabs, search, pagination)
+- Wired into Admin.jsx: `case 'services'`, `case 'go'`, `case 'play'`
+
+### Mira OS Page — New Features
+- **NEAR ME tab**: 6th OS tab with location-based search. 4 quick prompts (vet, groomer, café, park)
+- **Pet Home → button**: floating pill top-right on /mira for quick navigation
+- **Streaming**: `useChatSubmit.js` now tries `/api/mira/os/stream` first (word-by-word), falls back to `/api/mira/chat`
+- **Soul chips**: Deduplicated (Chicken-free, High energy, Playful nature — all distinct)
+- **SoulRadar**: Ambient radar background behind ChatInputBar at 15% opacity
+
+### Mira OS Tab Bar
+- 6 tabs now: TODAY, PICKS, SERVICES, NEAR ME, LEARN, CONCIERGE®
+- Scrollable on mobile (overflow-x: auto, scrollbar hidden)
+- Compact padding (8px/12px, 11px font) for 6-tab display
+
+### Documentation Status
+- ADMIN_GUIDE.md: Updated to Mar 21, 2026
+- PRD.md: Updated
+- complete-documentation.html: v20.0 (needs v21 update)
+
+---
+## DATA PERSISTENCE & REDEPLOY SAFETY
+
+### What survives a redeploy:
+✅ Users/members (users collection)
+✅ Pets and soul profiles (pets collection)
+✅ Service desk tickets (service_desk_tickets)
+✅ Member notifications, orders, memberships
+✅ Soul products (breed_products) — no seed script overwrites these
+✅ Mira conversations and memory
+
+⚠️ Product catalog (products_master) — MasterSync upserts on startup
+   Admin edits to product names/prices WILL persist (upsert by id)
+   but new products added in admin may be deduped if seed runs
+
+### Database config:
+- Preview: mongodb://localhost:27017 → pet-os-live-test_database
+- 143 collections, 36,751+ documents as of Mar 21, 2026
+- For production: needs persistent volume OR MongoDB Atlas
+
+### Generate button fix (Mar 21, 2026):
+- Root cause: scoring job blocked the event loop
+- Fix: asyncio.Semaphore(1) in mira_score_engine.py
+  → Only 1 scoring job at a time
+  → Other API calls are never blocked
+  → Concurrent scoring attempts are silently skipped (not queued)

@@ -320,8 +320,83 @@ const useChatSubmit = (config) => {
         await syncToServiceDesk(currentTicket.id, userMessage);
       }
       
-      // STEP 3: Get Mira's response - Using /api/mira/chat for beautiful structured responses
-      // This is the same endpoint as MiraOSModal (BETA widget) for consistent experience
+      // STEP 3: Get Mira's response — try streaming first, fall back to /api/mira/chat
+      // Streaming gives word-by-word display (same as MiraChatWidget)
+
+      let streamingSucceeded = false;
+      try {
+        const streamRes = await fetch(`${API_URL}/api/mira/os/stream`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...(token && { Authorization: `Bearer ${token}` }) },
+          body: JSON.stringify({
+            message: inputQuery,
+            pet_id: pet?.id,
+            pet_name: pet?.name,
+            pet_breed: pet?.breed,
+            soul_answers: pet?.doggy_soul_answers || {},
+            history: conversationHistory?.slice(-10) || [],
+          }),
+          signal: AbortSignal.timeout(15000),
+        });
+
+        if (streamRes.ok && streamRes.body) {
+          streamingSucceeded = true;
+          const reader = streamRes.body.getReader();
+          const decoder = new TextDecoder();
+          let fullText = '';
+
+          // Show a streaming placeholder message
+          if (setIsTyping) setIsTyping(true);
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value, { stream: true });
+            for (const line of chunk.split('\n')) {
+              if (!line.startsWith('data: ')) continue;
+              const data = line.slice(6).trim();
+              if (data === '[DONE]') break;
+              try {
+                const tok = JSON.parse(data).text || '';
+                if (tok) {
+                  fullText += tok;
+                  // Update UI progressively via setIsTyping + response
+                  if (setQuery) setQuery(''); // keep input clear
+                }
+              } catch {}
+            }
+          }
+
+          if (setIsTyping) setIsTyping(false);
+
+          // Inject the full response into the conversation as a Mira message
+          const streamMiraMsg = {
+            id: Date.now(),
+            role: 'assistant',
+            content: fullText,
+            response: fullText,
+            text: fullText,
+            type: 'mira_stream',
+            timestamp: new Date().toISOString(),
+          };
+
+          if (setConversationHistory) {
+            setConversationHistory(prev => [...(prev || []), streamMiraMsg]);
+          }
+
+          // tdc.chat tracking
+          try {
+            const { tdc } = await import('../../utils/tdc_intent');
+            tdc.chat({ message: inputQuery, reply: fullText, pillar: pillar || 'mira_os', pet, channel: 'mira_os_stream' });
+          } catch {}
+
+          return; // Don't fall through to /api/mira/chat
+        }
+      } catch (streamErr) {
+        console.log('[MiraOS] Streaming failed, falling back to /api/mira/chat:', streamErr?.message);
+      }
+
+      // STEP 3b: Fallback — /api/mira/chat (original path)
       const response = await fetch(`${API_URL}/api/mira/chat`, {
         method: 'POST',
         headers: {

@@ -26,11 +26,16 @@
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
-// ── Auth helper ──────────────────────────────────────────────────────────────
+// ── Auth helper — mobile-safe ─────────────────────────────────────────────────
 function getAuth() {
   try {
-    const token = localStorage.getItem('tdb_auth_token');
-    const user  = JSON.parse(localStorage.getItem('user') || 'null');
+    const token = localStorage.getItem('tdb_auth_token')
+               || sessionStorage.getItem('tdb_auth_token')
+               || null;
+    const userStr = localStorage.getItem('user')
+                 || sessionStorage.getItem('user')
+                 || 'null';
+    const user = JSON.parse(userStr);
     return { token, user };
   } catch {
     return { token: null, user: null };
@@ -74,9 +79,12 @@ async function fireTicket({
   metadata = {},
 }) {
   const { token, user } = getAuth();
-  if (!token || !user) return null; // not logged in — silent skip
-
-  const parent_id = user.id || user._id || user.email;
+  // Mobile: allow anonymous parent_id from email if stored separately
+  const parent_id = user?.id || user?._id || user?.email 
+                 || localStorage.getItem('user_email')
+                 || sessionStorage.getItem('user_email')
+                 || null;
+  if (!parent_id) return null; // truly not logged in
   const pet_id    = pet?.id || pet?._id || '';   // backend requires string, not null
 
   try {
@@ -102,13 +110,17 @@ async function fireTicket({
       },
     };
 
+    const bodyStr = JSON.stringify(body);
+
+    // keepalive:true — survives page navigation on mobile (critical fix)
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
     const res = await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
       method: 'POST',
-      headers: {
-        'Content-Type':  'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(body),
+      headers,
+      body: bodyStr,
+      keepalive: true,  // ← mobile: request completes even if user navigates away
     });
 
     if (res.ok) {
@@ -116,7 +128,16 @@ async function fireTicket({
       return data.ticket_id || data.id || null;
     }
   } catch {
-    // Tracking must NEVER break UX — swallow all errors silently
+    // Last resort: sendBeacon for high-urgency events on mobile
+    // sendBeacon uses POST and survives page unload — no response but guaranteed delivery
+    if ((urgency === 'high' || urgency === 'emergency') && typeof navigator !== 'undefined' && navigator.sendBeacon) {
+      try {
+        navigator.sendBeacon(
+          `${API_URL}/api/service_desk/attach_or_create_ticket`,
+          new Blob([JSON.stringify(body)], { type: 'application/json' })
+        );
+      } catch {}
+    }
   }
   return null;
 }
