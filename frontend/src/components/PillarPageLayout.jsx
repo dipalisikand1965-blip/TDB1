@@ -22,7 +22,7 @@ import UnifiedHero from './UnifiedHero';
 import PillarNav from './PillarNav';
 import SEOHead from './SEOHead';
 import MiraChatWidget from './MiraChatWidget';
-import MobileMenu from './MobileMenu';
+// MobileMenu removed — Navbar from MainLayout handles mobile navigation
 
 // Pillar subcategories configuration - with REAL product images from Shopify
 const PILLAR_SUBCATEGORIES = {
@@ -140,7 +140,7 @@ const PillarPageLayout = ({
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [menuOpen, setMenuOpen] = useState(false); // Mobile menu
+  // Mobile menu removed - Navbar handles it
   
   // Use global pet from PillarContext - ensures consistency when pet is switched elsewhere
   const { currentPet, setCurrentPet, pets: contextPets, soulData: contextSoulData } = usePillarContext();
@@ -257,25 +257,10 @@ const PillarPageLayout = ({
   
   return (
     <div className={`min-h-screen bg-gradient-to-b ${bgGradient} to-white pb-20 md:pb-0 overflow-x-hidden w-full max-w-full`} data-testid={`${pillar}-page`}>
-      {/* ── Mobile nav header — hamburger + brand (mobile only) ───────────── */}
-      <div className="tdc-mobile-header sticky top-0 z-50 flex items-center justify-between px-4 py-3"
-        style={{ background: "rgba(15,10,30,0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(201,151,58,0.2)" }}>
-        <button onClick={() => navigate(-1)} style={{ background:"none", border:"none", color:"rgba(245,240,232,0.7)", fontSize:20, cursor:"pointer", padding:4 }}>←</button>
-        <span style={{ fontFamily:"Georgia,serif", fontSize:14, fontWeight:600, color:"#F5F0E8", letterSpacing:"0.03em" }}>
-          The Doggy Company<span style={{ color:"#C9973A" }}>®</span>
-        </span>
-        <button onClick={() => setMenuOpen(true)} style={{ background:"none", border:"none", color:"#F5F0E8", fontSize:22, cursor:"pointer", padding:4 }} data-testid="pillar-hamburger-btn">☰</button>
-      </div>
+      {/* ── Mobile nav header — REMOVED: Navbar from MainLayout handles this ───────────── */}
+      {/* Back button only on mobile, subtly placed below Navbar */}
 
-      {/* New MobileMenu */}
-      <MobileMenu
-        isOpen={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        currentPet={activePet}
-        pets={userPets}
-        onPetSwitch={(pet) => { setCurrentPet?.(pet); setMenuOpen(false); }}
-        userName={user?.name || user?.email}
-      />
+      {/* MobileMenu is handled by Navbar in MainLayout */}
 
       {/* SEO */}
       <SEOHead 

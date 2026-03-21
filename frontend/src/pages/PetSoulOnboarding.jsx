@@ -103,37 +103,140 @@ function Chip({ label, selected, onToggle, colour = G.purple, emoji }) {
   );
 }
 
-// ── Progress bar ───────────────────────────────────────────────────────
-function MiraProgress({ step, totalSteps, petName, ptsEarned }) {
+// ── Soul Growth Card — gamified progress with glowing score ──────────
+function SoulGrowthCard({ step, totalSteps, petName, ptsEarned, chapter }) {
   const pct = Math.round((step / totalSteps) * 100);
+  const maxPts = STEPS.reduce((s, st) => s + st.pts, 0);
+  const scorePct = maxPts > 0 ? Math.min(Math.round((ptsEarned / maxPts) * 100), 100) : 0;
+
+  // Mira encouragements based on progress
+  const miraMessage = 
+    step === 0 ? `Every soul has a story. Let's begin ${petName}'s.` :
+    step === 1 ? `A face makes everything real. Mira sees ${petName} now.` :
+    step <= 3 ? `Mira is starting to feel ${petName}'s energy...` :
+    step <= 5 ? `The soul is taking shape. ${petName}'s profile is growing.` :
+    step <= 7 ? `Mira knows ${petName} better than most humans do now.` :
+    step <= 9 ? `Almost there. ${petName}'s soul profile is nearly complete.` :
+    `${petName}'s soul is fully known to Mira.`;
+
+  // Glow intensity increases with progress
+  const glowColor = scorePct < 30 ? 'rgba(155,89,182,0.3)' 
+    : scorePct < 60 ? 'rgba(155,89,182,0.5)' 
+    : 'rgba(201,151,58,0.6)';
+  const ringColor = scorePct < 30 ? '#9B59B6' 
+    : scorePct < 60 ? '#8E44AD' 
+    : '#C9973A';
+
+  // SVG arc calculation
+  const radius = 52;
+  const circumference = 2 * Math.PI * radius;
+  const dashOffset = circumference - (scorePct / 100) * circumference;
+
   return (
-    <div style={{ marginBottom: 24 }}>
+    <div style={{
+      background: 'linear-gradient(135deg, #0F0A1E, #1A1040)',
+      borderRadius: 20,
+      padding: '20px 16px',
+      marginBottom: 24,
+      textAlign: 'center',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Ambient glow */}
       <div style={{
-        display: "flex", justifyContent: "space-between",
-        alignItems: "center", marginBottom: 8,
-      }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: G.muted }}>
-          ✦ Mira is learning about <span style={{ color: G.purple }}>{petName || "your dog"}</span>
-        </div>
+        position: 'absolute', top: '50%', left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 160, height: 160, borderRadius: '50%',
+        background: `radial-gradient(circle, ${glowColor}, transparent 70%)`,
+        filter: 'blur(20px)',
+        transition: 'all 0.6s ease',
+        pointerEvents: 'none',
+      }} />
+
+      {/* Soul Ring */}
+      <div style={{ position: 'relative', display: 'inline-block', marginBottom: 12 }}>
+        <svg width="128" height="128" viewBox="0 0 128 128" style={{ transform: 'rotate(-90deg)' }}>
+          {/* Background ring */}
+          <circle cx="64" cy="64" r={radius} fill="none" 
+            stroke="rgba(155,89,182,0.15)" strokeWidth="8" />
+          {/* Progress ring */}
+          <circle cx="64" cy="64" r={radius} fill="none"
+            stroke={ringColor} strokeWidth="8"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={dashOffset}
+            style={{ 
+              transition: 'stroke-dashoffset 0.8s ease, stroke 0.4s ease',
+              filter: `drop-shadow(0 0 6px ${glowColor})`,
+            }}
+          />
+        </svg>
+        {/* Score in center */}
         <div style={{
-          fontSize: 11, fontWeight: 700,
-          background: MIRA_ORB, WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
+          position: 'absolute', inset: 0,
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
         }}>
-          {ptsEarned} soul pts
+          <div style={{
+            fontSize: 32, fontWeight: 900,
+            background: ptsEarned > 0 
+              ? 'linear-gradient(135deg, #E8D5B7, #C9973A, #F5E6CC)' 
+              : 'linear-gradient(135deg, #9B59B6, #8E44AD)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            lineHeight: 1,
+            filter: ptsEarned > 0 ? `drop-shadow(0 0 8px ${glowColor})` : 'none',
+            transition: 'all 0.4s ease',
+          }}>
+            {ptsEarned}
+          </div>
+          <div style={{
+            fontSize: 10, fontWeight: 600,
+            color: 'rgba(245,240,232,0.5)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            marginTop: 2,
+          }}>
+            soul pts
+          </div>
         </div>
       </div>
+
+      {/* Mira message */}
       <div style={{
-        height: 6, borderRadius: 999,
-        background: "rgba(155,89,182,0.15)",
-        overflow: "hidden",
+        fontSize: 13, fontWeight: 500,
+        color: 'rgba(245,240,232,0.7)',
+        fontStyle: 'italic',
+        lineHeight: 1.5,
+        maxWidth: 280, margin: '0 auto 12px',
+        transition: 'all 0.3s ease',
       }}>
+        "{miraMessage}"
+      </div>
+
+      {/* Step progress bar */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        justifyContent: 'center',
+      }}>
+        <span style={{ fontSize: 10, fontWeight: 600, color: 'rgba(245,240,232,0.4)' }}>
+          {step + 1}/{totalSteps}
+        </span>
         <div style={{
-          height: "100%", borderRadius: 999,
-          background: MIRA_ORB,
-          width: `${pct}%`,
-          transition: "width 0.4s ease",
-        }}/>
+          flex: 1, maxWidth: 160, height: 4, borderRadius: 999,
+          background: 'rgba(155,89,182,0.2)',
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            height: '100%', borderRadius: 999,
+            background: 'linear-gradient(90deg, #9B59B6, #C9973A)',
+            width: `${pct}%`,
+            transition: 'width 0.4s ease',
+          }} />
+        </div>
+        <span style={{ fontSize: 10, fontWeight: 600, color: 'rgba(245,240,232,0.4)' }}>
+          {chapter}
+        </span>
       </div>
     </div>
   );
@@ -1263,12 +1366,13 @@ export default function PetSoulOnboarding() {
           </div>
         </div>
 
-        {/* Progress */}
-        <MiraProgress
+        {/* Soul Growth Card — gamified progress */}
+        <SoulGrowthCard
           step={currentStep}
           totalSteps={STEPS.length}
           petName={petName}
           ptsEarned={totalPts}
+          chapter={step?.chapter}
         />
 
         {/* Step header */}
@@ -1312,34 +1416,41 @@ export default function PetSoulOnboarding() {
           <button
             onClick={handleNext}
             disabled={saving || (currentStep === 0 && !stepData.name)}
+            data-testid="onboarding-next-btn"
             style={{
-              flex: 1, padding: "14px",
-              borderRadius: 12, border: "none",
+              flex: 1, padding: "16px",
+              borderRadius: 14, border: "none",
               background: (saving || (currentStep === 0 && !stepData.name))
                 ? "rgba(107,70,193,0.2)"
                 : MIRA_ORB,
               color: (saving || (currentStep === 0 && !stepData.name)) ? G.muted : "#fff",
-              fontSize: 15, fontWeight: 700,
+              fontSize: 16, fontWeight: 700,
               cursor: (saving || (currentStep === 0 && !stepData.name)) ? "not-allowed" : "pointer",
               transition: "all 0.2s",
+              boxShadow: (saving || (currentStep === 0 && !stepData.name)) ? "none" : "0 4px 20px rgba(155,89,182,0.35)",
             }}
           >
-            {saving ? "Saving…" : currentStep >= STEPS.length - 1 ? `Mira is ready ✦` : "Next →"}
-          </button>
-          <button
-            onClick={handleSkip}
-            style={{
-              padding: "14px 20px",
-              borderRadius: 12,
-              background: "none",
-              border: "1px solid rgba(107,70,193,0.25)",
-              color: G.sub, fontSize: 14,
-              cursor: "pointer",
-            }}
-          >
-            Skip
+            {saving ? "Saving…" : currentStep >= STEPS.length - 1 ? `Complete Soul Profile ✦` : "Continue →"}
           </button>
         </div>
+        {currentStep > 0 && (
+          <div style={{ textAlign: "center", marginTop: 10 }}>
+            <button
+              onClick={handleSkip}
+              data-testid="onboarding-skip-btn"
+              style={{
+                padding: "8px 16px",
+                borderRadius: 10,
+                background: "none",
+                border: "none",
+                color: "rgba(107,70,193,0.4)", fontSize: 12,
+                cursor: "pointer",
+              }}
+            >
+              skip for now
+            </button>
+          </div>
+        )}
 
         {/* Step dots */}
         <div style={{
