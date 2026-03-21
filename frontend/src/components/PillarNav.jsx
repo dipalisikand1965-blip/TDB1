@@ -8,7 +8,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Sparkles, Package, Wrench, ChevronLeft, ChevronRight,
-  Cake, Utensils, Home, Plane, Heart, Gamepad2, GraduationCap,
+  Cake, Utensils, Home, Plane, Heart, Gamepad, GraduationCap,
   Scissors, FileText, AlertTriangle, Flower2, PawPrint, Shield,
   Star, ShoppingBag, Stethoscope
 } from 'lucide-react';
@@ -21,7 +21,7 @@ const PILLARS = [
   { id: 'stay', label: 'Stay', icon: Home, color: 'from-teal-500 to-cyan-500', emoji: '🏠' },
   { id: 'travel', label: 'Travel', icon: Plane, color: 'from-blue-500 to-indigo-500', emoji: '✈️' },
   { id: 'care', label: 'Care', icon: Scissors, color: 'from-pink-500 to-purple-500', emoji: '✂️' },
-  { id: 'enjoy', label: 'Play', icon: Gamepad2, color: 'from-violet-500 to-purple-500', emoji: '🎾' },
+  { id: 'enjoy', label: 'Play', icon: Gamepad, color: 'from-violet-500 to-purple-500', emoji: '🎾' },
   { id: 'learn', label: 'Learn', icon: GraduationCap, color: 'from-emerald-500 to-teal-500', emoji: '🎓' },
   { id: 'advisory', label: 'Advisory', icon: Stethoscope, color: 'from-cyan-500 to-blue-500', emoji: '💬' },
   { id: 'paperwork', label: 'Paperwork', icon: FileText, color: 'from-slate-500 to-gray-500', emoji: '📄' },

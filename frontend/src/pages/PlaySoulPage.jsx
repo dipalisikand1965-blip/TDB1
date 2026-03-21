@@ -1368,7 +1368,7 @@ const PlaySoulPage = () => {
   const navigate = useNavigate();
   const { token, isAuthenticated }                     = useAuth();
   const { currentPet, setCurrentPet, pets:contextPets } = usePillarContext();
-
+  const pet = currentPet; // alias so all sub-components can use pet directly
   const [loading, setLoading]         = useState(true);
   const [activeTab, setActiveTab]     = useState("play");
   const [openDim, setOpenDim]         = useState(null);
@@ -1507,11 +1507,11 @@ const PlaySoulPage = () => {
   // Auto-trigger Mira scoring for play pillar on first visit
   useEffect(() => {
     if (!petData?.id) return;
-    fetch(`${API_URL}/api/mira/score-for-pet`, {
+    if (!pet?.overall_score || pet.overall_score <= 0) { fetch(`${API_URL}/api/mira/score-for-pet`, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       body: JSON.stringify({ pet_id: petData.id, pillar: "play", entity_types: ["product", "service"] }),
-    }).catch(() => {});
+    }).catch(() => {}); }
   }, [petData?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAddPet = useCallback(() => {

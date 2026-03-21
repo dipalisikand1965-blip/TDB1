@@ -819,6 +819,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
   const [videos,    setVideos]    = useState([]);
   const [vLoading,  setVLoading]  = useState(false);
   const [playing,   setPlaying]   = useState(null);
+  const [selProd,   setSelProd]   = useState(null); // ProductDetailModal
 
   // Products from pre-fetched apiProducts
   const catName = DIM_ID_TO_CATEGORY[dim.id]||"Learn Foundations";
@@ -932,7 +933,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
               {products.map(p=>(
                 <div key={p.id||p._id} style={{position:"relative"}}>
                   {p.mira_score>=75 && <div style={{position:"absolute",top:-6,left:-6,zIndex:2,background:G.mid,borderRadius:20,padding:"1px 6px",fontSize:9,fontWeight:700,color:"#fff"}}>★ {p.mira_score}</div>}
-                  <SharedProductCard product={p} pillar="learn" selectedPet={pet} miraContext={miraCtx}/>
+                  <SharedProductCard product={p} pillar="learn" selectedPet={pet} miraContext={miraCtx} onViewDetails={(prod)=>setSelProd(prod)}/>
                 </div>
               ))}
             </div>
@@ -992,7 +993,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
                 </p>
                 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(180px,100%),1fr))",gap:12}}>
                   {dimProds.map(p=>(
-                    <SharedProductCard key={p.id||p._id} product={p} pillar="learn" selectedPet={pet}/>
+                    <SharedProductCard key={p.id||p._id} product={p} pillar="learn" selectedPet={pet} onViewDetails={(prod)=>setSelProd(prod)}/>
                   ))}
                 </div>
               </>
@@ -1126,6 +1127,8 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
           )}
         </div>
       )}
+      {/* ProductDetailModal */}
+      {selProd && <ProductDetailModal product={selProd} pet={pet} pillar="learn" onClose={()=>setSelProd(null)} onBook={(p)=>{setSelProd(null);onBook(p);}}/>}
     </div>
   );
 }
@@ -1753,6 +1756,8 @@ const LearnSoulPage = () => {
   const navigate = useNavigate();
   const {token,isAuthenticated}                       = useAuth();
   const {currentPet,setCurrentPet,pets:contextPets}  = usePillarContext();
+  const pet = currentPet; // alias for sub-components
+
 
   const [loading,     setLoading]     = useState(true);
   const [activeTab,   setActiveTab]   = useState("learn");

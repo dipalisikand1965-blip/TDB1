@@ -6,7 +6,7 @@ import {
   MessageCircle, Star, ChevronRight, Check,
   Users, Play, ChevronDown, Crown, Utensils, 
   Hotel, GraduationCap, PartyPopper, HeartPulse,
-  Phone, Mail, Quote, Plane, Gamepad2, Dumbbell,
+  Phone, Mail, Quote, Plane, Gamepad, Dumbbell,
   FileText, Lightbulb, AlertCircle, Rainbow, Gift, Download
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -157,7 +157,7 @@ const Home = () => {
     { icon: Hotel, title: 'Stay', description: 'Places that welcome them as family', color: 'from-blue-500 to-cyan-500' },
     { icon: Plane, title: 'Travel', description: 'The world is their playground', color: 'from-sky-500 to-blue-500' },
     { icon: HeartPulse, title: 'Care', description: 'Health tracking, vet reminders, wellness', color: 'from-red-500 to-rose-500' },
-    { icon: Gamepad2, title: 'Enjoy', description: 'Activities, events, and pure joy', color: 'from-pink-500 to-fuchsia-500' },
+    { icon: Gamepad, title: 'Enjoy', description: 'Activities, events, and pure joy', color: 'from-pink-500 to-fuchsia-500' },
     { icon: Dumbbell, title: 'Fit', description: 'Exercise, training, staying active', color: 'from-green-500 to-emerald-500' },
     { icon: GraduationCap, title: 'Learn', description: 'Understanding every bark and purr', color: 'from-amber-500 to-yellow-500' },
     { icon: FileText, title: 'Paperwork', description: 'Documents, permits, certificates handled', color: 'from-slate-500 to-gray-500' },

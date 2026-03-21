@@ -65,7 +65,7 @@ const PILLARS = [
   { id: 'care', name: 'Care', icon: Stethoscope, color: 'from-emerald-500 to-teal-500', path: '/care' },
   { id: 'dine', name: 'Dine', icon: Utensils, color: 'from-amber-500 to-orange-500', path: '/dine' },
   { id: 'go', name: 'Go', icon: Plane, color: 'from-blue-500 to-indigo-500', path: '/go' },
-  { id: 'enjoy', name: 'Enjoy', icon: Heart, color: 'from-red-500 to-pink-500', path: '/enjoy' },
+  { id: 'play', name: 'Play', icon: null, emoji: '🎾', color: 'from-orange-500 to-amber-600', path: '/play' },
   { id: 'learn', name: 'Learn', icon: GraduationCap, color: 'from-indigo-500 to-blue-500', path: '/learn' },
   { id: 'shop', name: 'Shop', icon: ShoppingBag, color: 'from-fuchsia-500 to-pink-500', path: '/shop' },
   { id: 'adopt', name: 'Adopt', icon: Dog, color: 'from-amber-400 to-yellow-500', path: '/adopt' },
@@ -850,7 +850,10 @@ const PetHomePage = () => {
                   data-testid={`pillar-${pillar.id}`}
                 >
                   <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${pillar.color} flex items-center justify-center mb-2`}>
-                    <PillarIcon className="w-6 h-6 text-white" />
+                    {pillar.emoji
+                      ? <span className="text-white text-xl">{pillar.emoji}</span>
+                      : <PillarIcon className="w-6 h-6 text-white" />
+                    }
                   </div>
                   <span className="text-white text-sm font-medium">{pillar.name}</span>
                 </motion.button>

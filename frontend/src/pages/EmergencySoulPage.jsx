@@ -286,6 +286,8 @@ const EmergencySoulPage = () => {
   const navigate = useNavigate();
   const { token, isAuthenticated } = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
+  const pet = currentPet; // alias for sub-components
+
 
   // ── Universal visit tracking ──────────────────────────────────
   usePlatformTracking({ pillar: "emergency", pet: currentPet });
