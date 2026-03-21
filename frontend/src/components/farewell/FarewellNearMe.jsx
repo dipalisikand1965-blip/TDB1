@@ -1,4 +1,5 @@
 /**
+import NearMeConciergeModal from '../common/NearMeConciergeModal';
  * FarewellNearMe.jsx — /farewell pillar
  * The Doggy Company
  *
@@ -13,6 +14,8 @@
  * Colour world: Deep Midnight #1A1A2E + Soft Indigo #6366F1
  */
 import { useState, useCallback } from "react";
+import { bookViaConcierge } from '../../utils/MiraCardActions';
+import { tdc } from '../../utils/tdc_intent';
 import { API_URL } from "../../utils/api";
 import { useAuth } from "../../context/AuthContext";
 
@@ -37,6 +40,7 @@ const POPULAR_CITIES = [
 
 export default function FarewellNearMe({ pet, onBook }) {
   const [city,       setCity]       = useState("");
+  const [selectedVendor, setSelectedVendor] = useState(null);
   const [cityInput,  setCityInput]  = useState("");
   const [searchType, setSearchType] = useState("all");
   const [results,    setResults]    = useState([]);
@@ -96,6 +100,15 @@ export default function FarewellNearMe({ pet, onBook }) {
   };
 
   const handleBook = (place) => {
+    // Farewell — always high urgency
+    tdc.track("farewell_nearme", { text: place.name, pillar: "farewell", pet, channel: "farewell_nearme_card", urgency: "high" });
+    bookViaConcierge({
+      service: place.name || "Farewell care provider",
+      pillar: "farewell",
+      pet,
+      channel: "farewell_nearme_card",
+      notes: place.vicinity || place.city || "",
+    });
     onBook?.({
       name: place.name,
       pillar: "farewell",
@@ -278,6 +291,13 @@ export default function FarewellNearMe({ pet, onBook }) {
           <p style={{ fontSize: 13 }}>Search by city above or tap Near me — Mira will handle all arrangements.</p>
         </div>
       )}
-    </div>
-  );
+    
+      <NearMeConciergeModal
+        isOpen={!!selectedVendor}
+        venue={selectedVendor}
+        pet={pet}
+        pillar="farewell"
+        onClose={() => setSelectedVendor(null)}
+      />
+    </div>  );
 }

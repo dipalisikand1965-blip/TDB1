@@ -22,8 +22,11 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import ReactDOM from "react-dom";
 import { API_URL } from "../../utils/api";
 import SharedProductCard from "../ProductCard";
+import { tdc } from "../../utils/tdc_intent";
+import NearMeConciergeModal from "../common/NearMeConciergeModal";
 
 const G = {
   deep:"#2D1B69", mid:"#4A2C8F", purple:"#9B59B6", gold:"#C9973A",
@@ -84,7 +87,12 @@ function QualityHint({ type }) {
 }
 
 // ── Vendor card (Google Places results) ───────────────────────
-function VendorCard({ vendor, pet, onBook }) {
+function VendorCard({ vendor, pet, onBook, onOpenModal }) {
+  const handleBook = () => {
+    tdc.nearme({ query: vendor.name || "venue", pillar: "celebrate", pet, channel: "celebrate_nearme" });
+    onOpenModal?.(vendor);
+    onBook?.(vendor, vendor.city || vendor.vicinity);
+  };
   const [imgErr,setImgErr] = useState(false);
   const type = VENDOR_TYPES.find(t=>t.id===vendor.type) || VENDOR_TYPES[0];
   return (
@@ -108,7 +116,7 @@ function VendorCard({ vendor, pet, onBook }) {
         {vendor.mira_note&&<div style={{fontSize:11,color:G.purple,fontStyle:"italic",marginBottom:8,lineHeight:1.4}}>✦ {vendor.mira_note}</div>}
         <div style={{display:"flex",gap:8,alignItems:"center",marginTop:10}}>
           {vendor.phone&&<a href={`tel:${vendor.phone}`} style={{fontSize:11,color:G.mid,fontWeight:600,textDecoration:"none",background:G.pale,borderRadius:20,padding:"5px 12px"}}>📞 Call</a>}
-          <button onClick={()=>onBook?.(vendor,vendor.city||vendor.vicinity)}
+          <button onClick={()=>{ tdc.nearme({ query: vendor.name||"venue", pillar:"celebrate", pet }); onOpenModal?.(vendor); }}
             style={{flex:1,background:`linear-gradient(135deg,${G.purple},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 14px",fontSize:11,fontWeight:700,cursor:"pointer"}}>
             Book via Concierge →
           </button>
@@ -118,7 +126,7 @@ function VendorCard({ vendor, pet, onBook }) {
   );
 }
 
-function MiraTopPick({ vendor, pet, onBook }) {
+function MiraTopPick({ vendor, pet, onOpenModal }) {
   return (
     <div style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,borderRadius:14,padding:"16px 20px",marginBottom:16,display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap"}}>
       <div style={{flex:1,minWidth:0}}>
@@ -127,7 +135,7 @@ function MiraTopPick({ vendor, pet, onBook }) {
         <div style={{fontSize:12,color:"rgba(255,255,255,0.65)",marginBottom:8}}>{vendor.vicinity}</div>
         <StarRating rating={vendor.rating} count={vendor.review_count}/>
       </div>
-      <button onClick={()=>onBook?.(vendor,vendor.city||vendor.vicinity)}
+      <button onClick={()=>{ tdc.nearme({ query: vendor.name||"venue", pillar:"celebrate", pet }); onOpenModal?.(vendor); }}
         style={{background:G.light,color:G.deep,border:"none",borderRadius:20,padding:"10px 20px",fontSize:12,fontWeight:700,cursor:"pointer",flexShrink:0,whiteSpace:"nowrap"}}>
         Book via Concierge →
       </button>
@@ -263,6 +271,7 @@ export default function CelebrateNearMe({ pet, onBook }) {
   const [activeType,    setActiveType]    = useState("all");
   const [activeQuery,   setActiveQuery]   = useState(null);
   const [vendors,       setVendors]       = useState([]);
+  const [selectedVendor,setSelectedVendor]= useState(null); // NearMeConciergeModal
   const [loading,       setLoading]       = useState(false);
   const [error,         setError]         = useState(null);
   const [suggestions,   setSuggestions]   = useState([]);
@@ -430,14 +439,14 @@ export default function CelebrateNearMe({ pet, onBook }) {
 
           {!loading&&vendors.length>0&&(
             <>
-              {topPick&&<MiraTopPick vendor={topPick} pet={pet} onBook={onBook}/>}
+              {topPick&&<MiraTopPick vendor={topPick} pet={pet} onOpenModal={setSelectedVendor}/>}
               <div style={{fontSize:12,color:G.mutedText,marginBottom:12}}>
                 {vendors.length} {activeTypeObj.label.toLowerCase()} found{displayCity&&displayCity!=="near_me"?` in ${displayCity}`:" near you"}
               </div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(280px,100%),1fr))",gap:14}}>
-                {restList.map((v,i)=><VendorCard key={v.place_id||i} vendor={v} pet={pet} onBook={onBook}/>)}
+                {restList.map((v,i)=><VendorCard key={v.place_id||i} vendor={v} pet={pet} onBook={onBook} onOpenModal={setSelectedVendor}/>)}
               </div>
-              <button onClick={()=>onBook?.(null,displayCity||"your area")}
+              <button onClick={()=>{ tdc.nearme({ query: displayCity||"your area", pillar:"celebrate", pet }); bookViaConcierge({ service: `Celebration venue in ${displayCity||"your area"}`, pillar:"celebrate", pet, channel:"celebrate_nearme_city" }); }}
                 style={{width:"100%",marginTop:16,padding:"12px",borderRadius:10,background:G.pale,border:`1px solid rgba(155,89,182,0.25)`,color:G.purple,fontSize:13,fontWeight:600,cursor:"pointer"}}>
                 Ask Concierge for more options →
               </button>
@@ -453,7 +462,7 @@ export default function CelebrateNearMe({ pet, onBook }) {
                   ?"Many work through Instagram rather than Google — Concierge can find them."
                   :"Concierge can source options in any city."}
               </div>
-              <button onClick={()=>onBook?.(null,displayCity||activeQuery)}
+              <button onClick={()=>{ tdc.nearme({ query: displayCity||activeQuery, pillar:"celebrate", pet }); bookViaConcierge({ service: `Celebration venue in ${displayCity||activeQuery}`, pillar:"celebrate", pet, channel:"celebrate_nearme_search" }); }}
                 style={{padding:"9px 20px",borderRadius:20,background:G.pale,border:`1px solid ${G.purple}`,color:G.purple,fontSize:12,fontWeight:600,cursor:"pointer"}}>
                 Ask Concierge to find options →
               </button>
@@ -461,6 +470,16 @@ export default function CelebrateNearMe({ pet, onBook }) {
           )}
         </>
       )}
+
+      {/* NearMe Booking Modal — venue pre-filled */}
+      <NearMeConciergeModal
+        isOpen={!!selectedVendor}
+        venue={selectedVendor}
+        pet={pet}
+        pillar="celebrate"
+        onClose={() => setSelectedVendor(null)}
+      />
     </div>
+
   );
 }
