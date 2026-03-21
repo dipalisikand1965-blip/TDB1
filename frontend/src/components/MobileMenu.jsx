@@ -280,14 +280,22 @@ export default function MobileMenu({
             </div>
           </div>
 
-          {/* Glass orb */}
-          <div
-            className="tdc-glass-orb"
-            style={{ width: 40, height: 40, fontSize: 16 }}
-            onClick={() => go("/mira-os")}
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            data-testid="mobile-menu-close-btn"
+            style={{
+              width: 36, height: 36, borderRadius: "50%",
+              background: "rgba(255,255,255,0.12)",
+              border: "none", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "#F5F0E8", fontSize: 20, fontWeight: 300,
+              WebkitTapHighlightColor: "transparent",
+            }}
+            aria-label="Close menu"
           >
-            ✦
-          </div>
+            &times;
+          </button>
         </div>
 
         {/* ── My Dogs (collapsible) ── */}
@@ -308,7 +316,7 @@ export default function MobileMenu({
           </div>
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
+            gridTemplateColumns: "repeat(3, 1fr)",
             gap: 8,
           }}>
             {PILLARS.map(p => (
