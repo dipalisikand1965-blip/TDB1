@@ -33,6 +33,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# ── Global semaphore — only 1 scoring job at a time, yields to other requests ──
+_scoring_semaphore = asyncio.Semaphore(1)
+_scoring_active_pet: Optional[str] = None  # track which pet is currently scoring
+
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 EMERGENT_LLM_KEY = os.environ.get("EMERGENT_LLM_KEY")
@@ -198,141 +202,149 @@ Score these {len(items)} items:
 
 
 async def _run_full_scoring(pet_id: str, pillar: Optional[str], entity_types: Optional[List[str]]):
-    """Background task: score ALL items for a pet and persist to DB."""
-    if _db is None:
+    """Background task: score ALL items for a pet and persist to DB.
+    Uses semaphore to prevent multiple concurrent scoring jobs blocking the event loop."""
+    global _scoring_active_pet
+
+    # If semaphore is locked (another job running), skip this one
+    if _scoring_semaphore.locked():
+        print(f"[MiraScoreEngine] Skipping scoring for pet={pet_id} — another job is running for {_scoring_active_pet}")
         return
 
-    # ── Cooldown: skip if scored within the last 60 minutes ──────────────
-    from datetime import datetime, timezone, timedelta
-    recent = await _db.mira_product_scores.find_one(
-        {"pet_id": pet_id},
-        sort=[("scored_at", -1)]
-    )
-    if recent:
-        scored_at = recent.get("scored_at")
-        if isinstance(scored_at, str):
-            try:
-                scored_at = datetime.fromisoformat(scored_at.replace("Z",""))
-                scored_at = scored_at.replace(tzinfo=timezone.utc) if scored_at.tzinfo is None else scored_at
-            except Exception:
-                scored_at = None
-        if scored_at and (datetime.now(timezone.utc) - scored_at) < timedelta(hours=6):
-            print(f"[MiraScoreEngine] Skipping scoring for pet={pet_id} — scored <1hr ago")
+    async with _scoring_semaphore:
+        _scoring_active_pet = pet_id
+
+        # ── Cooldown: skip if scored within the last 60 minutes ──────────────
+        from datetime import datetime, timezone, timedelta
+        recent = await _db.mira_product_scores.find_one(
+            {"pet_id": pet_id},
+            sort=[("scored_at", -1)]
+        )
+        if recent:
+            scored_at = recent.get("scored_at")
+            if isinstance(scored_at, str):
+                try:
+                    scored_at = datetime.fromisoformat(scored_at.replace("Z",""))
+                    scored_at = scored_at.replace(tzinfo=timezone.utc) if scored_at.tzinfo is None else scored_at
+                except Exception:
+                    scored_at = None
+            if scored_at and (datetime.now(timezone.utc) - scored_at) < timedelta(hours=6):
+                print(f"[MiraScoreEngine] Skipping scoring for pet={pet_id} — scored <1hr ago")
+                return
+
+        print(f"[MiraScoreEngine] Starting scoring for pet={pet_id} pillar={pillar}")
+
+        # Fetch pet
+        pet = await _db.pets.find_one({"id": pet_id}, {"_id": 0})
+        if not pet:
+            # Try ObjectId-based lookup
+            pet = await _db.pets.find_one({"_id": pet_id}, {"_id": 0})
+        if not pet:
+            print(f"[MiraScoreEngine] Pet {pet_id} not found")
             return
 
-    print(f"[MiraScoreEngine] Starting scoring for pet={pet_id} pillar={pillar}")
+        pet_profile = _extract_pet_profile(pet)
 
-    # Fetch pet
-    pet = await _db.pets.find_one({"id": pet_id}, {"_id": 0})
-    if not pet:
-        # Try ObjectId-based lookup
-        pet = await _db.pets.find_one({"_id": pet_id}, {"_id": 0})
-    if not pet:
-        print(f"[MiraScoreEngine] Pet {pet_id} not found")
-        return
+        # Determine which entity types to score
+        types = entity_types or ["product", "service", "bundle"]
 
-    pet_profile = _extract_pet_profile(pet)
+        # Fetch all items
+        all_items = []
 
-    # Determine which entity types to score
-    types = entity_types or ["product", "service", "bundle"]
+        if "product" in types:
+            q = {"pillar": pillar} if pillar else {}
+            cursor = _db.products_master.find(q, {"_id": 0})
+            products = await cursor.to_list(length=2000)
 
-    # Fetch all items
-    all_items = []
+            # Breed pre-filter — only score breed-relevant products (huge speed gain)
+            pet_breed = (pet.get("breed") or "").lower().strip()
+            def _breed_ok(p):
+                targets = [b.lower() for b in (p.get("breed_targets") or [])]
+                if not targets:
+                    return True  # universal product
+                if "all" in targets or "all_breeds" in targets:
+                    return True
+                return any(pet_breed in t or t in pet_breed for t in targets)
 
-    if "product" in types:
-        q = {"pillar": pillar} if pillar else {}
-        cursor = _db.products_master.find(q, {"_id": 0})
-        products = await cursor.to_list(length=2000)
+            before = len(products)
+            products = [p for p in products if _breed_ok(p)]
+            print(f"[MiraScoreEngine] Breed pre-filter ({pet_breed}): {before} → {len(products)} products")
 
-        # Breed pre-filter — only score breed-relevant products (huge speed gain)
-        pet_breed = (pet.get("breed") or "").lower().strip()
-        def _breed_ok(p):
-            targets = [b.lower() for b in (p.get("breed_targets") or [])]
-            if not targets:
-                return True  # universal product
-            if "all" in targets or "all_breeds" in targets:
-                return True
-            return any(pet_breed in t or t in pet_breed for t in targets)
+            for p in products:
+                p["entity_type"] = "product"
+            all_items.extend(products)
 
-        before = len(products)
-        products = [p for p in products if _breed_ok(p)]
-        print(f"[MiraScoreEngine] Breed pre-filter ({pet_breed}): {before} → {len(products)} products")
+        if "service" in types:
+            q = {"is_active": {"$ne": False}}
+            if pillar:
+                q["pillar"] = pillar
+            cursor = _db.services_master.find(q, {"_id": 0})
+            services = await cursor.to_list(length=1000)
+            for s in services:
+                s["entity_type"] = "service"
+            all_items.extend(services)
 
-        for p in products:
-            p["entity_type"] = "product"
-        all_items.extend(products)
+        if "bundle" in types:
+            q = {"pillar": pillar} if pillar else {}
+            cursor = _db.bundles.find(q, {"_id": 0})
+            bundles = await cursor.to_list(length=200)
+            for b in bundles:
+                b["entity_type"] = "bundle"
+            all_items.extend(bundles)
 
-    if "service" in types:
-        q = {"is_active": {"$ne": False}}
-        if pillar:
-            q["pillar"] = pillar
-        cursor = _db.services_master.find(q, {"_id": 0})
-        services = await cursor.to_list(length=1000)
-        for s in services:
-            s["entity_type"] = "service"
-        all_items.extend(services)
+        if not all_items:
+            print("[MiraScoreEngine] No items found for scoring")
+            return
 
-    if "bundle" in types:
-        q = {"pillar": pillar} if pillar else {}
-        cursor = _db.bundles.find(q, {"_id": 0})
-        bundles = await cursor.to_list(length=200)
-        for b in bundles:
-            b["entity_type"] = "bundle"
-        all_items.extend(bundles)
+        print(f"[MiraScoreEngine] Scoring {len(all_items)} items for {pet_profile['name']}")
 
-    if not all_items:
-        print("[MiraScoreEngine] No items found for scoring")
-        return
+        # Batch and score — yield to event loop between batches so API calls get through
+        batches = [all_items[i:i+BATCH_SIZE] for i in range(0, len(all_items), BATCH_SIZE)]
+        scored_at = datetime.now(timezone.utc).isoformat()
+        session_id = f"mira-score-{pet_id}-{uuid.uuid4().hex[:8]}"
 
-    print(f"[MiraScoreEngine] Scoring {len(all_items)} items for {pet_profile['name']}")
+        # Process batches (2 at a time) — yield between each pair to prevent event loop starvation
+        all_scores = []
+        for i in range(0, len(batches), 2):
+            chunk = batches[i:i+2]
+            tasks = [
+                _score_batch(f"{session_id}-b{i+j}", pet_profile, batch)
+                for j, batch in enumerate(chunk)
+            ]
+            results = await asyncio.gather(*tasks)
+            for result in results:
+                all_scores.extend(result)
+            # Yield to event loop so other API requests can be served while scoring
+            await asyncio.sleep(0)
 
-    # Batch and score — yield to event loop between batches so API calls get through
-    batches = [all_items[i:i+BATCH_SIZE] for i in range(0, len(all_items), BATCH_SIZE)]
-    scored_at = datetime.now(timezone.utc).isoformat()
-    session_id = f"mira-score-{pet_id}-{uuid.uuid4().hex[:8]}"
+        # Build lookup from scored results
+        score_map = {s["id"]: s for s in all_scores if s.get("id")}
 
-    # Process batches (2 at a time) — yield between each pair to prevent event loop starvation
-    all_scores = []
-    for i in range(0, len(batches), 2):
-        chunk = batches[i:i+2]
-        tasks = [
-            _score_batch(f"{session_id}-b{i+j}", pet_profile, batch)
-            for j, batch in enumerate(chunk)
-        ]
-        results = await asyncio.gather(*tasks)
-        for result in results:
-            all_scores.extend(result)
-        # Yield to event loop so other API requests can be served while scoring
-        await asyncio.sleep(0)
+        # Persist to mira_product_scores
+        ops = []
+        for item in all_items:
+            item_id = item.get("id")
+            if not item_id:
+                continue
+            sc = score_map.get(item_id, {})
+            score_doc = {
+                "pet_id": pet_id,
+                "entity_id": item_id,
+                "entity_type": item.get("entity_type", "product"),
+                "entity_name": item.get("name"),
+                "pillar": item.get("pillar"),
+                "score": sc.get("score", 50),
+                "mira_reason": sc.get("reason", ""),
+                "scored_at": scored_at,
+                "pet_name": pet_profile["name"],
+            }
+            ops.append(score_doc)
 
-    # Build lookup from scored results
-    score_map = {s["id"]: s for s in all_scores if s.get("id")}
-
-    # Persist to mira_product_scores
-    ops = []
-    for item in all_items:
-        item_id = item.get("id")
-        if not item_id:
-            continue
-        sc = score_map.get(item_id, {})
-        score_doc = {
-            "pet_id": pet_id,
-            "entity_id": item_id,
-            "entity_type": item.get("entity_type", "product"),
-            "entity_name": item.get("name"),
-            "pillar": item.get("pillar"),
-            "score": sc.get("score", 50),
-            "mira_reason": sc.get("reason", ""),
-            "scored_at": scored_at,
-            "pet_name": pet_profile["name"],
-        }
-        ops.append(score_doc)
-
-    if ops:
-        # Upsert all scores
-        await _db.mira_product_scores.delete_many({"pet_id": pet_id, **({"pillar": pillar} if pillar else {})})
-        await _db.mira_product_scores.insert_many(ops, ordered=False)
-        print(f"[MiraScoreEngine] Saved {len(ops)} scores for {pet_profile['name']}")
+        if ops:
+            # Upsert all scores
+            await _db.mira_product_scores.delete_many({"pet_id": pet_id, **({"pillar": pillar} if pillar else {})})
+            await _db.mira_product_scores.insert_many(ops, ordered=False)
+            print(f"[MiraScoreEngine] Saved {len(ops)} scores for {pet_profile['name']}")
 
 
 # ── API Routes ────────────────────────────────────────────────────────────────

@@ -11,18 +11,19 @@ import React, { useState, useRef, useEffect, memo } from 'react';
 import { createPortal } from 'react-dom';
 import { 
   ChevronDown, Heart, Calendar, Sparkles, Briefcase, 
-  GraduationCap, Users, Check, Bell
+  GraduationCap, Users, Check, Bell, MapPin
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import hapticFeedback from '../../utils/haptic';
 
 // OS Layer configuration
 const OS_LAYERS = [
-  { id: 'today', label: 'TODAY', icon: Calendar, description: 'Time Layer' },
-  { id: 'picks', label: 'PICKS', icon: Sparkles, description: 'Intelligence Layer' },
-  { id: 'services', label: 'SERVICES', icon: Briefcase, description: 'Action Layer' },
-  { id: 'learn', label: 'LEARN', icon: GraduationCap, description: 'Knowledge Layer' },
-  { id: 'concierge', label: 'CONCIERGE®', icon: Users, description: 'Human Layer' },
+  { id: 'today',     label: 'TODAY',       icon: Calendar,       description: 'Time Layer' },
+  { id: 'picks',     label: 'PICKS',       icon: Sparkles,       description: 'Intelligence Layer' },
+  { id: 'services',  label: 'SERVICES',    icon: Briefcase,      description: 'Action Layer' },
+  { id: 'nearme',    label: 'NEAR ME',     icon: MapPin,         description: 'Location Layer' },
+  { id: 'learn',     label: 'LEARN',       icon: GraduationCap,  description: 'Knowledge Layer' },
+  { id: 'concierge', label: 'CONCIERGE®',  icon: Users,          description: 'Human Layer' },
 ];
 
 /**

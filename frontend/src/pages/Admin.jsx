@@ -69,6 +69,9 @@ import TopicProductsManager from '../components/admin/TopicProductsManager';
 import LearnPageCMS from '../components/admin/LearnPageCMS';
 import PaperworkPageCMS from '../components/admin/PaperworkPageCMS';
 import PillarPageCMS from '../components/admin/PillarPageCMS';
+import ServicesManager from '../components/admin/ServicesManager';
+import GoManager from '../components/admin/GoManager';
+import PlayManager from '../components/admin/PlayManager';
 import { testimonials as mockTestimonials, faqs as mockFaqs } from '../mockData';
 import { API_URL } from '../utils/api';
 import { getPetPhotoUrl } from '../utils/petAvatar';
@@ -2457,9 +2460,9 @@ const Admin = () => {
                     { id: 'dine', label: 'Dine', icon: UtensilsCrossed },
                     { id: 'shop-manager', label: 'Shop', icon: ShoppingBag },
                     { id: 'care', label: 'Care', icon: Heart },
-                    { id: 'stay', label: 'Stay', icon: Home },
-                    { id: 'travel', label: 'Travel', icon: Plane },
-                    { id: 'fit', label: 'Fit', icon: Activity },
+                    { id: 'go', label: 'Go', icon: Home },
+                    { id: 'go', label: 'Go', icon: Plane },
+                    { id: 'services', label: 'Services', icon: Activity },
                     { id: 'learn', label: 'Learn', icon: BookOpen },
                   ].map(tab => (
                     <button
@@ -4725,13 +4728,13 @@ const Admin = () => {
         )}
 
         {/* Stay Tab */}
-        {activeTab === 'stay' && (
-          <StayManager getAuthHeader={getAuthHeaders} />
+        {activeTab === 'go' && (
+          <GoManager token={localStorage.getItem('adminToken') || localStorage.getItem('tdb_admin_token')} />
         )}
 
-        {/* Travel Tab */}
+        {/* Travel Tab — same as Go */}
         {activeTab === 'travel' && (
-          <TravelManager getAuthHeader={getAuthHeaders} />
+          <GoManager token={localStorage.getItem('adminToken') || localStorage.getItem('tdb_admin_token')} />
         )}
 
         {/* Care Tab */}
@@ -4739,14 +4742,14 @@ const Admin = () => {
           <CareManager getAuthHeader={getAuthHeaders} />
         )}
 
-        {/* Enjoy Tab */}
-        {activeTab === 'enjoy' && (
-          <EnjoyManager getAuthHeader={getAuthHeaders} />
+        {/* Play Tab */}
+        {activeTab === 'play' && (
+          <PlayManager token={localStorage.getItem('adminToken') || localStorage.getItem('tdb_admin_token')} />
         )}
 
-        {/* Fit Tab */}
-        {activeTab === 'fit' && (
-          <FitManager getAuthHeader={getAuthHeaders} />
+        {/* Services Tab */}
+        {activeTab === 'services' && (
+          <ServicesManager token={localStorage.getItem('adminToken') || localStorage.getItem('tdb_admin_token')} />
         )}
 
         {/* Learn Tab */}

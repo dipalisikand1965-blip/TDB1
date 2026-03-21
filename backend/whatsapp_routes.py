@@ -38,7 +38,7 @@ def get_whatsapp_config():
     return {
         "phone_number_id": os.environ.get("WHATSAPP_PHONE_NUMBER_ID"),
         "access_token": os.environ.get("WHATSAPP_ACCESS_TOKEN"),
-        "verify_token": os.environ.get("WHATSAPP_VERIFY_TOKEN", "doggy_company_verify"),
+        "verify_token": os.environ.get("WHATSAPP_VERIFY_TOKEN", "tdc_webhook_verify_2025"),
         "business_account_id": os.environ.get("WHATSAPP_BUSINESS_ACCOUNT_ID")
     }
 
