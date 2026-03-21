@@ -19,16 +19,17 @@ Build a production-ready pet life management platform with 12 core pillars, AI c
 | /admin | Admin Portal | Service desk, product management |
 
 ## What's Been Implemented
-### Navigation (Fixed Feb 2026)
-- Single Navbar at top + single bottom MobileNavBar with Mira orb FAB
-- MobileMenu rendered via `createPortal` to `document.body` (z-99999/100000) for proper overlay
-- Removed duplicate Navbar, Mira header, TabNavigation from PetHomePage
-- Moved `/pet-home` into MainLayout for shared navigation
 
-### Modal Z-Index Fix (Feb 2026)
-- ProductDetailModal: z-50000 (was z-9999)
-- LearnContentModal: z-11000
-- Other pillar modals: z-10002–10006
+### Session Feb 2026 — Mobile Navigation & UX Overhaul
+- **MobileMenu portal fix:** Rendered via `createPortal` to `document.body` (z-99999/100000) for proper overlay stacking
+- **X close button:** Replaced glass orb in menu header with circular close button
+- **3-column pillar grid:** Changed from 4 columns to prevent text cutoff ("Paperwork", "Services")
+- **Removed duplicate navigation:** PetHomePage no longer imports its own Navbar, TabNavigation, or Mira FAB
+- **Moved /pet-home into MainLayout:** Gets shared Navbar + MobileNavBar automatically
+- **Removed PillarPageLayout duplicate header:** No more second hamburger (☰) on right side of pillar pages
+- **Hidden UniversalServiceButton:** Removed orange globe from /pet-home, /my-requests, /my-pets, /dashboard
+- **ProductDetailModal z-index fix:** z-50000 (was z-9999), now renders above LearnContentModal (z-11000)
+- **Soul Growth Card gamification:** New dark card with glowing SVG soul ring, animated score, Mira quotes, de-emphasized skip button
 
 ### Previously Completed
 - Universal Intent-to-Ticket flow (tdc_intent.js + useConcierge.js)
@@ -50,7 +51,7 @@ Build a production-ready pet life management platform with 12 core pillars, AI c
 - [ ] Run pillar name migration on production Atlas DB
 - [ ] Full E2E mobile test on real device
 
-### P1 — Service Flow
+### P1 — Service Flow Audit
 - [ ] Audit useConcierge.js integration across all pillar pages
 - [ ] Verify every "Book via Concierge" action creates admin ticket
 - [ ] Soul Product AI image generation (background jobs in progress)
@@ -58,8 +59,9 @@ Build a production-ready pet life management platform with 12 core pillars, AI c
 ### P2 — UX Polish
 - [ ] Backend pagination for Mira Picks
 - [ ] Production .env (SMTP/Resend credentials)
-- [ ] Pet Parent Dashboard mobile-first UX audit (ongoing)
-- [ ] Onboarding flow full audit (Registration → Soul Builder → Pet Home)
+- [ ] Pet Parent Dashboard mobile-first UX deep audit
+- [ ] Onboarding flow full mobile audit (Registration → Soul Builder → Pet Home)
+- [ ] Update complete-documentation.html
 
 ### P3 — Future
 - [ ] Build Love pillar
@@ -71,7 +73,7 @@ Build a production-ready pet life management platform with 12 core pillars, AI c
 - `products_master`: id, pillar, category, price, cloudinary_image_url, active
 - `mira_product_scores`: pet_id, entity_id, score, scored_at
 - `breed_products`: product_type, breed_name, mockup_url
-- `pets`: health_vault, doggy_soul_answers
+- `pets`: health_vault, doggy_soul_answers (79+ keys for complete profiles)
 
 ## Test Credentials
 - User: dipali@clubconcierge.in / test123
