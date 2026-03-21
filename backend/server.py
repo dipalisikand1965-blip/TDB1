@@ -14761,7 +14761,7 @@ async def save_pet_soul_answer_alias(pet_id: str, answer_data: dict, current_use
         raise HTTPException(status_code=400, detail="question_id and answer are required")
     
     # Get current soul answers or initialize
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     soul_answers[question_id] = answer
     
     # Recalculate score
