@@ -406,7 +406,7 @@ async def get_pillar_preferences(pet_id: str):
     
     pet_name = pet.get("name", "Pet")
     soul_answers = pet.get("doggy_soul_answers") or {}
-    preferences = pet.get("preferences", {})
+    preferences = pet.get("preferences") or {}
     celebrations = pet.get("celebrations", [])
     vault = pet.get("vault", {})
     pillar_interactions = pet.get("pillar_interactions", [])
@@ -421,7 +421,7 @@ async def get_pillar_preferences(pet_id: str):
                 "general_nature": soul_answers.get("general_nature"),
                 "stranger_reaction": soul_answers.get("stranger_reaction"),
                 "loud_sounds": soul_answers.get("loud_sounds"),
-                "personality_tag": pet.get("soul", {}).get("personality_tag") if pet.get("soul") else None,
+                "personality_tag": pet.get("soul") or {}.get("personality_tag") if pet.get("soul") else None,
             }
         },
         "family_pack": {

@@ -792,7 +792,7 @@ async def get_soulful_response(
         context_parts.append(f"Chronic condition: {chronic} - be gentle and considerate")
     
     # Preferences
-    preferences = pet_context.get("preferences") or pet_context.get("soul_data", {}).get("preferences", {})
+    preferences = pet_context.get("preferences") or pet_context.get("soul_data", {}).get("preferences") or {}
     if preferences:
         if preferences.get("favorite_activities"):
             context_parts.append(f"Loves: {', '.join(preferences['favorite_activities'])}")

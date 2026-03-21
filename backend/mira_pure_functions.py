@@ -46,7 +46,7 @@ async def get_picks_for_pet(pet_id: str, pet_name: str, pillar: str = "all", lim
         preferences = {}
         if pet:
             allergies = pet.get("health_data", {}).get("allergies", []) or pet.get("allergies", [])
-            preferences = pet.get("soul_data", {}).get("preferences", {})
+            preferences = pet.get("soul_data", {}).get("preferences") or {}
         
         # Build picks based on pillar
         picks = []
@@ -320,7 +320,7 @@ async def get_today_actions(pet_id: str, pet_name: str, user_email: str) -> Dict
         # Default action if nothing else
         if not actions:
             soul = pet.get("soul_data", {}) if pet else {}
-            activities = soul.get("preferences", {}).get("favorite_activities", ["a walk"])
+            activities = soul.get("preferences") or {}.get("favorite_activities", ["a walk"])
             actions.append({
                 "type": "suggestion",
                 "priority": "low",

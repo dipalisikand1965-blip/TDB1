@@ -202,7 +202,7 @@ def get_next_question(answers: Dict) -> Optional[Dict]:
 def generate_insights(pet_data: Dict) -> Dict:
     """Generate AI-readable insights from pet profile"""
     answers = pet_data.get("doggy_soul_answers") or {}
-    identity = pet_data.get("identity", {})
+    identity = pet_data.get("identity") or {}
     
     insights = {
         "overall_summary": "",
@@ -1046,7 +1046,7 @@ async def get_profile_for_pillar(pet_id: str, pillar: str):
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     
-    identity = pet.get("identity", {})
+    identity = pet.get("identity") or {}
     answers = pet.get("doggy_soul_answers") or {}
     
     # Fields needed per pillar
@@ -1390,9 +1390,9 @@ async def get_celebrations_calendar(
     ).to_list(10000)
     
     for pet in pets:
-        pet_name = pet.get("name") or pet.get("identity", {}).get("name", "Unknown")
+        pet_name = pet.get("name") or pet.get("identity") or {}.get("name", "Unknown")
         pet_id = pet.get("id")
-        breed = pet.get("breed") or pet.get("identity", {}).get("breed", "")
+        breed = pet.get("breed") or pet.get("identity") or {}.get("breed", "")
         owner = {
             "name": pet.get("owner_name"),
             "email": pet.get("owner_email"),
@@ -1400,7 +1400,7 @@ async def get_celebrations_calendar(
         }
         
         # Check birthday
-        birth_date_str = pet.get("birth_date") or pet.get("identity", {}).get("birth_date")
+        birth_date_str = pet.get("birth_date") or pet.get("identity") or {}.get("birth_date")
         if birth_date_str:
             try:
                 # Handle different date formats
@@ -1438,7 +1438,7 @@ async def get_celebrations_calendar(
                 pass
         
         # Check gotcha day (adoption anniversary)
-        gotcha_date_str = pet.get("gotcha_date") or pet.get("identity", {}).get("gotcha_date")
+        gotcha_date_str = pet.get("gotcha_date") or pet.get("identity") or {}.get("gotcha_date")
         if gotcha_date_str:
             try:
                 if len(gotcha_date_str) == 5:
@@ -1596,7 +1596,7 @@ async def get_weight_history(pet_id: str):
         raise HTTPException(status_code=404, detail="Pet not found")
     
     history = pet.get("weight_history", [])
-    current_weight = pet.get("identity", {}).get("weight")
+    current_weight = pet.get("identity") or {}.get("weight")
     target_weight = pet.get("target_weight")
     
     # Calculate trend if we have enough data
@@ -1665,7 +1665,7 @@ async def get_training_history(pet_id: str):
     
     return {
         "pet_id": pet_id,
-        "pet_name": pet.get("identity", {}).get("name", "Pet"),
+        "pet_name": pet.get("identity") or {}.get("name", "Pet"),
         "history": history,
         "summary": pet.get("training_summary"),
         "stats": {
@@ -1721,7 +1721,7 @@ async def get_environment_profile(pet_id: str):
         raise HTTPException(status_code=404, detail="Pet not found")
     
     environment = pet.get("environment", {})
-    breed = pet.get("identity", {}).get("breed", "")
+    breed = pet.get("identity") or {}.get("breed", "")
     
     # Get breed-specific climate info from breed_knowledge
     from breed_knowledge import get_breed_knowledge

@@ -557,7 +557,7 @@ async def check_upcoming_celebrations():
                     continue  # Already sent this reminder
                 
                 # Get pet persona for personalized message
-                soul = pet.get("soul", {})
+                soul = pet.get("soul") or {}
                 persona = soul.get("persona", "beloved companion")
                 
                 # Send email reminder
@@ -3675,11 +3675,11 @@ async def chat_with_mira_legacy(request: ChatRequest):
                     user_pets = pets
                     pet_soul_context = "\n\n🐾 **PET SOUL DATA - USE THIS FIRST (NOT GENERIC BREED INFO)**:\n"
                     for pet in pets:
-                        identity = pet.get("identity", {})
-                        soul = pet.get("soul", {})
-                        preferences = pet.get("preferences", {})
+                        identity = pet.get("identity") or {}
+                        soul = pet.get("soul") or {}
+                        preferences = pet.get("preferences") or {}
                         doggy_soul = pet.get("doggy_soul_answers") or {}
-                        enrichments = pet.get("soul_enrichments", {})
+                        enrichments = pet.get("soul_enrichments") or {}
                         
                         pet_name = pet.get('name', 'Pet')
                         breed = identity.get('breed', pet.get('breed', 'Unknown'))
@@ -6461,7 +6461,7 @@ async def admin_get_all_pets(
     
     # Add persona info to each pet
     for pet in pets:
-        soul = pet.get("soul", {}) or {}
+        soul = pet.get("soul") or {} or {}
         persona = soul.get("persona", "shadow")
         if persona in DOG_PERSONAS:
             pet["persona_info"] = DOG_PERSONAS[persona]
@@ -6513,7 +6513,7 @@ async def admin_get_member_pets(
     
     # Add persona info to each pet
     for pet in pets:
-        soul = pet.get("soul", {}) or {}
+        soul = pet.get("soul") or {} or {}
         persona = soul.get("persona", "shadow")
         if persona in DOG_PERSONAS:
             pet["persona_info"] = DOG_PERSONAS[persona]
@@ -6540,7 +6540,7 @@ async def admin_get_pet_detail(pet_id: str, username: str = Depends(verify_admin
         raise HTTPException(status_code=404, detail="Pet not found")
     
     # Add persona info
-    soul = pet.get("soul", {}) or {}
+    soul = pet.get("soul") or {} or {}
     persona = soul.get("persona", "shadow")
     if persona in DOG_PERSONAS:
         pet["persona_info"] = DOG_PERSONAS[persona]
@@ -6635,7 +6635,7 @@ async def admin_get_pet_stats(username: str = Depends(verify_admin)):
     # Count by persona
     persona_counts = {}
     async for pet in db.pets.find({}, {"soul.persona": 1}):
-        persona = (pet.get("soul", {}) or {}).get("persona", "unknown")
+        persona = (pet.get("soul") or {} or {}).get("persona", "unknown")
         persona_counts[persona] = persona_counts.get(persona, 0) + 1
     
     # Count by species
@@ -9239,7 +9239,7 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
                 score += 20
             
             # Coat type match (from pet soul data)
-            soul = pet.get("soul", {})
+            soul = pet.get("soul") or {}
             coat_type = soul.get("coat_type", "").lower().replace(" ", "_")
             if coat_type and coat_type in good_for_tags:
                 score += 15
@@ -15899,10 +15899,10 @@ async def get_all_upcoming_celebrations(days: int = 30):
     all_upcoming = []
     
     async for pet in db.pets.find({}, {"_id": 0}):
-        soul = pet.get("soul", {}) or {}
+        soul = pet.get("soul") or {} or {}
         persona = soul.get("persona", "adventurer")
         persona_info = DOG_PERSONAS.get(persona, {"id": "adventurer", "name": "The Adventurer", "description": "Loves outdoor activities"})
-        preferences = pet.get("preferences", {}) or {}
+        preferences = pet.get("preferences") or {} or {}
         
         for celeb in pet.get("celebrations", []):
             try:
@@ -15966,10 +15966,10 @@ async def get_my_upcoming_celebrations(days: int = 30, current_user: dict = Depe
     
     # Only fetch pets belonging to the current user
     async for pet in db.pets.find({"owner_email": current_user["email"]}, {"_id": 0}):
-        soul = pet.get("soul", {}) or {}
+        soul = pet.get("soul") or {} or {}
         persona = soul.get("persona", "adventurer")
         persona_info = DOG_PERSONAS.get(persona, {"id": "adventurer", "name": "The Adventurer", "description": "Loves outdoor activities"})
-        preferences = pet.get("preferences", {}) or {}
+        preferences = pet.get("preferences") or {} or {}
         
         for celeb in pet.get("celebrations", []):
             try:
@@ -16058,12 +16058,12 @@ async def add_celebrate_to_pet_soul(pet_id: str, data: dict):
     }
     
     # Update Pet Soul with celebrate history
-    soul = pet.get("soul", {}) or {}
+    soul = pet.get("soul") or {} or {}
     celebrate_history = soul.get("celebrate_history", [])
     celebrate_history.append(celebrate_entry)
     
     # Track favorite categories/products for recommendations
-    preferences = soul.get("preferences", {}) or {}
+    preferences = soul.get("preferences") or {} or {}
     favorite_cake_categories = preferences.get("favorite_cake_categories", [])
     if data.get("category") and data.get("category") not in favorite_cake_categories:
         favorite_cake_categories.append(data.get("category"))
@@ -16106,12 +16106,12 @@ async def add_stay_to_pet_soul(pet_id: str, data: dict):
     }
     
     # Update Pet Soul with stay history
-    soul = pet.get("soul", {}) or {}
+    soul = pet.get("soul") or {} or {}
     stay_history = soul.get("stay_history", [])
     stay_history.append(stay_entry)
     
     # Track favorite cities and property types for recommendations
-    preferences = soul.get("preferences", {}) or {}
+    preferences = soul.get("preferences") or {} or {}
     
     # Track favorite travel cities
     favorite_cities = preferences.get("favorite_travel_cities", [])
@@ -16144,10 +16144,10 @@ async def add_stay_to_pet_soul(pet_id: str, data: dict):
 
 def generate_celebration_message(pet: dict, celebration: dict, days_until: int) -> dict:
     """Generate personalized celebration message based on pet's soul"""
-    soul = pet.get("soul", {}) or {}
+    soul = pet.get("soul") or {} or {}
     persona = soul.get("persona", "adventurer")
     persona_info = DOG_PERSONAS.get(persona, {"id": "adventurer", "name": "The Adventurer", "description": "Loves outdoor activities"})
-    preferences = pet.get("preferences", {}) or {}
+    preferences = pet.get("preferences") or {} or {}
     occasion_info = CELEBRATION_OCCASIONS.get(celebration.get("occasion", ""), {})
     
     pet_name = pet.get("name", "your furry friend")
@@ -19892,7 +19892,7 @@ async def get_pet_soul_summary():
         completion_buckets = {"0-25": 0, "26-50": 0, "51-75": 0, "76-100": 0}
         
         for pet in pets:
-            filled = sum(1 for f in soul_fields if pet.get(f) or (pet.get("soul") and pet.get("soul", {}).get(f)))
+            filled = sum(1 for f in soul_fields if pet.get(f) or (pet.get("soul") and pet.get("soul") or {}.get(f)))
             score = int((filled / len(soul_fields)) * 100)
             
             if score <= 25:
@@ -19908,7 +19908,7 @@ async def get_pet_soul_summary():
             "total_pets": total_pets,
             "completion_distribution": completion_buckets,
             "average_completion": sum(
-                int((sum(1 for f in soul_fields if p.get(f) or (p.get("soul") and p.get("soul", {}).get(f))) / len(soul_fields)) * 100)
+                int((sum(1 for f in soul_fields if p.get(f) or (p.get("soul") and p.get("soul") or {}.get(f))) / len(soul_fields)) * 100)
                 for p in pets
             ) // max(total_pets, 1)
         }

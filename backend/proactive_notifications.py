@@ -171,7 +171,7 @@ async def check_birthday_reminders() -> List[Dict]:
             continue
         
         # Check birthday
-        birthday = pet.get("birthday") or pet.get("identity", {}).get("birthday") or pet.get("date_of_birth") or pet.get("birth_date")
+        birthday = pet.get("birthday") or pet.get("identity") or {}.get("birthday") or pet.get("date_of_birth") or pet.get("birth_date")
         if birthday:
             try:
                 if isinstance(birthday, str):

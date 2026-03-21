@@ -86,10 +86,10 @@ def build_soul_context_summary(pet: Dict) -> SoulContextSummary:
     
     # Extract from various sources in the pet object
     raw_doggy_soul = pet.get("doggy_soul_answers") or {} or {}
-    soul_data = pet.get("soul", {}) or {}  # Used for personality data
-    preferences = pet.get("preferences", {}) or {}
+    soul_data = pet.get("soul") or {} or {}  # Used for personality data
+    preferences = pet.get("preferences") or {} or {}
     health = pet.get("health", {}) or {}
-    identity = pet.get("identity", {}) or {}
+    identity = pet.get("identity") or {} or {}
     
     # CANONICAL: Get properly normalized answers for Mira context
     canonical = canonicalize_answers(raw_doggy_soul, preferences, soul_data)

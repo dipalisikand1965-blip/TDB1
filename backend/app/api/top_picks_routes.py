@@ -1532,11 +1532,11 @@ async def get_pillar_picks(
 ) -> List[Dict[str, Any]]:
     """Get top picks for a specific pillar, filtered by pet parameters."""
     
-    pet_allergies = pet.get("preferences", {}).get("allergies") or []
+    pet_allergies = pet.get("preferences") or {}.get("allergies") or []
     pet_size = pet.get("weight_kg", 15)  # Default medium
     pet_breed = pet.get("breed", "")
     pet_age = pet.get("age_years") or 3  # Default adult
-    pet_health_flags = pet.get("health_vault", {}).get("conditions") or []
+    pet_health_flags = pet.get("health_vault") or {}.get("conditions") or []
     
     # Determine size category
     if pet_size < 10:
@@ -1589,7 +1589,7 @@ async def get_pillar_picks(
                 score += 20
             
             # Check soul data for temperament match
-            soul = pet.get("soul", {})
+            soul = pet.get("soul") or {}
             temperament = soul.get("temperament", "").lower()
             if temperament:
                 if temperament in good_for_tags:
@@ -1916,7 +1916,7 @@ async def get_top_picks(
         raise HTTPException(status_code=404, detail=f"Pet not found: {pet_id}")
     
     # Build pet intelligence summary
-    pet_allergies = pet.get("preferences", {}).get("allergies") or []
+    pet_allergies = pet.get("preferences") or {}.get("allergies") or []
     pet_size = pet.get("weight_kg")
     pet_breed = pet.get("breed", "Unknown")
     pet_name = pet.get("name", "Your pet")
@@ -2296,7 +2296,7 @@ async def get_context_aware_picks(request: ContextAwarePicksRequest):
     matched_tags = list(set(matched_tags))
     
     # Build query for products
-    pet_allergies = pet.get("preferences", {}).get("allergies") or []
+    pet_allergies = pet.get("preferences") or {}.get("allergies") or []
     
     # Query: Match pillar OR any of the context tags
     query = {

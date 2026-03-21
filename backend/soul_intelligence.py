@@ -94,7 +94,7 @@ def get_known_fields(pet_soul: Dict) -> Dict[str, Any]:
     
     # Direct fields
     for field in ["name", "breed", "age", "weight", "size", "gender"]:
-        val = pet_soul.get(field) or pet_soul.get("identity", {}).get(field)
+        val = pet_soul.get(field) or pet_soul.get("identity") or {}.get(field)
         if val:
             known[field] = val
     
@@ -118,7 +118,7 @@ def get_known_fields(pet_soul: Dict) -> Dict[str, Any]:
         known["sensitivities"] = sensitivities
     
     # Preferences - handle both dict and list formats
-    prefs = pet_soul.get("preferences", {})
+    prefs = pet_soul.get("preferences") or {}
     if isinstance(prefs, list):
         # If preferences is a list, store as favorites
         if prefs:
@@ -164,7 +164,7 @@ def get_known_fields(pet_soul: Dict) -> Dict[str, Any]:
             known[key] = val
     
     # Soul enrichments (learned from conversations)
-    enrichments = pet_soul.get("soul_enrichments", {})
+    enrichments = pet_soul.get("soul_enrichments") or {}
     for key, val in enrichments.items():
         if val and key not in known:
             known[key] = val

@@ -132,12 +132,12 @@ async def get_pet_recommendations(pet_id: str, limit: int = 10):
     recommendations = []
     
     # Extract pet details
-    breed = (pet.get("identity", {}).get("breed") or pet.get("breed") or "").lower()
-    dob = pet.get("identity", {}).get("dob") or pet.get("dob")
+    breed = (pet.get("identity") or {}.get("breed") or pet.get("breed") or "").lower()
+    dob = pet.get("identity") or {}.get("dob") or pet.get("dob")
     age_years = calculate_pet_age(dob) if dob else 3.0
     age_category = get_age_category(age_years)
     health_conditions = pet.get("health", {}).get("conditions") or pet.get("health_conditions") or []
-    weight = pet.get("identity", {}).get("weight") or pet.get("weight")
+    weight = pet.get("identity") or {}.get("weight") or pet.get("weight")
     
     # Get breed-specific needs
     breed_needs = BREED_NEEDS.get(breed, {

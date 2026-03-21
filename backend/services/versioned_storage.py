@@ -303,7 +303,7 @@ async def migrate_existing_soul_data(db, pet_id: str) -> Dict:
                 migrated += 1
         
         # Migrate soul dict if exists
-        soul_data = pet.get("soul", {})
+        soul_data = pet.get("soul") or {}
         for field, value in soul_data.items():
             if value:
                 await storage.store_soul_answer(
@@ -317,7 +317,7 @@ async def migrate_existing_soul_data(db, pet_id: str) -> Dict:
                 migrated += 1
         
         # Migrate preferences
-        prefs = pet.get("preferences", {})
+        prefs = pet.get("preferences") or {}
         for field, value in prefs.items():
             if value:
                 await storage.store_soul_answer(

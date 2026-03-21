@@ -138,7 +138,7 @@ def get_unanswered_soul_questions(pet: Dict, limit: int = 5) -> List[Dict]:
     
     pet_name = pet.get("name", "your pet")
     doggy_soul = pet.get("doggy_soul_answers") or {}
-    soul_data = pet.get("soul", {})
+    soul_data = pet.get("soul") or {}
     
     # Combine all possible answer sources
     all_answers = {**doggy_soul, **soul_data}
@@ -220,8 +220,8 @@ def get_soul_completion_score(pet: Dict, conversation_memories: List[Dict] = Non
     
     # Aggregate all data sources
     doggy_soul = pet.get("doggy_soul_answers") or {}
-    soul_data = pet.get("soul", {})  # Deep soul data (persona, love_language, etc.)
-    preferences = pet.get("preferences", {})
+    soul_data = pet.get("soul") or {}  # Deep soul data (persona, love_language, etc.)
+    preferences = pet.get("preferences") or {}
     insights = pet.get("insights", {})
     
     # Combine all sources
