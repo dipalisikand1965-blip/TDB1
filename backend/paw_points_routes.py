@@ -586,7 +586,7 @@ async def sync_achievement_points(authorization: str = Header(None)):
     has_photo = False
     
     for pet in pets:
-        answers = pet.get("doggy_soul_answers", {}) or {}
+        answers = pet.get("doggy_soul_answers") or {} or {}
         # Use canonical count function - counts only UI question IDs + aliases
         pet_questions = count_ui_questions_answered(answers)
         questions_answered = max(questions_answered, pet_questions)

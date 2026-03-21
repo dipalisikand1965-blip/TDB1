@@ -304,7 +304,7 @@ async def get_what_mira_knows(
     pet_breed = pet.get("breed", "")
     
     # Get all profile sections
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     preferences = pet.get("preferences", {})
     soul = pet.get("soul", {})
     identity = pet.get("identity", {})

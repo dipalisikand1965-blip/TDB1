@@ -262,7 +262,7 @@ async def get_pet_recommendations(
         "preferences": pet.get("preferences", {}),
         "health": pet.get("health", {}),
         "personality": pet.get("personality", {}),
-        "soul_answers": pet.get("doggy_soul_answers", {})
+        "soul_answers": pet.get("doggy_soul_answers") or {}
     }
     
     # Get inferred preferences for user

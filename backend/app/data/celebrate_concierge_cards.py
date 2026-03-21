@@ -548,7 +548,7 @@ def derive_traits_from_profile(pet_data: Dict[str, Any]) -> List[str]:
     derived = []
     
     # Check doggy_soul_answers for anxiety indicators
-    doggy_soul = pet_data.get("doggy_soul_answers", {}) or {}
+    doggy_soul = pet_data.get("doggy_soul_answers") or {} or {}
     
     travel_anxiety = doggy_soul.get("travel_anxiety", "").lower()
     if travel_anxiety in ["high", "severe", "moderate", "mild"]:

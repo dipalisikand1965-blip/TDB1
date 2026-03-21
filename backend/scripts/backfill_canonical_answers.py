@@ -131,7 +131,7 @@ def run_migration(dry_run: bool = False, limit: int = None):
         owner_id = pet.get("owner_id", "Unknown")
         
         try:
-            old_answers = pet.get("doggy_soul_answers", {})
+            old_answers = pet.get("doggy_soul_answers") or {}
             new_answers = migrate_pet_answers(old_answers)
             
             if new_answers is None:

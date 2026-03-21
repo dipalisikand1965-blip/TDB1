@@ -1198,7 +1198,7 @@ async def ask_advisory_ai(
         try:
             pet = await db.pets.find_one({"id": request.pet_id})
             if pet:
-                soul_answers = pet.get("doggy_soul_answers", {})
+                soul_answers = pet.get("doggy_soul_answers") or {}
                 pet_context = f"""
 Pet Profile:
 - Name: {pet.get('name', request.pet_name or 'Your Pet')}

@@ -711,7 +711,7 @@ async def get_top_picks(
         try:
             pet_doc = await _db.pets.find_one({"id": pet_id}, {"_id": 0, "doggy_soul_answers": 1})
             if pet_doc:
-                soul = pet_doc.get("doggy_soul_answers", {}) or {}
+                soul = pet_doc.get("doggy_soul_answers") or {} or {}
                 allergies = [
                     a.lower() for a in soul.get("food_allergies", [])
                     if a and a.lower() not in ["none", "none known", "no_allergies", ""]

@@ -341,7 +341,7 @@ def generate_mira_briefing(pet: dict, service_name: str, pillar: str, intent: st
     Generates a human-readable briefing from the pet's soul profile.
     Prepended to every ticket thread so Concierge can respond immediately.
     """
-    soul = pet.get("doggy_soul_answers", {})
+    soul = pet.get("doggy_soul_answers") or {}
     name = pet.get("name", "this dog")
     breed = pet.get("breed", "Mixed breed")
     soul_score = pet.get("overall_score") or pet.get("soul_score") or 0

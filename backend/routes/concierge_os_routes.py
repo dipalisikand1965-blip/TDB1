@@ -1034,7 +1034,7 @@ async def get_thread(
             pet = await db.pets.find_one({"id": thread["pet_id"]})
             if pet:
                 # Build context drawer data
-                soul_answers = pet.get("doggy_soul_answers", {})
+                soul_answers = pet.get("doggy_soul_answers") or {}
                 preferences = pet.get("preferences", {})
                 
                 # Calculate age stage

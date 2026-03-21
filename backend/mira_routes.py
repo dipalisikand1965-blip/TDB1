@@ -603,8 +603,8 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
                 (pet.get("preferences") or {}).get("allergies"),
                 (pet.get("health_vault") or {}).get("allergies"),
                 pet.get("insights", {}).get("key_flags", {}).get("allergy_list"),
-                pet.get("doggy_soul_answers", {}).get("food_allergies"),
-                pet.get("doggy_soul_answers", {}).get("allergies")
+                pet.get("doggy_soul_answers") or {}.get("food_allergies"),
+                pet.get("doggy_soul_answers") or {}.get("allergies")
             ]
             
             # MERGE and dedupe all allergies (case-insensitive)
@@ -7799,7 +7799,7 @@ async def get_default_picks_for_pet(
         allergy_names = [a.get("allergen", a) if isinstance(a, dict) else a for a in allergies]
         size = pet.get("size", "medium").lower() if pet else "medium"
         soul = pet.get("soul", {}) if pet else {}
-        doggy_answers = pet.get("doggy_soul_answers", {}) if pet else {}
+        doggy_answers = pet.get("doggy_soul_answers") or {} if pet else {}
         favorites = pet.get("favorites", []) if pet else []
         love_language = soul.get("love_language", doggy_answers.get("love_language", ""))
         energy_level = soul.get("energy_level", doggy_answers.get("energy_level", ""))
@@ -13886,7 +13886,7 @@ If {pet_name} has any allergies or sensitivities, tell me and I'll adjust everyt
             # Check for fast-eater trait for slow feeder recommendation
             has_fast_eater = selected_pet and (
                 "fast" in str(selected_pet.get("eating_speed", "")).lower() or
-                "gulps" in str(selected_pet.get("doggy_soul_answers", {}).get("eating_habits", "")).lower()
+                "gulps" in str(selected_pet.get("doggy_soul_answers") or {}.get("eating_habits", "")).lower()
             )
             
             # Build picks based on traits
@@ -14252,11 +14252,11 @@ Would you like me to show you safe treats in one of those flavors?"""
     
     # Extract pet context for personalization
     pet_name = selected_pet.get("name", "your furry friend") if selected_pet else "your furry friend"
-    pet_energy = selected_pet.get("energy_level") or selected_pet.get("doggy_soul_answers", {}).get("energy_level") if selected_pet else None
-    pet_temperament = selected_pet.get("temperament") or selected_pet.get("doggy_soul_answers", {}).get("temperament") if selected_pet else None
-    pet_behavior_with_dogs = selected_pet.get("behavior_with_dogs") or selected_pet.get("doggy_soul_answers", {}).get("behavior_with_dogs") if selected_pet else None
-    pet_anxiety = selected_pet.get("separation_anxiety") or selected_pet.get("doggy_soul_answers", {}).get("separation_anxiety") if selected_pet else None
-    pet_general_nature = selected_pet.get("general_nature") or selected_pet.get("doggy_soul_answers", {}).get("general_nature") if selected_pet else None
+    pet_energy = selected_pet.get("energy_level") or selected_pet.get("doggy_soul_answers") or {}.get("energy_level") if selected_pet else None
+    pet_temperament = selected_pet.get("temperament") or selected_pet.get("doggy_soul_answers") or {}.get("temperament") if selected_pet else None
+    pet_behavior_with_dogs = selected_pet.get("behavior_with_dogs") or selected_pet.get("doggy_soul_answers") or {}.get("behavior_with_dogs") if selected_pet else None
+    pet_anxiety = selected_pet.get("separation_anxiety") or selected_pet.get("doggy_soul_answers") or {}.get("separation_anxiety") if selected_pet else None
+    pet_general_nature = selected_pet.get("general_nature") or selected_pet.get("doggy_soul_answers") or {}.get("general_nature") if selected_pet else None
     
     # Build pet context summary for conversational anchoring
     pet_traits_summary = []
@@ -16510,13 +16510,13 @@ FOLLOW-UP CONCISENESS RULE:
                 # Check if we actually have the data to back this up
                 has_allergy_data = selected_pet and (
                     selected_pet.get("food_allergies") or 
-                    selected_pet.get("doggy_soul_answers", {}).get("food_allergies")
+                    selected_pet.get("doggy_soul_answers") or {}.get("food_allergies")
                 )
                 has_trait_data = selected_pet and (
                     selected_pet.get("temperament") or 
-                    selected_pet.get("doggy_soul_answers", {}).get("temperament") or
+                    selected_pet.get("doggy_soul_answers") or {}.get("temperament") or
                     selected_pet.get("energy_level") or
-                    selected_pet.get("doggy_soul_answers", {}).get("energy_level")
+                    selected_pet.get("doggy_soul_answers") or {}.get("energy_level")
                 )
                 
                 if "allerg" in phrase and not has_allergy_data:
@@ -18720,7 +18720,7 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
             db = get_db()
             pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
             if pet:
-                soul = pet.get("doggy_soul_answers", {}) or soul_answers
+                soul = pet.get("doggy_soul_answers") or {} or soul_answers
                 allergies = soul.get("food_allergies", [])
                 allergy_str = ", ".join(a for a in allergies if a not in ["none","none known","no_allergies"]) or "none known"
                 pet_context = (
@@ -24943,7 +24943,7 @@ async def get_youtube_recommended(pet_id: str, max_results: int = 6):
         
         # Get sensitivities for topic-specific videos
         sensitivities = []
-        if pet.get("doggy_soul_answers", {}).get("health_conditions"):
+        if pet.get("doggy_soul_answers") or {}.get("health_conditions"):
             conditions = pet["doggy_soul_answers"]["health_conditions"]
             if isinstance(conditions, str):
                 sensitivities = [c.strip() for c in conditions.split(",")]
@@ -26469,7 +26469,7 @@ async def get_curated_set(
             "answered_questions": pet.get("answered_questions", []),
             "age_band": age_band,
             # Include raw profile data for trait derivation
-            "doggy_soul_answers": pet.get("doggy_soul_answers", {}),
+            "doggy_soul_answers": pet.get("doggy_soul_answers") or {},
             "personality": pet.get("personality", {}),
             "soul": pet.get("soul", {}),
             "temperament": pet.get("temperament", ""),
@@ -26630,7 +26630,7 @@ def extract_soul_traits(pet: dict) -> List[str]:
     Extract soul traits from pet's doggy_soul_answers.
     """
     traits = []
-    soul_answers = pet.get("doggy_soul_answers", {}) or {}
+    soul_answers = pet.get("doggy_soul_answers") or {} or {}
     
     # Direct trait mappings
     if soul_answers.get("general_nature"):

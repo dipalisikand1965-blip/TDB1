@@ -85,7 +85,7 @@ def build_soul_context_summary(pet: Dict) -> SoulContextSummary:
     from canonical_answers import canonicalize_answers, get_mira_context
     
     # Extract from various sources in the pet object
-    raw_doggy_soul = pet.get("doggy_soul_answers", {}) or {}
+    raw_doggy_soul = pet.get("doggy_soul_answers") or {} or {}
     soul_data = pet.get("soul", {}) or {}  # Used for personality data
     preferences = pet.get("preferences", {}) or {}
     health = pet.get("health", {}) or {}
@@ -1241,7 +1241,7 @@ async def recalculate_pet_soul_score(db, pet_id: str) -> dict:
             return {"success": False, "error": "Pet not found"}
         
         old_score = pet.get("overall_score", 0)
-        answers = pet.get("doggy_soul_answers", {})
+        answers = pet.get("doggy_soul_answers") or {}
         
         # Import folder structure for score calculation
         # These weights match the pet_soul_routes.py question bank

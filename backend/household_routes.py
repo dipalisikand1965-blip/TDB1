@@ -34,7 +34,7 @@ def set_dependencies(generate_pet_pass_number_func):
 
 def calculate_pet_soul_score(pet: dict) -> int:
     """Calculate Pet Soul completeness score"""
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     if not soul_answers:
         return 0
     
@@ -70,7 +70,7 @@ async def get_household_info(user_email: str):
     shared_allergies = set()
     
     for pet in pets:
-        soul = pet.get("doggy_soul_answers", {})
+        soul = pet.get("doggy_soul_answers") or {}
         allergies = soul.get("food_allergies", [])
         if isinstance(allergies, list):
             if shared_allergies:
@@ -173,7 +173,7 @@ async def get_household_recommendations(user_email: str):
     # Collect all allergies across all pets
     all_allergies = set()
     for pet in pets:
-        soul = pet.get("doggy_soul_answers", {})
+        soul = pet.get("doggy_soul_answers") or {}
         allergies = soul.get("food_allergies", [])
         if isinstance(allergies, list):
             for a in allergies:

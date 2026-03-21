@@ -3678,7 +3678,7 @@ async def chat_with_mira_legacy(request: ChatRequest):
                         identity = pet.get("identity", {})
                         soul = pet.get("soul", {})
                         preferences = pet.get("preferences", {})
-                        doggy_soul = pet.get("doggy_soul_answers", {})
+                        doggy_soul = pet.get("doggy_soul_answers") or {}
                         enrichments = pet.get("soul_enrichments", {})
                         
                         pet_name = pet.get('name', 'Pet')
@@ -10136,7 +10136,7 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
         
         # CRITICAL: Merge existing answers with new ones (NEVER overwrite, only add)
         # This ensures questions are NEVER repeated - they're tracked and excluded
-        existing_answers = existing_pet.get("doggy_soul_answers", {}) if existing_pet else {}
+        existing_answers = existing_pet.get("doggy_soul_answers") or {} if existing_pet else {}
         merged_answers = {**existing_answers}
         
         for key, value in new_soul_answers.items():
@@ -10224,7 +10224,7 @@ async def backfill_pet_soul_answers(background_tasks: BackgroundTasks, admin: di
         pets_cursor = db.pets.find({})
         
         async for pet in pets_cursor:
-            current_answers = pet.get("doggy_soul_answers", {})
+            current_answers = pet.get("doggy_soul_answers") or {}
             new_answers = dict(current_answers)  # Start with existing answers
             updated = False
             
@@ -13963,7 +13963,7 @@ async def membership_onboard(data: MembershipOnboardModel):
 # Note: For accurate scoring, use calculate_pet_soul_score from pet_score_logic.py
 def calculate_pet_soul_score_legacy(pet: dict) -> int:
     """Calculate Pet Soul completeness score (legacy simple version)"""
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     if not soul_answers:
         return 0
     
@@ -14097,7 +14097,7 @@ async def get_my_pets(current_user: dict = Depends(get_current_user)):
     
     for pet in pets:
         stored_score = pet.get("overall_score", 0) or 0
-        answers = pet.get("doggy_soul_answers", {}) or pet.get("soul_answers", {})
+        answers = pet.get("doggy_soul_answers") or pet.get("soul_answers") or {}
 
         # Fast path: use stored score if already calculated (skip CPU-intensive recalc)
         if stored_score > 0:
@@ -14368,7 +14368,7 @@ async def mark_pet_rainbow_bridge(pet_id: str, memorial_data: dict, current_user
         "owner_email": current_user.get("email"),
         "owner_name": current_user.get("name") or current_user.get("email"),
         "soul_score": pet.get("soul_score") or pet.get("overall_score", 0),
-        "doggy_soul_answers": pet.get("doggy_soul_answers", {}),
+        "doggy_soul_answers": pet.get("doggy_soul_answers") or {},
         "crossing_date": memorial_update["crossing_date"],
         "tribute_message": memorial_update["tribute_message"],
         "favorite_memory": memorial_update["favorite_memory"],
@@ -14605,7 +14605,7 @@ async def get_pet_soul(pet_id: str, current_user: dict = Depends(get_current_use
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     
     # Calculate score using weighted system
     score_data = calculate_pet_soul_score(soul_answers)
@@ -14644,7 +14644,7 @@ async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dic
         raise HTTPException(status_code=400, detail="question_id and answer are required")
     
     # Get current soul answers or initialize
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     previous_count = sum(1 for v in soul_answers.values() if v and v not in ['', [], None, 'Unknown'])
     soul_answers[question_id] = answer
     
@@ -14731,7 +14731,7 @@ async def get_pet_soul_profile(pet_id: str, current_user: dict = Depends(get_cur
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     score_data = calculate_pet_soul_score(soul_answers)
     
     return {
@@ -14845,7 +14845,7 @@ async def get_pet_life_timeline(pet_id: str, limit: int = 50, current_user: dict
         raise HTTPException(status_code=404, detail="Pet not found")
     
     timeline_events = []
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     pet_name = pet.get("name", "Pet")
     owner_id = pet.get("owner_id") or pet.get("user_id")
     
@@ -15278,7 +15278,7 @@ async def patch_pet_soul_answers(pet_id: str, answers: dict):
         raise HTTPException(status_code=404, detail="Pet not found")
     
     # Get current soul answers or initialize
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     
     # Merge the new answers into existing
     for key, value in answers.items():
@@ -15337,7 +15337,7 @@ async def update_pet_pillar_soul(pet_id: str, payload: dict):
     summary = payload.get("summary", "")
     
     # 1) Merge new answers into existing soul_answers
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     for key, value in answers.items():
         if value is not None and value != '':
             soul_answers[key] = value
@@ -15403,7 +15403,7 @@ async def recalculate_all_pet_scores():
     for pet in pets:
         pet_id = pet.get("id")
         old_score = pet.get("overall_score", 0)
-        answers = pet.get("doggy_soul_answers", {})
+        answers = pet.get("doggy_soul_answers") or {}
         
         if answers:
             score_data = calculate_pet_soul_score(answers)
@@ -23653,7 +23653,7 @@ def get_slot_1_hero_cake(pet: dict) -> dict:
     allergy2 = pet.get("allergy2", "").lower()
     all_allergies = allergies + [a for a in [allergy1, allergy2] if a]
     
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     fav_food = soul_answers.get("favorite_protein") or soul_answers.get("favourite_food1") or ""
     fav_food = fav_food.lower() if isinstance(fav_food, str) else ""
     
@@ -23681,7 +23681,7 @@ def get_slot_1_hero_cake(pet: dict) -> dict:
 
 def get_slot_2_joy_item(pet: dict) -> dict:
     """Slot 2 — Joy Item: Based on top soul pillar"""
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     top_pillar = soul_answers.get("top_soul_pillar", "").lower()
     top_activity = soul_answers.get("favorite_activity") or soul_answers.get("top_activity") or ""
     breed = (pet.get("breed") or "").lower()
@@ -23701,7 +23701,7 @@ def get_slot_3_style_item(pet: dict) -> dict:
     pet_name = pet.get("name", "Pet")
     birthday, gotcha_day = pet.get("birthday"), pet.get("gotcha_day")
     breed, size = (pet.get("breed") or "").lower(), (pet.get("size") or "").lower()
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     grooming_score = soul_answers.get("grooming_score", 0)
     
     small_breeds = ["shih tzu", "pomeranian", "chihuahua", "maltese", "yorkshire"]
@@ -23723,7 +23723,7 @@ def get_slot_3_style_item(pet: dict) -> dict:
 def get_slot_4_memory_item(pet: dict) -> dict:
     """Slot 4 — Memory Item: Something to preserve the day"""
     pet_name, birthday = pet.get("name", "Pet"), pet.get("birthday")
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     memory_score = soul_answers.get("memory_score") or soul_answers.get("love_memory_score", 0)
     
     if memory_score and memory_score > 60:
@@ -23760,7 +23760,7 @@ def get_slot_5_health_item(pet: dict) -> dict:
 def get_slot_6_surprise_item(pet: dict) -> dict:
     """Slot 6 — Surprise Item: Based on archetype"""
     pet_name = pet.get("name", "Pet")
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     archetype = (soul_answers.get("archetype") or soul_answers.get("pet_archetype") or "").lower().replace(" ", "_")
     breed = (pet.get("breed") or "").lower()
     
@@ -23773,7 +23773,7 @@ def get_slot_6_surprise_item(pet: dict) -> dict:
 
 def calculate_soul_percent(pet: dict) -> int:
     """Calculate how much of the soul profile is filled"""
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     key_fields = ["favorite_protein", "favourite_food1", "allergies", "top_soul_pillar", "favorite_activity", "favorite_toy", "archetype", "pet_archetype", "grooming_score", "memory_score", "health_score"]
     filled = sum(1 for k in key_fields if soul_answers.get(k))
     pet_fields = ["birthday", "breed", "age", "health_condition"]

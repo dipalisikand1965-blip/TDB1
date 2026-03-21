@@ -97,7 +97,7 @@ def get_fields_to_recall(pet_soul: Dict, intent: str = None) -> Dict[str, Any]:
                 memory_values[field] = value
     
     # Also check doggy_soul_answers
-    dsa = pet_soul.get("doggy_soul_answers", {})
+    dsa = pet_soul.get("doggy_soul_answers") or {}
     if dsa:
         for field, value in dsa.items():
             if value and field not in memory_values and value not in [[], {}, "", None]:

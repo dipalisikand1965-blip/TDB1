@@ -158,7 +158,7 @@ def get_known_fields(pet_soul: Dict) -> Dict[str, Any]:
         known["crate_trained"] = travel["crate_trained"]
     
     # Soul answers (raw answers from soul questions)
-    soul_answers = pet_soul.get("soul_answers", {}) or pet_soul.get("doggy_soul_answers", {})
+    soul_answers = pet_soul.get("soul_answers", {}) or pet_soul.get("doggy_soul_answers") or {}
     for key, val in soul_answers.items():
         if val and key not in known:
             known[key] = val
@@ -518,7 +518,7 @@ async def save_soul_enrichment(pet_id: str, enrichments: List[Dict], session_id:
         from pet_score_logic import calculate_pet_soul_score
         pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "doggy_soul_answers": 1})
         if pet:
-            answers = pet.get("doggy_soul_answers", {})
+            answers = pet.get("doggy_soul_answers") or {}
             score_data = calculate_pet_soul_score(answers)
             await db.pets.update_one(
                 {"id": pet_id},
