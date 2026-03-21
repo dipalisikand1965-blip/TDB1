@@ -1072,24 +1072,96 @@ async def get_tickets_by_parent(parent_id: str, limit: int = 100):
 
 
 @service_desk_router.get("/tickets/queue/{queue_name}")
-async def get_tickets_by_queue(queue_name: str, status: str = "open_concierge", limit: int = 50):
-    """Get tickets in a specific concierge queue."""
+async def get_tickets_by_queue(queue_name: str, status: str = "open", limit: int = 50):
+    """Get tickets in a specific concierge queue from service_desk_tickets."""
     db = get_db()
     if db is None:
         raise HTTPException(status_code=500, detail="Database not available")
-    
-    query = {"concierge_queue": queue_name.upper()}
-    if status:
-        query["status"] = status
-    
-    cursor = db.mira_conversations.find(
-        query,
-        {"_id": 0}
-    ).sort("handoff_time", -1).limit(limit)
-    
+
+    # Map queue names to pillar filters
+    QUEUE_PILLAR_MAP = {
+        "INBOX":    None,  # all pillars
+        "CARE":     "care",
+        "DINE":     "dine",
+        "GO":       "go",
+        "PLAY":     "play",
+        "LEARN":    "learn",
+        "SHOP":     "shop",
+        "CELEBRATE":"celebrate",
+        "SERVICES": "services",
+        "EMERGENCY":"emergency",
+        "FAREWELL": "farewell",
+        "ADOPT":    "adopt",
+        "PAPERWORK":"paperwork",
+    }
+
+    query: dict = {}
+    pillar = QUEUE_PILLAR_MAP.get(queue_name.upper())
+    if pillar:
+        query["pillar"] = pillar
+    if status and status != "all":
+        query["status"] = {"$in": [status, "open", "in_progress"]}
+
+    cursor = db.service_desk_tickets.find(
+        query, {"_id": 0}
+    ).sort("created_at", -1).limit(limit)
+
     tickets = await cursor.to_list(length=limit)
-    
+    # Normalize fields
+    for t in tickets:
+        t.pop("_id", None)
+        if not t.get("intent_primary") and t.get("type"):
+            t["intent_primary"] = t["type"]
+
     return {"tickets": tickets, "queue": queue_name, "total": len(tickets)}
+
+
+@service_desk_router.get("/tickets")
+async def get_all_service_desk_tickets(
+    status: str = "all",
+    limit: int = 200,
+    pillar: str = None,
+    urgency: str = None,
+):
+    """Admin: get all service desk tickets. Used by DoggyServiceDesk admin panel."""
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not available")
+
+    query: dict = {
+        # Exclude Pet Wrapped auto-generated tickets — admin only sees real booking requests
+        "ticket_id": {"$not": {"$regex": "^(wrapped-|annual-|birthday-)", "$options": "i"}},
+    }
+    if status and status != "all":
+        query["status"] = status
+    if pillar:
+        query["pillar"] = pillar
+    if urgency:
+        query["urgency"] = urgency
+
+    cursor = db.service_desk_tickets.find(
+        query, {"_id": 0}
+    ).sort("created_at", -1).limit(limit)
+
+    tickets = await cursor.to_list(length=limit)
+    for t in tickets:
+        t.pop("_id", None)
+        if not t.get("intent_primary") and t.get("type"):
+            t["intent_primary"] = t["type"]
+        # Map to DoggyServiceDesk expected shape
+        if not t.get("subject") and t.get("intent_primary"):
+            intent = t["intent_primary"].replace("_"," ").title()
+            pet = t.get("pet_name","")
+            t["subject"] = f"{intent} for {pet}" if pet else intent
+        if not t.get("member"):
+            t["member"] = {
+                "name":  t.get("pet_name") or t.get("parent_id",""),
+                "email": t.get("parent_id") if "@" in (t.get("parent_id") or "") else None,
+            }
+        if not t.get("pet_info") and t.get("pet_id"):
+            t["pet_info"] = {"id": t["pet_id"], "name": t.get("pet_name","")}
+
+    return {"tickets": tickets, "total": len(tickets)}
 
 
 # ============================================

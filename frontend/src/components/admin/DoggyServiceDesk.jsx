@@ -506,10 +506,22 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   // Fetch all tickets from multiple sources
   const fetchAllTickets = useCallback(async () => {
     try {
-      // Fetch from main tickets endpoint
-      const ticketsRes = await fetch(`${getApiUrl()}/api/tickets/`, { headers: authHeaders });
-      const ticketsData = await ticketsRes.json();
-      let allTicketsList = ticketsData.tickets || [];
+      // PRIMARY: Fetch from service_desk_tickets (concierge intent tickets with Mira briefing)
+      const sdRes = await fetch(`${getApiUrl()}/api/service_desk/tickets?limit=200`, { headers: authHeaders });
+      const sdData = await sdRes.json();
+      let allTicketsList = (sdData.tickets || []);
+
+      // SECONDARY: Fetch from /api/tickets/ (order tickets) and merge
+      try {
+        const ticketsRes = await fetch(`${getApiUrl()}/api/tickets/`, { headers: authHeaders });
+        if (ticketsRes.ok) {
+          const ticketsData = await ticketsRes.json();
+          const orderTickets = ticketsData.tickets || [];
+          const existingIds = new Set(allTicketsList.map(t => t.ticket_id || t.id));
+          const newOrderTickets = orderTickets.filter(t => !existingIds.has(t.ticket_id || t.id));
+          allTicketsList = [...allTicketsList, ...newOrderTickets];
+        }
+      } catch (e) { console.log('Order tickets fetch failed:', e); }
       
       // Also fetch from channel_intakes (WhatsApp, Email, etc.)
       try {
@@ -538,7 +550,6 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         }
       } catch (e) { console.log('Channel intakes not available'); }
       
-      // Fetch reservations as tickets
       try {
         const resRes = await fetch(`${getApiUrl()}/api/admin/dine/reservations`, { headers: authHeaders });
         if (resRes.ok) {
