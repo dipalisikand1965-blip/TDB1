@@ -1149,7 +1149,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
 
   return (
     <div 
-      className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[9999]"
+      className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[50000]"
       onClick={handleBackdropClick}
     >
       <div 
