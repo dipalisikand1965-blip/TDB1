@@ -680,7 +680,7 @@ def derive_traits_from_profile(pet_data: Dict[str, Any]) -> List[str]:
         derived.extend(pet_data["soul_traits"])
     
     # 2. Check doggy_soul_answers
-    doggy_soul = pet_data.get("doggy_soul_answers", {}) or {}
+    doggy_soul = pet_data.get("doggy_soul_answers") or {} or {}
     
     # Food motivation
     food_motivation = doggy_soul.get("food_motivation", "").lower()

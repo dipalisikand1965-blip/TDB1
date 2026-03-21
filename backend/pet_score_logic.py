@@ -579,7 +579,7 @@ async def get_pet_score_state(pet_id: str):
         raise HTTPException(status_code=404, detail="Pet not found")
     
     # Get answers and additional data
-    answers = pet.get("doggy_soul_answers", {})
+    answers = pet.get("doggy_soul_answers") or {}
     preferences = pet.get("preferences", {})
     soul = pet.get("soul", {})
     
@@ -647,7 +647,7 @@ async def recalculate_pet_score(pet_id: str):
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     
-    answers = pet.get("doggy_soul_answers", {})
+    answers = pet.get("doggy_soul_answers") or {}
     score_data = calculate_pet_soul_score(answers)
     
     # Update stored score
@@ -691,7 +691,7 @@ async def get_quick_questions(pet_id: str, limit: int = 5):
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     
-    answers = pet.get("doggy_soul_answers", {})
+    answers = pet.get("doggy_soul_answers") or {}
     score_data = calculate_pet_soul_score(answers)
     
     # Get unanswered questions sorted by weight

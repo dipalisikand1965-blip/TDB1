@@ -108,7 +108,7 @@ async def generate_pet_wrapped(pet_id: str, year: Optional[int] = None):
     # Calculate score using the same weighted scoring as /api/pets/my-pets
     # This ensures consistency across all components
     stored_score = pet.get("overall_score", 0) or pet.get("soul_score", 0) or 0
-    answers = pet.get("doggy_soul_answers", {}) or pet.get("soul_answers", {})
+    answers = pet.get("doggy_soul_answers") or {} or pet.get("soul_answers", {})
     
     if answers:
         score_data = calculate_pet_soul_score(answers)
@@ -187,7 +187,7 @@ async def generate_pet_wrapped(pet_id: str, year: Optional[int] = None):
             pass
     
     # Count Soul Profile questions answered from doggy_soul_answers
-    doggy_soul_answers = pet.get("doggy_soul_answers", {})
+    doggy_soul_answers = pet.get("doggy_soul_answers") or {}
     questions_answered = sum(1 for v in doggy_soul_answers.values() if v and str(v).strip())
     if questions_answered == 0:
         questions_answered = count_soul_questions(soul_data)

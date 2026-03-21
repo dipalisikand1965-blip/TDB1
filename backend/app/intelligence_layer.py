@@ -138,7 +138,7 @@ def derive_traits_from_pet_data(pet_data: Dict) -> List[str]:
         traits.extend(pet_data["soul_traits"])
     
     # 2. Doggy Soul Answers - extract personality markers
-    doggy_soul = pet_data.get("doggy_soul_answers", {})
+    doggy_soul = pet_data.get("doggy_soul_answers") or {}
     if doggy_soul:
         # Map common answers to traits
         for key, value in doggy_soul.items():

@@ -98,7 +98,7 @@ def get_all_allergies(pet: dict) -> list:
         all_allergies.update([a.lower() for a in health["allergies"] if a])
     
     # Check doggy_soul_answers.food_allergies
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     if soul_answers.get("food_allergies"):
         all_allergies.update([a.lower() for a in soul_answers["food_allergies"] if a])
     if soul_answers.get("allergies"):
@@ -125,7 +125,7 @@ def get_slot_1_hero_cake(pet: dict) -> dict:
     """Slot 1 — Hero Item: Birthday Cake based on favorite food or breed"""
     all_allergies = get_all_allergies(pet)
     
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     fav_food = soul_answers.get("favorite_protein") or soul_answers.get("favourite_food1") or ""
     fav_food = fav_food.lower() if isinstance(fav_food, str) else ""
     
@@ -178,7 +178,7 @@ def get_slot_1_hero_cake(pet: dict) -> dict:
 
 def get_slot_2_joy_item(pet: dict) -> dict:
     """Slot 2 — Joy Item: Based on top soul pillar"""
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     top_pillar = soul_answers.get("top_soul_pillar", "").lower()
     top_activity = soul_answers.get("favorite_activity") or soul_answers.get("top_activity") or ""
     breed = (pet.get("breed") or "").lower()
@@ -198,7 +198,7 @@ def get_slot_3_style_item(pet: dict) -> dict:
     pet_name = pet.get("name", "Pet")
     birthday, gotcha_day = pet.get("birthday"), pet.get("gotcha_day")
     breed, size = (pet.get("breed") or "").lower(), (pet.get("size") or "").lower()
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     grooming_score = soul_answers.get("grooming_score", 0)
     
     small_breeds = ["shih tzu", "pomeranian", "chihuahua", "maltese", "yorkshire"]
@@ -220,7 +220,7 @@ def get_slot_3_style_item(pet: dict) -> dict:
 def get_slot_4_memory_item(pet: dict) -> dict:
     """Slot 4 — Memory Item: Something to preserve the day"""
     pet_name, birthday = pet.get("name", "Pet"), pet.get("birthday")
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     memory_score = soul_answers.get("memory_score") or soul_answers.get("love_memory_score", 0)
     
     if memory_score and memory_score > 60:
@@ -255,7 +255,7 @@ def get_slot_5_health_item(pet: dict) -> dict:
 def get_slot_6_surprise_item(pet: dict) -> dict:
     """Slot 6 — Surprise Item: Based on archetype"""
     pet_name = pet.get("name", "Pet")
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     archetype = (soul_answers.get("archetype") or soul_answers.get("pet_archetype") or "").lower().replace(" ", "_")
     breed = (pet.get("breed") or "").lower()
     
@@ -268,7 +268,7 @@ def get_slot_6_surprise_item(pet: dict) -> dict:
 
 def calculate_soul_percent(pet: dict) -> int:
     """Calculate how much of the soul profile is filled"""
-    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers = pet.get("doggy_soul_answers") or {}
     key_fields = ["favorite_protein", "favourite_food1", "allergies", "top_soul_pillar", "favorite_activity", "favorite_toy", "archetype", "pet_archetype", "grooming_score", "memory_score", "health_score"]
     filled = sum(1 for k in key_fields if soul_answers.get(k))
     pet_fields = ["birthday", "breed", "age", "health_condition"]

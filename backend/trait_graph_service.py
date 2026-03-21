@@ -274,7 +274,7 @@ async def update_trait_from_service_outcome(
             return {"success": False, "error": "Pet not found"}
         
         pet_name = pet.get("name", "Pet")
-        current_answers = pet.get("doggy_soul_answers", {})
+        current_answers = pet.get("doggy_soul_answers") or {}
         current_meta = pet.get("doggy_soul_meta", {})
         
         now = datetime.now(timezone.utc)
@@ -417,7 +417,7 @@ async def update_trait_from_purchase(
             return {"success": False, "error": "Pet not found"}
         
         pet_name = pet.get("name", "Pet")
-        current_answers = pet.get("doggy_soul_answers", {})
+        current_answers = pet.get("doggy_soul_answers") or {}
         current_meta = pet.get("doggy_soul_meta", {})
         
         now = datetime.now(timezone.utc)
@@ -560,7 +560,7 @@ async def update_trait_from_behaviour_observation(
             return {"success": False, "error": "Pet not found"}
         
         pet_name = pet.get("name", "Pet")
-        current_answers = pet.get("doggy_soul_answers", {})
+        current_answers = pet.get("doggy_soul_answers") or {}
         current_meta = pet.get("doggy_soul_meta", {})
         
         now = datetime.now(timezone.utc)

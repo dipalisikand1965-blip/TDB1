@@ -598,7 +598,7 @@ def print_field_coverage():
     
     for pet in pets:
         name = pet.get("name", "Unknown")
-        soul_answers = pet.get("doggy_soul_answers", {})
+        soul_answers = pet.get("doggy_soul_answers") or {}
         filled_fields = len([k for k, v in soul_answers.items() if v and k != "_canonical_migration_v1"])
         
         print(f"\n{name}: {filled_fields}/{total_fields} fields filled ({filled_fields/total_fields*100:.1f}%)")

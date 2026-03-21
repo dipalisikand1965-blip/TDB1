@@ -359,7 +359,7 @@ async def compute_and_save_archetype(pet_id: str, db) -> Dict:
         return {"error": "Pet not found"}
     
     # Get soul data
-    soul_data = pet.get("doggy_soul_answers", {})
+    soul_data = pet.get("doggy_soul_answers") or {}
     
     # Derive archetype
     archetype_key, archetype_details = derive_archetype(soul_data)
@@ -405,7 +405,7 @@ def get_archetype_for_display(pet: Dict) -> Dict:
         return pet["soul_archetype"]
     
     # Derive from soul data
-    soul_data = pet.get("doggy_soul_answers", {})
+    soul_data = pet.get("doggy_soul_answers") or {}
     archetype_key, archetype_details = derive_archetype(soul_data)
     
     return {

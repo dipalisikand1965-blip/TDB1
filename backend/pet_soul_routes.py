@@ -201,7 +201,7 @@ def get_next_question(answers: Dict) -> Optional[Dict]:
 
 def generate_insights(pet_data: Dict) -> Dict:
     """Generate AI-readable insights from pet profile"""
-    answers = pet_data.get("doggy_soul_answers", {})
+    answers = pet_data.get("doggy_soul_answers") or {}
     identity = pet_data.get("identity", {})
     
     insights = {
@@ -460,7 +460,7 @@ async def get_pet_soul_profile(pet_id: str):
         raise HTTPException(status_code=404, detail="Pet not found")
     
     # Calculate scores
-    answers = pet.get("doggy_soul_answers", {})
+    answers = pet.get("doggy_soul_answers") or {}
     folder_scores = {fk: calculate_folder_score(answers, fk) for fk in FOLDER_KEYS}
     overall_score = calculate_overall_score(answers)
     
@@ -482,7 +482,7 @@ async def get_profile_progress(pet_id: str):
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     
-    answers = pet.get("doggy_soul_answers", {})
+    answers = pet.get("doggy_soul_answers") or {}
     folder_scores = {fk: calculate_folder_score(answers, fk) for fk in FOLDER_KEYS}
     
     # Build folder progress with icons
@@ -522,7 +522,7 @@ async def get_quick_questions(
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     
-    answers = pet.get("doggy_soul_answers", {})
+    answers = pet.get("doggy_soul_answers") or {}
     pet_name = pet.get("name", "your pet")
     
     # Collect all unanswered questions with their folder info
@@ -596,7 +596,7 @@ async def get_8_pillars_summary(pet_id: str):
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
     
-    answers = pet.get("doggy_soul_answers", {})
+    answers = pet.get("doggy_soul_answers") or {}
     pet_name = pet.get("name", "your pet")
     
     try:
@@ -697,7 +697,7 @@ async def save_soul_answer_simple(request: Request):
         
         # Recalculate scores
         pet = await db.pets.find_one(pet_filter, {"_id": 0})
-        answers = pet.get("doggy_soul_answers", {})
+        answers = pet.get("doggy_soul_answers") or {}
         folder_scores = {fk: calculate_folder_score(answers, fk) for fk in FOLDER_KEYS}
         overall_score = calculate_overall_score(answers)
         
@@ -753,7 +753,7 @@ async def save_answer(pet_id: str, answer: DoggyAnswer):
     
     # Recalculate scores and insights
     pet = await db.pets.find_one(pet_filter, {"_id": 0})
-    answers = pet.get("doggy_soul_answers", {})
+    answers = pet.get("doggy_soul_answers") or {}
     folder_scores = {fk: calculate_folder_score(answers, fk) for fk in FOLDER_KEYS}
     overall_score = calculate_overall_score(answers)
     insights = generate_insights(pet)
@@ -994,7 +994,7 @@ async def capture_from_pillar(pet_id: str, pillar_data: Dict):
     }
     
     # Update doggy soul answers
-    existing_answers = pet.get("doggy_soul_answers", {})
+    existing_answers = pet.get("doggy_soul_answers") or {}
     updates_made = []
     
     for field_key, value in captured_fields.items():
@@ -1047,7 +1047,7 @@ async def get_profile_for_pillar(pet_id: str, pillar: str):
         raise HTTPException(status_code=404, detail="Pet not found")
     
     identity = pet.get("identity", {})
-    answers = pet.get("doggy_soul_answers", {})
+    answers = pet.get("doggy_soul_answers") or {}
     
     # Fields needed per pillar
     pillar_fields = {
@@ -1117,7 +1117,7 @@ async def admin_list_pets(
     # Add computed scores if missing
     for pet in pets:
         if "overall_score" not in pet:
-            answers = pet.get("doggy_soul_answers", {})
+            answers = pet.get("doggy_soul_answers") or {}
             pet["overall_score"] = calculate_overall_score(answers)
     
     return {"pets": pets, "total": total, "skip": skip, "limit": limit}
@@ -1136,7 +1136,7 @@ async def admin_get_questions():
     
     question_stats = {}
     for pet in all_pets:
-        for qid, answer in pet.get("doggy_soul_answers", {}).items():
+        for qid, answer in pet.get("doggy_soul_answers") or {}.items():
             if answer:
                 question_stats[qid] = question_stats.get(qid, 0) + 1
     
@@ -1274,7 +1274,7 @@ async def learn_from_order(db, order_data: dict):
             return {"learned": False, "reason": "No learnable info in order", "pet_id": pet_id}
         
         # Update Pet Soul answers
-        existing_answers = pet.get("doggy_soul_answers", {})
+        existing_answers = pet.get("doggy_soul_answers") or {}
         
         # Merge favorite treats
         if "favorite_treats" in updates:
@@ -1468,7 +1468,7 @@ async def get_celebrations_calendar(
                 pass
         
         # Check custom celebrations from Pet Soul answers
-        celebration_prefs = pet.get("doggy_soul_answers", {}).get("celebration_preferences", [])
+        celebration_prefs = (pet.get("doggy_soul_answers") or {}).get("celebration_preferences", [])
         custom_celebrations = pet.get("celebrations", [])
         
         # Add festival celebrations based on preferences

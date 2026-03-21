@@ -3128,7 +3128,7 @@ async def ai_draft_reply(request: AIReplyRequest):
                     },
                     "personality": {
                         "anxiety_triggers": pet_doc.get("personality", {}).get("anxiety_triggers", []),
-                        "handling_comfort": pet_doc.get("doggy_soul_answers", {}).get("handling_comfort"),
+                        "handling_comfort": pet_doc.get("doggy_soul_answers") or {}.get("handling_comfort"),
                     },
                     "recent_activity": ticket.get("category", "inquiry")
                 }
