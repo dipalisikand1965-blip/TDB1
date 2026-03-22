@@ -506,10 +506,10 @@ async def get_breed_products(
     pillar: Optional[str] = None,
     limit: int = 50
 ):
-    """Get breed products with optional filters."""
+    """Get breed products with optional filters. Defaults to is_mockup=True (proper product mockups only)."""
     db = get_db()
     
-    query = {}
+    query = {"is_mockup": True}   # Always filter to proper mockups only
     if breed:
         # Include breed-specific AND universal "all" products
         query["$or"] = [

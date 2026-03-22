@@ -11501,8 +11501,8 @@ async def get_admin_breed_products(
     limit: int = 100,
     skip: int = 0
 ):
-    """Get breed products for admin management"""
-    query = {}
+    """Get breed products for admin management (is_mockup=True by default — proper mockups only)"""
+    query = {"is_mockup": True}   # Only show proper product mockups, not portrait-only
     if breed:
         # Include breed-specific products AND universal "all" breed products
         query["$or"] = [
