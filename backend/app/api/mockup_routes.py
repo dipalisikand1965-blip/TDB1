@@ -1350,3 +1350,294 @@ async def list_soul_made_products(
         "limit": limit,
         "skip": skip
     }
+
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# AI AUTO-ASSIGN PILLARS FOR PENDING PRODUCTS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+_pillar_assign_status = {
+    "running": False, "total": 0, "processed": 0, "assigned": 0, "failed": 0,
+    "started_at": None, "completed_at": None
+}
+
+PILLAR_MAP = {
+    "adopt": ["adoption_folder", "welcome_kit", "breed_checklist", "starter_kit"],
+    "care": ["care_guide", "grooming_apron", "grooming_pouch", "pet_journal", "pet_robe",
+             "pet_towel", "first_bed", "crate_mat", "cushion_cover", "room_sign", "blanket",
+             "collar_tag"],
+    "celebrate": ["bandana", "birthday_card", "cake_topper", "frame", "keychain", "mug",
+                  "milestone_book", "party_banner", "party_hat", "photo_props", "pupcake_set",
+                  "return_gift_pack", "tote_bag"],
+    "dine": ["bowl", "feeding_mat", "food_container", "lick_mat", "placemat", "treat_jar"],
+    "emergency": ["emergency_card", "emergency_pouch", "first_aid_kit", "medical_alert_tag", "id_tag"],
+    "farewell": ["keepsake_box", "memorial_candle", "memorial_ornament", "paw_print_frame",
+                 "paw_print_kit", "remembrance_card"],
+    "go": ["car_seat_protector", "car_sticker", "carrier_tag", "luggage_tag", "passport_holder",
+           "personalized_lead", "poop_bag_holder", "travel_bowl", "travel_pouch", "walking_set",
+           "welcome_mat"],
+    "learn": ["learning_cards", "training_kit", "training_log", "treat_pouch"],
+    "paperwork": ["document_holder", "medical_file", "pet_profile_book", "vaccine_folder"],
+    "play": ["activity_toy", "breed_plush", "enrichment_mat", "fetch_toy_set", "personalized_toy",
+             "play_bandana", "playdate_card", "rope_toy"],
+}
+
+
+def _guess_pillar(product_type: str, name: str = "") -> tuple:
+    """Guess pillar from product_type using the mapping. Returns (pillar, pillars_list)."""
+    pt = product_type.lower().strip()
+    for pillar, types in PILLAR_MAP.items():
+        if pt in types:
+            return pillar, [pillar]
+    
+    # Fallback: keyword matching in name
+    name_lower = (name or "").lower()
+    keyword_map = {
+        "farewell": ["memorial", "remembrance", "keepsake", "paw print"],
+        "celebrate": ["birthday", "party", "cake", "celebration"],
+        "care": ["groom", "towel", "robe", "bed", "cushion", "blanket"],
+        "dine": ["bowl", "food", "treat", "feeding", "meal"],
+        "go": ["travel", "car", "luggage", "passport", "walk"],
+        "play": ["toy", "play", "fetch", "rope", "plush"],
+        "learn": ["train", "learn", "flash"],
+        "emergency": ["emergency", "first aid", "medical alert"],
+        "adopt": ["adopt", "welcome", "starter"],
+        "paperwork": ["document", "vaccine", "medical file", "profile book"],
+    }
+    for pillar, keywords in keyword_map.items():
+        for kw in keywords:
+            if kw in name_lower or kw in pt:
+                return pillar, [pillar]
+    
+    return "shop", ["shop"]
+
+
+async def _auto_assign_pillars_background(db, use_ai: bool = True):
+    """Background task: auto-assign pillars to products that don't have one."""
+    global _pillar_assign_status
+    _pillar_assign_status = {
+        "running": True, "total": 0, "processed": 0, "assigned": 0, "failed": 0,
+        "started_at": datetime.utcnow().isoformat(), "completed_at": None
+    }
+    
+    try:
+        # Find products without pillar
+        query = {"$or": [
+            {"pillar": {"$exists": False}}, {"pillar": None}, {"pillar": ""}
+        ]}
+        products = await db.breed_products.find(query).to_list(2000)
+        _pillar_assign_status["total"] = len(products)
+        
+        logger.info(f"[PILLAR-ASSIGN] Found {len(products)} products without pillar")
+        
+        for i, product in enumerate(products):
+            _pillar_assign_status["processed"] = i + 1
+            try:
+                pt = product.get("product_type", "")
+                name = product.get("name", "")
+                pillar, pillars = _guess_pillar(pt, name)
+                
+                await db.breed_products.update_one(
+                    {"_id": product["_id"]},
+                    {"$set": {"pillar": pillar, "pillars": pillars, "updated_at": datetime.utcnow().isoformat()}}
+                )
+                _pillar_assign_status["assigned"] += 1
+            except Exception as e:
+                logger.error(f"[PILLAR-ASSIGN] Error: {e}")
+                _pillar_assign_status["failed"] += 1
+        
+        _pillar_assign_status["completed_at"] = datetime.utcnow().isoformat()
+        logger.info(f"[PILLAR-ASSIGN] Done: {_pillar_assign_status['assigned']} assigned, {_pillar_assign_status['failed']} failed")
+    except Exception as e:
+        logger.error(f"[PILLAR-ASSIGN] Background error: {e}")
+    finally:
+        _pillar_assign_status["running"] = False
+
+
+@router.post("/auto-assign-pillars")
+async def auto_assign_pillars(background_tasks: BackgroundTasks):
+    """Auto-assign pillars to all products that are missing them. Runs in background."""
+    global _pillar_assign_status
+    if _pillar_assign_status["running"]:
+        return {"message": "Already running", "status": _pillar_assign_status}
+    
+    db = get_db()
+    pending = await db.breed_products.count_documents({
+        "$or": [{"pillar": {"$exists": False}}, {"pillar": None}, {"pillar": ""}]
+    })
+    
+    if pending == 0:
+        return {"message": "All products already have pillars assigned", "pending": 0}
+    
+    background_tasks.add_task(_auto_assign_pillars_background, db)
+    return {"message": f"Auto-assigning pillars for {pending} products in background", "pending": pending}
+
+
+@router.get("/pillar-assign-status")
+async def get_pillar_assign_status():
+    """Get status of background pillar assignment."""
+    return _pillar_assign_status
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# AI MOCKUP IMAGE GENERATION FOR NEW PRODUCT TYPES
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class GenerateProductMockupRequest(BaseModel):
+    product_type: str
+    breeds: Optional[List[str]] = None  # None = all breeds in DB
+    pillars: List[str] = []
+    price: Optional[int] = 0
+    name_template: str = "{breed} {product_type}"
+    description: str = ""
+
+_mockup_gen_status = {
+    "running": False, "total": 0, "generated": 0, "failed": 0,
+    "current": None, "started_at": None, "completed_at": None
+}
+
+
+def _build_mockup_prompt(breed: str, product_type: str, name: str) -> str:
+    """Build an AI image generation prompt for a product mockup."""
+    breed_display = breed.replace("_", " ").title()
+    pt_display = product_type.replace("_", " ").title()
+    
+    prompt_map = {
+        "mug": f"Professional product photography of a white ceramic coffee mug with a beautiful watercolor illustration of a {breed_display} dog printed on it. The mug is on a clean marble surface with soft studio lighting. The illustration shows the dog's face in soft watercolor style. Photorealistic product mockup.",
+        "bandana": f"Professional product photography of a dog bandana laid flat on a white surface. The bandana has a beautiful watercolor illustration of a {breed_display} dog printed on the fabric. Soft cotton material, triangle fold. Clean studio lighting. Product mockup.",
+        "frame": f"Professional product photo of a wooden picture frame with a beautiful watercolor portrait of a {breed_display} dog inside. The frame is on a shelf with soft lighting. Clean, elegant presentation. Product mockup.",
+        "keychain": f"Professional product photo of a metal keychain with a {breed_display} dog breed silhouette design. The keychain is photographed on a clean white surface with studio lighting. Detailed engraving visible. Product mockup.",
+        "tote_bag": f"Professional product photo of a canvas tote bag with a watercolor illustration of a {breed_display} dog printed on it. The bag is displayed flat on a white background. Clean studio lighting. Product mockup.",
+        "bowl": f"Professional product photo of a ceramic pet food bowl with a {breed_display} dog illustration on the outer rim. The bowl is on a clean surface. Product mockup with studio lighting.",
+        "blanket": f"Professional product photo of a cozy pet blanket with a watercolor {breed_display} dog pattern printed on soft fleece fabric. Folded neatly on a wooden surface. Product mockup.",
+        "cake_topper": f"Professional product photo of a wooden birthday cake topper with a {breed_display} dog silhouette laser-cut design. Photographed on a white cake. Product mockup.",
+        "collar_tag": f"Professional product photo of a stainless steel dog ID tag engraved with a {breed_display} dog silhouette and the name 'Buddy'. Photographed on a clean surface. Product mockup.",
+        "memorial_candle": f"Professional product photo of an elegant white memorial candle in a glass jar with a watercolor {breed_display} dog illustration on the label. Soft warm lighting. Product mockup.",
+        "treat_jar": f"Professional product photo of a ceramic treat jar with a {breed_display} dog illustration and the word 'Treats' on it. On a kitchen counter. Product mockup.",
+        "party_hat": f"Professional product photo of a cute birthday party hat for dogs with a {breed_display} dog illustration printed on it. Colorful, festive. Product mockup.",
+    }
+    
+    base = prompt_map.get(product_type)
+    if not base:
+        base = f"Professional product photography of a {pt_display} featuring a beautiful watercolor illustration of a {breed_display} dog. The product is displayed on a clean surface with soft studio lighting. High-quality photorealistic product mockup."
+    
+    return base
+
+
+async def _generate_mockups_for_type(db, product_type: str, breeds: List[str], pillars: List[str], price: int, name_template: str, description: str):
+    """Background: generate AI mockup images for a product type across breeds."""
+    global _mockup_gen_status
+    _mockup_gen_status = {
+        "running": True, "total": len(breeds), "generated": 0, "failed": 0,
+        "current": None, "started_at": datetime.utcnow().isoformat(), "completed_at": None
+    }
+    
+    try:
+        for i, breed in enumerate(breeds):
+            if not _mockup_gen_status["running"]:
+                break
+            
+            product_id = f"bp-{breed}-{product_type}"
+            display_name = name_template.replace("{breed}", breed.replace("_", " ").title()).replace("{product_type}", product_type.replace("_", " ").title())
+            _mockup_gen_status["current"] = f"{display_name} ({i+1}/{len(breeds)})"
+            
+            try:
+                prompt = _build_mockup_prompt(breed, product_type, display_name)
+                slug = f"breed-{breed}-{product_type}"
+                
+                mockup_url = await _generate_mockup_image(prompt, slug, breed)
+                
+                if mockup_url:
+                    pillar = pillars[0] if pillars else _guess_pillar(product_type, display_name)[0]
+                    await db.breed_products.update_one(
+                        {"breed": breed, "product_type": product_type},
+                        {"$set": {
+                            "id": product_id,
+                            "name": display_name,
+                            "product_type": product_type,
+                            "breed": breed,
+                            "pillar": pillar,
+                            "pillars": pillars if pillars else [pillar],
+                            "price": price,
+                            "description": description or f"Beautiful {display_name} featuring soulful watercolor breed illustration.",
+                            "mockup_url": mockup_url,
+                            "cloudinary_url": mockup_url if mockup_url.startswith("http") else None,
+                            "image_url": mockup_url,
+                            "is_mockup": True,
+                            "is_active": True,
+                            "active": True,
+                            "mockup_generated_at": datetime.utcnow().isoformat(),
+                            "updated_at": datetime.utcnow().isoformat(),
+                        },
+                        "$setOnInsert": {"created_at": datetime.utcnow().isoformat()}},
+                        upsert=True
+                    )
+                    _mockup_gen_status["generated"] += 1
+                    logger.info(f"[MOCKUP-GEN] Generated {slug}")
+                else:
+                    _mockup_gen_status["failed"] += 1
+                    logger.warning(f"[MOCKUP-GEN] Failed {slug}")
+                
+                await asyncio.sleep(3)  # Rate limit
+                
+            except Exception as e:
+                logger.error(f"[MOCKUP-GEN] Error for {breed}/{product_type}: {e}")
+                _mockup_gen_status["failed"] += 1
+        
+        _mockup_gen_status["completed_at"] = datetime.utcnow().isoformat()
+        logger.info(f"[MOCKUP-GEN] Complete: {_mockup_gen_status['generated']} generated, {_mockup_gen_status['failed']} failed")
+    except Exception as e:
+        logger.error(f"[MOCKUP-GEN] Background error: {e}")
+    finally:
+        _mockup_gen_status["running"] = False
+        _mockup_gen_status["current"] = None
+
+
+@router.post("/generate-product-type")
+async def generate_mockups_for_product_type(request: GenerateProductMockupRequest, background_tasks: BackgroundTasks):
+    """Generate AI mockup images for a product type across selected breeds. Runs in background."""
+    global _mockup_gen_status
+    if _mockup_gen_status["running"]:
+        return {"message": "Generation already running", "status": _mockup_gen_status}
+    
+    db = get_db()
+    
+    if request.breeds:
+        breeds = request.breeds
+    else:
+        breeds = await db.breed_products.distinct("breed")
+        breeds = [b for b in breeds if b and b != "all"]
+    
+    if not breeds:
+        return {"message": "No breeds found", "breeds": 0}
+    
+    background_tasks.add_task(
+        _generate_mockups_for_type, db,
+        request.product_type.lower().strip(),
+        breeds, request.pillars, request.price or 0,
+        request.name_template, request.description
+    )
+    
+    return {
+        "message": f"Generating mockups for {request.product_type} across {len(breeds)} breeds",
+        "breeds": len(breeds),
+        "product_type": request.product_type,
+        "check_status": "/api/mockups/mockup-gen-status"
+    }
+
+
+@router.get("/mockup-gen-status")
+async def get_mockup_gen_status():
+    """Get status of product type mockup generation."""
+    return _mockup_gen_status
+
+
+@router.post("/stop-mockup-gen")
+async def stop_mockup_gen():
+    """Stop background mockup generation."""
+    global _mockup_gen_status
+    if not _mockup_gen_status["running"]:
+        return {"message": "No generation in progress"}
+    _mockup_gen_status["running"] = False
+    return {"message": "Generation will stop after current item"}

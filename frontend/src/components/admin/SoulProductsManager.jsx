@@ -111,9 +111,12 @@ const SoulProductsManager = () => {
   const [newTypeModal, setNewTypeModal] = useState(false);
   const [newTypeData, setNewTypeData] = useState({
     product_type: '', name_template: '{breed} {product_type}',
-    price: 0, pillars: [], breeds: 'all', description: ''
+    price: 0, pillars: [], breeds: 'all', description: '', generate_mockups: false
   });
   const [creatingType, setCreatingType] = useState(false);
+
+  // AI Mockup Generation status
+  const [mockupGenStatus, setMockupGenStatus] = useState(null);
 
   // Cloud storage state
   const [cloudStatus, setCloudStatus] = useState(null);
@@ -339,6 +342,7 @@ const SoulProductsManager = () => {
     }
     setCreatingType(true);
     try {
+      // Step 1: Seed the product entries across breeds
       const res = await fetch(`${API_URL}/api/admin/breed-products/seed-type`, {
         method: 'POST', headers: AUTH_HEADER,
         body: JSON.stringify(newTypeData)
@@ -346,12 +350,54 @@ const SoulProductsManager = () => {
       const data = await res.json();
       if (data.success) {
         toast({ title: `Created ${data.seeded} new products across ${data.total_breeds} breeds!` });
+
+        // Step 2: If generate_mockups is checked, trigger AI image generation
+        if (newTypeData.generate_mockups) {
+          try {
+            const genRes = await fetch(`${API_URL}/api/mockups/generate-product-type`, {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                product_type: newTypeData.product_type,
+                breeds: newTypeData.breeds === 'all' ? null : [newTypeData.breeds],
+                pillars: newTypeData.pillars,
+                price: newTypeData.price,
+                name_template: newTypeData.name_template,
+                description: newTypeData.description
+              })
+            });
+            const genData = await genRes.json();
+            toast({ title: `AI mockup generation started for ${genData.breeds} breeds`, description: 'This runs in the background. Check status in the AI Mockups tab.' });
+            pollMockupGenStatus();
+          } catch (e) {
+            toast({ title: 'Seeded but mockup generation failed', description: e.message, variant: 'destructive' });
+          }
+        }
+
         setNewTypeModal(false);
-        setNewTypeData({ product_type:'', name_template:'{breed} {product_type}', price:0, pillars:[], breeds:'all', description:'' });
+        setNewTypeData({ product_type:'', name_template:'{breed} {product_type}', price:0, pillars:[], breeds:'all', description:'', generate_mockups: false });
         fetchMockupStats();
       } else throw new Error(data.error || 'Failed');
     } catch (e) { toast({ title: e.message, variant: 'destructive' }); }
     setCreatingType(false);
+  };
+
+  // Poll mockup generation status
+  const pollMockupGenStatus = () => {
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/mockups/mockup-gen-status`);
+        if (res.ok) {
+          const status = await res.json();
+          setMockupGenStatus(status);
+          if (!status.running && status.completed_at) {
+            clearInterval(interval);
+            fetchMockupStats();
+            toast({ title: 'AI Mockup Generation Complete', description: `Generated ${status.generated} mockups (${status.failed} failed)` });
+          }
+        }
+      } catch {}
+    }, 5000);
+    setTimeout(() => clearInterval(interval), 60 * 60 * 1000);
   };
 
   // Fetch products
@@ -1366,6 +1412,32 @@ const SoulProductsManager = () => {
               </div>
             )}
 
+            {/* New Product Type Mockup Generation Status */}
+            {mockupGenStatus?.running && (
+              <div className="mb-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-purple-800 flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    AI Mockup Image Generation
+                  </span>
+                  <Button size="sm" variant="outline" onClick={async () => {
+                    await fetch(`${API_URL}/api/mockups/stop-mockup-gen`, { method: 'POST' });
+                    toast({ title: 'Stopping generation...' });
+                  }}>
+                    <Square className="w-3 h-3 mr-1" /> Stop
+                  </Button>
+                </div>
+                <div className="w-full bg-purple-200 rounded-full h-2">
+                  <div className="bg-purple-600 h-2 rounded-full transition-all"
+                    style={{ width: `${mockupGenStatus.total > 0 ? (mockupGenStatus.generated + mockupGenStatus.failed) / mockupGenStatus.total * 100 : 0}%` }}/>
+                </div>
+                <div className="flex justify-between text-xs text-purple-700 mt-1">
+                  <span>{mockupGenStatus.current || 'Processing...'}</span>
+                  <span>Done: {mockupGenStatus.generated} | Failed: {mockupGenStatus.failed} / {mockupGenStatus.total}</span>
+                </div>
+              </div>
+            )}
+
             {/* Controls */}
             <div className="grid grid-cols-4 gap-4 mb-4">
               <div>
@@ -1654,7 +1726,7 @@ const SoulProductsManager = () => {
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle className="flex items-center gap-2"><Plus className="w-4 h-4 text-purple-600"/>Create New Product Type</DialogTitle></DialogHeader>
           <div className="space-y-4 py-2">
-            <p className="text-sm text-gray-500">This will seed the new product type across selected breeds, ready for AI mockup generation.</p>
+            <p className="text-sm text-gray-500">This will seed the new product type across selected breeds. Optionally generate AI mockup images.</p>
             <div>
               <Label className="text-xs">Product Type ID (snake_case)</Label>
               <Input placeholder="e.g. rain_jacket" value={newTypeData.product_type} className="mt-1 text-sm"
@@ -1699,13 +1771,39 @@ const SoulProductsManager = () => {
                 ))}
               </select>
             </div>
+            <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={newTypeData.generate_mockups}
+                  onChange={e => setNewTypeData(d => ({...d, generate_mockups: e.target.checked}))}
+                  className="rounded border-purple-300 text-purple-600 focus:ring-purple-500"/>
+                <div>
+                  <span className="text-sm font-medium text-purple-800">Generate AI Mockup Images</span>
+                  <p className="text-xs text-purple-600 mt-0.5">AI will create professional product mockups for each breed. Runs in background.</p>
+                </div>
+              </label>
+            </div>
+
+            {/* Mockup generation status */}
+            {mockupGenStatus?.running && (
+              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-center gap-2 mb-1">
+                  <Loader2 className="w-3 h-3 animate-spin text-blue-600"/>
+                  <span className="text-xs font-medium text-blue-800">Generating mockups...</span>
+                </div>
+                <div className="w-full bg-blue-200 rounded-full h-1.5">
+                  <div className="bg-blue-600 h-1.5 rounded-full transition-all"
+                    style={{ width: `${mockupGenStatus.total > 0 ? (mockupGenStatus.generated + mockupGenStatus.failed) / mockupGenStatus.total * 100 : 0}%` }}/>
+                </div>
+                <p className="text-xs text-blue-600 mt-1">{mockupGenStatus.current || `${mockupGenStatus.generated}/${mockupGenStatus.total} done`}</p>
+              </div>
+            )}
           </div>
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setNewTypeModal(false)}>Cancel</Button>
             <Button onClick={createNewProductType} disabled={creatingType||!newTypeData.product_type||newTypeData.pillars.length===0}
               className="bg-purple-600 hover:bg-purple-700">
               {creatingType ? <Loader2 className="w-4 h-4 mr-2 animate-spin"/> : <Sparkles className="w-4 h-4 mr-2"/>}
-              Seed Across Breeds
+              {newTypeData.generate_mockups ? 'Create & Generate' : 'Seed Across Breeds'}
             </Button>
           </DialogFooter>
         </DialogContent>
