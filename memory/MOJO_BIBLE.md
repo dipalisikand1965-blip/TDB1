@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://concierge-platform-4.preview.emergentagent.com
+https://mockup-manager.preview.emergentagent.com
 ```
 
 ---

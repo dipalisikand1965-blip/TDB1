@@ -296,4 +296,4 @@ Password: test123
 
 **Audit Status:** COMPLETE
 **Generated:** February 9, 2026
-**Preview URL:** https://concierge-platform-4.preview.emergentagent.com
+**Preview URL:** https://mockup-manager.preview.emergentagent.com
