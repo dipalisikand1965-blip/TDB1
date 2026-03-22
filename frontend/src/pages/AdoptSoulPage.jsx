@@ -145,6 +145,7 @@ function AdoptProfile({ pet, token }) {
 function MiraPicksSection({ pet }) {
   const [picks, setPicks]               = useState([]);
   const [picksLoading, setPicksLoading] = useState(true);
+  const [selPick, setSelPick]           = useState(null);
   const { token } = useAuth();
   const petName = "your future dog"; const breed = "";
   const { note, orderCount, topInterest } = useMiraIntelligence(pet?.id, token);
@@ -168,6 +169,8 @@ function MiraPicksSection({ pet }) {
       <p style={{fontSize:13,color:"#888",marginBottom:16}}>{subtitle}</p>
       {!picksLoading&&picks.length===0&&<div style={{display:"flex",gap:12,overflowX:"auto",paddingBottom:8,scrollbarWidth:"none"}}>{imagines.map(item=><MiraImaginesCard key={item.id} item={item} pet={pet} token={token} pillar="adopt"/>)}</div>}
       {picksLoading&&<div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 0",color:G.mutedText}}><Loader2 size={14} style={{animation:"spin 1s linear infinite",color:G.rose}}/><span style={{fontSize:12}}>Mira is preparing adoption picks…</span></div>}
+      {!picksLoading&&picks.length>0&&(<div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}}>{picks.map((pick,i)=>{const score=pick.mira_score||0;const col=score>=80?"#16A34A":score>=70?G.rose:"#6B7280";const img=[pick.image_url,pick.image].find(u=>u&&u.startsWith("http"))||null;return<div key={i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer"}} onClick={()=>setSelPick(pick)} onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e=>e.currentTarget.style.transform=""}><div style={{width:"100%",height:130,background:G.pale,overflow:"hidden"}}>{img?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>:<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${G.deep},${G.rose})`,color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,18)}</div>}</div><div style={{padding:"10px 11px 12px"}}><div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||"—"}</div><div style={{display:"flex",alignItems:"center",gap:5}}><div style={{flex:1,height:4,background:G.pale,borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:col,borderRadius:4}}/></div><span style={{fontSize:10,fontWeight:800,color:col,minWidth:26}}>{score}</span></div></div></div>;})})</div>)}
+      {selPick&&<ProductDetailModal product={selPick} pillar="adopt" selectedPet={pet} onClose={()=>setSelPick(null)}/>}
     </section>
   );
 }
