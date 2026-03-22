@@ -952,7 +952,7 @@ const FitPage = () => {
       {(activePet || userPets?.[0]) && (
         <div className="max-w-6xl mx-auto px-4 mb-8">
           <SoulMadeCollection
-            pillar="fit"
+            pillar="play"
             maxItems={8}
             showTitle={true}
           />
