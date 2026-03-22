@@ -888,11 +888,11 @@ const FarewellPage = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Memorial Keepsakes</h2>
             <p className="text-gray-600">Beautiful ways to preserve the memory of your beloved companion</p>
           </div>
-          <SoulMadeCollection
+          {/* {/* <SoulMadeCollection
             pillar="farewell"
             maxItems={12}
             showTitle={false}
-          />
+          /> */} */}
         </div>
       </section>
 
@@ -901,7 +901,7 @@ const FarewellPage = () => {
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <section className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
-          <CuratedBundles pillar="farewell" showTitle={true} />
+          <CuratedBundles pillar="farewell" showTitle={true} /> */}
         </div>
       </section>
 

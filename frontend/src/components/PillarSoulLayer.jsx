@@ -1,7 +1,7 @@
 import React from 'react';
 import { Badge } from './ui/badge';
 import PersonalizedPicks from './PersonalizedPicks';
-import SoulMadeCollection from './SoulMadeCollection';
+// import SoulMadeCollection from './SoulMadeCollection';
 import PillarPicksSection from './PillarPicksSection';
 
 export const PillarSoulLayer = ({
@@ -11,7 +11,7 @@ export const PillarSoulLayer = ({
   subtitle,
   showSoulMade = false,
   maxProducts = 6,
-  maxSoulMadeItems = 8,
+  // maxSoulMadeItems = 8,
 }) => {
   if (!activePet) return null;
 
@@ -35,11 +35,12 @@ export const PillarSoulLayer = ({
 
         <PersonalizedPicks pillar={pillar} maxProducts={maxProducts} />
 
-        {showSoulMade && (
+        {/* SoulMadeCollection disabled — portraits issue, uncomment to re-enable */}
+        {/* {showSoulMade && (
           <div className="rounded-3xl border border-slate-100 bg-white p-4 sm:p-6">
             <SoulMadeCollection pillar={pillar} maxItems={maxSoulMadeItems} showTitle={true} />
           </div>
-        )}
+        )} */}
 
         <PillarPicksSection pillar={pillar} pet={activePet} />
       </div>

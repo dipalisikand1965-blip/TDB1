@@ -650,11 +650,11 @@ const EnjoyPage = () => {
             ═══════════════════════════════════════════════════════════════════════ */}
         {userPets && userPets[0] && (
           <div className="max-w-6xl mx-auto px-4 mb-8">
-            <SoulMadeCollection
+            {/* {/* <SoulMadeCollection
               pillar="play"
               maxItems={8}
               showTitle={true}
-            />
+            /> */} */}
           </div>
         )}
 
@@ -676,14 +676,14 @@ const EnjoyPage = () => {
         {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
         {/* ═══════════════════════════════════════════════════════════════════════ */}
         <div className="max-w-6xl mx-auto px-4 mb-8">
-          <ArchetypeProducts pillar="enjoy" maxProducts={8} showTitle={true} />
+          <ArchetypeProducts pillar="enjoy" maxProducts={8} showTitle={true} /> */}
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════════ */}
         {/* CURATED BUNDLES - Save with handpicked combinations */}
         {/* ═══════════════════════════════════════════════════════════════════════ */}
         <div className="max-w-6xl mx-auto px-4 mb-8">
-          <CuratedBundles pillar="enjoy" showTitle={true} />
+          <CuratedBundles pillar="enjoy" showTitle={true} /> */}
         </div>
         
         {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}

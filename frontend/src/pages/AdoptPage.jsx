@@ -1052,7 +1052,7 @@ const AdoptPage = () => {
             <PersonalizedPicks pillar="adopt" maxProducts={6} />
 
             <div className="rounded-3xl border border-orange-100 bg-white p-4 sm:p-6">
-              <SoulMadeCollection pillar="adopt" maxItems={8} showTitle={true} />
+              {/* <SoulMadeCollection pillar="adopt" maxItems={8} showTitle={true} /> */}
             </div>
 
             <BreedSmartRecommendations pillar="adopt" />
@@ -1083,7 +1083,7 @@ const AdoptPage = () => {
           ═══════════════════════════════════════════════════════════════════════════ */}
       <section className="py-8 px-4 bg-gradient-to-b from-green-50 to-white">
         <div className="max-w-6xl mx-auto">
-          <CuratedBundles pillar="adopt" showTitle={true} />
+          <CuratedBundles pillar="adopt" showTitle={true} /> */}
         </div>
       </section>
 
