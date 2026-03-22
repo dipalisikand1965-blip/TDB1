@@ -528,9 +528,6 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook, o
       {dimTab==="advisory" && (
         <div style={{padding:"12px 16px 20px"}}>
           <PersonalisedBreedSection pet={pet} pillar="paperwork"/>
-          <div style={{borderTop:"1px solid #f0f0f0",marginTop:16,paddingTop:16}}>
-            <SoulMadeCollection pillar="paperwork" maxItems={4} showTitle={true}/>
-          </div>
         </div>
       )}
     </div>
