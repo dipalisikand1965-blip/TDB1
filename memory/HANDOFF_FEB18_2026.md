@@ -304,7 +304,7 @@ Test Pets:
 ## Services
 - Backend: Running on port 8001
 - Frontend: Running on port 3000
-- Preview URL: https://mockup-manager.preview.emergentagent.com
+- Preview URL: https://custom-order-desk-1.preview.emergentagent.com
 
 ---
 
