@@ -1,144 +1,132 @@
-# The Doggy Company — Pet Life OS
-## Product Requirements Document
+# The Doggy Company — Pet Life OS — PRD
 
-### Original Problem Statement
-Build a robust, architecturally consistent, and highly performant Pet Life OS platform for soft launch. Specifically:
-1. Universal Intent-to-Ticket Flow across all 12 pillars via useConcierge.js and tdc_intent.js
-2. Health Vault & Intelligence Loop integration
-3. Omnichannel Admin Comms (WhatsApp + Email)
+## Original Problem Statement
+Build a universal, soulful platform for dog parents: **The Doggy Company's Pet Life OS**. A cohesive system spanning adoption, care, celebration, dining, learning, play, emergency, paperwork, farewell, and travel — powered by AI (Mira) and concierge services.
 
-### Core Architecture
-- **Frontend**: React + Tailwind + Shadcn/UI  
-- **Backend**: FastAPI + MongoDB  
-- **3rd Party**: OpenAI/Claude (Emergent LLM Key), Cloudinary, Razorpay, Gupshup (WhatsApp), Resend (Email)
+**Session Focus:** CSV pillar import, AI mockup generation, Custom Order WOW feature.
 
-### What's Been Implemented
+---
 
-#### Session: March 22, 2026 (Fork 2)
+## Core Architecture
+```
+/app
+├── backend/
+│   ├── server.py                            # Main app (24K+ lines)
+│   ├── breed_catalogue.py                   # Breed product fetching
+│   └── app/api/
+│       ├── mockup_routes.py                 # AI mockup generation + auto-assign pillars
+│       ├── custom_order_routes.py           # Custom Order + Photo Upload (NEW)
+│       └── bundle_routes.py                 # Product bundles
+└── frontend/
+    ├── src/
+    │   ├── components/
+    │   │   ├── admin/SoulProductsManager.jsx  # AI Mockups admin (CRUD, CSV, Generation)
+    │   │   ├── celebrate/
+    │   │   │   ├── CelebrateContentModal.jsx  # Soul Picks modal
+    │   │   │   ├── CustomOrderFlow.jsx        # Custom Order WOW feature (NEW)
+    │   │   │   └── ProductDetailModal.jsx     # Product detail with Customise btn
+    │   │   └── ProductCard.jsx                # Universal product card with CustomOrder
+    │   └── pages/
+    │       ├── ShopSoulPage.jsx               # Load More pagination
+    │       └── [Pillar]SoulPage.jsx           # Tabbed products per pillar
+```
 
-**1. Member Inbox Redesign (/notifications) — COMPLETE ✅**
-- Outlook-style unified inbox replacing old messy notification list
-- 3 collapsible sections: "Waiting on You" (amber), "Active" (green), "Resolved" (gray, collapsed)
-- Desktop: 380px left ticket list + right TicketThread split panel
-- Mobile: full-width list, tap → full-screen thread
-- Warm cream (#F5F2EC) theme, no purple gradients
-- Smart message preview (shows actual conversation, filters out Mira briefings)
-- Deduplication, search, refresh, unread pink dots
-- TicketThread: light theme in split mode, dark in standalone
-- Files: `NotificationsInbox.jsx`, `TicketThread.jsx`
-- Testing: 18/18 tests passed (iteration_186.json)
+---
 
-**2. Soul Products Image Mapping — COMPLETE ✅**
-- Mapped `mockup_url` → `cloudinary_url` for 3,070 breed products
-- Was: 0 cloudinary_url → Now: 3,305 active products with images
-- Frontend pillar pages now show breed-specific AI products with images
-- Verified: /play page shows "Soul Play - Personalised for Mojo" with mockups
+## What's Been Implemented
 
-**3. Breed Name Normalization — COMPLETE ✅**
-- Merged 93 → 51 unique breed names
-- Normalized: Title Case → lowercase, spaces → underscores
-- Merged variants: "Labrador Retriever" → "labrador", "Cavalier King Charles Spaniel" → "cavalier"
+### Session: Mar 22, 2026
+1. **CSV Pillar Import (2,409 products)** — DONE
+   - Imported user-provided CSV mapping all products to pillars
+   - Admin can re-import via `POST /api/admin/breed-products/import`
+   - All 3,826 breed_products now have `pillar` and `pillars` fields assigned
+   - Frontend shows products breed-wise under correct pillar pages
 
-**4. Pillar Name Migration — COMPLETE ✅**
-- enjoy → play, fit → play, travel → go, stay → go
-- food → dine, memory → farewell, adventure → go
-- Updated both `pillar` (singular) and `pillars` (array) fields
-- Deduplicated array values after migration
-- No old pillar names remain
+2. **AI Auto-Assign Pillars** — DONE
+   - Built rule-based + keyword matching for auto-assigning pillars
+   - Endpoint: `POST /api/mockups/auto-assign-pillars` (background)
+   - Status: `GET /api/mockups/pillar-assign-status`
+   - All products now have pillars (0 remaining without)
 
-**5. Dynamic Category Dropdowns (ProductBox) — COMPLETE ✅**
-- Replaced hardcoded MAIN_CATEGORIES with dynamic API fetch
-- Primary Category dropdown: fetches from `GET /api/admin/pillar-products/sub-categories?pillar=X`
-- Sub-Category dropdown: dynamic select (was free-text input)
-- Category filter tabs on product list: dynamic chips from DB
-- Bulk operations category dropdown: also dynamic
-- Celebrate pillar shows 42 categories, Play shows 14, etc.
+3. **AI Mockup Generation for New Product Types** — DONE
+   - Admin "New Product Type" wired to generate AI images via GPT Image
+   - Endpoint: `POST /api/mockups/generate-product-type` (background)
+   - Generates professional mockup images per breed per product type
+   - Status polling + stop functionality
+   - Progress bar in Admin UI
 
-#### Previous Sessions (Completed)
-- Universal Concierge Audit & Wiring (all 12 pillars)
-- Pet Health Vault Rebuild (/pet-vault/:petId)
-- Health Reminder System (WhatsApp + Email)
-- Intelligent Service Desk (Vault data → tickets)
-- Two-Way WhatsApp Threading
-- Master Sync Re-enabled
-- Mira Picks Pagination
+4. **Custom Order + Photo Delivery (WOW Feature)** — DONE
+   - Multi-step custom order flow: Preview → Upload Photo → Personalise → Confirm
+   - Photo upload to Cloudinary (quality:100, max 10MB, JPG/PNG/HEIC)
+   - Creates Service Desk ticket with full context (photos, notes, product ref, pet profile)
+   - Admin sees everything needed to send to printer/baker
+   - Concierge pricing (no upfront cost, admin shares price offline)
+   - Delivery estimate matrix by product type
+   - "Customise with [Pet]'s Photo" button in every Soul product detail modal
+   - Backend: `POST /api/custom-orders`, `GET /api/custom-orders`, `PATCH /api/custom-orders/{id}/status`
 
-### Database Backups
-- 30 commerce collections backed up on 2026-03-22
-- Backup suffix: `*_backup_20260322`
-- Collections: products_master, breed_products, unified_products, services_master, bundles, etc.
+### Previous Sessions (Summary)
+- Watercolour portrait filtering (`is_mockup` logic)
+- SoulMadeCollection carousels removed from tabbed pages
+- Admin CSV exports with filters
+- Breed Products CRUD tab
+- `sub_category` auto-mapping for 4,071 products
+- `is_active` → `active` DB migration (3,600+ products exposed)
+- Load More pagination for Soul Products
+- Emergency/Farewell/Adopt pillar product clicks + concierge tickets
 
-### Prioritized Backlog
+---
 
-**Session: March 22, 2026 (Fork 3) — COMPLETE ✅**
+## Key Technical Concepts
+- **Image Filtering (`is_mockup`)**: Legitimate mockups have URLs starting with `breed-`. Portraits start with `soul-` or `bp-`.
+- **Pillar Field**: `pillar` (primary), `pillars` (array, for multi-pillar products). All endpoints filter using `pillars` with `$in`.
+- **Custom Orders**: Creates entry in `custom_orders` + `service_desk_tickets` collections. Photos stored permanently on Cloudinary.
 
-**6. EMOTIONAL_COLLECTIONS Pillar Alignment — COMPLETE ✅**
-- Replaced old `stay`/`travel` keys with `play`/`go`/`learn`/`shop`/`emergency`/`adopt`/`advisory`/`default`
-- Pillar pages (Play, Go, Dine, Farewell) now show correct section names & emojis
-- Added safe `exclude?.length` check; new `default` fallback replaces old `celebrate` fallback
+---
 
-**7. Shop Breed Collection — Load More Pagination — COMPLETE ✅**
-- BreedCollectionSection refactored with skip-based pagination (12 per page)
-- Uses `cloudinary_url || mockup_url` for images (shows actual Cloudinary mockups)
-- "Load more for {petName} →" button; filter by type (Bandana, Mug, Frame, etc.)
-- All 3,305+ breed products now browsable from /shop
+## Key API Endpoints
+- `GET /api/mockups/breed-products?breed={breed}&pillar={pillar}` — Soul Products
+- `POST /api/admin/breed-products/import` — CSV re-import
+- `POST /api/mockups/generate-product-type` — AI mockup generation
+- `POST /api/mockups/auto-assign-pillars` — Auto-assign pillars
+- `POST /api/custom-orders` — Create custom order
+- `POST /api/custom-orders/upload-photo` — Upload pet photo
+- `GET /api/custom-orders` — List orders
+- `PATCH /api/custom-orders/{order_id}/status` — Update order status
 
-**8. Empty-Breed Products Tagged — COMPLETE ✅**
-- 660 products with empty breed field → tagged as `breed="all"`
-- Backend `/api/admin/breed-products` and `/api/mockups/breed-products` now include `breed="all"` products in $or queries
-- Total visible soul products: 3,305 + 660 = 3,965
+---
 
-**P1 — In Progress**
-- [ ] Multi-pillar product support (one product in multiple pillars with per-pillar categories)
-- [ ] Product type routing (service → ServiceBox, physical → ProductBox, bundle → Bundles)
-- [ ] Bundle curation admin (admin creates bundles from products)
+## DB Collections
+- `breed_products`: {breed, pillar, pillars[], product_type, mockup_url, cloudinary_url, is_mockup, is_active, active, name, price, sub_category, category}
+- `custom_orders`: {order_id, status, product{}, pet{}, customer{}, photo_urls[], personalisation_notes, special_text}
+- `service_desk_tickets`: {ticket_id, type, status, priority, subject, description, photo_urls[], order_id, tags[]}
 
-**P1 — Not Started**
-- [ ] DB Pillar Migration for products_master and unified_products (BLOCKED: needs user backup confirmation)
-- [ ] Activate inactive breeds: indian_spitz (25), labradoodle (25), maltipoo (25)
+---
 
-**P2 — Future**
-- [ ] "3 vets near you" in vaccine WhatsApp reminders
-- [ ] Medication refill reminders
-- [ ] Love pillar (13th pillar)
-- [ ] MiraDemoPage.jsx refactor (5,400+ lines)
-- [ ] Remove "Skip Payment" from onboarding
-- [ ] WhatsApp "BOOK" keyword handler
-- [ ] Admin pillar name pills update (Stay→Go, Travel→Go, Enjoy→Play, Fit→Play)
+## Prioritized Backlog
 
-### Test Credentials
+### P1 (Upcoming)
+- Admin: "Generate All Pending for Breed" button to batch-generate remaining 756 pending products
+- Add "3 vets near you" context to daily health WhatsApp reminders
+
+### P2 (Future)
+- Build the `Love` pillar
+- Extend scheduler for Medication refill reminders
+- Refactor MiraDemoPage.jsx (5,400+ lines)
+- Refactor server.py (24K+ lines)
+- Remove "Skip Payment" from onboarding
+- WhatsApp "BOOK" keyword handler
+- Activate inactive breeds: indian_spitz, labradoodle, maltipoo
+
+---
+
+## 3rd Party Integrations
+- OpenAI GPT-4o / Claude Sonnet (Emergent LLM Key)
+- Cloudinary (Images) — User API Key
+- Razorpay (Payments) — User API Key
+- Gupshup (WhatsApp) — User API Key
+- Resend (Email) — User API Key
+
+## Credentials
 - User: `dipali@clubconcierge.in` / `test123`
-- Admin: `aditya` / `lola4304`
-- Admin portal: `/admin`
-
-## Session: March 22, 2026 (Fork 4) — COMPLETE ✅
-
-### Completed this session:
-
-**Soul Product Fixes:**
-- EMOTIONAL_COLLECTIONS updated with all 14 pillar keys (play, go, etc.)
-- Shop Breed Collection Load More pagination (12/page)
-- 660 empty-breed products tagged as breed="all"
-- is_active → active DB migration (3,305 products now visible)
-- FarewellSoulPage + AdoptSoulPage SoulMadeCollection added
-- ProductCard.jsx fix: strip breed prefix for breed="all" products
-- Farewell breed tab now fetches from breed_products collection
-- SoulMadeCollection removed from 7 pages (old design)
-- is_mockup field tagged on all 3,775 products (breed- prefix = True)
-- All breed product APIs default to is_mockup=True filter
-- PersonalizedBreedCollection + PersonalisedBreedSection URL safety filter
-- products_master sub_category: 4,071 → 0 missing (100% mapped)
-- Admin ProductBoxEditor: Auto-fill button + smart formula hint
-- FarewellSoulPage + AdoptSoulPage: product card onClick + modal
-
-**Admin Soul Products Manager:**
-- Export CSV button (filtered by breed/type/pillar/has_image)
-- Pending 705 CSV download button
-- Full CRUD Breed Products tab (table, edit, delete, paginated)
-- Import CSV modal (bulk upsert)
-- New Product Type creator (seeds across all/selected breeds)
-- Backend: PUT/DELETE/import/seed-type endpoints
-
-**Static CSVs available:**
-- /soul_mockups_clean.csv — 2,409 proper mockups
-- /soul_pending_705.csv — 706 pending products
+- Admin: `aditya` / `lola4304` (at `/admin`)
