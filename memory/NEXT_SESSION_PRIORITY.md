@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://concierge-platform-4.preview.emergentagent.com
+**Preview URL:** https://mockup-manager.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

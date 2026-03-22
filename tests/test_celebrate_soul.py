@@ -6,7 +6,7 @@ import asyncio
 from playwright.async_api import async_playwright
 import json
 
-BASE_URL = "https://concierge-platform-4.preview.emergentagent.com"
+BASE_URL = "https://mockup-manager.preview.emergentagent.com"
 BRUNO_PET_ID = "pet-bruno-7327ad58"
 
 
