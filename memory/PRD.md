@@ -51,16 +51,16 @@ Build a production-ready pet life management platform with 12 core pillars, AI c
 - **Tiers:** Based on percentage: Seedling → Sprout → Bloom → Soul Master
 - **Storage:** `doggy_soul_answers` dict on pet document, `overall_score` float
 
-### Session Mar 2026 — 5-Bug Fix + PillarSoulProfile Rebuild
-- **BUG 1 FIXED**: "What Mira Knows" tiles now use correct DB keys (age_stage, food_allergies, diet_type, etc.)
-- **BUG 2 FIXED**: Questions load from `/api/pet-soul/profile/{id}/quick-questions` API
-- **BUG 3 FIXED**: "Profile complete" only shows when score >= 80% AND all questions answered
-- **BUG 4 FIXED**: Score uses `Math.max(prev, newScore)` — never decreases on answer
-- **BUG 5 FIXED**: Pet switch closes modal + key prop forces remount with new pet data
-- **Concierge crash FIXED**: `petData` → `pet` in GoSoulPage MiraPicksSection, `generate_ticket_id()` + null check in mira_service_desk.py
-- **PillarSoulProfile rebuilt** with 3 sections: What Mira Knows (per-pillar tile maps), Breed tags, Questions from API
-- **SoulChapterModal rebuilt** with correct CHAPTER_QUESTIONS keys matching actual DB fields
-- Components: `/app/frontend/src/components/SoulChapterModal.jsx`, `/app/frontend/src/components/PillarSoulProfile.jsx`
+### Session Mar 2026 — Complete PillarSoulProfile on ALL 12 Pillars
+- **PillarSoulProfile** rebuilt with 4 sections: Mira Voice, What Mira Knows (tiles), Breed Tips, Mira Imagines cards
+- Deployed to ALL 12 pillar pages: Celebrate, Dine, Go, Care, Play, Learn, Paperwork, Emergency, Farewell, Adopt, Shop, Services
+- Per-pillar tile maps using correct DB keys (81 actual soul answer fields mapped)
+- Breed-specific tips per pillar with fallback for unknown breeds
+- MiraImaginesBreed cards integrated (allergen-aware, breed-specific AI product mockups)
+- "See full profile" links to `/my-pets` (not soul-builder)
+- Score bar + live score update on answer submission
+- Pet switch resets drawer state
+- Components: `/app/frontend/src/components/PillarSoulProfile.jsx`, `/app/frontend/src/components/SoulChapterModal.jsx`
 
 ## Prioritized Backlog
 

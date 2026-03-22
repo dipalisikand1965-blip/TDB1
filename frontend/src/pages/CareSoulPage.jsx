@@ -41,6 +41,7 @@ import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
+import PillarSoulProfile from "../components/PillarSoulProfile";
 
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Sage Green
@@ -2204,6 +2205,10 @@ export default function CareSoulPage() {
       </Helmet>
 
       <CareHero pet={petData} soulScore={soulScore} />
+
+      <div style={{ paddingTop:16, maxWidth:'80rem', margin:'0 auto', padding:'0 16px' }}>
+        <PillarSoulProfile pet={petData} token={token} pillar="care" />
+      </div>
 
       <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>
         <CareCategoryStrip pet={petData} onDimSelect={id => setOpenDim(prev => prev===id?null:id)} activeDim={openDim} />

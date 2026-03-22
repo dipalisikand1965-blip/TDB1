@@ -23,6 +23,7 @@ import AdoptNearMe from "../components/adopt/AdoptNearMe";
 import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
+import PillarSoulProfile from "../components/PillarSoulProfile";
 
 const G = {
   deep:"#4A0E2E", mid:"#7B1D4E", rose:"#D4537E", light:"#F9A8C9",
@@ -276,6 +277,10 @@ const AdoptSoulPage = () => {
       </div>
 
       <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{background:G.pageBg,fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",overflowX:"hidden",boxSizing:"border-box"}}>
+        {/* Soul Profile bar */}
+        <div style={{ paddingTop: 16 }}>
+          <PillarSoulProfile pet={currentPet} token={token} pillar="adopt" />
+        </div>
         {/* Tab bar */}
         <div style={{display:"flex",background:"#fff",borderBottom:`1.5px solid ${G.borderLight}`,marginBottom:24}}>
           {[{id:"adopt",label:"🐾 Find Your Dog"},{id:"services",label:"💌 Book Guidance"},{id:"find",label:"📍 Find Rescue"}].map(tab=>{const a=activeTab===tab.id;return<button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{flex:1,padding:"14px 4px",background:"none",border:"none",borderBottom:a?`3px solid ${G.rose}`:"3px solid transparent",color:a?G.rose:"#888",fontSize:13,fontWeight:a?700:500,cursor:"pointer",transition:"all 0.15s",whiteSpace:"nowrap"}}>{tab.label}</button>;})}

@@ -47,6 +47,7 @@ import MiraImaginesBreed from "../components/common/MiraImaginesBreed";import Sh
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
+import PillarSoulProfile from "../components/PillarSoulProfile";
 
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Deep Teal + Travel Gold
@@ -1957,6 +1958,10 @@ const GoSoulPage = () => {
       </Helmet>
 
       <GoHero pet={petData} soulScore={soulScore} />
+
+      <div style={{ paddingTop:16, maxWidth:'80rem', margin:'0 auto', padding:'0 16px' }}>
+        <PillarSoulProfile pet={petData} token={token} pillar="go" />
+      </div>
 
       <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>
         <GoCategoryStrip pet={petData} />
