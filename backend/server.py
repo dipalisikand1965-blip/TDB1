@@ -276,6 +276,9 @@ from app.api.soul_products_routes import router as soul_products_router, set_sou
 # Product Mockup Routes (AI-generated personalized mockups)
 from app.api.mockup_routes import router as mockup_router, set_mockup_db
 
+# Custom Order Routes (WOW feature — photo upload + concierge ticket)
+from app.api.custom_order_routes import router as custom_order_router
+
 # Bundle Routes (Curated product bundles)
 from app.api.bundle_routes import router as bundle_router, set_bundle_db
 
@@ -11497,6 +11500,9 @@ async def update_admin_product(product_id: str, updates: dict):
 async def get_admin_breed_products(
     breed: Optional[str] = None,
     category: Optional[str] = None,
+    pillar: Optional[str] = None,
+    search: Optional[str] = None,
+    has_mockup: Optional[str] = None,
     is_active: Optional[bool] = None,
     limit: int = 100,
     skip: int = 0
@@ -11504,13 +11510,20 @@ async def get_admin_breed_products(
     """Get breed products for admin management (is_mockup=True by default — proper mockups only)"""
     query = {"is_mockup": True}   # Only show proper product mockups, not portrait-only
     if breed:
-        # Include breed-specific products AND universal "all" breed products
         query["$or"] = [
             {"breed": {"$regex": breed, "$options": "i"}},
             {"breed": "all"},
         ]
     if category:
         query["category"] = {"$regex": category, "$options": "i"}
+    if pillar:
+        query["pillars"] = {"$in": [pillar.lower()]}
+    if search:
+        query["name"] = {"$regex": search, "$options": "i"}
+    if has_mockup == "true":
+        query["cloudinary_url"] = {"$exists": True, "$ne": None, "$ne": ""}
+    elif has_mockup == "false":
+        query["$or"] = [{"cloudinary_url": {"$exists": False}}, {"cloudinary_url": None}, {"cloudinary_url": ""}]
     if is_active is not None:
         query["is_active"] = is_active
     
@@ -11575,7 +11588,9 @@ async def delete_breed_product(product_id: str):
 
 @api_router.post("/admin/breed-products/import")
 async def import_breed_products(request: dict):
-    """Bulk import/upsert breed products from CSV rows"""
+    """Bulk import/upsert breed products from CSV rows.
+    Matches by breed+product_type (natural key) to update pillar mappings.
+    Admin can re-import CSV anytime to update pillars, categories, prices."""
     rows = request.get("rows", [])
     if not rows:
         raise HTTPException(status_code=400, detail="No rows provided")
@@ -11583,26 +11598,50 @@ async def import_breed_products(request: dict):
     from pymongo import UpdateOne
     ops = []
     for row in rows:
-        if not row.get("breed") or not row.get("product_type"):
+        breed = (row.get("breed", "") or "").lower().strip()
+        product_type = (row.get("product_type", "") or "").lower().strip()
+        if not breed or not product_type:
             continue
-        product_id = row.get("id") or f"bp-{row['breed']}-{row['product_type']}-{row.get('pillar','')}"
+        
+        pillar = (row.get("pillar", "") or "").lower().strip()
+        all_pillars_str = row.get("pillars", row.get("all_pillars", "")) or ""
+        pillars = [p.strip().lower() for p in all_pillars_str.split("|") if p.strip()]
+        if not pillars and pillar:
+            pillars = [pillar]
+        
+        update_doc = {
+            "breed": breed,
+            "product_type": product_type,
+            "pillar": pillar,
+            "pillars": pillars,
+            "updated_at": get_utc_timestamp(),
+        }
+        name = row.get("name", row.get("product_name", ""))
+        if name:
+            update_doc["name"] = name
+        sub_cat = (row.get("sub_category", "") or "").strip()
+        if sub_cat:
+            update_doc["sub_category"] = sub_cat
+        cat = (row.get("category", "") or "").strip()
+        if cat:
+            update_doc["category"] = cat
+        price = float(row.get("price", 0) or 0)
+        if price > 0:
+            update_doc["price"] = price
+        img = (row.get("cloudinary_url", "") or row.get("image_url", "") or "").strip()
+        if img:
+            update_doc["cloudinary_url"] = img
+        
+        # Match by breed + product_type (natural key for breed products)
         ops.append(UpdateOne(
-            {"id": product_id},
-            {"$set": {
-                "id": product_id,
-                "breed": row.get("breed", "").lower().strip(),
-                "product_type": row.get("product_type", "").lower().strip(),
-                "name": row.get("name", row.get("product_name", "")),
-                "pillar": row.get("pillar", ""),
-                "pillars": [p.strip() for p in row.get("pillars", row.get("all_pillars", "")).split("|") if p.strip()],
-                "sub_category": row.get("sub_category", ""),
-                "category": row.get("category", ""),
-                "price": float(row.get("price", 0) or 0),
-                "cloudinary_url": row.get("cloudinary_url", row.get("image_url", "")),
-                "is_active": str(row.get("is_active", "true")).lower() != "false",
-                "active": str(row.get("active", "true")).lower() != "false",
-                "updated_at": get_utc_timestamp(),
-            }},
+            {"breed": breed, "product_type": product_type},
+            {"$set": update_doc,
+             "$setOnInsert": {
+                 "id": f"bp-{breed}-{product_type}",
+                 "is_active": True, "active": True,
+                 "is_mockup": True,
+                 "created_at": get_utc_timestamp(),
+             }},
             upsert=True
         ))
     
@@ -21559,6 +21598,7 @@ app.include_router(mis_router)
 app.include_router(rewards_router)
 app.include_router(member_rewards_router)  # Social Sharing, NPS
 app.include_router(paw_points_router)  # Paw Points Redemption
+app.include_router(custom_order_router)  # Custom Order + Photo Delivery (WOW feature)
 app.include_router(travel_router)  # Travel Pillar
 app.include_router(care_router)  # Care Pillar
 app.include_router(enjoy_router)  # Enjoy Pillar

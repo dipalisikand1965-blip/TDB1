@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { ShoppingCart, Star, X, CalendarIcon, Plus, Sparkles, MessageSquare, PawPrint, ChevronDown, Award, Check, Loader2 } from 'lucide-react';
+import { ShoppingCart, Star, X, CalendarIcon, Plus, Sparkles, MessageSquare, PawPrint, ChevronDown, Award, Check, Loader2, Palette } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { useCart } from '../context/CartContext';
@@ -14,6 +14,7 @@ import { format } from 'date-fns';
 import { API_URL } from '../utils/api';
 import { findBreedIllustration, getBreedIllustrationByName } from '../utils/breedIllustrations';
 import { getProductMockup } from '../utils/productMockups';
+import CustomOrderFlow from './celebrate/CustomOrderFlow';
 
 // Autoship tier discount rates
 const AUTOSHIP_DISCOUNT_TIERS = [
@@ -627,6 +628,10 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   const isService = (product.product_type === 'service') || (product.category === 'service');
   const [serviceSent, setServiceSent] = useState(false);
   const [serviceSending, setServiceSending] = useState(false);
+  const [showCustomOrder, setShowCustomOrder] = useState(false);
+  
+  // Check if this is a customisable Soul/breed product
+  const isSoulProduct = product.is_mockup || product.id?.startsWith('bp-') || (product.product_type && !isService);
 
   const handleServiceRequest = async () => {
     setServiceSending(true);
@@ -1588,6 +1593,23 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
             )}
 
             <div className="flex items-center justify-between pt-3 border-t">
+              {/* Customise with Photo button for Soul products */}
+              {isSoulProduct && !isService && (
+                <button
+                  onClick={() => setShowCustomOrder(true)}
+                  className="absolute -top-1 left-0 right-0 mx-4 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
+                  style={{
+                    background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)',
+                    color: 'white',
+                    transform: 'translateY(-100%)',
+                    marginBottom: 4,
+                  }}
+                  data-testid="customise-with-photo-btn"
+                >
+                  <Palette className="w-3.5 h-3.5" />
+                  Customise with {selectedPet?.name || 'Pet'}'s Photo
+                </button>
+              )}
               <div>
                 <p className="text-xs text-gray-500">{isService ? 'Service' : 'Total Price'}</p>
                 {isService ? (
@@ -1823,6 +1845,18 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
           </div>
         )}
       </div>
+
+      {/* Custom Order Flow Modal */}
+      {showCustomOrder && (
+        <CustomOrderFlow
+          product={product}
+          pet={selectedPet}
+          user={user}
+          isOpen={showCustomOrder}
+          onClose={() => setShowCustomOrder(false)}
+          pillarColor={pillar === 'celebrate' ? '#C44DFF' : pillar === 'farewell' ? '#4B5563' : '#FF8C42'}
+        />
+      )}
     </div>
   );
 };

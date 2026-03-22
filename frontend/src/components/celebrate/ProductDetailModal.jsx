@@ -3,13 +3,15 @@
  * Full product modal for pillar Shop tabs
  * - Shows product details, variants, quantity
  * - Add to Cart or Send to Concierge (for service items)
+ * - "Customise This" button triggers CustomOrderFlow
  */
 
 import React, { useState } from 'react';
 import { tdc } from '../utils/tdc_intent';
 import { bookViaConcierge } from '../utils/MiraCardActions';
-import { X, Plus, Minus, ShoppingCart, Sparkles, Heart, Check, Star } from 'lucide-react';
+import { X, Plus, Minus, ShoppingCart, Sparkles, Heart, Check, Star, Palette } from 'lucide-react';
 import { useResizeMobile } from '../../hooks/useResizeMobile';
+import CustomOrderFlow from './CustomOrderFlow';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
@@ -40,6 +42,8 @@ const ProductDetailModal = ({
   isOpen, 
   onClose, 
   petName = 'your pet',
+  pet = null,
+  user = null,
   isConcierge = false,
   pillarColor = '#C44DFF'
 }) => {
@@ -49,8 +53,12 @@ const ProductDetailModal = ({
   const [isAdding, setIsAdding] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [isSentToConcierge, setIsSentToConcierge] = useState(false);
+  const [showCustomOrder, setShowCustomOrder] = useState(false);
 
   if (!isOpen || !product) return null;
+
+  // Check if this is a Soul/breed product that can be customised
+  const isSoulProduct = product.is_mockup || product.id?.startsWith('bp-') || product.product_type;
 
   const variants = product.variants || [];
   const currentVariant = variants[selectedVariant] || {};
@@ -293,6 +301,23 @@ const ProductDetailModal = ({
             )}
           </div>
 
+          {/* Customise This — triggers the WOW flow for Soul products */}
+          {isSoulProduct && (
+            <button
+              onClick={() => setShowCustomOrder(true)}
+              className="w-full py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all mb-3"
+              style={{
+                fontSize: 15,
+                background: `linear-gradient(135deg, ${pillarColor}, #FF6B9D)`,
+                color: 'white',
+              }}
+              data-testid="customise-product-btn"
+            >
+              <Palette className="w-5 h-5" />
+              Customise with {petName}'s Photo
+            </button>
+          )}
+
           {/* Action Button */}
           {isService ? (
             <button
@@ -347,6 +372,18 @@ const ProductDetailModal = ({
           </p>
         </div>
       </div>
+
+      {/* Custom Order Flow Modal */}
+      {showCustomOrder && (
+        <CustomOrderFlow
+          product={product}
+          pet={pet}
+          user={user}
+          isOpen={showCustomOrder}
+          onClose={() => setShowCustomOrder(false)}
+          pillarColor={pillarColor}
+        />
+      )}
     </div>
   );
 };
