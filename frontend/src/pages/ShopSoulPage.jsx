@@ -32,6 +32,7 @@ import { ProductGridSkeleton } from "../components/common/ProductSkeleton";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import SoulMadeModal from "../components/SoulMadeModal";
 
 // ── Colour system — warm gold, The Doggy Bakery amber ─────────
 const G = {
@@ -699,6 +700,7 @@ const ShopSoulPage = () => {
   const [activeSection, setActiveSection] = useState(null); // null = show all
   const [toastVisible,  setToastVisible]  = useState(false);
   const [toastSvc,      setToastSvc]      = useState("");
+  const [soulMadeOpen,  setSoulMadeOpen]  = useState(false);
 
   useEffect(() => {
     if (contextPets?.length>0 && !currentPet) setCurrentPet(contextPets[0]);
@@ -780,7 +782,20 @@ const ShopSoulPage = () => {
 
         {/* Mira picks — always shown unless a section is active */}
         {(!activeSection || activeSection === "mira") && (
-          <MiraPicksSection pet={petData}/>
+          <>
+            <MiraPicksSection pet={petData}/>
+            {/* ── SOUL MADE™ ── */}
+            {petData?.name && (
+              <div style={{textAlign:"center",margin:"4px 0 20px"}}>
+                <button onClick={()=>setSoulMadeOpen(true)} style={{padding:"12px 28px",borderRadius:999,border:`1px solid ${G.gold}40`,background:`${G.gold}10`,color:G.gold,fontSize:13,fontWeight:700,cursor:"pointer"}}
+                  onMouseEnter={e=>{e.currentTarget.style.background=`${G.gold}20`;}}
+                  onMouseLeave={e=>{e.currentTarget.style.background=`${G.gold}10`;}}>
+                  ✦ Soul Made™ — Make it personal for {petData.name}
+                </button>
+              </div>
+            )}
+            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="shop" pillarColor={G.gold} pillarLabel="Shop" onClose={()=>setSoulMadeOpen(false)}/>}
+          </>
         )}
 
         {/* The Doggy Bakery */}

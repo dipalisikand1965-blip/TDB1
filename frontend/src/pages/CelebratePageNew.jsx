@@ -52,6 +52,7 @@ import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from '../hooks/useMiraIntelligence';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import { ProductDetailModal } from '../components/ProductCard';
+import SoulMadeModal from '../components/SoulMadeModal';
 
 // API utilities
 import { getApiUrl, API_URL } from '../utils/api';
@@ -251,6 +252,7 @@ const CelebratePageNew = () => {
   const [soulScore, setSoulScore] = useState(0);
   const [loading, setLoading] = useState(true);
   const [celebrateCatModal, setCelebrateCatModal] = useState(null);
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
 
   // Wait for pet data to load from context
   useEffect(() => {
@@ -426,6 +428,18 @@ const CelebratePageNew = () => {
 
         {/* MIRA'S CELEBRATION PICKS — imagines immediately + AI scored below */}
         <CelebrateMiraPicksSection pet={selectedPet} token={token}/>
+
+        {/* ── SOUL MADE™ TRIGGER ── */}
+        {selectedPet?.name && (
+          <div style={{textAlign:"center",margin:"4px 0 20px"}}>
+            <button onClick={()=>setSoulMadeOpen(true)} style={{padding:"12px 28px",borderRadius:999,border:"1px solid #A855F740",background:"#A855F710",color:"#A855F7",fontSize:13,fontWeight:700,cursor:"pointer",transition:"all 0.2s"}}
+              onMouseEnter={e=>{e.currentTarget.style.background="#A855F720";e.currentTarget.style.borderColor="#A855F780";}}
+              onMouseLeave={e=>{e.currentTarget.style.background="#A855F710";e.currentTarget.style.borderColor="#A855F740";}}>
+              ✦ Soul Made™ — Make it personal for {selectedPet.name}
+            </button>
+          </div>
+        )}
+        {soulMadeOpen && <SoulMadeModal pet={selectedPet} pillar="celebrate" pillarColor="#A855F7" pillarLabel="Celebration" onClose={()=>setSoulMadeOpen(false)}/>}
 
         {/* 3. SOUL CELEBRATION PILLARS — "How would Mojo love to celebrate?" */}
         <SoulCelebrationPillars 

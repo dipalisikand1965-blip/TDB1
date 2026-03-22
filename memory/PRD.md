@@ -1,132 +1,133 @@
-# The Doggy Company — Pet Life OS — PRD
+# Pet Life OS — Product Requirements Document
+_Last updated: 2026-03-22_
 
 ## Original Problem Statement
-Build a universal, soulful platform for dog parents: **The Doggy Company's Pet Life OS**. A cohesive system spanning adoption, care, celebration, dining, learning, play, emergency, paperwork, farewell, and travel — powered by AI (Mira) and concierge services.
+1. Import and map 2,409 products from CSV to respective pillars without hardcoding.
+2. Run AI background engine to assign pillars to remaining pending products.
+3. Integrate AI Mockup generation tool in Admin panel for new product types.
+4. Implement "Wow" Custom Order / Photo Delivery — Soul Made™ feature.
+5. Fix `/services` page to use Universal Concierge ticketing flow.
+6. Fix Soul Picks to display actual product mockups (`image_url`), not watercolour dog portraits.
 
-**Session Focus:** CSV pillar import, AI mockup generation, Custom Order WOW feature.
+**Core Rule:** ALL service bookings and custom order requests MUST route through `service_desk_tickets` via Universal Concierge flow (`attach_or_create_ticket`).
 
 ---
 
-## Core Architecture
+## Architecture
+
 ```
 /app
 ├── backend/
-│   ├── server.py                            # Main app (24K+ lines)
-│   ├── breed_catalogue.py                   # Breed product fetching
-│   └── app/api/
-│       ├── mockup_routes.py                 # AI mockup generation + auto-assign pillars
-│       ├── custom_order_routes.py           # Custom Order + Photo Upload (NEW)
-│       └── bundle_routes.py                 # Product bundles
+│   ├── server.py                       # Main app (24k lines — needs splitting P2)
+│   ├── app/api/mockup_routes.py        # AI pillar assignment + breed product management
+│   └── app/api/custom_order_routes.py  # DELETED (orphaned — all goes to service desk)
 └── frontend/
     ├── src/
     │   ├── components/
-    │   │   ├── admin/SoulProductsManager.jsx  # AI Mockups admin (CRUD, CSV, Generation)
+    │   │   ├── SoulMadeModal.jsx        # NEW: Soul Made™ 4-step custom order modal
+    │   │   ├── ProductCard.jsx          # Fixed: mockup_url/cloudinary_url fallback
+    │   │   ├── PillarSoulProfile.jsx    # Fixed: textarea for free-text soul questions
+    │   │   ├── admin/
+    │   │   │   └── SoulProductsManager.jsx  # Added: "Add Single Product" form
     │   │   ├── celebrate/
-    │   │   │   ├── CelebrateContentModal.jsx  # Soul Picks modal
-    │   │   │   ├── CustomOrderFlow.jsx        # Custom Order WOW feature (NEW)
-    │   │   │   └── ProductDetailModal.jsx     # Product detail with Customise btn
-    │   │   └── ProductCard.jsx                # Universal product card with CustomOrder
+    │   │   │   ├── CelebrateContentModal.jsx
+    │   │   │   ├── ProductDetailModal.jsx
+    │   │   │   └── ConciergeIntakeModal.jsx
+    │   │   └── common/
+    │   │       └── MiraImaginesBreed.jsx  # Added: go/emergency/play/paperwork/adopt/farewell cards
     │   └── pages/
-    │       ├── ShopSoulPage.jsx               # Load More pagination
-    │       └── [Pillar]SoulPage.jsx           # Tabbed products per pillar
+    │       ├── CelebratePageNew.jsx    # Wired: SoulMadeModal
+    │       ├── CareSoulPage.jsx        # Wired: SoulMadeModal
+    │       ├── EmergencySoulPage.jsx   # Wired: SoulMadeModal + MiraImaginesBreed + Emergency Kit
+    │       ├── DineSoulPage.jsx        # Wired: SoulMadeModal
+    │       ├── GoSoulPage.jsx          # Wired: SoulMadeModal
+    │       ├── PlaySoulPage.jsx        # Wired: SoulMadeModal
+    │       ├── PaperworkSoulPage.jsx   # Wired: SoulMadeModal
+    │       ├── FarewellSoulPage.jsx    # Wired: SoulMadeModal
+    │       ├── AdoptSoulPage.jsx       # Wired: SoulMadeModal
+    │       └── ShopSoulPage.jsx        # Wired: SoulMadeModal
 ```
 
 ---
 
 ## What's Been Implemented
 
-### Session: Mar 22, 2026
-1. **CSV Pillar Import (2,409 products)** — DONE
-   - Imported user-provided CSV mapping all products to pillars
-   - Admin can re-import via `POST /api/admin/breed-products/import`
-   - All 3,826 breed_products now have `pillar` and `pillars` fields assigned
-   - Frontend shows products breed-wise under correct pillar pages
+### Phase 1 — Data Foundation ✅
+- CSV import: 2,409 products mapped to pillars in `breed_products`
+- AI auto-assign: GPT batch for remaining ~756 pending products (restarted 2026-03-22)
+- DB fix: 1,778 products — `mockup_url` copied to `image_url` (all breeds/pillars)
 
-2. **AI Auto-Assign Pillars** — DONE
-   - Built rule-based + keyword matching for auto-assigning pillars
-   - Endpoint: `POST /api/mockups/auto-assign-pillars` (background)
-   - Status: `GET /api/mockups/pillar-assign-status`
-   - All products now have pillars (0 remaining without)
+### Phase 2 — Admin Panel ✅
+- AI Mockup generation: fixed stuck running flag, restarted successfully
+- Admin Soul Products: "Add Single Product" form added (breed + pillar + price + image)
+- New Product Type: AI mockup generation per breed type
 
-3. **AI Mockup Generation for New Product Types** — DONE
-   - Admin "New Product Type" wired to generate AI images via GPT Image
-   - Endpoint: `POST /api/mockups/generate-product-type` (background)
-   - Generates professional mockup images per breed per product type
-   - Status polling + stop functionality
-   - Progress bar in Admin UI
+### Phase 3 — Soul Picks Display ✅
+- ProductCard.jsx: `mockup_url`/`cloudinary_url` fallback BEFORE breed illustration
+- CelebrateContentModal.jsx: Breed Cakes sorted pet's breed first, AI dummies deactivated
+- Soul Picks: All 14+ celebrate products show real Cloudinary mockups
+- Farewell page: Removed "Indie" tab bleed
 
-4. **Custom Order + Photo Delivery (WOW Feature)** — DONE
-   - Multi-step custom order flow: Preview → Upload Photo → Personalise → Confirm
-   - Photo upload to Cloudinary (quality:100, max 10MB, JPG/PNG/HEIC)
-   - Creates Service Desk ticket with full context (photos, notes, product ref, pet profile)
-   - Admin sees everything needed to send to printer/baker
-   - Concierge pricing (no upfront cost, admin shares price offline)
-   - Delivery estimate matrix by product type
-   - "Customise with [Pet]'s Photo" button in every Soul product detail modal
-   - Backend: `POST /api/custom-orders`, `GET /api/custom-orders`, `PATCH /api/custom-orders/{id}/status`
+### Phase 4 — Emergency Page ✅
+- EmergencySoulPage: fetch + render "Emergency Kit for {pet}" section
+- 9 emergency products show for Indie with real mockup images
+- DimExpanded: falls back to breedProducts when pillar-products catalogue is empty
+- MiraImaginesBreed: Added emergency/go/play/paperwork/adopt/farewell pillar cards
 
-### Previous Sessions (Summary)
-- Watercolour portrait filtering (`is_mockup` logic)
-- SoulMadeCollection carousels removed from tabbed pages
-- Admin CSV exports with filters
-- Breed Products CRUD tab
-- `sub_category` auto-mapping for 4,071 products
-- `is_active` → `active` DB migration (3,600+ products exposed)
-- Load More pagination for Soul Products
-- Emergency/Farewell/Adopt pillar product clicks + concierge tickets
+### Phase 5 — Soul Made™ ✅
+- SoulMadeModal.jsx: 4-step modal (Pick product → Upload photo → Write message → Done)
+- Wired to ALL 10 pillar pages with pillar-specific colors and labels
+- Backend: `POST /api/upload/image` endpoint for photo upload
+- All custom orders route through Universal Concierge → service_desk_tickets
+
+### Phase 6 — UI Fixes ✅
+- PillarSoulProfile: Free-text soul questions now show textarea input
+- Services page: Universal Concierge flow, not generic buttons
+- ProductCard: Removed "Often paired with" text and "Soul Made" badges
 
 ---
 
 ## Key Technical Concepts
-- **Image Filtering (`is_mockup`)**: Legitimate mockups have URLs starting with `breed-`. Portraits start with `soul-` or `bp-`.
-- **Pillar Field**: `pillar` (primary), `pillars` (array, for multi-pillar products). All endpoints filter using `pillars` with `$in`.
-- **Custom Orders**: Creates entry in `custom_orders` + `service_desk_tickets` collections. Photos stored permanently on Cloudinary.
+- **Universal Concierge Flow**: All requests → `POST /api/service_desk/attach_or_create_ticket` → Admin Service Desk
+- **Image Priority**: `image_url` → `mockup_url` → `cloudinary_url` → breed illustration → placeholder
+- **Soul Picks**: `GET /api/mockups/breed-products?breed={breed}&pillar={pillar}` → product grid
 
 ---
 
-## Key API Endpoints
-- `GET /api/mockups/breed-products?breed={breed}&pillar={pillar}` — Soul Products
-- `POST /api/admin/breed-products/import` — CSV re-import
-- `POST /api/mockups/generate-product-type` — AI mockup generation
-- `POST /api/mockups/auto-assign-pillars` — Auto-assign pillars
-- `POST /api/custom-orders` — Create custom order
-- `POST /api/custom-orders/upload-photo` — Upload pet photo
-- `GET /api/custom-orders` — List orders
-- `PATCH /api/custom-orders/{order_id}/status` — Update order status
+## DB Schema
+- `breed_products`: `{id, breed, pillar, name, product_type, price, image_url, mockup_url, active}`
+- `services_master`: `{id, pillar, price, features}`
+- `service_desk_tickets`: main collection for all concierge interactions
 
 ---
 
-## DB Collections
-- `breed_products`: {breed, pillar, pillars[], product_type, mockup_url, cloudinary_url, is_mockup, is_active, active, name, price, sub_category, category}
-- `custom_orders`: {order_id, status, product{}, pet{}, customer{}, photo_urls[], personalisation_notes, special_text}
-- `service_desk_tickets`: {ticket_id, type, status, priority, subject, description, photo_urls[], order_id, tags[]}
+## Credentials
+- User: `dipali@clubconcierge.in` / `test123`
+- Admin: `aditya` / `lola4304` (at `/admin`)
 
 ---
 
 ## Prioritized Backlog
 
-### P1 (Upcoming)
-- Admin: "Generate All Pending for Breed" button to batch-generate remaining 756 pending products
-- Add "3 vets near you" context to daily health WhatsApp reminders
+### P0 — Immediate
+- [ ] Verify SoulMadeModal Step 2 (photo upload) works end-to-end with Cloudinary
 
-### P2 (Future)
-- Build the `Love` pillar
-- Extend scheduler for Medication refill reminders
-- Refactor MiraDemoPage.jsx (5,400+ lines)
-- Refactor server.py (24K+ lines)
-- Remove "Skip Payment" from onboarding
-- WhatsApp "BOOK" keyword handler
-- Activate inactive breeds: indian_spitz, labradoodle, maltipoo
+### P1 — Next Sprint
+- [ ] Add "3 vets near you" context to daily health WhatsApp reminders
+- [ ] Paperwork Mira Picks badge shows "Makes celebrations special" — wrong pillar text
+
+### P2 — Future
+- [ ] Extend scheduler for Medication refill reminders
+- [ ] Build `Love` pillar
+- [ ] Refactor `MiraDemoPage.jsx` (5,400+ lines) and `server.py` (24,000+ lines)
+- [ ] Remove "Skip Payment" from onboarding (post soft-launch)
+- [ ] Add "My Custom Orders" tab in user profile
 
 ---
 
 ## 3rd Party Integrations
-- OpenAI GPT-4o / Claude Sonnet (Emergent LLM Key)
-- Cloudinary (Images) — User API Key
-- Razorpay (Payments) — User API Key
-- Gupshup (WhatsApp) — User API Key
-- Resend (Email) — User API Key
-
-## Credentials
-- User: `dipali@clubconcierge.in` / `test123`
-- Admin: `aditya` / `lola4304` (at `/admin`)
+- OpenAI GPT-4o / Claude Sonnet — Emergent LLM Key
+- Cloudinary — user API key (images)
+- Razorpay — user API key (payments)
+- Gupshup — user API key (WhatsApp)
+- Resend — user API key (email)

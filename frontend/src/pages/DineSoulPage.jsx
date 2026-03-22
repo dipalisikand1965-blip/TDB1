@@ -31,6 +31,7 @@ import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
+import SoulMadeModal from "../components/SoulMadeModal";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 
@@ -1396,6 +1397,7 @@ const DineSoulPage = () => {
   const [dineOutIntakeOpen, setDineOutIntakeOpen] = useState(false);
   const [dineOutVenue, setDineOutVenue] = useState(null);
   const [dineOutCity, setDineOutCity] = useState(null);
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
 
   // Fetch Dine products from SSOT — only food categories to avoid breed merchandise
   useEffect(() => {
@@ -1504,6 +1506,18 @@ const DineSoulPage = () => {
 
             {/* Mira's Picks — AI scored, products + services mix */}
             <MiraPicksSection pet={petData} />
+
+            {/* ── SOUL MADE™ ── */}
+            {petData?.name && (
+              <div style={{textAlign:"center",margin:"4px 0 20px"}}>
+                <button onClick={()=>setSoulMadeOpen(true)} style={{padding:"12px 28px",borderRadius:999,border:"1px solid #FF8C4240",background:"#FF8C4210",color:"#FF8C42",fontSize:13,fontWeight:700,cursor:"pointer"}}
+                  onMouseEnter={e=>{e.currentTarget.style.background="#FF8C4220";}}
+                  onMouseLeave={e=>{e.currentTarget.style.background="#FF8C4210";}}>
+                  ✦ Soul Made™ — Make it personal for {petData.name}
+                </button>
+              </div>
+            )}
+            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="dine" pillarColor="#FF8C42" pillarLabel="Dining" onClose={()=>setSoulMadeOpen(false)}/>}
 
             <div style={{ fontSize: "clamp(1.125rem,2.5vw,1.375rem)", fontWeight: 800, color: "#1A0A00", marginBottom: 4, fontFamily: "Georgia,serif" }}>Eat &amp; Nourish</div>
             <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>5 dimensions, filtered to {petData.name}</div>
