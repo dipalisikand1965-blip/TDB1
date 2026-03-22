@@ -11504,7 +11504,11 @@ async def get_admin_breed_products(
     """Get breed products for admin management"""
     query = {}
     if breed:
-        query["breed"] = {"$regex": breed, "$options": "i"}
+        # Include breed-specific products AND universal "all" breed products
+        query["$or"] = [
+            {"breed": {"$regex": breed, "$options": "i"}},
+            {"breed": "all"},
+        ]
     if category:
         query["category"] = {"$regex": category, "$options": "i"}
     if is_active is not None:

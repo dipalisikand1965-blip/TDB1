@@ -511,7 +511,11 @@ async def get_breed_products(
     
     query = {}
     if breed:
-        query["breed"] = breed
+        # Include breed-specific AND universal "all" products
+        query["$or"] = [
+            {"breed": breed},
+            {"breed": "all"},
+        ]
     if product_type:
         query["product_type"] = product_type
     if pillar:
