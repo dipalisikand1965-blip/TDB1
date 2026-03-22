@@ -194,7 +194,13 @@ const PersonalizedBreedCollection = ({
 
         if (response.ok) {
           const data = await response.json();
-          setProducts(data.products || []);
+          // Only show proper product mockups (breed- prefix filename)
+          const clean = (data.products || []).filter(p => {
+            const url = p.mockup_url || p.cloudinary_url || '';
+            if (!url) return false;
+            return url.split('/').pop().startsWith('breed-');
+          });
+          setProducts(clean);
         } else {
           throw new Error('Failed to fetch products');
         }
