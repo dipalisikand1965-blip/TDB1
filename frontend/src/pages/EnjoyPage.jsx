@@ -651,7 +651,7 @@ const EnjoyPage = () => {
         {userPets && userPets[0] && (
           <div className="max-w-6xl mx-auto px-4 mb-8">
             <SoulMadeCollection
-              pillar="enjoy"
+              pillar="play"
               maxItems={8}
               showTitle={true}
             />

@@ -964,7 +964,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
         <div>
           <PersonalisedBreedSection pet={pet} pillar="go" />
           <div style={{ borderTop:"1px solid #f0f0f0", marginTop:16, paddingTop:16 }}>
-            <SoulMadeCollection pillar="travel" maxItems={8} showTitle={true} />
+            <SoulMadeCollection pillar="go" maxItems={8} showTitle={true} />
           </div>
         </div>
       ) : (
