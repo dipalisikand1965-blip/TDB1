@@ -1,0 +1,706 @@
+breed,product_name,product_type,pillar,all_pillars,sub_category,category,has_image,image_url,status
+akita,Akita Breed Food Mat,,dine,dine,akita-dine,dine_accessories,NO,,PENDING
+akita,Akita Breed Ceramic Bowl,,dine,dine,akita-dine,dine_accessories,NO,,PENDING
+akita,Akita Breed Recipe Card,,dine,dine,akita-dine,dine_accessories,NO,,PENDING
+akita,Akita Breed Grooming Guide,,care,care,akita-care,care_accessories,NO,,PENDING
+akita,Akita Breed Portrait Frame,,care,care,akita-care,care_accessories,NO,,PENDING
+akita,Akita Breed Wellness Kit,,care,care,akita-care,care_accessories,NO,,PENDING
+akita,Akita Breed Adventure Bandana,,go,go,akita-go,go_accessories,NO,,PENDING
+akita,Akita Breed Travel Tag,,go,go,akita-go,go_accessories,NO,,PENDING
+akita,Akita Breed Trail Guide,,go,go,akita-go,go_accessories,NO,,PENDING
+akita,Akita Breed Play Bandana,,play,play,akita-play,play_accessories,NO,,PENDING
+akita,Akita Breed Playdate Card,,play,play,akita-play,play_accessories,NO,,PENDING
+akita,Akita Breed Activity Print,,play,play,akita-play,play_accessories,NO,,PENDING
+alaskan_malamute,Alaskan Malamute Breed Food Mat,,dine,dine,alaskan-malamute-dine,dine_accessories,NO,,PENDING
+alaskan_malamute,Alaskan Malamute Breed Ceramic Bowl,,dine,dine,alaskan-malamute-dine,dine_accessories,NO,,PENDING
+alaskan_malamute,Alaskan Malamute Breed Recipe Card,,dine,dine,alaskan-malamute-dine,dine_accessories,NO,,PENDING
+alaskan_malamute,Alaskan Malamute Breed Grooming Guide,,care,care,alaskan-malamute-care,care_accessories,NO,,PENDING
+alaskan_malamute,Alaskan Malamute Breed Portrait Frame,,care,care,alaskan-malamute-care,care_accessories,NO,,PENDING
+alaskan_malamute,Alaskan Malamute Breed Wellness Kit,,care,care,alaskan-malamute-care,care_accessories,NO,,PENDING
+alaskan_malamute,Alaskan Malamute Breed Adventure Bandana,,go,go,alaskan-malamute-go,go_accessories,NO,,PENDING
+alaskan_malamute,Alaskan Malamute Breed Travel Tag,,go,go,alaskan-malamute-go,go_accessories,NO,,PENDING
+alaskan_malamute,Alaskan Malamute Breed Trail Guide,,go,go,alaskan-malamute-go,go_accessories,NO,,PENDING
+alaskan_malamute,Alaskan Malamute Breed Play Bandana,,play,play,alaskan-malamute-play,play_accessories,NO,,PENDING
+alaskan_malamute,Alaskan Malamute Breed Playdate Card,,play,play,alaskan-malamute-play,play_accessories,NO,,PENDING
+alaskan_malamute,Alaskan Malamute Breed Activity Print,,play,play,alaskan-malamute-play,play_accessories,NO,,PENDING
+all,Great Dane · Breed Activity Print · Soul Expression,,play,celebrate|play,great-dane-special,play_accessories,NO,,PENDING
+all,Dalmatian · Breed Food Mat · Mealtime Essential,,dine,dine,dalmatian-special,dine_accessories,NO,,PENDING
+all,Dalmatian · Breed Recipe Card · Nutrition Guide,,dine,dine,dalmatian-special,dine_accessories,NO,,PENDING
+all,Dalmatian · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,dalmatian-special,dine_accessories,NO,,PENDING
+all,Dalmatian · Breed Grooming Guide · Care Essential,,care,care,dalmatian-special,care_accessories,NO,,PENDING
+all,Dalmatian · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,dalmatian-special,care_accessories,NO,,PENDING
+all,Dalmatian · Breed Wellness Kit · Health Essentials,,care,care,dalmatian-special,care_accessories,NO,,PENDING
+all,Dalmatian · Breed Adventure Bandana · Travel Identity,,go,go,dalmatian-special,go_accessories,NO,,PENDING
+all,Dalmatian · Breed Travel Tag · Safety Essential,,go,go,dalmatian-special,go_accessories,NO,,PENDING
+all,Dalmatian · Breed Trail Guide · Adventure Companion,,go,go,dalmatian-special,go_accessories,NO,,PENDING
+all,Dalmatian · Breed Play Bandana · Play Identity,,play,play,dalmatian-special,play_accessories,NO,,PENDING
+all,Dalmatian · Breed Playdate Card · Social Identity,,play,play,dalmatian-special,play_accessories,NO,,PENDING
+all,Dalmatian · Breed Activity Print · Soul Expression,,play,celebrate|play,dalmatian-special,play_accessories,NO,,PENDING
+all,Chihuahua · Breed Food Mat · Mealtime Essential,,dine,dine,chihuahua-special,dine_accessories,NO,,PENDING
+all,Chihuahua · Breed Recipe Card · Nutrition Guide,,dine,dine,chihuahua-special,dine_accessories,NO,,PENDING
+all,Chihuahua · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,chihuahua-special,dine_accessories,NO,,PENDING
+all,Chihuahua · Breed Grooming Guide · Care Essential,,care,care,chihuahua-special,care_accessories,NO,,PENDING
+all,Chihuahua · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,chihuahua-special,care_accessories,NO,,PENDING
+all,Chihuahua · Breed Wellness Kit · Health Essentials,,care,care,chihuahua-special,care_accessories,NO,,PENDING
+all,Chihuahua · Breed Adventure Bandana · Travel Identity,,go,go,chihuahua-special,go_accessories,NO,,PENDING
+all,Chihuahua · Breed Travel Tag · Safety Essential,,go,go,chihuahua-special,go_accessories,NO,,PENDING
+all,Chihuahua · Breed Trail Guide · Adventure Companion,,go,go,chihuahua-special,go_accessories,NO,,PENDING
+all,Chihuahua · Breed Play Bandana · Play Identity,,play,play,chihuahua-special,play_accessories,NO,,PENDING
+all,Chihuahua · Breed Playdate Card · Social Identity,,play,play,chihuahua-special,play_accessories,NO,,PENDING
+all,Chihuahua · Breed Activity Print · Soul Expression,,play,celebrate|play,chihuahua-special,play_accessories,NO,,PENDING
+all,Pomeranian · Breed Food Mat · Mealtime Essential,,dine,dine,pomeranian-special,dine_accessories,NO,,PENDING
+all,Pomeranian · Breed Recipe Card · Nutrition Guide,,dine,dine,pomeranian-special,dine_accessories,NO,,PENDING
+all,Pomeranian · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,pomeranian-special,dine_accessories,NO,,PENDING
+all,Pomeranian · Breed Grooming Guide · Care Essential,,care,care,pomeranian-special,care_accessories,NO,,PENDING
+all,Pomeranian · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,pomeranian-special,care_accessories,NO,,PENDING
+all,Pomeranian · Breed Wellness Kit · Health Essentials,,care,care,pomeranian-special,care_accessories,NO,,PENDING
+all,Pomeranian · Breed Adventure Bandana · Travel Identity,,go,go,pomeranian-special,go_accessories,NO,,PENDING
+all,Pomeranian · Breed Travel Tag · Safety Essential,,go,go,pomeranian-special,go_accessories,NO,,PENDING
+all,Pomeranian · Breed Trail Guide · Adventure Companion,,go,go,pomeranian-special,go_accessories,NO,,PENDING
+all,Pomeranian · Breed Play Bandana · Play Identity,,play,play,pomeranian-special,play_accessories,NO,,PENDING
+all,Pomeranian · Breed Playdate Card · Social Identity,,play,play,pomeranian-special,play_accessories,NO,,PENDING
+all,Pomeranian · Breed Activity Print · Soul Expression,,play,celebrate|play,pomeranian-special,play_accessories,NO,,PENDING
+all,Border Collie · Breed Food Mat · Mealtime Essential,,dine,dine,border-collie-special,dine_accessories,NO,,PENDING
+all,Border Collie · Breed Recipe Card · Nutrition Guide,,dine,dine,border-collie-special,dine_accessories,NO,,PENDING
+all,Border Collie · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,border-collie-special,dine_accessories,NO,,PENDING
+all,Border Collie · Breed Grooming Guide · Care Essential,,care,care,border-collie-special,care_accessories,NO,,PENDING
+all,Border Collie · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,border-collie-special,care_accessories,NO,,PENDING
+all,Border Collie · Breed Wellness Kit · Health Essentials,,care,care,border-collie-special,care_accessories,NO,,PENDING
+all,Border Collie · Breed Adventure Bandana · Travel Identity,,go,go,border-collie-special,go_accessories,NO,,PENDING
+all,Border Collie · Breed Travel Tag · Safety Essential,,go,go,border-collie-special,go_accessories,NO,,PENDING
+all,Border Collie · Breed Trail Guide · Adventure Companion,,go,go,border-collie-special,go_accessories,NO,,PENDING
+all,Border Collie · Breed Play Bandana · Play Identity,,play,play,border-collie-special,play_accessories,NO,,PENDING
+all,Border Collie · Breed Playdate Card · Social Identity,,play,play,border-collie-special,play_accessories,NO,,PENDING
+all,Border Collie · Breed Activity Print · Soul Expression,,play,celebrate|play,border-collie-special,play_accessories,NO,,PENDING
+all,Bulldog · Birthday Cake · Custom Design,,celebrate,celebrate,bulldog-special,breed-cakes,NO,,PENDING
+all,Bulldog · Ceramic Mug · Pet Parent Gift,,celebrate,celebrate|shop,bulldog-special,cups_merch,NO,,PENDING
+all,Bulldog · Designer Bandana · Birthday Edition,,celebrate,celebrate|shop,bulldog-special,bandanas,NO,,PENDING
+all,Bulldog · Photo Frame · Memorial Edition,,celebrate,celebrate|farewell,bulldog-special,accessories,NO,,PENDING
+all,Bulldog · Treat Box · Celebration Pack,,celebrate,celebrate,bulldog-special,celebration_addons,NO,,PENDING
+all,Bulldog · Canvas Print · Art Collection,,celebrate,celebrate|shop,bulldog-special,cups_merch,NO,,PENDING
+all,Bulldog · Breed Keychain · Accessory,,shop,celebrate|shop,bulldog-special,accessories,NO,,PENDING
+all,Bulldog · Party Hat · Birthday Special,,celebrate,celebrate,bulldog-special,celebration_addons,NO,,PENDING
+all,Bulldog · Breed Food Mat · Mealtime Essential,,dine,dine,bulldog-special,dine_accessories,NO,,PENDING
+all,Bulldog · Breed Recipe Card · Nutrition Guide,,dine,dine,bulldog-special,dine_accessories,NO,,PENDING
+all,Bulldog · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,bulldog-special,dine_accessories,NO,,PENDING
+all,Bulldog · Breed Grooming Guide · Care Essential,,care,care,bulldog-special,care_accessories,NO,,PENDING
+all,Bulldog · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,bulldog-special,care_accessories,NO,,PENDING
+all,Bulldog · Breed Wellness Kit · Health Essentials,,care,care,bulldog-special,care_accessories,NO,,PENDING
+all,Bulldog · Breed Adventure Bandana · Travel Identity,,go,go,bulldog-special,go_accessories,NO,,PENDING
+all,Bulldog · Breed Travel Tag · Safety Essential,,go,go,bulldog-special,go_accessories,NO,,PENDING
+all,Bulldog · Breed Trail Guide · Adventure Companion,,go,go,bulldog-special,go_accessories,NO,,PENDING
+all,Bulldog · Breed Play Bandana · Play Identity,,play,play,bulldog-special,play_accessories,NO,,PENDING
+all,Bulldog · Breed Playdate Card · Social Identity,,play,play,bulldog-special,play_accessories,NO,,PENDING
+all,Bulldog · Breed Activity Print · Soul Expression,,play,celebrate|play,bulldog-special,play_accessories,NO,,PENDING
+all,Maltese · Birthday Cake · Custom Design,,celebrate,celebrate,maltese-special,breed-cakes,NO,,PENDING
+all,Maltese · Ceramic Mug · Pet Parent Gift,,celebrate,celebrate|shop,maltese-special,cups_merch,NO,,PENDING
+all,Maltese · Designer Bandana · Birthday Edition,,celebrate,celebrate|shop,maltese-special,bandanas,NO,,PENDING
+all,Maltese · Photo Frame · Memorial Edition,,celebrate,celebrate|farewell,maltese-special,accessories,NO,,PENDING
+all,Maltese · Treat Box · Celebration Pack,,celebrate,celebrate,maltese-special,celebration_addons,NO,,PENDING
+all,Maltese · Canvas Print · Art Collection,,celebrate,celebrate|shop,maltese-special,cups_merch,NO,,PENDING
+all,Maltese · Breed Keychain · Accessory,,shop,celebrate|shop,maltese-special,accessories,NO,,PENDING
+all,Maltese · Party Hat · Birthday Special,,celebrate,celebrate,maltese-special,celebration_addons,NO,,PENDING
+all,Maltese · Breed Food Mat · Mealtime Essential,,dine,dine,maltese-special,dine_accessories,NO,,PENDING
+all,Maltese · Breed Recipe Card · Nutrition Guide,,dine,dine,maltese-special,dine_accessories,NO,,PENDING
+all,Maltese · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,maltese-special,dine_accessories,NO,,PENDING
+all,Maltese · Breed Grooming Guide · Care Essential,,care,care,maltese-special,care_accessories,NO,,PENDING
+all,Maltese · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,maltese-special,care_accessories,NO,,PENDING
+all,Maltese · Breed Wellness Kit · Health Essentials,,care,care,maltese-special,care_accessories,NO,,PENDING
+all,Maltese · Breed Adventure Bandana · Travel Identity,,go,go,maltese-special,go_accessories,NO,,PENDING
+all,Maltese · Breed Travel Tag · Safety Essential,,go,go,maltese-special,go_accessories,NO,,PENDING
+all,Maltese · Breed Trail Guide · Adventure Companion,,go,go,maltese-special,go_accessories,NO,,PENDING
+all,Maltese · Breed Play Bandana · Play Identity,,play,play,maltese-special,play_accessories,NO,,PENDING
+all,Maltese · Breed Playdate Card · Social Identity,,play,play,maltese-special,play_accessories,NO,,PENDING
+all,Maltese · Breed Activity Print · Soul Expression,,play,celebrate|play,maltese-special,play_accessories,NO,,PENDING
+all,Yorkshire Terrier · Birthday Cake · Custom Design,,celebrate,celebrate,yorkshire-terrier-special,breed-cakes,NO,,PENDING
+all,Yorkshire Terrier · Ceramic Mug · Pet Parent Gift,,celebrate,celebrate|shop,yorkshire-terrier-special,cups_merch,NO,,PENDING
+all,Yorkshire Terrier · Designer Bandana · Birthday Edition,,celebrate,celebrate|shop,yorkshire-terrier-special,bandanas,NO,,PENDING
+all,Yorkshire Terrier · Photo Frame · Memorial Edition,,celebrate,celebrate|farewell,yorkshire-terrier-special,accessories,NO,,PENDING
+all,Yorkshire Terrier · Treat Box · Celebration Pack,,celebrate,celebrate,yorkshire-terrier-special,celebration_addons,NO,,PENDING
+all,Yorkshire Terrier · Canvas Print · Art Collection,,celebrate,celebrate|shop,yorkshire-terrier-special,cups_merch,NO,,PENDING
+all,Yorkshire Terrier · Breed Keychain · Accessory,,shop,celebrate|shop,yorkshire-terrier-special,accessories,NO,,PENDING
+all,Yorkshire Terrier · Party Hat · Birthday Special,,celebrate,celebrate,yorkshire-terrier-special,celebration_addons,NO,,PENDING
+all,Yorkshire Terrier · Breed Food Mat · Mealtime Essential,,dine,dine,yorkshire-terrier-special,dine_accessories,NO,,PENDING
+all,Yorkshire Terrier · Breed Recipe Card · Nutrition Guide,,dine,dine,yorkshire-terrier-special,dine_accessories,NO,,PENDING
+all,Yorkshire Terrier · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,yorkshire-terrier-special,dine_accessories,NO,,PENDING
+all,Yorkshire Terrier · Breed Grooming Guide · Care Essential,,care,care,yorkshire-terrier-special,care_accessories,NO,,PENDING
+all,Yorkshire Terrier · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,yorkshire-terrier-special,care_accessories,NO,,PENDING
+all,Yorkshire Terrier · Breed Wellness Kit · Health Essentials,,care,care,yorkshire-terrier-special,care_accessories,NO,,PENDING
+all,Yorkshire Terrier · Breed Adventure Bandana · Travel Identity,,go,go,yorkshire-terrier-special,go_accessories,NO,,PENDING
+all,Yorkshire Terrier · Breed Travel Tag · Safety Essential,,go,go,yorkshire-terrier-special,go_accessories,NO,,PENDING
+all,Yorkshire Terrier · Breed Trail Guide · Adventure Companion,,go,go,yorkshire-terrier-special,go_accessories,NO,,PENDING
+all,Yorkshire Terrier · Breed Play Bandana · Play Identity,,play,play,yorkshire-terrier-special,play_accessories,NO,,PENDING
+all,Yorkshire Terrier · Breed Playdate Card · Social Identity,,play,play,yorkshire-terrier-special,play_accessories,NO,,PENDING
+all,Yorkshire Terrier · Breed Activity Print · Soul Expression,,play,celebrate|play,yorkshire-terrier-special,play_accessories,NO,,PENDING
+all,Akita · Birthday Cake · Custom Design,,celebrate,celebrate,akita-special,breed-cakes,NO,,PENDING
+all,Akita · Ceramic Mug · Pet Parent Gift,,celebrate,celebrate|shop,akita-special,cups_merch,NO,,PENDING
+all,Akita · Designer Bandana · Birthday Edition,,celebrate,celebrate|shop,akita-special,bandanas,NO,,PENDING
+all,Akita · Photo Frame · Memorial Edition,,celebrate,celebrate|farewell,akita-special,accessories,NO,,PENDING
+all,Akita · Treat Box · Celebration Pack,,celebrate,celebrate,akita-special,celebration_addons,NO,,PENDING
+all,Akita · Canvas Print · Art Collection,,celebrate,celebrate|shop,akita-special,cups_merch,NO,,PENDING
+all,Akita · Breed Keychain · Accessory,,shop,celebrate|shop,akita-special,accessories,NO,,PENDING
+all,Akita · Party Hat · Birthday Special,,celebrate,celebrate,akita-special,celebration_addons,NO,,PENDING
+all,Akita · Breed Food Mat · Mealtime Essential,,dine,dine,akita-special,dine_accessories,NO,,PENDING
+all,Akita · Breed Recipe Card · Nutrition Guide,,dine,dine,akita-special,dine_accessories,NO,,PENDING
+all,Akita · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,akita-special,dine_accessories,NO,,PENDING
+all,Akita · Breed Grooming Guide · Care Essential,,care,care,akita-special,care_accessories,NO,,PENDING
+all,Akita · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,akita-special,care_accessories,NO,,PENDING
+all,Akita · Breed Wellness Kit · Health Essentials,,care,care,akita-special,care_accessories,NO,,PENDING
+all,Akita · Breed Adventure Bandana · Travel Identity,,go,go,akita-special,go_accessories,NO,,PENDING
+all,Akita · Breed Travel Tag · Safety Essential,,go,go,akita-special,go_accessories,NO,,PENDING
+all,Akita · Breed Trail Guide · Adventure Companion,,go,go,akita-special,go_accessories,NO,,PENDING
+all,Akita · Breed Play Bandana · Play Identity,,play,play,akita-special,play_accessories,NO,,PENDING
+all,Akita · Breed Playdate Card · Social Identity,,play,play,akita-special,play_accessories,NO,,PENDING
+all,Akita · Breed Activity Print · Soul Expression,,play,celebrate|play,akita-special,play_accessories,NO,,PENDING
+all,Saint Bernard · Birthday Cake · Custom Design,,celebrate,celebrate,saint-bernard-special,breed-cakes,NO,,PENDING
+all,Saint Bernard · Ceramic Mug · Pet Parent Gift,,celebrate,celebrate|shop,saint-bernard-special,cups_merch,NO,,PENDING
+all,Saint Bernard · Designer Bandana · Birthday Edition,,celebrate,celebrate|shop,saint-bernard-special,bandanas,NO,,PENDING
+all,Saint Bernard · Photo Frame · Memorial Edition,,celebrate,celebrate|farewell,saint-bernard-special,accessories,NO,,PENDING
+all,Saint Bernard · Treat Box · Celebration Pack,,celebrate,celebrate,saint-bernard-special,celebration_addons,NO,,PENDING
+all,Saint Bernard · Canvas Print · Art Collection,,celebrate,celebrate|shop,saint-bernard-special,cups_merch,NO,,PENDING
+all,Saint Bernard · Breed Keychain · Accessory,,shop,celebrate|shop,saint-bernard-special,accessories,NO,,PENDING
+all,Saint Bernard · Party Hat · Birthday Special,,celebrate,celebrate,saint-bernard-special,celebration_addons,NO,,PENDING
+all,Saint Bernard · Breed Food Mat · Mealtime Essential,,dine,dine,saint-bernard-special,dine_accessories,NO,,PENDING
+all,Saint Bernard · Breed Recipe Card · Nutrition Guide,,dine,dine,saint-bernard-special,dine_accessories,NO,,PENDING
+all,Saint Bernard · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,saint-bernard-special,dine_accessories,NO,,PENDING
+all,Saint Bernard · Breed Grooming Guide · Care Essential,,care,care,saint-bernard-special,care_accessories,NO,,PENDING
+all,Saint Bernard · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,saint-bernard-special,care_accessories,NO,,PENDING
+all,Saint Bernard · Breed Wellness Kit · Health Essentials,,care,care,saint-bernard-special,care_accessories,NO,,PENDING
+all,Saint Bernard · Breed Adventure Bandana · Travel Identity,,go,go,saint-bernard-special,go_accessories,NO,,PENDING
+all,Saint Bernard · Breed Travel Tag · Safety Essential,,go,go,saint-bernard-special,go_accessories,NO,,PENDING
+all,Saint Bernard · Breed Trail Guide · Adventure Companion,,go,go,saint-bernard-special,go_accessories,NO,,PENDING
+all,Saint Bernard · Breed Play Bandana · Play Identity,,play,play,saint-bernard-special,play_accessories,NO,,PENDING
+all,Saint Bernard · Breed Playdate Card · Social Identity,,play,play,saint-bernard-special,play_accessories,NO,,PENDING
+all,Saint Bernard · Breed Activity Print · Soul Expression,,play,celebrate|play,saint-bernard-special,play_accessories,NO,,PENDING
+all,Lhasa Apso · Birthday Cake · Custom Design,,celebrate,celebrate,lhasa-apso-special,breed-cakes,NO,,PENDING
+all,Lhasa Apso · Ceramic Mug · Pet Parent Gift,,celebrate,celebrate|shop,lhasa-apso-special,cups_merch,NO,,PENDING
+all,Lhasa Apso · Designer Bandana · Birthday Edition,,celebrate,celebrate|shop,lhasa-apso-special,bandanas,NO,,PENDING
+all,Lhasa Apso · Photo Frame · Memorial Edition,,celebrate,celebrate|farewell,lhasa-apso-special,accessories,NO,,PENDING
+all,Lhasa Apso · Treat Box · Celebration Pack,,celebrate,celebrate,lhasa-apso-special,celebration_addons,NO,,PENDING
+all,Lhasa Apso · Canvas Print · Art Collection,,celebrate,celebrate|shop,lhasa-apso-special,cups_merch,NO,,PENDING
+all,Lhasa Apso · Breed Keychain · Accessory,,shop,celebrate|shop,lhasa-apso-special,accessories,NO,,PENDING
+all,Lhasa Apso · Party Hat · Birthday Special,,celebrate,celebrate,lhasa-apso-special,celebration_addons,NO,,PENDING
+all,Lhasa Apso · Breed Food Mat · Mealtime Essential,,dine,dine,lhasa-apso-special,dine_accessories,NO,,PENDING
+all,Lhasa Apso · Breed Recipe Card · Nutrition Guide,,dine,dine,lhasa-apso-special,dine_accessories,NO,,PENDING
+all,Lhasa Apso · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,lhasa-apso-special,dine_accessories,NO,,PENDING
+all,Lhasa Apso · Breed Grooming Guide · Care Essential,,care,care,lhasa-apso-special,care_accessories,NO,,PENDING
+all,Lhasa Apso · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,lhasa-apso-special,care_accessories,NO,,PENDING
+all,Lhasa Apso · Breed Wellness Kit · Health Essentials,,care,care,lhasa-apso-special,care_accessories,NO,,PENDING
+all,Lhasa Apso · Breed Adventure Bandana · Travel Identity,,go,go,lhasa-apso-special,go_accessories,NO,,PENDING
+all,Lhasa Apso · Breed Travel Tag · Safety Essential,,go,go,lhasa-apso-special,go_accessories,NO,,PENDING
+all,Lhasa Apso · Breed Trail Guide · Adventure Companion,,go,go,lhasa-apso-special,go_accessories,NO,,PENDING
+all,Lhasa Apso · Breed Play Bandana · Play Identity,,play,play,lhasa-apso-special,play_accessories,NO,,PENDING
+all,Lhasa Apso · Breed Playdate Card · Social Identity,,play,play,lhasa-apso-special,play_accessories,NO,,PENDING
+all,Lhasa Apso · Breed Activity Print · Soul Expression,,play,celebrate|play,lhasa-apso-special,play_accessories,NO,,PENDING
+all,Bichon Frise · Birthday Cake · Custom Design,,celebrate,celebrate,bichon-frise-special,breed-cakes,NO,,PENDING
+all,Bichon Frise · Ceramic Mug · Pet Parent Gift,,celebrate,celebrate|shop,bichon-frise-special,cups_merch,NO,,PENDING
+all,Bichon Frise · Designer Bandana · Birthday Edition,,celebrate,celebrate|shop,bichon-frise-special,bandanas,NO,,PENDING
+all,Bichon Frise · Photo Frame · Memorial Edition,,celebrate,celebrate|farewell,bichon-frise-special,accessories,NO,,PENDING
+all,Bichon Frise · Treat Box · Celebration Pack,,celebrate,celebrate,bichon-frise-special,celebration_addons,NO,,PENDING
+all,Bichon Frise · Canvas Print · Art Collection,,celebrate,celebrate|shop,bichon-frise-special,cups_merch,NO,,PENDING
+all,Bichon Frise · Breed Keychain · Accessory,,shop,celebrate|shop,bichon-frise-special,accessories,NO,,PENDING
+all,Bichon Frise · Party Hat · Birthday Special,,celebrate,celebrate,bichon-frise-special,celebration_addons,NO,,PENDING
+all,Bichon Frise · Breed Food Mat · Mealtime Essential,,dine,dine,bichon-frise-special,dine_accessories,NO,,PENDING
+all,Bichon Frise · Breed Recipe Card · Nutrition Guide,,dine,dine,bichon-frise-special,dine_accessories,NO,,PENDING
+all,Bichon Frise · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,bichon-frise-special,dine_accessories,NO,,PENDING
+all,Bichon Frise · Breed Grooming Guide · Care Essential,,care,care,bichon-frise-special,care_accessories,NO,,PENDING
+all,Bichon Frise · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,bichon-frise-special,care_accessories,NO,,PENDING
+all,Bichon Frise · Breed Wellness Kit · Health Essentials,,care,care,bichon-frise-special,care_accessories,NO,,PENDING
+all,Bichon Frise · Breed Adventure Bandana · Travel Identity,,go,go,bichon-frise-special,go_accessories,NO,,PENDING
+all,Bichon Frise · Breed Travel Tag · Safety Essential,,go,go,bichon-frise-special,go_accessories,NO,,PENDING
+all,Bichon Frise · Breed Trail Guide · Adventure Companion,,go,go,bichon-frise-special,go_accessories,NO,,PENDING
+all,Bichon Frise · Breed Play Bandana · Play Identity,,play,play,bichon-frise-special,play_accessories,NO,,PENDING
+all,Bichon Frise · Breed Playdate Card · Social Identity,,play,play,bichon-frise-special,play_accessories,NO,,PENDING
+all,Bichon Frise · Breed Activity Print · Soul Expression,,play,celebrate|play,bichon-frise-special,play_accessories,NO,,PENDING
+all,Corgi · Birthday Cake · Custom Design,,celebrate,celebrate,corgi-special,breed-cakes,NO,,PENDING
+all,Corgi · Ceramic Mug · Pet Parent Gift,,celebrate,celebrate|shop,corgi-special,cups_merch,NO,,PENDING
+all,Corgi · Designer Bandana · Birthday Edition,,celebrate,celebrate|shop,corgi-special,bandanas,NO,,PENDING
+all,Corgi · Photo Frame · Memorial Edition,,celebrate,celebrate|farewell,corgi-special,accessories,NO,,PENDING
+all,Corgi · Treat Box · Celebration Pack,,celebrate,celebrate,corgi-special,celebration_addons,NO,,PENDING
+all,Corgi · Canvas Print · Art Collection,,celebrate,celebrate|shop,corgi-special,cups_merch,NO,,PENDING
+all,Corgi · Breed Keychain · Accessory,,shop,celebrate|shop,corgi-special,accessories,NO,,PENDING
+all,Corgi · Party Hat · Birthday Special,,celebrate,celebrate,corgi-special,celebration_addons,NO,,PENDING
+all,Corgi · Breed Food Mat · Mealtime Essential,,dine,dine,corgi-special,dine_accessories,NO,,PENDING
+all,Corgi · Breed Recipe Card · Nutrition Guide,,dine,dine,corgi-special,dine_accessories,NO,,PENDING
+all,Corgi · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,corgi-special,dine_accessories,NO,,PENDING
+all,Corgi · Breed Grooming Guide · Care Essential,,care,care,corgi-special,care_accessories,NO,,PENDING
+all,Corgi · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,corgi-special,care_accessories,NO,,PENDING
+all,Corgi · Breed Wellness Kit · Health Essentials,,care,care,corgi-special,care_accessories,NO,,PENDING
+all,Corgi · Breed Adventure Bandana · Travel Identity,,go,go,corgi-special,go_accessories,NO,,PENDING
+all,Corgi · Breed Travel Tag · Safety Essential,,go,go,corgi-special,go_accessories,NO,,PENDING
+all,Corgi · Breed Trail Guide · Adventure Companion,,go,go,corgi-special,go_accessories,NO,,PENDING
+all,Corgi · Breed Play Bandana · Play Identity,,play,play,corgi-special,play_accessories,NO,,PENDING
+all,Corgi · Breed Playdate Card · Social Identity,,play,play,corgi-special,play_accessories,NO,,PENDING
+all,Corgi · Breed Activity Print · Soul Expression,,play,celebrate|play,corgi-special,play_accessories,NO,,PENDING
+all,Samoyed · Birthday Cake · Custom Design,,celebrate,celebrate,samoyed-special,breed-cakes,NO,,PENDING
+all,Samoyed · Ceramic Mug · Pet Parent Gift,,celebrate,celebrate|shop,samoyed-special,cups_merch,NO,,PENDING
+all,Samoyed · Designer Bandana · Birthday Edition,,celebrate,celebrate|shop,samoyed-special,bandanas,NO,,PENDING
+all,Samoyed · Photo Frame · Memorial Edition,,celebrate,celebrate|farewell,samoyed-special,accessories,NO,,PENDING
+all,Samoyed · Treat Box · Celebration Pack,,celebrate,celebrate,samoyed-special,celebration_addons,NO,,PENDING
+all,Samoyed · Canvas Print · Art Collection,,celebrate,celebrate|shop,samoyed-special,cups_merch,NO,,PENDING
+all,Samoyed · Breed Keychain · Accessory,,shop,celebrate|shop,samoyed-special,accessories,NO,,PENDING
+all,Samoyed · Party Hat · Birthday Special,,celebrate,celebrate,samoyed-special,celebration_addons,NO,,PENDING
+all,Samoyed · Breed Food Mat · Mealtime Essential,,dine,dine,samoyed-special,dine_accessories,NO,,PENDING
+all,Samoyed · Breed Recipe Card · Nutrition Guide,,dine,dine,samoyed-special,dine_accessories,NO,,PENDING
+all,Samoyed · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,samoyed-special,dine_accessories,NO,,PENDING
+all,Samoyed · Breed Grooming Guide · Care Essential,,care,care,samoyed-special,care_accessories,NO,,PENDING
+all,Samoyed · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,samoyed-special,care_accessories,NO,,PENDING
+all,Samoyed · Breed Wellness Kit · Health Essentials,,care,care,samoyed-special,care_accessories,NO,,PENDING
+all,Samoyed · Breed Adventure Bandana · Travel Identity,,go,go,samoyed-special,go_accessories,NO,,PENDING
+all,Samoyed · Breed Travel Tag · Safety Essential,,go,go,samoyed-special,go_accessories,NO,,PENDING
+all,Samoyed · Breed Trail Guide · Adventure Companion,,go,go,samoyed-special,go_accessories,NO,,PENDING
+all,Samoyed · Breed Play Bandana · Play Identity,,play,play,samoyed-special,play_accessories,NO,,PENDING
+all,Samoyed · Breed Playdate Card · Social Identity,,play,play,samoyed-special,play_accessories,NO,,PENDING
+all,Samoyed · Breed Activity Print · Soul Expression,,play,celebrate|play,samoyed-special,play_accessories,NO,,PENDING
+all,Vizsla · Birthday Cake · Custom Design,,celebrate,celebrate,vizsla-special,breed-cakes,NO,,PENDING
+all,Vizsla · Ceramic Mug · Pet Parent Gift,,celebrate,celebrate|shop,vizsla-special,cups_merch,NO,,PENDING
+all,Vizsla · Designer Bandana · Birthday Edition,,celebrate,celebrate|shop,vizsla-special,bandanas,NO,,PENDING
+all,Vizsla · Photo Frame · Memorial Edition,,celebrate,celebrate|farewell,vizsla-special,accessories,NO,,PENDING
+all,Vizsla · Treat Box · Celebration Pack,,celebrate,celebrate,vizsla-special,celebration_addons,NO,,PENDING
+all,Vizsla · Canvas Print · Art Collection,,celebrate,celebrate|shop,vizsla-special,cups_merch,NO,,PENDING
+all,Vizsla · Breed Keychain · Accessory,,shop,celebrate|shop,vizsla-special,accessories,NO,,PENDING
+all,Vizsla · Party Hat · Birthday Special,,celebrate,celebrate,vizsla-special,celebration_addons,NO,,PENDING
+all,Vizsla · Breed Food Mat · Mealtime Essential,,dine,dine,vizsla-special,dine_accessories,NO,,PENDING
+all,Vizsla · Breed Recipe Card · Nutrition Guide,,dine,dine,vizsla-special,dine_accessories,NO,,PENDING
+all,Vizsla · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,vizsla-special,dine_accessories,NO,,PENDING
+all,Vizsla · Breed Grooming Guide · Care Essential,,care,care,vizsla-special,care_accessories,NO,,PENDING
+all,Vizsla · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,vizsla-special,care_accessories,NO,,PENDING
+all,Vizsla · Breed Wellness Kit · Health Essentials,,care,care,vizsla-special,care_accessories,NO,,PENDING
+all,Vizsla · Breed Adventure Bandana · Travel Identity,,go,go,vizsla-special,go_accessories,NO,,PENDING
+all,Vizsla · Breed Travel Tag · Safety Essential,,go,go,vizsla-special,go_accessories,NO,,PENDING
+all,Vizsla · Breed Trail Guide · Adventure Companion,,go,go,vizsla-special,go_accessories,NO,,PENDING
+all,Vizsla · Breed Play Bandana · Play Identity,,play,play,vizsla-special,play_accessories,NO,,PENDING
+all,Vizsla · Breed Playdate Card · Social Identity,,play,play,vizsla-special,play_accessories,NO,,PENDING
+all,Vizsla · Breed Activity Print · Soul Expression,,play,celebrate|play,vizsla-special,play_accessories,NO,,PENDING
+all,Weimaraner · Birthday Cake · Custom Design,,celebrate,celebrate,weimaraner-special,breed-cakes,NO,,PENDING
+all,Weimaraner · Ceramic Mug · Pet Parent Gift,,celebrate,celebrate|shop,weimaraner-special,cups_merch,NO,,PENDING
+all,Weimaraner · Designer Bandana · Birthday Edition,,celebrate,celebrate|shop,weimaraner-special,bandanas,NO,,PENDING
+all,Weimaraner · Photo Frame · Memorial Edition,,celebrate,celebrate|farewell,weimaraner-special,accessories,NO,,PENDING
+all,Weimaraner · Treat Box · Celebration Pack,,celebrate,celebrate,weimaraner-special,celebration_addons,NO,,PENDING
+all,Weimaraner · Canvas Print · Art Collection,,celebrate,celebrate|shop,weimaraner-special,cups_merch,NO,,PENDING
+all,Weimaraner · Breed Keychain · Accessory,,shop,celebrate|shop,weimaraner-special,accessories,NO,,PENDING
+all,Weimaraner · Party Hat · Birthday Special,,celebrate,celebrate,weimaraner-special,celebration_addons,NO,,PENDING
+all,Weimaraner · Breed Food Mat · Mealtime Essential,,dine,dine,weimaraner-special,dine_accessories,NO,,PENDING
+all,Weimaraner · Breed Recipe Card · Nutrition Guide,,dine,dine,weimaraner-special,dine_accessories,NO,,PENDING
+all,Weimaraner · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,weimaraner-special,dine_accessories,NO,,PENDING
+all,Weimaraner · Breed Grooming Guide · Care Essential,,care,care,weimaraner-special,care_accessories,NO,,PENDING
+all,Weimaraner · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,weimaraner-special,care_accessories,NO,,PENDING
+all,Weimaraner · Breed Wellness Kit · Health Essentials,,care,care,weimaraner-special,care_accessories,NO,,PENDING
+all,Weimaraner · Breed Adventure Bandana · Travel Identity,,go,go,weimaraner-special,go_accessories,NO,,PENDING
+all,Weimaraner · Breed Travel Tag · Safety Essential,,go,go,weimaraner-special,go_accessories,NO,,PENDING
+all,Weimaraner · Breed Trail Guide · Adventure Companion,,go,go,weimaraner-special,go_accessories,NO,,PENDING
+all,Weimaraner · Breed Play Bandana · Play Identity,,play,play,weimaraner-special,play_accessories,NO,,PENDING
+all,Weimaraner · Breed Playdate Card · Social Identity,,play,play,weimaraner-special,play_accessories,NO,,PENDING
+all,Weimaraner · Breed Activity Print · Soul Expression,,play,celebrate|play,weimaraner-special,play_accessories,NO,,PENDING
+all,Basenji · Birthday Cake · Custom Design,,celebrate,celebrate,basenji-special,breed-cakes,NO,,PENDING
+all,Basenji · Ceramic Mug · Pet Parent Gift,,celebrate,celebrate|shop,basenji-special,cups_merch,NO,,PENDING
+all,Basenji · Designer Bandana · Birthday Edition,,celebrate,celebrate|shop,basenji-special,bandanas,NO,,PENDING
+all,Basenji · Photo Frame · Memorial Edition,,celebrate,celebrate|farewell,basenji-special,accessories,NO,,PENDING
+all,Basenji · Treat Box · Celebration Pack,,celebrate,celebrate,basenji-special,celebration_addons,NO,,PENDING
+all,Basenji · Canvas Print · Art Collection,,celebrate,celebrate|shop,basenji-special,cups_merch,NO,,PENDING
+all,Basenji · Breed Keychain · Accessory,,shop,celebrate|shop,basenji-special,accessories,NO,,PENDING
+all,Basenji · Party Hat · Birthday Special,,celebrate,celebrate,basenji-special,celebration_addons,NO,,PENDING
+all,Basenji · Breed Food Mat · Mealtime Essential,,dine,dine,basenji-special,dine_accessories,NO,,PENDING
+all,Basenji · Breed Recipe Card · Nutrition Guide,,dine,dine,basenji-special,dine_accessories,NO,,PENDING
+all,Basenji · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,basenji-special,dine_accessories,NO,,PENDING
+all,Basenji · Breed Grooming Guide · Care Essential,,care,care,basenji-special,care_accessories,NO,,PENDING
+all,Basenji · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,basenji-special,care_accessories,NO,,PENDING
+all,Basenji · Breed Wellness Kit · Health Essentials,,care,care,basenji-special,care_accessories,NO,,PENDING
+all,Basenji · Breed Adventure Bandana · Travel Identity,,go,go,basenji-special,go_accessories,NO,,PENDING
+all,Basenji · Breed Travel Tag · Safety Essential,,go,go,basenji-special,go_accessories,NO,,PENDING
+all,Basenji · Breed Trail Guide · Adventure Companion,,go,go,basenji-special,go_accessories,NO,,PENDING
+all,Basenji · Breed Play Bandana · Play Identity,,play,play,basenji-special,play_accessories,NO,,PENDING
+all,Basenji · Breed Playdate Card · Social Identity,,play,play,basenji-special,play_accessories,NO,,PENDING
+all,Basenji · Breed Activity Print · Soul Expression,,play,celebrate|play,basenji-special,play_accessories,NO,,PENDING
+all,Alaskan Malamute · Birthday Cake · Custom Design,,celebrate,celebrate,alaskan-malamute-special,breed-cakes,NO,,PENDING
+all,Alaskan Malamute · Ceramic Mug · Pet Parent Gift,,celebrate,celebrate|shop,alaskan-malamute-special,cups_merch,NO,,PENDING
+all,Alaskan Malamute · Designer Bandana · Birthday Edition,,celebrate,celebrate|shop,alaskan-malamute-special,bandanas,NO,,PENDING
+all,Alaskan Malamute · Photo Frame · Memorial Edition,,celebrate,celebrate|farewell,alaskan-malamute-special,accessories,NO,,PENDING
+all,Alaskan Malamute · Treat Box · Celebration Pack,,celebrate,celebrate,alaskan-malamute-special,celebration_addons,NO,,PENDING
+all,Alaskan Malamute · Canvas Print · Art Collection,,celebrate,celebrate|shop,alaskan-malamute-special,cups_merch,NO,,PENDING
+all,Alaskan Malamute · Breed Keychain · Accessory,,shop,celebrate|shop,alaskan-malamute-special,accessories,NO,,PENDING
+all,Alaskan Malamute · Party Hat · Birthday Special,,celebrate,celebrate,alaskan-malamute-special,celebration_addons,NO,,PENDING
+all,Alaskan Malamute · Breed Food Mat · Mealtime Essential,,dine,dine,alaskan-malamute-special,dine_accessories,NO,,PENDING
+all,Alaskan Malamute · Breed Recipe Card · Nutrition Guide,,dine,dine,alaskan-malamute-special,dine_accessories,NO,,PENDING
+all,Alaskan Malamute · Breed Ceramic Bowl · Personalised Feed,,dine,dine|shop,alaskan-malamute-special,dine_accessories,NO,,PENDING
+all,Alaskan Malamute · Breed Grooming Guide · Care Essential,,care,care,alaskan-malamute-special,care_accessories,NO,,PENDING
+all,Alaskan Malamute · Breed Portrait Frame · Vet Visit Companion,,care,care|celebrate,alaskan-malamute-special,care_accessories,NO,,PENDING
+all,Alaskan Malamute · Breed Wellness Kit · Health Essentials,,care,care,alaskan-malamute-special,care_accessories,NO,,PENDING
+all,Alaskan Malamute · Breed Adventure Bandana · Travel Identity,,go,go,alaskan-malamute-special,go_accessories,NO,,PENDING
+all,Alaskan Malamute · Breed Travel Tag · Safety Essential,,go,go,alaskan-malamute-special,go_accessories,NO,,PENDING
+all,Alaskan Malamute · Breed Trail Guide · Adventure Companion,,go,go,alaskan-malamute-special,go_accessories,NO,,PENDING
+all,Alaskan Malamute · Breed Play Bandana · Play Identity,,play,play,alaskan-malamute-special,play_accessories,NO,,PENDING
+all,Alaskan Malamute · Breed Playdate Card · Social Identity,,play,play,alaskan-malamute-special,play_accessories,NO,,PENDING
+all,Alaskan Malamute · Breed Activity Print · Soul Expression,,play,celebrate|play,alaskan-malamute-special,play_accessories,NO,,PENDING
+basenji,Basenji Breed Food Mat,,dine,dine,basenji-dine,dine_accessories,NO,,PENDING
+basenji,Basenji Breed Ceramic Bowl,,dine,dine,basenji-dine,dine_accessories,NO,,PENDING
+basenji,Basenji Breed Recipe Card,,dine,dine,basenji-dine,dine_accessories,NO,,PENDING
+basenji,Basenji Breed Grooming Guide,,care,care,basenji-care,care_accessories,NO,,PENDING
+basenji,Basenji Breed Portrait Frame,,care,care,basenji-care,care_accessories,NO,,PENDING
+basenji,Basenji Breed Wellness Kit,,care,care,basenji-care,care_accessories,NO,,PENDING
+basenji,Basenji Breed Adventure Bandana,,go,go,basenji-go,go_accessories,NO,,PENDING
+basenji,Basenji Breed Travel Tag,,go,go,basenji-go,go_accessories,NO,,PENDING
+basenji,Basenji Breed Trail Guide,,go,go,basenji-go,go_accessories,NO,,PENDING
+basenji,Basenji Breed Play Bandana,,play,play,basenji-play,play_accessories,NO,,PENDING
+basenji,Basenji Breed Playdate Card,,play,play,basenji-play,play_accessories,NO,,PENDING
+basenji,Basenji Breed Activity Print,,play,play,basenji-play,play_accessories,NO,,PENDING
+beagle,Beagle Breed Food Mat,,dine,dine,beagle-dine,dine_accessories,NO,,PENDING
+beagle,Beagle Breed Ceramic Bowl,,dine,dine,beagle-dine,dine_accessories,NO,,PENDING
+beagle,Beagle Breed Recipe Card,,dine,dine,beagle-dine,dine_accessories,NO,,PENDING
+beagle,Beagle Breed Grooming Guide,,care,care,beagle-care,care_accessories,NO,,PENDING
+beagle,Beagle Breed Portrait Frame,,care,care,beagle-care,care_accessories,NO,,PENDING
+beagle,Beagle Breed Wellness Kit,,care,care,beagle-care,care_accessories,NO,,PENDING
+beagle,Beagle Breed Adventure Bandana,,go,go,beagle-go,go_accessories,NO,,PENDING
+beagle,Beagle Breed Travel Tag,,go,go,beagle-go,go_accessories,NO,,PENDING
+beagle,Beagle Breed Trail Guide,,go,go,beagle-go,go_accessories,NO,,PENDING
+beagle,Beagle Breed Play Bandana,,play,play,beagle-play,play_accessories,NO,,PENDING
+beagle,Beagle Breed Playdate Card,,play,play,beagle-play,play_accessories,NO,,PENDING
+beagle,Beagle Breed Activity Print,,play,play,beagle-play,play_accessories,NO,,PENDING
+bichon_frise,Bichon Frise Breed Food Mat,,dine,dine,bichon-frise-dine,dine_accessories,NO,,PENDING
+bichon_frise,Bichon Frise Breed Ceramic Bowl,,dine,dine,bichon-frise-dine,dine_accessories,NO,,PENDING
+bichon_frise,Bichon Frise Breed Recipe Card,,dine,dine,bichon-frise-dine,dine_accessories,NO,,PENDING
+bichon_frise,Bichon Frise Breed Grooming Guide,,care,care,bichon-frise-care,care_accessories,NO,,PENDING
+bichon_frise,Bichon Frise Breed Portrait Frame,,care,care,bichon-frise-care,care_accessories,NO,,PENDING
+bichon_frise,Bichon Frise Breed Wellness Kit,,care,care,bichon-frise-care,care_accessories,NO,,PENDING
+bichon_frise,Bichon Frise Breed Adventure Bandana,,go,go,bichon-frise-go,go_accessories,NO,,PENDING
+bichon_frise,Bichon Frise Breed Travel Tag,,go,go,bichon-frise-go,go_accessories,NO,,PENDING
+bichon_frise,Bichon Frise Breed Trail Guide,,go,go,bichon-frise-go,go_accessories,NO,,PENDING
+bichon_frise,Bichon Frise Breed Play Bandana,,play,play,bichon-frise-play,play_accessories,NO,,PENDING
+bichon_frise,Bichon Frise Breed Playdate Card,,play,play,bichon-frise-play,play_accessories,NO,,PENDING
+bichon_frise,Bichon Frise Breed Activity Print,,play,play,bichon-frise-play,play_accessories,NO,,PENDING
+border_collie,Border Collie Breed Food Mat,,dine,dine,border-collie-dine,dine_accessories,NO,,PENDING
+border_collie,Border Collie Breed Ceramic Bowl,,dine,dine,border-collie-dine,dine_accessories,NO,,PENDING
+border_collie,Border Collie Breed Recipe Card,,dine,dine,border-collie-dine,dine_accessories,NO,,PENDING
+border_collie,Border Collie Breed Grooming Guide,,care,care,border-collie-care,care_accessories,NO,,PENDING
+border_collie,Border Collie Breed Portrait Frame,,care,care,border-collie-care,care_accessories,NO,,PENDING
+border_collie,Border Collie Breed Wellness Kit,,care,care,border-collie-care,care_accessories,NO,,PENDING
+border_collie,Border Collie Breed Adventure Bandana,,go,go,border-collie-go,go_accessories,NO,,PENDING
+border_collie,Border Collie Breed Travel Tag,,go,go,border-collie-go,go_accessories,NO,,PENDING
+border_collie,Border Collie Breed Trail Guide,,go,go,border-collie-go,go_accessories,NO,,PENDING
+border_collie,Border Collie Breed Play Bandana,,play,play,border-collie-play,play_accessories,NO,,PENDING
+border_collie,Border Collie Breed Playdate Card,,play,play,border-collie-play,play_accessories,NO,,PENDING
+border_collie,Border Collie Breed Activity Print,,play,play,border-collie-play,play_accessories,NO,,PENDING
+boxer,Boxer Breed Food Mat,,dine,dine,boxer-dine,dine_accessories,NO,,PENDING
+boxer,Boxer Breed Ceramic Bowl,,dine,dine,boxer-dine,dine_accessories,NO,,PENDING
+boxer,Boxer Breed Recipe Card,,dine,dine,boxer-dine,dine_accessories,NO,,PENDING
+boxer,Boxer Breed Grooming Guide,,care,care,boxer-care,care_accessories,NO,,PENDING
+boxer,Boxer Breed Portrait Frame,,care,care,boxer-care,care_accessories,NO,,PENDING
+boxer,Boxer Breed Wellness Kit,,care,care,boxer-care,care_accessories,NO,,PENDING
+boxer,Boxer Breed Adventure Bandana,,go,go,boxer-go,go_accessories,NO,,PENDING
+boxer,Boxer Breed Travel Tag,,go,go,boxer-go,go_accessories,NO,,PENDING
+boxer,Boxer Breed Trail Guide,,go,go,boxer-go,go_accessories,NO,,PENDING
+boxer,Boxer Breed Play Bandana,,play,play,boxer-play,play_accessories,NO,,PENDING
+boxer,Boxer Breed Playdate Card,,play,play,boxer-play,play_accessories,NO,,PENDING
+boxer,Boxer Breed Activity Print,,play,play,boxer-play,play_accessories,NO,,PENDING
+bulldog,Bulldog Breed Food Mat,,dine,dine,bulldog-dine,dine_accessories,NO,,PENDING
+bulldog,Bulldog Breed Ceramic Bowl,,dine,dine,bulldog-dine,dine_accessories,NO,,PENDING
+bulldog,Bulldog Breed Recipe Card,,dine,dine,bulldog-dine,dine_accessories,NO,,PENDING
+bulldog,Bulldog Breed Grooming Guide,,care,care,bulldog-care,care_accessories,NO,,PENDING
+bulldog,Bulldog Breed Portrait Frame,,care,care,bulldog-care,care_accessories,NO,,PENDING
+bulldog,Bulldog Breed Wellness Kit,,care,care,bulldog-care,care_accessories,NO,,PENDING
+bulldog,Bulldog Breed Adventure Bandana,,go,go,bulldog-go,go_accessories,NO,,PENDING
+bulldog,Bulldog Breed Travel Tag,,go,go,bulldog-go,go_accessories,NO,,PENDING
+bulldog,Bulldog Breed Trail Guide,,go,go,bulldog-go,go_accessories,NO,,PENDING
+bulldog,Bulldog Breed Play Bandana,,play,play,bulldog-play,play_accessories,NO,,PENDING
+bulldog,Bulldog Breed Playdate Card,,play,play,bulldog-play,play_accessories,NO,,PENDING
+bulldog,Bulldog Breed Activity Print,,play,play,bulldog-play,play_accessories,NO,,PENDING
+chihuahua,Chihuahua Breed Food Mat,,dine,dine,chihuahua-dine,dine_accessories,NO,,PENDING
+chihuahua,Chihuahua Breed Ceramic Bowl,,dine,dine,chihuahua-dine,dine_accessories,NO,,PENDING
+chihuahua,Chihuahua Breed Recipe Card,,dine,dine,chihuahua-dine,dine_accessories,NO,,PENDING
+chihuahua,Chihuahua Breed Grooming Guide,,care,care,chihuahua-care,care_accessories,NO,,PENDING
+chihuahua,Chihuahua Breed Portrait Frame,,care,care,chihuahua-care,care_accessories,NO,,PENDING
+chihuahua,Chihuahua Breed Wellness Kit,,care,care,chihuahua-care,care_accessories,NO,,PENDING
+chihuahua,Chihuahua Breed Adventure Bandana,,go,go,chihuahua-go,go_accessories,NO,,PENDING
+chihuahua,Chihuahua Breed Travel Tag,,go,go,chihuahua-go,go_accessories,NO,,PENDING
+chihuahua,Chihuahua Breed Trail Guide,,go,go,chihuahua-go,go_accessories,NO,,PENDING
+chihuahua,Chihuahua Breed Play Bandana,,play,play,chihuahua-play,play_accessories,NO,,PENDING
+chihuahua,Chihuahua Breed Playdate Card,,play,play,chihuahua-play,play_accessories,NO,,PENDING
+chihuahua,Chihuahua Breed Activity Print,,play,play,chihuahua-play,play_accessories,NO,,PENDING
+cocker_spaniel,Cocker Spaniel Breed Food Mat,,dine,dine,cocker-spaniel-dine,dine_accessories,NO,,PENDING
+cocker_spaniel,Cocker Spaniel Breed Ceramic Bowl,,dine,dine,cocker-spaniel-dine,dine_accessories,NO,,PENDING
+cocker_spaniel,Cocker Spaniel Breed Recipe Card,,dine,dine,cocker-spaniel-dine,dine_accessories,NO,,PENDING
+cocker_spaniel,Cocker Spaniel Breed Grooming Guide,,care,care,cocker-spaniel-care,care_accessories,NO,,PENDING
+cocker_spaniel,Cocker Spaniel Breed Portrait Frame,,care,care,cocker-spaniel-care,care_accessories,NO,,PENDING
+cocker_spaniel,Cocker Spaniel Breed Wellness Kit,,care,care,cocker-spaniel-care,care_accessories,NO,,PENDING
+cocker_spaniel,Cocker Spaniel Breed Adventure Bandana,,go,go,cocker-spaniel-go,go_accessories,NO,,PENDING
+cocker_spaniel,Cocker Spaniel Breed Travel Tag,,go,go,cocker-spaniel-go,go_accessories,NO,,PENDING
+cocker_spaniel,Cocker Spaniel Breed Trail Guide,,go,go,cocker-spaniel-go,go_accessories,NO,,PENDING
+cocker_spaniel,Cocker Spaniel Breed Play Bandana,,play,play,cocker-spaniel-play,play_accessories,NO,,PENDING
+cocker_spaniel,Cocker Spaniel Breed Playdate Card,,play,play,cocker-spaniel-play,play_accessories,NO,,PENDING
+cocker_spaniel,Cocker Spaniel Breed Activity Print,,play,play,cocker-spaniel-play,play_accessories,NO,,PENDING
+corgi,Corgi Breed Food Mat,,dine,dine,corgi-dine,dine_accessories,NO,,PENDING
+corgi,Corgi Breed Ceramic Bowl,,dine,dine,corgi-dine,dine_accessories,NO,,PENDING
+corgi,Corgi Breed Recipe Card,,dine,dine,corgi-dine,dine_accessories,NO,,PENDING
+corgi,Corgi Breed Grooming Guide,,care,care,corgi-care,care_accessories,NO,,PENDING
+corgi,Corgi Breed Portrait Frame,,care,care,corgi-care,care_accessories,NO,,PENDING
+corgi,Corgi Breed Wellness Kit,,care,care,corgi-care,care_accessories,NO,,PENDING
+corgi,Corgi Breed Adventure Bandana,,go,go,corgi-go,go_accessories,NO,,PENDING
+corgi,Corgi Breed Travel Tag,,go,go,corgi-go,go_accessories,NO,,PENDING
+corgi,Corgi Breed Trail Guide,,go,go,corgi-go,go_accessories,NO,,PENDING
+corgi,Corgi Breed Play Bandana,,play,play,corgi-play,play_accessories,NO,,PENDING
+corgi,Corgi Breed Playdate Card,,play,play,corgi-play,play_accessories,NO,,PENDING
+corgi,Corgi Breed Activity Print,,play,play,corgi-play,play_accessories,NO,,PENDING
+dachshund,Dachshund Breed Food Mat,,dine,dine,dachshund-dine,dine_accessories,NO,,PENDING
+dachshund,Dachshund Breed Ceramic Bowl,,dine,dine,dachshund-dine,dine_accessories,NO,,PENDING
+dachshund,Dachshund Breed Recipe Card,,dine,dine,dachshund-dine,dine_accessories,NO,,PENDING
+dachshund,Dachshund Breed Grooming Guide,,care,care,dachshund-care,care_accessories,NO,,PENDING
+dachshund,Dachshund Breed Portrait Frame,,care,care,dachshund-care,care_accessories,NO,,PENDING
+dachshund,Dachshund Breed Wellness Kit,,care,care,dachshund-care,care_accessories,NO,,PENDING
+dachshund,Dachshund Breed Adventure Bandana,,go,go,dachshund-go,go_accessories,NO,,PENDING
+dachshund,Dachshund Breed Travel Tag,,go,go,dachshund-go,go_accessories,NO,,PENDING
+dachshund,Dachshund Breed Trail Guide,,go,go,dachshund-go,go_accessories,NO,,PENDING
+dachshund,Dachshund Breed Play Bandana,,play,play,dachshund-play,play_accessories,NO,,PENDING
+dachshund,Dachshund Breed Playdate Card,,play,play,dachshund-play,play_accessories,NO,,PENDING
+dachshund,Dachshund Breed Activity Print,,play,play,dachshund-play,play_accessories,NO,,PENDING
+dalmatian,Dalmatian Breed Food Mat,,dine,dine,dalmatian-dine,dine_accessories,NO,,PENDING
+dalmatian,Dalmatian Breed Ceramic Bowl,,dine,dine,dalmatian-dine,dine_accessories,NO,,PENDING
+dalmatian,Dalmatian Breed Recipe Card,,dine,dine,dalmatian-dine,dine_accessories,NO,,PENDING
+dalmatian,Dalmatian Breed Grooming Guide,,care,care,dalmatian-care,care_accessories,NO,,PENDING
+dalmatian,Dalmatian Breed Portrait Frame,,care,care,dalmatian-care,care_accessories,NO,,PENDING
+dalmatian,Dalmatian Breed Wellness Kit,,care,care,dalmatian-care,care_accessories,NO,,PENDING
+dalmatian,Dalmatian Breed Adventure Bandana,,go,go,dalmatian-go,go_accessories,NO,,PENDING
+dalmatian,Dalmatian Breed Travel Tag,,go,go,dalmatian-go,go_accessories,NO,,PENDING
+dalmatian,Dalmatian Breed Trail Guide,,go,go,dalmatian-go,go_accessories,NO,,PENDING
+dalmatian,Dalmatian Breed Play Bandana,,play,play,dalmatian-play,play_accessories,NO,,PENDING
+dalmatian,Dalmatian Breed Playdate Card,,play,play,dalmatian-play,play_accessories,NO,,PENDING
+dalmatian,Dalmatian Breed Activity Print,,play,play,dalmatian-play,play_accessories,NO,,PENDING
+doberman,Doberman Breed Food Mat,,dine,dine,doberman-dine,dine_accessories,NO,,PENDING
+doberman,Doberman Breed Ceramic Bowl,,dine,dine,doberman-dine,dine_accessories,NO,,PENDING
+doberman,Doberman Breed Recipe Card,,dine,dine,doberman-dine,dine_accessories,NO,,PENDING
+doberman,Doberman Breed Grooming Guide,,care,care,doberman-care,care_accessories,NO,,PENDING
+doberman,Doberman Breed Portrait Frame,,care,care,doberman-care,care_accessories,NO,,PENDING
+doberman,Doberman Breed Wellness Kit,,care,care,doberman-care,care_accessories,NO,,PENDING
+doberman,Doberman Breed Adventure Bandana,,go,go,doberman-go,go_accessories,NO,,PENDING
+doberman,Doberman Breed Travel Tag,,go,go,doberman-go,go_accessories,NO,,PENDING
+doberman,Doberman Breed Trail Guide,,go,go,doberman-go,go_accessories,NO,,PENDING
+doberman,Doberman Breed Play Bandana,,play,play,doberman-play,play_accessories,NO,,PENDING
+doberman,Doberman Breed Playdate Card,,play,play,doberman-play,play_accessories,NO,,PENDING
+doberman,Doberman Breed Activity Print,,play,play,doberman-play,play_accessories,NO,,PENDING
+french_bulldog,French Bulldog Breed Food Mat,,dine,dine,french-bulldog-dine,dine_accessories,NO,,PENDING
+french_bulldog,French Bulldog Breed Ceramic Bowl,,dine,dine,french-bulldog-dine,dine_accessories,NO,,PENDING
+french_bulldog,French Bulldog Breed Recipe Card,,dine,dine,french-bulldog-dine,dine_accessories,NO,,PENDING
+french_bulldog,French Bulldog Breed Grooming Guide,,care,care,french-bulldog-care,care_accessories,NO,,PENDING
+french_bulldog,French Bulldog Breed Portrait Frame,,care,care,french-bulldog-care,care_accessories,NO,,PENDING
+french_bulldog,French Bulldog Breed Wellness Kit,,care,care,french-bulldog-care,care_accessories,NO,,PENDING
+french_bulldog,French Bulldog Breed Adventure Bandana,,go,go,french-bulldog-go,go_accessories,NO,,PENDING
+french_bulldog,French Bulldog Breed Travel Tag,,go,go,french-bulldog-go,go_accessories,NO,,PENDING
+french_bulldog,French Bulldog Breed Trail Guide,,go,go,french-bulldog-go,go_accessories,NO,,PENDING
+french_bulldog,French Bulldog Breed Play Bandana,,play,play,french-bulldog-play,play_accessories,NO,,PENDING
+french_bulldog,French Bulldog Breed Playdate Card,,play,play,french-bulldog-play,play_accessories,NO,,PENDING
+french_bulldog,French Bulldog Breed Activity Print,,play,play,french-bulldog-play,play_accessories,NO,,PENDING
+german_shepherd,German Shepherd Breed Food Mat,,dine,dine,german-shepherd-dine,dine_accessories,NO,,PENDING
+german_shepherd,German Shepherd Breed Ceramic Bowl,,dine,dine,german-shepherd-dine,dine_accessories,NO,,PENDING
+german_shepherd,German Shepherd Breed Recipe Card,,dine,dine,german-shepherd-dine,dine_accessories,NO,,PENDING
+german_shepherd,German Shepherd Breed Grooming Guide,,care,care,german-shepherd-care,care_accessories,NO,,PENDING
+german_shepherd,German Shepherd Breed Portrait Frame,,care,care,german-shepherd-care,care_accessories,NO,,PENDING
+german_shepherd,German Shepherd Breed Wellness Kit,,care,care,german-shepherd-care,care_accessories,NO,,PENDING
+german_shepherd,German Shepherd Breed Adventure Bandana,,go,go,german-shepherd-go,go_accessories,NO,,PENDING
+german_shepherd,German Shepherd Breed Travel Tag,,go,go,german-shepherd-go,go_accessories,NO,,PENDING
+german_shepherd,German Shepherd Breed Trail Guide,,go,go,german-shepherd-go,go_accessories,NO,,PENDING
+german_shepherd,German Shepherd Breed Play Bandana,,play,play,german-shepherd-play,play_accessories,NO,,PENDING
+german_shepherd,German Shepherd Breed Playdate Card,,play,play,german-shepherd-play,play_accessories,NO,,PENDING
+german_shepherd,German Shepherd Breed Activity Print,,play,play,german-shepherd-play,play_accessories,NO,,PENDING
+golden_retriever,Golden Retriever Breed Food Mat,,dine,dine,golden-retriever-dine,dine_accessories,NO,,PENDING
+golden_retriever,Golden Retriever Breed Ceramic Bowl,,dine,dine,golden-retriever-dine,dine_accessories,NO,,PENDING
+golden_retriever,Golden Retriever Breed Recipe Card,,dine,dine,golden-retriever-dine,dine_accessories,NO,,PENDING
+golden_retriever,Golden Retriever Breed Grooming Guide,,care,care,golden-retriever-care,care_accessories,NO,,PENDING
+golden_retriever,Golden Retriever Breed Portrait Frame,,care,care,golden-retriever-care,care_accessories,NO,,PENDING
+golden_retriever,Golden Retriever Breed Wellness Kit,,care,care,golden-retriever-care,care_accessories,NO,,PENDING
+golden_retriever,Golden Retriever Breed Adventure Bandana,,go,go,golden-retriever-go,go_accessories,NO,,PENDING
+golden_retriever,Golden Retriever Breed Travel Tag,,go,go,golden-retriever-go,go_accessories,NO,,PENDING
+golden_retriever,Golden Retriever Breed Trail Guide,,go,go,golden-retriever-go,go_accessories,NO,,PENDING
+golden_retriever,Golden Retriever Breed Play Bandana,,play,play,golden-retriever-play,play_accessories,NO,,PENDING
+golden_retriever,Golden Retriever Breed Playdate Card,,play,play,golden-retriever-play,play_accessories,NO,,PENDING
+golden_retriever,Golden Retriever Breed Activity Print,,play,play,golden-retriever-play,play_accessories,NO,,PENDING
+great_dane,Great Dane Breed Food Mat,,dine,dine,great-dane-dine,dine_accessories,NO,,PENDING
+great_dane,Great Dane Breed Ceramic Bowl,,dine,dine,great-dane-dine,dine_accessories,NO,,PENDING
+great_dane,Great Dane Breed Recipe Card,,dine,dine,great-dane-dine,dine_accessories,NO,,PENDING
+great_dane,Great Dane Breed Grooming Guide,,care,care,great-dane-care,care_accessories,NO,,PENDING
+great_dane,Great Dane Breed Portrait Frame,,care,care,great-dane-care,care_accessories,NO,,PENDING
+great_dane,Great Dane Breed Wellness Kit,,care,care,great-dane-care,care_accessories,NO,,PENDING
+great_dane,Great Dane Breed Adventure Bandana,,go,go,great-dane-go,go_accessories,NO,,PENDING
+great_dane,Great Dane Breed Travel Tag,,go,go,great-dane-go,go_accessories,NO,,PENDING
+great_dane,Great Dane Breed Trail Guide,,go,go,great-dane-go,go_accessories,NO,,PENDING
+great_dane,Great Dane Breed Play Bandana,,play,play,great-dane-play,play_accessories,NO,,PENDING
+great_dane,Great Dane Breed Playdate Card,,play,play,great-dane-play,play_accessories,NO,,PENDING
+great_dane,Great Dane Breed Activity Print,,play,play,great-dane-play,play_accessories,NO,,PENDING
+husky,Husky Breed Food Mat,,dine,dine,husky-dine,dine_accessories,NO,,PENDING
+husky,Husky Breed Ceramic Bowl,,dine,dine,husky-dine,dine_accessories,NO,,PENDING
+husky,Husky Breed Recipe Card,,dine,dine,husky-dine,dine_accessories,NO,,PENDING
+husky,Husky Breed Grooming Guide,,care,care,husky-care,care_accessories,NO,,PENDING
+husky,Husky Breed Portrait Frame,,care,care,husky-care,care_accessories,NO,,PENDING
+husky,Husky Breed Wellness Kit,,care,care,husky-care,care_accessories,NO,,PENDING
+husky,Husky Breed Adventure Bandana,,go,go,husky-go,go_accessories,NO,,PENDING
+husky,Husky Breed Travel Tag,,go,go,husky-go,go_accessories,NO,,PENDING
+husky,Husky Breed Trail Guide,,go,go,husky-go,go_accessories,NO,,PENDING
+husky,Husky Breed Play Bandana,,play,play,husky-play,play_accessories,NO,,PENDING
+husky,Husky Breed Playdate Card,,play,play,husky-play,play_accessories,NO,,PENDING
+husky,Husky Breed Activity Print,,play,play,husky-play,play_accessories,NO,,PENDING
+indie,Indie Breed Food Mat,,dine,dine,indie-dine,dine_accessories,NO,,PENDING
+indie,Indie Breed Ceramic Bowl,,dine,dine,indie-dine,dine_accessories,NO,,PENDING
+indie,Indie Breed Recipe Card,,dine,dine,indie-dine,dine_accessories,NO,,PENDING
+indie,Indie Breed Grooming Guide,,care,care,indie-care,care_accessories,NO,,PENDING
+indie,Indie Breed Portrait Frame,,care,care,indie-care,care_accessories,NO,,PENDING
+indie,Indie Breed Wellness Kit,,care,care,indie-care,care_accessories,NO,,PENDING
+indie,Indie Breed Adventure Bandana,,go,go,indie-go,go_accessories,NO,,PENDING
+indie,Indie Breed Travel Tag,,go,go,indie-go,go_accessories,NO,,PENDING
+indie,Indie Breed Trail Guide,,go,go,indie-go,go_accessories,NO,,PENDING
+indie,Indie Breed Play Bandana,,play,play,indie-play,play_accessories,NO,,PENDING
+indie,Indie Breed Playdate Card,,play,play,indie-play,play_accessories,NO,,PENDING
+indie,Indie Breed Activity Print,,play,play,indie-play,play_accessories,NO,,PENDING
+labrador,Labrador Breed Food Mat,,dine,dine,labrador-dine,dine_accessories,NO,,PENDING
+labrador,Labrador Breed Ceramic Bowl,,dine,dine,labrador-dine,dine_accessories,NO,,PENDING
+labrador,Labrador Breed Recipe Card,,dine,dine,labrador-dine,dine_accessories,NO,,PENDING
+labrador,Labrador Breed Grooming Guide,,care,care,labrador-care,care_accessories,NO,,PENDING
+labrador,Labrador Breed Portrait Frame,,care,care,labrador-care,care_accessories,NO,,PENDING
+labrador,Labrador Breed Wellness Kit,,care,care,labrador-care,care_accessories,NO,,PENDING
+labrador,Labrador Breed Adventure Bandana,,go,go,labrador-go,go_accessories,NO,,PENDING
+labrador,Labrador Breed Travel Tag,,go,go,labrador-go,go_accessories,NO,,PENDING
+labrador,Labrador Breed Trail Guide,,go,go,labrador-go,go_accessories,NO,,PENDING
+labrador,Labrador Breed Play Bandana,,play,play,labrador-play,play_accessories,NO,,PENDING
+labrador,Labrador Breed Playdate Card,,play,play,labrador-play,play_accessories,NO,,PENDING
+labrador,Labrador Breed Activity Print,,play,play,labrador-play,play_accessories,NO,,PENDING
+lhasa_apso,Lhasa Apso Breed Food Mat,,dine,dine,lhasa-apso-dine,dine_accessories,NO,,PENDING
+lhasa_apso,Lhasa Apso Breed Ceramic Bowl,,dine,dine,lhasa-apso-dine,dine_accessories,NO,,PENDING
+lhasa_apso,Lhasa Apso Breed Recipe Card,,dine,dine,lhasa-apso-dine,dine_accessories,NO,,PENDING
+lhasa_apso,Lhasa Apso Breed Grooming Guide,,care,care,lhasa-apso-care,care_accessories,NO,,PENDING
+lhasa_apso,Lhasa Apso Breed Portrait Frame,,care,care,lhasa-apso-care,care_accessories,NO,,PENDING
+lhasa_apso,Lhasa Apso Breed Wellness Kit,,care,care,lhasa-apso-care,care_accessories,NO,,PENDING
+lhasa_apso,Lhasa Apso Breed Adventure Bandana,,go,go,lhasa-apso-go,go_accessories,NO,,PENDING
+lhasa_apso,Lhasa Apso Breed Travel Tag,,go,go,lhasa-apso-go,go_accessories,NO,,PENDING
+lhasa_apso,Lhasa Apso Breed Trail Guide,,go,go,lhasa-apso-go,go_accessories,NO,,PENDING
+lhasa_apso,Lhasa Apso Breed Play Bandana,,play,play,lhasa-apso-play,play_accessories,NO,,PENDING
+lhasa_apso,Lhasa Apso Breed Playdate Card,,play,play,lhasa-apso-play,play_accessories,NO,,PENDING
+lhasa_apso,Lhasa Apso Breed Activity Print,,play,play,lhasa-apso-play,play_accessories,NO,,PENDING
+maltese,Maltese Breed Food Mat,,dine,dine,maltese-dine,dine_accessories,NO,,PENDING
+maltese,Maltese Breed Ceramic Bowl,,dine,dine,maltese-dine,dine_accessories,NO,,PENDING
+maltese,Maltese Breed Recipe Card,,dine,dine,maltese-dine,dine_accessories,NO,,PENDING
+maltese,Maltese Breed Grooming Guide,,care,care,maltese-care,care_accessories,NO,,PENDING
+maltese,Maltese Breed Portrait Frame,,care,care,maltese-care,care_accessories,NO,,PENDING
+maltese,Maltese Breed Wellness Kit,,care,care,maltese-care,care_accessories,NO,,PENDING
+maltese,Maltese Breed Adventure Bandana,,go,go,maltese-go,go_accessories,NO,,PENDING
+maltese,Maltese Breed Travel Tag,,go,go,maltese-go,go_accessories,NO,,PENDING
+maltese,Maltese Breed Trail Guide,,go,go,maltese-go,go_accessories,NO,,PENDING
+maltese,Maltese Breed Play Bandana,,play,play,maltese-play,play_accessories,NO,,PENDING
+maltese,Maltese Breed Playdate Card,,play,play,maltese-play,play_accessories,NO,,PENDING
+maltese,Maltese Breed Activity Print,,play,play,maltese-play,play_accessories,NO,,PENDING
+pomeranian,Pomeranian Breed Food Mat,,dine,dine,pomeranian-dine,dine_accessories,NO,,PENDING
+pomeranian,Pomeranian Breed Ceramic Bowl,,dine,dine,pomeranian-dine,dine_accessories,NO,,PENDING
+pomeranian,Pomeranian Breed Recipe Card,,dine,dine,pomeranian-dine,dine_accessories,NO,,PENDING
+pomeranian,Pomeranian Breed Grooming Guide,,care,care,pomeranian-care,care_accessories,NO,,PENDING
+pomeranian,Pomeranian Breed Portrait Frame,,care,care,pomeranian-care,care_accessories,NO,,PENDING
+pomeranian,Pomeranian Breed Wellness Kit,,care,care,pomeranian-care,care_accessories,NO,,PENDING
+pomeranian,Pomeranian Breed Adventure Bandana,,go,go,pomeranian-go,go_accessories,NO,,PENDING
+pomeranian,Pomeranian Breed Travel Tag,,go,go,pomeranian-go,go_accessories,NO,,PENDING
+pomeranian,Pomeranian Breed Trail Guide,,go,go,pomeranian-go,go_accessories,NO,,PENDING
+pomeranian,Pomeranian Breed Play Bandana,,play,play,pomeranian-play,play_accessories,NO,,PENDING
+pomeranian,Pomeranian Breed Playdate Card,,play,play,pomeranian-play,play_accessories,NO,,PENDING
+pomeranian,Pomeranian Breed Activity Print,,play,play,pomeranian-play,play_accessories,NO,,PENDING
+poodle,Poodle Breed Food Mat,,dine,dine,poodle-dine,dine_accessories,NO,,PENDING
+poodle,Poodle Breed Ceramic Bowl,,dine,dine,poodle-dine,dine_accessories,NO,,PENDING
+poodle,Poodle Breed Recipe Card,,dine,dine,poodle-dine,dine_accessories,NO,,PENDING
+poodle,Poodle Breed Grooming Guide,,care,care,poodle-care,care_accessories,NO,,PENDING
+poodle,Poodle Breed Portrait Frame,,care,care,poodle-care,care_accessories,NO,,PENDING
+poodle,Poodle Breed Wellness Kit,,care,care,poodle-care,care_accessories,NO,,PENDING
+poodle,Poodle Breed Adventure Bandana,,go,go,poodle-go,go_accessories,NO,,PENDING
+poodle,Poodle Breed Travel Tag,,go,go,poodle-go,go_accessories,NO,,PENDING
+poodle,Poodle Breed Trail Guide,,go,go,poodle-go,go_accessories,NO,,PENDING
+poodle,Poodle Breed Play Bandana,,play,play,poodle-play,play_accessories,NO,,PENDING
+poodle,Poodle Breed Playdate Card,,play,play,poodle-play,play_accessories,NO,,PENDING
+poodle,Poodle Breed Activity Print,,play,play,poodle-play,play_accessories,NO,,PENDING
+pug,Pug Breed Food Mat,,dine,dine,pug-dine,dine_accessories,NO,,PENDING
+pug,Pug Breed Ceramic Bowl,,dine,dine,pug-dine,dine_accessories,NO,,PENDING
+pug,Pug Breed Recipe Card,,dine,dine,pug-dine,dine_accessories,NO,,PENDING
+pug,Pug Breed Grooming Guide,,care,care,pug-care,care_accessories,NO,,PENDING
+pug,Pug Breed Portrait Frame,,care,care,pug-care,care_accessories,NO,,PENDING
+pug,Pug Breed Wellness Kit,,care,care,pug-care,care_accessories,NO,,PENDING
+pug,Pug Breed Adventure Bandana,,go,go,pug-go,go_accessories,NO,,PENDING
+pug,Pug Breed Travel Tag,,go,go,pug-go,go_accessories,NO,,PENDING
+pug,Pug Breed Trail Guide,,go,go,pug-go,go_accessories,NO,,PENDING
+pug,Pug Breed Play Bandana,,play,play,pug-play,play_accessories,NO,,PENDING
+pug,Pug Breed Playdate Card,,play,play,pug-play,play_accessories,NO,,PENDING
+pug,Pug Breed Activity Print,,play,play,pug-play,play_accessories,NO,,PENDING
+rottweiler,Rottweiler Breed Food Mat,,dine,dine,rottweiler-dine,dine_accessories,NO,,PENDING
+rottweiler,Rottweiler Breed Ceramic Bowl,,dine,dine,rottweiler-dine,dine_accessories,NO,,PENDING
+rottweiler,Rottweiler Breed Recipe Card,,dine,dine,rottweiler-dine,dine_accessories,NO,,PENDING
+rottweiler,Rottweiler Breed Grooming Guide,,care,care,rottweiler-care,care_accessories,NO,,PENDING
+rottweiler,Rottweiler Breed Portrait Frame,,care,care,rottweiler-care,care_accessories,NO,,PENDING
+rottweiler,Rottweiler Breed Wellness Kit,,care,care,rottweiler-care,care_accessories,NO,,PENDING
+rottweiler,Rottweiler Breed Adventure Bandana,,go,go,rottweiler-go,go_accessories,NO,,PENDING
+rottweiler,Rottweiler Breed Travel Tag,,go,go,rottweiler-go,go_accessories,NO,,PENDING
+rottweiler,Rottweiler Breed Trail Guide,,go,go,rottweiler-go,go_accessories,NO,,PENDING
+rottweiler,Rottweiler Breed Play Bandana,,play,play,rottweiler-play,play_accessories,NO,,PENDING
+rottweiler,Rottweiler Breed Playdate Card,,play,play,rottweiler-play,play_accessories,NO,,PENDING
+rottweiler,Rottweiler Breed Activity Print,,play,play,rottweiler-play,play_accessories,NO,,PENDING
+samoyed,Samoyed Breed Food Mat,,dine,dine,samoyed-dine,dine_accessories,NO,,PENDING
+samoyed,Samoyed Breed Ceramic Bowl,,dine,dine,samoyed-dine,dine_accessories,NO,,PENDING
+samoyed,Samoyed Breed Recipe Card,,dine,dine,samoyed-dine,dine_accessories,NO,,PENDING
+samoyed,Samoyed Breed Grooming Guide,,care,care,samoyed-care,care_accessories,NO,,PENDING
+samoyed,Samoyed Breed Portrait Frame,,care,care,samoyed-care,care_accessories,NO,,PENDING
+samoyed,Samoyed Breed Wellness Kit,,care,care,samoyed-care,care_accessories,NO,,PENDING
+samoyed,Samoyed Breed Adventure Bandana,,go,go,samoyed-go,go_accessories,NO,,PENDING
+samoyed,Samoyed Breed Travel Tag,,go,go,samoyed-go,go_accessories,NO,,PENDING
+samoyed,Samoyed Breed Trail Guide,,go,go,samoyed-go,go_accessories,NO,,PENDING
+samoyed,Samoyed Breed Play Bandana,,play,play,samoyed-play,play_accessories,NO,,PENDING
+samoyed,Samoyed Breed Playdate Card,,play,play,samoyed-play,play_accessories,NO,,PENDING
+samoyed,Samoyed Breed Activity Print,,play,play,samoyed-play,play_accessories,NO,,PENDING
+shih_tzu,Shih Tzu Breed Food Mat,,dine,dine,shih-tzu-dine,dine_accessories,NO,,PENDING
+shih_tzu,Shih Tzu Breed Ceramic Bowl,,dine,dine,shih-tzu-dine,dine_accessories,NO,,PENDING
+shih_tzu,Shih Tzu Breed Recipe Card,,dine,dine,shih-tzu-dine,dine_accessories,NO,,PENDING
+shih_tzu,Shih Tzu Breed Grooming Guide,,care,care,shih-tzu-care,care_accessories,NO,,PENDING
+shih_tzu,Shih Tzu Breed Portrait Frame,,care,care,shih-tzu-care,care_accessories,NO,,PENDING
+shih_tzu,Shih Tzu Breed Wellness Kit,,care,care,shih-tzu-care,care_accessories,NO,,PENDING
+shih_tzu,Shih Tzu Breed Adventure Bandana,,go,go,shih-tzu-go,go_accessories,NO,,PENDING
+shih_tzu,Shih Tzu Breed Travel Tag,,go,go,shih-tzu-go,go_accessories,NO,,PENDING
+shih_tzu,Shih Tzu Breed Trail Guide,,go,go,shih-tzu-go,go_accessories,NO,,PENDING
+shih_tzu,Shih Tzu Breed Play Bandana,,play,play,shih-tzu-play,play_accessories,NO,,PENDING
+shih_tzu,Shih Tzu Breed Playdate Card,,play,play,shih-tzu-play,play_accessories,NO,,PENDING
+shih_tzu,Shih Tzu Breed Activity Print,,play,play,shih-tzu-play,play_accessories,NO,,PENDING
+st_bernard,Saint Bernard Breed Food Mat,,dine,dine,saint-bernard-dine,dine_accessories,NO,,PENDING
+st_bernard,Saint Bernard Breed Ceramic Bowl,,dine,dine,saint-bernard-dine,dine_accessories,NO,,PENDING
+st_bernard,Saint Bernard Breed Recipe Card,,dine,dine,saint-bernard-dine,dine_accessories,NO,,PENDING
+st_bernard,Saint Bernard Breed Grooming Guide,,care,care,saint-bernard-care,care_accessories,NO,,PENDING
+st_bernard,Saint Bernard Breed Portrait Frame,,care,care,saint-bernard-care,care_accessories,NO,,PENDING
+st_bernard,Saint Bernard Breed Wellness Kit,,care,care,saint-bernard-care,care_accessories,NO,,PENDING
+st_bernard,Saint Bernard Breed Adventure Bandana,,go,go,saint-bernard-go,go_accessories,NO,,PENDING
+st_bernard,Saint Bernard Breed Travel Tag,,go,go,saint-bernard-go,go_accessories,NO,,PENDING
+st_bernard,Saint Bernard Breed Trail Guide,,go,go,saint-bernard-go,go_accessories,NO,,PENDING
+st_bernard,Saint Bernard Breed Play Bandana,,play,play,saint-bernard-play,play_accessories,NO,,PENDING
+st_bernard,Saint Bernard Breed Playdate Card,,play,play,saint-bernard-play,play_accessories,NO,,PENDING
+st_bernard,Saint Bernard Breed Activity Print,,play,play,saint-bernard-play,play_accessories,NO,,PENDING
+vizsla,Vizsla Breed Food Mat,,dine,dine,vizsla-dine,dine_accessories,NO,,PENDING
+vizsla,Vizsla Breed Ceramic Bowl,,dine,dine,vizsla-dine,dine_accessories,NO,,PENDING
+vizsla,Vizsla Breed Recipe Card,,dine,dine,vizsla-dine,dine_accessories,NO,,PENDING
+vizsla,Vizsla Breed Grooming Guide,,care,care,vizsla-care,care_accessories,NO,,PENDING
+vizsla,Vizsla Breed Portrait Frame,,care,care,vizsla-care,care_accessories,NO,,PENDING
+vizsla,Vizsla Breed Wellness Kit,,care,care,vizsla-care,care_accessories,NO,,PENDING
+vizsla,Vizsla Breed Adventure Bandana,,go,go,vizsla-go,go_accessories,NO,,PENDING
+vizsla,Vizsla Breed Travel Tag,,go,go,vizsla-go,go_accessories,NO,,PENDING
+vizsla,Vizsla Breed Trail Guide,,go,go,vizsla-go,go_accessories,NO,,PENDING
+vizsla,Vizsla Breed Play Bandana,,play,play,vizsla-play,play_accessories,NO,,PENDING
+vizsla,Vizsla Breed Playdate Card,,play,play,vizsla-play,play_accessories,NO,,PENDING
+vizsla,Vizsla Breed Activity Print,,play,play,vizsla-play,play_accessories,NO,,PENDING
+weimaraner,Weimaraner Breed Food Mat,,dine,dine,weimaraner-dine,dine_accessories,NO,,PENDING
+weimaraner,Weimaraner Breed Ceramic Bowl,,dine,dine,weimaraner-dine,dine_accessories,NO,,PENDING
+weimaraner,Weimaraner Breed Recipe Card,,dine,dine,weimaraner-dine,dine_accessories,NO,,PENDING
+weimaraner,Weimaraner Breed Grooming Guide,,care,care,weimaraner-care,care_accessories,NO,,PENDING
+weimaraner,Weimaraner Breed Portrait Frame,,care,care,weimaraner-care,care_accessories,NO,,PENDING
+weimaraner,Weimaraner Breed Wellness Kit,,care,care,weimaraner-care,care_accessories,NO,,PENDING
+weimaraner,Weimaraner Breed Adventure Bandana,,go,go,weimaraner-go,go_accessories,NO,,PENDING
+weimaraner,Weimaraner Breed Travel Tag,,go,go,weimaraner-go,go_accessories,NO,,PENDING
+weimaraner,Weimaraner Breed Trail Guide,,go,go,weimaraner-go,go_accessories,NO,,PENDING
+weimaraner,Weimaraner Breed Play Bandana,,play,play,weimaraner-play,play_accessories,NO,,PENDING
+weimaraner,Weimaraner Breed Playdate Card,,play,play,weimaraner-play,play_accessories,NO,,PENDING
+weimaraner,Weimaraner Breed Activity Print,,play,play,weimaraner-play,play_accessories,NO,,PENDING
+yorkshire,Yorkshire Terrier Breed Food Mat,,dine,dine,yorkshire-terrier-dine,dine_accessories,NO,,PENDING
+yorkshire,Yorkshire Terrier Breed Ceramic Bowl,,dine,dine,yorkshire-terrier-dine,dine_accessories,NO,,PENDING
+yorkshire,Yorkshire Terrier Breed Recipe Card,,dine,dine,yorkshire-terrier-dine,dine_accessories,NO,,PENDING
+yorkshire,Yorkshire Terrier Breed Grooming Guide,,care,care,yorkshire-terrier-care,care_accessories,NO,,PENDING
+yorkshire,Yorkshire Terrier Breed Portrait Frame,,care,care,yorkshire-terrier-care,care_accessories,NO,,PENDING
+yorkshire,Yorkshire Terrier Breed Wellness Kit,,care,care,yorkshire-terrier-care,care_accessories,NO,,PENDING
+yorkshire,Yorkshire Terrier Breed Adventure Bandana,,go,go,yorkshire-terrier-go,go_accessories,NO,,PENDING
+yorkshire,Yorkshire Terrier Breed Travel Tag,,go,go,yorkshire-terrier-go,go_accessories,NO,,PENDING
+yorkshire,Yorkshire Terrier Breed Trail Guide,,go,go,yorkshire-terrier-go,go_accessories,NO,,PENDING
+yorkshire,Yorkshire Terrier Breed Play Bandana,,play,play,yorkshire-terrier-play,play_accessories,NO,,PENDING
+yorkshire,Yorkshire Terrier Breed Playdate Card,,play,play,yorkshire-terrier-play,play_accessories,NO,,PENDING
+yorkshire,Yorkshire Terrier Breed Activity Print,,play,play,yorkshire-terrier-play,play_accessories,NO,,PENDING

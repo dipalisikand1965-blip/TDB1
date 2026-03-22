@@ -11519,27 +11519,6 @@ async def get_admin_breed_products(
     
     return {"products": products, "total": total}
 
-@api_router.put("/admin/breed-products/{product_id}")
-async def update_breed_product(product_id: str, updates: dict):
-    """Update a breed product from admin"""
-    allowed_fields = [
-        "is_active", "price", "mrp", "description", "mira_hint",
-        "mockup_url", "image_url", "status", "in_stock"
-    ]
-    
-    sanitized = {k: v for k, v in updates.items() if k in allowed_fields}
-    sanitized["updated_at"] = get_utc_timestamp()
-    
-    result = await db.breed_products.update_one(
-        {"id": product_id},
-        {"$set": sanitized}
-    )
-    
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Breed product not found")
-    
-    return {"success": True, "updated_fields": list(sanitized.keys())}
-
 @api_router.patch("/admin/breed-products/{product_id}/toggle-active")
 async def toggle_breed_product_active(product_id: str):
     """Toggle is_active status for a breed product"""
@@ -11567,6 +11546,138 @@ async def bulk_toggle_breed_products(request: dict):
     )
     
     return {"success": True, "modified_count": result.modified_count}
+
+
+@api_router.put("/admin/breed-products/{product_id}")
+async def update_breed_product(product_id: str, request: dict):
+    """Update a single breed product"""
+    update_data = {k: v for k, v in request.items() if k not in ("_id", "id")}
+    update_data["updated_at"] = get_utc_timestamp()
+    result = await db.breed_products.update_one(
+        {"$or": [{"id": product_id}, {"_id": product_id}]},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return {"success": True, "modified_count": result.modified_count}
+
+
+@api_router.delete("/admin/breed-products/{product_id}")
+async def delete_breed_product(product_id: str):
+    """Delete a single breed product"""
+    result = await db.breed_products.delete_one(
+        {"$or": [{"id": product_id}, {"_id": product_id}]}
+    )
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return {"success": True, "deleted_count": result.deleted_count}
+
+
+@api_router.post("/admin/breed-products/import")
+async def import_breed_products(request: dict):
+    """Bulk import/upsert breed products from CSV rows"""
+    rows = request.get("rows", [])
+    if not rows:
+        raise HTTPException(status_code=400, detail="No rows provided")
+    
+    from pymongo import UpdateOne
+    ops = []
+    for row in rows:
+        if not row.get("breed") or not row.get("product_type"):
+            continue
+        product_id = row.get("id") or f"bp-{row['breed']}-{row['product_type']}-{row.get('pillar','')}"
+        ops.append(UpdateOne(
+            {"id": product_id},
+            {"$set": {
+                "id": product_id,
+                "breed": row.get("breed", "").lower().strip(),
+                "product_type": row.get("product_type", "").lower().strip(),
+                "name": row.get("name", row.get("product_name", "")),
+                "pillar": row.get("pillar", ""),
+                "pillars": [p.strip() for p in row.get("pillars", row.get("all_pillars", "")).split("|") if p.strip()],
+                "sub_category": row.get("sub_category", ""),
+                "category": row.get("category", ""),
+                "price": float(row.get("price", 0) or 0),
+                "cloudinary_url": row.get("cloudinary_url", row.get("image_url", "")),
+                "is_active": str(row.get("is_active", "true")).lower() != "false",
+                "active": str(row.get("active", "true")).lower() != "false",
+                "updated_at": get_utc_timestamp(),
+            }},
+            upsert=True
+        ))
+    
+    if not ops:
+        return {"success": False, "error": "No valid rows found"}
+    
+    result = await db.breed_products.bulk_write(ops, ordered=False)
+    return {
+        "success": True,
+        "inserted": result.upserted_count,
+        "updated": result.modified_count,
+        "total": len(ops)
+    }
+
+
+@api_router.post("/admin/breed-products/seed-type")
+async def seed_new_product_type(request: dict):
+    """Seed a new product type across selected breeds and pillars"""
+    product_type  = request.get("product_type", "").lower().strip()
+    name_template = request.get("name_template", "{breed} {product_type}")
+    price         = float(request.get("price", 0) or 0)
+    pillars       = request.get("pillars", [])
+    breeds_param  = request.get("breeds", "all")  # "all" or list of breed strings
+    description   = request.get("description", "")
+    
+    if not product_type:
+        raise HTTPException(status_code=400, detail="product_type is required")
+    if not pillars:
+        raise HTTPException(status_code=400, detail="At least one pillar is required")
+    
+    # Get breeds
+    if breeds_param == "all" or not breeds_param:
+        breed_docs = await db.breed_products.distinct("breed")
+        breeds = [b for b in breed_docs if b and b != "all"]
+    else:
+        breeds = breeds_param if isinstance(breeds_param, list) else [breeds_param]
+    
+    from pymongo import UpdateOne
+    ops = []
+    created = []
+    for breed in breeds:
+        product_id = f"bp-{breed}-{product_type}-{'_'.join(pillars)}"
+        display_name = name_template.replace("{breed}", breed.replace("_", " ").title()).replace("{product_type}", product_type.replace("_", " ").title())
+        ops.append(UpdateOne(
+            {"id": product_id},
+            {"$setOnInsert": {
+                "id": product_id,
+                "breed": breed,
+                "product_type": product_type,
+                "name": display_name,
+                "pillar": pillars[0],
+                "pillars": pillars,
+                "price": price,
+                "description": description,
+                "cloudinary_url": None,
+                "mockup_url": None,
+                "is_active": True,
+                "active": True,
+                "is_mockup": False,
+                "created_at": get_utc_timestamp(),
+                "updated_at": get_utc_timestamp(),
+            }},
+            upsert=True
+        ))
+        created.append({"breed": breed, "product_type": product_type, "name": display_name})
+    
+    result = await db.breed_products.bulk_write(ops, ordered=False)
+    return {
+        "success": True,
+        "seeded": result.upserted_count,
+        "already_existed": result.matched_count,
+        "total_breeds": len(breeds),
+        "products": created[:10]
+    }
+
 
 @api_router.patch("/admin/products/{product_id}/toggle-active")
 async def toggle_product_active(product_id: str):

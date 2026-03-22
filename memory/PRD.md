@@ -110,3 +110,35 @@ Build a robust, architecturally consistent, and highly performant Pet Life OS pl
 - User: `dipali@clubconcierge.in` / `test123`
 - Admin: `aditya` / `lola4304`
 - Admin portal: `/admin`
+
+## Session: March 22, 2026 (Fork 4) — COMPLETE ✅
+
+### Completed this session:
+
+**Soul Product Fixes:**
+- EMOTIONAL_COLLECTIONS updated with all 14 pillar keys (play, go, etc.)
+- Shop Breed Collection Load More pagination (12/page)
+- 660 empty-breed products tagged as breed="all"
+- is_active → active DB migration (3,305 products now visible)
+- FarewellSoulPage + AdoptSoulPage SoulMadeCollection added
+- ProductCard.jsx fix: strip breed prefix for breed="all" products
+- Farewell breed tab now fetches from breed_products collection
+- SoulMadeCollection removed from 7 pages (old design)
+- is_mockup field tagged on all 3,775 products (breed- prefix = True)
+- All breed product APIs default to is_mockup=True filter
+- PersonalizedBreedCollection + PersonalisedBreedSection URL safety filter
+- products_master sub_category: 4,071 → 0 missing (100% mapped)
+- Admin ProductBoxEditor: Auto-fill button + smart formula hint
+- FarewellSoulPage + AdoptSoulPage: product card onClick + modal
+
+**Admin Soul Products Manager:**
+- Export CSV button (filtered by breed/type/pillar/has_image)
+- Pending 705 CSV download button
+- Full CRUD Breed Products tab (table, edit, delete, paginated)
+- Import CSV modal (bulk upsert)
+- New Product Type creator (seeds across all/selected breeds)
+- Backend: PUT/DELETE/import/seed-type endpoints
+
+**Static CSVs available:**
+- /soul_mockups_clean.csv — 2,409 proper mockups
+- /soul_pending_705.csv — 706 pending products

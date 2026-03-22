@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -11,32 +11,15 @@ import { toast } from '../../hooks/use-toast';
 import { API_URL } from '../../utils/api';
 import ProductBoxEditor from './ProductBoxEditor';
 import { 
-  Sparkles, 
-  Heart, 
-  Gift, 
-  Search, 
-  Filter,
-  Check,
-  X,
-  RefreshCw,
-  PawPrint,
-  Palette,
-  Crown,
-  Star,
-  Package,
-  Eye,
-  Image,
-  Play,
-  Square,
-  Loader2,
-  Cloud,
-  Upload,
-  Edit,
-  DollarSign,
-  Boxes,
-  Tag
+  Sparkles, Heart, Gift, Search, Filter, Check, X, RefreshCw,
+  PawPrint, Palette, Crown, Star, Package, Eye, Image, Play,
+  Square, Loader2, Cloud, Upload, Edit, DollarSign, Boxes, Tag,
+  Download, FileUp, Plus, Trash2, ChevronLeft, ChevronRight, AlertCircle
 } from 'lucide-react';
 import CloudinaryUploader from './CloudinaryUploader';
+
+const PILLARS = ['celebrate','play','go','care','dine','learn','farewell','emergency','paperwork','adopt','shop','advisory'];
+const AUTH_HEADER = { 'Authorization': `Basic ${btoa('aditya:lola4304')}`, 'Content-Type': 'application/json' };
 
 /**
  * SoulProductsManager
@@ -96,7 +79,42 @@ const SoulProductsManager = () => {
   const [selectedBreed, setSelectedBreed] = useState('');
   const [selectedProductType, setSelectedProductType] = useState('');
   const [selectedPillar, setSelectedPillar] = useState('');
-  
+  const [hasImageFilter, setHasImageFilter] = useState('all');
+
+  // Export state
+  const [exportingCsv, setExportingCsv] = useState(false);
+
+  // Import state
+  const [importModalOpen, setImportModalOpen] = useState(false);
+  const [importFile, setImportFile] = useState(null);
+  const [importLoading, setImportLoading] = useState(false);
+  const [importResults, setImportResults] = useState(null);
+  const importFileRef = useRef(null);
+
+  // Breed Products CRUD state
+  const [crudProducts, setCrudProducts] = useState([]);
+  const [crudTotal, setCrudTotal] = useState(0);
+  const [crudPage, setCrudPage] = useState(1);
+  const [crudLoading, setCrudLoading] = useState(false);
+  const [crudSearch, setCrudSearch] = useState('');
+  const [crudBreed, setCrudBreed] = useState('');
+  const [crudPillar, setCrudPillar] = useState('');
+  const [crudType, setCrudType] = useState('');
+  const [crudHasImage, setCrudHasImage] = useState('all');
+  const [editBreedProd, setEditBreedProd] = useState(null);
+  const [editBreedProdOpen, setEditBreedProdOpen] = useState(false);
+  const [savingBreedProd, setSavingBreedProd] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+  const CRUD_PAGE_SIZE = 20;
+
+  // New Product Type state
+  const [newTypeModal, setNewTypeModal] = useState(false);
+  const [newTypeData, setNewTypeData] = useState({
+    product_type: '', name_template: '{breed} {product_type}',
+    price: 0, pillars: [], breeds: 'all', description: ''
+  });
+  const [creatingType, setCreatingType] = useState(false);
+
   // Cloud storage state
   const [cloudStatus, setCloudStatus] = useState(null);
   const [convertingToCloud, setConvertingToCloud] = useState(false);
@@ -183,6 +201,157 @@ const SoulProductsManager = () => {
     const newVariants = [...editingProduct.variants];
     newVariants[index] = { ...newVariants[index], [field]: value };
     setEditingProduct({ ...editingProduct, variants: newVariants });
+  };
+
+  // ── Export CSV ───────────────────────────────────────────────────────────
+  const exportMockupsCsv = async (pendingOnly = false) => {
+    setExportingCsv(true);
+    try {
+      const params = new URLSearchParams({ limit: 5000 });
+      if (selectedBreed)       params.append('breed', selectedBreed);
+      if (selectedProductType) params.append('category', selectedProductType);
+      if (selectedPillar)      params.append('pillar', selectedPillar);
+      if (pendingOnly) params.append('has_mockup', 'false');
+      else if (hasImageFilter === 'yes') params.append('has_mockup', 'true');
+      else if (hasImageFilter === 'no')  params.append('has_mockup', 'false');
+
+      const res  = await fetch(`${API_URL}/api/admin/breed-products?${params}`);
+      const data = await res.json();
+      const rows = data.products || [];
+
+      const headers = ['breed','product_name','product_type','pillar','all_pillars','sub_category','category','price','has_image','image_url','is_mockup'];
+      const csv = [
+        headers.join(','),
+        ...rows.map(p => [
+          p.breed||'', `"${(p.name||'').replace(/"/g,'""')}"`,
+          p.product_type||'', p.pillar||'',
+          `"${(p.pillars||[]).join('|')}"`,
+          p.sub_category||'', p.category||'',
+          p.price||0,
+          (p.cloudinary_url||p.mockup_url) ? 'YES':'NO',
+          p.cloudinary_url||p.mockup_url||'',
+          p.is_mockup ? 'true':'false'
+        ].join(','))
+      ].join('\n');
+
+      const fname = `soul_${pendingOnly?'pending':'products'}${selectedBreed?'_'+selectedBreed:''}${selectedPillar?'_'+selectedPillar:''}.csv`;
+      const a = Object.assign(document.createElement('a'), {
+        href: URL.createObjectURL(new Blob([csv], {type:'text/csv'})), download: fname
+      });
+      a.click(); URL.revokeObjectURL(a.href);
+      toast({ title: `Downloaded ${rows.length} rows` });
+    } catch { toast({ title:'Export failed', variant:'destructive' }); }
+    setExportingCsv(false);
+  };
+
+  // ── Import CSV ───────────────────────────────────────────────────────────
+  const handleImport = async () => {
+    if (!importFile) return;
+    setImportLoading(true);
+    setImportResults(null);
+    try {
+      const text = await importFile.text();
+      const lines = text.trim().split('\n');
+      const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,''));
+      const rows = lines.slice(1).map(line => {
+        const vals = line.match(/(".*?"|[^,]+|(?<=,)(?=,)|^(?=,)|(?<=,)$)/g) || [];
+        const obj = {};
+        headers.forEach((h,i) => { obj[h] = (vals[i]||'').replace(/^"|"$/g,'').trim(); });
+        return obj;
+      }).filter(r => r.breed || r.product_type);
+
+      const res = await fetch(`${API_URL}/api/admin/breed-products/import`, {
+        method: 'POST', headers: AUTH_HEADER,
+        body: JSON.stringify({ rows })
+      });
+      const result = await res.json();
+      setImportResults(result);
+      if (result.success) {
+        toast({ title: `Import complete: ${result.inserted} new, ${result.updated} updated` });
+        fetchCrudProducts();
+      }
+    } catch (e) {
+      toast({ title: 'Import failed', description: e.message, variant: 'destructive' });
+    }
+    setImportLoading(false);
+  };
+
+  // ── CRUD: fetch breed products ───────────────────────────────────────────
+  const fetchCrudProducts = useCallback(async (page = crudPage) => {
+    setCrudLoading(true);
+    try {
+      const params = new URLSearchParams({
+        limit: CRUD_PAGE_SIZE,
+        skip: (page - 1) * CRUD_PAGE_SIZE,
+      });
+      if (crudBreed)  params.append('breed', crudBreed);
+      if (crudType)   params.append('category', crudType);
+      if (crudPillar) params.append('pillar', crudPillar);
+      if (crudSearch) params.append('search', crudSearch);
+      if (crudHasImage === 'yes') params.append('has_mockup', 'true');
+      if (crudHasImage === 'no')  params.append('has_mockup', 'false');
+
+      const res  = await fetch(`${API_URL}/api/admin/breed-products?${params}`);
+      const data = await res.json();
+      setCrudProducts(data.products || []);
+      setCrudTotal(data.total || 0);
+    } catch { /* silent */ }
+    setCrudLoading(false);
+  }, [crudPage, crudBreed, crudType, crudPillar, crudSearch, crudHasImage]);
+
+  useEffect(() => { if (activeSubTab === 'crud') fetchCrudProducts(crudPage); }, [activeSubTab, crudPage, crudBreed, crudType, crudPillar, crudSearch, crudHasImage]);
+
+  const saveBreedProd = async () => {
+    if (!editBreedProd) return;
+    setSavingBreedProd(true);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/breed-products/${editBreedProd.id || editBreedProd._id}`, {
+        method: 'PUT', headers: AUTH_HEADER,
+        body: JSON.stringify(editBreedProd)
+      });
+      if (res.ok) {
+        toast({ title: 'Saved!' });
+        setEditBreedProdOpen(false);
+        setEditBreedProd(null);
+        fetchCrudProducts(crudPage);
+      } else throw new Error('Save failed');
+    } catch { toast({ title: 'Save failed', variant: 'destructive' }); }
+    setSavingBreedProd(false);
+  };
+
+  const deleteBreedProd = async (id) => {
+    if (!window.confirm('Delete this product?')) return;
+    setDeletingId(id);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/breed-products/${id}`, {
+        method: 'DELETE', headers: AUTH_HEADER
+      });
+      if (res.ok) { toast({ title: 'Deleted' }); fetchCrudProducts(crudPage); }
+      else throw new Error();
+    } catch { toast({ title: 'Delete failed', variant: 'destructive' }); }
+    setDeletingId(null);
+  };
+
+  // ── New Product Type ─────────────────────────────────────────────────────
+  const createNewProductType = async () => {
+    if (!newTypeData.product_type || newTypeData.pillars.length === 0) {
+      toast({ title: 'Fill in product type and at least one pillar', variant: 'destructive' }); return;
+    }
+    setCreatingType(true);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/breed-products/seed-type`, {
+        method: 'POST', headers: AUTH_HEADER,
+        body: JSON.stringify(newTypeData)
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast({ title: `Created ${data.seeded} new products across ${data.total_breeds} breeds!` });
+        setNewTypeModal(false);
+        setNewTypeData({ product_type:'', name_template:'{breed} {product_type}', price:0, pillars:[], breeds:'all', description:'' });
+        fetchMockupStats();
+      } else throw new Error(data.error || 'Failed');
+    } catch (e) { toast({ title: e.message, variant: 'destructive' }); }
+    setCreatingType(false);
   };
 
   // Fetch products
@@ -561,6 +730,7 @@ const SoulProductsManager = () => {
           { id: 'products', label: 'Product Tiers', icon: Package },
           { id: 'archetypes', label: 'Soul Archetypes', icon: Crown },
           { id: 'mockups', label: 'AI Mockups', icon: Image },
+          { id: 'crud', label: 'Breed Products', icon: Boxes },
           { id: 'preview', label: 'Preview', icon: Eye }
         ].map(tab => (
           <Button
@@ -832,6 +1002,134 @@ const SoulProductsManager = () => {
       )}
 
       {/* Preview Tab - SHOW ACTUAL PRODUCT MOCKUPS */}
+      {/* ── BREED PRODUCTS CRUD TAB ─────────────────────────────────── */}
+      {activeSubTab === 'crud' && (
+        <div className="space-y-4">
+          <Card className="p-4">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <h3 className="text-lg font-semibold flex items-center gap-2"><Boxes className="w-5 h-5 text-purple-600"/>Breed Products — Full CRUD</h3>
+              <div className="flex gap-2 flex-wrap">
+                <Button onClick={() => exportMockupsCsv(false)} disabled={exportingCsv} variant="outline" size="sm" className="border-blue-500 text-blue-700">
+                  {exportingCsv ? <Loader2 className="w-3 h-3 mr-1 animate-spin"/> : <Download className="w-3 h-3 mr-1"/>} Export CSV
+                </Button>
+                <Button onClick={() => { setImportModalOpen(true); setImportResults(null); }} variant="outline" size="sm" className="border-green-500 text-green-700">
+                  <FileUp className="w-3 h-3 mr-1"/> Import CSV
+                </Button>
+                <Button onClick={() => setNewTypeModal(true)} size="sm" className="bg-purple-600 hover:bg-purple-700">
+                  <Plus className="w-3 h-3 mr-1"/> New Product Type
+                </Button>
+              </div>
+            </div>
+
+            {/* Filters */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-4">
+              <Input placeholder="Search name..." value={crudSearch} onChange={e => { setCrudSearch(e.target.value); setCrudPage(1); }} className="text-sm"/>
+              <select value={crudBreed} onChange={e => { setCrudBreed(e.target.value); setCrudPage(1); }} className="px-2 py-1 border rounded text-sm">
+                <option value="">All Breeds</option>
+                {mockupStats?.by_breed && Object.keys(mockupStats.by_breed).sort().map(b => <option key={b} value={b}>{b}</option>)}
+              </select>
+              <select value={crudPillar} onChange={e => { setCrudPillar(e.target.value); setCrudPage(1); }} className="px-2 py-1 border rounded text-sm">
+                <option value="">All Pillars</option>
+                {PILLARS.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+              <select value={crudType} onChange={e => { setCrudType(e.target.value); setCrudPage(1); }} className="px-2 py-1 border rounded text-sm">
+                <option value="">All Types</option>
+                {mockupStats?.by_product_type && Object.keys(mockupStats.by_product_type).sort().map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+              <select value={crudHasImage} onChange={e => { setCrudHasImage(e.target.value); setCrudPage(1); }} className="px-2 py-1 border rounded text-sm">
+                <option value="all">All Images</option>
+                <option value="yes">Has Image</option>
+                <option value="no">No Image</option>
+              </select>
+            </div>
+
+            {/* Table */}
+            {crudLoading ? (
+              <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-purple-600"/></div>
+            ) : (
+              <>
+                <div className="overflow-x-auto rounded-lg border">
+                  <table className="w-full text-xs">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        {['Image','Breed','Name','Type','Pillar','Price','Active','Actions'].map(h => (
+                          <th key={h} className="px-3 py-2 text-left font-semibold text-gray-600">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {crudProducts.map((p, i) => {
+                        const img = p.cloudinary_url || p.mockup_url || '';
+                        const isValid = img && img.split('/').pop().startsWith('breed-');
+                        return (
+                          <tr key={p.id || i} className="hover:bg-gray-50">
+                            <td className="px-3 py-2">
+                              {img ? (
+                                <div className={`w-10 h-10 rounded overflow-hidden border-2 ${isValid ? 'border-green-300' : 'border-amber-300'}`}>
+                                  <img src={img} alt="" className="w-full h-full object-cover" onError={e => e.target.style.display='none'}/>
+                                </div>
+                              ) : (
+                                <div className="w-10 h-10 rounded bg-gray-100 flex items-center justify-center border border-dashed border-gray-300">
+                                  <AlertCircle className="w-4 h-4 text-gray-400"/>
+                                </div>
+                              )}
+                            </td>
+                            <td className="px-3 py-2 font-medium">{p.breed}</td>
+                            <td className="px-3 py-2 max-w-[160px] truncate">{p.name}</td>
+                            <td className="px-3 py-2 text-gray-500">{p.product_type}</td>
+                            <td className="px-3 py-2">
+                              <span className="px-1.5 py-0.5 rounded text-xs bg-purple-100 text-purple-700">{(p.pillars||[p.pillar]||[]).join('|')}</span>
+                            </td>
+                            <td className="px-3 py-2">₹{p.price||0}</td>
+                            <td className="px-3 py-2">
+                              <span className={`px-1.5 py-0.5 rounded text-xs ${p.is_active||p.active ? 'bg-green-100 text-green-700':'bg-gray-100 text-gray-500'}`}>
+                                {p.is_active||p.active ? 'Active':'Off'}
+                              </span>
+                            </td>
+                            <td className="px-3 py-2">
+                              <div className="flex gap-1">
+                                <button onClick={() => { setEditBreedProd({...p}); setEditBreedProdOpen(true); }}
+                                  className="p-1 rounded hover:bg-blue-50 text-blue-600" title="Edit">
+                                  <Edit className="w-3.5 h-3.5"/>
+                                </button>
+                                <button onClick={() => deleteBreedProd(p.id||p._id)}
+                                  disabled={deletingId === (p.id||p._id)}
+                                  className="p-1 rounded hover:bg-red-50 text-red-500" title="Delete">
+                                  {deletingId === (p.id||p._id) ? <Loader2 className="w-3.5 h-3.5 animate-spin"/> : <Trash2 className="w-3.5 h-3.5"/>}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {crudProducts.length === 0 && (
+                        <tr><td colSpan={8} className="px-3 py-8 text-center text-gray-400">No products found</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination */}
+                <div className="flex items-center justify-between mt-3 text-sm text-gray-600">
+                  <span>{crudTotal} total • page {crudPage} of {Math.max(1, Math.ceil(crudTotal/CRUD_PAGE_SIZE))}</span>
+                  <div className="flex gap-1">
+                    <button onClick={() => setCrudPage(p => Math.max(1, p-1))} disabled={crudPage <= 1}
+                      className="p-1 rounded border disabled:opacity-40 hover:bg-gray-50">
+                      <ChevronLeft className="w-4 h-4"/>
+                    </button>
+                    <button onClick={() => setCrudPage(p => p+1)} disabled={crudPage >= Math.ceil(crudTotal/CRUD_PAGE_SIZE)}
+                      className="p-1 rounded border disabled:opacity-40 hover:bg-gray-50">
+                      <ChevronRight className="w-4 h-4"/>
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </Card>
+        </div>
+      )}
+
+      {/* ── PREVIEW TAB ─────────────────────────────────────────────── */}
       {activeSubTab === 'preview' && (
         <div className="space-y-6">
           <Card className="p-6">
@@ -1105,46 +1403,61 @@ const SoulProductsManager = () => {
                   ))}
                 </select>
               </div>
-              {/* ── PILLAR SELECTOR (new) ── */}
+              {/* ── PILLAR SELECTOR ── */}
               <div>
-                <label className="text-xs font-medium text-purple-600 block mb-1">🎯 Target Pillar (Product Inbox)</label>
+                <label className="text-xs font-medium text-purple-600 block mb-1">🎯 Target Pillar</label>
                 <select
                   value={selectedPillar}
                   onChange={e => setSelectedPillar(e.target.value)}
                   className="w-full px-3 py-2 border-2 border-purple-200 rounded-lg text-sm font-medium"
                 >
-                  <option value="">All Pillars (General)</option>
-                  {['learn','care','dine','go','celebrate','play','shop','adopt','paperwork','advisory','emergency','farewell'].map(p => (
+                  <option value="">All Pillars</option>
+                  {PILLARS.map(p => (
                     <option key={p} value={p}>{p.charAt(0).toUpperCase()+p.slice(1)}</option>
                   ))}
                 </select>
                 {selectedPillar && (
                   <p className="text-xs text-purple-500 mt-1">
-                    ✦ Generated products will be tagged with pillar="{selectedPillar}" and appear in the {selectedPillar} product inbox.
+                    ✦ Generated products tagged with pillar="{selectedPillar}"
                   </p>
                 )}
               </div>
-              <div className="flex items-end gap-2">
-                <Button 
-                  onClick={startMockupGeneration}
-                  disabled={generationStatus?.running}
-                  className="bg-purple-600 hover:bg-purple-700"
+              {/* ── HAS IMAGE FILTER ── */}
+              <div>
+                <label className="text-xs font-medium text-gray-600 block mb-1">Has Image</label>
+                <select
+                  value={hasImageFilter}
+                  onChange={e => setHasImageFilter(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg text-sm"
                 >
+                  <option value="all">All</option>
+                  <option value="yes">Yes — with image</option>
+                  <option value="no">No — pending</option>
+                </select>
+              </div>
+              <div className="flex items-end gap-2 flex-wrap">
+                <Button onClick={startMockupGeneration} disabled={generationStatus?.running} className="bg-purple-600 hover:bg-purple-700">
                   <Play className="w-4 h-4 mr-2" />
                   {selectedPillar ? `Generate → ${selectedPillar.charAt(0).toUpperCase()+selectedPillar.slice(1)}` : 'Generate'}
                 </Button>
-                <Button onClick={seedBreedProducts} variant="outline">
-                  Seed Products
+                <Button onClick={seedBreedProducts} variant="outline">Seed Products</Button>
+                <Button onClick={() => setNewTypeModal(true)} variant="outline" className="border-green-500 text-green-700">
+                  <Plus className="w-4 h-4 mr-1" /> New Type
+                </Button>
+                <Button onClick={() => exportMockupsCsv(false)} disabled={exportingCsv} variant="outline" className="border-blue-500 text-blue-700">
+                  {exportingCsv ? <Loader2 className="w-4 h-4 mr-1 animate-spin"/> : <Download className="w-4 h-4 mr-1"/>}
+                  Export CSV
+                </Button>
+                <Button onClick={() => exportMockupsCsv(true)} disabled={exportingCsv} variant="outline" className="border-amber-500 text-amber-700">
+                  <Download className="w-4 h-4 mr-1"/> Pending 705
                 </Button>
               </div>
             </div>
 
             <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
               <strong>Note:</strong> Soul Made products are auto-seeded on deployment via MasterSync.
-              <br />
-              Mockup generation takes ~30-60 seconds per image. Click Generate to start batch processing.
-              <br />
-              <strong>33 breeds × 20+ product types = 1000+ total mockups</strong>
+              <br />Mockup generation takes ~30-60 seconds per image. Click Generate to start batch processing.
+              <br /><strong>Filters apply to both Export CSV and Generate.</strong>
             </div>
             
             {/* Cloud Storage Status */}
@@ -1245,23 +1558,158 @@ const SoulProductsManager = () => {
 
       {/* ════════════════════════════════════════════════════════════════════ */}
       {/* SOUL PRODUCT EDITOR — Full ProductBoxEditor with tabs, media upload */}
-      {/* ════════════════════════════════════════════════════════════════════ */}
       {editingProduct && (
         <ProductBoxEditor
-          product={{
-            ...editingProduct,
-            id: editingProduct.id || editingProduct._id,
-            collection: 'breed_products',
-          }}
+          product={{ ...editingProduct, id: editingProduct.id||editingProduct._id, collection:'breed_products' }}
           open={editModalOpen}
           onClose={() => { setEditModalOpen(false); setEditingProduct(null); }}
-          onSave={async () => {
-            // save handled inside ProductBoxEditor via /api/admin/products
-            setEditModalOpen(false);
-            await fetchProducts();
-          }}
+          onSave={async () => { setEditModalOpen(false); await fetchProducts(); }}
         />
       )}
+
+      {/* ── EDIT BREED PRODUCT MODAL ───────────────────────────── */}
+      <Dialog open={editBreedProdOpen} onOpenChange={setEditBreedProdOpen}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><Edit className="w-4 h-4"/>Edit Breed Product</DialogTitle></DialogHeader>
+          {editBreedProd && (
+            <div className="space-y-3 py-2">
+              {[
+                {label:'Name',       field:'name',         type:'text'},
+                {label:'Breed',      field:'breed',        type:'text'},
+                {label:'Product Type',field:'product_type',type:'text'},
+                {label:'Price (₹)',  field:'price',        type:'number'},
+                {label:'Image URL',  field:'cloudinary_url',type:'text'},
+                {label:'Sub Category',field:'sub_category',type:'text'},
+              ].map(({label,field,type}) => (
+                <div key={field}>
+                  <Label className="text-xs">{label}</Label>
+                  <Input type={type} value={editBreedProd[field]||''} className="text-sm mt-1"
+                    onChange={e => setEditBreedProd(p => ({...p, [field]: type==='number'?parseFloat(e.target.value)||0 : e.target.value}))}/>
+                </div>
+              ))}
+              <div>
+                <Label className="text-xs">Pillar</Label>
+                <select value={editBreedProd.pillar||''} onChange={e => setEditBreedProd(p => ({...p, pillar: e.target.value}))}
+                  className="w-full mt-1 px-3 py-2 border rounded text-sm">
+                  <option value="">— none —</option>
+                  {PILLARS.map(pl => <option key={pl} value={pl}>{pl}</option>)}
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <input type="checkbox" id="ep-active" checked={!!(editBreedProd.is_active||editBreedProd.active)}
+                  onChange={e => setEditBreedProd(p => ({...p, is_active: e.target.checked, active: e.target.checked}))}/>
+                <label htmlFor="ep-active" className="text-sm">Active</label>
+                <input type="checkbox" id="ep-mockup" className="ml-4" checked={!!editBreedProd.is_mockup}
+                  onChange={e => setEditBreedProd(p => ({...p, is_mockup: e.target.checked}))}/>
+                <label htmlFor="ep-mockup" className="text-sm">Is Mockup</label>
+              </div>
+              {editBreedProd.cloudinary_url && (
+                <div className="rounded-lg overflow-hidden border w-24 h-24">
+                  <img src={editBreedProd.cloudinary_url} alt="" className="w-full h-full object-cover"/>
+                </div>
+              )}
+            </div>
+          )}
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setEditBreedProdOpen(false)}>Cancel</Button>
+            <Button onClick={saveBreedProd} disabled={savingBreedProd} className="bg-purple-600 hover:bg-purple-700">
+              {savingBreedProd ? <Loader2 className="w-4 h-4 mr-2 animate-spin"/> : <Check className="w-4 h-4 mr-2"/>}Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── IMPORT CSV MODAL ───────────────────────────────────── */}
+      <Dialog open={importModalOpen} onOpenChange={setImportModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><FileUp className="w-4 h-4"/>Import Breed Products CSV</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-gray-600">Upload a CSV with columns: <code className="bg-gray-100 px-1 rounded text-xs">breed, product_type, name, pillar, price, cloudinary_url, active</code></p>
+            <div className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:border-purple-400 transition-colors"
+              onClick={() => importFileRef.current?.click()}>
+              <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2"/>
+              <p className="text-sm text-gray-600">{importFile ? importFile.name : 'Click to select CSV file'}</p>
+              <input ref={importFileRef} type="file" accept=".csv" className="hidden"
+                onChange={e => setImportFile(e.target.files[0])}/>
+            </div>
+            {importResults && (
+              <div className={`p-3 rounded-lg text-sm ${importResults.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                {importResults.success
+                  ? `✅ ${importResults.inserted} inserted, ${importResults.updated} updated (${importResults.total} total)`
+                  : `❌ ${importResults.error}`}
+              </div>
+            )}
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setImportModalOpen(false)}>Cancel</Button>
+            <Button onClick={handleImport} disabled={!importFile||importLoading} className="bg-green-600 hover:bg-green-700">
+              {importLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin"/> : <FileUp className="w-4 h-4 mr-2"/>}Import
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── NEW PRODUCT TYPE MODAL ─────────────────────────────── */}
+      <Dialog open={newTypeModal} onOpenChange={setNewTypeModal}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><Plus className="w-4 h-4 text-purple-600"/>Create New Product Type</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-gray-500">This will seed the new product type across selected breeds, ready for AI mockup generation.</p>
+            <div>
+              <Label className="text-xs">Product Type ID (snake_case)</Label>
+              <Input placeholder="e.g. rain_jacket" value={newTypeData.product_type} className="mt-1 text-sm"
+                onChange={e => setNewTypeData(d => ({...d, product_type: e.target.value.toLowerCase().replace(/\s+/g,'_')}))}/>
+            </div>
+            <div>
+              <Label className="text-xs">Name Template</Label>
+              <Input placeholder="{breed} {product_type}" value={newTypeData.name_template} className="mt-1 text-sm"
+                onChange={e => setNewTypeData(d => ({...d, name_template: e.target.value}))}/>
+              <p className="text-xs text-gray-400 mt-0.5">Use {"{"+"breed}"} and {"{"+"product_type}"} as placeholders</p>
+            </div>
+            <div>
+              <Label className="text-xs">Price (₹)</Label>
+              <Input type="number" value={newTypeData.price} className="mt-1 text-sm"
+                onChange={e => setNewTypeData(d => ({...d, price: parseFloat(e.target.value)||0}))}/>
+            </div>
+            <div>
+              <Label className="text-xs">Description</Label>
+              <Textarea placeholder="Brief description of this product type" value={newTypeData.description} className="mt-1 text-sm"
+                onChange={e => setNewTypeData(d => ({...d, description: e.target.value}))}/>
+            </div>
+            <div>
+              <Label className="text-xs">Pillars (select one or more)</Label>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {PILLARS.map(p => (
+                  <button key={p} type="button"
+                    onClick={() => setNewTypeData(d => ({...d, pillars: d.pillars.includes(p) ? d.pillars.filter(x=>x!==p) : [...d.pillars, p]}))}
+                    className={`px-2 py-1 rounded text-xs font-medium border transition-colors ${newTypeData.pillars.includes(p) ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-600 border-gray-300 hover:border-purple-400'}`}>
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">Breeds</Label>
+              <select value={typeof newTypeData.breeds === 'string' ? newTypeData.breeds : 'custom'}
+                onChange={e => setNewTypeData(d => ({...d, breeds: e.target.value}))}
+                className="w-full mt-1 px-3 py-2 border rounded text-sm">
+                <option value="all">All Breeds (50 breeds)</option>
+                {mockupStats?.by_breed && Object.keys(mockupStats.by_breed).sort().map(b => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setNewTypeModal(false)}>Cancel</Button>
+            <Button onClick={createNewProductType} disabled={creatingType||!newTypeData.product_type||newTypeData.pillars.length===0}
+              className="bg-purple-600 hover:bg-purple-700">
+              {creatingType ? <Loader2 className="w-4 h-4 mr-2 animate-spin"/> : <Sparkles className="w-4 h-4 mr-2"/>}
+              Seed Across Breeds
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
