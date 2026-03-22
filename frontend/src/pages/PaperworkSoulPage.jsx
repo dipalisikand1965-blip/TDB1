@@ -33,6 +33,7 @@ import GuidedPaperworkPaths from "../components/paperwork/GuidedPaperworkPaths";
 import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
+import PillarSoulProfile from "../components/PillarSoulProfile";
 
 // ─── COLOUR SYSTEM ─────────────────────────────────────────
 const G = {
@@ -762,6 +763,11 @@ const PaperworkSoulPage = () => {
       </div>
       {/* ── PAGE BODY ── */}
       <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{background:G.pageBg,fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",overflowX:"hidden",boxSizing:"border-box"}}>
+
+        {/* Soul Profile bar — pet/breed info + questions */}
+        <div style={{ paddingTop: 16 }}>
+          <PillarSoulProfile pet={petData} token={token} pillar="paperwork" color="#0D9488" />
+        </div>
 
         {/* Booking modal */}
         {activeService && <ServiceBookingModal service={activeService} pet={petData} onClose={()=>setActiveService(null)}/>}

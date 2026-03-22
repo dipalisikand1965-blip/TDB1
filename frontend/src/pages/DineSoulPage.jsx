@@ -32,6 +32,7 @@ import SharedProductCard, { ProductDetailModal } from "../components/ProductCard
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
+import PillarSoulProfile from "../components/PillarSoulProfile";
 
 // ─── Dimension visual config — dynamic per pet ───────────────────────────────
 function getDineDims(pet) {
@@ -1470,6 +1471,11 @@ const DineSoulPage = () => {
 
       {/* Page body — max-w-5xl centred, matches Celebrate layout */}
       <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{ background: "#FDF6EE", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
+
+        {/* Soul Profile bar — pet/breed info + questions */}
+        <div style={{ paddingTop: 16 }}>
+          <PillarSoulProfile pet={petData} token={token} pillar="dine" color="#D97706" />
+        </div>
 
         {/* Category strip — centered within max-w container (same as Celebrate) */}
         <DineCategoryStrip pet={petData} />

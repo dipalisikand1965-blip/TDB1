@@ -259,21 +259,21 @@ const COMMAND_PATTERNS = [
     intent: 'boarding',
     response: (petName) => `Looking for boarding for ${petName}? Let me show you our trusted partners.`,
     action: 'navigate',
-    path: '/stay'
+    path: '/go'
   },
   {
     patterns: ['daycare', 'day care', 'creche', 'drop off', 'pet sitting', 'dog sitting'],
     intent: 'daycare',
     response: (petName) => `Need daycare for ${petName}? We have great options!`,
     action: 'navigate',
-    path: '/stay?type=daycare'
+    path: '/go?type=daycare'
   },
   {
     patterns: ['pet sitter', 'sitter', 'home visit', 'someone to watch', 'house sitting'],
     intent: 'pet_sitter',
     response: (petName) => `A pet sitter for ${petName}! Our Stay pillar has trusted options.`,
     action: 'navigate',
-    path: '/stay'
+    path: '/go'
   },
   
   // ============================================
@@ -284,35 +284,35 @@ const COMMAND_PATTERNS = [
     intent: 'travel_planning',
     response: (petName) => `Planning to travel with ${petName}? Let me help you prepare!`,
     action: 'navigate',
-    path: '/travel'
+    path: '/go'
   },
   {
     patterns: ['pet friendly', 'dog friendly', 'allows dogs', 'allows pets', 'pet allowed'],
     intent: 'pet_friendly',
     response: (petName) => `Looking for pet-friendly places? Our Travel pillar has everything you need!`,
     action: 'navigate',
-    path: '/travel'
+    path: '/go'
   },
   {
     patterns: ['flight', 'flying', 'airplane', 'airline', 'air travel'],
     intent: 'air_travel',
     response: (petName) => `Flying with ${petName}? Our Travel Concierge can help with all the requirements and documentation.`,
     action: 'navigate',
-    path: '/travel?type=air'
+    path: '/go?type=air'
   },
   {
     patterns: ['train', 'railway', 'rail travel'],
     intent: 'train_travel',
     response: (petName) => `Taking ${petName} on a train? Let me show you the requirements and options.`,
     action: 'navigate',
-    path: '/travel?type=train'
+    path: '/go?type=train'
   },
   {
     patterns: ['cab', 'taxi', 'uber', 'ola', 'car ride'],
     intent: 'cab_travel',
     response: (petName) => `Need a pet-friendly cab for ${petName}? Let me help you find one!`,
     action: 'navigate',
-    path: '/travel?type=cab'
+    path: '/go?type=cab'
   },
   {
     patterns: ['documents', 'papers', 'certificate', 'health certificate', 'travel documents'],
@@ -341,28 +341,28 @@ const COMMAND_PATTERNS = [
     intent: 'walking',
     response: (petName) => `Looking for walking services for ${petName}? Our Fit pillar has great options!`,
     action: 'navigate',
-    path: '/fit'
+    path: '/play'
   },
   {
     patterns: ['training', 'trainer', 'obedience', 'behavior', 'puppy training', 'basic commands'],
     intent: 'training',
     response: (petName) => `Training for ${petName}? Great idea! Let me show you our trusted trainers.`,
     action: 'navigate',
-    path: '/fit?type=training'
+    path: '/play?type=training'
   },
   {
     patterns: ['swimming', 'swim', 'pool', 'hydrotherapy'],
     intent: 'swimming',
     response: (petName) => `Swimming for ${petName}? It's great exercise! Let me find options near you.`,
     action: 'navigate',
-    path: '/fit?type=swimming'
+    path: '/play?type=swimming'
   },
   {
     patterns: ['park', 'dog park', 'play area', 'off leash', 'play date'],
     intent: 'parks',
     response: (petName) => `Looking for a place for ${petName} to play? Let me show you nearby options!`,
     action: 'navigate',
-    path: '/enjoy'
+    path: '/play'
   },
   
   // ============================================

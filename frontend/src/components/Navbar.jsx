@@ -236,10 +236,6 @@ const Navbar = () => {
       walking: { pillar: 'care', path: '/care?type=walking', keywords: ['walker', 'walking', 'walk my dog', 'daily walk'] },
       sitting: { pillar: 'care', path: '/care?type=sitting', keywords: ['sitter', 'pet sitting', 'babysitter', 'day care'] },
       
-      // Stay Services
-      boarding: { pillar: 'stay', path: '/stay?type=boarding', keywords: ['boarding', 'kennel', 'leave my pet', 'overnight'] },
-      hotel: { pillar: 'stay', path: '/stay', keywords: ['hotel', 'pet hotel', 'staycation', 'vacation stay'] },
-      
       // Training
       training: { pillar: 'learn', path: '/learn', keywords: ['trainer', 'training', 'obedience', 'behavior', 'puppy class', 'learn', 'teach'] },
       
@@ -255,20 +251,15 @@ const Navbar = () => {
       // Dine
       food: { pillar: 'dine', path: '/dine', keywords: ['food', 'meal', 'restaurant', 'eat', 'feed', 'fresh meals', 'diet', 'nutrition'] },
       
-      // Enjoy
-      event: { pillar: 'enjoy', path: '/enjoy', keywords: ['event', 'meetup', 'playdate', 'social', 'fun', 'play', 'enjoy'] },
-      
-      // Fit
-      fitness: { pillar: 'fit', path: '/fit', keywords: ['fitness', 'exercise', 'weight', 'active', 'swim', 'gym', 'fit'] },
+      // Play (merged Enjoy events + Fit)
+      event: { pillar: 'play', path: '/play', keywords: ['event', 'meetup', 'playdate', 'social', 'fun', 'play', 'enjoy'] },
+      fitness: { pillar: 'play', path: '/play', keywords: ['fitness', 'exercise', 'weight', 'active', 'swim', 'gym', 'fit'] },
       
       // Farewell
       farewell: { pillar: 'farewell', path: '/farewell', keywords: ['farewell', 'memorial', 'cremation', 'end of life', 'rainbow bridge', 'loss'] },
       
-      // Paperwork
-      paperwork: { pillar: 'paperwork', path: '/paperwork', keywords: ['paperwork', 'document', 'license', 'registration', 'certificate', 'records'] },
-      
-      // Advisory
-      advisory: { pillar: 'advisory', path: '/advisory', keywords: ['advice', 'advisory', 'consult', 'question', 'help', 'guidance'] },
+      // Paperwork (merged Advisory)
+      paperwork: { pillar: 'paperwork', path: '/paperwork', keywords: ['paperwork', 'document', 'license', 'registration', 'certificate', 'records', 'advice', 'advisory', 'consult', 'guidance'] },
       
       // Emergency
       emergency: { pillar: 'emergency', path: '/emergency', keywords: ['emergency', 'urgent', '24/7', 'ambulance', 'poison', 'accident'] },

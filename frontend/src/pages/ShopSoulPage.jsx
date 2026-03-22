@@ -31,6 +31,7 @@ import { tdc } from "../utils/tdc_intent";
 import { ProductGridSkeleton } from "../components/common/ProductSkeleton";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
+import PillarSoulProfile from "../components/PillarSoulProfile";
 
 // ── Colour system — warm gold, The Doggy Bakery amber ─────────
 const G = {
@@ -708,6 +709,9 @@ const ShopSoulPage = () => {
             ))}
           </div>
         </div>
+
+        {/* Soul Profile bar — pet/breed info + questions */}
+        <PillarSoulProfile pet={petData} token={token} pillar="shop" color="#D97706" />
 
         {/* Category strip */}
         <ShopCategoryStrip

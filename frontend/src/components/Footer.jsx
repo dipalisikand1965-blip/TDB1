@@ -108,8 +108,8 @@ const Footer = () => {
                 <div className="grid grid-cols-2 gap-2 p-4">
                   <Link to="/services?pillar=care" className="text-sm py-2 hover:text-pink-400 transition-colors">✂️ Grooming</Link>
                   <Link to="/services?pillar=learn" className="text-sm py-2 hover:text-pink-400 transition-colors">🎓 Training</Link>
-                  <Link to="/services?pillar=stay" className="text-sm py-2 hover:text-pink-400 transition-colors">🏠 Boarding</Link>
-                  <Link to="/services?pillar=stay" className="text-sm py-2 hover:text-pink-400 transition-colors">🌞 Daycare</Link>
+                  <Link to="/services?pillar=go" className="text-sm py-2 hover:text-pink-400 transition-colors">🏠 Boarding</Link>
+                  <Link to="/services?pillar=care" className="text-sm py-2 hover:text-pink-400 transition-colors">🌞 Daycare</Link>
                   <Link to="/services?pillar=care" className="text-sm py-2 hover:text-pink-400 transition-colors">🏥 Vet Care</Link>
                   <Link to="/services?pillar=care" className="text-sm py-2 hover:text-pink-400 transition-colors">🐕 Dog Walking</Link>
                   <Link to="/services?pillar=celebrate" className="text-sm py-2 hover:text-pink-400 transition-colors">📸 Pet Photo</Link>
@@ -296,8 +296,8 @@ const Footer = () => {
               <ul className="space-y-2 text-sm">
                 <li><Link to="/services?pillar=care" className="hover:text-pink-400 transition-colors">✂️ Grooming</Link></li>
                 <li><Link to="/services?pillar=learn" className="hover:text-pink-400 transition-colors">🎓 Training</Link></li>
-                <li><Link to="/services?pillar=stay" className="hover:text-pink-400 transition-colors">🏠 Boarding</Link></li>
-                <li><Link to="/services?pillar=stay" className="hover:text-pink-400 transition-colors">🌞 Daycare</Link></li>
+                <li><Link to="/services?pillar=go" className="hover:text-pink-400 transition-colors">🏠 Boarding</Link></li>
+                <li><Link to="/services?pillar=care" className="hover:text-pink-400 transition-colors">🌞 Daycare</Link></li>
                 <li><Link to="/services?pillar=care" className="hover:text-pink-400 transition-colors">🏥 Vet Care</Link></li>
                 <li><Link to="/services?pillar=care" className="hover:text-pink-400 transition-colors">🐕 Dog Walking</Link></li>
                 <li><Link to="/services?pillar=celebrate" className="hover:text-pink-400 transition-colors">📸 Pet Photography</Link></li>
