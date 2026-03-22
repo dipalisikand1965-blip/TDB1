@@ -15,7 +15,7 @@ logging.basicConfig(
 )
 log = logging.getLogger('img_gen')
 
-API_URL = "https://custom-order-desk-1.preview.emergentagent.com"
+API_URL = "https://custom-merch-hub-23.preview.emergentagent.com"
 PILLARS = ["celebrate", "care", "dine", "enjoy", "fit", "learn", "emergency", "farewell", "adopt", "paperwork", "advisory", "shop", "stay", "travel", "go"]
 
 async def run():

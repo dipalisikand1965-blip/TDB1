@@ -27,7 +27,7 @@ import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
-import SoulMadeModal from "../components/SoulMadeModal";
+
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 
 const G = {
@@ -311,7 +311,7 @@ const EmergencySoulPage = () => {
   const [toastSvc, setToastSvc]     = useState("");
   const [breedProducts, setBreedProducts] = useState([]);
   const [breedProductsLoading, setBreedProductsLoading] = useState(false);
-  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
+
 
   const handleBook = useCallback((svc) => {
     if(!svc)return;
@@ -473,17 +473,6 @@ const EmergencySoulPage = () => {
 
             <GuidedEmergencyPaths pet={petData}/>
 
-            {/* ── SOUL MADE™ ── */}
-            {petData?.name && (
-              <div style={{textAlign:"center",margin:"4px 0 20px"}}>
-                <button onClick={()=>setSoulMadeOpen(true)} style={{padding:"12px 28px",borderRadius:999,border:`1px solid ${G.crimson}40`,background:`${G.crimson}10`,color:G.crimson,fontSize:13,fontWeight:700,cursor:"pointer"}}
-                  onMouseEnter={e=>{e.currentTarget.style.background=`${G.crimson}20`;}}
-                  onMouseLeave={e=>{e.currentTarget.style.background=`${G.crimson}10`;}}>
-                  ✦ Soul Made™ — Make it personal for {petData.name}
-                </button>
-              </div>
-            )}
-            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="emergency" pillarColor={G.crimson} pillarLabel="Emergency" onClose={()=>setSoulMadeOpen(false)}/>}
 
             {/* ── MIRA IMAGINES: Emergency kit ideas ── */}
             {petData?.breed && (

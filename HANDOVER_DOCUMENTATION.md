@@ -17,7 +17,7 @@ The Doggy Company is a "Pet Life Operating System" - a comprehensive platform th
 
 **URLs:**
 - **Production:** https://thedoggycompany.com
-- **Preview:** https://custom-order-desk-1.preview.emergentagent.com
+- **Preview:** https://custom-merch-hub-23.preview.emergentagent.com
 
 ---
 
@@ -269,7 +269,7 @@ components/
 
 ### Test Razorpay Integration
 ```bash
-API_URL=https://custom-order-desk-1.preview.emergentagent.com
+API_URL=https://custom-merch-hub-23.preview.emergentagent.com
 curl -X POST "$API_URL/api/membership/create-order" \
   -H "Content-Type: application/json" \
   -d '{"plan_id": "essential", "user_email": "test@example.com", "user_name": "Test User", "user_phone": "9876543210"}'
@@ -277,12 +277,12 @@ curl -X POST "$API_URL/api/membership/create-order" \
 
 ### Test WhatsApp Status
 ```bash
-curl https://custom-order-desk-1.preview.emergentagent.com/api/whatsapp/status
+curl https://custom-merch-hub-23.preview.emergentagent.com/api/whatsapp/status
 ```
 
 ### Test Service Listing
 ```bash
-curl "https://custom-order-desk-1.preview.emergentagent.com/api/service-box/services?pillar=dine&limit=5"
+curl "https://custom-merch-hub-23.preview.emergentagent.com/api/service-box/services?pillar=dine&limit=5"
 ```
 
 ---

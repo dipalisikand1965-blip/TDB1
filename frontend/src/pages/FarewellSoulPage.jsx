@@ -338,14 +338,14 @@ const FarewellSoulPage = () => {
             <div style={{marginBottom:20}}><FarewellProfile pet={petData} token={token}/></div>
             <MiraPicksSection pet={petData}/>
 
-            {/* ── SOUL MADE™ ── */}
+            {/* ── SOUL MADE™ TRIGGER ── */}
             {petData?.name && (
-              <div style={{textAlign:"center",margin:"4px 0 20px"}}>
-                <button onClick={()=>setSoulMadeOpen(true)} style={{padding:"12px 28px",borderRadius:999,border:`1px solid ${G.indigo}40`,background:`${G.indigo}10`,color:G.indigo,fontSize:13,fontWeight:700,cursor:"pointer"}}
-                  onMouseEnter={e=>{e.currentTarget.style.background=`${G.indigo}20`;}}
-                  onMouseLeave={e=>{e.currentTarget.style.background=`${G.indigo}10`;}}>
-                  ✦ Soul Made™ — Make it personal for {petData.name}
-                </button>
+              <div data-testid="soul-made-trigger" style={{margin:'16px 0 24px',padding:'16px',background:`${G.indigo}08`,border:`1px solid ${G.indigo}20`,borderRadius:16,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer'}} onClick={()=>setSoulMadeOpen(true)}>
+                <div>
+                  <div style={{fontSize:13,fontWeight:700,color:G.indigo,marginBottom:3}}>✦ In memory of {petData.name} — create something meaningful</div>
+                  <div style={{fontSize:12,color:'rgba(245,240,232,0.4)'}}>Upload {petData.name}'s photo · Concierge® creates it · Price on WhatsApp</div>
+                </div>
+                <div style={{fontSize:20,color:`${G.indigo}60`}}>›</div>
               </div>
             )}
             {soulMadeOpen && <SoulMadeModal pet={petData} pillar="farewell" pillarColor={G.indigo} pillarLabel="Farewell" onClose={()=>setSoulMadeOpen(false)}/>}

@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://custom-order-desk-1.preview.emergentagent.com
+https://custom-merch-hub-23.preview.emergentagent.com
 ```
 
 ---

@@ -815,17 +815,17 @@ const PaperworkSoulPage = () => {
             {/* Mira picks */}
             <div ref={miraRef}><MiraPicksSection pet={petData} onSelectProd={setSelProd}/></div>
 
-            {/* ── SOUL MADE™ ── */}
+            {/* ── SOUL MADE™ TRIGGER ── */}
             {petData?.name && (
-              <div style={{textAlign:"center",margin:"4px 0 20px"}}>
-                <button onClick={()=>setSoulMadeOpen(true)} style={{padding:"12px 28px",borderRadius:999,border:`1px solid ${G.teal}40`,background:`${G.teal}10`,color:G.teal,fontSize:13,fontWeight:700,cursor:"pointer"}}
-                  onMouseEnter={e=>{e.currentTarget.style.background=`${G.teal}20`;}}
-                  onMouseLeave={e=>{e.currentTarget.style.background=`${G.teal}10`;}}>
-                  ✦ Soul Made™ — Make it personal for {petData.name}
-                </button>
+              <div data-testid="soul-made-trigger" style={{margin:'16px 0 24px',padding:'16px',background:`${G.teal}08`,border:`1px solid ${G.teal}20`,borderRadius:16,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer'}} onClick={()=>setSoulMadeOpen(true)}>
+                <div>
+                  <div style={{fontSize:13,fontWeight:700,color:G.teal,marginBottom:3}}>✦ Soul Made™ — Make it personal</div>
+                  <div style={{fontSize:12,color:'rgba(245,240,232,0.4)'}}>Upload {petData.name}'s photo · Concierge® creates it · Price on WhatsApp</div>
+                </div>
+                <div style={{fontSize:20,color:`${G.teal}60`}}>›</div>
               </div>
             )}
-            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="paperwork" pillarColor={G.teal} pillarLabel="Paperwork" onClose={()=>setSoulMadeOpen(false)}/>}
+            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="paperwork" pillarColor={G.teal} pillarLabel="Documents" onClose={()=>setSoulMadeOpen(false)}/>}
 
             <GuidedPaperworkPaths pet={petData}/>
 
