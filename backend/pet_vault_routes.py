@@ -9,6 +9,7 @@ from typing import Optional, List
 from datetime import datetime, timezone, timedelta
 import logging
 import uuid
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -684,53 +685,75 @@ async def check_health_reminders():
     """Check for due health reminders and send notifications via Email & WhatsApp"""
     if db is None:
         return
-    
+
+    from whatsapp_notifications import send_whatsapp_message
+    APP_URL = os.environ.get("FRONTEND_URL", "https://thedoggycompany.com")
+
     try:
         today = datetime.now(timezone.utc).date()
-        
+
         # Get all pets with vault data
         pets_with_reminders = await db.pets.find({
             "vault.vaccines": {"$exists": True, "$ne": []}
         }, {"_id": 0, "id": 1, "name": 1, "owner_email": 1, "owner_phone": 1, "vault": 1}).to_list(10000)
-        
+
         sent_count = 0
-        
+
         for pet in pets_with_reminders:
             pet_id = pet.get("id")
-            pet_name = pet.get("name", "Your pet")
+            pet_name = pet.get("name", "your dog")
             owner_email = pet.get("owner_email")
             owner_phone = pet.get("owner_phone")
-            
+
+            # Fetch parent first name for personalization
+            parent_name = "there"
+            if owner_email:
+                user_doc = await db.users.find_one({"email": owner_email}, {"_id": 0, "name": 1, "first_name": 1})
+                if user_doc:
+                    full_name = user_doc.get("first_name") or (user_doc.get("name") or "").split()[0]
+                    if full_name:
+                        parent_name = full_name
+
             vaccines = pet.get("vault", {}).get("vaccines", [])
-            
+
             for vax in vaccines:
                 if not vax.get("reminder_enabled") or not vax.get("next_due_date"):
                     continue
-                
+
                 try:
                     due_date = datetime.fromisoformat(vax["next_due_date"].replace("Z", "+00:00")).date()
                     days_until = (due_date - today).days
-                    
+
                     # Send reminders: 7 days before AND on the day
                     if days_until in [7, 0]:
                         reminder_key = f"{pet_id}_{vax['id']}_{days_until}_{today.isoformat()}"
-                        
+
                         # Check if already sent today
                         already_sent = await db.health_reminder_logs.find_one({"key": reminder_key})
                         if already_sent:
                             continue
-                        
+
                         vaccine_name = vax.get("vaccine_name", "Vaccine")
-                        
-                        # Determine message
+                        vault_url = f"{APP_URL}/pet-vault/{pet_id}"
+
+                        # ── Personalized messages (Concierge® language) ──────────
                         if days_until == 7:
-                            subject = f"🐕 Vaccine Reminder: {pet_name}'s {vaccine_name} due in 7 days"
-                            message = f"Hi! Just a friendly reminder that {pet_name}'s {vaccine_name} vaccination is due on {due_date.strftime('%B %d, %Y')} (7 days from now). Please schedule an appointment with your vet."
+                            subject = f"🐕 {pet_name}'s {vaccine_name} is due in 7 days"
+                            whatsapp_msg = (
+                                f"Hey {parent_name}! 🐾 Just a heads up — {pet_name}'s {vaccine_name} "
+                                f"vaccination is due in 7 days ({due_date.strftime('%d %b %Y')}).\n\n"
+                                f"Concierge® can book a vet appointment for you 👉 {vault_url}"
+                            )
                         else:
-                            subject = f"🐕 Vaccine Due Today: {pet_name}'s {vaccine_name}"
-                            message = f"Hi! Today is the day! {pet_name}'s {vaccine_name} vaccination is due today ({due_date.strftime('%B %d, %Y')}). Please visit your vet today."
-                        
-                        # Send Email
+                            subject = f"🚨 {pet_name}'s {vaccine_name} is due today!"
+                            whatsapp_msg = (
+                                f"Hey {parent_name}! 🚨 {pet_name}'s {vaccine_name} vaccination is due TODAY "
+                                f"({due_date.strftime('%d %b %Y')}).\n\n"
+                                f"Book a vet via Concierge® now 👉 {vault_url}\n"
+                                f"Reply BOOK and we'll arrange it."
+                            )
+
+                        # ── Send Email ───────────────────────────────────────────
                         email_sent = False
                         if owner_email:
                             try:
@@ -740,27 +763,33 @@ async def check_health_reminders():
                                     pet_name=pet_name,
                                     vaccine_name=vaccine_name,
                                     due_date=due_date,
-                                    days_until=days_until
+                                    days_until=days_until,
+                                    parent_name=parent_name,
+                                    pet_id=pet_id,
+                                    app_url=APP_URL
                                 )
                             except Exception as e:
                                 logger.error(f"Failed to send reminder email: {e}")
-                        
-                        # Send WhatsApp
+
+                        # ── Send WhatsApp (via main Gupshup provider) ────────────
                         whatsapp_sent = False
                         if owner_phone:
                             try:
-                                whatsapp_sent = await send_health_reminder_whatsapp(
-                                    phone=owner_phone,
-                                    message=message
+                                result = await send_whatsapp_message(
+                                    to=owner_phone,
+                                    message=whatsapp_msg,
+                                    log_context="health_reminder"
                                 )
+                                whatsapp_sent = result.get("success", False)
                             except Exception as e:
                                 logger.error(f"Failed to send WhatsApp reminder: {e}")
-                        
-                        # Log the reminder sent
+
+                        # ── Log ──────────────────────────────────────────────────
                         await db.health_reminder_logs.insert_one({
                             "key": reminder_key,
                             "pet_id": pet_id,
                             "pet_name": pet_name,
+                            "parent_name": parent_name,
                             "vaccine_id": vax["id"],
                             "vaccine_name": vaccine_name,
                             "due_date": vax["next_due_date"],
@@ -769,109 +798,103 @@ async def check_health_reminders():
                             "whatsapp_sent": whatsapp_sent,
                             "sent_at": datetime.now(timezone.utc).isoformat()
                         })
-                        
-                        # Also create admin notification
+
+                        # ── Admin notification ───────────────────────────────────
                         await db.admin_notifications.insert_one({
                             "type": "health_reminder_sent",
                             "title": f"🏥 Reminder Sent: {pet_name}",
-                            "message": f"{vaccine_name} reminder sent (due in {days_until} days). Email: {'✓' if email_sent else '✗'}, WhatsApp: {'✓' if whatsapp_sent else '✗'}",
+                            "message": f"{vaccine_name} reminder sent to {parent_name} (due in {days_until} days). Email: {'✓' if email_sent else '✗'}, WhatsApp: {'✓' if whatsapp_sent else '✗'}",
                             "read": False,
                             "created_at": datetime.now(timezone.utc).isoformat(),
                             "metadata": {
                                 "pet_id": pet_id,
                                 "vaccine_name": vaccine_name,
                                 "owner_email": owner_email,
-                                "owner_phone": owner_phone
+                                "owner_phone": owner_phone,
+                                "days_until": days_until,
                             }
                         })
-                        
+
                         sent_count += 1
-                        logger.info(f"Sent health reminder for {pet_name}: {vaccine_name} (due in {days_until} days)")
-                        
+                        logger.info(f"Health reminder sent for {pet_name}: {vaccine_name} in {days_until} days → {parent_name}")
+
                 except Exception as e:
-                    logger.error(f"Error processing vaccine reminder: {e}")
-        
+                    logger.error(f"Error processing vaccine reminder for pet {pet_id}: {e}")
+
         logger.info(f"Health reminder check complete. Sent {sent_count} reminders.")
         return {"sent": sent_count}
-        
+
     except Exception as e:
         logger.error(f"Health reminder check failed: {e}")
         return {"error": str(e)}
 
 
-async def send_health_reminder_email(to_email: str, subject: str, pet_name: str, vaccine_name: str, due_date, days_until: int) -> bool:
-    """Send health reminder email via Resend"""
+async def send_health_reminder_email(to_email: str, subject: str, pet_name: str, vaccine_name: str, due_date, days_until: int, parent_name: str = "there", pet_id: str = "", app_url: str = "https://thedoggycompany.com") -> bool:
+    """Send health reminder email via Resend — personalised with parent name + Concierge® CTA"""
     import os
     import httpx
-    
+
     RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
     if not RESEND_API_KEY:
         logger.warning("RESEND_API_KEY not configured")
         return False
-    
-    # Format the date
-    date_str = due_date.strftime('%B %d, %Y') if hasattr(due_date, 'strftime') else str(due_date)
-    
-    # Build HTML email
-    html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            body {{ font-family: 'Segoe UI', sans-serif; background: #f8f4f0; margin: 0; padding: 20px; }}
-            .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; }}
-            .header {{ background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%); padding: 30px; text-align: center; }}
-            .header h1 {{ color: white; margin: 0; font-size: 24px; }}
-            .content {{ padding: 30px; }}
-            .alert-box {{ background: {'#fef3cd' if days_until == 7 else '#f8d7da'}; border-left: 4px solid {'#ffc107' if days_until == 7 else '#dc3545'}; padding: 15px; margin: 20px 0; border-radius: 4px; }}
-            .footer {{ text-align: center; padding: 20px; color: #666; font-size: 12px; }}
-            .button {{ display: inline-block; background: #7c3aed; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin-top: 20px; }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <h1>🐾 Health Reminder</h1>
-            </div>
-            <div class="content">
-                <h2>Hi there!</h2>
-                
-                <div class="alert-box">
-                    <strong>{'⏰ Upcoming' if days_until == 7 else '🚨 Due Today'}:</strong>
-                    <br><br>
-                    <strong>{pet_name}</strong>'s <strong>{vaccine_name}</strong> vaccination is 
-                    {'due in 7 days' if days_until == 7 else 'due TODAY'}!
-                    <br><br>
-                    📅 Due Date: <strong>{date_str}</strong>
-                </div>
-                
-                <p>Please schedule an appointment with your veterinarian to keep {pet_name} protected and healthy.</p>
-                
-                <p>You can manage all of {pet_name}'s health records in their Pet Vault.</p>
-                
-                <center>
-                    <a href="https://thedoggycompany.com/my-pets" class="button">
-                        View Pet Vault →
-                    </a>
-                </center>
-            </div>
-            <div class="footer">
-                <p>🐕 The Doggy Company</p>
-                <p>Your one-stop shop for everything pets</p>
-            </div>
-        </div>
-    </body>
-    </html>
-    """
-    
+
+    date_str = due_date.strftime('%d %B %Y') if hasattr(due_date, 'strftime') else str(due_date)
+    vault_url = f"{app_url}/pet-vault/{pet_id}" if pet_id else f"{app_url}/care"
+    urgency_color = "#ffc107" if days_until == 7 else "#dc3545"
+    urgency_bg    = "#fef3cd" if days_until == 7 else "#f8d7da"
+    urgency_text  = f"due in 7 days — {date_str}" if days_until == 7 else f"due TODAY — {date_str}"
+
+    html_content = f"""<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {{ font-family: 'Segoe UI', sans-serif; background: #F5F0E8; margin: 0; padding: 20px; }}
+    .container {{ max-width: 560px; margin: 0 auto; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }}
+    .header {{ background: #0F0F0F; padding: 28px; text-align: center; }}
+    .header p {{ color: rgba(245,240,232,0.6); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; margin: 0 0 8px; }}
+    .header h1 {{ color: #F5F0E8; margin: 0; font-size: 20px; font-weight: 700; }}
+    .content {{ padding: 28px; }}
+    .alert-box {{ background: {urgency_bg}; border-left: 4px solid {urgency_color}; padding: 14px 16px; margin: 16px 0; border-radius: 6px; }}
+    .alert-box strong {{ font-size: 15px; }}
+    .footer {{ text-align: center; padding: 16px; color: #999; font-size: 11px; background: #f9f9f9; }}
+    .button {{ display: inline-block; background: #40916C; color: white; padding: 13px 28px; text-decoration: none; border-radius: 8px; margin-top: 20px; font-weight: 600; font-size: 14px; }}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <p>The Doggy Company · Concierge®</p>
+      <h1>🐾 Health Vault Reminder</h1>
+    </div>
+    <div class="content">
+      <h2 style="font-size:18px; color:#111; margin:0 0 12px;">Hey {parent_name}!</h2>
+      <div class="alert-box">
+        <strong>{'⏰ Upcoming' if days_until == 7 else '🚨 Due Today'}:</strong><br><br>
+        <strong>{pet_name}</strong>'s <strong>{vaccine_name}</strong> vaccination is {urgency_text}.
+      </div>
+      <p style="color:#555; line-height:1.6;">
+        {'Schedule an appointment this week to keep ' + pet_name + ' protected.' if days_until == 7 else 'Please visit your vet today. Concierge® can book a nearby vet for you right now.'}
+      </p>
+      <center>
+        <a href="{vault_url}" class="button">
+          {'View ' + pet_name + "'s Vault →" if days_until == 7 else 'Book via Concierge® →'}
+        </a>
+      </center>
+    </div>
+    <div class="footer">
+      <p>🐕 The Doggy Company — Pet Concierge® Platform</p>
+      <p>You're receiving this because you enabled vaccine reminders in {pet_name}'s Health Vault.</p>
+    </div>
+  </div>
+</body>
+</html>"""
+
     try:
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 "https://api.resend.com/emails",
-                headers={
-                    "Authorization": f"Bearer {RESEND_API_KEY}",
-                    "Content-Type": "application/json"
-                },
+                headers={"Authorization": f"Bearer {RESEND_API_KEY}", "Content-Type": "application/json"},
                 json={
                     "from": "THEDOGGYCOMPANY <hello@thedoggycompany.com>",
                     "to": to_email,
@@ -879,14 +902,12 @@ async def send_health_reminder_email(to_email: str, subject: str, pet_name: str,
                     "html": html_content
                 }
             )
-            
             if response.status_code in [200, 201]:
                 logger.info(f"Health reminder email sent to {to_email}")
                 return True
             else:
                 logger.error(f"Resend API error: {response.status_code} - {response.text}")
                 return False
-                
     except Exception as e:
         logger.error(f"Email send error: {e}")
         return False
