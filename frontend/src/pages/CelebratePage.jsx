@@ -878,7 +878,7 @@ const CelebratePage = () => {
       {/* SECTION 3: CURATED BUNDLES - Birthday Pawty, Gotcha Day */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <div className="max-w-6xl mx-auto px-4 mb-8">
-        <CuratedBundles pillar="celebrate" showTitle={true} />
+        <CuratedBundles pillar="celebrate" showTitle={true} /> */}
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
@@ -888,12 +888,12 @@ const CelebratePage = () => {
       {activePet && token && (
         <div className="max-w-6xl mx-auto px-4 py-8 section-fade-in" data-testid="soul-made-section">
           <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-white rounded-3xl p-6 sm:p-8 border border-purple-100">
-            <SoulMadeCollection
+            {/* {/* <SoulMadeCollection
               key={`soul-made-${activePet?.id || 'guest'}`}
               pillar="celebrate"
               maxItems={8}
               showTitle={true}
-            />
+            /> */} */}
           </div>
         </div>
       )}

@@ -1155,7 +1155,7 @@ const ShopPage = () => {
         {selectedPet && (
           <div className="max-w-7xl mx-auto px-4 mt-8">
             <div className="rounded-3xl border border-fuchsia-100 bg-white p-4 sm:p-6" data-testid="shop-soul-made-layer">
-              <SoulMadeCollection pillar="shop" maxItems={8} showTitle={true} />
+              {/* <SoulMadeCollection pillar="shop" maxItems={8} showTitle={true} /> */}
             </div>
           </div>
         )}

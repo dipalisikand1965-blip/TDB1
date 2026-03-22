@@ -999,7 +999,7 @@ const CarePage = () => {
           {/* Soul Made Collection */}
           {selectedPet && (
             <div className="mb-8">
-              <SoulMadeCollection pillar="care" maxItems={8} showTitle={true} />
+              {/* <SoulMadeCollection pillar="care" maxItems={8} showTitle={true} /> */}
             </div>
           )}
           
@@ -1012,7 +1012,7 @@ const CarePage = () => {
           
           {/* Archetype Products */}
           <div className="mb-8">
-            <ArchetypeProducts pillar="care" maxProducts={8} showTitle={true} />
+            <ArchetypeProducts pillar="care" maxProducts={8} showTitle={true} /> */}
           </div>
           
           <div className="mt-6 text-center">

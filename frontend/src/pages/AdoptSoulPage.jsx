@@ -351,16 +351,7 @@ const AdoptSoulPage = () => {
         )}
       </div>
 
-      {/* Soul Adopt — Breed-specific new beginnings products */}
-      {petData && (
-        <div style={{ padding:"0 16px", marginBottom:32 }}>
-          <SoulMadeCollection
-            pillar="adopt"
-            maxItems={12}
-            showTitle={true}
-          />
-        </div>
-      )}
+      {/* Soul Adopt — handled via breed tab section above */}
 
       <ConciergeToast toast={toastVisible?{name:toastSvc,pillar:"adopt"}:null} onClose={()=>setToastVisible(false)}/>
       <AdoptConciergeModal isOpen={conciergeOpen} onClose={()=>setConciergeOpen(false)} token={token} preSelected={conciergeSvc}/>

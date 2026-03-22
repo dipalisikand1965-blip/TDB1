@@ -1181,7 +1181,7 @@ const LearnPage = () => {
             </h2>
             <p className="text-gray-600 mt-1">Complete training solutions for {activePet?.name || 'your pet'}</p>
           </div>
-          <CuratedBundles pillar="learn" maxBundles={3} showTitle={false} />
+          <CuratedBundles pillar="learn" maxBundles={3} showTitle={false} /> */}
         </div>
       </div>
 
@@ -1262,7 +1262,7 @@ const LearnPage = () => {
           
           {/* Archetype Products */}
           <div className="mt-8">
-            <ArchetypeProducts pillar="learn" maxProducts={8} showTitle={true} />
+            <ArchetypeProducts pillar="learn" maxProducts={8} showTitle={true} /> */}
           </div>
           
           <div className="mt-6 text-center">
@@ -1304,7 +1304,7 @@ const LearnPage = () => {
             </div>
 
             <div className="rounded-3xl border border-indigo-100 bg-white p-4 sm:p-6">
-              <SoulMadeCollection pillar="learn" maxItems={8} showTitle={true} />
+              {/* <SoulMadeCollection pillar="learn" maxItems={8} showTitle={true} /> */}
             </div>
 
             <PillarPicksSection pillar="learn" pet={activePet} />
