@@ -46,7 +46,6 @@ import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
-import SoulMadeModal from "../components/SoulMadeModal";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 
@@ -1905,8 +1904,6 @@ const GoSoulPage = () => {
       }).catch(e => console.error("[GoSoulPage] products fetch:", e));
   }, [petData]);
 
-  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
-
   useEffect(() => {
     if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
     if (contextPets !== undefined) setLoading(false);
@@ -1989,17 +1986,7 @@ const GoSoulPage = () => {
             {/* Mira's Picks */}
             <MiraPicksSection pet={petData} />
 
-            {/* ── SOUL MADE™ TRIGGER ── */}
-            {petData?.name && (
-              <div data-testid="soul-made-trigger" style={{margin:'16px 0 24px',padding:'16px',background:`${G.teal}08`,border:`1px solid ${G.teal}20`,borderRadius:16,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer'}} onClick={()=>setSoulMadeOpen(true)}>
-                <div>
-                  <div style={{fontSize:13,fontWeight:700,color:G.teal,marginBottom:3}}>✦ Soul Made™ — Make it personal</div>
-                  <div style={{fontSize:12,color:'rgba(245,240,232,0.4)'}}>Upload {petData.name}'s photo · Concierge® creates it · Price on WhatsApp</div>
-                </div>
-                <div style={{fontSize:20,color:`${G.teal}60`}}>›</div>
-              </div>
-            )}
-            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="go" pillarColor={G.teal} pillarLabel="Travel" onClose={()=>setSoulMadeOpen(false)}/>}
+            {/* Soul Made handled inside PersonalisedBreedSection */}
 
             {/* "Go for [name]" label */}
             <div style={{ fontSize:"clamp(1.125rem,2.5vw,1.375rem)", fontWeight:800, color:G.darkText, marginBottom:4, fontFamily:"Georgia,serif" }}>

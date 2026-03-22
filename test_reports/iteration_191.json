@@ -1,0 +1,88 @@
+{
+  "summary": "Tested Soul Made™ trigger placement after refactoring. CelebrateContentModal correctly shows soul-made-trigger inside Soul Picks section. PersonalisedBreedSection is used by Care/Dine/Go/Play/Paperwork pages but trigger only shows when breed products exist (not in empty state). Emergency page correctly excluded. Learn and Farewell pages have comments about PersonalisedBreedSection but don't actually render it.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "PersonalisedBreedSection empty state",
+        "issue": "soul-made-trigger only shows when breed products exist. In empty state (no products), the trigger is not displayed. Users cannot access Soul Made™ when breed products are still being curated.",
+        "affected_selectors": ["[data-testid='soul-made-trigger']"],
+        "priority": "MEDIUM"
+      },
+      {
+        "flow": "LearnSoulPage PersonalisedBreedSection",
+        "issue": "LearnSoulPage imports PersonalisedBreedSection but doesn't render it. Only has comments about it.",
+        "affected_selectors": [],
+        "priority": "LOW"
+      },
+      {
+        "flow": "FarewellSoulPage PersonalisedBreedSection",
+        "issue": "FarewellSoulPage doesn't import or use PersonalisedBreedSection. Only has a comment. Custom 'In memory of' text cannot be tested.",
+        "affected_selectors": [],
+        "priority": "LOW"
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/test_reports/iteration_191.json"
+  ],
+  "action_items": [
+    "Consider showing soul-made-trigger in PersonalisedBreedSection empty state (when no breed products exist)",
+    "LearnSoulPage: Either render PersonalisedBreedSection or remove the import and comments",
+    "FarewellSoulPage: Either add PersonalisedBreedSection with pillar='farewell' for custom 'In memory of' text, or remove the comment"
+  ],
+  "critical_code_review_comments": [
+    "CelebrateContentModal correctly implements soul-made-trigger inside Soul Picks section (lines 1535-1564)",
+    "PersonalisedBreedSection correctly implements soul-made-trigger at bottom of breed products grid (lines 139-170)",
+    "PersonalisedBreedSection empty state (lines 82-91) does NOT include soul-made-trigger - this may be intentional but limits access to Soul Made™",
+    "Care/Dine/Go/Play/Paperwork pages correctly use PersonalisedBreedSection inside DimExpanded 'Personalised' tab",
+    "Emergency page correctly excluded from Soul Made feature",
+    "No standalone soul-made-trigger found on any page body (all removed as expected)"
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (frontend only)", "frontend": "85%"},
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Iteration 191 tested Soul Made™ trigger placement after refactoring. Key findings: (1) CelebrateContentModal Soul Picks section correctly shows trigger with breed products (Indie Bandana, Indie Lover Mug, etc.) and clicking opens SoulMadeModal. (2) PersonalisedBreedSection in Care/Dine/Go/Play/Paperwork shows trigger only when breed products exist - empty state shows 'We're curating breed-specific products' without trigger. (3) Emergency page correctly excluded. (4) Learn and Farewell pages have comments about PersonalisedBreedSection but don't render it. Test user: dipali@clubconcierge.in / test123, pet: Mojo (Indie breed). Use mobile viewport 430x800.",
+  "test_results_detail": {
+    "celebrate_soul_picks": {
+      "route": "/celebrate-soul → Soul Picks category",
+      "soul_made_trigger_location": "Inside CelebrateContentModal Soul Picks section",
+      "trigger_visible": true,
+      "modal_opens": true,
+      "breed_products_shown": ["Indie Bandana", "Indie Lover Mug", "Indie Keychain", "Indie Portrait Frame", "Indie Tote Bag", "Indie Party Hat"],
+      "status": "PASS"
+    },
+    "care_personalised_tab": {
+      "route": "/care → Dim expanded → Personalised tab",
+      "soul_made_trigger_location": "Inside PersonalisedBreedSection (when products exist)",
+      "trigger_visible": false,
+      "reason": "Empty state - no breed products loaded",
+      "status": "PARTIAL - trigger not shown in empty state"
+    },
+    "dine_personalised_tab": {
+      "route": "/dine → Dim expanded → Personalised tab",
+      "soul_made_trigger_location": "Inside PersonalisedBreedSection (when products exist)",
+      "trigger_visible": false,
+      "reason": "Empty state - no breed products loaded",
+      "status": "PARTIAL - trigger not shown in empty state"
+    },
+    "emergency_page": {
+      "route": "/emergency",
+      "soul_made_trigger_location": "N/A - excluded",
+      "trigger_visible": false,
+      "status": "PASS - correctly excluded"
+    },
+    "standalone_trigger_check": {
+      "pages_tested": ["Care", "Dine", "Go", "Play"],
+      "standalone_trigger_found": false,
+      "status": "PASS - no standalone triggers on page body"
+    }
+  }
+}

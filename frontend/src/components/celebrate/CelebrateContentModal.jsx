@@ -18,6 +18,7 @@ import ReactDOM from 'react-dom';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { X, Loader2, Sparkles, ChevronRight, ShoppingBag, Check, ChevronDown, Share2, Calendar } from 'lucide-react';
 import ProductCard from '../ProductCard';
+import SoulMadeModal from '../SoulMadeModal';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 
@@ -1099,6 +1100,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
   const [addedCount, setAddedCount] = useState(0); // tracks items added this session
   const [miraImagines, setMiraImagines] = useState([]); // imaginary cards for non-existent flavours
   const [liveSoulScore, setLiveSoulScore] = useState(null); // live soul score updated by inline questions
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
 
   // Reset on new category open
   useEffect(() => {
@@ -1529,6 +1531,37 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                         <SoulPickCard key={p.id || idx} product={p} pet={pet} />
                       ))}
                     </div>
+
+                    {/* ── Soul Made™ Trigger — inside Soul Picks ── */}
+                    <div
+                      data-testid="soul-made-trigger"
+                      onClick={() => setSoulMadeOpen(true)}
+                      style={{
+                        margin:'16px 0 4px', padding:'14px 16px',
+                        background:'#A855F708', border:'1px solid #A855F720',
+                        borderRadius:14, display:'flex', alignItems:'center',
+                        justifyContent:'space-between', cursor:'pointer',
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontSize:13, fontWeight:700, color:'#A855F7', marginBottom:3 }}>
+                          ✦ Soul Made™ — Make it personal
+                        </div>
+                        <div style={{ fontSize:12, color:'#888', lineHeight:1.4 }}>
+                          Upload {petName}'s photo · Concierge® creates it · Price on WhatsApp
+                        </div>
+                      </div>
+                      <div style={{ fontSize:20, color:'#A855F760', flexShrink:0, marginLeft:8 }}>›</div>
+                    </div>
+                    {soulMadeOpen && (
+                      <SoulMadeModal
+                        pet={pet}
+                        pillar="celebrate"
+                        pillarColor="#A855F7"
+                        pillarLabel="Celebration"
+                        onClose={() => setSoulMadeOpen(false)}
+                      />
+                    )}
                   </div>
                 ) : (
                   <EmptyState config={config} onAskMira={() => {

@@ -10,6 +10,7 @@
  */
 import { useState, useEffect } from "react";
 import { API_URL } from "../../utils/api";
+import SoulMadeModal from "../SoulMadeModal";
 
 const PILLAR_COLORS = {
   dine:      { deep:"#1A2F1A", orange:"#C9973A", pale:"#FFF8EE" },
@@ -17,6 +18,17 @@ const PILLAR_COLORS = {
   go:        { deep:"#0D3349", orange:"#1ABC9C", pale:"#F0FDFA" },
   play:      { deep:"#7B2D00", orange:"#E76F51", pale:"#FFF0EA" },
   celebrate: { deep:"#1A0A2E", orange:"#C9973A", pale:"#FFF8EE" },
+  learn:     { deep:"#1A1363", orange:"#7C3AED", pale:"#F5F3FF" },
+  paperwork: { deep:"#042F2E", orange:"#0D9488", pale:"#F0FDFA" },
+  shop:      { deep:"#451A03", orange:"#F59E0B", pale:"#FFFBEB" },
+  adopt:     { deep:"#1A2E05", orange:"#65A30D", pale:"#F7FEE7" },
+  farewell:  { deep:"#2E1065", orange:"#8B5CF6", pale:"#F5F3FF" },
+  services:  { deep:"#0C4A6E", orange:"#0EA5E9", pale:"#F0F9FF" },
+};
+const PILLAR_LABELS = {
+  care:"Wellness", dine:"Food", go:"Travel", play:"Play", learn:"Learning",
+  celebrate:"Celebration", shop:"Shopping", paperwork:"Documents",
+  adopt:"Adoption", farewell:"Farewell", services:"Services",
 };
 const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
 
@@ -32,6 +44,7 @@ export default function PersonalisedBreedSection({ pet, pillar = "play" }) {
   const [products, setProducts] = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [selected, setSelected] = useState(null);
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
 
   const breed    = pet?.doggy_soul_answers?.breed || pet?.breed || "Indie";
   const petName  = pet?.name || "your dog";
@@ -122,6 +135,39 @@ export default function PersonalisedBreedSection({ pet, pillar = "play" }) {
           );
         })}
       </div>
+
+      {/* ── Soul Made™ Trigger — inside Soul Picks ── */}
+      <div
+        data-testid="soul-made-trigger"
+        onClick={() => setSoulMadeOpen(true)}
+        style={{
+          margin:'16px 0 12px', padding:'14px 16px',
+          background:`${C.orange}08`, border:`1px solid ${C.orange}20`,
+          borderRadius:14, display:'flex', alignItems:'center',
+          justifyContent:'space-between', cursor:'pointer',
+        }}
+      >
+        <div>
+          <div style={{ fontSize:13, fontWeight:700, color:C.orange, marginBottom:3 }}>
+            {pillar === 'farewell'
+              ? `✦ In memory of ${petName} — create something meaningful`
+              : '✦ Soul Made™ — Make it personal'}
+          </div>
+          <div style={{ fontSize:12, color:'#888', lineHeight:1.4 }}>
+            Upload {petName}'s photo · Concierge® creates it · Price on WhatsApp
+          </div>
+        </div>
+        <div style={{ fontSize:20, color:`${C.orange}60`, flexShrink:0, marginLeft:8 }}>›</div>
+      </div>
+      {soulMadeOpen && (
+        <SoulMadeModal
+          pet={pet}
+          pillar={pillar}
+          pillarColor={C.orange}
+          pillarLabel={PILLAR_LABELS[pillar] || pillar}
+          onClose={() => setSoulMadeOpen(false)}
+        />
+      )}
 
       {/* Selected product detail */}
       {selected && (
