@@ -179,6 +179,8 @@ const ProductBoxEditor = ({
   const [loadingBreeds, setLoadingBreeds] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [generatingImage, setGeneratingImage] = useState(false);
+  const [dynamicCategories, setDynamicCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
 
   // Generate AI image — starts background job, polls for result (avoids 30s timeout)
   const handleGenerateAIImage = async () => {
@@ -325,6 +327,35 @@ const ProductBoxEditor = ({
       fetchBreeds();
     }
   }, [open]);
+
+  // Fetch dynamic categories when pillar changes
+  useEffect(() => {
+    const currentPillar = product?.primary_pillar || product?.pillar || '';
+    if (!currentPillar || !open) {
+      setDynamicCategories([]);
+      return;
+    }
+    const fetchCategories = async () => {
+      setLoadingCategories(true);
+      try {
+        const adminAuth = localStorage.getItem('adminAuth') ||
+          (sessionStorage.getItem('admin_authenticated') === 'true' ? btoa(`${sessionStorage.getItem('admin_username') || 'aditya'}:lola4304`) : null);
+        const response = await fetch(
+          `${API_URL}/api/admin/pillar-products/sub-categories?pillar=${encodeURIComponent(currentPillar)}`,
+          { headers: adminAuth ? { 'Authorization': `Basic ${adminAuth}` } : {} }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setDynamicCategories(data.categories || []);
+        }
+      } catch (err) {
+        console.error('Failed to fetch categories:', err);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+    fetchCategories();
+  }, [open, product?.primary_pillar, product?.pillar]);
   
   if (!product) return null;
   
@@ -845,7 +876,7 @@ const ProductBoxEditor = ({
                   </select>
                 </div>
 
-                {/* Category — filtered by selected primary pillar */}
+                {/* Category — dynamically fetched from DB */}
                 <div>
                   <Label>Primary Category *</Label>
                   <select
@@ -853,79 +884,90 @@ const ProductBoxEditor = ({
                     onChange={(e) => {
                       updateField('commerce_ops.category', e.target.value);
                       updateField('category', e.target.value);
-                      // Also add to categories array if not already present
                       const currentCats = getValue('categories', []) || [];
                       if (e.target.value && !currentCats.includes(e.target.value)) {
                         updateField('categories', [e.target.value, ...currentCats.filter(c => c !== e.target.value)]);
                       }
                     }}
                     className="w-full h-10 px-3 rounded-md border border-gray-200"
+                    data-testid="primary-category-select"
                   >
                     <option value="">— Select Primary Category —</option>
-                    {MAIN_CATEGORIES
-                      .filter(c => !c.pillar || c.pillar === (getValue('primary_pillar', '') || getValue('pillar', 'shop')))
-                      .map(c => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
-                      ))
-                    }
+                    {loadingCategories && <option disabled>Loading categories...</option>}
+                    {dynamicCategories.map(c => (
+                      <option key={c} value={c}>
+                        {c.replace(/[-_]/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase())}
+                      </option>
+                    ))}
                   </select>
+                  {dynamicCategories.length === 0 && !loadingCategories && (
+                    <p className="text-xs text-amber-500 mt-1">No categories found for this pillar. Select a pillar first.</p>
+                  )}
                 </div>
 
                 {/* Multi-Category — cross-category applicability */}
-                {(() => {
-                  const currentPillar = getValue('primary_pillar', '') || getValue('pillar', 'shop');
-                  const pillarCats = MAIN_CATEGORIES.filter(c => !c.pillar || c.pillar === currentPillar);
-                  if (pillarCats.length < 2) return null;
-                  return (
-                    <div>
-                      <Label className="mb-2 block">Additional Categories (cross-category applicability)</Label>
-                      <div className="flex flex-wrap gap-2">
-                        {pillarCats.map(c => (
-                          <label
-                            key={c.id}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full cursor-pointer border-2 text-xs transition-all ${
-                              (getValue('categories', []) || []).includes(c.id)
-                                ? 'border-amber-500 bg-amber-50 text-amber-800'
-                                : 'border-gray-200 hover:border-gray-300 text-gray-600'
-                            }`}
-                          >
-                            <input
-                              type="checkbox"
-                              className="sr-only"
-                              checked={(getValue('categories', []) || []).includes(c.id)}
-                              onChange={(e) => {
-                                const current = getValue('categories', []) || [];
-                                const newVal = e.target.checked
-                                  ? [...current.filter(x => x !== c.id), c.id]
-                                  : current.filter(x => x !== c.id);
-                                updateField('categories', newVal);
-                                // Sync primary category if categories[0] changes
-                                if (newVal.length > 0 && !getValue('category', '')) {
-                                  updateField('category', newVal[0]);
-                                  updateField('commerce_ops.category', newVal[0]);
-                                }
-                              }}
-                            />
-                            {c.name}
-                          </label>
-                        ))}
-                      </div>
+                {dynamicCategories.length >= 2 && (
+                  <div>
+                    <Label className="mb-2 block">Additional Categories (cross-category applicability)</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {dynamicCategories.map(c => (
+                        <label
+                          key={c}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full cursor-pointer border-2 text-xs transition-all ${
+                            (getValue('categories', []) || []).includes(c)
+                              ? 'border-amber-500 bg-amber-50 text-amber-800'
+                              : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            className="sr-only"
+                            checked={(getValue('categories', []) || []).includes(c)}
+                            onChange={(e) => {
+                              const current = getValue('categories', []) || [];
+                              const newVal = e.target.checked
+                                ? [...current.filter(x => x !== c), c]
+                                : current.filter(x => x !== c);
+                              updateField('categories', newVal);
+                              if (newVal.length > 0 && !getValue('category', '')) {
+                                updateField('category', newVal[0]);
+                                updateField('commerce_ops.category', newVal[0]);
+                              }
+                            }}
+                          />
+                          {c.replace(/[-_]/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase())}
+                        </label>
+                      ))}
                     </div>
-                  );
-                })()}
+                  </div>
+                )}
 
-                {/* Sub-Category */}
+                {/* Sub-Category — dynamic dropdown */}
                 <div>
                   <Label>Sub-Category</Label>
-                  <Input
+                  <select
                     value={getValue('commerce_ops.subcategory', '') || getValue('sub_category', '')}
                     onChange={(e) => {
                       updateField('commerce_ops.subcategory', e.target.value);
                       updateField('sub_category', e.target.value);
                     }}
-                    placeholder="e.g. Special Diets, Chicken-Free, Grain-Free, Senior, Puppy…"
-                  />
-                  <p className="text-xs text-gray-400 mt-1">Used to tag this product into a specific diet/sub-section within the pillar category</p>
+                    className="w-full h-10 px-3 rounded-md border border-gray-200"
+                    data-testid="sub-category-select"
+                  >
+                    <option value="">— Select Sub-Category —</option>
+                    {dynamicCategories.map(c => (
+                      <option key={c} value={c}>
+                        {c.replace(/[-_]/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase())}
+                      </option>
+                    ))}
+                    {/* Allow custom entry as last option */}
+                    {getValue('sub_category', '') && !dynamicCategories.includes(getValue('sub_category', '')) && (
+                      <option value={getValue('sub_category', '')}>
+                        {getValue('sub_category', '')} (custom)
+                      </option>
+                    )}
+                  </select>
+                  <p className="text-xs text-gray-400 mt-1">Sub-section within the pillar. Categories are managed from the database.</p>
                 </div>
 
                 {/* Pillar Status — activate/deactivate per pillar */}
