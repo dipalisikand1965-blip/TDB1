@@ -273,6 +273,53 @@ async def process_gupshup_webhook(body: dict):
                 )
                 
                 logger.info(f"[GUPSHUP] Added message to ticket {ticket.get('ticket_id')}")
+
+                # ── ALSO update service_desk_tickets (Concierge® inbox) ──────
+                sd_ticket = await db.service_desk_tickets.find_one(
+                    {
+                        "$or": [
+                            {"member.phone": {"$regex": from_number[-10:]}},
+                            {"user_phone": {"$regex": from_number[-10:]}},
+                        ],
+                        "status": {"$nin": ["closed", "resolved"]},
+                    },
+                    sort=[("updated_at", -1)],
+                )
+                if sd_ticket:
+                    sd_msg = {
+                        "id": str(uuid.uuid4()),
+                        "sender": "member",
+                        "sender_name": sender_name,
+                        "text": content,
+                        "channel": "whatsapp",
+                        "timestamp": now,
+                        "source": "whatsapp_inbound",
+                    }
+                    await db.service_desk_tickets.update_one(
+                        {"_id": sd_ticket["_id"]},
+                        {
+                            "$push": {"conversation": sd_msg},
+                            "$set": {
+                                "updated_at": now,
+                                "has_unread_member_reply": True,
+                                "last_member_reply_at": now,
+                            },
+                        },
+                    )
+                    # Admin bell
+                    sd_ticket_id = sd_ticket.get("ticket_id") or sd_ticket.get("id")
+                    member_label = sd_ticket.get("member", {}).get("name") or sender_name
+                    pet_label    = sd_ticket.get("pet_name", "")
+                    await db.admin_notifications.insert_one({
+                        "type": "whatsapp_reply",
+                        "title": f"💬 WhatsApp reply from {member_label}",
+                        "message": f"{sender_name} replied on ticket {sd_ticket_id}{(' for ' + pet_label) if pet_label else ''}: \"{content[:120]}\"",
+                        "ticket_id": sd_ticket_id,
+                        "read": False,
+                        "created_at": now,
+                        "metadata": {"from_phone": from_number, "text_preview": content[:200]},
+                    })
+                    logger.info(f"[GUPSHUP] ✅ service_desk_ticket {sd_ticket_id} updated with WA reply")
             else:
                 # ═══════════════════════════════════════════════════════════════════════════
                 # HANDOFF TO SPINE - Create new ticket from WhatsApp message (Gupshup)
