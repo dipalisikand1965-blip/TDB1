@@ -416,7 +416,7 @@ export default function PillarSoulProfile({
                           <div style={{ fontSize:13, fontWeight:600, color:'rgba(245,240,232,0.85)', marginBottom:10, lineHeight:1.4 }}>
                             {(q.question_text || q.question || '').replace(/\{name\}/g, name)}
                           </div>
-                          {q.options && (
+                          {q.options ? (
                             <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom: hasAns ? 10 : 0 }}>
                               {q.options.map(opt => {
                                 const sel = q.type === 'multi_select' ? (ans || []).includes(opt) : ans === opt;
@@ -428,6 +428,25 @@ export default function PillarSoulProfile({
                                 );
                               })}
                             </div>
+                          ) : (
+                            /* Free-text question — textarea input */
+                            <textarea
+                              value={ans || ''}
+                              onChange={e => handleAnswer(q.question_id, e.target.value, 'text')}
+                              placeholder={`Type your answer about ${name}…`}
+                              rows={2}
+                              style={{
+                                width: '100%', boxSizing: 'border-box',
+                                background: 'rgba(255,255,255,0.05)',
+                                border: `1.5px solid ${ans ? pColor : 'rgba(255,255,255,0.12)'}`,
+                                borderRadius: 10, padding: '10px 12px',
+                                fontSize: 12, color: 'rgba(245,240,232,0.85)',
+                                resize: 'vertical', outline: 'none', lineHeight: 1.5,
+                                marginBottom: ans ? 10 : 0,
+                                fontFamily: 'inherit',
+                                transition: 'border-color 0.15s'
+                              }}
+                            />
                           )}
                           {hasAns && (
                             <button onClick={() => handleSubmit(q)} disabled={submitting[q.question_id]}

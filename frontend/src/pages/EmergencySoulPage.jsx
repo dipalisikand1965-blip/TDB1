@@ -222,12 +222,14 @@ function MiraPicksSection({ pet }) {
 }
 
 // ── DIM EXPANDED ─────────────────────────────────────────────
-function DimExpanded({ dim, pet, onClose, apiProducts={}, onBook }) {
+function DimExpanded({ dim, pet, onClose, apiProducts={}, onBook, breedProducts=[] }) {
   const petName=pet?.name||"your dog";
   const [dimTab,setDimTab]=useState("products");
   const catName=DIM_CAT[dim.id]||"First Aid";
   const catData=apiProducts[catName]||{};
   const allRaw=filterBreedProducts(Object.values(catData).flat(),pet?.breed);
+  // Fallback: use breedProducts when pillar-products catalogue is empty
+  const displayProducts = allRaw.length > 0 ? allRaw : breedProducts;
   const dimSvcs=EMERG_SERVICES.filter(s=>s.dim===dim.id);
   return (
     <div style={{background:"#fff",border:`2px solid ${G.crimson}`,borderTop:"none",borderRadius:"0 0 14px 14px",marginBottom:8}}>
@@ -239,7 +241,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, onBook }) {
       <div style={{display:"flex",borderBottom:"1px solid #F0F0F0"}}>
         {[{id:"products",label:"📦 Products"},{id:"services",label:"🚨 Services"}].map(tab=><button key={tab.id} onClick={()=>setDimTab(tab.id)} style={{flex:1,padding:"10px 0",background:"none",border:"none",borderBottom:dimTab===tab.id?`2.5px solid ${G.crimson}`:"2.5px solid transparent",color:dimTab===tab.id?G.mid:"#888",fontSize:12,fontWeight:dimTab===tab.id?700:400,cursor:"pointer"}}>{tab.label}</button>)}
       </div>
-      {dimTab==="products"&&(<div style={{padding:"12px 16px 20px"}}>{allRaw.length===0?<div style={{textAlign:"center",padding:"28px 0",color:"#888",fontSize:13}}><div style={{fontSize:28,marginBottom:8}}>📦</div>Products for {petName} being added.</div>:<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(170px,100%),1fr))",gap:12}}>{allRaw.map(p=><SharedProductCard key={p.id||p._id} product={p} pillar="emergency" selectedPet={pet}/>)}</div>}</div>)}
+      {dimTab==="products"&&(<div style={{padding:"12px 16px 20px"}}>{displayProducts.length===0?<div style={{textAlign:"center",padding:"28px 0",color:"#888",fontSize:13}}><div style={{fontSize:28,marginBottom:8}}>📦</div>Products for {petName} being added.</div>:<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(170px,100%),1fr))",gap:12}}>{displayProducts.map(p=><SharedProductCard key={p.id||p._id} product={p} pillar="emergency" selectedPet={pet}/>)}</div>}</div>)}
       {dimTab==="services"&&(<div style={{padding:"12px 16px 20px"}}>{dimSvcs.length===0?<button onClick={()=>onBook?.(EMERG_SERVICES[0])} style={{width:"100%",background:`linear-gradient(135deg,${G.crimson},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"11px",fontSize:13,fontWeight:700,cursor:"pointer"}}>Get Emergency Help →</button>:<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(220px,100%),1fr))",gap:14}}>{dimSvcs.map(svc=><div key={svc.id} onClick={()=>onBook?.(svc)} style={{background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer",padding:"14px 16px"}}><div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}><span style={{fontSize:28}}>{svc.icon}</span><div><div style={{fontSize:13,fontWeight:700,color:G.darkText}}>{svc.name}</div><div style={{fontSize:11,color:G.mutedText}}>{svc.tagline}</div></div></div><div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}><span style={{fontSize:13,fontWeight:700,color:G.deep}}>{svc.price}</span><button style={{background:G.crimson,color:"#fff",border:"none",borderRadius:20,padding:"6px 14px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Book →</button></div></div>)}</div>}</div>)}
     </div>
   );
@@ -504,7 +506,7 @@ const EmergencySoulPage = () => {
                         </div>
                         <button onClick={()=>setOpenDim(null)} style={{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:32,height:32,cursor:"pointer",color:"#fff",fontSize:18,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>
                       </div>
-                      <DimExpanded dim={dim} pet={petData} onClose={()=>setOpenDim(null)} apiProducts={apiProducts} onBook={handleBook}/>
+                      <DimExpanded dim={dim} pet={petData} onClose={()=>setOpenDim(null)} apiProducts={apiProducts} onBook={handleBook} breedProducts={breedProducts}/>
                     </div>
                   </>,
                   document.body
