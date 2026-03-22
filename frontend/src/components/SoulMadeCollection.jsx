@@ -43,68 +43,144 @@ import { getArchetypeDisplayInfo, getProductIntro, getPillarAwareProductIntro } 
 const EMOTIONAL_COLLECTIONS = {
   celebrate: {
     name: "Birthday & Gotcha",
+    label: "Birthday & Gotcha",
     collections: ["birthday", "gotcha", "celebration", "party"],
     product_types: ["bandana", "party_hat", "frame", "keychain", "mug", "tote_bag"],
-    exclude: ["memorial", "farewell", "remembrance", "cake"],  // EXCLUDE CAKES - use real Doggy Bakery cakes
+    exclude: ["memorial", "farewell", "remembrance", "cake"],
     emoji: "🎂",
+    color: "#A855F7",
     copy: (name) => `Celebrate ${name}'s special moments`
+  },
+  play: {
+    name: "Play & Enrichment",
+    label: "Play & Enrichment",
+    collections: ["play", "fun", "enrichment", "games"],
+    product_types: ["bandana", "tote_bag", "keychain", "mug"],
+    exclude: ["memorial", "farewell", "remembrance"],
+    emoji: "🎾",
+    color: "#E76F51",
+    copy: (name) => `${name}'s playtime essentials`
+  },
+  go: {
+    name: "Travel & Adventure",
+    label: "Travel & Adventure",
+    collections: ["travel", "adventure", "outdoor", "go"],
+    product_types: ["tote_bag", "collar_tag", "keychain"],
+    exclude: ["memorial", "farewell", "remembrance"],
+    emoji: "✈️",
+    color: "#3498DB",
+    copy: (name) => `Adventure awaits ${name}`
   },
   dine: {
     name: "Dine & Treats",
+    label: "Food & Treats",
     collections: ["feeding", "treats", "nutrition"],
     product_types: ["bowl", "treat_jar"],
-    exclude: ["cake"],  // No cakes in Soul Made
-    emoji: "🍖",
+    exclude: ["cake"],
+    emoji: "🍽️",
+    color: "#C9973A",
     copy: (name) => `${name}'s dining essentials`
-  },
-  stay: {
-    name: "At Home",
-    collections: ["home", "comfort", "cozy"],
-    product_types: ["blanket", "welcome_mat"],
-    exclude: ["cake"],
-    emoji: "🏠",
-    copy: (name) => `${name}'s cozy corner`
-  },
-  travel: {
-    name: "Travel with Me",
-    collections: ["travel", "adventure", "outdoor"],
-    product_types: ["tote_bag", "collar_tag"],
-    exclude: ["cake"],
-    emoji: "✈️",
-    copy: (name) => `Adventure awaits ${name}`
   },
   care: {
     name: "Care & Wellness",
+    label: "Wellness & Grooming",
     collections: ["wellness", "grooming", "care"],
     product_types: ["collar_tag"],
     exclude: [],
-    emoji: "🩺",
+    emoji: "🌿",
+    color: "#40916C",
     copy: (name) => `${name}'s wellness essentials`
   },
   farewell: {
     name: "Memorial & Remembrance",
+    label: "Memory & Farewell",
     collections: ["memorial", "remembrance", "keepsake"],
     product_types: ["frame"],
     exclude: [],
-    emoji: "🕊️",
+    emoji: "🌷",
+    color: "#8B5CF6",
     copy: (name) => `Always in our hearts`
   },
-  parent_gifts: {
-    name: "For Dog Mum/Dad",
-    collections: ["parent", "gift", "human"],
-    product_types: ["mug", "tote_bag", "keychain"],
+  learn: {
+    name: "Training & Learning",
+    label: "Training & Learning",
+    collections: ["training", "learning", "education"],
+    product_types: ["collar_tag", "keychain"],
     exclude: [],
-    emoji: "❤️",
-    copy: (name) => `Gifts for ${name}'s humans`
+    emoji: "🎓",
+    color: "#7C3AED",
+    copy: (name) => `${name}'s learning journey`
+  },
+  shop: {
+    name: "Soul Made Collection",
+    label: "Soul Made Collection",
+    collections: ["shop", "general"],
+    product_types: ["bandana", "mug", "tote_bag", "keychain", "frame", "collar_tag"],
+    exclude: [],
+    emoji: "✨",
+    color: "#F59E0B",
+    copy: (name) => `${name}'s soul collection`
   },
   paperwork: {
-    name: "Document Organization",
+    name: "Identity & Documents",
+    label: "Identity & Documents",
     collections: ["documents", "paperwork", "records"],
     product_types: ["collar_tag", "keychain"],
     exclude: [],
-    emoji: "📋",
+    emoji: "📄",
+    color: "#0D9488",
     copy: (name) => `${name}'s document essentials`
-  }
+  },
+  emergency: {
+    name: "Safety & Emergency",
+    label: "Safety & Emergency",
+    collections: ["emergency", "safety"],
+    product_types: ["collar_tag"],
+    exclude: [],
+    emoji: "🚨",
+    color: "#EF4444",
+    copy: (name) => `${name}'s safety essentials`
+  },
+  adopt: {
+    name: "New Beginnings",
+    label: "New Beginnings",
+    collections: ["adoption", "new_pet"],
+    product_types: ["bandana", "collar_tag", "keychain"],
+    exclude: [],
+    emoji: "🐾",
+    color: "#65A30D",
+    copy: (name) => `Welcome home, ${name}`
+  },
+  parent_gifts: {
+    name: "For Dog Mum/Dad",
+    label: "Concierge Services",
+    collections: ["parent", "gift", "human"],
+    product_types: ["mug", "tote_bag", "keychain"],
+    exclude: [],
+    emoji: "🤝",
+    color: "#0EA5E9",
+    copy: (name) => `Gifts for ${name}'s humans`
+  },
+  advisory: {
+    name: "Expert Advisory",
+    label: "Expert Advisory",
+    collections: ["advisory", "expert"],
+    product_types: ["collar_tag"],
+    exclude: [],
+    emoji: "💡",
+    color: "#10B981",
+    copy: (name) => `Expert care for ${name}`
+  },
+  default: {
+    name: "Soul Made Collection",
+    label: "Soul Made Collection",
+    collections: [],
+    product_types: [],
+    exclude: [],
+    emoji: "✨",
+    color: "#9B59B6",
+    copy: (name) => `${name}'s collection`
+  },
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -339,7 +415,7 @@ const SoulMadeCollection = ({
   const breedName = currentPet?.breed || '';
 
   // Get pillar-specific configuration
-  const pillarConfig = EMOTIONAL_COLLECTIONS[pillar] || EMOTIONAL_COLLECTIONS.celebrate;
+  const pillarConfig = EMOTIONAL_COLLECTIONS[pillar] || EMOTIONAL_COLLECTIONS.default;
 
   // Handle product click - open modal
   const handleProductClick = (product) => {
@@ -435,7 +511,7 @@ const SoulMadeCollection = ({
         let filteredProducts = data.products || [];
         
         // Filter out excluded product types (exact match on product_type)
-        if (pillarConfig.exclude.length > 0) {
+        if (pillarConfig.exclude?.length > 0) {
           filteredProducts = filteredProducts.filter(p => {
             const pType = (p.product_type || '').toLowerCase();
             // Only exclude if product_type exactly matches an excluded type

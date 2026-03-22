@@ -373,40 +373,55 @@ function DoggyBakerySection({ pet }) {
 }
 
 // ── Breed Collection Section ──────────────────────────────────
+const SOUL_PAGE_LIMIT = 12;
 function BreedCollectionSection({ pet }) {
-  const [products, setProducts]     = useState([]);
-  const [loading,  setLoading]      = useState(true);
-  const [selPick,  setSelPick]      = useState(null);
+  const [products,     setProducts]     = useState([]);
+  const [loading,      setLoading]      = useState(true);
+  const [loadingMore,  setLoadingMore]  = useState(false);
+  const [hasMore,      setHasMore]      = useState(true);
+  const [skip,         setSkip]         = useState(0);
+  const [selPick,      setSelPick]      = useState(null);
+  const [activeType,   setActiveType]   = useState("All");
   const breedDisplay = (pet?.breed || "").split("(")[0].trim();
   const petName = pet?.name || "your dog";
+  const TYPES = ["All", "Bandana", "Mug", "Keychain", "Frame", "Tote Bag", "Collar Tag"];
+
+  const fetchProducts = useCallback(async (currentSkip = 0, append = false) => {
+    if (!append) setLoading(true); else setLoadingMore(true);
+    try {
+      const breed = encodeURIComponent((pet?.breed || "Indie").split("(")[0].trim().toLowerCase());
+      const typeParam = activeType !== "All"
+        ? `&category=${encodeURIComponent(activeType.toLowerCase().replace(" ", "_"))}`
+        : "";
+      const res = await fetch(
+        `${API_URL}/api/admin/breed-products?breed=${breed}&is_active=true&limit=${SOUL_PAGE_LIMIT}&skip=${currentSkip}${typeParam}`
+      );
+      if (!res.ok) throw new Error("fetch failed");
+      const data = await res.json();
+      const newItems = (data?.products || []).map(p => ({
+        ...p,
+        id: p.id || p._id || p.slug,
+        name: p.name || p.product_type || "Soul Made Item",
+        image_url: p.cloudinary_url || p.mockup_url || p.image_url || "",
+        price: p.price || 0,
+        pillar: "shop",
+      }));
+      setProducts(prev => {
+        if (!append) return newItems;
+        const seen = new Set(prev.map(x => x.id));
+        return [...prev, ...newItems.filter(x => !seen.has(x.id))];
+      });
+      setHasMore(newItems.length === SOUL_PAGE_LIMIT);
+      setSkip(currentSkip + newItems.length);
+    } catch { /* silent */ }
+    finally { setLoading(false); setLoadingMore(false); }
+  }, [pet?.id, pet?.breed, activeType]);
 
   useEffect(() => {
-    const breed = encodeURIComponent((pet?.breed || "Indie").split("(")[0].trim());
-    // Query breed_products collection (soul-made mockups — bandanas, mugs, keychains, tote bags, frames)
-    fetch(`${API_URL}/api/admin/breed-products?breed=${breed}&is_active=true&limit=50`)
-      .then(r=>r.ok?r.json():null)
-      .then(data => {
-        const all = data?.products || [];
-        // Deduplicate by id
-        const seen = new Set();
-        const deduped = all.filter(p => {
-          const id = p.id || p._id || p.slug;
-          if (seen.has(id)) return false;
-          seen.add(id);
-          return true;
-        });
-        setProducts(deduped);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [pet?.id, pet?.breed]);
-
-  const TYPES = ["All", "Bandana", "Mug", "Keychain", "Frame", "Tote Bag"];
-  const [activeType, setActiveType] = useState("All");
-
-  const filtered = activeType === "All" ? products : products.filter(p =>
-    (p.name||"").toLowerCase().includes(activeType.toLowerCase())
-  );
+    setSkip(0);
+    setHasMore(true);
+    fetchProducts(0, false);
+  }, [pet?.id, pet?.breed, activeType]);
 
   return (
     <div>
@@ -415,7 +430,7 @@ function BreedCollectionSection({ pet }) {
                     borderRadius:14, padding:"16px 20px", marginBottom:16 }}>
         <div style={{ fontSize:10, fontWeight:700, color:"#DDD6FE", textTransform:"uppercase",
                       letterSpacing:"0.08em", marginBottom:6 }}>
-          ✦ Soul-Made Collection
+          ✦ Soul Made For {(breedDisplay || "Your Dog").toUpperCase()}
         </div>
         <div style={{ fontSize:15, fontWeight:700, color:"#fff", marginBottom:4 }}>
           {breedDisplay ? `Made for ${breedDisplay}s — made for ${petName}` : `Made for ${petName}'s breed`}
@@ -429,6 +444,7 @@ function BreedCollectionSection({ pet }) {
       <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
         {TYPES.map(type => (
           <button key={type} onClick={() => setActiveType(type)}
+            data-testid={`breed-type-filter-${type.toLowerCase().replace(" ","-")}`}
             style={{ padding:"5px 12px", borderRadius:20, fontSize:11, fontWeight:600,
                      border:`1px solid ${activeType===type?"#7C3AED":G.border}`,
                      background:activeType===type?"#7C3AED":G.pale,
@@ -443,35 +459,72 @@ function BreedCollectionSection({ pet }) {
           <div style={{ fontSize:28, marginBottom:8 }}>🐾</div>
           Loading {breedDisplay || "breed"} collection…
         </div>
-      ) : filtered.length === 0 ? (
+      ) : products.length === 0 ? (
         <div style={{ textAlign:"center", padding:"24px 0", color:"#888", fontSize:13 }}>
           <div style={{ fontSize:28, marginBottom:8 }}>🐾</div>
           Breed collection being added.
         </div>
       ) : (
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(180px,100%),1fr))", gap:12 }}>
-          {filtered.map(p => {
-            // Normalise breed_product fields for SharedProductCard
-            const normalised = {
-              ...p,
-              id: p.id || p._id || p.slug,
-              name: p.name || p.product_type || "Soul Made Item",
-              image_url: p.mockup_url || p.image_url || p.cloudinary_url || "",
-              price: p.price || 0,
-              pillar: "shop",
-            };
-            return (
-              <SharedProductCard
-                key={normalised.id}
-                product={normalised}
-                pillar="shop"
-                selectedPet={pet}
-                onViewDetails={() => setSelPick(normalised)}
-                miraContext={{ includeText:"Add to Cart" }}
-              />
-            );
-          })}
-        </div>
+        <>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(160px,100%),1fr))", gap:12 }}>
+            {products.map(p => (
+              <div key={p.id}
+                data-testid={`soul-product-card-${p.id}`}
+                onClick={() => setSelPick(p)}
+                style={{
+                  background:"#fff", borderRadius:14,
+                  border:"1px solid rgba(201,151,58,0.15)",
+                  overflow:"hidden", cursor:"pointer",
+                  transition:"box-shadow 0.15s",
+                }}
+                onMouseEnter={e => e.currentTarget.style.boxShadow="0 4px 16px rgba(0,0,0,0.10)"}
+                onMouseLeave={e => e.currentTarget.style.boxShadow="none"}
+              >
+                <div style={{ aspectRatio:"1", overflow:"hidden", background:"#F5F0E8" }}>
+                  {p.image_url ? (
+                    <img src={p.image_url} alt={p.name}
+                      style={{ width:"100%", height:"100%", objectFit:"cover" }}
+                      loading="lazy"/>
+                  ) : (
+                    <div style={{ width:"100%", height:"100%", display:"flex",
+                      alignItems:"center", justifyContent:"center", fontSize:32 }}>🐾</div>
+                  )}
+                </div>
+                <div style={{ padding:"10px 12px" }}>
+                  <div style={{ fontSize:12, fontWeight:600, color:"#1A1A2E",
+                    marginBottom:4, lineHeight:1.3,
+                    overflow:"hidden", display:"-webkit-box",
+                    WebkitLineClamp:2, WebkitBoxOrient:"vertical" }}>
+                    {p.name}
+                  </div>
+                  <div style={{ fontSize:12, fontWeight:700, color:G.gold }}>
+                    {p.price ? `₹${p.price}` : "Price on request"}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Load More */}
+          {hasMore && (
+            <div style={{ textAlign:"center", marginTop:20 }}>
+              <button
+                data-testid="breed-collection-load-more"
+                onClick={() => fetchProducts(skip, true)}
+                disabled={loadingMore}
+                style={{
+                  padding:"11px 32px", borderRadius:999,
+                  border:`1.5px solid ${G.gold}`,
+                  background:"#fff", color:G.gold,
+                  fontSize:14, fontWeight:600,
+                  cursor: loadingMore ? "not-allowed" : "pointer",
+                  opacity: loadingMore ? 0.7 : 1,
+                }}>
+                {loadingMore ? "Loading…" : `Load more for ${petName} →`}
+              </button>
+            </div>
+          )}
+        </>
       )}
       {selPick && <ProductDetailModal product={selPick} pillar="shop" selectedPet={pet} onClose={() => setSelPick(null)}/>}
     </div>
