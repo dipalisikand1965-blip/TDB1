@@ -87,6 +87,38 @@ export default function PersonalisedBreedSection({ pet, pillar = "play" }) {
         <div style={{ fontSize:12, color:"#888", lineHeight:1.6, maxWidth:300, margin:"0 auto" }}>
           We're curating breed-specific products for {petName}. Check back soon — Mira is working on it.
         </div>
+        {/* ── Soul Made™ Trigger — available even before products are curated ── */}
+        <div
+          data-testid="soul-made-trigger"
+          onClick={() => setSoulMadeOpen(true)}
+          style={{
+            margin:'20px auto 0', padding:'14px 16px', maxWidth:340,
+            background:`${C.orange}08`, border:`1px solid ${C.orange}20`,
+            borderRadius:14, display:'flex', alignItems:'center',
+            justifyContent:'space-between', cursor:'pointer', textAlign:'left',
+          }}
+        >
+          <div>
+            <div style={{ fontSize:13, fontWeight:700, color:C.orange, marginBottom:3 }}>
+              {pillar === 'farewell'
+                ? `✦ In memory of ${petName} — create something meaningful`
+                : '✦ Soul Made™ — Make it personal'}
+            </div>
+            <div style={{ fontSize:12, color:'#888', lineHeight:1.4 }}>
+              Upload {petName}'s photo · Concierge® creates it · Price on WhatsApp
+            </div>
+          </div>
+          <div style={{ fontSize:20, color:`${C.orange}60`, flexShrink:0, marginLeft:8 }}>›</div>
+        </div>
+        {soulMadeOpen && (
+          <SoulMadeModal
+            pet={pet}
+            pillar={pillar}
+            pillarColor={C.orange}
+            pillarLabel={PILLAR_LABELS[pillar] || pillar}
+            onClose={() => setSoulMadeOpen(false)}
+          />
+        )}
       </div>
     );
   }

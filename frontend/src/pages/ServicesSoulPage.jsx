@@ -33,6 +33,7 @@ import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 
 // ── Colour — clean slate, every pillar's colour shows through ─
 const G = {
@@ -698,7 +699,8 @@ const ServicesSoulPage = () => {
           <PillarSoulProfile pet={petData} token={token} pillar="services" color="#6366F1" />
         )}
 
-        {/* Soul Made handled inside PersonalisedBreedSection if used */}
+        {/* ── Soul Made™ via PersonalisedBreedSection ── */}
+        <PersonalisedBreedSection pet={petData} pillar="services" />
 
         {/* Search */}
         <div style={{ marginBottom:16 }}>

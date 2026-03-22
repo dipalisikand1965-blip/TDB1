@@ -8,7 +8,7 @@ _Last updated: 2026-03-22_
 4. Implement "Wow" Custom Order / Photo Delivery — Soul Made feature.
 5. Fix `/services` page to use Universal Concierge ticketing flow.
 6. Fix Soul Picks to display actual product mockups (`image_url`), not watercolour dog portraits.
-7. Add styled Soul Made trigger button to 11 pillar pages (excluding Emergency & Advisory).
+7. Add styled Soul Made trigger button INSIDE Soul Picks section on all pillar pages (excluding Emergency & Advisory).
 
 **Core Rule:** ALL service bookings and custom order requests MUST route through `service_desk_tickets` via Universal Concierge flow (`attach_or_create_ticket`).
 
@@ -27,24 +27,28 @@ frontend/
             SoulMadeModal.jsx        # Soul Made 4-step custom order modal
             ProductCard.jsx          # Fixed: mockup_url/cloudinary_url fallback
             PillarSoulProfile.jsx    # Fixed: textarea for free-text soul questions
-            admin/
-                SoulProductsManager.jsx  # Added: "Add Single Product" form
             common/
-                MiraImaginesBreed.jsx  # Added: go/emergency/play/paperwork/adopt/farewell cards
+                PersonalisedBreedSection.jsx  # Shared breed products + Soul Made trigger
+            celebrate/
+                CelebrateContentModal.jsx     # Celebrate soul-picks + Soul Made trigger
+            admin/
+                SoulProductsManager.jsx       # Added: "Add Single Product" form
+            common/
+                MiraImaginesBreed.jsx         # Added: go/emergency/play/paperwork/adopt/farewell cards
         hooks/
             useConcierge.js          # Universal hook: request() creates service desk tickets
         pages/
-            CelebratePageNew.jsx    # Soul Made styled trigger (purple #A855F7)
-            CareSoulPage.jsx        # Soul Made styled trigger (sage G.sage)
-            DineSoulPage.jsx        # Soul Made styled trigger (#FF8C42)
-            GoSoulPage.jsx          # Soul Made styled trigger (teal G.teal)
-            PlaySoulPage.jsx        # Soul Made styled trigger (orange G.orange)
-            LearnSoulPage.jsx       # Soul Made styled trigger (violet G.violet)
-            ShopSoulPage.jsx        # Soul Made styled trigger (gold G.gold)
-            PaperworkSoulPage.jsx   # Soul Made styled trigger (teal G.teal)
-            AdoptSoulPage.jsx       # Soul Made styled trigger (rose G.rose)
-            FarewellSoulPage.jsx    # Soul Made styled trigger (indigo G.indigo) + CUSTOM TEXT
-            ServicesSoulPage.jsx    # Soul Made styled trigger (#0EA5E9)
+            CelebratePageNew.jsx    # Uses CelebrateContentModal for Soul Picks trigger
+            CareSoulPage.jsx        # Uses PersonalisedBreedSection (DimExpanded)
+            DineSoulPage.jsx        # Uses PersonalisedBreedSection (DimExpanded)
+            GoSoulPage.jsx          # Uses PersonalisedBreedSection (DimExpanded)
+            PlaySoulPage.jsx        # Uses PersonalisedBreedSection (DimExpanded)
+            LearnSoulPage.jsx       # Uses PersonalisedBreedSection (Personalised tab)
+            ShopSoulPage.jsx        # Uses PersonalisedBreedSection
+            PaperworkSoulPage.jsx   # Uses PersonalisedBreedSection (DimExpanded)
+            AdoptSoulPage.jsx       # Uses PersonalisedBreedSection
+            FarewellSoulPage.jsx    # Uses PersonalisedBreedSection (custom "In memory of" text)
+            ServicesSoulPage.jsx    # Uses PersonalisedBreedSection
             EmergencySoulPage.jsx   # NO Soul Made (removed)
             AdvisoryPage.jsx        # NO Soul Made (never added)
 ```
@@ -55,55 +59,43 @@ frontend/
 
 ### Phase 1 — Data Foundation
 - CSV import: 2,409 products mapped to pillars in `breed_products`
-- AI auto-assign: GPT batch for remaining ~756 pending products (restarted 2026-03-22)
-- DB fix: 1,778 products — `mockup_url` copied to `image_url` (all breeds/pillars)
+- AI auto-assign: GPT batch for remaining ~756 pending products
+- DB fix: 1,778 products — `mockup_url` copied to `image_url`
 
 ### Phase 2 — Admin Panel
-- AI Mockup generation: fixed stuck running flag, restarted successfully
-- Admin Soul Products: "Add Single Product" form added (breed + pillar + price + image)
+- AI Mockup generation: fixed stuck running flag, restarted
+- Admin Soul Products: "Add Single Product" form added
 
 ### Phase 3 — Soul Picks Display
 - ProductCard.jsx: `mockup_url`/`cloudinary_url` fallback BEFORE breed illustration
-- CelebrateContentModal.jsx: Breed Cakes sorted pet's breed first
 - Soul Picks: All 14+ celebrate products show real Cloudinary mockups
 
 ### Phase 4 — Emergency Page
 - EmergencySoulPage: fetch + render "Emergency Kit for {pet}" section
 - 9 emergency products show for Indie with real mockup images
-- DimExpanded: falls back to breedProducts when pillar-products catalogue is empty
-- MiraImaginesBreed: Added emergency/go/play/paperwork/adopt/farewell pillar cards
 
-### Phase 5 — Soul Made (Modal)
-- SoulMadeModal.jsx: 4-step modal (Pick product -> Upload photo -> Write message -> Done)
-- Backend: `POST /api/upload/image` endpoint for photo upload (Cloudinary preset: tdc_custom_orders)
-- All custom orders route through Universal Concierge -> service_desk_tickets
+### Phase 5 — Soul Made Modal
+- SoulMadeModal.jsx: 4-step modal (Pick → Upload photo → Write message → Done)
+- Backend: `POST /api/upload/image` (Cloudinary preset: tdc_custom_orders)
+- All custom orders → Universal Concierge → service_desk_tickets
 
-### Phase 6 — Soul Made Styled Trigger Buttons (2026-03-22)
-- Replaced basic pill buttons with styled card-like div triggers on ALL 11 pillar pages
-- Each trigger uses pillar-specific color with subtle background tint and border
-- Farewell pillar has custom text: "In memory of {petName} — create something meaningful"
-- Emergency and Advisory pillars explicitly excluded (no Soul Made)
-- LearnSoulPage and ServicesSoulPage: NEW Soul Made integration added (import + state + trigger + modal)
-- 100% test pass rate across all 11 pillars + Emergency exclusion verified
-
-### Phase 7 — UI Fixes
-- PillarSoulProfile: Free-text soul questions now show textarea input
-- Services page: Universal Concierge flow, not generic buttons
+### Phase 6 — Soul Made Trigger INSIDE Soul Picks (2026-03-22)
+- **PersonalisedBreedSection.jsx**: Added Soul Made trigger at bottom of breed products grid + in empty state
+  - Supports all pillar colors via PILLAR_COLORS lookup
+  - Farewell pillar gets custom text: "In memory of {petName} — create something meaningful"
+  - Trigger available even when no breed products exist yet
+- **CelebrateContentModal.jsx**: Added trigger inside soul-picks category section
+- **Removed all standalone triggers** from 11 page bodies
+- **Cleaned up**: SoulMadeModal imports + soulMadeOpen state from all pages
+- **PersonalisedBreedSection added to**: Learn, Farewell, Shop, Adopt, Services pages
+- Emergency and Advisory pillars excluded
 
 ---
 
 ## Key Technical Concepts
-- **Universal Concierge Flow**: All requests -> `POST /api/service_desk/attach_or_create_ticket` -> Admin Service Desk
-- **Image Priority**: `image_url` -> `mockup_url` -> `cloudinary_url` -> breed illustration -> placeholder
-- **Soul Picks**: `GET /api/mockups/breed-products?breed={breed}&pillar={pillar}` -> product grid
-- **Soul Made Trigger**: Styled div with `data-testid="soul-made-trigger"`, pillar color + subtitle text, opens SoulMadeModal on click
-
----
-
-## DB Schema
-- `breed_products`: `{id, breed, pillar, name, product_type, price, image_url, mockup_url, active}`
-- `services_master`: `{id, pillar, price, features}`
-- `service_desk_tickets`: main collection for all concierge interactions
+- **Soul Made Trigger Architecture**: Lives inside `PersonalisedBreedSection` (most pillars) and `CelebrateContentModal` (Celebrate). NOT on the page body.
+- **Universal Concierge Flow**: All requests → `POST /api/service_desk/attach_or_create_ticket` → Admin Service Desk
+- **Image Priority**: `image_url` → `mockup_url` → `cloudinary_url` → breed illustration → placeholder
 
 ---
 
@@ -124,7 +116,7 @@ frontend/
 - [ ] Refactor `MiraDemoPage.jsx` and `server.py` (24,000+ lines)
 - [ ] Remove "Skip Payment" from onboarding (post soft-launch)
 - [ ] Add "My Custom Orders" tab in user profile for order tracking
-- [ ] Add admin notification banner/chime in Service Desk for new Soul Made orders
+- [ ] Add admin notification banner in Service Desk for new Soul Made orders
 
 ---
 
@@ -138,16 +130,16 @@ frontend/
 ## Pillar Color Reference
 | Pillar | Color | Label | Soul Made |
 |--------|-------|-------|-----------|
-| care | #40916C / G.sage | Wellness | Yes |
-| dine | #C9973A / #FF8C42 | Food | Yes |
-| go | #3498DB / G.teal | Travel | Yes |
-| play | #E76F51 / G.orange | Play | Yes |
-| learn | #7C3AED / G.violet | Learning | Yes |
-| celebrate | #A855F7 | Celebration | Yes |
-| shop | #F59E0B / G.gold | Shopping | Yes |
-| paperwork | #0D9488 / G.teal | Documents | Yes |
-| adopt | #65A30D / G.rose | Adoption | Yes |
-| farewell | #8B5CF6 / G.indigo | Farewell | Yes (custom text) |
-| services | #0EA5E9 | Services | Yes |
+| care | #40916C / G.sage | Wellness | PersonalisedBreedSection |
+| dine | #C9973A | Food | PersonalisedBreedSection |
+| go | #1ABC9C / G.teal | Travel | PersonalisedBreedSection |
+| play | #E76F51 / G.orange | Play | PersonalisedBreedSection |
+| learn | #7C3AED / G.violet | Learning | PersonalisedBreedSection |
+| celebrate | #A855F7 | Celebration | CelebrateContentModal |
+| shop | #F59E0B / G.gold | Shopping | PersonalisedBreedSection |
+| paperwork | #0D9488 / G.teal | Documents | PersonalisedBreedSection |
+| adopt | #65A30D / G.rose | Adoption | PersonalisedBreedSection |
+| farewell | #8B5CF6 / G.indigo | Farewell | PersonalisedBreedSection (custom text) |
+| services | #0EA5E9 | Services | PersonalisedBreedSection |
 | emergency | #EF4444 | Safety | NO |
 | advisory | #10B981 | Advisory | NO |
