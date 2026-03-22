@@ -11,7 +11,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://health-vault-loop.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://concierge-platform-4.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 TEST_EMAIL = "dipali@clubconcierge.in"
