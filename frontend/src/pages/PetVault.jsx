@@ -477,15 +477,15 @@ const PetVault = () => {
         </div>
 
         {/* ── Tab Nav ── */}
-        <div style={{ display: 'flex', gap: 6, overflowX: 'auto', marginBottom: 20, paddingBottom: 4 }}>
+        <div style={{ display: 'flex', gap: 6, overflowX: 'auto', marginBottom: 20, paddingBottom: 4, scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {tabs.map(({ id, label, icon: Icon, alert }) => (
             <button
               key={id}
               data-testid={`vault-tab-${id}`}
               onClick={() => setActiveTab(id)}
               style={{
-                flexShrink: 0, display: 'flex', alignItems: 'center', gap: 5,
-                padding: '7px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600,
+                flexShrink: 0, display: 'flex', alignItems: 'center', gap: 5, whiteSpace: 'nowrap',
+                padding: '7px 11px', borderRadius: 8, fontSize: 11, fontWeight: 600,
                 cursor: 'pointer', border: 'none', fontFamily: 'inherit',
                 background: activeTab === id ? G.green : G.surface,
                 color: activeTab === id ? '#fff' : G.muted,
