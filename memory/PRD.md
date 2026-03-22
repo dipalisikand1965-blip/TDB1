@@ -62,6 +62,22 @@ Build a production-ready pet life management platform with 12 core pillars, AI c
 - Pet switch resets drawer state
 - Components: `/app/frontend/src/components/PillarSoulProfile.jsx`, `/app/frontend/src/components/SoulChapterModal.jsx`
 
+### Session Mar 22, 2026 — Universal Concierge Wiring Audit (100% Complete)
+- **Full audit** of all 12 pillar pages against `tdc_intent.js` / `useConcierge` / `usePlatformTracking`
+- **9 gaps fixed:**
+  1. DineSoulPage — Added `usePlatformTracking` call (was imported, never called)
+  2. GoSoulPage — Added `usePlatformTracking` call
+  3. LearnSoulPage — Added `usePlatformTracking` call
+  4. PlaySoulPage — Added `usePlatformTracking` call
+  5. ShopSoulPage — Added `usePlatformTracking` call
+  6. CareSoulPage WellnessProfile — Added `tdc.request()` on soul answer
+  7. DineSoulPage SoulQuestionCardDine — Added `tdc.request()` on soul answer
+  8. LearnSoulPage LearnProfile.save — Added `tdc.request()` on soul answer
+  9. PlaySoulPage handlePlayBook — Added `tdc.nearme()` before API for NearMe booking
+  10. EmergencySoulPage send() — Added `tdc.urgent()` in modal form submission
+  11. FarewellSoulPage send() — Added `tdc.request()` in modal form submission
+- **Verification:** 218+ tickets confirmed in admin service desk. All pillars, all interaction types verified.
+
 ## Prioritized Backlog
 
 ### P0 — Production Deployment
