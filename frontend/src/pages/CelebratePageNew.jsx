@@ -52,7 +52,6 @@ import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from '../hooks/useMiraIntelligence';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import { ProductDetailModal } from '../components/ProductCard';
-import SoulMadeModal from '../components/SoulMadeModal';
 
 // API utilities
 import { getApiUrl, API_URL } from '../utils/api';
@@ -252,7 +251,6 @@ const CelebratePageNew = () => {
   const [soulScore, setSoulScore] = useState(0);
   const [loading, setLoading] = useState(true);
   const [celebrateCatModal, setCelebrateCatModal] = useState(null);
-  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
 
   // Wait for pet data to load from context
   useEffect(() => {
@@ -429,17 +427,7 @@ const CelebratePageNew = () => {
         {/* MIRA'S CELEBRATION PICKS — imagines immediately + AI scored below */}
         <CelebrateMiraPicksSection pet={selectedPet} token={token}/>
 
-        {/* ── SOUL MADE™ TRIGGER ── */}
-        {selectedPet?.name && (
-          <div data-testid="soul-made-trigger" style={{margin:'16px 0 24px',padding:'16px',background:'#A855F708',border:'1px solid #A855F720',borderRadius:16,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer'}} onClick={()=>setSoulMadeOpen(true)}>
-            <div>
-              <div style={{fontSize:13,fontWeight:700,color:'#A855F7',marginBottom:3}}>✦ Soul Made™ — Make it personal</div>
-              <div style={{fontSize:12,color:'rgba(245,240,232,0.4)'}}>Upload {selectedPet.name}'s photo · Concierge® creates it · Price on WhatsApp</div>
-            </div>
-            <div style={{fontSize:20,color:'#A855F760'}}>›</div>
-          </div>
-        )}
-        {soulMadeOpen && <SoulMadeModal pet={selectedPet} pillar="celebrate" pillarColor="#A855F7" pillarLabel="Celebration" onClose={()=>setSoulMadeOpen(false)}/>}
+        {/* Soul Made is handled inside CelebrateMiraPicksSection / CelebrateContentModal */}
 
         {/* 3. SOUL CELEBRATION PILLARS — "How would Mojo love to celebrate?" */}
         <SoulCelebrationPillars 

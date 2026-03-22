@@ -26,7 +26,6 @@ import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 import SoulMadeCollection from "../components/SoulMadeCollection";
-import SoulMadeModal from "../components/SoulMadeModal";
 
 const G = {
   deep:"#1A1A2E", mid:"#4B4B6E", indigo:"#6366F1", light:"#C7D2FE",
@@ -243,7 +242,6 @@ const FarewellSoulPage = () => {
   const [conciergeSvc,  setConciergeSvc]  = useState("");
   const [toastVisible, setToastVisible] = useState(false);
   const [toastSvc, setToastSvc] = useState("");
-  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   useEffect(()=>{ if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]); if(contextPets!==undefined)setLoading(false); },[contextPets,currentPet,setCurrentPet]);
   useEffect(()=>{ if(currentPet){ const n={...currentPet,photo_url:currentPet.photo_url||currentPet.avatar_url||null,avatar:currentPet.avatar||"🐕",breed:currentPet.breed||""}; setPetData(n); } },[currentPet]);
   useEffect(()=>{
@@ -338,17 +336,7 @@ const FarewellSoulPage = () => {
             <div style={{marginBottom:20}}><FarewellProfile pet={petData} token={token}/></div>
             <MiraPicksSection pet={petData}/>
 
-            {/* ── SOUL MADE™ TRIGGER ── */}
-            {petData?.name && (
-              <div data-testid="soul-made-trigger" style={{margin:'16px 0 24px',padding:'16px',background:`${G.indigo}08`,border:`1px solid ${G.indigo}20`,borderRadius:16,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer'}} onClick={()=>setSoulMadeOpen(true)}>
-                <div>
-                  <div style={{fontSize:13,fontWeight:700,color:G.indigo,marginBottom:3}}>✦ In memory of {petData.name} — create something meaningful</div>
-                  <div style={{fontSize:12,color:'rgba(245,240,232,0.4)'}}>Upload {petData.name}'s photo · Concierge® creates it · Price on WhatsApp</div>
-                </div>
-                <div style={{fontSize:20,color:`${G.indigo}60`}}>›</div>
-              </div>
-            )}
-            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="farewell" pillarColor={G.indigo} pillarLabel="Farewell" onClose={()=>setSoulMadeOpen(false)}/>}
+            {/* Soul Made handled inside PersonalisedBreedSection */}
             <GuidedFarewellPaths pet={petData}/>
 
             {/* Products — tab layout, breed-filtered */}

@@ -42,7 +42,6 @@ import PersonalisedBreedSection from "../components/common/PersonalisedBreedSect
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
-import SoulMadeModal from "../components/SoulMadeModal";
 
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Sage Green
@@ -2065,7 +2064,6 @@ export default function CareSoulPage() {
   const [soulScore, setSoulScore] = useState(0);
   const [apiProducts, setApiProducts] = useState({});
   const [conciergeToast, setConciergeToast] = useState(null);
-  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
 
   // ── tdc page visit tracking ──────────────────────────────────────────────
   usePlatformTracking({ pillar: "care", pet: currentPet });
@@ -2261,17 +2259,7 @@ export default function CareSoulPage() {
               {/* Mira's Picks */}
               <MiraPicksSection pet={petData} />
 
-              {/* ── SOUL MADE™ TRIGGER ── */}
-              {petData?.name && (
-                <div data-testid="soul-made-trigger" style={{margin:'16px 0 24px',padding:'16px',background:`${G.sage}08`,border:`1px solid ${G.sage}20`,borderRadius:16,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer'}} onClick={()=>setSoulMadeOpen(true)}>
-                  <div>
-                    <div style={{fontSize:13,fontWeight:700,color:G.sage,marginBottom:3}}>✦ Soul Made™ — Make it personal</div>
-                    <div style={{fontSize:12,color:'rgba(245,240,232,0.4)'}}>Upload {petData.name}'s photo · Concierge® creates it · Price on WhatsApp</div>
-                  </div>
-                  <div style={{fontSize:20,color:`${G.sage}60`}}>›</div>
-                </div>
-              )}
-              {soulMadeOpen && <SoulMadeModal pet={petData} pillar="care" pillarColor={G.sage} pillarLabel="Wellness" onClose={()=>setSoulMadeOpen(false)}/>}
+              {/* Soul Made handled inside PersonalisedBreedSection */}
 
               {/* "Care & Nourish" label — mirrors "Eat & Nourish" in DineSoulPage */}
               <div style={{ fontSize:"clamp(1.125rem,2.5vw,1.375rem)", fontWeight:800, color:G.darkText, marginBottom:4, fontFamily:"Georgia,serif" }}>
