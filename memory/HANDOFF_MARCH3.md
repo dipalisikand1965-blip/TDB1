@@ -110,7 +110,7 @@ Step 4: Welcome!
 ---
 
 ## PREVIEW URL
-`https://concierge-platform-4.preview.emergentagent.com`
+`https://mockup-manager.preview.emergentagent.com`
 
 ## SERVICES
 - Frontend: Running on port 3000 (hot reload)

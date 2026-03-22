@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://concierge-platform-4.preview.emergentagent.com
+https://mockup-manager.preview.emergentagent.com
 
 ---
 

@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://concierge-platform-4.preview.emergentagent.com
+**Preview URL:** https://mockup-manager.preview.emergentagent.com
 
 ---
 

@@ -16,7 +16,7 @@ import json
 import time
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://concierge-platform-4.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mockup-manager.preview.emergentagent.com').rstrip('/')
 TEST_USER = "dipali@clubconcierge.in"
 TEST_PASSWORD = "test123"
 TEST_PET_ID = "pet-3661ae55d2e2"  # Mystique
