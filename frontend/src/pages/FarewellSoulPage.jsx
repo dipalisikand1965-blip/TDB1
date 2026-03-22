@@ -26,6 +26,7 @@ import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 import SoulMadeCollection from "../components/SoulMadeCollection";
+import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 
 const G = {
   deep:"#1A1A2E", mid:"#4B4B6E", indigo:"#6366F1", light:"#C7D2FE",
@@ -336,7 +337,8 @@ const FarewellSoulPage = () => {
             <div style={{marginBottom:20}}><FarewellProfile pet={petData} token={token}/></div>
             <MiraPicksSection pet={petData}/>
 
-            {/* Soul Made handled inside PersonalisedBreedSection */}
+            {/* ── Soul Made™ via PersonalisedBreedSection ── */}
+            <PersonalisedBreedSection pet={petData} pillar="farewell" />
             <GuidedFarewellPaths pet={petData}/>
 
             {/* Products — tab layout, breed-filtered */}
