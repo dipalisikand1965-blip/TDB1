@@ -1001,10 +1001,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
               </>
             );
           })()}
-          {/* SoulMadeCollection below */}
-          <div style={{borderTop:"1px solid #EDE9FE",marginTop:20,paddingTop:16}}>
-            <SoulMadeCollection pillar="learn" maxItems={6} showTitle={true}/>
-          </div>
+          {/* SoulMadeCollection removed — breed products shown via PersonalisedBreedSection */}
         </div>
       )}
 

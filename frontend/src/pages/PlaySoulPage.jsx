@@ -929,9 +929,6 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {}, apiLoading = false }
       ) : dimTab === "personalised" ? (
         <div>
           <PersonalisedBreedSection pet={pet} pillar="play" />
-          <div style={{ borderTop:"1px solid #f0f0f0", marginTop:16, paddingTop:16 }}>
-            <SoulMadeCollection pillar="play" maxItems={8} showTitle={true} />
-          </div>
         </div>
       ) : (
         <>
