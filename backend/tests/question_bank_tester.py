@@ -27,7 +27,7 @@ import os
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # API Configuration
-BASE_URL = os.environ.get("TEST_API_URL", "https://custom-order-desk-1.preview.emergentagent.com")
+BASE_URL = os.environ.get("TEST_API_URL", "https://custom-merch-hub-23.preview.emergentagent.com")
 TEST_EMAIL = "dipali@clubconcierge.in"
 TEST_PASSWORD = "test123"
 TEST_PET_ID = "mystique-001"

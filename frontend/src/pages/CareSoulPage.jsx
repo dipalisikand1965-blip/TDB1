@@ -2261,17 +2261,17 @@ export default function CareSoulPage() {
               {/* Mira's Picks */}
               <MiraPicksSection pet={petData} />
 
-              {/* ── SOUL MADE™ ── */}
+              {/* ── SOUL MADE™ TRIGGER ── */}
               {petData?.name && (
-                <div style={{textAlign:"center",margin:"4px 0 20px"}}>
-                  <button onClick={()=>setSoulMadeOpen(true)} style={{padding:"12px 28px",borderRadius:999,border:`1px solid ${G.sage}40`,background:`${G.sage}10`,color:G.sage,fontSize:13,fontWeight:700,cursor:"pointer"}}
-                    onMouseEnter={e=>{e.currentTarget.style.background=`${G.sage}20`;}}
-                    onMouseLeave={e=>{e.currentTarget.style.background=`${G.sage}10`;}}>
-                    ✦ Soul Made™ — Make it personal for {petData.name}
-                  </button>
+                <div data-testid="soul-made-trigger" style={{margin:'16px 0 24px',padding:'16px',background:`${G.sage}08`,border:`1px solid ${G.sage}20`,borderRadius:16,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer'}} onClick={()=>setSoulMadeOpen(true)}>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:700,color:G.sage,marginBottom:3}}>✦ Soul Made™ — Make it personal</div>
+                    <div style={{fontSize:12,color:'rgba(245,240,232,0.4)'}}>Upload {petData.name}'s photo · Concierge® creates it · Price on WhatsApp</div>
+                  </div>
+                  <div style={{fontSize:20,color:`${G.sage}60`}}>›</div>
                 </div>
               )}
-              {soulMadeOpen && <SoulMadeModal pet={petData} pillar="care" pillarColor={G.sage} pillarLabel="Care" onClose={()=>setSoulMadeOpen(false)}/>}
+              {soulMadeOpen && <SoulMadeModal pet={petData} pillar="care" pillarColor={G.sage} pillarLabel="Wellness" onClose={()=>setSoulMadeOpen(false)}/>}
 
               {/* "Care & Nourish" label — mirrors "Eat & Nourish" in DineSoulPage */}
               <div style={{ fontSize:"clamp(1.125rem,2.5vw,1.375rem)", fontWeight:800, color:G.darkText, marginBottom:4, fontFamily:"Georgia,serif" }}>
