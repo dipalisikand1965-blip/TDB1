@@ -51,40 +51,30 @@ Build a production-ready pet life management platform with 12 core pillars, AI c
 - **Tiers:** Based on percentage: Seedling → Sprout → Bloom → Soul Master
 - **Storage:** `doggy_soul_answers` dict on pet document, `overall_score` float
 
-### Session Mar 2026 — Dynamic Soul Chapter Cards
-- **Soul Chapter cards on /pet-home** now show real data from `doggy_soul_answers`
-- Each card displays: percentage score, color progress bar, Mira's plain-English summary
-- Maps actual DB keys (e.g. `behavior_with_dogs`, `life_stage`, `favorite_treats`) to 6 chapters
-- Empty chapters show "Tap to tell Mira →" (invitation, not blank)
-- Works for all pets: filled (Mojo 100%), partial (Buddy 76%), empty (Coco 0%)
-
-### Session Mar 2026 — Soul Chapter Modal (Interactive)
-- **Clicking a chapter card** opens a chapter-specific modal (NOT soul-builder intro page)
-- **"What Mira Knows"** section shows all answered questions as readable key-value cards
-- **"Tell Mira More"** section shows unanswered questions with clickable option buttons
-- **Live answer submission** via `/api/pet-soul/profile/{pet_id}/answer` with score recalculation
-- **Points indicator** (+X pts added) shows after each successful answer
-- **Complete state** shows "{name}'s {chapter} profile is complete" when all questions answered
-- All 8 backend folders mapped to 6 dashboard chapters (identity→identity_temperament, behaviour→rhythm_routine+home_comforts, health→long_horizon, social→family_pack, nutrition→taste_treat, learning→training_behaviour+travel_style)
-- Component: `/app/frontend/src/components/SoulChapterModal.jsx`
+### Session Mar 2026 — Pillar Cleanup + Soul Profile on ALL Pillars
+- **Deprecated pillars removed** from Navbar, MobileMenu, PetHome, MemberMobileNav, MyPets, PetSoulPage, ServicesPage, Pulse, Footer: Advisory, Travel, Stay, Enjoy, Fit
+- Deprecated routes redirect to merged targets: /advisory→Paperwork, /stay+/travel→Go, /enjoy+/fit→Play
+- **Reusable `PillarSoulProfile` component** created (`/app/frontend/src/components/PillarSoulProfile.jsx`)
+- Added soul profile bars to 5 pillar pages: Dine, Celebrate, Paperwork, Shop, Services (Go/Care/Play already had custom ones)
+- **"THE LOGIN PAGE · EVERY PERSON SEES THIS FIRST"** text removed from AboutPage
+- **Concierge bug fixed** — `generate_ticket_id()` function missing + `request.initial_message` null crash in `mira_service_desk.py`
+- **Master sync disabled in preview** to prevent event loop blocking from AI calls
 
 ## Prioritized Backlog
 
 ### P0 — Production Deployment
 - [ ] User deploys via Emergent platform
-- [ ] Run pillar name migration on production Atlas DB
+- [ ] Re-enable master sync for production (with asyncio.to_thread for AI steps)
 - [ ] Full E2E mobile test on real device
 
 ### P1 — Pending Issues
-- [ ] Deprecate & hide AdvisoryPage (remove /advisory route from App.js)
 - [ ] Database pillar name migration & dynamic sub-categories (BLOCKED: awaiting user backup)
 - [ ] AI Soul Products integration into product catalog
-- [ ] Soul Chapter card modal popup (user to confirm requirements)
+- [ ] Add quick-questions API to Adopt/Emergency/Farewell/Learn profile drawers
 
 ### P2 — UX Polish
 - [ ] Backend pagination for Mira Picks
 - [ ] Production .env (SMTP/Resend credentials)
-- [ ] Update complete-documentation.html
 - [ ] Add more questions to reach 51+ in Soul Builder
 
 ### P3 — Future

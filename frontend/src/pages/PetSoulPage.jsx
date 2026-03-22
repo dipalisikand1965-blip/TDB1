@@ -19,20 +19,18 @@ import { toast } from '../hooks/use-toast';
 
 // All 14 pillars
 const SOUL_PILLARS = [
-  { icon: '🎂', name: 'Celebrate', desc: 'Birthday parties, special occasions, custom cakes', color: 'from-pink-500 to-rose-500', path: '/celebrate' },
-  { icon: '🍽️', name: 'Dine', desc: 'Pet-friendly restaurants, special menus', color: 'from-orange-500 to-amber-500', path: '/dine' },
-  { icon: '🏨', name: 'Stay', desc: 'Boarding, daycare, pet hotels', color: 'from-blue-500 to-cyan-500', path: '/stay' },
-  { icon: '✈️', name: 'Travel', desc: 'Pet relocation, documentation', color: 'from-indigo-500 to-purple-500', path: '/travel' },
-  { icon: '💊', name: 'Care', desc: 'Veterinary care, grooming, health', color: 'from-green-500 to-emerald-500', path: '/care' },
-  { icon: '🎾', name: 'Enjoy', desc: 'Toys, accessories, enrichment', color: 'from-yellow-500 to-amber-500', path: '/enjoy' },
-  { icon: '🏃', name: 'Fit', desc: 'Exercise programs, swimming', color: 'from-teal-500 to-cyan-500', path: '/fit' },
-  { icon: '🎓', name: 'Learn', desc: 'Training, behaviour modification', color: 'from-blue-600 to-indigo-600', path: '/learn' },
-  { icon: '📄', name: 'Paperwork', desc: 'Registration, licenses', color: 'from-gray-500 to-slate-500', path: '/paperwork' },
-  { icon: '📋', name: 'Advisory', desc: 'Legal advice, insurance', color: 'from-slate-500 to-gray-600', path: '/advisory' },
-  { icon: '🚨', name: 'Emergency', desc: '24/7 emergency care', color: 'from-red-500 to-orange-500', path: '/emergency' },
-  { icon: '🌈', name: 'Farewell', desc: 'End-of-life care, memorials', color: 'from-purple-500 to-pink-500', path: '/farewell' },
-  { icon: '🐾', name: 'Adopt', desc: 'Adoption, foster, rescue', color: 'from-amber-500 to-orange-500', path: '/adopt' },
-  { icon: '🛒', name: 'Shop', desc: 'Pet supplies, food, treats', color: 'from-green-600 to-teal-600', path: '/shop' }
+  { icon: '\uD83C\uDF82', name: 'Celebrate', desc: 'Birthday parties, special occasions, custom cakes', color: 'from-pink-500 to-rose-500', path: '/celebrate' },
+  { icon: '\uD83C\uDF7D\uFE0F', name: 'Dine', desc: 'Pet-friendly restaurants, special menus', color: 'from-orange-500 to-amber-500', path: '/dine' },
+  { icon: '\u2708\uFE0F', name: 'Go', desc: 'Travel, stays, transport', color: 'from-indigo-500 to-purple-500', path: '/go' },
+  { icon: '\uD83D\uDCA8', name: 'Care', desc: 'Veterinary care, grooming, health', color: 'from-green-500 to-emerald-500', path: '/care' },
+  { icon: '\uD83C\uDFBE', name: 'Play', desc: 'Toys, accessories, enrichment', color: 'from-yellow-500 to-amber-500', path: '/play' },
+  { icon: '\uD83C\uDF93', name: 'Learn', desc: 'Training, behaviour modification', color: 'from-blue-600 to-indigo-600', path: '/learn' },
+  { icon: '\uD83D\uDCC4', name: 'Paperwork', desc: 'Registration, licenses, advisory', color: 'from-gray-500 to-slate-500', path: '/paperwork' },
+  { icon: '\uD83D\uDEA8', name: 'Emergency', desc: '24/7 emergency care', color: 'from-red-500 to-orange-500', path: '/emergency' },
+  { icon: '\uD83C\uDF08', name: 'Farewell', desc: 'End-of-life care, memorials', color: 'from-purple-500 to-pink-500', path: '/farewell' },
+  { icon: '\uD83D\uDC3E', name: 'Adopt', desc: 'Adoption, foster, rescue', color: 'from-amber-500 to-orange-500', path: '/adopt' },
+  { icon: '\uD83D\uDED2', name: 'Shop', desc: 'Pet supplies, food, treats', color: 'from-green-600 to-teal-600', path: '/shop' },
+  { icon: '\uD83E\uDD1D', name: 'Services', desc: 'Professional pet services', color: 'from-cyan-500 to-blue-500', path: '/services' }
 ];
 
 // What Pet Soul captures

@@ -180,15 +180,16 @@ const MemberMobileNav = () => {
       items: [
         { path: '/celebrate', label: 'Celebrate', icon: PartyPopper },
         { path: '/dine', label: 'Dine', icon: UtensilsCrossed },
+        { path: '/go', label: 'Go', icon: Plane },
         { path: '/care', label: 'Care', icon: Heart },
-        { path: '/stay', label: 'Stay', icon: Hotel },
-        { path: '/travel', label: 'Travel', icon: Plane },
+        { path: '/play', label: 'Play', icon: Music },
         { path: '/learn', label: 'Learn', icon: GraduationCap },
-        { path: '/enjoy', label: 'Enjoy', icon: Music },
         { path: '/paperwork', label: 'Paperwork', icon: FileCheck },
         { path: '/emergency', label: 'Emergency', icon: AlertTriangle },
         { path: '/adopt', label: 'Adopt', icon: Dog },
         { path: '/farewell', label: 'Farewell', icon: Flower2 },
+        { path: '/shop', label: 'Shop', icon: PawPrint },
+        { path: '/services', label: 'Services', icon: FileCheck },
       ]
     },
     {

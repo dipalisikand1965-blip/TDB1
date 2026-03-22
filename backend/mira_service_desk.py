@@ -55,6 +55,13 @@ SECRET_KEY = os.environ.get("JWT_SECRET", "tdb_super_secret_key_2025_woof")
 ALGORITHM = "HS256"
 
 
+async def generate_ticket_id():
+    """Generate a unique ticket ID like TDB-2026-XXXX"""
+    db = get_db()
+    count = await db.service_desk_tickets.count_documents({})
+    return f"TDB-{datetime.now(timezone.utc).year}-{count + 1:04d}"
+
+
 # ============================================
 # MODELS
 # ============================================
@@ -550,25 +557,26 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         # Attach to existing ticket
         ticket_id = existing_ticket.get("ticket_id")
         
-        # Add the initial message to the conversation
-        await db.mira_conversations.update_one(
-            {"ticket_id": ticket_id},
-            {
-                "$push": {
-                    "conversation": {
-                        "sender": request.initial_message.sender,
-                        "source": request.initial_message.source,
-                        "text": request.initial_message.text,
-                        "timestamp": now.isoformat()
+        # Add the initial message to the conversation (if provided)
+        if request.initial_message:
+            await db.mira_conversations.update_one(
+                {"ticket_id": ticket_id},
+                {
+                    "$push": {
+                        "conversation": {
+                            "sender": request.initial_message.sender,
+                            "source": request.initial_message.source,
+                            "text": request.initial_message.text,
+                            "timestamp": now.isoformat()
+                        }
+                    },
+                    "$set": {
+                        "updated_at": now.isoformat(),
+                        "intent_primary": request.intent_primary,
+                        "life_state": request.life_state
                     }
-                },
-                "$set": {
-                    "updated_at": now.isoformat(),
-                    "intent_primary": request.intent_primary,
-                    "life_state": request.life_state
                 }
-            }
-        )
+            )
         
         logger.info(f"[SERVICE_DESK] Attached to existing ticket: {ticket_id}")
         

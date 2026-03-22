@@ -42,7 +42,6 @@ import {
   Download,
   FileText,
   AlertTriangle,
-  BookOpen,
   Briefcase,
   Rainbow,
   HeartHandshake
@@ -63,7 +62,6 @@ const PILLARS = [
   { id: 'shop', name: 'Shop', icon: ShoppingBag, color: 'from-fuchsia-500 to-pink-500', path: '/shop' },
   { id: 'adopt', name: 'Adopt', icon: Dog, color: 'from-amber-400 to-yellow-500', path: '/adopt' },
   { id: 'paperwork', name: 'Paperwork', icon: FileText, color: 'from-slate-500 to-gray-600', path: '/paperwork' },
-  { id: 'advisory', name: 'Advisory', icon: BookOpen, color: 'from-teal-500 to-cyan-500', path: '/advisory' },
   { id: 'emergency', name: 'Emergency', icon: AlertTriangle, color: 'from-red-600 to-orange-500', path: '/emergency' },
   { id: 'farewell', name: 'Farewell', icon: Rainbow, color: 'from-purple-400 to-indigo-400', path: '/farewell' },
   { id: 'services', name: 'Services', icon: Briefcase, color: 'from-cyan-500 to-blue-500', path: '/services' },

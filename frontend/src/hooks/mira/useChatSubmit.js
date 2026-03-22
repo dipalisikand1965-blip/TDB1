@@ -971,7 +971,7 @@ const useChatSubmit = (config) => {
             summary: conciergeCards[0]?.title || conciergeCards[0]?.name || 'Mira\'s suggestion',
             message: data.response?.text || inputQuery,
             originalMessage: inputQuery,
-            pillar: picksContract.pillar || 'advisory',
+            pillar: picksContract.pillar || 'paperwork',
             items: conciergeCards.slice(0, 5)
           });
         }
@@ -1026,7 +1026,7 @@ const useChatSubmit = (config) => {
             summary: conciergeCards[0]?.title || conciergeCards[0]?.name || 'Mira\'s recommendation',
             message: data.response?.text || inputQuery,
             originalMessage: inputQuery,
-            pillar: picksContract.pillar || 'advisory',
+            pillar: picksContract.pillar || 'paperwork',
             items: conciergeCards.slice(0, 5)
           });
         }
@@ -1237,7 +1237,7 @@ const useChatSubmit = (config) => {
       const shouldAutoOpenPanel = (
         currentPillarForReplies && 
         currentPillarForReplies !== 'general' && 
-        currentPillarForReplies !== 'advisory'
+        currentPillarForReplies !== 'paperwork'
       );
       
       if (shouldAutoOpenPanel) {
@@ -1257,7 +1257,7 @@ const useChatSubmit = (config) => {
           // The concierge CTA is primary - user likely wants to book something
         }
         // If pillar is LEARN, suggest LEARN panel
-        if (currentPillarForReplies === 'learn' || currentPillarForReplies === 'advisory') {
+        if (currentPillarForReplies === 'learn' || currentPillarForReplies === 'paperwork') {
           console.log(`[INTELLIGENT ROUTING] Educational content - LEARN panel relevant`);
         }
       }
