@@ -1180,20 +1180,18 @@ const MyPets = () => {
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2">
                       {[
-                        { id: 'feed', name: 'Feed', icon: '🍖', path: '/feed', color: 'from-orange-400 to-red-400' },
-                        { id: 'celebrate', name: 'Celebrate', icon: '🎂', path: '/celebrate', color: 'from-pink-400 to-rose-400' },
-                        { id: 'dine', name: 'Dine', icon: '🍽️', path: '/dine', color: 'from-amber-400 to-orange-400' },
-                        { id: 'stay', name: 'Stay', icon: '🏨', path: '/stay', color: 'from-blue-400 to-indigo-400' },
-                        { id: 'travel', name: 'Travel', icon: '✈️', path: '/travel', color: 'from-cyan-400 to-blue-400' },
-                        { id: 'care', name: 'Care', icon: '🩺', path: '/care', color: 'from-emerald-400 to-teal-400' },
-                        { id: 'groom', name: 'Groom', icon: '✂️', path: '/groom', color: 'from-violet-400 to-teal-400' },
-                        { id: 'play', name: 'Play', icon: '🎾', path: '/play', color: 'from-green-400 to-emerald-400' },
-                        { id: 'train', name: 'Train', icon: '🎓', path: '/train', color: 'from-indigo-400 to-teal-400' },
-                        { id: 'insure', name: 'Insure', icon: '🛡️', path: '/insure', color: 'from-slate-400 to-gray-500' },
-                        { id: 'adopt', name: 'Adopt', icon: '🐕', path: '/adopt', color: 'from-rose-400 to-pink-400' },
-                        { id: 'farewell', name: 'Farewell', icon: '🌈', path: '/farewell', color: 'from-purple-400 to-indigo-400' },
-                        { id: 'shop', name: 'Shop', icon: '🛒', path: '/all', color: 'from-teal-400 to-cyan-400' },
-                        { id: 'community', name: 'Community', icon: '👥', path: '/community', color: 'from-yellow-400 to-amber-400' }
+                        { id: 'celebrate', name: 'Celebrate', icon: '\uD83C\uDF82', path: '/celebrate-soul', color: 'from-pink-400 to-rose-400' },
+                        { id: 'dine', name: 'Dine', icon: '\uD83C\uDF7D\uFE0F', path: '/dine', color: 'from-amber-400 to-orange-400' },
+                        { id: 'go', name: 'Go', icon: '\u2708\uFE0F', path: '/go', color: 'from-cyan-400 to-blue-400' },
+                        { id: 'care', name: 'Care', icon: '\uD83E\uDE7A', path: '/care', color: 'from-emerald-400 to-teal-400' },
+                        { id: 'play', name: 'Play', icon: '\uD83C\uDFBE', path: '/play', color: 'from-green-400 to-emerald-400' },
+                        { id: 'learn', name: 'Learn', icon: '\uD83C\uDF93', path: '/learn', color: 'from-indigo-400 to-teal-400' },
+                        { id: 'paperwork', name: 'Paperwork', icon: '\uD83D\uDCC4', path: '/paperwork', color: 'from-slate-400 to-gray-500' },
+                        { id: 'emergency', name: 'Emergency', icon: '\uD83D\uDEA8', path: '/emergency', color: 'from-red-400 to-rose-400' },
+                        { id: 'farewell', name: 'Farewell', icon: '\uD83C\uDF08', path: '/farewell', color: 'from-purple-400 to-indigo-400' },
+                        { id: 'adopt', name: 'Adopt', icon: '\uD83D\uDC3E', path: '/adopt', color: 'from-rose-400 to-pink-400' },
+                        { id: 'shop', name: 'Shop', icon: '\uD83D\uDED2', path: '/shop', color: 'from-teal-400 to-cyan-400' },
+                        { id: 'services', name: 'Services', icon: '\uD83E\uDD1D', path: '/services', color: 'from-blue-400 to-indigo-400' }
                       ].map((pillar) => (
                         <Link 
                           key={pillar.id} 

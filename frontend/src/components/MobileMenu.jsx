@@ -38,7 +38,6 @@ const PILLARS = [
   { emoji: "🐾", label: "Adopt",     route: "/adopt"     },
   { emoji: "🌷", label: "Farewell",  route: "/farewell"  },
   { emoji: "🤝", label: "Services",  route: "/services"  },
-  { emoji: "💡", label: "Advisory",  route: "/advisory"  },
 ];
 
 // Glass orb CSS — injected once

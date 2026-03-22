@@ -145,12 +145,6 @@ export default function AboutPage() {
               }}>
                 "In loving memory of Kouros & Mystique —
                 They taught us that to know a pet is to know a soul."
-                <div style={{
-                  fontSize:11,color:C.amber,marginTop:8,fontStyle:"normal",
-                  fontWeight:600,letterSpacing:"0.08em",
-                }}>
-                  — THE LOGIN PAGE · EVERY PERSON SEES THIS FIRST
-                </div>
               </div>
             </div>
           </div>

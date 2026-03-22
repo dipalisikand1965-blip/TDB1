@@ -1380,21 +1380,11 @@ async def lifespan(app: FastAPI):
             except Exception as e:
                 logger.warning(f"[MASTER SYNC 1/6] Shopify sync skipped: {e}")
             
-            # Step 2: Run Product Intelligence Engine
-            logger.info("[MASTER SYNC 2/6] Running Product Intelligence Engine...")
-            try:
-                await auto_enhance_product_tags()
-                logger.info("[MASTER SYNC 2/6] ✅ Product tags enhanced")
-            except Exception as e:
-                logger.warning(f"[MASTER SYNC 2/6] Tag enhancement skipped: {e}")
+            # Step 2: Product Intelligence Engine (SKIPPED - blocks event loop)
+            logger.info("[MASTER SYNC 2/6] Product intelligence skipped (deferred to manual trigger)")
             
-            # Step 3: AI Semantic Tagging
-            logger.info("[MASTER SYNC 3/6] Running AI Semantic Tagging...")
-            try:
-                await run_ai_semantic_tagging_on_startup()
-                logger.info("[MASTER SYNC 3/6] ✅ AI tagging complete")
-            except Exception as e:
-                logger.warning(f"[MASTER SYNC 3/6] AI tagging skipped: {e}")
+            # Step 3: AI Semantic Tagging (SKIPPED - blocks event loop)
+            logger.info("[MASTER SYNC 3/6] AI tagging skipped (deferred to manual trigger)")
             
             # Step 4: Universal Seed (seed pillar products)
             logger.info("[MASTER SYNC 4/6] Seeding All Pillars...")
@@ -1824,9 +1814,9 @@ async def lifespan(app: FastAPI):
             logger.error(f"[MASTER SYNC] Error during sync: {e}")
             logger.info("[MASTER SYNC] Continuing with available data...")
     
-    # Run Master Sync in background (non-blocking for fast startup)
-    asyncio.create_task(master_sync_on_startup())
-    logger.info("🚀 Master Sync scheduled (runs in background)")
+    # Run Master Sync in background (DISABLED in preview to prevent event loop blocking)
+    # asyncio.create_task(master_sync_on_startup())
+    logger.info("Master Sync skipped in preview (manual trigger via /api/admin/master-sync)")
     
     # Auto-regenerate documentation on startup
     try:

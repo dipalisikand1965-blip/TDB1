@@ -71,9 +71,10 @@ function ConditionalFloatingButton() {
   // Hide on /mira, /admin, and ALL pillar pages (they have their own Ask Concierge buttons)
   const hiddenPaths = [
     '/mira', '/admin', '/demo', '/pet-home', '/my-requests', '/my-pets', '/dashboard',
-    '/care', '/celebrate', '/celebrate-soul', '/advisory', '/dine', '/stay', '/travel', '/go', '/play',
-    '/emergency', '/enjoy', '/fit', '/learn', '/farewell', '/adopt', 
-    '/paperwork', '/shop', '/cakes', '/breed-cakes', '/mini-cakes'
+    '/care', '/celebrate', '/celebrate-soul', '/dine', '/go', '/play',
+    '/emergency', '/learn', '/farewell', '/adopt', 
+    '/paperwork', '/shop', '/services', '/cakes', '/breed-cakes', '/mini-cakes',
+    '/stay', '/travel', '/enjoy', '/fit', '/advisory'
   ];
   
   if (hiddenPaths.some(path => pathname === path || pathname.startsWith(path + '/'))) {
@@ -603,18 +604,15 @@ function MainLayout() {
         
         <Route path="/go" element={<GoSoulPage />} />
         <Route path="/play" element={<PlaySoulPage />} />
-        <Route path="/stay" element={<StayPage />} />
-        <Route path="/stay/beds" element={<ProductListing category="beds" pillar="stay" />} />
-        <Route path="/stay/mats" element={<ProductListing category="mats" pillar="stay" />} />
-        <Route path="/stay/kennels" element={<ProductListing category="kennels" pillar="stay" />} />
-        <Route path="/stay/bowls" element={<ProductListing category="bowls" pillar="stay" />} />
-        <Route path="/stay/:category" element={<ProductListing pillar="stay" />} />
-        
-        <Route path="/travel" element={<TravelPage />} />
-        <Route path="/travel/carriers" element={<ProductListing category="carriers" pillar="travel" />} />
-        <Route path="/travel/car" element={<ProductListing category="car-accessories" pillar="travel" />} />
-        <Route path="/travel/outdoor" element={<ProductListing category="outdoor" pillar="travel" />} />
-        <Route path="/travel/:category" element={<ProductListing pillar="travel" />} />
+        {/* Deprecated pillars redirect to merged targets */}
+        <Route path="/stay" element={<GoSoulPage />} />
+        <Route path="/stay/*" element={<GoSoulPage />} />
+        <Route path="/travel" element={<GoSoulPage />} />
+        <Route path="/travel/*" element={<GoSoulPage />} />
+        <Route path="/enjoy" element={<PlaySoulPage />} />
+        <Route path="/enjoy/*" element={<PlaySoulPage />} />
+        <Route path="/fit" element={<PlaySoulPage />} />
+        <Route path="/fit/*" element={<PlaySoulPage />} />
         
         <Route path="/care" element={<CareSoulPage />} />
         <Route path="/care/grooming" element={<ProductListing category="grooming" pillar="care" />} />
@@ -622,20 +620,6 @@ function MainLayout() {
         <Route path="/care/supplements" element={<ProductListing category="supplements" pillar="care" />} />
         <Route path="/care/spa" element={<ProductListing category="spa" pillar="care" />} />
         <Route path="/care/:category" element={<ProductListing pillar="care" />} />
-        
-        <Route path="/enjoy" element={<EnjoyPage />} />
-        <Route path="/enjoy/toys" element={<ProductListing category="toys" pillar="enjoy" />} />
-        <Route path="/enjoy/chews" element={<ProductListing category="chews" pillar="enjoy" />} />
-        <Route path="/enjoy/games" element={<ProductListing category="games" pillar="enjoy" />} />
-        <Route path="/enjoy/puzzles" element={<ProductListing category="puzzles" pillar="enjoy" />} />
-        <Route path="/enjoy/:category" element={<ProductListing pillar="enjoy" />} />
-        
-        <Route path="/fit" element={<FitPage />} />
-        <Route path="/fit/leashes" element={<ProductListing category="leashes" pillar="fit" />} />
-        <Route path="/fit/harnesses" element={<ProductListing category="harnesses" pillar="fit" />} />
-        <Route path="/fit/collars" element={<ProductListing category="collars" pillar="fit" />} />
-        <Route path="/fit/apparel" element={<ProductListing category="apparel" pillar="fit" />} />
-        <Route path="/fit/:category" element={<ProductListing pillar="fit" />} />
         
         <Route path="/learn" element={<ProtectedRoute><LearnSoulPage /></ProtectedRoute>} />
         <Route path="/paperwork" element={<ProtectedRoute><PaperworkSoulPage /></ProtectedRoute>} />
@@ -652,7 +636,6 @@ function MainLayout() {
         <Route path="/learn/books" element={<ProductListing category="books" pillar="learn" />} />
         <Route path="/learn/:topicSlug" element={<LearnTopicPage />} />
         
-        <Route path="/advisory" element={<AdvisoryPage />} />
         <Route path="/paperwork" element={<PaperworkPage />} />
         <Route path="/emergency" element={<EmergencyPage />} />
         <Route path="/pillar/:pillarId" element={<PillarPage />} />

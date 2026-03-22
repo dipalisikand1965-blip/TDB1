@@ -33,6 +33,7 @@ import ProductModal from "../components/common/ProductModal";
 import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
+import PillarSoulProfile from "../components/PillarSoulProfile";
 
 // ── Colour — clean slate, every pillar's colour shows through ─
 const G = {
@@ -493,6 +494,11 @@ const ServicesSoulPage = () => {
             </button>
           )}
         </div>
+
+        {/* Soul Profile bar — pet/breed info + questions */}
+        {petData && (
+          <PillarSoulProfile pet={petData} token={token} pillar="services" color="#6366F1" />
+        )}
 
         {/* Search */}
         <div style={{ marginBottom:16 }}>

@@ -57,6 +57,7 @@ import { ProductDetailModal } from '../components/ProductCard';
 import { getApiUrl, API_URL } from '../utils/api';
 import { tdc } from '../utils/tdc_intent';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
+import PillarSoulProfile from '../components/PillarSoulProfile';
 
 // ─── KNOWN BREEDS (breed filter — PET FIRST, BREED NEXT) ────────────
 const KNOWN_BREEDS = ['american bully','beagle','border collie','boxer','cavalier','chihuahua','chow chow','dachshund','dalmatian','doberman','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','jack russell','labrador','lhasa apso','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
@@ -412,6 +413,11 @@ const CelebratePageNew = () => {
 
       {/* Main content area with consistent max-width + padding for centering */}
       <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8">
+        {/* Soul Profile bar — pet/breed info + questions */}
+        <div style={{ paddingTop: 16 }}>
+          <PillarSoulProfile pet={selectedPet} token={token} pillar="celebrate" color="#E11D48" />
+        </div>
+
         {/* 2. CATEGORY STRIP - Opens modals on click */}
         <CelebrateCategoryStrip 
           pet={selectedPet}
