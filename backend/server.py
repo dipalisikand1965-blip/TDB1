@@ -1814,9 +1814,14 @@ async def lifespan(app: FastAPI):
             logger.error(f"[MASTER SYNC] Error during sync: {e}")
             logger.info("[MASTER SYNC] Continuing with available data...")
     
-    # Run Master Sync in background (DISABLED in preview to prevent event loop blocking)
-    # asyncio.create_task(master_sync_on_startup())
-    logger.info("Master Sync skipped in preview (manual trigger via /api/admin/master-sync)")
+    # Run Master Sync in background — safe: all async MongoDB + static image ops, NO LLM calls
+    # 60s delay lets the server fully initialize before syncing
+    async def _delayed_master_sync():
+        await asyncio.sleep(60)
+        await master_sync_on_startup()
+
+    asyncio.create_task(_delayed_master_sync())
+    logger.info("Master Sync scheduled in background (starts in 60s)")
     
     # Auto-regenerate documentation on startup
     try:

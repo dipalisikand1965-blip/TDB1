@@ -7767,7 +7767,9 @@ async def create_concierge_arrange_ticket(
 @router.get("/picks/default/{pet_id}")
 async def get_default_picks_for_pet(
     pet_id: str,
-    limit: int = Query(8, le=20),
+    limit: int = Query(8, le=48),
+    offset: int = Query(0, ge=0),
+    pillar: Optional[str] = Query(None),
     authorization: Optional[str] = Header(None)
 ):
     """
@@ -7923,11 +7925,16 @@ async def get_default_picks_for_pet(
                     "source": "service_recommendation"
                 })
         
+        total_available = len(picks)
+        paginated = picks[offset: offset + limit]
         return {
-            "picks": picks[:limit],
+            "picks": paginated,
             "pet_name": pet_name,
-            "total": len(picks[:limit]),
-            "message": f"Here are {len(picks[:limit])} picks curated for {pet_name}"
+            "total": total_available,
+            "limit": limit,
+            "offset": offset,
+            "has_more": (offset + limit) < total_available,
+            "message": f"Showing {len(paginated)} of {total_available} picks for {pet_name}"
         }
         
     except Exception as e:

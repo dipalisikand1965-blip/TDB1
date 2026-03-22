@@ -62,7 +62,15 @@ Build a production-ready pet life management platform with 12 core pillars, AI c
 - Pet switch resets drawer state
 - Components: `/app/frontend/src/components/PillarSoulProfile.jsx`, `/app/frontend/src/components/SoulChapterModal.jsx`
 
-### Session Mar 22, 2026 — Pet Health Vault — Full Concierge Wiring (Complete)
+### Session Mar 22, 2026 — WhatsApp Reply Button + Q2 Fixes
+- **WhatsApp reply personalized**: `concierge_reply()` now reads `ticket.member.name` + `ticket.pet_name` → message: "Hi Dipali 🐾 Mira here from The Doggy Company. Your Concierge has a message about Mojo..."
+- **TicketFullPageModal WhatsApp button**: Real WhatsApp SVG icon (not generic MessageCircle), green highlight when selected, pulsing dot when phone is available, recipient preview ("→ Dipali (2582)"), send button turns green with WA icon
+- **Q2 cosmetic fixes confirmed**: `whiteSpace: nowrap` on PetVault tabs (line 487), soul answer test gap is code-correct (Mojo 100% score — nothing to fix)
+- **Mira Briefing enriched**: `generate_mira_briefing()` now reads `pet.vault` (allergies, active meds, vaccines, vet, weight, last visit) + per-pillar soul answers. Every ticket now has a `HEALTH & SAFETY`, `DIET & DAILY LIFE`, `PILLAR INTEL` section.
+- **Parent identity fixed**: `attach_or_create_ticket` now looks up user by `parent_id` (email or ID), fetches `name/email/phone`, and writes `member: { name, email, phone }` to ticket. "Unknown" is gone — "Dipali" shows in CONTACT INFO.
+- **Personalization-stats enriched**: `/api/mira/personalization-stats/{petId}` now includes vault allergies at priority 10 (CRITICAL — NO CHICKEN), active meds, upcoming vaccines with urgency scoring, primary vet, last vet visit, current weight.
+- **DoggyServiceDesk fetchContext fixed**: Now uses `ticket.pet_id` fallback (old tickets had no `pet_info.id`), uses `ticket.member` directly when populated, tries pet name lookup as last resort.
+- **Testing**: 100% backend (36/36), 100% frontend — all verified by testing agent iteration_185.
 - **PetVault.jsx** fully rewired: `useConcierge`, `usePlatformTracking`, `saveSoulAnswer` helper, `getIdealWeight` helper
 - **New section: Allergies** — red critical cards, "Add allergy" fires `urgent()` ticket immediately + writes `doggy_soul_answers.food_allergies`
 - **New section: Identity & Insurance** — microchip, insurance status, pet passport with Concierge® enquiry links
@@ -91,26 +99,33 @@ Build a production-ready pet life management platform with 12 core pillars, AI c
 
 ## Prioritized Backlog
 
-### P0 — Production Deployment
-- [ ] User deploys via Emergent platform
-- [ ] Re-enable master sync for production (with asyncio.to_thread for AI steps)
-- [ ] Full E2E mobile test on real device
+### P0 — MUST DO BEFORE LAUNCH
+- [ ] **DB Pillar Name Migration** — adventure→go, food→dine, memory→farewell (BLOCKED: user must confirm DB backup first)
 
-### P1 — Pending Issues
-- [ ] Database pillar name migration & dynamic sub-categories (BLOCKED: awaiting user backup)
-- [ ] AI Soul Products integration into product catalog
-- [ ] Add quick-questions API to Adopt/Emergency/Farewell/Learn profile drawers
+### P1 — NEXT SESSION
+- [ ] **AI Soul Products** — link 3,000+ Cloudinary mockups to `products_master` (NOW UNBLOCKED — master sync re-enabled)
+- [ ] **Backend pagination** for Mira Picks `GET /api/mira/picks/{pillar}?limit=12&offset=0`
+- [ ] **WhatsApp BOOK keyword** — when parent replies "BOOK" to reminder, auto-create booking ticket in `whatsapp_routes.py`
+- [ ] **Full E2E mobile test** on real device before soft launch
 
-### P2 — UX Polish
-- [ ] Backend pagination for Mira Picks
-- [ ] Production .env (SMTP/Resend credentials)
-- [ ] Add more questions to reach 51+ in Soul Builder
+### P1 — UPDATED (Mar 22 final)
+- [x] **Backend pagination for Mira Picks** — DONE: `?limit=N&offset=N` + `has_more` field ✅
+- [x] **Email on service desk reply** — DONE: fixed dead `ticket` variable bug, now sends real Resend email ✅
+- [ ] **Inbox UI cleanup** (`MyRequestsPage.jsx`) — active prominent/warm cream, resolved collapsed, no purple gradient
+- [ ] **AI Soul Products** — INVESTIGATE: 5,131 products, 0 cloudinary_url. Find where mockups live, link to products_master
+- [ ] **WhatsApp BOOK keyword** — parent replies "BOOK" → auto booking ticket
 
-### P3 — Future
-- [ ] Build Love pillar
-- [ ] Refactor MiraDemoPage.jsx (5,400+ lines → modules)
-- [ ] Remove "Skip Payment" from onboarding (post soft-launch)
+
+### P2 — POST-LAUNCH
+- [ ] **Medication refill reminders** — extend `check_health_reminders()` for medications with `end_date`
+- [ ] **Love pillar** — 13th pillar page (same structure as existing 12)
+- [ ] **MiraDemoPage.jsx split** — 5,400+ lines → component modules (HIGH RISK — do last)
+- [ ] **"3 vets near you"** in vaccine reminder WhatsApp
+- [ ] **Two-way WA thread UI** — show inbound replies in ticket view real-time (WebSocket push)
+- [ ] **Production .env** — SMTP/Resend/Atlas credentials for production deploy
+- [ ] See `/app/memory/NEXT_AGENT_BRIEFING.md` for full context
 
 ## Test Credentials
-- User: dipali@clubconcierge.in / test123
-- Admin: aditya / lola4304
+- User: `dipali@clubconcierge.in` / `test123`
+- Admin: `aditya` / `lola4304`
+
