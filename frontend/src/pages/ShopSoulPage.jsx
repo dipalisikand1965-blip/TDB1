@@ -32,6 +32,7 @@ import { ProductGridSkeleton } from "../components/common/ProductSkeleton";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 
 // ── Colour system — warm gold, The Doggy Bakery amber ─────────
 const G = {
@@ -782,7 +783,7 @@ const ShopSoulPage = () => {
         {(!activeSection || activeSection === "mira") && (
           <>
             <MiraPicksSection pet={petData}/>
-            {/* Soul Made handled inside PersonalisedBreedSection */}
+            <PersonalisedBreedSection pet={petData} pillar="shop" />
           </>
         )}
 

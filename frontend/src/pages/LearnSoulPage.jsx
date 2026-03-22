@@ -1001,7 +1001,8 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
               </>
             );
           })()}
-          {/* SoulMadeCollection removed — breed products shown via PersonalisedBreedSection */}
+          {/* ── Soul Made™ via PersonalisedBreedSection ── */}
+          <PersonalisedBreedSection pet={pet} pillar="learn" />
         </div>
       )}
 
