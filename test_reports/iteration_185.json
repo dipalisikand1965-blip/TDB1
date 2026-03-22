@@ -1,0 +1,70 @@
+{
+  "summary": "Comprehensive e2e testing of Intelligent Service Desk feature. All 36 backend tests passed. All core frontend flows verified. Member name 'Dipali' correctly appears (not 'Unknown') in CONTACT INFO. MIRA'S INTEL ticker shows vault allergies (NO CHICKEN, NO TEST_BEEF at priority 10). Mira briefing includes HEALTH & SAFETY, DIET & DAILY LIFE, PILLAR INTEL sections. Pet Vault dark theme working. Care/Play/Dine/Learn pillars all create tickets with real member names.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "POST /api/service_desk/attach_or_create_ticket",
+        "issue": "Response only returns {ticket_id, status, is_new} - full ticket data (member, mira_briefing, etc.) not in response. Must do GET /api/tickets/{id} for full data. This is a design decision, not a bug, but API consumers should be aware.",
+        "priority": "LOW"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Admin Service Desk (/admin/service-desk)",
+        "issues": ["Two-step login required: (1) 'Admin Access' dark screen → (2) DoggyServiceDesk purple login screen. Minor UX friction for admin users."]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_intelligent_service_desk_185.py",
+    "/app/test_reports/pytest/service_desk_185.xml"
+  ],
+  "action_items": [
+    "INFO: All features from the problem statement are verified working. No critical issues found.",
+    "INFO: Old tickets (created before this fix) still show 'Unknown' in member.name — this is expected. Only new tickets show real name.",
+    "MINOR: Two-step login for /admin/service-desk could be simplified to one step for better admin UX.",
+    "INFO: Pet Home Health chapter shows latest vault allergy only (e.g. 'test_fish_185 allergy') — other vault allergies not shown in soul chapter summary. This might be intentional.",
+    "CLEANUP: Test allergies added by previous iterations (TEST_Beef, TEST_Pollen, TEST_Walnut, Beef, Beef_UI_Test, TEST_Fish_185, TEST_Fish_185 backend test) should be cleaned up from Mojo's vault."
+  ],
+  "critical_code_review_comments": [
+    "VERIFIED: attach_or_create_ticket now does proper user lookup by email OR pet owner_email, resolving 'Unknown' member names for new tickets.",
+    "VERIFIED: generate_mira_briefing() (line 346) includes vault allergies (highest priority), active meds, upcoming vaccines, vet info, weight — all pulling from pet.vault correctly.",
+    "VERIFIED: personalization-stats endpoint adds vault allergies at priority=10 (category='health'), confirmed vaccines at priority 7-10 depending on urgency.",
+    "VERIFIED: DoggyServiceDesk.jsx fetchContext() now uses ticket.pet_id fallback + ticket.member direct fallback — member name loaded correctly for new ticket format.",
+    "NOTE: The attach_or_create_ticket 72-hour deduplication window means the same (parent+pet+pillar) combination attaches to existing ticket instead of creating new. This means the channel-based unique ID approach used in our tests is the correct way to force new ticket creation."
+  ],
+  "test_results": {
+    "personalization_stats_endpoint": "PASS - Returns knowledge_items with vault allergies at priority 10",
+    "no_chicken_allergy_ticker": "PASS - NO CHICKEN (severe) at priority 10 in MIRA'S INTEL",
+    "no_test_beef_ticker": "PASS - NO TEST_BEEF (moderate) at priority 10",
+    "vaccine_items_ticker": "PASS - TEST_Rabies due in 14d, Rabies due in 14d visible",
+    "ticket_creation_member_name": "PASS - member.name='Dipali' (not Unknown) for care/dine/play/learn pillars",
+    "mira_briefing_health_safety": "PASS - HEALTH & SAFETY section with CONFIRMED ALLERGIES in every ticket",
+    "mira_briefing_diet_daily": "PASS - DIET & DAILY LIFE section present",
+    "mira_briefing_pillar_intel": "PASS - CARE/PLAY/DINE/LEARN PILLAR INTEL sections with per-pillar soul answers",
+    "care_pillar_concierge_book": "PASS - Care page loads, Book via Concierge button works, ticket created",
+    "admin_contact_info_dipali": "PASS - CONTACT INFO shows 'Dipali', email, phone in ticket modal",
+    "miras_intel_expanded": "PASS - MIRA'S INTEL expanded shows NO CHICKEN, NO TEST_BEEF, NO TEST_POLLEN",
+    "pet_vault_dark_theme": "PASS - Mojo's Health Vault dark-themed container at /pet-vault/pet-mojo-7327ad56",
+    "vault_alert_bar": "PASS - TEST_Rabies due in 14 days alert with Book via Concierge link",
+    "vault_allergies_tab": "PASS - Allergies tab shows all 9 allergies (Chicken, TEST_Beef, TEST_Pollen, etc.)",
+    "vault_add_allergy_modal": "PASS - Modal shows soul profile warning + Save & Alert Mira button",
+    "pet_home_health_chapter": "PASS - Health chapter shows vault allergy (test_fish_185)",
+    "usePlatformTracking": "PASS - Code verified in CareSoulPage, DineSoulPage, GoSoulPage, LearnSoulPage, PlaySoulPage, ShopSoulPage"
+  },
+  "updated_files": [],
+  "success_rate": {
+    "backend": "100% (36/36 tests passed)",
+    "frontend": "100% (all core flows verified)"
+  },
+  "seed_data_creation": "Added allergy 'TEST_Fish_185' via POST /api/pet-vault/pet-mojo-7327ad56/allergies in backend tests. Created tickets via care, dine, play, learn pillars for testing. Admin should clean up test allergies.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All 'intelligent service desk' features fully verified working. Key flows: (1) dipali@clubconcierge.in / test123 → /care → Book via Concierge → ticket created with member.name='Dipali'. (2) aditya/lola4304 → /admin/service-desk (2-step login) → ticket modal shows CONTACT INFO='Dipali', MIRA'S INTEL with vault allergies at priority 10. (3) Mira briefing includes HEALTH & SAFETY (vault allergies+vaccines), DIET & DAILY LIFE, PILLAR INTEL sections. (4) Pet Vault at /pet-vault/pet-mojo-7327ad56 works with dark theme. Test cleanup needed: remove TEST_Fish_185 and other test allergies from Mojo's vault. Backend test file: /app/backend/tests/test_intelligent_service_desk_185.py (36 tests). Admin login endpoint: POST /api/admin/login with {username, password}.",
+  "rca_of_issue": null
+}
