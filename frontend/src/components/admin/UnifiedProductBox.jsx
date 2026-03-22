@@ -83,6 +83,7 @@ const UnifiedProductBox = () => {
   const [filterHasMiraHint, setFilterHasMiraHint] = useState('');
   const [filterSource, setFilterSource] = useState('');  // NEW: shopify, soul_made, manual
   const [filterCategory, setFilterCategory] = useState('');  // Category filter
+  const [dynamicCategoryList, setDynamicCategoryList] = useState([]);
   
   // Bulk Selection
   const [selectedProducts, setSelectedProducts] = useState(new Set());
@@ -165,6 +166,25 @@ const UnifiedProductBox = () => {
     fetchProducts();
     fetchStats();
   }, [fetchProducts]);
+
+  // Fetch dynamic categories when pillar filter changes
+  useEffect(() => {
+    if (!filterPillar) {
+      setDynamicCategoryList([]);
+      return;
+    }
+    (async () => {
+      try {
+        const r = await fetch(`${API_URL}/api/admin/pillar-products/sub-categories?pillar=${encodeURIComponent(filterPillar)}`);
+        if (r.ok) {
+          const data = await r.json();
+          setDynamicCategoryList(data.categories || []);
+        }
+      } catch (e) {
+        console.error('Category fetch error:', e);
+      }
+    })();
+  }, [filterPillar]);
 
   // Save product
   const saveProduct = async () => {
@@ -934,7 +954,7 @@ const UnifiedProductBox = () => {
       </div>
 
       {/* Category Quick Filter + Pillar Search — shows when a pillar is selected */}
-      {filterPillar && MAIN_CATEGORIES.filter(c => c.pillar === filterPillar).length > 0 && (
+      {filterPillar && dynamicCategoryList.length > 0 && (
         <div className="space-y-3 bg-gray-50 border border-gray-200 rounded-xl p-3">
           {/* Prominent search bar for this pillar */}
           <div className="relative">
@@ -956,7 +976,7 @@ const UnifiedProductBox = () => {
               </button>
             )}
           </div>
-          {/* Category chips */}
+          {/* Category chips — dynamic from DB */}
           <div className="flex flex-wrap gap-2 items-center">
             <span className="text-xs text-gray-500 font-medium">Category:</span>
             <button
@@ -966,14 +986,14 @@ const UnifiedProductBox = () => {
             >
               All
             </button>
-            {MAIN_CATEGORIES.filter(c => c.pillar === filterPillar).map(c => (
+            {dynamicCategoryList.map(c => (
               <button
-                key={c.id}
-                onClick={() => { setFilterCategory(c.id); setPage(0); }}
-                className={`h-7 px-3 text-xs rounded-full border transition-colors ${filterCategory === c.id ? 'bg-purple-600 text-white border-purple-600' : 'border-gray-300 text-gray-600 hover:border-purple-400'}`}
-                data-testid={`filter-category-${c.id}`}
+                key={c}
+                onClick={() => { setFilterCategory(c); setPage(0); }}
+                className={`h-7 px-3 text-xs rounded-full border transition-colors ${filterCategory === c ? 'bg-purple-600 text-white border-purple-600' : 'border-gray-300 text-gray-600 hover:border-purple-400'}`}
+                data-testid={`filter-category-${c}`}
               >
-                {c.name}
+                {c.replace(/[-_]/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase())}
               </button>
             ))}
           </div>
@@ -1506,20 +1526,21 @@ const UnifiedProductBox = () => {
                     data-testid="bulk-category-select"
                   >
                     <option value="">— Select Category —</option>
-                    {(filterPillar
-                      ? MAIN_CATEGORIES.filter(c => !c.pillar || c.pillar === filterPillar)
-                      : MAIN_CATEGORIES
-                    ).map(c => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
+                    {dynamicCategoryList.map(c => (
+                      <option key={c} value={c}>{c.replace(/[-_]/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase())}</option>
                     ))}
                   </select>
-                  <input
+                  <select
                     value={bulkSubCategory}
                     onChange={e => setBulkSubCategory(e.target.value)}
-                    placeholder="Sub-category (optional)"
                     className="h-8 px-2 rounded border border-amber-300 text-sm bg-white min-w-[160px]"
-                    data-testid="bulk-subcategory-input"
-                  />
+                    data-testid="bulk-subcategory-select"
+                  >
+                    <option value="">Sub-category (optional)</option>
+                    {dynamicCategoryList.map(c => (
+                      <option key={c} value={c}>{c.replace(/[-_]/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase())}</option>
+                    ))}
+                  </select>
                   <Button
                     size="sm"
                     disabled={!bulkCategory || bulkAssigning}
