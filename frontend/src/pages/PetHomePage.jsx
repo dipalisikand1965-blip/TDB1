@@ -503,7 +503,67 @@ const PetHomePage = () => {
   }
   
   const pet = selectedPet;
-  
+
+  // Map soul answers to chapter scores — keys match actual DB fields
+  const getChapterScore = (chapterId) => {
+    const soul = pet?.doggy_soul_answers || {};
+    const maps = {
+      identity:   ['life_stage','age_stage','gender','energy_level','general_nature','breed','describe_3_words'],
+      behaviour:  ['training_level','behavior_issues','leash_behavior','grooming_tolerance','vet_comfort','separation_anxiety','crate_trained'],
+      health:     ['health_conditions','food_allergies','sensitive_stomach','vaccinated','vet_comfort','prefers_grain_free'],
+      social:     ['behavior_with_dogs','stranger_reaction','social_with_people','kids_at_home','lives_with','most_attached_to'],
+      nutrition:  ['diet_type','favorite_treats','treat_preference','food_motivation','favorite_protein','feeding_times','food_allergies'],
+      learning:   ['training_level','motivation_type','leash_behavior','walks_per_day','learn_level','learn_focus'],
+    };
+    const keys = maps[chapterId] || [];
+    const answered = keys.filter(k => {
+      const v = soul[k];
+      return v && v !== '' && v !== 'unknown' && !(Array.isArray(v) && v.length === 0);
+    }).length;
+    return Math.round((answered / keys.length) * 100);
+  };
+
+  // Mira's summary per chapter based on actual answers
+  const getChapterSummary = (chapterId) => {
+    const soul = pet?.doggy_soul_answers || {};
+    const name = pet?.name || 'your dog';
+    const fmt = (s) => s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) : '';
+    const allergies = Array.isArray(soul.food_allergies) ? soul.food_allergies.join(', ') : soul.food_allergies;
+    const treats = Array.isArray(soul.favorite_treats) ? soul.favorite_treats[0] : (soul.treat_preference || soul.favorite_treats);
+    const summaries = {
+      identity: (soul.life_stage || soul.age_stage)
+        ? `${fmt(soul.life_stage || soul.age_stage)} · ${soul.energy_level || 'active'} energy`
+        : `Tell Mira who ${name} is`,
+      behaviour: soul.training_level
+        ? `${fmt(soul.training_level)} · ${soul.separation_anxiety ? soul.separation_anxiety + ' separation' : 'no issues'}`
+        : `Tell Mira how ${name} behaves`,
+      health: allergies && !['none','no','no allergies','none known','no known allergies'].includes(String(allergies).toLowerCase())
+        ? `${allergies} allergy · ${soul.health_conditions && !['none','healthy','no','none known'].includes(String(soul.health_conditions).toLowerCase()) ? soul.health_conditions : 'otherwise healthy'}`
+        : soul.health_conditions && !['none','healthy','no','none known'].includes(String(soul.health_conditions).toLowerCase())
+        ? `${soul.health_conditions} · being monitored`
+        : `${name} is healthy`,
+      social: soul.behavior_with_dogs
+        ? `${fmt(soul.behavior_with_dogs)} · ${soul.stranger_reaction || soul.social_with_people || 'friendly'}`
+        : `Tell Mira about ${name}'s social life`,
+      nutrition: soul.diet_type
+        ? `${fmt(soul.diet_type)} · loves ${treats ? String(treats).replace(/_/g,' ') : 'treats'}`
+        : `Tell Mira what ${name} eats`,
+      learning: soul.training_level
+        ? `${fmt(soul.training_level)} · ${soul.learn_level || soul.learn_focus || 'learning'}`
+        : `Tell Mira what ${name} knows`,
+    };
+    return summaries[chapterId] || '';
+  };
+
+  const SOUL_CHAPTERS = [
+    { id:"identity",  label:"Identity",  emoji:"\u2726", color:"#9333EA" },
+    { id:"behaviour", label:"Behaviour", emoji:"\uD83E\uDDE0", color:"#EC4899" },
+    { id:"health",    label:"Health",    emoji:"\u2764\uFE0F", color:"#EF4444" },
+    { id:"social",    label:"Social",    emoji:"\uD83D\uDC3E", color:"#F59E0B" },
+    { id:"nutrition", label:"Nutrition", emoji:"\uD83C\uDF56", color:"#10B981" },
+    { id:"learning",  label:"Learning",  emoji:"\uD83D\uDCDA", color:"#3B82F6" },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-purple-950 pb-24">
       {/* Main Content */}
@@ -575,41 +635,55 @@ const PetHomePage = () => {
               </div>
             </div>
             
-            {/* Soul Chapter Pills — clickable, navigate to soul-builder */}
-            {soulScore > 0 && (
-              <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginTop:12, marginBottom:4 }}>
-                {[
-                  { id:"identity",   label:"Identity",   emoji:"✦", color:"#9333EA" },
-                  { id:"behaviour",  label:"Behaviour",  emoji:"🧠", color:"#EC4899" },
-                  { id:"health",     label:"Health",     emoji:"❤️", color:"#EF4444" },
-                  { id:"social",     label:"Social",     emoji:"🐾", color:"#F59E0B" },
-                  { id:"nutrition",  label:"Nutrition",  emoji:"🍖", color:"#10B981" },
-                  { id:"learning",   label:"Learning",   emoji:"📚", color:"#3B82F6" },
-                ].map(ch => (
-                  <button
+            {/* Soul Chapter Cards — dynamic scores + Mira summaries from real answers */}
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap:8, marginTop:12, marginBottom:4 }}>
+              {SOUL_CHAPTERS.map(ch => {
+                const score = getChapterScore(ch.id);
+                const summary = getChapterSummary(ch.id);
+                return (
+                  <div
                     key={ch.id}
                     onClick={() => navigate(`/soul-builder?chapter=${ch.id}`)}
                     data-testid={`soul-chapter-pill-${ch.id}`}
                     style={{
-                      background: `${ch.color}18`,
-                      border: `1px solid ${ch.color}40`,
-                      color: ch.color,
-                      borderRadius: 20,
-                      padding: "3px 10px",
-                      fontSize: 11,
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 4,
-                      transition: "all 0.15s",
+                      background: score > 0 ? `${ch.color}15` : 'rgba(255,255,255,0.04)',
+                      border: `1.5px solid ${score > 0 ? ch.color+'40' : 'rgba(255,255,255,0.1)'}`,
+                      borderRadius: 14, padding: '12px 14px',
+                      cursor: 'pointer', transition: 'all 0.2s',
+                      display: 'flex', flexDirection: 'column', gap: 6,
                     }}
                   >
-                    <span>{ch.emoji}</span> {ch.label}
-                  </button>
-                ))}
-              </div>
-            )}
+                    {/* Header */}
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                        <span style={{ fontSize:14 }}>{ch.emoji}</span>
+                        <span style={{ fontSize:12, fontWeight:700, color: score>0 ? ch.color : 'rgba(245,240,232,0.5)' }}>
+                          {ch.label}
+                        </span>
+                      </div>
+                      <span style={{ fontSize:11, fontWeight:700, color: score>0 ? ch.color : 'rgba(245,240,232,0.3)' }}>
+                        {score}%
+                      </span>
+                    </div>
+
+                    {/* Mini score bar */}
+                    <div style={{ height:3, borderRadius:999, background:'rgba(255,255,255,0.08)', overflow:'hidden' }}>
+                      <div style={{
+                        height:'100%', borderRadius:999,
+                        background: ch.color,
+                        width: `${score}%`,
+                        transition: 'width 0.8s ease',
+                      }}/>
+                    </div>
+
+                    {/* Mira's summary */}
+                    <div style={{ fontSize:10, color:'rgba(245,240,232,0.45)', lineHeight:1.4 }}>
+                      {score > 0 ? summary : `Tap to tell Mira \u2192`}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
 
             {/* Teach Mira More - ALWAYS show if soul score < 80 */}
             {soulScore < 80 && (

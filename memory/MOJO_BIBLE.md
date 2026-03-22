@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://pet-soul-platform-1.preview.emergentagent.com
+https://soul-chapters.preview.emergentagent.com
 ```
 
 ---
