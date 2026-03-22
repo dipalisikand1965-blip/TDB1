@@ -202,6 +202,9 @@ const PetHomePage = () => {
   const [soulScore, setSoulScore] = useState(0);
   const [traits, setTraits] = useState([]);
   const [openChapter, setOpenChapter] = useState(null);
+
+  // Close chapter modal when pet switches
+  useEffect(() => { setOpenChapter(null); }, [selectedPet?.id]);
   
   // Generate proactive alerts based on pet data
   const generateAlerts = useCallback((petData) => {
@@ -835,11 +838,12 @@ const PetHomePage = () => {
       {/* Soul Chapter Modal */}
       {openChapter && (
         <SoulChapterModal
+          key={`${pet?.id}-${openChapter?.id}`}
           chapter={openChapter}
           pet={pet}
           token={localStorage.getItem('tdb_auth_token')}
           onClose={() => setOpenChapter(null)}
-          onScoreUpdated={(newScore) => setSoulScore(Math.round(newScore))}
+          onScoreUpdated={(newScore) => setSoulScore(prev => Math.max(prev, Math.round(newScore)))}
         />
       )}
     </div>

@@ -334,7 +334,7 @@ function MiraPicksSection({ pet }) {
   const handleServiceConcierge = async service => {
     setConciergeSending(true);
     // Fire tdc.book immediately
-    tdc.book({ service: service.name || service.entity_name, pillar: "go", pet: petData, channel: "go_miras_picks", amount: service.price });
+    tdc.book({ service: service.name || service.entity_name, pillar: "go", pet: pet, channel: "go_miras_picks", amount: service.price });
     try {
       const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
       await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
