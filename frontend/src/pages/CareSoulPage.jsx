@@ -831,6 +831,7 @@ function WellnessProfile({ pet, token }) {
         setQPts(p => ({ ...p, [q.question_id]: weight }));
         setTotalPts(p => p + weight);
         setSubmitted(p => ({ ...p, [q.question_id]: true }));
+        tdc.request({ text: `Soul answer for ${petName}: ${q.question_text || q.question_id}`, pillar: 'care', pet, channel: 'care_wellness_profile' });
         if (data.scores?.overall !== undefined) {
           setLiveScore(data.scores.overall);
           window.dispatchEvent(new CustomEvent("soulScoreUpdated", { detail: { petId: pet.id, score: data.scores.overall } }));

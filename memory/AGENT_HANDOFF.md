@@ -122,7 +122,7 @@ MONGO_URL=...                   # Already in .env
 DB_NAME=doggyconcierge
 
 # Frontend  
-REACT_APP_BACKEND_URL=https://soul-chapters.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://pillar-launch.preview.emergentagent.com
 
 # Services
 Backend: port 8001 (supervisor-managed)
@@ -135,15 +135,15 @@ Frontend: port 3000 (supervisor-managed)
 
 ```bash
 # Test Voice
-curl -s "https://soul-chapters.preview.emergentagent.com/api/mira/voice/test"
+curl -s "https://pillar-launch.preview.emergentagent.com/api/mira/voice/test"
 
 # Test Remember
-curl -s -X POST "https://soul-chapters.preview.emergentagent.com/api/mira/memory/remember" \
+curl -s -X POST "https://pillar-launch.preview.emergentagent.com/api/mira/memory/remember" \
   -H "Content-Type: application/json" \
   -d '{"pet_id": "test", "memory_text": "Buddy is scared of thunder"}'
 
 # Test Concierge Summarize
-curl -s -X POST "https://soul-chapters.preview.emergentagent.com/api/mira/concierge/summarize" \
+curl -s -X POST "https://pillar-launch.preview.emergentagent.com/api/mira/concierge/summarize" \
   -H "Content-Type: application/json" \
   -d '{"session_id":"x","pet_id":"x","pet_name":"Buddy","pet_breed":"Golden Retriever","conversation_history":[{"role":"user","content":"I need boarding for Buddy"}],"category":"boarding","urgency":"normal"}'
 ```

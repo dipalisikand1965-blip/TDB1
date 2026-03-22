@@ -264,6 +264,7 @@ function SoulQuestionCardDine({ question, petName, onAnswered, token }) {
         const data = await res.json();
         setPointsGained(question.weight || 3);
         setSubmitted(true);
+        tdc.request({ text: `Soul answer: ${question.question_text || question.question_id}`, pillar: 'dine', pet: { id: question.pet_id }, channel: 'dine_soul_question' });
         onAnswered?.(data.scores?.overall, question.weight || 3);
       }
     } catch (err) {
@@ -1448,6 +1449,8 @@ const DineSoulPage = () => {
     window.addEventListener("soulScoreUpdated", handle);
     return () => window.removeEventListener("soulScoreUpdated", handle);
   }, [petData?.id, token]);
+
+  usePlatformTracking({ pillar: "dine", pet: currentPet });
 
   const handleAddPet = useCallback(() => {
     navigate(isAuthenticated ? "/dashboard/pets?action=add" : "/login?redirect=/dine");

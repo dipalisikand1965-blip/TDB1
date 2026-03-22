@@ -1823,6 +1823,8 @@ const GoSoulPage = () => {
   const [apiProducts, setApiProducts] = useState({});
   const [conciergeToast, setConciergeToast] = useState(null);
 
+  usePlatformTracking({ pillar: "go", pet: currentPet });
+
   // handleNearMeBook — wires "Book via Concierge" on any nearby place card
   const handleNearMeBook = useCallback(async (spot, city) => {
     // Fire tdc.nearme immediately

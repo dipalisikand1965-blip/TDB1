@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://soul-chapters.preview.emergentagent.com
+**Preview URL:** https://pillar-launch.preview.emergentagent.com
 
 ---
 

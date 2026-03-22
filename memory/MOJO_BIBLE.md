@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://soul-chapters.preview.emergentagent.com
+https://pillar-launch.preview.emergentagent.com
 ```
 
 ---

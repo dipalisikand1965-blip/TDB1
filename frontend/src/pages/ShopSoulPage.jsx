@@ -655,6 +655,8 @@ const ShopSoulPage = () => {
     }
   }, [currentPet]);
 
+  usePlatformTracking({ pillar: "shop", pet: currentPet });
+
   const handleAddPet = useCallback(() => {
     navigate(isAuthenticated ? "/dashboard/pets?action=add" : "/login?redirect=/shop");
   }, [isAuthenticated, navigate]);

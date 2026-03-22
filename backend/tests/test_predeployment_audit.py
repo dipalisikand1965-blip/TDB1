@@ -14,7 +14,7 @@ import os
 import time
 import json
 
-BASE_URL = "https://soul-chapters.preview.emergentagent.com"
+BASE_URL = "https://pillar-launch.preview.emergentagent.com"
 
 # Test credentials
 USER_EMAIL = "dipali@clubconcierge.in"

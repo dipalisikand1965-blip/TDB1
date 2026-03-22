@@ -299,6 +299,7 @@ function LearnProfile({ pet, token }) {
       });
       if (res.ok) { const d=await res.json(); if(d.scores?.overall) setLiveScore(d.scores.overall); }
       setSaved(p=>({...p,[q.id]:true}));
+      tdc.request({ text: `Soul answer for ${petName}: ${q.text || q.id}`, pillar: 'learn', pet, channel: 'learn_soul_profile' });
       setTotalPts(p => p + q.pts);
     } catch { setSaved(p=>({...p,[q.id]:true})); }
     finally { setSubmitting(p=>({...p,[q.id]:false})); }
@@ -1806,6 +1807,8 @@ const LearnSoulPage = () => {
 
   useEffect(()=>{if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]);if(contextPets!==undefined)setLoading(false);},[contextPets,currentPet,setCurrentPet]);
   useEffect(()=>{if(currentPet){setPetData(currentPet);setSoulScore(currentPet.overall_score||currentPet.soul_score||0);}},[currentPet]);
+
+  usePlatformTracking({ pillar: "learn", pet: currentPet });
 
   const handleAddPet=useCallback(()=>navigate(isAuthenticated?"/dashboard/pets?action=add":"/login?redirect=/learn"),[isAuthenticated,navigate]);
 
