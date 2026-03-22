@@ -6,7 +6,7 @@ Iteration 126 - Follow-up to iteration_125.
 
 import asyncio
 
-BASE_URL = "https://health-vault-loop.preview.emergentagent.com"
+BASE_URL = "https://concierge-platform-4.preview.emergentagent.com"
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 
