@@ -1,947 +1,629 @@
 /**
- * NotificationsInbox - Full-screen iOS Mail-style inbox
+ * NotificationsInbox — Outlook-style Unified Inbox
  * 
- * Routes: /notifications
- * Query params: ?view=archive (toggle archived view)
- *               ?ticketId=XXX (desktop split view - selected ticket)
+ * Route: /notifications
+ * Query: ?ticketId=XXX (desktop split view)
  * 
- * Features:
- * - Full-screen list (no dropdown)
- * - Search inside inbox (subject, pet, messages, ticket ID)
- * - Select mode + bulk actions (mark read/unread, archive/unarchive - NO delete)
- * - Tabs: Primary / Updates / All
- * - Pet filter: Active Pet / All Pets
- * - Filter sheet: Status, Pet, Type (with active indicator)
- * - iOS Mail-style rows with swipe actions
- * - Dedupe/group repeated events (30-60s window)
- * - Desktop: Split view (list left, thread right) - renders TicketThread inline
- * - Every row opens a ticket thread
- * - Unread count = NotificationEvents (not tickets)
- * - Global Dashboard | Inbox navigation
+ * Architecture:
+ * - Ticket-centric (not notification-event-centric)
+ * - Sections: Active | Waiting on You | Resolved (collapsible)
+ * - Desktop: split view (left list + right TicketThread)
+ * - Mobile: full-width list, tap → /tickets/:id full screen
+ * - Warm cream theme, no purple gradients
+ * - Polls every 15s for updates
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { 
-  ArrowLeft, Bell, Filter, Search, X, 
-  CheckSquare, Square, RefreshCw, Archive, Mail, MailOpen,
-  ArchiveRestore, Inbox, Loader2
+import {
+  ArrowLeft, Search, X, RefreshCw, Filter, Inbox,
+  ChevronDown, ChevronRight, Clock, MessageSquare, AlertTriangle,
+  CheckCircle2, Archive
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import InboxRow from '../components/Mira/InboxRow';
 import GlobalNav from '../components/Mira/GlobalNav';
 import TicketThread from './TicketThread';
 import MobileNavBar from '../components/MobileNavBar';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+const POLL_MS = 15000;
 
-// Tab definitions
-const TABS = [
-  { id: 'primary', label: 'Primary' },
-  { id: 'updates', label: 'Updates' },
-  { id: 'all', label: 'All' }
-];
-
-// Group events within time window (60 seconds) for same ticket+type
-const groupEvents = (notifications) => {
-  const grouped = [];
-  const ticketGroups = new Map();
-  
-  const sorted = [...notifications].sort((a, b) => 
-    new Date(b.created_at) - new Date(a.created_at)
-  );
-  
-  for (const notif of sorted) {
-    const key = `${notif.ticket_id}-${notif.type}`;
-    const existing = ticketGroups.get(key);
-    
-    if (existing) {
-      const existingTime = new Date(existing.notif.created_at);
-      const currentTime = new Date(notif.created_at);
-      const diffSeconds = Math.abs(existingTime - currentTime) / 1000;
-      
-      if (diffSeconds < 60) {
-        existing.count++;
-        existing.ids.push(notif.id);
-        continue;
-      }
-    }
-    
-    const group = { notif, count: 1, ids: [notif.id] };
-    ticketGroups.set(key, group);
-    grouped.push(group);
-  }
-  
-  return grouped.map(g => ({
-    ...g.notif,
-    groupCount: g.count,
-    groupIds: g.ids
-  }));
+/* ── Pillar colors ─────────────────────────────────── */
+const PILLAR_COLORS = {
+  care: '#40916C', dine: '#E07A3A', learn: '#7C3AED', go: '#1ABC9C',
+  play: '#E76F51', celebrate: '#A855F7', emergency: '#EF4444',
+  farewell: '#8B5CF6', paperwork: '#0D9488', adopt: '#65A30D',
+  shop: '#F59E0B', services: '#6366F1', general: '#94A3B8',
 };
 
+const PILLAR_ICONS = {
+  care: 'Health', dine: 'Food', learn: 'Training', go: 'Travel',
+  play: 'Play', celebrate: 'Celebrate', emergency: 'SOS',
+  farewell: 'Farewell', paperwork: 'Docs', adopt: 'Adopt',
+  shop: 'Shop', services: 'Services', general: 'General',
+};
+
+/* ── Helpers ────────────────────────────────────────── */
+function timeAgo(ts) {
+  if (!ts) return '';
+  const diff = (Date.now() - new Date(ts).getTime()) / 1000;
+  if (diff < 60) return 'now';
+  if (diff < 3600) return `${Math.floor(diff / 60)}m`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
+  if (diff < 604800) return `${Math.floor(diff / 86400)}d`;
+  return new Date(ts).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+}
+
+function getLastMessage(ticket) {
+  // Merge all message sources
+  const conv = ticket.conversation || [];
+  const msgs = ticket.messages || [];
+  const thread = ticket.thread || [];
+  const all = [...conv, ...msgs, ...thread];
+  if (all.length === 0) return null;
+
+  // Filter out mira system briefings (internal-only messages)
+  const userFacing = all.filter(m => m.sender !== 'mira' && m.sender !== 'system');
+  const pool = userFacing.length > 0 ? userFacing : all;
+
+  // Return the latest by timestamp
+  return pool.reduce((latest, m) => {
+    if (!latest) return m;
+    const lTime = new Date(latest.timestamp || 0).getTime();
+    const mTime = new Date(m.timestamp || 0).getTime();
+    return mTime > lTime ? m : latest;
+  }, null);
+}
+
+function getThreadCount(ticket) {
+  const conv = ticket.conversation || [];
+  const msgs = ticket.messages || [];
+  const thread = ticket.thread || [];
+  // Use a Set to deduplicate by timestamp
+  const seen = new Set();
+  let count = 0;
+  [...conv, ...msgs, ...thread].forEach(m => {
+    const key = `${m.sender}-${m.timestamp}`;
+    if (!seen.has(key)) { seen.add(key); count++; }
+  });
+  return count;
+}
+
+function classifyTicket(ticket) {
+  const status = (ticket.status || '').toLowerCase();
+  const resolved = ['resolved', 'closed'].includes(status);
+  if (resolved) return 'resolved';
+
+  const lastMsg = getLastMessage(ticket);
+  const lastSender = lastMsg?.sender || '';
+  // Only actual concierge/admin replies count as "waiting on parent"
+  // mira briefings are internal and don't count
+  const waitingOnParent = ['concierge', 'admin'].includes(lastSender);
+  if (waitingOnParent) return 'waiting';
+  return 'active';
+}
+
+function isUrgent(ticket) {
+  return String(ticket.status || '').toLowerCase() === 'urgent' ||
+         String(ticket.priority || '').toLowerCase() === 'urgent';
+}
+
+/* ── Section Header ─────────────────────────────────── */
+const SectionHeader = ({ title, count, icon: Icon, color, collapsed, onToggle }) => (
+  <button
+    onClick={onToggle}
+    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-left group transition-colors hover:bg-black/5"
+    data-testid={`section-${title.toLowerCase().replace(/\s/g, '-')}`}
+  >
+    <div className="flex items-center gap-2 flex-1 min-w-0">
+      <Icon className="w-4 h-4 flex-shrink-0" style={{ color }} />
+      <span className="text-xs font-semibold tracking-wide uppercase" style={{ color }}>
+        {title}
+      </span>
+      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+        style={{ backgroundColor: `${color}15`, color }}>
+        {count}
+      </span>
+    </div>
+    {collapsed
+      ? <ChevronRight className="w-4 h-4 text-gray-400" />
+      : <ChevronDown className="w-4 h-4 text-gray-400" />
+    }
+  </button>
+);
+
+/* ── Ticket Card ────────────────────────────────────── */
+const TicketCard = ({ ticket, section, isSelected, isUnread, onClick }) => {
+  const lastMsg = getLastMessage(ticket);
+  const threadLen = getThreadCount(ticket);
+  const pillar = (ticket.pillar || 'general').toLowerCase();
+  const pillarColor = PILLAR_COLORS[pillar] || PILLAR_COLORS.general;
+  const pillarLabel = PILLAR_ICONS[pillar] || 'General';
+  const urgent = isUrgent(ticket);
+
+  const borderColor = section === 'waiting'
+    ? '#F59E0B'
+    : section === 'resolved'
+      ? '#CBD5E1'
+      : urgent ? '#EF4444' : '#40916C';
+
+  const bgColor = section === 'resolved' ? '#FFFFFF' : '#FAF7F2';
+
+  const msgText = lastMsg?.text || lastMsg?.content || lastMsg?.message || '';
+  const snippet = msgText
+    ? msgText.replace(/[━═─]+/g, '').replace(/[✦◆●▸]/g, '').replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1').trim().substring(0, 90)
+    : ticket.description?.substring(0, 90) || ticket.intent_primary || 'New request';
+
+  const senderLabel = lastMsg
+    ? ['concierge', 'admin'].includes(lastMsg.sender)
+      ? 'Concierge'
+      : lastMsg.sender === 'mira'
+        ? 'Mira'
+        : 'You'
+    : '';
+
+  return (
+    <div
+      onClick={onClick}
+      className={`
+        group cursor-pointer transition-all duration-150 mx-2 mb-1.5 rounded-lg
+        ${isSelected ? 'ring-1 ring-[#C96D9E] shadow-sm' : 'hover:shadow-sm'}
+      `}
+      style={{
+        backgroundColor: isSelected ? '#FDF6F0' : bgColor,
+        borderLeft: `3px solid ${borderColor}`,
+      }}
+      data-testid={`ticket-card-${ticket.ticket_id}`}
+    >
+      <div className="flex items-start gap-3 px-3 py-3">
+        {/* Unread dot */}
+        <div className="flex-shrink-0 pt-1.5 w-2">
+          {isUnread && (
+            <div
+              className="w-2 h-2 rounded-full animate-pulse"
+              style={{ backgroundColor: '#E8507A' }}
+              data-testid={`unread-dot-${ticket.ticket_id}`}
+            />
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          {/* Row 1: Subject + Time */}
+          <div className="flex items-start justify-between gap-2 mb-0.5">
+            <h3 className={`text-[13px] leading-tight truncate ${isUnread ? 'font-semibold text-gray-900' : 'font-medium text-gray-700'}`}>
+              {ticket.subject || ticket.title || `${pillarLabel} Request`}
+            </h3>
+            <span className="text-[11px] text-gray-400 flex-shrink-0 whitespace-nowrap">
+              {timeAgo(lastMsg?.timestamp || ticket.updated_at || ticket.created_at)}
+            </span>
+          </div>
+
+          {/* Row 2: Pillar pill + Pet name + Thread count */}
+          <div className="flex items-center gap-1.5 mb-1">
+            <span
+              className="text-[10px] font-semibold px-1.5 py-[1px] rounded"
+              style={{
+                backgroundColor: `${pillarColor}15`,
+                color: pillarColor,
+              }}
+            >
+              {pillarLabel}
+            </span>
+            {ticket.pet_name && (
+              <span className="text-[11px] text-gray-500">{ticket.pet_name}</span>
+            )}
+            {threadLen > 1 && (
+              <span className="flex items-center gap-0.5 text-[10px] text-gray-400 ml-auto">
+                <MessageSquare className="w-3 h-3" />
+                {threadLen}
+              </span>
+            )}
+          </div>
+
+          {/* Row 3: Snippet */}
+          <p className="text-[12px] text-gray-500 truncate leading-relaxed">
+            {senderLabel && <span className="font-medium text-gray-600">{senderLabel}: </span>}
+            {snippet}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ── Main Component ─────────────────────────────────── */
 const NotificationsInbox = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { user, token } = useAuth();
-  
-  // URL-based state for archive view and selected ticket
-  const viewArchived = searchParams.get('view') === 'archive';
+
   const selectedTicketId = searchParams.get('ticketId');
-  
-  // State
-  const [notifications, setNotifications] = useState([]);
+
+  const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('primary');
-  const [petFilter, setPetFilter] = useState('active');
-  const [activePet, setActivePet] = useState(null);
-  const [pets, setPets] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  
-  // Search state
+  const [unreadTicketIds, setUnreadTicketIds] = useState(new Set());
+  const [pets, setPets] = useState([]);
+  const [activePet, setActivePet] = useState(null);
+
+  // UI state
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Filter sheet state
-  const [showFilterSheet, setShowFilterSheet] = useState(false);
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [typeFilter, setTypeFilter] = useState('all');
-  
-  // Select mode state
-  const [selectMode, setSelectMode] = useState(false);
-  const [selectedIds, setSelectedIds] = useState(new Set());
-  
-  // Desktop detection
+  const [collapsedSections, setCollapsedSections] = useState({ resolved: true });
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
 
-  // Check if any filters are active
-  const hasActiveFilters = statusFilter !== 'all' || typeFilter !== 'all' || petFilter !== 'all';
+  const pollRef = useRef(null);
+  const prevTicketCountRef = useRef(0);
 
-  // Check screen size
+  // Responsive
   useEffect(() => {
-    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    const h = () => setIsDesktop(window.innerWidth >= 1024);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
   }, []);
 
-  // Toggle archive view via URL param
-  const toggleArchiveView = () => {
-    const newParams = new URLSearchParams(searchParams);
-    if (viewArchived) {
-      newParams.delete('view');
-    } else {
-      newParams.set('view', 'archive');
-    }
-    newParams.delete('ticketId'); // Clear selected ticket when toggling
-    setSearchParams(newParams);
-    setSelectedIds(new Set());
-  };
-
-  // Select ticket for desktop split view
-  const selectTicket = (ticketId) => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set('ticketId', ticketId);
-    setSearchParams(newParams);
-  };
-
-  // Fetch user's pets and sync with global selected pet
+  // Fetch pets
   useEffect(() => {
-    const fetchPets = async () => {
-      if (!user?.email) return;
-      try {
-        const response = await fetch(`${API_URL}/api/user/${encodeURIComponent(user.email)}/pets`, {
-          headers: { 
-            'Content-Type': 'application/json',
-            ...(token && { 'Authorization': `Bearer ${token}` })
-          }
-        });
-        if (response.ok) {
-          const data = await response.json();
-          const fetchedPets = data.pets || [];
-          setPets(fetchedPets);
-          
-          if (fetchedPets.length > 0) {
-            // Check localStorage for globally selected pet
-            const savedPetId = localStorage.getItem('selectedPetId');
-            if (savedPetId) {
-              const savedPet = fetchedPets.find(p => p.id === savedPetId);
-              if (savedPet) {
-                setActivePet(savedPet);
-              } else {
-                setActivePet(fetchedPets[0]);
-              }
-            } else {
-              setActivePet(fetchedPets[0]);
-            }
-          }
-        }
-      } catch (err) {
-        console.error('Failed to fetch pets:', err);
-      }
-    };
-    fetchPets();
-  }, [user?.email, token]);
-  
-  // Listen for storage events to sync pet selection across tabs/components
-  useEffect(() => {
-    const handleStorageChange = (e) => {
-      if (e.key === 'selectedPetId' && e.newValue) {
-        const selectedPet = pets.find(p => p.id === e.newValue);
-        if (selectedPet) {
-          setActivePet(selectedPet);
-        }
-      }
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [pets]);
-
-  // Fetch notifications
-  const fetchNotifications = useCallback(async () => {
     if (!user?.email) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      let url = `${API_URL}/api/member/notifications/inbox/${encodeURIComponent(user.email)}?limit=100`;
-      
-      if (viewArchived) {
-        url += `&archived=true`;
-      }
-      
-      if (petFilter === 'active' && activePet?.id) {
-        url += `&pet_id=${activePet.id}`;
-      }
-      
-      if (activeTab !== 'all') {
-        url += `&category=${activeTab}`;
-      }
-      
-      const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
+    (async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/pets/my-pets`, {
+          headers: { 'Content-Type': 'application/json', ...(token && { Authorization: `Bearer ${token}` }) },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const fetched = data.pets || (Array.isArray(data) ? data : []);
+          setPets(fetched);
+          const savedId = localStorage.getItem('selectedPetId');
+          const found = savedId && fetched.find(p => p.id === savedId);
+          setActivePet(found || fetched[0] || null);
         }
-      });
-      
-      if (!response.ok) throw new Error('Failed to fetch notifications');
-      
-      const data = await response.json();
-      setNotifications(data.notifications || []);
-      setUnreadCount(data.unread || 0);
-      
-    } catch (err) {
-      console.error('Error fetching notifications:', err);
-      setError(err.message);
+      } catch (e) { console.error('Pets fetch fail:', e); }
+    })();
+  }, [user?.email, token]);
+
+  // Fetch tickets + unread info
+  const fetchData = useCallback(async (silent = false) => {
+    if (!token) return;
+    if (!silent) setLoading(true);
+    try {
+      // Parallel: tickets + notifications unread count
+      const [ticketsRes, notifsRes] = await Promise.all([
+        fetch(`${API_URL}/api/mira/my-tickets`, {
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        }),
+        user?.email
+          ? fetch(`${API_URL}/api/member/notifications/inbox/${encodeURIComponent(user.email)}?limit=100`, {
+              headers: { 'Content-Type': 'application/json', ...(token && { Authorization: `Bearer ${token}` }) },
+            })
+          : Promise.resolve(null),
+      ]);
+
+      if (ticketsRes.ok) {
+        const data = await ticketsRes.json();
+        const list = Array.isArray(data) ? data : data.tickets || [];
+        setTickets(list);
+        prevTicketCountRef.current = list.length;
+      }
+
+      if (notifsRes?.ok) {
+        const nData = await notifsRes.json();
+        setUnreadCount(nData.unread || 0);
+        // Build set of ticket IDs that have unread notifications
+        const unreadSet = new Set();
+        (nData.notifications || []).forEach(n => {
+          if (!n.read && n.ticket_id) unreadSet.add(n.ticket_id);
+        });
+        setUnreadTicketIds(unreadSet);
+      }
+    } catch (e) {
+      console.error('Fetch error:', e);
     } finally {
       setLoading(false);
     }
-  }, [user?.email, token, activeTab, petFilter, activePet?.id, viewArchived]);
+  }, [token, user?.email]);
 
+  useEffect(() => { fetchData(); }, [fetchData]);
+
+  // Poll
   useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
+    pollRef.current = setInterval(() => fetchData(true), POLL_MS);
+    return () => clearInterval(pollRef.current);
+  }, [fetchData]);
 
-  // Apply local filters + grouping + search
-  const filteredNotifications = useMemo(() => {
-    let filtered = [...notifications];
-    
+  // Listen for pet changes
+  useEffect(() => {
+    const h = (e) => {
+      if (e.key === 'selectedPetId' && e.newValue) {
+        const p = pets.find(p => p.id === e.newValue);
+        if (p) setActivePet(p);
+      }
+    };
+    window.addEventListener('storage', h);
+    return () => window.removeEventListener('storage', h);
+  }, [pets]);
+
+  // Classify and filter tickets
+  const { activeTickets, waitingTickets, resolvedTickets } = useMemo(() => {
+    let filtered = [...tickets];
+
+    // Deduplicate by ticket_id
+    const seen = new Set();
+    filtered = filtered.filter(t => {
+      if (!t.ticket_id || seen.has(t.ticket_id)) return false;
+      seen.add(t.ticket_id);
+      return true;
+    });
+
+    // Search
     if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(n => 
-        n.title?.toLowerCase().includes(query) ||
-        n.message?.toLowerCase().includes(query) ||
-        n.pet_name?.toLowerCase().includes(query) ||
-        n.ticket_id?.toLowerCase().includes(query)
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter(t =>
+        (t.subject || '').toLowerCase().includes(q) ||
+        (t.pet_name || '').toLowerCase().includes(q) ||
+        (t.pillar || '').toLowerCase().includes(q) ||
+        (t.ticket_id || '').toLowerCase().includes(q) ||
+        (t.description || '').toLowerCase().includes(q)
       );
     }
-    
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(n => n.ticket_status === statusFilter);
-    }
-    
-    if (typeFilter !== 'all') {
-      const typeMap = {
-        requests: ['picks_request_received', 'mira_request_received', 'vault_request_received', 'service_request_received', 'experience_request_received', 'concierge_request_received'],
-        replies: ['concierge_reply'],
-        approvals: ['approval_needed', 'payment_needed'],
-        announcements: ['announcement']
-      };
-      filtered = filtered.filter(n => typeMap[typeFilter]?.includes(n.type));
-    }
-    
-    return groupEvents(filtered);
-  }, [notifications, searchQuery, statusFilter, typeFilter]);
 
-  // Handle notification click
-  const handleNotificationClick = async (notification) => {
-    if (selectMode) {
-      toggleSelection(notification.id);
-      return;
+    const active = [], waiting = [], resolved = [];
+    for (const t of filtered) {
+      const cat = classifyTicket(t);
+      if (cat === 'resolved') resolved.push(t);
+      else if (cat === 'waiting') waiting.push(t);
+      else active.push(t);
     }
-    
-    // Mark as read immediately
-    if (!notification.read) {
-      try {
-        await fetch(`${API_URL}/api/member/notifications/${notification.id}/read`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token && { 'Authorization': `Bearer ${token}` })
-          }
-        });
-        
-        setNotifications(prev => prev.map(n => 
-          n.id === notification.id ? { ...n, read: true } : n
-        ));
-        setUnreadCount(prev => Math.max(0, prev - 1));
-      } catch (err) {
-        console.error('Failed to mark as read:', err);
-      }
-    }
-    
-    // Navigate to ticket thread
-    const ticketId = notification.ticket_id;
-    if (ticketId) {
-      if (isDesktop) {
-        // Desktop: update URL param, render inline
-        selectTicket(ticketId);
-      } else {
-        // Mobile: navigate to full-screen thread with returnTo
-        const currentPath = `/notifications${viewArchived ? '?view=archive' : ''}`;
-        const eventParam = notification.id ? `event=${notification.id}` : '';
-        const returnToParam = `returnTo=${encodeURIComponent(currentPath)}`;
-        const params = [eventParam, returnToParam].filter(Boolean).join('&');
-        navigate(`/tickets/${ticketId}?${params}`);
-      }
-    }
+
+    // Sort each group: urgent first, then by last activity
+    const sortFn = (a, b) => {
+      if (isUrgent(a) && !isUrgent(b)) return -1;
+      if (!isUrgent(a) && isUrgent(b)) return 1;
+      const aTime = new Date(getLastMessage(a)?.timestamp || a.updated_at || a.created_at || 0);
+      const bTime = new Date(getLastMessage(b)?.timestamp || b.updated_at || b.created_at || 0);
+      return bTime - aTime;
+    };
+
+    active.sort(sortFn);
+    waiting.sort(sortFn);
+    resolved.sort(sortFn);
+
+    return { activeTickets: active, waitingTickets: waiting, resolvedTickets: resolved };
+  }, [tickets, searchQuery]);
+
+  const toggleSection = (key) => {
+    setCollapsedSections(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  // Selection helpers
-  const toggleSelection = (id) => {
-    const newSelected = new Set(selectedIds);
-    if (newSelected.has(id)) {
-      newSelected.delete(id);
+  const handleTicketClick = (ticket) => {
+    if (isDesktop) {
+      const p = new URLSearchParams(searchParams);
+      p.set('ticketId', ticket.ticket_id);
+      setSearchParams(p);
     } else {
-      newSelected.add(id);
-    }
-    setSelectedIds(newSelected);
-  };
-
-  const selectAll = () => {
-    setSelectedIds(new Set(filteredNotifications.map(n => n.id)));
-  };
-
-  const clearSelection = () => {
-    setSelectedIds(new Set());
-    setSelectMode(false);
-  };
-
-  // Bulk actions
-  const handleBulkMarkRead = async () => {
-    const ids = Array.from(selectedIds);
-    if (ids.length === 0) return;
-    
-    try {
-      const response = await fetch(`${API_URL}/api/member/notifications/bulk/read`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          ...(token && { 'Authorization': `Bearer ${token}` }) 
-        },
-        body: JSON.stringify(ids)
-      });
-      
-      if (response.ok) {
-        const affectedUnread = notifications.filter(n => selectedIds.has(n.id) && !n.read).length;
-        setNotifications(prev => prev.map(n => 
-          selectedIds.has(n.id) ? { ...n, read: true } : n
-        ));
-        setUnreadCount(prev => Math.max(0, prev - affectedUnread));
-      }
-    } catch (err) {
-      console.error('Failed to bulk mark read:', err);
-    }
-    
-    clearSelection();
-  };
-
-  const handleBulkMarkUnread = async () => {
-    const ids = Array.from(selectedIds);
-    if (ids.length === 0) return;
-    
-    try {
-      const response = await fetch(`${API_URL}/api/member/notifications/bulk/unread`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          ...(token && { 'Authorization': `Bearer ${token}` }) 
-        },
-        body: JSON.stringify(ids)
-      });
-      
-      if (response.ok) {
-        const affectedRead = notifications.filter(n => selectedIds.has(n.id) && n.read).length;
-        setNotifications(prev => prev.map(n => 
-          selectedIds.has(n.id) ? { ...n, read: false } : n
-        ));
-        setUnreadCount(prev => prev + affectedRead);
-      }
-    } catch (err) {
-      console.error('Failed to bulk mark unread:', err);
-    }
-    
-    clearSelection();
-  };
-
-  const handleBulkArchive = async () => {
-    const ids = Array.from(selectedIds);
-    if (ids.length === 0) return;
-    
-    try {
-      const response = await fetch(`${API_URL}/api/member/notifications/bulk/archive`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          ...(token && { 'Authorization': `Bearer ${token}` }) 
-        },
-        body: JSON.stringify(ids)
-      });
-      
-      if (response.ok) {
-        const affectedUnread = notifications.filter(n => selectedIds.has(n.id) && !n.read).length;
-        setNotifications(prev => prev.filter(n => !selectedIds.has(n.id)));
-        setUnreadCount(prev => Math.max(0, prev - affectedUnread));
-      }
-    } catch (err) {
-      console.error('Failed to bulk archive:', err);
-    }
-    
-    clearSelection();
-  };
-
-  const handleBulkUnarchive = async () => {
-    const ids = Array.from(selectedIds);
-    if (ids.length === 0) return;
-    
-    try {
-      const response = await fetch(`${API_URL}/api/member/notifications/bulk/unarchive`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          ...(token && { 'Authorization': `Bearer ${token}` }) 
-        },
-        body: JSON.stringify(ids)
-      });
-      
-      if (response.ok) {
-        setNotifications(prev => prev.filter(n => !selectedIds.has(n.id)));
-      }
-    } catch (err) {
-      console.error('Failed to bulk unarchive:', err);
-    }
-    
-    clearSelection();
-  };
-
-  // Single row actions
-  const handleSingleMarkRead = async (notification) => {
-    try {
-      await fetch(`${API_URL}/api/member/notifications/${notification.id}/read`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) }
-      });
-      setNotifications(prev => prev.map(n => 
-        n.id === notification.id ? { ...n, read: true } : n
-      ));
-      if (!notification.read) {
-        setUnreadCount(prev => Math.max(0, prev - 1));
-      }
-    } catch (err) {
-      console.error('Failed to mark read:', err);
+      navigate(`/tickets/${ticket.ticket_id}?returnTo=${encodeURIComponent('/notifications')}`);
     }
   };
 
-  const handleSingleMarkUnread = async (notification) => {
-    try {
-      await fetch(`${API_URL}/api/member/notifications/${notification.id}/unread`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) }
-      });
-      setNotifications(prev => prev.map(n => 
-        n.id === notification.id ? { ...n, read: false } : n
-      ));
-      if (notification.read) {
-        setUnreadCount(prev => prev + 1);
-      }
-    } catch (err) {
-      console.error('Failed to mark unread:', err);
-    }
-  };
-
-  const handleSingleArchive = async (notification) => {
-    try {
-      await fetch(`${API_URL}/api/member/notifications/${notification.id}/archive`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) }
-      });
-      setNotifications(prev => prev.filter(n => n.id !== notification.id));
-      if (!notification.read) {
-        setUnreadCount(prev => Math.max(0, prev - 1));
-      }
-    } catch (err) {
-      console.error('Failed to archive:', err);
-    }
-  };
-
-  const handleSingleUnarchive = async (notification) => {
-    try {
-      await fetch(`${API_URL}/api/member/notifications/${notification.id}/unarchive`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) }
-      });
-      setNotifications(prev => prev.filter(n => n.id !== notification.id));
-    } catch (err) {
-      console.error('Failed to unarchive:', err);
-    }
-  };
-
-  const getPetName = (notification) => {
-    if (notification.pet_name) return notification.pet_name;
-    const pet = pets.find(p => p.id === notification.pet_id);
-    return pet?.name || 'General';
-  };
-
-  const resetFilters = () => {
-    setStatusFilter('all');
-    setTypeFilter('all');
-    setPetFilter('all');
-    setShowFilterSheet(false);
-  };
-
-  // Get returnTo from URL params
-  const returnTo = searchParams.get('returnTo');
-  
-  // Handle back navigation
   const handleBack = () => {
-    if (returnTo) {
-      navigate(decodeURIComponent(returnTo));
-    } else if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/mira-os');
-    }
+    if (window.history.length > 1) navigate(-1);
+    else navigate('/mira-os');
   };
+
+  const totalActive = activeTickets.length + waitingTickets.length;
 
   return (
-    <div className="min-h-screen bg-[#0a0a14] flex flex-col overflow-x-hidden" style={{ minHeight: '100dvh' }}>
-      {/* Global Navigation: Dashboard | Inbox + Pet Switcher */}
-      <GlobalNav 
-        unreadCount={unreadCount} 
+    <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: '#F5F2EC' }}>
+      {/* Global Nav */}
+      <GlobalNav
+        unreadCount={unreadCount}
         activePetName={activePet?.name}
         activePetId={activePet?.id}
         pets={pets}
         onPetSelect={(pet) => {
           setActivePet(pet);
-          // Re-fetch notifications will happen automatically via useEffect
+          localStorage.setItem('selectedPetId', pet.id);
         }}
         onPetClick={() => navigate('/my-pets')}
       />
-      
+
       {/* Inbox Header */}
-      <header className="sticky top-0 z-40 bg-[#0d0d1a] border-b border-gray-800/50">
-        {/* Select mode header */}
-        {selectMode ? (
-          <div className="flex items-center justify-between px-4 py-3" data-select-area>
-            <div className="flex items-center gap-3">
-              <button onClick={clearSelection} className="p-2 rounded-full hover:bg-gray-800" data-testid="exit-select-mode">
-                <X className="w-5 h-5 text-gray-300" />
-              </button>
-              <span className="text-white font-medium">{selectedIds.size} selected</span>
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleBack}
+              className="p-2 rounded-lg hover:bg-gray-100 lg:hidden transition-colors"
+              data-testid="back-btn"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <div>
+              <h1 className="text-lg font-bold text-gray-900 flex items-center gap-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                <Inbox className="w-5 h-5 text-[#C96D9E]" />
+                Inbox
+              </h1>
+              <p className="text-[11px] text-gray-400 mt-0.5">
+                {totalActive > 0 ? `${totalActive} active` : 'All caught up'}
+                {resolvedTickets.length > 0 && ` · ${resolvedTickets.length} resolved`}
+              </p>
             </div>
-            <button onClick={selectAll} className="text-pink-400 text-sm font-medium" data-testid="select-all-btn">
-              Select All
+          </div>
+
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => { setShowSearch(!showSearch); setSearchQuery(''); }}
+              className={`p-2 rounded-lg transition-colors ${showSearch ? 'bg-[#C96D9E]/10 text-[#C96D9E]' : 'hover:bg-gray-100 text-gray-500'}`}
+              data-testid="search-toggle"
+            >
+              <Search className="w-4.5 h-4.5" />
+            </button>
+            <button
+              onClick={() => fetchData()}
+              className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
+              data-testid="refresh-btn"
+            >
+              <RefreshCw className={`w-4.5 h-4.5 ${loading ? 'animate-spin' : ''}`} />
             </button>
           </div>
-        ) : (
-          <div className="flex items-center justify-between px-4 py-3">
-            <div className="flex items-center gap-3">
-              <button 
-                onClick={handleBack}
-                className="p-2 rounded-full hover:bg-gray-800 lg:hidden"
-                data-testid="back-btn"
-              >
-                <ArrowLeft className="w-5 h-5 text-gray-300" />
-              </button>
-              <div>
-                <h1 className="text-lg font-semibold text-white flex items-center gap-2">
-                  {viewArchived ? (
-                    <Archive className="w-5 h-5 text-gray-400" />
-                  ) : (
-                    <Bell className="w-5 h-5 text-pink-400" />
-                  )}
-                  {viewArchived ? 'Archive' : 'Inbox'}
-                </h1>
-                <p className="text-xs text-gray-400">
-                  {viewArchived 
-                    ? `${filteredNotifications.length} archived`
-                    : unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'
-                  }
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-1">
-              {/* Archive/Inbox toggle - same URL, different view param */}
-              <button 
-                onClick={toggleArchiveView}
-                className={`p-2 rounded-full ${viewArchived ? 'bg-pink-500/20 text-pink-400' : 'hover:bg-gray-800 text-gray-400'}`}
-                data-testid="toggle-archive-view"
-                title={viewArchived ? 'Back to Inbox' : 'View Archive'}
-              >
-                {viewArchived ? <Inbox className="w-5 h-5" /> : <Archive className="w-5 h-5" />}
-              </button>
-              
-              <button 
-                onClick={() => {
-                  setSelectMode(true);
-                  setSelectedIds(new Set());
-                }}
-                className="p-2 rounded-full hover:bg-gray-800 text-gray-400"
-                data-testid="enter-select-mode"
-              >
-                <CheckSquare className="w-5 h-5" />
-              </button>
-              
-              <button 
-                onClick={() => setShowSearch(!showSearch)}
-                className={`p-2 rounded-full ${showSearch ? 'bg-blue-500/20 text-blue-400' : 'hover:bg-gray-800 text-gray-400'}`}
-                data-testid="search-toggle"
-              >
-                <Search className="w-5 h-5" />
-              </button>
-              
-              <button 
-                onClick={fetchNotifications}
-                className="p-2 rounded-full hover:bg-gray-800"
-                data-testid="refresh-btn"
-              >
-                <RefreshCw className={`w-5 h-5 text-gray-400 ${loading ? 'animate-spin' : ''}`} />
-              </button>
-              
-              <button 
-                onClick={() => setShowFilterSheet(true)}
-                className="p-2 rounded-full hover:bg-gray-800 relative"
-                data-testid="filter-btn"
-              >
-                <Filter className="w-5 h-5 text-gray-400" />
-                {hasActiveFilters && (
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-pink-500 rounded-full" />
-                )}
-              </button>
-            </div>
-          </div>
-        )}
-        
-        {/* Search Input */}
-        {showSearch && !selectMode && (
+        </div>
+
+        {/* Search */}
+        {showSearch && (
           <div className="px-4 pb-3">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search tickets, pets, messages..."
-                className="w-full bg-gray-800/50 border border-gray-700/50 rounded-full pl-10 pr-10 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pink-500/50"
+                placeholder="Search by pet, pillar, ticket..."
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-10 pr-10 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#C96D9E]/30 focus:border-[#C96D9E]/50"
                 autoFocus
                 data-testid="search-input"
               />
               {searchQuery && (
                 <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <X className="w-4 h-4 text-gray-500" />
+                  <X className="w-4 h-4 text-gray-400" />
                 </button>
               )}
             </div>
-          </div>
-        )}
-        
-        {/* Tabs + Pet Filter */}
-        {!selectMode && !viewArchived && (
-          <div className="flex items-center justify-between px-4 pb-3">
-            <div className="flex gap-1">
-              {TABS.map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`
-                    px-3 py-1.5 rounded-full text-xs font-medium transition-all
-                    ${activeTab === tab.id 
-                      ? 'bg-blue-500 text-white' 
-                      : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
-                    }
-                  `}
-                  data-testid={`tab-${tab.id}`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-            
-            <button
-              onClick={() => setPetFilter(petFilter === 'active' ? 'all' : 'active')}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-gray-800/50 text-gray-400 hover:bg-gray-800"
-              data-testid="pet-filter-toggle"
-            >
-              {petFilter === 'active' ? (activePet?.name || 'Active Pet') : 'All Pets'}
-              <span className="text-[10px]">▾</span>
-            </button>
-          </div>
-        )}
-        
-        {/* Bulk Actions Bar */}
-        {selectMode && selectedIds.size > 0 && (
-          <div className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-800/50 border-t border-gray-700/30" data-select-area>
-            <button
-              onClick={handleBulkMarkRead}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
-              data-testid="bulk-mark-read"
-            >
-              <MailOpen className="w-4 h-4" />
-              Mark Read
-            </button>
-            <button
-              onClick={handleBulkMarkUnread}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-amber-500/20 text-amber-400 hover:bg-amber-500/30"
-              data-testid="bulk-mark-unread"
-            >
-              <Mail className="w-4 h-4" />
-              Mark Unread
-            </button>
-            {viewArchived ? (
-              <button
-                onClick={handleBulkUnarchive}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-green-500/20 text-green-400 hover:bg-green-500/30"
-                data-testid="bulk-unarchive"
-              >
-                <ArchiveRestore className="w-4 h-4" />
-                Unarchive
-              </button>
-            ) : (
-              <button
-                onClick={handleBulkArchive}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-gray-500/20 text-gray-400 hover:bg-gray-500/30"
-                data-testid="bulk-archive"
-              >
-                <Archive className="w-4 h-4" />
-                Archive
-              </button>
-            )}
           </div>
         )}
       </header>
-      
-      {/* Filter Sheet */}
-      {showFilterSheet && (
-        <div className="fixed inset-0 z-50 bg-black/50" onClick={() => setShowFilterSheet(false)}>
-          <div 
-            className="absolute bottom-0 left-0 right-0 bg-[#0d0d1a] rounded-t-2xl p-4 max-h-[70vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="w-10 h-1 bg-gray-700 rounded-full mx-auto mb-4" />
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">Filters</h3>
-              {hasActiveFilters && (
-                <button onClick={resetFilters} className="text-pink-400 text-sm" data-testid="reset-filters">
-                  Reset
-                </button>
-              )}
-            </div>
-            
-            <div className="mb-4">
-              <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Status</p>
-              <div className="flex flex-wrap gap-2">
-                {['all', 'open', 'in_progress', 'waiting', 'resolved'].map(status => (
-                  <button
-                    key={status}
-                    onClick={() => setStatusFilter(status)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                      statusFilter === status ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
-                    }`}
-                    data-testid={`filter-status-${status}`}
-                  >
-                    {status === 'in_progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}
-                  </button>
-                ))}
-              </div>
-            </div>
-            
-            <div className="mb-4">
-              <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Type</p>
-              <div className="flex flex-wrap gap-2">
-                {['all', 'requests', 'replies', 'approvals', 'announcements'].map(type => (
-                  <button
-                    key={type}
-                    onClick={() => setTypeFilter(type)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                      typeFilter === type ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
-                    }`}
-                    data-testid={`filter-type-${type}`}
-                  >
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </button>
-                ))}
-              </div>
-            </div>
-            
-            <div className="mb-6">
-              <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Pet</p>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => setPetFilter('all')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                    petFilter === 'all' ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
-                  }`}
-                  data-testid="filter-pet-all"
-                >
-                  All Pets
-                </button>
-                {pets.map(pet => (
-                  <button
-                    key={pet.id}
-                    onClick={() => {
-                      setPetFilter('active');
-                      setActivePet(pet);
-                    }}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                      petFilter === 'active' && activePet?.id === pet.id ? 'bg-pink-500 text-white' : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
-                    }`}
-                    data-testid={`filter-pet-${pet.id}`}
-                  >
-                    {pet.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-            
-            <button
-              onClick={() => setShowFilterSheet(false)}
-              className="w-full py-3 bg-pink-500 text-white font-medium rounded-full"
-              data-testid="apply-filters"
-            >
-              Apply Filters
-            </button>
-          </div>
-        </div>
-      )}
-      
-      {/* Content - Split View on Desktop */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Inbox List */}
+
+      {/* Content — Split View */}
+      <div className="flex-1 flex overflow-hidden min-h-0">
+        {/* Left: Ticket List */}
         <div className={`
-          overflow-y-auto
-          ${isDesktop && selectedTicketId ? 'w-[400px] flex-shrink-0 border-r border-gray-800/50' : 'flex-1'}
+          overflow-y-auto bg-[#F5F2EC] min-h-0
+          ${isDesktop && selectedTicketId ? 'w-[380px] flex-shrink-0 border-r border-gray-200' : 'flex-1'}
         `}>
-          {loading && notifications.length === 0 ? (
+          {loading && tickets.length === 0 ? (
             <div className="flex items-center justify-center h-64">
-              <RefreshCw className="w-6 h-6 animate-spin text-pink-400" />
+              <RefreshCw className="w-5 h-5 animate-spin text-[#C96D9E]" />
             </div>
-          ) : error ? (
+          ) : tickets.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-gray-400">
-              <p>{error}</p>
-              <button onClick={fetchNotifications} className="mt-3 text-pink-400 text-sm">
-                Try again
-              </button>
-            </div>
-          ) : filteredNotifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-64 text-gray-400">
-              {viewArchived ? (
-                <Archive className="w-12 h-12 mb-3 opacity-30" />
-              ) : (
-                <Bell className="w-12 h-12 mb-3 opacity-30" />
-              )}
-              <p>{searchQuery ? 'No matching notifications' : viewArchived ? 'No archived items' : 'No notifications yet'}</p>
+              <Inbox className="w-12 h-12 mb-3 opacity-30" />
+              <p className="text-sm font-medium text-gray-500">No conversations yet</p>
+              <p className="text-xs mt-1">Your concierge requests will appear here</p>
             </div>
           ) : (
-            <div data-select-area>
-              {filteredNotifications.map(notification => (
-                <div key={notification.id} className="flex items-center">
-                  {selectMode && (
-                    <button
-                      onClick={() => toggleSelection(notification.id)}
-                      className="pl-4 py-3"
-                      data-testid={`select-${notification.id}`}
-                    >
-                      {selectedIds.has(notification.id) ? (
-                        <CheckSquare className="w-5 h-5 text-pink-400" />
-                      ) : (
-                        <Square className="w-5 h-5 text-gray-500" />
-                      )}
-                    </button>
-                  )}
-                  <div className="flex-1">
-                    <InboxRow
-                      notification={{
-                        ...notification,
-                        title: notification.groupCount > 1 
-                          ? `${notification.title} (${notification.groupCount})`
-                          : notification.title
-                      }}
-                      petName={getPetName(notification)}
-                      isUnread={!notification.read}
-                      onClick={() => handleNotificationClick(notification)}
-                      onMarkRead={() => handleSingleMarkRead(notification)}
-                      onMarkUnread={() => handleSingleMarkUnread(notification)}
-                      onArchive={viewArchived ? undefined : () => handleSingleArchive(notification)}
-                      onUnarchive={viewArchived ? () => handleSingleUnarchive(notification) : undefined}
-                      showPetName={petFilter === 'all'}
-                      isSelected={selectedIds.has(notification.id) || selectedTicketId === notification.ticket_id}
-                      selectMode={selectMode}
-                      isArchived={viewArchived}
-                      /* Enhanced read/unread contrast */
-                      className={!notification.read 
-                        ? 'bg-gradient-to-r from-pink-500/10 to-purple-500/5 border-l-2 border-l-pink-500' 
-                        : 'bg-transparent opacity-75 hover:opacity-100'
-                      }
+            <div className="py-2" data-testid="ticket-list">
+              {/* ─── Waiting on You ─── */}
+              {waitingTickets.length > 0 && (
+                <div className="mb-1">
+                  <SectionHeader
+                    title="Waiting on You"
+                    count={waitingTickets.length}
+                    icon={Clock}
+                    color="#D97706"
+                    collapsed={!!collapsedSections.waiting}
+                    onToggle={() => toggleSection('waiting')}
+                  />
+                  {!collapsedSections.waiting && waitingTickets.map((t, idx) => (
+                    <TicketCard
+                      key={`w-${t.ticket_id}-${idx}`}
+                      ticket={t}
+                      section="waiting"
+                      isSelected={selectedTicketId === t.ticket_id}
+                      isUnread={unreadTicketIds.has(t.ticket_id)}
+                      onClick={() => handleTicketClick(t)}
                     />
-                  </div>
+                  ))}
                 </div>
-              ))}
+              )}
+
+              {/* ─── Active ─── */}
+              {activeTickets.length > 0 && (
+                <div className="mb-1">
+                  <SectionHeader
+                    title="Active"
+                    count={activeTickets.length}
+                    icon={MessageSquare}
+                    color="#40916C"
+                    collapsed={!!collapsedSections.active}
+                    onToggle={() => toggleSection('active')}
+                  />
+                  {!collapsedSections.active && activeTickets.map((t, idx) => (
+                    <TicketCard
+                      key={`a-${t.ticket_id}-${idx}`}
+                      ticket={t}
+                      section="active"
+                      isSelected={selectedTicketId === t.ticket_id}
+                      isUnread={unreadTicketIds.has(t.ticket_id)}
+                      onClick={() => handleTicketClick(t)}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* ─── Resolved ─── */}
+              {resolvedTickets.length > 0 && (
+                <div className="mb-1">
+                  <SectionHeader
+                    title="Resolved"
+                    count={resolvedTickets.length}
+                    icon={CheckCircle2}
+                    color="#94A3B8"
+                    collapsed={collapsedSections.resolved !== false}
+                    onToggle={() => toggleSection('resolved')}
+                  />
+                  {collapsedSections.resolved === false && resolvedTickets.map((t, idx) => (
+                    <TicketCard
+                      key={`r-${t.ticket_id}-${idx}`}
+                      ticket={t}
+                      section="resolved"
+                      isSelected={selectedTicketId === t.ticket_id}
+                      isUnread={unreadTicketIds.has(t.ticket_id)}
+                      onClick={() => handleTicketClick(t)}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* No results */}
+              {activeTickets.length === 0 && waitingTickets.length === 0 && resolvedTickets.length === 0 && searchQuery && (
+                <div className="flex flex-col items-center justify-center h-48 text-gray-400">
+                  <Search className="w-8 h-8 mb-2 opacity-30" />
+                  <p className="text-sm">No matching conversations</p>
+                </div>
+              )}
             </div>
           )}
         </div>
-        
-        {/* Desktop: Thread Panel - Direct component rendering (Option A - No iframe) */}
+
+        {/* Right: Thread Panel (Desktop only) */}
         {isDesktop && selectedTicketId && (
-          <div className="flex-1 bg-[#0a0a14] overflow-hidden" data-testid="thread-panel">
-            <TicketThread 
+          <div className="flex-1 min-h-0 bg-white overflow-hidden" data-testid="thread-panel">
+            <TicketThread
               ticketId={selectedTicketId}
               mode="split"
               onClose={() => {
-                const newParams = new URLSearchParams(searchParams);
-                newParams.delete('ticketId');
-                setSearchParams(newParams);
+                const p = new URLSearchParams(searchParams);
+                p.delete('ticketId');
+                setSearchParams(p);
               }}
-              onTicketUpdate={fetchNotifications}
+              onTicketUpdate={() => fetchData(true)}
             />
           </div>
         )}
-        
-        {/* Desktop: Empty state when no ticket selected */}
+
+        {/* Right: Empty State (Desktop, no ticket selected) */}
         {isDesktop && !selectedTicketId && (
-          <div className="flex-1 bg-[#0a0a14] flex items-center justify-center text-gray-500">
+          <div className="flex-1 bg-white flex items-center justify-center">
             <div className="text-center">
-              <Inbox className="w-16 h-16 mx-auto mb-4 opacity-30" />
-              <p className="text-lg">Select a conversation</p>
-              <p className="text-sm mt-1">Choose from the list on the left</p>
+              <Inbox className="w-14 h-14 mx-auto mb-3 text-gray-200" />
+              <p className="text-sm font-medium text-gray-400">Select a conversation</p>
+              <p className="text-xs text-gray-300 mt-1">Choose from the list on the left</p>
             </div>
           </div>
         )}
       </div>
-      
-      {/* Mobile Bottom Navigation */}
+
+      {/* Mobile Nav */}
       <div className="lg:hidden">
         <MobileNavBar />
       </div>
