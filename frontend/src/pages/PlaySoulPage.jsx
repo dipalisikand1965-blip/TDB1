@@ -42,6 +42,7 @@ import SharedProductCard, { ProductDetailModal } from "../components/ProductCard
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
+import PillarSoulProfile from "../components/PillarSoulProfile";
 
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Vibrant Green + Orange
@@ -1532,6 +1533,10 @@ const PlaySoulPage = () => {
       </Helmet>
 
       <PlayHero pet={petData} soulScore={soulScore} />
+
+      <div style={{ paddingTop:16, maxWidth:'80rem', margin:'0 auto', padding:'0 16px' }}>
+        <PillarSoulProfile pet={petData} token={token} pillar="play" />
+      </div>
 
       <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>
 

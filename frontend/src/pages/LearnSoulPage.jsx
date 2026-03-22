@@ -38,6 +38,7 @@ import { API_URL } from "../utils/api";
 import { MiraPicksSkeleton, ProductGridSkeleton } from "../components/common/ProductSkeleton";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
+import PillarSoulProfile from "../components/PillarSoulProfile";
 
 // ─── SOUL CHIP (hero chips — same as CareHero) ───────────────
 function SoulChip({ icon, label, value }) {
@@ -1903,6 +1904,11 @@ const LearnSoulPage = () => {
       </div>
 
       <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{background:G.pageBg,fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"}}>
+
+        {/* Soul Profile bar */}
+        <div style={{ paddingTop: 16 }}>
+          <PillarSoulProfile pet={petData} token={token} pillar="learn" />
+        </div>
 
         {/* Category strip — Care-style icon+label pills with content modal */}
         <div style={{background:"#fff",borderBottom:`1px solid ${G.borderLight}`,position:"relative"}}>
