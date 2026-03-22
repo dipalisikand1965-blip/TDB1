@@ -24,6 +24,7 @@ import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import SoulMadeCollection from "../components/SoulMadeCollection";
 
 const G = {
   deep:"#4A0E2E", mid:"#7B1D4E", rose:"#D4537E", light:"#F9A8C9",
@@ -346,6 +347,17 @@ const AdoptSoulPage = () => {
           </div>
         )}
       </div>
+
+      {/* Soul Adopt — Breed-specific new beginnings products */}
+      {petData && (
+        <div style={{ padding:"0 16px", marginBottom:32 }}>
+          <SoulMadeCollection
+            pillar="adopt"
+            maxItems={12}
+            showTitle={true}
+          />
+        </div>
+      )}
 
       <ConciergeToast toast={toastVisible?{name:toastSvc,pillar:"adopt"}:null} onClose={()=>setToastVisible(false)}/>
       <AdoptConciergeModal isOpen={conciergeOpen} onClose={()=>setConciergeOpen(false)} token={token} preSelected={conciergeSvc}/>
