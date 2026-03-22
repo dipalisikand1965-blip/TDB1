@@ -26,6 +26,7 @@ import EmergencyNearMe from "../components/emergency/EmergencyNearMe";
 import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
+import PillarSoulProfile from "../components/PillarSoulProfile";
 
 const G = {
   deep:"#7F1D1D", mid:"#991B1B", crimson:"#DC2626", light:"#FCA5A5",
@@ -389,6 +390,10 @@ const EmergencySoulPage = () => {
 
       {/* ── PAGE BODY ── */}
       <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{background:G.pageBg,fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",overflowX:"hidden",boxSizing:"border-box"}}>
+        {/* Soul Profile bar */}
+        <div style={{ paddingTop: 16 }}>
+          <PillarSoulProfile pet={petData} token={token} pillar="emergency" />
+        </div>
         {/* Category strip */}
         <div style={{background:"#fff",borderBottom:`1px solid ${G.borderLight}`,position:"relative"}}>
           <div style={{display:"flex",overflowX:"auto",scrollbarWidth:"none",padding:"8px 12px",gap:4}}>
