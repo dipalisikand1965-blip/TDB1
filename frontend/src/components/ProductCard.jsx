@@ -14,7 +14,6 @@ import { format } from 'date-fns';
 import { API_URL } from '../utils/api';
 import { findBreedIllustration, getBreedIllustrationByName } from '../utils/breedIllustrations';
 import { getProductMockup } from '../utils/productMockups';
-import CustomOrderFlow from './celebrate/CustomOrderFlow';
 
 // Autoship tier discount rates
 const AUTOSHIP_DISCOUNT_TIERS = [
@@ -444,18 +443,6 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
             );
           })()}
           <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 sm:gap-2">
-            {/* Soul Tier Badges */}
-            {product.soul_tier === 'soul_made' && (
-              <Badge className="bg-purple-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">
-                <Sparkles className="w-2.5 h-2.5 mr-0.5" /> Soul Made
-              </Badge>
-            )}
-            {product.soul_tier === 'soul_selected' && (
-              <Badge className="bg-blue-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">🎯 Picked for You</Badge>
-            )}
-            {product.soul_tier === 'soul_gifted' && (
-              <Badge className="bg-pink-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">🎁 Soul Gifted</Badge>
-            )}
             {product.isNew && <Badge className="bg-purple-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">New</Badge>}
             {product.isBestseller && <Badge className="bg-pink-600 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">Bestseller</Badge>}
             {product.onSale && <Badge className="bg-orange-500 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">Sale</Badge>}
@@ -533,11 +520,6 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
               Price on request
             </p>
           )}
-          
-          {/* Quiet grey hint - pillar specific, non-clicky */}
-          <p className="text-[8px] sm:text-[9px] text-gray-400 leading-tight mt-1">
-            {effectiveMiraContext?.quietHints?.[0] || 'Handled by Mira'}
-          </p>
           
           {/* View Button */}
           <button 
@@ -628,7 +610,6 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   const isService = (product.product_type === 'service') || (product.category === 'service');
   const [serviceSent, setServiceSent] = useState(false);
   const [serviceSending, setServiceSending] = useState(false);
-  const [showCustomOrder, setShowCustomOrder] = useState(false);
   
   // Check if this is a customisable Soul/breed product
   const isSoulProduct = product.is_mockup || product.id?.startsWith('bp-') || (product.product_type && !isService);
@@ -1585,31 +1566,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
               </div>
             )}
 
-            {/* Quiet grey hint - pillar specific */}
-            {miraContext && (
-              <p className="text-[10px] text-gray-400 text-center py-2">
-                {miraContext?.quietHints?.[Math.floor(Math.random() * (miraContext?.quietHints?.length || 1))] || 'Handled with care'}
-              </p>
-            )}
-
             <div className="flex items-center justify-between pt-3 border-t">
-              {/* Customise with Photo button for Soul products */}
-              {isSoulProduct && !isService && (
-                <button
-                  onClick={() => setShowCustomOrder(true)}
-                  className="absolute -top-1 left-0 right-0 mx-4 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
-                  style={{
-                    background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)',
-                    color: 'white',
-                    transform: 'translateY(-100%)',
-                    marginBottom: 4,
-                  }}
-                  data-testid="customise-with-photo-btn"
-                >
-                  <Palette className="w-3.5 h-3.5" />
-                  Customise with {selectedPet?.name || 'Pet'}'s Photo
-                </button>
-              )}
               <div>
                 <p className="text-xs text-gray-500">{isService ? 'Service' : 'Total Price'}</p>
                 {isService ? (
@@ -1845,18 +1802,6 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
           </div>
         )}
       </div>
-
-      {/* Custom Order Flow Modal */}
-      {showCustomOrder && (
-        <CustomOrderFlow
-          product={product}
-          pet={selectedPet}
-          user={user}
-          isOpen={showCustomOrder}
-          onClose={() => setShowCustomOrder(false)}
-          pillarColor={pillar === 'celebrate' ? '#C44DFF' : pillar === 'farewell' ? '#4B5563' : '#FF8C42'}
-        />
-      )}
     </div>
   );
 };
