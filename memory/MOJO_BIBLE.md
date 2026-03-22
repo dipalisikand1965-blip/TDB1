@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mockup-manager.preview.emergentagent.com
+https://custom-order-desk-1.preview.emergentagent.com
 ```
 
 ---

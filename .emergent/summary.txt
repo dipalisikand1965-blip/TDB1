@@ -1,118 +1,123 @@
-<analysis>original_problem_statement: Ensure the platform is robust, architecturally consistent, and highly performant for a soft launch. Build a Universal Intent-to-Ticket Flow, integrate Pet Health Vault, and Omnichannel Admin Comms. 
-*Session Requests:* Fix missing Soul Products on Pillar pages, add Load More to Shop Soul products, map all catalogue products to a , implement comprehensive Admin AI Mockups management (CSV export, CRUD, generation), and rigorously filter out watercolour portrait images so only true product mockups display across the app.
+<analysis>original_problem_statement: 
+1. Import and map 2,409 products from a CSV to their respective pillars in the database without hardcoding, allowing Admin edits.
+2. Run an AI background engine to automatically assign pillars to the remaining 704 pending products.
+3. Integrate an AI Mockup generation tool in the Admin panel for creating new product types.
+4. Implement a Wow Custom Order / Photo Delivery feature for Soul Picks.
+5. Fix  page to use the Universal Concierge ticketing flow instead of generic buttons.
+6. Fix Soul Picks to display actual product mockups () instead of watercolor dog portraits. Ensure Shopify breed cakes are sorted with the pet's breed first. 
+*Product Requirements:* All service bookings and custom order requests MUST route through the central  via the Universal Concierge flow ().
 
 **User's preferred language**: INSTRUCT next agent to respond in English.
 
 **what currently exists?** 
-A cohesive Pet Life OS. The backend database has been heavily cleaned:  fields were migrated to  (making 3,600+ AI products visible), and over 4,000 products were auto-mapped with  tags based on  logic. The Admin portal now features a full AI Mockups suite with CSV exports, CRUD, and seed-type generation. The frontend has been heavily refactored to remove outdated  carousels from pages that use tabbed layouts, and strict filtering () is implemented to ensure non-product watercolor portraits do not appear in product feeds.
+A robust Pet Life OS. The  collection (3,826 items) is now fully mapped to pillars. The Admin panel supports generating AI mockups for new product types. The  page now mimics , pushing all inquiries through a 3-question Concierge intake modal that creates real . The Soul Picks section strictly renders legitimate product mockups from  (bypassing older portrait fallbacks), and Shopify bakery products correctly sort the user's pet breed to the top.
 
 **Last working item**:
-    - Last item agent was working: Fixing the ✨ Soul Picks section inside . It was erroneously fetching from  using generic categories (like ), which was bypassing the mockup filters and showing watercolour portraits. The agent changed the fetch endpoint to  to ensure only clean, proper mockups render.
+    - Last item agent was working: Rewiring the Customise with Mojos Photo" button in `ProductDetailModal.jsx` and `ProductCard.jsx` to use the Universal Concierge Flow (`sendToConcierge` / `attach_or_create_ticket`). Initially, the agent built a custom modal and API route, but the user requested it flow through the standard Service Desk system so admins get notifications. The agent swapped the functions and removed the custom flow renders.
     - Status: USER VERIFICATION PENDING
-    - Agent Testing Done: Y (Manual testing via bash/curl, confirmed 6 clean mockups returned for Indie).
-    - Which testing method agent to use? screenshot tool (Frontend) to verify the UI in the Celebrate modal reflects the clean API response.
+    - Agent Testing Done: Y (Linting passed, but no functional UI/E2E test done post-swap).
+    - Which testing method agent to use? screenshot tool (Frontend) to verify clicking "Customise with Mojos Photo successfully opens the 3-question Concierge modal.
     - User Testing Done: N
 
 **All Pending/In progress Issue list**:  
-  Issue 1: Verify Watercolour Portraits are completely eliminated from all UI surfaces (P0)
-     - Attempted fixes: Added  DB field, applied backend filters, commented out  globally, fixed , and updated . 
-     - Next debug checklist: Log in, navigate to Celebrate page, open the Celebrate modal, and verify the ✨ Soul Picks section only shows actual mockups (e.g., mugs, bandanas, frames) and no standalone dog face portraits. Check other pillars just in case.
-     - Why fix this issue and what will be achieved with the fix? Product carousels must look like a real e-commerce store, not an AI art gallery.
+  Issue 1: Verify the Customise with Mojos Photo" button triggers the Concierge flow (P0)
+     - Attempted fixes: Replaced local `CustomOrderFlow` state and components with `sendToConcierge` calls in `ProductDetailModal.jsx` and `ProductCard.jsx`.
+     - Next debug checklist: Log in, go to `/celebrate-soul`, click "Soul Picks", open a product, and click "Customise with Mojos Photo. Ensure the standard Service Desk modal opens and submits successfully.
+     - Why fix this issue and what will be achieved with the fix? Ensures all custom orders land in the centralized admin Service Desk rather than a disconnected database collection.
      - Status: USER VERIFICATION PENDING
-     - Is recurring issue? Y (Kept popping up from different legacy components).
+     - Is recurring issue? N
      - Should Test frontend/backend/both after fix? Frontend
      - Blocked on other issue: None
 
 **In progress Task List**:
-  *(No tasks currently blocked or mid-execution, awaiting user verification on the portrait fix).*
+  *(No tasks currently blocked or mid-execution, awaiting verification of the Custom Order button swap).*
 
 **Upcoming and Future Tasks**
   Upcoming Tasks:
-  - (P1) Admin feature: Add Generate All Pending for Breed button in Admin Mockups to batch-generate the remaining 705 pending products.
-  - (P2) Add 3 vets near you context to daily health WhatsApp reminders (requires NearMe API call at scheduler time).
+  - (P1) Add 3 vets near you context to daily health WhatsApp reminders (requires NearMe API call at scheduler time).
   - (P2) Extend scheduler to handle Medication refill reminders.
   
   Future Tasks:
   - (P2) Build the  pillar (post-launch).
-  - (P2) Refactor  (currently 5,400+ lines, needs splitting) and  (23,000+ lines).
+  - (P2) Refactor  (currently 5,400+ lines, needs splitting) and  (24,000+ lines).
   - (P2) Remove Skip Payment from onboarding (post soft-launch).
+  - (P2) Add a My Custom Orders tab in the user profile so customers can track order status.
 
 **Completed work in this session**
--  updated in  to map all new pillar names (DONE).
-- Added paginated Load More for Soul Products on  (DONE).
-- DB Migration: Tagged empty-breed products as  (DONE).
-- DB Migration: Synced  to  field, exposing 3,300+ hidden products (DONE).
-- Added product detail modal  events to  and  (DONE).
-- Catalogue Mapping: Auto-populated  for 4,071 products in  and added auto-fill to Admin  (DONE).
-- UI Cleanup: Removed old  carousels from 7 active pages and 7 inactive pages to prevent UI duplication (DONE).
-- Image Quality Filtering: Added  logic to filter out  and  prefixed images (watercolour portraits) from valid  prefixed mockups (DONE).
-- Admin AI Mockups Manager: Added CSV exports with filters, pending 705 CSV download, Breed Products CRUD tab, and New Product Type seed generator (DONE).
-- Fixed  Soul Picks to use the correct  endpoint (DONE).
+- CSV Pillar Import & Mapping: Populated pillars for 2,409 products in  via new import endpoint (DONE).
+- AI Auto-assign: Ran background GPT script to categorize the remaining 756 pending products into pillars (DONE).
+- Admin AI Mockups: Added generation status bar and wired up AI image generation to New Product Type flow (DONE).
+- Farewell Page Fix: Removed the Indie tab from  to stop non-farewell products from bleeding into the UI (DONE).
+- Services Page Unification: Replaced generic View Details buttons on  with Book via Concierge leading to the  and creating  (DONE).
+- Database URL Restoration: Restored 631 overwritten Cloudinary  paths back to their original  paths (DONE).
+- Frontend Image Fix: Updated  to stop overriding valid  fields with breed illustration portraits (DONE).
+- UI Cleanup: Removed Often paired with... hints and Soul Made badges from Soul Picks cards (DONE).
+- Shopify Cakes Fix: Sorted Breed Cakes in  to ensure the pet's specific breed cake renders first, and deactivated 20 dummy AI cakes (DONE).
+- Custom Order Flow integration: Rewired the Customise button to use the standard Universal Concierge Ticket flow (DONE).
 
 **Earlier issues found/mentioned but not fixed**
   - None.
 
 **Known issue recurrence from previous fork**
-  - Issue recurrence in previous fork: Querying  for breed-specific AI mockups instead of querying the dedicated  collection. 
-  - Recurrence count: 3
-  - Status: RESOLVED (Watch out for legacy components making this mistake).
+  - Issue recurrence in previous fork: Image rendering confusion.  vs  collections contain different image sets (beautiful mockups vs watercolours). Furthermore,  had a fallback logic that favored old breed illustrations over valid mockup URLs.
+  - Recurrence count: 4
+  - Status: RESOLVED (Watch out for any component mapping images. Always trust  for mockups and do NOT try to sync  over  again).
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Image Filtering ()**: Legitimate product mockups have URLs starting with . Watercolour portraits start with  or . The DB now has an  boolean, and all endpoints filter for .
-- **Catalogue Mapping**: Products in  dynamically get a  assigned based on a  or  formula.
-- **Unified vs AI Products**: Generic items (End of Life Planning) live in . AI generated breed-specific items (Indie Memorial Frame) live in .
+- **Universal Concierge Flow**: Every request (custom products, services, photo delivery) MUST trigger  to land in the centralized Admin Service Desk.
+- **Image Priority**:  must respect  first. Legacy  or  fallbacks should not override actual product mockups.
+- **Service Box Routing**:  pulls from  dynamically. Clicking a service reads its  and automatically adapts the Concierge Intake questions.
 
 **key DB schema**
-  - : {breed, pillar, mockup_url, cloudinary_url, active, is_active, is_mockup}
-  - : {category, sub_category, active, is_active}
+  - : {breed, pillar, mockup_url, image_url, active, is_mockup} (Contains the true Soul Picks)
+  - : {id, pillar, price, features} (Source of truth for bookable services)
+  - : Main collection for all concierge interactions.
 
 **changes in tech stack**
   - None.
 
 **All files of reference** 
-  -  (Recently fixed)
-  -  (Massive feature additions)
-  -  (Added import/export routes for AI mockups)
-  - 
-  - 
+  -  (Critical image rendering logic fixed)
+  -  (Controls Soul Picks & Cake sorting)
+  -  (Holds the Customise button)
+  -  (Rewritten to use Concierge Flow)
+  -  (Contains the AI pillar assignment logic)
 
 **Areas that need refactoring**:
--  is over 23,000 lines. 
-- Dead/inactive pages in  (e.g., , ) are cluttering the codebase and causing search/replace confusion.
+- **Code Cleanup Needed**: The agent created  and , but the user subsequently rejected this custom flow in favor of the Universal Concierge flow. These files are now orphaned/dead code and should be deleted to prevent future confusion.
+-  is over 24,000 lines. 
 
 **key api endpoints**
--  (USE THIS FOR SOUL PRODUCTS)
-- 
-- 
+-  (Used by Soul Picks)
+-  (Universal Concierge entry point)
+-  (Background AI job)
 
 **Critical Info for New Agent** 
-- **NEVER use ** on a page that already has a tabbed product layout. It is currently commented out in  to prevent the UI from duplicating and showing old/wrong products.
-- Always use  when querying AI products, otherwise, you will render standalone dog face illustrations instead of actual product mockups.
--  vs : Both exist in the DB now. Rely on endpoints that account for .
+- **DO NOT TOUCH SHOPIFY ROUTES/COLLECTIONS**: The user has real bakery products synced from Shopify. Do not attempt to replace these with AI images.
+- **Soul Picks Images**: The images are correctly stored as  in Cloudinary. The bug was frontend rendering ( falling back to illustrations). Do not attempt to modify the DB URLs again.
+- Always use  /  for any booking or custom request. Never create isolated API routes for user requests; they must go to the Service Desk.
 
 **documents and test reports created in this job** 
   - 
   - 
-  - 
-  -  (Also generated dynamically in Admin)
 
 **Last 10 User Messages and any pending HUMAN messages** 
-1. **LATEST**: User reported that Celebrate products like cake toppers are missing after the previous fix. -> **STATUS: RESOLVED** (Agent switched the modal to use ).
-2. User stated that watercolour portraits were *still* showing under ✨ Soul Picks. -> **STATUS: COMPLETED** (Agent traced it to  fetching wrong categories).
-3. User clarified the CSV was clean (2,409 real mockups), suggesting the issue was frontend components querying old  data. Instructed agent to hide  globally. -> **STATUS: COMPLETED** (Commented out in ).
-4. User requested to add a CSV export button to the AI Mockups admin tab with filters, a download for pending 705 products, a CRUD interface for Breed Products, and a New Product Type AI generator. -> **STATUS: COMPLETED**.
-5. User noted the watercolour images were *still* appearing and provided a screenshot. -> **STATUS: COMPLETED**.
-6. User instructed to filter out watercolour-only images (URLs containing 'portrait' or 'illustration', or lacking product nouns) from all pillars. -> **STATUS: COMPLETED** (Implemented  logic).
-7. User instructed to connect the Farewell breed tab to , hide  from pages with tab sections, and strip the breed prefix from  products. -> **STATUS: COMPLETED**.
-8. User asked why the Indie Farewell tab showed 0 products, and why generic multi-breed products were showing in the old carousel. -> **STATUS: COMPLETED** (Diagnosed query mismatch).
-9. User provided a doc to fix Catalogue Mapping (1,551 no-pillar, 2,719 no-sub_category) and requested a script to map them and a JSX snippet for . -> **STATUS: COMPLETED**.
-10. User confirmed Emergency picks worked perfectly, but noted Farewell picks were unclickable and asked to fix it across all pillars ensuring the Concierge ticket flow works. -> **STATUS: COMPLETED** (Tested via Testing Agent).
+1. **LATEST**: User stated that Custom Orders weren't appearing in the Admin Service Desk because the universal concierge flow wasn't used. -> **STATUS: RESOLVED** (Agent rewired the Customise button to use ).
+2. User asked to see a screenshot of the Custom Made product feature. -> **STATUS: COMPLETED**
+3. User instructed to make the pet's specific breed cake appear on the top row, with the rest below. -> **STATUS: COMPLETED**.
+4. User noticed dummy AI cakes were rendering alongside real Shopify cakes and asked to remove them. -> **STATUS: COMPLETED** (Agent deactivated 20 AI cakes).
+5. User was furious that Shopify cakes were removed from the Birthday/Breed cake tabs due to the agent's broad endpoint manipulation. -> **STATUS: COMPLETED** (Agent reverted the aggressive filtering, restoring the Shopify cakes).
+6. User pointed out that Soul Picks was rendering TWO rows: a correct top row of mockups, and a broken bottom row of old watercolour portraits. Asked to remove the bottom row. -> **STATUS: COMPLETED**.
+7. User explained exactly why Soul Picks was broken:  was rendering  instead of . Asked to fix it, remove Often paired with text, and remove Soul Made badges. -> **STATUS: COMPLETED**.
+8. User noticed URLs were overwritten to  and asked to restore them to . -> **STATUS: COMPLETED** (Agent restored 631 URLs in the DB).
+9. User had a heart attack because Soul Picks showed only watercolor dog faces instead of products. -> **STATUS: COMPLETED** (Agent initially made a mistake trying to sync images, but eventually fixed it).
+10. User confirmed the  concierge flow works and asked if newly created services automatically get this modal. -> **STATUS: COMPLETED** (Agent explained it reads the pillar dynamically).
 
 **Project Health Check:**
-Mocked/Functional. Major bugs resolved, application UI aligns properly with expected DB logic.
+Functional. Major architectural flow unification completed.
 
 **3rd Party Integrations** 
   • OpenAI GPT-4o / Claude Sonnet — uses Emergent LLM Key
@@ -122,14 +127,14 @@ Mocked/Functional. Major bugs resolved, application UI aligns properly with expe
   • Resend (Email) — requires User API Key
 
 **Testing status**
-  - Testing agent used after significant changes: YES (Iteration 187 & 188)
+  - Testing agent used after significant changes: YES (Iteration 189)
   - Troubleshoot agent used after agent stuck in loop: NO
   - Test files created: None
-  - Known regressions: None currently known. 
+  - Known regressions: None currently known, but the last wiring change for Custom Orders was not functionally tested by the agent via screenshot. 
 
 **Credentials to test flow:**
 - User:  / 
 - Admin:  /  (Admin portal at )
 
 **What agent forgot to execute**
-The agent resolved the final request (switching  to the correct endpoint) but did not capture a final UI screenshot or run the Testing Agent to definitively prove to the user that the watercolour portraits are visually gone from the screen. The next agent should verify this immediately if requested.</analysis>
+The agent successfully replaced the  component with the universal  function in the UI, but **failed to delete the orphaned files** ( and ). The next agent should delete these files to keep the codebase clean. The agent also forgot to capture a final screenshot proving the Customise button opens the standard Service Desk modal.</analysis>
