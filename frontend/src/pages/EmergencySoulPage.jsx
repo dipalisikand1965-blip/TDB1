@@ -305,6 +305,8 @@ const EmergencySoulPage = () => {
   const [conciergeSvc,  setConciergeSvc]  = useState("");
   const [toastVisible, setToastVisible] = useState(false);
   const [toastSvc, setToastSvc]     = useState("");
+  const [breedProducts, setBreedProducts] = useState([]);
+  const [breedProductsLoading, setBreedProductsLoading] = useState(false);
 
   const handleBook = useCallback((svc) => {
     if(!svc)return;
@@ -327,6 +329,21 @@ const EmergencySoulPage = () => {
 
   useEffect(()=>{if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]);if(contextPets!==undefined)setLoading(false);},[contextPets,currentPet,setCurrentPet]);
   useEffect(()=>{if(currentPet){const n={...currentPet,photo_url:currentPet.photo_url||currentPet.avatar_url||null,avatar:currentPet.avatar||"🐕",breed:currentPet.breed||""};setPetData(n);setReadinessScore(getEmergencyScore(n));}}, [currentPet]);
+
+  // Fetch breed-specific emergency products
+  useEffect(()=>{
+    if(!currentPet?.breed) return;
+    const breedKey = (currentPet.breed||"").toLowerCase().replace(/\s+/g,'_').replace(/[()]/g,'');
+    setBreedProductsLoading(true);
+    fetch(`${API_URL}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&pillar=emergency&limit=20`)
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{
+        const prods=(d?.products||[]).filter(p=>p.image_url||p.mockup_url||p.cloudinary_url);
+        setBreedProducts(prods);
+        setBreedProductsLoading(false);
+      })
+      .catch(()=>setBreedProductsLoading(false));
+  },[currentPet?.breed]);
 
   const handleAddPet = useCallback(()=>navigate(isAuthenticated?"/dashboard/pets?action=add":"/login?redirect=/emergency"),[isAuthenticated,navigate]);
 
@@ -422,6 +439,33 @@ const EmergencySoulPage = () => {
               <button onClick={()=>setConciergeOpen(true)} style={{background:`linear-gradient(135deg,${G.crimson},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"9px 20px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Fix these now with Concierge →</button>
             </div>)}
             <MiraPicksSection pet={petData}/>
+
+            {/* ── SOUL PICKS: Breed Emergency Products ── */}
+            {(breedProductsLoading || breedProducts.length > 0) && (
+              <section style={{marginBottom:28}}>
+                <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:4}}>
+                  <h3 style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:G.darkText,margin:0,fontFamily:"Georgia,serif"}}>
+                    Emergency Kit for <span style={{color:G.crimson}}>{petName}</span>
+                  </h3>
+                  {!breedProductsLoading && breedProducts.length > 0 && (
+                    <span style={{fontSize:11,background:`linear-gradient(135deg,${G.crimson},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>{breedProducts.length} items</span>
+                  )}
+                </div>
+                <p style={{fontSize:13,color:"#888",marginBottom:16,lineHeight:1.5}}>
+                  Personalised emergency essentials — chosen for {breed||petName}.
+                </p>
+                {breedProductsLoading ? (
+                  <div style={{fontSize:12,color:"#aaa",padding:"8px 0"}}>Loading emergency kit for {petName}…</div>
+                ) : (
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(160px,100%),1fr))",gap:12}}>
+                    {breedProducts.map((p,i)=>(
+                      <SharedProductCard key={p.id||p._id||i} product={p} pillar="emergency" selectedPet={petData}/>
+                    ))}
+                  </div>
+                )}
+              </section>
+            )}
+
             <GuidedEmergencyPaths pet={petData}/>
             <section style={{paddingBottom:16}}>
               <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:6,fontFamily:"Georgia,serif"}}>Is <span style={{color:G.crimson}}>{petName}</span> really ready?</h2>
@@ -478,7 +522,7 @@ const EmergencySoulPage = () => {
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(240px,100%),1fr))",gap:14}}>
               {EMERG_SERVICES.map(svc=>{
                 const dbSvc=services.find(s=>s.name===svc.name||s.id===svc.id)||{};
-                const img=dbSvc.watercolor_image||dbSvc.image_url||null;
+                const img=dbSvc.image_url||dbSvc.watercolor_image||null;
                 return(<div key={svc.id} style={{background:"#fff",borderRadius:16,border:`2px solid rgba(220,38,38,0.12)`,overflow:"hidden",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${svc.accentColor}20`;}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
                 <div style={{height:120,background:`linear-gradient(135deg,${G.pale},${G.cream})`,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
                   {img?<img src={img} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>:<span style={{fontSize:40}}>{svc.icon}</span>}

@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://mockup-manager.preview.emergentagent.com/mira-demo**
+**https://custom-order-desk-1.preview.emergentagent.com/mira-demo**
 
 ---
 

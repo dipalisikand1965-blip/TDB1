@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://mockup-manager.preview.emergentagent.com` |
+| **Preview** | `https://custom-order-desk-1.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |

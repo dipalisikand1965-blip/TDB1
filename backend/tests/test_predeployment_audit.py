@@ -14,7 +14,7 @@ import os
 import time
 import json
 
-BASE_URL = "https://mockup-manager.preview.emergentagent.com"
+BASE_URL = "https://custom-order-desk-1.preview.emergentagent.com"
 
 # Test credentials
 USER_EMAIL = "dipali@clubconcierge.in"

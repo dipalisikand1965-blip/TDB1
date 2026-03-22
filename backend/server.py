@@ -277,7 +277,7 @@ from app.api.soul_products_routes import router as soul_products_router, set_sou
 from app.api.mockup_routes import router as mockup_router, set_mockup_db
 
 # Custom Order Routes (WOW feature — photo upload + concierge ticket)
-from app.api.custom_order_routes import router as custom_order_router
+# custom_order_router removed — all custom orders go through service_desk attach_or_create_ticket
 
 # Bundle Routes (Curated product bundles)
 from app.api.bundle_routes import router as bundle_router, set_bundle_db
@@ -21598,7 +21598,7 @@ app.include_router(mis_router)
 app.include_router(rewards_router)
 app.include_router(member_rewards_router)  # Social Sharing, NPS
 app.include_router(paw_points_router)  # Paw Points Redemption
-app.include_router(custom_order_router)  # Custom Order + Photo Delivery (WOW feature)
+# custom_order_router removed — all custom orders go through service_desk attach_or_create_ticket
 app.include_router(travel_router)  # Travel Pillar
 app.include_router(care_router)  # Care Pillar
 app.include_router(enjoy_router)  # Enjoy Pillar

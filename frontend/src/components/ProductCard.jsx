@@ -345,6 +345,14 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
     if (product.image_url && product.image_url.startsWith('http')) {
       return product.image_url;
     }
+
+    // 2b. mockup_url / cloudinary_url — breed_products real mockup images
+    if (product.mockup_url && product.mockup_url.startsWith('http')) {
+      return product.mockup_url;
+    }
+    if (product.cloudinary_url && product.cloudinary_url.startsWith('http')) {
+      return product.cloudinary_url;
+    }
     
     // 3. For breed-specific products (IDs like "breed-cavalier-welcome_kit"), use breed illustration
     const productId = product.id || '';
@@ -561,6 +569,14 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
     // 2. image_url is the clean, curated field — always prefer it over legacy `image`
     if (product.image_url && product.image_url.startsWith('http')) {
       return product.image_url;
+    }
+
+    // 2b. mockup_url / cloudinary_url — breed_products real mockup images
+    if (product.mockup_url && product.mockup_url.startsWith('http')) {
+      return product.mockup_url;
+    }
+    if (product.cloudinary_url && product.cloudinary_url.startsWith('http')) {
+      return product.cloudinary_url;
     }
     
     // 3. For breed-specific products (IDs like "breed-cavalier-welcome_kit"), use breed illustration
