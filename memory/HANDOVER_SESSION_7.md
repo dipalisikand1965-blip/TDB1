@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://pet-soul-platform-1.preview.emergentagent.com
+https://soul-chapters.preview.emergentagent.com
 
 ---
 

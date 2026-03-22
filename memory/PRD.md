@@ -51,6 +51,13 @@ Build a production-ready pet life management platform with 12 core pillars, AI c
 - **Tiers:** Based on percentage: Seedling → Sprout → Bloom → Soul Master
 - **Storage:** `doggy_soul_answers` dict on pet document, `overall_score` float
 
+### Session Mar 2026 — Dynamic Soul Chapter Cards
+- **Soul Chapter cards on /pet-home** now show real data from `doggy_soul_answers`
+- Each card displays: percentage score, color progress bar, Mira's plain-English summary
+- Maps actual DB keys (e.g. `behavior_with_dogs`, `life_stage`, `favorite_treats`) to 6 chapters
+- Empty chapters show "Tap to tell Mira →" (invitation, not blank)
+- Works for all pets: filled (Mojo 100%), partial (Buddy 76%), empty (Coco 0%)
+
 ## Prioritized Backlog
 
 ### P0 — Production Deployment
@@ -58,10 +65,11 @@ Build a production-ready pet life management platform with 12 core pillars, AI c
 - [ ] Run pillar name migration on production Atlas DB
 - [ ] Full E2E mobile test on real device
 
-### P1 — Service Flow
-- [ ] Audit useConcierge.js integration across all pillar pages
-- [ ] Verify every pillar booking action creates admin ticket
-- [ ] Soul Product AI image generation (background)
+### P1 — Pending Issues
+- [ ] Deprecate & hide AdvisoryPage (remove /advisory route from App.js)
+- [ ] Database pillar name migration & dynamic sub-categories (BLOCKED: awaiting user backup)
+- [ ] AI Soul Products integration into product catalog
+- [ ] Soul Chapter card modal popup (user to confirm requirements)
 
 ### P2 — UX Polish
 - [ ] Backend pagination for Mira Picks
