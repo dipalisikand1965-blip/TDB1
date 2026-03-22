@@ -350,7 +350,6 @@ const FarewellSoulPage = () => {
                 { id:"Memorial & Legacy",   label:"🌷 Memorial",   icon:"🌷" },
                 { id:"Grief & Healing",     label:"💙 Grief",      icon:"💙" },
                 { id:"Cremation & Burial",  label:"🌿 Cremation",  icon:"🌿" },
-                ...(breed ? [{ id:"breed", label:`🐾 ${breed.split(" ")[0]}`, icon:"🐾" }] : []),
               ];
 
               // Flatten all farewell products with breed filter
