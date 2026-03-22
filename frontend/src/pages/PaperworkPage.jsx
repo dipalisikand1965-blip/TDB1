@@ -1380,11 +1380,11 @@ const PaperworkPage = () => {
           {/* SOUL MADE COLLECTION */}
           <section className="py-12 px-4" data-testid="paperwork-soul-made-section">
             <div className="max-w-6xl mx-auto">
-              <SoulMadeCollection
+              {/* {/* <SoulMadeCollection
                 pillar="paperwork"
                 maxItems={8}
                 showTitle={true}
-              />
+              /> */} */}
             </div>
           </section>
 
@@ -1398,14 +1398,14 @@ const PaperworkPage = () => {
           {/* ARCHETYPE-PERSONALIZED PRODUCTS */}
           <section className="py-8 px-4">
             <div className="max-w-6xl mx-auto">
-              <ArchetypeProducts pillar="paperwork" maxProducts={8} showTitle={true} />
+              <ArchetypeProducts pillar="paperwork" maxProducts={8} showTitle={true} /> */}
             </div>
           </section>
 
           {/* CURATED BUNDLES */}
           <section className="py-8 px-4">
             <div className="max-w-6xl mx-auto">
-              <CuratedBundles pillar="paperwork" showTitle={true} />
+              <CuratedBundles pillar="paperwork" showTitle={true} /> */}
             </div>
           </section>
         </>

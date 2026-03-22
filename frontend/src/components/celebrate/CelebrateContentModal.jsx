@@ -1140,31 +1140,21 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
     try {
       const apiUrl = getApiUrl();
 
-      // ── Soul Picks: real celebrate merchandise filtered by breed ─────
+      // ── Soul Picks: breed-specific celebrate merchandise from breed_products ─
       if (category === 'soul-picks') {
         const breedDisplay = getBreedDisplay(pet);
-        const breedSearch = breedDisplay.toLowerCase();
-        // Fetch from ALL breed merchandise categories relevant for Celebrate
-        const breedCats = [
-          'breed-mugs', 'breed-bandanas', 'breed-frames',
-          'breed-keychains', 'breed-party_hats', 'breed-tote_bags',
-          // NEW: More celebrate-relevant categories
-          'breed-blankets', 'breed-bowls', 'breed-paw_print_frames',
-          'breed-pet_robes', 'breed-pet_towels', 'breed-placemats',
-          'breed-treat_jars', 'breed-cushion_covers'
-        ];
-        const responses = await Promise.all(
-          breedCats.map(cat => fetch(`${apiUrl}/api/products?category=${cat}&limit=50`))
-        );
-        const datasets = await Promise.all(
-          responses.map(r => r.ok ? r.json() : Promise.resolve({ products: [] }))
-        );
-        const allMerch = datasets.flatMap(d => d.products || []);
-        // Filter by breed name
-        const breedMerch = breedSearch
-          ? allMerch.filter(p => (p.name || p.title || '').toLowerCase().includes(breedSearch))
-          : allMerch;
-        setBreedProducts(breedMerch.length > 0 ? breedMerch : allMerch.slice(0, 12));
+        const breedKey = breedDisplay.toLowerCase().replace(/\s+/g,'_').replace(/[()]/g,'');
+        try {
+          const res = await fetch(
+            `${apiUrl}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&pillar=celebrate&limit=20`
+          );
+          const data = res.ok ? await res.json() : { products: [] };
+          const prods = (data.products || []).filter(p => {
+            const url = p.mockup_url || p.cloudinary_url || '';
+            return url.split('/').pop().startsWith('breed-');
+          });
+          setBreedProducts(prods);
+        } catch { setBreedProducts([]); }
         setLoading(false);
         return;
       }

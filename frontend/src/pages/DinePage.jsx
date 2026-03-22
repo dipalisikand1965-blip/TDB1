@@ -751,7 +751,7 @@ const DinePage = () => {
             </h2>
             <p className="text-gray-600 mt-1">Complete nutrition solutions at great value</p>
           </div>
-          <CuratedBundles pillar="dine" maxBundles={3} showTitle={false} />
+          <CuratedBundles pillar="dine" maxBundles={3} showTitle={false} /> */}
         </div>
       </div>
 
@@ -772,7 +772,7 @@ const DinePage = () => {
           {/* Soul Made Collection */}
           {activePet && (
             <div className="mb-8">
-              <SoulMadeCollection pillar="dine" maxItems={8} showTitle={true} />
+              {/* <SoulMadeCollection pillar="dine" maxItems={8} showTitle={true} /> */}
             </div>
           )}
           
@@ -785,7 +785,7 @@ const DinePage = () => {
           
           {/* Archetype Products */}
           <div className="mb-8">
-            <ArchetypeProducts pillar="dine" maxProducts={8} showTitle={true} />
+            <ArchetypeProducts pillar="dine" maxProducts={8} showTitle={true} /> */}
           </div>
           
           <div className="mt-6 text-center">

@@ -951,11 +951,11 @@ const FitPage = () => {
           ═══════════════════════════════════════════════════════════════════════ */}
       {(activePet || userPets?.[0]) && (
         <div className="max-w-6xl mx-auto px-4 mb-8">
-          <SoulMadeCollection
+          {/* {/* <SoulMadeCollection
             pillar="play"
             maxItems={8}
             showTitle={true}
-          />
+          /> */} */}
         </div>
       )}
 
@@ -977,14 +977,14 @@ const FitPage = () => {
       {/* ARCHETYPE-PERSONALIZED PRODUCTS - Multi-factor filtering */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <div className="max-w-6xl mx-auto px-4 mb-8">
-        <ArchetypeProducts pillar="fit" maxProducts={8} showTitle={true} />
+        <ArchetypeProducts pillar="fit" maxProducts={8} showTitle={true} /> */}
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* CURATED BUNDLES - Save with handpicked combinations */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <div className="max-w-6xl mx-auto px-4 mb-8">
-        <CuratedBundles pillar="fit" showTitle={true} />
+        <CuratedBundles pillar="fit" showTitle={true} /> */}
       </div>
       
       {/* Unified Curated Layer - Matches Dine/Celebrate gold standard */}
