@@ -510,6 +510,14 @@ const SoulMadeCollection = ({
         
         let filteredProducts = data.products || [];
         
+        // Safety net: only show proper product mockups (breed- prefix filename)
+        filteredProducts = filteredProducts.filter(p => {
+          const url = p.mockup_url || p.cloudinary_url || p.image_url || "";
+          if (!url) return false;
+          const fname = url.split("/").pop() || "";
+          return fname.startsWith("breed-");
+        });
+        
         // Filter out excluded product types (exact match on product_type)
         if (pillarConfig.exclude?.length > 0) {
           filteredProducts = filteredProducts.filter(p => {
