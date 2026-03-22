@@ -506,12 +506,12 @@ async def get_breed_products(
     pillar: Optional[str] = None,
     limit: int = 50
 ):
-    """Get breed products with optional filters. Defaults to is_mockup=True (proper product mockups only)."""
+    """Get breed products from breed_products collection only.
+    Filters to is_mockup=True (proper product mockups)."""
     db = get_db()
     
-    query = {"is_mockup": True}   # Always filter to proper mockups only
+    query = {"is_mockup": True}
     if breed:
-        # Include breed-specific AND universal "all" products
         query["$or"] = [
             {"breed": breed},
             {"breed": "all"},
@@ -519,7 +519,6 @@ async def get_breed_products(
     if product_type:
         query["product_type"] = product_type
     if pillar:
-        # pillars is an array field, use $in to check if pillar is in the array
         query["pillars"] = {"$in": [pillar]}
     if has_mockup is not None:
         if has_mockup:
