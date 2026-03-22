@@ -1,0 +1,311 @@
+breed,product_name,pillar,all_pillars,sub_category,category,price,has_image,in_products_master,visible_on_frontend
+akita,Akita Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+akita,Akita Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+akita,Akita Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+akita,Akita Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+akita,Akita Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+alaskan_malamute,Alaskan Malamute Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+alaskan_malamute,Alaskan Malamute Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+alaskan_malamute,Alaskan Malamute Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+alaskan_malamute,Alaskan Malamute Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+alaskan_malamute,Alaskan Malamute Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+american_bully,American Bully Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+american_bully,American Bully Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+american_bully,American Bully Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+american_bully,American Bully Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+american_bully,American Bully Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+basenji,Basenji Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+basenji,Basenji Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+basenji,Basenji Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+basenji,Basenji Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+basenji,Basenji Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+beagle,Beagle Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+beagle,Beagle Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+beagle,Beagle Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+beagle,Beagle Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+beagle,Beagle Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+bichon_frise,Bichon Frise Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+bichon_frise,Bichon Frise Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+bichon_frise,Bichon Frise Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+bichon_frise,Bichon Frise Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+bichon_frise,Bichon Frise Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+border_collie,Border Collie Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+border_collie,Border Collie Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+border_collie,Border Collie Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+border_collie,Border Collie Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+border_collie,Border Collie Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+boxer,Boxer Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+boxer,Boxer Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+boxer,Boxer Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+boxer,Boxer Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+boxer,Boxer Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+bulldog,Bulldog Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+bulldog,Bulldog Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+bulldog,English Bulldog Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+bulldog,English Bulldog Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+bulldog,Bulldog Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+bulldog,English Bulldog Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+bulldog,Bulldog Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+bulldog,Bulldog Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+bulldog,English Bulldog Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+bulldog,English Bulldog Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+cavalier,Cavalier King Charles Spaniel Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+cavalier,Cavalier King Charles Spaniel Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+cavalier,Cavalier King Charles Spaniel Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+cavalier,Cavalier King Charles Spaniel Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+cavalier,Cavalier King Charles Spaniel Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+chihuahua,Chihuahua Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+chihuahua,Chihuahua Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+chihuahua,Chihuahua Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+chihuahua,Chihuahua Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+chihuahua,Chihuahua Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+chow_chow,Chow Chow Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+chow_chow,Chow Chow Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+chow_chow,Chow Chow Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+chow_chow,Chow Chow Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+chow_chow,Chow Chow Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+cocker_spaniel,Cocker Spaniel Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+cocker_spaniel,Cocker Spaniel Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+cocker_spaniel,Cocker Spaniel Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+cocker_spaniel,Cocker Spaniel Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+cocker_spaniel,Cocker Spaniel Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+corgi,Corgi Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+corgi,Corgi Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+corgi,Corgi Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+corgi,Corgi Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+corgi,Corgi Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+dachshund,Dachshund Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+dachshund,Dachshund Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+dachshund,Dachshund Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+dachshund,Dachshund Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+dachshund,Dachshund Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+dalmatian,Dalmatian Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+dalmatian,Dalmatian Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+dalmatian,Dalmatian Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+dalmatian,Dalmatian Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+dalmatian,Dalmatian Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+doberman,Doberman Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+doberman,Doberman Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+doberman,Doberman Pinscher Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+doberman,Doberman Pinscher Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+doberman,Doberman Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+doberman,Doberman Pinscher Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+doberman,Doberman Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+doberman,Doberman Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+doberman,Doberman Pinscher Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+doberman,Doberman Pinscher Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+french_bulldog,French Bulldog Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+french_bulldog,French Bulldog Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+french_bulldog,French Bulldog Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+french_bulldog,French Bulldog Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+french_bulldog,French Bulldog Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+german_shepherd,German Shepherd Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+german_shepherd,German Shepherd Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+german_shepherd,German Shepherd Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+german_shepherd,German Shepherd Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+german_shepherd,German Shepherd Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+golden_retriever,Golden Retriever Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+golden_retriever,Golden Retriever Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+golden_retriever,Golden Retriever Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+golden_retriever,Golden Retriever Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+golden_retriever,Golden Retriever Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+great_dane,Great Dane Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+great_dane,Great Dane Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+great_dane,Great Dane Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+great_dane,Great Dane Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+great_dane,Great Dane Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+husky,Husky Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+husky,Husky Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+husky,Husky Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+husky,Husky Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+husky,Husky Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+indian spitz,Indian Spitz Breed Grooming Guide,care,care,,care_accessories,399,YES,NO,YES
+indian spitz,Indian Spitz Breed Portrait Frame,care,care|celebrate,,care_accessories,799,YES,NO,YES
+indian spitz,Indian Spitz Breed Wellness Kit,care,care,,care_accessories,1299,YES,NO,YES
+indian spitz,Indian Spitz Birthday Cake,celebrate,celebrate,,breed-cakes,1899,YES,NO,YES
+indian spitz,Indian Spitz Ceramic Mug,celebrate,celebrate|shop,,cups_merch,599,YES,NO,YES
+indian spitz,Indian Spitz Designer Bandana,celebrate,celebrate|shop,,bandanas,399,YES,NO,YES
+indian spitz,Indian Spitz Photo Frame,celebrate,celebrate|farewell,,accessories,799,YES,NO,YES
+indian spitz,Indian Spitz Treat Box,celebrate,celebrate,,celebration_addons,699,YES,NO,YES
+indian spitz,Indian Spitz Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+indian spitz,Indian Spitz Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+indian spitz,Indian Spitz Canvas Print,celebrate,celebrate|shop,,cups_merch,1299,YES,NO,YES
+indian spitz,Indian Spitz Party Hat,celebrate,celebrate,,celebration_addons,249,YES,NO,YES
+indian spitz,Indian Spitz Breed Food Mat,dine,dine,,dine_accessories,599,YES,NO,YES
+indian spitz,Indian Spitz Breed Recipe Card,dine,dine,,dine_accessories,299,YES,NO,YES
+indian spitz,Indian Spitz Breed Ceramic Bowl,dine,dine|shop,,dine_accessories,899,YES,NO,YES
+indian spitz,Indian Spitz Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+indian spitz,Indian Spitz Breed Adventure Bandana,go,go,,go_accessories,399,YES,NO,YES
+indian spitz,Indian Spitz Breed Travel Tag,go,go,,go_accessories,299,YES,NO,YES
+indian spitz,Indian Spitz Breed Trail Guide,go,go,,go_accessories,499,YES,NO,YES
+indian spitz,Indian Spitz Breed Play Bandana,play,play,,play_accessories,399,YES,NO,YES
+indian spitz,Indian Spitz Breed Playdate Card,play,play,,play_accessories,299,YES,NO,YES
+indian spitz,Indian Spitz Breed Activity Print,play,celebrate|play,,play_accessories,899,YES,NO,YES
+indian spitz,Indian Spitz Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+indian spitz,Indian Spitz Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+indian spitz,Indian Spitz Breed Keychain,shop,celebrate|shop,,accessories,199,YES,NO,YES
+indie,Indian Pariah Dog Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+indie,Indian Pariah Dog Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+indie,Indie Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+indie,Indie Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+indie,Indian Pariah Dog Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+indie,Indie Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+indie,Indian Pariah Dog Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+indie,Indian Pariah Dog Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+indie,Indie Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+indie,Indie Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+irish_setter,Irish Setter Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+irish_setter,Irish Setter Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+irish_setter,Irish Setter Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+irish_setter,Irish Setter Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+irish_setter,Irish Setter Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+italian_greyhound,Italian Greyhound Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+italian_greyhound,Italian Greyhound Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+italian_greyhound,Italian Greyhound Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+italian_greyhound,Italian Greyhound Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+italian_greyhound,Italian Greyhound Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+jack_russell,Jack Russell Terrier Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+jack_russell,Jack Russell Terrier Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+jack_russell,Jack Russell Terrier Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+jack_russell,Jack Russell Terrier Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+jack_russell,Jack Russell Terrier Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+labradoodle,Labradoodle Breed Grooming Guide,care,care,,care_accessories,399,YES,NO,YES
+labradoodle,Labradoodle Breed Portrait Frame,care,care|celebrate,,care_accessories,799,YES,NO,YES
+labradoodle,Labradoodle Breed Wellness Kit,care,care,,care_accessories,1299,YES,NO,YES
+labradoodle,Labradoodle Birthday Cake,celebrate,celebrate,,breed-cakes,1899,YES,NO,YES
+labradoodle,Labradoodle Ceramic Mug,celebrate,celebrate|shop,,cups_merch,599,YES,NO,YES
+labradoodle,Labradoodle Designer Bandana,celebrate,celebrate|shop,,bandanas,399,YES,NO,YES
+labradoodle,Labradoodle Photo Frame,celebrate,celebrate|farewell,,accessories,799,YES,NO,YES
+labradoodle,Labradoodle Treat Box,celebrate,celebrate,,celebration_addons,699,YES,NO,YES
+labradoodle,Labradoodle Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+labradoodle,Labradoodle Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+labradoodle,Labradoodle Canvas Print,celebrate,celebrate|shop,,cups_merch,1299,YES,NO,YES
+labradoodle,Labradoodle Party Hat,celebrate,celebrate,,celebration_addons,249,YES,NO,YES
+labradoodle,Labradoodle Breed Food Mat,dine,dine,,dine_accessories,599,YES,NO,YES
+labradoodle,Labradoodle Breed Recipe Card,dine,dine,,dine_accessories,299,YES,NO,YES
+labradoodle,Labradoodle Breed Ceramic Bowl,dine,dine|shop,,dine_accessories,899,YES,NO,YES
+labradoodle,Labradoodle Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+labradoodle,Labradoodle Breed Adventure Bandana,go,go,,go_accessories,399,YES,NO,YES
+labradoodle,Labradoodle Breed Travel Tag,go,go,,go_accessories,299,YES,NO,YES
+labradoodle,Labradoodle Breed Trail Guide,go,go,,go_accessories,499,YES,NO,YES
+labradoodle,Labradoodle Breed Play Bandana,play,play,,play_accessories,399,YES,NO,YES
+labradoodle,Labradoodle Breed Playdate Card,play,play,,play_accessories,299,YES,NO,YES
+labradoodle,Labradoodle Breed Activity Print,play,celebrate|play,,play_accessories,899,YES,NO,YES
+labradoodle,Labradoodle Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+labradoodle,Labradoodle Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+labradoodle,Labradoodle Breed Keychain,shop,celebrate|shop,,accessories,199,YES,NO,YES
+labrador,Labrador Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+labrador,Labrador Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+labrador,Labrador Retriever Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+labrador,Labrador Retriever Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+labrador,Labrador Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+labrador,Labrador Retriever Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+labrador,Labrador Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+labrador,Labrador Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+labrador,Labrador Retriever Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+labrador,Labrador Retriever Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+lhasa_apso,Lhasa Apso Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+lhasa_apso,Lhasa Apso Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+lhasa_apso,Lhasa Apso Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+lhasa_apso,Lhasa Apso Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+lhasa_apso,Lhasa Apso Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+maltese,Maltese Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+maltese,Maltese Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+maltese,Maltese Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+maltese,Maltese Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+maltese,Maltese Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+maltipoo,Maltipoo Breed Grooming Guide,care,care,,care_accessories,399,YES,NO,YES
+maltipoo,Maltipoo Breed Portrait Frame,care,care|celebrate,,care_accessories,799,YES,NO,YES
+maltipoo,Maltipoo Breed Wellness Kit,care,care,,care_accessories,1299,YES,NO,YES
+maltipoo,Maltipoo Birthday Cake,celebrate,celebrate,,breed-cakes,1899,YES,NO,YES
+maltipoo,Maltipoo Ceramic Mug,celebrate,celebrate|shop,,cups_merch,599,YES,NO,YES
+maltipoo,Maltipoo Designer Bandana,celebrate,celebrate|shop,,bandanas,399,YES,NO,YES
+maltipoo,Maltipoo Photo Frame,celebrate,celebrate|farewell,,accessories,799,YES,NO,YES
+maltipoo,Maltipoo Treat Box,celebrate,celebrate,,celebration_addons,699,YES,NO,YES
+maltipoo,Maltipoo Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+maltipoo,Maltipoo Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+maltipoo,Maltipoo Canvas Print,celebrate,celebrate|shop,,cups_merch,1299,YES,NO,YES
+maltipoo,Maltipoo Party Hat,celebrate,celebrate,,celebration_addons,249,YES,NO,YES
+maltipoo,Maltipoo Breed Food Mat,dine,dine,,dine_accessories,599,YES,NO,YES
+maltipoo,Maltipoo Breed Recipe Card,dine,dine,,dine_accessories,299,YES,NO,YES
+maltipoo,Maltipoo Breed Ceramic Bowl,dine,dine|shop,,dine_accessories,899,YES,NO,YES
+maltipoo,Maltipoo Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+maltipoo,Maltipoo Breed Adventure Bandana,go,go,,go_accessories,399,YES,NO,YES
+maltipoo,Maltipoo Breed Travel Tag,go,go,,go_accessories,299,YES,NO,YES
+maltipoo,Maltipoo Breed Trail Guide,go,go,,go_accessories,499,YES,NO,YES
+maltipoo,Maltipoo Breed Play Bandana,play,play,,play_accessories,399,YES,NO,YES
+maltipoo,Maltipoo Breed Playdate Card,play,play,,play_accessories,299,YES,NO,YES
+maltipoo,Maltipoo Breed Activity Print,play,celebrate|play,,play_accessories,899,YES,NO,YES
+maltipoo,Maltipoo Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+maltipoo,Maltipoo Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+maltipoo,Maltipoo Breed Keychain,shop,celebrate|shop,,accessories,199,YES,NO,YES
+pomeranian,Pomeranian Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+pomeranian,Pomeranian Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+pomeranian,Pomeranian Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+pomeranian,Pomeranian Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+pomeranian,Pomeranian Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+poodle,Poodle Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+poodle,Poodle Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+poodle,Poodle Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+poodle,Poodle Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+poodle,Poodle Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+pug,Pug Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+pug,Pug Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+pug,Pug Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+pug,Pug Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+pug,Pug Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+rottweiler,Rottweiler Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+rottweiler,Rottweiler Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+rottweiler,Rottweiler Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+rottweiler,Rottweiler Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+rottweiler,Rottweiler Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+samoyed,Samoyed Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+samoyed,Samoyed Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+samoyed,Samoyed Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+samoyed,Samoyed Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+samoyed,Samoyed Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+schnoodle,Schnoodle Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+schnoodle,Schnoodle Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+schnoodle,Schnoodle Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+schnoodle,Schnoodle Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+schnoodle,Schnoodle Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+scottish_terrier,Scottish Terrier Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+scottish_terrier,Scottish Terrier Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+scottish_terrier,Scottish Terrier Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+scottish_terrier,Scottish Terrier Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+scottish_terrier,Scottish Terrier Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+shih_tzu,Shih Tzu Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+shih_tzu,Shih Tzu Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+shih_tzu,Shih Tzu Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+shih_tzu,Shih Tzu Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+shih_tzu,Shih Tzu Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+siberian_husky,Siberian Husky Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+siberian_husky,Siberian Husky Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+siberian_husky,Siberian Husky Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+siberian_husky,Siberian Husky Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+siberian_husky,Siberian Husky Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+st_bernard,Saint Bernard Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+st_bernard,Saint Bernard Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+st_bernard,St Bernard Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+st_bernard,St Bernard Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,NO,YES
+st_bernard,Saint Bernard Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+st_bernard,St Bernard Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+st_bernard,Saint Bernard Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+st_bernard,Saint Bernard Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+st_bernard,St Bernard Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+st_bernard,St Bernard Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+vizsla,Vizsla Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+vizsla,Vizsla Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+vizsla,Vizsla Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+vizsla,Vizsla Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+vizsla,Vizsla Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+weimaraner,Weimaraner Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+weimaraner,Weimaraner Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+weimaraner,Weimaraner Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+weimaraner,Weimaraner Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+weimaraner,Weimaraner Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
+yorkshire,Yorkshire Terrier Custom Portrait,celebrate,celebrate|farewell|shop,,breed-custom_portraits,2499,YES,NO,YES
+yorkshire,Yorkshire Terrier Birthday Cake Topper,celebrate,celebrate,,breed-birthday_cake_toppers,499,YES,YES,YES
+yorkshire,Yorkshire Terrier Memory Box,farewell,celebrate|farewell,,breed-memory_boxes,3499,YES,NO,YES
+yorkshire,Yorkshire Terrier Phone Case,shop,celebrate|shop,,breed-phone_cases,799,YES,NO,YES
+yorkshire,Yorkshire Terrier Framed Wall Art,shop,celebrate|shop,,breed-wall_art,1899,YES,NO,YES
