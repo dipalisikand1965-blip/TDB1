@@ -944,7 +944,23 @@ const ProductBoxEditor = ({
 
                 {/* Sub-Category — dynamic dropdown */}
                 <div>
-                  <Label>Sub-Category</Label>
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
+                    <Label>Sub-Category</Label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const breed = getValue('breed','') || 'all';
+                        const pillar = getValue('pillar','') || 'general';
+                        const auto = `${breed.toLowerCase()}-${pillar}`;
+                        updateField('commerce_ops.subcategory', auto);
+                        updateField('sub_category', auto);
+                      }}
+                      style={{ fontSize:10, color:"#7C3AED", background:"none", border:"1px solid #7C3AED",
+                               borderRadius:4, padding:"2px 8px", cursor:"pointer", fontWeight:600 }}
+                    >
+                      Auto-fill
+                    </button>
+                  </div>
                   <select
                     value={getValue('commerce_ops.subcategory', '') || getValue('sub_category', '')}
                     onChange={(e) => {
@@ -967,7 +983,10 @@ const ProductBoxEditor = ({
                       </option>
                     )}
                   </select>
-                  <p className="text-xs text-gray-400 mt-1">Sub-section within the pillar. Categories are managed from the database.</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Sub-section within the pillar. 
+                    Auto formula: <strong>{getValue('breed','') || 'all'}-{getValue('pillar','') || 'general'}</strong>
+                  </p>
                 </div>
 
                 {/* Pillar Status — activate/deactivate per pillar */}
