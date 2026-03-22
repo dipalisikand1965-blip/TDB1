@@ -236,6 +236,7 @@ const FarewellSoulPage = () => {
   const [prodTab,  setProdTab]  = useState("Memorial & Legacy");
   const [petData,  setPetData]  = useState(null);
   const [apiProducts, setApiProducts] = useState({});
+  const [breedProds,  setBreedProds]  = useState([]);
   const [services, setServices]       = useState([]);
   const [conciergeOpen, setConciergeOpen] = useState(false);
   const [conciergeSvc,  setConciergeSvc]  = useState("");
@@ -250,6 +251,29 @@ const FarewellSoulPage = () => {
     }).catch(()=>{});
     fetch(`${API_URL}/api/service-box/services?pillar=farewell`).then(r=>r.ok?r.json():null).then(d=>{if(d?.services)setServices(d.services);}).catch(()=>{});
   },[]);
+
+  // Fetch breed-specific farewell products from breed_products collection
+  useEffect(()=>{
+    if(!petData?.breed) return;
+    const breedKey = encodeURIComponent(petData.breed.split("(")[0].trim().toLowerCase());
+    fetch(`${API_URL}/api/admin/breed-products?breed=${breedKey}&is_active=true&limit=50`)
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{
+        const prods = (d?.products||[]).filter(p=>{
+          const b = (p.breed||"").toLowerCase();
+          return b !== "all" && b !== "";
+        }).map(p=>({
+          ...p,
+          id: p.id||p._id,
+          name: p.name||p.product_type||"Soul Made Item",
+          image_url: p.cloudinary_url||p.mockup_url||p.image_url||"",
+          price: p.price||0,
+          pillar: "farewell",
+          category: "Memorial & Legacy",
+        }));
+        setBreedProds(prods);
+      }).catch(()=>{});
+  },[petData?.breed]);
 
   const petName = petData?.name || "your dog";
   const breed   = petData?.breed||"";
@@ -333,10 +357,7 @@ const FarewellSoulPage = () => {
               );
 
               const tabProds = prodTab === "breed"
-                ? allProds.filter(p => {
-                    const nm = (p.name||"").toLowerCase();
-                    return breed ? nm.includes(breed.split("(")[0].trim().toLowerCase()) : true;
-                  }).slice(0, 12)
+                ? breedProds.slice(0, 12)
                 : allProds.filter(p => (p.category||"") === prodTab).slice(0, 12);
 
               return (
@@ -353,8 +374,16 @@ const FarewellSoulPage = () => {
                   {tabProds.length === 0 ? (
                     <div style={{textAlign:"center",padding:"32px 0",color:"#888"}}>
                       <div style={{fontSize:32,marginBottom:10}}>🌷</div>
-                      <p style={{fontWeight:600,marginBottom:8}}>Memorial products being curated with love</p>
-                      <p style={{fontSize:13,marginBottom:16}}>Mira is sourcing {breed||petName}-specific items for this category.</p>
+                      <p style={{fontWeight:600,marginBottom:8}}>
+                        {prodTab==="breed"
+                          ? `${breed||petName}-specific farewell pieces being created`
+                          : "Memorial products being curated with love"}
+                      </p>
+                      <p style={{fontSize:13,marginBottom:16}}>
+                        {prodTab==="breed"
+                          ? `We're designing farewell keepsakes just for ${breed||petName}s.`
+                          : `Mira is sourcing ${breed||petName}-specific items for this category.`}
+                      </p>
                       <button onClick={()=>setConciergeOpen(true)} style={{background:`linear-gradient(135deg,${G.indigo},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"10px 24px",fontSize:13,fontWeight:700,cursor:"pointer"}}>Ask Mira for guidance →</button>
                     </div>
                   ) : (
@@ -417,16 +446,7 @@ const FarewellSoulPage = () => {
         )}
       </div>
 
-      {/* Soul Farewell — Breed-specific memorial products */}
-      {petData && (
-        <div style={{ padding:"0 16px", marginBottom:32 }}>
-          <SoulMadeCollection
-            pillar="farewell"
-            maxItems={12}
-            showTitle={true}
-          />
-        </div>
-      )}
+      {/* Soul Farewell — Breed-specific memorial products (rendered via breed tab above) */}
 
       <ConciergeToast toast={toastVisible?{name:toastSvc,pillar:"farewell"}:null} onClose={()=>setToastVisible(false)}/>
       <FarewellConciergeModal isOpen={conciergeOpen} onClose={()=>setConciergeOpen(false)} petName={petName} petId={petData?.id} token={token} preSelected={conciergeSvc}/>

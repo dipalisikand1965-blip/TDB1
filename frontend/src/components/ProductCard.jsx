@@ -517,7 +517,11 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
             </p>
           )}
 
-          <h3 className="font-semibold text-gray-900 line-clamp-2 text-xs sm:text-sm">{product.name}</h3>
+          <h3 className="font-semibold text-gray-900 line-clamp-2 text-xs sm:text-sm">
+            {product.breed === "all" && (product.name||"").includes(" · ")
+              ? (product.name||"").split(" · ").slice(1).join(" · ")
+              : (product.name||"")}
+          </h3>
 
           {minPrice > 0 ? (
             <p className="text-sm sm:text-base font-bold text-gray-900">
@@ -1214,7 +1218,11 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
               </div>
             )}
 
-            <h2 className="text-xl font-bold text-gray-900 mb-2 pr-8">{product.name}</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-2 pr-8">
+              {product.breed === "all" && (product.name||"").includes(" · ")
+                ? (product.name||"").split(" · ").slice(1).join(" · ")
+                : (product.name||"")}
+            </h2>
             
             {/* Full Description - Expandable */}
             {product.description && (
