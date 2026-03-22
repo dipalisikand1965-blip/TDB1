@@ -33,7 +33,6 @@ import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
-import SoulMadeModal from "../components/SoulMadeModal";
 
 // ── Colour — clean slate, every pillar's colour shows through ─
 const G = {
@@ -573,7 +572,6 @@ const ServicesSoulPage = () => {
   const [toastVisible,  setToastVisible]  = useState(false);
   const [toastSvc,      setToastSvc]      = useState("");
   const [search,        setSearch]        = useState("");
-  const [soulMadeOpen,  setSoulMadeOpen]  = useState(false);
 
   // Fetch all services from all real pillars
   useEffect(() => {
@@ -700,17 +698,7 @@ const ServicesSoulPage = () => {
           <PillarSoulProfile pet={petData} token={token} pillar="services" color="#6366F1" />
         )}
 
-        {/* ── SOUL MADE™ TRIGGER ── */}
-        {petData?.name && (
-          <div data-testid="soul-made-trigger" style={{margin:'16px 0 24px',padding:'16px',background:'#0EA5E908',border:'1px solid #0EA5E920',borderRadius:16,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer'}} onClick={()=>setSoulMadeOpen(true)}>
-            <div>
-              <div style={{fontSize:13,fontWeight:700,color:'#0EA5E9',marginBottom:3}}>✦ Soul Made™ — Make it personal</div>
-              <div style={{fontSize:12,color:'rgba(245,240,232,0.4)'}}>Upload {petData.name}'s photo · Concierge® creates it · Price on WhatsApp</div>
-            </div>
-            <div style={{fontSize:20,color:'#0EA5E960'}}>›</div>
-          </div>
-        )}
-        {soulMadeOpen && <SoulMadeModal pet={petData} pillar="services" pillarColor="#0EA5E9" pillarLabel="Services" onClose={()=>setSoulMadeOpen(false)}/>}
+        {/* Soul Made handled inside PersonalisedBreedSection if used */}
 
         {/* Search */}
         <div style={{ marginBottom:16 }}>

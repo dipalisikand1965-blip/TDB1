@@ -28,7 +28,6 @@ import PillarPageLayout from "../components/PillarPageLayout";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
-import SoulMadeModal from "../components/SoulMadeModal";
 import ConciergeToast from "../components/common/ConciergeToast";
 import LearnNearMe from "../components/learn/LearnNearMe";
 import GuidedLearnPaths from "../components/learn/GuidedLearnPaths";
@@ -1772,7 +1771,6 @@ const LearnSoulPage = () => {
   const [conciergeType,  setConciergeType]  = useState('');
   const [toastVisible,   setToastVisible]   = useState(false);
   const [toastSvc,    setToastSvc]    = useState("");
-  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const miraPicksRef = useRef(null);
 
   const handleBook = useCallback((svc) => {
@@ -1972,17 +1970,7 @@ const LearnSoulPage = () => {
             {/* Mira Picks */}
             <div ref={miraPicksRef}><MiraPicksSection pet={petData}/></div>
 
-            {/* ── SOUL MADE™ TRIGGER ── */}
-            {petData?.name && (
-              <div data-testid="soul-made-trigger" style={{margin:'16px 0 24px',padding:'16px',background:`${G.violet}08`,border:`1px solid ${G.violet}20`,borderRadius:16,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer'}} onClick={()=>setSoulMadeOpen(true)}>
-                <div>
-                  <div style={{fontSize:13,fontWeight:700,color:G.violet,marginBottom:3}}>✦ Soul Made™ — Make it personal</div>
-                  <div style={{fontSize:12,color:'rgba(245,240,232,0.4)'}}>Upload {petData.name}'s photo · Concierge® creates it · Price on WhatsApp</div>
-                </div>
-                <div style={{fontSize:20,color:`${G.violet}60`}}>›</div>
-              </div>
-            )}
-            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="learn" pillarColor={G.violet} pillarLabel="Learning" onClose={()=>setSoulMadeOpen(false)}/>}
+            {/* Soul Made handled inside PersonalisedBreedSection */}
 
             {/* Guided Learning Paths */}
             <GuidedLearnPaths pet={petData} />

@@ -41,7 +41,6 @@ import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
-import SoulMadeModal from "../components/SoulMadeModal";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 
@@ -1380,7 +1379,6 @@ const PlaySoulPage = () => {
   const [prefetchedServices, setPrefetchedServices] = useState([]);
   const [conciergeToast, setConciergeToast] = useState(null);
   const miraPicksRef = useRef(null);
-  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
 
   usePlatformTracking({ pillar: "play", pet: currentPet });
 
@@ -1557,17 +1555,7 @@ const PlaySoulPage = () => {
               <MiraPicksSection pet={petData} />
             </div>
 
-            {/* ── SOUL MADE™ TRIGGER ── */}
-            {petData?.name && (
-              <div data-testid="soul-made-trigger" style={{margin:'16px 0 24px',padding:'16px',background:`${G.orange}08`,border:`1px solid ${G.orange}20`,borderRadius:16,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer'}} onClick={()=>setSoulMadeOpen(true)}>
-                <div>
-                  <div style={{fontSize:13,fontWeight:700,color:G.orange,marginBottom:3}}>✦ Soul Made™ — Make it personal</div>
-                  <div style={{fontSize:12,color:'rgba(245,240,232,0.4)'}}>Upload {petData.name}'s photo · Concierge® creates it · Price on WhatsApp</div>
-                </div>
-                <div style={{fontSize:20,color:`${G.orange}60`}}>›</div>
-              </div>
-            )}
-            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="play" pillarColor={G.orange} pillarLabel="Play" onClose={()=>setSoulMadeOpen(false)}/>}
+            {/* Soul Made handled inside PersonalisedBreedSection */}
 
             <section style={{ paddingBottom:16 }} data-testid="play-explore-section">
               <h2 style={{ fontSize:"clamp(1.375rem,3vw,1.875rem)", fontWeight:800, color:G.darkText, marginBottom:6, fontFamily:"Georgia,serif", lineHeight:1.2 }}>

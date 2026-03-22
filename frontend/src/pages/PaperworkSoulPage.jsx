@@ -27,7 +27,6 @@ import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import SoulMadeCollection from "../components/SoulMadeCollection";
-import SoulMadeModal from "../components/SoulMadeModal";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import ConciergeToast from "../components/common/ConciergeToast";
 import GuidedPaperworkPaths from "../components/paperwork/GuidedPaperworkPaths";
@@ -635,7 +634,6 @@ const PaperworkSoulPage = () => {
   const [toastVisible,  setToastVisible]  = useState(false);
   const [toastSvc,      setToastSvc]      = useState("");
   const [selProd,       setSelProd]       = useState(null); // ProductDetailModal
-  const [soulMadeOpen,  setSoulMadeOpen]  = useState(false);
   const miraRef = useRef(null);
 
   const handleBook = useCallback(async (svc) => {
@@ -815,17 +813,7 @@ const PaperworkSoulPage = () => {
             {/* Mira picks */}
             <div ref={miraRef}><MiraPicksSection pet={petData} onSelectProd={setSelProd}/></div>
 
-            {/* ── SOUL MADE™ TRIGGER ── */}
-            {petData?.name && (
-              <div data-testid="soul-made-trigger" style={{margin:'16px 0 24px',padding:'16px',background:`${G.teal}08`,border:`1px solid ${G.teal}20`,borderRadius:16,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer'}} onClick={()=>setSoulMadeOpen(true)}>
-                <div>
-                  <div style={{fontSize:13,fontWeight:700,color:G.teal,marginBottom:3}}>✦ Soul Made™ — Make it personal</div>
-                  <div style={{fontSize:12,color:'rgba(245,240,232,0.4)'}}>Upload {petData.name}'s photo · Concierge® creates it · Price on WhatsApp</div>
-                </div>
-                <div style={{fontSize:20,color:`${G.teal}60`}}>›</div>
-              </div>
-            )}
-            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="paperwork" pillarColor={G.teal} pillarLabel="Documents" onClose={()=>setSoulMadeOpen(false)}/>}
+            {/* Soul Made handled inside PersonalisedBreedSection */}
 
             <GuidedPaperworkPaths pet={petData}/>
 
