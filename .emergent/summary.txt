@@ -1,0 +1,17 @@
+<analysis>/notifications/notificationsenjoyplaytravelgoEnjoyPage.jsxFitPage.jsxTravelPage.jsxSoulMadeCollection.jsxplaygosearch_replace/play/gopillar=enjoypillar=playEnjoyPage.jsxFitPage.jsxTravelPage.jsxStayPage.jsxEMOTIONAL_COLLECTIONS/app/frontend/src/components/SoulMadeCollection.jsxShopSoulPage.jsxSoulMadeCollection.jsxEnjoyPageTravelPageLoveMiraDemoPage.jsx/notificationsbreed_products_backup_20260322mockup_urlcloudinary_urlenjoyplaytravelgostaygofooddinememoryfarewelladventuregoProductBoxEditor.jsxUnifiedProductBox.jsx
+/app
+├── backend/
+│   ├── server.py                       # Main app, unified product queries
+│   ├── pillar_products_routes.py       # Handles dynamic categories per pillar
+│   ├── breed_catalogue.py              # Fetches soul/breed products
+│   └── mockup_routes.py                # Handles AI mockups sync
+└── frontend/
+    ├── src/
+    │   ├── components/admin/
+    │   │   ├── ProductBoxEditor.jsx    # Modal for creating/editing products
+    │   │   └── UnifiedProductBox.jsx   # Admin product list & filters
+    │   ├── components/SoulMadeCollection.jsx # Carousel for AI breed products
+    │   └── pages/
+    │       ├── NotificationsInbox.jsx  # New Member Inbox
+    │       └── [Pillar]Pages.jsx       # Individual pillar views (Enjoy, Travel, etc.)
+GET /api/admin/pillar-products/sectionsmessagessendermirabreed_productsproducts_master/app/frontend/src/components/SoulMadeCollection.jsx/app/frontend/src/pages/NotificationsInbox.jsx/app/frontend/src/components/admin/ProductBoxEditor.jsx/app/frontend/src/components/admin/UnifiedProductBox.jsx/app/memory/NEXT_AGENT_BRIEFING.mdEnjoyPageTravelPagePlayPageGoPageGET /api/admin/pillar-products/sections?pillar={pillar}GET /api/mockups/breed-products?breed={breed}GET /member/notifications/inbox/{user_email}_backup_20260322playgodinefarewellProductBoxEditormockup_urlcloudinary_urlSoulMadeCollectiondipali@clubconcierge.intest123adityalola4304/adminSoulMadeCollection.jsx</analysis>

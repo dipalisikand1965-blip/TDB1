@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://health-vault-loop.preview.emergentagent.com/mira-demo**
+**https://concierge-platform-4.preview.emergentagent.com/mira-demo**
 
 ---
 
