@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://soul-chapters.preview.emergentagent.com
+https://pillar-launch.preview.emergentagent.com
 ```
 
 ---
