@@ -77,7 +77,7 @@ const CSS = `
 async function uploadToCloudinary(file, token) {
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('upload_preset', 'soul_made');
+  formData.append('upload_preset', 'tdc_custom_orders');
 
   try {
     // Try backend upload endpoint first
