@@ -58,6 +58,16 @@ Build a production-ready pet life management platform with 12 core pillars, AI c
 - Empty chapters show "Tap to tell Mira →" (invitation, not blank)
 - Works for all pets: filled (Mojo 100%), partial (Buddy 76%), empty (Coco 0%)
 
+### Session Mar 2026 — Soul Chapter Modal (Interactive)
+- **Clicking a chapter card** opens a chapter-specific modal (NOT soul-builder intro page)
+- **"What Mira Knows"** section shows all answered questions as readable key-value cards
+- **"Tell Mira More"** section shows unanswered questions with clickable option buttons
+- **Live answer submission** via `/api/pet-soul/profile/{pet_id}/answer` with score recalculation
+- **Points indicator** (+X pts added) shows after each successful answer
+- **Complete state** shows "{name}'s {chapter} profile is complete" when all questions answered
+- All 8 backend folders mapped to 6 dashboard chapters (identity→identity_temperament, behaviour→rhythm_routine+home_comforts, health→long_horizon, social→family_pack, nutrition→taste_treat, learning→training_behaviour+travel_style)
+- Component: `/app/frontend/src/components/SoulChapterModal.jsx`
+
 ## Prioritized Backlog
 
 ### P0 — Production Deployment
