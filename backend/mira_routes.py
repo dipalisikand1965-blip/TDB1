@@ -21299,8 +21299,8 @@ async def get_dog_friendly_places(pet_id: str, city: str = "Mumbai", limit: int 
 async def get_personalization_stats(pet_id: str):
     """
     Get personalization stats for the ticker.
-    Shows everything Mira knows about this pet - their soul, preferences, breed traits.
-    This powers the dynamic "Soul Knowledge Ticker" in the UI.
+    Shows everything Mira knows about this pet — soul profile + Health Vault.
+    Powers the dynamic "Soul Knowledge Ticker" in the admin ticket sidebar.
     """
     db = get_db()
     
@@ -21311,7 +21311,9 @@ async def get_personalization_stats(pet_id: str):
             "favorites": 1, "allergies": 1, "personality": 1,
             "breed": 1, "birthday": 1, "gotcha_day": 1,
             "vaccinations": 1, "preferences": 1, "health": 1,
-            "doggy_soul_answers": 1, "soul": 1, "_id": 0
+            "doggy_soul_answers": 1, "soul": 1,
+            "vault": 1, "current_weight_kg": 1,
+            "_id": 0
         }
     )
     
@@ -21496,6 +21498,56 @@ async def get_personalization_stats(pet_id: str):
                 }.get(topic.lower(), "💭")
                 add_knowledge(icon, display_text, "memory", 5)
     
+    # ═══════════════════════════════════════════════════════════════════
+    # HEALTH VAULT — vet-confirmed records (highest priority)
+    # ═══════════════════════════════════════════════════════════════════
+    vault = pet.get("vault") or {}
+
+    # Vault allergies override soul answers — vet-confirmed = ground truth
+    vault_allergy_objs = vault.get("allergies", [])
+    if vault_allergy_objs:
+        for a in vault_allergy_objs[:3]:
+            name_a = a.get("name", "")
+            sev    = a.get("severity", "")
+            confirmed = a.get("confirmed_by", "")
+            if name_a:
+                label = f"⚠️ NO {name_a.upper()}"
+                if sev:    label += f" ({sev})"
+                if confirmed: label += f" — confirmed by {confirmed}"
+                add_knowledge("⚠️", label, "health", 10, True, "Allergy — never suggest this")
+
+    # Active medications
+    active_meds = [m for m in vault.get("medications", []) if m.get("active", True)]
+    for med in active_meds[:2]:
+        add_knowledge("💊", f"On {med['medication_name']} {med.get('dosage','')} — {med.get('frequency','')}", "health", 9)
+
+    # Upcoming vaccines
+    from datetime import date as _vdate
+    today_iso = _vdate.today().isoformat()
+    upcoming_vax = [v for v in vault.get("vaccines", []) if v.get("next_due_date","") >= today_iso]
+    for vax in upcoming_vax[:2]:
+        days = ((_vdate.fromisoformat(vax["next_due_date"][:10])) - _vdate.today()).days
+        urgency = 10 if days <= 0 else 9 if days <= 7 else 7
+        add_knowledge("💉", f"{vax['vaccine_name']} {'OVERDUE' if days <= 0 else f'due in {days}d'}", "health", urgency, urgency >= 9, "Book vet via Concierge®")
+
+    # Primary vet
+    vets = vault.get("vets", [])
+    pvet = next((v for v in vets if v.get("is_primary")), vets[0] if vets else None)
+    if pvet:
+        add_knowledge("🏥", f"Vet: {pvet.get('name','')} — {pvet.get('clinic_name','')} {pvet.get('phone','')}", "health", 6)
+
+    # Last vet visit
+    visits = vault.get("visits", [])
+    if visits:
+        lv = visits[-1]
+        add_knowledge("📋", f"Last visit: {lv.get('reason','')} ({lv.get('visit_date','')[:10]})", "health", 5)
+
+    # Current weight
+    wh = vault.get("weight_history", [])
+    kg = (wh[-1].get("weight_kg") if wh else None) or pet.get("current_weight_kg")
+    if kg:
+        add_knowledge("⚖️", f"Weight: {kg}kg", "health", 5)
+
     # ═══════════════════════════════════════════════════════════════════
     # SPECIAL DATES
     # ═══════════════════════════════════════════════════════════════════

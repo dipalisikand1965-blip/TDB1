@@ -959,19 +959,27 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     try {
       let petFound = false;
       
-      // Try to fetch pet profile by pet_info.id first
-      if (ticket.pet_info?.id) {
-        const petRes = await fetch(`${getApiUrl()}/api/pets/${ticket.pet_info.id}`, { headers: authHeaders });
+      // ── Pet: try pet_info.id first, then pet_id (new ticket format) ──
+      const petId = ticket.pet_info?.id || ticket.pet_id;
+      if (petId) {
+        const petRes = await fetch(`${getApiUrl()}/api/pets/${petId}`, { headers: authHeaders });
         if (petRes.ok) {
           const petData = await petRes.json();
           setPetProfile(petData.pet || petData);
           petFound = true;
         }
       }
+
+      // ── Member: use ticket.member directly if populated (new tickets) ──
+      const memberEmail = ticket.member?.email || (ticket.user_email);
+      if (ticket.member?.name && ticket.member.name !== 'Pet Parent') {
+        // New ticket format — member already resolved, use it directly
+        setMemberProfile(ticket.member);
+      }
       
-      // Try to fetch member profile by email
-      if (ticket.member?.email) {
-        const memberRes = await fetch(`${getApiUrl()}/api/admin/members/search?email=${encodeURIComponent(ticket.member.email)}`, { headers: authHeaders });
+      // Still do API search to get full member profile (orders, full data)
+      if (memberEmail) {
+        const memberRes = await fetch(`${getApiUrl()}/api/admin/members/search?email=${encodeURIComponent(memberEmail)}`, { headers: authHeaders });
         if (memberRes.ok) {
           const memberData = await memberRes.json();
           if (memberData.members?.[0]) {
@@ -983,7 +991,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
               if (ordersRes.ok) {
                 const ordersData = await ordersRes.json();
                 // Filter orders by email
-                const userOrders = (ordersData.orders || []).filter(o => o.email === ticket.member.email);
+                const userOrders = (ordersData.orders || []).filter(o => o.email === memberEmail);
                 setOrderHistory(userOrders);
               }
             } catch (e) {
@@ -992,21 +1000,31 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           }
         }
         
-        // FALLBACK: If no pet found yet, try to get member's pets by email
-        if (!petFound) {
+        // FALLBACK: If no pet found yet, try member's pets by email
+        if (!petFound && memberEmail) {
           try {
-            const memberPetsRes = await fetch(`${getApiUrl()}/api/admin/members/${encodeURIComponent(ticket.member.email)}/pets`, { headers: authHeaders });
+            const memberPetsRes = await fetch(`${getApiUrl()}/api/admin/members/${encodeURIComponent(memberEmail)}/pets`, { headers: authHeaders });
             if (memberPetsRes.ok) {
               const petsData = await memberPetsRes.json();
-              // Use the first pet (primary pet) if found
               if (petsData.pets?.length > 0) {
                 setPetProfile(petsData.pets[0]);
-                console.log('Pet Profile loaded via member email fallback:', petsData.pets[0]?.name);
+                petFound = true;
               }
             }
           } catch (e) {
             console.debug('Could not fetch pets by member email:', e);
           }
+        }
+
+        // LAST RESORT: if still no pet, try pet_name lookup
+        if (!petFound && ticket.pet_name) {
+          try {
+            const nameRes = await fetch(`${getApiUrl()}/api/admin/pets/search?name=${encodeURIComponent(ticket.pet_name)}`, { headers: authHeaders });
+            if (nameRes.ok) {
+              const nd = await nameRes.json();
+              if (nd.pets?.[0]) setPetProfile(nd.pets[0]);
+            }
+          } catch (e) { console.debug('pet name search failed', e); }
         }
       }
     } catch (err) {
