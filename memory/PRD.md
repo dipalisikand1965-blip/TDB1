@@ -70,6 +70,24 @@ Build a robust, architecturally consistent, and highly performant Pet Life OS pl
 
 ### Prioritized Backlog
 
+**Session: March 22, 2026 (Fork 3) — COMPLETE ✅**
+
+**6. EMOTIONAL_COLLECTIONS Pillar Alignment — COMPLETE ✅**
+- Replaced old `stay`/`travel` keys with `play`/`go`/`learn`/`shop`/`emergency`/`adopt`/`advisory`/`default`
+- Pillar pages (Play, Go, Dine, Farewell) now show correct section names & emojis
+- Added safe `exclude?.length` check; new `default` fallback replaces old `celebrate` fallback
+
+**7. Shop Breed Collection — Load More Pagination — COMPLETE ✅**
+- BreedCollectionSection refactored with skip-based pagination (12 per page)
+- Uses `cloudinary_url || mockup_url` for images (shows actual Cloudinary mockups)
+- "Load more for {petName} →" button; filter by type (Bandana, Mug, Frame, etc.)
+- All 3,305+ breed products now browsable from /shop
+
+**8. Empty-Breed Products Tagged — COMPLETE ✅**
+- 660 products with empty breed field → tagged as `breed="all"`
+- Backend `/api/admin/breed-products` and `/api/mockups/breed-products` now include `breed="all"` products in $or queries
+- Total visible soul products: 3,305 + 660 = 3,965
+
 **P1 — In Progress**
 - [ ] Multi-pillar product support (one product in multiple pillars with per-pillar categories)
 - [ ] Product type routing (service → ServiceBox, physical → ProductBox, bundle → Bundles)
@@ -77,7 +95,6 @@ Build a robust, architecturally consistent, and highly performant Pet Life OS pl
 
 **P1 — Not Started**
 - [ ] DB Pillar Migration for products_master and unified_products (BLOCKED: needs user backup confirmation)
-- [ ] Investigate 660 empty-breed products in breed_products
 - [ ] Activate inactive breeds: indian_spitz (25), labradoodle (25), maltipoo (25)
 
 **P2 — Future**
