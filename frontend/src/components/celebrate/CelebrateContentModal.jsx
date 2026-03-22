@@ -1389,10 +1389,22 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
   useEffect(() => { fetchData(); }, [fetchData]);
 
   // Filter products
-  const filteredProducts = activeFilter === 'all' ? products : products.filter(p =>
-    (p.life_stage || '').includes(activeFilter) ||
-    (p.dietary || '').includes(activeFilter)
-  );
+  const filteredProducts = (() => {
+    const base = activeFilter === 'all' ? products : products.filter(p =>
+      (p.life_stage || '').includes(activeFilter) ||
+      (p.dietary || '').includes(activeFilter)
+    );
+    // For cake categories, sort pet's breed to the top
+    if (['birthday-cakes', 'breed-cakes'].includes(category) && pet?.breed) {
+      const petBreed = (pet.breed || '').toLowerCase().replace(/[_\s]+/g, ' ');
+      return [...base].sort((a, b) => {
+        const aMatch = ((a.name || '') + ' ' + (a.title || '')).toLowerCase().includes(petBreed) ? 0 : 1;
+        const bMatch = ((b.name || '') + ' ' + (b.title || '')).toLowerCase().includes(petBreed) ? 0 : 1;
+        return aMatch - bMatch;
+      });
+    }
+    return base;
+  })();
 
   if (!isOpen) return null;
 
@@ -1603,56 +1615,86 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
             {/* ── NORMAL CATEGORIES layout ────────────────────────────── */}
             {category !== 'bundles' && category !== 'soul-picks' && category !== 'miras-picks' && (
               <>
-                {breedProducts.length > 0 && (
-                  <div className="mb-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-xs font-bold uppercase tracking-wider"
-                        style={{ color: '#FF8C42', letterSpacing: '0.06em' }}>
-                        ✦ {config.miraLabel}
-                      </span>
-                      <span className="rounded-full text-xs font-bold text-white px-2 py-0.5"
-                        style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)' }}>
-                        For {petName}
-                      </span>
-                    </div>
-                    <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
-                      {breedProducts.slice(0, 6).map((p, idx) => (
-                        <div key={p.id || idx} className="flex-shrink-0" style={{ width: 160 }}>
-                          <ProductCard product={p} pillar="celebrate" selectedPet={pet} size="small" />
+                {/* Pet's breed items first — own row for cake categories */}
+                {['birthday-cakes', 'breed-cakes'].includes(category) && pet?.breed && (() => {
+                  const petBreed = (pet.breed || '').toLowerCase().replace(/[_\s]+/g, ' ');
+                  const myBreedItems = filteredProducts.filter(p =>
+                    ((p.name || '') + ' ' + (p.title || '')).toLowerCase().includes(petBreed)
+                  );
+                  const otherItems = filteredProducts.filter(p =>
+                    !((p.name || '') + ' ' + (p.title || '')).toLowerCase().includes(petBreed)
+                  );
+                  if (myBreedItems.length === 0) return null;
+                  return (
+                    <>
+                      <div className="mb-6">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-xs font-bold uppercase tracking-wider"
+                            style={{ color: '#FF8C42', letterSpacing: '0.06em' }}>
+                            ✦ {petName}'s Breed
+                          </span>
+                          <span className="rounded-full text-xs font-bold text-white px-2 py-0.5"
+                            style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)' }}>
+                            {myBreedItems.length} {myBreedItems.length === 1 ? 'item' : 'items'}
+                          </span>
                         </div>
-                      ))}
-                    </div>
-                    <hr style={{ borderColor: '#F0E8E0', margin: '20px 0 16px' }} />
-                  </div>
-                )}
+                        <div className="grid gap-3"
+                          style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
+                          {myBreedItems.map((product, idx) => (
+                            <ProductCard key={product.id || idx} product={product} pillar="celebrate" selectedPet={pet} size="small" />
+                          ))}
+                        </div>
+                      </div>
+                      {otherItems.length > 0 && (
+                        <>
+                          <hr style={{ borderColor: '#F0E8E0', margin: '0 0 16px' }} />
+                          <p className="text-xs font-bold uppercase tracking-wider mb-3"
+                            style={{ color: '#888', letterSpacing: '0.06em' }}>
+                            All {config.label} — {otherItems.length} items
+                          </p>
+                          <div className="grid gap-3"
+                            style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
+                            {otherItems.map((product, idx) => (
+                              <ProductCard key={product.id || idx} product={product} pillar="celebrate" selectedPet={pet} size="small" />
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  );
+                })()}
 
-                {filteredProducts.length > 0 && (
-                  <p className="text-xs font-bold uppercase tracking-wider mb-3"
-                    style={{ color: '#888', letterSpacing: '0.06em' }}>
-                    All {config.label} — {filteredProducts.length} items
-                  </p>
-                )}
+                {/* Non-cake categories OR no breed match — show all */}
+                {(!['birthday-cakes', 'breed-cakes'].includes(category) || !pet?.breed || (() => {
+                  const petBreed = (pet?.breed || '').toLowerCase().replace(/[_\s]+/g, ' ');
+                  return filteredProducts.filter(p =>
+                    ((p.name || '') + ' ' + (p.title || '')).toLowerCase().includes(petBreed)
+                  ).length === 0;
+                })()) && (
+                  <>
+                    {filteredProducts.length > 0 && (
+                      <p className="text-xs font-bold uppercase tracking-wider mb-3"
+                        style={{ color: '#888', letterSpacing: '0.06em' }}>
+                        All {config.label} — {filteredProducts.length} items
+                      </p>
+                    )}
 
-                {filteredProducts.length > 0 ? (
-                  <div className="grid gap-3"
-                    style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
-                    {filteredProducts.map((product, idx) => (
-                      <ProductCard
-                        key={product.id || idx}
-                        product={product}
-                        pillar="celebrate"
-                        selectedPet={pet}
-                        size="small"
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <EmptyState config={config} onAskMira={() => {
-                    window.dispatchEvent(new CustomEvent('openMiraAI', {
-                      detail: { message: `Show me ${config.label} for ${petName}`, context: 'celebrate' }
-                    }));
-                    onClose();
-                  }} />
+                    {filteredProducts.length > 0 ? (
+                      <div className="grid gap-3"
+                        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
+                        {filteredProducts.map((product, idx) => (
+                          <ProductCard key={product.id || idx} product={product} pillar="celebrate" selectedPet={pet} size="small" />
+                        ))}
+                      </div>
+                    ) : (
+                      <EmptyState config={config} onAskMira={() => {
+                        window.dispatchEvent(new CustomEvent('openMiraAI', {
+                          detail: { message: `Show me ${config.label} for ${petName}`, context: 'celebrate' }
+                        }));
+                        onClose();
+                      }} />
+                    )}
+                  </>
                 )}
               </>
             )}
