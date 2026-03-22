@@ -115,6 +115,11 @@ const SoulProductsManager = () => {
   });
   const [creatingType, setCreatingType] = useState(false);
 
+  // Add Single Product state
+  const [addProductModal, setAddProductModal] = useState(false);
+  const [addProductData, setAddProductData] = useState({ name:'', breed:'', pillar:'', product_type:'', price:0, description:'', image_url:'', active:true });
+  const [savingSingleProduct, setSavingSingleProduct] = useState(false);
+
   // AI Mockup Generation status
   const [mockupGenStatus, setMockupGenStatus] = useState(null);
 
@@ -333,6 +338,31 @@ const SoulProductsManager = () => {
       else throw new Error();
     } catch { toast({ title: 'Delete failed', variant: 'destructive' }); }
     setDeletingId(null);
+  };
+
+  // ── Add Single Breed Product ──────────────────────────────────────────────
+  const createSingleProduct = async () => {
+    if (!addProductData.name || !addProductData.breed || !addProductData.pillar || !addProductData.product_type) {
+      toast({ title: 'Name, Breed, Pillar and Product Type are required', variant: 'destructive' }); return;
+    }
+    setSavingSingleProduct(true);
+    try {
+      const id = `breed-${addProductData.breed.toLowerCase().replace(/\s+/g,'_')}-${addProductData.product_type.toLowerCase().replace(/\s+/g,'_')}`;
+      const row = { ...addProductData, id, is_mockup: true, active: true, created_at: new Date().toISOString() };
+      const res = await fetch(`${API_URL}/api/admin/breed-products/import`, {
+        method: 'POST', headers: AUTH_HEADER,
+        body: JSON.stringify({ rows: [row] })
+      });
+      const data = await res.json();
+      if (data.upserted !== undefined || data.success) {
+        toast({ title: `Product "${addProductData.name}" added to Soul Picks!` });
+        setAddProductModal(false);
+        setAddProductData({ name:'', breed:'', pillar:'', product_type:'', price:0, description:'', image_url:'', active:true });
+        fetchBreedProducts(true);
+        fetchMockupStats();
+      } else throw new Error(data.error || 'Failed');
+    } catch (e) { toast({ title: e.message, variant: 'destructive' }); }
+    setSavingSingleProduct(false);
   };
 
   // ── New Product Type ─────────────────────────────────────────────────────
@@ -1061,6 +1091,9 @@ const SoulProductsManager = () => {
                 <Button onClick={() => { setImportModalOpen(true); setImportResults(null); }} variant="outline" size="sm" className="border-green-500 text-green-700">
                   <FileUp className="w-3 h-3 mr-1"/> Import CSV
                 </Button>
+                <Button onClick={() => setAddProductModal(true)} size="sm" variant="outline" className="border-green-500 text-green-700 hover:bg-green-50">
+                  <Plus className="w-3 h-3 mr-1"/> Add Single Product
+                </Button>
                 <Button onClick={() => setNewTypeModal(true)} size="sm" className="bg-purple-600 hover:bg-purple-700">
                   <Plus className="w-3 h-3 mr-1"/> New Product Type
                 </Button>
@@ -1716,6 +1749,77 @@ const SoulProductsManager = () => {
             <Button variant="outline" onClick={() => setImportModalOpen(false)}>Cancel</Button>
             <Button onClick={handleImport} disabled={!importFile||importLoading} className="bg-green-600 hover:bg-green-700">
               {importLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin"/> : <FileUp className="w-4 h-4 mr-2"/>}Import
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── ADD SINGLE SOUL PRODUCT MODAL ────────────────────────── */}
+      <Dialog open={addProductModal} onOpenChange={setAddProductModal}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><Plus className="w-4 h-4 text-green-600"/>Add Single Soul Product</DialogTitle></DialogHeader>
+          <p className="text-sm text-gray-500 pb-1">Add one product directly to a breed + pillar. It will appear in Soul Picks immediately.</p>
+          <div className="space-y-3 py-1">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">Product Name *</Label>
+                <Input placeholder="e.g. Indie Rain Jacket" value={addProductData.name} className="mt-1 text-sm"
+                  onChange={e => setAddProductData(d => ({...d, name: e.target.value}))}/>
+              </div>
+              <div>
+                <Label className="text-xs">Breed * (snake_case)</Label>
+                <Input placeholder="e.g. indie, labrador" value={addProductData.breed} className="mt-1 text-sm"
+                  onChange={e => setAddProductData(d => ({...d, breed: e.target.value.toLowerCase().replace(/\s+/g,'_')}))}/>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">Pillar *</Label>
+                <select value={addProductData.pillar} onChange={e => setAddProductData(d => ({...d, pillar: e.target.value}))}
+                  className="w-full mt-1 px-3 py-2 border rounded text-sm">
+                  <option value="">Select pillar…</option>
+                  {PILLARS.map(p => <option key={p} value={p}>{p}</option>)}
+                </select>
+              </div>
+              <div>
+                <Label className="text-xs">Product Type * (snake_case)</Label>
+                <Input placeholder="e.g. rain_jacket" value={addProductData.product_type} className="mt-1 text-sm"
+                  onChange={e => setAddProductData(d => ({...d, product_type: e.target.value.toLowerCase().replace(/\s+/g,'_')}))}/>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">Price (₹)</Label>
+                <Input type="number" value={addProductData.price} className="mt-1 text-sm"
+                  onChange={e => setAddProductData(d => ({...d, price: parseFloat(e.target.value)||0}))}/>
+              </div>
+              <div className="flex items-end pb-0.5">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={addProductData.active}
+                    onChange={e => setAddProductData(d => ({...d, active: e.target.checked}))}
+                    className="rounded"/>
+                  <span className="text-sm font-medium">Active (visible in Soul Picks)</span>
+                </label>
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">Image URL (Cloudinary)</Label>
+              <Input placeholder="https://res.cloudinary.com/duoapcx1p/image/upload/..." value={addProductData.image_url} className="mt-1 text-sm"
+                onChange={e => setAddProductData(d => ({...d, image_url: e.target.value}))}/>
+              {addProductData.image_url && <img src={addProductData.image_url} alt="preview" className="mt-2 w-20 h-20 object-cover rounded border"/>}
+            </div>
+            <div>
+              <Label className="text-xs">Description</Label>
+              <Textarea placeholder="Brief product description…" value={addProductData.description} className="mt-1 text-sm" rows={2}
+                onChange={e => setAddProductData(d => ({...d, description: e.target.value}))}/>
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setAddProductModal(false)}>Cancel</Button>
+            <Button onClick={createSingleProduct} disabled={savingSingleProduct||!addProductData.name||!addProductData.breed||!addProductData.pillar||!addProductData.product_type}
+              className="bg-green-600 hover:bg-green-700">
+              {savingSingleProduct ? <Loader2 className="w-4 h-4 mr-2 animate-spin"/> : <Plus className="w-4 h-4 mr-2"/>}
+              Add to Soul Picks
             </Button>
           </DialogFooter>
         </DialogContent>
