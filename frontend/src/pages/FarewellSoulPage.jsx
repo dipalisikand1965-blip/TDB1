@@ -261,7 +261,10 @@ const FarewellSoulPage = () => {
       .then(d=>{
         const prods = (d?.products||[]).filter(p=>{
           const b = (p.breed||"").toLowerCase();
-          return b !== "all" && b !== "";
+          if (b === "all" || b === "") return false;
+          // Only proper mockups (breed- prefix filename)
+          const fname = (p.cloudinary_url||p.mockup_url||"").split("/").pop();
+          return fname.startsWith("breed-");
         }).map(p=>({
           ...p,
           id: p.id||p._id,

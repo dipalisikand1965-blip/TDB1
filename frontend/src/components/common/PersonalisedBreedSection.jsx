@@ -43,7 +43,14 @@ export default function PersonalisedBreedSection({ pet, pillar = "play" }) {
     fetch(`${API_URL}/api/breed-catalogue/products?pillar=${pillar}&breed=${breedEncoded}&limit=20`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
-        if (data?.products?.length) setProducts(data.products);
+        const raw = data?.products || [];
+        // Safety net: only proper mockups (breed- prefix filename)
+        const clean = raw.filter(p => {
+          const url = p.cloudinary_url || p.mockup_url || p.image_url || "";
+          if (!url) return false;
+          return url.split("/").pop().startsWith("breed-");
+        });
+        if (clean.length) setProducts(clean);
         setLoading(false);
       })
       .catch(() => setLoading(false));

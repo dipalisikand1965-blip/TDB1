@@ -405,7 +405,11 @@ function BreedCollectionSection({ pet }) {
         image_url: p.cloudinary_url || p.mockup_url || p.image_url || "",
         price: p.price || 0,
         pillar: "shop",
-      }));
+      })).filter(p => {
+        // Only show proper mockups (breed- prefix filename)
+        const fname = (p.image_url || "").split("/").pop();
+        return fname.startsWith("breed-");
+      });
       setProducts(prev => {
         if (!append) return newItems;
         const seen = new Set(prev.map(x => x.id));
