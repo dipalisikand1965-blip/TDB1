@@ -13,7 +13,7 @@ import os
 import jwt
 from datetime import datetime, timezone, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://custom-order-desk-1.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://custom-merch-hub-23.preview.emergentagent.com').rstrip('/')
 
 
 def get_auth_token():

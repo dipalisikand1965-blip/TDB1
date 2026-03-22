@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://custom-order-desk-1.preview.emergentagent.com
+https://custom-merch-hub-23.preview.emergentagent.com
 ```
 
 ---

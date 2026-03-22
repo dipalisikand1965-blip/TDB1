@@ -1,0 +1,60 @@
+{
+  "summary": "Tested Soul Made™ custom order trigger buttons across 11 pillar pages. All 11 pillar pages with Soul Made triggers passed. Emergency page correctly does NOT have the trigger. Farewell page has custom 'In memory of {petName}' text. SoulMadeModal opens correctly with product list, photo upload flow, and message step.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Soul Made trigger subtitle",
+        "issues": ["Subtitle text color rgba(245,240,232,0.4) is very faint on light backgrounds - this is by design for dark backgrounds but may be hard to read on some pillar pages with lighter themes"]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/test_reports/iteration_190.json"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "All 11 pillar pages (Celebrate, Care, Dine, Go, Play, Learn, Shop, Paperwork, Adopt, Farewell, Services) have Soul Made trigger with data-testid='soul-made-trigger'",
+    "Emergency page correctly excluded from Soul Made feature",
+    "Farewell page has custom text: 'In memory of {petName} — create something meaningful'",
+    "SoulMadeModal has 4-step flow: product selection, photo upload, message, confirmation",
+    "Modal loads breed-specific products (e.g., Indie Bandana, Indie Lover Mug for Indie breed)",
+    "Photo upload uses Cloudinary preset 'tdc_custom_orders'",
+    "Concierge integration via useConcierge hook for ticket creation"
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (frontend only)", "frontend": "100%"},
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Iteration 190 tested Soul Made™ trigger buttons across all pillar pages. Test user: dipali@clubconcierge.in / test123, pet: Mojo (Indie breed). All 11 pillar pages have soul-made-trigger (data-testid). Emergency page correctly excluded. Farewell has custom 'In memory of' text. SoulMadeModal opens with product list, photo upload, message steps. Use mobile viewport 430x800 for testing.",
+  "test_results_detail": {
+    "pillar_pages_tested": {
+      "celebrate_soul": {"route": "/celebrate-soul", "has_trigger": true, "color": "#A855F7", "status": "PASS"},
+      "care": {"route": "/care", "has_trigger": true, "color": "sage green", "status": "PASS"},
+      "dine": {"route": "/dine", "has_trigger": true, "color": "#FF8C42", "status": "PASS"},
+      "go": {"route": "/go", "has_trigger": true, "color": "teal", "status": "PASS"},
+      "play": {"route": "/play", "has_trigger": true, "color": "orange", "status": "PASS"},
+      "learn": {"route": "/learn", "has_trigger": true, "color": "#7C3AED", "status": "PASS"},
+      "shop": {"route": "/shop", "has_trigger": true, "color": "gold", "status": "PASS"},
+      "paperwork": {"route": "/paperwork", "has_trigger": true, "color": "teal", "status": "PASS"},
+      "adopt": {"route": "/adopt", "has_trigger": true, "color": "rose", "status": "PASS"},
+      "farewell": {"route": "/farewell", "has_trigger": true, "color": "indigo", "custom_text": "In memory of {petName} — create something meaningful", "status": "PASS"},
+      "services": {"route": "/services", "has_trigger": true, "color": "#0EA5E9", "status": "PASS"},
+      "emergency": {"route": "/emergency", "has_trigger": false, "status": "PASS", "note": "Correctly excluded from Soul Made feature"}
+    },
+    "soul_made_modal_test": {
+      "opens_on_click": true,
+      "step1_product_list": true,
+      "products_shown": ["Indie Bandana", "Indie Lover Mug", "Indie Keychain", "Indie Portrait Frame", "Indie Tote Bag", "Indie Party Hat"],
+      "something_else_option": true,
+      "product_count": 13,
+      "status": "PASS"
+    }
+  }
+}

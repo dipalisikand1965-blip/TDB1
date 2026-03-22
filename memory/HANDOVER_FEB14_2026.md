@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://custom-order-desk-1.preview.emergentagent.com` |
+| **Preview** | `https://custom-merch-hub-23.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |

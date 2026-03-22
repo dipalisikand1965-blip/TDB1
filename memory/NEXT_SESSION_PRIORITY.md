@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://custom-order-desk-1.preview.emergentagent.com
+**Preview URL:** https://custom-merch-hub-23.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

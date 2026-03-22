@@ -1507,17 +1507,17 @@ const DineSoulPage = () => {
             {/* Mira's Picks — AI scored, products + services mix */}
             <MiraPicksSection pet={petData} />
 
-            {/* ── SOUL MADE™ ── */}
+            {/* ── SOUL MADE™ TRIGGER ── */}
             {petData?.name && (
-              <div style={{textAlign:"center",margin:"4px 0 20px"}}>
-                <button onClick={()=>setSoulMadeOpen(true)} style={{padding:"12px 28px",borderRadius:999,border:"1px solid #FF8C4240",background:"#FF8C4210",color:"#FF8C42",fontSize:13,fontWeight:700,cursor:"pointer"}}
-                  onMouseEnter={e=>{e.currentTarget.style.background="#FF8C4220";}}
-                  onMouseLeave={e=>{e.currentTarget.style.background="#FF8C4210";}}>
-                  ✦ Soul Made™ — Make it personal for {petData.name}
-                </button>
+              <div data-testid="soul-made-trigger" style={{margin:'16px 0 24px',padding:'16px',background:'#FF8C4208',border:'1px solid #FF8C4220',borderRadius:16,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer'}} onClick={()=>setSoulMadeOpen(true)}>
+                <div>
+                  <div style={{fontSize:13,fontWeight:700,color:'#FF8C42',marginBottom:3}}>✦ Soul Made™ — Make it personal</div>
+                  <div style={{fontSize:12,color:'rgba(245,240,232,0.4)'}}>Upload {petData.name}'s photo · Concierge® creates it · Price on WhatsApp</div>
+                </div>
+                <div style={{fontSize:20,color:'#FF8C4260'}}>›</div>
               </div>
             )}
-            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="dine" pillarColor="#FF8C42" pillarLabel="Dining" onClose={()=>setSoulMadeOpen(false)}/>}
+            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="dine" pillarColor="#FF8C42" pillarLabel="Food" onClose={()=>setSoulMadeOpen(false)}/>}
 
             <div style={{ fontSize: "clamp(1.125rem,2.5vw,1.375rem)", fontWeight: 800, color: "#1A0A00", marginBottom: 4, fontFamily: "Georgia,serif" }}>Eat &amp; Nourish</div>
             <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>5 dimensions, filtered to {petData.name}</div>

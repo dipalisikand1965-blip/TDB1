@@ -1557,14 +1557,14 @@ const PlaySoulPage = () => {
               <MiraPicksSection pet={petData} />
             </div>
 
-            {/* ── SOUL MADE™ ── */}
+            {/* ── SOUL MADE™ TRIGGER ── */}
             {petData?.name && (
-              <div style={{textAlign:"center",margin:"4px 0 20px"}}>
-                <button onClick={()=>setSoulMadeOpen(true)} style={{padding:"12px 28px",borderRadius:999,border:`1px solid ${G.orange}40`,background:`${G.orange}10`,color:G.orange,fontSize:13,fontWeight:700,cursor:"pointer"}}
-                  onMouseEnter={e=>{e.currentTarget.style.background=`${G.orange}20`;}}
-                  onMouseLeave={e=>{e.currentTarget.style.background=`${G.orange}10`;}}>
-                  ✦ Soul Made™ — Make it personal for {petData.name}
-                </button>
+              <div data-testid="soul-made-trigger" style={{margin:'16px 0 24px',padding:'16px',background:`${G.orange}08`,border:`1px solid ${G.orange}20`,borderRadius:16,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer'}} onClick={()=>setSoulMadeOpen(true)}>
+                <div>
+                  <div style={{fontSize:13,fontWeight:700,color:G.orange,marginBottom:3}}>✦ Soul Made™ — Make it personal</div>
+                  <div style={{fontSize:12,color:'rgba(245,240,232,0.4)'}}>Upload {petData.name}'s photo · Concierge® creates it · Price on WhatsApp</div>
+                </div>
+                <div style={{fontSize:20,color:`${G.orange}60`}}>›</div>
               </div>
             )}
             {soulMadeOpen && <SoulMadeModal pet={petData} pillar="play" pillarColor={G.orange} pillarLabel="Play" onClose={()=>setSoulMadeOpen(false)}/>}

@@ -431,12 +431,12 @@ const CelebratePageNew = () => {
 
         {/* ── SOUL MADE™ TRIGGER ── */}
         {selectedPet?.name && (
-          <div style={{textAlign:"center",margin:"4px 0 20px"}}>
-            <button onClick={()=>setSoulMadeOpen(true)} style={{padding:"12px 28px",borderRadius:999,border:"1px solid #A855F740",background:"#A855F710",color:"#A855F7",fontSize:13,fontWeight:700,cursor:"pointer",transition:"all 0.2s"}}
-              onMouseEnter={e=>{e.currentTarget.style.background="#A855F720";e.currentTarget.style.borderColor="#A855F780";}}
-              onMouseLeave={e=>{e.currentTarget.style.background="#A855F710";e.currentTarget.style.borderColor="#A855F740";}}>
-              ✦ Soul Made™ — Make it personal for {selectedPet.name}
-            </button>
+          <div data-testid="soul-made-trigger" style={{margin:'16px 0 24px',padding:'16px',background:'#A855F708',border:'1px solid #A855F720',borderRadius:16,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer'}} onClick={()=>setSoulMadeOpen(true)}>
+            <div>
+              <div style={{fontSize:13,fontWeight:700,color:'#A855F7',marginBottom:3}}>✦ Soul Made™ — Make it personal</div>
+              <div style={{fontSize:12,color:'rgba(245,240,232,0.4)'}}>Upload {selectedPet.name}'s photo · Concierge® creates it · Price on WhatsApp</div>
+            </div>
+            <div style={{fontSize:20,color:'#A855F760'}}>›</div>
           </div>
         )}
         {soulMadeOpen && <SoulMadeModal pet={selectedPet} pillar="celebrate" pillarColor="#A855F7" pillarLabel="Celebration" onClose={()=>setSoulMadeOpen(false)}/>}
