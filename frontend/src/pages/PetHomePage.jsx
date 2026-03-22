@@ -48,6 +48,7 @@ import {
   HeartHandshake
 } from 'lucide-react';
 import { getWrappedApiBase } from '../utils/api';
+import SoulChapterModal from '../components/SoulChapterModal';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -202,6 +203,7 @@ const PetHomePage = () => {
   const [openRequests, setOpenRequests] = useState([]);
   const [soulScore, setSoulScore] = useState(0);
   const [traits, setTraits] = useState([]);
+  const [openChapter, setOpenChapter] = useState(null);
   
   // Generate proactive alerts based on pet data
   const generateAlerts = useCallback((petData) => {
@@ -643,7 +645,7 @@ const PetHomePage = () => {
                 return (
                   <div
                     key={ch.id}
-                    onClick={() => navigate(`/soul-builder?chapter=${ch.id}`)}
+                    onClick={() => setOpenChapter(ch)}
                     data-testid={`soul-chapter-pill-${ch.id}`}
                     style={{
                       background: score > 0 ? `${ch.color}15` : 'rgba(255,255,255,0.04)',
@@ -831,6 +833,17 @@ const PetHomePage = () => {
           </div>
         </div>
       </div>
+
+      {/* Soul Chapter Modal */}
+      {openChapter && (
+        <SoulChapterModal
+          chapter={openChapter}
+          pet={pet}
+          token={localStorage.getItem('tdb_auth_token')}
+          onClose={() => setOpenChapter(null)}
+          onScoreUpdated={(newScore) => setSoulScore(Math.round(newScore))}
+        />
+      )}
     </div>
   );
 };
