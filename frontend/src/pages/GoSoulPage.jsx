@@ -46,6 +46,7 @@ import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
+import SoulMadeModal from "../components/SoulMadeModal";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 
@@ -1904,6 +1905,8 @@ const GoSoulPage = () => {
       }).catch(e => console.error("[GoSoulPage] products fetch:", e));
   }, [petData]);
 
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
+
   useEffect(() => {
     if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
     if (contextPets !== undefined) setLoading(false);
@@ -1985,6 +1988,18 @@ const GoSoulPage = () => {
 
             {/* Mira's Picks */}
             <MiraPicksSection pet={petData} />
+
+            {/* ── SOUL MADE™ ── */}
+            {petData?.name && (
+              <div style={{textAlign:"center",margin:"4px 0 20px"}}>
+                <button onClick={()=>setSoulMadeOpen(true)} style={{padding:"12px 28px",borderRadius:999,border:`1px solid ${G.teal}40`,background:`${G.teal}10`,color:G.teal,fontSize:13,fontWeight:700,cursor:"pointer"}}
+                  onMouseEnter={e=>{e.currentTarget.style.background=`${G.teal}20`;}}
+                  onMouseLeave={e=>{e.currentTarget.style.background=`${G.teal}10`;}}>
+                  ✦ Soul Made™ — Make it personal for {petData.name}
+                </button>
+              </div>
+            )}
+            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="go" pillarColor={G.teal} pillarLabel="Travel & Go" onClose={()=>setSoulMadeOpen(false)}/>}
 
             {/* "Go for [name]" label */}
             <div style={{ fontSize:"clamp(1.125rem,2.5vw,1.375rem)", fontWeight:800, color:G.darkText, marginBottom:4, fontFamily:"Georgia,serif" }}>

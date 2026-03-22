@@ -27,6 +27,7 @@ import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import SoulMadeCollection from "../components/SoulMadeCollection";
+import SoulMadeModal from "../components/SoulMadeModal";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import ConciergeToast from "../components/common/ConciergeToast";
 import GuidedPaperworkPaths from "../components/paperwork/GuidedPaperworkPaths";
@@ -634,6 +635,7 @@ const PaperworkSoulPage = () => {
   const [toastVisible,  setToastVisible]  = useState(false);
   const [toastSvc,      setToastSvc]      = useState("");
   const [selProd,       setSelProd]       = useState(null); // ProductDetailModal
+  const [soulMadeOpen,  setSoulMadeOpen]  = useState(false);
   const miraRef = useRef(null);
 
   const handleBook = useCallback(async (svc) => {
@@ -812,6 +814,18 @@ const PaperworkSoulPage = () => {
 
             {/* Mira picks */}
             <div ref={miraRef}><MiraPicksSection pet={petData} onSelectProd={setSelProd}/></div>
+
+            {/* ── SOUL MADE™ ── */}
+            {petData?.name && (
+              <div style={{textAlign:"center",margin:"4px 0 20px"}}>
+                <button onClick={()=>setSoulMadeOpen(true)} style={{padding:"12px 28px",borderRadius:999,border:`1px solid ${G.teal}40`,background:`${G.teal}10`,color:G.teal,fontSize:13,fontWeight:700,cursor:"pointer"}}
+                  onMouseEnter={e=>{e.currentTarget.style.background=`${G.teal}20`;}}
+                  onMouseLeave={e=>{e.currentTarget.style.background=`${G.teal}10`;}}>
+                  ✦ Soul Made™ — Make it personal for {petData.name}
+                </button>
+              </div>
+            )}
+            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="paperwork" pillarColor={G.teal} pillarLabel="Paperwork" onClose={()=>setSoulMadeOpen(false)}/>}
 
             <GuidedPaperworkPaths pet={petData}/>
 
