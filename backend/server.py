@@ -4267,6 +4267,28 @@ async def save_custom_cake_design(request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@api_router.post("/upload/image")
+async def upload_soul_made_image(file: UploadFile = File(...)):
+    """Upload a pet photo for Soul Made™ custom orders — stores in Cloudinary."""
+    allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp', 'image/gif']
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type. Please upload JPG, PNG, or WebP images.")
+    try:
+        contents = await file.read()
+        import io
+        upload_result = cloudinary.uploader.upload(
+            io.BytesIO(contents),
+            folder="soul_made",
+            resource_type="image",
+            allowed_formats=["jpg","png","webp","gif"],
+            transformation=[{"width":1200,"crop":"limit"},{"quality":"auto"}]
+        )
+        return {"url": upload_result.get("secure_url"), "public_id": upload_result.get("public_id")}
+    except Exception as e:
+        logger.error(f"Soul Made image upload failed: {e}")
+        raise HTTPException(status_code=500, detail="Image upload failed. Please try again.")
+
+
 @api_router.post("/upload/about-image")
 async def upload_about_image(file: UploadFile = File(...)):
     """Upload an image for About page (dogs, team)"""

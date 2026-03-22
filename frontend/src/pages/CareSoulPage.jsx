@@ -42,6 +42,7 @@ import PersonalisedBreedSection from "../components/common/PersonalisedBreedSect
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import SoulMadeModal from "../components/SoulMadeModal";
 
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Sage Green
@@ -2064,6 +2065,7 @@ export default function CareSoulPage() {
   const [soulScore, setSoulScore] = useState(0);
   const [apiProducts, setApiProducts] = useState({});
   const [conciergeToast, setConciergeToast] = useState(null);
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
 
   // ── tdc page visit tracking ──────────────────────────────────────────────
   usePlatformTracking({ pillar: "care", pet: currentPet });
@@ -2258,6 +2260,18 @@ export default function CareSoulPage() {
 
               {/* Mira's Picks */}
               <MiraPicksSection pet={petData} />
+
+              {/* ── SOUL MADE™ ── */}
+              {petData?.name && (
+                <div style={{textAlign:"center",margin:"4px 0 20px"}}>
+                  <button onClick={()=>setSoulMadeOpen(true)} style={{padding:"12px 28px",borderRadius:999,border:`1px solid ${G.sage}40`,background:`${G.sage}10`,color:G.sage,fontSize:13,fontWeight:700,cursor:"pointer"}}
+                    onMouseEnter={e=>{e.currentTarget.style.background=`${G.sage}20`;}}
+                    onMouseLeave={e=>{e.currentTarget.style.background=`${G.sage}10`;}}>
+                    ✦ Soul Made™ — Make it personal for {petData.name}
+                  </button>
+                </div>
+              )}
+              {soulMadeOpen && <SoulMadeModal pet={petData} pillar="care" pillarColor={G.sage} pillarLabel="Care" onClose={()=>setSoulMadeOpen(false)}/>}
 
               {/* "Care & Nourish" label — mirrors "Eat & Nourish" in DineSoulPage */}
               <div style={{ fontSize:"clamp(1.125rem,2.5vw,1.375rem)", fontWeight:800, color:G.darkText, marginBottom:4, fontFamily:"Georgia,serif" }}>

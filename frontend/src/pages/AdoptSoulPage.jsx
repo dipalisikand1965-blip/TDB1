@@ -25,6 +25,7 @@ import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 import SoulMadeCollection from "../components/SoulMadeCollection";
+import SoulMadeModal from "../components/SoulMadeModal";
 
 const G = {
   deep:"#4A0E2E", mid:"#7B1D4E", rose:"#D4537E", light:"#F9A8C9",
@@ -229,6 +230,7 @@ const AdoptSoulPage = () => {
   const [conciergeSvc,  setConciergeSvc]  = useState("");
   const [toastVisible, setToastVisible] = useState(false);
   const [toastSvc, setToastSvc] = useState("");
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
 
   useEffect(()=>{ if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]); if(contextPets!==undefined)setLoading(false); },[contextPets,currentPet,setCurrentPet]);
   useEffect(()=>{ if(currentPet){ const n={...currentPet,photo_url:currentPet.photo_url||currentPet.avatar_url||null,avatar:currentPet.avatar||"🐕",breed:currentPet.breed||""}; setPetData(n); } },[currentPet]);
@@ -306,6 +308,18 @@ const AdoptSoulPage = () => {
             </div>
             <div style={{marginBottom:20}}><AdoptProfile pet={petData} token={token}/></div>
             <MiraPicksSection pet={petData}/>
+
+            {/* ── SOUL MADE™ ── */}
+            {petData?.name && (
+              <div style={{textAlign:"center",margin:"4px 0 20px"}}>
+                <button onClick={()=>setSoulMadeOpen(true)} style={{padding:"12px 28px",borderRadius:999,border:`1px solid ${G.rose}40`,background:`${G.rose}10`,color:G.rose,fontSize:13,fontWeight:700,cursor:"pointer"}}
+                  onMouseEnter={e=>{e.currentTarget.style.background=`${G.rose}20`;}}
+                  onMouseLeave={e=>{e.currentTarget.style.background=`${G.rose}10`;}}>
+                  ✦ Soul Made™ — Make it personal for {petData.name}
+                </button>
+              </div>
+            )}
+            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="adopt" pillarColor={G.rose} pillarLabel="Adoption" onClose={()=>setSoulMadeOpen(false)}/>}
             <GuidedAdoptPaths pet={petData}/>
             <div style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,borderRadius:16,padding:"24px 28px",marginBottom:24,textAlign:"center"}}>
               <p style={{fontSize:18,fontWeight:800,color:"#fff",fontFamily:"Georgia,serif",marginBottom:8}}>Ready to start? Mira finds your perfect dog.</p>

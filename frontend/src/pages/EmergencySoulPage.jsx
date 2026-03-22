@@ -27,6 +27,8 @@ import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import SoulMadeModal from "../components/SoulMadeModal";
+import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 
 const G = {
   deep:"#7F1D1D", mid:"#991B1B", crimson:"#DC2626", light:"#FCA5A5",
@@ -309,6 +311,7 @@ const EmergencySoulPage = () => {
   const [toastSvc, setToastSvc]     = useState("");
   const [breedProducts, setBreedProducts] = useState([]);
   const [breedProductsLoading, setBreedProductsLoading] = useState(false);
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
 
   const handleBook = useCallback((svc) => {
     if(!svc)return;
@@ -469,6 +472,23 @@ const EmergencySoulPage = () => {
             )}
 
             <GuidedEmergencyPaths pet={petData}/>
+
+            {/* ── SOUL MADE™ ── */}
+            {petData?.name && (
+              <div style={{textAlign:"center",margin:"4px 0 20px"}}>
+                <button onClick={()=>setSoulMadeOpen(true)} style={{padding:"12px 28px",borderRadius:999,border:`1px solid ${G.crimson}40`,background:`${G.crimson}10`,color:G.crimson,fontSize:13,fontWeight:700,cursor:"pointer"}}
+                  onMouseEnter={e=>{e.currentTarget.style.background=`${G.crimson}20`;}}
+                  onMouseLeave={e=>{e.currentTarget.style.background=`${G.crimson}10`;}}>
+                  ✦ Soul Made™ — Make it personal for {petData.name}
+                </button>
+              </div>
+            )}
+            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="emergency" pillarColor={G.crimson} pillarLabel="Emergency" onClose={()=>setSoulMadeOpen(false)}/>}
+
+            {/* ── MIRA IMAGINES: Emergency kit ideas ── */}
+            {petData?.breed && (
+              <MiraImaginesBreed pet={petData} pillar="emergency" colour={G.crimson} onConcierge={()=>{}}/>
+            )}
             <section style={{paddingBottom:16}}>
               <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:6,fontFamily:"Georgia,serif"}}>Is <span style={{color:G.crimson}}>{petName}</span> really ready?</h2>
               <p style={{fontSize:14,color:"#888",lineHeight:1.5}}>Every dim below has the tools, kit, and service. <span style={{color:G.mid,fontWeight:600}}>Glowing dims need urgent attention.</span></p>

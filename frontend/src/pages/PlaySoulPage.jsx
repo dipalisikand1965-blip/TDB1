@@ -41,6 +41,7 @@ import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
+import SoulMadeModal from "../components/SoulMadeModal";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 
@@ -1379,6 +1380,7 @@ const PlaySoulPage = () => {
   const [prefetchedServices, setPrefetchedServices] = useState([]);
   const [conciergeToast, setConciergeToast] = useState(null);
   const miraPicksRef = useRef(null);
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
 
   usePlatformTracking({ pillar: "play", pet: currentPet });
 
@@ -1554,6 +1556,18 @@ const PlaySoulPage = () => {
             <div ref={miraPicksRef}>
               <MiraPicksSection pet={petData} />
             </div>
+
+            {/* ── SOUL MADE™ ── */}
+            {petData?.name && (
+              <div style={{textAlign:"center",margin:"4px 0 20px"}}>
+                <button onClick={()=>setSoulMadeOpen(true)} style={{padding:"12px 28px",borderRadius:999,border:`1px solid ${G.orange}40`,background:`${G.orange}10`,color:G.orange,fontSize:13,fontWeight:700,cursor:"pointer"}}
+                  onMouseEnter={e=>{e.currentTarget.style.background=`${G.orange}20`;}}
+                  onMouseLeave={e=>{e.currentTarget.style.background=`${G.orange}10`;}}>
+                  ✦ Soul Made™ — Make it personal for {petData.name}
+                </button>
+              </div>
+            )}
+            {soulMadeOpen && <SoulMadeModal pet={petData} pillar="play" pillarColor={G.orange} pillarLabel="Play" onClose={()=>setSoulMadeOpen(false)}/>}
 
             <section style={{ paddingBottom:16 }} data-testid="play-explore-section">
               <h2 style={{ fontSize:"clamp(1.375rem,3vw,1.875rem)", fontWeight:800, color:G.darkText, marginBottom:6, fontFamily:"Georgia,serif", lineHeight:1.2 }}>
