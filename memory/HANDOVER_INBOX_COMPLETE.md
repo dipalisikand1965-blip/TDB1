@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://pillar-launch.preview.emergentagent.com
+https://health-vault-loop.preview.emergentagent.com
 ```
 
 ---

@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://pillar-launch.preview.emergentagent.com
+**Preview URL:** https://health-vault-loop.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
