@@ -345,144 +345,150 @@ async def route_intent(request: RouteIntentRequest):
 
 def generate_mira_briefing(pet: dict, service_name: str, pillar: str, intent: str) -> str:
     """
-    Generates a human-readable briefing from the pet's soul profile.
+    Generates a human-readable briefing from the pet's soul profile + Health Vault.
     Prepended to every ticket thread so Concierge can respond immediately.
+    Reads: doggy_soul_answers (soul builder) + pet.vault (Health Vault records)
     """
-    soul = pet.get("doggy_soul_answers") or {}
-    name = pet.get("name", "this dog")
+    soul  = pet.get("doggy_soul_answers") or {}
+    vault = pet.get("vault") or {}
+    name  = pet.get("name", "this dog")
     breed = pet.get("breed", "Mixed breed")
     soul_score = pet.get("overall_score") or pet.get("soul_score") or 0
 
-    # Age stage
-    age_map = {
-        "puppy": "Puppy (under 1 year)",
-        "young": "Young (1–3 years)",
-        "adult": "Adult (3–7 years)",
-        "senior": "Senior (7+ years)",
+    # ── Age stage ────────────────────────────────────────────────────
+    age_map = {"puppy":"Puppy (under 1yr)","young":"Young (1–3yr)","adult":"Adult (3–7yr)","senior":"Senior (7+yr)"}
+    age_label = age_map.get(soul.get("age_stage",""), soul.get("age_stage","Age unknown"))
+
+    # ── Allergies — vault overrides soul (vet-confirmed = ground truth) ──
+    vault_allergies = [a.get("name") for a in vault.get("allergies",[]) if a.get("name")]
+    soul_allergies  = soul.get("food_allergies",[])
+    allergies = vault_allergies or (soul_allergies if isinstance(soul_allergies,list) else [soul_allergies] if soul_allergies else [])
+    allergies = [a for a in allergies if a and a.lower() not in ["none","none known","no"]]
+    allergy_line = (f"⚠️ CONFIRMED ALLERGIES: {', '.join(a.title() for a in allergies)} — NEVER suggest these"
+                    if allergies else "No known food allergies")
+
+    # ── Health conditions ─────────────────────────────────────────────
+    conditions = [c for c in (soul.get("health_conditions",[]) or []) if c not in ["none","healthy","all_healthy"]]
+    health_line = ", ".join(c.replace("_"," ").title() for c in conditions) if conditions else "No known conditions"
+
+    # ── Active medications from vault ─────────────────────────────────
+    active_meds = [m for m in vault.get("medications",[]) if m.get("active",True)]
+    meds_line   = ", ".join(f"{m['medication_name']} {m.get('dosage','')}" for m in active_meds[:3]) if active_meds else "None"
+
+    # ── Upcoming vaccines from vault ──────────────────────────────────
+    from datetime import date as _date
+    today_iso = _date.today().isoformat()
+    upcoming_vax = [v["vaccine_name"] for v in vault.get("vaccines",[]) if v.get("next_due_date") and v["next_due_date"] >= today_iso]
+    vax_line = ", ".join(upcoming_vax[:3]) if upcoming_vax else f"{len(vault.get('vaccines',[]))} on file" if vault.get("vaccines") else "None recorded"
+
+    # ── Primary vet from vault ────────────────────────────────────────
+    vets = vault.get("vets",[])
+    pvet = next((v for v in vets if v.get("is_primary")), vets[0] if vets else None)
+    vet_line = f"{pvet['name']} — {pvet.get('clinic_name','')} {pvet.get('phone','')}" if pvet else "Not saved"
+
+    # ── Last vet visit from vault ─────────────────────────────────────
+    visits = vault.get("visits",[])
+    last_visit_line = f"{visits[-1].get('reason','visit')} ({visits[-1].get('visit_date','')[:10]})" if visits else "None recorded"
+
+    # ── Current weight ────────────────────────────────────────────────
+    wh = vault.get("weight_history",[])
+    weight_line = f"{wh[-1].get('weight_kg')}kg (logged {wh[-1].get('date','')[:10]})" if wh else (
+        f"{pet.get('current_weight_kg')}kg" if pet.get("current_weight_kg") else "Not recorded")
+
+    # ── Soul profile fields ───────────────────────────────────────────
+    diet_map  = {"dry":"Dry kibble","wet":"Wet food","fresh":"Fresh/cooked","raw":"Raw diet","mixed":"Mixed","homemade":"Home cooked"}
+    diet      = diet_map.get(soul.get("diet_type",""), soul.get("diet_type","Not specified"))
+    energy_map= {"couch":"Low energy","moderate":"Moderate","active":"Active & playful","intense":"Very high energy"}
+    energy    = energy_map.get(soul.get("energy_level",""), soul.get("energy_level","Not specified"))
+    personality = soul.get("personality",[]) or []
+    personality_str = ", ".join(p.replace("_"," ").title() for p in personality) if personality else soul.get("personality_primary","Not specified")
+    training_map={"none":"Just starting","basic":"Basic commands","good":"Well trained","advanced":"Advanced"}
+    training  = training_map.get(soul.get("training_level",""), soul.get("training_level","Not specified"))
+    home_map  = {"apartment":"Apartment","house_small":"House/small garden","house_large":"House/large yard","farm":"Farm"}
+    home      = home_map.get(soul.get("home_type",""), soul.get("home_type","Not specified"))
+    fears     = [f.replace("_"," ").title() for f in (soul.get("anxiety_triggers",[]) or []) if f not in ["none","no_fears"]]
+    fears_str = ", ".join(fears) if fears else "No known fears"
+    activities= soul.get("favourite_activities",[]) or []
+    activities_str = ", ".join(a.replace("_"," ").title() for a in activities) if activities else "Not specified"
+
+    score_note = ("Profile comprehensive — Mira knows this dog well." if soul_score >= 80
+                  else "Profile partial — some details may be missing." if soul_score >= 50
+                  else "Profile early — ask parent for more details.")
+
+    # ── Pillar-specific answered soul questions ───────────────────────
+    PILLAR_SOUL_KEYS = {
+        "care":      ["coat_type","groom_frequency","grooming_tolerance","bathing_frequency","vet_comfort","sensitive_skin","vaccination_status","vaccinated","has_regular_vet"],
+        "dine":      ["diet_type","food_allergies","sensitive_stomach","prefers_grain_free","treat_preference","meal_frequency","meal_amount","raw_food_comfort","water_intake"],
+        "learn":     ["training_level","training_goals","commands_known","attention_span","learning_style","reward_preference","socialization_level"],
+        "go":        ["travel_comfort","car_comfort","travel_frequency","longest_trip","travel_docs_ready","microchipped","neutered"],
+        "play":      ["energy_level","exercise_frequency","exercise_type","play_style","toy_preference","outdoor_vs_indoor","dog_park_comfort","favourite_activities"],
+        "celebrate": ["birthday","favourite_treats","celebration_style","party_preference","social_comfort"],
+        "emergency": ["health_conditions","vet_comfort","emergency_vet","has_regular_vet","microchipped","blood_type"],
+        "farewell":  ["farewell_type_preference","farewell_location","spiritual_beliefs","cremation_vs_burial"],
+        "paperwork": ["microchipped","neutered","travel_docs_ready","insurance_status","registered_breed"],
+        "adopt":     ["home_type","other_pets","children_at_home","lifestyle","first_time_owner","breed_preference"],
+        "shop":      ["size_category","coat_type","brand_preference","budget_range","online_vs_instore"],
+        "services":  ["service_preferences","grooming_tolerance","vet_comfort","budget_range"],
     }
-    age_label = age_map.get(soul.get("age_stage", ""), soul.get("age_stage", "Age unknown"))
+    pillar_keys = PILLAR_SOUL_KEYS.get(pillar, [])
+    pillar_answered = [(k.replace("_"," ").title(), str(soul[k]).replace("_"," ").title())
+                       for k in pillar_keys if soul.get(k) and soul[k] not in ["", "none", "not_sure", None]]
+    pillar_intel = "\n".join(f"  {label}: {val}" for label, val in pillar_answered) if pillar_answered else "  No pillar-specific answers yet."
 
-    # Allergies — CRITICAL for Concierge
-    allergies = soul.get("food_allergies", [])
-    if not allergies or allergies == ["none"] or allergies == ["none known"]:
-        allergy_line = "No known food allergies"
-    else:
-        allergy_line = f"⚠️ ALLERGIES: {', '.join(a.title() for a in allergies)} — never suggest these"
-
-    # Health conditions
-    conditions = soul.get("health_conditions", [])
-    conditions_clean = [c for c in conditions if c not in ["none", "healthy", "all_healthy"]]
-    if not conditions_clean:
-        health_line = "No known health conditions"
-    else:
-        health_line = ", ".join(c.replace("_", " ").title() for c in conditions_clean)
-
-    # Diet
-    diet_map = {
-        "dry": "Dry kibble",
-        "wet": "Wet food",
-        "fresh": "Fresh / cooked meals",
-        "raw": "Raw diet",
-        "mixed": "Mixed diet",
-        "homemade": "Home cooked",
-    }
-    diet = diet_map.get(soul.get("diet_type", ""), soul.get("diet_type", "Not specified"))
-
-    # Energy
-    energy_map = {
-        "couch": "Low energy (couch potato)",
-        "moderate": "Moderate energy",
-        "active": "Active and playful",
-        "intense": "Very high energy",
-    }
-    energy = energy_map.get(soul.get("energy_level", ""), soul.get("energy_level", "Not specified"))
-
-    # Personality
-    personality = soul.get("personality", [])
-    personality_str = ", ".join(p.replace("_", " ").title() for p in personality) if personality else "Not specified"
-
-    # Training level
-    training_map = {
-        "none": "Just starting out",
-        "basic": "Basic commands (sit, stay, come)",
-        "good": "Well trained",
-        "advanced": "Advanced training",
-    }
-    training = training_map.get(soul.get("training_level", ""), soul.get("training_level", "Not specified"))
-
-    # Home
-    home_map = {
-        "apartment": "Apartment",
-        "house_small": "House with small garden",
-        "house_large": "House with large yard",
-        "farm": "Farm / rural",
-    }
-    home = home_map.get(soul.get("home_type", ""), soul.get("home_type", "Not specified"))
-
-    # Fears / anxieties
-    fears = soul.get("anxiety_triggers", [])
-    fears_clean = [f for f in fears if f not in ["none", "no_fears"]]
-    fears_str = ", ".join(f.replace("_", " ").title() for f in fears_clean) if fears_clean else "No known fears"
-
-    # Favourite activities
-    activities = soul.get("favourite_activities", [])
-    activities_str = ", ".join(a.replace("_", " ").title() for a in activities) if activities else "Not specified"
-
-    # Soul score completeness
-    score_note = ""
-    if soul_score >= 80:
-        score_note = "Profile is comprehensive — Mira knows this dog well."
-    elif soul_score >= 50:
-        score_note = "Profile is partially complete — some details may be missing."
-    else:
-        score_note = "Profile is early — ask parent for more details if needed."
-
-    # Pillar-specific context
+    # ── Pillar guidance ───────────────────────────────────────────────
     pillar_context = {
-        "care": f"Request is about grooming, wellness or care for {name}. Check coat type and grooming comfort from profile.",
-        "dine": f"Request is about food or nutrition for {name}. CRITICAL: Check allergies above before any food suggestion.",
-        "celebrate": f"Request is about celebrating {name}. Check upcoming birthday and favourite treats.",
-        "go": f"Request is about travel or stays with {name}. Check travel comfort and documents.",
-        "play": f"Request is about play or fitness for {name}. Check energy level and favourite activities.",
-        "learn": f"Request is about training {name}. Check current training level and goals.",
-        "shop": f"Request is about products for {name}. Check breed, size and any sensitivities.",
-        "emergency": f"⚠️ EMERGENCY request for {name}. Respond immediately. Check health conditions and primary vet.",
-        "farewell": f"🌷 Farewell request for {name}. Handle with the utmost care and compassion.",
-        "paperwork": f"Request is about documents or paperwork for {name}. Check insurance and registration status.",
-        "adopt": f"Request is about adoption guidance. They may be adding a new dog to their family.",
-        "services": f"General service request for {name}. Review full profile for context.",
-    }.get(pillar, f"Request is from the {pillar} pillar for {name}.")
+        "care":     f"Care/wellness request for {name}. ⚠️ Check coat type and grooming tolerance. Primary vet: {vet_line}",
+        "dine":     f"Food/nutrition request for {name}. ⚠️ CRITICAL: CHECK ALLERGIES ABOVE before any food suggestion.",
+        "celebrate":f"Celebration request for {name}. Check birthday and favourite treats above.",
+        "go":       f"Travel/stay request for {name}. Check microchip/travel docs status below.",
+        "play":     f"Play/fitness request for {name}. High energy dog may need intensive activity.",
+        "learn":    f"Training request for {name}. Check current training level and goals.",
+        "shop":     f"Product request for {name}. Check breed, size and any allergens above.",
+        "emergency":f"⚠️ EMERGENCY for {name}. Respond immediately. Primary vet: {vet_line}",
+        "farewell": f"🌷 Farewell request for {name}. Handle with utmost care and compassion.",
+        "paperwork":f"Paperwork/docs request for {name}. Check microchip and insurance below.",
+        "adopt":    f"Adoption enquiry. Check home type and lifestyle below.",
+        "services": f"General service request for {name}. Review full profile.",
+    }.get(pillar, f"Request from {pillar} pillar for {name}.")
 
     briefing = f"""━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✦ MIRA'S BRIEFING FOR CONCIERGE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 SERVICE REQUESTED: {service_name}
-PILLAR: {pillar.title()}
+PILLAR: {pillar.title()} · Soul Score: {soul_score}%
 
 ━━━ ABOUT {name.upper()} ━━━
 Breed:        {breed}
 Life stage:   {age_label}
-Soul score:   {soul_score}% — {score_note}
+Soul score:   {soul_score}% ({score_note})
+Weight:       {weight_line}
+Home:         {home}
 
-━━━ HEALTH & DIET (read before responding) ━━━
+━━━ ⚠️ HEALTH & SAFETY (READ FIRST) ━━━
 {allergy_line}
 Health:       {health_line}
+Active meds:  {meds_line}
+Vaccines:     {vax_line}
+Primary vet:  {vet_line}
+Last visit:   {last_visit_line}
+
+━━━ DIET & DAILY LIFE ━━━
 Diet:         {diet}
 Energy:       {energy}
-
-━━━ PERSONALITY & LIFESTYLE ━━━
-Personality:  {personality_str}
-Loves:        {activities_str}
+Activities:   {activities_str}
 Fears:        {fears_str}
-Home:         {home}
 Training:     {training}
+Personality:  {personality_str}
+
+━━━ {pillar.upper()} PILLAR INTEL ━━━
+{pillar_intel}
 
 ━━━ CONCIERGE GUIDANCE ━━━
 {pillar_context}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-This briefing is auto-generated by Mira from {name}'s Soul Profile.
+Auto-generated by Mira from {name}'s Soul Profile + Health Vault.
 The parent has not seen this message.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
 
@@ -595,12 +601,57 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
     pet_name = ""
     pet_doc = None
     if request.pet_id:
-        pet_doc = await db.pets.find_one({"id": request.pet_id}, {"name":1,"breed":1,"doggy_soul_answers":1,"overall_score":1,"soul_score":1,"city":1})
+        pet_doc = await db.pets.find_one(
+            {"id": request.pet_id},
+            {"name":1,"breed":1,"doggy_soul_answers":1,"overall_score":1,"soul_score":1,
+             "city":1,"vault":1,"owner_email":1,"owner_phone":1,"current_weight_kg":1}
+        )
         if pet_doc:
             pet_name = pet_doc.get("name","")
     subject = f"{service_name} for {pet_name}" if pet_name else f"{service_name} — {request.pillar.title()} Request"
 
-    # ── Generate Mira briefing from soul profile ─────────────────────
+    # ── Look up parent identity ──────────────────────────────────────
+    member_obj = {"name": "Pet Parent", "id": request.parent_id or ""}
+    try:
+        if request.parent_id and request.parent_id not in ("anonymous", "guest", ""):
+            user_doc = None
+            if "@" in request.parent_id:
+                user_doc = await db.users.find_one(
+                    {"email": request.parent_id.lower()},
+                    {"_id":0,"name":1,"first_name":1,"email":1,"phone":1,"mobile":1,"whatsapp":1,"id":1}
+                )
+            if not user_doc:
+                user_doc = await db.users.find_one(
+                    {"$or": [{"id": request.parent_id}, {"user_id": request.parent_id}]},
+                    {"_id":0,"name":1,"first_name":1,"email":1,"phone":1,"mobile":1,"whatsapp":1,"id":1}
+                )
+            if user_doc:
+                full_name = user_doc.get("name") or ""
+                first_name = user_doc.get("first_name") or (full_name.split()[0] if full_name else "")
+                member_obj = {
+                    "name":  full_name or "Pet Parent",
+                    "first_name": first_name or "there",
+                    "email": user_doc.get("email", ""),
+                    "phone": user_doc.get("phone") or user_doc.get("mobile") or user_doc.get("whatsapp",""),
+                    "id":    user_doc.get("id") or request.parent_id,
+                }
+        elif pet_doc and pet_doc.get("owner_email"):
+            user_doc = await db.users.find_one(
+                {"email": pet_doc["owner_email"].lower()},
+                {"_id":0,"name":1,"first_name":1,"email":1,"phone":1,"mobile":1}
+            )
+            if user_doc:
+                member_obj = {
+                    "name":  user_doc.get("name","Pet Parent"),
+                    "first_name": user_doc.get("first_name") or (user_doc.get("name","").split()[0] or "there"),
+                    "email": user_doc.get("email",""),
+                    "phone": user_doc.get("phone") or user_doc.get("mobile",""),
+                    "id":    request.parent_id or pet_doc["owner_email"],
+                }
+    except Exception as _e:
+        logger.warning(f"[SERVICE_DESK] Could not resolve parent identity: {_e}")
+
+    # ── Generate Mira briefing from soul profile + vault ─────────────
     mira_briefing = ""
     if request.pet_id and pet_doc:
         mira_briefing = generate_mira_briefing(pet_doc, service_name, request.pillar, request.intent_primary or "concierge_request")
@@ -626,6 +677,10 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "ticket_id": ticket_id,
         "subject": subject,
         "parent_id": request.parent_id,
+        "member": member_obj,
+        "user_name": member_obj.get("name"),
+        "user_email": member_obj.get("email") or (request.parent_id if "@" in (request.parent_id or "") else None),
+        "user_phone": member_obj.get("phone"),
         "pet_id": request.pet_id,
         "pet_name": pet_name,
         "pillar": request.pillar,
@@ -652,7 +707,7 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "id":            ticket_id,
         "ticket_id":     ticket_id,
         "type":          request.intent_primary or "service_booking",
-        "intent_primary": request.intent_primary or "service_booking",  # alias for my-requests tab filtering
+        "intent_primary": request.intent_primary or "service_booking",
         "category":      request.pillar,
         "sub_category":  service_name.lower().replace(" ","_"),
         "subject":       subject,
@@ -665,7 +720,10 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "pet_id":        request.pet_id,
         "pet_name":      pet_name,
         "parent_id":     request.parent_id,
-        "user_email":    request.parent_id if "@" in (request.parent_id or "") else None,
+        "member":        member_obj,
+        "user_name":     member_obj.get("name"),
+        "user_email":    member_obj.get("email") or (request.parent_id if "@" in (request.parent_id or "") else None),
+        "user_phone":    member_obj.get("phone"),
         "mira_briefing": mira_briefing,
         "life_state":    request.life_state,
         "created_at":    now.isoformat(),
