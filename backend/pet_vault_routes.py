@@ -90,6 +90,15 @@ class WeightRecord(BaseModel):
     notes: Optional[str] = None
 
 
+class AllergyRecord(BaseModel):
+    name: str
+    allergy_type: str = "food"   # "food", "environmental", "medication"
+    confirmed_by: Optional[str] = None
+    date: Optional[str] = None
+    severity: Optional[str] = None   # "mild", "moderate", "severe"
+    notes: Optional[str] = None
+
+
 # ============================================
 # VACCINE ENDPOINTS
 # ============================================
@@ -482,8 +491,44 @@ async def add_document(pet_id: str, document: HealthDocument):
 
 
 # ============================================
-# HEALTH SUMMARY
+# ALLERGY ENDPOINTS
 # ============================================
+
+@pet_vault_router.get("/{pet_id}/allergies")
+async def get_allergies(pet_id: str):
+    """Get all allergies and conditions for a pet"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "vault": 1, "name": 1})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    allergies = pet.get("vault", {}).get("allergies", [])
+    return {"pet_id": pet_id, "allergies": allergies, "total": len(allergies)}
+
+
+@pet_vault_router.post("/{pet_id}/allergies")
+async def add_allergy(pet_id: str, allergy: AllergyRecord):
+    """Add an allergy — also writes to doggy_soul_answers immediately"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    record = allergy.dict()
+    record["id"] = f"alg-{uuid.uuid4().hex[:8]}"
+    record["added_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.pets.update_one(
+        {"id": pet_id},
+        {"$push": {"vault.allergies": record}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    # Immediately update soul profile so Mira never suggests this allergen
+    await db.pets.update_one(
+        {"id": pet_id},
+        {"$set": {"doggy_soul_answers.food_allergies": record["name"].lower()}}
+    )
+    return {"message": "Allergy recorded and soul profile updated", "allergy": record}
+
+
+
 
 @pet_vault_router.get("/{pet_id}/summary")
 async def get_health_summary(pet_id: str):
@@ -555,6 +600,9 @@ async def get_health_summary(pet_id: str):
         "pet_name": pet.get("name"),
         "pet_breed": pet.get("breed"),
         "current_weight_kg": pet.get("weight_kg"),
+        "microchip": pet.get("microchip"),
+        "insurance": pet.get("insurance"),
+        "passport": pet.get("passport"),
         "summary": {
             "total_vaccines": len(vaccines),
             "total_medications": len(medications),
@@ -564,6 +612,7 @@ async def get_health_summary(pet_id: str):
             "saved_vets": len(vets)
         },
         "alerts": alerts,
+        "allergies": vault.get("allergies", []),
         "active_medications": active_meds,
         "upcoming_followups": upcoming_followups,
         "primary_vet": next((v for v in vets if v.get("is_primary")), None),
