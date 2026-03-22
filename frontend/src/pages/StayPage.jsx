@@ -825,7 +825,7 @@ ${stayRequestForm.special_requests || 'None'}
         {userPets && userPets[0] && (
           <div className="max-w-6xl mx-auto px-4 mb-8">
             <SoulMadeCollection
-              pillar="stay"
+              pillar="go"
               maxItems={8}
               showTitle={true}
             />
