@@ -1383,8 +1383,11 @@ const PlaySoulPage = () => {
   const [conciergeToast, setConciergeToast] = useState(null);
   const miraPicksRef = useRef(null);
 
+  usePlatformTracking({ pillar: "play", pet: currentPet });
+
   // handleNearMeBook — wires "Book via Concierge" on PlayNearMe cards
   const handlePlayBook = useCallback(async (spot, city) => {
+    tdc.nearme({ query: spot?.name || city || "play spot", pillar: "play", pet: petData, channel: "play_nearme_card" });
     try {
       const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
       const venueName = spot?.name || (city ? `a park in ${city}` : "a play spot");
