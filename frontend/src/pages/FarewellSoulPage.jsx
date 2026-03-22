@@ -25,6 +25,7 @@ import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import SoulMadeCollection from "../components/SoulMadeCollection";
 
 const G = {
   deep:"#1A1A2E", mid:"#4B4B6E", indigo:"#6366F1", light:"#C7D2FE",
@@ -413,6 +414,17 @@ const FarewellSoulPage = () => {
           </div>
         )}
       </div>
+
+      {/* Soul Farewell — Breed-specific memorial products */}
+      {petData && (
+        <div style={{ padding:"0 16px", marginBottom:32 }}>
+          <SoulMadeCollection
+            pillar="farewell"
+            maxItems={12}
+            showTitle={true}
+          />
+        </div>
+      )}
 
       <ConciergeToast toast={toastVisible?{name:toastSvc,pillar:"farewell"}:null} onClose={()=>setToastVisible(false)}/>
       <FarewellConciergeModal isOpen={conciergeOpen} onClose={()=>setConciergeOpen(false)} petName={petName} petId={petData?.id} token={token} preSelected={conciergeSvc}/>
