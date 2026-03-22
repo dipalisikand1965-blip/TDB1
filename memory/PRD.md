@@ -62,7 +62,18 @@ Build a production-ready pet life management platform with 12 core pillars, AI c
 - Pet switch resets drawer state
 - Components: `/app/frontend/src/components/PillarSoulProfile.jsx`, `/app/frontend/src/components/SoulChapterModal.jsx`
 
-### Session Mar 22, 2026 — Universal Concierge Wiring Audit (100% Complete)
+### Session Mar 22, 2026 — Pet Health Vault — Full Concierge Wiring (Complete)
+- **PetVault.jsx** fully rewired: `useConcierge`, `usePlatformTracking`, `saveSoulAnswer` helper, `getIdealWeight` helper
+- **New section: Allergies** — red critical cards, "Add allergy" fires `urgent()` ticket immediately + writes `doggy_soul_answers.food_allergies`
+- **New section: Identity & Insurance** — microchip, insurance status, pet passport with Concierge® enquiry links
+- **Documents tab** — existing doc list with upload-via-concierge button
+- **Mira Alert Bar** — shows at top when vaccines due within 14 days; fires `urgent()` ticket automatically
+- **Weight tracker** — fires `request()` + weight-range alert if outside ideal breed range
+- **All 5 form handlers wired**: vaccine → `request()` + `saveSoulAnswer('vaccination_status', 'up_to_date')`, vet → `request()` + `saveSoulAnswer('has_regular_vet', 'yes')`, medication/visit/weight → `request()`
+- **Backend**: New `GET/POST /api/pet-vault/{petId}/allergies` endpoints + summary now includes `allergies`, `microchip`, `insurance`, `passport`
+- **Care Pillar link**: `care-health-vault-link` card added below PillarSoulProfile on `/care`
+- **Bug fixed**: `mira_service_desk.py:606` missing 4th `intent` arg to `generate_mira_briefing()` — was causing 500 on ALL ticket creation
+- Testing: 100% backend (25/25), 95% frontend
 - **Full audit** of all 12 pillar pages against `tdc_intent.js` / `useConcierge` / `usePlatformTracking`
 - **9 gaps fixed:**
   1. DineSoulPage — Added `usePlatformTracking` call (was imported, never called)
