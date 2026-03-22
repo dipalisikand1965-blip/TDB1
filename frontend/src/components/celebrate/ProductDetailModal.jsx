@@ -9,9 +9,8 @@
 import React, { useState } from 'react';
 import { tdc } from '../utils/tdc_intent';
 import { bookViaConcierge } from '../utils/MiraCardActions';
-import { X, Plus, Minus, ShoppingCart, Sparkles, Heart, Check, Star, Palette } from 'lucide-react';
+import { X, Plus, Minus, ShoppingCart, Sparkles, Heart, Check, Star, Palette, Loader2 } from 'lucide-react';
 import { useResizeMobile } from '../../hooks/useResizeMobile';
-import CustomOrderFlow from './CustomOrderFlow';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
@@ -53,7 +52,11 @@ const ProductDetailModal = ({
   const [isAdding, setIsAdding] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [isSentToConcierge, setIsSentToConcierge] = useState(false);
-  const [showCustomOrder, setShowCustomOrder] = useState(false);
+  const [showConciergeModal, setShowConciergeModal] = useState(false);
+  const [conciergeNotes, setConciergeNotes] = useState('');
+  const [conciergeSpecialText, setConciergeSpecialText] = useState('');
+  const [conciergeSending, setConciergeSending] = useState(false);
+  const [conciergeSent, setConciergeSent] = useState(false);
 
   if (!isOpen || !product) return null;
 
@@ -301,15 +304,15 @@ const ProductDetailModal = ({
             )}
           </div>
 
-          {/* Customise This — triggers the WOW flow for Soul products */}
+          {/* Customise This — opens concierge modal for Soul products */}
           {isSoulProduct && (
             <button
-              onClick={() => setShowCustomOrder(true)}
+              onClick={() => setShowConciergeModal(true)}
               className="w-full py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all mb-3"
               style={{
                 fontSize: 15,
-                background: `linear-gradient(135deg, ${pillarColor}, #FF6B9D)`,
-                color: 'white',
+                background: `linear-gradient(135deg, #C9973A, #F0C060)`,
+                color: '#1A0A00',
               }}
               data-testid="customise-product-btn"
             >
@@ -373,16 +376,155 @@ const ProductDetailModal = ({
         </div>
       </div>
 
-      {/* Custom Order Flow Modal */}
-      {showCustomOrder && (
-        <CustomOrderFlow
-          product={product}
-          pet={pet}
-          user={user}
-          isOpen={showCustomOrder}
-          onClose={() => setShowCustomOrder(false)}
-          pillarColor={pillarColor}
-        />
+      {/* Universal Concierge Modal for Custom Orders */}
+      {showConciergeModal && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.50)",
+                      zIndex:1100, display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}
+             onClick={e => e.target===e.currentTarget && !conciergeSent && setShowConciergeModal(false)}
+             data-testid="custom-concierge-modal-overlay">
+          <div style={{ background:"#fff", borderRadius:20, padding:32,
+                        maxWidth:480, width:"100%", maxHeight:"90vh", overflowY:"auto",
+                        position:"relative", boxShadow:"0 24px 64px rgba(0,0,0,0.20)" }}
+               onClick={e => e.stopPropagation()}>
+
+            {conciergeSent ? (
+              <div style={{ textAlign:"center", padding:"16px 0" }}>
+                <div style={{
+                  width:64, height:64, borderRadius:"50%",
+                  background:"rgba(201,151,58,0.15)", border:"2px solid rgba(201,151,58,0.40)",
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                  fontSize:28, margin:"0 auto 16px"
+                }}>♥</div>
+                <h3 style={{ fontSize:18, fontWeight:800, color:"#1A0030", marginBottom:10 }}>
+                  {petName}'s custom order is in good hands.
+                </h3>
+                <p style={{ fontSize:14, color:"#666", lineHeight:1.6, marginBottom:24 }}>
+                  Your Concierge has everything they need to create your personalised <strong>{product.name}</strong>. Expect a message within 48 hours with pricing and next steps.
+                </p>
+                <button onClick={() => { setShowConciergeModal(false); setConciergeSent(false); setConciergeNotes(''); setConciergeSpecialText(''); }}
+                  style={{ marginTop:8, background:"linear-gradient(135deg,#C9973A,#F0C060)",
+                           color:"#1A0A00", border:"none", borderRadius:12,
+                           padding:"12px 32px", fontSize:14, fontWeight:800,
+                           cursor:"pointer", width:"100%" }}
+                  data-testid="custom-concierge-close">
+                  Close
+                </button>
+              </div>
+            ) : (
+              <>
+                <button onClick={() => setShowConciergeModal(false)}
+                  style={{ position:"absolute", top:16, right:16, background:"none",
+                           border:"none", cursor:"pointer", padding:4, fontSize:20, color:"#888" }}>✕</button>
+
+                <div style={{
+                  display:"inline-flex", alignItems:"center", gap:6,
+                  background:"rgba(201,151,58,0.15)", border:"1px solid rgba(201,151,58,0.40)",
+                  borderRadius:9999, padding:"4px 14px",
+                  fontSize:12, fontWeight:600, color:"#F0C060", marginBottom:16
+                }}>
+                  <span style={{ color:"#C9973A" }}>★</span>
+                  {petName}'s Concierge
+                </div>
+
+                <h2 style={{ fontSize:"1.25rem", fontFamily:"Georgia,serif", fontWeight:800,
+                             color:"#1A0030", marginBottom:6, lineHeight:1.3 }}>
+                  Customise {product.name} for {petName}
+                </h2>
+                <p style={{ fontSize:13, color:"#888", marginBottom:10, lineHeight:1.5 }}>
+                  Three questions. Then your Concierge takes over.
+                </p>
+
+                <div style={{ background:"#F8F7F4", borderRadius:10, padding:"10px 14px",
+                              marginBottom:20, fontSize:13, fontWeight:600, color:"#1A0030",
+                              display:"flex", alignItems:"center", gap:10 }}>
+                  {image && <img src={image} alt="" style={{ width:40, height:40, borderRadius:8, objectFit:"cover" }} />}
+                  <div>
+                    <div>{product.name}</div>
+                    <div style={{ fontSize:11, color:"#888", fontWeight:400 }}>{(product.product_type || '').replace(/_/g,' ')}</div>
+                  </div>
+                </div>
+
+                <div style={{ marginBottom:24 }}>
+                  <p style={{ fontSize:13, fontWeight:700, color:"#1A0030", marginBottom:8 }}>
+                    What text should go on the product?
+                  </p>
+                  <input value={conciergeSpecialText} onChange={e => setConciergeSpecialText(e.target.value)}
+                    placeholder={`e.g. "${petName} - Since 2023" or "${petName} the ${(pet?.breed||'').replace(/_/g,' ')}"`}
+                    maxLength={50}
+                    style={{ width:"100%", padding:"10px 14px", borderRadius:10,
+                             border:"1px solid rgba(0,0,0,0.15)", fontSize:13, color:"#1A0030",
+                             boxSizing:"border-box" }}
+                    data-testid="custom-special-text" />
+                  <p style={{ fontSize:11, color:"#aaa", marginTop:4 }}>{conciergeSpecialText.length}/50 characters</p>
+                </div>
+
+                <div style={{ marginBottom:24 }}>
+                  <p style={{ fontSize:13, fontWeight:700, color:"#1A0030", marginBottom:8 }}>
+                    Any special requests for {petName}'s product?
+                  </p>
+                  <textarea value={conciergeNotes} onChange={e => setConciergeNotes(e.target.value)}
+                    placeholder="Colours, layout, specific photo you'll share, allergies if it's food..."
+                    rows={3} maxLength={500}
+                    style={{ width:"100%", padding:"12px 14px", borderRadius:10,
+                             border:"1px solid rgba(0,0,0,0.12)", fontSize:13, color:"#1A0030",
+                             lineHeight:1.5, resize:"vertical", boxSizing:"border-box", fontFamily:"inherit" }}
+                    data-testid="custom-notes" />
+                </div>
+
+                <div style={{ padding:"10px 14px", borderRadius:10, background:"#FFFBEB",
+                              border:"1px solid #FEF3C7", marginBottom:20, fontSize:12, color:"#92400E", lineHeight:1.5 }}>
+                  Our Concierge will reach out to collect {petName}'s photo and share pricing. No charges until you confirm.
+                </div>
+
+                <button onClick={async () => {
+                  setConciergeSending(true);
+                  try {
+                    const token = localStorage.getItem('tdb_auth_token');
+                    const textNote = conciergeSpecialText ? ` Text on product: "${conciergeSpecialText}".` : '';
+                    const extraNotes = conciergeNotes ? ` Notes: ${conciergeNotes}` : '';
+                    await fetch(`${API_BASE}/api/service_desk/attach_or_create_ticket`, {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                        ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+                      },
+                      body: JSON.stringify({
+                        parent_id: user?.id || user?.email || "guest",
+                        pet_id: pet?.id || pet?._id || "unknown",
+                        pillar: product.pillar || "celebrate",
+                        intent_primary: "custom_order",
+                        channel: "soul_picks_customise",
+                        life_state: "PLAN",
+                        urgency: "high",
+                        status: "open",
+                        force_new: true,
+                        initial_message: {
+                          sender: "parent",
+                          text: `${petName}'s parent wants to customise: ${product.name} (${(product.product_type||'').replace(/_/g,' ')}).${textNote}${extraNotes} — Please collect pet photo and share pricing.`
+                        }
+                      })
+                    });
+                    setConciergeSent(true);
+                  } catch(e) {
+                    setConciergeSent(true);
+                  }
+                  setConciergeSending(false);
+                }} disabled={conciergeSending}
+                  style={{ width:"100%", background:"linear-gradient(135deg,#C9973A,#F0C060)",
+                           color:"#1A0A00", border:"none", borderRadius:12, padding:"14px",
+                           fontSize:15, fontWeight:800, cursor: conciergeSending ? "not-allowed" : "pointer",
+                           opacity: conciergeSending ? 0.7 : 1 }}
+                  data-testid="custom-concierge-submit">
+                  {conciergeSending ? "Sending..." : "Send to my Concierge →"}
+                </button>
+
+                <p style={{ fontSize:11, color:"#aaa", textAlign:"center", marginTop:12, lineHeight:1.5 }}>
+                  We already have your contact details. Your Concierge will reach out — you don't need to chase.
+                </p>
+              </>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
