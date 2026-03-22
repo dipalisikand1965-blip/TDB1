@@ -603,7 +603,7 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
     # ── Generate Mira briefing from soul profile ─────────────────────
     mira_briefing = ""
     if request.pet_id and pet_doc:
-        mira_briefing = generate_mira_briefing(pet_doc, service_name, request.pillar)
+        mira_briefing = generate_mira_briefing(pet_doc, service_name, request.pillar, request.intent_primary or "concierge_request")
 
     # ── Build conversation with briefing prepended ───────────────────
     conversation = []

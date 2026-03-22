@@ -2209,6 +2209,31 @@ export default function CareSoulPage() {
 
       <div style={{ paddingTop:16, maxWidth:'80rem', margin:'0 auto', padding:'0 16px' }}>
         <PillarSoulProfile pet={petData} token={token} pillar="care" />
+
+        {/* Health Vault Link — physical health record under Care */}
+        {petData?.id && (
+          <div
+            data-testid="care-health-vault-link"
+            onClick={() => navigate(`/pet-vault/${petData.id}`)}
+            style={{
+              background: 'rgba(64,145,108,0.08)', border: '1px solid rgba(64,145,108,0.2)',
+              borderRadius: 14, padding: '14px 16px', cursor: 'pointer', marginTop: 12, marginBottom: 4,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background='rgba(64,145,108,0.14)'}
+            onMouseLeave={e => e.currentTarget.style.background='rgba(64,145,108,0.08)'}
+          >
+            <div>
+              <p style={{ fontSize: 13, fontWeight: 700, color: '#40916C', marginBottom: 2 }}>
+                🏥 {petData.name}'s Health Vault
+              </p>
+              <p style={{ fontSize: 12, color: 'rgba(245,240,232,0.5)', margin: 0 }}>
+                Vaccines · Medications · Allergies · Vet visits · Identity
+              </p>
+            </div>
+            <span style={{ fontSize: 20, color: 'rgba(64,145,108,0.5)' }}>›</span>
+          </div>
+        )}
       </div>
 
       <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>
