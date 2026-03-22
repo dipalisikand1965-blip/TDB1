@@ -254,7 +254,7 @@ const PetVault = () => {
         await request(`Vaccine recorded: ${vaccineForm.vaccine_name} for ${petName} on ${vaccineForm.date_given}`, {
           channel: 'vault_vaccine_add', metadata: { vaccine: vaccineForm.vaccine_name, date: vaccineForm.date_given, vet: vaccineForm.vet_name },
         });
-        await saveSoulAnswer(petId, 'vaccination_status', 'up_to_date', token);
+        await saveSoulAnswer(petId, 'vaccinated', 'yes', token);   // 'vaccinated' is the key in health chapter
         toast.success(`Vaccine recorded. Concierge® has been notified.`);
         fetchVaccines(); fetchSummary();
       }

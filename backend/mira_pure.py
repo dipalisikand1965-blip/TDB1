@@ -184,19 +184,60 @@ async def get_pet_context(pet_id: str, pet_name: str = None) -> dict:
             doggy_answers.get("allergies") or
             doggy_answers.get("food_allergies")
         )
+        # Vault allergies override everything — these are vet-confirmed records
+        vault = pet.get("vault", {})
+        vault_allergy_objs = vault.get("allergies", [])
+        if vault_allergy_objs:
+            vault_allergy_names = [a.get("name") for a in vault_allergy_objs if a.get("name")]
+            if vault_allergy_names:
+                allergies = vault_allergy_names
         if allergies:
             if isinstance(allergies, list):
-                context_parts.append(f"⚠️ ALLERGIES: {', '.join(allergies)}")
+                context_parts.append(f"⚠️ ALLERGIES (NEVER suggest these): {', '.join(allergies)}")
             else:
-                context_parts.append(f"⚠️ ALLERGIES: {allergies}")
+                context_parts.append(f"⚠️ ALLERGIES (NEVER suggest these): {allergies}")
         
-        conditions = health.get("chronic_conditions")
+        conditions = health.get("chronic_conditions") or doggy_answers.get("health_conditions")
         if conditions:
-            context_parts.append(f"⚠️ Health: {conditions}")
+            context_parts.append(f"⚠️ Health conditions: {conditions}")
         
         sensitivities = health.get("sensitivities", [])
         if sensitivities:
             context_parts.append(f"Sensitivities: {', '.join(sensitivities)}")
+
+        # ── Vault context: vaccines, meds, vet ─────────────────────────────
+        if vault:
+            vault_meds = vault.get("medications", [])
+            active_meds = [m for m in vault_meds if m.get("active", True)]
+            if active_meds:
+                context_parts.append(f"Current medications: {', '.join([m['medication_name'] + ' ' + (m.get('dosage') or '') for m in active_meds[:3]])}")
+
+            vaccines = vault.get("vaccines", [])
+            if vaccines:
+                context_parts.append(f"Vaccination records: {len(vaccines)} on file")
+                # Upcoming due
+                from datetime import date as _date
+                today_iso = _date.today().isoformat()
+                upcoming_vax = [v.get("vaccine_name") for v in vaccines if v.get("next_due_date") and v["next_due_date"] >= today_iso]
+                if upcoming_vax:
+                    context_parts.append(f"Upcoming vaccines due: {', '.join(upcoming_vax[:3])}")
+
+            vets = vault.get("vets", [])
+            primary_vet = next((v for v in vets if v.get("is_primary")), vets[0] if vets else None)
+            if primary_vet:
+                context_parts.append(f"Primary vet: {primary_vet.get('name')} at {primary_vet.get('clinic_name', '')} — {primary_vet.get('phone', '')}")
+
+            visits = vault.get("visits", [])
+            if visits:
+                last_visit = visits[-1] if visits else None
+                if last_visit:
+                    context_parts.append(f"Last vet visit: {last_visit.get('reason')} ({last_visit.get('visit_date', '')[:10]})")
+
+            weight_history = vault.get("weight_history", [])
+            if weight_history:
+                latest_w = weight_history[-1]
+                context_parts.append(f"Current weight: {latest_w.get('weight_kg')}kg (logged {latest_w.get('date', '')[:10]})")
+        # ── End vault context ───────────────────────────────────────────────
         
         # Love language & quirks
         love_lang = soul.get("love_language") or soul_simple.get("love_language") or doggy_answers.get("love_language")
