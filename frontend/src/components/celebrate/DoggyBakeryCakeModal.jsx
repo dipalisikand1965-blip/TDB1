@@ -232,7 +232,7 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
     const subject = `🎂 Breed Cake Order — ${breed.charAt(0).toUpperCase()+breed.slice(1)} · ${selectedBase?.label} · ${selectedFlavour?.label?.split(' ').slice(1).join(' ')||flavour} — for ${petName}`;
 
     const body =
-      `🎂 BREED CAKE ORDER — DOGGY BAKERY\n` +
+      `🎂 BREED CAKE ORDER — THE DOGGY BAKERY\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
       `FOR: ${petName} (${breed.charAt(0).toUpperCase()+breed.slice(1)})\n\n` +
       `ILLUSTRATION SELECTED:\n` +
@@ -288,7 +288,7 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
         position:'fixed', inset:0,
         background:'rgba(0,0,0,0.75)',
         zIndex:2000,
-        display:'flex', alignItems:'flex-end', justifyContent:'center',
+        display:'flex', alignItems:'center', justifyContent:'center',
         animation:'cbc-fade 0.2s ease',
       }}
     >
@@ -300,9 +300,7 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
           width:'100%', maxWidth:'min(760px, 98vw)',
           maxHeight:'92vh', overflowY:'auto',
           background:'#0F0A1E',
-          borderRadius:'24px 24px 0 0',
-          border:'1px solid rgba(168,85,247,0.3)',
-          animation:'cbc-slide 0.3s cubic-bezier(0.16,1,0.3,1)',
+          borderRadius:'24px',
           fontFamily:"'DM Sans',sans-serif",
           color:'#F5F0E8',
           position:'relative',
@@ -333,13 +331,13 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
             <div>
               <div style={{ fontSize:10, fontWeight:700, color:'#A855F7', letterSpacing:'0.14em', marginBottom:4 }}>
-                DOGGY BAKERY™ · BREED CAKE
+                THE DOGGY BAKERY™ · BREED CAKE
               </div>
               <div style={{
                 fontFamily:"'Cormorant Garamond',Georgia,serif",
                 fontSize:'1.5rem', fontWeight:300, lineHeight:1.2,
               }}>
-                A cake that looks like <em style={{ color:'#A855F7' }}>their dog.</em>
+                A cake that looks like <em style={{ color:'#A855F7' }}>{petName}.</em>
               </div>
             </div>
             <button onClick={onClose} data-testid="cake-modal-close" style={{

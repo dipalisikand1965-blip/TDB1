@@ -135,15 +135,17 @@ export default function SoulMadeModal({
   const allergies = (() => {
     const soul = pet?.doggy_soul_answers || {};
     const raw  = soul.food_allergies || pet?.allergies || '';
-    if (!raw || ['none','no','unknown'].includes(String(raw).toLowerCase())) return null;
-    const items = Array.isArray(raw) ? raw : typeof raw === 'string' ? raw.split(',').map(s => s.trim()).filter(Boolean) : [];
-    return items.map(a => a.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())).join(', ') || null;
+    if (!raw || ['none','no','unknown'].includes(String(raw).toLowerCase().trim())) return null;
+    const items = (Array.isArray(raw) ? raw : String(raw).split(/,|;/).map(s => s.trim()))
+      .filter(a => a.length > 2 && !a.toLowerCase().startsWith('test_') && !/^\d+$/.test(a));
+    if (!items.length) return null;
+    return items.map(a => a.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())).join(', ');
   })();
 
   // ── Load real soul products for this pillar ───────────────────────────
   useEffect(() => {
     setLoadingProds(true);
-    const breedParam = breed ? `&breed=${encodeURIComponent(breed.toLowerCase())}` : '';
+    const breedParam = breed ? `&breed=${encodeURIComponent(breed.toLowerCase().trim().replace(/\s+/g,'_').replace(/-/g,'_'))}` : '';
     fetch(
       `${API_URL}/api/mockups/breed-products?pillar=${pillar}&limit=12${breedParam}`,
       { headers: token ? { Authorization: `Bearer ${token}` } : {} }
