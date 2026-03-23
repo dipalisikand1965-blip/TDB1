@@ -1501,8 +1501,68 @@ def _build_mockup_prompt(breed: str, product_type: str, name: str) -> str:
     """Build an AI image generation prompt for a product mockup."""
     breed_display = breed.replace("_", " ").title()
     pt_display = product_type.replace("_", " ").title()
-    
+
+    # Breed → characteristic colour for cake illustration prompts
+    BREED_COLOURS = {
+        "indie": "warm tan",
+        "labrador": "golden yellow",
+        "labrador_retriever": "golden yellow",
+        "golden_retriever": "golden",
+        "beagle": "tricolor brown white and black",
+        "pug": "fawn",
+        "bulldog": "white and brindle",
+        "english_bulldog": "white and brindle",
+        "french_bulldog": "brindle",
+        "dachshund": "rich chocolate brown",
+        "shih_tzu": "white and gold",
+        "poodle": "fluffy white",
+        "cocker_spaniel": "golden brown",
+        "husky": "grey and white",
+        "chihuahua": "tan",
+        "maltese": "pure white",
+        "pomeranian": "vibrant orange",
+        "rottweiler": "black and tan",
+        "german_shepherd": "black and tan",
+        "doberman": "black and tan",
+        "boxer": "fawn",
+        "dalmatian": "white with black spots",
+        "border_collie": "black and white",
+        "akita": "red and white",
+        "corgi": "golden orange",
+        "australian_shepherd": "blue merle",
+        "cavalier": "chestnut and white",
+        "bichon_frise": "fluffy white",
+        "chow_chow": "cinnamon red",
+        "boston_terrier": "black and white",
+        "bernese_mountain": "tricolor black brown white",
+        "alaskan_malamute": "grey and white",
+        "american_bully": "slate grey",
+        "lhasa_apso": "golden",
+        "yorkshire": "steel blue and tan",
+        "basenji": "red and white",
+        "samoyed": "pure white",
+        "shar_pei": "golden fawn",
+        "weimaraner": "silver grey",
+        "vizsla": "golden rust",
+        "whippet": "fawn and white",
+        "greyhound": "brindle and white",
+        "bloodhound": "red and black",
+        "basset_hound": "tricolor",
+        "irish_setter": "rich mahogany",
+    }
+    breed_colour = BREED_COLOURS.get(breed.lower().replace(" ", "_"), "warm golden")
+
     prompt_map = {
+        "birthday_cake": (
+            f"Flat vector illustration of a {breed_colour} {breed_display} dog, yappy style, "
+            f"clean white background, cute and simple, suitable for printing on a birthday cake, "
+            f"no text, no shadows, pastel warm tones, rounded edges, friendly expression, facing forward"
+        ),
+        "cake": (
+            f"Flat vector illustration of a {breed_colour} {breed_display} dog, yappy style, "
+            f"clean white background, cute and simple, suitable for printing on a birthday cake, "
+            f"no text, no shadows, pastel warm tones, rounded edges, friendly expression, facing forward"
+        ),
         "mug": f"Professional product photography of a white ceramic coffee mug with a beautiful watercolor illustration of a {breed_display} dog printed on it. The mug is on a clean marble surface with soft studio lighting. The illustration shows the dog's face in soft watercolor style. Photorealistic product mockup.",
         "bandana": f"Professional product photography of a dog bandana laid flat on a white surface. The bandana has a beautiful watercolor illustration of a {breed_display} dog printed on the fabric. Soft cotton material, triangle fold. Clean studio lighting. Product mockup.",
         "frame": f"Professional product photo of a wooden picture frame with a beautiful watercolor portrait of a {breed_display} dog inside. The frame is on a shelf with soft lighting. Clean, elegant presentation. Product mockup.",
@@ -1640,3 +1700,35 @@ async def stop_mockup_gen():
         return {"message": "No generation in progress"}
     _mockup_gen_status["running"] = False
     return {"message": "Generation will stop after current item"}
+
+
+@router.post("/generate-breed-cakes")
+async def generate_breed_cake_illustrations(background_tasks: BackgroundTasks, breeds: Optional[List[str]] = None):
+    """
+    Generate yappy-style flat vector cake illustrations for all breeds.
+    Uses the birthday_cake prompt type (pastel flat vector, white background).
+    """
+    global _mockup_gen_status
+    if _mockup_gen_status.get("running"):
+        return {"message": "Generation already running", "status": _mockup_gen_status}
+
+    db = get_db()
+    all_breeds = breeds or [b for b in await db.breed_products.distinct("breed") if b and b != "all"]
+
+    if not all_breeds:
+        return {"message": "No breeds found"}
+
+    background_tasks.add_task(
+        _generate_mockups_for_type, db,
+        "birthday_cake",
+        all_breeds,
+        ["celebrate"],
+        950,
+        "{breed} Birthday Cake",
+        "Flat-vector breed illustration for cake printing — yappy style, pastel warm tones."
+    )
+    return {
+        "message": f"Generating birthday_cake illustrations for {len(all_breeds)} breeds",
+        "breeds": all_breeds,
+        "check_status": "/api/mockups/mockup-gen-status",
+    }

@@ -595,6 +595,25 @@ const SoulProductsManager = () => {
     }
   };
 
+  const generateBreedCakes = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/mockups/generate-breed-cakes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        toast({ title: '🎂 Breed Cake Art Started', description: `Generating flat-vector illustrations for ${data.breeds?.length || '?'} breeds. Check status below.` });
+        pollGenerationStatus();
+      } else {
+        const err = await res.json();
+        toast({ title: 'Error', description: err.detail || 'Failed to start breed cake generation', variant: 'destructive' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to start breed cake generation', variant: 'destructive' });
+    }
+  };
+
   const pollGenerationStatus = () => {
     const interval = setInterval(async () => {
       try {
@@ -1544,6 +1563,14 @@ const SoulProductsManager = () => {
                 <Button onClick={startMockupGeneration} disabled={generationStatus?.running} className="bg-purple-600 hover:bg-purple-700">
                   <Play className="w-4 h-4 mr-2" />
                   {selectedPillar ? `Generate → ${selectedPillar.charAt(0).toUpperCase()+selectedPillar.slice(1)}` : 'Generate'}
+                </Button>
+                <Button
+                  onClick={generateBreedCakes}
+                  disabled={generationStatus?.running}
+                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                  title="Generate flat-vector yappy-style cake illustrations for all breeds"
+                >
+                  <span className="mr-1">🎂</span> Breed Cake Art
                 </Button>
                 <Button onClick={seedBreedProducts} variant="outline">Seed Products</Button>
                 <Button onClick={() => setNewTypeModal(true)} variant="outline" className="border-green-500 text-green-700">
