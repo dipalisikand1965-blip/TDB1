@@ -590,9 +590,7 @@ const ServicesSoulPage = () => {
       )
     ).then(results => {
       const all = results.flat();
-      // Only keep priced services
-      const priced = all.filter(s => parseFloat(s.base_price||s.price||0) > 0);
-      setAllServices(priced);
+      setAllServices(all);
       setSvcLoading(false);
     });
   }, []);
@@ -620,7 +618,7 @@ const ServicesSoulPage = () => {
       pillar: service?.pillar || "services",
       pet: petData,
       channel: "services_page",
-      amount: service?.base_price || service?.price,
+      amount: 0,
     });
     setBookingService(service);
   };

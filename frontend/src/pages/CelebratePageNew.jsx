@@ -52,6 +52,7 @@ import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from '../hooks/useMiraIntelligence';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import { ProductDetailModal } from '../components/ProductCard';
+import DoggyBakeryCakeModal from '../components/celebrate/DoggyBakeryCakeModal';
 
 // API utilities
 import { getApiUrl, API_URL } from '../utils/api';
@@ -342,6 +343,7 @@ const CelebratePageNew = () => {
 
   // Handle talk to concierge — fires canonical flow + opens intake modal
   const [showConciergeModal, setShowConciergeModal] = useState(false);
+  const [cakeModalOpen, setCakeModalOpen] = useState(false);
   const handleTalkToConcierge = useCallback(async () => {
     // Fire tdc tracking immediately
     tdc.book({ service: 'Celebration Concierge', pillar: 'celebrate', pet: selectedPet, channel: 'celebrate_concierge_btn' });
@@ -370,13 +372,17 @@ const CelebratePageNew = () => {
 
   // Handle category selection from strip
   const handleCategorySelect = useCallback((categoryId, categoryObj) => {
-    // Track category pill tap
     tdc.view({
       name: categoryObj?.label || categoryId,
       pillar: "celebrate",
       pet: selectedPet,
       channel: "celebrate_category_strip",
     });
+    // Breed Cakes → open Doggy Bakery cake modal
+    if (categoryId === 'breed-cakes') {
+      setCakeModalOpen(true);
+      return;
+    }
     setCelebrateCatModal({ id: categoryId, obj: categoryObj });
   }, [selectedPet]);
 
@@ -436,12 +442,54 @@ const CelebratePageNew = () => {
           onOpenSoulBuilder={handleOpenSoulBuilder}
         />
 
-        {/* 4. MIRA'S BIRTHDAY BOX — Below the pillars section */}
+        {/* 4. MIRA'S BIRTHDAY BOX */}
         <MiraBirthdayBox 
           pet={selectedPet}
           onBuildBox={handleBuildBox}
           onBrowseProducts={(boxPreview) => handleOpenBrowseDrawer(boxPreview)}
         />
+
+        {/* DOGGY BAKERY — Breed Cake standalone banner */}
+        <div
+          data-testid="breed-cake-banner"
+          onClick={() => setCakeModalOpen(true)}
+          style={{
+            margin: '8px 0 24px',
+            padding: '18px 20px',
+            background: 'linear-gradient(135deg, #0F0A1E 0%, #1a0a2e 100%)',
+            border: '1px solid rgba(168,85,247,0.3)',
+            borderRadius: 16,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            cursor: 'pointer',
+            transition: 'box-shadow 0.2s, transform 0.15s',
+            boxShadow: '0 4px 20px rgba(168,85,247,0.12)',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 28px rgba(168,85,247,0.25)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 4px 20px rgba(168,85,247,0.12)'; e.currentTarget.style.transform = ''; }}
+        >
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#A855F7', letterSpacing: '0.12em', marginBottom: 4 }}>
+              DOGGY BAKERY™ · EXCLUSIVE
+            </div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#F5F0E8', marginBottom: 3 }}>
+              A cake that looks like {selectedPet?.name || 'your dog'} 🎂
+            </div>
+            <div style={{ fontSize: 12, color: 'rgba(245,240,232,0.5)' }}>
+              Breed-specific · {selectedPet?.breed || 'Indie'} illustration on every cake · From ₹950
+            </div>
+          </div>
+          <div style={{
+            flexShrink: 0, marginLeft: 16,
+            background: 'linear-gradient(135deg,#A855F7,#9333EA)',
+            borderRadius: 10, padding: '8px 14px',
+            fontSize: 12, fontWeight: 700, color: '#fff',
+            whiteSpace: 'nowrap',
+          }}>
+            Order →
+          </div>
+        </div>
 
         {/* 5. CELEBRATE CONCIERGE® */}
         <CelebrateConcierge 
@@ -493,7 +541,7 @@ const CelebratePageNew = () => {
         />
       )}
 
-      {/* CONCIERGE INTAKE MODAL — fires canonical flow to admin inbox */}
+      {/* CONCIERGE INTAKE MODAL */}
       <ConciergeIntakeModal
         isOpen={showConciergeModal}
         onClose={() => setShowConciergeModal(false)}
@@ -501,6 +549,14 @@ const CelebratePageNew = () => {
         petName={selectedPet?.name}
         token={token}
       />
+
+      {/* DOGGY BAKERY BREED CAKE MODAL */}
+      {cakeModalOpen && (
+        <DoggyBakeryCakeModal
+          pet={selectedPet}
+          onClose={() => setCakeModalOpen(false)}
+        />
+      )}
 
     </PillarPageLayout>
   );
