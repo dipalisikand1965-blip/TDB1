@@ -35,10 +35,6 @@ const CareCategoryStrip = ({ pet, onDimSelect, activeDim, onSoulMade }) => {
   const scrollRef = useRef(null);
 
   const handleCategoryClick = (cat) => {
-    if (cat.id === 'soul_made') {
-      if (onSoulMade) onSoulMade();
-      return;
-    }
     setActiveCategory(cat);
     setShowModal(true);
     if (onDimSelect) onDimSelect(cat.id);
