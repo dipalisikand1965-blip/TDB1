@@ -11,6 +11,7 @@ import { X, Send, Check } from 'lucide-react';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import ProductCard from '../ProductCard';
+import SoulMadeModal from '../SoulMadeModal';
 
 // ─── Green palette ────────────────────────────────────────────────────────────
 const G = {
@@ -33,6 +34,7 @@ const CAT_CONFIG = {
   supplements: { emoji: '💊',  label: 'Supplements',     dimKey: 'Supplements' },
   soul:        { emoji: '✨',  label: 'Soul Care',       dimKey: 'Soul Care Products' },
   mira:        { emoji: '🪄',  label: "Mira's Picks",   dimKey: null },
+  soul_made:   { emoji: '✦',   label: 'Soul Made™',     dimKey: null },
 };
 
 // ─── Mira QUOTES per dimension ────────────────────────────────────────────────
@@ -53,6 +55,9 @@ const MIRA_QUOTES = {
     ? `${n}'s ${breed} soul — I pulled everything made just for your breed.`
     : `Every dog has a soul. These are made for ${n}'s personality and spirit.`,
   mira:        (n) => `My top picks for ${n} across all care dimensions — scored and ranked just for them.`,
+  soul_made:   (n, breed) => breed
+    ? `Want something truly one-of-a-kind for ${n}? Upload a photo — I'll have Concierge® create it just for your ${breed}.`
+    : `Want something made just for ${n}? Upload a photo and Concierge® will bring it to life.`,
 };
 
 // ─── Pet helpers ──────────────────────────────────────────────────────────────
@@ -287,6 +292,7 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
   const [activeTab, setActiveTab]   = useState('All');
   const [tabs, setTabs]             = useState(['All']);
   const [isDesktop, setIsDesktop]   = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const { token } = useAuth();
 
   useEffect(() => {
@@ -322,6 +328,19 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
     const apiUrl = getApiUrl();
 
     try {
+      // ── Soul Made™: breed-specific products from mockup API ──────────
+      if (category === 'soul_made') {
+        const breedParam = encodeURIComponent((pet?.breed || '').trim().toLowerCase());
+        const r = await fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&pillar=care`);
+        const data = r.ok ? await r.json() : { products: [] };
+        const breedProducts = data.products || [];
+        const subCats = [...new Set(breedProducts.map(p => p.sub_category || p.product_type).filter(Boolean))];
+        setTabs(subCats.length > 1 ? ['All', ...subCats] : ['All']);
+        setProducts(breedProducts);
+        setLoading(false);
+        return;
+      }
+
       // ── Soul Care: breed merch (Breed Collection) + Care Essentials ──────
       if (category === 'soul') {
         const r = await fetch(`${apiUrl}/api/admin/pillar-products?pillar=care&limit=600`);
@@ -600,6 +619,39 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
                       ))}
                     </div>
                   </>
+                )}
+
+                {/* ── Soul Made™ Trigger — shown inside soul_made catalogue ── */}
+                {category === 'soul_made' && !loading && (
+                  <div
+                    data-testid="soul-made-trigger"
+                    onClick={() => setSoulMadeOpen(true)}
+                    style={{
+                      margin:'20px 0 8px', padding:'16px',
+                      background:`${G.sage}08`, border:`1px solid ${G.sage}20`,
+                      borderRadius:14, display:'flex', alignItems:'center',
+                      justifyContent:'space-between', cursor:'pointer',
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontSize:13, fontWeight:700, color:G.sage, marginBottom:3 }}>
+                        ✦ Soul Made™ — Make it personal
+                      </div>
+                      <div style={{ fontSize:12, color:'#888', lineHeight:1.4 }}>
+                        Upload {petName}'s photo · Concierge® creates it · Price on WhatsApp
+                      </div>
+                    </div>
+                    <div style={{ fontSize:20, color:`${G.sage}60`, flexShrink:0, marginLeft:8 }}>›</div>
+                  </div>
+                )}
+                {soulMadeOpen && (
+                  <SoulMadeModal
+                    pet={pet}
+                    pillar="care"
+                    pillarColor={G.sage}
+                    pillarLabel="Wellness"
+                    onClose={() => setSoulMadeOpen(false)}
+                  />
                 )}
               </div>
             </motion.div>
