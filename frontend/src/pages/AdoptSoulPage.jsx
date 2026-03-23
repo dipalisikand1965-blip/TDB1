@@ -309,14 +309,17 @@ const AdoptSoulPage = () => {
             <MiraPicksSection pet={petData}/>
             {/* ✦ Soul Made™ trigger */}
             <div data-testid="adopt-soul-made-trigger" onClick={()=>setSoulMadeOpen(true)}
-              style={{margin:"0 auto 24px",maxWidth:440,padding:"16px 20px",background:"#fff",border:`2px solid ${G.rose}22`,borderRadius:16,display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",boxShadow:`0 4px 16px ${G.rose}14`,transition:"box-shadow 0.2s,transform 0.15s"}}
-              onMouseEnter={e=>{e.currentTarget.style.boxShadow=`0 6px 24px ${G.rose}28`;e.currentTarget.style.transform="translateY(-1px)";}}
-              onMouseLeave={e=>{e.currentTarget.style.boxShadow=`0 4px 16px ${G.rose}14`;e.currentTarget.style.transform="";}}>
-              <div>
-                <div style={{fontSize:14,fontWeight:800,color:G.rose,letterSpacing:"0.02em"}}>✦ Soul Made™ — Make it personal</div>
-                <div style={{fontSize:12,color:"#888",marginTop:3}}>Upload photo · Concierge® creates a custom keepsake for your new dog</div>
+              style={{margin:"0 auto 24px",maxWidth:540,padding:"20px 20px 18px",background:"linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 50%, #1a0a2e 100%)",border:"1.5px solid rgba(196,77,255,0.4)",borderRadius:18,cursor:"pointer",position:"relative",overflow:"hidden",boxShadow:"0 4px 24px rgba(196,77,255,0.18)",transition:"transform 0.15s, box-shadow 0.15s"}}
+              onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 8px 32px rgba(196,77,255,0.32)";}}
+              onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 4px 24px rgba(196,77,255,0.18)";}}>
+              <div style={{position:"absolute",top:-40,right:-40,width:160,height:160,background:"radial-gradient(circle,rgba(196,77,255,0.15) 0%,transparent 70%)",pointerEvents:"none"}}/>
+              <div style={{fontSize:10,fontWeight:800,letterSpacing:"0.15em",color:"#C44DFF",marginBottom:8}}>{`\u2726 SOUL MADE\u2122 \u00B7 MADE ONLY FOR ${(petName||"YOUR DOG").toUpperCase()}`}</div>
+              <div style={{fontSize:20,fontWeight:800,color:"#F5F0E8",fontFamily:"Georgia,serif",marginBottom:6,lineHeight:1.2}}>{petName}'s face. On everything.</div>
+              <div style={{fontSize:13,color:"rgba(245,240,232,0.55)",marginBottom:16}}>Bandana · Portrait Frame · Party Hat · Cake Topper · Tote · and more</div>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"linear-gradient(135deg,#C44DFF,#9333EA)",borderRadius:30,padding:"10px 22px",fontSize:13,fontWeight:700,color:"#fff",boxShadow:"0 4px 16px rgba(196,77,255,0.4)"}}>{`\u2726 Make something only ${petName} has`}</div>
+                <div style={{fontSize:12,color:"rgba(245,240,232,0.35)",fontStyle:"italic",maxWidth:160,textAlign:"right",lineHeight:1.4}}>Upload a photo · Concierge® creates it · Price on WhatsApp</div>
               </div>
-              <span style={{fontSize:22,color:`${G.rose}60`,flexShrink:0,marginLeft:12}}>›</span>
             </div>
             <GuidedAdoptPaths pet={petData}/>
             <div style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,borderRadius:16,padding:"24px 28px",marginBottom:24,textAlign:"center"}}>
