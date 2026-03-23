@@ -2240,7 +2240,7 @@ export default function CareSoulPage() {
       </div>
 
       <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>
-        <CareCategoryStrip pet={petData} onDimSelect={id => setOpenDim(prev => prev===id?null:id)} activeDim={openDim} />
+        <CareCategoryStrip pet={petData} onDimSelect={id => setOpenDim(prev => prev===id?null:id)} activeDim={openDim} onSoulMade={() => setSoulMadeOpen(true)} />
 
         <CareTabBar active={activeTab} onChange={setActiveTab} />
 
