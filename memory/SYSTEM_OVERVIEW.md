@@ -8,7 +8,7 @@
 ## WHAT THIS IS
 The Doggy Company's Pet Life Operating System (PLOS) — a pillar-based concierge platform where every experience is personalised to a named dog by Mira, the AI concierge. Built by Aditya Nair with 200+ days of vision. Products from **thedoggybakery.com** (Shopify). Architecture: React 18 + FastAPI + MongoDB + Cloudinary.
 
-**Preview URL**: https://custom-merch-hub-23.preview.emergentagent.com  
+**Preview URL**: https://concierge-flow-fix.preview.emergentagent.com  
 **Test login**: dipali@clubconcierge.in / test123 | Admin: aditya / lola4304
 
 ---
@@ -306,7 +306,7 @@ Images:  POST /api/ai-images/pipeline/mira-imagines?pillar=X&breed=Y
 **Option A (Best)**: Paste the contents of this file at the start of any Claude conversation.
 
 **Option B**: Share the URL:
-`https://custom-merch-hub-23.preview.emergentagent.com/SYSTEM_OVERVIEW.md`  
+`https://concierge-flow-fix.preview.emergentagent.com/SYSTEM_OVERVIEW.md`  
 (Copy this file to `/app/frontend/public/SYSTEM_OVERVIEW.md`)
 
 **Option C**: For complex questions, share specific files:

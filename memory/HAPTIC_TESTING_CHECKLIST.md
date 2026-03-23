@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://custom-merch-hub-23.preview.emergentagent.com/mira-demo**
+**https://concierge-flow-fix.preview.emergentagent.com/mira-demo**
 
 ---
 

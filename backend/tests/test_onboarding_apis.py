@@ -11,7 +11,7 @@ import uuid
 import random
 import string
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://custom-merch-hub-23.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://concierge-flow-fix.preview.emergentagent.com')
 
 
 class TestOnboardingFlow:

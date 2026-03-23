@@ -59,7 +59,7 @@ MOJO (Identity)
 ## 2.2 URLs
 | Environment | URL |
 |-------------|-----|
-| **Preview** | https://custom-merch-hub-23.preview.emergentagent.com |
+| **Preview** | https://concierge-flow-fix.preview.emergentagent.com |
 | **Main Demo Page** | /mira-demo |
 | **Admin Panel** | /admin |
 | **Dashboard** | /dashboard |
@@ -77,7 +77,7 @@ MOJO (Identity)
 
 ## 2.4 API Base URL
 ```
-REACT_APP_BACKEND_URL=https://custom-merch-hub-23.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://concierge-flow-fix.preview.emergentagent.com
 ```
 
 ---

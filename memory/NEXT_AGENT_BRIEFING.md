@@ -156,7 +156,7 @@ Use `MONGO_URL` from `/app/backend/.env`. DB name from `DB_NAME`. Never hardcode
 ## TEST CREDENTIALS
 - User: `dipali@clubconcierge.in` / `test123`
 - Admin: `aditya` / `lola4304` at `/admin`
-- Preview URL: `https://custom-merch-hub-23.preview.emergentagent.com`
+- Preview URL: `https://concierge-flow-fix.preview.emergentagent.com`
 
 ---
 
@@ -173,7 +173,7 @@ Use `MONGO_URL` from `/app/backend/.env`. DB name from `DB_NAME`. Never hardcode
 ## GUPSHUP WHATSAPP CONFIG
 - API Key: in `/app/backend/.env` as `GUPSHUP_API_KEY`
 - Source number: `WHATSAPP_NUMBER` (918971702582)
-- Inbound webhook URL (register in Gupshup dashboard): `POST https://custom-merch-hub-23.preview.emergentagent.com/api/whatsapp/webhook`
+- Inbound webhook URL (register in Gupshup dashboard): `POST https://concierge-flow-fix.preview.emergentagent.com/api/whatsapp/webhook`
 - Provider: `send_whatsapp_message()` in `whatsapp_notifications.py` — handles formatting + retry
 
 ---
