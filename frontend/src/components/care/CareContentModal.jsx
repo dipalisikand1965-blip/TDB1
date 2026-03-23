@@ -24,6 +24,9 @@ const G = {
   border:    'rgba(45,106,79,0.18)',
 };
 
+// Format raw DB tab labels: pet_towel → Pet Towel
+const fmtTab = (t) => t === 'All' || t === 'all' ? t : t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
 // ─── Category config ──────────────────────────────────────────────────────────
 const CAT_CONFIG = {
   grooming:    { emoji: '✂️',  label: 'Grooming',       dimKey: 'Grooming' },
@@ -553,7 +556,7 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
                         }}
                         data-testid={`care-modal-tab-${tab.toLowerCase().replace(/\s+/g, '-')}`}
                       >
-                        {tab}
+                        {fmtTab(tab)}
                       </button>
                     ))}
                   </div>

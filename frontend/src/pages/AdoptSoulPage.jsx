@@ -307,7 +307,6 @@ const AdoptSoulPage = () => {
             </div>
             <div style={{marginBottom:20}}><AdoptProfile pet={petData} token={token}/></div>
             <MiraPicksSection pet={petData}/>
-            <PersonalisedBreedSection pet={petData} pillar="adopt" />
             <GuidedAdoptPaths pet={petData}/>
             <div style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,borderRadius:16,padding:"24px 28px",marginBottom:24,textAlign:"center"}}>
               <p style={{fontSize:18,fontWeight:800,color:"#fff",fontFamily:"Georgia,serif",marginBottom:8}}>Ready to start? Mira finds your perfect dog.</p>

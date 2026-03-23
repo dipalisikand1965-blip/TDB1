@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, Check, Send, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import SharedProductCard from '../ProductCard';
+import SoulMadeModal from '../SoulMadeModal';
 import { useAuth } from '../../context/AuthContext';
 import { API_URL } from '../../utils/api';
 import { bookViaConcierge } from '../../utils/MiraCardActions';
@@ -34,6 +35,7 @@ const getAllergies = (pet) => {
 };
 
 // ── Category config ────────────────────────────────────────────────────────────
+const fmtTab = (t) => t === 'All' || t === 'all' ? t : t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 const CATEGORY_CONFIG = {
   'outings':     { emoji:'🌳', label:'Outings & Parks',   apiCategory:'outings'   },
   'playdates':   { emoji:'🐾', label:'Playdates',          apiCategory:'playdates' },
@@ -43,6 +45,7 @@ const CATEGORY_CONFIG = {
   'soul':        { emoji:'✨', label:'Soul Play',          apiCategory:null        },
   'bundles':     { emoji:'🎁', label:'Play Bundles',       apiCategory:null        },
   'miras-picks': { emoji:'💫', label:"Mira's Picks",       apiCategory:null        },
+  'soul_made':   { emoji:'✦',  label:'Soul Made™',         apiCategory:null        },
 };
 
 // ── Mira quote builder ────────────────────────────────────────────────────────
@@ -197,6 +200,7 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
   const [activeTab, setActiveTab] = useState('all');
   const [tabs,      setTabs]     = useState([]);
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const { token } = useAuth();
 
   useEffect(() => {
@@ -222,6 +226,19 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
     const apiUrl = getApiUrl();
 
     try {
+      // ── Soul Made™: breed-specific products ──────
+      if (category === 'soul_made') {
+        const breedParam = encodeURIComponent(petBreed);
+        const r = await fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&pillar=play`);
+        const data = r.ok ? await r.json() : { products: [] };
+        const bp = data.products || [];
+        const subCats = [...new Set(bp.map(p => p.sub_category || p.product_type).filter(Boolean))];
+        setTabs(subCats.length > 1 ? ['all', ...subCats] : ['all']);
+        setProducts(bp);
+        setLoading(false);
+        return;
+      }
+
       // ── Soul Play — breed-specific bandanas + cards + soul products ──────────
       if (category === 'soul') {
         const [r1, r2, r3] = await Promise.all([
@@ -434,7 +451,7 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
         <div style={{ display:'flex', gap:8, overflowX:'auto', padding:'12px 16px 4px', flexShrink:0, scrollbarWidth:'none' }}>
           {['all', ...tabs].map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)} style={{ flexShrink:0, borderRadius:20, padding:'6px 16px', fontSize:12.5, fontWeight:700, border: activeTab===tab ? 'none' : `1.5px solid #FFCC99`, background: activeTab===tab ? `linear-gradient(135deg,${G.orange},#C44400)` : G.pale, color: activeTab===tab ? '#fff' : '#C44400', cursor:'pointer' }} data-testid={`play-tab-${tab}`}>
-              {tab === 'all' ? 'All' : tab}
+              {fmtTab(tab)}
             </button>
           ))}
         </div>
@@ -501,17 +518,36 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
         )}
       </div>
 
+      {/* ── Soul Made trigger ────────────────────────────────────────── */}
+      {category === 'soul_made' && !loading && (
+        <div style={{ padding:'0 20px 8px' }}>
+          <div data-testid="soul-made-trigger" onClick={() => setSoulMadeOpen(true)} style={{
+            margin:'8px 0', padding:'14px 16px', background:`${G.orange}08`, border:`1px solid ${G.orange}20`,
+            borderRadius:14, display:'flex', alignItems:'center', justifyContent:'space-between', cursor:'pointer',
+          }}>
+            <div>
+              <div style={{ fontSize:13, fontWeight:700, color:G.orange, marginBottom:3 }}>✦ Soul Made™ — Make it personal</div>
+              <div style={{ fontSize:12, color:'#888', lineHeight:1.4 }}>Upload {petName}'s photo · Concierge® creates it · Price on WhatsApp</div>
+            </div>
+            <div style={{ fontSize:20, color:`${G.orange}60`, flexShrink:0, marginLeft:8 }}>›</div>
+          </div>
+        </div>
+      )}
+      {soulMadeOpen && <SoulMadeModal pet={pet} pillar="play" pillarColor={G.orange} pillarLabel="Play" onClose={() => setSoulMadeOpen(false)} />}
+
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
       <div style={{ flexShrink:0, padding:'14px 20px', borderTop:'1px solid #F0E8E0', background:'#FFFAF6', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <p style={{ fontSize:12, color:'#888', margin:0 }}>Personalised for {petName}</p>
         <button
           onClick={() => {
-            tdc.book({ service: config.label, pillar: 'play', pet, channel: 'play_content_modal_footer' });
-            onClose();
+            if (category === 'soul_made') { setSoulMadeOpen(true); } else {
+              tdc.book({ service: config.label, pillar: 'play', pet, channel: 'play_content_modal_footer' });
+              onClose();
+            }
           }}
           style={{ background:`linear-gradient(135deg,${G.orange},#FF6B9D)`, color:'#fff', border:'none', borderRadius:12, padding:'9px 18px', fontSize:13, fontWeight:700, cursor:'pointer' }}
           data-testid="play-modal-cta">
-          Book {config.label} for {petName} →
+          {category === 'soul_made' ? `Make it personal for ${petName} →` : `Book ${config.label} for ${petName} →`}
         </button>
       </div>
     </motion.div>

@@ -857,7 +857,7 @@ function WellnessProfile({ pet, token }) {
         style={{ background:"#fff", border:`2px solid ${G.pale}`, borderRadius:16, padding:"14px 18px", marginBottom:20, cursor:"pointer", display:"flex", alignItems:"center", gap:14, boxShadow:`0 2px 12px rgba(45,106,79,0.08)` }}>
         <div style={{ width:40, height:40, borderRadius:10, flexShrink:0, fontSize:20, background:`linear-gradient(135deg,${G.pale},${G.light})`, display:"flex", alignItems:"center", justifyContent:"center" }}>🌿</div>
         <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ fontSize:14, fontWeight:700, color:G.darkText }}>{petName}'s Wellness Profile</div>
+          <div style={{ fontSize:14, fontWeight:700, color:G.darkText }}>{petName}'s Grooming Profile</div>
           <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginTop:4 }}>
             {pet?.breed && <span style={{ fontSize:10, fontWeight:600, color:"#1B4332", background:"#D8F3DC", border:"1px solid #74C69D", borderRadius:20, padding:"2px 8px" }}>🐾 {pet.breed} · {breedInsight.tagline}</span>}
             {coat && <span style={{ fontSize:10, fontWeight:600, color:G.deepMid, background:G.pale, border:`1px solid ${G.light}`, borderRadius:20, padding:"2px 8px" }}>🌿 {coat}</span>}
@@ -2210,35 +2210,6 @@ export default function CareSoulPage() {
 
       <CareHero pet={petData} soulScore={soulScore} />
 
-      <div style={{ paddingTop:16, maxWidth:'80rem', margin:'0 auto', padding:'0 16px' }}>
-        <PillarSoulProfile pet={petData} token={token} pillar="care" />
-
-        {/* Health Vault Link — physical health record under Care */}
-        {petData?.id && (
-          <div
-            data-testid="care-health-vault-link"
-            onClick={() => navigate(`/pet-vault/${petData.id}`)}
-            style={{
-              background: 'rgba(64,145,108,0.08)', border: '1px solid rgba(64,145,108,0.2)',
-              borderRadius: 14, padding: '14px 16px', cursor: 'pointer', marginTop: 12, marginBottom: 4,
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'all 0.15s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.background='rgba(64,145,108,0.14)'}
-            onMouseLeave={e => e.currentTarget.style.background='rgba(64,145,108,0.08)'}
-          >
-            <div>
-              <p style={{ fontSize: 13, fontWeight: 700, color: '#40916C', marginBottom: 2 }}>
-                🏥 {petData.name}'s Health Vault
-              </p>
-              <p style={{ fontSize: 12, color: 'rgba(245,240,232,0.5)', margin: 0 }}>
-                Vaccines · Medications · Allergies · Vet visits · Identity
-              </p>
-            </div>
-            <span style={{ fontSize: 20, color: 'rgba(64,145,108,0.5)' }}>›</span>
-          </div>
-        )}
-      </div>
-
       <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>
         <CareCategoryStrip pet={petData} onDimSelect={id => setOpenDim(prev => prev===id?null:id)} activeDim={openDim} onSoulMade={() => setSoulMadeOpen(true)} />
 
@@ -2250,6 +2221,39 @@ export default function CareSoulPage() {
             <>
               {/* Wellness Profile bar */}
               <WellnessProfile pet={petData} token={token} />
+
+              {/* ── Beautiful PillarSoulProfile + Health Vault (moved from top) ── */}
+              <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:20 }}>
+                {/* Soul Profile — full component with drawer */}
+                <PillarSoulProfile pet={petData} token={token} pillar="care" />
+
+                {/* Health Vault — styled like WellnessProfile card */}
+                {petData?.id && (
+                  <div
+                    data-testid="health-vault-card-lower"
+                    onClick={() => navigate(`/pet-vault/${petData.id}`)}
+                    style={{
+                      background:'#fff', border:`2px solid ${G.pale}`, borderRadius:16,
+                      padding:'14px 18px', cursor:'pointer', display:'flex', alignItems:'center', gap:14,
+                      boxShadow:'0 2px 12px rgba(45,106,79,0.08)', transition:'all 0.15s',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.boxShadow='0 4px 20px rgba(45,106,79,0.14)'}
+                    onMouseLeave={e => e.currentTarget.style.boxShadow='0 2px 12px rgba(45,106,79,0.08)'}
+                  >
+                    <div style={{ width:44, height:44, borderRadius:12, flexShrink:0, background:'linear-gradient(135deg,#E8F5E9,#A5D6A7)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>🏥</div>
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <div style={{ fontSize:14, fontWeight:700, color:G.darkText }}>{petData.name}'s Health Vault</div>
+                      <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginTop:4 }}>
+                        <span style={{ fontSize:10, fontWeight:600, color:'#00695C', background:'#E0F2F1', border:'1px solid #80CBC4', borderRadius:20, padding:'2px 8px' }}>💉 Vaccines</span>
+                        <span style={{ fontSize:10, fontWeight:600, color:'#1565C0', background:'#E3F2FD', border:'1px solid #90CAF9', borderRadius:20, padding:'2px 8px' }}>💊 Medications</span>
+                        <span style={{ fontSize:10, fontWeight:600, color:'#AD1457', background:'#FCE4EC', border:'1px solid #F48FB1', borderRadius:20, padding:'2px 8px' }}>⚕ Allergies</span>
+                        <span style={{ fontSize:10, fontWeight:600, color:'#1B4332', background:'#D8F3DC', border:'1px solid #74C69D', borderRadius:20, padding:'2px 8px' }}>🩺 Vet visits</span>
+                      </div>
+                    </div>
+                    <span style={{ fontSize:11, color:G.sage, fontWeight:700, whiteSpace:'nowrap', flexShrink:0 }}>open →</span>
+                  </div>
+                )}
+              </div>
 
               {/* Section header */}
               <div style={{ marginBottom:16 }}>

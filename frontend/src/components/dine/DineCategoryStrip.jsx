@@ -61,6 +61,12 @@ export const DINE_CATEGORIES = [
     icon: '💫',
     iconBg: 'linear-gradient(135deg, #FCE4EC, #FF6B9D)',
   },
+  {
+    id: 'soul_made',
+    name: 'Soul Made™',
+    icon: '✦',
+    iconBg: 'linear-gradient(135deg, #FFF3E0, #FFE0B2)',
+  },
 ];
 
 const DineCategoryStrip = ({ pet, onCategorySelect }) => {

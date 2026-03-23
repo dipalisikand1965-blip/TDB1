@@ -78,6 +78,12 @@ const CELEBRATE_CATEGORIES = [
     icon: '💫',
     iconBg: 'linear-gradient(135deg, #FCE4EC, #FF6B9D)'
   },
+  {
+    id: 'soul_made',
+    name: 'Soul Made™',
+    icon: '✦',
+    iconBg: 'linear-gradient(135deg, #E8D5F5, #C44DFF)'
+  },
 ];
 
 export { CELEBRATE_CATEGORIES };

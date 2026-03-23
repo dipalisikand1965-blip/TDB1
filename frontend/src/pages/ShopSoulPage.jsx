@@ -33,6 +33,7 @@ import SharedProductCard, { ProductDetailModal } from "../components/ProductCard
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
+import SoulMadeModal from "../components/SoulMadeModal";
 
 // ── Colour system — warm gold, The Doggy Bakery amber ─────────
 const G = {
@@ -700,7 +701,7 @@ const ShopSoulPage = () => {
   const [activeSection, setActiveSection] = useState(null); // null = show all
   const [toastVisible,  setToastVisible]  = useState(false);
   const [toastSvc,      setToastSvc]      = useState("");
-
+  const [soulMadeOpen,  setSoulMadeOpen]  = useState(false);
   useEffect(() => {
     if (contextPets?.length>0 && !currentPet) setCurrentPet(contextPets[0]);
     if (contextPets !== undefined) setLoading(false);
@@ -783,7 +784,6 @@ const ShopSoulPage = () => {
         {(!activeSection || activeSection === "mira") && (
           <>
             <MiraPicksSection pet={petData}/>
-            <PersonalisedBreedSection pet={petData} pillar="shop" />
           </>
         )}
 
@@ -812,12 +812,13 @@ const ShopSoulPage = () => {
                            color:G.darkText, margin:0, fontFamily:"Georgia,serif" }}>
                 Breed Collection
               </h2>
-              <span style={{ fontSize:10, fontWeight:700, background:"#7C3AED", color:"#fff",
-                             borderRadius:20, padding:"2px 8px" }}>✦ Soul-Made</span>
+              <span onClick={() => setSoulMadeOpen(true)} style={{ fontSize:10, fontWeight:700, background:"#7C3AED", color:"#fff",
+                             borderRadius:20, padding:"2px 8px", cursor:"pointer" }}>✦ Soul-Made</span>
             </div>
             <BreedCollectionSection pet={petData}/>
           </section>
         )}
+        {soulMadeOpen && <SoulMadeModal pet={petData} pillar="shop" pillarColor="#F59E0B" pillarLabel="Shopping" onClose={() => setSoulMadeOpen(false)} />}
 
         {/* Full browse */}
         <section style={{ marginBottom:48 }}>

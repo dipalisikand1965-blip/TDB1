@@ -296,6 +296,7 @@ from checklist_routes import router as checklist_router
 
 # Nearby Places Routes (Google Places API for location-based services)
 from nearby_places_routes import router as nearby_places_router
+from nearby_places_routes import nearme_router
 
 # Instagram Feed Routes (for celebration wall)
 from instagram_routes import router as instagram_router
@@ -21703,6 +21704,7 @@ app.include_router(checklist_router)  # Checklists at /api/checklists/*
 
 # Initialize Nearby Places Routes (Google Places API)
 app.include_router(nearby_places_router)  # Nearby at /api/nearby/*
+app.include_router(nearme_router)          # NearMe at /api/nearme/*
 
 # Initialize Instagram Feed Routes
 app.include_router(instagram_router)  # Instagram at /api/instagram/*
