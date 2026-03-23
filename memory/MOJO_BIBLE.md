@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://flat-art-picker.preview.emergentagent.com
+https://concierge-wiring.preview.emergentagent.com
 ```
 
 ---

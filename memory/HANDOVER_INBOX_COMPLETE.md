@@ -170,7 +170,7 @@ This endpoint already exists in `mira_service_desk.py`.
 ## PREVIEW URL
 
 ```
-https://flat-art-picker.preview.emergentagent.com
+https://concierge-wiring.preview.emergentagent.com
 ```
 
 ---

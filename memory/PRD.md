@@ -71,7 +71,7 @@ frontend/src/
 ## Credentials
 - User: `dipali@clubconcierge.in` / `test123`
 - Admin: `aditya` / `lola4304` at `/admin`
-- App: `https://flat-art-picker.preview.emergentagent.com`
+- App: `https://concierge-wiring.preview.emergentagent.com`
 - MongoDB: `mongodb://localhost:27017` / DB: `pet-os-live-test_database`
 
 ---

@@ -23,7 +23,7 @@
   "test_credentials": {
     "user_email": "dipali@clubconcierge.in",
     "user_password": "test123",
-    "preview_url": "https://flat-art-picker.preview.emergentagent.com"
+    "preview_url": "https://concierge-wiring.preview.emergentagent.com"
   },
   "seed_data_creation": "None - used existing data",
   "retest_needed": false,

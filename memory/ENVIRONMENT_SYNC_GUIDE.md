@@ -43,7 +43,7 @@ curl -X POST "https://thedoggycompany.in/api/admin/env-sync/full-sync?token=sync
   -u "aditya:lola4304" \
   -H "Content-Type: application/json" \
   -d '{
-    "source_url": "https://flat-art-picker.preview.emergentagent.com",
+    "source_url": "https://concierge-wiring.preview.emergentagent.com",
     "user_email": "dipali@clubconcierge.in",
     "user_password": "test123",
     "sync_soul_data": true
@@ -54,7 +54,7 @@ curl -X POST "https://thedoggycompany.in/api/admin/env-sync/full-sync?token=sync
 
 ```bash
 # Full sync from Production to Preview
-curl -X POST "https://flat-art-picker.preview.emergentagent.com/api/admin/env-sync/full-sync?token=sync-preview-to-prod-2026&overwrite=true" \
+curl -X POST "https://concierge-wiring.preview.emergentagent.com/api/admin/env-sync/full-sync?token=sync-preview-to-prod-2026&overwrite=true" \
   -u "aditya:lola4304" \
   -H "Content-Type: application/json" \
   -d '{
