@@ -209,7 +209,7 @@ const PILLAR_CROSS_SELL_TITLES = {
   default: "You May Also Like"
 };
 
-const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraContext = null }) => {
+const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraContext = null, overrideImageUrl = null, artStyleLabel = null }) => {
   const [showModal, setShowModal] = useState(false);
   const { user, token } = useAuth();
   const isServiceProduct = (product.product_type === 'service') || (product.category === 'service');
@@ -438,16 +438,28 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
             // Regular Shopify products should ALWAYS use their original product images
             const isSoulMade = product.soul_tier === 'soul_made';
             const mockup = (isSoulMade && selectedPet?.breed) ? getProductMockup(product, selectedPet.breed) : null;
-            const displayImage = mockup?.mockupUrl || productImage;
+            const displayImage = overrideImageUrl || mockup?.mockupUrl || productImage;
             
             return (
-              <img
-                src={displayImage}
-                alt={product.name}
-                className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                style={{ background: '#fafafa' }}
-                onError={(e) => { e.target.src = productImage || PLACEHOLDER_IMAGE; }}
-              />
+              <>
+                <img
+                  src={displayImage}
+                  alt={product.name}
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                  style={{ background: '#fafafa' }}
+                  onError={(e) => { e.target.src = productImage || PLACEHOLDER_IMAGE; }}
+                />
+                {artStyleLabel && (
+                  <div style={{
+                    position:'absolute', bottom:6, left:6,
+                    background:'rgba(0,0,0,0.60)', borderRadius:999,
+                    padding:'3px 9px', fontSize:9, fontWeight:700,
+                    color:'#fff', letterSpacing:'0.04em', pointerEvents:'none',
+                  }}>
+                    {artStyleLabel === 'flat_art' ? '🐾 Flat Art' : '🎨 Watercolour'}
+                  </div>
+                )}
+              </>
             );
           })()}
           <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 sm:gap-2">
@@ -519,7 +531,11 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
               : (product.name||"")}
           </h3>
 
-          {minPrice > 0 ? (
+          {isServiceProduct ? (
+            <p className="text-sm font-semibold text-orange-600" style={{ letterSpacing: '-0.01em' }}>
+              Price on Request · Concierge
+            </p>
+          ) : minPrice > 0 ? (
             <p className="text-sm sm:text-base font-bold text-gray-900">
               From ₹{minPrice.toLocaleString('en-IN')}
             </p>
@@ -529,13 +545,13 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
             </p>
           )}
           
-          {/* View Button */}
-          <button 
+          {/* CTA — opens modal; modal handles Concierge for services */}
+          <button
             onClick={(e) => { e.stopPropagation(); setShowModal(true); }}
             className={`w-full mt-2 py-2 text-xs font-semibold rounded-lg transition-colors ${isServiceProduct ? 'bg-orange-100 hover:bg-orange-200 text-orange-700' : 'bg-purple-100 hover:bg-purple-200 text-purple-700'}`}
             data-testid={`view-product-${product.id}`}
           >
-            {isServiceProduct ? 'Request Service' : 'View Details'}
+            {isServiceProduct ? 'Talk to Concierge →' : 'View Details'}
           </button>
         </div>
       </div>

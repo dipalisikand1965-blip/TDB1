@@ -17,6 +17,7 @@ import {
   Download, FileUp, Plus, Trash2, ChevronLeft, ChevronRight, AlertCircle
 } from 'lucide-react';
 import CloudinaryUploader from './CloudinaryUploader';
+import AIImagePromptField from './AIImagePromptField';
 
 const PILLARS = ['celebrate','play','go','care','dine','learn','farewell','emergency','paperwork','adopt','shop','advisory'];
 const AUTH_HEADER = { 'Authorization': `Basic ${btoa('aditya:lola4304')}`, 'Content-Type': 'application/json' };
@@ -1779,6 +1780,14 @@ const SoulProductsManager = () => {
               {/* Image upload */}
               <div>
                 <Label className="text-xs mb-1 block">Image (Upload or paste URL)</Label>
+                <AIImagePromptField
+                  entityType="breed_product"
+                  entityId={editBreedProd?.id}
+                  currentPrompt={editBreedProd?.ai_image_prompt || ''}
+                  onPromptChange={val => setEditBreedProd(p => ({ ...p, ai_image_prompt: val }))}
+                  onImageGenerated={(url) => setEditBreedProd(p => ({ ...p, cloudinary_url: url, mockup_url: url }))}
+                />
+                <div className="mt-2">
                 <CloudinaryUploader
                   productId={editBreedProd.id}
                   currentImageUrl={editBreedProd.cloudinary_url || editBreedProd.mockup_url}
@@ -1792,6 +1801,7 @@ const SoulProductsManager = () => {
                   </div>
                 )}
               </div>
+            </div>
             </div>
           )}
           <DialogFooter className="gap-2">

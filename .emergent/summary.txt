@@ -1,142 +1,151 @@
-<analysis>Here is the handover summary based on the provided LLM message history.
+<analysis>original_problem_statement: Implement unified Soul Made™ custom order flow, fix Concierge routing, build a scalable Flat Art pipeline using blank templates and a front-end picker, implement admin CRUD improvements (active toggles, AI prompt fields, pagination), fix global breed recommendations in cart/checkout, and ensure mobile UX consistency. PRODUCT REQUIREMENTS: Fully integrate Flat Art into cart/checkout flow via  templates with custom metadata, hide service pricing, and ensure accurate cart recommendation breed filtering.
 
-**original_problem_statement**: Implement unified Soul Made™ custom order flow, fix Concierge routing, fix Birthday box swap functionality, and build a highly scalable Breed Cake illustration generator. Expand this to a Flat Art merchandise line using zero-cost Cloudinary overlays. Hide all hardcoded pricing for Services platform-wide (route to Concierge instead). Fix global breed string matching (spaces vs underscores).
+**User's preferred language**: English (INSTRUCT next agent to respond in English only)
 
-**User's preferred language**: English (INSTRUCT next agent to respond in English only).
-
-**what currently exists?**: A comprehensive Pet Life OS with React frontend, FastAPI backend, and MongoDB. The system now features a robust Soul Made product generation pipeline. It includes a custom  for ordering personalized breed cakes. The platform uses a dual-art system for merchandise: Watercolor (AI-generated) and Flat Art (Yappy-style vector faces overlaid instantly onto existing templates using Cloudinary transformations). Service prices are hidden globally, enforcing a Price on Request / Talk to Concierge model.
+**what currently exists?** A comprehensive Pet Life OS. The Flat Art pipeline was completely overhauled in the recent session: old overlapping Cloudinary composite images were deleted. Now, 20 generic blank product templates exist in , and the frontend () allows users to toggle between Watercolour and Flat Art, picking specific Yappy-style breed variants dynamically. Admin panels are enriched with pagination, search, active/inactive toggles, and AI prompt fields.
 
 **Last working item**: 
-    - Last item agent was working: Wiring an auto-chain script (). The script was silently generating 272 missing watercolor products for 16 rare breeds in the background, which will automatically trigger  upon completion.
-    - Status: IN PROGRESS (Background task running/pending).
-    - Agent Testing Done: N/A (Background API execution).
-    - Which testing method agent to use?: Check backend  via curl or Python script.
+    - Last item agent was working: Updating documentation (, ) and preparing the handover summary as requested by the user in their final message.
+    - Status: IN PROGRESS
+    - Agent Testing Done: Y
+    - Which testing method agent to use?: NA (Documentation only)
     - User Testing Done: N
 
-**All Pending/In progress Issue list**:  
-  - Issue 1: Mira Imagines Loading State UX (P1)
-     - Attempted fixes: The previous agent explained to the user that the Mira Imagines card is just a 2-second fallback while the real AI picks load. No code fix was implemented.
-     - Next debug checklist: Go to  and replace the  fallback map with a proper UI Skeleton/Shimmer loader.
-     - Why fix this issue and what will be achieved with the fix? The user panicked thinking the Shopify sync broke because they saw the placeholder text. A proper skeleton loader prevents this UX confusion.
+**All Pending/In progress Issue list**:
+  Issue 1: Test Pets Cleanup (P2)
+     - Attempted fixes: None.
+     - Next debug checklist: Check database or admin member directory to remove TestScoring, TestScoringWeight, and duplicate Coco pets from user profiles/system.
+     - Why fix this issue and what will be achieved with the fix? Clean up production data so dummy pets don't appear in recommendations or dropdowns.
      - Status: NOT STARTED
      - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? Frontend (Screenshot)
+     - Should Test frontend/backend/both after fix? Backend
+     - Blocked on other issue: None
+  Issue 2: Mobile UI/UX visual audit (P2)
+     - Attempted fixes: Fixed scrolling and clipping in modals, but user previously noted font sizes seem small on iOS/Apple devices.
+     - Next debug checklist: Audit , , ,  on real mobile viewports for font size (, ) readability and image rendering.
+     - Why fix this issue and what will be achieved with the fix? Better accessibility and premium feel on iOS devices.
+     - Status: NOT STARTED
+     - Is recurring issue? Y (Mobile specific)
+     - Should Test frontend/backend/both after fix? Frontend testing agent / Screenshot tool
      - Blocked on other issue: None
 
 **In progress Task List**:
-  - Task 1: Verify Background Image Generation
-     - Where to resume: Check backend logs or hit .
-     - What will be achieved with this? Ensuring the 272 missing watercolor products and subsequent Flat Art Cloudinary overlays were generated successfully. *USER EXPLICITLY REQUESTED the next agent to switch it on before starting if the container sleep interrupted the process.*
+  Task 1: Complete Documentation Updates
+     - Where to resume: Verify  is updated and finish writing  to reflect the newly implemented Flat Art architecture.
+     - What will be achieved with this? Fulfills the user's explicit final request.
      - Status: IN PROGRESS
-     - Should Test frontend/backend/both after fix? Backend
+     - Should Test frontend/backend/both after fix? NA
      - Blocked on something: None
 
 **Upcoming and Future Tasks**
-  Upcoming Tasks:
-  - (P1) Add 3 vets near you context to daily health WhatsApp reminders (requires NearMe API call at scheduler time).
-  - (P1) Extend scheduler to handle Medication refill reminders.
-  
-  Future Tasks:
-  - (P2) Build the  pillar.
-  - (P2) Refactor  (24,000+ lines).
-  - (P2) Add a My Custom Orders tab in the user profile.
-  - (P2) Add an admin notification banner/chime in the Service Desk when a new Soul Made™ order comes in.
+    Upcoming Tasks:
+    - (P1) Add 3 vets near you context to daily health WhatsApp reminders (requires NearMe API call at scheduler time).
+    - (P1) Extend scheduler to handle Medication refill reminders.
+    
+    Future Tasks:
+    - (P2) Build the  pillar.
+    - (P2) Refactor  (24,000+ lines).
+    - (P2) Add a My Custom Orders tab in the user profile.
+    - (P2) Replace generic white product blank templates with lifestyle-style product shots for Flat Art.
 
 **Completed work in this session**
-- Added Soul Made triggers to Adopt, Farewell, and Emergency pages (DONE)
-- Fixed ProductDetailModal Concierge route to use canonical ticket flow (DONE)
-- Fixed MiraCuratedBox (Birthday) item swap/switch functionality (DONE)
-- Implemented Admin-style Soul Cards in BirthdayBoxBrowseDrawer (DONE)
-- Hidden all Service prices across app -> routed to Concierge (DONE)
-- Generated Yappy-style flat Breed Cake illustrations for 51 breeds (DONE)
-- Built  with pet-awareness (highlights pet's fav proteins, filters allergens) (DONE)
-- Created Cloudinary overlay pipeline for Flat Art merchandise (940+ products created instantly using ) (DONE)
-- Fixed global breed name normalization (spaces vs underscores, aliases) in  (DONE)
-- Added pagination and Side-by-Side rendering to Soul Products Collection (DONE)
+- Fixed duplicate All tab bugs in , , ,  (DONE)
+- Added pagination and search to Admin Soul Products gallery (DONE)
+- Added Active/Inactive toggles to Admin (ProductBox, Services, Bundles) & fixed status counts (DONE)
+- Added  to all 5 admin editors (DONE)
+- Deleted 831 clashing Flat Art overlays from MongoDB via script (DONE)
+- Created  and generated 24 new blank product templates (DONE)
+- Created 20 Flat Art template products in  with cart integration (DONE)
+- Fixed cart caching via  check (DONE)
+- Fixed checkout cross-sell breed filter logic (DONE)
+- Fixed content modal bottom-padding clipping (DONE)
 
 **Earlier issues found/mentioned but not fixed**
-   - Issue 1: UX loading state on Celebrate Page (Documented in Pending Issues).
+   Issue 1: Test pets data and duplicate pets in production view
+   - Debug checklist: Search user DB for TestScoring, TestScoringWeight, duplicate Coco.
+   - Why to solve this issue and what will be achieved with this: Ensures clean, professional demo environment.
+   - Should Test frontend/backend/both after fix: Backend
+   - Is recurring issue? N
 
 **Known issue recurrence from previous fork**
-  - Issue recurrence in previous fork: None. (The long-standing breed spacing issue like 'golden retriever' vs 'golden_retriever' was finally solved globally via a  map).
+  - Issue recurrence in previous fork: None
   - Recurrence count: 0
   - Status: RESOLVED
 
 **Code Architecture**
-- : Monolithic backend router.
-- : Handles all AI generation, prompts, and status.
-- : Handles fetching products. Contains vital  dictionary.
-- : Script to generate Cloudinary overlay URLs instantly.
-- : Custom order UI for cakes.
-- : Frontend gallery for personalized products.
+- : Main UI component for selecting flat art variants on top of blank templates.
+- : Manages cart state; updated to save custom illustration URLs and variants, utilizes a versioning system.
+- : Reusable component for AI image prompts.
+- : Handles background image generation logic.
+- : Maps product types to their respective blank template URLs.
 
 **Key Technical Concepts**
-- **Cloudinary Overlay Pipeline (CRITICAL):** Instead of using expensive AI to generate flat art merch, the system uses Cloudinary string manipulation (). It takes the AI-generated Yappy face and overlays it onto the existing watercolor product templates. It utilizes the  flag to strip the white box from the face illustration seamlessly.
-- **Service Pricing Rule:** Services are personalized, not productized. Hardcoded prices () have been stripped from service cards/pages and replaced with Price on request / Concierge will confirm.
+- **Hybrid Flat Art Pipeline:** Instead of pre-generating thousands of permutations, the app uses 20 base Flat Art Templates in  (e.g. Soul Mug - Flat Art). The frontend UI allows users to dynamically pick their breed's variant (Yappy face), which is then passed as metadata into the cart/checkout for the Concierge to fulfill.
+- **Cart Versioning:**  uses a  constant. Bumping this auto-wipes stale  carts across client browsers to prevent schema crash loops.
 
 **key DB schema**
-  - : Contains both watercolor (AI generated) and flat art (Cloudinary overlays).  field is used for filtering.
-  - , .
+  - : Base items, now contains 20 Soul [Product] — Flat Art template items.
+  - : Contains Watercolour mockups and  (Yappy illustrations).
+  - : Managed separately with active toggles.
 
 **changes in tech stack**
-  - Heavy leverage of Cloudinary on-the-fly transformations.
+  - Pivot in strategy: Reverted from using Cloudinary  overlay logic for Flat Art, moved to a frontend Selection UI approach (blank template + variant picker) mapped to standard product IDs.
 
 **All files of reference** 
-  -  (Explains the cake generator)
-  -  (Explains the Cloudinary overlay scaling)
-  - 
-  - 
+  -  (created)
+  -  (created)
+  -  (created)
+  -  (updated version logic)
+  -  (updated for flat art metadata)
+  -  (updated breed filters)
+  -  (search and stats endpoints updated)
 
-**Areas that need refactoring**:
-  -  is massively bloated (~24k lines). 
+**Areas that need refactoring**: 
+  -  is massively bloated (24k+ lines) and should be split into modular routers.
 
 **key api endpoints**
   - 
   - 
-  -  (Silent background chain)
   - 
 
 **Critical Info for New Agent** 
-- Before starting new work, ping the  to ensure the missing breed background task completed. If it says not running and products are missing, trigger  to resume.
-- The  passes a highly detailed multi-line string to  ->  so the human baker gets exactly what is needed (sizes, flavors, text, allergies, mockup URL). Do not alter this payload structure.
+- The Flat Art functionality has fundamentally changed. **Do NOT** attempt to overlay images using Cloudinary transformations anymore. Flat Art is now a *product selection experience* on the frontend via , where the user selects an existing Yappy illustration variant (from  products) to be applied to a generic blank product template. The Cart automatically passes this as custom metadata.
+- Product Box search works perfectly for flat art—you just have to search flat art or Soul Bandana, not breed names (because the products in the DB are generic templates).
 
 **documents and test reports created in this job** 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  -  
   - 
 
 **Last 10 User Messages and any pending HUMAN messages** 
-1. **LATEST**: User confirmed to trigger the auto-chain generation and left instructions for the future agent to check it on startup. -> **STATUS: PENDING VERIFICATION**
-2. User wanted to know how many products were generated and asked to auto-generate the 16 missing rare breeds silently. -> **STATUS: COMPLETED**
-3. User disliked the white box on the flat-art cushions. -> **STATUS: COMPLETED** (Agent added  to Cloudinary and deleted flat_cushions as templates were flawed).
-4. User noticed Buddy (Golden Retriever) and Shih Tzu weren't showing products. -> **STATUS: COMPLETED** (Agent fixed breed name spacing matching globally).
-5. User requested pagination and See More for Soul Products. -> **STATUS: COMPLETED**
-6. User requested functional download buttons for Admin panels. -> **STATUS: COMPLETED** (Added  flag).
-7. User agreed to use Cloudinary overlay (Option B) for scaling Flat Art merch to save AI costs. -> **STATUS: COMPLETED**
+1. **LATEST**: User requested to update PRD, , and write a detailed handover for the next agent. -> **STATUS: IN PROGRESS**
+2. User noted that Mira also recommends in checkout was showing incorrect breeds (Scottish Terrier for an Indie). -> **COMPLETED** (Fixed breed filter logic)
+3. User reported adding a product to cart resulted in a stale Party Favor Pack appearing globally. -> **COMPLETED** (Fixed by implementing  auto-wipe in CartContext).
+4. User asked if flat art products were editable in Product Box. -> **COMPLETED** (Explained they exist as 20 generic templates).
+5. User requested flat art products to have prices and standard Add to Cart flow instead of pure concierge request. -> **COMPLETED** (Migrated 20 templates to ).
+6. User requested to use AI to generate 25 blank mockups and map them to the 80 mockups. -> **COMPLETED** (Used Gemini Image generation).
+7. User suggested showing a blank white product and letting customers click to add their breed's illustration below. -> **COMPLETED** (Built ).
+8. User complained the Cloudinary overlay (Option B) looked horrible. Requested deletion of 831 generated products. -> **COMPLETED**.
+9. User asked for AI image prompt field in ProductBoxEditor, Services, Bundles, and Soul editors. -> **COMPLETED**.
+10. User requested to be able to activate/deactivate items from the admin backend. -> **COMPLETED**.
 
 **Project Health Check:**
-Frontend compiles cleanly. Backend routes are stable. Heavy background tasks might need status verification.
+Healthy.
 
 **3rd Party Integrations** 
-  • OpenAI GPT-4o / Claude Sonnet — uses Emergent LLM Key
-  • Cloudinary (Images/Overlays) — requires User API Key (Heavily utilized)
-  • Razorpay (Payments) — requires User API Key
-  • Gupshup (WhatsApp) — requires User API Key
-  • Google Places API (NearMe) — requires User API Key
+	•	OpenAI GPT-4o / Claude Sonnet — uses Emergent LLM Key
+	•	Gemini (imagen-4.0-generate-001) for blank template generation — uses Emergent LLM Key
+	•	Cloudinary (Images) — requires User API Key
+	•	Razorpay (Payments) — requires User API Key
 
 **Testing status**
   - Testing agent used after significant changes: YES
   - Troubleshoot agent used after agent stuck in loop: NO
-  - Test files created: , , 
-  - Known regressions: None detected.
+  - Test files created: 
+  - Known regressions: None.
 
 **Credentials to test flow:**
 - User:  / 
 - Admin:  /  (Admin portal at )
 
 **What agent forgot to execute**
-The agent explicitly left the UX loading issue (replacing Mira Imagines with a Skeleton loader in ) for the next fork, prioritizing the massive backend generation pipeline instead. This should be a quick front-end fix.</analysis>
+The agent received the final user request to update  and  and called  for , but the session ended before finishing the  edit/creation and sending the final confirmation message. The next agent must finalize the  update.</analysis>

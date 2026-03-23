@@ -6,7 +6,7 @@ Iteration 126 - Follow-up to iteration_125.
 
 import asyncio
 
-BASE_URL = "https://pet-life-os-2.preview.emergentagent.com"
+BASE_URL = "https://flat-art-picker.preview.emergentagent.com"
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 

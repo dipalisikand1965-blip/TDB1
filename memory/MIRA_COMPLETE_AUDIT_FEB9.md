@@ -296,4 +296,4 @@ Password: test123
 
 **Audit Status:** COMPLETE
 **Generated:** February 9, 2026
-**Preview URL:** https://pet-life-os-2.preview.emergentagent.com
+**Preview URL:** https://flat-art-picker.preview.emergentagent.com

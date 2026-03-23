@@ -33,6 +33,7 @@ import {
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
 import CloudinaryUploader from './CloudinaryUploader';
+import AIImagePromptField from './AIImagePromptField';
 
 const PILLARS = [
   { id: 'celebrate', name: 'Celebrate', icon: '🎂' },
@@ -855,6 +856,15 @@ const BundlesManager = () => {
               </div>
               {!editingBundle?.id && <p className="text-xs text-gray-400 mt-1">Save bundle first to enable image upload/generation</p>}
             </div>
+
+            {/* AI Image Prompt */}
+            <AIImagePromptField
+              entityType="bundle"
+              entityId={editingBundle?.id}
+              currentPrompt={formData.ai_image_prompt || ''}
+              onPromptChange={val => setFormData(prev => ({ ...prev, ai_image_prompt: val }))}
+              onImageGenerated={(url, prompt) => setFormData(prev => ({ ...prev, image_url: url, ai_image_prompt: prompt }))}
+            />
           </div>
           
           <DialogFooter>
