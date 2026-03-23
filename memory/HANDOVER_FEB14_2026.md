@@ -11,7 +11,7 @@
 | **Mira OS** | `/mira-demo` ← MAIN OS (NOT `/mira`) |
 | **Admin Panel** | `/admin` |
 | **Member Dashboard** | `/member-dashboard` |
-| **Preview** | `https://pet-life-os-2.preview.emergentagent.com` |
+| **Preview** | `https://flat-art-picker.preview.emergentagent.com` |
 
 ### Test Credentials
 | Role | Email | Password |

@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://pet-life-os-2.preview.emergentagent.com/mira-demo**
+**https://flat-art-picker.preview.emergentagent.com/mira-demo**
 
 ---
 

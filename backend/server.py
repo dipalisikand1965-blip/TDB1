@@ -21426,7 +21426,53 @@ async def get_product_image_status(
     return job
 
 
-@api_router.post("/admin/celebrate/bundles/{bundle_id}/generate-image")
+@api_router.post("/admin/generate-image")
+async def generate_image_universal(
+    data: dict,
+    username: str = Depends(verify_admin_auth),
+):
+    """Universal AI image generator. Pass prompt + optional entity_type/entity_id to auto-save result.
+    entity_type: 'product' | 'service' | 'bundle' | 'breed_product'
+    Returns {url, success}"""
+    from ai_image_service import generate_ai_image
+
+    prompt = data.get("prompt", "").strip()
+    entity_type = data.get("entity_type", "")
+    entity_id = data.get("entity_id", "")
+
+    if not prompt:
+        raise HTTPException(status_code=400, detail="prompt is required")
+
+    url = await generate_ai_image(prompt)
+    if not url:
+        raise HTTPException(status_code=500, detail="Image generation failed — check AI service")
+
+    # Save result to the entity if entity info provided
+    if entity_type and entity_id:
+        collection_map = {
+            "product": db.products_master,
+            "service": db.services_master,
+            "bundle": db.bundles,
+            "breed_product": db.breed_products,
+        }
+        col = collection_map.get(entity_type)
+        if col:
+            await col.update_one(
+                {"$or": [{"id": entity_id}, {"_id": entity_id}]},
+                {"$set": {
+                    "ai_image_prompt": prompt,
+                    "image_url": url,
+                    "cloudinary_url": url,
+                    "image": url,
+                    "ai_image_generated": True,
+                    "image_updated_at": datetime.now(timezone.utc).isoformat(),
+                }}
+            )
+
+    return {"url": url, "success": True}
+
+
+
 async def generate_bundle_image_sync(
     bundle_id: str,
     username: str = Depends(verify_admin_auth),

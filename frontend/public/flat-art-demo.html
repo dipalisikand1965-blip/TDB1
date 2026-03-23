@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Flat Art Mockup Demo</title>
+<style>
+  body { background: #f5f0eb; display: flex; gap: 32px; padding: 40px; font-family: 'DM Sans', sans-serif; align-items: flex-start; flex-wrap: wrap; }
+  .card { background: white; border-radius: 16px; overflow: hidden; width: 220px; box-shadow: 0 4px 20px rgba(0,0,0,0.10); }
+  .img-wrap { position: relative; width: 220px; height: 220px; background: #fafafa; display: flex; align-items: center; justify-content: center; }
+  .img-wrap img.product { width: 100%; height: 100%; object-fit: contain; }
+  .img-wrap img.yappy { position: absolute; width: 52%; height: 52%; object-fit: contain; top: 50%; left: 35%; transform: translate(-50%, -52%); border-radius: 50%; }
+  .label { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.6); color: white; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
+  .info { padding: 12px 14px 16px; }
+  .info h3 { font-size: 14px; font-weight: 700; margin: 0 0 4px; }
+  .info p { font-size: 12px; color: #888; margin: 0 0 10px; }
+  .badge { display: inline-flex; align-items: center; gap: 4px; background: #FFF3E0; color: #C9973A; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+  .toggle { display: flex; background: #FFF3E0; border-radius: 999px; padding: 3px; gap: 2px; margin-bottom: 12px; }
+  .toggle button { padding: 5px 14px; border-radius: 999px; border: none; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+  .toggle button.active { background: #C9973A; color: white; }
+  .toggle button:not(.active) { background: transparent; color: rgba(0,0,0,0.4); }
+  .section-title { font-size: 11px; font-weight: 700; color: #C9973A; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+  .note { font-size: 13px; color: #555; max-width: 500px; line-height: 1.6; margin-bottom: 24px; background: white; padding: 16px 20px; border-radius: 12px; border-left: 3px solid #C9973A; }
+</style>
+</head>
+<body>
+
+<div style="width:100%">
+  <p class="note">
+    <strong>Concept:</strong> Blank product template + Yappy face overlaid via CSS.<br>
+    The Yappy face sits on the "print area" of the product. When customer clicks "Talk to Concierge →", the brief includes the illustration URL so the baker/designer knows exactly what to print.
+  </p>
+
+  <p class="section-title">✦ Soul Made™ — Flat Art Style · For Mojo (Indie)</p>
+
+  <div class="toggle">
+    <button class="active">🎨 Watercolour</button>
+    <button>🐾 Flat Art</button>
+  </div>
+</div>
+
+<!-- Card 1: Flat art mug -->
+<div class="card">
+  <div class="img-wrap">
+    <img class="product" src="https://static.prod-images.emergentagent.com/jobs/0959c2bd-5a86-4255-9dea-0a6c5d186ee7/images/0c2c31bc49d5084f78130a941492133ee831a9c4d99a8b0e61ddf8bd1fee53db.png" />
+    <img class="yappy" src="https://res.cloudinary.com/duoapcx1p/image/upload/v1774252066/doggy/mockups/indie/cake-indie-ginger.webp" />
+    <span class="label">🐾 Flat Art</span>
+  </div>
+  <div class="info">
+    <h3>Indie Lover Mug</h3>
+    <p>Custom flat art print · 350ml ceramic</p>
+    <span class="badge">Price on Request · Concierge</span>
+  </div>
+</div>
+
+<!-- Card 2: Watercolour mug (original) -->
+<div class="card">
+  <div class="img-wrap">
+    <img class="product" src="https://res.cloudinary.com/duoapcx1p/image/upload/doggy/mockups/indie/breed-indie-mug.webp" />
+    <span class="label">🎨 Watercolour</span>
+  </div>
+  <div class="info">
+    <h3>Indie Lover Mug</h3>
+    <p>Watercolour art print · 350ml ceramic</p>
+    <span class="badge">Price on Request · Concierge</span>
+  </div>
+</div>
+
+</body>
+</html>

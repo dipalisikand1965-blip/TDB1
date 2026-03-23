@@ -12,6 +12,7 @@ import { Input } from '../ui/input';
 import { toast } from 'sonner';
 import { Play, Square, RefreshCw, Image, Trash2, Download, Search } from 'lucide-react';
 import CloudinaryUploader from './CloudinaryUploader';
+import AIImagePromptField from './AIImagePromptField';
 
 const API_URL   = process.env.REACT_APP_BACKEND_URL || '';
 const AUTH      = { Authorization: `Basic ${btoa('aditya:lola4304')}`, 'Content-Type': 'application/json' };
@@ -503,7 +504,18 @@ export default function BreedCakeManager() {
             </div>
           </Card>
 
-          {/* Per-breed expected variants */}
+          <Card className="p-5 mt-4">
+            <h3 className="font-bold text-gray-800 mb-1">Custom AI Image</h3>
+            <p className="text-sm text-gray-500 mb-3">Generate a one-off breed illustration or cake image with a custom prompt.</p>
+            <AIImagePromptField
+              entityType="breed_product"
+              entityId={undefined}
+              currentPrompt=""
+              onImageGenerated={(url) => { navigator.clipboard?.writeText(url); toast.success('Image URL copied to clipboard'); }}
+              onPromptChange={undefined}
+            />
+          </Card>
+
           <Card className="p-4">
             <h4 className="font-semibold text-gray-700 mb-3">Expected variants per breed</h4>
             <div className="space-y-2">

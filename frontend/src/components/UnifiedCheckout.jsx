@@ -218,18 +218,36 @@ const UnifiedCheckout = () => {
         });
         if (response.ok) {
           const data = await response.json();
-          // Client-side breed filter — PET FIRST, BREED NEXT
-          const breedLower = petBreed.toLowerCase();
-          const known = ['american bully','beagle','border collie','boxer','chow chow','french bulldog','german shepherd','golden retriever','husky','indie','labrador','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
+          // Client-side breed filter — only show products matching pet's breed or breed-neutral
+          const breedLower = petBreed.toLowerCase().replace(/_/g,' ');
+          // All known breeds — if product name contains any breed not matching pet, exclude it
+          const ALL_BREEDS = [
+            'akita','alaskan malamute','american bully','australian shepherd','basenji',
+            'beagle','bernese mountain','bichon frise','border collie','boston terrier',
+            'boxer','bulldog','cavalier','chihuahua','chow chow','cocker spaniel','corgi',
+            'dachshund','dalmatian','doberman','french bulldog','german shepherd',
+            'golden retriever','great dane','havanese','husky','indian spitz',
+            'indie','irish setter','italian greyhound','jack russell','labradoodle',
+            'labrador','lhasa apso','maltese','maltipoo','pomeranian','poodle','pug',
+            'rottweiler','samoyed','schnoodle','scottish terrier','shetland sheepdog',
+            'shih tzu','st bernard','vizsla','weimaraner','yorkshire','indian pariah',
+            'desi dog','street dog',
+          ];
           const filtered = (data.products||[]).filter(p => {
             const nm = (p.name||'').toLowerCase();
-            for (const b of known) {
-              if (nm.includes(b)) {
-                if (!breedLower) return false;
-                return nm.includes(breedLower) || breedLower.split(/\s+/).some(w=>w.length>2&&b.includes(w));
+            const tags = (p.breed_tags||[]).join(' ').toLowerCase();
+            const combined = nm + ' ' + tags;
+            for (const b of ALL_BREEDS) {
+              if (combined.includes(b)) {
+                // If breed unknown, show anyway; else must match pet breed
+                if (!breedLower) return true;
+                return (
+                  combined.includes(breedLower) ||
+                  breedLower.split(/\s+/).some(w => w.length > 2 && b.includes(w))
+                );
               }
             }
-            return true;
+            return true; // breed-neutral product — always show
           });
           setRecommendations(filtered.slice(0, 4));
         }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import AIImagePromptField from './AIImagePromptField';
 
 // ─── ServicesManager.jsx ─────────────────────────────────────────────────────
 // Admin component for the Services pillar
@@ -23,7 +24,7 @@ const SERVICE_CATEGORIES = [
 const EMPTY_FORM = {
   name: '', description: '', category: 'Grooming & Spa',
   price: '', price_unit: 'per session', duration_mins: '',
-  is_active: true, tags: '', image_url: '',
+  is_active: true, tags: '', image_url: '', ai_image_prompt: '',
 };
 
 export default function ServicesManager({ token }) {
@@ -336,6 +337,14 @@ export default function ServicesManager({ token }) {
               <input style={s.input} value={form.image_url} onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))} placeholder="https://res.cloudinary.com/duoapcx1p/..." />
               {form.image_url && <img src={form.image_url} alt="" style={{ marginTop: '8px', height: '60px', borderRadius: '6px', objectFit: 'cover' }} onError={e => e.target.style.display = 'none'} />}
             </div>
+
+            <AIImagePromptField
+              entityType="service"
+              entityId={modal === 'edit' ? editId : undefined}
+              currentPrompt={form.ai_image_prompt || ''}
+              onPromptChange={val => setForm(f => ({ ...f, ai_image_prompt: val }))}
+              onImageGenerated={(url, prompt) => setForm(f => ({ ...f, image_url: url, ai_image_prompt: prompt }))}
+            />
 
             <div style={s.field}>
               <label style={{ ...s.label, display: 'flex', alignItems: 'center', gap: '8px' }}>

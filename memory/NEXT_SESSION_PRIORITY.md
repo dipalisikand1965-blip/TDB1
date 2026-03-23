@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://pet-life-os-2.preview.emergentagent.com
+**Preview URL:** https://flat-art-picker.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
