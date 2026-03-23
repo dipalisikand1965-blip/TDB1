@@ -15,6 +15,9 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/nearby", tags=["nearby-places"])
 
+# Also create a nearme router for CareNearMe component
+nearme_router = APIRouter(prefix="/api/nearme", tags=["nearme"])
+
 GOOGLE_PLACES_API_KEY = os.environ.get("GOOGLE_PLACES_API_KEY", "")
 GOOGLE_PLACES_API_URL = "https://places.googleapis.com/v1"
 
@@ -204,3 +207,79 @@ def _process_places_response(data: dict) -> list:
     places.sort(key=lambda x: (x.get("rating") or 0), reverse=True)
     
     return places
+
+
+@nearme_router.get("/search")
+async def nearme_search(
+    query: str = Query(..., description="Search query like 'pet grooming salon Hyderabad'"),
+    type: str = Query("care", description="Pillar type")
+):
+    """
+    Text-based NearMe search used by CareNearMe component.
+    Returns results with fields matching the frontend expectations.
+    """
+    if not GOOGLE_PLACES_API_KEY:
+        raise HTTPException(status_code=500, detail="Google Places API not configured")
+
+    try:
+        request_body = {
+            "textQuery": query,
+            "maxResultCount": 15,
+            "languageCode": "en"
+        }
+
+        field_mask = ",".join([
+            "places.id",
+            "places.displayName",
+            "places.formattedAddress",
+            "places.nationalPhoneNumber",
+            "places.internationalPhoneNumber",
+            "places.rating",
+            "places.userRatingCount",
+            "places.websiteUri",
+            "places.currentOpeningHours",
+            "places.businessStatus",
+            "places.location",
+            "places.photos"
+        ])
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{GOOGLE_PLACES_API_URL}/places:searchText",
+                json=request_body,
+                headers={
+                    "Content-Type": "application/json",
+                    "X-Goog-Api-Key": GOOGLE_PLACES_API_KEY,
+                    "X-Goog-FieldMask": field_mask
+                },
+                timeout=15.0
+            )
+
+            if response.status_code != 200:
+                logger.error(f"NearMe search error: {response.status_code} - {response.text}")
+                return {"results": [], "places": []}
+
+            data = response.json()
+            raw_places = _process_places_response(data)
+
+            # Map to the format CareNearMe expects
+            results = []
+            for p in raw_places:
+                results.append({
+                    "name": p["name"],
+                    "formatted_address": p["address"],
+                    "vicinity": p["address"],
+                    "rating": p.get("rating"),
+                    "user_ratings_total": p.get("total_ratings", 0),
+                    "formatted_phone_number": p.get("phone"),
+                    "website": p.get("website"),
+                    "opening_hours": {"open_now": p.get("is_open_now")} if p.get("is_open_now") is not None else None,
+                    "photo_url": p.get("photo_url"),
+                    "geometry": {"location": p.get("location", {})},
+                })
+
+            return {"results": results, "places": results, "total": len(results)}
+
+    except Exception as e:
+        logger.error(f"NearMe search error: {e}")
+        return {"results": [], "places": []}

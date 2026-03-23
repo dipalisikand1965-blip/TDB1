@@ -17,6 +17,7 @@ export const PLAY_CATEGORIES = [
   { id: "soul",      label: "Soul Picks",        icon: "✨", iconBg: "linear-gradient(135deg,#EDE7F6,#D1C4E9)" },
   { id: "bundles",   label: "Bundles",           icon: "🎁", iconBg: "linear-gradient(135deg,#FFF8E1,#FFECB3)" },
   { id: "miras-picks", label: "Mira's Picks",   icon: "💫", iconBg: "linear-gradient(135deg,#FCE4EC,#FF6B9D)" },
+  { id: "soul_made",  label: "Soul Made™",     icon: "✦",  iconBg: "linear-gradient(135deg,#FFF3E0,#FFCCBC)" },
 ];
 
 export default function PlayCategoryStrip({ pet, openDim, onSelect, onMiraPicks }) {

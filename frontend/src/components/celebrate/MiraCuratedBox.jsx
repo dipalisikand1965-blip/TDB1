@@ -16,7 +16,8 @@ const generateCuratedItems = (pet) => {
   const petName = pet?.name || 'your pet';
   
   // 1. Food item based on preferences (avoiding allergies)
-  const allergies = (pet?.allergies || []).map(a => a?.toLowerCase());
+  const rawAllergies = pet?.allergies || pet?.doggy_soul_answers?.food_allergies || [];
+  const allergies = (Array.isArray(rawAllergies) ? rawAllergies : typeof rawAllergies === 'string' ? rawAllergies.split(',').map(s => s.trim()).filter(Boolean) : []).map(a => a?.toLowerCase());
   const favoriteProtein = pet?.doggy_soul_answers?.favorite_protein?.toLowerCase();
   
   if (favoriteProtein && !allergies.includes(favoriteProtein)) {

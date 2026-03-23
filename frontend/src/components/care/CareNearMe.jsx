@@ -60,12 +60,12 @@ export default function CareNearMe({ currentPet, setConciergeToast }) {
 
     try {
       const res = await fetch(
-        `${API_URL}/api/places/care-providers?city=${encodeURIComponent(city || searchCity || q)}&type=all`,
+        `${API_URL}/api/nearme/search?query=${encodeURIComponent(fullQuery)}&type=care`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.ok) {
         const data = await res.json();
-        setResults(data.places || []);
+        setResults(data.results || data.places || []);
       }
     } catch { setResults([]); }
     setLoading(false);

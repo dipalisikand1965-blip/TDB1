@@ -20,6 +20,7 @@ const GO_STRIPS = [
   { id:"feeding",  icon:"🥣", label:"Feeding",        iconBg:"linear-gradient(135deg,#FFF9C4,#FFF176)" },
   { id:"health",   icon:"💊", label:"Health & Docs",  iconBg:"linear-gradient(135deg,#FCE4EC,#F48FB1)" },
   { id:"stay",     icon:"🏡", label:"Stay & Board",   iconBg:"linear-gradient(135deg,#EDE7F6,#B39DDB)" },
+  { id:"soul_made", icon:"✦",  label:"Soul Made™",    iconBg:"linear-gradient(135deg,#E0F7FA,#80DEEA)" },
 ];
 
 export default function GoCategoryStrip({ pet }) {

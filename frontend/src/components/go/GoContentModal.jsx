@@ -11,6 +11,7 @@ import { X, Send, Check } from 'lucide-react';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import ProductCard from '../ProductCard';
+import SoulMadeModal from '../SoulMadeModal';
 import PersonalisedBreedSection from '../common/PersonalisedBreedSection';
 import SoulMadeCollection from '../SoulMadeCollection';
 
@@ -18,6 +19,7 @@ import SoulMadeCollection from '../SoulMadeCollection';
 const toLabel = s => s ? s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : s;
 
 // ─── Teal palette ─────────────────────────────────────────────────────────────
+const fmtTab = (t) => t === 'All' || t === 'all' ? t : t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 const G = {
   teal:      '#1ABC9C',
   deep:      '#0D3349',
@@ -41,6 +43,7 @@ const CAT_CONFIG = {
   feeding:  { emoji: '🥣', label: 'Feeding & Hydration',  keywords: ['feeding', 'travel-feed'] },
   health:   { emoji: '💊', label: 'Health & Documents',   keywords: ['health', 'travel-health'] },
   stay:     { emoji: '🏡', label: 'Stay & Board',          keywords: ['boarding', 'stay'] },
+  soul_made:{ emoji: '✦',  label: 'Soul Made™',            keywords: [], special: 'soul_made' },
 };
 
 // ─── Mira quotes per category ─────────────────────────────────────────────────
@@ -252,6 +255,7 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
   const [tabs, setTabs]         = useState(['All']);
   const [goTab, setGoTab]       = useState("products"); // products | personalised
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const { token } = useAuth();
   const apiUrl = getApiUrl();
 
@@ -292,6 +296,22 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
     const petAllergies = getPetAllergies(pet);
     const petSize = getPetSize(pet);
     const petCondition = getHealthCondition(pet);
+
+    // ── Soul Made™: breed-specific products ──────
+    if (category === 'soul_made') {
+      const breedParam = encodeURIComponent((pet?.breed || '').trim().toLowerCase());
+      fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&pillar=go`)
+        .then(r => r.ok ? r.json() : { products: [] })
+        .then(data => {
+          const bp = data.products || [];
+          const subCats = [...new Set(bp.map(p => p.sub_category || p.product_type).filter(Boolean))];
+          setTabs(subCats.length > 1 ? ['All', ...subCats] : ['All']);
+          setProducts(bp);
+        })
+        .catch(err => console.error('[GoContentModal soul_made]', err))
+        .finally(() => setLoading(false));
+      return;
+    }
 
     // ── Special: Soul Go — AI scored picks across all go categories ──
     if (category === 'soul') {
@@ -525,6 +545,21 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
                   )}
                 </div>
               )}
+
+              {/* Soul Made trigger */}
+              {category === 'soul_made' && !loading && (
+                <div data-testid="soul-made-trigger" onClick={() => setSoulMadeOpen(true)} style={{
+                  margin:'16px 20px 8px', padding:'14px 16px', background:`${G.teal}08`, border:`1px solid ${G.teal}20`,
+                  borderRadius:14, display:'flex', alignItems:'center', justifyContent:'space-between', cursor:'pointer',
+                }}>
+                  <div>
+                    <div style={{ fontSize:13, fontWeight:700, color:G.teal, marginBottom:3 }}>✦ Soul Made™ — Make it personal</div>
+                    <div style={{ fontSize:12, color:'#888', lineHeight:1.4 }}>Upload {petName}'s photo · Concierge® creates it · Price on WhatsApp</div>
+                  </div>
+                  <div style={{ fontSize:20, color:`${G.teal}60`, flexShrink:0, marginLeft:8 }}>›</div>
+                </div>
+              )}
+              {soulMadeOpen && <SoulMadeModal pet={pet} pillar="go" pillarColor={G.teal} pillarLabel="Travel" onClose={() => setSoulMadeOpen(false)} />}
             </div>
           </motion.div>
         </motion.div>
