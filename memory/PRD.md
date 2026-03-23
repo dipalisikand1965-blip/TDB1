@@ -1,5 +1,5 @@
 # Pet Life OS — Product Requirements Document
-_Last updated: 2026-03-24_
+_Last updated: 2026-03-25_
 
 ## Original Problem Statement
 Build a full-featured Pet Life OS with 13+ pillar pages, AI-powered product recommendations, breed-specific merchandise, and a custom order flow (Soul Made™) across all pillars.
@@ -16,38 +16,32 @@ backend/
     server.py                           # Main app (24k lines)
     nearby_places_routes.py             # /api/nearby/* + /api/nearme/search
     app/api/mockup_routes.py            # AI pillar assignment + breed products + Yappy cake prompts
+                                        # breed-products endpoint: flat_only, skip, search params added
 frontend/
     src/
         components/
-            SoulMadeModal.jsx            # 4-step custom order modal (CENTRED)
+            SoulMadeModal.jsx            # 4-step custom order modal (700px wide, 2-col grid)
             ProductCard.jsx              # Image rendering with mockup_url priority
             PillarSoulProfile.jsx        # Soul drawer (CENTRED modal)
             celebrate/
                 DoggyBakeryCakeModal.jsx # Breed cake order modal (THE DOGGY BAKERY™)
                 BirthdayBoxBrowseDrawer.jsx # 2-col grid, ProductBoxEditor on click
+                CelebrateContentModal.jsx   # soul_made + flatArtProducts (Yappy Art section)
             admin/
-                BreedCakeManager.jsx     # Admin gallery + generation for cake illustrations
-                SoulProductsManager.jsx  # AI soul product generation + management
+                BreedCakeManager.jsx     # Admin gallery + generation + Flat Art tab (831 products)
+                SoulProductsManager.jsx  # AI soul product generation + gallery pagination + search + CloudinaryUploader
             common/
                 PersonalisedBreedSection.jsx  # Shared breed products + Soul Made trigger
-            celebrate/
-                CelebrateCategoryStrip.jsx  # Has Soul Made™ pill
-                CelebrateContentModal.jsx   # Has soul_made category + trigger
             dine/
-                DineCategoryStrip.jsx    # Has Soul Made™ pill
-                DineContentModal.jsx     # Has soul_made category + trigger
+                DineContentModal.jsx     # Fixed: no duplicate All tab, correct filter, Yappy Art section
             go/
-                GoCategoryStrip.jsx      # Has Soul Made™ pill
-                GoContentModal.jsx       # Has soul_made category + trigger
+                GoContentModal.jsx       # Fixed: correct filter, Yappy Art section
             play/
-                PlayCategoryStrip.jsx    # Has Soul Made™ pill
-                PlayContentModal.jsx     # Has soul_made category + trigger
+                PlayContentModal.jsx     # Fixed: no duplicate All tab, correct filter, Yappy Art section
         hooks/
             useConcierge.js              # Universal request() → service desk tickets
         pages/
-            CareSoulPage.jsx             # Removed top PillarSoulProfile+HealthVault, added lower
-            CelebratePageNew.jsx
-            [All other]SoulPage.jsx
+            CelebratePageNew.jsx         # Shimmer skeleton loader while Mira picks load
 ```
 
 ---
