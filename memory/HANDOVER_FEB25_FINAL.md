@@ -34,7 +34,7 @@ Mira should talk like Claude talks - understanding context, remembering the pet'
 ### Preview Environment
 - **Member:** dipali@clubconcierge.in / test123
 - **Admin:** aditya / lola4304
-- **URL:** https://concierge-flow-fix.preview.emergentagent.com
+- **URL:** https://pet-life-os-2.preview.emergentagent.com
 
 ### Production Environment
 - **Member:** dipali@clubconcierge.in / test123 (IF deployed from this session)

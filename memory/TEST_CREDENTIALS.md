@@ -62,7 +62,7 @@ curl -s "$API_URL/api/mira/tickets?pet_id=pet-3661ae55d2e2" -H "Authorization: B
 
 | Environment | URL |
 |-------------|-----|
-| **Emergent Preview** | `https://concierge-flow-fix.preview.emergentagent.com` |
+| **Emergent Preview** | `https://pet-life-os-2.preview.emergentagent.com` |
 | **Production** | `https://thedoggycompany.in` |
 
 ---
