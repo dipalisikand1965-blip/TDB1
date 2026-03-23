@@ -49,13 +49,13 @@ FOURSQUARE_API_KEY=fsq3UISTe99WBkl+2of3Gyp3mylGaXByON+Vud59SZSl450=
 
 ## 1.4 Frontend Environment (/app/frontend/.env)
 ```
-REACT_APP_BACKEND_URL=https://concierge-flow-fix.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://pet-life-os-2.preview.emergentagent.com
 REACT_APP_RAZORPAY_KEY_ID=rzp_test_1234567890abcdef
 ```
 
 ## 1.5 Preview URL
 ```
-https://concierge-flow-fix.preview.emergentagent.com
+https://pet-life-os-2.preview.emergentagent.com
 ```
 
 ## 1.6 Test Pets
@@ -533,16 +533,16 @@ curl -X POST "$API_URL/api/pet-soul/profile/pet-99a708f1722a/answers/bulk" \
 ## Step 2: Test Credentials
 ```bash
 # Verify backend
-curl https://concierge-flow-fix.preview.emergentagent.com/api/health
+curl https://pet-life-os-2.preview.emergentagent.com/api/health
 
 # Login
-curl -X POST "https://concierge-flow-fix.preview.emergentagent.com/api/auth/login" \
+curl -X POST "https://pet-life-os-2.preview.emergentagent.com/api/auth/login" \
   -H "Content-Type: application/json" \
   -d '{"email":"dipali@clubconcierge.in","password":"test123"}'
 ```
 
 ## Step 3: Explore the App
-1. Go to: https://concierge-flow-fix.preview.emergentagent.com
+1. Go to: https://pet-life-os-2.preview.emergentagent.com
 2. Login with test credentials
 3. Navigate to `/mira-demo`
 4. Click pet avatar → Open MOJO modal

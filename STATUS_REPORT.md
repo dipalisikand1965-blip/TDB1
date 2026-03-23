@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://concierge-flow-fix.preview.emergentagent.com
+**Preview URL:** https://pet-life-os-2.preview.emergentagent.com
 
 ---
 
