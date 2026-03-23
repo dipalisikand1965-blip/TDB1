@@ -785,8 +785,8 @@ const ServiceCard = ({ service, pet, index, showWhyPicked = false, onQuickView }
         
         {/* Price and duration */}
         <div className="flex items-center justify-between pt-2 sm:pt-3 border-t border-gray-100">
-          <span className="font-bold text-gray-900 text-base sm:text-lg">
-            {service.base_price ? `₹${service.base_price.toLocaleString()}` : 'Get Quote'}
+          <span className="font-medium text-sm" style={{ color: '#7C3AED' }}>
+            Personalised · Price on request
           </span>
           <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
             {service.duration && (

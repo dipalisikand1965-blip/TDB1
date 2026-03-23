@@ -1,0 +1,144 @@
+{
+  "summary": "Tested DoggyBakeryCakeModal (breed cake order flow), breed-cake-banner, Breed Cakes strip pill, ServicesPage price hiding, ServicesSoulPage all-services listing. 11/12 feature tests PASS. 1 feature untestable (FitPage) due to routing — /fit loads PlaySoulPage not FitPage. Key critical issue: FitPage.jsx changes are dead code since no route points to FitPage.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "FitPage.jsx (line 979, 986)",
+        "issue": "Trailing */} inside JSX after self-closing components: '<ArchetypeProducts .../> */}' and '<CuratedBundles .../> */}'. Syntax errors — harmless since FitPage is unrouted, but need cleanup.",
+        "selector": "N/A",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "FitPage (/fit) — Concierge® will advise price",
+        "issue": "ROUTING MISMATCH: /fit route (App.js line 614) maps to PlaySoulPage not FitPage. The price change in FitPage.jsx ServiceDetailModal (line 257: 'Concierge® will advise price') is dead code — FitPage is imported but never routed. Test requirement 'FitPage (/fit) — service detail shows Concierge® will advise price' cannot be verified via UI. Main agent needs to either: (a) restore /fit route to use FitPage, or (b) apply the same price change to PlaySoulPage's service detail component.",
+        "affected_selectors": ["[data-testid='modal-book-btn']"],
+        "priority": "MEDIUM"
+      },
+      {
+        "flow": "ServicesPage (/services) — Personalised · Price on request",
+        "issue": "ROUTING: /services uses ServicesSoulPage via ProtectedRoute (App.js line 631) which takes priority over ServicesPage at line 652. The 'Personalised · Price on request' change in ServicesPage.jsx is not visible to logged-in users. However, ServicesSoulPage doesn't show prices at all (cards show 'Book via Concierge →'), so the net effect is correct — no ₹ amounts shown to users.",
+        "affected_selectors": ["[data-testid='service-card-{id}']"],
+        "priority": "LOW"
+      }
+    ],
+    "design_issues": []
+  },
+  "test_results_detail": {
+    "test_1_breed_cake_banner": {
+      "testid": "breed-cake-banner",
+      "route": "/celebrate",
+      "text_check": "A cake that looks like Mojo 🎂",
+      "price_check": "From ₹950",
+      "status": "PASS"
+    },
+    "test_2_banner_click_opens_modal": {
+      "testid": "doggy-bakery-cake-modal",
+      "trigger": "breed-cake-banner click",
+      "status": "PASS"
+    },
+    "test_3_breed_cakes_pill_opens_modal": {
+      "pill_text": "Breed Cakes",
+      "modal_opens": true,
+      "status": "PASS"
+    },
+    "test_4_modal_breed_pills": {
+      "default_breed": "indie",
+      "default_selected": true,
+      "testid": "breed-pill-indie",
+      "class_when_selected": "cbc-breed sel",
+      "status": "PASS"
+    },
+    "test_5_oats_ragi_base": {
+      "oats_testid": "base-option-oats",
+      "ragi_testid": "base-option-ragi",
+      "both_found": true,
+      "status": "PASS"
+    },
+    "test_6_flavour_pills": {
+      "count": 8,
+      "flavours": ["🥜 Peanut Butter ₹999", "🥕 Carrot ₹950", "🍌 Banana ₹950", "🍎 Apple & Cinnamon ₹950", "🧀 Cheese ₹999", "🍗 Chicken ₹999", "🐟 Fish (Salmon) ₹999", "🍖 Lamb ₹1,200"],
+      "status": "PASS"
+    },
+    "test_7_fish_allergen_note": {
+      "text": "🐟 Fish = Salmon · Safe for most dogs · Not suitable if fish-allergic",
+      "found": true,
+      "status": "PASS"
+    },
+    "test_8_price_updates": {
+      "banana": "₹950",
+      "chicken": "₹999",
+      "lamb": "₹1,200",
+      "testid": "cake-price-display",
+      "status": "PASS"
+    },
+    "test_9_message_input": {
+      "testid": "cake-message-input",
+      "accepts_text": true,
+      "max_30_chars_enforced": true,
+      "status": "PASS"
+    },
+    "test_10_order_btn": {
+      "testid": "cake-order-btn",
+      "disabled_when_no_illus": "N/A (all tested breeds have auto-loaded illustrations)",
+      "enabled_when_illus_selected": true,
+      "note": "Indie and Poodle breeds both have illustrations and auto-select; order btn enabled. Code logic disabled={!selIllus} is correct.",
+      "status": "PASS"
+    },
+    "test_11_close_modal": {
+      "testid": "cake-modal-close",
+      "modal_closes": true,
+      "status": "PASS"
+    },
+    "test_12_services_price_hiding": {
+      "route": "/services",
+      "page_shown": "ServicesSoulPage (not ServicesPage)",
+      "price_in_cards": false,
+      "cards_show": "Book via Concierge →",
+      "rupee_signs_on_page": false,
+      "status": "PASS"
+    },
+    "test_13_services_soul_all_services": {
+      "total_count": "337 bookable services",
+      "note": "Previously filtered to priced-only (74 shown). Filter removed — now shows all 337.",
+      "groups": ["Pamper & Groom", "Health & Vet", "Train & Learn", "Celebrate", "Fitness & Walks", "Travel & Paperwork", "Life Events"],
+      "status": "PASS"
+    },
+    "test_14_fit_page_concierge_price": {
+      "route": "/fit",
+      "expected": "FitPage with 'Concierge® will advise price'",
+      "actual": "PlaySoulPage loaded (not FitPage)",
+      "status": "FAIL - ROUTING ISSUE",
+      "action_needed": "FitPage.jsx has correct change but is not routed. Route /fit points to PlaySoulPage."
+    }
+  },
+  "test_report_links": [
+    "/app/test_reports/iteration_194.json"
+  ],
+  "action_items": [
+    "MEDIUM: /fit route (App.js line 614) points to PlaySoulPage not FitPage — the 'Concierge® will advise price' change in FitPage.jsx ServiceDetailModal is not accessible. Either (a) update /fit route to use FitPage, or (b) apply the same price change to PlaySoulPage's service booking component.",
+    "LOW: FitPage.jsx lines 979, 986 — trailing */} inside JSX after self-closing components (syntax error, harmless since file is unrouted but should be cleaned up)",
+    "LOW: ServicesPage 'Personalised · Price on request' change is technically dead code at /services for logged-in users (ServicesSoulPage wins), but net effect is correct since ServicesSoulPage also hides prices. No user-visible issue."
+  ],
+  "critical_code_review_comments": [
+    "FitPage.jsx is DEAD CODE — imported (App.js line 241) but never used in any route. Routes for /fit and /fit/* both map to PlaySoulPage. All changes made to FitPage.jsx are invisible to users.",
+    "App.js line 652: ServicesPage route at /services is dead code — the ProtectedRoute version (line 631: ServicesSoulPage) always wins in React Router v6 first-match-wins routing.",
+    "FitPage.jsx syntax errors at lines 979 and 986: JSX has '*/}' which is a leftover from a comment removal — should be '/>\\n' not '/> */}'"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend only)",
+    "frontend": "92% (11/12 testable features pass; 1 feature untestable due to routing)"
+  },
+  "test_credentials": "dipali@clubconcierge.in / test123",
+  "seed_data_creation": "",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "DoggyBakeryCakeModal fully working: breed-cake-banner at /celebrate, Breed Cakes strip pill, modal features (8 flavours with correct prices, Oats/Ragi base, fish allergen note, price pill updates, message input max 30 chars, close button). ServicesSoulPage at /services shows all 337 services without prices. FitPage.jsx changes NOT accessible — /fit uses PlaySoulPage. Auth: dipali@clubconcierge.in / test123 (JWT: tdb_auth_token in localStorage). Mojo pet is Indie breed.",
+  "rca_of_issues": "The FitPage routing issue: App.js defines Route path='/fit' twice — line 614 maps to PlaySoulPage (first match wins in React Router v6), so FitPage is never rendered. This was likely the result of migrating /fit to use PlaySoulPage while forgetting to update the FitPage reference in the same file."
+}
