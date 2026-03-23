@@ -223,12 +223,16 @@ function BookingModal({ service, pet, user, onClose, onBooked }) {
   const petName = pet?.name || "your dog";
   const pillar = service?.pillar || "services";
 
-  const options = PILLAR_OPTIONS[pillar] || [
+  // If a specific service was already selected, skip the generic pillar chips
+  const hasSpecificService = service?.name && service.name !== 'General Inquiry';
+  const options = hasSpecificService ? [] : (PILLAR_OPTIONS[pillar] || [
     { id: 'general', label: 'General Inquiry' },
     { id: 'booking', label: 'Book a Session' },
     { id: 'consultation', label: 'Consultation' },
-  ];
-  const question = (PILLAR_QUESTIONS[pillar] || "What does {pet} need?").replace("{pet}", petName);
+  ]);
+  const question = hasSpecificService
+    ? `Booking: ${service.name}`
+    : (PILLAR_QUESTIONS[pillar] || "What does {pet} need?").replace("{pet}", petName);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -698,9 +702,6 @@ const ServicesSoulPage = () => {
         {petData && (
           <PillarSoulProfile pet={petData} token={token} pillar="services" color="#6366F1" />
         )}
-
-        {/* ── Soul Made™ via PersonalisedBreedSection ── */}
-        <PersonalisedBreedSection pet={petData} pillar="services" />
 
         {/* Search */}
         <div style={{ marginBottom:16 }}>

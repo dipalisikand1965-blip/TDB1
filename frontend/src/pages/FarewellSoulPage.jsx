@@ -337,8 +337,6 @@ const FarewellSoulPage = () => {
             <div style={{marginBottom:20}}><FarewellProfile pet={petData} token={token}/></div>
             <MiraPicksSection pet={petData}/>
 
-            {/* ── Soul Made™ via PersonalisedBreedSection ── */}
-            <PersonalisedBreedSection pet={petData} pillar="farewell" />
             <GuidedFarewellPaths pet={petData}/>
 
             {/* Products — tab layout, breed-filtered */}

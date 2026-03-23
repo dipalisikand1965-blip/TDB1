@@ -28,6 +28,7 @@ import PillarPageLayout from "../components/PillarPageLayout";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
+import SoulMadeModal from "../components/SoulMadeModal";
 import ConciergeToast from "../components/common/ConciergeToast";
 import LearnNearMe from "../components/learn/LearnNearMe";
 import GuidedLearnPaths from "../components/learn/GuidedLearnPaths";
@@ -536,6 +537,7 @@ const LEARN_CATS = [
   { id:"soul",        icon:"🌟", label:"Soul Learn",     dbCategory:"breed-treat_pouchs",      bg:"#F3E5F5", accent:"#7B1FA2" },
   { id:"bundles",     icon:"🎁", label:"Bundles",        dbCategory:"bundles",                 bg:"#E8F5E9", accent:"#2E7D32" },
   { id:"mira",        icon:"✦",  label:"Mira's Picks",  dbCategory:null,                      bg:"#E8EAF6", accent:"#3949AB" },
+  { id:"soul_made",   icon:"✦",  label:"Soul Made™",    dbCategory:null,                      bg:"#F3E5F5", accent:"#7C3AED" },
 ];
 
 const LEARN_MIRA_QUOTES = {
@@ -547,6 +549,7 @@ const LEARN_MIRA_QUOTES = {
   breed:       (n,b) => b ? `Everything I know about ${b}s — in one place, personalised for ${n}.` : `Know your breed, know your dog. Personalised for ${n}.`,
   soul:        (n,b) => b ? `${n}'s ${b} soul — journals, pouches, and guides made just for your breed.` : `Soulful learning tools made just for ${n}.`,
   mira:        (n) => `My top learning picks for ${n} — ranked by fit, not popularity.`,
+  soul_made:   (n) => `Want something truly one-of-a-kind for ${n}? Upload a photo — Concierge® creates it.`,
 };
 
 // ─── LEARN CONTENT MODAL (opens from category strip pill) ───────────────────
@@ -554,6 +557,7 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
   const [products, setProducts]   = useState([]);
   const [loading,  setLoading]    = useState(false);
   const [selProd,  setSelProd]    = useState(null);
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const { token } = useAuth();
   const catCfg = LEARN_CATS.find(c => c.id === category) || {};
   const petName = pet?.name || "your dog";
@@ -564,6 +568,15 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
   useEffect(() => {
     if (!isOpen) return;
     setLoading(true);
+    if (category === "soul_made") {
+      const breedParam = encodeURIComponent((pet?.breed || '').trim().toLowerCase());
+      fetch(`${API_URL}/api/mockups/breed-products?breed=${breedParam}&pillar=learn`)
+        .then(r => r.ok ? r.json() : { products: [] })
+        .then(data => setProducts(data.products || []))
+        .catch(() => setProducts([]))
+        .finally(() => setLoading(false));
+      return;
+    }
     if (category === "mira") {
       if (!pet?.id) { setLoading(false); return; }
       const breedParam = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : "";
@@ -756,20 +769,50 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
           )}
 
           {/* Standard category products */}
-          {!loading && category !== "mira" && category !== "bundles" && products.length === 0 && (
+          {!loading && category !== "mira" && category !== "bundles" && category !== "soul_made" && products.length === 0 && (
             <div style={{textAlign:"center",padding:"32px 0",color:"#888"}}>
               <div style={{fontSize:32,marginBottom:10}}>📦</div>
               <p style={{fontWeight:600,marginBottom:4}}>Products being added</p>
               <p style={{fontSize:13}}>Mira is curating {petName}'s {catCfg.label} kit — check back soon.</p>
             </div>
           )}
-          {!loading && category !== "mira" && category !== "bundles" && products.length > 0 && (
+          {!loading && category !== "mira" && category !== "bundles" && category !== "soul_made" && products.length > 0 && (
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))",gap:12}}>
               {products.map(p => (
                 <SharedProductCard key={p.id||p._id} product={p} pet={pet}
                   onViewDetails={() => setSelProd(p)} accentColor={catCfg.accent||G.violet}/>
               ))}
             </div>
+          )}
+
+          {/* Soul Made™ section */}
+          {!loading && category === "soul_made" && (
+            <>
+              {products.length > 0 ? (
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))",gap:12}}>
+                  {products.map(p => (
+                    <SharedProductCard key={p.id||p._id} product={p} pet={pet}
+                      onViewDetails={() => setSelProd(p)} accentColor={G.violet}/>
+                  ))}
+                </div>
+              ) : (
+                <div style={{textAlign:"center",padding:"32px 0",color:"#888"}}>
+                  <div style={{fontSize:28,marginBottom:10}}>✦</div>
+                  <p style={{fontSize:14}}>We're curating breed-specific items for {petName}. Check back soon!</p>
+                </div>
+              )}
+              <div data-testid="soul-made-trigger" onClick={() => setSoulMadeOpen(true)} style={{
+                margin:'16px 0 8px', padding:'14px 16px', background:`${G.violet}08`, border:`1px solid ${G.violet}20`,
+                borderRadius:14, display:'flex', alignItems:'center', justifyContent:'space-between', cursor:'pointer',
+              }}>
+                <div>
+                  <div style={{ fontSize:13, fontWeight:700, color:G.violet, marginBottom:3 }}>✦ Soul Made™ — Make it personal</div>
+                  <div style={{ fontSize:12, color:'#888', lineHeight:1.4 }}>Upload {petName}'s photo · Concierge® creates it · Price on WhatsApp</div>
+                </div>
+                <div style={{ fontSize:20, color:`${G.violet}60`, flexShrink:0, marginLeft:8 }}>›</div>
+              </div>
+              {soulMadeOpen && <SoulMadeModal pet={pet} pillar="learn" pillarColor={G.violet} pillarLabel="Learning" onClose={() => setSoulMadeOpen(false)} />}
+            </>
           )}
         </div>
       </div>

@@ -1,14 +1,8 @@
 # Pet Life OS — Product Requirements Document
-_Last updated: 2026-03-22_
+_Last updated: 2026-03-23_
 
 ## Original Problem Statement
-1. Import and map 2,409 products from CSV to respective pillars without hardcoding.
-2. Run AI background engine to assign pillars to remaining pending products.
-3. Integrate AI Mockup generation tool in Admin panel for new product types.
-4. Implement "Wow" Custom Order / Photo Delivery — Soul Made feature.
-5. Fix `/services` page to use Universal Concierge ticketing flow.
-6. Fix Soul Picks to display actual product mockups (`image_url`), not watercolour dog portraits.
-7. Add styled Soul Made trigger button INSIDE Soul Picks section on all pillar pages (excluding Emergency & Advisory).
+Build a full-featured Pet Life OS with 13+ pillar pages, AI-powered product recommendations, breed-specific merchandise, and a custom order flow (Soul Made™) across all pillars.
 
 **Core Rule:** ALL service bookings and custom order requests MUST route through `service_desk_tickets` via Universal Concierge flow (`attach_or_create_ticket`).
 
@@ -19,83 +13,116 @@ _Last updated: 2026-03-22_
 ```
 /app
 backend/
-    server.py                       # Main app (24k lines — needs splitting P2)
-    app/api/mockup_routes.py        # AI pillar assignment + breed product management
+    server.py                           # Main app (24k lines)
+    nearby_places_routes.py             # /api/nearby/* + /api/nearme/search
+    app/api/mockup_routes.py            # AI pillar assignment + breed products
 frontend/
     src/
         components/
-            SoulMadeModal.jsx        # Soul Made 4-step custom order modal
-            ProductCard.jsx          # Fixed: mockup_url/cloudinary_url fallback
-            PillarSoulProfile.jsx    # Fixed: textarea for free-text soul questions
+            SoulMadeModal.jsx            # 4-step custom order modal (CENTERED, not bottom-stuck)
+            ProductCard.jsx              # Image rendering with mockup_url priority
+            PillarSoulProfile.jsx        # Soul drawer (CENTERED modal, not bottom-stuck)
             common/
                 PersonalisedBreedSection.jsx  # Shared breed products + Soul Made trigger
+            care/
+                CareCategoryStrip.jsx    # Has Soul Made™ pill
+                CareContentModal.jsx     # Has soul_made category + trigger
+                CareNearMe.jsx           # Fixed: uses /api/nearme/search
             celebrate/
-                CelebrateContentModal.jsx     # Celebrate soul-picks + Soul Made trigger
-            admin/
-                SoulProductsManager.jsx       # Added: "Add Single Product" form
-            common/
-                MiraImaginesBreed.jsx         # Added: go/emergency/play/paperwork/adopt/farewell cards
+                CelebrateCategoryStrip.jsx  # Has Soul Made™ pill
+                CelebrateContentModal.jsx   # Has soul_made category + trigger
+            dine/
+                DineCategoryStrip.jsx    # Has Soul Made™ pill
+                DineContentModal.jsx     # Has soul_made category + trigger
+            go/
+                GoCategoryStrip.jsx      # Has Soul Made™ pill
+                GoContentModal.jsx       # Has soul_made category + trigger
+            play/
+                PlayCategoryStrip.jsx    # Has Soul Made™ pill
+                PlayContentModal.jsx     # Has soul_made category + trigger
         hooks/
-            useConcierge.js          # Universal hook: request() creates service desk tickets
+            useConcierge.js              # Universal request() → service desk tickets
         pages/
-            CelebratePageNew.jsx    # Uses CelebrateContentModal for Soul Picks trigger
-            CareSoulPage.jsx        # Uses PersonalisedBreedSection (DimExpanded)
-            DineSoulPage.jsx        # Uses PersonalisedBreedSection (DimExpanded)
-            GoSoulPage.jsx          # Uses PersonalisedBreedSection (DimExpanded)
-            PlaySoulPage.jsx        # Uses PersonalisedBreedSection (DimExpanded)
-            LearnSoulPage.jsx       # Uses PersonalisedBreedSection (Personalised tab)
-            ShopSoulPage.jsx        # Uses PersonalisedBreedSection
-            PaperworkSoulPage.jsx   # Uses PersonalisedBreedSection (DimExpanded)
-            AdoptSoulPage.jsx       # Uses PersonalisedBreedSection
-            FarewellSoulPage.jsx    # Uses PersonalisedBreedSection (custom "In memory of" text)
-            ServicesSoulPage.jsx    # Uses PersonalisedBreedSection
-            EmergencySoulPage.jsx   # NO Soul Made (removed)
-            AdvisoryPage.jsx        # NO Soul Made (never added)
+            CareSoulPage.jsx             # Removed top PillarSoulProfile+HealthVault, added lower
+            CelebratePageNew.jsx
+            [All other]SoulPage.jsx
 ```
 
 ---
 
-## What's Been Implemented
+## What's Been Implemented (This Session — 2026-03-23)
 
-### Phase 1 — Data Foundation
-- CSV import: 2,409 products mapped to pillars in `breed_products`
-- AI auto-assign: GPT batch for remaining ~756 pending products
-- DB fix: 1,778 products — `mockup_url` copied to `image_url`
+### 1. Soul Made™ Full Pillar Rollout
+- **SoulMadeModal.jsx**: 4-step flow (Pick → Photo → Message → Done), Cloudinary upload (preset: `tdc_custom_orders`), Concierge tickets
+- **Category Strip pills added**: Care, Celebrate, Dine, Go, Play — clicking opens full-screen catalogue overlay with breed products + "Make it personal" trigger
+- **ContentModal integration**: Each pillar's ContentModal handles `soul_made` category — fetches breed products via `/api/mockups/breed-products`, shows product grid, has trigger at bottom
+- **PersonalisedBreedSection**: Covers Learn, Shop, Paperwork, Adopt, Farewell, Services (no CategoryStrip)
+- **Farewell**: Custom text "In memory of {petName} — create something meaningful"
+- **Emergency & Advisory**: Explicitly excluded
+- **FULL GUIDE**: See `/app/memory/SOUL_MADE_GUIDE.md` for exact steps to replicate on any new pillar
 
-### Phase 2 — Admin Panel
-- AI Mockup generation: fixed stuck running flag, restarted
-- Admin Soul Products: "Add Single Product" form added
+### 2. Modal/Drawer Centering Fix
+- **Bug**: All modals stuck to bottom of viewport (mobile + desktop), clipped behind footer
+- **Fix**: Changed `alignItems:'flex-end'` → `alignItems:'center'`, `borderRadius:'Xpx Xpx 0 0'` → `borderRadius:X`, added `padding:16`
+- **Applied to**: SoulMadeModal.jsx, PillarSoulProfile.jsx
+- **FULL GUIDE**: See `/app/memory/MODAL_CENTERING_FIX.md` — includes grep commands to find other modals needing the fix
 
-### Phase 3 — Soul Picks Display
-- ProductCard.jsx: `mockup_url`/`cloudinary_url` fallback BEFORE breed illustration
-- Soul Picks: All 14+ celebrate products show real Cloudinary mockups
+### 3. Care Page Improvements
+- Removed basic PillarSoulProfile + Health Vault from top of page
+- Added beautiful styled PillarSoulProfile + Health Vault cards in lower section (white cards, green accents, breed tags, shadows)
+- Renamed WellnessProfile → "Grooming Profile"
+- Fixed CareNearMe: new component using `/api/nearme/search` endpoint with city search, type filters (groomer/vet/spa/walker/daycare/boarding), Mira tips
 
-### Phase 4 — Emergency Page
-- EmergencySoulPage: fetch + render "Emergency Kit for {pet}" section
-- 9 emergency products show for Indie with real mockup images
+### 4. NearMe API
+- Added `/api/nearme/search` endpoint in `nearby_places_routes.py` (text-based Google Places search)
+- Returns 15 results with ratings, phone, open/closed status
+- Registered `nearme_router` in server.py alongside existing `nearby_places_router`
 
-### Phase 5 — Soul Made Modal
-- SoulMadeModal.jsx: 4-step modal (Pick → Upload photo → Write message → Done)
-- Backend: `POST /api/upload/image` (Cloudinary preset: tdc_custom_orders)
-- All custom orders → Universal Concierge → service_desk_tickets
-
-### Phase 6 — Soul Made Trigger INSIDE Soul Picks (2026-03-22)
-- **PersonalisedBreedSection.jsx**: Added Soul Made trigger at bottom of breed products grid + in empty state
-  - Supports all pillar colors via PILLAR_COLORS lookup
-  - Farewell pillar gets custom text: "In memory of {petName} — create something meaningful"
-  - Trigger available even when no breed products exist yet
-- **CelebrateContentModal.jsx**: Added trigger inside soul-picks category section
-- **Removed all standalone triggers** from 11 page bodies
-- **Cleaned up**: SoulMadeModal imports + soulMadeOpen state from all pages
-- **PersonalisedBreedSection added to**: Learn, Farewell, Shop, Adopt, Services pages
-- Emergency and Advisory pillars excluded
+### 5. Mobile Landing Page
+- Added hamburger menu for mobile (<640px) in `LandingPage.jsx`
+- Slide-in menu with Our Story, Membership, Sign In, Join Now
+- CSS: `.tdc-hamburger` + `.tdc-mobile-menu` + `.tdc-mobile-overlay`
 
 ---
 
-## Key Technical Concepts
-- **Soul Made Trigger Architecture**: Lives inside `PersonalisedBreedSection` (most pillars) and `CelebrateContentModal` (Celebrate). NOT on the page body.
-- **Universal Concierge Flow**: All requests → `POST /api/service_desk/attach_or_create_ticket` → Admin Service Desk
-- **Image Priority**: `image_url` → `mockup_url` → `cloudinary_url` → breed illustration → placeholder
+## HANDOVER GUIDES (Critical for Next Agent)
+
+### `/app/memory/SOUL_MADE_GUIDE.md`
+Complete step-by-step guide to add Soul Made™ to any pillar page. Includes:
+- Exact JSX for CategoryStrip pill
+- Exact JSX for ContentModal config, fetch, rendering, trigger
+- Pillar color/label reference table
+- Common mistakes to avoid
+- File locations
+
+### `/app/memory/MODAL_CENTERING_FIX.md`
+Guide to fix bottom-stuck modals/drawers. Includes:
+- Before/after code for SoulMadeModal and PillarSoulProfile
+- 3-property change pattern (alignItems, borderRadius, padding)
+- Grep commands to find other modals needing the fix
+- Verification checklist
+
+---
+
+## VERIFICATION NEEDED BY NEXT AGENT
+
+1. **Dine Soul Made**: Pill shows in strip, clicking opens ContentModal with breed products, footer CTA opens SoulMadeModal (not onClose)
+2. **Go Soul Made**: Pill shows, ContentModal renders breed products, trigger at bottom works
+3. **Play Soul Made**: Pill shows, ContentModal renders, footer CTA + trigger both open SoulMadeModal
+4. **Celebrate Soul Made**: Pill shows, ContentModal renders breed products (not cakes), trigger works, exclusion list prevents double-render
+5. **All other modals**: Check for remaining `alignItems:'flex-end'` patterns using grep from MODAL_CENTERING_FIX.md
+
+---
+
+## Key API Endpoints
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /api/mockups/breed-products?breed={breed}&pillar={pillar}` | Breed-specific products |
+| `POST /api/upload/image` | Cloudinary photo upload (preset: tdc_custom_orders) |
+| `POST /api/service_desk/attach_or_create_ticket` | Concierge ticket (via useConcierge) |
+| `GET /api/nearme/search?query={query}&type={type}` | NearMe text search (Google Places) |
+| `GET /api/nearby/places?lat={lat}&lng={lng}&type={type}` | NearMe coordinate search |
 
 ---
 
@@ -107,39 +134,47 @@ frontend/
 
 ## Prioritized Backlog
 
+### P0 — Immediate (Verification)
+- [ ] Verify Soul Made works on all 5 ContentModal pillars (Dine, Go, Play, Celebrate, Care)
+- [ ] Check remaining modals for bottom-stuck bug (grep for `alignItems.*flex-end`)
+
 ### P1 — Next Sprint
-- [ ] Add "3 vets near you" context to daily health WhatsApp reminders (NearMe API at scheduler time)
+- [ ] Add "3 vets near you" to daily health WhatsApp reminders (NearMe API at scheduler)
 - [ ] Extend scheduler for Medication refill reminders
 
 ### P2 — Future
-- [ ] Build `Love` pillar (post-launch)
-- [ ] Refactor `MiraDemoPage.jsx` and `server.py` (24,000+ lines)
-- [ ] Remove "Skip Payment" from onboarding (post soft-launch)
-- [ ] Add "My Custom Orders" tab in user profile for order tracking
-- [ ] Add admin notification banner in Service Desk for new Soul Made orders
+- [ ] Build `Love` pillar
+- [ ] Refactor `server.py` (24k lines) and `MiraDemoPage.jsx`
+- [ ] Remove "Skip Payment" from onboarding
+- [ ] "My Custom Orders" tab in user profile
+- [ ] Admin notification for new Soul Made orders
 
 ---
 
 ## 3rd Party Integrations
 - OpenAI GPT-4o / Claude Sonnet — Emergent LLM Key
-- Cloudinary — user API key (images)
+- Cloudinary — user API key (images, preset: tdc_custom_orders)
 - Razorpay — user API key (payments)
 - Gupshup — user API key (WhatsApp)
 - Resend — user API key (email)
+- Google Places API — for NearMe search (key in backend/.env)
+
+---
 
 ## Pillar Color Reference
-| Pillar | Color | Label | Soul Made |
-|--------|-------|-------|-----------|
-| care | #40916C / G.sage | Wellness | PersonalisedBreedSection |
-| dine | #C9973A | Food | PersonalisedBreedSection |
-| go | #1ABC9C / G.teal | Travel | PersonalisedBreedSection |
-| play | #E76F51 / G.orange | Play | PersonalisedBreedSection |
-| learn | #7C3AED / G.violet | Learning | PersonalisedBreedSection |
-| celebrate | #A855F7 | Celebration | CelebrateContentModal |
-| shop | #F59E0B / G.gold | Shopping | PersonalisedBreedSection |
-| paperwork | #0D9488 / G.teal | Documents | PersonalisedBreedSection |
-| adopt | #65A30D / G.rose | Adoption | PersonalisedBreedSection |
-| farewell | #8B5CF6 / G.indigo | Farewell | PersonalisedBreedSection (custom text) |
-| services | #0EA5E9 | Services | PersonalisedBreedSection |
-| emergency | #EF4444 | Safety | NO |
-| advisory | #10B981 | Advisory | NO |
+
+| Pillar | Color | Label | Soul Made Method | Status |
+|--------|-------|-------|-----------------|--------|
+| care | #40916C / G.sage | Wellness | CategoryStrip + CareContentModal | ✅ |
+| celebrate | #A855F7 | Celebration | CategoryStrip + CelebrateContentModal | ✅ |
+| dine | #FF8C42 | Food | CategoryStrip + DineContentModal | ✅ Needs verification |
+| go | G.teal / #3498DB | Travel | CategoryStrip + GoContentModal | ✅ Needs verification |
+| play | G.orange / #E76F51 | Play | CategoryStrip + PlayContentModal | ✅ Needs verification |
+| learn | G.violet / #7C3AED | Learning | PersonalisedBreedSection | ✅ |
+| shop | G.gold / #F59E0B | Shopping | PersonalisedBreedSection | ✅ |
+| paperwork | G.teal / #0D9488 | Documents | PersonalisedBreedSection | ✅ |
+| adopt | G.rose / #65A30D | Adoption | PersonalisedBreedSection | ✅ |
+| farewell | G.indigo / #8B5CF6 | Farewell | PersonalisedBreedSection (custom text) | ✅ |
+| services | #0EA5E9 | Services | PersonalisedBreedSection | ✅ |
+| emergency | #EF4444 | Safety | EXCLUDED | ❌ |
+| advisory | #10B981 | Advisory | EXCLUDED | ❌ |

@@ -13,8 +13,8 @@
  */
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import { bookViaConcierge } from "../../utils/MiraCardActions";
 import { tdc } from "../../utils/tdc_intent";
+import { useConcierge } from "../../hooks/useConcierge";
 
 const PILLAR_COLORS = {
   celebrate:  { gradient: "linear-gradient(135deg,#9C27B0,#E91E63)", light: "#F3E5F5" },
@@ -29,7 +29,7 @@ const PILLAR_COLORS = {
   platform:   { gradient: "linear-gradient(135deg,#37474F,#78909C)", light: "#ECEFF1" },
 };
 
-export default function NearMeConciergeModal({ isOpen, venue, place, pet, pillar = "platform", onClose }) {
+export default function NearMeConciergeModal({ isOpen, venue, place, pet, pillar = "platform", onClose, setConciergeToast }) {
   // Accept either 'venue' or 'place' prop for compatibility
   const actualVenue = venue || place;
   const [date,     setDate]    = useState("");
@@ -38,6 +38,7 @@ export default function NearMeConciergeModal({ isOpen, venue, place, pet, pillar
   const [sending,  setSending] = useState(false);
   const [sent,     setSent]    = useState(false);
 
+  const { request } = useConcierge({ pet, pillar });
   const petName   = pet?.name || "your pet";
   const venueName = actualVenue?.name || "this venue";
   const colors    = PILLAR_COLORS[pillar] || PILLAR_COLORS.platform;
@@ -46,23 +47,38 @@ export default function NearMeConciergeModal({ isOpen, venue, place, pet, pillar
     if (sending) return;
     setSending(true);
     tdc.nearme({ query: venueName, pillar, pet, channel: `${pillar}_nearme_modal` });
-    await bookViaConcierge({
-      service: venueName,
-      pillar,
-      pet,
-      channel: `${pillar}_nearme_modal`,
-      notes: [
-        actualVenue?.vicinity ? `Address: ${actualVenue.vicinity}` : "",
-        actualVenue?.rating   ? `Rating: ${actualVenue.rating}★` : "",
-        notes.trim()    ? `Notes: ${notes}` : "",
-      ].filter(Boolean).join(" | "),
-      date: notSure ? null : (date || null),
-      onSuccess: () => setSent(true),
+
+    const briefText =
+      `NearMe booking request for ${petName}\n` +
+      `Venue: ${venueName}\n` +
+      (actualVenue?.formatted_address || actualVenue?.vicinity ? `Address: ${actualVenue.formatted_address || actualVenue.vicinity}\n` : '') +
+      (actualVenue?.rating ? `Rating: ${actualVenue.rating}★\n` : '') +
+      (actualVenue?.formatted_phone_number ? `Phone: ${actualVenue.formatted_phone_number}\n` : '') +
+      `When: ${notSure ? 'Not sure yet — just enquire' : (date || 'Not specified')}\n` +
+      (notes.trim() ? `Notes: ${notes}\n` : '') +
+      `\nPlease contact the venue and arrange for ${petName}.`;
+
+    await request(briefText, {
+      channel:  `${pillar}_nearme`,
+      urgency:  'normal',
+      metadata: {
+        nearme_booking: true,
+        venue_name:     venueName,
+        venue_address:  actualVenue?.formatted_address || actualVenue?.vicinity,
+        venue_rating:   actualVenue?.rating,
+        venue_phone:    actualVenue?.formatted_phone_number,
+        preferred_date: notSure ? null : (date || null),
+        notes:          notes.trim() || null,
+        pillar,
+      },
     });
+
+    setSent(true);
     setSending(false);
   };
 
-  if (!isOpen || !venue) return null;
+  if (!isOpen && !actualVenue) return null;
+  if (!actualVenue) return null;
 
   const modal = (
     <>

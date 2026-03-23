@@ -27,6 +27,7 @@ import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import SoulMadeCollection from "../components/SoulMadeCollection";
+import SoulMadeModal from "../components/SoulMadeModal";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import ConciergeToast from "../components/common/ConciergeToast";
 import GuidedPaperworkPaths from "../components/paperwork/GuidedPaperworkPaths";
@@ -158,6 +159,13 @@ function getPaperworkDims(pet) {
       badge:"Made for you", badgeBg: G.teal,
       glow: true, glowColor:"rgba(13,148,136,0.22)",
       mira:`{name}'s breed-specific passport holder — carries the identity, soul profile, and story of this dog.`,
+    },
+    {
+      id:"soul_made", icon:"✦", label:"Soul Made™",
+      sub: `Custom-made for {name}`,
+      badge:"Make it personal", badgeBg: G.teal,
+      glow: true, glowColor:"rgba(13,148,136,0.22)",
+      mira:`Want something truly one-of-a-kind for {name}? Upload a photo — Concierge® creates it.`,
     },
   ];
 }
@@ -539,6 +547,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook, o
 // ─── PAPERWORK CONTENT MODAL (category pill → products) ──────
 function PaperworkContentModal({ isOpen, onClose, category, pet }) {
   const [products,setProducts]=useState([]); const [loading,setLoading]=useState(false); const [selProd,setSelProd]=useState(null);
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const { token } = useAuth();
   const petName=pet?.name||"your dog"; const breed=pet?.breed?pet.breed.split("(")[0].trim():"";
   const CAT_CONFIG = {
@@ -550,11 +559,21 @@ function PaperworkContentModal({ isOpen, onClose, category, pet }) {
     advisory:  {label:"Expert Advisory",   bg:"#F3E5F5",icon:"💡", accent:G.teal},
     soul:      {label:"Soul Documents",     bg:"#F0FDFA",icon:"🌟", accent:G.teal},
     mira:      {label:"Mira's Picks",       bg:"#E8EAF6",icon:"✦",  accent:G.mid},
+    soul_made: {label:"Soul Made™",         bg:"#F3E5F5",icon:"✦",  accent:G.teal},
   };
   const cfg=CAT_CONFIG[category]||CAT_CONFIG.identity;
-  const miraQuotes={identity:`I picked these for ${petName}'s complete identity protection.`,health:`${petName}'s health records — organised, accessible, and up to date.`,travel:breed?`Travelling with a ${breed}? I've selected every document you'll need.`:`Everything ${petName} needs for safe, documented travel.`,insurance:`${petName}'s insurance and financial documents — organised and claim-ready.`,breeds:breed?`I've curated the complete ${breed} care guide set for ${petName}.`:`Breed-specific guides tailored to ${petName}'s heritage.`,advisory:`Expert guidance resources and life planning for ${petName}.`,soul:`${petName}'s soul documents — their identity and story, beautifully held.`,mira:`My top picks across all document categories for ${petName}.`};
+  const miraQuotes={identity:`I picked these for ${petName}'s complete identity protection.`,health:`${petName}'s health records — organised, accessible, and up to date.`,travel:breed?`Travelling with a ${breed}? I've selected every document you'll need.`:`Everything ${petName} needs for safe, documented travel.`,insurance:`${petName}'s insurance and financial documents — organised and claim-ready.`,breeds:breed?`I've curated the complete ${breed} care guide set for ${petName}.`:`Breed-specific guides tailored to ${petName}'s heritage.`,advisory:`Expert guidance resources and life planning for ${petName}.`,soul:`${petName}'s soul documents — their identity and story, beautifully held.`,mira:`My top picks across all document categories for ${petName}.`,soul_made:`Want something truly one-of-a-kind for ${petName}? Upload a photo — Concierge® creates it.`};
   useEffect(()=>{
     if(!isOpen)return; setLoading(true);
+    if(category==="soul_made"){
+      const breedParam=encodeURIComponent((pet?.breed||'').trim().toLowerCase());
+      fetch(`${API_URL}/api/mockups/breed-products?breed=${breedParam}&pillar=paperwork`)
+        .then(r=>r.ok?r.json():{products:[]})
+        .then(data=>setProducts(data.products||[]))
+        .catch(()=>setProducts([]))
+        .finally(()=>setLoading(false));
+      return;
+    }
     if(category==="mira"){
       if(!pet?.id){setLoading(false);return;}
       fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=16&min_score=40`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
@@ -590,6 +609,19 @@ function PaperworkContentModal({ isOpen, onClose, category, pet }) {
           {loading&&<div style={{textAlign:"center",padding:"32px 0"}}><Loader2 size={24} style={{color:G.teal,animation:"spin 1s linear infinite"}}/></div>}
           {!loading&&products.length===0&&<div style={{textAlign:"center",padding:"32px 0",color:"#888"}}><div style={{fontSize:32,marginBottom:10}}>📦</div><p style={{fontWeight:600}}>Products being curated</p><p style={{fontSize:13}}>Mira is sourcing {petName}'s {cfg.label} kit — check back soon.</p></div>}
           {!loading&&products.length>0&&<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))",gap:12}}>{products.map(p=><SharedProductCard key={p.id||p._id} product={p} pet={pet} onViewDetails={()=>setSelProd(p)} accentColor={cfg.accent||G.teal}/>)}</div>}
+          {category==="soul_made"&&!loading&&(
+            <div data-testid="soul-made-trigger" onClick={()=>setSoulMadeOpen(true)} style={{
+              margin:'16px 0 8px',padding:'14px 16px',background:`${G.teal}08`,border:`1px solid ${G.teal}20`,
+              borderRadius:14,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer',
+            }}>
+              <div>
+                <div style={{fontSize:13,fontWeight:700,color:G.teal,marginBottom:3}}>✦ Soul Made™ — Make it personal</div>
+                <div style={{fontSize:12,color:'#888',lineHeight:1.4}}>Upload {petName}'s photo · Concierge® creates it · Price on WhatsApp</div>
+              </div>
+              <div style={{fontSize:20,color:`${G.teal}60`,flexShrink:0,marginLeft:8}}>›</div>
+            </div>
+          )}
+          {soulMadeOpen&&<SoulMadeModal pet={pet} pillar="paperwork" pillarColor={G.teal} pillarLabel="Documents" onClose={()=>setSoulMadeOpen(false)}/>}
         </div>
       </div>
       {selProd&&<ProductDetailModal product={selProd} pet={pet} onClose={()=>setSelProd(null)}/>}
@@ -781,6 +813,7 @@ const PaperworkSoulPage = () => {
               {id:"advisory",  icon:"💡", label:"Advisory",       bg:"#F3E5F5", accent:G.teal},
               {id:"soul",      icon:"🌟", label:"Soul Docs",      bg:"#F0FDFA", accent:G.teal},
               {id:"mira",      icon:"✦",  label:"Mira's Picks",   bg:"#E8EAF6", accent:G.mid},
+              {id:"soul_made", icon:"✦",  label:"Soul Made™",     bg:"#F3E5F5", accent:G.teal},
             ].map(cat=>{
               const isA = catModal===cat.id;
               return(

@@ -157,6 +157,7 @@ const CATEGORY_API = {
   'hampers':         [{ url: '/api/products?category=hampers&limit=50', key: 'products' }],
   'bundles':         [{ url: '/api/celebrate/bundles', key: 'bundles' }],
   'soul-picks':      [],  // handled separately with breed endpoint
+  'soul_made':       [],  // handled separately with breed endpoint
   'miras-picks':     [{ url: '/api/products?category=cakes&limit=60', key: 'products' }], // breed-filtered client-side
 };
 
@@ -175,6 +176,7 @@ const MIRA_WHISPERS = {
   'party':          (n) => `🎉 Party decor explored for ${n}'s big day`,
   'nut-butters':    (n) => `🥜 Nut butter found — ${n}'s lick of the day`,
   'soul-picks':     (n) => `✨ Soul picks — made just for ${n}`,
+  'soul_made':      (n) => `✦ Want something truly unique for ${n}? Upload a photo — Concierge® creates it.`,
   'miras-picks':    (n) => `🌟 Mira curated these just for ${n}`,
 };
 
@@ -189,6 +191,7 @@ const CTA_LABELS = {
   'party':          (n) => `Plan ${n}'s Pawty Setup →`,
   'nut-butters':    (n) => `Add to ${n}'s Pantry →`,
   'soul-picks':     (n) => `Build ${n}'s Soul Box →`,
+  'soul_made':      (n) => `Make it personal for ${n} →`,
   'miras-picks':    (n) => `Start ${n}'s Celebration →`,
 };
 
@@ -1082,6 +1085,11 @@ export const CATEGORY_CONFIG = {
     miraLabel: 'Made just for your dog',
     emptyText: "Personalised picks coming for your pup!"
   },
+  'soul_made': {
+    emoji: '✦', label: 'Soul Made™',
+    miraLabel: 'Custom-made for your dog',
+    emptyText: "Upload a photo and Concierge® will create it!"
+  },
   'miras-picks': {
     emoji: '🌟', label: "Mira's Picks",
     miraLabel: 'Soul-curated by Mira',
@@ -1156,6 +1164,21 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
             return url.split('/').pop().startsWith('breed-');
           });
           setBreedProducts(prods);
+        } catch { setBreedProducts([]); }
+        setLoading(false);
+        return;
+      }
+
+      // ── Soul Made™: breed products for custom orders ────────────────
+      if (category === 'soul_made') {
+        const breedDisplay = getBreedDisplay(pet);
+        const breedKey = breedDisplay.toLowerCase().replace(/\s+/g,'_').replace(/[()]/g,'');
+        try {
+          const res = await fetch(
+            `${apiUrl}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&pillar=celebrate&limit=20`
+          );
+          const data = res.ok ? await res.json() : { products: [] };
+          setBreedProducts(data.products || []);
         } catch { setBreedProducts([]); }
         setLoading(false);
         return;
@@ -1574,6 +1597,52 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
               </>
             )}
 
+
+            {/* ── SOUL MADE™ layout — breed products + custom order trigger ── */}
+            {category === 'soul_made' && (
+              <>
+                {breedProducts.length > 0 ? (
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <p className="text-xs font-bold uppercase tracking-wider"
+                        style={{ color: '#A855F7', letterSpacing: '0.06em' }}>
+                        ✦ Made for {petName} — {getBreedDisplay(pet) || pet?.breed || 'your breed'}
+                      </p>
+                      <span className="text-xs rounded-full px-2 py-0.5 font-semibold"
+                        style={{ background: 'rgba(168,85,247,0.12)', color: '#A855F7' }}>
+                        {breedProducts.length} items
+                      </span>
+                    </div>
+                    <div className="grid gap-3"
+                      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
+                      {breedProducts.map((p, idx) => (
+                        <SoulPickCard key={p.id || idx} product={p} pet={pet} />
+                      ))}
+                    </div>
+                  </div>
+                ) : !loading && (
+                  <div style={{ textAlign:'center', padding:'32px 16px', color:'#888' }}>
+                    <div style={{ fontSize:28, marginBottom:10 }}>✦</div>
+                    <p style={{ fontSize:14 }}>We're curating breed-specific items for {petName}. Check back soon!</p>
+                  </div>
+                )}
+                {/* Soul Made trigger */}
+                <div data-testid="soul-made-trigger" onClick={() => setSoulMadeOpen(true)} style={{
+                  margin:'16px 0 4px', padding:'14px 16px', background:'#A855F708', border:'1px solid #A855F720',
+                  borderRadius:14, display:'flex', alignItems:'center', justifyContent:'space-between', cursor:'pointer',
+                }}>
+                  <div>
+                    <div style={{ fontSize:13, fontWeight:700, color:'#A855F7', marginBottom:3 }}>✦ Soul Made™ — Make it personal</div>
+                    <div style={{ fontSize:12, color:'#888', lineHeight:1.4 }}>Upload {petName}'s photo · Concierge® creates it · Price on WhatsApp</div>
+                  </div>
+                  <div style={{ fontSize:20, color:'#A855F760', flexShrink:0, marginLeft:8 }}>›</div>
+                </div>
+                {soulMadeOpen && (
+                  <SoulMadeModal pet={pet} pillar="celebrate" pillarColor="#A855F7" pillarLabel="Celebration" onClose={() => setSoulMadeOpen(false)} />
+                )}
+              </>
+            )}
+
             {/* ── MIRA'S PICKS layout — imaginary cards + breed cakes ──── */}
             {category === 'miras-picks' && (
               <>
@@ -1646,7 +1715,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
             )}
 
             {/* ── NORMAL CATEGORIES layout ────────────────────────────── */}
-            {category !== 'bundles' && category !== 'soul-picks' && category !== 'miras-picks' && (
+            {category !== 'bundles' && category !== 'soul-picks' && category !== 'soul_made' && category !== 'miras-picks' && (
               <>
                 {/* Pet's breed items first — own row for cake categories */}
                 {['birthday-cakes', 'breed-cakes'].includes(category) && pet?.breed && (() => {

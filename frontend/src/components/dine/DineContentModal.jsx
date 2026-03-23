@@ -19,6 +19,9 @@ import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import ProductCard from '../ProductCard';
+import SoulMadeModal from '../SoulMadeModal';
+
+const fmtTab = (t) => t === 'All' || t === 'all' ? t : t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
 // ── Pet data helpers ──────────────────────────────────────────────────────────
 const ALLERGY_CLEAN = /^(no|none|none_confirmed|no_allergies|no allergies|na|n\/a|unknown)$/i;
@@ -371,6 +374,7 @@ const CATEGORY_CONFIG = {
   'bundles':          { emoji: '🎁', label: 'Dining Bundles',        apiCategory: null },
   'soul-picks':       { emoji: '✨', label: 'Soul Picks',            apiCategory: null },
   'miras-picks':      { emoji: '💫', label: "Mira's Picks",          apiCategory: null }, // includes services
+  'soul_made':        { emoji: '✦',  label: 'Soul Made™',            apiCategory: null },
 };
 
 const CTA_LABELS = {
@@ -382,6 +386,7 @@ const CTA_LABELS = {
   'bundles':            (n) => `Get a Bundle for ${n} →`,
   'soul-picks':         (n) => `Build ${n}'s Soul Box →`,
   'miras-picks':        (n) => `Start ${n}'s Dine Plan →`,
+  'soul_made':          (n) => `Make it personal for ${n} →`,
 };
 
 // ── Mira quote generator ──────────────────────────────────────────────────────
@@ -510,6 +515,7 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
   const [activeTab, setActiveTab] = useState('all');
   const [tabs, setTabs] = useState([]);
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const { token } = useAuth();
 
   useEffect(() => {
@@ -552,6 +558,19 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
           const d = await r.json();
           setProducts(d.bundles || []);
         }
+        return;
+      }
+
+      // ── Soul Made™: breed-specific products from mockup API ──────
+      if (category === 'soul_made') {
+        const breedParam = encodeURIComponent((pet?.breed || '').trim().toLowerCase());
+        const r = await fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&pillar=dine`);
+        const data = r.ok ? await r.json() : { products: [] };
+        const breedProducts = data.products || [];
+        const subCats = [...new Set(breedProducts.map(p => p.sub_category || p.product_type).filter(Boolean))];
+        setTabs(subCats.length > 1 ? ['all', ...subCats] : ['all']);
+        setProducts(breedProducts);
+        setLoading(false);
         return;
       }
 
@@ -829,7 +848,7 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
               }}
               data-testid={`dine-tab-${tab.toLowerCase().replace(/\s+/g, '-')}`}
             >
-              {tab}
+              {fmtTab(tab)}
             </button>
           ))}
         </div>
@@ -894,11 +913,26 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
       </div>
 
       {/* ── Footer CTA ───────────────────────────────────────────────── */}
+      {category === 'soul_made' && !loading && (
+        <div style={{ padding:'0 20px 8px' }}>
+          <div data-testid="soul-made-trigger" onClick={() => setSoulMadeOpen(true)} style={{
+            margin:'8px 0', padding:'14px 16px', background:'#FF8C4208', border:'1px solid #FF8C4220',
+            borderRadius:14, display:'flex', alignItems:'center', justifyContent:'space-between', cursor:'pointer',
+          }}>
+            <div>
+              <div style={{ fontSize:13, fontWeight:700, color:'#FF8C42', marginBottom:3 }}>✦ Soul Made™ — Make it personal</div>
+              <div style={{ fontSize:12, color:'#888', lineHeight:1.4 }}>Upload {petName}'s photo · Concierge® creates it · Price on WhatsApp</div>
+            </div>
+            <div style={{ fontSize:20, color:'#FF8C4260', flexShrink:0, marginLeft:8 }}>›</div>
+          </div>
+        </div>
+      )}
+      {soulMadeOpen && <SoulMadeModal pet={pet} pillar="dine" pillarColor="#FF8C42" pillarLabel="Food" onClose={() => setSoulMadeOpen(false)} />}
       <div className="flex-shrink-0 px-5 py-4" style={{ borderTop: '1px solid #F0E8E0', background: '#FFFAF6' }}>
         <div className="flex items-center justify-between">
           <p className="text-xs text-gray-400">Personalised for {petName}</p>
           <button
-            onClick={onClose}
+            onClick={() => { if (category === 'soul_made') { setSoulMadeOpen(true); } else { onClose(); } }}
             className="rounded-xl px-4 py-2 text-sm font-bold text-white"
             style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)', border: 'none', cursor: 'pointer' }}
             data-testid="dine-modal-cta"

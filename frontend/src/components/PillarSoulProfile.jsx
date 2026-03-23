@@ -294,29 +294,43 @@ export default function PillarSoulProfile({
 
   return (
     <>
-      {/* Compact trigger bar */}
+      {/* Compact trigger bar — beautiful white card style */}
       <div onClick={() => setOpen(true)} data-testid={`${pillar}-profile-bar`}
-        style={{ background:`${pColor}12`, border:`1px solid ${pColor}30`, borderRadius:14, padding:'12px 16px', cursor:'pointer', display:'flex', alignItems:'center', gap:12, marginBottom:16, transition:'all 0.15s' }}>
-        <div style={{ width:36, height:36, borderRadius:'50%', border:`2px solid ${pColor}40`, overflow:'hidden', flexShrink:0, background:`${pColor}20`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:18 }}>
+        style={{
+          background:'#fff', border:`2px solid ${pColor}18`, borderRadius:16,
+          padding:'14px 18px', cursor:'pointer', display:'flex', alignItems:'center', gap:14,
+          marginBottom:16, transition:'all 0.15s',
+          boxShadow:`0 2px 12px ${pColor}14`,
+        }}
+        onMouseEnter={e => e.currentTarget.style.boxShadow=`0 4px 20px ${pColor}22`}
+        onMouseLeave={e => e.currentTarget.style.boxShadow=`0 2px 12px ${pColor}14`}
+      >
+        <div style={{ width:42, height:42, borderRadius:12, border:`2px solid ${pColor}30`, overflow:'hidden', flexShrink:0, background:`${pColor}15`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:18 }}>
           {pet?.photo_url ? <img src={pet.photo_url} alt={name} style={{ width:'100%', height:'100%', objectFit:'cover' }}/> : '\uD83D\uDC3E'}
         </div>
-        <div style={{ flex:1 }}>
-          <div style={{ fontSize:12, fontWeight:700, color:pColor, marginBottom:3 }}>{pEmoji} {name}'s {pLabel} Profile</div>
-          <div style={{ height:4, borderRadius:999, background:'rgba(0,0,0,0.06)', overflow:'hidden' }}>
-            <div style={{ height:'100%', borderRadius:999, background:pColor, width:`${Math.min(score,100)}%`, transition:'width 0.8s ease' }}/>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ fontSize:14, fontWeight:700, color:'#1a1a2e', marginBottom:4 }}>{name}'s {pLabel} Profile</div>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
+            {pet?.breed && (
+              <span style={{ fontSize:10, fontWeight:600, color:pColor, background:`${pColor}12`, border:`1px solid ${pColor}30`, borderRadius:20, padding:'2px 8px' }}>
+                🐾 {pet.breed}{pet?.doggy_soul_answers?.coat_type ? ` · ${pet.doggy_soul_answers.coat_type} coat` : ''}
+              </span>
+            )}
+            {pet?.doggy_soul_answers?.grooming_frequency && (
+              <span style={{ fontSize:10, fontWeight:600, color:pColor, background:`${pColor}12`, border:`1px solid ${pColor}30`, borderRadius:20, padding:'2px 8px' }}>
+                ✂ {pet.doggy_soul_answers.grooming_frequency}
+              </span>
+            )}
           </div>
         </div>
-        <div style={{ textAlign:'right', flexShrink:0 }}>
-          <div style={{ fontSize:13, fontWeight:700, color:pColor }}>{Math.round(score)}%</div>
-          <div style={{ fontSize:10, color:'#999' }}>tap</div>
-        </div>
+        <span style={{ fontSize:11, color:pColor, fontWeight:700, whiteSpace:'nowrap', flexShrink:0 }}>Mira's picks →</span>
       </div>
 
       {/* Drawer overlay */}
       {open && (
-        <div onClick={() => setOpen(false)} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.65)', zIndex:50001, display:'flex', alignItems:'flex-end', justifyContent:'center' }}>
+        <div onClick={() => setOpen(false)} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.65)', zIndex:50001, display:'flex', alignItems:'center', justifyContent:'center', padding:16 }}>
           <div onClick={e => e.stopPropagation()} data-testid={`${pillar}-profile-drawer`}
-            style={{ width:'100%', maxWidth:560, maxHeight:'85vh', background:'#0F0A1E', borderRadius:'20px 20px 0 0', border:`1px solid ${pColor}30`, overflowY:'auto' }}>
+            style={{ width:'100%', maxWidth:560, maxHeight:'85vh', background:'#0F0A1E', borderRadius:20, border:`1px solid ${pColor}30`, overflowY:'auto' }}>
 
             {/* Header */}
             <div style={{ padding:'20px 20px 16px', background:`linear-gradient(135deg, #0F0A1E, ${pColor}15)`, borderBottom:`1px solid ${pColor}20`, position:'sticky', top:0, zIndex:2 }}>

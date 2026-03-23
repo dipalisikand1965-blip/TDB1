@@ -136,7 +136,8 @@ export default function SoulMadeModal({
     const soul = pet?.doggy_soul_answers || {};
     const raw  = soul.food_allergies || pet?.allergies || '';
     if (!raw || ['none','no','unknown'].includes(String(raw).toLowerCase())) return null;
-    return Array.isArray(raw) ? raw.join(', ') : raw;
+    const items = Array.isArray(raw) ? raw : typeof raw === 'string' ? raw.split(',').map(s => s.trim()).filter(Boolean) : [];
+    return items.map(a => a.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())).join(', ') || null;
   })();
 
   // ── Load real soul products for this pillar ───────────────────────────
@@ -247,9 +248,10 @@ export default function SoulMadeModal({
         position:'fixed', inset:0,
         background:'rgba(0,0,0,0.72)',
         zIndex:2000,
-        display:'flex', alignItems:'flex-end',
+        display:'flex', alignItems:'center',
         justifyContent:'center',
         animation:'sm-fade 0.2s ease',
+        padding:'16px',
       }}
     >
       <style>{`${FONTS}${CSS}`}</style>
@@ -258,9 +260,9 @@ export default function SoulMadeModal({
         onClick={e => e.stopPropagation()}
         style={{
           width:'100%', maxWidth:520,
-          maxHeight:'92vh', overflowY:'auto',
+          maxHeight:'85vh', overflowY:'auto',
           background:'#0F0A1E',
-          borderRadius:'24px 24px 0 0',
+          borderRadius:24,
           border:`1px solid ${pillarColor}30`,
           animation:'sm-slide 0.3s cubic-bezier(0.16,1,0.3,1)',
           '--sm-color': pillarColor,
@@ -404,11 +406,28 @@ export default function SoulMadeModal({
               <button
                 className={`sm-opt${selected?.id === 'custom' ? ' sel' : ''}`}
                 onClick={() => setSelected({ id:'custom', name:'Something custom — I\'ll describe it' })}
-                style={{ marginBottom:20 }}
+                style={{ marginBottom: selected?.id === 'custom' ? 8 : 20 }}
               >
                 <span style={{ fontSize:20 }}>✦</span>
                 <span style={{ fontSize:13, fontWeight:600 }}>Something else — I'll describe it</span>
               </button>
+
+              {/* Custom description textarea */}
+              {selected?.id === 'custom' && (
+                <textarea
+                  value={message}
+                  onChange={e => setMessage(e.target.value)}
+                  placeholder={`Describe what you'd like made for ${petName}... e.g. "A custom portrait on a mug with Mojo wearing a bow tie"`}
+                  style={{
+                    width:'100%', minHeight:100, padding:'14px', borderRadius:12,
+                    border:`1px solid ${pillarColor}40`, background:'rgba(255,255,255,0.05)',
+                    color:'#F5F0E8', fontSize:14, fontFamily:'inherit', resize:'vertical',
+                    outline:'none', marginBottom:20, lineHeight:1.5,
+                  }}
+                  onFocus={e => e.target.style.borderColor = pillarColor}
+                  onBlur={e => e.target.style.borderColor = `${pillarColor}40`}
+                />
+              )}
 
               <button
                 onClick={() => setStep(2)}
