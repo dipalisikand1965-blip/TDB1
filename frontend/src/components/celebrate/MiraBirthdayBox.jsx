@@ -10,6 +10,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Gift, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useConcierge } from '../../hooks/useConcierge';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
@@ -155,6 +156,7 @@ const MiraBirthdayBox = ({ pet, onBuildBox, onBrowseProducts }) => {
   const [isRevealing, setIsRevealing] = useState(false);
   const [revealedSlots, setRevealedSlots] = useState([]);
   const [error, setError] = useState(null);
+  const { request } = useConcierge({ pet, pillar: 'celebrate' });
 
   const petName = pet?.name || 'your pet';
   const petId = pet?.id;
@@ -187,6 +189,9 @@ const MiraBirthdayBox = ({ pet, onBuildBox, onBrowseProducts }) => {
   // Handle "Build Box" click — trigger reveal animation
   const handleBuildClick = () => {
     if (!boxPreview) return;
+
+    // Fire concierge ticket
+    request({ service: `${petName}'s Birthday Box — started`, channel: 'celebrate_birthday_box_start' });
 
     // Start reveal animation
     setIsRevealing(true);

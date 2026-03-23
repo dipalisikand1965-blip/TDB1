@@ -10,10 +10,12 @@
 
 import React, { useState } from 'react';
 import ConciergeIntakeModal from './ConciergeIntakeModal';
+import { useConcierge } from '../../hooks/useConcierge';
 
 const CelebrateConcierge = ({ pet, onAddToCart }) => {
   const [intakeOpen, setIntakeOpen] = useState(false);
   const petName = pet?.name || 'your pet';
+  const { book } = useConcierge({ pet, pillar: 'celebrate' });
 
   return (
     <>
@@ -106,7 +108,10 @@ const CelebrateConcierge = ({ pet, onAddToCart }) => {
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>meals made with love</span>
             </div>
             <button
-              onClick={() => setIntakeOpen(true)}
+              onClick={() => {
+                book({ service: `${petName}'s Celebration — Plan my birthday`, channel: 'celebrate_concierge_cta', urgency: 'high' });
+                setIntakeOpen(true);
+              }}
               style={{
                 background: 'linear-gradient(135deg, #C9973A, #F0C060)',
                 color: '#1A0A00',

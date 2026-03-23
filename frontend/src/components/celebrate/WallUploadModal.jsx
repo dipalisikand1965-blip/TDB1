@@ -85,12 +85,14 @@ const WallUploadModal = ({ isOpen, onClose, petName, petId, onSubmitted }) => {
       };
 
       let uploadedPhotoId = null;
+      let cloudinaryUrl = null;
       const res = await fetch(`${apiUrl}/api/celebration-wall/photos/ugc`, {
         method: 'POST', headers, body: JSON.stringify(payload)
       });
       if (res.ok) {
         const data = await res.json();
         uploadedPhotoId = data.photo_id || data.id;
+        cloudinaryUrl = data.image_url || null;
       }
 
       // Show confirmation FIRST, then notify parent from the "See your photo" button
@@ -99,7 +101,7 @@ const WallUploadModal = ({ isOpen, onClose, petName, petId, onSubmitted }) => {
       // Store uploadedPhotoId + photo data for confirmation button to pass to parent
       window.__lastUploadedWallPhotoId = uploadedPhotoId;
       window.__lastUploadedWallPhotoData = {
-        previewUrl,
+        previewUrl: cloudinaryUrl || previewUrl,
         caption: caption.trim(),
         celebType: celebType || 'Birthday',
         city: city.trim() || null,
