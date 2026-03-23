@@ -584,11 +584,11 @@ const Navbar = () => {
     <header className={`sticky top-0 bg-white shadow-sm ${isMenuOpen ? 'z-[10000]' : 'z-50'}`} style={{ WebkitOverflowScrolling: 'touch' }}>
       {/* Top Announcement Banner */}
       <div 
-        className="text-center text-xs font-medium py-1.5 px-4 overflow-x-auto whitespace-nowrap"
+        className="text-center font-medium py-1.5 px-4 overflow-x-auto whitespace-nowrap"
         style={{ 
           background: 'linear-gradient(90deg, #1a0a2e, #3B0764)',
           color: 'rgba(255,255,255,0.75)',
-          fontSize: '12px',
+          fontSize: '13px',
           letterSpacing: '0.05em',
           WebkitOverflowScrolling: 'touch',
           scrollbarWidth: 'none',
@@ -634,7 +634,7 @@ const Navbar = () => {
                 <img src="/logo-new.png" alt="The Doggy Company" className="h-6 w-6 object-contain" />
               </div>
               <div>
-                <div className="text-xs font-bold leading-none">
+                <div className="text-sm font-bold leading-none">
                   <span className="text-teal-400">the</span>
                   <span className="text-purple-400">doggy</span>
                   <span className="text-pink-400">company</span>
@@ -727,7 +727,7 @@ const Navbar = () => {
                   <span className="text-purple-400">doggy</span>
                   <span className="text-pink-400">company</span>
                 </div>
-                <div className="text-[10px] text-teal-400 tracking-wider">PET CONCIERGE®</div>
+                <div className="text-[13px] text-teal-400 tracking-wider">PET CONCIERGE®</div>
               </div>
             </Link>
 
