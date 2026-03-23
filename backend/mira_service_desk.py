@@ -666,12 +666,13 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
             "timestamp": now.isoformat(),
             "is_briefing": True,
         })
-    conversation.append({
-        "sender": request.initial_message.sender,
-        "source": getattr(request.initial_message, "source", request.channel),
-        "text": request.initial_message.text,
-        "timestamp": now.isoformat()
-    })
+    if request.initial_message:
+        conversation.append({
+            "sender": request.initial_message.sender,
+            "source": getattr(request.initial_message, "source", request.channel),
+            "text": request.initial_message.text,
+            "timestamp": now.isoformat()
+        })
 
     ticket_doc = {
         "ticket_id": ticket_id,

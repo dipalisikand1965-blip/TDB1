@@ -144,7 +144,7 @@ function getAllergies(pet) {
 }
 
 export default function DoggyBakeryCakeModal({ pet, onClose }) {
-  const { token }            = useAuth();
+  const { token, user }      = useAuth();
   const { request }          = useConcierge({ pet, pillar: 'celebrate' });
 
   const allergies    = getAllergies(pet);
@@ -229,34 +229,50 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
       ? `⚠️ ALLERGY ALERT: No ${allergies.join(', ')} — critical`
       : 'No known allergies';
 
-    const briefText =
-      `🎂 Breed Cake Order — Doggy Bakery\n\n` +
-      `Breed: ${breed.charAt(0).toUpperCase() + breed.slice(1)}\n` +
-      `Illustration: ${selIllus?.name || 'Variant selected'}\n` +
-      (illusUrl ? `Illustration image: ${illusUrl}\n` : '') +
-      `Base: ${selectedBase?.label} (${selectedBase?.desc})\n` +
-      `Flavour: ${selectedFlavour?.label || flavour} — ${price}\n` +
-      (message ? `Message on cake: "${message}"\n` : 'No message on cake\n') +
-      `\n${allergyNote}\n` +
-      `\nOrdered for: ${petName}\n` +
-      `Please confirm delivery date and final price via WhatsApp.`;
+    const subject = `🎂 Breed Cake Order — ${breed.charAt(0).toUpperCase()+breed.slice(1)} · ${selectedBase?.label} · ${selectedFlavour?.label?.split(' ').slice(1).join(' ')||flavour} — for ${petName}`;
 
-    await request(briefText, {
-      channel:  'doggy_bakery_order',
-      urgency:  'normal',
-      metadata: {
-        order_type:       'breed_cake',
-        breed,
-        base,
-        illustration:     selIllus?.name || '',
-        illustration_url: illusUrl,
-        price,
-        flavour,
-        message,
-        allergies,
-        pet_name:         petName,
-      },
-    });
+    const body =
+      `🎂 BREED CAKE ORDER — DOGGY BAKERY\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+      `FOR: ${petName} (${breed.charAt(0).toUpperCase()+breed.slice(1)})\n\n` +
+      `ILLUSTRATION SELECTED:\n` +
+      `  Name: ${selIllus?.name || selIllus?.colour_label || 'Variant selected'}\n` +
+      (illusUrl ? `  Image URL: ${illusUrl}\n` : `  No image URL — check admin gallery\n`) +
+      `\nCAKE DETAILS:\n` +
+      `  Base: ${selectedBase?.label} (${selectedBase?.desc})\n` +
+      `  Flavour: ${selectedFlavour?.label || flavour}\n` +
+      `  Price: ${price}\n` +
+      `  Message on cake: ${message ? `"${message}"` : '(none)'}\n\n` +
+      `${allergyNote}\n\n` +
+      `ACTION NEEDED:\n` +
+      `  1. Download illustration from URL above\n` +
+      `  2. Confirm price + delivery date via WhatsApp\n` +
+      `  3. Collect payment before baking\n`;
+
+    try {
+      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          parent_id:      user?.id || user?.email || '',
+          intent_primary: 'breed_cake_order',
+          pillar:         'celebrate',
+          channel:        'doggy_bakery_order',
+          urgency:        'normal',
+          pet_id:         pet?.id,
+          initial_message: {
+            sender: 'parent',
+            source: 'breed_cake_order',
+            text:   `${subject}\n\n${body}`,
+          },
+        }),
+      });
+    } catch (e) {
+      console.error('[DoggyBakeryCakeModal] order failed', e);
+    }
 
     setSending(false);
     setDone(true);
