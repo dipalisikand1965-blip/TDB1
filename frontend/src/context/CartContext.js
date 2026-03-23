@@ -14,20 +14,29 @@ const FREE_SHIPPING_THRESHOLD = 3000;
 const SHIPPING_COST = 150;
 
 // Helper function to safely get cart from localStorage
+const CART_VERSION = 2; // bump this to wipe stale carts on schema changes
 const getStoredCart = () => {
   try {
     const savedCart = localStorage.getItem('doggyBakeryCart');
-    if (savedCart) {
-      const parsed = JSON.parse(savedCart);
-      // Validate it's an array
-      if (Array.isArray(parsed)) {
-        return parsed;
-      }
+    if (!savedCart) return [];
+    const parsed = JSON.parse(savedCart);
+    if (!Array.isArray(parsed)) {
+      localStorage.removeItem('doggyBakeryCart');
+      return [];
     }
+    // Version guard — wipe cart if version mismatch
+    const savedVersion = localStorage.getItem('doggyBakeryCartVersion');
+    if (savedVersion !== String(CART_VERSION)) {
+      localStorage.removeItem('doggyBakeryCart');
+      localStorage.setItem('doggyBakeryCartVersion', String(CART_VERSION));
+      return [];
+    }
+    return parsed;
   } catch (error) {
     console.error('Error loading cart from localStorage:', error);
+    localStorage.removeItem('doggyBakeryCart');
+    return [];
   }
-  return [];
 };
 
 // Helper function to get concierge requests from localStorage

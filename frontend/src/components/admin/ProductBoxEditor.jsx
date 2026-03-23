@@ -17,6 +17,7 @@ import {
   ImagePlus, DollarSign, Truck, Shield, Bot, Tag, Gift, Eye, RefreshCw
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
+import AIImagePromptField from './AIImagePromptField';
 import {
   ALL_PILLARS, PRODUCT_TYPES, LIFE_STAGES, SIZE_OPTIONS, ENERGY_LEVELS,
   CHEW_STRENGTHS, PLAY_TYPES, COAT_TYPES, COMMON_AVOIDS, MATERIAL_SAFETY_FLAGS,
@@ -1653,6 +1654,22 @@ const ProductBoxEditor = ({
                     placeholder="Alt text for accessibility"
                   />
                 </div>
+              </div>
+
+              {/* Custom AI Prompt */}
+              <div className="mt-4">
+                <AIImagePromptField
+                  entityType="product"
+                  entityId={product?.id}
+                  currentPrompt={getValue('ai_image_prompt', '')}
+                  onPromptChange={val => updateField('ai_image_prompt', val)}
+                  onImageGenerated={(url) => {
+                    updateField('media.primary_image', url);
+                    updateField('image', url);
+                    updateField('image_url', url);
+                    updateField('thumbnail', url);
+                  }}
+                />
               </div>
               
               <div className="mt-4">

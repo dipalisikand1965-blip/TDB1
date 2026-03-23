@@ -15,7 +15,7 @@
 - **User:** `dipali@clubconcierge.in` / `test123`
 - **Admin:** `aditya` / `lola4304`
 - **Test URL:** `/mira-demo?debug=1`
-- **API URL:** `https://pet-life-os-2.preview.emergentagent.com`
+- **API URL:** `https://flat-art-picker.preview.emergentagent.com`
 
 ---
 

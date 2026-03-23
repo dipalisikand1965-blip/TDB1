@@ -18,6 +18,7 @@ import ReactDOM from 'react-dom';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { X, Loader2, Sparkles, ChevronRight, ShoppingBag, Check, ChevronDown, Share2, Calendar } from 'lucide-react';
 import ProductCard from '../ProductCard';
+import FlatArtPickerCard from '../common/FlatArtPickerCard';
 import SoulMadeModal from '../SoulMadeModal';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
@@ -340,11 +341,14 @@ const BundleCard = ({ bundle, pet }) => {
 };
 
 // ── Soul Picks Product Card — wraps ProductCard with "For {petName}" badge ─
-const SoulPickCard = ({ product, pet }) => {
+const SoulPickCard = ({ product, pet, overrideImageUrl, artStyleLabel }) => {
   const petName = pet?.name || 'your pet';
   return (
     <div className="relative">
-      <ProductCard product={product} pillar="celebrate" selectedPet={pet} size="small" />
+      <ProductCard product={product} pillar="celebrate" selectedPet={pet} size="small"
+        overrideImageUrl={overrideImageUrl}
+        artStyleLabel={artStyleLabel}
+      />
       <span
         className="absolute top-2 left-2 text-white text-xs font-bold rounded-full px-2 py-0.5 pointer-events-none"
         style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)', fontSize: 10, zIndex: 1 }}>
@@ -1103,6 +1107,8 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
   const [bundles, setBundles] = useState([]);
   const [breedProducts, setBreedProducts] = useState([]);
   const [flatArtProducts, setFlatArtProducts] = useState([]);
+  const [yappyIllustrations, setYappyIllustrations] = useState([]);
+  const [artStyle, setArtStyle] = useState('watercolour');
   const [loading, setLoading] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
@@ -1148,6 +1154,8 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
     setBundles([]);
     setBreedProducts([]);
     setFlatArtProducts([]);
+    setYappyIllustrations([]);
+    setArtStyle('watercolour');
 
     try {
       const apiUrl = getApiUrl();
@@ -1176,15 +1184,20 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
         const breedDisplay = getBreedDisplay(pet);
         const breedKey = breedDisplay.toLowerCase().replace(/\s+/g,'_').replace(/[()]/g,'');
         try {
-          const [res1, res2] = await Promise.all([
+          const [res1, res2, res3] = await Promise.all([
             fetch(`${apiUrl}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&pillar=celebrate&limit=20`),
             fetch(`${apiUrl}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&flat_only=true&limit=40`),
+            fetch(`${apiUrl}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&product_type=birthday_cake&limit=3`),
           ]);
-          const data1 = res1.ok ? await res1.json() : { products: [] };
+        const data1 = res1.ok ? await res1.json() : { products: [] };
           const data2 = res2.ok ? await res2.json() : { products: [] };
-          setBreedProducts(data1.products || []);
+          const data3 = res3.ok ? await res3.json() : { products: [] };
+          // Filter out birthday_cake — those are illustrations, not orderable products
+          setBreedProducts((data1.products || []).filter(p => p.product_type !== 'birthday_cake' && p.product_type !== 'Birthday Cake'));
           setFlatArtProducts(data2.products || []);
-        } catch { setBreedProducts([]); setFlatArtProducts([]); }
+          setYappyIllustrations(data3.products || []);
+          setArtStyle('watercolour');
+        } catch { setBreedProducts([]); setFlatArtProducts([]); setYappyFaceUrl(null); }
         setLoading(false);
         return;
       }
@@ -1509,7 +1522,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
         )}
 
         {!loading && (
-          <div className="px-4 pt-4 pb-6">
+          <div className="px-4 pt-4 pb-20">
 
             {/* ── BUNDLES layout ──────────────────────────────────────── */}
             {category === 'bundles' && (
@@ -1606,7 +1619,31 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
             {/* ── SOUL MADE™ layout — breed products + custom order trigger ── */}
             {category === 'soul_made' && (
               <>
+                {/* Art style toggle */}
+                {breedProducts.length > 0 && yappyIllustrations.length > 0 && (
+                  <div style={{ display:'flex', background:'rgba(168,85,247,0.08)', borderRadius:999, padding:3, marginBottom:14, gap:2, width:'fit-content' }}>
+                    {['watercolour','flat_art'].map(s => (
+                      <button key={s} onClick={() => setArtStyle(s)} style={{
+                        padding:'5px 14px', borderRadius:999, border:'none',
+                        background: artStyle===s ? '#A855F7' : 'transparent',
+                        color: artStyle===s ? '#fff' : 'rgba(0,0,0,0.45)',
+                        fontSize:11, fontWeight:700, cursor:'pointer', transition:'all 0.15s',
+                      }}>
+                        {s==='watercolour' ? '🎨 Watercolour' : '🐾 Flat Art'}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
                 {breedProducts.length > 0 ? (
+                  artStyle === 'flat_art' ? (
+                    <div className="grid gap-3"
+                      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))' }}>
+                      {breedProducts.map((p, idx) => (
+                        <FlatArtPickerCard key={p.id || p.name || idx} product={p} illustrations={yappyIllustrations} pet={pet} pillar="celebrate" />
+                      ))}
+                    </div>
+                  ) : (
                   <div>
                     <div className="flex items-center gap-2 mb-3">
                       <p className="text-xs font-bold uppercase tracking-wider"
@@ -1625,27 +1662,11 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                       ))}
                     </div>
                   </div>
+                  )
                 ) : !loading && (
                   <div style={{ textAlign:'center', padding:'32px 16px', color:'#888' }}>
                     <div style={{ fontSize:28, marginBottom:10 }}>✦</div>
                     <p style={{ fontSize:14 }}>We're curating breed-specific items for {petName}. Check back soon!</p>
-                  </div>
-                )}
-
-                {/* Flat Art / Yappy Style */}
-                {flatArtProducts.length > 0 && (
-                  <div style={{ marginTop: 24 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                      <div style={{ flex: 1, height: 1, background: 'rgba(168,85,247,0.15)' }} />
-                      <span style={{ fontSize: 11, fontWeight: 700, color: '#A855F7', textTransform: 'uppercase', letterSpacing: '0.07em', whiteSpace: 'nowrap' }}>✦ Yappy Art — Flat Illustrations</span>
-                      <div style={{ flex: 1, height: 1, background: 'rgba(168,85,247,0.15)' }} />
-                    </div>
-                    <p style={{ fontSize: 12, color: '#aaa', marginBottom: 12 }}>Same items, different style — choose Yappy (flat art) over watercolour.</p>
-                    <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
-                      {flatArtProducts.map((p, idx) => (
-                        <SoulPickCard key={p.id || idx} product={p} pet={pet} />
-                      ))}
-                    </div>
                   </div>
                 )}
 

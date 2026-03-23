@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://pet-life-os-2.preview.emergentagent.com
+https://flat-art-picker.preview.emergentagent.com
 ```
 
 ---

@@ -11,6 +11,7 @@ import { X, Send, Check } from 'lucide-react';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import ProductCard from '../ProductCard';
+import FlatArtPickerCard from '../common/FlatArtPickerCard';
 import SoulMadeModal from '../SoulMadeModal';
 import PersonalisedBreedSection from '../common/PersonalisedBreedSection';
 import SoulMadeCollection from '../SoulMadeCollection';
@@ -251,6 +252,8 @@ const generateGoImagines = (pet, category) => {
 const GoContentModal = ({ isOpen, onClose, category, pet }) => {
   const [products, setProducts] = useState([]);
   const [flatArtProducts, setFlatArtProducts] = useState([]);
+  const [yappyIllustrations, setYappyIllustrations] = useState([]);
+  const [artStyle, setArtStyle] = useState('watercolour');
   const [loading, setLoading]   = useState(false);
   const [activeTab, setActiveTab] = useState('All');
   const [tabs, setTabs]         = useState(['All']);
@@ -293,6 +296,10 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
     if (!isOpen) return;
     setLoading(true);
     setActiveTab('All');
+    setProducts([]);
+    setFlatArtProducts([]);
+    setYappyIllustrations([]);
+    setArtStyle('watercolour');
 
     const petAllergies = getPetAllergies(pet);
     const petSize = getPetSize(pet);
@@ -304,17 +311,23 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
       Promise.all([
         fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&pillar=go&limit=60`),
         fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&flat_only=true&limit=60`),
+        fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&product_type=birthday_cake&limit=3`),
       ])
-        .then(([r1, r2]) => Promise.all([
+        .then(([r1, r2, r3]) => Promise.all([
           r1.ok ? r1.json() : { products: [] },
           r2.ok ? r2.json() : { products: [] },
+          r3.ok ? r3.json() : { products: [] },
         ]))
-        .then(([data1, data2]) => {
-          const bp = data1.products || [];
+        .then(([data1, data2, data3]) => {
+          const bp = (data1.products || []).filter(p =>
+            p.product_type !== 'birthday_cake' && p.product_type !== 'Birthday Cake'
+          );
           const subCats = [...new Set(bp.map(p => p.sub_category || p.product_type).filter(Boolean))];
           setTabs(subCats.length > 0 ? ['All', ...subCats] : ['All']);
           setProducts(bp);
           setFlatArtProducts(data2.products || []);
+          setYappyIllustrations(data3.products || []);
+          setArtStyle('watercolour');
         })
         .catch(err => console.error('[GoContentModal soul_made]', err))
         .finally(() => setLoading(false));
@@ -489,7 +502,7 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
             )}
 
             {/* Content */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: 20 }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: 20, paddingBottom: 80 }}>
               {goTab === "personalised" ? (
                 <div>
                   <PersonalisedBreedSection pet={pet} pillar="go" />
@@ -525,7 +538,30 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
                     {size && <span style={{ color: G.deepMid, fontWeight: 600 }}>🎒 {size} dog sized</span>}
                   </div>
 
+                  {/* Art style toggle — soul_made only */}
+                  {category === 'soul_made' && visibleProducts.length > 0 && yappyIllustrations.length > 0 && (
+                    <div style={{ display:'flex', background:'#E8F5F0', borderRadius:999, padding:3, marginBottom:16, gap:2, width:'fit-content' }}>
+                      {['watercolour','flat_art'].map(s => (
+                        <button key={s} onClick={() => setArtStyle(s)} style={{
+                          padding:'5px 14px', borderRadius:999, border:'none',
+                          background: artStyle===s ? '#27AE60' : 'transparent',
+                          color: artStyle===s ? '#fff' : 'rgba(0,0,0,0.45)',
+                          fontSize:11, fontWeight:700, cursor:'pointer', transition:'all 0.15s',
+                        }}>
+                          {s==='watercolour' ? '🎨 Watercolour' : '🐾 Flat Art'}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Product grid */}
+                  {category === 'soul_made' && artStyle === 'flat_art' ? (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))', gap: 16, marginBottom: 24 }}>
+                      {visibleProducts.map((p, i) => (
+                        <FlatArtPickerCard key={p.id || p.name || i} product={p} illustrations={yappyIllustrations} pet={pet} pillar="go" />
+                      ))}
+                    </div>
+                  ) : (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(180px, 100%), 1fr))', gap: 12, marginBottom: 24 }}>
                     {visibleProducts.map((p, i) => (
                       <div key={p.id || i} data-testid={`go-modal-product-${p.id}`} style={{ position: 'relative' }}>
@@ -536,20 +572,6 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
                       </div>
                     ))}
                   </div>
-
-                  {/* Flat Art / Yappy Style products */}
-                  {category === 'soul_made' && flatArtProducts.length > 0 && (
-                    <div style={{ marginBottom: 24 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                        <div style={{ flex: 1, height: 1, background: G.pale }} />
-                        <span style={{ fontSize: 11, fontWeight: 700, color: G.teal, textTransform: 'uppercase', letterSpacing: '0.07em', whiteSpace: 'nowrap' }}>✦ Yappy Art — Flat Illustrations</span>
-                        <div style={{ flex: 1, height: 1, background: G.pale }} />
-                      </div>
-                      <p style={{ fontSize: 12, color: '#aaa', marginBottom: 12 }}>Same items, different style — choose Yappy (flat art) over watercolour.</p>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))', gap: 12 }}>
-                        {flatArtProducts.map((p, i) => <ProductCard key={p.id || i} product={p} pillar="go" selectedPet={pet} />)}
-                      </div>
-                    </div>
                   )}
 
                   {/* Mira Imagines at bottom */}

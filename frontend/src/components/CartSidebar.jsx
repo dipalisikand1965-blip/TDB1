@@ -122,7 +122,8 @@ const CartSidebar = () => {
   const { 
     cartItems, 
     updateQuantity, 
-    removeFromCart, 
+    removeFromCart,
+    clearCart,
     getCartTotal, 
     isCartOpen, 
     setIsCartOpen, 
@@ -218,14 +219,31 @@ const CartSidebar = () => {
                   )}
                 </div>
               </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 rounded-full hover:bg-gray-100"
-                onClick={() => setIsCartOpen(false)}
-              >
-                <X className="w-5 h-5" />
-              </Button>
+              <div className="flex items-center gap-2">
+                {cartItems.length > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-red-400 hover:text-red-600 hover:bg-red-50 h-7 px-2"
+                    onClick={() => {
+                      if (window.confirm('Clear all items from cart?')) {
+                        clearCart();
+                      }
+                    }}
+                    data-testid="clear-cart-btn"
+                  >
+                    <Trash2 className="w-3 h-3 mr-1" /> Clear
+                  </Button>
+                )}
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 rounded-full hover:bg-gray-100"
+                  onClick={() => setIsCartOpen(false)}
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
             </SheetTitle>
           </SheetHeader>
           
@@ -426,12 +444,23 @@ const CartSidebar = () => {
                           </Badge>
                         )}
                         
-                        {/* Custom Details (for cakes etc) */}
+                        {/* Custom Details (for cakes, flat art etc) */}
                         {item.customDetails && (
                           <div className="mt-2 text-xs bg-gray-50 rounded-lg p-2 space-y-0.5">
                             {item.customDetails.shape && <p><span className="text-gray-500">Shape:</span> {item.customDetails.shape}</p>}
                             {item.customDetails.customName && <p><span className="text-gray-500">Name:</span> {item.customDetails.customName}</p>}
                             {item.customDetails.date && <p><span className="text-gray-500">Date:</span> {new Date(item.customDetails.date).toLocaleDateString()}</p>}
+                            {/* Flat Art illustration details */}
+                            {item.customDetails.illustration_url && (
+                              <div className="flex items-center gap-2 mt-1">
+                                <img src={item.customDetails.illustration_url} alt="illustration"
+                                  className="w-8 h-8 rounded-md object-cover border border-amber-200 flex-shrink-0" />
+                                <div>
+                                  <p className="font-semibold text-amber-700">🐾 Flat Art · {item.customDetails.variant}</p>
+                                  <p className="text-gray-400">{item.customDetails.breed_display} · For {item.customDetails.pet_name}</p>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         )}
                         

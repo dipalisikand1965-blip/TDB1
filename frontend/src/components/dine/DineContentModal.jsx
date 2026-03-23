@@ -19,6 +19,7 @@ import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import ProductCard from '../ProductCard';
+import FlatArtPickerCard from '../common/FlatArtPickerCard';
 import SoulMadeModal from '../SoulMadeModal';
 
 const fmtTab = (t) => t === 'All' || t === 'all' ? t : t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -511,6 +512,8 @@ const getBreedDisplay = (pet) => {
 const DineContentModal = ({ isOpen, onClose, category, pet }) => {
   const [products, setProducts] = useState([]);
   const [flatArtProducts, setFlatArtProducts] = useState([]);
+  const [yappyIllustrations, setYappyIllustrations] = useState([]);
+  const [artStyle, setArtStyle] = useState('watercolour'); // 'watercolour' | 'flat_art'
   const [imagines, setImagines] = useState([]);  // Mira Imagines (not-yet-in-catalog)
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
@@ -546,7 +549,8 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
     setLoading(true);
     setProducts([]);
     setFlatArtProducts([]);
-    setImagines([]);
+    setYappyIllustrations([]);
+    setArtStyle('watercolour'); // always reset on new fetch
     setTabs([]);
     setActiveTab('all');
 
@@ -566,17 +570,23 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
       // ── Soul Made™: breed-specific products from mockup API ──────
       if (category === 'soul_made') {
         const breedParam = encodeURIComponent((pet?.breed || '').trim().toLowerCase());
-        const [r1, r2] = await Promise.all([
+        const [r1, r2, r3] = await Promise.all([
           fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&pillar=dine&limit=60`),
           fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&flat_only=true&limit=60`),
+          fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&product_type=birthday_cake&limit=10`),
         ]);
         const data1 = r1.ok ? await r1.json() : { products: [] };
-        const breedProducts = data1.products || [];
+        const breedProducts = (data1.products || []).filter(p =>
+          p.product_type !== 'birthday_cake' && p.product_type !== 'Birthday Cake'
+        );
         const subCats = [...new Set(breedProducts.map(p => p.sub_category || p.product_type).filter(Boolean))];
         setTabs(subCats.length >= 1 ? subCats : []);
         setProducts(breedProducts);
         const data2 = r2.ok ? await r2.json() : { products: [] };
         setFlatArtProducts(data2.products || []);
+        const data3 = r3.ok ? await r3.json() : { products: [] };
+        setYappyIllustrations(data3.products || []);
+        setArtStyle('watercolour');
         setLoading(false);
         return;
       }
@@ -862,7 +872,7 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
       )}
 
       {/* ── Product Grid ─────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto" style={{ paddingBottom: 80 }}>
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <Loader2 className="w-7 h-7 animate-spin" style={{ color: '#FF8C42' }} />
@@ -870,6 +880,22 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
           </div>
         ) : (
           <div className="px-4 pb-6" style={{ paddingTop: tabs.length > 1 ? 4 : 16 }}>
+
+            {/* Art style toggle — soul_made only */}
+            {category === 'soul_made' && (filteredProducts.length > 0) && yappyIllustrations.length > 0 && (
+              <div style={{ display:'flex', background:'#FFF3E0', borderRadius:999, padding:3, marginBottom:16, gap:2, width:'fit-content' }}>
+                {['watercolour','flat_art'].map(s => (
+                  <button key={s} onClick={() => setArtStyle(s)} style={{
+                    padding:'5px 14px', borderRadius:999, border:'none',
+                    background: artStyle===s ? '#C9973A' : 'transparent',
+                    color: artStyle===s ? '#fff' : 'rgba(0,0,0,0.45)',
+                    fontSize:11, fontWeight:700, cursor:'pointer', transition:'all 0.15s',
+                  }}>
+                    {s==='watercolour' ? '🎨 Watercolour' : '🐾 Flat Art'}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Product count */}
             {(filteredProducts.length > 0 || imagines.length > 0) && (
@@ -894,6 +920,13 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
 
             {/* Products / Bundles / Services grid */}
             {filteredProducts.length > 0 ? (
+              category === 'soul_made' && artStyle === 'flat_art' ? (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))', gap: 16 }}>
+                  {filteredProducts.map((p, idx) => (
+                    <FlatArtPickerCard key={p.id || p.name || idx} product={p} illustrations={yappyIllustrations} pet={pet} pillar="dine" />
+                  ))}
+                </div>
+              ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 100%), 1fr))', gap: 16 }}>
                 {isBundles
                   ? filteredProducts.map((b, idx) => (
@@ -907,6 +940,7 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
                     })
                 }
               </div>
+              )
             ) : (
               !loading && imagines.length === 0 && (
                 <div className="text-center py-12">
@@ -916,26 +950,7 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
               )
             )}
 
-            {/* Flat Art / Yappy Style products — shown below watercolour */}
-            {category === 'soul_made' && flatArtProducts.length > 0 && (
-              <div style={{ marginTop: 28 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-                  <div style={{ flex: 1, height: 1, background: '#F0E8E0' }} />
-                  <p style={{ fontSize: 11, fontWeight: 700, color: '#E17A25', letterSpacing: '0.07em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-                    ✦ Yappy Art — Flat Illustrations
-                  </p>
-                  <div style={{ flex: 1, height: 1, background: '#F0E8E0' }} />
-                </div>
-                <p style={{ fontSize: 12, color: '#aaa', marginBottom: 12 }}>
-                  Same items, different style — choose Yappy (flat art) over watercolour.
-                </p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(180px, 100%), 1fr))', gap: 14 }}>
-                  {flatArtProducts.map((p, idx) => (
-                    <ProductCard key={p.id || idx} product={p} pillar="dine" selectedPet={pet} />
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Flat Art shown via toggle above — no separate section needed */}
           </div>
         )}
       </div>
