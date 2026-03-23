@@ -157,6 +157,24 @@ Guide to fix bottom-stuck modals/drawers. Includes:
 
 ## Prioritized Backlog
 
+### 🔴 FUTURE AGENT — DO THIS FIRST AT SESSION START
+
+```
+# Check if watercolour generation completed and flat art needs refresh
+curl -s {REACT_APP_BACKEND_URL}/api/mockups/mockup-gen-status
+# If running=false AND you see breeds like akita/alaskan_malamute/australian_shepherd
+# now have watercolour products, trigger flat art:
+curl -s -X POST {REACT_APP_BACKEND_URL}/api/mockups/generate-breed-cakes
+# This generates Yappy face illustrations for any breed that has watercolour
+# products but no cake illustrations yet, then auto-triggers flat art overlay.
+```
+
+**Why**: 272 watercolour products being generated for 16 missing breeds. When complete,
+flat art auto-triggers (wired in `_generate_missing_breed_products` finally block).
+But if the session restarted, re-trigger manually with the commands above.
+
+---
+
 ### P0 — Done ✅ (March 2026)
 - [x] Soul Made™ on ALL 11 pillars (Care, Celebrate, Dine, Go, Play, Learn, Shop, Paperwork, Adopt, Farewell, Emergency)
 - [x] THE DOGGY BAKERY™ Breed Cake Modal — Yappy-style illustrations, pet-aware personalisation
