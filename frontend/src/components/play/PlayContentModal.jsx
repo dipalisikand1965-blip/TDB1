@@ -195,6 +195,7 @@ const BundleCard = ({ bundle, petName, pet, token }) => {
 // ── Main Modal ────────────────────────────────────────────────────────────────
 const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
   const [products, setProducts] = useState([]);
+  const [flatArtProducts, setFlatArtProducts] = useState([]);
   const [imagines, setImagines] = useState([]);
   const [loading,  setLoading]  = useState(false);
   const [activeTab, setActiveTab] = useState('all');
@@ -229,12 +230,17 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
       // ── Soul Made™: breed-specific products ──────
       if (category === 'soul_made') {
         const breedParam = encodeURIComponent(petBreed);
-        const r = await fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&pillar=play`);
-        const data = r.ok ? await r.json() : { products: [] };
-        const bp = data.products || [];
+        const [r1, r2] = await Promise.all([
+          fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&pillar=play&limit=60`),
+          fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&flat_only=true&limit=60`),
+        ]);
+        const data1 = r1.ok ? await r1.json() : { products: [] };
+        const bp = data1.products || [];
         const subCats = [...new Set(bp.map(p => p.sub_category || p.product_type).filter(Boolean))];
-        setTabs(subCats.length > 1 ? ['all', ...subCats] : ['all']);
+        setTabs(subCats.length > 0 ? subCats : []);
         setProducts(bp);
+        const data2 = r2.ok ? await r2.json() : { products: [] };
+        setFlatArtProducts(data2.products || []);
         setLoading(false);
         return;
       }
@@ -390,7 +396,7 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
 
   const filteredProducts = activeTab === 'all'
     ? products
-    : products.filter(p => p.sub_category === activeTab || p.category === activeTab);
+    : products.filter(p => p.sub_category === activeTab || p.category === activeTab || p.product_type === activeTab);
 
   if (!isOpen) return null;
 
@@ -513,6 +519,21 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
                   <p style={{ fontSize:14, color:'#888', marginTop:8 }}>Personalised picks for {petName} coming soon!</p>
                 </div>
               )
+            )}
+
+            {/* Flat Art / Yappy style products */}
+            {category === 'soul_made' && !loading && flatArtProducts.length > 0 && (
+              <div style={{ marginTop: 28 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                  <div style={{ flex: 1, height: 1, background: '#F0E8E0' }} />
+                  <span style={{ fontSize: 11, fontWeight: 700, color: G.orange, textTransform: 'uppercase', letterSpacing: '0.07em', whiteSpace: 'nowrap' }}>✦ Yappy Art — Flat Illustrations</span>
+                  <div style={{ flex: 1, height: 1, background: '#F0E8E0' }} />
+                </div>
+                <p style={{ fontSize: 12, color: '#aaa', marginBottom: 12 }}>Same items, different style — choose Yappy (flat art) over watercolour.</p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))', gap: 12 }}>
+                  {flatArtProducts.map((p, i) => <SharedProductCard key={p.id || i} product={p} pillar="play" selectedPet={pet} />)}
+                </div>
+              </div>
             )}
           </div>
         )}

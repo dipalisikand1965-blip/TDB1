@@ -261,9 +261,9 @@ export default function SoulMadeModal({
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          width:'100%', maxWidth:520,
-          maxHeight:'85vh', overflowY:'auto',
-          background:'#0F0A1E',
+          width:'100%', maxWidth:700,
+          maxHeight:'88vh', overflowY:'auto',
+          background:'#0F172A',
           borderRadius:24,
           border:`1px solid ${pillarColor}30`,
           animation:'sm-slide 0.3s cubic-bezier(0.16,1,0.3,1)',
@@ -350,7 +350,7 @@ export default function SoulMadeModal({
                   <br/>Describe what you'd like below.
                 </div>
               ) : (
-                <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:16 }}>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(200px,100%),1fr))', gap:8, marginBottom:16 }}>
                   {products.map((p, i) => {
                     const name = p.name || p.product_name || `Item ${i+1}`;
                     const isSel = selected?.id === (p.id || p._id) || selected?.name === name;

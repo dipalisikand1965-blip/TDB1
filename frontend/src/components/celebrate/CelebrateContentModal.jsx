@@ -1102,6 +1102,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
   const [products, setProducts] = useState([]);
   const [bundles, setBundles] = useState([]);
   const [breedProducts, setBreedProducts] = useState([]);
+  const [flatArtProducts, setFlatArtProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
@@ -1146,6 +1147,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
     setProducts([]);
     setBundles([]);
     setBreedProducts([]);
+    setFlatArtProducts([]);
 
     try {
       const apiUrl = getApiUrl();
@@ -1174,12 +1176,15 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
         const breedDisplay = getBreedDisplay(pet);
         const breedKey = breedDisplay.toLowerCase().replace(/\s+/g,'_').replace(/[()]/g,'');
         try {
-          const res = await fetch(
-            `${apiUrl}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&pillar=celebrate&limit=20`
-          );
-          const data = res.ok ? await res.json() : { products: [] };
-          setBreedProducts(data.products || []);
-        } catch { setBreedProducts([]); }
+          const [res1, res2] = await Promise.all([
+            fetch(`${apiUrl}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&pillar=celebrate&limit=20`),
+            fetch(`${apiUrl}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&flat_only=true&limit=40`),
+          ]);
+          const data1 = res1.ok ? await res1.json() : { products: [] };
+          const data2 = res2.ok ? await res2.json() : { products: [] };
+          setBreedProducts(data1.products || []);
+          setFlatArtProducts(data2.products || []);
+        } catch { setBreedProducts([]); setFlatArtProducts([]); }
         setLoading(false);
         return;
       }
@@ -1626,6 +1631,24 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                     <p style={{ fontSize:14 }}>We're curating breed-specific items for {petName}. Check back soon!</p>
                   </div>
                 )}
+
+                {/* Flat Art / Yappy Style */}
+                {flatArtProducts.length > 0 && (
+                  <div style={{ marginTop: 24 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                      <div style={{ flex: 1, height: 1, background: 'rgba(168,85,247,0.15)' }} />
+                      <span style={{ fontSize: 11, fontWeight: 700, color: '#A855F7', textTransform: 'uppercase', letterSpacing: '0.07em', whiteSpace: 'nowrap' }}>✦ Yappy Art — Flat Illustrations</span>
+                      <div style={{ flex: 1, height: 1, background: 'rgba(168,85,247,0.15)' }} />
+                    </div>
+                    <p style={{ fontSize: 12, color: '#aaa', marginBottom: 12 }}>Same items, different style — choose Yappy (flat art) over watercolour.</p>
+                    <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
+                      {flatArtProducts.map((p, idx) => (
+                        <SoulPickCard key={p.id || idx} product={p} pet={pet} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Soul Made trigger */}
                 <div data-testid="soul-made-trigger" onClick={() => setSoulMadeOpen(true)} style={{
                   margin:'16px 0 4px', padding:'14px 16px', background:'#A855F708', border:'1px solid #A855F720',

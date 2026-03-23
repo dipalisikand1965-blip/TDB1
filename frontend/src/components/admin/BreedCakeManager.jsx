@@ -33,8 +33,11 @@ export default function BreedCakeManager() {
   const [activeTab,    setActiveTab]    = useState('gallery');
   const [status,       setStatus]       = useState(null);
   const [illustrations,setIllustrations]= useState([]);
+  const [flatArtProds, setFlatArtProds] = useState([]);
+  const [loadingFlat,  setLoadingFlat]  = useState(false);
   const [loading,      setLoading]      = useState(false);
   const [search,       setSearch]       = useState('');
+  const [flatSearch,   setFlatSearch]   = useState('');
   const [editItem,     setEditItem]     = useState(null);
   const [regenerating, setRegenerating] = useState(new Set());
   const pollRef = useRef(null);
@@ -50,6 +53,19 @@ export default function BreedCakeManager() {
       }
     } catch { /* silent */ }
     setLoading(false);
+  }, []);
+
+  // ── Fetch flat art products ───────────────────────────────────────────────
+  const fetchFlatArtProds = useCallback(async () => {
+    setLoadingFlat(true);
+    try {
+      const res = await fetch(`${API_URL}/api/mockups/breed-products?flat_only=true&limit=1000`, { headers: AUTH });
+      if (res.ok) {
+        const data = await res.json();
+        setFlatArtProds(data.products || []);
+      }
+    } catch { /* silent */ }
+    setLoadingFlat(false);
   }, []);
 
   // ── Poll generation status ────────────────────────────────────────────────
@@ -70,9 +86,10 @@ export default function BreedCakeManager() {
 
   useEffect(() => {
     fetchIllustrations();
+    fetchFlatArtProds();
     pollStatus();
     return () => { if (pollRef.current) clearTimeout(pollRef.current); };
-  }, [fetchIllustrations, pollStatus]);
+  }, [fetchIllustrations, fetchFlatArtProds, pollStatus]);
 
   // ── Start full generation ─────────────────────────────────────────────────
   const startGeneration = async () => {
@@ -221,6 +238,7 @@ export default function BreedCakeManager() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="gallery">Gallery ({illustrations.length})</TabsTrigger>
+          <TabsTrigger value="flat_art">Flat Art ({flatArtProds.length})</TabsTrigger>
           <TabsTrigger value="generation">Generation</TabsTrigger>
         </TabsList>
 
@@ -369,6 +387,87 @@ export default function BreedCakeManager() {
                 )}
               </div>
             ))
+          )}
+        </TabsContent>
+
+        {/* ── FLAT ART PRODUCTS TAB ─────────────────────────────────── */}
+        <TabsContent value="flat_art" className="space-y-4 mt-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Cloudinary overlay products — Yappy face on mugs, bandanas, totes, phone cases etc.</p>
+              <p className="text-xs text-gray-400 mt-0.5">{flatArtProds.length} products across {[...new Set(flatArtProds.map(p => p.breed))].length} breeds</p>
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={generateFlatArt} disabled={status?.running} className="bg-amber-500 hover:bg-amber-600 text-white" size="sm">
+                🎨 Re-generate All
+              </Button>
+              <Button onClick={fetchFlatArtProds} variant="outline" size="sm">
+                <RefreshCw className="w-3 h-3 mr-1" /> Refresh
+              </Button>
+            </div>
+          </div>
+
+          <div className="relative">
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+            <Input placeholder="Search breed or product type…" value={flatSearch} onChange={e => setFlatSearch(e.target.value)} className="pl-9" />
+          </div>
+
+          {loadingFlat ? (
+            <div className="grid grid-cols-4 gap-3">
+              {Array.from({length:12}).map((_,i) => <div key={i} className="aspect-square rounded-xl bg-gray-100 animate-pulse" />)}
+            </div>
+          ) : flatArtProds.length === 0 ? (
+            <div className="text-center py-16 text-gray-400">
+              <Image className="w-10 h-10 mx-auto mb-3 opacity-30" />
+              <p className="font-medium">No flat art products yet</p>
+              <p className="text-sm mt-1">Click "Flat Art Products" to generate Cloudinary overlay products</p>
+            </div>
+          ) : (
+            (() => {
+              const filtFlat = flatArtProds.filter(p =>
+                !flatSearch ||
+                p.breed?.toLowerCase().includes(flatSearch.toLowerCase()) ||
+                p.product_type?.toLowerCase().includes(flatSearch.toLowerCase()) ||
+                p.name?.toLowerCase().includes(flatSearch.toLowerCase())
+              );
+              const grouped = filtFlat.reduce((acc, p) => {
+                const t = p.product_type || 'other';
+                if (!acc[t]) acc[t] = [];
+                acc[t].push(p);
+                return acc;
+              }, {});
+              return Object.entries(grouped).sort(([a],[b]) => a.localeCompare(b)).map(([type, items]) => (
+                <div key={type} className="mb-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <h3 className="font-bold text-gray-800 capitalize">{type.replace(/_/g,' ').replace('flat ','')} </h3>
+                    <Badge variant="outline" className="text-xs">{items.length} variants</Badge>
+                  </div>
+                  <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2">
+                    {items.map(item => (
+                      <Card key={item.id} className="overflow-hidden hover:shadow-md transition-all">
+                        <div className="aspect-square bg-gray-50">
+                          {item.mockup_url || item.cloudinary_url ? (
+                            <div className="relative group">
+                              <img src={item.cloudinary_url || item.mockup_url} alt={item.name} className="w-full h-full object-contain p-1" />
+                              <a href={getDownloadUrl(item.cloudinary_url || item.mockup_url)} download={`${item.name || item.id}.webp`}
+                                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded p-1 shadow"
+                                onClick={e => e.stopPropagation()}>
+                                <Download className="w-3 h-3 text-gray-700" />
+                              </a>
+                            </div>
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center"><Image className="w-5 h-5 text-gray-300" /></div>
+                          )}
+                        </div>
+                        <div className="p-1.5">
+                          <p className="text-[10px] text-gray-600 truncate capitalize">{(item.breed || '').replace(/_/g,' ')}</p>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              ));
+            })()
           )}
         </TabsContent>
 

@@ -510,6 +510,7 @@ const getBreedDisplay = (pet) => {
 // ── Main Modal ────────────────────────────────────────────────────────────────
 const DineContentModal = ({ isOpen, onClose, category, pet }) => {
   const [products, setProducts] = useState([]);
+  const [flatArtProducts, setFlatArtProducts] = useState([]);
   const [imagines, setImagines] = useState([]);  // Mira Imagines (not-yet-in-catalog)
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
@@ -544,6 +545,7 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
     if (!isOpen || !category) return;
     setLoading(true);
     setProducts([]);
+    setFlatArtProducts([]);
     setImagines([]);
     setTabs([]);
     setActiveTab('all');
@@ -564,12 +566,17 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
       // ── Soul Made™: breed-specific products from mockup API ──────
       if (category === 'soul_made') {
         const breedParam = encodeURIComponent((pet?.breed || '').trim().toLowerCase());
-        const r = await fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&pillar=dine`);
-        const data = r.ok ? await r.json() : { products: [] };
-        const breedProducts = data.products || [];
+        const [r1, r2] = await Promise.all([
+          fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&pillar=dine&limit=60`),
+          fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&flat_only=true&limit=60`),
+        ]);
+        const data1 = r1.ok ? await r1.json() : { products: [] };
+        const breedProducts = data1.products || [];
         const subCats = [...new Set(breedProducts.map(p => p.sub_category || p.product_type).filter(Boolean))];
-        setTabs(subCats.length > 1 ? ['all', ...subCats] : ['all']);
+        setTabs(subCats.length >= 1 ? subCats : []);
         setProducts(breedProducts);
+        const data2 = r2.ok ? await r2.json() : { products: [] };
+        setFlatArtProducts(data2.products || []);
         setLoading(false);
         return;
       }
@@ -727,7 +734,7 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
 
   const filteredProducts = activeTab === 'all'
     ? products
-    : products.filter(p => (p.sub_category === activeTab) || (p.category === activeTab));
+    : products.filter(p => (p.sub_category === activeTab) || (p.category === activeTab) || (p.product_type === activeTab));
 
   if (!isOpen) return null;
 
@@ -907,6 +914,27 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
                   <p className="text-sm text-gray-500 mt-2">Personalised picks being curated for {petName}!</p>
                 </div>
               )
+            )}
+
+            {/* Flat Art / Yappy Style products — shown below watercolour */}
+            {category === 'soul_made' && flatArtProducts.length > 0 && (
+              <div style={{ marginTop: 28 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                  <div style={{ flex: 1, height: 1, background: '#F0E8E0' }} />
+                  <p style={{ fontSize: 11, fontWeight: 700, color: '#E17A25', letterSpacing: '0.07em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+                    ✦ Yappy Art — Flat Illustrations
+                  </p>
+                  <div style={{ flex: 1, height: 1, background: '#F0E8E0' }} />
+                </div>
+                <p style={{ fontSize: 12, color: '#aaa', marginBottom: 12 }}>
+                  Same items, different style — choose Yappy (flat art) over watercolour.
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(180px, 100%), 1fr))', gap: 14 }}>
+                  {flatArtProducts.map((p, idx) => (
+                    <ProductCard key={p.id || idx} product={p} pillar="dine" selectedPet={pet} />
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         )}
