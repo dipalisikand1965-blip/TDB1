@@ -149,6 +149,7 @@ export default function LandingPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 40);
@@ -193,6 +194,21 @@ export default function LandingPage() {
         .tdc-soul-grid  { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; }
         .tdc-mojo-hdr   { display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
         .tdc-nav-text   { display:flex; align-items:center; gap:16px; }
+        .tdc-hamburger  { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:8px; z-index:102; }
+        .tdc-hamburger span { width:22px; height:2px; background:${C.ivory}; border-radius:2px; transition:all 0.3s; }
+        .tdc-mobile-menu {
+          position:fixed; top:0; right:0; bottom:0; width:260px; z-index:101;
+          background:rgba(10,10,15,0.97); backdrop-filter:blur(16px);
+          padding:80px 32px 40px; display:flex; flex-direction:column; gap:8px;
+          transform:translateX(100%); transition:transform 0.3s ease;
+          border-left:1px solid ${C.border};
+        }
+        .tdc-mobile-menu.open { transform:translateX(0); }
+        .tdc-mobile-overlay {
+          position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.5);
+          opacity:0; pointer-events:none; transition:opacity 0.3s;
+        }
+        .tdc-mobile-overlay.open { opacity:1; pointer-events:auto; }
         .tdc-hero-btns  { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
         .tdc-pillar-grid { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
 
@@ -204,6 +220,7 @@ export default function LandingPage() {
           .tdc-isnot-grid { grid-template-columns:1fr; gap:12px; }
           .tdc-isnot-grid > div { border-radius:16px !important; }
           .tdc-nav-text > button:not(:last-child) { display:none; }
+          .tdc-hamburger { display:flex; }
           .tdc-hero-btns { flex-direction:column; align-items:center; }
           .tdc-hero-btns > button { width:100%; max-width:280px; }
           .tdc-soul-grid { grid-template-columns:repeat(2,1fr); }
@@ -288,7 +305,40 @@ export default function LandingPage() {
             {isAuthenticated ? "My Dogs →" : "Join Now"}
           </button>
         </div>
+        {/* Hamburger — mobile only */}
+        <div className="tdc-hamburger" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} data-testid="mobile-menu-toggle">
+          <span style={mobileMenuOpen ? {transform:'rotate(45deg) translate(5px,5px)'} : {}} />
+          <span style={mobileMenuOpen ? {opacity:0} : {}} />
+          <span style={mobileMenuOpen ? {transform:'rotate(-45deg) translate(5px,-5px)'} : {}} />
+        </div>
       </nav>
+
+      {/* ── MOBILE MENU OVERLAY ── */}
+      <div className={`tdc-mobile-overlay${mobileMenuOpen ? ' open' : ''}`} onClick={() => setMobileMenuOpen(false)} />
+      <div className={`tdc-mobile-menu${mobileMenuOpen ? ' open' : ''}`}>
+        {[
+          { label: "Our Story", action: () => navigate("/about") },
+          { label: "Membership", action: () => navigate("/membership") },
+          ...(!isAuthenticated ? [{ label: "Sign in", action: () => navigate("/login") }] : []),
+        ].map(item => (
+          <button key={item.label} onClick={() => { setMobileMenuOpen(false); item.action(); }} style={{
+            background:"none", border:"none", textAlign:"left",
+            color: C.ivory, fontSize:18, fontWeight:500, padding:"14px 0",
+            fontFamily:"DM Sans, sans-serif", cursor:"pointer",
+            borderBottom:`1px solid ${C.border}`,
+          }}>
+            {item.label}
+          </button>
+        ))}
+        <button onClick={() => { setMobileMenuOpen(false); handleJoin(); }} style={{
+          marginTop:16, padding:"14px 28px", borderRadius:999,
+          border:`1px solid ${C.amber}`, background:C.amber,
+          color:C.night, fontSize:16, fontWeight:600,
+          cursor:"pointer", fontFamily:"DM Sans, sans-serif",
+        }}>
+          {isAuthenticated ? "My Dogs →" : "Join Now"}
+        </button>
+      </div>
 
       {/* ── HERO ── */}
       <section style={{
