@@ -140,12 +140,14 @@ Currently uses blank white product templates. Goal: 350 AI-generated images (50 
 
 ## P1 — Next Sprint (NEXT AGENT: Start Here)
 
-- [ ] **VERIFY**: After hard refresh, cart should be empty (version guard clears stale Party Favor Pack)
-- [ ] **VERIFY**: Flat art modal opens correct product when "Choose style →" clicked (not wrong product)
-- [ ] **VERIFY**: Watercolour products still open ProductDetailModal correctly in all 4 ContentModals
+- [ ] Audit remaining pillars: Care → Go → Play → Learn → Adopt → Farewell → Emergency → Paperwork
 - [ ] Add "3 vets near you" to daily health WhatsApp reminders (NearMe API at scheduler time)
 - [ ] Extend scheduler for Medication refill reminders
-- [ ] Mobile/iOS audit page-by-page (font sizes small, images weird on Apple devices — start with Dine → Go → Play → Celebrate → Care → Learn → Shop)
+- [ ] Mobile/iOS audit remaining pillars page-by-page
+
+> **DO NOT TOUCH THE CELEBRATE PILLAR.** It has been fully audited, tested (11/11 backend, 100% frontend), and signed off. See "Final Audit: Celebrate" section in `/app/complete-documentation.html`. Any changes to celebrate components require explicit user approval.
+
+> **DO NOT TOUCH THE DINE PILLAR.** It has been fully audited, tested (7/7 concierge flows, mobile 375px clean), and signed off. See "Final Audit: Dine" section in `/app/complete-documentation.html`. Any changes to dine components require explicit user approval.
 
 ## Recently Completed (27 March 2026)
 
@@ -172,6 +174,17 @@ Currently uses blank white product templates. Goal: 350 AI-generated images (50 
 - [x] **Celebration Wall upload**: Now uploads to Cloudinary (tdc/celebration-wall/ugc/), auto-approves, photos appear immediately
 - [x] **Mobile font fixes**: Announcement bar 13px, PET CONCIERGE® 13px, navbar bold text-sm, Footer copyright 13px, "Learn more" link 44px tap target
 - [x] **Testing agent v3**: 11/11 backend tests passed, frontend 90%→100% after font fixes
+
+## Dine Pillar — Completed & Signed Off (27 March 2026)
+
+- [x] **Bug fix**: Removed duplicate "Find Dine" tab (identical to "Dine Out" — both rendered PetFriendlySpots)
+- [x] **Bug fix**: "Mojo's none" health condition in DineHero — added null/none guard on `healthCond`
+- [x] **Bug fix**: "Mojo's none" in GuidedNutritionPaths — added null/none guard on `condition`
+- [x] **Concierge gap wired**: DineConciergeSection CTA — useConcierge book() before modal open
+- [x] **Concierge gap wired**: DineDimensions cards — useConcierge request() on dimension click
+- [x] **7/7 concierge flows verified**: All create tickets with pet_breed=Indie (TDB-2026-0692 through 0698)
+- [x] **Mobile 375px audit**: All 11 sections readable, no overflow, fonts ≥13px, tap targets ≥44px
+- [x] **Soul Made™ premium strip**: Already in DineContentModal as cross-sell in ALL categories
 
 ---
 

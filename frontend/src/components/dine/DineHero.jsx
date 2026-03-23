@@ -53,7 +53,8 @@ const MiraQuoteCard = ({ pet }) => {
       return [...new Set(l)].slice(0, 2);
     })();
 
-    const healthCond = pet?.health_condition || pet?.doggy_soul_answers?.health_condition || '';
+    const healthRaw = pet?.health_condition || pet?.doggy_soul_answers?.health_condition || '';
+    const healthCond = (healthRaw && healthRaw.toLowerCase() !== 'none' && healthRaw.toLowerCase() !== 'none_confirmed' && healthRaw.trim() !== '') ? healthRaw : '';
 
     if (allergies.length > 0) {
       return `I've already removed everything containing ${allergies.slice(0, 2).join(' and ')}. What you see is safe.${healthCond ? ` I'm also keeping ${petName}'s ${healthCond} in mind.` : ''}`;

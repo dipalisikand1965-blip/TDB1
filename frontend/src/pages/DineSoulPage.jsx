@@ -1284,7 +1284,10 @@ function DiningConcierge({ pet }) {
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>handled for you</span>
             </div>
             <button
-              onClick={() => setIntakeOpen(true)}
+              onClick={() => {
+                book({ service: `${petName}'s Dine Concierge Request`, channel: 'dine_concierge_cta', urgency: 'high' });
+                setIntakeOpen(true);
+              }}
               style={{
                 background: 'linear-gradient(135deg, #C9973A, #F0C060)',
                 color: '#1A0A00', border: 'none', borderRadius: 12,
@@ -1325,7 +1328,6 @@ function TabBar({ active, onChange }) {
       {[
         { id: "eat", icon: "🍽️", label: "Eat & Nourish" },
         { id: "out", icon: "🗺️", label: "Dine Out" },
-        { id: "find", icon: "📍", label: "Find Dine" },
       ].map(tab => (
         <button
           key={tab.id}
@@ -1568,23 +1570,7 @@ const DineSoulPage = () => {
           </>
         )}
 
-        {/* Find Dine — nearby pet-friendly restaurants & delivery */}
-        {activeTab === "find" && (
-          <div style={{marginTop:24}}>
-            <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:"#C44400",marginBottom:4,fontFamily:"Georgia,serif"}}>
-              Find Dine for <span style={{color:"#FF8C42"}}>{petData?.name||"your dog"}</span>
-            </h2>
-            <p style={{fontSize:13,color:"#888",marginBottom:20}}>Pet-friendly restaurants, home delivery, and dining options near you — curated by Mira.</p>
-            <PetFriendlySpots
-              pet={petData}
-              onReserve={(spot, city) => {
-                setDineOutVenue(spot?.name || null);
-                setDineOutCity(city || null);
-                setDineOutIntakeOpen(true);
-              }}
-            />
-          </div>
-        )}
+        {/* Find Dine — REMOVED: duplicate of Dine Out (both render PetFriendlySpots) */}
 
         {/* Dine Concierge Modal */}
         {dineConciergeOpen && (

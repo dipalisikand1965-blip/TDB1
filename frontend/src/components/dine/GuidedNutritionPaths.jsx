@@ -38,7 +38,8 @@ function buildPaths(pet) {
   );
   const name = pet?.name || "your pet";
   const firstAllergy = allergies[0] || "an allergen";
-  const condition = pet?.healthCondition || pet?.health?.conditions?.[0] || pet?.doggy_soul_answers?.health_conditions || null;
+  const rawCondition = pet?.healthCondition || pet?.health?.conditions?.[0] || pet?.doggy_soul_answers?.health_conditions || null;
+  const condition = (rawCondition && rawCondition.toLowerCase() !== 'none' && rawCondition.toLowerCase() !== 'none_confirmed' && rawCondition.trim() !== '') ? rawCondition : null;
   const loves = ((pet?.favoriteFoods || pet?.preferences?.favorite_foods || []).filter(
     f => !allergies.includes(f.toLowerCase())
   )[0]) || "salmon";
