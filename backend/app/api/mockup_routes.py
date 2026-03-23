@@ -2009,6 +2009,14 @@ async def _generate_missing_breed_products(db, breeds: list, product_types: list
             "completed_at": datetime.utcnow().isoformat(),
         })
         logger.info(f"[MISSING] Done — {_mockup_gen_status['generated']} generated")
+        # Auto-trigger flat art generation for newly generated breeds
+        logger.info("[MISSING] Auto-triggering flat art overlay generation...")
+        try:
+            from flat_art_merchandise import generate_flat_art_merchandise
+            result = await generate_flat_art_merchandise(db)
+            logger.info(f"[FLAT-ART AUTO] Done — {result.get('inserted',0)} new flat art products inserted")
+        except Exception as e:
+            logger.error(f"[FLAT-ART AUTO] Failed: {e}")
 async def generate_flat_art_endpoint(background_tasks: BackgroundTasks):
     """
     Generate 400 flat art merchandise product records using Cloudinary overlay.
