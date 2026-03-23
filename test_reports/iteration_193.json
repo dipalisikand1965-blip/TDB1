@@ -1,0 +1,109 @@
+{
+  "summary": "Tested MiraCuratedBox Birthday Box feature: browse-birthday-btn, BirthdayBoxBrowseDrawer, SoulCard 2-column grid, ProductBoxEditor (6 tabs), swap/undo swap, Build button with swapped item propagation. All 9 test cases passed. API /api/mockups/breed-products working and returning breed products.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Browse Drawer - Natural flow via browse-birthday-btn",
+        "issue": "When Mojo pet has badly formatted allergy data (single character allergies like 'e', 't', 'i', 's' stored as separate array items), ALL products get filtered out by the allergy filter and 'No products found' appears. This is a test data issue but reveals a fragile allergy filter that over-filters on single-char allergens.",
+        "affected_selectors": ["[data-testid='birthday-box-browse-drawer']"],
+        "priority": "LOW - data issue not code bug"
+      }
+    ],
+    "design_issues": []
+  },
+  "test_results_detail": {
+    "test_1_browse_birthday_btn": {
+      "testid": "browse-birthday-btn",
+      "route": "/celebrate → MiraBirthdayBox section",
+      "found": true,
+      "status": "PASS"
+    },
+    "test_2_drawer_opens": {
+      "testid": "birthday-box-browse-drawer",
+      "status": "PASS",
+      "note": "Dark-purple overlay drawer opens on click"
+    },
+    "test_3_soul_card_grid": {
+      "grid_cols": 2,
+      "card_count": 40,
+      "first_card_testid": "soul-card-breed-indie-bandana",
+      "status": "PASS"
+    },
+    "test_4_card_content": {
+      "has_images": true,
+      "has_product_type_badges": true,
+      "sample_badge": "bandana",
+      "image_source": "Cloudinary AI mockup URL",
+      "mira_pick_badge": true,
+      "status": "PASS"
+    },
+    "test_5_product_box_editor": {
+      "opens_on_card_image_click": true,
+      "tabs": ["Basics", "Suitability", "Pillars", "Commerce", "Media", "Mira AI"],
+      "media_tab": "Has Upload Image File + Generate AI button",
+      "mira_ai_tab": "Has Mira Configuration, Recommendable switch",
+      "status": "PASS"
+    },
+    "test_6_swap_button": {
+      "text_before": "⇄ Swap into box",
+      "text_after_click": "✓ Swapped — tap to undo",
+      "swap_pill_shown": true,
+      "mira_bar_updates": "1 swap from Mira's default — everything allergy-safe",
+      "status": "PASS"
+    },
+    "test_7_undo_swap": {
+      "undo_by_clicking_swapped_btn": true,
+      "text_after_undo": "⇄ Swap into box",
+      "status": "PASS"
+    },
+    "test_8_build_button": {
+      "testid": "browse-drawer-build-btn",
+      "opens_birthday_box_builder": true,
+      "builder_testid": "birthday-box-builder",
+      "status": "PASS"
+    },
+    "test_9_swap_in_builder": {
+      "swapped_item_shows_in_builder": true,
+      "original_item": "Veggie Birthday Cake",
+      "swapped_item": "Indie Bandana",
+      "builder_shows_swapped": true,
+      "slot_label": "HERO",
+      "status": "PASS"
+    },
+    "api_breed_products": {
+      "endpoint": "/api/mockups/breed-products?limit=5",
+      "status": 200,
+      "returns_fields": ["id", "mockup_url", "product_type", "breed", "name", "price"],
+      "status_check": "PASS"
+    }
+  },
+  "test_report_links": [
+    "/app/test_reports/iteration_193.json"
+  ],
+  "action_items": [
+    "LOW PRIORITY: Consider adding a minimum length check (>2 chars) on allergy items before filtering products - prevents single-char allergies from over-filtering. The allergy filter in BirthdayBoxBrowseDrawer.jsx filters products by checking if allergen string appears anywhere in product name/description/tags - single characters like 'e', 't' would match every product."
+  ],
+  "critical_code_review_comments": [
+    "Allergy filter in TabContent (BirthdayBoxBrowseDrawer.jsx line 187-192) uses simple substring match - single char allergies would filter out ALL products. Recommend: allergies.filter(a => a.length > 2) before applying filter",
+    "SoulCard component correctly uses data-testid='soul-card-{product.id}' and swap-btn-{product.id} for testability",
+    "handleBuild correctly merges swaps into visibleSlots/hiddenSlots before dispatching openOccasionBoxBuilder event",
+    "ProductBoxEditor properly receives product with collection='breed_products' and opens with all 6 tabs",
+    "BirthdayBoxBrowseDrawer is rendered via React Portal which correctly handles z-index layering"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend only)",
+    "frontend": "100% (9/9 tests passed)"
+  },
+  "test_credentials": "dipali@clubconcierge.in / test123 (admin user, pet: Mojo, breed: Indie)",
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All MiraBirthdayBox Browse Drawer features verified working: browse-birthday-btn (data-testid='browse-birthday-btn'), BirthdayBoxBrowseDrawer (data-testid='birthday-box-browse-drawer'), 2-col soul card grid (40 cards for Indie breed), ProductBoxEditor (6 tabs: Basics/Suitability/Pillars/Commerce/Media/Mira AI), swap buttons (data-testid='swap-btn-{id}'), undo swap, browse-drawer-build-btn opens BirthdayBoxBuilder with swapped items. Auth: dipali@clubconcierge.in / test123, JWT stored as tdb_auth_token in localStorage. Mojo pet has bad allergy data (single-char allergens) which can cause 'No products found' in natural flow - use direct event dispatch with empty allergies for testing.",
+  "mocked_api": "None - all APIs real"
+}

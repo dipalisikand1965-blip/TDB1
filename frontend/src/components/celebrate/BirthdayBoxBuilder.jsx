@@ -576,7 +576,7 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
                     onNext={handleNext}
                     onOpenBrowse={() => {
                       handleClose();
-                      onOpenBrowseDrawer?.();
+                      onOpenBrowseDrawer?.(boxData);
                     }}
                   />
                 </motion.div>
