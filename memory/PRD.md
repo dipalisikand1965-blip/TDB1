@@ -106,7 +106,15 @@ Guide to fix bottom-stuck modals/drawers. Includes:
 
 ## Completed (2026-03-24)
 
-### Soul Made™ — Adopt, Farewell, Emergency Triggers Added
+### MiraCuratedBox — Swap Fix + Admin-Style Soul Cards + ProductBoxEditor
+- **Swap Bug Fixed**: `BirthdayBoxBrowseDrawer.handleBuild` now correctly merges swaps into `visibleSlots`/`hiddenSlots` before opening `BirthdayBoxBuilder`. Swapped items appear in correct slots in the builder.
+- **Admin-Style Soul Cards**: Replaced horizontal product rows with a 2-column grid of `SoulCard` components — square AI mockup image, product type badge, name, breed, price, swap button — matching the admin mockup gallery format.
+- **Breed Products Fetch**: `TabContent` now fetches from `/api/mockups/breed-products?breed={petBreed}` (falling back to unfiltered breed products, then regular products). Shows 40 real AI-generated breed product cards.
+- **ProductBoxEditor Integration**: Clicking any soul card's image opens the full 6-tab `ProductBoxEditor` (Basics / Suitability / Pillars / Commerce / Media / Mira AI) with CloudinaryUploader and AI generation.
+- **Allergy Filter Fixed**: Added `a.length > 2` guard to prevent single-char allergen strings from filtering out all products.
+- **petBreed Propagation**: `CelebratePageNew.handleOpenBrowseDrawer` now passes `petBreed` to the event so breed products are fetched correctly.
+
+---
 - **Adopt** (`AdoptSoulPage.jsx`): Added `✦ Soul Made™ — Make it personal` trigger card after MiraPicks. Wired to `SoulMadeModal` with rose color. Removed dead `PersonalisedBreedSection` import.
 - **Farewell** (`FarewellSoulPage.jsx`): Added `✦ Soul Made™ — In memory of {petName}` trigger card after MiraPicks. Wired to `SoulMadeModal` with indigo color. Removed dead `PersonalisedBreedSection` import.
 - **Emergency** (`EmergencySoulPage.jsx`): Added `✦ Soul Made™ — Custom safety gear` trigger card after MiraPicks. Wired to `SoulMadeModal` with crimson color. Replaced unused `SoulMadeCollection` import with `SoulMadeModal`.
