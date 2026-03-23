@@ -9,6 +9,8 @@ from typing import List, Optional
 from datetime import datetime, timezone
 from bson import ObjectId
 import os
+import cloudinary
+import cloudinary.uploader
 
 router = APIRouter(prefix="/api/celebration-wall", tags=["celebration-wall"])
 
@@ -16,6 +18,13 @@ router = APIRouter(prefix="/api/celebration-wall", tags=["celebration-wall"])
 from motor.motor_asyncio import AsyncIOMotorClient
 MONGO_URL = os.environ.get('MONGO_URL')
 DB_NAME = os.environ.get('DB_NAME')
+
+# Cloudinary config
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET'),
+)
 
 def get_db():
     client = AsyncIOMotorClient(MONGO_URL)
@@ -158,17 +167,36 @@ async def delete_celebration_photo(photo_id: str):
 async def create_ugc_photo(photo: UGCPhotoCreate):
     """
     UGC upload from the Celebration Wall 'Share Your Story' modal.
-    Creates a pending-review photo with mira_comment pre-generated.
+    Uploads base64 image to Cloudinary, then stores the URL in MongoDB.
+    Auto-approves and features the photo so it appears immediately.
     """
     db = get_db()
 
+    # Upload to Cloudinary if base64
+    image_url = photo.image_url
+    if image_url and image_url.startswith("data:"):
+        try:
+            upload_result = cloudinary.uploader.upload(
+                image_url,
+                folder="tdc/celebration-wall/ugc",
+                resource_type="image",
+                transformation=[
+                    {"width": 800, "height": 800, "crop": "limit", "quality": "auto:good", "fetch_format": "auto"}
+                ]
+            )
+            image_url = upload_result.get("secure_url", image_url)
+        except Exception as e:
+            print(f"[CelebrationWall] Cloudinary upload failed: {e}")
+            raise HTTPException(status_code=500, detail="Image upload failed. Please try again.")
+
     photo_dict = photo.dict()
+    photo_dict["image_url"] = image_url
     photo_dict["occasion"] = photo.celebration_type
     photo_dict["location"] = photo.city or ""
     photo_dict["likes"] = 0
-    photo_dict["is_pending_review"] = True
-    photo_dict["is_featured"] = False
-    photo_dict["is_approved"] = False
+    photo_dict["is_pending_review"] = False
+    photo_dict["is_featured"] = True
+    photo_dict["is_approved"] = True
     photo_dict["source"] = "ugc"
     photo_dict["created_at"] = datetime.now(timezone.utc)
     photo_dict["updated_at"] = datetime.now(timezone.utc)
@@ -180,7 +208,8 @@ async def create_ugc_photo(photo: UGCPhotoCreate):
         "success": True,
         "message": "Your story is on the wall ♥",
         "photo_id": photo_id,
-        "status": "pending_review"
+        "image_url": image_url,
+        "status": "approved"
     }
 
 
