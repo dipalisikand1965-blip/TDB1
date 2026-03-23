@@ -165,7 +165,9 @@ Currently uses blank white product templates. Goal: 350 AI-generated images (50 
 - [x] **P0.2 complete**: Added `favourite_treat: peanut_butter`, `birthday_quarter: q4` to Mojo's soul data
 - [x] **P0.3**: `pet_breed` now included in service desk ticket creation (mira_service_desk.py)
 - [x] **MiraAI multi-pet bug**: Global widget now always sends first pet's ID for multi-pet users
-- [x] **Soul Made™ strip redesign**: Premium dark purple gradient card with glow CTA, applied to ALL 5 pillar content modals (Celebrate, Dine, Go, Play, Care), now visible as cross-sell in ALL categories (not just Soul Made category)
+- [x] **Soul Made™ strip redesign**: Premium dark purple gradient card with glow CTA, applied to ALL 10 pillar locations (Celebrate×2, Dine, Go, Play, Care content modals + Adopt, Farewell, Emergency, Learn, Paperwork soul pages), now visible as cross-sell in ALL categories
+- [x] **MiraChatWidget pet context fix**: Backend `/api/mira/os/stream` now reads `selected_pet_id` field + enriched pet context with vault allergies, favourite treat, personality, gender
+- [x] **Emergency page chunk error**: Fixed by frontend restart (stale webpack cache)
 
 ---
 
