@@ -99,12 +99,48 @@ const ALL_FLAVOURS = [
   { id:'lamb',          label:'🍖 Lamb',            allergens:['lamb'],           price:1200 },
 ];
 
+// ── Flavour → matching keyword list (for favourite detection) ───────────────
+const FLAVOUR_KEYWORDS = {
+  peanut_butter: ['peanut','peanut butter','peanutbutter'],
+  carrot:        ['carrot','vegetable','veggie','veg'],
+  banana:        ['banana'],
+  apple:         ['apple','cinnamon'],
+  cheese:        ['cheese','dairy','paneer'],
+  chicken:       ['chicken','poultry'],
+  fish_salmon:   ['fish','salmon','seafood'],
+  lamb:          ['lamb','mutton'],
+};
+
+function getPetFavFlavours(pet) {
+  const soul = pet?.doggy_soul_answers || {};
+  const sources = [
+    soul.favorite_protein,
+    soul.petFavouriteFood1,
+    soul.petFavouriteFood2,
+    soul.favourite_protein,
+    ...(Array.isArray(soul.favorite_treats) ? soul.favorite_treats : [soul.favorite_treats]),
+  ].filter(Boolean).map(s => String(s).toLowerCase());
+
+  const favIds = new Set();
+  if (soul.taste_banana === true) favIds.add('banana');
+
+  for (const [flavId, keywords] of Object.entries(FLAVOUR_KEYWORDS)) {
+    if (sources.some(src => keywords.some(kw => src.includes(kw)))) {
+      favIds.add(flavId);
+    }
+  }
+  return favIds;
+}
+
 function getAllergies(pet) {
   const soul = pet?.doggy_soul_answers || {};
   const raw  = soul.food_allergies || pet?.allergies || '';
   if (!raw || /^(none|no|unknown)$/i.test(String(raw).trim())) return [];
-  return (Array.isArray(raw) ? raw : String(raw).split(/,|;/).map(x => x.trim()))
-    .map(a => a.toLowerCase()).filter(a => a.length > 2);
+  // Parse comma/semicolon list; skip test_ prefixed values and short strings
+  const items = (Array.isArray(raw) ? raw : String(raw).split(/,|;/))
+    .map(x => x.trim().toLowerCase())
+    .filter(a => a.length > 2 && !a.startsWith('test_'));
+  return items;
 }
 
 export default function DoggyBakeryCakeModal({ pet, onClose }) {
@@ -112,25 +148,39 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
   const { request }          = useConcierge({ pet, pillar: 'celebrate' });
 
   const allergies    = getAllergies(pet);
+  const petFavIds    = getPetFavFlavours(pet);
   const petName      = pet?.name  || 'your dog';
-  const defaultBreed = (pet?.breed || 'indie').toLowerCase();
+  const defaultBreed = (pet?.breed || 'indie').toLowerCase().replace(/\s+/g,'_');
+
+  // Compute these BEFORE any useState so the initializer can reference them
+  const safeFlavours = ALL_FLAVOURS.filter(f =>
+    !f.allergens.some(a => allergies.includes(a))
+  );
+  const sortedFlavours = safeFlavours.slice().sort((a, b) => {
+    const aFav = petFavIds.has(a.id) ? -1 : 0;
+    const bFav = petFavIds.has(b.id) ? -1 : 0;
+    return aFav - bFav;
+  });
+  const orderedBreeds = [
+    defaultBreed,
+    ...ALL_BREEDS.filter(b => b !== defaultBreed),
+  ];
 
   const [breed,      setBreed]      = useState(defaultBreed);
   const [illus,      setIllus]      = useState([]);
   const [selIllus,   setSelIllus]   = useState(null);
   const [loading,    setLoading]    = useState(false);
   const [base,       setBase]       = useState('oats');
-  const [flavour,    setFlavour]    = useState('banana');
+  const [flavour,    setFlavour]    = useState(() => {
+    // Default to the pet's top favourite flavour if safe
+    const fav = sortedFlavours[0]?.id || 'banana';
+    return fav;
+  });
   const [message,    setMessage]    = useState('');
   const [sending,    setSending]    = useState(false);
   const [done,       setDone]       = useState(false);
   const [showPop,    setShowPop]    = useState(false);
   const [showBreeds, setShowBreeds] = useState(false);
-
-  // Safe flavours — filter out pet's allergens
-  const safeFlavours = ALL_FLAVOURS.filter(f =>
-    !f.allergens.some(a => allergies.includes(a))
-  );
 
   // Load illustrations for selected breed
   const loadIllus = useCallback(async (b) => {
@@ -231,7 +281,7 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          width:'100%', maxWidth:520,
+          width:'100%', maxWidth:'min(760px, 98vw)',
           maxHeight:'92vh', overflowY:'auto',
           background:'#0F0A1E',
           borderRadius:'24px 24px 0 0',
@@ -310,16 +360,19 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
                 overflowX: showBreeds ? 'visible' : 'auto',
                 marginBottom:20, paddingBottom:4,
               }}>
-                {(showBreeds ? ALL_BREEDS : ALL_BREEDS.slice(0, 12)).map(b => (
-                  <button
-                    key={b}
-                    className={`cbc-breed ${breed === b ? 'sel' : 'unsel'}`}
-                    onClick={() => { setBreed(b); setShowBreeds(false); }}
-                    data-testid={`breed-pill-${b.replace(/\s+/g,'-')}`}
-                  >
-                    {b.charAt(0).toUpperCase() + b.slice(1)}
-                  </button>
-                ))}
+                {(showBreeds ? orderedBreeds : orderedBreeds.slice(0, 12)).map(b => {
+                  const isPetBreed = b === defaultBreed;
+                  return (
+                    <button
+                      key={b}
+                      className={`cbc-breed ${breed === b ? 'sel' : 'unsel'}`}
+                      onClick={() => { setBreed(b); setShowBreeds(false); }}
+                      data-testid={`breed-pill-${b.replace(/\s+/g,'-')}`}
+                    >
+                      {isPetBreed ? `${petName} (${b.charAt(0).toUpperCase()+b.slice(1)})` : b.charAt(0).toUpperCase() + b.slice(1)}
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Illustration picker */}
@@ -332,7 +385,7 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
                   Loading {breed} illustrations…
                 </div>
               ) : illus.length > 0 ? (
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, marginBottom:20 }}>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:20 }}>
                   {illus.map((p, i) => {
                     const imgUrl = p.cloudinary_url || p.mockup_url || p.image_url;
                     const isSel  = selIllus?.id === p.id || selIllus === p;
@@ -421,20 +474,29 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
                 </span>
               </div>
               <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:4 }}>
-                {safeFlavours.map(f => (
-                  <button
-                    key={f.id}
-                    className={`cbc-flav${flavour === f.id ? ' sel' : ''}`}
-                    onClick={() => setFlavour(f.id)}
-                    data-testid={`flavour-btn-${f.id}`}
-                    title={`₹${f.price.toLocaleString('en-IN')}`}
-                  >
-                    {f.label}
-                    <span style={{ marginLeft:5, fontSize:10, opacity:0.7 }}>
-                      ₹{f.price.toLocaleString('en-IN')}
-                    </span>
-                  </button>
-                ))}
+                {sortedFlavours.map(f => {
+                  const isFav = petFavIds.has(f.id);
+                  return (
+                    <button
+                      key={f.id}
+                      className={`cbc-flav${flavour === f.id ? ' sel' : ''}`}
+                      onClick={() => setFlavour(f.id)}
+                      data-testid={`flavour-btn-${f.id}`}
+                      title={`₹${f.price.toLocaleString('en-IN')}`}
+                      style={isFav ? { borderColor:'rgba(201,151,58,0.6)', color:'#C9973A', background:'rgba(201,151,58,0.10)' } : {}}
+                    >
+                      {f.label}
+                      {isFav && (
+                        <span style={{ marginLeft:5, fontSize:10, background:'rgba(201,151,58,0.20)', borderRadius:4, padding:'1px 5px', color:'#C9973A', fontWeight:700 }}>
+                          {petName}'s fave
+                        </span>
+                      )}
+                      <span style={{ marginLeft:5, fontSize:10, opacity:0.7 }}>
+                        ₹{f.price.toLocaleString('en-IN')}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Fish note — as specified */}

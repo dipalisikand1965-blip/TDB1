@@ -1497,71 +1497,36 @@ _mockup_gen_status = {
 }
 
 
-def _build_mockup_prompt(breed: str, product_type: str, name: str) -> str:
+def _build_mockup_prompt(breed: str, product_type: str, name: str, colour_variant: str = "") -> str:
     """Build an AI image generation prompt for a product mockup."""
     breed_display = breed.replace("_", " ").title()
     pt_display = product_type.replace("_", " ").title()
-
-    # Breed → characteristic colour for cake illustration prompts
-    BREED_COLOURS = {
-        "indie": "warm tan",
-        "labrador": "golden yellow",
-        "labrador_retriever": "golden yellow",
-        "golden_retriever": "golden",
-        "beagle": "tricolor brown white and black",
-        "pug": "fawn",
-        "bulldog": "white and brindle",
-        "english_bulldog": "white and brindle",
-        "french_bulldog": "brindle",
-        "dachshund": "rich chocolate brown",
-        "shih_tzu": "white and gold",
-        "poodle": "fluffy white",
-        "cocker_spaniel": "golden brown",
-        "husky": "grey and white",
-        "chihuahua": "tan",
-        "maltese": "pure white",
-        "pomeranian": "vibrant orange",
-        "rottweiler": "black and tan",
-        "german_shepherd": "black and tan",
-        "doberman": "black and tan",
-        "boxer": "fawn",
-        "dalmatian": "white with black spots",
-        "border_collie": "black and white",
-        "akita": "red and white",
-        "corgi": "golden orange",
-        "australian_shepherd": "blue merle",
-        "cavalier": "chestnut and white",
-        "bichon_frise": "fluffy white",
-        "chow_chow": "cinnamon red",
-        "boston_terrier": "black and white",
-        "bernese_mountain": "tricolor black brown white",
-        "alaskan_malamute": "grey and white",
-        "american_bully": "slate grey",
-        "lhasa_apso": "golden",
-        "yorkshire": "steel blue and tan",
-        "basenji": "red and white",
-        "samoyed": "pure white",
-        "shar_pei": "golden fawn",
-        "weimaraner": "silver grey",
-        "vizsla": "golden rust",
-        "whippet": "fawn and white",
-        "greyhound": "brindle and white",
-        "bloodhound": "red and black",
-        "basset_hound": "tricolor",
-        "irish_setter": "rich mahogany",
-    }
-    breed_colour = BREED_COLOURS.get(breed.lower().replace(" ", "_"), "warm golden")
+    colour = colour_variant or BREED_COLOURS.get(breed.lower().replace(" ", "_"), "warm golden")
 
     prompt_map = {
         "birthday_cake": (
-            f"Flat vector illustration of a {breed_colour} {breed_display} dog, yappy style, "
-            f"clean white background, cute and simple, suitable for printing on a birthday cake, "
-            f"no text, no shadows, pastel warm tones, rounded edges, friendly expression, facing forward"
+            f"Yappy.com style dog portrait illustration, head and face ONLY (cropped at neck, no body visible), "
+            f"{colour} {breed_display} dog, "
+            f"pure flat vector art with solid colour fills, absolutely NO outlines NO strokes NO gradients NO shadows, "
+            f"pure white background, "
+            f"small black oval eyes each with a single tiny white highlight dot, "
+            f"prominent black inverted-teardrop nose centred below the eyes, "
+            f"bright pink tongue peeking out from the bottom of the muzzle, "
+            f"friendly happy forward-facing expression, "
+            f"simplified geometric head shape characteristic of {breed_display}, "
+            f"breed-accurate ear shape (e.g. floppy for Labrador, erect triangular for Husky, long droopy for Beagle), "
+            f"minimalist clean flat design, bold distinct colours, "
+            f"perfectly suitable for edible cake printing or fondant cake toppers, "
+            f"centred composition with generous white margin, square format"
         ),
         "cake": (
-            f"Flat vector illustration of a {breed_colour} {breed_display} dog, yappy style, "
-            f"clean white background, cute and simple, suitable for printing on a birthday cake, "
-            f"no text, no shadows, pastel warm tones, rounded edges, friendly expression, facing forward"
+            f"Yappy.com style dog portrait illustration, head and face ONLY (cropped at neck, no body visible), "
+            f"{colour} {breed_display} dog, "
+            f"pure flat vector art, solid colour fills, NO outlines NO gradients NO shadows, "
+            f"pure white background, small black oval eyes with white highlight dot, "
+            f"black teardrop nose, pink tongue, happy friendly expression, "
+            f"minimalist geometric shapes, centred square composition, "
+            f"suitable for edible cake printing"
         ),
         "mug": f"Professional product photography of a white ceramic coffee mug with a beautiful watercolor illustration of a {breed_display} dog printed on it. The mug is on a clean marble surface with soft studio lighting. The illustration shows the dog's face in soft watercolor style. Photorealistic product mockup.",
         "bandana": f"Professional product photography of a dog bandana laid flat on a white surface. The bandana has a beautiful watercolor illustration of a {breed_display} dog printed on the fabric. Soft cotton material, triangle fold. Clean studio lighting. Product mockup.",
@@ -1576,12 +1541,248 @@ def _build_mockup_prompt(breed: str, product_type: str, name: str) -> str:
         "treat_jar": f"Professional product photo of a ceramic treat jar with a {breed_display} dog illustration and the word 'Treats' on it. On a kitchen counter. Product mockup.",
         "party_hat": f"Professional product photo of a cute birthday party hat for dogs with a {breed_display} dog illustration printed on it. Colorful, festive. Product mockup.",
     }
-    
+
     base = prompt_map.get(product_type)
     if not base:
         base = f"Professional product photography of a {pt_display} featuring a beautiful watercolor illustration of a {breed_display} dog. The product is displayed on a clean surface with soft studio lighting. High-quality photorealistic product mockup."
-    
+
     return base
+
+
+# ── Breed → characteristic colour (fallback for non-cake products) ──────────
+BREED_COLOURS = {
+    "indie": "warm tan ginger",
+    "labrador": "golden yellow",
+    "labrador_retriever": "golden yellow",
+    "golden_retriever": "golden",
+    "beagle": "tricolour tan black and white",
+    "pug": "fawn",
+    "bulldog": "white and brindle",
+    "english_bulldog": "white and brindle",
+    "french_bulldog": "brindle grey",
+    "dachshund": "rich chocolate brown",
+    "shih_tzu": "white and gold",
+    "poodle": "fluffy white",
+    "cocker_spaniel": "golden brown",
+    "husky": "grey and white",
+    "chihuahua": "tan",
+    "maltese": "pure white",
+    "pomeranian": "vibrant orange",
+    "rottweiler": "black and tan",
+    "german_shepherd": "black and tan",
+    "doberman": "black and tan",
+    "boxer": "fawn",
+    "dalmatian": "white with black spots",
+    "border_collie": "black and white",
+    "akita": "red and white",
+    "corgi": "golden orange",
+    "australian_shepherd": "blue merle",
+    "cavalier": "chestnut and white",
+    "bichon_frise": "fluffy white",
+    "chow_chow": "cinnamon red",
+    "boston_terrier": "black and white",
+    "bernese_mountain": "tricolour black brown white",
+    "alaskan_malamute": "grey and white",
+    "american_bully": "slate grey",
+    "lhasa_apso": "golden",
+    "yorkshire": "steel blue and tan",
+    "basenji": "red and white",
+    "samoyed": "pure white",
+}
+
+# ── Per-breed colour variants for cake illustrations (Yappy-style) ──────────
+# Each entry: (colour_descriptor_for_prompt, display_label_for_UI)
+BREED_COLOUR_VARIANTS: dict = {
+    "indie": [
+        ("warm tan ginger coat",           "Ginger"),
+        ("jet black coat",                  "Black"),
+        ("fawn cream coat",                 "Fawn"),
+        ("brindle brown coat",              "Brindle"),
+        ("white with tan patches coat",     "Patchy"),
+    ],
+    "labrador": [
+        ("golden yellow coat",              "Yellow"),
+        ("jet black coat",                  "Black"),
+        ("rich chocolate brown coat",       "Chocolate"),
+        ("fox red coat",                    "Fox Red"),
+    ],
+    "golden_retriever": [
+        ("light golden cream coat",         "Light Golden"),
+        ("rich dark golden coat",           "Dark Golden"),
+        ("pale cream white coat",           "Cream"),
+        ("deep copper red coat",            "Red"),
+    ],
+    "beagle": [
+        ("tricolour tan black and white coat",  "Tricolour"),
+        ("lemon and white coat",                "Lemon"),
+        ("red and white coat",                  "Red & White"),
+        ("chocolate tricolour coat",            "Chocolate Tri"),
+    ],
+    "husky": [
+        ("grey and white coat with bright blue eyes",                           "Blue Eyes"),
+        ("black and white coat with heterochromatic one blue one amber eye",    "Hetero Eyes"),
+        ("pure white coat with pale blue eyes",                                 "White"),
+        ("agouti grey and white coat",                                          "Agouti"),
+    ],
+    "pug": [
+        ("fawn coat with black face mask",  "Fawn"),
+        ("jet black coat",                  "Black"),
+        ("silver grey coat",                "Silver"),
+    ],
+    "german_shepherd": [
+        ("black and tan saddle coat",       "Black & Tan"),
+        ("sable dark grey coat",            "Sable"),
+        ("all black coat",                  "Black"),
+        ("white coat",                      "White"),
+    ],
+    "poodle": [
+        ("fluffy white coat",               "White"),
+        ("apricot cream coat",              "Apricot"),
+        ("silver grey coat",                "Silver"),
+        ("jet black coat",                  "Black"),
+    ],
+    "cocker_spaniel": [
+        ("golden brown coat",               "Golden"),
+        ("black coat",                      "Black"),
+        ("roan blue and white coat",        "Blue Roan"),
+        ("chocolate and tan coat",          "Chocolate"),
+    ],
+    "dachshund": [
+        ("rich chocolate brown coat",       "Chocolate"),
+        ("red coat",                        "Red"),
+        ("black and tan coat",              "Black & Tan"),
+        ("dapple merle coat",               "Dapple"),
+    ],
+    "shih_tzu": [
+        ("white and gold coat",             "Gold & White"),
+        ("solid gold coat",                 "Gold"),
+        ("black and white coat",            "Black & White"),
+        ("liver and white coat",            "Liver"),
+    ],
+    "chihuahua": [
+        ("tan coat",                        "Tan"),
+        ("fawn coat",                       "Fawn"),
+        ("black and tan coat",              "Black & Tan"),
+        ("white coat",                      "White"),
+    ],
+    "border_collie": [
+        ("black and white coat",            "Black & White"),
+        ("red and white coat",              "Red & White"),
+        ("blue merle coat",                 "Blue Merle"),
+        ("tricolour coat",                  "Tri"),
+    ],
+    "dalmatian": [
+        ("white with black spots coat",     "Black Spots"),
+        ("white with liver brown spots coat","Liver Spots"),
+    ],
+    "rottweiler": [
+        ("black and tan coat",              "Black & Tan"),
+        ("black and mahogany coat",         "Mahogany"),
+    ],
+}
+
+# Default variants for breeds not in the map above (3 generic colour variants)
+DEFAULT_VARIANTS = [
+    ("natural coat colour",         "Natural"),
+    ("light coat colour variant",   "Light"),
+    ("dark coat colour variant",    "Dark"),
+]
+
+
+async def _generate_breed_cake_art(db, breeds: list):
+    """
+    Background task: generate Yappy-style face-only cake illustrations.
+    Creates 3-5 colour variant products per breed.
+    Uses birthday_cake prompt type.
+    """
+    global _mockup_gen_status
+
+    all_variants = []
+    for breed in breeds:
+        variants = BREED_COLOUR_VARIANTS.get(breed.lower().replace(" ", "_"), DEFAULT_VARIANTS)
+        for colour, label in variants:
+            all_variants.append((breed, colour, label))
+
+    _mockup_gen_status.update({
+        "running": True, "current": None,
+        "generated": 0, "failed": 0, "skipped": 0,
+        "total": len(all_variants),
+        "started_at": datetime.utcnow().isoformat(),
+        "completed_at": None,
+    })
+
+    logger.info(f"[CAKE-ART] Starting Yappy-style generation: {len(all_variants)} variants across {len(breeds)} breeds")
+
+    try:
+        for breed, colour, label in all_variants:
+            if not _mockup_gen_status["running"]:
+                logger.info("[CAKE-ART] Stopped by request")
+                break
+
+            safe_breed   = breed.lower().replace(" ", "_")
+            safe_label   = label.lower().replace(" & ", "_").replace(" ", "_").replace("/", "_")
+            product_id   = f"cake-{safe_breed}-{safe_label}"
+            display_name = f"{breed.replace('_',' ').title()} — {label}"
+
+            _mockup_gen_status["current"] = f"{display_name} ({_mockup_gen_status['generated']+1}/{len(all_variants)})"
+
+            # Skip if already exists with a mockup
+            existing = await db.breed_products.find_one({"id": product_id}, {"_id": 0, "mockup_url": 1})
+            if existing and existing.get("mockup_url"):
+                logger.info(f"[CAKE-ART] Skip {product_id} — already has image")
+                _mockup_gen_status["skipped"] = _mockup_gen_status.get("skipped", 0) + 1
+                continue
+
+            prompt = _build_mockup_prompt(breed, "birthday_cake", display_name, colour)
+
+            try:
+                img_url = await _generate_mockup_image(prompt, product_id, breed)
+
+                if img_url:
+                    doc = {
+                        "id":           product_id,
+                        "breed":        safe_breed,
+                        "breed_display": breed.replace("_", " ").title(),
+                        "name":         display_name,
+                        "product_type": "birthday_cake",
+                        "colour_variant": colour,
+                        "colour_label": label,
+                        "price":        950,
+                        "description":  f"Yappy-style flat face illustration — {label} {breed.replace('_',' ').title()} — for cake printing",
+                        "mockup_url":   img_url,
+                        "cloudinary_url": img_url if img_url.startswith("http") else None,
+                        "image_url":    img_url,
+                        "pillars":      ["celebrate"],
+                        "pillar":       "celebrate",
+                        "is_mockup":    True,
+                        "is_active":    True,
+                        "created_at":   datetime.utcnow().isoformat(),
+                        "mockup_prompt": prompt,
+                    }
+                    await db.breed_products.update_one(
+                        {"id": product_id},
+                        {"$set": doc},
+                        upsert=True
+                    )
+                    _mockup_gen_status["generated"] += 1
+                    logger.info(f"[CAKE-ART] ✓ {display_name}")
+                else:
+                    _mockup_gen_status["failed"] += 1
+                    logger.warning(f"[CAKE-ART] ✗ No image returned for {display_name}")
+
+                await asyncio.sleep(4)  # Rate limit
+
+            except Exception as e:
+                logger.error(f"[CAKE-ART] Error for {display_name}: {e}")
+                _mockup_gen_status["failed"] += 1
+
+    except Exception as e:
+        logger.error(f"[CAKE-ART] Fatal error: {e}")
+    finally:
+        _mockup_gen_status["running"]      = False
+        _mockup_gen_status["current"]      = None
+        _mockup_gen_status["completed_at"] = datetime.utcnow().isoformat()
+        logger.info(f"[CAKE-ART] Done — {_mockup_gen_status['generated']} generated, {_mockup_gen_status['failed']} failed")
 
 
 async def _generate_mockups_for_type(db, product_type: str, breeds: List[str], pillars: List[str], price: int, name_template: str, description: str):
@@ -1705,8 +1906,8 @@ async def stop_mockup_gen():
 @router.post("/generate-breed-cakes")
 async def generate_breed_cake_illustrations(background_tasks: BackgroundTasks, breeds: Optional[List[str]] = None):
     """
-    Generate yappy-style flat vector cake illustrations for all breeds.
-    Uses the birthday_cake prompt type (pastel flat vector, white background).
+    Generate Yappy-style flat face-only cake illustrations with colour variants per breed.
+    Indie gets 5 variants, most breeds get 3-4 variants.
     """
     global _mockup_gen_status
     if _mockup_gen_status.get("running"):
@@ -1714,21 +1915,21 @@ async def generate_breed_cake_illustrations(background_tasks: BackgroundTasks, b
 
     db = get_db()
     all_breeds = breeds or [b for b in await db.breed_products.distinct("breed") if b and b != "all"]
-
     if not all_breeds:
         return {"message": "No breeds found"}
 
-    background_tasks.add_task(
-        _generate_mockups_for_type, db,
-        "birthday_cake",
-        all_breeds,
-        ["celebrate"],
-        950,
-        "{breed} Birthday Cake",
-        "Flat-vector breed illustration for cake printing — yappy style, pastel warm tones."
+    # Count total variants
+    total_variants = sum(
+        len(BREED_COLOUR_VARIANTS.get(b.lower().replace(" ","_"), DEFAULT_VARIANTS))
+        for b in all_breeds
     )
+
+    background_tasks.add_task(_generate_breed_cake_art, db, all_breeds)
+
     return {
-        "message": f"Generating birthday_cake illustrations for {len(all_breeds)} breeds",
-        "breeds": all_breeds,
+        "message": f"Generating Yappy-style face illustrations for {len(all_breeds)} breeds ({total_variants} colour variants total)",
+        "breeds": len(all_breeds),
+        "total_variants": total_variants,
+        "indie_variants": len(BREED_COLOUR_VARIANTS.get("indie", DEFAULT_VARIANTS)),
         "check_status": "/api/mockups/mockup-gen-status",
     }
