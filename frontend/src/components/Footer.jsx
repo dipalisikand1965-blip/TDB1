@@ -217,12 +217,12 @@ const Footer = () => {
             <p className="flex items-center justify-center gap-1.5 flex-wrap">
               <Sparkles className="w-3 h-3 text-purple-400" />
               <span>Mira is powered by AI and can make mistakes.</span>
-              <Link to="/ai-disclaimer" className="text-purple-400 hover:text-purple-300 underline">Learn more</Link>
+              <Link to="/ai-disclaimer" className="text-purple-400 hover:text-purple-300 underline" style={{ display: 'inline-flex', alignItems: 'center', minHeight: '44px', padding: '12px 8px' }}>Learn more</Link>
             </p>
           </div>
           
           {/* Copyright */}
-          <div className="text-center text-xs text-gray-500 space-y-2">
+          <div className="text-center text-[13px] text-gray-500 space-y-2">
             <p className="text-gray-400">© 2026 The Doggy Company®. All rights reserved.</p>
             <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
               <span>Les Concierges® (1998)</span>
@@ -423,7 +423,7 @@ const Footer = () => {
               <p className="flex items-center justify-center gap-1.5 flex-wrap">
                 <Sparkles className="w-3 h-3 text-purple-400" />
                 <span>Mira is powered by AI and can make mistakes. Check important info.</span>
-                <Link to="/ai-disclaimer" className="text-purple-400 hover:text-purple-300 underline">Learn more</Link>
+                <Link to="/ai-disclaimer" className="text-purple-400 hover:text-purple-300 underline" style={{ display: 'inline-flex', alignItems: 'center', minHeight: '44px', padding: '12px 8px' }}>Learn more</Link>
               </p>
             </div>
             
