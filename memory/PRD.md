@@ -104,6 +104,16 @@ Guide to fix bottom-stuck modals/drawers. Includes:
 
 ---
 
+## Completed (2026-03-24)
+
+### Soul Made™ — Adopt, Farewell, Emergency Triggers Added
+- **Adopt** (`AdoptSoulPage.jsx`): Added `✦ Soul Made™ — Make it personal` trigger card after MiraPicks. Wired to `SoulMadeModal` with rose color. Removed dead `PersonalisedBreedSection` import.
+- **Farewell** (`FarewellSoulPage.jsx`): Added `✦ Soul Made™ — In memory of {petName}` trigger card after MiraPicks. Wired to `SoulMadeModal` with indigo color. Removed dead `PersonalisedBreedSection` import.
+- **Emergency** (`EmergencySoulPage.jsx`): Added `✦ Soul Made™ — Custom safety gear` trigger card after MiraPicks. Wired to `SoulMadeModal` with crimson color. Replaced unused `SoulMadeCollection` import with `SoulMadeModal`.
+- **ProductCard Concierge**: Verified `handleServiceRequest` (line 640) already correctly uses `POST /api/service_desk/attach_or_create_ticket`. No fix needed.
+
+---
+
 ## VERIFICATION NEEDED BY NEXT AGENT
 
 1. **Dine Soul Made**: Pill shows in strip, clicking opens ContentModal with breed products, footer CTA opens SoulMadeModal (not onClose)
@@ -173,8 +183,8 @@ Guide to fix bottom-stuck modals/drawers. Includes:
 | learn | G.violet / #7C3AED | Learning | PersonalisedBreedSection | ✅ |
 | shop | G.gold / #F59E0B | Shopping | PersonalisedBreedSection | ✅ |
 | paperwork | G.teal / #0D9488 | Documents | PersonalisedBreedSection | ✅ |
-| adopt | G.rose / #65A30D | Adoption | PersonalisedBreedSection | ✅ |
-| farewell | G.indigo / #8B5CF6 | Farewell | PersonalisedBreedSection (custom text) | ✅ |
+| adopt | G.rose / #D4537E | Adoption | SoulMadeModal trigger after MiraPicksSection | ✅ |
+| farewell | G.indigo / #6366F1 | Farewell | SoulMadeModal trigger (In memory of {pet}) | ✅ |
 | services | #0EA5E9 | Services | PersonalisedBreedSection | ✅ |
-| emergency | #EF4444 | Safety | EXCLUDED | ❌ |
+| emergency | #EF4444 | Safety | SoulMadeModal trigger after MiraPicksSection | ✅ |
 | advisory | #10B981 | Advisory | EXCLUDED | ❌ |
