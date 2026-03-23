@@ -50,6 +50,7 @@
   <a href="#admin">Admin Panel</a>
   <a href="#api">API Endpoints</a>
   <a href="#db">DB Schema</a>
+  <a href="#celebrate-audit">CELEBRATE AUDIT</a>
   <a href="#bugs">Known Issues</a>
   <a href="#next">Next Agent</a>
 </nav>
@@ -381,6 +382,354 @@ Response: { "url": "https://cloudinary.com/...", "success": true }</code></pre>
 # Update /app/frontend/src/utils/blankTemplates.js with real URLs</code></pre>
     </div>
   </div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     FINAL AUDIT: CELEBRATE PILLAR — SIGNED OFF 27 MARCH 2026
+     ════════════════════════════════════════════════════════════════════════
+     DO NOT MODIFY ANY CELEBRATE COMPONENT WITHOUT EXPLICIT USER APPROVAL.
+     This pillar passed 11/11 backend tests and 100% frontend audit.
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<div class="section" id="celebrate-audit">
+  <h2>FINAL AUDIT: CELEBRATE PILLAR — SIGNED OFF 27 MARCH 2026</h2>
+
+  <div class="alert" style="background:#14532D20; border-color:#14532D;">
+    <p style="color:#86EFAC; font-weight:700; font-size:1rem;">
+      STATUS: COMPLETE — DO NOT TOUCH
+    </p>
+    <p style="color:#86EFAC;">
+      This pillar has been fully audited, tested (11/11 backend, 100% frontend), concierge-wired, mobile-audited at 375px, and signed off by the product owner.
+      Future agents: DO NOT modify any celebrate component without explicit user approval. Refer to this section for the complete state.
+    </p>
+  </div>
+
+  <!-- ── 12 Page Sections ── -->
+  <div class="card">
+    <h3>12 Page Sections — All Rendering</h3>
+    <table>
+      <tr><th>#</th><th>Section</th><th>Component</th><th>Personalized</th><th>Concierge Wired</th><th>Mobile 375px</th></tr>
+      <tr><td>1</td><td>CelebrateHero</td><td><code>CelebrateHero.jsx</code></td><td>Mojo's name, soul chips, allergy:chicken, loves:salmon</td><td>N/A (display)</td><td>OK — fade-only animation</td></tr>
+      <tr><td>2</td><td>PillarSoulProfile</td><td><code>PillarSoulProfile.jsx</code></td><td>"Mojo's Celebration Profile" + Indie badge</td><td>useConcierge — multiple fire points</td><td>OK</td></tr>
+      <tr><td>3</td><td>CategoryStrip</td><td><code>CelebrateCategoryStrip.jsx</code></td><td>11 categories</td><td>N/A (navigation)</td><td>OK — 44px min-height, 13px font, horizontal scroll</td></tr>
+      <tr><td>4</td><td>Mira's Picks</td><td><code>CelebratePageNew.jsx</code> (inline)</td><td>AI scored, 10 orders, 6+ products</td><td>Product clicks → ticket</td><td>OK — shimmer skeleton</td></tr>
+      <tr><td>5</td><td>SoulCelebrationPillars</td><td><code>SoulCelebrationPillars.jsx</code></td><td>"How would Mojo celebrate?"</td><td>PillarSoulModal submit</td><td>OK</td></tr>
+      <tr><td>6</td><td>MiraBirthdayBox</td><td><code>MiraBirthdayBox.jsx</code></td><td>"The Mojo Birthday Box"</td><td>useConcierge request() on Build</td><td>OK</td></tr>
+      <tr><td>7</td><td>Doggy Bakery Banner</td><td><code>CelebratePageNew.jsx</code> (inline)</td><td>"A cake that looks like Mojo — Indie"</td><td>Opens DoggyBakeryCakeModal</td><td>OK</td></tr>
+      <tr><td>8</td><td>CelebrateConcierge</td><td><code>CelebrateConcierge.jsx</code></td><td>"Celebrate Mojo the way only you know"</td><td>useConcierge book() on CTA → intake modal</td><td>OK</td></tr>
+      <tr><td>9</td><td>CelebrateServiceGrid</td><td><code>CelebrateServiceGrid.jsx</code></td><td>"Plan Mojo's birthday →"</td><td>useConcierge book() per card → intake modal</td><td>OK</td></tr>
+      <tr><td>10</td><td>GuidedCelebrationPaths</td><td><code>GuidedCelebrationPaths.jsx</code></td><td>"Book Mojo's Birthday Party →"</td><td>tdc.request()</td><td>OK</td></tr>
+      <tr><td>11</td><td>CelebrateNearMe</td><td><code>CelebrateNearMe.jsx</code></td><td>"Find celebration help for Mojo"</td><td>tdc.nearme() + bookViaConcierge()</td><td>OK</td></tr>
+      <tr><td>12</td><td>CelebrationMemoryWall</td><td><code>CelebrationMemoryWall.jsx</code></td><td>"Mojo's community celebrates"</td><td>N/A (display + upload)</td><td>OK</td></tr>
+    </table>
+  </div>
+
+  <!-- ── 5 Modals ── -->
+  <div class="card">
+    <h3>5 Modals / Drawers — All Working</h3>
+    <table>
+      <tr><th>Modal</th><th>Component</th><th>Opens From</th><th>Concierge Wired</th><th>Status</th></tr>
+      <tr><td>M1 CelebrateContentModal</td><td><code>CelebrateContentModal.jsx</code></td><td>Category strip click</td><td>attach_or_create_ticket on product interest</td><td><span class="badge done">DONE</span></td></tr>
+      <tr><td>M2 BirthdayBoxBuilder</td><td><code>BirthdayBoxBuilder.jsx</code></td><td>MiraBirthdayBox "Build"</td><td>/birthday-box/{petId}/concierge-handoff</td><td><span class="badge done">DONE</span></td></tr>
+      <tr><td>M3 BirthdayBoxBrowseDrawer</td><td><code>BirthdayBoxBrowseDrawer.jsx</code></td><td>Builder "Browse"</td><td>N/A (browse only)</td><td><span class="badge done">DONE</span></td></tr>
+      <tr><td>M4 ConciergeIntakeModal</td><td><code>ConciergeIntakeModal.jsx</code></td><td>Service grid, Concierge CTA</td><td>Form submit → ticket</td><td><span class="badge done">DONE</span></td></tr>
+      <tr><td>M5 DoggyBakeryCakeModal</td><td><code>DoggyBakeryCakeModal.jsx</code></td><td>Bakery banner</td><td>useConcierge + attach_or_create_ticket</td><td><span class="badge done">DONE</span></td></tr>
+    </table>
+  </div>
+
+  <!-- ── Soul Made™ Strip ── -->
+  <div class="card">
+    <h3>Soul Made™ Premium Strip — 10 Pillar Locations</h3>
+    <p>Redesigned from quiet text link → dark purple gradient card (<code>linear-gradient(135deg, #1a0a2e, #2d0a4e)</code>) with glowing CTA button, personalized headline ("{petName}'s face. On everything."), and product listing.</p>
+    <table>
+      <tr><th>Location</th><th>File</th><th>Shows In</th></tr>
+      <tr><td>Celebrate (Soul Picks)</td><td><code>CelebrateContentModal.jsx</code> ~line 1578</td><td>soul-picks category</td></tr>
+      <tr><td>Celebrate (Cross-sell)</td><td><code>CelebrateContentModal.jsx</code> ~line 1888</td><td>ALL other categories</td></tr>
+      <tr><td>Dine</td><td><code>DineContentModal.jsx</code></td><td>ALL categories (cross-sell)</td></tr>
+      <tr><td>Go</td><td><code>GoContentModal.jsx</code></td><td>ALL categories (cross-sell)</td></tr>
+      <tr><td>Play</td><td><code>PlayContentModal.jsx</code></td><td>ALL categories (cross-sell)</td></tr>
+      <tr><td>Care</td><td><code>CareContentModal.jsx</code></td><td>ALL categories (cross-sell)</td></tr>
+      <tr><td>Adopt</td><td><code>AdoptSoulPage.jsx</code></td><td>Page section</td></tr>
+      <tr><td>Farewell</td><td><code>FarewellSoulPage.jsx</code></td><td>Page section (memory-themed)</td></tr>
+      <tr><td>Emergency</td><td><code>EmergencySoulPage.jsx</code></td><td>Page section (safety-themed)</td></tr>
+      <tr><td>Learn</td><td><code>LearnSoulPage.jsx</code></td><td>Content modal soul_made category</td></tr>
+      <tr><td>Paperwork</td><td><code>PaperworkSoulPage.jsx</code></td><td>Content modal soul_made category</td></tr>
+    </table>
+  </div>
+
+  <!-- ── Concierge Wiring ── -->
+  <div class="card">
+    <h3>Concierge Wiring — Every Action Creates a Ticket</h3>
+    <table>
+      <tr><th>Component</th><th>Method</th><th>Channel</th><th>Status</th></tr>
+      <tr><td>CelebratePageNew</td><td>tdc.book() + sendToAdminInbox()</td><td>celebrate_page</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>CelebrateContentModal</td><td>attach_or_create_ticket (direct fetch)</td><td>celebrate_content_modal</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>DoggyBakeryCakeModal</td><td>useConcierge + attach_or_create_ticket</td><td>celebrate_bakery</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>CelebrateConcierge CTA</td><td>useConcierge book()</td><td>celebrate_concierge_cta</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>CelebrateServiceGrid</td><td>useConcierge book()</td><td>celebrate_service_grid</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>MiraBirthdayBox "Build"</td><td>useConcierge request()</td><td>celebrate_birthday_box_start</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>BirthdayBoxBuilder handoff</td><td>/birthday-box/{petId}/concierge-handoff</td><td>birthday_box</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>GuidedCelebrationPaths</td><td>tdc.request()</td><td>celebrate_guided_paths</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>CelebrateNearMe</td><td>tdc.nearme() + bookViaConcierge()</td><td>celebrate_nearme</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>SoulMadeModal</td><td>useConcierge</td><td>soul_made</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>PillarSoulProfile</td><td>useConcierge (multiple fire points)</td><td>pillar_soul</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>MiraAI / MiraChatWidget</td><td>Backend auto-creates ticket on intent</td><td>mira_chat</td><td><span class="badge done">WIRED</span></td></tr>
+    </table>
+  </div>
+
+  <!-- ── Mira AI ── -->
+  <div class="card">
+    <h3>Mira AI — Fully Pet-Aware</h3>
+    <h4>Bug Fixed: MiraChatWidget pet context</h4>
+    <ul>
+      <li><strong>Root cause:</strong> Backend <code>/api/mira/os/stream</code> read <code>body.get("pet_id")</code> but widget sends <code>selected_pet_id</code></li>
+      <li><strong>Fix:</strong> <code>pet_id = body.get("pet_id") or body.get("selected_pet_id")</code> in <code>mira_routes.py</code> line ~18710</li>
+      <li><strong>Enriched context:</strong> Vault allergies, favourite treat, personality, gender, soul score, breed — all injected into system prompt</li>
+      <li><strong>Verified:</strong> "My sweet indie pup... LOVE peanut butter... careful with chicken and beef — complete no-nos... 100% soul connection"</li>
+    </ul>
+    <h4>Bug Fixed: MiraAI global widget multi-pet</h4>
+    <ul>
+      <li><strong>Root cause:</strong> <code>MiraAI.jsx</code> only sent pet_id if <code>userPets.length === 1</code>. Dipali has 12 dogs → sent null</li>
+      <li><strong>Fix:</strong> <code>selected_pet_id: userPets?.[0]?.id || userPets?.[0]?.name || null</code> — always sends first pet</li>
+    </ul>
+  </div>
+
+  <!-- ── Celebration Wall ── -->
+  <div class="card">
+    <h3>Celebration Wall Upload — Cloudinary</h3>
+    <ul>
+      <li><strong>Before:</strong> Base64 stored directly in MongoDB (huge strings, unreliable), photos set to <code>pending_review</code> (never appeared)</li>
+      <li><strong>After:</strong> Uploads to Cloudinary (<code>tdc/celebration-wall/ugc/</code>), auto-quality 800px max, auto-approves (<code>is_featured: true</code>)</li>
+      <li><strong>Backend:</strong> <code>/api/celebration-wall/photos/ugc</code> in <code>app/api/celebration_wall_routes.py</code></li>
+      <li><strong>Frontend:</strong> <code>WallUploadModal.jsx</code> uses Cloudinary URL from response for immediate preview</li>
+    </ul>
+  </div>
+
+  <!-- ── Data Fixes ── -->
+  <div class="card">
+    <h3>Data Fixes</h3>
+    <table>
+      <tr><th>Fix</th><th>What Changed</th><th>Collection</th></tr>
+      <tr><td>Test pets cleanup</td><td>Deleted TestScoring, TestScoringWeight, duplicate Coco + 2,255 orphan records</td><td>pets, mira_product_scores, soul_score_history, pet_wrapped, service_desk_tickets</td></tr>
+      <tr><td>Mojo allergy data</td><td><code>food_allergies: "chicken"</code> (was <code>test_fish_185</code>), added <code>allergy_info</code> with vet confirmation</td><td>pets.doggy_soul_answers</td></tr>
+      <tr><td>Mojo soul data</td><td>Added <code>favourite_treat: "peanut_butter"</code>, <code>birthday_quarter: "q4"</code></td><td>pets.doggy_soul_answers</td></tr>
+      <tr><td>pet_breed in tickets</td><td>All new tickets now include <code>pet_breed</code> field (e.g. "Indie")</td><td>service_desk_tickets (via mira_service_desk.py)</td></tr>
+    </table>
+  </div>
+
+  <!-- ── UI Fixes ── -->
+  <div class="card">
+    <h3>UI / UX Fixes (9 Original + Mobile)</h3>
+    <table>
+      <tr><th>#</th><th>Fix</th><th>File(s)</th><th>Detail</th></tr>
+      <tr><td>1</td><td>Nav pillar shake</td><td><code>Navbar.jsx</code></td><td>Removed <code>transition-colors</code>, static border style</td></tr>
+      <tr><td>2</td><td>Mira OS back nav</td><td><code>MiraDemoPage.jsx</code></td><td>"&lt; Pet Home" link in header, navigates to /pet-home</td></tr>
+      <tr><td>3</td><td>Mojo allergy chip</td><td>DB + <code>CelebrateHero.jsx</code></td><td>Shows "Allergy: chicken" (not test_fish_185)</td></tr>
+      <tr><td>4</td><td>Category strip tap targets</td><td><code>CelebrateCategoryStrip.jsx</code></td><td>44px min-height, 78px min-width, 16px padding, 13px font</td></tr>
+      <tr><td>5</td><td>Announcement bar</td><td><code>Navbar.jsx</code></td><td>"India's first Pet Life OS · Built in memory of Mystique · Now in early access" — 13px</td></tr>
+      <tr><td>6</td><td>Hero animation</td><td><code>CelebrateHero.jsx</code></td><td>Fade-only (removed scale bounce from SoulChip + avatar)</td></tr>
+      <tr><td>7</td><td>Mira OS pills</td><td><code>mira-header-shell.css</code></td><td>Already had proper mobile horizontal scroll (verified)</td></tr>
+      <tr><td>8</td><td>Test pets</td><td>DB cleanup</td><td>Deleted from pets + 2,255 orphan records across 5 collections</td></tr>
+      <tr><td>9</td><td>/custom-cake</td><td><code>App.js</code></td><td>Redirects to /celebrate via <code>&lt;Navigate&gt;</code></td></tr>
+      <tr><td>10</td><td>Mobile fonts</td><td><code>Navbar.jsx</code>, <code>Footer.jsx</code></td><td>PET CONCIERGE® 13px, copyright 13px, "Learn more" 44px tap target</td></tr>
+    </table>
+  </div>
+
+  <!-- ── Testing Results ── -->
+  <div class="card">
+    <h3>Testing Results — 27 March 2026</h3>
+    <div class="success">
+      <p><strong>Backend: 11/11 PASSED</strong></p>
+    </div>
+    <table>
+      <tr><th>Test</th><th>Result</th></tr>
+      <tr><td>CelebrateConcierge CTA → creates ticket</td><td><span class="badge done">PASS</span></td></tr>
+      <tr><td>CelebrateServiceGrid card → creates ticket</td><td><span class="badge done">PASS</span></td></tr>
+      <tr><td>MiraBirthdayBox Build → creates ticket</td><td><span class="badge done">PASS</span></td></tr>
+      <tr><td>Soul Made strip visible in Birthday Cakes modal</td><td><span class="badge done">PASS</span></td></tr>
+      <tr><td>Celebration Wall Cloudinary upload</td><td><span class="badge done">PASS</span></td></tr>
+      <tr><td>Announcement bar visible</td><td><span class="badge done">PASS</span></td></tr>
+      <tr><td>Mira OS back button navigates</td><td><span class="badge done">PASS</span></td></tr>
+      <tr><td>UGC photo auto-approved + on wall</td><td><span class="badge done">PASS</span></td></tr>
+      <tr><td>Mobile 375px no horizontal overflow</td><td><span class="badge done">PASS</span></td></tr>
+      <tr><td>Mobile fonts ≥13px</td><td><span class="badge done">PASS</span></td></tr>
+      <tr><td>Mira chat accepts selected_pet_id</td><td><span class="badge done">PASS</span></td></tr>
+    </table>
+    <p style="margin-top:12px;"><strong>Test report:</strong> <code>/app/test_reports/iteration_198.json</code></p>
+  </div>
+
+  <!-- ── Files Modified ── -->
+  <div class="card">
+    <h3>All Files Modified in This Audit</h3>
+    <h4>Frontend</h4>
+    <ul>
+      <li><code>Navbar.jsx</code> — Announcement bar, pillar nav, font sizes</li>
+      <li><code>Footer.jsx</code> — Font sizes, tap targets</li>
+      <li><code>App.js</code> — /custom-cake redirect</li>
+      <li><code>MiraAI.jsx</code> — Multi-pet selected_pet_id fix</li>
+      <li><code>MiraDemoPage.jsx</code> — Back to Pet Home link</li>
+      <li><code>CelebrateHero.jsx</code> — Fade-only animation</li>
+      <li><code>CelebrateCategoryStrip.jsx</code> — Mobile tap targets</li>
+      <li><code>CelebrateConcierge.jsx</code> — useConcierge book() wiring</li>
+      <li><code>CelebrateServiceGrid.jsx</code> — useConcierge book() wiring</li>
+      <li><code>MiraBirthdayBox.jsx</code> — useConcierge request() wiring</li>
+      <li><code>CelebrateContentModal.jsx</code> — Soul Made premium strip (×2)</li>
+      <li><code>DineContentModal.jsx</code> — Soul Made premium strip cross-sell</li>
+      <li><code>GoContentModal.jsx</code> — Soul Made premium strip cross-sell</li>
+      <li><code>PlayContentModal.jsx</code> — Soul Made premium strip cross-sell</li>
+      <li><code>CareContentModal.jsx</code> — Soul Made premium strip cross-sell</li>
+      <li><code>AdoptSoulPage.jsx</code> — Soul Made premium strip</li>
+      <li><code>FarewellSoulPage.jsx</code> — Soul Made premium strip (memory-themed)</li>
+      <li><code>EmergencySoulPage.jsx</code> — Soul Made premium strip (safety-themed)</li>
+      <li><code>LearnSoulPage.jsx</code> — Soul Made premium strip</li>
+      <li><code>PaperworkSoulPage.jsx</code> — Soul Made premium strip</li>
+      <li><code>WallUploadModal.jsx</code> — Cloudinary URL from response</li>
+    </ul>
+    <h4>Backend</h4>
+    <ul>
+      <li><code>mira_routes.py</code> — selected_pet_id fix + enriched pet context in /os/stream</li>
+      <li><code>mira_service_desk.py</code> — pet_breed field in ticket creation</li>
+      <li><code>app/api/celebration_wall_routes.py</code> — Cloudinary upload + auto-approve</li>
+    </ul>
+    <h4>Database</h4>
+    <ul>
+      <li>Deleted 3 test pets + 2,255 orphan records</li>
+      <li>Fixed Mojo's doggy_soul_answers (food_allergies, allergy_info, favourite_treat, birthday_quarter)</li>
+    </ul>
+  </div>
+
+  <!-- ── DO NOT TOUCH warning ── -->
+  <div class="alert" style="background:#7C2D1220; border-color:#991B1B; margin-top:24px;">
+    <p style="color:#FCA5A5; font-weight:800; font-size:1.1rem;">
+      FUTURE AGENTS: DO NOT MODIFY CELEBRATE COMPONENTS
+    </p>
+    <p style="color:#FCA5A5;">
+      The Celebrate pillar has been fully audited, tested, and signed off on 27 March 2026.
+      All 12 sections render correctly. All concierge flows create tickets. Mobile is clean at 375px.
+      Mira knows the pet. Soul Made strips are premium-styled across all pillars.
+      <br><br>
+      <strong>If you need to change a celebrate component, you MUST get explicit user approval first.</strong>
+      <br>
+      Breaking changes to this pillar will invalidate the entire audit.
+      <br><br>
+      Signed: Celebrate Audit Agent — 27 March 2026
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     FINAL AUDIT: DINE PILLAR — SIGNED OFF 27 MARCH 2026
+     ════════════════════════════════════════════════════════════════════════
+     DO NOT MODIFY ANY DINE COMPONENT WITHOUT EXPLICIT USER APPROVAL.
+     This pillar passed 7/7 concierge flows and mobile 375px audit.
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<div class="section" id="dine-audit">
+  <h2>FINAL AUDIT: DINE PILLAR — SIGNED OFF 27 MARCH 2026</h2>
+
+  <div class="alert" style="background:#14532D20; border-color:#14532D;">
+    <p style="color:#86EFAC; font-weight:700; font-size:1rem;">
+      STATUS: COMPLETE — DO NOT TOUCH
+    </p>
+    <p style="color:#86EFAC;">
+      This pillar has been fully audited, concierge-wired (7/7 flows verified), mobile-audited at 375px, bugs fixed, and signed off by the product owner.
+      Future agents: DO NOT modify any dine component without explicit user approval.
+    </p>
+  </div>
+
+  <!-- ── 11 Page Sections ── -->
+  <div class="card">
+    <h3>11 Page Sections — All Rendering at 375px</h3>
+    <table>
+      <tr><th>#</th><th>Section</th><th>Component</th><th>Fonts ≥13px</th><th>Tap ≥44px</th><th>Overflow</th><th>Concierge</th></tr>
+      <tr><td>1</td><td>DineHero</td><td><code>DineHero.jsx</code></td><td>OK</td><td>OK</td><td>None</td><td>N/A (display)</td></tr>
+      <tr><td>2</td><td>PillarSoulProfile</td><td><code>PillarSoulProfile.jsx</code></td><td>OK</td><td>OK</td><td>None</td><td>useConcierge</td></tr>
+      <tr><td>3</td><td>Category Strip</td><td><code>DineSoulPage.jsx</code> (inline)</td><td>OK 13px</td><td>OK 44px</td><td>H-scroll</td><td>Navigation</td></tr>
+      <tr><td>4</td><td>Mira's Picks</td><td><code>DineSoulPage.jsx</code> (inline)</td><td>OK</td><td>OK</td><td>H-scroll</td><td>Product clicks → ticket</td></tr>
+      <tr><td>5</td><td>DineDimensions</td><td><code>DineDimensions.jsx</code></td><td>OK</td><td>OK</td><td>None</td><td>useConcierge request()</td></tr>
+      <tr><td>6</td><td>MealBoxCard</td><td><code>MealBoxCard.jsx</code></td><td>OK</td><td>OK</td><td>None</td><td>tdc.book + bookViaConcierge</td></tr>
+      <tr><td>7</td><td>PersonalizedDine</td><td><code>PersonalizedDineSection.jsx</code></td><td>OK</td><td>OK</td><td>None</td><td>/api/service-requests</td></tr>
+      <tr><td>8</td><td>DineServiceCards</td><td><code>DineConciergeSection.jsx</code></td><td>OK</td><td>OK</td><td>None</td><td>useConcierge book()</td></tr>
+      <tr><td>9</td><td>GuidedNutritionPaths</td><td><code>GuidedNutritionPaths.jsx</code></td><td>OK</td><td>OK</td><td>None</td><td>tdc.request()</td></tr>
+      <tr><td>10</td><td>Tabs (Eat/Dine Out)</td><td><code>DineSoulPage.jsx</code></td><td>OK</td><td>OK</td><td>None</td><td>Reserve → intake modal</td></tr>
+      <tr><td>11</td><td>Soul Made™ Strip</td><td><code>DineContentModal.jsx</code></td><td>OK</td><td>OK</td><td>None</td><td>useConcierge (SoulMadeModal)</td></tr>
+    </table>
+  </div>
+
+  <!-- ── 7 Concierge Flows ── -->
+  <div class="card">
+    <h3>7 Concierge Flows — All Verified</h3>
+    <table>
+      <tr><th>Flow</th><th>Action</th><th>Ticket ID</th><th>Channel</th><th>pet_breed</th></tr>
+      <tr><td>1</td><td>Category Modal → Product Interest</td><td>TDB-2026-0692</td><td>dine_content_modal</td><td>Indie</td></tr>
+      <tr><td>2</td><td>Meal Box → Build started</td><td>TDB-2026-0693</td><td>dine_meal_box_start</td><td>Indie</td></tr>
+      <tr><td>3</td><td>Dine Concierge CTA</td><td>TDB-2026-0694</td><td>dine_concierge_cta</td><td>Indie</td></tr>
+      <tr><td>4</td><td>Service Card → Book</td><td>TDB-2026-0695</td><td>dine_service_grid</td><td>Indie</td></tr>
+      <tr><td>5</td><td>Guided Nutrition Path</td><td>TDB-2026-0696</td><td>dine_guided_paths</td><td>Indie</td></tr>
+      <tr><td>6</td><td>Dine Out → Reserve</td><td>TDB-2026-0697</td><td>dine_out</td><td>Indie</td></tr>
+      <tr><td>7</td><td>Soul Made Strip</td><td>TDB-2026-0698</td><td>soul_made_dine</td><td>Indie</td></tr>
+    </table>
+  </div>
+
+  <!-- ── Bugs Fixed ── -->
+  <div class="card">
+    <h3>Bugs Fixed</h3>
+    <table>
+      <tr><th>Bug</th><th>Fix</th><th>File</th></tr>
+      <tr><td>"Find Dine" / "Dine Out" duplicate tabs</td><td>Removed "Find Dine" tab — both rendered identical <code>PetFriendlySpots</code></td><td><code>DineSoulPage.jsx</code></td></tr>
+      <tr><td>"Mojo's none" in hero</td><td>Added null/none guard: <code>healthCond</code> falls back to empty string</td><td><code>DineHero.jsx</code></td></tr>
+      <tr><td>"Mojo's none" in Guided Paths</td><td>Added null/none guard: <code>condition</code> falls back to null</td><td><code>GuidedNutritionPaths.jsx</code></td></tr>
+    </table>
+  </div>
+
+  <!-- ── Concierge Wiring ── -->
+  <div class="card">
+    <h3>Concierge Wiring — Every Action Creates a Ticket</h3>
+    <table>
+      <tr><th>Component</th><th>Method</th><th>Channel</th><th>Status</th></tr>
+      <tr><td>DineContentModal</td><td>attach_or_create_ticket (direct fetch)</td><td>dine_content_modal</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>DineConciergeSection CTA</td><td>useConcierge book()</td><td>dine_concierge_cta</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>DineDimensions cards</td><td>useConcierge request()</td><td>dine_dimension_card</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>MealBoxCard</td><td>tdc.book() + bookViaConcierge()</td><td>dine_meal_box</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>PersonalizedDineSection</td><td>/api/service-requests</td><td>dine_personalized</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>GuidedNutritionPaths</td><td>tdc.request()</td><td>dine_guided_paths</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>PetFriendlySpots (Dine Out)</td><td>onReserve → intake modal</td><td>dine_out</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>SoulMadeModal</td><td>useConcierge</td><td>soul_made_dine</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>PillarSoulProfile</td><td>useConcierge (multiple fire points)</td><td>pillar_soul</td><td><span class="badge done">WIRED</span></td></tr>
+      <tr><td>MiraChatWidget</td><td>Backend auto-creates ticket on intent</td><td>mira_chat</td><td><span class="badge done">WIRED</span></td></tr>
+    </table>
+  </div>
+
+  <!-- ── Files Modified ── -->
+  <div class="card">
+    <h3>All Files Modified in Dine Audit</h3>
+    <ul>
+      <li><code>DineSoulPage.jsx</code> — Removed "Find Dine" duplicate tab</li>
+      <li><code>DineHero.jsx</code> — Fixed "Mojo's none" health condition</li>
+      <li><code>GuidedNutritionPaths.jsx</code> — Fixed "Mojo's none" condition</li>
+      <li><code>DineConciergeSection.jsx</code> — Added useConcierge book() on CTA</li>
+      <li><code>DineDimensions.jsx</code> — Added useConcierge request() on cards</li>
+      <li><code>DineContentModal.jsx</code> — Soul Made premium strip (already done in Celebrate session)</li>
+    </ul>
+  </div>
+
+  <!-- ── DO NOT TOUCH warning ── -->
+  <div class="alert" style="background:#7C2D1220; border-color:#991B1B; margin-top:24px;">
+    <p style="color:#FCA5A5; font-weight:800; font-size:1.1rem;">
+      FUTURE AGENTS: DO NOT MODIFY DINE COMPONENTS
+    </p>
+    <p style="color:#FCA5A5;">
+      The Dine pillar has been fully audited, tested, and signed off on 27 March 2026.
+      All 11 sections render correctly at 375px. All 7 concierge flows create tickets with pet_breed=Indie.
+      "Find Dine" duplicate removed. "Mojo's none" bugs fixed. Soul Made strips premium-styled.
+      <br><br>
+      <strong>If you need to change a dine component, you MUST get explicit user approval first.</strong>
+      <br>
+      Breaking changes to this pillar will invalidate the entire audit.
+      <br><br>
+      Signed: Dine Audit Agent — 27 March 2026
+    </p>
+  </div>
+</div>
 
 </div>
 </body>

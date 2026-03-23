@@ -7,6 +7,7 @@
 import React from 'react';
 import { Lock } from 'lucide-react';
 import { useResizeMobile } from '../../hooks/useResizeMobile';
+import { useConcierge } from '../../hooks/useConcierge';
 
 export const DINE_DIMENSIONS = [
   {
@@ -146,6 +147,7 @@ const DimensionCard = ({ dim, pet, loves, avoid, isOpen, onClick }) => {
 
 const DineDimensions = ({ pet, openDimension, onOpen }) => {
   const isMobile = useResizeMobile();
+  const { request } = useConcierge({ pet, pillar: 'dine' });
   const loves = [
     ...(pet?.preferences?.favorite_flavors || []),
     ...(Array.isArray(pet?.doggy_soul_answers?.favorite_treats)
@@ -176,7 +178,10 @@ const DineDimensions = ({ pet, openDimension, onOpen }) => {
             loves={loves}
             avoid={avoid}
             isOpen={openDimension === dim.id}
-            onClick={() => onOpen(dim.id)}
+            onClick={() => {
+              request(`${pet?.name || 'Pet'} — ${dim.title}`, { channel: 'dine_dimension_card' });
+              onOpen(dim.id);
+            }}
           />
         ))}
       </div>

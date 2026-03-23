@@ -14,11 +14,13 @@ import React, { useState, useEffect } from 'react';
 import CelebrateServiceCard from '../celebrate/CelebrateServiceCard';
 import DineConciergeModal from './DineConciergeModal';
 import { getApiUrl } from '../../utils/api';
+import { useConcierge } from '../../hooks/useConcierge';
 
 const DineConciergeSection = ({ pet }) => {
   const [services,    setServices]    = useState([]);
   const [loading,     setLoading]     = useState(true);
   const [intakeModal, setIntakeModal] = useState({ open: false, serviceType: '' });
+  const { book } = useConcierge({ pet, pillar: 'dine' });
 
   const petName = pet?.name || 'your pet';
 
@@ -48,7 +50,10 @@ const DineConciergeSection = ({ pet }) => {
 
   const resolveCopy = (text = '') => text.replace(/\{petName\}/g, petName);
 
-  const openIntake = (serviceType) => setIntakeModal({ open: true, serviceType });
+  const openIntake = (serviceType) => {
+    book({ service: `${petName} — ${serviceType}`, channel: 'dine_service_grid', urgency: 'normal' });
+    setIntakeModal({ open: true, serviceType });
+  };
 
   // Skeleton while loading
   if (loading) {
