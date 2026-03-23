@@ -70,7 +70,9 @@ Base (Oats / Ragi) does not affect price.
 ### Breed Colour Variants (161 total across 50 breeds)
 - **Indie**: 5 variants (Ginger, Black, Fawn, Brindle, Patchy)
 - **Labrador**: 4 variants (Yellow, Black, Chocolate, Fox Red)
-- **Husky**: 4 variants (Blue Eyes, Hetero Eyes, White, Agouti)
+- **Husky**: 6 variants (Blue Eyes, Hetero Eyes, White, Agouti, **Black & White**, **Grey & White**)
+  - Black & White → maps to "Black Husky" breed registration
+  - Grey & White → maps to "Grey Husky" breed registration
 - Most breeds: 3–4 variants
 
 ### API Endpoints

@@ -1,5 +1,5 @@
 # Pet Life OS — Product Requirements Document
-_Last updated: 2026-03-23_
+_Last updated: 2026-03-24_
 
 ## Original Problem Statement
 Build a full-featured Pet Life OS with 13+ pillar pages, AI-powered product recommendations, breed-specific merchandise, and a custom order flow (Soul Made™) across all pillars.
@@ -15,19 +15,21 @@ Build a full-featured Pet Life OS with 13+ pillar pages, AI-powered product reco
 backend/
     server.py                           # Main app (24k lines)
     nearby_places_routes.py             # /api/nearby/* + /api/nearme/search
-    app/api/mockup_routes.py            # AI pillar assignment + breed products
+    app/api/mockup_routes.py            # AI pillar assignment + breed products + Yappy cake prompts
 frontend/
     src/
         components/
-            SoulMadeModal.jsx            # 4-step custom order modal (CENTERED, not bottom-stuck)
+            SoulMadeModal.jsx            # 4-step custom order modal (CENTRED)
             ProductCard.jsx              # Image rendering with mockup_url priority
-            PillarSoulProfile.jsx        # Soul drawer (CENTERED modal, not bottom-stuck)
+            PillarSoulProfile.jsx        # Soul drawer (CENTRED modal)
+            celebrate/
+                DoggyBakeryCakeModal.jsx # Breed cake order modal (THE DOGGY BAKERY™)
+                BirthdayBoxBrowseDrawer.jsx # 2-col grid, ProductBoxEditor on click
+            admin/
+                BreedCakeManager.jsx     # Admin gallery + generation for cake illustrations
+                SoulProductsManager.jsx  # AI soul product generation + management
             common/
                 PersonalisedBreedSection.jsx  # Shared breed products + Soul Made trigger
-            care/
-                CareCategoryStrip.jsx    # Has Soul Made™ pill
-                CareContentModal.jsx     # Has soul_made category + trigger
-                CareNearMe.jsx           # Fixed: uses /api/nearme/search
             celebrate/
                 CelebrateCategoryStrip.jsx  # Has Soul Made™ pill
                 CelebrateContentModal.jsx   # Has soul_made category + trigger
@@ -137,8 +139,11 @@ Guide to fix bottom-stuck modals/drawers. Includes:
 | Endpoint | Purpose |
 |----------|---------|
 | `GET /api/mockups/breed-products?breed={breed}&pillar={pillar}` | Breed-specific products |
+| `GET /api/mockups/breed-products?product_type=birthday_cake&breed={breed}` | Yappy-style cake illustrations |
+| `POST /api/mockups/generate-breed-cakes` | Generate Yappy-style cake illustrations (163 variants, 50 breeds) |
+| `GET /api/mockups/mockup-gen-status` | Poll generation progress |
 | `POST /api/upload/image` | Cloudinary photo upload (preset: tdc_custom_orders) |
-| `POST /api/service_desk/attach_or_create_ticket` | Concierge ticket (via useConcierge) |
+| `POST /api/service_desk/attach_or_create_ticket` | Concierge ticket (direct fetch + useConcierge) |
 | `GET /api/nearme/search?query={query}&type={type}` | NearMe text search (Google Places) |
 | `GET /api/nearby/places?lat={lat}&lng={lng}&type={type}` | NearMe coordinate search |
 
@@ -152,9 +157,30 @@ Guide to fix bottom-stuck modals/drawers. Includes:
 
 ## Prioritized Backlog
 
-### P0 — Immediate (Verification)
-- [ ] Verify Soul Made works on all 5 ContentModal pillars (Dine, Go, Play, Celebrate, Care)
-- [ ] Check remaining modals for bottom-stuck bug (grep for `alignItems.*flex-end`)
+### P0 — Done ✅ (March 2026)
+- [x] Soul Made™ on ALL 11 pillars (Care, Celebrate, Dine, Go, Play, Learn, Shop, Paperwork, Adopt, Farewell, Emergency)
+- [x] THE DOGGY BAKERY™ Breed Cake Modal — Yappy-style illustrations, pet-aware personalisation
+- [x] 163 cake illustrations generated (50 breeds × 3-6 colour variants)
+- [x] Admin → 🎂 Breed Cakes tab (BreedCakeManager)
+- [x] Services price hiding — "Personalised · Price on request" across all pillars
+- [x] Birthday Box Browse Drawer — admin-style soul cards, ProductBoxEditor, swap bug fixed
+- [x] Black Husky + Grey Husky cake variants added and generated
+
+- [x] 940 flat art products live (163 Yappy illustrations × 8 product types via Cloudinary overlay)
+  - Zero AI cost — uses existing watercolour soul products as base, overlays Yappy face
+  - Types: flat_bandana (₹349), flat_mug (₹599), flat_tote (₹799), flat_cushion (₹1,299), flat_phone_case (₹499), flat_tshirt (₹899), flat_notebook (₹449), flat_keyring (₹249)
+  - Available via `/api/mockups/breed-products?breed={breed}&pillar=shop`
+
+- [x] Breed name normalization fixed globally — 51/51 breeds return products correctly
+  - Backend: spaces→underscores + BREED_ALIASES (black husky→husky, dobermann→doberman, etc.)
+  - Frontend SoulMadeCollection: BREED_KEY_MAP updated + smart fallback for unmapped breeds
+  - Frontend SoulMadeModal: breed normalized before API call
+  - test_fish_185 allergy bug fixed in SoulMadeModal (test_ prefixed values ignored)
+- [x] 940 flat art products (831 after cushion removed) via Cloudinary overlay — zero AI cost
+  - Uses existing watercolour soul products as base, Yappy face overlaid via e_bgremoval
+  - flat_cushion removed (coloured base looks terrible with overlay)
+- [x] Orphan breed_products cleaned (593 deleted) — pending count: 50 rain_jacket only
+- [x] breed_catalogue.py updated to match by direct breed field (flat art products now visible)
 
 ### P1 — Next Sprint
 - [ ] Add "3 vets near you" to daily health WhatsApp reminders (NearMe API at scheduler)
@@ -162,16 +188,17 @@ Guide to fix bottom-stuck modals/drawers. Includes:
 
 ### P2 — Future
 - [ ] Build `Love` pillar
-- [ ] Refactor `server.py` (24k lines) and `MiraDemoPage.jsx`
-- [ ] Remove "Skip Payment" from onboarding
+- [ ] Refactor `server.py` (24k lines)
 - [ ] "My Custom Orders" tab in user profile
-- [ ] Admin notification for new Soul Made orders
+- [ ] Admin notification chime for new Soul Made / cake orders
+- [ ] MiraCuratedBox swap — remaining OccasionBoxBuilder edge cases
 
 ---
 
 ## 3rd Party Integrations
 - OpenAI GPT-4o / Claude Sonnet — Emergent LLM Key
-- Cloudinary — user API key (images, preset: tdc_custom_orders)
+- OpenAI Image Generation (gpt-image-1) — for Yappy-style cake illustrations
+- Cloudinary — user API key (images, auto-upload for all generated mockups)
 - Razorpay — user API key (payments)
 - Gupshup — user API key (WhatsApp)
 - Resend — user API key (email)
@@ -184,15 +211,16 @@ Guide to fix bottom-stuck modals/drawers. Includes:
 | Pillar | Color | Label | Soul Made Method | Status |
 |--------|-------|-------|-----------------|--------|
 | care | #40916C / G.sage | Wellness | CategoryStrip + CareContentModal | ✅ |
-| celebrate | #A855F7 | Celebration | CategoryStrip + CelebrateContentModal | ✅ |
-| dine | #FF8C42 | Food | CategoryStrip + DineContentModal | ✅ Needs verification |
-| go | G.teal / #3498DB | Travel | CategoryStrip + GoContentModal | ✅ Needs verification |
-| play | G.orange / #E76F51 | Play | CategoryStrip + PlayContentModal | ✅ Needs verification |
+| celebrate | #A855F7 | Celebration | CategoryStrip + CelebrateContentModal + DoggyBakeryCakeModal | ✅ |
+| dine | #FF8C42 | Food | CategoryStrip + DineContentModal | ✅ |
+| go | G.teal / #3498DB | Travel | CategoryStrip + GoContentModal | ✅ |
+| play | G.orange / #E76F51 | Play | CategoryStrip + PlayContentModal | ✅ |
 | learn | G.violet / #7C3AED | Learning | PersonalisedBreedSection | ✅ |
 | shop | G.gold / #F59E0B | Shopping | PersonalisedBreedSection | ✅ |
 | paperwork | G.teal / #0D9488 | Documents | PersonalisedBreedSection | ✅ |
 | adopt | G.rose / #D4537E | Adoption | SoulMadeModal trigger after MiraPicksSection | ✅ |
 | farewell | G.indigo / #6366F1 | Farewell | SoulMadeModal trigger (In memory of {pet}) | ✅ |
-| services | #0EA5E9 | Services | PersonalisedBreedSection | ✅ |
+| services | #0EA5E9 | Services | PersonalisedBreedSection (prices hidden) | ✅ |
 | emergency | #EF4444 | Safety | SoulMadeModal trigger after MiraPicksSection | ✅ |
+| advisory | #10B981 | Advisory | EXCLUDED | ❌ |
 | advisory | #10B981 | Advisory | EXCLUDED | ❌ |

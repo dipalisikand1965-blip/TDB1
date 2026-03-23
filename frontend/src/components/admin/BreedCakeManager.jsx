@@ -90,6 +90,20 @@ export default function BreedCakeManager() {
   };
 
   // ── Stop generation ───────────────────────────────────────────────────────
+  const generateFlatArt = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/mockups/generate-flat-art`, { method: 'POST', headers: AUTH });
+      if (res.ok) {
+        const data = await res.json();
+        toast.success(`🎨 ${data.message}`);
+        pollStatus();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || err.detail || 'Failed to start. Upload product templates first.');
+      }
+    } catch { toast.error('Failed to start flat art generation'); }
+  };
+
   const stopGeneration = async () => {
     await fetch(`${API_URL}/api/mockups/stop-mockup-gen`, { method: 'POST' });
     toast.info('Stopping after current item…');
@@ -131,7 +145,11 @@ export default function BreedCakeManager() {
     } catch { toast.error('Delete failed'); }
   };
 
-  // ── Grouped by breed ──────────────────────────────────────────────────────
+  // Force download via Cloudinary fl_attachment transformation
+  const getDownloadUrl = (url) => {
+    if (!url || !url.includes('/upload/')) return url;
+    return url.replace('/upload/', '/upload/fl_attachment/');
+  };
   const filtered = illustrations.filter(i =>
     !search || i.breed?.includes(search.toLowerCase()) || i.name?.toLowerCase().includes(search.toLowerCase())
   );
@@ -164,6 +182,15 @@ export default function BreedCakeManager() {
               <Play className="w-3 h-3 mr-1" /> Generate All Breeds
             </Button>
           )}
+          <Button
+            onClick={generateFlatArt}
+            disabled={status?.running}
+            className="bg-amber-500 hover:bg-amber-600 text-white"
+            size="sm"
+            title="Cloudinary overlay — uses existing illustrations. Requires blank product templates uploaded first."
+          >
+            🎨 Flat Art Products
+          </Button>
           <Button onClick={fetchIllustrations} variant="outline" size="sm">
             <RefreshCw className="w-3 h-3 mr-1" /> Refresh
           </Button>
@@ -277,9 +304,9 @@ export default function BreedCakeManager() {
                           </button>
                           {(item.mockup_url || item.cloudinary_url) && (
                             <a
-                              href={item.cloudinary_url || item.mockup_url}
-                              target="_blank" rel="noopener noreferrer"
-                              title="Open full image"
+                              href={getDownloadUrl(item.cloudinary_url || item.mockup_url)}
+                              download={`${item.name || item.id}.webp`}
+                              title="Download illustration"
                               className="flex-1 p-1 rounded bg-blue-50 hover:bg-blue-100 transition-colors"
                             >
                               <Download className="w-3 h-3 mx-auto text-blue-600" />
