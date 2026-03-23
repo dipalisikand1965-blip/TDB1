@@ -3986,8 +3986,8 @@ const MiraDemoPage = () => {
           All navigation elements in one clean horizontal row
           ═══════════════════════════════════════════════════════════════════ */}
       <div className="mira-sticky-header" ref={shellRefs.headerRef}>
-        {/* Back to Pillar - Shows when user came from a pillar page */}
-        {(returnUrl || sourcePillar) && (
+        {/* Back to Pillar - Shows when user came from a pillar page, or Pet Home fallback */}
+        {(returnUrl || sourcePillar) ? (
           <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-b border-purple-200/30">
             <div className="max-w-4xl mx-auto px-4 py-2 flex items-center justify-between">
               <button
@@ -3997,6 +3997,19 @@ const MiraDemoPage = () => {
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span>Back to {PILLAR_NAMES[sourcePillar] || 'browsing'}</span>
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="border-b border-white/5">
+            <div className="max-w-4xl mx-auto px-4 py-1.5 flex items-center">
+              <button
+                onClick={() => navigate('/pet-home')}
+                className="flex items-center gap-1.5 text-xs font-medium text-white/50 hover:text-white/80 transition-colors"
+                data-testid="mira-os-back-btn"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span>Pet Home</span>
               </button>
             </div>
           </div>
