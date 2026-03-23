@@ -504,30 +504,55 @@ async def get_breed_products(
     product_type: Optional[str] = None,
     has_mockup: Optional[bool] = None,
     pillar: Optional[str] = None,
-    limit: int = 50
+    limit: int = 50,
+    skip: int = 0,
+    search: Optional[str] = None,
+    flat_only: bool = False,
 ):
     """Get breed products from breed_products collection only.
-    Filters to is_mockup=True (proper product mockups)."""
+    Filters to is_mockup=True (proper product mockups).
+    flat_only=True returns only flat-art overlay products (product_type starts with flat_)."""
     db = get_db()
-    
+
+    BREED_ALIASES = {
+        "black_husky": "husky", "grey_husky": "husky", "white_husky": "husky",
+        "siberian_husky": "husky",
+        "dobermann": "doberman", "doberman_pinscher": "doberman",
+        "english_bulldog": "bulldog",
+        "yorkshire_terrier": "yorkshire", "yorkie": "yorkshire",
+        "cavalier_king_charles_spaniel": "cavalier", "cavalier_king_charles": "cavalier",
+        "toy_poodle": "poodle", "miniature_poodle": "poodle",
+        "shnoodle": "schnoodle",
+        "labrador_retriever": "labrador", "lab": "labrador",
+        "indian_pariah": "indie", "indian_pariah_dog": "indie",
+        "desi_dog": "indie", "street_dog": "indie", "mixed": "indie",
+        "saint_bernard": "st_bernard",
+        "jack_russell_terrier": "jack_russell",
+    }
+
+    # flat_only mode: return only flat-art overlay products
+    if flat_only:
+        query = {"is_mockup": True, "product_type": {"$regex": "^flat_"}}
+        if breed:
+            breed_norm = breed.lower().strip().replace(" ", "_").replace("-", "_")
+            breed_resolved = BREED_ALIASES.get(breed_norm, breed_norm)
+            query["$or"] = [
+                {"breed": breed_resolved},
+                {"breed": breed_norm},
+                {"breed": breed.lower()},
+            ]
+        if search:
+            text_cond = {"$or": [
+                {"name": {"$regex": search, "$options": "i"}},
+                {"breed": {"$regex": search, "$options": "i"}},
+            ]}
+            query = {"$and": [query, text_cond]}
+        total = await db.breed_products.count_documents(query)
+        products = await db.breed_products.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
+        return {"products": products, "total": total, "count": len(products)}
+
     query = {"is_mockup": True}
     if breed:
-        # Normalise + alias map — handles ALL 35 official breeds
-        BREED_ALIASES = {
-            "black_husky": "husky", "grey_husky": "husky", "white_husky": "husky",
-            "siberian_husky": "husky",
-            "dobermann": "doberman", "doberman_pinscher": "doberman",
-            "english_bulldog": "bulldog",
-            "yorkshire_terrier": "yorkshire", "yorkie": "yorkshire",
-            "cavalier_king_charles_spaniel": "cavalier", "cavalier_king_charles": "cavalier",
-            "toy_poodle": "poodle", "miniature_poodle": "poodle",
-            "shnoodle": "schnoodle",
-            "labrador_retriever": "labrador", "lab": "labrador",
-            "indian_pariah": "indie", "indian_pariah_dog": "indie",
-            "desi_dog": "indie", "street_dog": "indie", "mixed": "indie",
-            "saint_bernard": "st_bernard",
-            "jack_russell_terrier": "jack_russell",
-        }
         breed_norm = breed.lower().strip().replace(" ", "_").replace("-", "_")
         breed_resolved = BREED_ALIASES.get(breed_norm, breed_norm)
         query["$or"] = [
@@ -545,11 +570,20 @@ async def get_breed_products(
             query["mockup_url"] = {"$ne": None}
         else:
             query["mockup_url"] = None
-    
-    products = await db.breed_products.find(query, {"_id": 0}).limit(limit).to_list(limit)
-    
+    if search:
+        text_cond = {"$or": [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"breed": {"$regex": search, "$options": "i"}},
+            {"product_type": {"$regex": search, "$options": "i"}},
+        ]}
+        query = {"$and": [query, text_cond]}
+
+    total = await db.breed_products.count_documents(query)
+    products = await db.breed_products.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
+
     return {
         "products": products,
+        "total": total,
         "count": len(products),
         "filters": {"breed": breed, "product_type": product_type, "pillar": pillar, "has_mockup": has_mockup}
     }
