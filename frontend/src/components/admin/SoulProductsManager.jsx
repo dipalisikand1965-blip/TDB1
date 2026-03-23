@@ -74,6 +74,10 @@ const SoulProductsManager = () => {
   const [mockupStats, setMockupStats] = useState(null);
   const [generationStatus, setGenerationStatus] = useState(null);
   const [breedProducts, setBreedProducts] = useState([]);
+  const [breedProductsTotal, setBreedProductsTotal] = useState(0);
+  const [galleryPage, setGalleryPage] = useState(1);
+  const [gallerySearch, setGallerySearch] = useState('');
+  const GALLERY_PAGE_SIZE = 48;
   const [loadingMockups, setLoadingMockups] = useState(false);
   const [generationLimit, setGenerationLimit] = useState(10);
   const [selectedBreed, setSelectedBreed] = useState('');
@@ -493,40 +497,39 @@ const SoulProductsManager = () => {
     }
   }, []);
 
-  const fetchBreedProducts = useCallback(async (hasMockup = null) => {
+  const fetchBreedProducts = useCallback(async (hasMockup = null, page = 1) => {
     setLoadingMockups(true);
+    const skip = (page - 1) * GALLERY_PAGE_SIZE;
     try {
-      let url = `${API_URL}/api/mockups/breed-products?limit=50`; // Reduced for faster loading
+      let url = `${API_URL}/api/mockups/breed-products?limit=${GALLERY_PAGE_SIZE}&skip=${skip}`;
       if (selectedBreed) url += `&breed=${selectedBreed}`;
       if (selectedProductType) url += `&product_type=${selectedProductType}`;
       if (hasMockup !== null) url += `&has_mockup=${hasMockup}`;
+      if (gallerySearch) url += `&search=${encodeURIComponent(gallerySearch)}`;
       
-      console.log('[SoulProducts] Fetching breed products:', url);
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
       
       const res = await fetch(url, { signal: controller.signal });
       clearTimeout(timeoutId);
       
       if (res.ok) {
         const data = await res.json();
-        console.log('[SoulProducts] Got breed products:', data.products?.length || 0);
         setBreedProducts(data.products || []);
+        setBreedProductsTotal(data.total || 0);
+        setGalleryPage(page);
       } else {
-        console.error('[SoulProducts] API error:', res.status);
         setBreedProducts([]);
+        setBreedProductsTotal(0);
       }
     } catch (error) {
-      if (error.name === 'AbortError') {
-        console.error('[SoulProducts] Request timed out');
-      } else {
-        console.error('[SoulProducts] Failed to fetch breed products:', error);
-      }
+      if (error.name !== 'AbortError') console.error('[SoulProducts] Failed to fetch breed products:', error);
       setBreedProducts([]);
+      setBreedProductsTotal(0);
     } finally {
       setLoadingMockups(false);
     }
-  }, [selectedBreed, selectedProductType]);
+  }, [selectedBreed, selectedProductType, gallerySearch]);
 
   const seedBreedProducts = async () => {
     try {
@@ -1637,13 +1640,25 @@ const SoulProductsManager = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Generated Mockups</h3>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={() => fetchBreedProducts(true)}>
+                <Button size="sm" variant="outline" onClick={() => fetchBreedProducts(true, 1)}>
                   <RefreshCw className="w-4 h-4 mr-1" /> Refresh
                 </Button>
-                <Button size="sm" variant="ghost" onClick={() => fetchBreedProducts(false)}>
+                <Button size="sm" variant="ghost" onClick={() => fetchBreedProducts(false, 1)}>
                   Show Pending
                 </Button>
               </div>
+            </div>
+
+            {/* Gallery search */}
+            <div className="flex gap-2 mb-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                <Input placeholder="Search breed, type…" value={gallerySearch}
+                  onChange={e => setGallerySearch(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && fetchBreedProducts(null, 1)}
+                  className="pl-9 text-sm" />
+              </div>
+              <Button size="sm" onClick={() => fetchBreedProducts(null, 1)} variant="outline">Search</Button>
             </div>
 
             {loadingMockups ? (
@@ -1696,6 +1711,21 @@ const SoulProductsManager = () => {
                 ))}
               </div>
             )}
+
+            {/* Pagination */}
+            {breedProductsTotal > GALLERY_PAGE_SIZE && (
+              <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                <span className="text-sm text-gray-500">
+                  {breedProductsTotal} total · Page {galleryPage} of {Math.ceil(breedProductsTotal / GALLERY_PAGE_SIZE)}
+                </span>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" disabled={galleryPage <= 1}
+                    onClick={() => fetchBreedProducts(null, galleryPage - 1)}>← Prev</Button>
+                  <Button size="sm" variant="outline" disabled={galleryPage >= Math.ceil(breedProductsTotal / GALLERY_PAGE_SIZE)}
+                    onClick={() => fetchBreedProducts(null, galleryPage + 1)}>Next →</Button>
+                </div>
+              </div>
+            )}
           </Card>
         </div>
       )}
@@ -1722,7 +1752,6 @@ const SoulProductsManager = () => {
                 {label:'Breed',      field:'breed',        type:'text'},
                 {label:'Product Type',field:'product_type',type:'text'},
                 {label:'Price (₹)',  field:'price',        type:'number'},
-                {label:'Image URL',  field:'cloudinary_url',type:'text'},
                 {label:'Sub Category',field:'sub_category',type:'text'},
               ].map(({label,field,type}) => (
                 <div key={field}>
@@ -1747,11 +1776,22 @@ const SoulProductsManager = () => {
                   onChange={e => setEditBreedProd(p => ({...p, is_mockup: e.target.checked}))}/>
                 <label htmlFor="ep-mockup" className="text-sm">Is Mockup</label>
               </div>
-              {editBreedProd.cloudinary_url && (
-                <div className="rounded-lg overflow-hidden border w-24 h-24">
-                  <img src={editBreedProd.cloudinary_url} alt="" className="w-full h-full object-cover"/>
-                </div>
-              )}
+              {/* Image upload */}
+              <div>
+                <Label className="text-xs mb-1 block">Image (Upload or paste URL)</Label>
+                <CloudinaryUploader
+                  productId={editBreedProd.id}
+                  currentImageUrl={editBreedProd.cloudinary_url || editBreedProd.mockup_url}
+                  onUploadSuccess={url => setEditBreedProd(p => ({...p, cloudinary_url: url, mockup_url: url}))}
+                />
+                <Input placeholder="Or paste Cloudinary URL…" value={editBreedProd.cloudinary_url||''} className="text-xs mt-2"
+                  onChange={e => setEditBreedProd(p => ({...p, cloudinary_url: e.target.value, mockup_url: e.target.value}))}/>
+                {(editBreedProd.cloudinary_url || editBreedProd.mockup_url) && (
+                  <div className="rounded-lg overflow-hidden border w-24 h-24 mt-2">
+                    <img src={editBreedProd.cloudinary_url || editBreedProd.mockup_url} alt="" className="w-full h-full object-cover"/>
+                  </div>
+                )}
+              </div>
             </div>
           )}
           <DialogFooter className="gap-2">

@@ -105,7 +105,20 @@ function CelebrateMiraPicksSection({ pet, token }) {
           {imagines.map(item=><MiraImaginesCard key={item.id} item={item} pet={pet} token={token} pillar="celebrate"/>)}
         </div>
       )}
-      {picksLoading&&<div style={{fontSize:12,color:"#aaa",padding:"8px 0"}}>Mira is scoring celebration picks for {petName}…</div>}
+      {picksLoading&&(
+        <div style={{display:"flex",gap:12,overflowX:"auto",paddingBottom:8,scrollbarWidth:"none"}}>
+          {[1,2,3,4].map(i=>(
+            <div key={i} style={{flexShrink:0,width:168,borderRadius:14,overflow:"hidden",background:"#FAF5FF",border:"1.5px solid rgba(196,77,255,0.1)"}}>
+              <div style={{width:"100%",height:130,background:"linear-gradient(90deg,#F3E8FF 25%,#EDE1FF 50%,#F3E8FF 75%)",backgroundSize:"200% 100%",animation:"celebrate-shimmer 1.4s infinite"}}/>
+              <div style={{padding:"10px 11px 12px"}}>
+                <div style={{height:10,borderRadius:6,background:"linear-gradient(90deg,#F3E8FF 25%,#EDE1FF 50%,#F3E8FF 75%)",backgroundSize:"200% 100%",animation:"celebrate-shimmer 1.4s infinite",marginBottom:8,width:"80%"}}/>
+                <div style={{height:8,borderRadius:6,background:"linear-gradient(90deg,#F3E8FF 25%,#EDE1FF 50%,#F3E8FF 75%)",backgroundSize:"200% 100%",animation:"celebrate-shimmer 1.4s infinite",width:"60%"}}/>
+              </div>
+            </div>
+          ))}
+          <style>{`@keyframes celebrate-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
+        </div>
+      )}
       {!picksLoading&&picks.length>0&&(
         <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}}>
           {picks.map((pick,i)=>{const score=pick.mira_score||0;const col=score>=80?"#16A34A":score>=70?"#C44DFF":"#6B7280";const img=[pick.image_url,pick.image].find(u=>u&&u.startsWith("http"))||null;return(

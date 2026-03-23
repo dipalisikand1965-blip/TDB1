@@ -250,6 +250,7 @@ const generateGoImagines = (pet, category) => {
 // ─── Main Modal ───────────────────────────────────────────────────────────────
 const GoContentModal = ({ isOpen, onClose, category, pet }) => {
   const [products, setProducts] = useState([]);
+  const [flatArtProducts, setFlatArtProducts] = useState([]);
   const [loading, setLoading]   = useState(false);
   const [activeTab, setActiveTab] = useState('All');
   const [tabs, setTabs]         = useState(['All']);
@@ -300,13 +301,20 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
     // ── Soul Made™: breed-specific products ──────
     if (category === 'soul_made') {
       const breedParam = encodeURIComponent((pet?.breed || '').trim().toLowerCase());
-      fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&pillar=go`)
-        .then(r => r.ok ? r.json() : { products: [] })
-        .then(data => {
-          const bp = data.products || [];
+      Promise.all([
+        fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&pillar=go&limit=60`),
+        fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&flat_only=true&limit=60`),
+      ])
+        .then(([r1, r2]) => Promise.all([
+          r1.ok ? r1.json() : { products: [] },
+          r2.ok ? r2.json() : { products: [] },
+        ]))
+        .then(([data1, data2]) => {
+          const bp = data1.products || [];
           const subCats = [...new Set(bp.map(p => p.sub_category || p.product_type).filter(Boolean))];
-          setTabs(subCats.length > 1 ? ['All', ...subCats] : ['All']);
+          setTabs(subCats.length > 0 ? ['All', ...subCats] : ['All']);
           setProducts(bp);
+          setFlatArtProducts(data2.products || []);
         })
         .catch(err => console.error('[GoContentModal soul_made]', err))
         .finally(() => setLoading(false));
@@ -394,7 +402,7 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
 
   const visibleProducts = activeTab === 'All'
     ? products
-    : products.filter(p => p.sub_category === activeTab);
+    : products.filter(p => p.sub_category === activeTab || p.product_type === activeTab || p.category === activeTab);
 
   const filtered = products.length;
   const total    = products.length; // already filtered for allergy
@@ -528,6 +536,21 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
                       </div>
                     ))}
                   </div>
+
+                  {/* Flat Art / Yappy Style products */}
+                  {category === 'soul_made' && flatArtProducts.length > 0 && (
+                    <div style={{ marginBottom: 24 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                        <div style={{ flex: 1, height: 1, background: G.pale }} />
+                        <span style={{ fontSize: 11, fontWeight: 700, color: G.teal, textTransform: 'uppercase', letterSpacing: '0.07em', whiteSpace: 'nowrap' }}>✦ Yappy Art — Flat Illustrations</span>
+                        <div style={{ flex: 1, height: 1, background: G.pale }} />
+                      </div>
+                      <p style={{ fontSize: 12, color: '#aaa', marginBottom: 12 }}>Same items, different style — choose Yappy (flat art) over watercolour.</p>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))', gap: 12 }}>
+                        {flatArtProducts.map((p, i) => <ProductCard key={p.id || i} product={p} pillar="go" selectedPet={pet} />)}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Mira Imagines at bottom */}
                   {imagines.length > 0 && (
