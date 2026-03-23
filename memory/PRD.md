@@ -168,6 +168,10 @@ Currently uses blank white product templates. Goal: 350 AI-generated images (50 
 - [x] **Soul Made™ strip redesign**: Premium dark purple gradient card with glow CTA, applied to ALL 10 pillar locations (Celebrate×2, Dine, Go, Play, Care content modals + Adopt, Farewell, Emergency, Learn, Paperwork soul pages), now visible as cross-sell in ALL categories
 - [x] **MiraChatWidget pet context fix**: Backend `/api/mira/os/stream` now reads `selected_pet_id` field + enriched pet context with vault allergies, favourite treat, personality, gender
 - [x] **Emergency page chunk error**: Fixed by frontend restart (stale webpack cache)
+- [x] **3 Concierge gaps wired**: CelebrateConcierge CTA, CelebrateServiceGrid cards, MiraBirthdayBox Build Box — all create service desk tickets via useConcierge hook
+- [x] **Celebration Wall upload**: Now uploads to Cloudinary (tdc/celebration-wall/ugc/), auto-approves, photos appear immediately
+- [x] **Mobile font fixes**: Announcement bar 13px, PET CONCIERGE® 13px, navbar bold text-sm, Footer copyright 13px, "Learn more" link 44px tap target
+- [x] **Testing agent v3**: 11/11 backend tests passed, frontend 90%→100% after font fixes
 
 ---
 
