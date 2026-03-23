@@ -252,10 +252,9 @@ const ServiceDetailModal = ({ service, isOpen, onClose, onBook, onAskConcierge, 
           {/* Price & Duration Bar */}
           <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
             <div>
-              <p className="text-sm text-gray-500">Service Fee</p>
-              <p className="text-2xl font-bold text-gray-900">
-                ₹{service.price?.toLocaleString()}
-                {service.is_subscription && <span className="text-sm font-normal text-gray-500">/month</span>}
+              <p className="text-sm text-gray-500">Pricing</p>
+              <p className="text-base font-semibold" style={{ color: '#7C3AED' }}>
+                Concierge® will advise price
               </p>
             </div>
             <div className="text-right">
