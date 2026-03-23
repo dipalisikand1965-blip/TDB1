@@ -42,7 +42,7 @@ import PersonalisedBreedSection from "../components/common/PersonalisedBreedSect
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
-
+import SoulMadeModal from "../components/SoulMadeModal";
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Sage Green
 // ─────────────────────────────────────────────────────────────
@@ -205,6 +205,12 @@ function getCareDims(pet) {
       sub: "Curated for {name}'s WellnessProfile",
       badge: "✦ Mira Pick", badgeBg: G.deep, glowColor: "rgba(45,106,79,0.22)", glow: true,
       mira: "These are my top picks across all care dimensions for {name} right now.",
+    },
+    {
+      id: "soul_made", icon: "✦", label: "Soul Made™",
+      sub: "Custom-made for {name}",
+      badge: "Make it personal", badgeBg: G.sage, glowColor: "rgba(45,157,120,0.18)", glow: true,
+      mira: "Want something truly one-of-a-kind? Upload {name}'s photo — I'll have Concierge® create it just for you.",
     },
   ];
 }
@@ -2064,7 +2070,7 @@ export default function CareSoulPage() {
   const [soulScore, setSoulScore] = useState(0);
   const [apiProducts, setApiProducts] = useState({});
   const [conciergeToast, setConciergeToast] = useState(null);
-
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   // ── tdc page visit tracking ──────────────────────────────────────────────
   usePlatformTracking({ pillar: "care", pet: currentPet });
 
@@ -2282,7 +2288,10 @@ export default function CareSoulPage() {
                   return (
                     <div
                       key={dim.id}
-                      onClick={() => setOpenDim(isOpen ? null : dim.id)}
+                      onClick={() => {
+                        if (dim.id === "soul_made") { setSoulMadeOpen(true); return; }
+                        setOpenDim(isOpen ? null : dim.id);
+                      }}
                       style={{
                         background: dim.glow ? G.cream : "#fff",
                         border: isOpen ? `2px solid ${G.sage}` : "2px solid transparent",
@@ -2314,10 +2323,21 @@ export default function CareSoulPage() {
               </div>
 
               {/* Expanded panel — OUTSIDE grid, full width (mirrors DineSoulPage) */}
-              {activeDim && (
+              {activeDim && activeDim.id !== "soul_made" && (
                 <div style={{ display:"grid", gridTemplateColumns:"1fr", marginBottom:8 }}>
                   <DimExpanded dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
                 </div>
+              )}
+
+              {/* Soul Made Modal */}
+              {soulMadeOpen && (
+                <SoulMadeModal
+                  pet={petData}
+                  pillar="care"
+                  pillarColor={G.sage}
+                  pillarLabel="Wellness"
+                  onClose={() => setSoulMadeOpen(false)}
+                />
               )}
 
               <div style={{ marginTop:32 }}>
