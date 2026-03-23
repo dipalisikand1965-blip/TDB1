@@ -6,7 +6,7 @@ Iteration 126 - Follow-up to iteration_125.
 
 import asyncio
 
-BASE_URL = "https://custom-merch-hub-23.preview.emergentagent.com"
+BASE_URL = "https://concierge-flow-fix.preview.emergentagent.com"
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 

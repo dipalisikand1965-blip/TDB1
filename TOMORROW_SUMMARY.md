@@ -200,7 +200,7 @@ All features tested and verified (Test Report: `/app/test_reports/iteration_23.j
 | System | Username | Password |
 |--------|----------|----------|
 | Admin Panel | aditya | lola4304 |
-| Preview URL | https://custom-merch-hub-23.preview.emergentagent.com |
+| Preview URL | https://concierge-flow-fix.preview.emergentagent.com |
 
 ---
 
