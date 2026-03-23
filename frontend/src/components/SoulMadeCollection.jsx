@@ -192,6 +192,22 @@ const BREED_KEY_MAP = {
   'labrador retriever': 'labrador',
   'golden retriever': 'golden_retriever',
   'golden': 'golden_retriever',
+  'golden retriever': 'golden_retriever',
+  'golden': 'golden_retriever',
+  'labrador': 'labrador',
+  'labrador retriever': 'labrador',
+  'lab': 'labrador',
+  'black labrador': 'labrador',
+  'yellow labrador': 'labrador',
+  'chocolate labrador': 'labrador',
+  'black husky': 'husky',
+  'grey husky': 'husky',
+  'white husky': 'husky',
+  'toy poodle': 'poodle',
+  'miniature poodle': 'poodle',
+  'dobermann': 'doberman',
+  'shnoodle': 'schnoodle',
+  'maltipoo': 'maltipoo',
   'cocker spaniel': 'cocker_spaniel',
   'irish setter': 'irish_setter',
   'german shepherd': 'german_shepherd',
@@ -243,7 +259,10 @@ const BREED_KEY_MAP = {
 const getBreedKey = (breedName) => {
   if (!breedName) return null;
   const normalized = breedName.toLowerCase().trim();
-  return BREED_KEY_MAP[normalized] || null;
+  // Try exact map match first
+  if (BREED_KEY_MAP[normalized]) return BREED_KEY_MAP[normalized];
+  // Smart fallback: spaces → underscores (handles any breed not in the map)
+  return normalized.replace(/\s+/g, '_').replace(/-/g, '_');
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -392,7 +411,7 @@ const SoulMadeProductCard = ({ product, petName, archetype, onViewDetails }) => 
 
 const SoulMadeCollection = ({ 
   pillar = 'celebrate',
-  maxItems = 12,
+  maxItems = 60,
   showTitle = true,
   className = '' 
 }) => {
@@ -404,7 +423,8 @@ const SoulMadeCollection = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [archetype, setArchetype] = useState(null);
-  
+  const [visibleCount, setVisibleCount] = useState(12);
+
   // Modal state
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -614,8 +634,33 @@ const SoulMadeCollection = ({
     }
   ];
 
-  // Use fallback products if no breed products available
-  const displayProducts = products.length > 0 ? products : fallbackProducts;
+  // Separate flat art and watercolour, then interleave them for side-by-side display
+  const flatProducts = (products.length > 0 ? products : fallbackProducts)
+    .filter(p => p.art_style === 'flat' || p.product_type?.startsWith('flat_'));
+  const watercolourProducts = (products.length > 0 ? products : fallbackProducts)
+    .filter(p => p.art_style !== 'flat' && !p.product_type?.startsWith('flat_'));
+
+  // Pair: watercolour first, flat art second for each product type
+  const pairedProducts = [];
+  const usedFlat = new Set();
+  watercolourProducts.forEach(wc => {
+    pairedProducts.push({ ...wc, _displayStyle: 'watercolour' });
+    // Find matching flat art by product_type base
+    const wcType = wc.product_type?.replace('flat_','');
+    const match = flatProducts.find(f =>
+      !usedFlat.has(f.id) &&
+      (f.product_type === `flat_${wcType}` || f.product_type?.replace('flat_','') === wcType)
+    );
+    if (match) { pairedProducts.push({ ...match, _displayStyle: 'flat' }); usedFlat.add(match.id); }
+  });
+  // Add any remaining flat products not paired
+  flatProducts.filter(f => !usedFlat.has(f.id)).forEach(f =>
+    pairedProducts.push({ ...f, _displayStyle: 'flat' })
+  );
+
+  const displayProducts = pairedProducts.length > 0 ? pairedProducts : (products.length > 0 ? products : fallbackProducts);
+  const visibleProducts = displayProducts.slice(0, visibleCount);
+  const hasMore = displayProducts.length > visibleCount;
   const usingFallback = products.length === 0;
 
   // Don't render if no pet or no breed
@@ -716,16 +761,41 @@ const SoulMadeCollection = ({
             </div>
           )}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {displayProducts.map(product => (
-              <SoulMadeProductCard
-                key={product.id}
-                product={product}
-                petName={petName}
-                archetype={archetype}
-                onViewDetails={handleProductClick}
-              />
+            {visibleProducts.map(product => (
+              <div key={product.id} className="relative">
+                {/* Art style badge */}
+                {product._displayStyle === 'flat' && (
+                  <div className="absolute top-2 left-2 z-10 bg-purple-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none">
+                    Flat Art
+                  </div>
+                )}
+                {product._displayStyle === 'watercolour' && (
+                  <div className="absolute top-2 left-2 z-10 bg-amber-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none">
+                    Watercolour
+                  </div>
+                )}
+                <SoulMadeProductCard
+                  product={product}
+                  petName={petName}
+                  archetype={archetype}
+                  onViewDetails={handleProductClick}
+                />
+              </div>
             ))}
           </div>
+
+          {/* See more button */}
+          {hasMore && (
+            <div className="flex justify-center mt-6">
+              <button
+                onClick={() => setVisibleCount(c => c + 12)}
+                data-testid="soul-made-see-more"
+                className="px-6 py-2.5 rounded-full text-sm font-semibold border border-purple-200 text-purple-700 hover:bg-purple-50 transition-colors"
+              >
+                See more ({displayProducts.length - visibleCount} more) →
+              </button>
+            </div>
+          )}
         </>
       )}
 

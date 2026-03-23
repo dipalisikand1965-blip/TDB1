@@ -305,12 +305,13 @@ async def get_breed_products(
         query["pillars"] = pillar
     if breed:
         normalized_breed = normalize_breed(breed)
-        # Check both simple breed_tags list and the full breed_tags_full structure
+        # Check breed_tags, breed_tags_full, who_for, AND direct breed field
         query["$or"] = [
-            {"breed_tags": {"$size": 0}},  # Universal products (empty list)
-            {"breed_tags": normalized_breed},  # Simple list match
-            {"breed_tags_full.breeds": normalized_breed},  # Full structure match
-            {"who_for": {"$regex": breed, "$options": "i"}}  # Match who_for field
+            {"breed_tags": {"$size": 0}},                         # Universal products
+            {"breed_tags": normalized_breed},                      # Simple list match
+            {"breed_tags_full.breeds": normalized_breed},          # Full structure match
+            {"who_for": {"$regex": breed, "$options": "i"}},       # who_for field
+            {"breed": normalized_breed},                           # Direct breed field (flat art + new products)
         ]
     if size:
         query["$or"] = [

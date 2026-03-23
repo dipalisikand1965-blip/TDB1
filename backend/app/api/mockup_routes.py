@@ -512,8 +512,28 @@ async def get_breed_products(
     
     query = {"is_mockup": True}
     if breed:
+        # Normalise + alias map — handles ALL 35 official breeds
+        BREED_ALIASES = {
+            "black_husky": "husky", "grey_husky": "husky", "white_husky": "husky",
+            "siberian_husky": "husky",
+            "dobermann": "doberman", "doberman_pinscher": "doberman",
+            "english_bulldog": "bulldog",
+            "yorkshire_terrier": "yorkshire", "yorkie": "yorkshire",
+            "cavalier_king_charles_spaniel": "cavalier", "cavalier_king_charles": "cavalier",
+            "toy_poodle": "poodle", "miniature_poodle": "poodle",
+            "shnoodle": "schnoodle",
+            "labrador_retriever": "labrador", "lab": "labrador",
+            "indian_pariah": "indie", "indian_pariah_dog": "indie",
+            "desi_dog": "indie", "street_dog": "indie", "mixed": "indie",
+            "saint_bernard": "st_bernard",
+            "jack_russell_terrier": "jack_russell",
+        }
+        breed_norm = breed.lower().strip().replace(" ", "_").replace("-", "_")
+        breed_resolved = BREED_ALIASES.get(breed_norm, breed_norm)
         query["$or"] = [
-            {"breed": breed},
+            {"breed": breed_resolved},
+            {"breed": breed_norm},
+            {"breed": breed.lower()},
             {"breed": "all"},
         ]
     if product_type:
@@ -1623,6 +1643,8 @@ BREED_COLOUR_VARIANTS: dict = {
         ("black and white coat with heterochromatic one blue one amber eye",    "Hetero Eyes"),
         ("pure white coat with pale blue eyes",                                 "White"),
         ("agouti grey and white coat",                                          "Agouti"),
+        ("jet black and white coat with striking blue eyes",                    "Black & White"),
+        ("silver grey and white coat with ice blue eyes",                       "Grey & White"),
     ],
     "pug": [
         ("fawn coat with black face mask",  "Fawn"),
@@ -1893,7 +1915,144 @@ async def get_mockup_gen_status():
     return _mockup_gen_status
 
 
-@router.post("/stop-mockup-gen")
+@router.post("/generate-missing-breeds")
+async def generate_missing_breeds(background_tasks: BackgroundTasks):
+    """
+    Silently generate watercolour soul products for breeds that have cake
+    illustrations but no standard product suite (bandana, mug, tote, etc.).
+    Runs in background — zero manual input needed.
+    """
+    global _mockup_gen_status
+    if _mockup_gen_status.get("running"):
+        return {"message": "Generation already running", "status": _mockup_gen_status}
+
+    db = get_db()
+    all_breeds   = [b for b in await db.breed_products.distinct("breed") if b and b != "all"]
+    have_bandana = set(await db.breed_products.distinct("breed", {"product_type": "bandana"}))
+    missing      = [b for b in all_breeds if b not in have_bandana]
+
+    if not missing:
+        return {"message": "All breeds have full product suites — nothing to generate!"}
+
+    # Product types to generate for each missing breed
+    target_types = [
+        "bandana","mug","keychain","tote_bag","pet_robe","rain_jacket",
+        "frame","party_hat","collar_tag","bowl","pet_journal","cushion_cover",
+        "welcome_mat","portrait","blanket","treat_jar","memorial_candle",
+    ]
+
+    background_tasks.add_task(_generate_missing_breed_products, db, missing, target_types)
+    return {
+        "message":       f"Silently generating {len(target_types)} product types for {len(missing)} missing breeds",
+        "missing_breeds": missing,
+        "target_types":  target_types,
+        "total_products": len(missing) * len(target_types),
+        "check_status":  "/api/mockups/mockup-gen-status",
+    }
+
+
+async def _generate_missing_breed_products(db, breeds: list, product_types: list):
+    """Background task — generate full watercolour suite for missing breeds."""
+    global _mockup_gen_status
+    total = len(breeds) * len(product_types)
+    _mockup_gen_status.update({
+        "running": True, "generated": 0, "failed": 0, "skipped": 0,
+        "total": total, "current": None, "started_at": datetime.utcnow().isoformat(),
+    })
+    logger.info(f"[MISSING] Generating {total} products for {len(breeds)} breeds")
+
+    try:
+        for breed in breeds:
+            for product_type in product_types:
+                if not _mockup_gen_status["running"]:
+                    break
+                product_id = f"bp-{breed}-{product_type}"
+                existing = await db.breed_products.find_one(
+                    {"id": product_id}, {"_id": 0, "mockup_url": 1}
+                )
+                if existing and existing.get("mockup_url"):
+                    _mockup_gen_status["skipped"] = _mockup_gen_status.get("skipped", 0) + 1
+                    continue
+
+                breed_display = breed.replace("_", " ").title()
+                name          = f"{breed_display} {product_type.replace('_',' ').title()}"
+                _mockup_gen_status["current"] = f"{name} ({_mockup_gen_status['generated']+1}/{total})"
+
+                prompt = _build_mockup_prompt(breed, product_type, name)
+                try:
+                    img_url = await _generate_mockup_image(prompt, product_id, breed)
+                    if img_url:
+                        doc = {
+                            "id": product_id, "breed": breed,
+                            "breed_display": breed_display, "name": name,
+                            "product_type": product_type, "price": 599,
+                            "mockup_url": img_url,
+                            "cloudinary_url": img_url if img_url.startswith("http") else None,
+                            "image_url": img_url,
+                            "pillars": ["shop"], "pillar": "shop",
+                            "is_mockup": True, "is_active": True,
+                            "created_at": datetime.utcnow().isoformat(),
+                        }
+                        await db.breed_products.update_one(
+                            {"id": product_id}, {"$set": doc}, upsert=True
+                        )
+                        _mockup_gen_status["generated"] += 1
+                    else:
+                        _mockup_gen_status["failed"] += 1
+                    await asyncio.sleep(4)
+                except Exception as e:
+                    logger.error(f"[MISSING] {name}: {e}")
+                    _mockup_gen_status["failed"] += 1
+    finally:
+        _mockup_gen_status.update({
+            "running": False, "current": None,
+            "completed_at": datetime.utcnow().isoformat(),
+        })
+        logger.info(f"[MISSING] Done — {_mockup_gen_status['generated']} generated")
+async def generate_flat_art_endpoint(background_tasks: BackgroundTasks):
+    """
+    Generate 400 flat art merchandise product records using Cloudinary overlay.
+    Uses existing birthday_cake illustrations — zero AI cost, instant URLs.
+    REQUIRES: 8 blank product templates uploaded to Cloudinary first.
+    See /app/backend/flat_art_merchandise.py for template naming convention.
+    """
+    from flat_art_merchandise import generate_flat_art_merchandise, PRODUCT_TEMPLATES
+    db = get_db()
+
+    # Quick pre-check: do templates exist?
+    # (We can't check Cloudinary without an API call, so we just run it)
+    cake_count = await db.breed_products.count_documents({"product_type": "birthday_cake"})
+    if cake_count == 0:
+        return {"error": "No birthday_cake illustrations found. Run breed cake generation first."}
+
+    background_tasks.add_task(_run_flat_art_generation, db)
+    return {
+        "message": f"Flat art merchandise generation started. {cake_count} illustrations × {len(PRODUCT_TEMPLATES)} product types = up to {cake_count * len(PRODUCT_TEMPLATES)} new products.",
+        "note": "URLs are built instantly via Cloudinary overlay — no AI generation. Requires blank product templates in Cloudinary.",
+        "template_path": "doggy/product_templates/{product_type}_blank",
+        "check_status": "/api/mockups/mockup-gen-status",
+    }
+
+
+async def _run_flat_art_generation(db):
+    """Background wrapper for flat art generation."""
+    global _mockup_gen_status
+    _mockup_gen_status.update({"running": True, "current": "Building flat art URLs…", "generated": 0, "failed": 0})
+    try:
+        from flat_art_merchandise import generate_flat_art_merchandise
+        result = await generate_flat_art_merchandise(db)
+        _mockup_gen_status.update({
+            "running": False,
+            "generated": result.get("inserted", 0),
+            "skipped": result.get("skipped", 0),
+            "failed": len(result.get("errors", [])),
+            "completed_at": datetime.utcnow().isoformat(),
+            "current": None,
+        })
+        logger.info(f"[FLAT-ART] Done — {result.get('inserted')} inserted, {result.get('skipped')} skipped")
+    except Exception as e:
+        logger.error(f"[FLAT-ART] Error: {e}")
+        _mockup_gen_status["running"] = False
 async def stop_mockup_gen():
     """Stop background mockup generation."""
     global _mockup_gen_status

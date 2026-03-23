@@ -1663,11 +1663,23 @@ const SoulProductsManager = () => {
                   <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                     <div className="aspect-square bg-gray-100">
                       {product.mockup_url ? (
-                        <img 
-                          src={product.mockup_url}
-                          alt={product.name}
-                          className="w-full h-full object-cover"
-                        />
+                        <div className="relative group">
+                          <img 
+                            src={product.mockup_url}
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                          />
+                          {/* Download button on hover */}
+                          <a
+                            href={(product.cloudinary_url || product.mockup_url || '').replace('/upload/', '/upload/fl_attachment/')}
+                            download={`${product.breed_name || product.product_type}.webp`}
+                            className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded p-1 shadow"
+                            title="Download illustration"
+                            onClick={e => e.stopPropagation()}
+                          >
+                            <Download className="w-3 h-3 text-gray-700" />
+                          </a>
+                        </div>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-400">
                           <Image className="w-8 h-8" />
