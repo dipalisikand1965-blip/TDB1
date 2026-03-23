@@ -1424,12 +1424,12 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
       (p.life_stage || '').includes(activeFilter) ||
       (p.dietary || '').includes(activeFilter)
     );
-    // For cake categories, sort pet's breed to the top
-    if (['birthday-cakes', 'breed-cakes'].includes(category) && pet?.breed) {
+    // For cake categories AND party accessories, sort pet's breed to the top
+    if (['birthday-cakes', 'breed-cakes', 'party', 'party_accessories'].includes(category) && pet?.breed) {
       const petBreed = (pet.breed || '').toLowerCase().replace(/[_\s]+/g, ' ');
       return [...base].sort((a, b) => {
-        const aMatch = ((a.name || '') + ' ' + (a.title || '')).toLowerCase().includes(petBreed) ? 0 : 1;
-        const bMatch = ((b.name || '') + ' ' + (b.title || '')).toLowerCase().includes(petBreed) ? 0 : 1;
+        const aMatch = ((a.name || '') + ' ' + (a.title || '') + ' ' + (a.breed_tags || []).join(' ')).toLowerCase().includes(petBreed) ? 0 : 1;
+        const bMatch = ((b.name || '') + ' ' + (b.title || '') + ' ' + (b.breed_tags || []).join(' ')).toLowerCase().includes(petBreed) ? 0 : 1;
         return aMatch - bMatch;
       });
     }

@@ -417,7 +417,24 @@ function MiraPicksSection({ pet }) {
       .catch(() => setLoading(false));
   }, [pet?.id]);
 
-  if (loading) return null;
+  if (loading) return (
+    <section style={{ marginBottom: 32 }}>
+      <div style={{ height: 22, width: 220, borderRadius: 8, background: 'linear-gradient(90deg,#E8F5F0 25%,#D4EDE5 50%,#E8F5F0 75%)', backgroundSize: '200% 100%', animation: 'care-shimmer 1.4s infinite', marginBottom: 8 }} />
+      <div style={{ height: 12, width: 280, borderRadius: 6, background: 'linear-gradient(90deg,#E8F5F0 25%,#D4EDE5 50%,#E8F5F0 75%)', backgroundSize: '200% 100%', animation: 'care-shimmer 1.4s infinite', marginBottom: 16 }} />
+      <div style={{ display: 'flex', gap: 14, overflow: 'hidden' }}>
+        {[1,2,3,4].map(i => (
+          <div key={i} style={{ flexShrink: 0, width: 168, borderRadius: 14, overflow: 'hidden', background: '#F9FBF9', border: '1.5px solid #E0EDE7' }}>
+            <div style={{ height: 130, background: 'linear-gradient(90deg,#E8F5F0 25%,#D4EDE5 50%,#E8F5F0 75%)', backgroundSize: '200% 100%', animation: 'care-shimmer 1.4s infinite' }} />
+            <div style={{ padding: '10px 11px 12px' }}>
+              <div style={{ height: 10, borderRadius: 6, background: 'linear-gradient(90deg,#E8F5F0 25%,#D4EDE5 50%,#E8F5F0 75%)', backgroundSize: '200% 100%', animation: 'care-shimmer 1.4s infinite', marginBottom: 8, width: '80%' }} />
+              <div style={{ height: 8, borderRadius: 6, background: 'linear-gradient(90deg,#E8F5F0 25%,#D4EDE5 50%,#E8F5F0 75%)', backgroundSize: '200% 100%', animation: 'care-shimmer 1.4s infinite', width: '60%' }} />
+            </div>
+          </div>
+        ))}
+      </div>
+      <style>{`@keyframes care-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
+    </section>
+  );
 
   // If no Mira-scored picks, always show Mira Imagines cards (never empty)
   if (!picks.length) {
