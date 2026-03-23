@@ -183,11 +183,12 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, onEdi
   const currentSwap = swaps[tab.id];
   const selectedProductId = currentSwap?.newProduct?.id || currentSwap?.newProduct?._id;
 
-  // Filter products by allergy (safety-first)
-  const filteredProducts = allergies?.length > 0
+  // Filter products by allergy (safety-first, skip single-char noise)
+  const cleanAllergies = (allergies || []).filter(a => typeof a === 'string' && a.trim().length > 2);
+  const filteredProducts = cleanAllergies.length > 0
     ? products.filter(p => {
         const text = `${p.name || ''} ${p.description || ''} ${p.tags?.join(' ') || ''}`.toLowerCase();
-        return !allergies.some(a => text.includes(a.toLowerCase()));
+        return !cleanAllergies.some(a => text.includes(a.toLowerCase()));
       })
     : products;
 
