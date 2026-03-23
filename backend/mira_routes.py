@@ -18707,7 +18707,7 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
         raise HTTPException(status_code=400, detail="Invalid body")
 
     message     = body.get("message", "")
-    pet_id      = body.get("pet_id")
+    pet_id      = body.get("pet_id") or body.get("selected_pet_id")
     pet_name    = body.get("pet_name", "your dog")
     soul_answers = body.get("soul_answers", {})
     history     = body.get("history", [])
@@ -18727,16 +18727,35 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
             db = get_db()
             pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
             if pet:
-                soul = pet.get("doggy_soul_answers") or {} or soul_answers
-                allergies = soul.get("food_allergies", [])
-                allergy_str = ", ".join(a for a in allergies if a not in ["none","none known","no_allergies"]) or "none known"
+                pet_name = pet.get("name", pet_name)
+                soul = pet.get("doggy_soul_answers") or soul_answers or {}
+                vault = pet.get("vault", {})
+                health = pet.get("health", {})
+                # Vault allergies take priority (vet-confirmed)
+                vault_allergies = vault.get("allergies", [])
+                allergy_names = [a.get("name","") if isinstance(a, dict) else str(a) for a in vault_allergies]
+                if not allergy_names:
+                    raw = soul.get("food_allergies", health.get("allergies", []))
+                    if isinstance(raw, str):
+                        allergy_names = [raw] if raw not in ["none","none known","no_allergies",""] else []
+                    elif isinstance(raw, list):
+                        allergy_names = [a for a in raw if a not in ["none","none known","no_allergies",""]]
+                allergy_str = ", ".join(allergy_names) if allergy_names else "none known"
+                fav_treat = soul.get("favourite_treat", soul.get("favorite_treat", ""))
+                personality = soul.get("personality_tags", [])
+                personality_str = ", ".join(personality[:5]) if personality else ""
                 pet_context = (
                     f"You are Mira, {pet_name}'s Soul Mate at The Doggy Company.\n"
                     f"About {pet_name}: Breed={pet.get('breed','unknown')}, "
+                    f"Gender={pet.get('gender','unknown')}, "
                     f"Soul score={pet.get('overall_score',0)}%, "
-                    f"Allergies={allergy_str} — NEVER suggest these.\n"
-                    f"Be warm, personal and specific. Always use {pet_name}'s name."
+                    f"Allergies={allergy_str} — NEVER suggest these foods.\n"
                 )
+                if fav_treat:
+                    pet_context += f"Favourite treat: {fav_treat}. "
+                if personality_str:
+                    pet_context += f"Personality: {personality_str}. "
+                pet_context += f"\nBe warm, personal and specific. Always use {pet_name}'s name. You KNOW this dog deeply."
         except Exception:
             pass
 
