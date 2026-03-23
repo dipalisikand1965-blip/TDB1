@@ -582,17 +582,20 @@ const Navbar = () => {
 
   return (
     <header className={`sticky top-0 bg-white shadow-sm ${isMenuOpen ? 'z-[10000]' : 'z-50'}`} style={{ WebkitOverflowScrolling: 'touch' }}>
-      {/* Top Banner - Scrollable on iOS */}
+      {/* Top Announcement Banner */}
       <div 
-        className="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 text-white py-1.5 px-4 text-center text-xs font-medium overflow-x-auto whitespace-nowrap"
+        className="text-center text-xs font-medium py-1.5 px-4 overflow-x-auto whitespace-nowrap"
         style={{ 
+          background: 'linear-gradient(90deg, #1a0a2e, #3B0764)',
+          color: 'rgba(255,255,255,0.75)',
+          fontSize: '12px',
+          letterSpacing: '0.05em',
           WebkitOverflowScrolling: 'touch',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none'
         }}
       >
-        {/* Announcement banner — hidden for launch */}
-        {false && <span>✨ The World's First Pet Life Operating System — Your Pet Concierge® </span>}
+        <span>✦ India's first Pet Life OS · Built in memory of Mystique · Now in early access</span>
       </div>
 
       {/* Main Header Row */}
@@ -1091,9 +1094,12 @@ const Navbar = () => {
               >
                 <Link
                   to={pillar.path}
-                  className={`flex items-center gap-1 px-3 py-2.5 transition-colors font-medium hover:text-pink-400 ${
-                    isActive(pillar.path) ? 'text-pink-400 border-b-2 border-pink-400' : 'border-b-2 border-transparent'
+                  className={`flex items-center gap-1 px-3 py-2.5 font-medium ${
+                    isActive(pillar.path) ? 'text-pink-400' : 'text-white/80 hover:text-pink-400'
                   }`}
+                  style={{
+                    borderBottom: isActive(pillar.path) ? '2px solid #f472b6' : '2px solid transparent',
+                  }}
                   data-testid={`nav-${pillar.id}`}
                 >
                   {pillar.name}

@@ -148,10 +148,15 @@ const CelebrateCategoryStrip = ({ pet, onCategorySelect }) => {
           ref={scrollRef}
           className="flex overflow-x-auto"
           style={{
+            display: 'flex',
+            gap: '10px',
+            overflowX: 'auto',
+            paddingBottom: '8px',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
             WebkitOverflowScrolling: 'touch',
-            paddingLeft: canScrollLeft ? 32 : 0,
+            padding: '4px 0 12px',
+            paddingLeft: canScrollLeft ? 32 : 8,
             paddingRight: canScrollRight ? 40 : 12
           }}
         >
@@ -163,9 +168,11 @@ const CelebrateCategoryStrip = ({ pet, onCategorySelect }) => {
                 onClick={() => handleCategoryClick(cat)}
                 className="flex flex-col items-center flex-shrink-0"
                 style={{
+                  flexShrink: 0,
+                  minHeight: '44px',
                   minWidth: 78,
-                  height: 72,
-                  padding: '10px 12px',
+                  height: 76,
+                  padding: '10px 16px',
                   cursor: 'pointer',
                   background: 'transparent',
                   border: 'none',
@@ -193,11 +200,11 @@ const CelebrateCategoryStrip = ({ pet, onCategorySelect }) => {
                 <span
                   className="text-center leading-tight"
                   style={{
-                    fontSize: 11,
-                    fontWeight: 500,
+                    fontSize: 13,
+                    fontWeight: 600,
                     color: isActive ? '#C44400' : '#555',
                     whiteSpace: 'nowrap',
-                    maxWidth: 80,
+                    maxWidth: 90,
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'
                   }}

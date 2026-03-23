@@ -32,8 +32,9 @@ const isTodayBirthday = (birthDate) => {
 
 const SoulChip = ({ icon, label, value, chipStyle }) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.9 }}
-    animate={{ opacity: 1, scale: 1 }}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 0.3 }}
     className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs text-white"
     style={chipStyle}
   >
@@ -232,8 +233,9 @@ const CelebrateHero = ({ pet, soulScore }) => {
       >
         {/* Avatar column */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
           className="flex-shrink-0 flex flex-col items-center"
         >
           {/* Avatar ring with gradient border */}
