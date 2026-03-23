@@ -18,6 +18,7 @@ const CARE_CATEGORIES = [
   { id: 'supplements',  icon: '💊',  name: 'Supplements',   iconBg: 'linear-gradient(135deg, #FFF9C4, #FFF176)' },
   { id: 'soul',         icon: '✨',  name: 'Soul Care',     iconBg: 'linear-gradient(135deg, #EDE7F6, #B39DDB)' },
   { id: 'mira',         icon: '🪄',  name: "Mira's Picks",  iconBg: 'linear-gradient(135deg, #FCE4EC, #F48FB1)' },
+  { id: 'soul_made',    icon: '✦',   name: 'Soul Made™',   iconBg: 'linear-gradient(135deg, #E8F5E9, #81C784)' },
 ];
 
 const G = {
@@ -26,7 +27,7 @@ const G = {
   border:  'rgba(45,106,79,0.18)',
 };
 
-const CareCategoryStrip = ({ pet, onDimSelect, activeDim }) => {
+const CareCategoryStrip = ({ pet, onDimSelect, activeDim, onSoulMade }) => {
   const [activeCategory, setActiveCategory] = useState(null);
   const [showModal, setShowModal]           = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -34,6 +35,10 @@ const CareCategoryStrip = ({ pet, onDimSelect, activeDim }) => {
   const scrollRef = useRef(null);
 
   const handleCategoryClick = (cat) => {
+    if (cat.id === 'soul_made') {
+      if (onSoulMade) onSoulMade();
+      return;
+    }
     setActiveCategory(cat);
     setShowModal(true);
     if (onDimSelect) onDimSelect(cat.id);
