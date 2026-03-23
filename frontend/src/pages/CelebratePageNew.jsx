@@ -335,9 +335,10 @@ const CelebratePageNew = () => {
       detail: {
         boxPreview,
         petName: selectedPet?.name,
+        petBreed: selectedPet?.breed || '',
       }
     }));
-  }, [selectedPet?.name]);
+  }, [selectedPet?.name, selectedPet?.breed]);
 
   // Handle talk to concierge — fires canonical flow + opens intake modal
   const [showConciergeModal, setShowConciergeModal] = useState(false);

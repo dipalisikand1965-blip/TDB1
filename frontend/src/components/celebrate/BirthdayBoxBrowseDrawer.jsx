@@ -15,10 +15,11 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { X, ChevronRight, RotateCcw, ShieldCheck, Sparkles } from 'lucide-react';
+import { X, ChevronRight, RotateCcw, ShieldCheck, Sparkles, Edit2, Image } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useResizeMobile } from '../../hooks/useResizeMobile';
+import ProductBoxEditor from '../admin/ProductBoxEditor';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
@@ -36,107 +37,131 @@ const TABS = [
 const SLOT_LABELS = ['Hero', 'Joy', 'Style', 'Memory', 'Health', 'Surprise'];
 
 /* ─────────────────────────────────────────────────────────────────
-   PRODUCT CARD (horizontal, drawer variant)
+   SOUL PRODUCT CARD — admin-style grid card with AI mockup image
    ───────────────────────────────────────────────────────────────── */
-const ProductCard = ({ product, isMiraPick, isCurrentSwap, onSelect }) => {
-  const image = product.image_url || product.image || product.images?.[0];
+const SoulCard = ({ product, isMiraPick, isCurrentSwap, onSelect, onEdit }) => {
+  const image = product.mockup_url || product.cloudinary_url || product.image_url || product.image || product.images?.[0];
+  const productType = product.product_type || product.sub_category || product.type || 'Soul Made';
   const price = product.price || 0;
 
   return (
     <div
-      className="flex items-center gap-3 rounded-xl p-3 transition-all cursor-pointer active:scale-[0.98]"
       style={{
-        background: isCurrentSwap
-          ? 'rgba(196,77,255,0.18)'
-          : isMiraPick
-          ? 'rgba(255,255,255,0.08)'
-          : 'rgba(255,255,255,0.04)',
-        border: isCurrentSwap
-          ? '1.5px solid rgba(196,77,255,0.55)'
-          : isMiraPick
-          ? '1px solid rgba(255,161,56,0.25)'
-          : '1px solid rgba(255,255,255,0.09)',
+        position: 'relative',
+        borderRadius: 12,
+        overflow: 'hidden',
+        background: isCurrentSwap ? 'rgba(196,77,255,0.14)' : 'rgba(255,255,255,0.06)',
+        border: isCurrentSwap ? '1.5px solid rgba(196,77,255,0.55)' : '1px solid rgba(255,255,255,0.10)',
+        transition: 'border 0.15s, background 0.15s',
       }}
-      onClick={onSelect}
-      data-testid={`browse-product-${product.id || product._id}`}
+      data-testid={`soul-card-${product.id || product._id}`}
     >
-      {/* Image */}
+      {/* Square image — click to open ProductBoxEditor */}
       <div
-        className="flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden"
-        style={{ background: 'rgba(255,255,255,0.08)' }}
+        style={{ aspectRatio: '1/1', background: 'rgba(255,255,255,0.04)', position: 'relative', cursor: 'pointer' }}
+        onClick={() => onEdit && onEdit(product)}
       >
         {image ? (
-          <img src={image} alt={product.name} className="w-full h-full object-contain" />
+          <img src={image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-2xl">
-            {isMiraPick ? '✦' : '🎁'}
+          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Image style={{ width: 32, height: 32, color: 'rgba(255,255,255,0.20)' }} />
           </div>
         )}
+        {/* Badges */}
+        {isMiraPick && (
+          <div style={{ position: 'absolute', top: 6, left: 6, background: 'rgba(255,161,56,0.92)', borderRadius: 4, padding: '2px 6px', fontSize: 10, fontWeight: 700, color: '#fff', letterSpacing: '0.02em' }}>
+            ✦ Mira
+          </div>
+        )}
+        {isCurrentSwap && (
+          <div style={{ position: 'absolute', top: 6, right: 6, background: 'linear-gradient(135deg, #FF2D87, #C44DFF)', borderRadius: '50%', width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ color: '#fff', fontSize: 11, fontWeight: 700 }}>✓</span>
+          </div>
+        )}
+        {/* Edit icon overlay */}
+        <div style={{ position: 'absolute', bottom: 6, right: 6, background: 'rgba(0,0,0,0.55)', borderRadius: 6, padding: '3px 6px', display: 'flex', alignItems: 'center', gap: 3 }}>
+          <Edit2 style={{ width: 10, height: 10, color: 'rgba(255,255,255,0.70)' }} />
+          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.70)', fontWeight: 600 }}>Edit</span>
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5 mb-0.5">
-          {isMiraPick && (
-            <span
-              className="text-xs px-1.5 py-0.5 rounded-full font-semibold"
-              style={{ background: 'rgba(255,161,56,0.20)', color: '#fbbf24', fontSize: '10px' }}
-            >
-              ✦ Mira's pick
-            </span>
-          )}
+      {/* Card info */}
+      <div style={{ padding: '8px 10px' }}>
+        <div style={{ background: isCurrentSwap ? 'rgba(196,77,255,0.30)' : 'rgba(196,77,255,0.16)', borderRadius: 4, padding: '2px 6px', fontSize: 10, fontWeight: 600, color: '#E0AAFF', display: 'inline-block', marginBottom: 4 }}>
+          {productType}
         </div>
-        <p className="text-sm font-semibold text-white leading-tight truncate">{product.name}</p>
-        {price > 0 && (
-          <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.55)' }}>
-            ₹{price.toLocaleString('en-IN')}
+        <p style={{ fontSize: 12, fontWeight: 600, color: '#fff', margin: 0, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {product.name}
+        </p>
+        {product.breed && (
+          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', margin: '1px 0 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {product.breed}
           </p>
         )}
+        {price > 0 && (
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', margin: '2px 0 0 0' }}>₹{price.toLocaleString('en-IN')}</p>
+        )}
+        {/* Swap button */}
+        <button
+          onClick={() => onSelect(product)}
+          style={{
+            marginTop: 6, width: '100%', padding: '5px 8px', borderRadius: 6, fontSize: 11, fontWeight: 600,
+            background: isCurrentSwap ? 'rgba(196,77,255,0.25)' : 'rgba(255,255,255,0.08)',
+            border: isCurrentSwap ? '1px solid rgba(196,77,255,0.40)' : '1px solid rgba(255,255,255,0.15)',
+            color: isCurrentSwap ? '#E0AAFF' : 'rgba(255,255,255,0.70)',
+            cursor: 'pointer', textAlign: 'center',
+          }}
+          data-testid={`swap-btn-${product.id || product._id}`}
+        >
+          {isCurrentSwap ? '✓ Swapped — tap to undo' : '⇄ Swap into box'}
+        </button>
       </div>
-
-      {/* Action state */}
-      {isMiraPick ? (
-        <span className="flex-shrink-0 text-xs px-2 py-1 rounded-full"
-          style={{ background: 'rgba(255,161,56,0.15)', color: '#fbbf24' }}>
-          Current
-        </span>
-      ) : isCurrentSwap ? (
-        <div className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center"
-          style={{ background: 'linear-gradient(135deg, #FF2D87, #C44DFF)' }}>
-          <span className="text-white text-xs font-bold">✓</span>
-        </div>
-      ) : (
-        <span className="flex-shrink-0 text-xs px-2 py-1 rounded-lg font-semibold transition-all hover:bg-purple-600/40"
-          style={{ background: 'rgba(196,77,255,0.18)', color: '#E0AAFF', whiteSpace: 'nowrap' }}>
-          Swap →
-        </span>
-      )}
     </div>
   );
 };
 
 /* ─────────────────────────────────────────────────────────────────
-   TAB CONTENT
+   TAB CONTENT — 2-col grid with admin-style soul product cards
    ───────────────────────────────────────────────────────────────── */
-const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies }) => {
+const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, onEditProduct }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const productGridRef = useRef(null);
 
-  // Fetch products for this tab's categories
   useEffect(() => {
     let cancelled = false;
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const allProducts = [];
-        for (const category of tab.categories) {
-          const res = await fetch(`${API_BASE}/api/products?category=${category}&limit=20`);
+        let allProducts = [];
+
+        // Primary: fetch AI-generated breed products
+        if (petBreed) {
+          const res = await fetch(`${API_BASE}/api/mockups/breed-products?breed=${encodeURIComponent(petBreed)}&limit=40`);
           if (res.ok) {
             const data = await res.json();
-            allProducts.push(...(data.products || data || []));
+            allProducts = data.products || data || [];
           }
         }
+        // Fallback to generic breed products (no breed filter)
+        if (allProducts.length === 0) {
+          const res = await fetch(`${API_BASE}/api/mockups/breed-products?limit=40`);
+          if (res.ok) {
+            const data = await res.json();
+            allProducts = data.products || data || [];
+          }
+        }
+        // Final fallback to regular products by category
+        if (allProducts.length === 0) {
+          for (const category of tab.categories) {
+            const res = await fetch(`${API_BASE}/api/products?category=${category}&limit=20`);
+            if (res.ok) {
+              const data = await res.json();
+              allProducts.push(...(data.products || data || []));
+            }
+          }
+        }
+
         if (!cancelled) setProducts(allProducts);
       } catch {
         if (!cancelled) setProducts([]);
@@ -146,7 +171,7 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies }) => {
     };
     fetchProducts();
     return () => { cancelled = true; };
-  }, [tab.id]);
+  }, [tab.id, petBreed]);
 
   // Get Mira's pick from box preview for this tab's slot
   const miraPickSlot = [
@@ -156,20 +181,19 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies }) => {
 
   // Current swap for this tab
   const currentSwap = swaps[tab.id];
+  const selectedProductId = currentSwap?.newProduct?.id || currentSwap?.newProduct?._id;
 
-  // Filter products by allergy on ALL tabs (safety-first for allergic pets)
+  // Filter products by allergy (safety-first)
   const filteredProducts = allergies?.length > 0
     ? products.filter(p => {
-        const productText = `${p.name || ''} ${p.description || ''} ${p.tags?.join(' ') || ''}`.toLowerCase();
-        return !allergies.some(a => productText.includes(a.toLowerCase()));
+        const text = `${p.name || ''} ${p.description || ''} ${p.tags?.join(' ') || ''}`.toLowerCase();
+        return !allergies.some(a => text.includes(a.toLowerCase()));
       })
     : products;
 
-  const selectedProductId = currentSwap?.newProduct?.id;
-
   return (
     <div>
-      {/* Mira's pick row */}
+      {/* Mira's pick slot banner */}
       {miraPickSlot && (
         <div
           className="flex items-center gap-3 rounded-xl px-4 py-3 mb-3"
@@ -180,30 +204,18 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies }) => {
         >
           <span className="text-xl">{miraPickSlot.emoji}</span>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold" style={{ color: '#fbbf24' }}>Mira's pick</p>
+            <p className="text-xs font-semibold" style={{ color: '#fbbf24' }}>Mira's pick for this slot</p>
             <p className="text-sm font-bold text-white truncate">{miraPickSlot.itemName || miraPickSlot.chipLabel}</p>
           </div>
-          {!currentSwap && (
-            <button
-              onClick={() => productGridRef.current?.scrollIntoView({ behavior: 'smooth' })}
-              className="text-xs font-semibold flex-shrink-0"
-              style={{ color: '#C44DFF' }}
-            >
-              Swap →
-            </button>
-          )}
           {currentSwap && (
-            <span
-              className="text-xs px-2 py-0.5 rounded-full"
-              style={{ background: 'rgba(196,77,255,0.20)', color: '#E0AAFF' }}
-            >
+            <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(196,77,255,0.20)', color: '#E0AAFF' }}>
               Swapped
             </span>
           )}
         </div>
       )}
 
-      {/* Allergy banner (wellness + whenever allergies exist) */}
+      {/* Allergy banner */}
       {allergies?.length > 0 && (
         <div
           className="flex items-center gap-2 rounded-lg px-3 py-2 mb-3"
@@ -216,51 +228,39 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies }) => {
         </div>
       )}
 
-      {/* Product grid */}
-      <div ref={productGridRef} className="space-y-2">
-        {loading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-20 rounded-xl animate-pulse"
-              style={{ background: 'rgba(255,255,255,0.06)' }}
-            />
-          ))
-        ) : filteredProducts.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-3xl mb-2">🔍</p>
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.55)' }}>
-              No products found after allergy filtering.
-            </p>
-            <p className="text-xs mt-1" style={{ color: 'rgba(196,77,255,0.70)' }}>
-              Ask the Concierge to find something safe.
-            </p>
-          </div>
-        ) : (
-          filteredProducts.map((product, i) => {
+      {/* 2-column grid (admin-style soul cards) */}
+      {loading ? (
+        <div className="grid grid-cols-2 gap-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="rounded-xl animate-pulse" style={{ aspectRatio: '1/1', background: 'rgba(255,255,255,0.06)' }} />
+          ))}
+        </div>
+      ) : filteredProducts.length === 0 ? (
+        <div className="text-center py-8">
+          <p className="text-3xl mb-2">🔍</p>
+          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.55)' }}>No products found.</p>
+          <p className="text-xs mt-1" style={{ color: 'rgba(196,77,255,0.70)' }}>Ask Concierge to find something.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-3">
+          {filteredProducts.map((product, i) => {
             const productId = product.id || product._id;
             const swappedId = currentSwap?.newProduct?.id || currentSwap?.newProduct?._id;
-            const isMiraPick = i === 0; // First product in list is Mira's pick
+            const isMiraPick = i === 0 && !currentSwap;
             const isCurrentSwap = !!swappedId && (productId === swappedId);
 
             return (
-              <ProductCard
+              <SoulCard
                 key={productId || i}
                 product={product}
-                isMiraPick={isMiraPick && !currentSwap}
+                isMiraPick={isMiraPick}
                 isCurrentSwap={isCurrentSwap}
+                onEdit={onEditProduct}
                 onSelect={() => {
-                  if (isMiraPick && !currentSwap) {
-                    // Clicking Mira's pick when no swap — scroll to other options
-                    productGridRef.current?.children?.[1]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    return;
-                  }
-                  // If clicking the already-swapped item, undo
                   if (isCurrentSwap) {
-                    onSwap(tab.id, null); // null = undo
+                    onSwap(tab.id, null);
                     return;
                   }
-                  // Swap with this product
                   onSwap(tab.id, {
                     slotNumber: tab.slotNumber,
                     originalItem: miraPickSlot,
@@ -269,9 +269,9 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies }) => {
                 }}
               />
             );
-          })
-        )}
-      </div>
+          })}
+        </div>
+      )}
     </div>
   );
 };
@@ -359,8 +359,11 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [boxPreview, setBoxPreview] = useState(null);
   const [petName, setPetName] = useState('');
+  const [petBreed, setPetBreed] = useState('');
   const [activeTab, setActiveTab] = useState('cakes');
   const [swaps, setSwaps] = useState({}); // { tabId: { slotNumber, originalItem, newProduct } }
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
   // Platform-standard mobile detection — ResizeObserver on document.body
   const isMobile = useResizeMobile();
@@ -368,9 +371,10 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
   // Listen for open event
   useEffect(() => {
     const handleOpen = (e) => {
-      const { boxPreview: preview, petName: name } = e.detail || {};
+      const { boxPreview: preview, petName: name, petBreed: breed } = e.detail || {};
       setBoxPreview(preview);
       setPetName(name || 'your pet');
+      setPetBreed(breed || '');
       setActiveTab('cakes');
       setSwaps({});
       setIsOpen(true);
@@ -409,23 +413,51 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
   }, []);
 
   const handleBuild = useCallback(() => {
-    // Merge swaps into boxPreview before opening builder
-    const updatedPreview = boxPreview ? { ...boxPreview } : null;
+    // Merge swaps into visibleSlots so BirthdayBoxBuilder sees the actual swapped items
+    const mergeSwapsIntoSlots = (slots) =>
+      (slots || []).map(slot => {
+        const tab = TABS.find(t => t.slotNumber === slot.slotNumber);
+        const swap = tab ? swaps[tab.id] : null;
+        if (!swap) return slot;
+        return {
+          ...slot,
+          itemName: swap.newProduct.name,
+          chipLabel: swap.newProduct.name,
+          emoji: swap.newProduct.emoji || '🔄',
+          description: swap.newProduct.description || '',
+          isSwapped: true,
+          swappedProductId: swap.newProduct.id || swap.newProduct._id,
+        };
+      });
+
+    const updatedPreview = boxPreview
+      ? {
+          ...boxPreview,
+          visibleSlots: mergeSwapsIntoSlots(boxPreview.visibleSlots),
+          hiddenSlots: mergeSwapsIntoSlots(boxPreview.hiddenSlots),
+        }
+      : null;
+
     handleClose();
-    // Short delay so drawer closes before builder opens
     setTimeout(() => {
       window.dispatchEvent(new CustomEvent('openOccasionBoxBuilder', {
         detail: {
           preset: updatedPreview,
           petName,
+          petBreed,
           swaps,
         },
       }));
     }, 320);
-  }, [boxPreview, petName, swaps, handleClose]);
+  }, [boxPreview, petName, petBreed, swaps, handleClose]);
 
   const swapCount = Object.keys(swaps).length;
   const allergies = boxPreview?.allergies || [];
+
+  const handleEditProduct = useCallback((product) => {
+    setEditingProduct({ ...product, id: product.id || product._id, collection: 'breed_products' });
+    setEditModalOpen(true);
+  }, []);
 
   const drawerContent = (
     <>
@@ -584,6 +616,8 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
                         swaps={swaps}
                         onSwap={handleSwap}
                         allergies={allergies}
+                        petBreed={petBreed}
+                        onEditProduct={handleEditProduct}
                       />
                     </motion.div>
                   ) : null
@@ -612,9 +646,20 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
     </>
   );
 
-  return typeof document !== 'undefined'
-    ? createPortal(drawerContent, document.body)
-    : null;
+  return (
+    <>
+      {typeof document !== 'undefined' && createPortal(drawerContent, document.body)}
+      {/* ProductBoxEditor — full-tabbed product editor with Media + AI generation */}
+      {editModalOpen && editingProduct && (
+        <ProductBoxEditor
+          product={editingProduct}
+          open={editModalOpen}
+          onClose={() => { setEditModalOpen(false); setEditingProduct(null); }}
+          onSave={() => { setEditModalOpen(false); setEditingProduct(null); toast.success('Product saved!'); }}
+        />
+      )}
+    </>
+  );
 };
 
 export default BirthdayBoxBrowseDrawer;
