@@ -11753,7 +11753,12 @@ async def toggle_product_active(product_id: str):
     new_status = not product.get("is_active", True)
     await db.products_master.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
-        {"$set": {"is_active": new_status, "updated_at": get_utc_timestamp()}}
+        {"$set": {
+            "is_active": new_status,
+            "active": new_status,
+            "visibility.status": "active" if new_status else "archived",
+            "updated_at": get_utc_timestamp()
+        }}
     )
     
     return {"success": True, "is_active": new_status}

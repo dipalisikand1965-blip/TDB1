@@ -464,7 +464,7 @@ const ProductBoxEditor = ({
               <div>
                 <Label>Product Type</Label>
                 <select 
-                  value={getValue('basics.product_type', 'physical') || getValue('product_type', 'physical')}
+                  value={getValue('product_type', '') || getValue('basics.product_type', '') || 'physical'}
                   onChange={(e) => {
                     updateField('basics.product_type', e.target.value);
                     updateField('product_type', e.target.value);

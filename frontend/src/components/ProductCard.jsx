@@ -332,7 +332,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
   const productMiraTip = getProductMiraTip();
   
   // Fallback placeholder image
-  const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop';
+  const PLACEHOLDER_IMAGE = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23F5F0EB"/><g fill="%23C4A882" opacity="0.7"><circle cx="50" cy="56" r="15"/><circle cx="34" cy="43" r="7"/><circle cx="66" cy="43" r="7"/><circle cx="42" cy="37" r="7"/><circle cx="58" cy="37" r="7"/></g></svg>')}`;
   
   // Get valid image - PRIORITIZE image_url (clean curated URL), then Shopify CDN, then legacy fields
   const getValidImage = () => {
@@ -446,7 +446,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
                 alt={product.name}
                 className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                 style={{ background: '#fafafa' }}
-                onError={(e) => { e.target.src = productImage || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop'; }}
+                onError={(e) => { e.target.src = productImage || PLACEHOLDER_IMAGE; }}
               />
             );
           })()}

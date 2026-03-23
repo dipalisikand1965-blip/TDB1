@@ -1412,13 +1412,29 @@ const UnifiedProductBox = () => {
                         )}
                       </td>
                       <td className="p-3 text-center">
-                        <Badge className={
-                          product.visibility?.status === 'active' ? 'bg-green-100 text-green-700' :
-                          product.visibility?.status === 'draft' ? 'bg-amber-100 text-amber-700' :
-                          'bg-gray-100 text-gray-700'
-                        }>
-                          {product.visibility?.status || 'unknown'}
-                        </Badge>
+                        <button
+                          onClick={async () => {
+                            try {
+                              const res = await fetch(`${API_URL}/api/admin/products/${product.id}/toggle-active`, { method: 'PATCH' });
+                              if (res.ok) {
+                                const data = await res.json();
+                                setProducts(prev => prev.map(p => p.id === product.id
+                                  ? { ...p, is_active: data.is_active, visibility: { ...p.visibility, status: data.is_active ? 'active' : 'archived' } }
+                                  : p
+                                ));
+                              }
+                            } catch (e) { /* silent */ }
+                          }}
+                          title={product.is_active !== false ? 'Click to deactivate' : 'Click to activate'}
+                          className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full border transition-colors ${
+                            product.is_active !== false || product.visibility?.status === 'active'
+                              ? 'bg-green-100 text-green-700 border-green-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200'
+                              : 'bg-gray-100 text-gray-500 border-gray-200 hover:bg-green-50 hover:text-green-600 hover:border-green-200'
+                          }`}
+                          data-testid={`toggle-active-${product.id}`}
+                        >
+                          {product.is_active !== false || product.visibility?.status === 'active' ? 'Active' : 'Inactive'}
+                        </button>
                       </td>
                       <td className="p-3">
                         <div className="flex items-center justify-center gap-1 flex-wrap">

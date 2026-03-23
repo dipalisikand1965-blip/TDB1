@@ -1570,8 +1570,8 @@ async def get_product_stats():
     total = await db.products_master.estimated_document_count()
 
     active, draft, archived, reward_eligible, reward_only, mira_visible = await asyncio.gather(
-        safe_count(db.products_master, {"visibility.status": "active"}),
-        safe_count(db.products_master, {"visibility.status": "draft"}),
+        safe_count(db.products_master, {"$or": [{"is_active": True}, {"active": True}, {"visibility.status": "active"}]}),
+        safe_count(db.products_master, {"$or": [{"is_active": False}, {"visibility.status": "draft"}]}),
         safe_count(db.products_master, {"visibility.status": "archived"}),
         safe_count(db.products_master, {"paw_rewards.is_reward_eligible": True}),
         safe_count(db.products_master, {"paw_rewards.is_reward_only": True}),

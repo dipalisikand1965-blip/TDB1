@@ -173,10 +173,20 @@ But if the session restarted, re-trigger manually with the commands above.
 - [x] Soul Made™ on ALL 11 pillars (Care, Celebrate, Dine, Go, Play, Learn, Shop, Paperwork, Adopt, Farewell, Emergency)
 - [x] THE DOGGY BAKERY™ Breed Cake Modal — Yappy-style illustrations, pet-aware personalisation
 - [x] 163 cake illustrations generated (50 breeds × 3-6 colour variants)
-- [x] Admin → 🎂 Breed Cakes tab (BreedCakeManager)
+- [x] Admin → 🎂 Breed Cakes tab (BreedCakeManager) + Flat Art tab (831 products)
 - [x] Services price hiding — "Personalised · Price on request" across all pillars
 - [x] Birthday Box Browse Drawer — admin-style soul cards, ProductBoxEditor, swap bug fixed
 - [x] Black Husky + Grey Husky cake variants added and generated
+- [x] ContentModal tab bugs fixed — no duplicate "All" tab, filter checks product_type
+- [x] Yappy Art section added to Soul Made view in all ContentModals
+- [x] Admin Soul Products gallery pagination (48/page) + search + CloudinaryUploader in edit
+- [x] SoulMadeModal widened to 700px, 2-column grid layout
+- [x] Mira picks shimmer skeleton on Celebrate + Care pages
+- [x] Admin stats active count fixed (was 3, now 4730+)
+- [x] Product type dropdown fixed in ProductBoxEditor (reads product_type before basics.product_type)
+- [x] Active/Inactive toggle added to UnifiedProductBox product rows + BundlesManager
+- [x] Party accessories breed sorting (Indie-specific items first for Indie dogs)
+- [x] No-image product placeholder replaced with paw SVG icon
 
 - [x] 940 flat art products live (163 Yappy illustrations × 8 product types via Cloudinary overlay)
   - Zero AI cost — uses existing watercolour soul products as base, overlays Yappy face
