@@ -18,7 +18,7 @@ from datetime import datetime
 # Get the backend URL from environment
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://custom-merch-hub-23.preview.emergentagent.com"
+    BASE_URL = "https://concierge-flow-fix.preview.emergentagent.com"
 
 # Admin credentials
 ADMIN_USERNAME = "aditya"

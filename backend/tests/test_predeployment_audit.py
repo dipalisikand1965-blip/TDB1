@@ -14,7 +14,7 @@ import os
 import time
 import json
 
-BASE_URL = "https://custom-merch-hub-23.preview.emergentagent.com"
+BASE_URL = "https://concierge-flow-fix.preview.emergentagent.com"
 
 # Test credentials
 USER_EMAIL = "dipali@clubconcierge.in"

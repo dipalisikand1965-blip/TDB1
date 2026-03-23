@@ -1,123 +1,139 @@
-<analysis>original_problem_statement: 
-1. Import and map 2,409 products from a CSV to their respective pillars in the database without hardcoding, allowing Admin edits.
-2. Run an AI background engine to automatically assign pillars to the remaining 704 pending products.
-3. Integrate an AI Mockup generation tool in the Admin panel for creating new product types.
-4. Implement a Wow Custom Order / Photo Delivery feature for Soul Picks.
-5. Fix  page to use the Universal Concierge ticketing flow instead of generic buttons.
-6. Fix Soul Picks to display actual product mockups () instead of watercolor dog portraits. Ensure Shopify breed cakes are sorted with the pet's breed first. 
-*Product Requirements:* All service bookings and custom order requests MUST route through the central  via the Universal Concierge flow ().
+<analysis>**original_problem_statement**: Implement a unified Soul Made™ custom order flow () across all pillar pages. Upgrade UI elements (Category strips, Profile bars) to be beautiful and consistent across the app. Fix bugs related to allergy string parsing, modal positioning, NearMe API routing, and ensure all Concierge flows use the universal  architecture.
 
 **User's preferred language**: INSTRUCT next agent to respond in English.
 
-**what currently exists?** 
-A robust Pet Life OS. The  collection (3,826 items) is now fully mapped to pillars. The Admin panel supports generating AI mockups for new product types. The  page now mimics , pushing all inquiries through a 3-question Concierge intake modal that creates real . The Soul Picks section strictly renders legitimate product mockups from  (bypassing older portrait fallbacks), and Shopify bakery products correctly sort the user's pet breed to the top.
+**what currently exists?**: A comprehensive Pet Life OS with React frontend, FastAPI backend, and MongoDB. Soul Made™ is integrated across most pillars via full-screen contextual catalogue overlays () triggered from category pill strips. A universal canonical Concierge flow ( -> ) is standardized. The  UI has been globally upgraded to a modern, beautiful white-card style.
 
-**Last working item**:
-    - Last item agent was working: Rewiring the Customise with Mojos Photo" button in `ProductDetailModal.jsx` and `ProductCard.jsx` to use the Universal Concierge Flow (`sendToConcierge` / `attach_or_create_ticket`). Initially, the agent built a custom modal and API route, but the user requested it flow through the standard Service Desk system so admins get notifications. The agent swapped the functions and removed the custom flow renders.
-    - Status: USER VERIFICATION PENDING
-    - Agent Testing Done: Y (Linting passed, but no functional UI/E2E test done post-swap).
-    - Which testing method agent to use? screenshot tool (Frontend) to verify clicking "Customise with Mojos Photo successfully opens the 3-question Concierge modal.
+**Last working item**: 
+    - Last item agent was working: Removing the visually unappealing  from the  and  pages, and documenting the remaining P0 bugs/tasks for the next agent because context was running out.
+    - Status: IN PROGRESS
+    - Agent Testing Done: Y (Screenshot tool confirmed removal)
+    - Which testing method agent to use? Screenshot tool (Frontend)
     - User Testing Done: N
 
 **All Pending/In progress Issue list**:  
-  Issue 1: Verify the Customise with Mojos Photo" button triggers the Concierge flow (P0)
-     - Attempted fixes: Replaced local `CustomOrderFlow` state and components with `sendToConcierge` calls in `ProductDetailModal.jsx` and `ProductCard.jsx`.
-     - Next debug checklist: Log in, go to `/celebrate-soul`, click "Soul Picks", open a product, and click "Customise with Mojos Photo. Ensure the standard Service Desk modal opens and submits successfully.
-     - Why fix this issue and what will be achieved with the fix? Ensures all custom orders land in the centralized admin Service Desk rather than a disconnected database collection.
-     - Status: USER VERIFICATION PENDING
+  Issue 1: Product Detail Send to Concierge Flow Missing Universal Route (P0)
+     - Attempted fixes: Identified by user at the end of the session. Not yet attempted.
+     - Next debug checklist: Investigate  (likely inside  or similar). Verify and rewire the Send to Concierge / Ask Mira button to use the canonical  hook and .
+     - Why fix this issue and what will be achieved with the fix? Ensures all service desk tickets from product details route correctly to the backend and admin panel.
+     - Status: NOT STARTED
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? Both
+     - Blocked on other issue: None
+
+  Issue 2: Add Soul Made to Emergency Pillar (P0)
+     - Attempted fixes: The original PRD excluded Emergency and Advisory. The user reversed this for Emergency in their final messages (emergcncy soul made is missing).
+     - Next debug checklist: Check  and add the  and a beautifully styled trigger (matching the pattern used in Shop or Care).
+     - Why fix this issue and what will be achieved with the fix? Fulfills user's latest requirement.
+     - Status: NOT STARTED
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? Frontend
+     - Blocked on other issue: None
+
+  Issue 3: MiraCuratedBox Swap/Switch Functionality Broken (P1)
+     - Attempted fixes: The agent fixed an allergy parsing bug in  but ran out of context before fixing the swap logic.
+     - Next debug checklist: Check  or  where the swap logic is handled.
+     - Why fix this issue and what will be achieved with the fix? Allows users to actually customize the items inside their curated Celebration boxes.
+     - Status: NOT STARTED
      - Is recurring issue? N
      - Should Test frontend/backend/both after fix? Frontend
      - Blocked on other issue: None
 
 **In progress Task List**:
-  *(No tasks currently blocked or mid-execution, awaiting verification of the Custom Order button swap).*
+  Task 1: Redesign Adopt and Farewell Soul Made triggers (P0)
+     - Where to resume:  and .
+     - What will be achieved with this? The agent removed the ugly  from these pages. Now, a compact, beautiful trigger (like the  badge on the Shop page) needs to be added so users can still access custom merchandise on these pillars.
+     - Status: IN PROGRESS
+     - Should Test frontend/backend/both after fix? Frontend
+     - Blocked on something: None
 
 **Upcoming and Future Tasks**
   Upcoming Tasks:
   - (P1) Add 3 vets near you context to daily health WhatsApp reminders (requires NearMe API call at scheduler time).
-  - (P2) Extend scheduler to handle Medication refill reminders.
+  - (P1) Extend scheduler to handle Medication refill reminders.
   
   Future Tasks:
-  - (P2) Build the  pillar (post-launch).
-  - (P2) Refactor  (currently 5,400+ lines, needs splitting) and  (24,000+ lines).
-  - (P2) Remove Skip Payment from onboarding (post soft-launch).
-  - (P2) Add a My Custom Orders tab in the user profile so customers can track order status.
+  - (P2) Build the  pillar.
+  - (P2) Refactor  (24,000+ lines).
+  - (P2) Add a My Custom Orders tab in the user profile.
+  - (P2) Add an admin notification banner/chime in the Service Desk when a new Soul Made™ order comes in.
 
 **Completed work in this session**
-- CSV Pillar Import & Mapping: Populated pillars for 2,409 products in  via new import endpoint (DONE).
-- AI Auto-assign: Ran background GPT script to categorize the remaining 756 pending products into pillars (DONE).
-- Admin AI Mockups: Added generation status bar and wired up AI image generation to New Product Type flow (DONE).
-- Farewell Page Fix: Removed the Indie tab from  to stop non-farewell products from bleeding into the UI (DONE).
-- Services Page Unification: Replaced generic View Details buttons on  with Book via Concierge leading to the  and creating  (DONE).
-- Database URL Restoration: Restored 631 overwritten Cloudinary  paths back to their original  paths (DONE).
-- Frontend Image Fix: Updated  to stop overriding valid  fields with breed illustration portraits (DONE).
-- UI Cleanup: Removed Often paired with... hints and Soul Made badges from Soul Picks cards (DONE).
-- Shopify Cakes Fix: Sorted Breed Cakes in  to ensure the pet's specific breed cake renders first, and deactivated 20 dummy AI cakes (DONE).
-- Custom Order Flow integration: Rewired the Customise button to use the standard Universal Concierge Ticket flow (DONE).
+- Soul Made Full Rollout: Added Soul Made™ pill to CategoryStrips and ContentModals for Care, Celebrate, Dine, Go, Play, Learn, and Paperwork (DONE).
+- Shop Integration: Added ✦ Soul-Made clickable badge on Shop's Breed Collection header (DONE).
+- UI Polish: Upgraded  globally to a modern white-card UI (DONE).
+- NearMe Fix: Added missing  route and wired Google Places properly (DONE).
+- Concierge Audit: Verified and standardized  across 66+ components, removing irrelevant tags in  (DONE).
+- Formatting Bugs: Fixed string-iteration bug for  (test_fish_185 -> Test Fish 185) and formatted raw DB strings in ContentModal tabs (DONE).
+- Mobile UI: Fixed bottom-stuck modals (,  drawer) so they center correctly on mobile screens (DONE).
 
 **Earlier issues found/mentioned but not fixed**
-  - None.
+  - Issue 1:  concierge flow not using canonical  (See Pending Issues).
 
 **Known issue recurrence from previous fork**
-  - Issue recurrence in previous fork: Image rendering confusion.  vs  collections contain different image sets (beautiful mockups vs watercolours). Furthermore,  had a fallback logic that favored old breed illustrations over valid mockup URLs.
-  - Recurrence count: 4
-  - Status: RESOLVED (Watch out for any component mapping images. Always trust  for mockups and do NOT try to sync  over  again).
+  - Issue recurrence in previous fork: None in this session.
+  - Recurrence count: 0
+  - Status: RESOLVED
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Universal Concierge Flow**: Every request (custom products, services, photo delivery) MUST trigger  to land in the centralized Admin Service Desk.
-- **Image Priority**:  must respect  first. Legacy  or  fallbacks should not override actual product mockups.
-- **Service Box Routing**:  pulls from  dynamically. Clicking a service reads its  and automatically adapts the Concierge Intake questions.
+- **Canonical Concierge Flow:** ALL Send to Concierge requests MUST post to .
+- **Contextual Catalogue Overlays:** Features like Soul Made, Grooming, etc. are triggered via small pill strips which open full-screen  drawers to let users browse products without leaving the page context.
+- **Documentation Overload:** The previous agent explicitly created multiple Markdown files to guide the next agent. Check the docs section.
 
 **key DB schema**
-  - : {breed, pillar, mockup_url, image_url, active, is_mockup} (Contains the true Soul Picks)
-  - : {id, pillar, price, features} (Source of truth for bookable services)
-  - : Main collection for all concierge interactions.
+  - : Target for all custom orders and concierge requests.
+  - : Fully generated for Indie breed, used by  category fetches.
 
 **changes in tech stack**
-  - None.
+  - None
 
 **All files of reference** 
-  -  (Critical image rendering logic fixed)
-  -  (Controls Soul Picks & Cake sorting)
-  -  (Holds the Customise button)
-  -  (Rewritten to use Concierge Flow)
-  -  (Contains the AI pillar assignment logic)
+  -  (CRITICAL STARTING POINT)
+  - 
+  -  (For fixing ProductDetailModal)
+  - 
+  - 
+  - 
 
 **Areas that need refactoring**:
-- **Code Cleanup Needed**: The agent created  and , but the user subsequently rejected this custom flow in favor of the Universal Concierge flow. These files are now orphaned/dead code and should be deleted to prevent future confusion.
--  is over 24,000 lines. 
+  -  is enormous.
+  -  /  logic is convoluted and failing to swap products.
 
 **key api endpoints**
--  (Used by Soul Picks)
--  (Universal Concierge entry point)
--  (Background AI job)
+  -  (Crucial for pending P0 issue)
+  -  (Fixed for NearMe functionalities)
 
 **Critical Info for New Agent** 
-- **DO NOT TOUCH SHOPIFY ROUTES/COLLECTIONS**: The user has real bakery products synced from Shopify. Do not attempt to replace these with AI images.
-- **Soul Picks Images**: The images are correctly stored as  in Cloudinary. The bug was frontend rendering ( falling back to illustrations). Do not attempt to modify the DB URLs again.
-- Always use  /  for any booking or custom request. Never create isolated API routes for user requests; they must go to the Service Desk.
+- **HANDOVER DOCS**: The previous agent created multiple detailed  files in  designed specifically for YOU. Start your session by reading  and .
+- **Emergency Page**: The user flip-flopped on whether Emergency should have Soul Made. The latest requirement is YES, it should. Add it.
 
 **documents and test reports created in this job** 
   - 
   - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
 
 **Last 10 User Messages and any pending HUMAN messages** 
-1. **LATEST**: User stated that Custom Orders weren't appearing in the Admin Service Desk because the universal concierge flow wasn't used. -> **STATUS: RESOLVED** (Agent rewired the Customise button to use ).
-2. User asked to see a screenshot of the Custom Made product feature. -> **STATUS: COMPLETED**
-3. User instructed to make the pet's specific breed cake appear on the top row, with the rest below. -> **STATUS: COMPLETED**.
-4. User noticed dummy AI cakes were rendering alongside real Shopify cakes and asked to remove them. -> **STATUS: COMPLETED** (Agent deactivated 20 AI cakes).
-5. User was furious that Shopify cakes were removed from the Birthday/Breed cake tabs due to the agent's broad endpoint manipulation. -> **STATUS: COMPLETED** (Agent reverted the aggressive filtering, restoring the Shopify cakes).
-6. User pointed out that Soul Picks was rendering TWO rows: a correct top row of mockups, and a broken bottom row of old watercolour portraits. Asked to remove the bottom row. -> **STATUS: COMPLETED**.
-7. User explained exactly why Soul Picks was broken:  was rendering  instead of . Asked to fix it, remove Often paired with text, and remove Soul Made badges. -> **STATUS: COMPLETED**.
-8. User noticed URLs were overwritten to  and asked to restore them to . -> **STATUS: COMPLETED** (Agent restored 631 URLs in the DB).
-9. User had a heart attack because Soul Picks showed only watercolor dog faces instead of products. -> **STATUS: COMPLETED** (Agent initially made a mistake trying to sync images, but eventually fixed it).
-10. User confirmed the  concierge flow works and asked if newly created services automatically get this modal. -> **STATUS: COMPLETED** (Agent explained it reads the pillar dynamically).
+1. **LATEST**: User expressed thanks, noted that Emergency Soul Made is missing, Product Detail modal is not using the universal concierge flow, and requested a better, less ugly UI for Adopt and Farewell (provided 5 images). -> **STATUS: PENDING**
+2. User verified the UI of the profile bar was beautiful but wanted it rolled out to ALL 11 pillars. -> **STATUS: COMPLETED**
+3. User noticed irrelevant chips opening on the Services page when booking specific services. -> **STATUS: COMPLETED**
+4. User requested the empty Soul Products for Indies box be removed from Services and Shop. -> **STATUS: COMPLETED**
+5. User asked to verify if AI generated all products for Indie. -> **STATUS: COMPLETED**
+6. User reported they couldn't type in the Something else box in SoulMadeModal. -> **STATUS: COMPLETED**
+7. User reported raw DB names (, ) showing up in tabs and text. -> **STATUS: COMPLETED**
+8. User reported the Birthday box swap feature was broken and stuck on mobile. -> **STATUS: PENDING** (Allergy bug fixed, but swap bug remains).
+9. User asked to verify the Book via concierge in NearMe. -> **STATUS: COMPLETED**
+10. User wanted to update  with new info. -> **STATUS: COMPLETED**
 
 **Project Health Check:**
-Functional. Major architectural flow unification completed.
+Frontend compiling cleanly. Minor UI bugs (Adopt/Farewell trigger layout) and missing implementation on specific buttons (Product Detail Modal) remain.
 
 **3rd Party Integrations** 
   • OpenAI GPT-4o / Claude Sonnet — uses Emergent LLM Key
@@ -125,16 +141,17 @@ Functional. Major architectural flow unification completed.
   • Razorpay (Payments) — requires User API Key
   • Gupshup (WhatsApp) — requires User API Key
   • Resend (Email) — requires User API Key
+  • Google Places API (NearMe) — requires User API Key
 
 **Testing status**
-  - Testing agent used after significant changes: YES (Iteration 189)
+  - Testing agent used after significant changes: YES
   - Troubleshoot agent used after agent stuck in loop: NO
-  - Test files created: None
-  - Known regressions: None currently known, but the last wiring change for Custom Orders was not functionally tested by the agent via screenshot. 
+  - Test files created: 
+  - Known regressions: MiraCuratedBox item swapping is broken.
 
 **Credentials to test flow:**
 - User:  / 
 - Admin:  /  (Admin portal at )
 
 **What agent forgot to execute**
-The agent successfully replaced the  component with the universal  function in the UI, but **failed to delete the orphaned files** ( and ). The next agent should delete these files to keep the codebase clean. The agent also forgot to capture a final screenshot proving the Customise button opens the standard Service Desk modal.</analysis>
+The agent ran out of context before fixing the Send to Concierge button in the Product Detail Modal (it's not using canonical flow), did not add the Soul Made trigger to Emergency, and only removed the ugly UI from Adopt/Farewell without replacing it with the beautiful, compact trigger requested. Fix these immediately.</analysis>
