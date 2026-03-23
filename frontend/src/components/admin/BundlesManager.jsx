@@ -387,6 +387,23 @@ const BundlesManager = () => {
       });
     }
   };
+
+  const handleToggleActive = async (bundle) => {
+    const newActive = !(bundle.is_active !== false);
+    try {
+      const response = await fetch(`${API_URL}/api/bundles/${bundle.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...bundle, is_active: newActive })
+      });
+      if (response.ok) {
+        toast({ title: newActive ? "Bundle Activated" : "Bundle Deactivated" });
+        fetchBundles(page);
+      }
+    } catch {
+      toast({ title: "Error", description: "Failed to update bundle status", variant: "destructive" });
+    }
+  };
   
   const calculateDiscount = () => {
     const original = parseFloat(formData.original_price) || 0;
@@ -624,6 +641,15 @@ const BundlesManager = () => {
                 >
                   <Edit2 className="w-4 h-4 mr-1" />
                   Edit
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleToggleActive(bundle)}
+                  className={bundle.is_active !== false ? 'text-green-600 hover:bg-green-50 border-green-200' : 'text-gray-400 hover:bg-green-50 hover:text-green-600'}
+                  title={bundle.is_active !== false ? 'Click to deactivate' : 'Click to activate'}
+                >
+                  {bundle.is_active !== false ? 'Active' : 'Off'}
                 </Button>
                 <Button 
                   variant="outline" 
