@@ -25,8 +25,7 @@ import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
-import SoulMadeCollection from "../components/SoulMadeCollection";
-import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
+import SoulMadeModal from "../components/SoulMadeModal";
 
 const G = {
   deep:"#1A1A2E", mid:"#4B4B6E", indigo:"#6366F1", light:"#C7D2FE",
@@ -241,6 +240,7 @@ const FarewellSoulPage = () => {
   const [services, setServices]       = useState([]);
   const [conciergeOpen, setConciergeOpen] = useState(false);
   const [conciergeSvc,  setConciergeSvc]  = useState("");
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastSvc, setToastSvc] = useState("");
   useEffect(()=>{ if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]); if(contextPets!==undefined)setLoading(false); },[contextPets,currentPet,setCurrentPet]);
@@ -336,7 +336,17 @@ const FarewellSoulPage = () => {
           <>
             <div style={{marginBottom:20}}><FarewellProfile pet={petData} token={token}/></div>
             <MiraPicksSection pet={petData}/>
-
+            {/* ✦ Soul Made™ trigger */}
+            <div data-testid="farewell-soul-made-trigger" onClick={()=>setSoulMadeOpen(true)}
+              style={{margin:"0 auto 24px",maxWidth:440,padding:"16px 20px",background:"#fff",border:`2px solid ${G.indigo}22`,borderRadius:16,display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",boxShadow:`0 4px 16px ${G.indigo}14`,transition:"box-shadow 0.2s,transform 0.15s"}}
+              onMouseEnter={e=>{e.currentTarget.style.boxShadow=`0 6px 24px ${G.indigo}28`;e.currentTarget.style.transform="translateY(-1px)";}}
+              onMouseLeave={e=>{e.currentTarget.style.boxShadow=`0 4px 16px ${G.indigo}14`;e.currentTarget.style.transform="";}}>
+              <div>
+                <div style={{fontSize:14,fontWeight:800,color:G.indigo,letterSpacing:"0.02em"}}>✦ Soul Made™ — In memory of {petName}</div>
+                <div style={{fontSize:12,color:"#888",marginTop:3}}>Upload a photo · Concierge® creates a meaningful keepsake</div>
+              </div>
+              <span style={{fontSize:22,color:`${G.indigo}60`,flexShrink:0,marginLeft:12}}>›</span>
+            </div>
             <GuidedFarewellPaths pet={petData}/>
 
             {/* Products — tab layout, breed-filtered */}
@@ -453,6 +463,7 @@ const FarewellSoulPage = () => {
 
       <ConciergeToast toast={toastVisible?{name:toastSvc,pillar:"farewell"}:null} onClose={()=>setToastVisible(false)}/>
       <FarewellConciergeModal isOpen={conciergeOpen} onClose={()=>setConciergeOpen(false)} petName={petName} petId={petData?.id} token={token} preSelected={conciergeSvc}/>
+      {soulMadeOpen&&<SoulMadeModal pet={petData} pillar="farewell" pillarColor={G.indigo} pillarLabel="Farewell" onClose={()=>setSoulMadeOpen(false)}/>}
     </PillarPageLayout>
     </>
   );

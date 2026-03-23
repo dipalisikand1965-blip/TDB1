@@ -17,7 +17,7 @@ import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
-import SoulMadeCollection from "../components/SoulMadeCollection";
+import SoulMadeModal from "../components/SoulMadeModal";
 import ConciergeToast from "../components/common/ConciergeToast";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
@@ -307,6 +307,7 @@ const EmergencySoulPage = () => {
   const [activeService, setActiveService] = useState(null);
   const [conciergeOpen, setConciergeOpen] = useState(false);
   const [conciergeSvc,  setConciergeSvc]  = useState("");
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastSvc, setToastSvc]     = useState("");
   const [breedProducts, setBreedProducts] = useState([]);
@@ -444,6 +445,17 @@ const EmergencySoulPage = () => {
               <button onClick={()=>setConciergeOpen(true)} style={{background:`linear-gradient(135deg,${G.crimson},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"9px 20px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Fix these now with Concierge →</button>
             </div>)}
             <MiraPicksSection pet={petData}/>
+            {/* ✦ Soul Made™ trigger — custom emergency ID tags, medical alert tags */}
+            <div data-testid="emergency-soul-made-trigger" onClick={()=>setSoulMadeOpen(true)}
+              style={{margin:"0 auto 24px",maxWidth:440,padding:"16px 20px",background:"#fff",border:`2px solid ${G.crimson}22`,borderRadius:16,display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",boxShadow:`0 4px 16px ${G.crimson}14`,transition:"box-shadow 0.2s,transform 0.15s"}}
+              onMouseEnter={e=>{e.currentTarget.style.boxShadow=`0 6px 24px ${G.crimson}28`;e.currentTarget.style.transform="translateY(-1px)";}}
+              onMouseLeave={e=>{e.currentTarget.style.boxShadow=`0 4px 16px ${G.crimson}14`;e.currentTarget.style.transform="";}}>
+              <div>
+                <div style={{fontSize:14,fontWeight:800,color:G.crimson,letterSpacing:"0.02em"}}>✦ Soul Made™ — Custom safety gear</div>
+                <div style={{fontSize:12,color:"#888",marginTop:3}}>ID tags, medical alert collars, emergency go-bags — made for {petName}</div>
+              </div>
+              <span style={{fontSize:22,color:`${G.crimson}60`,flexShrink:0,marginLeft:12}}>›</span>
+            </div>
 
             {/* ── SOUL PICKS: Breed Emergency Products ── */}
             {(breedProductsLoading || breedProducts.length > 0) && (
@@ -563,6 +575,7 @@ const EmergencySoulPage = () => {
 
       <ConciergeToast toast={toastVisible?{name:toastSvc,pillar:"emergency"}:null} onClose={()=>setToastVisible(false)}/>
       <EmergencyConciergeModal isOpen={conciergeOpen} onClose={()=>setConciergeOpen(false)} petName={petName} petId={petData?.id} token={token} preSelected={conciergeSvc}/>
+      {soulMadeOpen&&<SoulMadeModal pet={petData} pillar="emergency" pillarColor={G.crimson} pillarLabel="Emergency" onClose={()=>setSoulMadeOpen(false)}/>}
     </PillarPageLayout>
     </>
   );

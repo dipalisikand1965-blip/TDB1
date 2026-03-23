@@ -24,8 +24,7 @@ import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
-import SoulMadeCollection from "../components/SoulMadeCollection";
-import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
+import SoulMadeModal from "../components/SoulMadeModal";
 
 const G = {
   deep:"#4A0E2E", mid:"#7B1D4E", rose:"#D4537E", light:"#F9A8C9",
@@ -228,6 +227,7 @@ const AdoptSoulPage = () => {
   const [services,    setServices]    = useState([]);
   const [conciergeOpen, setConciergeOpen] = useState(false);
   const [conciergeSvc,  setConciergeSvc]  = useState("");
+  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastSvc, setToastSvc] = useState("");
 
@@ -307,6 +307,17 @@ const AdoptSoulPage = () => {
             </div>
             <div style={{marginBottom:20}}><AdoptProfile pet={petData} token={token}/></div>
             <MiraPicksSection pet={petData}/>
+            {/* ✦ Soul Made™ trigger */}
+            <div data-testid="adopt-soul-made-trigger" onClick={()=>setSoulMadeOpen(true)}
+              style={{margin:"0 auto 24px",maxWidth:440,padding:"16px 20px",background:"#fff",border:`2px solid ${G.rose}22`,borderRadius:16,display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",boxShadow:`0 4px 16px ${G.rose}14`,transition:"box-shadow 0.2s,transform 0.15s"}}
+              onMouseEnter={e=>{e.currentTarget.style.boxShadow=`0 6px 24px ${G.rose}28`;e.currentTarget.style.transform="translateY(-1px)";}}
+              onMouseLeave={e=>{e.currentTarget.style.boxShadow=`0 4px 16px ${G.rose}14`;e.currentTarget.style.transform="";}}>
+              <div>
+                <div style={{fontSize:14,fontWeight:800,color:G.rose,letterSpacing:"0.02em"}}>✦ Soul Made™ — Make it personal</div>
+                <div style={{fontSize:12,color:"#888",marginTop:3}}>Upload photo · Concierge® creates a custom keepsake for your new dog</div>
+              </div>
+              <span style={{fontSize:22,color:`${G.rose}60`,flexShrink:0,marginLeft:12}}>›</span>
+            </div>
             <GuidedAdoptPaths pet={petData}/>
             <div style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,borderRadius:16,padding:"24px 28px",marginBottom:24,textAlign:"center"}}>
               <p style={{fontSize:18,fontWeight:800,color:"#fff",fontFamily:"Georgia,serif",marginBottom:8}}>Ready to start? Mira finds your perfect dog.</p>
@@ -356,6 +367,7 @@ const AdoptSoulPage = () => {
 
       <ConciergeToast toast={toastVisible?{name:toastSvc,pillar:"adopt"}:null} onClose={()=>setToastVisible(false)}/>
       <AdoptConciergeModal isOpen={conciergeOpen} onClose={()=>setConciergeOpen(false)} token={token} preSelected={conciergeSvc}/>
+      {soulMadeOpen&&<SoulMadeModal pet={petData} pillar="adopt" pillarColor={G.rose} pillarLabel="Adoption" onClose={()=>setSoulMadeOpen(false)}/>}
     </PillarPageLayout>
     </>
   );
