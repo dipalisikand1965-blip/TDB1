@@ -153,6 +153,15 @@ Currently uses blank white product templates. Goal: 350 AI-generated images (50 
 - [x] Cleaned 2,253 orphan records from `mira_product_scores`, 2 from `soul_score_history`, 1 from `pet_wrapped`
 - [x] Closed 2 orphaned service desk tickets linked to test pets
 - [x] Documentation updated (PRD.md + complete-documentation.html)
+- [x] **Fix 1**: Nav pillar dropdown shake removed — clean static border, no transition bounce
+- [x] **Fix 2**: Mira OS "< Pet Home" back navigation added to MiraDemoPage header
+- [x] **Fix 3**: Mojo allergy data corrected — `food_allergies: chicken`, `allergy_info` now has proper vet-confirmed data
+- [x] **Fix 4**: Category strip mobile tap targets enlarged (44px min-height, 78px min-width, 16px padding, 13px font)
+- [x] **Fix 5**: Announcement bar enabled — "India's first Pet Life OS · Built in memory of Mystique · Now in early access"
+- [x] **Fix 6**: CelebrateHero load animation changed to fade-only (removed scale bounce from SoulChip and pet avatar)
+- [x] **Fix 7**: Mira OS pill nav already has proper mobile horizontal scroll (CSS verified)
+- [x] **Fix 8**: Test pets removed from DB (TestScoring, TestScoringWeight, duplicate Coco)
+- [x] **Fix 9**: `/custom-cake` deprecated — redirects to `/celebrate` via React Router Navigate
 
 ---
 

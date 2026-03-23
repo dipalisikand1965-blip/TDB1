@@ -500,7 +500,7 @@ function MainLayout() {
           <Route path="/search" element={<SearchResults />} />
           
           {/* Special Pages */}
-          <Route path="/custom-cake" element={<ProtectedRoute><CustomCakeDesigner /></ProtectedRoute>} />
+          <Route path="/custom-cake" element={<Navigate to="/celebrate" replace />} />
           <Route path="/concierge" element={<MiraConcierge />} />
           <Route path="/checkout" element={<ProtectedRoute><UnifiedCheckout /></ProtectedRoute>} />
           <Route path="/checkout-old" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
