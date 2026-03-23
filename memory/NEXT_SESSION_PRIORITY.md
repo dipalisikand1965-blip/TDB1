@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://flat-art-picker.preview.emergentagent.com
+**Preview URL:** https://concierge-wiring.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*

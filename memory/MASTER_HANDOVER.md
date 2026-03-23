@@ -58,7 +58,7 @@ Be patient. Be thorough. Honor the Sikand legacy.
 - Admin: `aditya` / `lola4304`
 
 ## 🌐 PREVIEW URL
-https://flat-art-picker.preview.emergentagent.com
+https://concierge-wiring.preview.emergentagent.com
 
 ---
 
