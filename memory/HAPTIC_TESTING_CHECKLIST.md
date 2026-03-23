@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://flat-art-picker.preview.emergentagent.com/mira-demo**
+**https://concierge-wiring.preview.emergentagent.com/mira-demo**
 
 ---
 
