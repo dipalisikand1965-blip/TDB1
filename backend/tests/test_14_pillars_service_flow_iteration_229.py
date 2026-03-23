@@ -14,7 +14,7 @@ import json
 from datetime import datetime
 
 # Get base URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://concierge-flow-fix.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pet-life-os-2.preview.emergentagent.com').rstrip('/')
 
 # Admin credentials
 ADMIN_USER = "aditya"
