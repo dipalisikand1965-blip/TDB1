@@ -162,6 +162,10 @@ Currently uses blank white product templates. Goal: 350 AI-generated images (50 
 - [x] **Fix 7**: Mira OS pill nav already has proper mobile horizontal scroll (CSS verified)
 - [x] **Fix 8**: Test pets removed from DB (TestScoring, TestScoringWeight, duplicate Coco)
 - [x] **Fix 9**: `/custom-cake` deprecated — redirects to `/celebrate` via React Router Navigate
+- [x] **P0.2 complete**: Added `favourite_treat: peanut_butter`, `birthday_quarter: q4` to Mojo's soul data
+- [x] **P0.3**: `pet_breed` now included in service desk ticket creation (mira_service_desk.py)
+- [x] **MiraAI multi-pet bug**: Global widget now always sends first pet's ID for multi-pet users
+- [x] **Soul Made™ strip redesign**: Premium dark purple gradient card with glow CTA, applied to ALL 5 pillar content modals (Celebrate, Dine, Go, Play, Care), now visible as cross-sell in ALL categories (not just Soul Made category)
 
 ---
 
