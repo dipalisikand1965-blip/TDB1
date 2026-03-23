@@ -1049,7 +1049,7 @@ const MiraAI = () => {
           current_page: location.pathname,
           current_pillar: currentPillar,
           previous_pillar: previousPillar,
-          selected_pet_id: userPets.length === 1 ? (userPets[0].id || userPets[0].name) : null,
+          selected_pet_id: userPets?.[0]?.id || userPets?.[0]?.name || null,
           history: history
         }),
         signal: controller.signal
@@ -1190,7 +1190,7 @@ const MiraAI = () => {
             current_page: location.pathname,
             current_pillar: currentPillar,
             previous_pillar: previousPillar,
-            selected_pet_id: userPets.length === 1 ? (userPets[0].id || userPets[0].name) : null,
+            selected_pet_id: userPets?.[0]?.id || userPets?.[0]?.name || null,
             history: history
           }),
           signal: controller.signal
