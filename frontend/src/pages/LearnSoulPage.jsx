@@ -558,12 +558,21 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
   const [loading,  setLoading]    = useState(false);
   const [selProd,  setSelProd]    = useState(null);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
+  const [guidedPath, setGuidedPath] = useState(null);
   const { token } = useAuth();
   const catCfg = LEARN_CATS.find(c => c.id === category) || {};
   const petName = pet?.name || "your dog";
   const breed   = pet?.breed ? pet.breed.split("(")[0].trim() : "";
   const miraQ   = LEARN_MIRA_QUOTES[category];
   const quote   = miraQ ? miraQ(petName, breed) : `Personalised for ${petName}.`;
+
+  // Category → guided path mapping (only for categories that have a guided path)
+  const CAT_TO_PATH = {
+    foundations: "new_puppy",
+    behaviour:  "behaviour",
+    training:   "basic_training",
+    enrichment: "enrichment",
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -835,7 +844,33 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
             </>
           )}
         </div>
+        {/* ── Footer CTA — category-specific guided path (mirrors Play pattern) ── */}
+        {!['bundles', 'soul', 'mira', 'soul_made'].includes(category) && (
+          <div style={{flexShrink:0, padding:'14px 20px', borderTop:`1px solid ${G.borderLight}`, background:'#FAFAFE', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+            <p style={{fontSize:12, color:'#888', margin:0}}>Personalised for {petName}</p>
+            <button
+              onClick={() => {
+                const pathId = CAT_TO_PATH[category];
+                if (pathId) {
+                  const paths = buildLearnGuidedPaths(pet);
+                  const match = paths.find(p => p.id === pathId);
+                  if (match) { setGuidedPath(match); return; }
+                }
+                // Fallback: fire concierge and close
+                tdc.book({ service: catCfg.label, pillar: 'learn', pet, channel: 'learn_content_modal_footer' });
+                onClose();
+              }}
+              style={{background:`linear-gradient(135deg,${G.violet},#FF6B9D)`, color:'#fff', border:'none', borderRadius:12, padding:'9px 18px', fontSize:13, fontWeight:700, cursor:'pointer'}}
+              data-testid="learn-modal-cta">
+              {CAT_TO_PATH[category]
+                ? `Start ${petName}'s ${catCfg.label} Path →`
+                : `Book ${catCfg.label} for ${petName} →`}
+            </button>
+          </div>
+        )}
       </div>
+      {/* Guided Path Flow Modal (opens on CTA click) */}
+      {guidedPath && <LearnPathFlowModal path={guidedPath} pet={pet} onClose={() => setGuidedPath(null)} />}
       {selProd && <ProductDetailModal product={selProd} pet={pet} onClose={()=>setSelProd(null)}/>}
     </div>
   );
@@ -1130,7 +1165,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
               <button onClick={()=>onBook?.({name:dim.label,icon:dim.icon,accentColor:G.violet,base_price:0,description:`${dim.label} session for ${petName}`,steps:3})}
                 style={{background:`linear-gradient(135deg,${G.violet},${G.mid})`,color:"#fff",
                   border:"none",borderRadius:20,padding:"11px 28px",fontSize:13,fontWeight:700,cursor:"pointer"}}>
-                Book {dim.label} →
+                Book {dim.label} for {petName} →
               </button>
             </div>
           ) : (
@@ -1179,7 +1214,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
                           style={{background:`linear-gradient(135deg,${accent},${G.mid})`,
                             color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",
                             fontSize:11,fontWeight:700,cursor:"pointer"}}>
-                          Book →
+                          Book for {petName} →
                         </button>
                       </div>
                     </div>
@@ -1826,7 +1861,6 @@ const LearnSoulPage = () => {
   const [activeTab,   setActiveTab]   = useState("learn");
   const [openDim,     setOpenDim]     = useState(null);
   const [catModal,    setCatModal]    = useState(null);
-  const [guidedPathModal, setGuidedPathModal] = useState(null); // For pill → guided path modal
   const [petData,     setPetData]     = useState(null);
   const [soulScore,   setSoulScore]   = useState(0);
   const [apiProducts, setApiProducts] = useState({});
@@ -1843,35 +1877,6 @@ const LearnSoulPage = () => {
     tdc.book({ service: svc.name || svc.id, pillar: "learn", pet: petData, channel: "learn_pillar", amount: svc.base_price || svc.price });
     setConciergeType(svc.concierge_type || svc.id || svc.category || '');
     setConciergeOpen(true);
-  }, [petData]);
-
-  // ── Pill → Guided Path mapping ──────────────────────────────
-  // Maps category pill IDs to guided learn path IDs
-  const PILL_TO_GUIDED_PATH = {
-    foundations: "new_puppy",     // or basic_training
-    behaviour:  "behaviour",
-    training:   "basic_training",
-    enrichment: "enrichment",
-    breed:      null,             // no guided path — opens product modal
-    soul:       null,             // no guided path — opens product modal
-    bundles:    null,             // opens product modal
-    mira:       null,             // opens product modal
-    soul_made:  null,             // opens product modal
-    tricks:     null,             // opens product modal (no dedicated guided path)
-  };
-
-  const handlePillClick = useCallback((catId) => {
-    const pathId = PILL_TO_GUIDED_PATH[catId];
-    if (pathId && petData) {
-      const paths = buildLearnGuidedPaths(petData);
-      const match = paths.find(p => p.id === pathId);
-      if (match) {
-        setGuidedPathModal(match);
-        return;
-      }
-    }
-    // Fallback: open product modal
-    setCatModal(catId);
   }, [petData]);
 
   // Pre-fetch everything on page load
@@ -2012,7 +2017,7 @@ const LearnSoulPage = () => {
               return(
                 <button key={cat.id} data-testid={`learn-cat-${cat.id}`}
                   onClick={()=>{
-                    handlePillClick(cat.id);
+                    setCatModal(cat.id);
                   }}
                   style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0,
                     minWidth:82,height:72,padding:"10px 12px",cursor:"pointer",background:"transparent",
@@ -2090,18 +2095,10 @@ const LearnSoulPage = () => {
               `}</style>
               {learnDims.map(dim=>{
                 const isOpen=openDim===dim.id;
-                const dimPathId = PILL_TO_GUIDED_PATH[dim.id];
                 return(
                   <div key={dim.id} style={{gridColumn:isOpen?"1 / -1":"auto"}}>
                     {/* Card */}
-                    <div onClick={()=>{
-                      if (dimPathId && petData) {
-                        const paths = buildLearnGuidedPaths(petData);
-                        const match = paths.find(p => p.id === dimPathId);
-                        if (match) { setGuidedPathModal(match); return; }
-                      }
-                      setOpenDim(isOpen?null:dim.id);
-                    }}
+                    <div onClick={()=>setOpenDim(isOpen?null:dim.id)}
                       data-testid={`learn-dim-${dim.id}`}
                       style={{background:"#fff",borderRadius:isOpen?"16px 16px 0 0":16,
                         cursor:"pointer",position:"relative",overflow:"hidden",
@@ -2138,9 +2135,9 @@ const LearnSoulPage = () => {
                         {/* CTA */}
                         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                           <span style={{fontSize:12,color:G.violet,fontWeight:700}}>
-                            {dimPathId ? `Start ${petName}'s path →` : isOpen?"Close ↑":"Explore →"}
+                            {isOpen?"Close ↑":"Explore →"}
                           </span>
-                          <span style={{fontSize:11,color:"#aaa"}}>{dimPathId?"Guided by Mira":dim.ytQuery?"Products · Videos · Book":"Products · Book"}</span>
+                          <span style={{fontSize:11,color:"#aaa"}}>{dim.ytQuery?"Products · Videos · Book":"Products · Book"}</span>
                         </div>
                       </div>
                     </div>
@@ -2209,7 +2206,7 @@ const LearnSoulPage = () => {
                           style={{background:`linear-gradient(135deg,${accent},#3730A3)`,
                             color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",
                             fontSize:12,fontWeight:700,cursor:"pointer"}}>
-                          Book →
+                          Book for {petName} →
                         </button>
                       </div>
                     </div>
@@ -2248,13 +2245,6 @@ const LearnSoulPage = () => {
       category={catModal}
       pet={petData}
     />
-    {guidedPathModal && (
-      <LearnPathFlowModal
-        path={guidedPathModal}
-        pet={petData}
-        onClose={() => setGuidedPathModal(null)}
-      />
-    )}
     </>
   );
 };
