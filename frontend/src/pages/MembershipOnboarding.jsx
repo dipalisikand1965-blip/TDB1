@@ -1873,7 +1873,7 @@ const MembershipOnboarding = () => {
                   <div className="mt-6 p-4 bg-slate-800/50 rounded-lg border border-slate-700">
                     <p className="text-xs font-medium text-slate-400 mb-2">YOUR PET PASS INCLUDES</p>
                     <div className="space-y-2 text-sm">
-                      {['Unique Pet Pass number per pet', 'All 14 pillars unlocked', 'Pet Soul™ profile', 'Mira AI Concierge®', 'Health Vault', 'Priority support'].map((item, i) => (
+                      {['Unique Pet Pass number per pet', 'All 12 pillars unlocked', 'Pet Soul™ profile', 'Mira AI Concierge®', 'Health Vault', 'Priority support'].map((item, i) => (
                         <div key={i} className="flex items-center gap-2 text-slate-300">
                           <Check className="w-4 h-4 text-emerald-400" />
                           {item}

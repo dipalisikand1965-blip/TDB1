@@ -1,6 +1,6 @@
 /**
  * Service Box - Admin Component (Enhanced 10/10 Version)
- * Full CRUD for all 87 services across 14 pillars
+ * Full CRUD for all 87 services across 12 pillars
  * Added: Service Provider tracking, Calendar view, Analytics, Better UX
  */
 import React, { useState, useEffect, useCallback } from 'react';
@@ -457,7 +457,7 @@ const ServiceBox = () => {
             <Briefcase className="w-7 h-7 text-purple-600" />
             Service Box
           </h2>
-          <p className="text-gray-500 text-sm">Manage all {stats?.total || 87} services across 14 pillars</p>
+          <p className="text-gray-500 text-sm">Manage all {stats?.total || 87} services across 12 pillars</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {/* View Toggle */}

@@ -17,7 +17,7 @@ import MiraChatWidget from '../components/MiraChatWidget';
 import { API_URL } from '../utils/api';
 import { toast } from '../hooks/use-toast';
 
-// All 14 pillars
+// All 12 pillars
 const SOUL_PILLARS = [
   { icon: '\uD83C\uDF82', name: 'Celebrate', desc: 'Birthday parties, special occasions, custom cakes', color: 'from-pink-500 to-rose-500', path: '/celebrate' },
   { icon: '\uD83C\uDF7D\uFE0F', name: 'Dine', desc: 'Pet-friendly restaurants, special menus', color: 'from-orange-500 to-amber-500', path: '/dine' },
@@ -432,7 +432,7 @@ const PetSoulPage = () => {
                   { step: '1', title: 'Create Profile', desc: 'Add your pet with basic info, photos, and their unique traits' },
                   { step: '2', title: 'Add Health Info', desc: 'Input vaccinations, allergies, medications, and vet records' },
                   { step: '3', title: 'Complete Soul Journey', desc: 'Answer personality questions to discover their unique soul' },
-                  { step: '4', title: 'Use Services', desc: 'Book across all 14 pillars — each interaction enriches their Soul' }
+                  { step: '4', title: 'Use Services', desc: 'Book across all 12 pillars — each interaction enriches their Soul' }
                 ].map((item, idx) => (
                   <div key={idx} className="text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
@@ -465,7 +465,7 @@ const PetSoulPage = () => {
                       'View all your pet\'s data in My Account anytime',
                       'Health reminders and milestone celebrations',
                       'Seamless handoff between service providers',
-                      'Complete history across all 14 pillars'
+                      'Complete history across all 12 pillars'
                     ].map((item, idx) => (
                       <li key={idx} className="flex items-start gap-2">
                         <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
@@ -486,7 +486,7 @@ const PetSoulPage = () => {
                       'Special dietary needs are always remembered',
                       'Anxiety triggers are avoided proactively',
                       'Favorite treats and toys are always available',
-                      'Consistent care across all 14 life pillars'
+                      'Consistent care across all 12 life pillars'
                     ].map((item, idx) => (
                       <li key={idx} className="flex items-start gap-2">
                         <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
