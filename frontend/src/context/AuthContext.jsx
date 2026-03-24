@@ -161,7 +161,7 @@ export const AuthProvider = ({ children }) => {
   const initiateGoogleLogin = () => {
     // After login, land on Pet Home - the member hub
     const redirectUrl = `${window.location.origin}/pet-home`;
-    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+    window.location.href = `${API_URL}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`;
   };
 
   const logout = async () => {
