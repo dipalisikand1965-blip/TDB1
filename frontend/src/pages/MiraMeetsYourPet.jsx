@@ -892,6 +892,34 @@ export default function MiraMeetsYourPet() {
         boxShadow:"0 24px 80px rgba(0,0,0,0.35)",
       }}>
 
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, marginBottom:18, flexWrap:'wrap' }}>
+          <div style={{ fontSize:11, color:G.sub, fontWeight:600 }}>
+            Existing member?
+          </div>
+          <div style={{ display:'flex', alignItems:'center', gap:12, flexWrap:'wrap' }}>
+            <button
+              onClick={() => navigate('/login')}
+              style={{
+                border:'none', background:'transparent', color:G.purple,
+                fontSize:12, fontWeight:700, cursor:'pointer', textDecoration:'underline',
+                padding:0,
+              }}
+            >
+              Sign in
+            </button>
+            <button
+              onClick={() => navigate('/forgot-password')}
+              style={{
+                border:'none', background:'transparent', color:G.sub,
+                fontSize:12, fontWeight:600, cursor:'pointer', textDecoration:'underline',
+                padding:0,
+              }}
+            >
+              Forgot password?
+            </button>
+          </div>
+        </div>
+
         {error && (
           <div style={{
             background:"#FEF2F2", border:"1px solid #FECACA",
