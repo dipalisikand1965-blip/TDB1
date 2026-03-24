@@ -11,6 +11,8 @@
 import { useState, useEffect } from "react";
 import { API_URL } from "../../utils/api";
 import SoulMadeModal from "../SoulMadeModal";
+import { tdc } from "../../utils/tdc_intent";
+import { bookViaConcierge } from "../../utils/MiraCardActions";
 
 const PILLAR_COLORS = {
   dine:      { deep:"#1A2F1A", orange:"#C9973A", pale:"#FFF8EE" },
@@ -55,6 +57,21 @@ export default function PersonalisedBreedSection({
 
   const breed    = pet?.doggy_soul_answers?.breed || pet?.breed || "Indie";
   const petName  = pet?.name || "your dog";
+  const handleRequestProduct = async (product) => {
+    if (!product) return;
+    if (onRequestProduct) {
+      onRequestProduct(product);
+      return;
+    }
+    tdc.book({ service: product?.name || 'Personalised pick', pillar, pet, channel: `${pillar}_personalised_pick` });
+    await bookViaConcierge({
+      service: product?.name || 'Personalised pick',
+      pillar,
+      pet,
+      channel: `${pillar}_personalised_pick`,
+      amount: product?.price,
+    });
+  };
   const C        = PILLAR_COLORS[pillar] || PILLAR_COLORS.play;
   const effectiveHidePrice = hidePrice || pillar === 'paperwork';
   const isConciergeMode = conciergeMode || pillar === 'paperwork';
@@ -152,6 +169,7 @@ export default function PersonalisedBreedSection({
             <div key={p.id || i}
               onClick={() => {
                 setSelected(selected?.id === p.id ? null : p);
+                tdc.view({ product: p, pillar, pet, channel: `${pillar}_personalised_view` });
                 onViewProduct?.(p);
               }}
               data-testid={`personalised-product-${p.id}`}
@@ -173,7 +191,7 @@ export default function PersonalisedBreedSection({
                     onClick={e => {
                       e.stopPropagation();
                       if (isConciergeMode) {
-                        onRequestProduct?.(p);
+                        handleRequestProduct(p);
                       }
                     }}
                     data-testid={`personalised-product-action-${p.id}`}
