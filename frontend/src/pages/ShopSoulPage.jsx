@@ -125,6 +125,7 @@ function MiraPicksSection({ pet }) {
   const [picks,    setPicks]    = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [selected, setSelected] = useState(null);
+  const navigate = useNavigate();
   const petName = pet?.name || "your dog";
 
   const imagines = [
@@ -173,7 +174,7 @@ function MiraPicksSection({ pet }) {
           onConcierge={(card)=>{
             // Birthday/cake items route to Celebrate page
             if(card?.name?.toLowerCase().includes('cake')||card?.name?.toLowerCase().includes('birthday')||card?.name?.toLowerCase().includes('hamper')) {
-              window.location.href='/celebrate';
+              navigate('/celebrate');
             }
           }}/>
       ) : (
