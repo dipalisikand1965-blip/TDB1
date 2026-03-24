@@ -3863,7 +3863,7 @@ const Admin = () => {
 
         {/* Mira Memory Manager */}
         {activeTab === 'mira-memory' && (
-          <MiraMemoryManager />
+          <MiraMemoryManager authHeaders={getAuthHeaders()} />
         )}
 
         {/* Kit Assembly Manager Tab */}
