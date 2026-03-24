@@ -795,6 +795,73 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
             </div>
           )}
 
+          {/* ── Breed-only sections: Mira's Breed Guide + Pet Wrapped ── */}
+          {!loading && category === 'breed' && (
+            <>
+              {/* Section 1: Mira's Breed Guide */}
+              <div style={{
+                margin: '24px 0',
+                background: 'linear-gradient(135deg, #1a0a2e, #2d0a4e)',
+                border: '1px solid rgba(196,77,255,0.2)',
+                borderRadius: 16, padding: '20px 24px'
+              }}>
+                <div style={{fontSize:10, fontWeight:700, color:'#C44DFF',
+                  letterSpacing:'0.12em', marginBottom:12}}>
+                  {`\u2726 MIRA ON ${(pet?.breed || 'YOUR BREED').toUpperCase()}`}
+                </div>
+                <div style={{fontSize:18, fontWeight:700, color:'#F5F0E8',
+                  fontFamily:'Georgia,serif', marginBottom:16}}>
+                  What makes {pet?.breed || 'your dog'} special
+                </div>
+                <MiraImaginesBreed pet={pet} pillar="learn" colour="#C44DFF"
+                  onConcierge={(product) => {
+                    tdc.book({ service: product?.name || 'Breed Guide', pillar: 'learn',
+                      pet, channel: 'learn_breed_guide' });
+                  }}
+                />
+              </div>
+
+              {/* Section 2: Pet Wrapped Card */}
+              <div
+                data-testid="learn-breed-wrapped-card"
+                onClick={() => { window.location.href = `/wrapped/${pet?.id}`; }}
+                style={{
+                  margin: '16px 0 24px',
+                  background: 'linear-gradient(135deg, #0F0A1E 0%, #1a0a2e 50%, #2d1045 100%)',
+                  border: '1.5px solid rgba(201,151,58,0.4)',
+                  borderRadius: 18, padding: '20px 24px',
+                  cursor: 'pointer', position: 'relative', overflow: 'hidden',
+                  transition: 'transform 0.15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform=''; }}
+              >
+                <div style={{position:'absolute', top:-40, right:-40, width:160, height:160,
+                  background:'radial-gradient(circle,rgba(201,151,58,0.15) 0%,transparent 70%)',
+                  pointerEvents:'none'}}/>
+                <div style={{fontSize:10, fontWeight:800, letterSpacing:'0.15em',
+                  color:'#C9973A', marginBottom:8}}>
+                  PET WRAPPED · 2026
+                </div>
+                <div style={{fontSize:20, fontWeight:800, color:'#F5F0E8',
+                  fontFamily:'Georgia,serif', marginBottom:6}}>
+                  {petName}'s year in full.
+                </div>
+                <div style={{fontSize:13, color:'rgba(245,240,232,0.5)', marginBottom:16}}>
+                  Soul score · Milestones · Mira's letter · Everything {petName} lived this year
+                </div>
+                <div style={{
+                  display:'inline-flex', alignItems:'center', gap:8,
+                  background:'linear-gradient(135deg, #C9973A, #A07020)',
+                  borderRadius:30, padding:'10px 22px',
+                  fontSize:13, fontWeight:700, color:'#fff',
+                }}>
+                  See {petName}'s 2026 Wrapped →
+                </div>
+              </div>
+            </>
+          )}
+
           {/* Soul Made™ section */}
           {!loading && category === "soul_made" && (
             <>
@@ -846,7 +913,7 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
           )}
         </div>
         {/* ── Footer CTA — category-specific guided path (mirrors Play pattern) ── */}
-        {!['bundles', 'soul', 'mira', 'soul_made'].includes(category) && (
+        {!['bundles', 'soul', 'mira', 'soul_made', 'breed'].includes(category) && (
           <div style={{flexShrink:0, padding:'14px 20px', borderTop:`1px solid ${G.borderLight}`, background:'#FAFAFE', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
             <p style={{fontSize:12, color:'#888', margin:0}}>Personalised for {petName}</p>
             <button
