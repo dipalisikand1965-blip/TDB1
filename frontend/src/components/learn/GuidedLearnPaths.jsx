@@ -26,7 +26,7 @@ const G = {
 };
 
 // ── buildPaths(pet) ───────────────────────────────────────────
-function buildPaths(pet) {
+export function buildPaths(pet) {
   const name  = pet?.name  || 'your dog';
   const breed = pet?.breed || '';
   const age   = parseInt(pet?.doggy_soul_answers?.age_years || pet?.age || '0') || 0;
@@ -353,7 +353,7 @@ function OptionRow({ option, selected, onToggle, accentColor }) {
 }
 
 // ── Path Flow Modal ────────────────────────────────────────────
-function PathFlowModal({ path, pet, onClose }) {
+export function PathFlowModal({ path, pet, onClose }) {
   const [step, setStep]       = useState(0);
   const [answers, setAnswers] = useState({});
   const [sent, setSent]       = useState(false);
