@@ -1,0 +1,327 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Admin Documentation</title><style>body{font-family:Arial,sans-serif;background:#f6f6fb;color:#1f2937;margin:0;padding:32px}h1,h2,h3{color:#111827}section{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:20px;margin:16px 0}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #e5e7eb;padding:8px;text-align:left;vertical-align:top}th{background:#f3f4f6}.ok{color:#065f46;font-weight:700}.warn{color:#92400e;font-weight:700}.bad{color:#991b1b;font-weight:700}.meta{color:#6b7280}.pill{display:inline-block;border-radius:999px;padding:3px 10px;background:#ede9fe;color:#6d28d9;font-size:12px;margin-right:6px}</style></head><body>
+<h1>Admin Documentation</h1><p class="meta">Generated: 2026-03-24 · Version 1.0 · Admin URL: https://thedoggycompany.com/admin</p>
+<section><h2>Section 1 — Admin Overview</h2>
+<p><strong>Member login:</strong> dipali@clubconcierge.in / test123<br><strong>Admin login:</strong> aditya / lola4304</p>
+<table><tr><th>Section</th><th>Who should use it</th></tr>
+<tr><td>Command Center</td><td>Daily concierge operations, inbox, finance, queues, notifications</td></tr>
+<tr><td>Members &amp; Pets</td><td>Member lookup, pet profile inspection, membership + points operations</td></tr>
+<tr><td>Page CMS</td><td>Page-level content management for the 12 pillars and global pages</td></tr>
+<tr><td>Commerce</td><td>Products, services, pricing, bundles, collections, orders and fulfilment</td></tr>
+<tr><td>Mira &amp; AI</td><td>Chats, live threads, memory, reminders, communications</td></tr>
+<tr><td>Marketing</td><td>Campaigns, occasion boxes, proactive outreach, push</td></tr>
+<tr><td>Analytics</td><td>MIS, reports, analytics, reviews, site status</td></tr>
+<tr><td>Content</td><td>Blog, FAQs, About, landing pages, transformation stories</td></tr>
+<tr><td>Config</td><td>Operational controls, tags, art libraries, guides, agents, high-risk sync tools</td></tr>
+</table></section>
+<section><h2>Section 2 — Button Safety Guide</h2><table><tr><th>Button</th><th>Safe?</th><th>What it does</th><th>When to use</th></tr>
+<tr><td>MASTER SYNC</td><td>⚠️</td><td>Runs large Shopify + seed + sync pipeline across catalogue and tags.</td><td>Use only for intentional broad catalogue refreshes after backup awareness.</td></tr>
+<tr><td>VERIFY DATA</td><td>✅</td><td>Reads collection counts and shows health/completeness summary.</td><td>Use anytime for a quick health check.</td></tr>
+<tr><td>FIX IMAGES</td><td>⚠️</td><td>Attempts Shopify image repair sync.</td><td>Use for missing Shopify image URLs, not wrong stored creative assets.</td></tr>
+<tr><td>FIX PROD DATA</td><td>⚠️</td><td>Fixes service illustrations + pet string data on current server.</td><td>Use only for known repair tasks.</td></tr>
+<tr><td>CONSOLIDATE DATA</td><td>⚠️</td><td>Migrates pillar-specific product/bundle collections into master collections.</td><td>Use with backup / migration intent.</td></tr>
+<tr><td>COMPARE</td><td>✅</td><td>Compares preview vs production site-status counts.</td><td>Use anytime to check parity.</td></tr>
+<tr><td>AI IMAGES</td><td>⚠️</td><td>Runs AI image generation for selected pillar/services.</td><td>Use when missing or flagged images need regeneration.</td></tr>
+<tr><td>SYNC→PROD</td><td>❌</td><td>Pushes Soul Made/mockup data to production.</td><td>Only with explicit signoff; never casually.</td></tr>
+</table></section>
+<section><h2>Section 3 — Complete Admin Tab Audit Results</h2><table><tr><th>Tab</th><th>Status</th><th>What it does</th><th>What was fixed</th><th>Known limitations</th></tr>
+<tr><td>Dashboard</td><td>✅</td><td>Overview stats and quick access to admin areas.</td><td>Verified opens and renders widgets shell.</td><td>Load ~3.1s; deeper widget value validation still ongoing.</td></tr>
+<tr><td>Service Desk</td><td>✅</td><td>Primary concierge workspace for tickets and replies.</td><td>Double-auth removed; reply payload fixed; workspace verified.</td><td>Full operational workflow audit still continuing.</td></tr>
+<tr><td>Unified Inbox</td><td>⚠️</td><td>Channel intake inbox for new requests.</td><td>Stats 404 fixed; status persistence verified; key collisions reduced.</td><td>Duplicate-key warnings should be monitored; reply/send not fully audited.</td></tr>
+<tr><td>Finance</td><td>⚠️</td><td>Payments and finance dashboard.</td><td>Opens and finance API responds.</td><td>No live payment data yet; stats all zero until real paying members use system.</td></tr>
+<tr><td>Pillar Queues</td><td>⚠️</td><td>Queue overview by pillar.</td><td>Opens without crash.</td><td>Population/action depth still pending.</td></tr>
+<tr><td>Notification Bell</td><td>✅</td><td>Admin notifications dropdown.</td><td>Null category bug fixed in code and DB backfill.</td><td>UX polish still recommended.</td></tr>
+<tr><td>Pet Parents</td><td>✅</td><td>Customer/member listing and detail access.</td><td>Fetch switched to /api/admin/customers so data renders correctly.</td><td>Bulk/deactivate actions still to test.</td></tr>
+<tr><td>Pet Profiles</td><td>✅</td><td>View pet profiles and soul data.</td><td>Crash fixed by hardening avatar URL handling.</td><td>Edit/delete workflows still to test.</td></tr>
+<tr><td>Membership</td><td>✅</td><td>Membership operations, pet list, points, gifting.</td><td>Dipali detail modal shows full pet list; points modal opens.</td><td>Live tier mutation/revert test still pending.</td></tr>
+<tr><td>Loyalty</td><td>✅</td><td>Loyalty points dashboard.</td><td>Opens and shows points/liability metrics.</td><td>Adjust/redemption deeper testing pending.</td></tr>
+<tr><td>Engagement</td><td>✅</td><td>Member engagement dashboard.</td><td>Opens cleanly.</td><td>Deep metric validation pending.</td></tr>
+<tr><td>Celebrations</td><td>✅</td><td>Celebration operations tab.</td><td>Opens in quick pass.</td><td>Actions not deeply tested yet.</td></tr>
+<tr><td>Celebration Wall</td><td>✅</td><td>Photo wall and celebration media admin.</td><td>Opens in quick pass.</td><td>Create/moderation workflow not yet tested.</td></tr>
+<tr><td>Learn CMS</td><td>❓</td><td>Learn page content management.</td><td>Not yet deeply tested.</td><td>Open/save loop pending.</td></tr>
+<tr><td>Paperwork CMS</td><td>❓</td><td>Paperwork page content management.</td><td>Not yet deeply tested.</td><td>Open/save loop pending.</td></tr>
+<tr><td>Care CMS</td><td>❓</td><td>Care page CMS.</td><td>Not yet deeply tested.</td><td>Open/save loop pending.</td></tr>
+<tr><td>Fit CMS</td><td>❓</td><td>Fit page CMS / legacy play-adjacent content.</td><td>Not yet deeply tested.</td><td>Open/save loop pending.</td></tr>
+<tr><td>Travel CMS</td><td>❓</td><td>Travel page CMS.</td><td>Not yet deeply tested.</td><td>Open/save loop pending.</td></tr>
+<tr><td>Stay CMS</td><td>❓</td><td>Stay page CMS.</td><td>Not yet deeply tested.</td><td>Open/save loop pending.</td></tr>
+<tr><td>Dine CMS</td><td>❓</td><td>Dine page CMS.</td><td>Not yet deeply tested.</td><td>Open/save loop pending.</td></tr>
+<tr><td>Enjoy CMS</td><td>❓</td><td>Enjoy legacy CMS.</td><td>Not yet deeply tested.</td><td>Open/save loop pending.</td></tr>
+<tr><td>Celebrate CMS</td><td>❓</td><td>Celebrate page manager / CMS.</td><td>Not yet deeply tested.</td><td>Open/save loop pending.</td></tr>
+<tr><td>Emergency CMS</td><td>❓</td><td>Emergency page CMS.</td><td>Not yet deeply tested.</td><td>Open/save loop pending.</td></tr>
+<tr><td>Advisory CMS</td><td>❓</td><td>Advisory page CMS.</td><td>Not yet deeply tested.</td><td>Open/save loop pending.</td></tr>
+<tr><td>Farewell CMS</td><td>❓</td><td>Farewell page CMS.</td><td>Not yet deeply tested.</td><td>Open/save loop pending.</td></tr>
+<tr><td>Adopt CMS</td><td>❓</td><td>Adopt page CMS.</td><td>Not yet deeply tested.</td><td>Open/save loop pending.</td></tr>
+<tr><td>Shop CMS</td><td>❓</td><td>Shop page CMS.</td><td>Not yet deeply tested.</td><td>Open/save loop pending.</td></tr>
+<tr><td>Landing Page Manager</td><td>✅</td><td>Landing page editor.</td><td>Opens in quick pass.</td><td>Mutation/save loop pending.</td></tr>
+<tr><td>Page Content Manager</td><td>✅</td><td>Generic CMS editor.</td><td>Opens via tab structure.</td><td>Deep save testing pending.</td></tr>
+<tr><td>Product Box</td><td>✅</td><td>Unified product editing.</td><td>Price change proven to reflect on storefront; manual price lock added.</td><td>Need ongoing caution with sync tools.</td></tr>
+<tr><td>Service Box</td><td>✅</td><td>Service CRUD and pricing editor.</td><td>Description change reflected on /learn services tab.</td><td>Additional service create/delete tests pending.</td></tr>
+<tr><td>Pricing Hub</td><td>✅</td><td>Product/service pricing, GST, commissions, shipping.</td><td>GST save mutation tested and reverted.</td><td>More mutation paths still to test.</td></tr>
+<tr><td>Orders</td><td>✅</td><td>Order list / status management.</td><td>Undefined rendering bug fixed.</td><td>Full order lifecycle test still pending.</td></tr>
+<tr><td>Fulfilment</td><td>❓</td><td>Delivery / fulfilment operations.</td><td>Not yet deeply tested.</td><td>Open/save loop pending.</td></tr>
+<tr><td>Soul Products</td><td>✅</td><td>Soul-made product editor.</td><td>Opens in quick pass.</td><td>Mutation not yet tested.</td></tr>
+<tr><td>Topic Products</td><td>✅</td><td>Learn topic product manager.</td><td>Opens in quick pass.</td><td>Mutation not yet tested.</td></tr>
+<tr><td>Breed Cakes</td><td>✅</td><td>Breed cake catalogue manager.</td><td>Opens in quick pass.</td><td>Mutation not yet tested.</td></tr>
+<tr><td>Bundles</td><td>⚠️</td><td>Bundle manager.</td><td>11 missing images flagged with placeholders.</td><td>AI image generation still needed for flagged bundles.</td></tr>
+<tr><td>Collections</td><td>✅</td><td>Collections merch manager.</td><td>Opens in quick pass.</td><td>Mutation not yet tested.</td></tr>
+<tr><td>Autoship</td><td>✅</td><td>Autoship config and member plans.</td><td>Opens in quick pass.</td><td>Workflow not yet tested.</td></tr>
+<tr><td>Abandoned</td><td>✅</td><td>Abandoned cart operations.</td><td>Opens in quick pass.</td><td>Reminder send flow not yet tested.</td></tr>
+<tr><td>Discounts</td><td>✅</td><td>Discount code management.</td><td>Opens in quick pass.</td><td>Create/edit flow not yet tested.</td></tr>
+<tr><td>Mira Chats</td><td>⚠️</td><td>Chatbase + legacy Mira chat monitoring.</td><td>Opens and shows conversations.</td><td>Mojo-specific search/filter still needs explicit test.</td></tr>
+<tr><td>Live Threads</td><td>✅</td><td>Real-time live conversation threads.</td><td>Verified with real active thread stats and Mojo visible.</td><td>Reply/close path still to test deeply.</td></tr>
+<tr><td>Mira Memory Manager</td><td>✅</td><td>Memory search, flag, suppress, delete, add.</td><td>Admin auth headers wired; tab loads.</td><td>Mutation buttons not yet exercised.</td></tr>
+<tr><td>Reminders</td><td>✅</td><td>Automated reminder scheduler.</td><td>Tab opens and scheduler controls visible.</td><td>Scheduler run effect not deeply tested.</td></tr>
+<tr><td>Kit Assembly</td><td>✅</td><td>Kit assembly manager.</td><td>Opens in quick pass.</td><td>Workflow not yet tested.</td></tr>
+<tr><td>Communications</td><td>✅</td><td>Communications overview/ops.</td><td>Opens in quick pass.</td><td>Message actions not yet tested.</td></tr>
+<tr><td>Campaigns</td><td>❓</td><td>Campaign management.</td><td>Not yet deeply tested.</td><td>Open/action pending.</td></tr>
+<tr><td>Occasion Boxes</td><td>❓</td><td>Occasion box management.</td><td>Import issues earlier corrected, deep audit pending.</td><td>Open/action pending.</td></tr>
+<tr><td>Proactive</td><td>❓</td><td>Proactive outreach tooling.</td><td>Not yet deeply tested.</td><td>Open/action pending.</td></tr>
+<tr><td>Push</td><td>❓</td><td>Push notification campaigns.</td><td>Not yet deeply tested.</td><td>Open/action pending.</td></tr>
+<tr><td>Live MIS</td><td>❓</td><td>Live MIS dashboard.</td><td>Not yet deeply tested.</td><td>Open/action pending.</td></tr>
+<tr><td>Reports</td><td>✅</td><td>Report builder.</td><td>Opens cleanly.</td><td>Generate/export not fully tested.</td></tr>
+<tr><td>Analytics</td><td>✅</td><td>Advanced analytics dashboard.</td><td>Opens cleanly.</td><td>Metric accuracy audit pending.</td></tr>
+<tr><td>Reviews</td><td>✅</td><td>Reviews/moderation analytics.</td><td>Opens cleanly.</td><td>Mutation not tested.</td></tr>
+<tr><td>Pawmeter</td><td>❓</td><td>Pawmeter / scoring analytics.</td><td>Not yet deeply tested.</td><td>Open/action pending.</td></tr>
+<tr><td>Site Status</td><td>✅</td><td>Site health report.</td><td>Opens and shows stats.</td><td>Accuracy spot-check pending.</td></tr>
+<tr><td>Blog</td><td>✅</td><td>Blog management.</td><td>Opens in quick pass.</td><td>Create/edit post still pending.</td></tr>
+<tr><td>Transformations</td><td>✅</td><td>Transformation stories admin.</td><td>Opens in quick pass.</td><td>Create/edit still pending.</td></tr>
+<tr><td>FAQs</td><td>✅</td><td>FAQ management.</td><td>Opens in quick pass.</td><td>Create/edit still pending.</td></tr>
+<tr><td>About</td><td>✅</td><td>About page manager.</td><td>Opens and seed default control visible.</td><td>Mutation not yet tested.</td></tr>
+<tr><td>Breed Tags</td><td>✅</td><td>Breed tags configuration.</td><td>Opens in quick pass.</td><td>Edit/save pending.</td></tr>
+<tr><td>Breed Art</td><td>✅</td><td>Breed art library.</td><td>Opens in quick pass.</td><td>Edit/save pending.</td></tr>
+<tr><td>Custom Cakes</td><td>✅</td><td>Custom cake config.</td><td>Opens in quick pass.</td><td>Mutation pending.</td></tr>
+<tr><td>Agents</td><td>✅</td><td>Agent management.</td><td>Opens in quick pass.</td><td>Add/remove agent pending.</td></tr>
+<tr><td>Guide &amp; Backup</td><td>✅</td><td>Guide/backups tab.</td><td>Opens in quick pass.</td><td>Action testing pending.</td></tr>
+<tr><td>Concierge XP</td><td>✅</td><td>Concierge operations config.</td><td>Opens in quick pass.</td><td>Mutation pending.</td></tr>
+<tr><td>Tags</td><td>✅</td><td>Tag manager.</td><td>Opens in quick pass.</td><td>Mutation pending.</td></tr>
+<tr><td>Streaties</td><td>✅</td><td>Streaties config.</td><td>Opens in quick pass.</td><td>Mutation pending.</td></tr>
+</table></section>
+<section><h2>Section 4 — Critical Flows Verified</h2><ul>
+<li><strong>Service Desk full flow</strong> — ✅ — Workspace loads, reply works, member sees reply, WhatsApp/email infrastructure validated.</li>
+<li><strong>Product Box → frontend sync</strong> — ✅ — Visible storefront proof completed with Celebrate hamper product pricing change.</li>
+<li><strong>Service Box → frontend sync</strong> — ✅ — Breed Education Session description change reflected on /learn services tab and reverted.</li>
+<li><strong>Pricing Hub + GST</strong> — ✅ — GST mutation tested from 5% to 18% and reverted successfully.</li>
+<li><strong>Admin reply → member sees it</strong> — ✅ — My Requests page patched to read messages/thread/content; reply visible to Dipali.</li>
+<li><strong>WhatsApp on every ticket</strong> — ✅ — Direct helper + ticket-triggered logs confirm Gupshup send in this environment.</li>
+<li><strong>Email on every ticket</strong> — ✅ — Direct Resend test succeeded and password reset emails logged.</li>
+<li><strong>Password reset</strong> — ✅ — Forgot password page, token issuance, reset, temp login, and original-password restore all verified.</li>
+<li><strong>Pet Parents rendering</strong> — ✅ — Admin fetch switched to /api/admin/customers and real data is visible.</li>
+<li><strong>Membership + Paw Points</strong> — ✅ — Dipali visible, pet list shown, points modal opens, tier UI visible.</li>
+</ul></section>
+<section><h2>Section 5 — Known Issues & Workarounds</h2><ul>
+<li><strong>Finance empty</strong> — ⚠️ — Expected at this stage because payments collection is empty; dashboard will populate after first real paid orders.</li>
+<li><strong>Wrong image on 1 flagged product</strong> — ⚠️ — Bite-Resistant Tug Rope remains flagged for AI/manual replacement; FIX IMAGES does not correct wrong stored creative assets.</li>
+<li><strong>11 bundles need AI images</strong> — ⚠️ — Bundles have placeholders + needs_ai_image flags and still require proper generation.</li>
+<li><strong>Mira Chats targeted Mojo search</strong> — ⚠️ — Tab opens and conversations exist, but explicit Mojo search/filter pass remains.</li>
+<li><strong>Admin load times slightly above 3s target</strong> — ⚠️ — Dashboard / inbox / finance range around 3.1–3.7 seconds; acceptable for admin, but lazy-loading could improve it.</li>
+</ul></section>
+<section><h2>Section 6 — Database Collections Guide</h2>
+<p>Total collections observed: 177</p><table><tr><th>Collection</th><th>Record count</th></tr>
+<tr><td>abandoned_cart_reminders</td><td>3</td></tr>
+<tr><td>abandoned_carts</td><td>5</td></tr>
+<tr><td>admin_config</td><td>1</td></tr>
+<tr><td>admin_notifications</td><td>1142</td></tr>
+<tr><td>adopt_bundles</td><td>5</td></tr>
+<tr><td>adopt_bundles_backup_20260322</td><td>5</td></tr>
+<tr><td>adopt_shelters</td><td>4</td></tr>
+<tr><td>adoptable_pets</td><td>8</td></tr>
+<tr><td>adoption_events</td><td>4</td></tr>
+<tr><td>advisory_bundles</td><td>8</td></tr>
+<tr><td>advisory_bundles_backup_20260322</td><td>8</td></tr>
+<tr><td>advisory_partners</td><td>4</td></tr>
+<tr><td>advisory_requests</td><td>24</td></tr>
+<tr><td>agents</td><td>1</td></tr>
+<tr><td>app_settings</td><td>4</td></tr>
+<tr><td>birthday_box_orders</td><td>37</td></tr>
+<tr><td>blog_posts</td><td>6</td></tr>
+<tr><td>breed_matrix</td><td>34</td></tr>
+<tr><td>breed_products</td><td>3448</td></tr>
+<tr><td>breed_products_backup_20260322</td><td>3775</td></tr>
+<tr><td>bundles</td><td>96</td></tr>
+<tr><td>bundles_backup_20260322</td><td>96</td></tr>
+<tr><td>care_bundles</td><td>27</td></tr>
+<tr><td>care_bundles_backup_20260322</td><td>27</td></tr>
+<tr><td>care_requests</td><td>17</td></tr>
+<tr><td>celebrate_bundles</td><td>6</td></tr>
+<tr><td>celebrate_bundles_backup_20260322</td><td>6</td></tr>
+<tr><td>celebrate_partners</td><td>2</td></tr>
+<tr><td>celebrate_products</td><td>3</td></tr>
+<tr><td>celebrate_products_backup_20260322</td><td>3</td></tr>
+<tr><td>celebrate_requests</td><td>21</td></tr>
+<tr><td>celebration_photos</td><td>18</td></tr>
+<tr><td>celebration_reminders</td><td>5</td></tr>
+<tr><td>channel_intakes</td><td>487</td></tr>
+<tr><td>collections</td><td>4</td></tr>
+<tr><td>collections_backup_20260322</td><td>4</td></tr>
+<tr><td>communication_log</td><td>7</td></tr>
+<tr><td>concierge_experiences</td><td>18</td></tr>
+<tr><td>concierge_intakes</td><td>72</td></tr>
+<tr><td>concierge_messages</td><td>2</td></tr>
+<tr><td>concierge_picks_requests</td><td>8</td></tr>
+<tr><td>concierge_threads</td><td>1</td></tr>
+<tr><td>conversation_memories</td><td>5</td></tr>
+<tr><td>curated_picks_cache</td><td>45</td></tr>
+<tr><td>custom_cake_designs</td><td>1</td></tr>
+<tr><td>custom_orders</td><td>5</td></tr>
+<tr><td>dine_bundles</td><td>4</td></tr>
+<tr><td>dine_bundles_backup_20260322</td><td>4</td></tr>
+<tr><td>dine_requests</td><td>20</td></tr>
+<tr><td>dismissed_alerts</td><td>6</td></tr>
+<tr><td>emergency_bundles</td><td>5</td></tr>
+<tr><td>emergency_bundles_backup_20260322</td><td>5</td></tr>
+<tr><td>emergency_partners</td><td>4</td></tr>
+<tr><td>enhanced_collections</td><td>3</td></tr>
+<tr><td>enhanced_collections_backup_20260322</td><td>3</td></tr>
+<tr><td>enjoy_bundles</td><td>5</td></tr>
+<tr><td>enjoy_bundles_backup_20260322</td><td>5</td></tr>
+<tr><td>enjoy_experiences</td><td>16</td></tr>
+<tr><td>enjoy_requests</td><td>1</td></tr>
+<tr><td>escalation_rules</td><td>6</td></tr>
+<tr><td>events_log</td><td>102</td></tr>
+<tr><td>faqs</td><td>19</td></tr>
+<tr><td>farewell_bundles</td><td>3</td></tr>
+<tr><td>farewell_bundles_backup_20260322</td><td>3</td></tr>
+<tr><td>farewell_partners</td><td>3</td></tr>
+<tr><td>farewell_products</td><td>6</td></tr>
+<tr><td>farewell_products_backup_20260322</td><td>6</td></tr>
+<tr><td>featured_dogs</td><td>5</td></tr>
+<tr><td>fit_bundles</td><td>5</td></tr>
+<tr><td>fit_bundles_backup_20260322</td><td>5</td></tr>
+<tr><td>fit_partners</td><td>4</td></tr>
+<tr><td>fit_plans</td><td>6</td></tr>
+<tr><td>fit_products</td><td>5</td></tr>
+<tr><td>fit_products_backup_20260322</td><td>5</td></tr>
+<tr><td>guided_paths</td><td>26</td></tr>
+<tr><td>health_reminders</td><td>4</td></tr>
+<tr><td>kit_templates</td><td>20</td></tr>
+<tr><td>learn_bundles</td><td>5</td></tr>
+<tr><td>learn_bundles_backup_20260322</td><td>5</td></tr>
+<tr><td>learn_cms_content</td><td>1</td></tr>
+<tr><td>learn_content</td><td>24</td></tr>
+<tr><td>learn_events</td><td>1</td></tr>
+<tr><td>learn_guides</td><td>36</td></tr>
+<tr><td>learn_products</td><td>2</td></tr>
+<tr><td>learn_products_backup_20260322</td><td>2</td></tr>
+<tr><td>learn_programs</td><td>3</td></tr>
+<tr><td>learn_requests</td><td>5</td></tr>
+<tr><td>learn_topics</td><td>12</td></tr>
+<tr><td>learn_trainers</td><td>2</td></tr>
+<tr><td>learn_videos</td><td>22</td></tr>
+<tr><td>live_conversation_threads</td><td>255</td></tr>
+<tr><td>member_notifications</td><td>486</td></tr>
+<tr><td>member_password_resets</td><td>1</td></tr>
+<tr><td>members</td><td>1</td></tr>
+<tr><td>membership_orders</td><td>8</td></tr>
+<tr><td>memberships</td><td>3</td></tr>
+<tr><td>mira_conversations</td><td>5</td></tr>
+<tr><td>mira_imagines_cache</td><td>24</td></tr>
+<tr><td>mira_inferences</td><td>1</td></tr>
+<tr><td>mira_memories</td><td>24</td></tr>
+<tr><td>mira_product_scores</td><td>21713</td></tr>
+<tr><td>mira_sessions</td><td>13</td></tr>
+<tr><td>mira_signals</td><td>4359</td></tr>
+<tr><td>mira_tickets</td><td>166</td></tr>
+<tr><td>mira_uploads</td><td>6</td></tr>
+<tr><td>notification_logs</td><td>9</td></tr>
+<tr><td>nudge_schedules</td><td>175</td></tr>
+<tr><td>occasion_box_templates</td><td>3</td></tr>
+<tr><td>orders</td><td>13</td></tr>
+<tr><td>page_configs</td><td>3</td></tr>
+<tr><td>page_content</td><td>16</td></tr>
+<tr><td>page_selections</td><td>3</td></tr>
+<tr><td>paperwork_bundles</td><td>8</td></tr>
+<tr><td>paperwork_bundles_backup_20260322</td><td>8</td></tr>
+<tr><td>paperwork_cms_categories</td><td>6</td></tr>
+<tr><td>paperwork_cms_content</td><td>1</td></tr>
+<tr><td>paw_points_ledger</td><td>14</td></tr>
+<tr><td>payment_orders</td><td>1</td></tr>
+<tr><td>pet_friendly_stays</td><td>12</td></tr>
+<tr><td>pet_traits</td><td>1</td></tr>
+<tr><td>pet_wrapped</td><td>13</td></tr>
+<tr><td>pet_wrapped_memories</td><td>2</td></tr>
+<tr><td>pet_wrapped_welcome</td><td>1</td></tr>
+<tr><td>pets</td><td>23</td></tr>
+<tr><td>pillar_cms_content</td><td>1</td></tr>
+<tr><td>pillar_requests</td><td>211</td></tr>
+<tr><td>pricing_tiers</td><td>4</td></tr>
+<tr><td>product_bundles</td><td>25</td></tr>
+<tr><td>product_bundles_backup_20260322</td><td>25</td></tr>
+<tr><td>product_pricing</td><td>1</td></tr>
+<tr><td>product_soul_tiers</td><td>101</td></tr>
+<tr><td>product_soul_tiers_backup_20260322</td><td>101</td></tr>
+<tr><td>products</td><td>1635</td></tr>
+<tr><td>products_backup_20260322</td><td>1635</td></tr>
+<tr><td>products_master</td><td>5147</td></tr>
+<tr><td>products_master_backup_20260322</td><td>5131</td></tr>
+<tr><td>quick_win_tips</td><td>10</td></tr>
+<tr><td>rainbow_bridge_memorials</td><td>1</td></tr>
+<tr><td>restaurants</td><td>12</td></tr>
+<tr><td>service_catalog</td><td>97</td></tr>
+<tr><td>service_catalog_backup_20260322</td><td>97</td></tr>
+<tr><td>service_desk_tickets</td><td>810</td></tr>
+<tr><td>service_requests</td><td>126</td></tr>
+<tr><td>services</td><td>46</td></tr>
+<tr><td>services_backup_20260322</td><td>46</td></tr>
+<tr><td>services_master</td><td>1025</td></tr>
+<tr><td>services_master_backup_20260322</td><td>1025</td></tr>
+<tr><td>settings</td><td>1</td></tr>
+<tr><td>shipping_rules</td><td>5</td></tr>
+<tr><td>shop_requests</td><td>1</td></tr>
+<tr><td>soul_score_history</td><td>7</td></tr>
+<tr><td>stay_boarding_facilities</td><td>8</td></tr>
+<tr><td>stay_bundles</td><td>8</td></tr>
+<tr><td>stay_bundles_backup_20260322</td><td>8</td></tr>
+<tr><td>stay_properties</td><td>32</td></tr>
+<tr><td>sync_logs</td><td>84</td></tr>
+<tr><td>team_members</td><td>4</td></tr>
+<tr><td>testimonials</td><td>6</td></tr>
+<tr><td>ticket_counters</td><td>1</td></tr>
+<tr><td>ticket_templates</td><td>5</td></tr>
+<tr><td>ticket_viewers</td><td>15</td></tr>
+<tr><td>tickets</td><td>218</td></tr>
+<tr><td>topic_products</td><td>12</td></tr>
+<tr><td>topic_products_backup_20260322</td><td>12</td></tr>
+<tr><td>transformation_stories</td><td>4</td></tr>
+<tr><td>travel_bundles</td><td>7</td></tr>
+<tr><td>travel_bundles_backup_20260322</td><td>7</td></tr>
+<tr><td>travel_requests</td><td>1</td></tr>
+<tr><td>unified_inbox</td><td>121</td></tr>
+<tr><td>unified_products</td><td>4558</td></tr>
+<tr><td>unified_products_backup_20260322</td><td>4558</td></tr>
+<tr><td>user_learn_intents</td><td>68</td></tr>
+<tr><td>user_sessions</td><td>8</td></tr>
+<tr><td>user_streaks</td><td>4</td></tr>
+<tr><td>users</td><td>14</td></tr>
+<tr><td>wrapped_deliveries</td><td>13</td></tr>
+<tr><td>wrapped_shares</td><td>6</td></tr>
+</table></section>
+<section><h2>Section 7 — Emergency Procedures</h2>
+<h3>If Service Desk looks locked out</h3><ul>
+<li>Check admin session in /admin first.</li>
+<li>Use the same admin session for /admin/service-desk.</li>
+<li>If still blocked, re-login via /api/admin/login and refresh.</li>
+</ul><p><strong>Do not:</strong></p><ul>
+<li>Do not create a second auth system.</li>
+</ul>
+<h3>If storefront data seems stale</h3><ul>
+<li>Check Product Box / Service Box DB save first.</li>
+<li>Check public API payload second.</li>
+<li>Check storefront card rendering third (variant price vs locked/manual price).</li>
+</ul><p><strong>Do not:</strong></p><ul>
+<li>Do not assume it is frontend cache without checking API payloads.</li>
+</ul>
+<h3>If a sync button feels risky</h3><ul>
+<li>Use VERIFY DATA or COMPARE first.</li>
+<li>Read the confirmation dialog carefully.</li>
+<li>Prefer backup/migration review before MASTER SYNC / CONSOLIDATE / FIX PROD DATA.</li>
+</ul><p><strong>Do not:</strong></p><ul>
+<li>Do not press SYNC→PROD casually.</li>
+<li>Do not run destructive seed scripts without the ALLOW_SEED guard.</li>
+</ul>
+<h3>Who to call</h3><ul>
+<li>Platform owner: Dipali for product signoff.</li>
+<li>Admin operator: Aditya credentials currently unlock admin tooling.</li>
+<li>Tech owner: use the engineering contact / internal support path for backend/config issues.</li>
+</ul><p><strong>Do not:</strong></p><ul>
+<li>Do not modify production credentials blindly.</li>
+</ul>
+</section></body></html>

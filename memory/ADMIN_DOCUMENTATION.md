@@ -1,0 +1,320 @@
+# Admin Documentation
+- Generated: 2026-03-24
+- Version: 1.0
+- Admin URL: https://thedoggycompany.com/admin
+
+## Section 1 — Admin Overview
+- Member login: `dipali@clubconcierge.in / test123`
+- Admin login: `aditya / lola4304`
+- Use Command Center for ops, Commerce for catalogue, Mira & AI for conversations/memory, Content/CMS for site copy.
+
+## Section 2 — Button Safety Guide
+- **MASTER SYNC** — ⚠️ — Runs large Shopify + seed + sync pipeline across catalogue and tags. Use: Use only for intentional broad catalogue refreshes after backup awareness.
+- **VERIFY DATA** — ✅ — Reads collection counts and shows health/completeness summary. Use: Use anytime for a quick health check.
+- **FIX IMAGES** — ⚠️ — Attempts Shopify image repair sync. Use: Use for missing Shopify image URLs, not wrong stored creative assets.
+- **FIX PROD DATA** — ⚠️ — Fixes service illustrations + pet string data on current server. Use: Use only for known repair tasks.
+- **CONSOLIDATE DATA** — ⚠️ — Migrates pillar-specific product/bundle collections into master collections. Use: Use with backup / migration intent.
+- **COMPARE** — ✅ — Compares preview vs production site-status counts. Use: Use anytime to check parity.
+- **AI IMAGES** — ⚠️ — Runs AI image generation for selected pillar/services. Use: Use when missing or flagged images need regeneration.
+- **SYNC→PROD** — ❌ — Pushes Soul Made/mockup data to production. Use: Only with explicit signoff; never casually.
+
+## Section 3 — Complete Admin Tab Audit Results
+- **Dashboard** — ✅ — Overview stats and quick access to admin areas. Fixed: Verified opens and renders widgets shell. Limits: Load ~3.1s; deeper widget value validation still ongoing.
+- **Service Desk** — ✅ — Primary concierge workspace for tickets and replies. Fixed: Double-auth removed; reply payload fixed; workspace verified. Limits: Full operational workflow audit still continuing.
+- **Unified Inbox** — ⚠️ — Channel intake inbox for new requests. Fixed: Stats 404 fixed; status persistence verified; key collisions reduced. Limits: Duplicate-key warnings should be monitored; reply/send not fully audited.
+- **Finance** — ⚠️ — Payments and finance dashboard. Fixed: Opens and finance API responds. Limits: No live payment data yet; stats all zero until real paying members use system.
+- **Pillar Queues** — ⚠️ — Queue overview by pillar. Fixed: Opens without crash. Limits: Population/action depth still pending.
+- **Notification Bell** — ✅ — Admin notifications dropdown. Fixed: Null category bug fixed in code and DB backfill. Limits: UX polish still recommended.
+- **Pet Parents** — ✅ — Customer/member listing and detail access. Fixed: Fetch switched to /api/admin/customers so data renders correctly. Limits: Bulk/deactivate actions still to test.
+- **Pet Profiles** — ✅ — View pet profiles and soul data. Fixed: Crash fixed by hardening avatar URL handling. Limits: Edit/delete workflows still to test.
+- **Membership** — ✅ — Membership operations, pet list, points, gifting. Fixed: Dipali detail modal shows full pet list; points modal opens. Limits: Live tier mutation/revert test still pending.
+- **Loyalty** — ✅ — Loyalty points dashboard. Fixed: Opens and shows points/liability metrics. Limits: Adjust/redemption deeper testing pending.
+- **Engagement** — ✅ — Member engagement dashboard. Fixed: Opens cleanly. Limits: Deep metric validation pending.
+- **Celebrations** — ✅ — Celebration operations tab. Fixed: Opens in quick pass. Limits: Actions not deeply tested yet.
+- **Celebration Wall** — ✅ — Photo wall and celebration media admin. Fixed: Opens in quick pass. Limits: Create/moderation workflow not yet tested.
+- **Learn CMS** — ❓ — Learn page content management. Fixed: Not yet deeply tested. Limits: Open/save loop pending.
+- **Paperwork CMS** — ❓ — Paperwork page content management. Fixed: Not yet deeply tested. Limits: Open/save loop pending.
+- **Care CMS** — ❓ — Care page CMS. Fixed: Not yet deeply tested. Limits: Open/save loop pending.
+- **Fit CMS** — ❓ — Fit page CMS / legacy play-adjacent content. Fixed: Not yet deeply tested. Limits: Open/save loop pending.
+- **Travel CMS** — ❓ — Travel page CMS. Fixed: Not yet deeply tested. Limits: Open/save loop pending.
+- **Stay CMS** — ❓ — Stay page CMS. Fixed: Not yet deeply tested. Limits: Open/save loop pending.
+- **Dine CMS** — ❓ — Dine page CMS. Fixed: Not yet deeply tested. Limits: Open/save loop pending.
+- **Enjoy CMS** — ❓ — Enjoy legacy CMS. Fixed: Not yet deeply tested. Limits: Open/save loop pending.
+- **Celebrate CMS** — ❓ — Celebrate page manager / CMS. Fixed: Not yet deeply tested. Limits: Open/save loop pending.
+- **Emergency CMS** — ❓ — Emergency page CMS. Fixed: Not yet deeply tested. Limits: Open/save loop pending.
+- **Advisory CMS** — ❓ — Advisory page CMS. Fixed: Not yet deeply tested. Limits: Open/save loop pending.
+- **Farewell CMS** — ❓ — Farewell page CMS. Fixed: Not yet deeply tested. Limits: Open/save loop pending.
+- **Adopt CMS** — ❓ — Adopt page CMS. Fixed: Not yet deeply tested. Limits: Open/save loop pending.
+- **Shop CMS** — ❓ — Shop page CMS. Fixed: Not yet deeply tested. Limits: Open/save loop pending.
+- **Landing Page Manager** — ✅ — Landing page editor. Fixed: Opens in quick pass. Limits: Mutation/save loop pending.
+- **Page Content Manager** — ✅ — Generic CMS editor. Fixed: Opens via tab structure. Limits: Deep save testing pending.
+- **Product Box** — ✅ — Unified product editing. Fixed: Price change proven to reflect on storefront; manual price lock added. Limits: Need ongoing caution with sync tools.
+- **Service Box** — ✅ — Service CRUD and pricing editor. Fixed: Description change reflected on /learn services tab. Limits: Additional service create/delete tests pending.
+- **Pricing Hub** — ✅ — Product/service pricing, GST, commissions, shipping. Fixed: GST save mutation tested and reverted. Limits: More mutation paths still to test.
+- **Orders** — ✅ — Order list / status management. Fixed: Undefined rendering bug fixed. Limits: Full order lifecycle test still pending.
+- **Fulfilment** — ❓ — Delivery / fulfilment operations. Fixed: Not yet deeply tested. Limits: Open/save loop pending.
+- **Soul Products** — ✅ — Soul-made product editor. Fixed: Opens in quick pass. Limits: Mutation not yet tested.
+- **Topic Products** — ✅ — Learn topic product manager. Fixed: Opens in quick pass. Limits: Mutation not yet tested.
+- **Breed Cakes** — ✅ — Breed cake catalogue manager. Fixed: Opens in quick pass. Limits: Mutation not yet tested.
+- **Bundles** — ⚠️ — Bundle manager. Fixed: 11 missing images flagged with placeholders. Limits: AI image generation still needed for flagged bundles.
+- **Collections** — ✅ — Collections merch manager. Fixed: Opens in quick pass. Limits: Mutation not yet tested.
+- **Autoship** — ✅ — Autoship config and member plans. Fixed: Opens in quick pass. Limits: Workflow not yet tested.
+- **Abandoned** — ✅ — Abandoned cart operations. Fixed: Opens in quick pass. Limits: Reminder send flow not yet tested.
+- **Discounts** — ✅ — Discount code management. Fixed: Opens in quick pass. Limits: Create/edit flow not yet tested.
+- **Mira Chats** — ⚠️ — Chatbase + legacy Mira chat monitoring. Fixed: Opens and shows conversations. Limits: Mojo-specific search/filter still needs explicit test.
+- **Live Threads** — ✅ — Real-time live conversation threads. Fixed: Verified with real active thread stats and Mojo visible. Limits: Reply/close path still to test deeply.
+- **Mira Memory Manager** — ✅ — Memory search, flag, suppress, delete, add. Fixed: Admin auth headers wired; tab loads. Limits: Mutation buttons not yet exercised.
+- **Reminders** — ✅ — Automated reminder scheduler. Fixed: Tab opens and scheduler controls visible. Limits: Scheduler run effect not deeply tested.
+- **Kit Assembly** — ✅ — Kit assembly manager. Fixed: Opens in quick pass. Limits: Workflow not yet tested.
+- **Communications** — ✅ — Communications overview/ops. Fixed: Opens in quick pass. Limits: Message actions not yet tested.
+- **Campaigns** — ❓ — Campaign management. Fixed: Not yet deeply tested. Limits: Open/action pending.
+- **Occasion Boxes** — ❓ — Occasion box management. Fixed: Import issues earlier corrected, deep audit pending. Limits: Open/action pending.
+- **Proactive** — ❓ — Proactive outreach tooling. Fixed: Not yet deeply tested. Limits: Open/action pending.
+- **Push** — ❓ — Push notification campaigns. Fixed: Not yet deeply tested. Limits: Open/action pending.
+- **Live MIS** — ❓ — Live MIS dashboard. Fixed: Not yet deeply tested. Limits: Open/action pending.
+- **Reports** — ✅ — Report builder. Fixed: Opens cleanly. Limits: Generate/export not fully tested.
+- **Analytics** — ✅ — Advanced analytics dashboard. Fixed: Opens cleanly. Limits: Metric accuracy audit pending.
+- **Reviews** — ✅ — Reviews/moderation analytics. Fixed: Opens cleanly. Limits: Mutation not tested.
+- **Pawmeter** — ❓ — Pawmeter / scoring analytics. Fixed: Not yet deeply tested. Limits: Open/action pending.
+- **Site Status** — ✅ — Site health report. Fixed: Opens and shows stats. Limits: Accuracy spot-check pending.
+- **Blog** — ✅ — Blog management. Fixed: Opens in quick pass. Limits: Create/edit post still pending.
+- **Transformations** — ✅ — Transformation stories admin. Fixed: Opens in quick pass. Limits: Create/edit still pending.
+- **FAQs** — ✅ — FAQ management. Fixed: Opens in quick pass. Limits: Create/edit still pending.
+- **About** — ✅ — About page manager. Fixed: Opens and seed default control visible. Limits: Mutation not yet tested.
+- **Breed Tags** — ✅ — Breed tags configuration. Fixed: Opens in quick pass. Limits: Edit/save pending.
+- **Breed Art** — ✅ — Breed art library. Fixed: Opens in quick pass. Limits: Edit/save pending.
+- **Custom Cakes** — ✅ — Custom cake config. Fixed: Opens in quick pass. Limits: Mutation pending.
+- **Agents** — ✅ — Agent management. Fixed: Opens in quick pass. Limits: Add/remove agent pending.
+- **Guide & Backup** — ✅ — Guide/backups tab. Fixed: Opens in quick pass. Limits: Action testing pending.
+- **Concierge XP** — ✅ — Concierge operations config. Fixed: Opens in quick pass. Limits: Mutation pending.
+- **Tags** — ✅ — Tag manager. Fixed: Opens in quick pass. Limits: Mutation pending.
+- **Streaties** — ✅ — Streaties config. Fixed: Opens in quick pass. Limits: Mutation pending.
+
+## Section 4 — Critical Flows Verified
+- **Service Desk full flow** — ✅ — Workspace loads, reply works, member sees reply, WhatsApp/email infrastructure validated.
+- **Product Box → frontend sync** — ✅ — Visible storefront proof completed with Celebrate hamper product pricing change.
+- **Service Box → frontend sync** — ✅ — Breed Education Session description change reflected on /learn services tab and reverted.
+- **Pricing Hub + GST** — ✅ — GST mutation tested from 5% to 18% and reverted successfully.
+- **Admin reply → member sees it** — ✅ — My Requests page patched to read messages/thread/content; reply visible to Dipali.
+- **WhatsApp on every ticket** — ✅ — Direct helper + ticket-triggered logs confirm Gupshup send in this environment.
+- **Email on every ticket** — ✅ — Direct Resend test succeeded and password reset emails logged.
+- **Password reset** — ✅ — Forgot password page, token issuance, reset, temp login, and original-password restore all verified.
+- **Pet Parents rendering** — ✅ — Admin fetch switched to /api/admin/customers and real data is visible.
+- **Membership + Paw Points** — ✅ — Dipali visible, pet list shown, points modal opens, tier UI visible.
+
+## Section 5 — Known Issues & Workarounds
+- **Finance empty** — ⚠️ — Expected at this stage because payments collection is empty; dashboard will populate after first real paid orders.
+- **Wrong image on 1 flagged product** — ⚠️ — Bite-Resistant Tug Rope remains flagged for AI/manual replacement; FIX IMAGES does not correct wrong stored creative assets.
+- **11 bundles need AI images** — ⚠️ — Bundles have placeholders + needs_ai_image flags and still require proper generation.
+- **Mira Chats targeted Mojo search** — ⚠️ — Tab opens and conversations exist, but explicit Mojo search/filter pass remains.
+- **Admin load times slightly above 3s target** — ⚠️ — Dashboard / inbox / finance range around 3.1–3.7 seconds; acceptable for admin, but lazy-loading could improve it.
+
+## Section 6 — Database Collections Guide
+- Total collections observed: 177
+- `abandoned_cart_reminders` — 3 records
+- `abandoned_carts` — 5 records
+- `admin_config` — 1 records
+- `admin_notifications` — 1142 records
+- `adopt_bundles` — 5 records
+- `adopt_bundles_backup_20260322` — 5 records
+- `adopt_shelters` — 4 records
+- `adoptable_pets` — 8 records
+- `adoption_events` — 4 records
+- `advisory_bundles` — 8 records
+- `advisory_bundles_backup_20260322` — 8 records
+- `advisory_partners` — 4 records
+- `advisory_requests` — 24 records
+- `agents` — 1 records
+- `app_settings` — 4 records
+- `birthday_box_orders` — 37 records
+- `blog_posts` — 6 records
+- `breed_matrix` — 34 records
+- `breed_products` — 3448 records
+- `breed_products_backup_20260322` — 3775 records
+- `bundles` — 96 records
+- `bundles_backup_20260322` — 96 records
+- `care_bundles` — 27 records
+- `care_bundles_backup_20260322` — 27 records
+- `care_requests` — 17 records
+- `celebrate_bundles` — 6 records
+- `celebrate_bundles_backup_20260322` — 6 records
+- `celebrate_partners` — 2 records
+- `celebrate_products` — 3 records
+- `celebrate_products_backup_20260322` — 3 records
+- `celebrate_requests` — 21 records
+- `celebration_photos` — 18 records
+- `celebration_reminders` — 5 records
+- `channel_intakes` — 487 records
+- `collections` — 4 records
+- `collections_backup_20260322` — 4 records
+- `communication_log` — 7 records
+- `concierge_experiences` — 18 records
+- `concierge_intakes` — 72 records
+- `concierge_messages` — 2 records
+- `concierge_picks_requests` — 8 records
+- `concierge_threads` — 1 records
+- `conversation_memories` — 5 records
+- `curated_picks_cache` — 45 records
+- `custom_cake_designs` — 1 records
+- `custom_orders` — 5 records
+- `dine_bundles` — 4 records
+- `dine_bundles_backup_20260322` — 4 records
+- `dine_requests` — 20 records
+- `dismissed_alerts` — 6 records
+- `emergency_bundles` — 5 records
+- `emergency_bundles_backup_20260322` — 5 records
+- `emergency_partners` — 4 records
+- `enhanced_collections` — 3 records
+- `enhanced_collections_backup_20260322` — 3 records
+- `enjoy_bundles` — 5 records
+- `enjoy_bundles_backup_20260322` — 5 records
+- `enjoy_experiences` — 16 records
+- `enjoy_requests` — 1 records
+- `escalation_rules` — 6 records
+- `events_log` — 102 records
+- `faqs` — 19 records
+- `farewell_bundles` — 3 records
+- `farewell_bundles_backup_20260322` — 3 records
+- `farewell_partners` — 3 records
+- `farewell_products` — 6 records
+- `farewell_products_backup_20260322` — 6 records
+- `featured_dogs` — 5 records
+- `fit_bundles` — 5 records
+- `fit_bundles_backup_20260322` — 5 records
+- `fit_partners` — 4 records
+- `fit_plans` — 6 records
+- `fit_products` — 5 records
+- `fit_products_backup_20260322` — 5 records
+- `guided_paths` — 26 records
+- `health_reminders` — 4 records
+- `kit_templates` — 20 records
+- `learn_bundles` — 5 records
+- `learn_bundles_backup_20260322` — 5 records
+- `learn_cms_content` — 1 records
+- `learn_content` — 24 records
+- `learn_events` — 1 records
+- `learn_guides` — 36 records
+- `learn_products` — 2 records
+- `learn_products_backup_20260322` — 2 records
+- `learn_programs` — 3 records
+- `learn_requests` — 5 records
+- `learn_topics` — 12 records
+- `learn_trainers` — 2 records
+- `learn_videos` — 22 records
+- `live_conversation_threads` — 255 records
+- `member_notifications` — 486 records
+- `member_password_resets` — 1 records
+- `members` — 1 records
+- `membership_orders` — 8 records
+- `memberships` — 3 records
+- `mira_conversations` — 5 records
+- `mira_imagines_cache` — 24 records
+- `mira_inferences` — 1 records
+- `mira_memories` — 24 records
+- `mira_product_scores` — 21713 records
+- `mira_sessions` — 13 records
+- `mira_signals` — 4359 records
+- `mira_tickets` — 166 records
+- `mira_uploads` — 6 records
+- `notification_logs` — 9 records
+- `nudge_schedules` — 175 records
+- `occasion_box_templates` — 3 records
+- `orders` — 13 records
+- `page_configs` — 3 records
+- `page_content` — 16 records
+- `page_selections` — 3 records
+- `paperwork_bundles` — 8 records
+- `paperwork_bundles_backup_20260322` — 8 records
+- `paperwork_cms_categories` — 6 records
+- `paperwork_cms_content` — 1 records
+- `paw_points_ledger` — 14 records
+- `payment_orders` — 1 records
+- `pet_friendly_stays` — 12 records
+- `pet_traits` — 1 records
+- `pet_wrapped` — 13 records
+- `pet_wrapped_memories` — 2 records
+- `pet_wrapped_welcome` — 1 records
+- `pets` — 23 records
+- `pillar_cms_content` — 1 records
+- `pillar_requests` — 211 records
+- `pricing_tiers` — 4 records
+- `product_bundles` — 25 records
+- `product_bundles_backup_20260322` — 25 records
+- `product_pricing` — 1 records
+- `product_soul_tiers` — 101 records
+- `product_soul_tiers_backup_20260322` — 101 records
+- `products` — 1635 records
+- `products_backup_20260322` — 1635 records
+- `products_master` — 5147 records
+- `products_master_backup_20260322` — 5131 records
+- `quick_win_tips` — 10 records
+- `rainbow_bridge_memorials` — 1 records
+- `restaurants` — 12 records
+- `service_catalog` — 97 records
+- `service_catalog_backup_20260322` — 97 records
+- `service_desk_tickets` — 810 records
+- `service_requests` — 126 records
+- `services` — 46 records
+- `services_backup_20260322` — 46 records
+- `services_master` — 1025 records
+- `services_master_backup_20260322` — 1025 records
+- `settings` — 1 records
+- `shipping_rules` — 5 records
+- `shop_requests` — 1 records
+- `soul_score_history` — 7 records
+- `stay_boarding_facilities` — 8 records
+- `stay_bundles` — 8 records
+- `stay_bundles_backup_20260322` — 8 records
+- `stay_properties` — 32 records
+- `sync_logs` — 84 records
+- `team_members` — 4 records
+- `testimonials` — 6 records
+- `ticket_counters` — 1 records
+- `ticket_templates` — 5 records
+- `ticket_viewers` — 15 records
+- `tickets` — 218 records
+- `topic_products` — 12 records
+- `topic_products_backup_20260322` — 12 records
+- `transformation_stories` — 4 records
+- `travel_bundles` — 7 records
+- `travel_bundles_backup_20260322` — 7 records
+- `travel_requests` — 1 records
+- `unified_inbox` — 121 records
+- `unified_products` — 4558 records
+- `unified_products_backup_20260322` — 4558 records
+- `user_learn_intents` — 68 records
+- `user_sessions` — 8 records
+- `user_streaks` — 4 records
+- `users` — 14 records
+- `wrapped_deliveries` — 13 records
+- `wrapped_shares` — 6 records
+
+## Section 7 — Emergency Procedures
+### If Service Desk looks locked out
+- Check admin session in /admin first.
+- Use the same admin session for /admin/service-desk.
+- If still blocked, re-login via /api/admin/login and refresh.
+- Do NOT:
+  - Do not create a second auth system.
+
+### If storefront data seems stale
+- Check Product Box / Service Box DB save first.
+- Check public API payload second.
+- Check storefront card rendering third (variant price vs locked/manual price).
+- Do NOT:
+  - Do not assume it is frontend cache without checking API payloads.
+
+### If a sync button feels risky
+- Use VERIFY DATA or COMPARE first.
+- Read the confirmation dialog carefully.
+- Prefer backup/migration review before MASTER SYNC / CONSOLIDATE / FIX PROD DATA.
+- Do NOT:
+  - Do not press SYNC→PROD casually.
+  - Do not run destructive seed scripts without the ALLOW_SEED guard.
+
+### Who to call
+- Platform owner: Dipali for product signoff.
+- Admin operator: Aditya credentials currently unlock admin tooling.
+- Tech owner: use the engineering contact / internal support path for backend/config issues.
+- Do NOT:
+  - Do not modify production credentials blindly.
