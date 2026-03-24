@@ -1958,8 +1958,10 @@ const GoSoulPage = () => {
 
       <GoHero pet={petData} soulScore={soulScore} />
 
-      <div style={{ paddingTop:16, maxWidth:'80rem', margin:'0 auto', padding:'0 16px' }}>
-        <PillarSoulProfile pet={petData} token={token} pillar="go" />
+      <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8">
+        <div style={{ paddingTop: 16 }}>
+          <PillarSoulProfile pet={petData} token={token} pillar="go" />
+        </div>
       </div>
 
       <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>

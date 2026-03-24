@@ -698,7 +698,9 @@ const ServicesSoulPage = () => {
 
         {/* Soul Profile bar — pet/breed info + questions */}
         {petData && (
-          <PillarSoulProfile pet={petData} token={token} pillar="services" color="#6366F1" />
+          <div style={{ paddingTop: 16 }}>
+            <PillarSoulProfile pet={petData} token={token} pillar="services" color="#6366F1" />
+          </div>
         )}
 
         {/* Search */}
