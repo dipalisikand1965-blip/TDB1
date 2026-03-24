@@ -68,7 +68,7 @@ function filterBreedProducts(products, petBreed) {
 }
 
 // ─── MIRA PICKS SECTION ───────────────────────────────────────────────
-function CelebrateMiraPicksSection({ pet, token }) {
+function CelebrateMiraPicksSection({ pet, token, onOpenService }) {
   const [scoringPending, setScoringPending] = useState(false);
   const [picks, setPicks]         = useState([]);
   const [picksLoading, setPicksLoading] = useState(true);
@@ -91,13 +91,15 @@ function CelebrateMiraPicksSection({ pet, token }) {
       .then(d=>{const f=filterBreedProducts(d?.picks||[],pet?.breed);if(f.length)setPicks(f.slice(0,12));setPicksLoading(false);})
       .catch(()=>setPicksLoading(false));
   },[pet?.id,pet?.breed]);
+  const productPicks = picks.filter(p => p.entity_type === 'product' || p.type === 'product' || (!p.entity_type && !p.type));
+  const hasScoredProducts = productPicks.length > 0;
   return (
     <section style={{marginBottom:32}}>
       <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:4}}>
         <h3 style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:"#1a0a2e",margin:0,fontFamily:"Georgia,serif"}}>
           Mira's Picks for <span style={{color:"#C44DFF"}}>{petName}</span>
         </h3>
-        <span style={{fontSize:11,background:"linear-gradient(135deg,#C44DFF,#FF6B9D)",color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>{picks.length>0?"AI Scored":"Pet Specific"}</span>
+        <span style={{fontSize:11,background:"linear-gradient(135deg,#C44DFF,#FF6B9D)",color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>{picks.length>0?(hasScoredProducts?"AI Scored":"Concierge Curated"):"Pet Specific"}</span>
       </div>
       <p style={{fontSize:13,color:"#888",marginBottom:16,lineHeight:1.5}}>{subtitle}</p>
       {!picksLoading&&picks.length===0&&(
@@ -121,12 +123,12 @@ function CelebrateMiraPicksSection({ pet, token }) {
       )}
       {!picksLoading&&picks.length>0&&(
         <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}}>
-          {picks.map((pick,i)=>{const score=pick.mira_score||0;const col=score>=80?"#16A34A":score>=70?"#C44DFF":"#6B7280";const img=[pick.image_url,pick.image].find(u=>u&&u.startsWith("http"))||null;return(
+          {picks.map((pick,i)=>{const isService=pick.entity_type==='service'||pick.type==='service';const score=pick.mira_score||0;const col=score>=80?"#16A34A":score>=70?"#C44DFF":"#6B7280";const img=[pick.image_url,pick.image].find(u=>u&&u.startsWith("http"))||null;return(
             <div key={pick.id||i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:"1.5px solid rgba(196,77,255,0.15)",overflow:"hidden",cursor:"pointer",transition:"transform 0.15s"}}
-              onClick={()=>setSelPick(pick)}
+              onClick={()=>isService?onOpenService?.(pick.name):setSelPick(pick)}
               onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e=>e.currentTarget.style.transform=""}>
               <div style={{width:"100%",height:130,background:"#FAF5FF",overflow:"hidden",position:"relative"}}>{img?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>:<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#3B0764,#7C3AED)",color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,18)}</div>}</div>
-              <div style={{padding:"10px 11px 12px"}}><div style={{fontSize:12,fontWeight:700,color:"#1a0a2e",lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||"—"}</div><div style={{display:"flex",alignItems:"center",gap:5}}><div style={{flex:1,height:4,background:"#FAF5FF",borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:col,borderRadius:4}}/></div><span style={{fontSize:10,fontWeight:800,color:col,minWidth:26}}>{score}</span></div></div>
+              <div style={{padding:"10px 11px 12px"}}><div style={{fontSize:12,fontWeight:700,color:"#1a0a2e",lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||"—"}</div>{!isService&&<div style={{display:"flex",alignItems:"center",gap:5,marginBottom:8}}><div style={{flex:1,height:4,background:"#FAF5FF",borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:col,borderRadius:4}}/></div><span style={{fontSize:10,fontWeight:800,color:col,minWidth:26}}>{score}</span></div>}{isService&&<p style={{fontSize:11,color:'#7C3AED',lineHeight:1.45,margin:'0 0 8px'}}>Concierge planning for {petName}'s celebration.</p>}<button onClick={(e)=>{e.stopPropagation();isService?onOpenService?.(pick.name):setSelPick(pick);}} style={{width:'100%',background:'linear-gradient(135deg,#C44DFF,#FF6B9D)',color:'#fff',border:'none',borderRadius:10,padding:'8px 10px',fontSize:12,fontWeight:700,cursor:'pointer'}}>{isService?'Talk to Concierge →':'View details →'}</button></div>
             </div>
           );})}
         </div>
@@ -356,6 +358,7 @@ const CelebratePageNew = () => {
 
   // Handle talk to concierge — fires canonical flow + opens intake modal
   const [showConciergeModal, setShowConciergeModal] = useState(false);
+  const [celebrateServiceType, setCelebrateServiceType] = useState('');
   const [cakeModalOpen, setCakeModalOpen] = useState(false);
   const handleTalkToConcierge = useCallback(async () => {
     // Fire tdc tracking immediately
@@ -370,6 +373,20 @@ const CelebratePageNew = () => {
       urgency: 'high',
     });
     // Open ConciergeIntakeModal for full booking flow
+    setShowConciergeModal(true);
+  }, [selectedPet]);
+
+  const handleOpenCelebrateService = useCallback((serviceName) => {
+    const serviceMap = {
+      'Birthday Party Planning': 'birthday_party',
+      'Professional Pet Photography': 'photography',
+      'Cake Consultation': 'custom_cake',
+      'Venue Booking': 'venue',
+      'Gotcha Day Planning': 'gotcha_day',
+    };
+    const mapped = serviceMap[serviceName] || 'birthday_party';
+    tdc.book({ service: serviceName || 'Celebration concierge', pillar: 'celebrate', pet: selectedPet, channel: 'celebrate_mira_picks_service' });
+    setCelebrateServiceType(mapped);
     setShowConciergeModal(true);
   }, [selectedPet]);
 
@@ -445,7 +462,7 @@ const CelebratePageNew = () => {
         />
 
         {/* MIRA'S CELEBRATION PICKS — imagines immediately + AI scored below */}
-        <CelebrateMiraPicksSection pet={selectedPet} token={token}/>
+        <CelebrateMiraPicksSection pet={selectedPet} token={token} onOpenService={handleOpenCelebrateService}/>
 
         {/* Soul Made is handled inside CelebrateMiraPicksSection / CelebrateContentModal */}
 
@@ -558,6 +575,7 @@ const CelebratePageNew = () => {
       <ConciergeIntakeModal
         isOpen={showConciergeModal}
         onClose={() => setShowConciergeModal(false)}
+        serviceType={celebrateServiceType}
         petId={selectedPet?.id || selectedPet?._id}
         petName={selectedPet?.name}
         token={token}
