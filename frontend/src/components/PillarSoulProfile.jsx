@@ -216,6 +216,10 @@ export default function PillarSoulProfile({
   const breedTip = getBreedTip(pillar, breed, name);
   const miraVoice = getMiraVoice(pillar, soul, name);
   const score = liveScore ?? (pet?.overall_score || 0);
+  const totalUnanswered = questions.length > 0 ? questions.filter(q => !submitted[q.question_id]).length : null;
+  const isComplete = score >= 100;
+  const barColor = isComplete ? '#16A34A' : pColor;
+  const scoreColor = isComplete ? '#16A34A' : pColor;
 
   const loadQuestions = useCallback(() => {
     if (!pet?.id) return;
@@ -322,10 +326,13 @@ export default function PillarSoulProfile({
               </span>
             )}
           </div>
+          <div style={{fontSize:11, color:scoreColor, fontWeight:600, marginTop:3}}>
+            {isComplete ? 'Mira knows everything' : `${totalUnanswered || '?'} questions waiting`}
+          </div>
         </div>
         <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', flexShrink:0, gap:2 }}>
-          <div style={{ fontSize:16, fontWeight:700, color:pColor, lineHeight:1 }}>{isFinite(score) ? Math.round(score) : 0}%</div>
-          <span style={{ fontSize:10, color:pColor, fontWeight:600, whiteSpace:'nowrap', opacity:0.7 }}>Soul Score</span>
+          <div style={{ fontSize:16, fontWeight:700, color:scoreColor, lineHeight:1 }}>{isFinite(score) ? Math.round(score) : 0}%</div>
+          <span style={{ fontSize:10, color:scoreColor, fontWeight:600, whiteSpace:'nowrap', opacity:0.7 }}>Soul Score</span>
         </div>
       </div>
 
@@ -349,7 +356,7 @@ export default function PillarSoulProfile({
                 </div>
                 <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                   <div style={{ textAlign:'right' }}>
-                    <div style={{ fontSize:20, fontWeight:700, color:pColor }}>{isFinite(score) ? Math.round(score) : 0}%</div>
+                    <div style={{ fontSize:20, fontWeight:700, color:scoreColor }}>{isFinite(score) ? Math.round(score) : 0}%</div>
                     <div style={{ fontSize:9, color:'rgba(245,240,232,0.3)', letterSpacing:'0.06em' }}>SOUL SCORE</div>
                   </div>
                   <button onClick={() => setOpen(false)} style={{ width:32, height:32, borderRadius:'50%', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.1)', color:'rgba(245,240,232,0.5)', cursor:'pointer', fontSize:16, display:'flex', alignItems:'center', justifyContent:'center' }}>
@@ -358,7 +365,7 @@ export default function PillarSoulProfile({
                 </div>
               </div>
               <div style={{ height:4, borderRadius:999, background:'rgba(255,255,255,0.06)', overflow:'hidden' }}>
-                <div style={{ height:'100%', borderRadius:999, background:pColor, width:`${Math.min(isFinite(score)?score:0,100)}%`, transition:'width 0.8s ease' }}/>
+                <div style={{ height:'100%', borderRadius:999, background:barColor, width:`${Math.min(isFinite(score)?score:0,100)}%`, transition:'width 0.8s ease' }}/>
               </div>
               {totalPts > 0 && <div style={{ marginTop:8, fontSize:11, color:pColor, fontWeight:600 }}>+{totalPts} pts added this session</div>}
             </div>
@@ -371,55 +378,26 @@ export default function PillarSoulProfile({
                 <div style={{ fontSize:13, fontStyle:'italic', color:'rgba(245,240,232,0.7)', lineHeight:1.6 }}>{miraVoice}</div>
               </div>
 
-              {/* SECTION 1: What Mira knows */}
-              {tiles.length > 0 && (
-                <div style={{ marginBottom:20 }}>
-                  <div style={{ fontSize:10, fontWeight:700, color:pColor, letterSpacing:'0.1em', marginBottom:10 }}>
-                    WHAT MIRA KNOWS ABOUT {name.toUpperCase()}
-                  </div>
-                  <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:8 }}>
-                    {tiles.map((t, i) => (
-                      <div key={i} style={{ background: t.urgent ? 'rgba(220,38,38,0.1)' : 'rgba(255,255,255,0.04)', border:`1px solid ${t.urgent ? 'rgba(220,38,38,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius:10, padding:'10px 12px' }}>
-                        <div style={{ fontSize:10, fontWeight:600, color: t.urgent ? '#F87171' : pColor, marginBottom:3, letterSpacing:'0.05em' }}>{t.icon} {t.label}</div>
-                        <div style={{ fontSize:13, color: t.urgent ? '#FCA5A5' : 'rgba(245,240,232,0.75)', lineHeight:1.4, fontWeight: t.urgent ? 600 : 400 }}>{t.value}</div>
-                      </div>
-                    ))}
+              {/* COMPLETE PETS — "Mira knows everything" banner */}
+              {isComplete && (
+                <div style={{
+                  background:'rgba(22,163,74,0.08)',
+                  border:'1px solid rgba(22,163,74,0.2)',
+                  borderRadius:12, padding:'10px 14px', marginBottom:16,
+                  display:'flex', alignItems:'center', gap:8
+                }}>
+                  <span style={{ fontSize:14 }}>✓</span>
+                  <div style={{ fontSize:13, color:'rgba(245,240,232,0.7)', fontStyle:'italic' }}>
+                    Mira knows {name} completely. Every recommendation is fully personalised.
                   </div>
                 </div>
               )}
 
-              {/* SECTION 2: Breed tip */}
-              <div style={{ background:`${pColor}08`, border:`1px solid ${pColor}20`, borderRadius:12, padding:'12px 14px', marginBottom:20 }}>
-                <div style={{ fontSize:10, fontWeight:700, color:pColor, letterSpacing:'0.1em', marginBottom:6 }}>
-                  MIRA ON {(breed || 'YOUR BREED').toUpperCase()} · {pLabel.toUpperCase()}
-                </div>
-                <div style={{ fontSize:13, color:'rgba(245,240,232,0.65)', lineHeight:1.6, fontStyle:'italic' }}>{breedTip}</div>
-              </div>
-
-              {/* SECTION 3: Mira Imagines cards */}
-              <div style={{ marginBottom:20 }}>
-                <div style={{ fontSize:10, fontWeight:700, color:pColor, letterSpacing:'0.08em', marginBottom:10 }}>
-                  MIRA IMAGINES FOR {name.toUpperCase()}
-                </div>
-                <MiraImaginesBreed pet={pet} pillar={pillar} colour={pColor} onConcierge={(product) => {
-                  // ACTION 3: Concierge ticket — Mira Imagines card clicked
-                  concierge({
-                    type: 'product',
-                    name: product?.name || product?.title || 'Mira Imagines product',
-                    item: product,
-                    silent: false,
-                    metadata: { action: 'mira_imagines_click', pillar, product_name: product?.name || product?.title },
-                  });
-                }} />
-              </div>
-
-              {/* SECTION 4: Soul questions */}
-              {qLoading ? (
-                <div style={{ textAlign:'center', padding:16, color:'rgba(245,240,232,0.3)', fontSize:13 }}>Loading questions for {name}...</div>
-              ) : questions.filter(q => !submitted[q.question_id]).length > 0 ? (
-                <div>
+              {/* INCOMPLETE PETS — Questions FIRST */}
+              {!isComplete && !qLoading && questions.filter(q => !submitted[q.question_id]).length > 0 && (
+                <div style={{ marginBottom:20 }}>
                   <div style={{ fontSize:10, fontWeight:700, color:pColor, letterSpacing:'0.1em', marginBottom:10 }}>
-                    TELL MIRA MORE — {questions.filter(q => !submitted[q.question_id]).length} QUESTIONS
+                    HELP MIRA KNOW {name.toUpperCase()} · {questions.filter(q => !submitted[q.question_id]).length} QUESTIONS WAITING
                   </div>
                   <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
                     {questions.filter(q => !submitted[q.question_id]).map(q => {
@@ -446,7 +424,6 @@ export default function PillarSoulProfile({
                               })}
                             </div>
                           ) : (
-                            /* Free-text question — textarea input */
                             <textarea
                               value={ans || ''}
                               onChange={e => handleAnswer(q.question_id, e.target.value, 'text')}
@@ -481,14 +458,61 @@ export default function PillarSoulProfile({
                     )}
                   </div>
                 </div>
-              ) : tiles.length === 0 ? (
+              )}
+              {!isComplete && qLoading && (
+                <div style={{ textAlign:'center', padding:16, color:'rgba(245,240,232,0.3)', fontSize:13, marginBottom:20 }}>Loading questions for {name}...</div>
+              )}
+
+              {/* SECTION 1: What Mira knows */}
+              {tiles.length > 0 && (
+                <div style={{ marginBottom:20 }}>
+                  <div style={{ fontSize:10, fontWeight:700, color:pColor, letterSpacing:'0.1em', marginBottom:10 }}>
+                    WHAT MIRA KNOWS ABOUT {name.toUpperCase()}
+                  </div>
+                  <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:8 }}>
+                    {tiles.map((t, i) => (
+                      <div key={i} style={{ background: t.urgent ? 'rgba(220,38,38,0.1)' : 'rgba(255,255,255,0.04)', border:`1px solid ${t.urgent ? 'rgba(220,38,38,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius:10, padding:'10px 12px' }}>
+                        <div style={{ fontSize:10, fontWeight:600, color: t.urgent ? '#F87171' : pColor, marginBottom:3, letterSpacing:'0.05em' }}>{t.icon} {t.label}</div>
+                        <div style={{ fontSize:13, color: t.urgent ? '#FCA5A5' : 'rgba(245,240,232,0.75)', lineHeight:1.4, fontWeight: t.urgent ? 600 : 400 }}>{t.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* SECTION 2: Breed tip */}
+              <div style={{ background:`${pColor}08`, border:`1px solid ${pColor}20`, borderRadius:12, padding:'12px 14px', marginBottom:20 }}>
+                <div style={{ fontSize:10, fontWeight:700, color:pColor, letterSpacing:'0.1em', marginBottom:6 }}>
+                  MIRA ON {(breed || 'YOUR BREED').toUpperCase()} · {pLabel.toUpperCase()}
+                </div>
+                <div style={{ fontSize:13, color:'rgba(245,240,232,0.65)', lineHeight:1.6, fontStyle:'italic' }}>{breedTip}</div>
+              </div>
+
+              {/* SECTION 3: Mira Imagines cards */}
+              <div style={{ marginBottom:20 }}>
+                <div style={{ fontSize:10, fontWeight:700, color:pColor, letterSpacing:'0.08em', marginBottom:10 }}>
+                  MIRA IMAGINES FOR {name.toUpperCase()}
+                </div>
+                <MiraImaginesBreed pet={pet} pillar={pillar} colour={pColor} onConcierge={(product) => {
+                  concierge({
+                    type: 'product',
+                    name: product?.name || product?.title || 'Mira Imagines product',
+                    item: product,
+                    silent: false,
+                    metadata: { action: 'mira_imagines_click', pillar, product_name: product?.name || product?.title },
+                  });
+                }} />
+              </div>
+
+              {/* Empty state for pets with no tiles and no questions */}
+              {!isComplete && !qLoading && questions.filter(q => !submitted[q.question_id]).length === 0 && tiles.length === 0 && (
                 <div style={{ textAlign:'center', padding:'20px 0', color:'rgba(245,240,232,0.3)', fontSize:13 }}>
                   Tell Mira about {name}'s {pLabel.toLowerCase()} — every answer personalises their experience.
                 </div>
-              ) : null}
+              )}
 
               {/* Footer */}
-              <button onClick={() => { setOpen(false); navigate(score >= 100 ? `/my-pets` : `/soul-builder?pet_id=${pet.id}`); }}
+              <button onClick={() => { setOpen(false); navigate(score >= 100 ? `/pet-home` : `/soul-builder?pet_id=${pet.id}`); }}
                 data-testid={`${pillar}-profile-full-link`}
                 style={{ marginTop:20, width:'100%', padding:11, borderRadius:12, border:'1px solid rgba(255,255,255,0.08)', background:'rgba(255,255,255,0.03)', color:'rgba(245,240,232,0.4)', fontSize:12, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6, transition:'all 0.15s' }}>
                 {score >= 100 ? `See ${name}'s full profile` : `Continue ${name}'s Soul Builder`}

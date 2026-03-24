@@ -38,8 +38,9 @@ function buildPaths(pet) {
   );
   const name = pet?.name || "your pet";
   const firstAllergy = allergies[0] || "an allergen";
-  const rawCondition = pet?.healthCondition || pet?.health?.conditions?.[0] || pet?.doggy_soul_answers?.health_conditions || null;
-  const condition = (rawCondition && rawCondition.toLowerCase() !== 'none' && rawCondition.toLowerCase() !== 'none_confirmed' && rawCondition.trim() !== '') ? rawCondition : null;
+  const rawConditionRaw = pet?.healthCondition || pet?.health?.conditions?.[0] || pet?.doggy_soul_answers?.health_conditions || null;
+  const rawCondition = Array.isArray(rawConditionRaw) ? rawConditionRaw[0] || null : rawConditionRaw;
+  const condition = (rawCondition && typeof rawCondition === 'string' && rawCondition.toLowerCase() !== 'none' && rawCondition.toLowerCase() !== 'none_confirmed' && rawCondition.trim() !== '') ? rawCondition : null;
   const loves = ((pet?.favoriteFoods || pet?.preferences?.favorite_foods || []).filter(
     f => !allergies.includes(f.toLowerCase())
   )[0]) || "salmon";
