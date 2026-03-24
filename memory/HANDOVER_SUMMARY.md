@@ -4,185 +4,276 @@
 ---
 
 ## SESSION OVERVIEW
-**Agent**: Current session agent
-**Date**: March 24, 2026
-**Duration**: Full session
-**Pillars Locked This Session**: Learn (6th of 13)
-**Total Pillars Locked**: 6/13 (Celebrate, Dine, Care, Go, Play, Learn)
+**Agent**: Current session agent  
+**Date**: March 24, 2026  
+**Status**: Pre-launch stabilization + pillar completion + admin audit  
+**Definitive Pillars**: **12**  
+**Locked Pillars**: **12/12**
+
+### The definitive 12 pillars
+1. Celebrate
+2. Dine
+3. Care
+4. Go *(includes Stay + Travel)*
+5. Play *(includes Fit + Enjoy)*
+6. Learn
+7. Paperwork *(includes Advisory)*
+8. Adopt
+9. Farewell
+10. Emergency
+11. Shop
+12. Services
 
 ---
 
-## COMPLETE LIST OF ALL CHANGES MADE
-
-### 1. BREED-PRODUCTS API FIX
-- **File**: `/app/backend/server.py` line ~11537
-- **Problem**: DB stores breeds as `shih_tzu` (underscore), frontend sends `shih tzu` (space). API returned 0 products for multi-word breeds.
-- **Fix**: `re.sub(r'[ _]', '[_ ]', breed)` — creates regex `shih[_ ]tzu` matching both formats
-- **Also integrated**: `normalise_breed()` from `breed_normalise.py` so `"Indian Pariah"` → `"indie"`, `"mixed breed"` → `"indie"`, etc.
-- **Result**: Shih Tzu 0→77, Golden Retriever 0→77, all 50 breeds resolve correctly
-
-### 2. MIRA SCORE ENGINE PERFORMANCE FIX
-- **File**: `/app/backend/mira_score_engine.py`
-- **Problem**: Scoring 1500+ items in parallel, blocking the entire event loop. `/api/pets/my-pets` was timing out.
-- **Fixes**:
-  - Changed from parallel 2-batch to sequential processing with `await asyncio.sleep(0.5)` between batches
-  - Increased scoring cooldown from 6 hours to 24 hours
-  - Fallback paths now check `count_documents` before re-triggering scoring
-  - `score_for_pet` endpoint returns `already_scored` if scored within 24h
-- **Result**: `/api/pets/my-pets` from timeout → 209ms
-
-### 3. MONGODB INDEXES ADDED
-- **Collections indexed**:
-  - `pets`: `owner_email_1`, `id_1`, `parent_id_1`, `email_1`
-  - `mira_product_scores`: `(pet_id, pillar, score)`, `(pet_id, entity_type, score)`, `(pet_id, score)`
-  - `breed_products`: `(breed, is_active, is_mockup)`
-- **Applied via**: Direct MongoDB commands (not in code — indexes persist)
-
-### 4. LEARN PILLAR AUDIT — FULL 8-PHASE COMPLETION
-
-#### Phase 1 — Component Map
-- 10 files: `LearnSoulPage.jsx` (2262 lines) + 8 sub-components in `/components/learn/` + `LearnProductsGrid.jsx`
-- Key imports: GuidedLearnPaths, MiraImaginesCard, PillarSoulProfile, SharedProductCard, SoulMadeCollection
-
-#### Phase 2 — Bug Hunt
-- No null-guard gaps, no duplicate tabs, no "none" rendering bugs found
-
-#### Phase 3 — Concierge Wiring Audit
-- 20+ wiring points verified across page + components
-- Test ticket `TDB-2026-0773` created with `pet_breed: Indie`, `mira_briefing` with allergy context
-- Backend auto-resolves `pet_breed` from `pet_doc` via `normalise_breed()`
-
-#### Phase 4 — Soul Made Strip
-- Soul Made tab present with SoulMadeModal, correctly rendered
-
-#### Phase 5 — Mobile (375px)
-- All fonts ≥13px, tap targets ≥44px, no overflow
-- PathFlowModal renders cleanly on mobile with pet avatar + breed badge
-
-#### Phase 6 — Mira Context
-- `useMiraIntelligence` active, breed-specific training profiles loaded
-- Breed-watch profiles for Shih Tzu, Brachycephalic breeds, etc.
-
-#### Phase 7 — Learn-Specific Features Built
-
-**a) Content Modal Footer CTA (Play Pattern)**
-- **File**: `/app/frontend/src/pages/LearnSoulPage.jsx` inside `LearnContentModal`
-- **Mapping**: `CAT_TO_PATH = { foundations→new_puppy, behaviour→behaviour, training→basic_training, tricks→enrichment, enrichment→enrichment }`
-- **UX**: Pill click → product modal opens → footer bar shows "Personalised for Mojo" + "Start Mojo's {Category} Path →" → click opens PathFlowModal
-- **Excluded from footer**: bundles, soul, mira, soul_made, breed (these don't have guided paths)
-
-**b) Know Your Breed Modal Enhancements**
-- **Mira's Breed Guide section**: Dark gradient card with "MIRA ON {BREED}" header, breed traits via `MiraImaginesBreed` component, concierge wiring on tap
-- **Pet Wrapped 2026 card**: Gold-accent gradient card linking to `/wrapped/{petId}` with "See {petName}'s 2026 Wrapped →" CTA
-
-**c) "Book for Mojo →" Personalisation**
-- Changed all 3 instances of "Book →" to `Book for {petName} →` and `Book {dim.label} for {petName} →`
-
-**d) LearnNearMe Fix**
-- **File**: `/app/frontend/src/components/learn/LearnNearMe.jsx`
-- Added `selectedPlace` state to main component (was only in unused child TrainerCard state)
-- Removed dead `selectedPlace` from TrainerCard
-- Fixed double fragment wrapper `<><>` → `<>`
-
-**e) GuidedLearnPaths Exports**
-- **File**: `/app/frontend/src/components/learn/GuidedLearnPaths.jsx`
-- Exported `buildPaths` and `PathFlowModal` for reuse by LearnSoulPage
-
-#### Phase 8 — Testing
-- Testing agent iteration_202.json: 13/13 tests passed, 100% backend, 100% frontend
-- No regressions on locked pillars
-
-### 5. PET WRAPPED AUTO-REGENERATION
-- **Files modified**:
-  - `/app/backend/server.py` — Both soul answer save endpoints (lines ~14895, ~14980)
-  - `/app/backend/pet_soul_routes.py` — `_schedule_wrapped_regen()` + `_regenerate_wrapped_background()`, wired into 3 endpoints
-  - `/app/backend/pet_vault_routes.py` — `_regenerate_wrapped_background()`, wired into vaccine, vet visit, medication save
-  - `/app/backend/orders_routes.py` — Wired into order completion
-- **Confirmed working**: Wrapped timestamp updated from 08:28 → 08:36 immediately after soul answer save
-
-### 6. BREED NORMALISATION SYSTEM
-- **Backend**: `/app/backend/breed_normalise.py` — `normalise_breed()` with 50 KNOWN_BREEDS + BREED_ALIASES
-- **Frontend**: `/app/frontend/src/utils/breedNormalise.js` — `normaliseBreed()` + `filterBreedProducts()`
-- **Wired into**:
-  - `mira_service_desk.py` — All 3 `pet_breed` assignment points (lines 688, 725, 1849)
-  - `server.py` — breed-products API endpoint
-- **Tested**: "Indian Pariah"→78 products, "mixed breed"→78, "Desi Dog"→78, "mutt"→78, "shih tzu"→77
-
-### 7. WHATSAPP ON NEW TICKET
-- **File**: `/app/backend/mira_service_desk.py` after line 757
-- **Trigger**: Every new ticket creation in `attach_or_create_ticket`
-- **Message**: "Concierge received your request for {pet_name}. We'll be in touch within 24 hours. — The Doggy Company"
-- **Phone normalisation**: Strips +/-/spaces, prepends 91 if needed
-- **Tested**: Message ID `be14d602-75d2-4ed5-b12a-ca30eba3e21f` delivered to 919876***
-
-### 8. MALTESE TRAILING SPACE FIX
-- **Collection**: `pets`
-- **Fix**: Lola's breed `"Maltese "` → `"Maltese"` (DB update)
-- **Only 1 pet affected**
+## TOP-LINE STATUS
+- **All 12 pillars locked** ✅
+- **All core admin tabs opening / major admin flows working** ✅
+- **Deployment safety fixes applied** ✅
+- **Atlas migration still pending** ⚠️
+- **Founding member welcome / onboarding JSX ready** ✅
+- **Navigation links approved / repaired** ✅
+- **Button safety guide documented** ✅
+- **Cart + GST working** ✅
+- **Onboarding working** ✅
+- **Static pages quick pass working** ✅
+- **Next session priority**: Atlas migration guidance + go-live execution
 
 ---
 
-## CANONICAL FLOW AUDIT RESULTS
+## MAJOR WORK COMPLETED IN THIS SESSION
 
-| Flow | Status | Detail |
-|------|--------|--------|
-| My Requests | YES | Member sees 5+ tickets |
-| Admin Service Desk | YES | Admin sees 10+ tickets |
-| Admin Bell | YES | 5 notifications firing |
-| Member Inbox | YES | `/api/inbox` returns data |
-| Cart | YES | 2 items in cart |
-| Mira Widget | YES | Knows Mojo across all 6 pillars |
-| NearMe | YES | 12 per type (vet/groomer/trainer) |
-| WhatsApp | YES | Gupshup live, messages delivered |
+### 1. All remaining pillar locks completed
+- **Emergency locked**: concierge-first emergency flows verified, mobile checked, breed/allergy ticket context verified
+- **Shop locked**: storefront commerce behavior verified, product modal/cart behavior correct, Product Box → storefront price sync proven
+- **Services locked**: concierge-first service architecture verified, quick view / booking flow validated, breed/allergy tickets verified
 
-### Ticket Completeness (last 20 per pillar):
-```
-celebrate    170 total   19/20 breed   19/20 allergy
-dine         101 total   15/20 breed   18/20 allergy
-care         247 total   20/20 breed   20/20 allergy
-go            15 total    1/15 breed    3/15 allergy
-play          10 total    6/10 breed   10/10 allergy
-learn         66 total    8/20 breed   18/20 allergy
-```
+### 2. Cross-pillar service/product rendering fix
+- Root cause identified: `claude-picks` can return mixed `entity_type=product` and `entity_type=service`
+- Fixed affected pillars so services never render as product cards again
+- Split or filtered handling applied to:
+  - Celebrate
+  - Adopt
+  - Emergency
+  - Farewell
+  - Paperwork
+  - Care / Dine / Go / Play service UI cleanup
+- Added hard rule in PRD: service picks must open concierge/service flows, not product modals
 
-### Breed Product Coverage
-- 50 breeds in breed_products (2,978 active products)
-- 69 breeds in products_master
-- 8 actual pet breeds in system (all have matching products)
-- 4 breeds appear in tickets: Indie(60), Maltipoo(13), Shih Tzu(7), Labrador(3)
+### 3. Product sync + Shopify overwrite protection
+- **Product Box → storefront sync proven** with visible Celebrate product (`Fruity Fro-Yo Duo`) — admin price changed, storefront reflected new price immediately
+- Root risk found: Shopify sync could overwrite manual Product Box prices
+- Added safeguard:
+  - `price_locked`
+  - `manual_price`
+  - preservation in sync paths
+- Result: manual admin prices are protected from Shopify overwrite
+
+### 4. Service sync proven
+- **Service Box → frontend sync proven**
+- Edited `Breed Education Session` in Service Box
+- Verified updated description reflected on `/learn`
+
+### 5. Admin audit — major fixes
+- **Service Desk double-auth fixed**: same admin session now works across `/admin` and `/admin/service-desk`
+- **Pet Profiles crash fixed**: hardened pet avatar URL handling (`photoUrl.includes is not a function`)
+- **Unified Inbox stats 404 fixed**: `/api/channels/intakes/stats` no longer shadowed by request-id route
+- **Admin reply field mismatch fixed**: frontend uses `content`, backend reply endpoint accepts `message` or `content`
+- **Member My Requests fixed**: now reads `messages` / `thread` / `conversation` correctly
+- **Bell null category bug fixed**: category normalization in code + DB backfill
+- **Pet Parents tab fixed**: switched admin fetch from broken `/api/admin/members` assumption to working `/api/admin/customers` payload shape
+- **Orders undefined bug fixed**: guarded currency/text rendering
+- **Membership detail improved**: shows Dipali’s full pet list, points modal works
+- **Memory Manager fixed**: missing auth headers added
+- **Live Threads verified**: working and showing Mojo/live conversations
+
+### 6. Safety / deployment hardening
+- Added **SYNC→PROD typed confirmation guard**
+- Added **seed_all_data.py safety guard** (`ALLOW_SEED=yes_i_know_this_deletes_everything`)
+- Created `/app/frontend/.env.production`
+- Removed hardcoded preview auth redirect from `AuthContext.jsx`
+- Confirmed `SITE_URL=https://thedoggycompany.com`
+- Confirmed preview/local DB is currently the source-of-truth for this job
+
+### 7. Onboarding / member experience fixes
+- `/join` now includes:
+  - **Sign in**
+  - **Forgot password?**
+- Fixed onboarding handoff bug:
+  - account + pet creation now lands correctly on `/soul-builder?pet_id=...`
+- Verified onboarding flow through:
+  - create new account
+  - create pet (`TestDog`, Labrador)
+  - reach Soul Builder
+  - answer 5 questions
+  - see score update on Pet Home (**6% shown**) 
+- Temporary test accounts/pets/orders cleaned up after tests
+
+### 8. Checkout + GST
+- Seeded cart and verified checkout renders:
+  - subtotal
+  - shipping
+  - taxable amount
+  - CGST / SGST
+  - total
+- No `undefined` in checkout test state
+
+### 9. Navigation / routing fixes
+- Fixed wrong chapter/profile navigation that previously sent members to bad soul-builder URLs
+- Pet Home now includes:
+  - Dashboard
+  - My Pets
+  - Pet Home
+- Fixed internal `window.location.href` usage in:
+  - Shop → Celebrate fallback
+  - Services → Shop view-mode toggle
+- Added branded **404 page** with catch-all route
+
+### 10. Celebrate contamination fixes
+- Removed **Pet Loss Counseling** from Celebrate UI via frontend filtering
+- Filtered Adopt/Farewell contamination from Celebrate Soul Made products
+- Improved internal Celebrate Soul Made strips so they don’t cover content on mobile
+- Improved Pet Wrapped CTA handling in Celebrate flows
+
+### 11. Images / catalogue hygiene
+- Deleted test products from DB
+- Marked concierge-only zero-price items appropriately
+- Flagged missing bundle images and wrong-image suspect(s)
+- Important finding: `FIX IMAGES` repairs missing Shopify image URLs, **not** wrong stored creative assets
+- Current narrowed wrong-image suspect count: **1** clearly flagged item (`Bite-Resistant Tug Rope` under advisory)
+
+### 12. Password reset + communications verified
+- Password reset request fired email successfully
+- Token reset flow worked end-to-end
+- Original password restored after test
+- Direct WhatsApp and ticket-triggered WhatsApp both verified
+- Direct Resend email verified
 
 ---
 
-## WHAT THE NEXT AGENT MUST DO
+## DATABASE / DEPLOYMENT TRUTH
 
-### Immediate: Paperwork Pillar Audit
-Follow `/app/memory/PILLAR_AUDIT_METHODOLOGY.md` exactly:
-1. **Phase 1**: Map all Paperwork files
-2. **Phase 2**: Bug hunt (null guards, duplicate tabs, "none" rendering)
-3. **Phase 3**: Concierge wiring audit — every CTA fires `attach_or_create_ticket`
-4. **Phase 4**: Soul Made strip check
-5. **Phase 5**: Mobile audit (375px)
-6. **Phase 6**: Mira context check
-7. **Phase 7**: Document & lock
-8. **Phase 8**: Report with testing_agent_v3_fork
+### Current source-of-truth database
+- **MONGO_URL**: `mongodb://localhost:27017`
+- **DB_NAME**: `pet-os-live-test_database`
 
-### After Paperwork: Continue Audit Queue
-Adopt → Farewell → Emergency → Shop → Services → Advisory
+### Important deployment finding
+- **Preview and production are separate environments**
+- `SYNC→PROD` does **not** sync the full database
+- It syncs mockup / Soul Made production data only (plus related mocked production-facing operations), **not** all products/users/pets/tickets/memories
+- Therefore **Atlas / production DB migration is still required** before go-live
 
-### P1 Features (After Audits)
-- **WhatsApp Daily Digest**: "Good morning Dipali! Mojo's soul is 100% known. Today Mira suggests: Salmon treats after his morning walk — perfect for an Indie his age."
-- "3 vets near you" in WhatsApp health reminders
-- Medication refill scheduler
+### Explicit product requirement from Dipali
+> What is in the local Mongo used by this app is what must be migrated to the final launch database.
 
 ---
 
-## CRITICAL WARNINGS
-1. **DO NOT TOUCH**: Celebrate, Dine, Care, Go, Play, Learn — ALL LOCKED
-2. **Cross-pillar components are interlinked**: `PillarSoulProfile`, Content Modals, `breedNormalise` — changes affect all pillars
-3. **Backend port 8001 stalls**: Kill with `pkill -f uvicorn && sudo supervisorctl restart backend`
-4. **MiraScoreEngine**: 24hr cooldown. If scoring blocks the server, restart backend.
+## ADMIN STATUS SNAPSHOT
+
+### Confirmed working / operationally ready
+- Dashboard
+- Service Desk
+- Unified Inbox status persistence
+- Pet Parents
+- Pet Profiles
+- Membership
+- Loyalty
+- Engagement
+- Product Box
+- Service Box
+- Pricing Hub
+- Live Threads
+- Mira Memory Manager
+- Reminders
+- Site Status
+- FAQs
+- About
+- Blog / Transformations / Breed Tags / Breed Art / Custom Cakes / Agents / Guide & Backup / Concierge XP / Tags / Streaties / Kit Assembly / Communications (open-pass verified)
+
+### Working with known caveats
+- Finance: opens, but empty payment data is expected until real payments exist
+- Mira Chats: opens, conversations visible, still worth a targeted Mojo search pass
+- Bell: works, but UX/data polish still possible
+- Orders: undefined bug fixed, deeper order workflow still pending
+- Wrong image workflow: `FIX IMAGES` not sufficient for wrong stored creative assets
+
+### No currently confirmed broken admin tabs
+- **Broken admin tabs remaining: 0** 🎉
+
+---
+
+## MEMBER EXPERIENCE STATUS SNAPSHOT
+
+### Verified
+- `/dashboard` opens, shows real member content
+- `/my-pets` opens, shows Mojo + Mystique
+- `/pet/:petId` opens and shows pet data
+- mobile pass for member core pages looks healthy
+- `/join` onboarding entry works
+- onboarding step 1 + step 2 mobile pass
+- full onboarding handoff to Soul Builder works
+- first 5 soul questions answered in test flow
+- Pet Home score updated for test pet
+- checkout + GST render correctly
+- static pages quick pass:
+  - `/about`
+  - `/how-it-works`
+  - `/pricing`
+  - `/blog`
+  - `/faqs`
+  - `/privacy-policy`
+  - `/terms`
+  - `/refund-policy`
+  - branded 404 via `/gibberish`
+
+### Still worth deeper verification later
+- footer full link-by-link pass
+- social / WhatsApp footer link validation
+- mobile footer policy links
+- membership upgrade end-to-end
+- loyalty earn/spend loop
+- cart mutation flow from storefront without seeding
+
+---
+
+## CRITICAL FLOWS VERIFIED
+- Product Box → storefront sync ✅
+- Service Box → storefront sync ✅
+- Pricing Hub mutation + GST ✅
+- Admin reply → member sees it ✅
+- WhatsApp on ticket creation ✅
+- Email sending ✅
+- Password reset ✅
+- Onboarding → Soul Builder handoff ✅
+- Checkout + GST rendering ✅
+- Pet page routing / profile routing ✅
+
+---
+
+## KNOWN ISSUES / CAVEATS
+- Finance shows zero because no payment records exist yet — expected, not a bug
+- One clearly flagged wrong-image product still needs AI/manual correction
+- 11 bundle images still need proper AI generation (placeholders + flags already added)
+- Mira Chats still deserves a targeted search/filter verification for specific pets like Mojo
+- `CORS_ORIGINS=*` is functionally fine in preview, but not final-hardened production policy
+
+---
+
+## NEXT SESSION PRIORITY
+### 1. Atlas migration + go-live prep
+- Get actual Atlas connection string from Dipali / Emergent guidance
+- Compare local DB counts vs Atlas
+- Migrate local source-of-truth DB to production DB
+- Verify counts match exactly
+
+### 2. Final go-live confirmation pass
+- full live-like member flow after DB migration
+- confirm production counts via COMPARE
+- only then discuss actual go-live
+
+---
 
 ## TEST CREDENTIALS
-- User: `dipali@clubconcierge.in` / `test123`
+- Member: `dipali@clubconcierge.in` / `test123`
 - Admin: `aditya` / `lola4304`
-- Admin portal: `/admin`
+- Admin URL: `/admin`
