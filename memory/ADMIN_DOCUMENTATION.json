@@ -1537,6 +1537,17 @@
           "Do not modify production credentials blindly."
         ]
       }
-    ]
+    ],
+    "deployment_note": {
+      "status": "recommended_path_updated",
+      "full_db_sync_tool_built": true,
+      "preview_to_production_direct_sync_blocked": true,
+      "recommended_launch_path": [
+        "Replace deployment",
+        "Choose Use new database",
+        "Let Emergent carry latest preview DB forward"
+      ],
+      "reason": "Production DB is stale/useless and direct preview backend connectivity to production Mongo currently fails."
+    }
   }
 }
