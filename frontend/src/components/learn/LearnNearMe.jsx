@@ -148,7 +148,6 @@ function TDCBadge() {
 // ─── Individual trainer card ──────────────────────────────────
 function TrainerCard({ provider, pet, onBook, onOpenModal }) {
   const [imgErr, setImgErr] = useState(false);
-  const [selectedPlace, setSelectedPlace] = useState(null);
   const petName = pet?.name || "your dog";
 
   return (
@@ -275,6 +274,7 @@ export default function LearnNearMe({ pet, dimId="training", onBook }) {
   const [suggestions,  setSuggestions]  = useState([]);
   const [nearMeLoading,setNearMeLoading]= useState(false);
   const [displayCity,  setDisplayCity]  = useState("");
+  const [selectedPlace, setSelectedPlace] = useState(null);
   const inputRef = useRef(null);
 
   const doFetch = useCallback(async (coords, cityName, type) => {
@@ -356,7 +356,6 @@ export default function LearnNearMe({ pet, dimId="training", onBook }) {
 
   return (
     <>
-<>
       <div data-testid="learn-near-me">
 
       {/* Header */}
@@ -520,7 +519,6 @@ export default function LearnNearMe({ pet, dimId="training", onBook }) {
         </div>
       )}
     </div>
-</>
       <NearMeConciergeModal
         isOpen={!!selectedPlace}
         place={selectedPlace}
