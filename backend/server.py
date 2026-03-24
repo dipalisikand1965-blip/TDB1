@@ -17247,12 +17247,13 @@ async def create_admin_notification(
     Categories: celebrate, dine, stay, care, travel, general
     Priority: low, normal, high, urgent
     """
+    safe_category = category or (metadata or {}).get("pillar") or (metadata or {}).get("type") or "general"
     notification = {
         "id": f"notif-{uuid.uuid4().hex[:12]}",
         "type": notification_type,
         "title": title,
         "message": message,
-        "category": category,
+        "category": safe_category,
         "related_id": related_id,
         "link_to": link_to,  # e.g., "/admin?tab=orders" or "/admin?tab=dine&subtab=reservations"
         "priority": priority,
@@ -17323,6 +17324,8 @@ async def get_admin_notifications(
         # type: fall back to intent_primary if type missing
         if not n.get("type") and n.get("intent_primary"):
             n["type"] = n["intent_primary"]
+        if not n.get("category"):
+            n["category"] = n.get("pillar") or n.get("type") or "general"
 
     # Get unread count
     unread_count = await db.admin_notifications.count_documents({"read": False})
@@ -17334,7 +17337,8 @@ async def get_admin_notifications(
     ]
     category_counts = {}
     async for doc in db.admin_notifications.aggregate(category_pipeline):
-        category_counts[doc["_id"]] = doc["count"]
+        key = doc.get("_id") or "general"
+        category_counts[key] = category_counts.get(key, 0) + doc["count"]
     
     return {
         "notifications": notifications,

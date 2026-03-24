@@ -14,6 +14,17 @@ const OrdersTab = ({
   updateOrderStatus,
   setSelectedOrderDetails 
 }) => {
+  const formatCurrencySafe = (amount, fallback = 'Price on WhatsApp') => {
+    const num = Number(amount);
+    if (!Number.isFinite(num) || num <= 0) return fallback;
+    return `₹${num.toLocaleString('en-IN')}`;
+  };
+
+  const safeText = (value, fallback = 'Not specified') => {
+    if (value === undefined || value === null) return fallback;
+    const str = String(value).trim();
+    return str && str !== 'undefined' ? str : fallback;
+  };
   // CSV Export for Orders
   const exportOrdersCSV = () => {
     const headers = ['Order ID', 'Customer', 'Email', 'Phone', 'Total', 'Status', 'Items', 'Date', 'Address'];
@@ -121,24 +132,24 @@ const OrdersTab = ({
                     {order.created_at ? new Date(order.created_at).toLocaleString() : 'N/A'}
                   </p>
                 </div>
-                <p className="text-xl font-bold text-purple-600">₹{order.total || order.total_amount || 0}</p>
+                <p className="text-xl font-bold text-purple-600">{formatCurrencySafe(order.total || order.total_amount)}</p>
               </div>
 
               <div className="grid md:grid-cols-3 gap-4 mb-4">
                 <div>
                   <p className="text-xs text-gray-500 uppercase">Customer</p>
-                  <p className="font-medium">{order.customer?.parentName || order.customer_name || order.user_name || 'N/A'}</p>
-                  <p className="text-sm text-gray-600">{order.customer?.phone || order.customer_phone || order.user_phone || ''}</p>
-                  <p className="text-sm text-gray-600">{order.customer?.whatsappNumber || order.customer_email || order.user_email || ''}</p>
+                  <p className="font-medium">{safeText(order.customer?.parentName || order.customer_name || order.user_name, 'N/A')}</p>
+                  <p className="text-sm text-gray-600">{safeText(order.customer?.phone || order.customer_phone || order.user_phone)}</p>
+                  <p className="text-sm text-gray-600">{safeText(order.customer?.whatsappNumber || order.customer_email || order.user_email)}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 uppercase">Pet</p>
-                  <p className="font-medium">{order.pet?.name || 'N/A'}</p>
-                  <p className="text-sm text-gray-600">{order.pet?.breed ? `${order.pet.breed} • ${order.pet.age}` : ''}</p>
+                  <p className="font-medium">{safeText(order.pet?.name, 'N/A')}</p>
+                  <p className="text-sm text-gray-600">{order.pet?.breed ? `${order.pet.breed} • ${safeText(order.pet?.age, 'Age not specified')}` : 'Not specified'}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 uppercase">Delivery</p>
-                  <p className="font-medium">{order.delivery?.city || order.city || ''}</p>
+                  <p className="font-medium">{safeText(order.delivery?.city || order.city)}</p>
                   <p className="text-sm text-gray-600">{(() => {
                     const addr = order.delivery?.address || order.shipping_address || order.address || '';
                     const addrStr = typeof addr === 'string' ? addr : (addr?.line1 || addr?.street || JSON.stringify(addr) || '');
@@ -157,10 +168,10 @@ const OrdersTab = ({
                         {item.name} 
                         {item.selectedSize && ` (${item.selectedSize}`}
                         {item.selectedFlavor && `, ${item.selectedFlavor})`}
-                        {!item.selectedSize && !item.selectedFlavor && item.size && ` (${item.size}, ${item.flavor})`}
+                        {!item.selectedSize && !item.selectedFlavor && item.size && ` (${item.size}${item.flavor ? `, ${item.flavor}` : ''})`}
                         {' '}x{item.quantity}
                       </span>
-                      <span className="font-medium">₹{item.price * item.quantity}</span>
+                      <span className="font-medium">{formatCurrencySafe((Number(item.price) || 0) * (Number(item.quantity) || 0))}</span>
                     </div>
                     
                     {/* Custom Cake Details */}
@@ -170,11 +181,11 @@ const OrdersTab = ({
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
                           <div>
                             <span className="text-gray-500">Shape:</span>
-                            <p className="font-medium">{item.customDetails.shapeIcon || ''} {item.customDetails.shape}</p>
+                            <p className="font-medium">{item.customDetails.shapeIcon || ''} {safeText(item.customDetails.shape)}</p>
                           </div>
                           <div>
                             <span className="text-gray-500">Flavour:</span>
-                            <p className="font-medium">{item.customDetails.flavorIcon || ''} {item.customDetails.flavor}</p>
+                            <p className="font-medium">{item.customDetails.flavorIcon || ''} {safeText(item.customDetails.flavor)}</p>
                           </div>
                           <div>
                             <span className="text-gray-500">Weight:</span>
