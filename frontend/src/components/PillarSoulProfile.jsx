@@ -298,41 +298,55 @@ export default function PillarSoulProfile({
 
   return (
     <>
-      {/* Compact trigger bar — beautiful white card style */}
+      {/* Trigger bar — gradient border, score ring, tap-to-open */}
       <div onClick={() => setOpen(true)} data-testid={`${pillar}-profile-bar`}
         style={{
-          background:'#fff', border:`2px solid ${pColor}18`, borderRadius:16,
-          padding:'14px 18px', cursor:'pointer', display:'flex', alignItems:'center', gap:14,
-          marginBottom:16, transition:'all 0.15s',
-          boxShadow:`0 2px 12px ${pColor}14`,
+          background:`linear-gradient(135deg, ${pColor}, ${isComplete ? '#16A34A' : pColor}90)`,
+          borderRadius:18, padding:2, cursor:'pointer',
+          marginBottom:16, transition:'all 0.2s ease',
+          boxShadow:`0 4px 20px ${pColor}30`,
         }}
-        onMouseEnter={e => e.currentTarget.style.boxShadow=`0 4px 20px ${pColor}22`}
-        onMouseLeave={e => e.currentTarget.style.boxShadow=`0 2px 12px ${pColor}14`}
+        onMouseEnter={e => { e.currentTarget.style.boxShadow=`0 6px 28px ${pColor}50`; e.currentTarget.style.transform='translateY(-1px)'; }}
+        onMouseLeave={e => { e.currentTarget.style.boxShadow=`0 4px 20px ${pColor}30`; e.currentTarget.style.transform='translateY(0)'; }}
       >
-        <div style={{ width:42, height:42, borderRadius:12, border:`2px solid ${pColor}30`, overflow:'hidden', flexShrink:0, background:`${pColor}15`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:18 }}>
-          {pet?.photo_url ? <img src={pet.photo_url} alt={name} style={{ width:'100%', height:'100%', objectFit:'cover' }}/> : '\uD83D\uDC3E'}
-        </div>
-        <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ fontSize:14, fontWeight:700, color:'#1a1a2e', marginBottom:4 }}>{name}'s {pLabel} Profile</div>
-          <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
-            {pet?.breed && (
-              <span style={{ fontSize:10, fontWeight:600, color:pColor, background:`${pColor}12`, border:`1px solid ${pColor}30`, borderRadius:20, padding:'2px 8px' }}>
-                🐾 {pet.breed}{pet?.doggy_soul_answers?.coat_type ? ` · ${pet.doggy_soul_answers.coat_type} coat` : ''}
-              </span>
-            )}
-            {pet?.doggy_soul_answers?.grooming_frequency && (
-              <span style={{ fontSize:10, fontWeight:600, color:pColor, background:`${pColor}12`, border:`1px solid ${pColor}30`, borderRadius:20, padding:'2px 8px' }}>
-                ✂ {pet.doggy_soul_answers.grooming_frequency}
-              </span>
-            )}
+        <div style={{
+          background:'#fff', borderRadius:16, padding:'14px 16px',
+          display:'flex', alignItems:'center', gap:12,
+        }}>
+          {/* Score ring around pet photo */}
+          <div style={{ position:'relative', width:48, height:48, flexShrink:0 }}>
+            <svg viewBox="0 0 48 48" style={{ position:'absolute', inset:0, width:48, height:48, transform:'rotate(-90deg)' }}>
+              <circle cx="24" cy="24" r="21" fill="none" stroke={`${pColor}18`} strokeWidth="3"/>
+              <circle cx="24" cy="24" r="21" fill="none" stroke={scoreColor} strokeWidth="3"
+                strokeDasharray={`${((isFinite(score)?score:0)/100)*131.95} 131.95`}
+                strokeLinecap="round" style={{ transition:'stroke-dasharray 0.8s ease' }}/>
+            </svg>
+            <div style={{ position:'absolute', inset:3, borderRadius:'50%', overflow:'hidden', background:`${pColor}12`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:16 }}>
+              {pet?.photo_url ? <img src={pet.photo_url} alt={name} style={{ width:'100%', height:'100%', objectFit:'cover' }}/> : '\uD83D\uDC3E'}
+            </div>
           </div>
-          <div style={{fontSize:11, color:scoreColor, fontWeight:600, marginTop:3}}>
-            {isComplete ? 'Mira knows everything' : `${totalUnanswered || '?'} questions waiting`}
+          {/* Info */}
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ fontSize:14, fontWeight:700, color:'#1a1a2e', marginBottom:3 }}>{name}'s {pLabel} Profile</div>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
+              {pet?.breed && (
+                <span style={{ fontSize:11, fontWeight:600, color:pColor, background:`${pColor}10`, border:`1px solid ${pColor}25`, borderRadius:20, padding:'2px 9px' }}>
+                  {pet.breed}{pet?.doggy_soul_answers?.coat_type ? ` · ${pet.doggy_soul_answers.coat_type} coat` : ''}
+                </span>
+              )}
+            </div>
+            <div style={{ fontSize:12, color:scoreColor, fontWeight:600, marginTop:3 }}>
+              {isComplete ? 'Mira knows everything' : `${totalUnanswered || '?'} questions waiting`}
+            </div>
           </div>
-        </div>
-        <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', flexShrink:0, gap:2 }}>
-          <div style={{ fontSize:16, fontWeight:700, color:scoreColor, lineHeight:1 }}>{isFinite(score) ? Math.round(score) : 0}%</div>
-          <span style={{ fontSize:10, color:scoreColor, fontWeight:600, whiteSpace:'nowrap', opacity:0.7 }}>Soul Score</span>
+          {/* Score + chevron */}
+          <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+            <div style={{ textAlign:'right' }}>
+              <div style={{ fontSize:18, fontWeight:800, color:scoreColor, lineHeight:1 }}>{isFinite(score) ? Math.round(score) : 0}%</div>
+              <span style={{ fontSize:9, color:scoreColor, fontWeight:600, opacity:0.6, textTransform:'uppercase', letterSpacing:'0.05em' }}>Soul</span>
+            </div>
+            <div style={{ color:`${pColor}60`, fontSize:18, lineHeight:1 }}>&#8250;</div>
+          </div>
         </div>
       </div>
 
@@ -340,7 +354,7 @@ export default function PillarSoulProfile({
       {open && (
         <div onClick={() => setOpen(false)} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.65)', zIndex:50001, display:'flex', alignItems:'center', justifyContent:'center', padding:16 }}>
           <div onClick={e => e.stopPropagation()} data-testid={`${pillar}-profile-drawer`}
-            style={{ width:'100%', maxWidth:560, maxHeight:'85vh', background:'#0F0A1E', borderRadius:20, border:`1px solid ${pColor}30`, overflowY:'auto' }}>
+            style={{ width:'100%', maxWidth:'min(680px, 95vw)', maxHeight:'85vh', background:'#0F0A1E', borderRadius:20, border:`1px solid ${pColor}30`, overflowY:'auto' }}>
 
             {/* Header */}
             <div style={{ padding:'20px 20px 16px', background:`linear-gradient(135deg, #0F0A1E, ${pColor}15)`, borderBottom:`1px solid ${pColor}20`, position:'sticky', top:0, zIndex:2 }}>
