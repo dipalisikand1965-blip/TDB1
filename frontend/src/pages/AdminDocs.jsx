@@ -547,8 +547,8 @@ aditya / lola4304`
         {
           title: 'What It Does',
           content: `**ONE CLICK** seeds everything:
-• **Products**: All 14 pillars with 3+ products each
-• **Services**: All 14 pillars with 2+ concierge services each
+• **Products**: All 12 pillars with 3+ products each
+• **Services**: All 12 pillars with 2+ concierge services each
 • **Unified Products**: Migrates to Product Box collection
 • **Pricing Tiers**: Basic, Member, Premium, VIP
 • **Shipping Rules**: Standard, Express, Same Day, Service, Digital
@@ -578,7 +578,7 @@ curl -X POST https://YOUR_DOMAIN/api/admin/universal-seed
     },
     'pillar-protocol': {
       title: '📋 Pillar Protocol',
-      subtitle: 'Standard protocol ensuring all 14 pillars have consistent data',
+      subtitle: 'Standard protocol ensuring all 12 pillars have consistent data',
       badge: 'Documentation',
       files: {
         memory: '/app/memory/PILLAR_PROTOCOL.md',
@@ -607,8 +607,8 @@ curl -X POST https://YOUR_DOMAIN/api/admin/universal-seed
         {
           title: 'Checklist',
           content: `Every deployment must ensure:
-✅ All 14 pillars have products in \`products\` collection
-✅ All 14 pillars have services in \`services\` collection
+✅ All 12 pillars have products in \`products\` collection
+✅ All 12 pillars have services in \`services\` collection
 ✅ Products migrated to \`unified_products\`
 ✅ Pricing tiers in \`pricing_tiers\`
 ✅ Shipping rules in \`shipping_rules\`
@@ -1694,7 +1694,7 @@ DELETE /api/admin/faqs/{id}     # Delete FAQ
           content: `**Mira® AI** is The Doggy Company's intelligent concierge:
 • **Personality**: Warm, knowledgeable, pet-obsessed
 • **Voice**: Friendly but professional, uses pet puns sparingly
-• **Expertise**: All 14 pillars of pet life
+• **Expertise**: All 12 pillars of pet life
 • **Memory**: Remembers pet profiles, preferences, past interactions
 
 **Brand Voice Guidelines**:

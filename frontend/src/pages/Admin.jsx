@@ -3147,9 +3147,9 @@ const Admin = () => {
             ))}
           </div>
           
-          {/* The 14 Pillars - Compact Icon Bar */}
+          {/* The 12 Pillars - Compact Icon Bar */}
           <div className="flex gap-2 flex-wrap items-center mb-4">
-            <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-pink-100 rounded">🏛️ 14 Pillars</span>
+            <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-pink-100 rounded">🏛️ 12 Pillars</span>
             {[
               { id: 'products', emoji: '🎂', label: 'Celebrate' },
               { id: 'dine', emoji: '🍽️', label: 'Dine' },
