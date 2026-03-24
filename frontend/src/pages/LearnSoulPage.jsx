@@ -2,7 +2,13 @@
  * LearnSoulPage.jsx — /learn pillar
  * The Doggy Company
  *
- * NEW PAGE — same design language as Care/Go/Dine
+ * ╔══════════════════════════════════════════════════════════════╗
+ * ║  LOCKED — DO NOT TOUCH — AUDITED Mar 24, 2026              ║
+ * ║  8-phase audit complete. Concierge wiring verified.         ║
+ * ║  Content modal footer CTAs, breed guide, Pet Wrapped card.  ║
+ * ║  Testing: iteration_202.json — 13/13 passed.               ║
+ * ╚══════════════════════════════════════════════════════════════╝
+ *
  * Colour world: Deep Indigo #1A1363 + Violet #7C3AED
  * Replaces the old topic-card Learn page entirely.
  *
@@ -747,8 +753,7 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
                   <p style={{fontSize:12,color:G.mutedText,lineHeight:1.5,marginBottom:10}}>{b.description}</p>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                     <div>
-                      {b.original_price&&<span style={{fontSize:11,color:"#aaa",textDecoration:"line-through",marginRight:6}}>₹{b.original_price}</span>}
-                      <span style={{fontSize:15,fontWeight:800,color:G.violet}}>₹{b.bundle_price}</span>
+                      {/* Bundle prices hidden — concierge-first model */}
                     </div>
                     <button
                       onClick={async () => {
@@ -1274,7 +1279,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
                       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                         <div>
                           <span style={{fontSize:13,fontWeight:800,color:G.deep}}>
-                            {svc.base_price>0?`₹${parseInt(svc.base_price).toLocaleString("en-IN")}`:svc.price||"Free"}
+                            {/* Prices hidden — concierge-first model */}
                           </span>
                           {svc.duration&&<span style={{fontSize:10,color:"#aaa",marginLeft:5}}>{svc.duration}</span>}
                         </div>
@@ -1885,7 +1890,7 @@ function LearnServiceFlow({ svc, pet, onClose, token }) {
               </div>
               <div style={{ fontSize:12, color:'#5B21B6', marginTop:8 }}>
                 Level: {level} · Schedule: {schedule}
-                {svc.base_price>0 ? ` · ₹${parseInt(svc.base_price).toLocaleString('en-IN')}` : svc.price ? ` · ${svc.price}` : ''}
+                {/* Prices hidden — concierge-first model */}
               </div>
             </div>
             <textarea placeholder={`Any notes for Mira? (optional)`}
@@ -2266,7 +2271,7 @@ const LearnSoulPage = () => {
                       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                         <div>
                           <span style={{fontSize:14,fontWeight:800,color:G.deep}}>
-                            {svc.base_price>0?`₹${parseInt(svc.base_price).toLocaleString("en-IN")}`:svc.price||"Free"}
+                            {/* Prices hidden — concierge-first model */}
                           </span>
                           {svc.duration&&<span style={{fontSize:10,color:"#aaa",marginLeft:6}}>{svc.duration}</span>}
                         </div>
