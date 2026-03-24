@@ -127,6 +127,20 @@ Reference implementation patterns:
 - Updated Paperwork CTA copy to `Book for {petName} →` and hid AI score bars for service-type Mira picks
 - Smoke tested screenshots: Paperwork documents tab, Paperwork Find Help tab, Pet Home vault
 
+### 6.8 Cross-Pillar Mira Picks Service/Product Split Fix
+- Normalised mixed `claude-picks` fetches to Care-style split fetches for **Adopt, Celebrate, Emergency, and Farewell** using separate `entity_type=product` and `entity_type=service` calls
+- Updated service picks in **Celebrate, Adopt, Emergency, Farewell, and Paperwork** to open concierge/service modals instead of `ProductDetailModal`
+- Protected product-only UI surfaces by forcing product-only `claude-picks` fetches in Learn and Paperwork Mira fallback modals
+- Verified service-pick modal behaviour with screenshots on Celebrate, Adopt, Farewell, and Emergency
+- Post-fix grep now only returns comments/docs for non-`entity_type` `claude-picks` references
+
+### 6.9 Adopt Audit — In Progress
+- Adjusted Adopt tone to be gentle and concierge-led in Mira picks and service guidance
+- Added concierge tracking before opening Adopt support flows (`Start with Mira`, service cards, service picks)
+- Guided Adopt Paths now create real service desk tickets via canonical guided path helper and use null-safe pet-name fallbacks
+- Verified Adopt tickets with breed + allergy context: `TDB-2026-0797`, `TDB-2026-0798`, `TDB-2026-0799`
+- Captured mobile 375px screenshots for Adopt service and rescue tabs
+
 ## 7. Canonical Flow Audit Results (All 6 Locked Pillars)
 
 | Flow | Status | Detail |
