@@ -571,6 +571,7 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
     foundations: "new_puppy",
     behaviour:  "behaviour",
     training:   "basic_training",
+    tricks:     "enrichment",
     enrichment: "enrichment",
   };
 
