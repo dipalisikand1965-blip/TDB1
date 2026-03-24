@@ -16,7 +16,7 @@
  *   2. The feeling — what makes TDC different
  *   3. Pet Soul demo — Mojo's profile card (the real sell)
  *   4. How it works — Understand → Guide → Support → Remember
- *   5. The 13 pillars — their whole life covered
+ *   5. The 12 pillars — their whole life covered
  *   6. Mira introduction
  *   7. The Doggy Bakery + Streaties
  *   8. Mystique dedication
@@ -750,7 +750,7 @@ export default function LandingPage() {
         }}>
           {[
             { n:"01", icon:"🔍", title:"Understand", desc:"We learn everything about your dog — breed, personality, health, fears, loves. Your soul profile grows with every interaction." },
-            { n:"02", icon:"🧭", title:"Guide",      desc:"Personalised recommendations across all 13 pillars of their life. Mira filters out what isn't right for your specific dog." },
+            { n:"02", icon:"🧭", title:"Guide",      desc:"Personalised recommendations across all 12 pillars of their life. Mira filters out what isn't right for your specific dog." },
             { n:"03", icon:"🤝", title:"Support",    desc:"Concierge® arranges everything — from birthday cakes to emergency vets. Real humans. Real action." },
             { n:"04", icon:"🧠", title:"Remember",   desc:"Every visit enriches the soul profile. Mira gets smarter and more specific over time. She never starts from zero." },
           ].map((item, i) => (

@@ -263,8 +263,8 @@ const Admin = () => {
   const seedAllPillars = async () => {
     setSeedingAll(true);
     try {
-      // UNIVERSAL SEED - Seeds ALL 14 pillars with products, services, pricing, shipping
-      toast({ title: '🚀 Universal Seed Started', description: 'Seeding all 14 pillars + enhancing tags... This may take 30-60 seconds.' });
+      // UNIVERSAL SEED - Seeds ALL 12 pillars with products, services, pricing, shipping
+      toast({ title: '🚀 Universal Seed Started', description: 'Seeding all 12 pillars + enhancing tags... This may take 30-60 seconds.' });
       
       console.log('[Universal Seed] Starting seed to:', `${API_URL}/api/admin/universal-seed`);
       
@@ -438,7 +438,7 @@ const Admin = () => {
       }
       
       // Step 4: Seed pillar products (products for each pillar)
-      toast({ title: '📦 Step 4/9: Seeding All Pillars...', description: 'Products & services to all 14 pillars' });
+      toast({ title: '📦 Step 4/9: Seeding All Pillars...', description: 'Products & services to all 12 pillars' });
       
       try {
         const pillarRes = await fetch(`${API_URL}/api/admin/universal-seed`, {

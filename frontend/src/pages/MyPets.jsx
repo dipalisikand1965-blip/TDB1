@@ -1170,7 +1170,7 @@ const MyPets = () => {
                     </Card>
                   </div>
                   
-                  {/* ALL PILLARS SECTION - Show all 14 pillars */}
+                  {/* ALL PILLARS SECTION - Show all 12 pillars */}
                   <div className="px-6 py-4 border-t border-gray-100">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-bold text-gray-900 flex items-center gap-2">
@@ -1209,7 +1209,7 @@ const MyPets = () => {
                       ))}
                     </div>
                     <p className="text-xs text-gray-500 mt-3 text-center">
-                      All 14 pillars unlocked with Pet Pass • Click any pillar to request support
+                      All 12 pillars unlocked with Pet Pass • Click any pillar to request support
                     </p>
                   </div>
                   

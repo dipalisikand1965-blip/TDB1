@@ -265,7 +265,7 @@ const OverviewTab = ({
           </div>
           <div>
             <h3 className="font-bold text-white text-lg">Your Pet Life Pillars</h3>
-            <p className="text-xs text-white/70">14 pillars unlocked with Pet Pass • Click to view history</p>
+            <p className="text-xs text-white/70">12 pillars unlocked with Pet Pass • Click to view history</p>
           </div>
         </div>
         

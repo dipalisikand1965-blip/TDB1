@@ -6,7 +6,7 @@
  * ARCHITECTURE RULES: See /app/memory/ARCHITECTURE.md
  * - Use this component in ALL pillar admins (never build a custom product list)
  * - Usage: <PillarProductsTab pillar="care" pillarName="Care" />
- * - All 13 pillars: celebrate, dine, care, fit, stay, travel, enjoy, learn,
+ * - All 12 pillars: celebrate, dine, care, stay, go, play, learn,
  *                  farewell, emergency, adopt, advisory, paperwork
  */
 
