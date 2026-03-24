@@ -792,7 +792,7 @@ const PetWrapTeaser = ({ pet }) => {
   }, [petId]);
 
   const handleShare = async () => {
-    const url = `${window.location.origin}/wrapped/${petId}`;
+    const url = `${window.location.origin}/api/wrapped/download/${petId}`;
     try {
       if (navigator.share) {
         await navigator.share({ title: `${pet?.name}'s PetWrap`, url });
@@ -844,7 +844,7 @@ const PetWrapTeaser = ({ pet }) => {
         </div>
       </div>
       <div className="flex gap-2">
-        <a href={`/wrapped/${petId}`} rel="noreferrer"
+        <a href={`/api/wrapped/download/${petId}`} rel="noreferrer"
           className="flex-1 rounded-xl py-1.5 text-xs font-bold text-center"
           style={{
             background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)',
@@ -1607,12 +1607,12 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                       <div style={{fontSize:13,color:'rgba(245,240,232,0.55)',marginBottom:16}}>
                         Bandana · Portrait Frame · Party Hat · Cake Topper · Tote · and more
                       </div>
-                      <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:12,flexWrap:'wrap'}}>
-                        <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#C44DFF,#9333EA)',borderRadius:30,padding:'10px 22px',fontSize:13,fontWeight:700,color:'#fff',boxShadow:'0 4px 16px rgba(196,77,255,0.4)',flexShrink:0}}>
-                          {`\u2726 Make something only ${petName} has`}
-                        </div>
-                        <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',lineHeight:1.4,flex:'1 1 180px',textAlign:'left'}}>
+                      <div style={{display:'flex',flexDirection:'column',alignItems:'flex-start',gap:12}}>
+                        <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',lineHeight:1.4}}>
                           Upload a photo · Concierge® creates it
+                        </div>
+                        <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#C44DFF,#9333EA)',borderRadius:30,padding:'10px 22px',fontSize:13,fontWeight:700,color:'#fff',boxShadow:'0 4px 16px rgba(196,77,255,0.4)'}}>
+                          {`\u2726 Make something only ${petName} has`}
                         </div>
                       </div>
                     </div>
@@ -1921,12 +1921,12 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
             <div style={{fontSize:13,color:'rgba(245,240,232,0.55)',marginBottom:16}}>
               Bandana · Portrait Frame · Party Hat · Cake Topper · Tote · and more
             </div>
-            <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:12,flexWrap:'wrap'}}>
-              <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#C44DFF,#9333EA)',borderRadius:30,padding:'10px 22px',fontSize:13,fontWeight:700,color:'#fff',boxShadow:'0 4px 16px rgba(196,77,255,0.4)',flexShrink:0}}>
-                {`\u2726 Make something only ${petName} has`}
-              </div>
-              <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',lineHeight:1.4,flex:'1 1 180px',textAlign:'left'}}>
+            <div style={{display:'flex',flexDirection:'column',alignItems:'flex-start',gap:12}}>
+              <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',lineHeight:1.4}}>
                 Upload a photo · Concierge® creates it
+              </div>
+              <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#C44DFF,#9333EA)',borderRadius:30,padding:'10px 22px',fontSize:13,fontWeight:700,color:'#fff',boxShadow:'0 4px 16px rgba(196,77,255,0.4)'}}>
+                {`\u2726 Make something only ${petName} has`}
               </div>
             </div>
           </div>

@@ -855,14 +855,14 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
                 <div style={{fontSize:13, color:'rgba(245,240,232,0.5)', marginBottom:16}}>
                   Soul score · Milestones · Mira's letter · Everything {petName} lived this year
                 </div>
-                <div style={{
+                <a href={`/api/wrapped/download/${pet?.id || pet?._id}`} style={{
                   display:'inline-flex', alignItems:'center', gap:8,
                   background:'linear-gradient(135deg, #C9973A, #A07020)',
                   borderRadius:30, padding:'10px 22px',
-                  fontSize:13, fontWeight:700, color:'#fff',
+                  fontSize:13, fontWeight:700, color:'#fff', textDecoration:'none'
                 }}>
                   See {petName}'s 2026 Wrapped →
-                </div>
+                </a>
               </div>
             </>
           )}
