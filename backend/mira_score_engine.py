@@ -228,8 +228,8 @@ async def _run_full_scoring(pet_id: str, pillar: Optional[str], entity_types: Op
                     scored_at = scored_at.replace(tzinfo=timezone.utc) if scored_at.tzinfo is None else scored_at
                 except Exception:
                     scored_at = None
-            if scored_at and (datetime.now(timezone.utc) - scored_at) < timedelta(hours=6):
-                print(f"[MiraScoreEngine] Skipping scoring for pet={pet_id} — scored <1hr ago")
+            if scored_at and (datetime.now(timezone.utc) - scored_at) < timedelta(hours=24):
+                print(f"[MiraScoreEngine] Skipping scoring for pet={pet_id} — scored <24hr ago")
                 return
 
         print(f"[MiraScoreEngine] Starting scoring for pet={pet_id} pillar={pillar}")
@@ -303,19 +303,13 @@ async def _run_full_scoring(pet_id: str, pillar: Optional[str], entity_types: Op
         scored_at = datetime.now(timezone.utc).isoformat()
         session_id = f"mira-score-{pet_id}-{uuid.uuid4().hex[:8]}"
 
-        # Process batches (2 at a time) — yield between each pair to prevent event loop starvation
+        # Process batches ONE at a time with generous yielding to prevent event loop starvation
         all_scores = []
-        for i in range(0, len(batches), 2):
-            chunk = batches[i:i+2]
-            tasks = [
-                _score_batch(f"{session_id}-b{i+j}", pet_profile, batch)
-                for j, batch in enumerate(chunk)
-            ]
-            results = await asyncio.gather(*tasks)
-            for result in results:
-                all_scores.extend(result)
-            # Yield to event loop so other API requests can be served while scoring
-            await asyncio.sleep(0)
+        for i, batch in enumerate(batches):
+            result = await _score_batch(f"{session_id}-b{i}", pet_profile, batch)
+            all_scores.extend(result)
+            # Yield generously (0.5s) so API requests get served between batches
+            await asyncio.sleep(0.5)
 
         # Build lookup from scored results
         score_map = {s["id"]: s for s in all_scores if s.get("id")}
@@ -396,12 +390,12 @@ async def score_for_pet(req: ScoreForPetRequest, background_tasks: BackgroundTas
                     if last_dt.tzinfo is None:
                         last_dt = last_dt.replace(tzinfo=tz.utc)
                     hours_since = (datetime.now(tz.utc) - last_dt).total_seconds() / 3600
-                    if hours_since < 6:
+                    if hours_since < 24:
                         return {
                             "status":         "already_scored",
                             "score":          overall,
                             "cached":         True,
-                            "next_in_hours":  round(6 - hours_since, 1),
+                            "next_in_hours":  round(24 - hours_since, 1),
                             "message":        "Mira already has fresh scores for this pet.",
                         }
                 except Exception:
@@ -613,8 +607,11 @@ async def get_top_picks(
 
     # ── Fallback: if not enough results, fill with breed-neutral top products ──────────
     if len(results) < limit // 2 and pillar:
-        import asyncio
-        asyncio.create_task(_run_full_scoring(pet_id, pillar, None))
+        # Only trigger re-scoring if no scores exist at all (don't re-trigger if recently scored)
+        existing_count = await _db.mira_product_scores.count_documents({"pet_id": pet_id, "pillar": pillar})
+        if existing_count == 0:
+            import asyncio
+            asyncio.create_task(_run_full_scoring(pet_id, pillar, None))
         fb_q: dict = {"$or": [{"pillar": pillar}, {"pillars": pillar}], "active": {"$ne": False}, "price": {"$gt": 0}}
         if breed_clean:
             fb_q["$or"] = [
@@ -688,8 +685,11 @@ async def get_top_picks(
     # ── Fallback: if no scored picks, return top products for pillar ──────────
     # Critical: filter by pet's BREED and ALLERGIES so first impression feels personal
     if not enriched and pillar:
-        import asyncio
-        asyncio.create_task(_run_full_scoring(pet_id, pillar, None))
+        # Only trigger scoring if no scores exist at all for this pet+pillar
+        existing = await _db.mira_product_scores.count_documents({"pet_id": pet_id, "pillar": pillar})
+        if existing == 0:
+            import asyncio
+            asyncio.create_task(_run_full_scoring(pet_id, pillar, None))
 
         # Build breed-aware query
         breed_clean = (breed or "").strip()
