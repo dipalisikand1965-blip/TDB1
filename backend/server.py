@@ -1648,8 +1648,8 @@ async def lifespan(app: FastAPI):
                     "Pawty Package (Full Celebration)": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
                     "Pet-Friendly Venue Booking": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
                     "Birthday Party Planning": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
-                    "Professional Pet Photography": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
-                    "Professional Pet Photoshoot": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
+                    "Professional Pet Photography": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333645/doggy/services/celebrate/svc-celebrate-photoshoot.png",
+                    "Professional Pet Photoshoot": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333645/doggy/services/celebrate/svc-celebrate-photoshoot.png",
                     # TRAVEL services
                     "Pet Taxi": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/c876103d3b245b387497075a69a5ebc95ef70b32bd0f28a12152f4860d4f08cf.png",
                     "Airport Transfer": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/34febffa9542ff79e60fa5bb6a93df3d9a87f6885aa1d94d617f5b0b08e5eec9.png",
