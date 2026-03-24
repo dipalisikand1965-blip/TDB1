@@ -301,8 +301,8 @@ export default function PillarSoulProfile({
       {/* Trigger bar — Dine-matched: compact, consistent across all 12 pillars */}
       <div onClick={() => setOpen(true)} data-testid={`${pillar}-profile-bar`}
         style={{
-          display:'flex', alignItems:'center', gap:14, cursor:'pointer',
-          padding:'14px 18px', boxSizing:'border-box',
+          display:'flex', alignItems:'center', gap:16, cursor:'pointer',
+          padding:'20px 22px', boxSizing:'border-box',
           borderRadius:16, background:'#fff',
           border:`2px solid ${isComplete ? '#16A34A' : pColor}`,
           width:'100%', marginBottom:16, transition:'all 0.2s ease',
@@ -311,24 +311,24 @@ export default function PillarSoulProfile({
         onMouseEnter={e => { e.currentTarget.style.boxShadow=`0 6px 28px ${pColor}30`; e.currentTarget.style.transform='translateY(-1px)'; }}
         onMouseLeave={e => { e.currentTarget.style.boxShadow=`0 2px 12px ${pColor}14`; e.currentTarget.style.transform='translateY(0)'; }}
       >
-        {/* Pet photo — 48px circle with score ring */}
-        <div style={{ position:'relative', width:48, height:48, flexShrink:0 }}>
-          <svg viewBox="0 0 48 48" style={{ position:'absolute', inset:0, width:48, height:48, transform:'rotate(-90deg)' }}>
-            <circle cx="24" cy="24" r="21" fill="none" stroke={`${pColor}18`} strokeWidth="3"/>
-            <circle cx="24" cy="24" r="21" fill="none" stroke={scoreColor} strokeWidth="3"
-              strokeDasharray={`${((isFinite(score)?score:0)/100)*131.95} 131.95`}
+        {/* Pet photo — 54px with score ring ≈ 66px total */}
+        <div style={{ position:'relative', width:54, height:54, flexShrink:0 }}>
+          <svg viewBox="0 0 54 54" style={{ position:'absolute', inset:-3, width:60, height:60, transform:'rotate(-90deg)' }}>
+            <circle cx="30" cy="30" r="27" fill="none" stroke={`${pColor}18`} strokeWidth="3"/>
+            <circle cx="30" cy="30" r="27" fill="none" stroke={scoreColor} strokeWidth="3"
+              strokeDasharray={`${((isFinite(score)?score:0)/100)*169.65} 169.65`}
               strokeLinecap="round" style={{ transition:'stroke-dasharray 0.8s ease' }}/>
           </svg>
-          <div style={{ position:'absolute', inset:3, borderRadius:'50%', overflow:'hidden', border:`2px solid ${isComplete ? '#16A34A' : pColor}`, background:`${pColor}12`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:16 }}>
+          <div style={{ width:54, height:54, borderRadius:'50%', overflow:'hidden', border:`2px solid ${isComplete ? '#16A34A' : pColor}`, background:`${pColor}12`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>
             {pet?.photo_url ? <img src={pet.photo_url} alt={name} style={{ width:'100%', height:'100%', objectFit:'cover' }}/> : '\uD83D\uDC3E'}
           </div>
         </div>
         {/* Info */}
         <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ fontSize:15, fontWeight:700, color:'#1a0a2e', marginBottom:2 }}>{name}'s {pLabel} Profile</div>
-          <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginBottom:2 }}>
+          <div style={{ fontSize:17, fontWeight:700, color:'#1a0a2e', marginBottom:4 }}>{name}'s {pLabel} Profile</div>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:4 }}>
             {pet?.breed && (
-              <span style={{ fontSize:12, fontWeight:600, color:pColor, background:`${pColor}10`, border:`1px solid ${pColor}25`, borderRadius:20, padding:'2px 9px', lineHeight:'18px' }}>
+              <span style={{ fontSize:13, fontWeight:600, color:pColor, background:`${pColor}10`, border:`1px solid ${pColor}25`, borderRadius:20, padding:'3px 10px', lineHeight:'18px' }}>
                 {pet.breed}{pet?.doggy_soul_answers?.coat_type ? ` · ${pet.doggy_soul_answers.coat_type} coat` : ''}
               </span>
             )}

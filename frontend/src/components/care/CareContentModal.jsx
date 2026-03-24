@@ -338,7 +338,9 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
         const data = r.ok ? await r.json() : { products: [] };
         const breedProducts = data.products || [];
         const subCats = [...new Set(breedProducts.map(p => p.sub_category || p.product_type).filter(Boolean))];
-        setTabs(subCats.length > 1 ? ['All', ...subCats] : ['All']);
+        const breedSlug = (pet?.breed||'').trim().toLowerCase().replace(/\s+/g, '_');
+        const filteredCats = subCats.filter(t => !/-play$|-shop$|-care$|-go$/.test(t) || !breedSlug || t.toLowerCase().startsWith(breedSlug));
+        setTabs(filteredCats.length > 1 ? ['All', ...filteredCats] : ['All']);
         setProducts(breedProducts);
         setLoading(false);
         return;
@@ -450,9 +452,11 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
         return 0;
       });
 
-      // Build tabs from sub_category
+      // Build tabs from sub_category — filter out other breed tabs
       const subCats = [...new Set(dimProds.map(p => p.sub_category).filter(Boolean))];
-      setTabs(['All', ...subCats]);
+      const breedSlug = (pet?.breed||'').trim().toLowerCase().replace(/\s+/g, '_');
+      const filteredCats = subCats.filter(t => !/-play$|-shop$|-care$|-go$/.test(t) || !breedSlug || t.toLowerCase().startsWith(breedSlug));
+      setTabs(['All', ...filteredCats]);
       setProducts(scored);
     } catch (err) {
       console.error('[CareContentModal]', err);
