@@ -256,38 +256,26 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
         return;
       }
 
-      // ── Soul Play — breed-specific bandanas + cards + soul products ──────────
+      // ── Soul Play — breed-specific products across all play-relevant types ──
       if (category === 'soul') {
-        const [r1, r2, r3] = await Promise.all([
-          fetch(`${apiUrl}/api/products?category=breed-play_bandanas&limit=60`).then(r=>r.ok?r.json():{products:[]}).catch(()=>({products:[]})),
-          fetch(`${apiUrl}/api/products?category=breed-playdate_cards&limit=60`).then(r=>r.ok?r.json():{products:[]}).catch(()=>({products:[]})),
+        const breedParam = encodeURIComponent(petBreed);
+        const SOUL_PLAY_TYPES = new Set([
+          'play_bandana', 'playdate_card', 'id_tag', 'tote_bag', 'keychain',
+          'training_kit', 'rope_toy', 'fetch_toy_set', 'walking_set', 'treat_pouch',
+        ]);
+        const [r1, r2] = await Promise.all([
+          fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&limit=80`).then(r=>r.ok?r.json():{products:[]}).catch(()=>({products:[]})),
           fetch(`${apiUrl}/api/admin/pillar-products?pillar=play&category=soul&limit=30`).then(r=>r.ok?r.json():{products:[]}).catch(()=>({products:[]})),
         ]);
-        const all = [...(r1.products||[]), ...(r2.products||[]), ...(r3.products||[])];
-        // Show ONLY this breed's products — breed_targets takes priority over breed_tags
-        const breedFiltered = all.filter(p => {
-          const bt  = (p.breed_tags||[]).map(b=>b.toLowerCase());
-          const btr = (p.breed_targets||[]).map(b=>b.toLowerCase());
-          const nm  = (p.name||'').toLowerCase();
-          if (!petBreed) return true;
-          // breed_targets with specific breeds takes highest priority
-          const hasSpecificTarget = btr.length > 0 && !btr.includes('all_breeds') && !btr.includes('all');
-          if (hasSpecificTarget) return btr.some(b => petBreed.includes(b) || b.includes(petBreed));
-          // Then breed_tags
-          if (bt.includes('all_breeds') || bt.includes('all') || bt.length === 0) {
-            // Generic product — show only if name also doesn't contain a different breed keyword
-            // or if it's a general soul product (not a breed-specific bandana/card)
-            const isBreedSpecificByName = /bandana|playdate card|play date card/i.test(nm);
-            if (isBreedSpecificByName) return nm.includes(petBreed);
-            return true;
-          }
-          return bt.includes(petBreed) || nm.includes(petBreed);
-        });
+        const breedProds = (r1.products || []).filter(p => SOUL_PLAY_TYPES.has(p.product_type));
+        const pillarProds = r2.products || [];
+        const all = [...breedProds, ...pillarProds];
         // Deduplicate by name
         const seen = new Map();
-        breedFiltered.forEach(p => { const k=(p.name||'').toLowerCase().trim(); if(!seen.has(k)) seen.set(k,p); });
-        setProducts([...seen.values()]);
-        setImagines(generatePlayImagines(pet, [...seen.values()]));
+        all.forEach(p => { const k=(p.name||'').toLowerCase().trim(); if(!seen.has(k)) seen.set(k,p); });
+        const deduped = [...seen.values()];
+        setProducts(deduped);
+        setImagines(deduped.length > 0 ? generatePlayImagines(pet, deduped) : generatePlayImagines(pet, []));
         return;
       }
 
@@ -553,86 +541,87 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
                 </div>
               )
             )}
+
+            {/* ── Soul Made trigger — soul_made category ───────────────── */}
+            {category === 'soul_made' && !loading && (
+              <div style={{ marginTop:20 }}>
+                <div
+                  data-testid="soul-made-trigger"
+                  onClick={() => setSoulMadeOpen(true)}
+                  style={{
+                    padding:'20px 20px 18px',
+                    background:'linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 50%, #1a0a2e 100%)',
+                    border:'1.5px solid rgba(196,77,255,0.4)',
+                    borderRadius:18, cursor:'pointer', position:'relative', overflow:'hidden',
+                    boxShadow:'0 4px 24px rgba(196,77,255,0.18)',
+                    transition:'transform 0.15s, box-shadow 0.15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 8px 32px rgba(196,77,255,0.32)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow='0 4px 24px rgba(196,77,255,0.18)'; }}
+                >
+                  <div style={{position:'absolute',top:-40,right:-40,width:160,height:160,background:'radial-gradient(circle,rgba(196,77,255,0.15) 0%,transparent 70%)',pointerEvents:'none'}}/>
+                  <div style={{fontSize:10,fontWeight:800,letterSpacing:'0.15em',color:'#C44DFF',marginBottom:8}}>
+                    {`\u2726 SOUL MADE\u2122 \u00B7 MADE ONLY FOR ${(petName||'YOUR DOG').toUpperCase()}`}
+                  </div>
+                  <div style={{fontSize:20,fontWeight:800,color:'#F5F0E8',fontFamily:'Georgia,serif',marginBottom:6,lineHeight:1.2}}>
+                    {petName}'s face. On everything.
+                  </div>
+                  <div style={{fontSize:13,color:'rgba(245,240,232,0.55)',marginBottom:16}}>
+                    Bandana · Portrait Frame · Party Hat · Cake Topper · Tote · and more
+                  </div>
+                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                    <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#C44DFF,#9333EA)',borderRadius:30,padding:'10px 22px',fontSize:13,fontWeight:700,color:'#fff',boxShadow:'0 4px 16px rgba(196,77,255,0.4)'}}>
+                      {`\u2726 Make something only ${petName} has`}
+                    </div>
+                    <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',maxWidth:160,textAlign:'right',lineHeight:1.4}}>
+                      Upload a photo · Concierge® creates it · Price on WhatsApp
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            {/* ── Soul Made cross-sell — ALL other categories ───────────── */}
+            {category !== 'soul_made' && (
+              <div style={{ marginTop:20 }}>
+                <div
+                  data-testid="soul-made-cross-sell"
+                  onClick={() => setSoulMadeOpen(true)}
+                  style={{
+                    padding:'20px 20px 18px',
+                    background:'linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 50%, #1a0a2e 100%)',
+                    border:'1.5px solid rgba(196,77,255,0.4)',
+                    borderRadius:18, cursor:'pointer', position:'relative', overflow:'hidden',
+                    boxShadow:'0 4px 24px rgba(196,77,255,0.18)',
+                    transition:'transform 0.15s, box-shadow 0.15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 8px 32px rgba(196,77,255,0.32)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow='0 4px 24px rgba(196,77,255,0.18)'; }}
+                >
+                  <div style={{position:'absolute',top:-40,right:-40,width:160,height:160,background:'radial-gradient(circle,rgba(196,77,255,0.15) 0%,transparent 70%)',pointerEvents:'none'}}/>
+                  <div style={{fontSize:10,fontWeight:800,letterSpacing:'0.15em',color:'#C44DFF',marginBottom:8}}>
+                    {`\u2726 SOUL MADE\u2122 \u00B7 MADE ONLY FOR ${(petName||'YOUR DOG').toUpperCase()}`}
+                  </div>
+                  <div style={{fontSize:20,fontWeight:800,color:'#F5F0E8',fontFamily:'Georgia,serif',marginBottom:6,lineHeight:1.2}}>
+                    {petName}'s face. On everything.
+                  </div>
+                  <div style={{fontSize:13,color:'rgba(245,240,232,0.55)',marginBottom:16}}>
+                    Bandana · Portrait Frame · Party Hat · Cake Topper · Tote · and more
+                  </div>
+                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                    <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#C44DFF,#9333EA)',borderRadius:30,padding:'10px 22px',fontSize:13,fontWeight:700,color:'#fff',boxShadow:'0 4px 16px rgba(196,77,255,0.4)'}}>
+                      {`\u2726 Make something only ${petName} has`}
+                    </div>
+                    <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',maxWidth:160,textAlign:'right',lineHeight:1.4}}>
+                      Upload a photo · Concierge® creates it · Price on WhatsApp
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* ── Soul Made trigger — soul_made category ───────────────── */}
-      {category === 'soul_made' && !loading && (
-        <div style={{ padding:'0 20px 8px' }}>
-          <div
-            data-testid="soul-made-trigger"
-            onClick={() => setSoulMadeOpen(true)}
-            style={{
-              margin:'24px 0 8px', padding:'20px 20px 18px',
-              background:'linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 50%, #1a0a2e 100%)',
-              border:'1.5px solid rgba(196,77,255,0.4)',
-              borderRadius:18, cursor:'pointer', position:'relative', overflow:'hidden',
-              boxShadow:'0 4px 24px rgba(196,77,255,0.18)',
-              transition:'transform 0.15s, box-shadow 0.15s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 8px 32px rgba(196,77,255,0.32)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow='0 4px 24px rgba(196,77,255,0.18)'; }}
-          >
-            <div style={{position:'absolute',top:-40,right:-40,width:160,height:160,background:'radial-gradient(circle,rgba(196,77,255,0.15) 0%,transparent 70%)',pointerEvents:'none'}}/>
-            <div style={{fontSize:10,fontWeight:800,letterSpacing:'0.15em',color:'#C44DFF',marginBottom:8}}>
-              {`\u2726 SOUL MADE\u2122 \u00B7 MADE ONLY FOR ${(petName||'YOUR DOG').toUpperCase()}`}
-            </div>
-            <div style={{fontSize:20,fontWeight:800,color:'#F5F0E8',fontFamily:'Georgia,serif',marginBottom:6,lineHeight:1.2}}>
-              {petName}'s face. On everything.
-            </div>
-            <div style={{fontSize:13,color:'rgba(245,240,232,0.55)',marginBottom:16}}>
-              Bandana · Portrait Frame · Party Hat · Cake Topper · Tote · and more
-            </div>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-              <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#C44DFF,#9333EA)',borderRadius:30,padding:'10px 22px',fontSize:13,fontWeight:700,color:'#fff',boxShadow:'0 4px 16px rgba(196,77,255,0.4)'}}>
-                {`\u2726 Make something only ${petName} has`}
-              </div>
-              <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',maxWidth:160,textAlign:'right',lineHeight:1.4}}>
-                Upload a photo · Concierge® creates it · Price on WhatsApp
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* ── Soul Made cross-sell — ALL other categories ───────────── */}
-      {category !== 'soul_made' && (
-        <div style={{ padding:'0 20px 8px' }}>
-          <div
-            data-testid="soul-made-cross-sell"
-            onClick={() => setSoulMadeOpen(true)}
-            style={{
-              margin:'8px 0', padding:'20px 20px 18px',
-              background:'linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 50%, #1a0a2e 100%)',
-              border:'1.5px solid rgba(196,77,255,0.4)',
-              borderRadius:18, cursor:'pointer', position:'relative', overflow:'hidden',
-              boxShadow:'0 4px 24px rgba(196,77,255,0.18)',
-              transition:'transform 0.15s, box-shadow 0.15s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 8px 32px rgba(196,77,255,0.32)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow='0 4px 24px rgba(196,77,255,0.18)'; }}
-          >
-            <div style={{position:'absolute',top:-40,right:-40,width:160,height:160,background:'radial-gradient(circle,rgba(196,77,255,0.15) 0%,transparent 70%)',pointerEvents:'none'}}/>
-            <div style={{fontSize:10,fontWeight:800,letterSpacing:'0.15em',color:'#C44DFF',marginBottom:8}}>
-              {`\u2726 SOUL MADE\u2122 \u00B7 MADE ONLY FOR ${(petName||'YOUR DOG').toUpperCase()}`}
-            </div>
-            <div style={{fontSize:20,fontWeight:800,color:'#F5F0E8',fontFamily:'Georgia,serif',marginBottom:6,lineHeight:1.2}}>
-              {petName}'s face. On everything.
-            </div>
-            <div style={{fontSize:13,color:'rgba(245,240,232,0.55)',marginBottom:16}}>
-              Bandana · Portrait Frame · Party Hat · Cake Topper · Tote · and more
-            </div>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-              <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#C44DFF,#9333EA)',borderRadius:30,padding:'10px 22px',fontSize:13,fontWeight:700,color:'#fff',boxShadow:'0 4px 16px rgba(196,77,255,0.4)'}}>
-                {`\u2726 Make something only ${petName} has`}
-              </div>
-              <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',maxWidth:160,textAlign:'right',lineHeight:1.4}}>
-                Upload a photo · Concierge® creates it · Price on WhatsApp
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
       {soulMadeOpen && <SoulMadeModal pet={pet} pillar="play" pillarColor={G.orange} pillarLabel="Play" onClose={() => setSoulMadeOpen(false)} />}
 
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
@@ -647,7 +636,7 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
           }}
           style={{ background:`linear-gradient(135deg,${G.orange},#FF6B9D)`, color:'#fff', border:'none', borderRadius:12, padding:'9px 18px', fontSize:13, fontWeight:700, cursor:'pointer' }}
           data-testid="play-modal-cta">
-          {category === 'soul_made' ? `Make it personal for ${petName} →` : `Book ${config.label} for ${petName} →`}
+          {category === 'soul_made' ? `Make it personal for ${petName} →` : category === 'playdates' ? `Find a playdate for ${petName} →` : `Book ${config.label} for ${petName} →`}
         </button>
       </div>
     </motion.div>

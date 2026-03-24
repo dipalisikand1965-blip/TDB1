@@ -86,9 +86,9 @@ export default function PlayConciergeSection({ pet, prefetchedServices }) {
                       {svc.icon || "🌳"}
                     </div>
                     {/* Price chip */}
-                    {svc.price && (
+                    {svc.price && Number(svc.price) > 0 && (
                       <div style={{ position:"absolute", bottom:8, right:8, background:"rgba(123,45,0,0.85)", color:"#fff", borderRadius:20, padding:"3px 10px", fontSize:11, fontWeight:700 }}>
-                        ₹{svc.price?.toLocaleString?.() ?? svc.price}
+                        From ₹{svc.price?.toLocaleString?.() ?? svc.price}
                       </div>
                     )}
                   </div>
@@ -101,11 +101,11 @@ export default function PlayConciergeSection({ pet, prefetchedServices }) {
                         {svc.description || svc.desc}
                       </div>
                     )}
-                    {svc.duration_minutes && (
+                    {svc.duration_minutes > 0 && (
                       <div style={{ fontSize:13, color:"#888", marginBottom:8 }}>⏱ {svc.duration_minutes} min session</div>
                     )}
                     <button style={{ width:"100%", padding:"8px 0", borderRadius:10, background:G.orange, border:"none", color:"#fff", fontSize:13, fontWeight:700, cursor:"pointer" }}>
-                      Book this →
+                      Book for {pet?.name || "your dog"} →
                     </button>
                   </div>
                 </div>
