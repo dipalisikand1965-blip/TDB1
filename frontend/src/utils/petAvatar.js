@@ -161,6 +161,22 @@ export function resolvePetAvatar(pet) {
   
   if (uploadedPhoto) {
     let photoUrl = uploadedPhoto;
+
+    if (Array.isArray(photoUrl)) {
+      photoUrl = photoUrl[0];
+    }
+
+    if (photoUrl && typeof photoUrl === 'object') {
+      photoUrl = photoUrl.url || photoUrl.secure_url || photoUrl.image_url || photoUrl.src || photoUrl.path || null;
+    }
+
+    if (typeof photoUrl !== 'string' || !photoUrl.trim()) {
+      photoUrl = null;
+    }
+
+    if (!photoUrl) {
+      // Fall through to breed/default logic if uploaded photo is malformed
+    } else {
     
     // Convert any old formats to new simplified API route
     // Old format 1: /api/pet-photo/petid/filename.jpg
@@ -189,6 +205,7 @@ export function resolvePetAvatar(pet) {
       uploadPrompt: null,
       isBreedPhoto: false
     };
+    }
   }
   
   // 2. Try to find breed-matched photo
