@@ -26,6 +26,7 @@
 import { useState } from "react";
 import { guidedPathComplete } from "../../utils/MiraCardActions";
 import { tdc } from "../../utils/tdc_intent";
+import { useConcierge } from "../../hooks/useConcierge";
 
 // ─────────────────────────────────────────────────────────────
 // HELPERS
@@ -485,6 +486,7 @@ function OptionRow({ option, selected, onSelect, accentColor }) {
 // PATH FLOW MODAL
 // ─────────────────────────────────────────────────────────────
 function PathFlowModal({ path, pet, onClose }) {
+  const { fire } = useConcierge({ pet, pillar: 'care' });
   const [currentStep,    setCurrentStep]    = useState(1);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [selections,     setSelections]     = useState({ step1:[], step2:null, step3:[], step4:null });
@@ -518,9 +520,22 @@ function PathFlowModal({ path, pet, onClose }) {
     });
   };
 
-  const handleSubmit = () => {
-    // TODO: POST /api/concierge/care-path
-    // body: { petId: pet.id, pathId: path.id, selections }
+  const handleSubmit = async () => {
+    const petName = pet?.name || 'your dog';
+    const allergies = (pet?.allergies || []).join(', ') || 'none';
+    await fire({
+      type: 'path',
+      name: path.title,
+      channel: 'care_guided_path_submit',
+      note: `Selections: Step1=${selections.step1.join(', ')||'—'}, Step2=${selections.step2||'—'}, Step3=${selections.step3.join(', ')||'—'}`,
+      metadata: {
+        path_id: path.id,
+        path_title: path.title,
+        pet_breed: pet?.breed,
+        pet_allergies: allergies,
+        selections,
+      },
+    });
     setSubmitted(true);
   };
 

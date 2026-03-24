@@ -43,6 +43,7 @@ import SoulMadeCollection from "../components/SoulMadeCollection";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 import SoulMadeModal from "../components/SoulMadeModal";
+import { useConcierge } from "../hooks/useConcierge";
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Sage Green
 // ─────────────────────────────────────────────────────────────
@@ -338,13 +339,13 @@ function MiraImagineCard({ item, pet, token }) {
         <div style={{ position:"absolute", top:8, left:8, background:G.sage, color:"#fff", fontSize:9, fontWeight:700, padding:"3px 8px", borderRadius:20 }}>Mira Imagines</div>
       </div>
       <div style={{ flex:1, padding:"10px 12px 4px" }}>
-        <p style={{ fontWeight:800, color:"#fff", fontSize:12, lineHeight:1.3, marginBottom:4 }}>{item.name}</p>
-        <p style={{ color:"rgba(255,255,255,0.50)", fontSize:10, lineHeight:1.4, margin:0, fontStyle:"italic" }}>{item.description}</p>
+        <p style={{ fontWeight:800, color:"#fff", fontSize:13, lineHeight:1.3, marginBottom:4 }}>{item.name}</p>
+        <p style={{ color:"rgba(255,255,255,0.50)", fontSize:11, lineHeight:1.4, margin:0, fontStyle:"italic" }}>{item.description}</p>
       </div>
       <div style={{ padding:"0 12px 12px" }}>
         {state === "sent"
-          ? <div style={{ textAlign:"center", fontSize:11, fontWeight:700, color:"#34D399" }}>✓ Sent to Concierge!</div>
-          : <button onClick={send} disabled={state==="sending"} style={{ width:"100%", background:`linear-gradient(135deg,${G.sage},${G.deepMid})`, color:"#fff", border:"none", borderRadius:10, padding:"9px", fontSize:11, fontWeight:700, cursor:"pointer", opacity:state==="sending"?0.7:1 }} data-testid={`mira-imagine-btn-${item.id}`}>
+          ? <div style={{ textAlign:"center", fontSize:13, fontWeight:700, color:"#34D399" }}>✓ Sent to Concierge!</div>
+          : <button onClick={send} disabled={state==="sending"} style={{ width:"100%", background:`linear-gradient(135deg,${G.sage},${G.deepMid})`, color:"#fff", border:"none", borderRadius:10, padding:"10px", fontSize:13, fontWeight:700, cursor:"pointer", opacity:state==="sending"?0.7:1 }} data-testid={`mira-imagine-btn-${item.id}`}>
               {state==="sending" ? "Sending…" : "Tap — Concierge →"}
             </button>}
       </div>
@@ -1504,7 +1505,7 @@ const CARE_SERVICES = [
 // ─────────────────────────────────────────────────────────────
 
 // ── GROOMING FLOW (5 steps) ──────────────────────────────────
-function GroomingFlow({ pet, service, onClose }) {
+function GroomingFlow({ pet, service, onClose, sendToConcierge }) {
   const [step, setStep]     = useState(1);
   const [mode, setMode]     = useState(null);
   const [format, setFormat] = useState(null);
@@ -1512,6 +1513,10 @@ function GroomingFlow({ pet, service, onClose }) {
   const [comfort, setComfort] = useState({ strangers:null, nervous:null });
   const [location, setLocation] = useState({ area:"", water:null, time:null, date:"" });
   const [sent, setSent]     = useState(false);
+  const handleSend = async () => {
+    await sendToConcierge({ mode, format, services: svcs, comfort, location, summary: `Grooming for ${pet.name}: Mode=${mode}, Format=${format}, Services=${svcs.join(', ')}, Stranger comfort=${comfort.strangers}, Nervous=${comfort.nervous}, Date=${location.date}, Time=${location.time}${location.area?`, Area=${location.area}`:''}` });
+    setSent(true);
+  };
   const toggleSvc = v => setSvcs(p => p.includes(v)?p.filter(x=>x!==v):[...p,v]);
   const today = new Date().toISOString().split('T')[0];
   const canNext = [!!mode,!!format,svcs.length>0,comfort.strangers&&comfort.nervous,location.date&&location.time][step-1];
@@ -1570,14 +1575,14 @@ function GroomingFlow({ pet, service, onClose }) {
         </>)}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={()=>setSent(true)} nextDisabled={!canNext} isLast={step===5} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={handleSend} nextDisabled={!canNext} isLast={step===5} accentColor={service.accentColor} />
       </div>
     </>
   );
 }
 
 // ── VET VISITS FLOW (4 steps) ────────────────────────────────
-function VetFlow({ pet, service, onClose }) {
+function VetFlow({ pet, service, onClose, sendToConcierge }) {
   const [step, setStep]   = useState(1);
   const [reason, setReason] = useState(null);
   const [pref, setPref]   = useState(null);
@@ -1585,6 +1590,10 @@ function VetFlow({ pet, service, onClose }) {
   const [notes, setNotes] = useState("");
   const [preferredDate, setPreferredDate] = useState("");
   const [sent, setSent]   = useState(false);
+  const handleSend = async () => {
+    await sendToConcierge({ reason, preference: pref, urgency, notes, preferredDate, summary: `Vet visit for ${pet.name}: Reason=${reason}, Type=${pref}, Urgency=${urgency}${preferredDate?`, Date=${preferredDate}`:''}${notes?`, Notes=${notes}`:''}` });
+    setSent(true);
+  };
   const today = new Date().toISOString().split('T')[0];
   const canNext = [!!reason,!!pref,!!urgency,true][step-1];
   if (sent) return <BookingConfirmed service={service} pet={pet} onClose={onClose} />;
@@ -1626,20 +1635,24 @@ function VetFlow({ pet, service, onClose }) {
         </>)}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={()=>setSent(true)} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={handleSend} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
       </div>
     </>
   );
 }
 
 // ── BOARDING FLOW (4 steps) ──────────────────────────────────
-function BoardingFlow({ pet, service, onClose }) {
+function BoardingFlow({ pet, service, onClose, sendToConcierge }) {
   const [step, setStep]   = useState(1);
   const [type, setType]   = useState(null);
   const [dates, setDates] = useState({ from:"", to:"", flexible:false });
   const [reqs, setReqs]   = useState([]);
   const [prefs, setPrefs] = useState([]);
   const [sent, setSent]   = useState(false);
+  const handleSend = async () => {
+    await sendToConcierge({ type, dates, requirements: reqs, preferences: prefs, summary: `Boarding for ${pet.name}: Type=${type}, Dates=${dates.flexible?'Flexible':`${dates.from} to ${dates.to}`}, Requirements=${reqs.join(', ')||'none'}, Preferences=${prefs.join(', ')||'none'}` });
+    setSent(true);
+  };
   const toggleReq  = v => setReqs(p=>p.includes(v)?p.filter(x=>x!==v):[...p,v]);
   const togglePref = v => setPrefs(p=>p.includes(v)?p.filter(x=>x!==v):[...p,v]);
   const canNext = [!!type,(dates.from&&dates.to)||dates.flexible,true,true][step-1];
@@ -1686,20 +1699,24 @@ function BoardingFlow({ pet, service, onClose }) {
         </>)}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={()=>setSent(true)} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={handleSend} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
       </div>
     </>
   );
 }
 
 // ── PET SITTING FLOW (4 steps) ───────────────────────────────
-function SittingFlow({ pet, service, onClose }) {
+function SittingFlow({ pet, service, onClose, sendToConcierge }) {
   const [step, setStep] = useState(1);
   const [type, setType] = useState(null);
   const [when, setWhen] = useState({ date:"", time:null, recurring:null });
   const [needs, setNeeds] = useState([]);
   const [access, setAccess] = useState({ notes:"" });
   const [sent, setSent] = useState(false);
+  const handleSend = async () => {
+    await sendToConcierge({ type, when, needs, access_notes: access.notes, summary: `Pet sitting for ${pet.name}: Type=${type}, Date=${when.date||'TBD'}, Time=${when.time||'TBD'}, Needs=${needs.join(', ')||'none'}${access.notes?`, Notes=${access.notes}`:''}` });
+    setSent(true);
+  };
   const toggleNeed = v => setNeeds(p=>p.includes(v)?p.filter(x=>x!==v):[...p,v]);
   const canNext = [!!type,when.time&&(when.date||when.recurring),needs.length>0,true][step-1];
   if (sent) return <BookingConfirmed service={service} pet={pet} onClose={onClose} />;
@@ -1737,14 +1754,14 @@ function SittingFlow({ pet, service, onClose }) {
         </>)}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={()=>setSent(true)} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={handleSend} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
       </div>
     </>
   );
 }
 
 // ── BEHAVIOUR SUPPORT FLOW (5 steps) ────────────────────────
-function BehaviourFlow({ pet, service, onClose }) {
+function BehaviourFlow({ pet, service, onClose, sendToConcierge }) {
   const [step, setStep]   = useState(1);
   const [concern, setConcern] = useState(null);
   const [when, setWhen]   = useState(null);
@@ -1752,6 +1769,10 @@ function BehaviourFlow({ pet, service, onClose }) {
   const [tried, setTried] = useState([]);
   const [approach, setApproach] = useState(null);
   const [sent, setSent]   = useState(false);
+  const handleSend = async () => {
+    await sendToConcierge({ concern, when, triggers, tried, approach, summary: `Behaviour support for ${pet.name}: Concern=${concern}, When=${when}, Triggers=${triggers.join(', ')||'none'}, Tried=${tried.join(', ')||'nothing'}, Approach=${approach}` });
+    setSent(true);
+  };
   const toggleTrig  = v => setTriggers(p=>p.includes(v)?p.filter(x=>x!==v):[...p,v]);
   const toggleTried = v => setTried(p=>p.includes(v)?p.filter(x=>x!==v):[...p,v]);
   const canNext = [!!concern,!!when,triggers.length>0,true,!!approach][step-1];
@@ -1797,20 +1818,24 @@ function BehaviourFlow({ pet, service, onClose }) {
         </>)}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={()=>setSent(true)} nextDisabled={!canNext} isLast={step===5} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={handleSend} nextDisabled={!canNext} isLast={step===5} accentColor={service.accentColor} />
       </div>
     </>
   );
 }
 
 // ── SENIOR & SPECIAL NEEDS FLOW (4 steps) ────────────────────
-function SeniorFlow({ pet, service, onClose }) {
+function SeniorFlow({ pet, service, onClose, sendToConcierge }) {
   const [step, setStep] = useState(1);
   const [need, setNeed] = useState(null);
   const [situation, setSituation] = useState("");
   const [setup, setSetup] = useState([]);
   const [vetInvolv, setVetInvolv] = useState(null);
   const [sent, setSent] = useState(false);
+  const handleSend = async () => {
+    await sendToConcierge({ need, situation, setup, vet_involvement: vetInvolv, summary: `Senior/special care for ${pet.name}: Need=${need}, Setup=${setup.join(', ')||'none'}, Vet=${vetInvolv}${situation?`, Situation=${situation}`:''}` });
+    setSent(true);
+  };
   const toggleSetup = v => setSetup(p=>p.includes(v)?p.filter(x=>x!==v):[...p,v]);
   const canNext = [!!need,true,setup.length>0,!!vetInvolv][step-1];
   if (sent) return <BookingConfirmed service={service} pet={pet} onClose={onClose} />;
@@ -1846,20 +1871,24 @@ function SeniorFlow({ pet, service, onClose }) {
         </>)}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={()=>setSent(true)} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={handleSend} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
       </div>
     </>
   );
 }
 
 // ── NUTRITION CONSULTS FLOW (4 steps) ────────────────────────
-function NutritionFlow({ pet, service, onClose }) {
+function NutritionFlow({ pet, service, onClose, sendToConcierge }) {
   const [step, setStep] = useState(1);
   const [reason, setReason] = useState(null);
   const [currentDiet, setCurrentDiet] = useState(null);
   const [issues, setIssues] = useState([]);
   const [outcome, setOutcome] = useState(null);
   const [sent, setSent] = useState(false);
+  const handleSend = async () => {
+    await sendToConcierge({ reason, currentDiet, issues, outcome, summary: `Nutrition consult for ${pet.name}: Reason=${reason}, Current diet=${currentDiet}, Issues=${issues.join(', ')||'none'}, Desired outcome=${outcome}` });
+    setSent(true);
+  };
   const toggleIssue = v => setIssues(p=>p.includes(v)?p.filter(x=>x!==v):[...p,v]);
   const canNext = [!!reason,!!currentDiet,true,!!outcome][step-1];
   if (sent) return <BookingConfirmed service={service} pet={pet} onClose={onClose} />;
@@ -1900,18 +1929,22 @@ function NutritionFlow({ pet, service, onClose }) {
         </>)}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={()=>setSent(true)} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={handleSend} nextDisabled={!canNext} isLast={step===4} accentColor={service.accentColor} />
       </div>
     </>
   );
 }
 
 // ── EMERGENCY FLOW (2 steps — fast) ─────────────────────────
-function EmergencyFlow({ pet, service, onClose }) {
+function EmergencyFlow({ pet, service, onClose, sendToConcierge }) {
   const [step, setStep] = useState(1);
   const [situation, setSituation] = useState(null);
   const [location, setLocation] = useState("");
   const [sent, setSent] = useState(false);
+  const handleSend = async () => {
+    await sendToConcierge({ situation, location, summary: `EMERGENCY for ${pet.name}: ${situation}${location?`, Location: ${location}`:''}` });
+    setSent(true);
+  };
   const canNext = [!!situation,true][step-1];
   if (sent) return (
     <div style={{ textAlign:"center", padding:"40px 32px" }}>
@@ -1957,7 +1990,7 @@ function EmergencyFlow({ pet, service, onClose }) {
         </>)}
       </div>
       <div style={{ padding:"0 24px 20px", flexShrink:0 }}>
-        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={()=>setSent(true)} nextDisabled={!canNext} isLast={step===2} accentColor="#C62828" />
+        <NavButtons onBack={step>1?()=>setStep(s=>s-1):null} onNext={()=>setStep(s=>s+1)} onSend={handleSend} nextDisabled={!canNext} isLast={step===2} accentColor="#C62828" />
       </div>
     </>
   );
@@ -1965,11 +1998,31 @@ function EmergencyFlow({ pet, service, onClose }) {
 
 // ── SERVICE BOOKING MODAL ROUTER ─────────────────────────────
 function ServiceBookingModal({ service, pet, onClose }) {
+  const { fire } = useConcierge({ pet, pillar: 'care' });
+  const sendToConcierge = useCallback(async (flowData) => {
+    const petName = pet?.name || 'your dog';
+    const allergies = (pet?.allergies || []).join(', ') || 'none recorded';
+    const isEmergency = service.id === 'emergency';
+    await fire({
+      type: isEmergency ? 'urgent' : 'service',
+      name: service.name,
+      urgency: isEmergency ? 'emergency' : 'normal',
+      channel: `care_service_flow_${service.id}`,
+      note: flowData.summary || '',
+      metadata: {
+        service_id: service.id,
+        service_name: service.name,
+        pet_breed: pet?.breed,
+        pet_allergies: allergies,
+        flow_selections: flowData,
+      },
+    });
+  }, [fire, pet, service]);
   const FlowComponent = { grooming:GroomingFlow, vet:VetFlow, boarding:BoardingFlow, sitting:SittingFlow, behaviour:BehaviourFlow, senior:SeniorFlow, nutrition:NutritionFlow, emergency:EmergencyFlow }[service.id];
   return (
     <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", zIndex:500, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
       <div onClick={e=>e.stopPropagation()} style={{ width:"min(580px,100%)", maxHeight:"90vh", background:"#fff", borderRadius:16, display:"flex", flexDirection:"column", overflow:"hidden", boxShadow:"0 32px 80px rgba(0,0,0,0.30)" }}>
-        {FlowComponent ? <FlowComponent pet={pet} service={service} onClose={onClose} /> : null}
+        {FlowComponent ? <FlowComponent pet={pet} service={service} onClose={onClose} sendToConcierge={sendToConcierge} /> : null}
       </div>
     </div>
   );
