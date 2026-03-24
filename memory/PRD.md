@@ -1,165 +1,88 @@
 # Pet Life OS — Product Requirements Document
-_Last updated: 2026-03-24 · The Doggy Company_
 
-## Product Vision
-A comprehensive Pet Life Operating System with 12 pillars covering every aspect of a dog's life — from food to travel, celebrations to end-of-life care. Every interaction is personalised via Mira AI using deep pet context (breed, allergies, soul score, health conditions). Every actionable element creates a Service Desk ticket for the concierge team.
+## Original Problem Statement
+Finalize documentation, completely clean test pet data, and perform comprehensive audits (UI/UX, mobile 375px, concierge wiring, and Mira context) for the remaining pillars. Every actionable element (service card, product, guided path, AI chat) MUST be perfectly wired to create an Admin Service Desk ticket with deep pet context.
 
-## Tech Stack
-- **Frontend:** React 18 + Shadcn/UI + inline styles
-- **Backend:** FastAPI (Python) — single `server.py` (24k+ lines) + modular route files
-- **Database:** MongoDB (collections: pets, users, service_desk_tickets, admin_notifications, celebration_photos, orders, etc.)
-- **AI:** OpenAI GPT-4o / Claude Sonnet via Emergent LLM Key
-- **Payments:** Razorpay
-- **Images:** Cloudinary (UGC uploads)
-- **Auth:** JWT-based custom auth
+## Architecture
+- **Frontend**: React (CRA) at port 3000
+- **Backend**: FastAPI at port 8001
+- **Database**: MongoDB (`pet-os-live-test_database`)
+- **AI**: OpenAI GPT-4o / Claude Sonnet via Emergent LLM Key (Mira AI)
+- **Images**: Cloudinary
+- **Payments**: Razorpay
 
-## Core Architecture
-- `useConcierge.js` — Central hook for all frontend → service desk ticket creation
-- `tdc_intent.js` — Lightweight intent tracker (tdc.book, tdc.request, tdc.nearme)
-- `PillarContext.jsx` — Global pet state shared across all pillar pages
-- `MiraChatWidget.jsx` — Floating Mira AI chat with pet context injection
-- `PillarSoulProfile.jsx` — Cross-pillar soul score drawer (shared by all 12 pillars)
-- `PillarPageLayout.jsx` — Shared layout wrapper for pillar pages
+## Pillar Audit Status
 
-## Credentials
-- **User:** dipali@clubconcierge.in / test123
-- **Admin:** aditya / lola4304 (at /admin)
-
-## 12 Pillars
-
-| # | Pillar | Route | Status | Audit Date |
-|---|--------|-------|--------|------------|
-| 1 | Celebrate | /celebrate | LOCKED | 27 Mar 2026 |
-| 2 | Dine | /dine | LOCKED | 27 Mar 2026 |
+| # | Pillar | Route | Status | Date |
+|---|--------|-------|--------|------|
+| 1 | Celebrate | /celebrate | LOCKED | 23 Mar 2026 |
+| 2 | Dine | /dine | LOCKED | 23 Mar 2026 |
 | 3 | Care | /care | LOCKED | 24 Mar 2026 |
 | 4 | Go | /go | LOCKED | 24 Mar 2026 |
 | 5 | Play | /play | LOCKED | 24 Mar 2026 |
 | 6 | Learn | /learn | PENDING | — |
-| 7 | Adopt | /adopt | PENDING | — |
-| 8 | Farewell | /farewell | PENDING | — |
-| 9 | Emergency | /emergency | PENDING | — |
-| 10 | Paperwork | /paperwork | PENDING | — |
-| 11 | Love | — | NOT BUILT | — |
+| 7 | Paperwork | /paperwork | PENDING | — |
+| 8 | Emergency | /emergency | PENDING | — |
+| 9 | Farewell | /farewell | PENDING | — |
+| 10 | Adopt | /adopt | PENDING | — |
+| 11 | Shop | /shop | PENDING | — |
 | 12 | Services | /services | PENDING | — |
 
----
+## Completed Work — 24 Mar 2026 (This Session)
 
-## Locked Pillars — DO NOT TOUCH
+### PillarSoulProfile Cross-Pillar Fixes
+- Trigger bar: clean CSS border ring (56px photo, 3px border), 20px/22px padding, 17px title
+- Drawer widened: `maxWidth: min(680px, 95vw)`
+- Container wrapper standardized (`max-w-5xl` + `paddingTop:16`) on ALL 12 pillars
+- Go pillar: Added `color="#0D9488"` teal prop
+- SVG score ring removed globally — replaced with simple CSS border
 
-### Celebrate (Locked 27 Mar 2026)
-- 11/11 backend tests passed, 100% frontend verified
-- All concierge wiring points confirmed
-- Mobile 375px audit passed
-- Celebration Wall UGC via Cloudinary
+### Play Pillar Audit (LOCKED)
+- 28+ concierge wiring points across 8 components
+- GuidedPlayPaths dead endpoint → `useConcierge.fire()`
+- PlayConciergeSection: `tdc.view` on card click, "Book for Mojo →" CTA
+- Mobile 375px: All fonts ≥13px
+- Soul Made Strip: Moved inside scrollable area (Play + Dine)
+- BuddyMeetup: New component for social playdate coordination
+- Walk Essentials: New guided path for Dog Walking
+- 7 footer CTA rewrites (Outings/Playdates/Walking/Fitness/Swimming → guided paths, Bundles/Soul/Mira → removed)
+- Soul Play: Fixed breed product_type mismatch (`play_bandanas` → `play_bandana`)
+- PlayCategoryStrip: Labels no longer clipped (removed maxWidth:84)
+- `duration_minutes: 0` rendering fix
+- Price guard: `Number(svc.price) > 0` + "From ₹" prefix
 
-### Dine (Locked 27 Mar 2026)
-- 7/7 concierge flows verified
-- Mobile 375px clean
-- 4 concierge gaps fixed in previous session
-- Bug fix: `rawCondition.toLowerCase` crash when `health_conditions` is an array (fixed 24 Mar 2026)
+### Cross-Pillar Breed Filter Fix
+- Applied to Play, Care, Dine, Go content modals
+- Only shows pet's own breed tabs (no other breed shops)
 
-### Care (Locked 24 Mar 2026)
-- 13/13 backend tests passed (iteration_199.json)
-- 12/12 concierge wiring points verified
-- 9 gaps fixed: 8 service booking flows (Grooming, Vet, Boarding, Sitting, Behaviour, Senior, Nutrition, Emergency) wired via `useConcierge` + `sendToConcierge` callback
-- GuidedCarePaths `handleSubmit` replaced TODO with `useConcierge.fire()`
-- Mobile font fix: Mira Imagines card button bumped to 13px
-- Soul Made strip present in all categories
+### Documentation
+- Word/DOCX download button added to documentation page
+- complete-documentation.html regenerated (317 files, 91882 lines)
 
-### Go (Locked 24 Mar 2026)
-- 11/13 backend tests passed (iteration_200.json; 2 test-setup issues)
-- 16/16 concierge wiring points verified
-- 1 gap fixed: GuidedGoPaths `handleSend` replaced dead `/api/concierge/go-path` endpoint with `useConcierge.fire()`
-- All 8 service flows already used `bookViaConcierge`
-- Mobile font fix: MiraImagineCard button bumped to 13px
+## P0 — Next Sprint
+- [ ] Audit remaining pillars: Learn → Adopt → Farewell → Emergency → Paperwork → Shop → Services
+- [ ] Follow 8-phase methodology in `/app/memory/PILLAR_AUDIT_METHODOLOGY.md`
 
-### Play (Locked 24 Mar 2026)
-- 12/12 backend tests passed (iteration_201.json)
-- 28 concierge wiring points verified across 8 components
-- 2 gaps fixed: GuidedPlayPaths `handleSubmit` replaced dead `/api/concierge/play-path` with `useConcierge.fire()`, PlayConciergeSection card click added `tdc.view` tracking
-- 6 service booking modals (Park, Social, Adventure, Fitness, Agility, Training) all use `bookViaConcierge`
-- Soul Made cross-sell strip confirmed in ALL categories
-- Mobile 375px: all user-readable fonts bumped to ≥13px (GuidedPlayPaths, PlayCategoryStrip, PlayConciergeSection, PlayHero, PlayNearMe)
-- Mira knows Mojo on Play pillar (verified via /api/mira/os/stream)
-- Ticket verified: TDB-2026-0755 with pet_breed=Indie
+## P1 — Upcoming
+- [ ] Add "3 vets near you" to WhatsApp reminders
+- [ ] Extend scheduler for medication refill reminders
 
----
-
-## Cross-Pillar Fixes (24 Mar 2026)
-
-### PillarSoulProfile Redesign
-- **Fix 1:** Soul builder navigation — `/pet-home` for 100% pets, `/soul-builder?pet_id=X` for incomplete
-- **Fix 2:** Trigger bar subtext — "Mira knows everything" (green) for complete, "X questions waiting" for incomplete
-- **Fix 3:** Drawer two states — questions FIRST for incomplete pets with "HELP MIRA KNOW" header; green "Mira knows everything" banner for complete pets
-- **Score colors:** Green (#16A34A) for 100% pets, pillar color for incomplete
-- **NaN guard:** `isFinite(score)` prevents "NaN%" display
-
-### Score Alignment (Backend)
-- `calculate_overall_score()` in `pet_soul_routes.py` now uses canonical `calculate_pet_soul_score` from `pet_score_logic.py`
-- All three touchpoints aligned: hero badge, drawer score, answer handler
-- Bruno's score bounce (88% → 58% → 88%) is FIXED
-
-### Pet Switcher Fix (Navbar)
-- Imported `usePillarContext` in Navbar.jsx
-- Desktop pet dropdown now calls `setCurrentPet(pet)` directly
-- Previously only set localStorage + dispatched event (unreliable)
-
-### Dine Crash Fix
-- `GuidedNutritionPaths.jsx` line 41-42: `rawCondition.toLowerCase()` crashed when `health_conditions` was an array
-- Fixed: Added `Array.isArray()` guard and `typeof === 'string'` check
-
----
-
-## P0 — Next Sprint (Start Here)
-
-- [x] Audit Play pillar — LOCKED 24 Mar 2026
-- [ ] Audit remaining pillars following `/app/memory/PILLAR_AUDIT_METHODOLOGY.md`:
-  - Learn → Adopt → Farewell → Emergency → Paperwork
-- [ ] Each pillar: 8-phase methodology (Component Map → Bug Hunt → Concierge Wiring → Soul Made → Mobile 375px → Mira Context → Document → Report)
-
-## P1 — Near Term
-
-- [ ] Add "3 vets near you" to daily health WhatsApp reminders
-- [ ] Extend scheduler for Medication refill reminders
-- [ ] Mobile/iOS audit remaining pillars
-
-## P2 — Backlog
-
-- [ ] Build the `Love` pillar
-- [ ] Refactor `server.py` (24k+ lines) into modular routers
+## P2 — Future/Backlog
+- [ ] Build the Love pillar
+- [ ] Refactor server.py into modular routers (24k+ lines)
 - [ ] Add "My Custom Orders" tab in user profile
-- [ ] Replace blank templates with lifestyle product shots for Flat Art
-- [ ] Documentation page: Add Word/DOCX download button
 
----
+## Key Endpoints
+- `POST /api/service_desk/attach_or_create_ticket` — Universal concierge
+- `GET /api/pet-soul/profile/{pet_id}/quick-questions` — Soul questions
+- `POST /api/pet-soul/profile/{pet_id}/answer` — Save answer + recalc score
+- `POST /api/mira/os/stream` — Mira AI chat
 
-## Key API Endpoints
-
-| Endpoint | Purpose |
-|----------|---------|
-| POST /api/service_desk/attach_or_create_ticket | Universal concierge ticket creation |
-| POST /api/mira/chat | Mira AI chat |
-| POST /api/mira/os/stream | Mira OS streaming |
-| POST /api/celebration-wall/photos/ugc | UGC photo upload |
-| GET /api/pet-soul/profile/{id}/quick-questions | Soul questions + live score |
-| POST /api/pet-soul/profile/{id}/answer | Answer soul question |
-| GET /api/pets | User's pets with scores |
-| POST /api/auth/login | User authentication |
-
-## Key DB Collections
-
-| Collection | Purpose |
-|-----------|---------|
-| pets | Pet profiles with `doggy_soul_answers`, `vault`, `overall_score` |
-| users | User accounts |
-| service_desk_tickets | Concierge requests from UI |
-| admin_notifications | Triggers NotificationBell |
-| celebration_photos | Celebration Wall (Cloudinary URLs) |
-| orders | E-commerce orders |
-| pillar_products | Products per pillar/category |
+## Credentials
+- User: `dipali@clubconcierge.in` / `test123`
+- Admin: `aditya` / `lola4304`
 
 ## 3rd Party Integrations
 - OpenAI GPT-4o / Claude Sonnet — Emergent LLM Key
-- Gemini — Emergent LLM Key
-- Cloudinary — User API Key (image uploads)
-- Razorpay — User API Key (payments)
+- Cloudinary — User API Key
+- Razorpay — User API Key
