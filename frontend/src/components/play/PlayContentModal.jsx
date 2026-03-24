@@ -18,6 +18,7 @@ import { bookViaConcierge } from '../../utils/MiraCardActions';
 import BuddyMeetup from './BuddyMeetup';
 import { useConcierge } from '../../hooks/useConcierge';
 import { tdc } from '../../utils/tdc_intent';
+import { buildPaths, PathFlowModal } from './GuidedPlayPaths';
 
 const getApiUrl = () => API_URL;
 
@@ -207,7 +208,7 @@ const PlayContentModal = ({ isOpen, onClose, category, pet, onNavigateToNearMe }
   const [tabs,      setTabs]     = useState([]);
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
-  const [showBuddyInline, setShowBuddyInline] = useState(false);
+  const [guidedPath, setGuidedPath] = useState(null);
   const { token } = useAuth();
   const { fire: fireConcierge } = useConcierge({ pet, pillar: 'play' });
 
@@ -636,12 +637,8 @@ const PlayContentModal = ({ isOpen, onClose, category, pet, onNavigateToNearMe }
 
       {soulMadeOpen && <SoulMadeModal pet={pet} pillar="play" pillarColor={G.orange} pillarLabel="Play" onClose={() => setSoulMadeOpen(false)} />}
 
-      {/* ── Inline Buddy Meetup (for playdates) ──────────────────────── */}
-      {showBuddyInline && category === 'playdates' && (
-        <div style={{ padding:'0 20px 12px' }}>
-          <BuddyMeetup pet={pet} />
-        </div>
-      )}
+      {/* ── Guided Path Flow Modal (for outings → Park Routine, playdates → Playdate Starter) ─ */}
+      {guidedPath && <PathFlowModal path={guidedPath} pet={pet} onClose={() => setGuidedPath(null)} />}
 
       {/* ── Footer — category-specific CTAs ──────────────────────────── */}
       {/* Hide footer for: bundles, soul, miras-picks */}
@@ -650,16 +647,16 @@ const PlayContentModal = ({ isOpen, onClose, category, pet, onNavigateToNearMe }
           <p style={{ fontSize:12, color:'#888', margin:0 }}>Personalised for {petName}</p>
           <button
             onClick={() => {
+              const paths = buildPaths(pet);
               if (category === 'soul_made') {
                 setSoulMadeOpen(true);
               } else if (category === 'outings') {
-                // Navigate to NearMe tab on Play page
-                if (onNavigateToNearMe) onNavigateToNearMe();
+                const parkPath = paths.find(p => p.id === 'park_routine');
+                if (parkPath) setGuidedPath(parkPath);
               } else if (category === 'playdates') {
-                // Show inline BuddyMeetup
-                setShowBuddyInline(true);
+                const playdatePath = paths.find(p => p.id === 'playdate_starter');
+                if (playdatePath) setGuidedPath(playdatePath);
               } else if (category === 'fitness' || category === 'swimming') {
-                // Concierge flow
                 tdc.book({ service: config.label, pillar: 'play', pet, channel: 'play_content_modal_footer' });
                 fireConcierge({
                   service: `${petName}'s ${config.label} — Play Concierge`,
@@ -675,7 +672,7 @@ const PlayContentModal = ({ isOpen, onClose, category, pet, onNavigateToNearMe }
             style={{ background:`linear-gradient(135deg,${G.orange},#FF6B9D)`, color:'#fff', border:'none', borderRadius:12, padding:'9px 18px', fontSize:13, fontWeight:700, cursor:'pointer' }}
             data-testid="play-modal-cta">
             {category === 'soul_made' ? `Make it personal for ${petName} →`
-              : category === 'outings' ? `Find parks near ${petName} →`
+              : category === 'outings' ? `Find parks for ${petName} →`
               : category === 'playdates' ? `Find ${petName} a play buddy →`
               : category === 'fitness' ? `Book fitness for ${petName} →`
               : category === 'swimming' ? `Book swimming for ${petName} →`
