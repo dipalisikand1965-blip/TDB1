@@ -1960,7 +1960,7 @@ const GoSoulPage = () => {
 
       <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8">
         <div style={{ paddingTop: 16 }}>
-          <PillarSoulProfile pet={petData} token={token} pillar="go" />
+          <PillarSoulProfile pet={petData} token={token} pillar="go" color="#0D9488" />
         </div>
       </div>
 
