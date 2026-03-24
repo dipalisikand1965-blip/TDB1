@@ -16,7 +16,7 @@ const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
 
 function SoulChip({ children }) {
   return (
-    <div style={{ display:"inline-flex", alignItems:"center", gap:4, borderRadius:20, padding:"4px 10px", fontSize:11, color:"#fff", border:"1px solid rgba(255,255,255,0.18)", background:"rgba(255,255,255,0.12)", margin:"3px 3px 0 0" }}>
+    <div style={{ display:"inline-flex", alignItems:"center", gap:4, borderRadius:20, padding:"4px 10px", fontSize:13, color:"#fff", border:"1px solid rgba(255,255,255,0.18)", background:"rgba(255,255,255,0.12)", margin:"3px 3px 0 0" }}>
       {children}
     </div>
   );
@@ -79,7 +79,7 @@ export default function PlayHero({ pet, soulScore }) {
         </div>
 
         {/* Eyebrow */}
-        <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(255,173,155,0.20)", border:"1px solid rgba(255,173,155,0.40)", borderRadius:20, padding:"4px 12px", color:G.light, fontSize:11, fontWeight:600 }}>
+        <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(255,173,155,0.20)", border:"1px solid rgba(255,173,155,0.40)", borderRadius:20, padding:"4px 12px", color:G.light, fontSize:13, fontWeight:600 }}>
           🌳 Play & Explore for {petName}
         </div>
 
