@@ -40,7 +40,14 @@ function SoulChip({ children, bg, color }) {
   );
 }
 
-export default function PersonalisedBreedSection({ pet, pillar = "play" }) {
+export default function PersonalisedBreedSection({
+  pet,
+  pillar = "play",
+  hidePrice = false,
+  conciergeMode = false,
+  onRequestProduct = null,
+  onViewProduct = null,
+}) {
   const [products, setProducts] = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [selected, setSelected] = useState(null);
@@ -49,6 +56,8 @@ export default function PersonalisedBreedSection({ pet, pillar = "play" }) {
   const breed    = pet?.doggy_soul_answers?.breed || pet?.breed || "Indie";
   const petName  = pet?.name || "your dog";
   const C        = PILLAR_COLORS[pillar] || PILLAR_COLORS.play;
+  const effectiveHidePrice = hidePrice || pillar === 'paperwork';
+  const isConciergeMode = conciergeMode || pillar === 'paperwork';
 
   useEffect(() => {
     if (!breed) { setLoading(false); return; }
@@ -141,7 +150,10 @@ export default function PersonalisedBreedSection({ pet, pillar = "play" }) {
           const imgUrl = p.mockup_url || p.primary_image || p.image || p.images?.[0];
           return (
             <div key={p.id || i}
-              onClick={() => setSelected(selected?.id === p.id ? null : p)}
+              onClick={() => {
+                setSelected(selected?.id === p.id ? null : p);
+                onViewProduct?.(p);
+              }}
               data-testid={`personalised-product-${p.id}`}
               style={{ background:"#fff", borderRadius:14, overflow:"hidden", cursor:"pointer", border:`1.5px solid ${selected?.id===p.id ? C.orange : C.pale}`, transition:"all 0.15s", boxShadow: selected?.id===p.id ? `0 4px 16px ${C.orange}22` : "none" }}
             >
@@ -154,12 +166,20 @@ export default function PersonalisedBreedSection({ pet, pillar = "play" }) {
                 <div style={{ fontSize:12, fontWeight:700, color:C.deep, marginBottom:3, lineHeight:1.3 }}>{p.name || p.title}</div>
                 {p.mira_hint && <div style={{ fontSize:10, color:C.orange, lineHeight:1.4, marginBottom:6 }}>{p.mira_hint}</div>}
                 <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-                  <span style={{ fontSize:13, fontWeight:800, color:C.deep }}>₹{p.price?.toLocaleString?.() ?? p.price}</span>
+                  <span style={{ fontSize:effectiveHidePrice ? 11 : 13, fontWeight:800, color:effectiveHidePrice ? '#888' : C.deep }}>
+                    {effectiveHidePrice ? 'Pricing shared by Concierge' : `₹${p.price?.toLocaleString?.() ?? p.price}`}
+                  </span>
                   <button
-                    onClick={e => { e.stopPropagation(); /* Add to cart */ }}
+                    onClick={e => {
+                      e.stopPropagation();
+                      if (isConciergeMode) {
+                        onRequestProduct?.(p);
+                      }
+                    }}
+                    data-testid={`personalised-product-action-${p.id}`}
                     style={{ background:C.orange, color:"#fff", border:"none", borderRadius:8, padding:"4px 10px", fontSize:10, fontWeight:700, cursor:"pointer" }}
                   >
-                    Add →
+                    {isConciergeMode ? 'Ask Concierge →' : 'Add →'}
                   </button>
                 </div>
               </div>

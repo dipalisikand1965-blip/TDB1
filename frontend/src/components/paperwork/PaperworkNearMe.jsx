@@ -14,6 +14,8 @@
 import NearMeConciergeModal from '../common/NearMeConciergeModal';
 import { useState, useCallback, useRef } from "react";
 import { API_URL } from "../../utils/api";
+import { tdc } from '../../utils/tdc_intent';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
 
 const G = { deep:"#1E293B", mid:"#334155", teal:"#0D9488", light:"#99F6E4", pale:"#F0FDFA", cream:"#F8FAFC", darkText:"#1E293B", mutedText:"#475569", amber:"#C9973A" };
 
@@ -50,13 +52,12 @@ function OpenBadge({ openNow }) {
   return <span style={{fontSize:9,fontWeight:700,borderRadius:8,padding:"2px 8px",background:openNow?"#E8F5E9":"#FFEBEE",color:openNow?"#2E7D32":"#C62828"}}>{openNow?"✓ Open now":"Closed"}</span>;
 }
 
-function ProviderCard({ provider, pet, onBook }) {
+function ProviderCard({ provider, pet, onSelectPlace }) {
   const [imgErr,setImgErr]=useState(false);
-  const [selectedPlace, setSelectedPlace] = useState(null);
-  const petName=pet?.name||"your dog";
   const type = PAPER_TYPES.find(t=>t.id===provider.type)||PAPER_TYPES[0];
   return (
     <div style={{background:"#fff",border:`1px solid rgba(13,148,136,0.15)`,borderRadius:14,overflow:"hidden",transition:"transform 0.15s"}}
+      data-testid={`paperwork-nearme-provider-${provider.place_id || provider.name?.replace?.(/\s+/g, '-').toLowerCase?.() || 'card'}`}
       onMouseEnter={e=>e.currentTarget.style.transform="translateY(-3px)"}
       onMouseLeave={e=>e.currentTarget.style.transform="none"}>
       <div style={{position:"relative",height:130,background:G.pale,display:"flex",alignItems:"center",justifyContent:"center"}}>
@@ -75,8 +76,9 @@ function ProviderCard({ provider, pet, onBook }) {
         {provider.vicinity&&<div style={{fontSize:11,color:G.mutedText,marginBottom:6,display:"flex",alignItems:"flex-start",gap:4}}><span style={{fontSize:12}}>📍</span><span style={{lineHeight:1.4}}>{provider.vicinity}</span></div>}
         {provider.mira_note&&<div style={{fontSize:11,color:G.teal,fontStyle:"italic",marginBottom:8,lineHeight:1.4}}>✦ {provider.mira_note}</div>}
         <div style={{display:"flex",gap:8,alignItems:"center",marginTop:10}}>
-          {provider.phone&&<a href={`tel:${provider.phone}`} style={{fontSize:11,color:G.mid,fontWeight:600,textDecoration:"none",background:G.pale,borderRadius:20,padding:"5px 12px"}}>📞 Call</a>}
-          <button onClick={()=>{ tdc.nearme({ query: "venue", pillar:"paperwork", pet }); setSelectedPlace({name:"venue near you"}); }}
+          {provider.phone&&<a href={`tel:${provider.phone}`} data-testid={`paperwork-nearme-call-${provider.place_id || provider.name?.replace?.(/\s+/g, '-').toLowerCase?.() || 'provider'}`} style={{fontSize:11,color:G.mid,fontWeight:600,textDecoration:"none",background:G.pale,borderRadius:20,padding:"5px 12px"}}>📞 Call</a>}
+          <button onClick={()=>{ tdc.nearme({ query: `${provider.name} ${type.label}`, pillar:"paperwork", pet, channel:"paperwork_nearme_provider" }); onSelectPlace?.(provider); }}
+            data-testid={`paperwork-nearme-arrange-${provider.place_id || provider.name?.replace?.(/\s+/g, '-').toLowerCase?.() || 'provider'}`}
             style={{flex:1,background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 14px",fontSize:11,fontWeight:700,cursor:"pointer"}}>
             Arrange via Concierge →
           </button>
@@ -86,17 +88,18 @@ function ProviderCard({ provider, pet, onBook }) {
   );
 }
 
-function MiraTopPick({ provider, pet, onBook }) {
+function MiraTopPick({ provider, pet, onSelectPlace }) {
   const petName=pet?.name||"your dog";
   return (
-    <div style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,borderRadius:14,padding:"16px 20px",marginBottom:16,display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap"}}>
+    <div style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,borderRadius:14,padding:"16px 20px",marginBottom:16,display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap"}} data-testid="paperwork-nearme-top-pick">
       <div style={{flex:1,minWidth:0}}>
         <div style={{fontSize:10,fontWeight:700,color:G.light,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:6}}>✦ Mira's Top Pick for {petName}</div>
         <div style={{fontSize:16,fontWeight:700,color:"#fff",marginBottom:4}}>{provider.name}</div>
         <div style={{fontSize:12,color:"rgba(255,255,255,0.65)",marginBottom:8}}>{provider.vicinity}</div>
         <StarRating rating={provider.rating} count={provider.review_count}/>
       </div>
-      <button onClick={()=>{ tdc.nearme({ query: "venue", pillar:"paperwork", pet }); setSelectedPlace({name:"venue near you"}); }}
+      <button onClick={()=>{ tdc.nearme({ query: provider.name || "venue", pillar:"paperwork", pet, channel:"paperwork_nearme_top_pick" }); onSelectPlace?.(provider); }}
+        data-testid="paperwork-nearme-top-pick-button"
         style={{background:G.light,color:G.deep,border:"none",borderRadius:20,padding:"10px 20px",fontSize:12,fontWeight:700,cursor:"pointer",flexShrink:0,whiteSpace:"nowrap"}}>
         Arrange via Concierge →
       </button>
@@ -115,7 +118,17 @@ export default function PaperworkNearMe({ pet, onBook }) {
   const [suggestions,   setSuggestions]   = useState([]);
   const [nearMeLoading, setNearMeLoading] = useState(false);
   const [displayCity,   setDisplayCity]   = useState("");
+  const [selectedPlace, setSelectedPlace] = useState(null);
   const inputRef = useRef(null);
+
+  const requestConciergeHelp = useCallback(async (label) => {
+    await bookViaConcierge({
+      service: `Paperwork support near ${label || displayCity || 'your area'}`,
+      pillar: 'paperwork',
+      pet,
+      channel: 'paperwork_nearme_more_options',
+    });
+  }, [displayCity, pet]);
 
   const doFetch = useCallback(async (coords, cityName, type) => {
     setLoading(true); setError(null); setProviders([]);
@@ -137,12 +150,19 @@ export default function PaperworkNearMe({ pet, onBook }) {
     setLoading(false);
   },[petName,displayCity]);
 
-  const handleSearch = () => { const q=query.trim(); if(!q)return; setActiveQuery(q); setSuggestions([]); doFetch(null,q,activeType); };
+  const handleSearch = () => {
+    const q=query.trim();
+    if(!q)return;
+    tdc.search({ query:q, pillar:'paperwork', pet, channel:'paperwork_nearme_search' });
+    setActiveQuery(q);
+    setSuggestions([]);
+    doFetch(null,q,activeType);
+  };
   const handleNearMe = () => {
     if(!navigator.geolocation){setError("Location not available.");return;}
     setNearMeLoading(true);
     navigator.geolocation.getCurrentPosition(
-      pos=>{setNearMeLoading(false);setDisplayCity("your area");setActiveQuery("near_me");doFetch({lat:pos.coords.latitude,lng:pos.coords.longitude},null,activeType);},
+      pos=>{tdc.nearme({ query:'current location', pillar:'paperwork', pet, channel:'paperwork_nearme_current_location' });setNearMeLoading(false);setDisplayCity("your area");setActiveQuery("near_me");doFetch({lat:pos.coords.latitude,lng:pos.coords.longitude},null,activeType);},
       ()=>{setNearMeLoading(false);setError("Location access denied.");}
     );
   };
@@ -154,7 +174,6 @@ export default function PaperworkNearMe({ pet, onBook }) {
 
   return (
     <>
-<>
       <div>
       <div style={{marginBottom:16}}>
         <div style={{fontSize:14,fontWeight:700,color:G.darkText,marginBottom:4}}>
@@ -168,12 +187,14 @@ export default function PaperworkNearMe({ pet, onBook }) {
         <div style={{display:"flex",gap:8}}>
           <div style={{flex:1,position:"relative"}}>
             <input ref={inputRef} value={query} onChange={e=>handleQueryChange(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleSearch()}
+              data-testid="paperwork-nearme-search-input"
               placeholder={`e.g. vets in Bangalore`}
               style={{width:"100%",padding:"10px 14px",borderRadius:10,border:`1.5px solid rgba(13,148,136,0.28)`,fontSize:13,outline:"none",color:G.darkText,background:"#fff",boxSizing:"border-box"}}/>
             {suggestions.length>0&&(
               <div style={{position:"absolute",top:"100%",left:0,right:0,zIndex:50,background:"#fff",border:`1px solid ${G.pale}`,borderRadius:10,boxShadow:"0 8px 24px rgba(0,0,0,0.10)",marginTop:4,overflow:"hidden"}}>
                 {suggestions.map(s=>(
-                  <div key={s} onClick={()=>{setQuery(s);setSuggestions([]);doFetch(null,s,activeType);}}
+                  <div key={s} onClick={()=>{tdc.search({ query:s, pillar:'paperwork', pet, channel:'paperwork_nearme_suggestion' });setQuery(s);setSuggestions([]);doFetch(null,s,activeType);}}
+                    data-testid={`paperwork-nearme-suggestion-${s.toLowerCase()}`}
                     style={{padding:"10px 14px",fontSize:13,color:G.darkText,cursor:"pointer",borderBottom:`1px solid ${G.pale}`}}
                     onMouseEnter={e=>e.currentTarget.style.background=G.pale}
                     onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
@@ -183,14 +204,14 @@ export default function PaperworkNearMe({ pet, onBook }) {
               </div>
             )}
           </div>
-          <button onClick={handleSearch} disabled={loading||!query.trim()}
+          <button onClick={handleSearch} disabled={loading||!query.trim()} data-testid="paperwork-nearme-search-button"
             style={{padding:"10px 18px",borderRadius:10,background:loading||!query.trim()?G.pale:`linear-gradient(135deg,${G.teal},${G.mid})`,color:loading||!query.trim()?G.mutedText:"#fff",border:"none",fontSize:13,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
             {loading?"Finding…":"Search"}
           </button>
         </div>
       </div>
 
-      <button onClick={handleNearMe} disabled={nearMeLoading}
+      <button onClick={handleNearMe} disabled={nearMeLoading} data-testid="paperwork-nearme-current-location-button"
         style={{width:"100%",padding:"10px",borderRadius:10,marginBottom:14,background:nearMeLoading?"#f0f0f0":G.pale,border:`1.5px solid rgba(13,148,136,0.25)`,color:G.teal,fontSize:13,fontWeight:600,cursor:nearMeLoading?"wait":"pointer"}}>
         {nearMeLoading?"Getting your location…":"📍 Use my current location"}
       </button>
@@ -198,7 +219,7 @@ export default function PaperworkNearMe({ pet, onBook }) {
       {/* Type pills */}
       <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:16}}>
         {PAPER_TYPES.map(type=>(
-          <button key={type.id} onClick={()=>handleTypeChange(type.id)}
+          <button key={type.id} onClick={()=>handleTypeChange(type.id)} data-testid={`paperwork-nearme-type-${type.id}`}
             style={{padding:"5px 12px",borderRadius:20,fontSize:11,fontWeight:500,border:`1px solid ${activeType===type.id?G.teal:"rgba(13,148,136,0.25)"}`,background:activeType===type.id?G.teal:G.pale,color:activeType===type.id?"#fff":G.teal,cursor:"pointer"}}>
             {type.icon} {type.label}
           </button>
@@ -211,7 +232,8 @@ export default function PaperworkNearMe({ pet, onBook }) {
           <div style={{fontSize:11,fontWeight:600,color:G.mutedText,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>Popular cities</div>
           <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20}}>
             {POPULAR_CITIES.map(city=>(
-              <button key={city.name} onClick={()=>{setQuery(city.name);doFetch(null,city.name,activeType);}}
+              <button key={city.name} onClick={()=>{tdc.search({ query:city.name, pillar:'paperwork', pet, channel:'paperwork_nearme_city' });setQuery(city.name);doFetch(null,city.name,activeType);}}
+                data-testid={`paperwork-nearme-city-${city.name.toLowerCase()}`}
                 style={{padding:"7px 14px",borderRadius:20,fontSize:12,fontWeight:500,border:`1px solid rgba(13,148,136,0.22)`,background:"#fff",color:G.darkText,cursor:"pointer"}}>
                 {city.flag} {city.name}
               </button>
@@ -226,12 +248,13 @@ export default function PaperworkNearMe({ pet, onBook }) {
 
       {!loading&&providers.length>0&&(
         <>
-          {topPick&&<MiraTopPick provider={topPick} pet={pet} onBook={onBook}/>}
+          {topPick&&<MiraTopPick provider={topPick} pet={pet} onSelectPlace={setSelectedPlace}/>} 
           <div style={{fontSize:12,color:G.mutedText,marginBottom:12}}>{providers.length} {PAPER_TYPES.find(t=>t.id===activeType)?.label?.toLowerCase()||"services"} found{displayCity&&displayCity!=="near_me"?` in ${displayCity}`:" near you"}</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(280px,100%),1fr))",gap:14}}>
-            {restList.map((p,i)=><ProviderCard key={p.place_id||i} provider={p} pet={pet} onBook={onBook}/>)}
+            {restList.map((p,i)=><ProviderCard key={p.place_id||i} provider={p} pet={pet} onSelectPlace={setSelectedPlace}/>)}
           </div>
-          <button onClick={()=>onBook?.(null,displayCity||"your area")}
+          <button onClick={()=>requestConciergeHelp(displayCity||"your area")}
+            data-testid="paperwork-nearme-more-options-button"
             style={{width:"100%",marginTop:16,padding:"12px",borderRadius:10,background:G.pale,border:`1px solid rgba(13,148,136,0.25)`,color:G.teal,fontSize:13,fontWeight:600,cursor:"pointer"}}>
             Ask Concierge for more options →
           </button>
@@ -242,13 +265,12 @@ export default function PaperworkNearMe({ pet, onBook }) {
         <div style={{textAlign:"center",padding:"40px 0",color:"#888",fontSize:13}}>
           <div style={{fontSize:32,marginBottom:12}}>🔍</div>
           No results in {displayCity||activeQuery}.<br/>
-          <button onClick={()=>onBook?.(null,displayCity||activeQuery)} style={{marginTop:14,padding:"9px 20px",borderRadius:20,background:G.pale,border:`1px solid ${G.teal}`,color:G.teal,fontSize:12,fontWeight:600,cursor:"pointer"}}>
+          <button onClick={()=>requestConciergeHelp(displayCity||activeQuery)} data-testid="paperwork-nearme-empty-state-button" style={{marginTop:14,padding:"9px 20px",borderRadius:20,background:G.pale,border:`1px solid ${G.teal}`,color:G.teal,fontSize:12,fontWeight:600,cursor:"pointer"}}>
             Ask Concierge to find options →
           </button>
         </div>
       )}
     </div>
-</>
       <NearMeConciergeModal
         isOpen={!!selectedPlace}
         place={selectedPlace}
