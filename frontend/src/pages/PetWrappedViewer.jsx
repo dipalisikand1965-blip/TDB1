@@ -49,7 +49,7 @@ const PetWrappedViewer = () => {
   };
 
   const handleShare = async () => {
-    const shareUrl = `${window.location.origin}/wrapped/${petId}`;
+    const shareUrl = `${window.location.origin}/api/wrapped/download/${petId}`;
     const shareText = `${wrappedData?.pet_name}'s Pet Wrapped ${wrappedData?.year} - See their soul journey! 🐾`;
     
     if (navigator.share) {
