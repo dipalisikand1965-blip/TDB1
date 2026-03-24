@@ -7,6 +7,11 @@ Admin Routes for The Doggy Company
 """
 
 import os
+import json
+import base64
+import asyncio
+import urllib.parse
+import urllib.request
 import uuid
 import logging
 from datetime import datetime, timezone, timedelta
@@ -175,6 +180,7 @@ class UpdateOrderStatus(BaseModel):
 
 class FullDbSyncRequest(BaseModel):
     confirmation: str = Field(..., min_length=1)
+    source_url: Optional[str] = None
 
 
 CRITICAL_SYNC_COLLECTIONS = [
@@ -210,10 +216,77 @@ async def _get_production_db():
     return client, prod_db
 
 
-@fulfilment_router.get('/full-db-sync-diff')
-async def full_db_sync_diff(username: str = Depends(verify_admin)):
+def _admin_basic_auth_header():
+    raw = f"{ADMIN_USERNAME}:{ADMIN_PASSWORD}".encode()
+    return {"Authorization": f"Basic {base64.b64encode(raw).decode()}"}
+
+
+async def _fetch_preview_sync_json(source_url: str, path: str):
+    url = f"{source_url.rstrip('/')}{path}"
+
+    def _do_request():
+        req = urllib.request.Request(url, headers=_admin_basic_auth_header())
+        with urllib.request.urlopen(req, timeout=180) as resp:
+            return json.loads(resp.read().decode())
+
+    return await asyncio.to_thread(_do_request)
+
+
+@fulfilment_router.get('/full-db-sync-export-meta')
+async def full_db_sync_export_meta(username: str = Depends(verify_admin)):
     if db is None:
         raise HTTPException(status_code=500, detail='Database not configured')
+    cols = [c for c in await db.list_collection_names() if not c.startswith('system.')]
+    counts = []
+    for col in sorted(cols):
+        counts.append({
+            'collection': col,
+            'count': await db[col].count_documents({})
+        })
+    return {'ok': True, 'db': os.environ.get('DB_NAME'), 'collections': counts}
+
+
+@fulfilment_router.get('/full-db-sync-export')
+async def full_db_sync_export(collection: str, username: str = Depends(verify_admin)):
+    if db is None:
+        raise HTTPException(status_code=500, detail='Database not configured')
+    if collection.startswith('system.'):
+        raise HTTPException(status_code=400, detail='System collections not allowed')
+    docs = await db[collection].find({}).to_list(None)
+    return {'ok': True, 'collection': collection, 'count': len(docs), 'docs': docs}
+
+
+@fulfilment_router.get('/full-db-sync-diff')
+async def full_db_sync_diff(source_url: Optional[str] = None, username: str = Depends(verify_admin)):
+    if db is None:
+        raise HTTPException(status_code=500, detail='Database not configured')
+
+    # If called from live site, compare current production DB against preview export over HTTPS.
+    if source_url:
+        meta = await _fetch_preview_sync_json(source_url, '/api/admin/full-db-sync-export-meta')
+        preview_counts = {row['collection']: row['count'] for row in meta.get('collections', [])}
+        prod_cols = [c for c in await db.list_collection_names() if not c.startswith('system.')]
+        all_cols = sorted(set(prod_cols) | set(preview_counts.keys()))
+        comparisons = []
+        for col in all_cols:
+            prod_count = await db[col].count_documents({}) if col in prod_cols else 0
+            preview_count = preview_counts.get(col, 0)
+            comparisons.append({
+                'collection': col,
+                'preview': preview_count,
+                'production': prod_count,
+                'diff': preview_count - prod_count,
+            })
+        critical = [c for c in comparisons if c['collection'] in CRITICAL_SYNC_COLLECTIONS]
+        return {
+            'ok': True,
+            'critical': critical,
+            'all_collections': comparisons,
+            'preview_db': meta.get('db', 'preview-source'),
+            'production_db': os.environ.get('DB_NAME'),
+            'total_collections': len(comparisons),
+            'source_url': source_url,
+        }
 
     prod_client, prod_db = await _get_production_db()
     try:
@@ -251,6 +324,44 @@ async def full_db_sync_to_production(payload: FullDbSyncRequest, username: str =
         raise HTTPException(status_code=400, detail='Type MIGRATE to proceed')
     if db is None:
         raise HTTPException(status_code=500, detail='Database not configured')
+
+    # If source_url provided, sync preview export into current production DB.
+    if payload.source_url:
+        meta = await _fetch_preview_sync_json(payload.source_url, '/api/admin/full-db-sync-export-meta')
+        source_cols = [row['collection'] for row in meta.get('collections', []) if not row['collection'].startswith('system.')]
+        results = []
+        for col in source_cols:
+            export = await _fetch_preview_sync_json(payload.source_url, f"/api/admin/full-db-sync-export?collection={urllib.parse.quote(col)}")
+            docs = export.get('docs', [])
+            local_count = len(docs)
+            try:
+                await db[col].drop()
+            except Exception:
+                pass
+            if docs:
+                batch = []
+                for doc in docs:
+                    batch.append(doc)
+                    if len(batch) >= 1000:
+                        await db[col].insert_many(batch)
+                        batch = []
+                if batch:
+                    await db[col].insert_many(batch)
+            prod_count = await db[col].count_documents({})
+            results.append({
+                'collection': col,
+                'preview': local_count,
+                'production_after': prod_count,
+                'matched': local_count == prod_count,
+            })
+        critical = [r for r in results if r['collection'] in CRITICAL_SYNC_COLLECTIONS]
+        return {
+            'ok': True,
+            'synced': critical,
+            'all_results': results,
+            'message': 'Full database sync complete (preview export → production db)',
+            'source_url': payload.source_url,
+        }
 
     prod_client, prod_db = await _get_production_db()
     try:

@@ -877,9 +877,16 @@ const Admin = () => {
 
   const handleFullDbSyncToProd = async () => {
     try {
-      if (window.location.hostname === 'thedoggycompany.com') {
-        alert('Run FULL DB SYNC → PROD from the PREVIEW admin, not the live site.\n\nLive site compares production against production and can’t migrate preview/local work forward.');
-        return;
+      const isLive = window.location.hostname === 'thedoggycompany.com';
+      let sourceUrl = null;
+      if (isLive) {
+        sourceUrl = window.prompt(
+          'Enter the PREVIEW admin base URL to sync FROM.\n\nExample:\nhttps://pet-wrapped-1.preview.emergentagent.com'
+        );
+        if (!sourceUrl) {
+          alert('Cancelled. Preview source URL is required.');
+          return;
+        }
       }
 
       const parseResponseSafe = async (res) => {
@@ -891,7 +898,10 @@ const Admin = () => {
         }
       };
 
-      const diffRes = await fetch(`${API_URL}/api/admin/full-db-sync-diff`, {
+      const diffPath = sourceUrl
+        ? `${API_URL}/api/admin/full-db-sync-diff?source_url=${encodeURIComponent(sourceUrl)}`
+        : `${API_URL}/api/admin/full-db-sync-diff`;
+      const diffRes = await fetch(diffPath, {
         headers: getAuthHeaders()
       });
       const diffData = await parseResponseSafe(diffRes);
@@ -921,7 +931,7 @@ const Admin = () => {
       const syncRes = await fetch(`${API_URL}/api/admin/full-db-sync-to-production`, {
         method: 'POST',
         headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
-        body: JSON.stringify({ confirmation: 'MIGRATE' })
+        body: JSON.stringify({ confirmation: 'MIGRATE', source_url: sourceUrl })
       });
       const syncData = await parseResponseSafe(syncRes);
       if (!syncRes.ok) throw new Error(syncData.detail || 'Full DB sync failed');
