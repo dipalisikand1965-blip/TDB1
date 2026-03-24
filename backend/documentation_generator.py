@@ -227,25 +227,41 @@ def generate_complete_documentation():
         .timestamp {{ background: #fef3c7; padding: 10px 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; font-size: 0.9em; color: #92400e; }}
         .doc-section {{ margin-bottom: 40px; padding-bottom: 20px; }}
         .meta {{ font-size: 0.85em; color: #888; margin-bottom: 15px; font-style: italic; }}
-        @media print {{ body {{ background: white; }} .container {{ box-shadow: none; }} }}
+        .pdf-btn {{ position: fixed; bottom: 24px; right: 24px; z-index: 999; background: linear-gradient(135deg, #7c3aed, #6b46c1); color: white; border: none; border-radius: 50px; padding: 14px 28px; font-size: 0.95rem; font-weight: 700; cursor: pointer; box-shadow: 0 6px 24px rgba(124,58,237,0.4); display: flex; align-items: center; gap: 8px; transition: transform 0.2s, box-shadow 0.2s; }}
+        .pdf-btn:hover {{ transform: translateY(-2px); box-shadow: 0 8px 32px rgba(124,58,237,0.55); }}
+        .pdf-btn svg {{ width: 20px; height: 20px; }}
+        @media print {{
+            body {{ background: white !important; padding: 0 !important; }}
+            .container {{ box-shadow: none !important; border-radius: 0 !important; max-width: 100% !important; padding: 20px !important; }}
+            .pdf-btn {{ display: none !important; }}
+            .toc {{ max-height: none !important; overflow: visible !important; }}
+            .doc-section {{ break-inside: avoid; }}
+            pre {{ white-space: pre-wrap !important; word-wrap: break-word !important; }}
+            h2 {{ page-break-before: auto; }}
+            table {{ font-size: 0.8em; }}
+        }}
     </style>
 </head>
 <body>
+    <button class="pdf-btn" onclick="window.print()" title="Download as PDF">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+        Download PDF
+    </button>
     <div class="container">
         <div class="header">
-            <h1>🐕 The Doggy Company</h1>
+            <h1>The Doggy Company</h1>
             <h2 style="border: none; margin-top: 0; padding-top: 0;">Complete Documentation</h2>
         </div>
         <div class="timestamp">
-            📅 Last Updated: {datetime.now().strftime('%B %d, %Y at %H:%M')} | 🔄 Auto-generated
+            Last Updated: {datetime.now().strftime('%B %d, %Y at %H:%M')} | Auto-generated
         </div>
         <div class="stats">
-            <strong>📊 Statistics:</strong> {total_files} documents | {total_lines:,} lines | Everything you've built!
+            <strong>Statistics:</strong> {total_files} documents | {total_lines:,} lines | Everything you've built!
         </div>
         {''.join(toc_entries)}
         {''.join(content_sections)}
         <div style="text-align: center; margin-top: 50px; padding-top: 30px; border-top: 2px solid #e9d5ff; color: #888;">
-            <p>💜 The Doggy Company - Pet Life Operating System 🐾</p>
+            <p>The Doggy Company - Pet Life Operating System</p>
         </div>
     </div>
 </body>
