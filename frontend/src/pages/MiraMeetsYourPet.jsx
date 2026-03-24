@@ -813,52 +813,24 @@ export default function MiraMeetsYourPet() {
         return;
       }
 
-      const { access_token, user } = await regRes.json();
+      const { access_token, user, pet_ids = [] } = await regRes.json();
       localStorage.setItem("tdb_auth_token", access_token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      // ── Refresh auth context so ProtectedRoute sees the new session ──────
-      try {
-        await login(form.email, form.password);
-      } catch {
+      // Refresh auth context in background; local token is already set.
+      login(form.email, form.password).catch(() => {
         // If login refresh fails, manual token is still set — proceed
-      }
+      });
 
-      // Create pets and collect their IDs for photo upload
-      const createdPets = [];
-      for (const pet of pets) {
-        if (!pet.name) continue;
-        try {
-          const petRes = await fetch(`${API_URL}/api/pets`, {
-            method: "POST",
-            headers: {
-              "Content-Type":"application/json",
-              "Authorization": `Bearer ${access_token}`,
-            },
-            body: JSON.stringify({
-              name:      pet.name,
-              breed:     pet.breed || "",
-              photo_url: null,
-              species:   "dog",
-              doggy_soul_answers: {
-                food_allergies:    snapshot?.allergies || [],
-                health_conditions: snapshot?.conditions || [],
-                car_comfort:       snapshot?.carRide || "",
-                dog_social:        snapshot?.dogFriendly || "",
-                home_type:         snapshot?.lifestyle || "",
-              },
-            }),
-          });
-          if (petRes.ok) {
-            const petData = await petRes.json();
-            createdPets.push({ ...pet, id: petData.id || petData.pet_id || petData._id });
-          }
-        } catch {}
-      }
+      // Membership onboarding already creates pets server-side and returns pet_ids.
+      const createdPets = pets
+        .filter(p => p.name)
+        .map((pet, idx) => ({ ...pet, id: pet_ids[idx] }))
+        .filter(p => p.id);
 
-      // Option A: upload photos after pet creation (need pet IDs from response)
+      // Upload photos against the newly created pet IDs
       for (let i = 0; i < createdPets.length; i++) {
-        const pet = form.pets[i];
+        const pet = createdPets[i];
         const petId = createdPets[i]?.id;
         if (pet.photo_file && petId && access_token) {
           try {
@@ -872,7 +844,8 @@ export default function MiraMeetsYourPet() {
           } catch(e) { console.warn("Photo upload failed for", petId, e); }
         }
       }
-      navigate("/soul-builder");
+      const firstPetId = createdPets[0]?.id || pet_ids[0];
+      window.location.href = firstPetId ? `/soul-builder?pet_id=${firstPetId}` : "/soul-builder";
     } catch {
       setError("Could not connect. Please check your connection and try again.");
     }
