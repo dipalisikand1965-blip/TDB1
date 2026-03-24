@@ -41,7 +41,7 @@ const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
 const EVERYTHING = [
   { icon:"✦", label:"Mira AI",             desc:"Unlimited conversations. She knows your dog completely." },
   { icon:"🤝", label:"Concierge® access",   desc:"Real humans. 24/7. Anything, Anytime, Anywhere." },
-  { icon:"🌿", label:"All 13 life pillars", desc:"Care, Dine, Go, Play, Learn, Celebrate and more." },
+  { icon:"🌿", label:"All 12 life pillars", desc:"Care, Dine, Go, Play, Learn, Celebrate and more." },
   { icon:"🧠", label:"Soul Profile™",       desc:"A living profile that grows smarter every visit." },
   { icon:"🏥", label:"Health Vault",        desc:"Secure medical records, vaccine reminders, vet history." },
   { icon:"🎂", label:"Birthday alerts",     desc:"Mira reminds you. The Doggy Bakery bakes for you." },

@@ -869,7 +869,7 @@ const ReportsManager = ({ authHeaders }) => {
                 )}
               </TabsContent>
 
-              {/* Generic Pillar Report Template for all 14 pillars */}
+              {/* Generic Pillar Report Template for all 12 pillars */}
               {['celebrate', 'dine', 'stay', 'travel', 'care', 'enjoy', 'fit', 'learn', 'paperwork', 'advisory', 'emergency', 'farewell', 'adopt', 'shop'].map((pillar) => (
                 <TabsContent key={pillar} value={pillar}>
                   <div className="space-y-6 mt-4">

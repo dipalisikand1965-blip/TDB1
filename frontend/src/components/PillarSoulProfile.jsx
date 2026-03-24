@@ -1,5 +1,5 @@
 /**
- * PillarSoulProfile.jsx — Shared profile component for ALL 13 pillars
+ * PillarSoulProfile.jsx — Shared profile component for ALL 12 pillars
  *
  * Shows:
  *   Section 1 — What Mira knows (soul answer tiles, pillar-specific)

@@ -34,7 +34,7 @@ const ServicesTab = () => {
           </div>
           <div>
             <h3 className="text-lg sm:text-xl font-bold text-white">All Pet Life Services</h3>
-            <p className="text-xs sm:text-sm text-slate-400">Access all 14 pillars with your Pet Pass</p>
+            <p className="text-xs sm:text-sm text-slate-400">Access all 12 pillars with your Pet Pass</p>
           </div>
         </div>
         

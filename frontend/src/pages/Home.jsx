@@ -985,7 +985,7 @@ const Home = () => {
               <p className="text-center text-purple-400/60 text-xs mt-2">← Swipe to explore →</p>
             </div>
             
-            {/* Desktop: Horizontal scroll for 13 pillars */}
+            {/* Desktop: Horizontal scroll for 12 pillars */}
             <div className="hidden md:block">
               <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {pillars.map((pillar, i) => (
@@ -1007,7 +1007,7 @@ const Home = () => {
                   </motion.div>
                 ))}
               </div>
-              <p className="text-center text-white/40 text-sm mt-4">← Swipe to explore all 13 pillars →</p>
+              <p className="text-center text-white/40 text-sm mt-4">← Swipe to explore all 12 pillars →</p>
             </div>
           </div>
         </section>

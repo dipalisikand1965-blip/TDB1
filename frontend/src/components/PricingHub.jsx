@@ -199,14 +199,14 @@ const PillarBundlesSection = ({ getAuthHeader, formatCurrency }) => {
       <div className="flex justify-between items-center">
         <div>
           <h3 className="text-lg font-semibold">Pillar Bundles & Packages</h3>
-          <p className="text-sm text-gray-500">{totalBundles} bundles across all 13 pillars — inline price editing</p>
+          <p className="text-sm text-gray-500">{totalBundles} bundles across all 12 pillars — inline price editing</p>
         </div>
         <Button variant="outline" onClick={fetchAllBundles}>
           <RefreshCw className="w-4 h-4 mr-2" /> Refresh
         </Button>
       </div>
 
-      {/* Pillar Tabs — all 13 pillars */}
+      {/* Pillar Tabs — all 12 pillars */}
       <div className="flex gap-2 flex-wrap">
         {Object.entries(BUNDLE_PILLAR_CONFIG).map(([key, config]) => {
           const count = getBundlesForPillar(key).length;
