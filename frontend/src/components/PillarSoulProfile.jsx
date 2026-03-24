@@ -298,42 +298,42 @@ export default function PillarSoulProfile({
 
   return (
     <>
-      {/* Trigger bar — Dine-matched: consistent height, size across all 12 pillars */}
+      {/* Trigger bar — Dine-matched: compact, consistent across all 12 pillars */}
       <div onClick={() => setOpen(true)} data-testid={`${pillar}-profile-bar`}
         style={{
           display:'flex', alignItems:'center', gap:14, cursor:'pointer',
-          padding:'16px 20px', minHeight:88, boxSizing:'border-box',
+          padding:'14px 18px', boxSizing:'border-box',
           borderRadius:16, background:'#fff',
           border:`2px solid ${isComplete ? '#16A34A' : pColor}`,
           width:'100%', marginBottom:16, transition:'all 0.2s ease',
-          boxShadow:`0 2px 12px ${pColor}14`,
+          boxShadow:`0 2px 12px ${pColor}14`, overflow:'visible',
         }}
         onMouseEnter={e => { e.currentTarget.style.boxShadow=`0 6px 28px ${pColor}30`; e.currentTarget.style.transform='translateY(-1px)'; }}
         onMouseLeave={e => { e.currentTarget.style.boxShadow=`0 2px 12px ${pColor}14`; e.currentTarget.style.transform='translateY(0)'; }}
       >
-        {/* Pet photo — 56px circle with score ring */}
-        <div style={{ position:'relative', width:56, height:56, flexShrink:0 }}>
-          <svg viewBox="0 0 56 56" style={{ position:'absolute', inset:0, width:56, height:56, transform:'rotate(-90deg)' }}>
-            <circle cx="28" cy="28" r="25" fill="none" stroke={`${pColor}18`} strokeWidth="3"/>
-            <circle cx="28" cy="28" r="25" fill="none" stroke={scoreColor} strokeWidth="3"
-              strokeDasharray={`${((isFinite(score)?score:0)/100)*157.08} 157.08`}
+        {/* Pet photo — 48px circle with score ring */}
+        <div style={{ position:'relative', width:48, height:48, flexShrink:0 }}>
+          <svg viewBox="0 0 48 48" style={{ position:'absolute', inset:0, width:48, height:48, transform:'rotate(-90deg)' }}>
+            <circle cx="24" cy="24" r="21" fill="none" stroke={`${pColor}18`} strokeWidth="3"/>
+            <circle cx="24" cy="24" r="21" fill="none" stroke={scoreColor} strokeWidth="3"
+              strokeDasharray={`${((isFinite(score)?score:0)/100)*131.95} 131.95`}
               strokeLinecap="round" style={{ transition:'stroke-dasharray 0.8s ease' }}/>
           </svg>
-          <div style={{ position:'absolute', inset:4, borderRadius:'50%', overflow:'hidden', border:`2px solid ${isComplete ? '#16A34A' : pColor}`, background:`${pColor}12`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:18 }}>
+          <div style={{ position:'absolute', inset:3, borderRadius:'50%', overflow:'hidden', border:`2px solid ${isComplete ? '#16A34A' : pColor}`, background:`${pColor}12`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:16 }}>
             {pet?.photo_url ? <img src={pet.photo_url} alt={name} style={{ width:'100%', height:'100%', objectFit:'cover' }}/> : '\uD83D\uDC3E'}
           </div>
         </div>
         {/* Info */}
         <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ fontSize:16, fontWeight:700, color:'#1a0a2e', marginBottom:3 }}>{name}'s {pLabel} Profile</div>
-          <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
+          <div style={{ fontSize:15, fontWeight:700, color:'#1a0a2e', marginBottom:2 }}>{name}'s {pLabel} Profile</div>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginBottom:2 }}>
             {pet?.breed && (
-              <span style={{ fontSize:13, fontWeight:600, color:pColor, background:`${pColor}10`, border:`1px solid ${pColor}25`, borderRadius:20, padding:'2px 9px' }}>
+              <span style={{ fontSize:12, fontWeight:600, color:pColor, background:`${pColor}10`, border:`1px solid ${pColor}25`, borderRadius:20, padding:'2px 9px', lineHeight:'18px' }}>
                 {pet.breed}{pet?.doggy_soul_answers?.coat_type ? ` · ${pet.doggy_soul_answers.coat_type} coat` : ''}
               </span>
             )}
           </div>
-          <div style={{ fontSize:13, color:scoreColor, fontWeight:600, marginTop:3 }}>
+          <div style={{ fontSize:13, color:scoreColor, fontWeight:600 }}>
             {isComplete ? 'Mira knows everything' : `${totalUnanswered || '?'} questions waiting`}
           </div>
         </div>
