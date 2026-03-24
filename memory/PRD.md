@@ -115,6 +115,8 @@ Currently uses blank white product templates. Goal: 350 AI-generated images (50 
 - [x] CartSidebar — illustration thumbnail + breed/variant for flat art cart items
 - [x] Clear Cart button added to CartSidebar header
 - [x] CartContext CART_VERSION=2 guard — auto-wipes stale localStorage on page load
+
+## Go Pillar — Completed & Signed Off (24 March 2026)
 - [x] artStyle bug fixed — resets to 'watercolour' at START of every ContentModal fetch
 - [x] birthday_cake products filtered from soul_made orderable grid
 - [x] Product snapshot bug fixed — modalProduct captured at click time (stable ref)
@@ -153,7 +155,13 @@ Currently uses blank white product templates. Goal: 350 AI-generated images (50 
 
 > **DO NOT TOUCH THE GO PILLAR.** It has been fully audited, tested (11/13 backend, 100% frontend, 16/16 concierge wiring points), and signed off. See "GO AUDIT" section in `/app/complete-documentation.html`. Any changes to go components require explicit user approval.
 
-## Go Pillar — Completed & Signed Off (24 March 2026)
+## PillarSoulProfile — Cross-Pillar Fix (24 March 2026)
+
+- [x] **Soul builder navigation**: Fixed link from `/my-pets` to `/soul-builder?pet_id=${pet.id}` for incomplete profiles
+- [x] **Score NaN guard**: Added `isFinite(score)` fallback to prevent "NaN%" display
+- [x] **Trigger bar redesign**: Now shows score + "Soul Score" label instead of "Mira's picks →"
+- [x] **Progress bar safety**: NaN-safe width calculation
+- [x] Verified on Care AND Go pages — consistent rendering
 
 - [x] **1 Concierge gap fixed**: GuidedGoPaths `handleSend` replaced dead `/api/concierge/go-path` endpoint with `useConcierge.fire()` including path selections metadata
 - [x] **MiraImagineCard font fix**: Button/reason text bumped from 11px to 13px for mobile readability
