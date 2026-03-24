@@ -13,6 +13,8 @@ import { usePillarContext } from '../context/PillarContext';
 
 const API = (path) => `/api${path}`;
 const POLL_INTERVAL_MS = 15000; // 15 seconds
+const getThreadMessages = (ticket) => ticket?.thread || ticket?.messages || ticket?.conversation || [];
+const getMessageText = (msg) => msg?.text || msg?.content || '';
 
 const TABS = [
   { id: 'all',       label: 'All',      icon: '📬' },
@@ -113,10 +115,10 @@ export default function MyRequestsPage() {
       list.forEach(ticket => {
         const prev = prevTicketsRef.current[ticket.ticket_id];
         const prevLen = prev ? prev.thread_length : 0;
-        const currLen = ticket.thread?.length || 0;
+        const currLen = getThreadMessages(ticket).length;
         if (prevLen > 0 && currLen > prevLen) {
           // Check if new message is from concierge
-          const newMsgs = (ticket.thread || []).slice(prevLen);
+          const newMsgs = getThreadMessages(ticket).slice(prevLen);
           const hasConciergReply = newMsgs.some(m => m.sender === 'concierge' || m.sender === 'admin');
           if (hasConciergReply) {
             newCount++;
@@ -130,7 +132,7 @@ export default function MyRequestsPage() {
 
       // Count unread (tickets with new concierge messages not seen)
       const unread = list.filter(t => {
-        const last = (t.thread || []).slice(-1)[0];
+        const last = getThreadMessages(t).slice(-1)[0];
         return last && (last.sender === 'concierge' || last.sender === 'mira') && t.status !== 'resolved';
       }).length;
       setUnreadCount(unread);
@@ -163,7 +165,7 @@ export default function MyRequestsPage() {
     if (threadEndRef.current) {
       threadEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [activeTicket?.thread?.length]);
+  }, [getThreadMessages(activeTicket).length]);
 
   // ── Send message from member ──
   const sendMessage = async () => {
@@ -241,7 +243,7 @@ export default function MyRequestsPage() {
 
         {/* Thread messages */}
         <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '100px', minHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
-          {(activeTicket.thread || []).map((msg, i) => {
+          {getThreadMessages(activeTicket).map((msg, i) => {
             const isParent    = msg.sender === 'parent';
             const isConcierge = msg.sender === 'concierge' || msg.sender === 'admin';
             const isMira      = msg.sender === 'mira';
@@ -264,7 +266,7 @@ export default function MyRequestsPage() {
                     border: isParent ? 'none' : `1px solid ${isMira ? 'rgba(139,92,246,0.2)' : 'rgba(244,239,230,0.08)'}`,
                     fontSize: '14px', color: '#F4EFE6', lineHeight: 1.6,
                   }}>
-                    {msg.text}
+                    {getMessageText(msg)}
                   </div>
                   <div style={{ fontSize: '10px', color: 'rgba(244,239,230,0.3)', marginTop: '3px', textAlign: isParent ? 'right' : 'left', paddingLeft: isParent ? 0 : '4px' }}>
                     {timeAgo(msg.timestamp)}
@@ -336,7 +338,7 @@ export default function MyRequestsPage() {
       ) : (
         <div style={c.list}>
           {filtered.map(ticket => {
-            const lastMsg  = (ticket.thread || []).slice(-1)[0];
+            const lastMsg  = getThreadMessages(ticket).slice(-1)[0];
             const isUnread = lastMsg && (lastMsg.sender === 'concierge' || lastMsg.sender === 'mira') && ticket.status !== 'resolved';
             const pillarColor = PILLAR_COLORS[ticket.pillar] || PILLAR_COLORS.general;
             return (
@@ -358,11 +360,11 @@ export default function MyRequestsPage() {
                       <StatusBadge status={ticket.status} />
                     </div>
                     <div style={{ fontSize: '12px', color: 'rgba(244,239,230,0.55)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '4px' }}>
-                      {lastMsg?.text || ticket.intent_primary?.replace(/_/g, ' ') || 'New request'}
+                      {getMessageText(lastMsg) || ticket.intent_primary?.replace(/_/g, ' ') || 'New request'}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span style={{ fontSize: '10px', color: 'rgba(244,239,230,0.3)' }}>
-                        {(ticket.thread || []).length} messages
+                        {getThreadMessages(ticket).length} messages
                       </span>
                       <span style={{ fontSize: '10px', color: 'rgba(244,239,230,0.3)' }}>
                         {timeAgo(lastMsg?.timestamp || ticket.created_at)}
