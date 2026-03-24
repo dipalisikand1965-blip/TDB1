@@ -14,6 +14,8 @@ import { format } from 'date-fns';
 import { API_URL } from '../utils/api';
 import { findBreedIllustration, getBreedIllustrationByName } from '../utils/breedIllustrations';
 import { getProductMockup } from '../utils/productMockups';
+import { tdc } from '../utils/tdc_intent';
+import { bookViaConcierge } from '../utils/MiraCardActions';
 
 // Autoship tier discount rates
 const AUTOSHIP_DISCOUNT_TIERS = [
@@ -209,10 +211,12 @@ const PILLAR_CROSS_SELL_TITLES = {
   default: "You May Also Like"
 };
 
-const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraContext = null, overrideImageUrl = null, artStyleLabel = null }) => {
+const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = null, miraContext = null, overrideImageUrl = null, artStyleLabel = null }) => {
   const [showModal, setShowModal] = useState(false);
   const { user, token } = useAuth();
   const isServiceProduct = (product.product_type === 'service') || (product.category === 'service');
+  const effectiveSelectedPet = selectedPet || pet;
+  const isConciergeOnly = pillar === 'paperwork';
   
   // Default miraContext if not provided - generates pillar-appropriate messaging
   const defaultMiraContext = {
@@ -423,11 +427,18 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
   
   const optionsCount = getOptionsCount();
 
+  const openDetails = () => {
+    if (isConciergeOnly) {
+      tdc.view({ product, pillar, pet: effectiveSelectedPet, channel: `${pillar}_product_card_view` });
+    }
+    setShowModal(true);
+  };
+
   return (
     <>
       <div 
         className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer"
-        onClick={() => setShowModal(true)}
+        onClick={openDetails}
         data-testid={`product-card-${product.id}`}
       >
         {/* MOBILE: Larger images (h-44 = 176px vs h-40 = 160px) */}
@@ -437,7 +448,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
             // IMPORTANT: Only apply mockups to soul_made products
             // Regular Shopify products should ALWAYS use their original product images
             const isSoulMade = product.soul_tier === 'soul_made';
-            const mockup = (isSoulMade && selectedPet?.breed) ? getProductMockup(product, selectedPet.breed) : null;
+            const mockup = (isSoulMade && effectiveSelectedPet?.breed) ? getProductMockup(product, effectiveSelectedPet.breed) : null;
             const displayImage = overrideImageUrl || mockup?.mockupUrl || productImage;
             
             return (
@@ -531,7 +542,11 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
               : (product.name||"")}
           </h3>
 
-          {isServiceProduct ? (
+          {isConciergeOnly ? (
+            <p className="text-sm font-semibold text-teal-700" style={{ letterSpacing: '-0.01em' }}>
+              Pricing shared by Concierge
+            </p>
+          ) : isServiceProduct ? (
             <p className="text-sm font-semibold text-orange-600" style={{ letterSpacing: '-0.01em' }}>
               Price on Request · Concierge
             </p>
@@ -547,26 +562,144 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
           
           {/* CTA — opens modal; modal handles Concierge for services */}
           <button
-            onClick={(e) => { e.stopPropagation(); setShowModal(true); }}
-            className={`w-full mt-2 py-2 text-xs font-semibold rounded-lg transition-colors ${isServiceProduct ? 'bg-orange-100 hover:bg-orange-200 text-orange-700' : 'bg-purple-100 hover:bg-purple-200 text-purple-700'}`}
+            onClick={(e) => { e.stopPropagation(); openDetails(); }}
+            className={`w-full mt-2 py-2 text-xs font-semibold rounded-lg transition-colors ${isServiceProduct || isConciergeOnly ? 'bg-orange-100 hover:bg-orange-200 text-orange-700' : 'bg-purple-100 hover:bg-purple-200 text-purple-700'}`}
             data-testid={`view-product-${product.id}`}
           >
-            {isServiceProduct ? 'Talk to Concierge →' : 'View Details'}
+            {isServiceProduct || isConciergeOnly ? 'Talk to Concierge →' : 'View Details'}
           </button>
         </div>
       </div>
 
       {showModal && createPortal(
-        <ProductDetailModal 
-          product={product} 
-          pillar={pillar}
-          selectedPet={selectedPet}
-          miraContext={effectiveMiraContext}
-          onClose={() => setShowModal(false)} 
-        />,
+        isConciergeOnly ? (
+          <ConciergeOnlyProductDetailModal
+            product={product}
+            pillar={pillar}
+            selectedPet={effectiveSelectedPet}
+            onClose={() => setShowModal(false)}
+          />
+        ) : (
+          <ProductDetailModal 
+            product={product} 
+            pillar={pillar}
+            selectedPet={effectiveSelectedPet}
+            miraContext={effectiveMiraContext}
+            onClose={() => setShowModal(false)} 
+          />
+        ),
         document.body
       )}
     </>
+  );
+};
+
+const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', selectedPet = null, onClose }) => {
+  const { token } = useAuth();
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const petName = selectedPet?.name || 'your dog';
+  const productImage = product.image_url || product.cloudinary_url || product.mockup_url || product.image || product.images?.[0] || 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579';
+
+  const handleRequest = async () => {
+    setSending(true);
+    await bookViaConcierge({
+      service: product?.name || 'Paperwork recommendation',
+      pillar,
+      pet: selectedPet,
+      token,
+      channel: `${pillar}_product_card`,
+      amount: product?.price,
+      onSuccess: () => setSent(true),
+      onError: () => setSent(true),
+    });
+    setSending(false);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[50000]" onClick={onClose}>
+      <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl relative" onClick={(e) => e.stopPropagation()} data-testid={`paperwork-product-modal-${product.id || 'item'}`}>
+        <button
+          className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+          onClick={onClose}
+          data-testid="paperwork-product-modal-close-button"
+        >
+          <X className="w-5 h-5 text-gray-600" />
+        </button>
+
+        <div className="grid md:grid-cols-2">
+          <div className="relative aspect-square bg-slate-50 p-6">
+            <img
+              src={productImage}
+              alt={product.name}
+              className="w-full h-full object-contain"
+              onError={(e) => { e.target.src = 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579'; }}
+            />
+          </div>
+
+          <div className="p-6 flex flex-col">
+            <div className="inline-flex items-center gap-2 self-start rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 mb-4">
+              <MessageSquare className="w-3.5 h-3.5" />
+              Concierge-first paperwork pick
+            </div>
+
+            <h2 className="text-2xl font-bold text-slate-900 mb-2 pr-8">
+              {product.breed === "all" && (product.name||"").includes(" · ")
+                ? (product.name||"").split(" · ").slice(1).join(" · ")
+                : (product.name||"")}
+            </h2>
+            <p className="text-sm text-slate-500 mb-4">Curated for {petName}. Pricing is shared by Concierge after review.</p>
+
+            {product.mira_hint && (
+              <div className="rounded-xl border border-teal-100 bg-teal-50 p-4 mb-4">
+                <p className="text-xs font-semibold text-teal-800 mb-1">Why Mira picked this</p>
+                <p className="text-sm text-teal-700">{product.mira_hint}</p>
+              </div>
+            )}
+
+            {(product.short_description || product.description) && (
+              <div className="mb-4">
+                <p className="text-sm text-slate-700 leading-6">{product.short_description || product.description}</p>
+              </div>
+            )}
+
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 mb-6">
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-500 font-semibold mb-2">What happens next</p>
+              <ul className="space-y-2 text-sm text-slate-700">
+                <li>• Concierge receives the request with {petName}'s pet context.</li>
+                <li>• Pricing and fit are shared after document needs are reviewed.</li>
+                <li>• The request appears in Admin Service Desk for follow-up.</li>
+              </ul>
+            </div>
+
+            <div className="mt-auto flex items-center justify-between gap-4 border-t pt-4">
+              <div>
+                <p className="text-xs text-slate-500">Concierge handling</p>
+                <p className="text-base font-semibold text-teal-700">Pricing shared on WhatsApp</p>
+              </div>
+              {sent ? (
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm font-semibold" data-testid="paperwork-product-modal-sent-state">
+                  <Check className="w-4 h-4" /> Sent to Concierge!
+                </div>
+              ) : (
+                <Button
+                  onClick={handleRequest}
+                  disabled={sending}
+                  className="bg-gradient-to-r from-teal-600 to-slate-800 hover:from-teal-700 hover:to-slate-900 px-6"
+                  data-testid={`paperwork-product-modal-request-${product.id || 'item'}`}
+                >
+                  {sending ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...</>
+                  ) : (
+                    <><MessageSquare className="w-4 h-4 mr-2" /> Talk to Concierge</>
+                  )}
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -1838,5 +1971,5 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   );
 };
 
-export { ProductDetailModal };
+export { ProductDetailModal, ConciergeOnlyProductDetailModal };
 export default ProductCard;

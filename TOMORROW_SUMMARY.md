@@ -200,7 +200,7 @@ All features tested and verified (Test Report: `/app/test_reports/iteration_23.j
 | System | Username | Password |
 |--------|----------|----------|
 | Admin Panel | aditya | lola4304 |
-| Preview URL | https://learn-pillar-audit.preview.emergentagent.com |
+| Preview URL | https://pet-wrapped-1.preview.emergentagent.com |
 
 ---
 

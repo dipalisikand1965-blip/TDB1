@@ -25,16 +25,19 @@ import { ChevronDown, Loader2, Check } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
-import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
+import SharedProductCard, { ConciergeOnlyProductDetailModal, ProductDetailModal } from "../components/ProductCard";
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import SoulMadeModal from "../components/SoulMadeModal";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import ConciergeToast from "../components/common/ConciergeToast";
-import GuidedPaperworkPaths from "../components/paperwork/GuidedPaperworkPaths";
+import GuidedPaperworkPaths, { buildPaths, PathFlowModal } from "../components/paperwork/GuidedPaperworkPaths";
+import PaperworkNearMe from "../components/paperwork/PaperworkNearMe";
 import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
+import { bookViaConcierge } from "../utils/MiraCardActions";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import { filterBreedProducts, normaliseBreed } from "../utils/breedNormalise";
 
 // ─── COLOUR SYSTEM ─────────────────────────────────────────
 const G = {

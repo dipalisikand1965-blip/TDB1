@@ -36,7 +36,7 @@ Contains: State machine, conversation flows
 
 ```bash
 # Test meal plan returns NO products
-curl -s -X POST "https://learn-pillar-audit.preview.emergentagent.com/api/mira/os/understand-with-products" \
+curl -s -X POST "https://pet-wrapped-1.preview.emergentagent.com/api/mira/os/understand-with-products" \
   -H "Content-Type: application/json" \
   -d '{"input": "Create a healthy meal plan for Mojo", "pet_context": {"name": "Mojo", "breed": "Indie"}}' \
   | python3 -c "import sys,json; r=json.load(sys.stdin); print('Products:', len(r.get('response',{}).get('products',[])))"
