@@ -60,6 +60,19 @@ import { tdc } from '../utils/tdc_intent';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 
+const CELEBRATE_SERVICE_BLACKLIST = [
+  'pet loss', 'grief', 'memorial', 'euthanasia', 'farewell', 'aftercare', 'counseling', 'counselling', 'rainbow bridge'
+];
+
+const isCelebrateSafeService = (pick) => {
+  const text = `${pick?.name || ''} ${pick?.description || ''} ${pick?.category || ''} ${pick?.sub_category || ''}`.toLowerCase();
+  const pickPillar = String(pick?.pillar || '').toLowerCase();
+  const pillarList = Array.isArray(pick?.pillars) ? pick.pillars.map((p) => String(p).toLowerCase()) : [];
+  if (pickPillar && pickPillar !== 'celebrate') return false;
+  if (pillarList.length > 0 && !pillarList.includes('celebrate')) return false;
+  return !CELEBRATE_SERVICE_BLACKLIST.some((bad) => text.includes(bad));
+};
+
 // ─── KNOWN BREEDS (breed filter — PET FIRST, BREED NEXT) ────────────
 const KNOWN_BREEDS = ['american bully','beagle','border collie','boxer','cavalier','chihuahua','chow chow','dachshund','dalmatian','doberman','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','jack russell','labrador','lhasa apso','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
 function filterBreedProducts(products, petBreed) {
@@ -92,7 +105,7 @@ function CelebrateMiraPicksSection({ pet, token, onOpenService }) {
     ])
       .then(([pData, sData]) => {
         const prods = filterBreedProducts(pData?.picks || [], pet?.breed);
-        const svcs = sData?.picks || [];
+        const svcs = (sData?.picks || []).filter(isCelebrateSafeService);
         const merged = [];
         let pi = 0, si = 0;
         while (pi < prods.length || si < svcs.length) {
