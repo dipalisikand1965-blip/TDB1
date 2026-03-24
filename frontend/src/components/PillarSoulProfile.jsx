@@ -176,6 +176,12 @@ function getMiraVoice(pillar, soul, name) {
   return lines[pillar] || `I know ${name}. Let me show you what I've learned.`;
 }
 
+function getPetProfileTabForPillar(pillar) {
+  if (pillar === 'emergency' || pillar === 'care' || pillar === 'paperwork') return 'health';
+  if (pillar === 'farewell') return 'memories';
+  return 'personality';
+}
+
 // ── Main component ──
 export default function PillarSoulProfile({
   pet, token,
@@ -522,10 +528,13 @@ export default function PillarSoulProfile({
               )}
 
               {/* Footer */}
-              <button onClick={() => { setOpen(false); navigate(score >= 100 ? `/pet-home` : `/soul-builder?pet_id=${pet.id}`); }}
+              <button onClick={() => {
+                setOpen(false);
+                navigate(`/pet/${pet.id}?tab=${getPetProfileTabForPillar(pillar)}`);
+              }}
                 data-testid={`${pillar}-profile-full-link`}
                 style={{ marginTop:20, width:'100%', padding:11, borderRadius:12, border:'1px solid rgba(255,255,255,0.08)', background:'rgba(255,255,255,0.03)', color:'rgba(245,240,232,0.4)', fontSize:12, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6, transition:'all 0.15s' }}>
-                {score >= 100 ? `See ${name}'s full profile` : `Continue ${name}'s Soul Builder`}
+                {score >= 100 ? `See ${name}'s full profile` : `Continue ${name}'s profile`}
               </button>
             </div>
           </div>

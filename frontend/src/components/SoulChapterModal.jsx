@@ -5,6 +5,7 @@
  * KEYS MATCH ACTUAL doggy_soul_answers fields from the DB
  */
 import { useState, useCallback, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import { Check, X, ChevronRight, Sparkles } from "lucide-react";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -95,6 +96,7 @@ function formatVal(v) {
 }
 
 export default function SoulChapterModal({ chapter, pet, token, onClose, onScoreUpdated }) {
+  const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
   const [qLoading, setQLoading] = useState(false);
   const [answers, setAnswers] = useState({});
@@ -104,6 +106,12 @@ export default function SoulChapterModal({ chapter, pet, token, onClose, onScore
 
   const chapterId = chapter?.id;
   const petId = pet?.id;
+
+  const profileTabForChapter = useCallback((id) => {
+    if (id === 'health') return 'health';
+    if (id === 'identity') return 'identity';
+    return 'personality';
+  }, []);
 
   // Load questions from backend API
   const loadQuestions = useCallback(() => {
@@ -318,10 +326,10 @@ export default function SoulChapterModal({ chapter, pet, token, onClose, onScore
             </div>
           )}
 
-          <button onClick={() => { onClose(); window.location.href = `/soul-builder?chapter=${chapter.id}`; }}
+          <button onClick={() => { onClose(); navigate(`/pet/${pet.id}?tab=${profileTabForChapter(chapter.id)}`); }}
             data-testid="soul-chapter-full-builder-link"
             style={{ marginTop:16, width:"100%", padding:"10px", borderRadius:12, border:"1px solid rgba(255,255,255,0.08)", background:"rgba(255,255,255,0.03)", color:"rgba(245,240,232,0.4)", fontSize:12, fontWeight:500, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
-            See full Soul Builder <ChevronRight size={14} />
+            Open full pet profile <ChevronRight size={14} />
           </button>
         </div>
       </div>
