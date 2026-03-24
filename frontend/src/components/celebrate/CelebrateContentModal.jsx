@@ -1890,12 +1890,54 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
               </>
             )}
 
+            {category !== 'soul_made' && (
+              <div style={{ padding: '0 20px' }}>
+                <div
+                  data-testid="soul-made-cross-sell-inline"
+                  onClick={() => setSoulMadeOpen(true)}
+                  style={{
+                    position: 'relative',
+                    margin:'24px 0 8px',
+                    padding:'20px 20px 18px',
+                    background:'linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 50%, #1a0a2e 100%)',
+                    border:'1.5px solid rgba(196,77,255,0.4)',
+                    borderRadius:18,
+                    cursor:'pointer',
+                    overflow:'hidden',
+                    boxShadow:'0 4px 24px rgba(196,77,255,0.18)',
+                    transition:'transform 0.15s, box-shadow 0.15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 8px 32px rgba(196,77,255,0.32)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow='0 4px 24px rgba(196,77,255,0.18)'; }}
+                >
+                  <div style={{position:'absolute',top:-40,right:-40,width:160,height:160,background:'radial-gradient(circle,rgba(196,77,255,0.15) 0%,transparent 70%)',pointerEvents:'none'}}/>
+                  <div style={{fontSize:10,fontWeight:800,letterSpacing:'0.15em',color:'#C44DFF',marginBottom:8}}>
+                    {`✦ SOUL MADE™ · MADE ONLY FOR ${(petName||'YOUR DOG').toUpperCase()}`}
+                  </div>
+                  <div style={{fontSize:20,fontWeight:800,color:'#F5F0E8',fontFamily:'Georgia,serif',marginBottom:6,lineHeight:1.2}}>
+                    {petName}'s face. On everything.
+                  </div>
+                  <div style={{fontSize:13,color:'rgba(245,240,232,0.55)',marginBottom:16}}>
+                    Bandana · Portrait Frame · Party Hat · Cake Topper · Tote · and more
+                  </div>
+                  <div style={{display:'flex',flexDirection:'column',alignItems:'flex-start',gap:12}}>
+                    <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',lineHeight:1.4}}>
+                      Upload a photo · Concierge® creates it
+                    </div>
+                    <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#C44DFF,#9333EA)',borderRadius:30,padding:'10px 22px',fontSize:13,fontWeight:700,color:'#fff',boxShadow:'0 4px 16px rgba(196,77,255,0.4)'}}>
+                      {`✦ Make something only ${petName} has`}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
           </div>
         )}
       </div>
 
       {/* ── SOUL MADE™ Cross-sell Strip — shows in ALL categories ── */}
-      {category !== 'soul_made' && (
+      {false && category !== 'soul_made' && (
         <div style={{ padding: '0 20px' }}>
           <div
             data-testid="soul-made-cross-sell"
