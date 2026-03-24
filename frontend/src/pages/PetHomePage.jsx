@@ -574,6 +574,30 @@ const PetHomePage = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-purple-950 pb-24">
       {/* Main Content */}
       <div className="p-4 md:p-6">
+        <div className="mb-4 flex gap-2 overflow-x-auto scrollbar-hide" data-testid="pet-home-primary-nav">
+          <button
+            onClick={() => navigate('/pet-home')}
+            data-testid="pet-home-nav-pet-home"
+            className="px-4 py-2 rounded-full bg-pink-500/20 border border-pink-500/30 text-pink-300 text-sm font-medium whitespace-nowrap"
+          >
+            Pet Home
+          </button>
+          <button
+            onClick={() => navigate('/dashboard')}
+            data-testid="pet-home-nav-dashboard"
+            className="px-4 py-2 rounded-full bg-slate-800 border border-slate-700 text-slate-200 text-sm font-medium whitespace-nowrap hover:border-pink-500/40"
+          >
+            Dashboard
+          </button>
+          <button
+            onClick={() => navigate('/my-pets')}
+            data-testid="pet-home-nav-my-pets"
+            className="px-4 py-2 rounded-full bg-slate-800 border border-slate-700 text-slate-200 text-sm font-medium whitespace-nowrap hover:border-pink-500/40"
+          >
+            My Pets
+          </button>
+        </div>
+
         {/* Pet Selector (multi-pet) */}
         <PetSelector 
           pets={pets} 
