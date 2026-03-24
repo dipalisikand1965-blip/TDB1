@@ -1349,7 +1349,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          message: replyText || (attachments.length > 0 ? `[${attachments.length} attachment(s)]` : ''), 
+          content: replyText || (attachments.length > 0 ? `[${attachments.length} attachment(s)]` : ''), 
           is_internal: isInternal,
           attachments: attachmentData
         })

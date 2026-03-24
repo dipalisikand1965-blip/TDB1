@@ -1,10 +1,16 @@
+import os
+import sys
+if os.environ.get('ALLOW_SEED') != 'yes_i_know_this_deletes_everything':
+    print('BLOCKED: This script will DELETE production data.')
+    print('To run: set ALLOW_SEED=yes_i_know_this_deletes_everything')
+    sys.exit(1)
+
 """
 Comprehensive Data Seeder for The Doggy Company
 Seeds all critical data: products, bundles, restaurants, stay properties, etc.
 """
 
 import asyncio
-import os
 import uuid
 from datetime import datetime, timezone
 from motor.motor_asyncio import AsyncIOMotorClient
