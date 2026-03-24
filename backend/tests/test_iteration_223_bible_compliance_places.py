@@ -9,7 +9,7 @@ Features to verify:
 3. NON_LOCATION_INTENTS list properly blocks Places for reminder/checkup/schedule intents
 
 API: POST /api/mira/chat
-Endpoint URL: https://concierge-wiring.preview.emergentagent.com
+Endpoint URL: https://pet-soul-audit.preview.emergentagent.com
 """
 
 import pytest
@@ -17,7 +17,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://concierge-wiring.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pet-soul-audit.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 TEST_EMAIL = "dipali@clubconcierge.in"
