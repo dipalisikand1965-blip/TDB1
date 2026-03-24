@@ -330,7 +330,7 @@ export default function PillarSoulProfile({
             <div style={{ fontSize:14, fontWeight:700, color:'#1a1a2e', marginBottom:3 }}>{name}'s {pLabel} Profile</div>
             <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
               {pet?.breed && (
-                <span style={{ fontSize:11, fontWeight:600, color:pColor, background:`${pColor}10`, border:`1px solid ${pColor}25`, borderRadius:20, padding:'2px 9px' }}>
+                <span style={{ fontSize:13, fontWeight:600, color:pColor, background:`${pColor}10`, border:`1px solid ${pColor}25`, borderRadius:20, padding:'2px 9px' }}>
                   {pet.breed}{pet?.doggy_soul_answers?.coat_type ? ` · ${pet.doggy_soul_answers.coat_type} coat` : ''}
                 </span>
               )}
