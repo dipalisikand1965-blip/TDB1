@@ -20,6 +20,7 @@
 import { useState } from "react";
 import { API_URL } from "../../utils/api";
 import { tdc } from "../../utils/tdc_intent";
+import { useConcierge } from "../../hooks/useConcierge";
 
 const G = {
   deep:"#0D3349", deepMid:"#1A5276", teal:"#1ABC9C", light:"#76D7C4",
@@ -219,6 +220,7 @@ function ModalShell({ path, onClose, children }) {
 }
 
 function PathFlowModal({ path, pet, onClose }) {
+  const { fire } = useConcierge({ pet, pillar: 'go' });
   const totalSteps = path.stepLabels.length;
   const [currentStep, setCurrentStep] = useState(1);
   const [selections, setSelections]   = useState({});
@@ -243,15 +245,23 @@ function PathFlowModal({ path, pet, onClose }) {
 
   const handleSend = async () => {
     setSending(true);
-    // Fire tdc on path completion
     tdc.request({ text: `Completed guided path: ${path.title}`, name: path.title, pillar: "go", pet, channel: "go_guided_paths_complete" });
-    try {
-      await fetch(`${API_URL}/api/concierge/go-path`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ petId: pet?.id, pathId: path.id, selections }),
-      });
-    } catch {}
+    const petName = pet?.name || 'your dog';
+    const allergies = (pet?.allergies || []).join(', ') || 'none';
+    await fire({
+      type: path.id === 'emergency_travel' ? 'urgent' : 'path',
+      name: path.title,
+      urgency: path.id === 'emergency_travel' ? 'emergency' : 'normal',
+      channel: 'go_guided_path_submit',
+      note: Object.entries(selections).map(([k,v]) => `Step ${k}: ${Array.isArray(v) ? v.join(', ') : v}`).join(' | '),
+      metadata: {
+        path_id: path.id,
+        path_title: path.title,
+        pet_breed: pet?.breed,
+        pet_allergies: allergies,
+        selections,
+      },
+    });
     setSending(false);
     setSubmitted(true);
   };
