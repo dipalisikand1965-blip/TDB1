@@ -296,7 +296,7 @@ function ServiceBookingModal({ service, pet, onClose }) {
             <>
               <div style={{background:G.pale,borderRadius:12,padding:"16px",marginBottom:14}}>
                 <div style={{fontSize:13,color:G.darkText,lineHeight:1.6}}>Our concierge will contact you within 2 hours to arrange {petName}'s {service.name}.</div>
-                <div style={{fontSize:12,color:G.mutedText,marginTop:8}}>Need: {choice} · Schedule: {schedule} · Price on WhatsApp</div>
+                <div style={{fontSize:12,color:G.mutedText,marginTop:8}}>Need: {choice} · Schedule: {schedule}</div>
               </div>
               <textarea placeholder={`Any notes for Mira? (optional)`} value={notes} onChange={e=>setNotes(e.target.value)}
                 style={{width:"100%",border:`1.5px solid ${G.border}`,borderRadius:10,padding:"11px 14px",fontSize:13,color:G.darkText,outline:"none",resize:"none",minHeight:72,boxSizing:"border-box"}}/>
@@ -387,9 +387,7 @@ function MiraPicksSection({ pet, onSelectProd }) {
                       <span style={{fontSize:10,fontWeight:800,color:scoreColor}}>{score}</span>
                     </div>
                   )}
-                  {isService ? (
-                    <p style={{fontSize:11,color:G.teal,fontStyle:'italic',margin:'0 0 4px'}}>Price on WhatsApp</p>
-                  ) : (
+                  {isService ? null : (
                     pick.mira_reason && !pick.mira_reason.toLowerCase().includes('celebrat') && <p style={{fontSize:10,color:"#888",lineHeight:1.4,margin:0,fontStyle:"italic"}}>{pick.mira_reason}</p>
                   )}
                   <button
@@ -499,8 +497,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook, o
                     {svc.tagline&&<div style={{fontSize:10,color:G.mutedText,marginBottom:2}}>{t(svc.tagline,petName)}</div>}
                     <div style={{fontSize:13,fontWeight:700,color:G.darkText,marginBottom:4,lineHeight:1.3}}>{svc.name}</div>
                     <div style={{fontSize:11,color:"#888",lineHeight:1.4,marginBottom:8,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{t(svc.desc,petName)}</div>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                      <span style={{fontSize:11,color:'#0D9488',fontStyle:'italic'}}>Price on WhatsApp</span>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"flex-end"}}>
                       <button data-testid={`paperwork-service-card-${svc.id}`} style={{background:G.teal,color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Book for {petName} →</button>
                     </div>
                   </div>
@@ -606,7 +603,7 @@ function PaperworkContentModal({ isOpen, onClose, category, pet }) {
               <div style={{fontSize:13,color:'rgba(245,240,232,0.55)',marginBottom:16}}>Bandana · Portrait Frame · Party Hat · Cake Topper · Tote · and more</div>
               <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                 <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#C44DFF,#9333EA)',borderRadius:30,padding:'10px 22px',fontSize:13,fontWeight:700,color:'#fff',boxShadow:'0 4px 16px rgba(196,77,255,0.4)'}}>{`\u2726 Make something only ${petName} has`}</div>
-                <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',maxWidth:160,textAlign:'right',lineHeight:1.4}}>Upload a photo · Concierge® creates it · Price on WhatsApp</div>
+                <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',maxWidth:160,textAlign:'right',lineHeight:1.4}}>Upload a photo · Concierge® creates it</div>
               </div>
             </div>
           )}
@@ -949,8 +946,7 @@ const PaperworkSoulPage = () => {
                     <div style={{fontSize:10,color:G.mutedText,marginBottom:2}}>{t(svc.tagline,petName)}</div>
                     <div style={{fontSize:13,fontWeight:700,color:G.darkText,marginBottom:4}}>{svc.name}</div>
                     <div style={{fontSize:11,color:"#888",lineHeight:1.4,marginBottom:8,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{t(svc.desc,petName)}</div>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                      <span style={{fontSize:11,color:'#0D9488',fontStyle:'italic'}}>Price on WhatsApp</span>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"flex-end"}}>
                       <button data-testid={`paperwork-advisory-card-${svc.id}`} style={{background:G.teal,color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Book for {petName} →</button>
                     </div>
                   </div>
