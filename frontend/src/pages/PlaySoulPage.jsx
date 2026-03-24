@@ -1714,6 +1714,7 @@ const PlaySoulPage = () => {
         category={modalCategory}
         pet={petData}
         onClose={() => setModalCategory(null)}
+        onNavigateToNearMe={() => { setModalCategory(null); setActiveTab("nearme"); }}
       />
     </PillarPageLayout>
   );
