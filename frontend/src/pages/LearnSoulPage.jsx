@@ -31,7 +31,7 @@ import SoulMadeCollection from "../components/SoulMadeCollection";
 import SoulMadeModal from "../components/SoulMadeModal";
 import ConciergeToast from "../components/common/ConciergeToast";
 import LearnNearMe from "../components/learn/LearnNearMe";
-import GuidedLearnPaths from "../components/learn/GuidedLearnPaths";
+import GuidedLearnPaths, { buildPaths as buildLearnGuidedPaths, PathFlowModal as LearnPathFlowModal } from "../components/learn/GuidedLearnPaths";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
@@ -1826,6 +1826,7 @@ const LearnSoulPage = () => {
   const [activeTab,   setActiveTab]   = useState("learn");
   const [openDim,     setOpenDim]     = useState(null);
   const [catModal,    setCatModal]    = useState(null);
+  const [guidedPathModal, setGuidedPathModal] = useState(null); // For pill → guided path modal
   const [petData,     setPetData]     = useState(null);
   const [soulScore,   setSoulScore]   = useState(0);
   const [apiProducts, setApiProducts] = useState({});
@@ -1842,6 +1843,35 @@ const LearnSoulPage = () => {
     tdc.book({ service: svc.name || svc.id, pillar: "learn", pet: petData, channel: "learn_pillar", amount: svc.base_price || svc.price });
     setConciergeType(svc.concierge_type || svc.id || svc.category || '');
     setConciergeOpen(true);
+  }, [petData]);
+
+  // ── Pill → Guided Path mapping ──────────────────────────────
+  // Maps category pill IDs to guided learn path IDs
+  const PILL_TO_GUIDED_PATH = {
+    foundations: "new_puppy",     // or basic_training
+    behaviour:  "behaviour",
+    training:   "basic_training",
+    enrichment: "enrichment",
+    breed:      null,             // no guided path — opens product modal
+    soul:       null,             // no guided path — opens product modal
+    bundles:    null,             // opens product modal
+    mira:       null,             // opens product modal
+    soul_made:  null,             // opens product modal
+    tricks:     null,             // opens product modal (no dedicated guided path)
+  };
+
+  const handlePillClick = useCallback((catId) => {
+    const pathId = PILL_TO_GUIDED_PATH[catId];
+    if (pathId && petData) {
+      const paths = buildLearnGuidedPaths(petData);
+      const match = paths.find(p => p.id === pathId);
+      if (match) {
+        setGuidedPathModal(match);
+        return;
+      }
+    }
+    // Fallback: open product modal
+    setCatModal(catId);
   }, [petData]);
 
   // Pre-fetch everything on page load
@@ -1982,7 +2012,7 @@ const LearnSoulPage = () => {
               return(
                 <button key={cat.id} data-testid={`learn-cat-${cat.id}`}
                   onClick={()=>{
-                    setCatModal(cat.id);
+                    handlePillClick(cat.id);
                   }}
                   style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0,
                     minWidth:82,height:72,padding:"10px 12px",cursor:"pointer",background:"transparent",
@@ -2060,10 +2090,18 @@ const LearnSoulPage = () => {
               `}</style>
               {learnDims.map(dim=>{
                 const isOpen=openDim===dim.id;
+                const dimPathId = PILL_TO_GUIDED_PATH[dim.id];
                 return(
                   <div key={dim.id} style={{gridColumn:isOpen?"1 / -1":"auto"}}>
                     {/* Card */}
-                    <div onClick={()=>setOpenDim(isOpen?null:dim.id)}
+                    <div onClick={()=>{
+                      if (dimPathId && petData) {
+                        const paths = buildLearnGuidedPaths(petData);
+                        const match = paths.find(p => p.id === dimPathId);
+                        if (match) { setGuidedPathModal(match); return; }
+                      }
+                      setOpenDim(isOpen?null:dim.id);
+                    }}
                       data-testid={`learn-dim-${dim.id}`}
                       style={{background:"#fff",borderRadius:isOpen?"16px 16px 0 0":16,
                         cursor:"pointer",position:"relative",overflow:"hidden",
@@ -2100,9 +2138,9 @@ const LearnSoulPage = () => {
                         {/* CTA */}
                         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                           <span style={{fontSize:12,color:G.violet,fontWeight:700}}>
-                            {isOpen?"Close ↑":"Explore →"}
+                            {dimPathId ? `Start ${petName}'s path →` : isOpen?"Close ↑":"Explore →"}
                           </span>
-                          <span style={{fontSize:11,color:"#aaa"}}>{dim.ytQuery?"Products · Videos · Book":"Products · Book"}</span>
+                          <span style={{fontSize:11,color:"#aaa"}}>{dimPathId?"Guided by Mira":dim.ytQuery?"Products · Videos · Book":"Products · Book"}</span>
                         </div>
                       </div>
                     </div>
@@ -2210,6 +2248,13 @@ const LearnSoulPage = () => {
       category={catModal}
       pet={petData}
     />
+    {guidedPathModal && (
+      <LearnPathFlowModal
+        path={guidedPathModal}
+        pet={petData}
+        onClose={() => setGuidedPathModal(null)}
+      />
+    )}
     </>
   );
 };
