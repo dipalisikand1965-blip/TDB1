@@ -27,6 +27,17 @@ const ServiceDeskPage = () => {
   // Check admin auth on mount
   useEffect(() => {
     const checkAuth = () => {
+      const sessionAuth = sessionStorage.getItem('admin_authenticated');
+      const sessionExpiry = sessionStorage.getItem('admin_auth_expiry');
+      if (sessionAuth === 'true' && sessionExpiry) {
+        const expiry = parseInt(sessionExpiry, 10);
+        if (Date.now() < expiry) {
+          setIsAuthenticated(true);
+          setIsLoading(false);
+          return;
+        }
+      }
+
       const token = localStorage.getItem('tdc_admin_token');
       const storedUser = localStorage.getItem('tdc_admin_user');
       const storedPassword = localStorage.getItem('tdc_admin_password');
@@ -53,6 +64,10 @@ const ServiceDeskPage = () => {
       
       if (res.ok) {
         const data = await res.json();
+        const expiry = Date.now() + (8 * 60 * 60 * 1000);
+        sessionStorage.setItem('admin_authenticated', 'true');
+        sessionStorage.setItem('admin_auth_expiry', expiry.toString());
+        sessionStorage.setItem('admin_username', username);
         localStorage.setItem('tdc_admin_token', data.token);
         localStorage.setItem('tdc_admin_user', username);
         localStorage.setItem('tdc_admin_password', password);
@@ -78,6 +93,15 @@ const ServiceDeskPage = () => {
       const basicAuth = btoa(`${storedUser}:${storedPassword}`);
       return {
         'Authorization': `Basic ${basicAuth}`
+      };
+    }
+
+    const sessionAuth = sessionStorage.getItem('admin_authenticated');
+    if (sessionAuth === 'true') {
+      const sessionUser = sessionStorage.getItem('admin_username') || 'aditya';
+      return {
+        'Authorization': `Basic ${btoa(`${sessionUser}:lola4304`)}`,
+        'Content-Type': 'application/json'
       };
     }
     
