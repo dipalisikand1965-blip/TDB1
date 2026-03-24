@@ -16,7 +16,7 @@ import threading
 from fastapi import APIRouter, HTTPException, Depends, Query, Request
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel, Field
-from motor.motor_asyncio import AsyncIOMotorDatabase
+from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
 import resend
 
 logger = logging.getLogger(__name__)
@@ -171,6 +171,122 @@ class UpdateOrderStatus(BaseModel):
     status: str
     notes: Optional[str] = None
     send_notification: bool = True
+
+
+class FullDbSyncRequest(BaseModel):
+    confirmation: str = Field(..., min_length=1)
+
+
+CRITICAL_SYNC_COLLECTIONS = [
+    'products_master',
+    'services_master',
+    'care_bundles',
+    'breed_products',
+    'mira_product_scores',
+    'pets',
+    'users',
+    'service_desk_tickets',
+    'live_conversation_threads',
+    'unified_inbox',
+    'mira_memories',
+    'admin_notifications',
+    'membership_orders',
+    'orders',
+]
+
+
+async def _get_production_db():
+    prod_url = os.environ.get('PRODUCTION_MONGO_URL')
+    if not prod_url:
+        raise HTTPException(status_code=400, detail='PRODUCTION_MONGO_URL not configured')
+    client = AsyncIOMotorClient(prod_url)
+    prod_db = client[os.environ.get('DB_NAME')]
+    return client, prod_db
+
+
+@fulfilment_router.get('/full-db-sync-diff')
+async def full_db_sync_diff(username: str = Depends(verify_admin)):
+    if db is None:
+        raise HTTPException(status_code=500, detail='Database not configured')
+
+    prod_client, prod_db = await _get_production_db()
+    try:
+        local_cols = [c for c in await db.list_collection_names() if not c.startswith('system.')]
+        prod_cols = [c for c in await prod_db.list_collection_names() if not c.startswith('system.')]
+        all_cols = sorted(set(local_cols) | set(prod_cols))
+        comparisons = []
+
+        for col in all_cols:
+            local_count = await db[col].count_documents({}) if col in local_cols else 0
+            prod_count = await prod_db[col].count_documents({}) if col in prod_cols else 0
+            comparisons.append({
+                'collection': col,
+                'preview': local_count,
+                'production': prod_count,
+                'diff': local_count - prod_count,
+            })
+
+        critical = [c for c in comparisons if c['collection'] in CRITICAL_SYNC_COLLECTIONS]
+        return {
+            'ok': True,
+            'critical': critical,
+            'all_collections': comparisons,
+            'preview_db': os.environ.get('DB_NAME'),
+            'production_db': os.environ.get('DB_NAME'),
+            'total_collections': len(comparisons),
+        }
+    finally:
+        prod_client.close()
+
+
+@fulfilment_router.post('/full-db-sync-to-production')
+async def full_db_sync_to_production(payload: FullDbSyncRequest, username: str = Depends(verify_admin)):
+    if payload.confirmation != 'MIGRATE':
+        raise HTTPException(status_code=400, detail='Type MIGRATE to proceed')
+    if db is None:
+        raise HTTPException(status_code=500, detail='Database not configured')
+
+    prod_client, prod_db = await _get_production_db()
+    try:
+        collections = [c for c in await db.list_collection_names() if not c.startswith('system.')]
+        results = []
+        for col in collections:
+            local_count = await db[col].count_documents({})
+            try:
+                await prod_db[col].drop()
+            except Exception:
+                pass
+
+            inserted = 0
+            if local_count > 0:
+                batch = []
+                async for doc in db[col].find({}):
+                    batch.append(doc)
+                    if len(batch) >= 1000:
+                        await prod_db[col].insert_many(batch)
+                        inserted += len(batch)
+                        batch = []
+                if batch:
+                    await prod_db[col].insert_many(batch)
+                    inserted += len(batch)
+
+            prod_count = await prod_db[col].count_documents({})
+            results.append({
+                'collection': col,
+                'preview': local_count,
+                'production_after': prod_count,
+                'matched': local_count == prod_count,
+            })
+
+        critical = [r for r in results if r['collection'] in CRITICAL_SYNC_COLLECTIONS]
+        return {
+            'ok': True,
+            'synced': critical,
+            'all_results': results,
+            'message': 'Full database sync complete',
+        }
+    finally:
+        prod_client.close()
 
 
 # Fulfilment status flow
