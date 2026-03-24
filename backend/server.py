@@ -1635,7 +1635,7 @@ async def lifespan(app: FastAPI):
                 SERVICE_IMAGES = {
                     # CELEBRATE services
                     "Birthday Party - Venue": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
-                    "Birthday Party - Home": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/3f8f60d3d6ab494c0d5804181180acb8f6f7c8acd969ffaa0f680d714bdeab95.png",
+                    "Birthday Party - Home": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333798/doggy/services/celebrate/svc-celeb-bday-home.png",
                     "Birthday Party": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
                     "Gotcha Day Celebration": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/c6b989379fea2659b7a568f5925af655d4b5b85888aa60f8edf9172cce34bb74.png",
                     "Milestone Celebration": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/e7a11005e785d5b3b29639030764bc2bd86582d31521d3b849b2bbab3f952960.png",
@@ -1645,9 +1645,9 @@ async def lifespan(app: FastAPI):
                     "Festive Celebration Planning": "https://images.unsplash.com/photo-1512568400610-62da28bc8a13?w=800",
                     "Surprise Coordination": "https://images.unsplash.com/photo-1502673530728-f79b4cab31b1?w=800",
                     "Surprise Delivery Service": "https://images.unsplash.com/photo-1502673530728-f79b4cab31b1?w=800",
-                    "Pawty Package (Full Celebration)": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
-                    "Pet-Friendly Venue Booking": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
-                    "Birthday Party Planning": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/d604f8777a6411e621b301128b78ca9e3790a06efc52d1a7d85a598706d64516.png",
+                    "Pawty Package (Full Celebration)": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773564989/doggy/services/celebrate/svc-celebrate-pawty-package.png",
+                    "Pet-Friendly Venue Booking": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333778/doggy/services/celebrate/svc-celebrate-venue.png",
+                    "Birthday Party Planning": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773564145/doggy/services/celebrate/svc-celebrate-party.png",
                     "Professional Pet Photography": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333645/doggy/services/celebrate/svc-celebrate-photoshoot.png",
                     "Professional Pet Photoshoot": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333645/doggy/services/celebrate/svc-celebrate-photoshoot.png",
                     # TRAVEL services
