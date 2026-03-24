@@ -843,7 +843,7 @@ export default function LandingPage() {
                 letterSpacing: "0.14em", marginBottom: 16,
                 fontFamily: "DM Sans, sans-serif",
               }}>
-                13 LIFE PILLARS
+                12 LIFE PILLARS
               </div>
               <h2 style={{
                 fontFamily: "Cormorant Garamond, Georgia, serif",
