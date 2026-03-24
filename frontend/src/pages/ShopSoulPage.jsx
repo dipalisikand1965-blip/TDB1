@@ -772,7 +772,9 @@ const ShopSoulPage = () => {
         </div>
 
         {/* Soul Profile bar — pet/breed info + questions */}
-        <PillarSoulProfile pet={petData} token={token} pillar="shop" color="#D97706" />
+        <div style={{ paddingTop: 16 }}>
+          <PillarSoulProfile pet={petData} token={token} pillar="shop" color="#D97706" />
+        </div>
 
         {/* Category strip */}
         <ShopCategoryStrip
