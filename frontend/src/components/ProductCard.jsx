@@ -1424,7 +1424,12 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
             {product.breed_tags && product.breed_tags.length > 0 && (
               <div className="mb-4">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-100 text-pink-700 text-xs font-medium rounded-full">
-                  <span>🐕</span> Perfect for {product.breed_tags.join(', ')}
+                  <span>🐕</span> Perfect for {product.breed_tags
+                    .map((breed) => {
+                      const prettyBreed = String(breed).replace(/_/g, ' ').trim();
+                      return /^(all|all breeds)$/i.test(prettyBreed) ? 'all breeds' : prettyBreed;
+                    })
+                    .join(', ')}
                 </span>
               </div>
             )}
