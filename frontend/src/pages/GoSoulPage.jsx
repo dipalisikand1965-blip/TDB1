@@ -283,12 +283,12 @@ function MiraImagineCard({ card, pet, token }) {
       <div style={{ padding:"12px 16px 16px", textAlign:"center", flex:1, display:"flex", flexDirection:"column" }}>
         <p style={{ fontWeight:700, color:"#fff", fontSize:14, marginBottom:6, lineHeight:1.3 }}>{card.name}</p>
         <p style={{ fontSize:12, color:"rgba(255,255,255,0.60)", marginBottom:6, lineHeight:1.5, flex:1 }}>{card.desc}</p>
-        <p style={{ fontSize:11, fontWeight:600, color:G.light, fontStyle:"italic", marginBottom:12 }}>{card.reason}</p>
+        <p style={{ fontSize:13, fontWeight:600, color:G.light, fontStyle:"italic", marginBottom:12 }}>{card.reason}</p>
         {requested
-          ? <div style={{ borderRadius:10, padding:8, fontSize:11, fontWeight:700, background:`rgba(26,188,156,0.20)`, border:`1px solid ${G.light}40`, color:G.light, display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
+          ? <div style={{ borderRadius:10, padding:10, fontSize:13, fontWeight:700, background:`rgba(26,188,156,0.20)`, border:`1px solid ${G.light}40`, color:G.light, display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
               <Check size={13} /> Sent to Concierge!
             </div>
-          : <button onClick={handleRequest} disabled={sending} style={{ width:"100%", borderRadius:10, padding:8, fontSize:11, fontWeight:700, background:sending?`${G.teal}60`:`linear-gradient(135deg,${G.teal},${G.deepMid})`, border:"none", color:"#fff", cursor:sending?"wait":"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:5, opacity:sending?0.7:1 }}>
+          : <button onClick={handleRequest} disabled={sending} style={{ width:"100%", borderRadius:10, padding:10, fontSize:13, fontWeight:700, background:sending?`${G.teal}60`:`linear-gradient(135deg,${G.teal},${G.deepMid})`, border:"none", color:"#fff", cursor:sending?"wait":"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:5, opacity:sending?0.7:1 }}>
               {sending && <Loader2 size={11} style={{ animation:"spin 1s linear infinite" }} />}
               Request a Quote →
             </button>}
