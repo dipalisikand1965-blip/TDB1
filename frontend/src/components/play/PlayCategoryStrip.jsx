@@ -71,7 +71,7 @@ export default function PlayCategoryStrip({ pet, openDim, onSelect, onMiraPicks 
               onClick={() => isMira ? onMiraPicks?.() : onSelect?.(isActive ? null : cat.id)}
               className="flex flex-col items-center flex-shrink-0"
               style={{
-                minWidth: 82, height: 72, padding: "10px 12px",
+                minWidth: 72, height: 72, padding: "10px 8px",
                 cursor: "pointer", background: "transparent", border: "none",
                 borderBottomWidth: 3, borderBottomStyle: "solid",
                 borderBottomColor: isActive ? "#E76F51" : "transparent",
@@ -90,7 +90,7 @@ export default function PlayCategoryStrip({ pet, openDim, onSelect, onMiraPicks 
                 style={{
                   fontSize: 13, fontWeight: 500,
                   color: isActive ? "#C44400" : isMira ? "#9B59B6" : "#555",
-                  whiteSpace: "nowrap", maxWidth: 84, overflow: "hidden", textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {cat.label}
