@@ -2295,7 +2295,9 @@ export default function CareSoulPage() {
               {/* ── Beautiful PillarSoulProfile + Health Vault (moved from top) ── */}
               <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:20 }}>
                 {/* Soul Profile — full component with drawer */}
-                <PillarSoulProfile pet={petData} token={token} pillar="care" />
+                <div style={{ paddingTop: 16 }}>
+                  <PillarSoulProfile pet={petData} token={token} pillar="care" />
+                </div>
 
                 {/* Health Vault — styled like WellnessProfile card */}
                 {petData?.id && (
