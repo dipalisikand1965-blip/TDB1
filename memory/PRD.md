@@ -44,6 +44,37 @@ With: `pet_id`, `pillar`, `channel`, `initial_message` → Backend auto-resolves
 
 WhatsApp confirmation fires automatically on every new ticket.
 
+### 4.1 Cross-Pillar Mira Picks Rule — DO NOT BREAK
+**Critical architecture rule for ALL pillars:** `GET /api/mira/claude-picks` can return a mix of `entity_type=product` and `entity_type=service` unless explicitly filtered.
+
+**Never render mixed picks through product-card logic.**
+
+Required pattern:
+1. Fetch **products** separately:
+   ```
+   /api/mira/claude-picks/{pet_id}?pillar=PILLAR&limit=12&min_score=60&entity_type=product
+   ```
+2. Fetch **services** separately:
+   ```
+   /api/mira/claude-picks/{pet_id}?pillar=PILLAR&limit=6&min_score=60&entity_type=service
+   ```
+3. Render separately:
+   - **Products** → product cards / product modal / score bars allowed
+   - **Services** → concierge service cards / service modal only / **NO cart behavior / NO product modal / NO score bar unless intentionally service-specific UI**
+
+**If a pillar uses a mixed fallback response, it MUST branch on `entity_type` before rendering.**
+
+Never allow these regressions again:
+- service pick opening `ProductDetailModal`
+- service pick showing add-to-cart behavior
+- service pick showing product pricing UI by default
+- service pick being treated as catalogue merchandise
+
+Reference implementation patterns:
+- `CareSoulPage.jsx` — canonical split fetch pattern
+- `AdoptSoulPage.jsx` — mixed response safely separated into product vs concierge service behavior
+- `CelebratePageNew.jsx`, `EmergencySoulPage.jsx`, `FarewellSoulPage.jsx`, `PaperworkSoulPage.jsx` — service picks routed to concierge flows
+
 ## 5. Breed Normalisation System
 - **Backend**: `/app/backend/breed_normalise.py`
   - `normalise_breed(raw)` → known breed or `'indie'` fallback
@@ -173,6 +204,8 @@ learn        66       8/20        18/20         learn_bundle_add
 3. Use `testing_agent_v3_fork` after completing each pillar audit
 4. Every interactive element MUST fire `POST /api/service_desk/attach_or_create_ticket`
 5. Backend auto-resolves `pet_breed` via `normalise_breed()` — never send raw breed from frontend
+6. **Mira picks must never mix service and product rendering.** Use separate `entity_type=product` and `entity_type=service` fetches wherever possible; otherwise branch on `entity_type` before rendering.
+7. **Service picks must open concierge/service modals, not product modals.**
 6. `PillarSoulProfile` uses standardised `max-w-5xl` container + CSS border (not SVG ring)
 7. Content Modals use client-side breed filtering — only show pet's own breed tab
 8. If backend port 8001 stalls, run `pkill -f uvicorn && sudo supervisorctl restart backend`
