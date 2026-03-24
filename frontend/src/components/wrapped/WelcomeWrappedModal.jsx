@@ -53,7 +53,7 @@ const WelcomeWrappedModal = ({ isOpen, onClose, petId, petData }) => {
   };
 
   const handleShare = async () => {
-    const shareUrl = `${window.location.origin}/wrapped/${petId}`;
+    const shareUrl = `${window.location.origin}/api/wrapped/download/${petId}`;
     const shareText = `${wrappedData?.pet_name}'s Soul Score is ${wrappedData?.soul_score}%! 🐾 Create yours at thedoggycompany.com`;
     
     if (navigator.share) {
