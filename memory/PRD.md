@@ -102,6 +102,14 @@ Admin editing destinations:
   3. Migrate every collection/document from local source-of-truth DB
   4. Verify counts match exactly before switching production envs
 
+### 4.4 Updated Go-Live Deployment Path (Mar 24, 2026)
+- The custom **`FULL DB SYNC → PROD`** tool was built, but preview backend → production Mongo direct connectivity currently fails with `ServerSelectionTimeoutError`.
+- Because Dipali confirmed the existing production DB is stale/useless and there are no live founding members yet, the **recommended deployment path for this launch** is:
+  1. **Replace deployment**
+  2. Select **Use new database**
+  3. Let Emergent carry the latest preview DB/data into the deployed app
+- Keep the custom `FULL DB SYNC → PROD` tool in the codebase for future use if network access / direct migration path is later enabled.
+
 Important distinction:
 - A **service pick** should create a **service desk ticket** for operational follow-up
 - The underlying **service definition** must still be edited in **service admin**, not product admin

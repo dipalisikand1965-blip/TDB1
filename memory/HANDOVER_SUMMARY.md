@@ -157,11 +157,20 @@
 - **MONGO_URL**: `mongodb://localhost:27017`
 - **DB_NAME**: `pet-os-live-test_database`
 
+### Updated launch recommendation after deployment tests
+- The custom `FULL DB SYNC → PROD` tool is built and visible in admin, but **preview → production direct DB sync is currently blocked by network access to the production Mongo target** (`ServerSelectionTimeoutError` from preview backend when contacting production replica set).
+- Because Dipali confirmed the current production DB is stale/useless and there are no founding members live yet, the **recommended launch path** is:
+  1. **Replace deployment**
+  2. Choose **Use new database**
+  3. Let Emergent carry the latest preview DB/data forward automatically
+- Do **not** rely on the custom `FULL DB SYNC → PROD` button for this immediate launch attempt unless network access between preview and production DB is later resolved.
+
 ### Important deployment finding
 - **Preview and production are separate environments**
 - `SYNC→PROD` does **not** sync the full database
 - It syncs mockup / Soul Made production data only (plus related mocked production-facing operations), **not** all products/users/pets/tickets/memories
 - Therefore **Atlas / production DB migration is still required** before go-live
+- Current practical override: for this launch attempt, since production DB is stale and Emergent deploy offers **Use new database** (“New data from latest preview carries over”), that platform path is preferred over the custom sync button.
 
 ### Explicit product requirement from Dipali
 > What is in the local Mongo used by this app is what must be migrated to the final launch database.
