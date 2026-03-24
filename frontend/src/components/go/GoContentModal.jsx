@@ -323,7 +323,9 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
             p.product_type !== 'birthday_cake' && p.product_type !== 'Birthday Cake'
           );
           const subCats = [...new Set(bp.map(p => p.sub_category || p.product_type).filter(Boolean))];
-          setTabs(subCats.length > 0 ? ['All', ...subCats] : ['All']);
+          const breedSlug = (pet?.breed||'').trim().toLowerCase().replace(/\s+/g, '_');
+          const filteredCats = subCats.filter(t => !/-play$|-shop$|-go$|-travel$/.test(t) || !breedSlug || t.toLowerCase().startsWith(breedSlug));
+          setTabs(filteredCats.length > 0 ? ['All', ...filteredCats] : ['All']);
           setProducts(bp);
           setFlatArtProducts(data2.products || []);
           setYappyIllustrations(data3.products || []);
@@ -404,9 +406,11 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
         // Apply Mira intelligence
         const intelligent = applyMiraFilter(filtered, petAllergies, petSize, petCondition);
 
-        // Build sub-category tabs
+        // Build sub-category tabs — filter out other breed tabs
         const subCats = [...new Set(intelligent.map(p => p.sub_category).filter(Boolean))];
-        setTabs(['All', ...subCats]);
+        const breedSlug = (pet?.breed||'').trim().toLowerCase().replace(/\s+/g, '_');
+        const filteredCats = subCats.filter(t => !/-play$|-shop$|-go$|-travel$/.test(t) || !breedSlug || t.toLowerCase().startsWith(breedSlug));
+        setTabs(['All', ...filteredCats]);
         setProducts(intelligent);
       })
       .catch(err => console.error('[GoContentModal]', err))
