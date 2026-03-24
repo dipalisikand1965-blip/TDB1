@@ -4,7 +4,7 @@
 ---
 
 ## 1. Vision & Core Platform
-India's first **Pet Life OS** — a comprehensive lifestyle platform for pet parents, powered by AI concierge **Mira**, with personalised product recommendations, concierge services, guided care paths, and deep pet soul profiling across 13 life pillars.
+India's first **Pet Life OS** — a comprehensive lifestyle platform for pet parents, powered by AI concierge **Mira**, with personalised product recommendations, concierge services, guided care paths, and deep pet soul profiling across 12 life pillars.
 
 **Key Differentiator**: Every user action creates an Admin Service Desk ticket with deep pet context (breed, allergies, soul score, Mira briefing). No pet app in India does this.
 
@@ -24,16 +24,15 @@ India's first **Pet Life OS** — a comprehensive lifestyle platform for pet par
 | 1 | Celebrate | LOCKED | Mar 2026 | Previous | DO NOT TOUCH — 28+ concierge wiring points |
 | 2 | Dine | LOCKED | Mar 2026 | Previous | DO NOT TOUCH — breed filtering, Soul Made |
 | 3 | Care | LOCKED | Mar 2026 | Previous | DO NOT TOUCH — 20/20 breed in tickets |
-| 4 | Go | LOCKED | Mar 2026 | Previous | DO NOT TOUCH — teal border, CSS ring fix |
-| 5 | Play | LOCKED | Mar 2026 | Previous | DO NOT TOUCH — GuidedPlayPaths, PathFlowModal |
+| 4 | Go *(includes Stay + Travel)* | LOCKED | Mar 2026 | Previous | DO NOT TOUCH — teal border, CSS ring fix |
+| 5 | Play *(includes Fit + Enjoy)* | LOCKED | Mar 2026 | Previous | DO NOT TOUCH — GuidedPlayPaths, PathFlowModal |
 | 6 | **Learn** | **LOCKED** | **Mar 24, 2026** | **Current** | Content modal CTAs, breed guide, Pet Wrapped card |
 | 7 | **Adopt** | **LOCKED** | **Mar 24, 2026** | **Current** | **Mira picks split, concierge verified, mobile checked** |
 | 8 | **Farewell** | **LOCKED** | **Mar 24, 2026** | **Current** | **Gentle tone enforced, no gamification, service flows verified** |
 | 9 | **Emergency** | **LOCKED** | **Mar 24, 2026** | **Current** | **Service flows split, emergency help CTAs verified, mobile checked** |
-| 10 | **Paperwork** | **LOCKED** | **Mar 24, 2026** | **Current** | **NearMe wired, Document Vault added, prices hidden, verified** |
+| 10 | **Paperwork** *(includes Advisory)* | **LOCKED** | **Mar 24, 2026** | **Current** | **NearMe wired, Document Vault added, prices hidden, verified** |
 | 11 | Shop | PENDING | — | — | Breed-products fix applied |
 | 12 | Services | PENDING | — | — | |
-| 13 | Advisory | PENDING | — | — | |
 
 ## 4. Universal Concierge Wiring Rule
 **Every actionable element** (service card, product CTA, guided path completion, AI chat, NearMe venue tap) **MUST** fire:
@@ -92,6 +91,16 @@ Admin editing destinations:
 - **Products** → product editors (`ProductBoxEditor`, pillar product admin flows, soul product admin flows)
 - **Services** → service editors (`ServiceCRUDAdmin`, service-box / `services_master` admin flows)
 - **Service desk tickets are NOT the same as catalogue editing**
+
+### 4.3 Source-of-Truth Database Rule — DO NOT MIX PREVIEW / EMERGENT VIEWER / DEPLOY TARGETS
+- The **local MongoDB used by this running app** (`mongodb://localhost:27017`, `DB_NAME=pet-os-live-test_database`) is the source of truth for launch preparation in this job.
+- Dipali explicitly stated that what is in the local Mongo used by the app is what should be migrated to the final deployment database.
+- Any differing data visible in other preview/emergent database viewers must not override this local source-of-truth without an explicit migration decision.
+- Atlas / deployment migration plan:
+  1. Get Atlas connection string from Dipali
+  2. Compare local vs Atlas collection counts
+  3. Migrate every collection/document from local source-of-truth DB
+  4. Verify counts match exactly before switching production envs
 
 Important distinction:
 - A **service pick** should create a **service desk ticket** for operational follow-up
@@ -254,7 +263,7 @@ learn        66       8/20        18/20         learn_bundle_add
 - **Admin Portal**: /admin
 
 ## 14. Critical Rules for Next Agent
-1. **DO NOT TOUCH** Celebrate, Dine, Care, Go, Play, Learn, Paperwork, Adopt, Farewell, Emergency — they are LOCKED
+1. **DO NOT TOUCH** Celebrate, Dine, Care, Go, Play, Learn, Paperwork, Adopt, Farewell, Emergency — they are LOCKED (Go includes Stay/Travel, Play includes Fit/Enjoy, Paperwork includes Advisory)
 2. Follow `/app/memory/PILLAR_AUDIT_METHODOLOGY.md` for all audits
 3. Use `testing_agent_v3_fork` after completing each pillar audit
 4. Every interactive element MUST fire `POST /api/service_desk/attach_or_create_ticket`

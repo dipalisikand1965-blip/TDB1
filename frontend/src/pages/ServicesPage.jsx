@@ -1079,7 +1079,7 @@ const ServicesPage = () => {
         viewMode="services"
         onViewModeChange={(mode) => {
           if (mode === 'products') {
-            window.location.href = '/shop';
+            navigate('/shop');
           }
         }}
         petName={petName}
