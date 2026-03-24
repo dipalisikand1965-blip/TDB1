@@ -540,6 +540,8 @@ async def get_intakes(
 @channel_router.get("/intakes/{request_id}")
 async def get_intake(request_id: str):
     """Get a specific intake request"""
+    if request_id == "stats":
+        return await get_intake_stats()
     if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
