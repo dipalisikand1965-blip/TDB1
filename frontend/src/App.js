@@ -321,6 +321,7 @@ const DreamfolksDemo = lazy(() => import("./pages/DreamfolksDemo"));
 // Pet Wrapped
 const PetWrappedViewer = lazy(() => import("./pages/PetWrappedViewer"));
 const WrappedWelcomePage = lazy(() => import("./pages/WrappedWelcomePage"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
 // Notifications Inbox + Ticket Thread (iOS Mail-style)
 const NotificationsInbox = lazy(() => import("./pages/NotificationsInbox"));
@@ -664,6 +665,7 @@ function MainLayout() {
         {/* Partner Onboarding */}
         <Route path="/partner" element={<PartnerOnboarding />} />
         <Route path="/become-a-partner" element={<PartnerOnboarding />} />
+        <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
       <Footer />
