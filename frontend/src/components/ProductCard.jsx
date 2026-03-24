@@ -399,6 +399,15 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
   
   const getMinPrice = () => {
     if (product.minPrice) return product.minPrice;
+    if (product.price_locked && (product.manual_price || product.pricing?.selling_price || product.pricing?.base_price || product.price)) {
+      return product.manual_price || product.pricing?.selling_price || product.pricing?.base_price || product.price;
+    }
+    if (product.pricing?.selling_price && Number(product.pricing.selling_price) > 0) {
+      return Number(product.pricing.selling_price);
+    }
+    if (product.pricing?.base_price && Number(product.pricing.base_price) > 0) {
+      return Number(product.pricing.base_price);
+    }
     if (product.sizes && product.sizes.length > 0) {
       const prices = product.sizes.map(s => typeof s === 'object' ? s.price : product.price);
       return Math.min(...prices.filter(p => p > 0));
