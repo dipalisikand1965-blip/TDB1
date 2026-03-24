@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Search, User, ChevronDown, ChevronUp, ChevronRight, Sparkles, PawPrint, LogOut, Mic, MicOff, Loader2, Package, Bell } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { usePillarContext } from '../context/PillarContext';
 import { intelligentSearch } from '../utils/unifiedApi';
 import { API_URL } from '../utils/api';
 import MiraSearchPanel from './MiraSearchPanel';
@@ -90,6 +91,7 @@ const PILLARS = [
 ];
 
 const Navbar = () => {
+  const { setCurrentPet } = usePillarContext();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false); // New MobileMenu
 
@@ -996,6 +998,7 @@ const Navbar = () => {
                               setPrimaryPet(pet);
                               setPetSoulScore(Math.round(pet?.overall_score || 0));
                               setShowPetDropdown(false);
+                              setCurrentPet(pet);
                               // Store in localStorage for persistence
                               localStorage.setItem('selectedPetId', pet.id);
                               // Store pet name for header display
