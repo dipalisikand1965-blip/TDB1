@@ -30,6 +30,7 @@ import PlayContentModal from "../components/play/PlayContentModal";
 import GuidedPlayPaths from "../components/play/GuidedPlayPaths";
 import PlayConciergeSection from "../components/play/PlayConciergeSection";
 import PlayNearMe from "../components/play/PlayNearMe";
+import BuddyMeetup from "../components/play/BuddyMeetup";
 import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
 import { MiraPicksSkeleton, ProductGridSkeleton } from "../components/common/ProductSkeleton";
@@ -1640,6 +1641,7 @@ const PlaySoulPage = () => {
                 ✦ Book via Concierge →
               </button>
             </div>
+            <BuddyMeetup pet={petData} />
             <GuidedPlayPaths pet={petData} />
             <PlayConciergeSection pet={petData} prefetchedServices={prefetchedServices} />
           </div>
