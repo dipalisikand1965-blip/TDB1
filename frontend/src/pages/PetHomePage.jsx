@@ -48,6 +48,8 @@ import {
 } from 'lucide-react';
 import { getWrappedApiBase } from '../utils/api';
 import SoulChapterModal from '../components/SoulChapterModal';
+import DocumentVault from '../components/paperwork/DocumentVault';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -192,6 +194,7 @@ const PetSelector = ({ pets, selectedPet, onPetChange }) => {
 const PetHomePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { token } = useAuth();
   
   const [loading, setLoading] = useState(true);
   const [pets, setPets] = useState([]);
@@ -721,6 +724,16 @@ const PetHomePage = () => {
                 Download {pet?.name}'s Pet Wrapped
                 <Download className="w-3.5 h-3.5 ml-1 opacity-70" />
               </button>
+            )}
+
+            {pet && (
+              <div className="mt-3">
+                <DocumentVault
+                  pet={pet}
+                  token={token}
+                  onConcierge={() => navigate('/paperwork')}
+                />
+              </div>
             )}
           </div>
         </motion.div>

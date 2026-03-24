@@ -30,7 +30,7 @@ India's first **Pet Life OS** — a comprehensive lifestyle platform for pet par
 | 7 | Adopt | PENDING | — | — | Next in audit queue |
 | 8 | Farewell | PENDING | — | — | |
 | 9 | Emergency | PENDING | — | — | |
-| 10 | **Paperwork** | **NEXT** | — | — | **Next agent starts here** |
+| 10 | **Paperwork** | **IN PROGRESS** | **Mar 24, 2026** | **Current** | **NearMe wired, Document Vault added, audit continuing** |
 | 11 | Shop | PENDING | — | — | Breed-products fix applied |
 | 12 | Services | PENDING | — | — | |
 | 13 | Advisory | PENDING | — | — | |
@@ -89,6 +89,13 @@ WhatsApp confirmation fires automatically on every new ticket.
 ### 6.6 Maltese Trailing Space Fix
 - Lola's breed: `"Maltese "` → `"Maltese"` (DB trimmed)
 
+### 6.7 Paperwork Audit — Partial Progress
+- Added `DocumentVault.jsx` for Paperwork + Pet Home using soul/vault data: progress bar, 6 document cards, urgent gaps, concierge sort CTA
+- Wired Paperwork Find Help tab to render `PaperworkNearMe` instead of placeholder content
+- Fixed ProductCard breed tag formatting so `all_breeds` displays as `all breeds`
+- Updated Paperwork CTA copy to `Book for {petName} →` and hid AI score bars for service-type Mira picks
+- Smoke tested screenshots: Paperwork documents tab, Paperwork Find Help tab, Pet Home vault
+
 ## 7. Canonical Flow Audit Results (All 6 Locked Pillars)
 
 | Flow | Status | Detail |
@@ -135,7 +142,8 @@ learn        66       8/20        18/20         learn_bundle_add
 - `users` — 14 users, 13 with phone, 8 with WhatsApp
 
 ## 10. Upcoming Tasks (Priority Order)
-- **(P0)** Audit remaining pillars: Adopt → Farewell → Emergency → **Paperwork** → Shop → Services
+- **(P0)** Complete remaining **Paperwork** audit: cross-check all service/product tickets, mobile 375px, and finalize price/wiring consistency
+- **(P0)** Audit remaining pillars after Paperwork: Adopt → Farewell → Emergency → Shop → Services
 - **(P1)** WhatsApp Daily Digest: "Good morning Dipali! Mojo's soul is 100% known. Today Mira suggests: Salmon treats after his morning walk — perfect for an Indie his age."
 - **(P1)** Add "3 vets near you" to WhatsApp health reminders
 - **(P1)** Extend scheduler for medication refill reminders
