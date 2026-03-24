@@ -15,6 +15,8 @@ import SoulMadeModal from '../SoulMadeModal';
 import { useAuth } from '../../context/AuthContext';
 import { API_URL } from '../../utils/api';
 import { bookViaConcierge } from '../../utils/MiraCardActions';
+import BuddyMeetup from './BuddyMeetup';
+import { useConcierge } from '../../hooks/useConcierge';
 import { tdc } from '../../utils/tdc_intent';
 
 const getApiUrl = () => API_URL;
@@ -194,7 +196,7 @@ const BundleCard = ({ bundle, petName, pet, token }) => {
 };
 
 // ── Main Modal ────────────────────────────────────────────────────────────────
-const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
+const PlayContentModal = ({ isOpen, onClose, category, pet, onNavigateToNearMe }) => {
   const [products, setProducts] = useState([]);
   const [flatArtProducts, setFlatArtProducts] = useState([]);
   const [yappyIllustrations, setYappyIllustrations] = useState([]);
@@ -205,7 +207,9 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
   const [tabs,      setTabs]     = useState([]);
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
+  const [showBuddyInline, setShowBuddyInline] = useState(false);
   const { token } = useAuth();
+  const { fire: fireConcierge } = useConcierge({ pet, pillar: 'play' });
 
   useEffect(() => {
     const check = () => setIsDesktop(window.innerWidth >= 768);
@@ -632,21 +636,53 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
 
       {soulMadeOpen && <SoulMadeModal pet={pet} pillar="play" pillarColor={G.orange} pillarLabel="Play" onClose={() => setSoulMadeOpen(false)} />}
 
-      {/* ── Footer ──────────────────────────────────────────────────────────── */}
-      <div style={{ flexShrink:0, padding:'14px 20px', borderTop:'1px solid #F0E8E0', background:'#FFFAF6', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-        <p style={{ fontSize:12, color:'#888', margin:0 }}>Personalised for {petName}</p>
-        <button
-          onClick={() => {
-            if (category === 'soul_made') { setSoulMadeOpen(true); } else {
-              tdc.book({ service: config.label, pillar: 'play', pet, channel: 'play_content_modal_footer' });
-              onClose();
-            }
-          }}
-          style={{ background:`linear-gradient(135deg,${G.orange},#FF6B9D)`, color:'#fff', border:'none', borderRadius:12, padding:'9px 18px', fontSize:13, fontWeight:700, cursor:'pointer' }}
-          data-testid="play-modal-cta">
-          {category === 'soul_made' ? `Make it personal for ${petName} →` : category === 'playdates' ? `Find a playdate for ${petName} →` : `Book ${config.label} for ${petName} →`}
-        </button>
-      </div>
+      {/* ── Inline Buddy Meetup (for playdates) ──────────────────────── */}
+      {showBuddyInline && category === 'playdates' && (
+        <div style={{ padding:'0 20px 12px' }}>
+          <BuddyMeetup pet={pet} />
+        </div>
+      )}
+
+      {/* ── Footer — category-specific CTAs ──────────────────────────── */}
+      {/* Hide footer for: bundles, soul, miras-picks */}
+      {!['bundles', 'soul', 'miras-picks'].includes(category) && (
+        <div style={{ flexShrink:0, padding:'14px 20px', borderTop:'1px solid #F0E8E0', background:'#FFFAF6', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <p style={{ fontSize:12, color:'#888', margin:0 }}>Personalised for {petName}</p>
+          <button
+            onClick={() => {
+              if (category === 'soul_made') {
+                setSoulMadeOpen(true);
+              } else if (category === 'outings') {
+                // Navigate to NearMe tab on Play page
+                if (onNavigateToNearMe) onNavigateToNearMe();
+              } else if (category === 'playdates') {
+                // Show inline BuddyMeetup
+                setShowBuddyInline(true);
+              } else if (category === 'fitness' || category === 'swimming') {
+                // Concierge flow
+                tdc.book({ service: config.label, pillar: 'play', pet, channel: 'play_content_modal_footer' });
+                fireConcierge({
+                  service: `${petName}'s ${config.label} — Play Concierge`,
+                  channel: 'play_content_modal_concierge',
+                  urgency: 'normal',
+                  notes: `${petName} wants to book ${config.label}. Breed: ${pet?.breed || 'unknown'}`,
+                });
+              } else {
+                tdc.book({ service: config.label, pillar: 'play', pet, channel: 'play_content_modal_footer' });
+                onClose();
+              }
+            }}
+            style={{ background:`linear-gradient(135deg,${G.orange},#FF6B9D)`, color:'#fff', border:'none', borderRadius:12, padding:'9px 18px', fontSize:13, fontWeight:700, cursor:'pointer' }}
+            data-testid="play-modal-cta">
+            {category === 'soul_made' ? `Make it personal for ${petName} →`
+              : category === 'outings' ? `Find parks near ${petName} →`
+              : category === 'playdates' ? `Find ${petName} a play buddy →`
+              : category === 'fitness' ? `Book fitness for ${petName} →`
+              : category === 'swimming' ? `Book swimming for ${petName} →`
+              : `Book ${config.label} for ${petName} →`}
+          </button>
+        </div>
+      )}
     </motion.div>
   );
 
