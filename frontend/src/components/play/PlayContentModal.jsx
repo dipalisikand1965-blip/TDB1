@@ -651,19 +651,20 @@ const PlayContentModal = ({ isOpen, onClose, category, pet, onNavigateToNearMe }
               if (category === 'soul_made') {
                 setSoulMadeOpen(true);
               } else if (category === 'outings') {
-                const parkPath = paths.find(p => p.id === 'park_routine');
-                if (parkPath) setGuidedPath(parkPath);
+                const p = paths.find(p => p.id === 'park_routine');
+                if (p) setGuidedPath(p);
               } else if (category === 'playdates') {
-                const playdatePath = paths.find(p => p.id === 'playdate_starter');
-                if (playdatePath) setGuidedPath(playdatePath);
-              } else if (category === 'fitness' || category === 'swimming') {
-                tdc.book({ service: config.label, pillar: 'play', pet, channel: 'play_content_modal_footer' });
-                fireConcierge({
-                  service: `${petName}'s ${config.label} — Play Concierge`,
-                  channel: 'play_content_modal_concierge',
-                  urgency: 'normal',
-                  notes: `${petName} wants to book ${config.label}. Breed: ${pet?.breed || 'unknown'}`,
-                });
+                const p = paths.find(p => p.id === 'playdate_starter');
+                if (p) setGuidedPath(p);
+              } else if (category === 'walking') {
+                const p = paths.find(p => p.id === 'walk_essentials');
+                if (p) setGuidedPath(p);
+              } else if (category === 'fitness') {
+                const p = paths.find(p => p.id === 'fitness_reboot');
+                if (p) setGuidedPath(p);
+              } else if (category === 'swimming') {
+                const p = paths.find(p => p.id === 'swim_confidence');
+                if (p) setGuidedPath(p);
               } else {
                 tdc.book({ service: config.label, pillar: 'play', pet, channel: 'play_content_modal_footer' });
                 onClose();
@@ -672,10 +673,11 @@ const PlayContentModal = ({ isOpen, onClose, category, pet, onNavigateToNearMe }
             style={{ background:`linear-gradient(135deg,${G.orange},#FF6B9D)`, color:'#fff', border:'none', borderRadius:12, padding:'9px 18px', fontSize:13, fontWeight:700, cursor:'pointer' }}
             data-testid="play-modal-cta">
             {category === 'soul_made' ? `Make it personal for ${petName} →`
-              : category === 'outings' ? `Find parks for ${petName} →`
-              : category === 'playdates' ? `Find ${petName} a play buddy →`
-              : category === 'fitness' ? `Book fitness for ${petName} →`
-              : category === 'swimming' ? `Book swimming for ${petName} →`
+              : category === 'outings' ? `Start ${petName}'s Park Routine →`
+              : category === 'playdates' ? `Start ${petName}'s Playdate Path →`
+              : category === 'walking' ? `Build ${petName}'s Walk Plan →`
+              : category === 'fitness' ? `Start ${petName}'s Fitness Plan →`
+              : category === 'swimming' ? `Start ${petName}'s Swim Path →`
               : `Book ${config.label} for ${petName} →`}
           </button>
         </div>
