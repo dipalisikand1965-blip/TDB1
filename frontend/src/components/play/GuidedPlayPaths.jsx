@@ -117,6 +117,23 @@ export function buildPaths(pet) {
       },
     },
     {
+      id:"walk_essentials",
+      icon:"🦮",
+      title:"Walk Essentials",
+      badge:"Mira Guided", badgeBg:"#0D9488",
+      accentColor:"#0D9488", accentBg:"#F0FDFA", accentBorder:"rgba(13,148,136,0.15)",
+      iconBg:"#99F6E4", photoBg:"linear-gradient(135deg,#F0FDFA,#5EEAD4)",
+      desc:`Build ${petName}'s perfect walk routine — gear, frequency, and distance matched to ${petBreed || 'their breed'}.`,
+      miraNote:`I know ${petName}'s energy and pace. Let me build the ideal walk setup.`,
+      stepLabels:["Walk frequency","Gear check","Route preference","Special needs"],
+      steps:{
+        step1:{q:`How often does ${petName} walk?`,type:"single",opts:["Twice daily","Once daily","3–4 times a week","Weekends only","Irregular — need a routine"]},
+        step2:{q:"Which walk gear does "+petName+" need?",type:"multi",opts:["Harness","Collar & leash","Reflective vest","Poop bag holder","Portable water bowl","Treat pouch","Rain jacket","All of the above"]},
+        step3:{q:`What kind of walks does ${petName} prefer?`,type:"single",opts:["Neighbourhood streets","Park trails","Off-lead fields","Beach / waterside","Urban — cafés & shops","Long hikes"]},
+        step4:{q:"Any special walk needs?",type:"multi",opts:["Pulls hard — need no-pull harness","Reactive to other dogs","Gets anxious on walks","Senior — needs shorter routes","Puppy — needs socialisation walks","Night walks — need lights","No special needs"]},
+      },
+    },
+    {
       id:"soul_play_journey",
       icon:"✨",
       title:"Soul Play Journey",
