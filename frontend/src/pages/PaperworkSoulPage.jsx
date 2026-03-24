@@ -25,19 +25,18 @@ import { ChevronDown, Loader2, Check } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
-import SharedProductCard, { ConciergeOnlyProductDetailModal, ProductDetailModal } from "../components/ProductCard";
+import SharedProductCard, { ConciergeOnlyProductDetailModal } from "../components/ProductCard";
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import SoulMadeModal from "../components/SoulMadeModal";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import ConciergeToast from "../components/common/ConciergeToast";
-import GuidedPaperworkPaths, { buildPaths, PathFlowModal } from "../components/paperwork/GuidedPaperworkPaths";
+import GuidedPaperworkPaths from "../components/paperwork/GuidedPaperworkPaths";
+import DocumentVault from "../components/paperwork/DocumentVault";
 import PaperworkNearMe from "../components/paperwork/PaperworkNearMe";
 import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
-import { bookViaConcierge } from "../utils/MiraCardActions";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
-import { filterBreedProducts, normaliseBreed } from "../utils/breedNormalise";
 
 // ─── COLOUR SYSTEM ─────────────────────────────────────────
 const G = {
@@ -316,42 +315,6 @@ function ServiceBookingModal({ service, pet, onClose }) {
   );
 }
 
-// ─── DOCUMENT COMPLETENESS BAR ──────────────────────────────
-function DocCompletnessBar({ pet, docScore, onOpen }) {
-  const petName = pet?.name||"your dog";
-  const missing = getMissingDocs(pet);
-  const label = docScore>=100 ? `${petName} is fully protected` :
-                docScore>=70  ? `${petName} is mostly covered` :
-                docScore>=40  ? `${petName} needs attention` :
-                                `${petName}'s documents need work`;
-
-  return (
-    <div onClick={onOpen} style={{background:"#fff",border:`2px solid ${G.pale}`,borderRadius:16,padding:"12px 18px",marginBottom:20,display:"flex",alignItems:"center",gap:14,cursor:"pointer"}}
-      onMouseEnter={e=>e.currentTarget.style.background=G.pale}
-      onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
-      <div style={{width:40,height:40,borderRadius:10,background:G.pale,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}}>📋</div>
-      <div style={{flex:1,minWidth:0}}>
-        <div style={{fontSize:13,fontWeight:700,color:G.darkText,marginBottom:5}}>Document Safety Profile</div>
-        <div style={{height:6,background:G.pale,borderRadius:4,overflow:"hidden",marginBottom:5}}>
-          <div style={{height:"100%",width:`${docScore}%`,background:`linear-gradient(90deg,${G.teal},${G.light})`,borderRadius:4,transition:"width 0.4s"}}/>
-        </div>
-        <div style={{fontSize:11,color:G.mutedText}}>{label} · {docScore}% complete</div>
-        {missing.length>0 && (
-          <div style={{display:"flex",flexWrap:"wrap",gap:5,marginTop:6}}>
-            {missing.slice(0,2).map(m=>(
-              <span key={m} style={{background:"#FFEBEE",border:"1px solid #FFCDD2",borderRadius:20,padding:"2px 8px",fontSize:10,color:"#C62828",fontWeight:500}}>⚠ {m}</span>
-            ))}
-            {missing.length>2 && <span style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:20,padding:"2px 8px",fontSize:10,color:G.teal,fontWeight:500}}>+{missing.length-2} more</span>}
-          </div>
-        )}
-      </div>
-      <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0}}>
-        <span style={{fontSize:12,color:G.teal,fontWeight:600}}>View & upload →</span>
-      </div>
-    </div>
-  );
-}
-
 // ─── MIRA PICKS ────────────────────────────────────────────
 function MiraPicksSection({ pet, onSelectProd }) {
   const [picks,setpicks]=useState([]); const [loading,setLoading]=useState(true);
@@ -372,13 +335,14 @@ function MiraPicksSection({ pet, onSelectProd }) {
   },[pet?.id]);
 
   const showImagines=!loading&&picks.length===0;
+  const hasScoredProducts = picks.some((pick) => !(pick.entity_type === 'service' || pick.type === 'service'));
   return (
     <section style={{marginBottom:32}}>
       <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:4}}>
         <h3 style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:G.darkText,margin:0,fontFamily:"Georgia,serif"}}>
           Mira's Safety Picks for <span style={{color:G.teal}}>{petName}</span>
         </h3>
-        <span style={{fontSize:11,background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>AI Scored</span>
+        {hasScoredProducts && <span style={{fontSize:11,background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>AI Scored</span>}
       </div>
       <p style={{fontSize:12,color:"#888",marginBottom:16}}>Products and services prioritised for {petName}'s protection and documentation needs.</p>
       {showImagines ? (
@@ -397,7 +361,8 @@ function MiraPicksSection({ pet, onSelectProd }) {
       ) : (
         <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:8}}>
           {picks.map((pick,i)=>{
-            const score=pick.mira_score||0;
+            const isService = pick.entity_type === 'service' || pick.type === 'service';
+            const score=isService ? 0 : (pick.mira_score||0);
             const scoreColor=score>=80?"#16A34A":score>=70?G.teal:"#6B7280";
             return (
               <div key={i} 
@@ -411,15 +376,21 @@ function MiraPicksSection({ pet, onSelectProd }) {
                 </div>
                 <div style={{padding:"9px 10px 11px"}}>
                   <div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:5}}>{pick.name||"—"}</div>
-                  <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:4}}>
-                    <div style={{flex:1,height:3,background:G.pale,borderRadius:3}}><div style={{width:`${score}%`,height:"100%",background:scoreColor,borderRadius:3}}/></div>
-                    <span style={{fontSize:10,fontWeight:800,color:scoreColor}}>{score}</span>
-                  </div>
-                  {pick.mira_reason && !pick.mira_reason.toLowerCase().includes('celebrat') && <p style={{fontSize:10,color:"#888",lineHeight:1.4,margin:0,fontStyle:"italic"}}>{pick.mira_reason}</p>}
+                  {!isService && (
+                    <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:4}}>
+                      <div style={{flex:1,height:3,background:G.pale,borderRadius:3}}><div style={{width:`${score}%`,height:"100%",background:scoreColor,borderRadius:3}}/></div>
+                      <span style={{fontSize:10,fontWeight:800,color:scoreColor}}>{score}</span>
+                    </div>
+                  )}
+                  {isService ? (
+                    <p style={{fontSize:11,color:G.mid,fontWeight:700,margin:'0 0 4px'}}>{pick.price ? `₹${pick.price}` : 'Price on request'}</p>
+                  ) : (
+                    pick.mira_reason && !pick.mira_reason.toLowerCase().includes('celebrat') && <p style={{fontSize:10,color:"#888",lineHeight:1.4,margin:0,fontStyle:"italic"}}>{pick.mira_reason}</p>
+                  )}
                   <button
                     onClick={async(e)=>{e.stopPropagation();const{tdc}=await import('../utils/tdc_intent');tdc.book({service:pick.name,pillar:"paperwork",pet,channel:"paperwork_safety_picks"});const{bookViaConcierge}=await import('../utils/MiraCardActions');bookViaConcierge({service:pick.name,pillar:"paperwork",pet,channel:"paperwork_safety_picks",amount:pick.price});}}
                     style={{marginTop:6,width:"100%",padding:"5px 0",background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",border:"none",borderRadius:8,fontSize:10,fontWeight:700,cursor:"pointer"}}>
-                    Book →
+                    Book for {petName} →
                   </button>
                 </div>
               </div>
@@ -525,7 +496,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook, o
                     <div style={{fontSize:11,color:"#888",lineHeight:1.4,marginBottom:8,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{t(svc.desc,petName)}</div>
                     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                       <span style={{fontSize:13,fontWeight:700,color:G.deep}}>{svc.price}</span>
-                      <button style={{background:G.teal,color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Book {svc.steps}-step →</button>
+                      <button data-testid={`paperwork-service-card-${svc.id}`} style={{background:G.teal,color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Book for {petName} →</button>
                     </div>
                   </div>
                 </div>
@@ -637,7 +608,7 @@ function PaperworkContentModal({ isOpen, onClose, category, pet }) {
           {soulMadeOpen&&<SoulMadeModal pet={pet} pillar="paperwork" pillarColor={G.teal} pillarLabel="Documents" onClose={()=>setSoulMadeOpen(false)}/>}
         </div>
       </div>
-      {selProd&&<ProductDetailModal product={selProd} pet={pet} onClose={()=>setSelProd(null)}/>}
+      {selProd&&<ConciergeOnlyProductDetailModal product={selProd} selectedPet={pet} pillar="paperwork" onClose={()=>setSelProd(null)}/>} 
     </div>
   );
 }
@@ -680,6 +651,11 @@ const PaperworkSoulPage = () => {
   const [toastSvc,      setToastSvc]      = useState("");
   const [selProd,       setSelProd]       = useState(null); // ProductDetailModal
   const miraRef = useRef(null);
+  const topTabs = [
+    { id: 'documents', label: 'Documents' },
+    { id: 'advisory', label: 'Advisory' },
+    { id: 'find', label: 'Find Help' },
+  ];
 
   const handleBook = useCallback(async (svc) => {
     const petName = petData?.name||"your dog";
@@ -814,8 +790,34 @@ const PaperworkSoulPage = () => {
         {/* Booking modal */}
         {activeService && <ServiceBookingModal service={activeService} pet={petData} onClose={()=>setActiveService(null)}/>}
 
+        <div style={{display:'flex',gap:8,flexWrap:'wrap',padding:'14px 0 18px'}}>
+          {topTabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                data-testid={`paperwork-top-tab-${tab.id}`}
+                style={{
+                  border:'none',
+                  borderRadius:9999,
+                  padding:'10px 16px',
+                  background:isActive ? `linear-gradient(135deg,${G.teal},${G.mid})` : '#fff',
+                  color:isActive ? '#fff' : G.mid,
+                  fontSize:13,
+                  fontWeight:700,
+                  boxShadow:isActive ? '0 8px 20px rgba(13,148,136,0.18)' : '0 1px 4px rgba(0,0,0,0.05)',
+                  cursor:'pointer',
+                }}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Category strip — Care-style 82×72px icon+label pills */}
-        <div style={{background:"#fff",borderBottom:`1px solid ${G.borderLight}`,position:"relative"}}>
+        {activeTab === 'documents' && <div style={{background:"#fff",borderBottom:`1px solid ${G.borderLight}`,position:"relative"}}>
           <div style={{display:"flex",overflowX:"auto",scrollbarWidth:"none",padding:"8px 12px",gap:4}}>
             {[
               {id:"identity",  icon:"🪪", label:"Identity",       bg:"#EDE9FE", accent:G.mid},
@@ -849,12 +851,18 @@ const PaperworkSoulPage = () => {
               );
             })}
           </div>
-        </div>
+        </div>}
 
         {activeTab==="documents" && (
           <>
-            {/* Doc completeness bar */}
-            <DocCompletnessBar pet={petData} docScore={docScore} onOpen={()=>navigate(`/pet-vault/${petData?.id||petData?._id}`)}/>
+            <DocumentVault
+              pet={petData}
+              token={token}
+              onConcierge={() => {
+                setToastSvc(`${petData?.name}'s Document Vault`);
+                setToastVisible(true);
+              }}
+            />
 
             {/* Mira picks */}
             <div ref={miraRef}><MiraPicksSection pet={petData} onSelectProd={setSelProd}/></div>
@@ -938,7 +946,7 @@ const PaperworkSoulPage = () => {
                     <div style={{fontSize:11,color:"#888",lineHeight:1.4,marginBottom:8,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{t(svc.desc,petName)}</div>
                     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                       <span style={{fontSize:13,fontWeight:700,color:G.deep}}>{svc.price}</span>
-                      <button style={{background:G.teal,color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Book →</button>
+                      <button data-testid={`paperwork-advisory-card-${svc.id}`} style={{background:G.teal,color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Book for {petName} →</button>
                     </div>
                   </div>
                 </div>
@@ -948,13 +956,12 @@ const PaperworkSoulPage = () => {
         )}
 
         {activeTab==="find" && (
-          <div style={{textAlign:"center",padding:"60px 20px",color:"#888"}}>
-            <div style={{fontSize:40,marginBottom:16}}>📍</div>
-            <div style={{fontSize:16,fontWeight:700,color:G.darkText,marginBottom:8}}>Find vets, microchipping clinics & advisors near you</div>
-            <p style={{fontSize:13,marginBottom:24}}>Drop in PaperworkNearMe.jsx here — same pattern as CareNearMe.</p>
-            <div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:12,padding:"16px 20px",maxWidth:400,margin:"0 auto",fontSize:12,color:G.mid}}>
-              <strong>Aditya:</strong> Import PaperworkNearMe from /components/paperwork/PaperworkNearMe.jsx and render it here with prop: &lt;PaperworkNearMe pet={'{petData}'} onBook={'{handleBook}'}/&gt;
-            </div>
+          <div style={{marginTop:24}} data-testid="paperwork-find-help-panel">
+            <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:6,fontFamily:"Georgia,serif"}}>
+              Find nearby paperwork help for <span style={{color:G.teal}}>{petName}</span>
+            </h2>
+            <p style={{fontSize:13,color:"#888",marginBottom:20}}>Vets, microchipping clinics, legal support and document guidance — all wired to Concierge.</p>
+            <PaperworkNearMe pet={petData} onBook={handleBook} />
           </div>
         )}
 
@@ -968,12 +975,11 @@ const PaperworkSoulPage = () => {
 
       {/* ProductDetailModal — opens when card is tapped */}
       {selProd && (
-        <ProductDetailModal
+        <ConciergeOnlyProductDetailModal
           product={selProd}
-          pet={petData}
           pillar="paperwork"
+          selectedPet={petData}
           onClose={() => setSelProd(null)}
-          onBook={(svc) => { setSelProd(null); handleBook(svc); }}
         />
       )}
 
