@@ -86,9 +86,23 @@ function CelebrateMiraPicksSection({ pet, token, onOpenService }) {
     if(!pet?.id){setPicksLoading(false);return;}
     setPicks([]);setPicksLoading(true);
     const breedParam=encodeURIComponent((pet?.breed||"").toLowerCase().trim());
-    fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=celebrate&limit=12&min_score=60&breed=${breedParam}`)
-      .then(r=>r.ok?r.json():null)
-      .then(d=>{const f=filterBreedProducts(d?.picks||[],pet?.breed);if(f.length)setPicks(f.slice(0,12));setPicksLoading(false);})
+    Promise.all([
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=celebrate&limit=12&min_score=60&entity_type=product&breed=${breedParam}`).then(r=>r.ok?r.json():null),
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=celebrate&limit=6&min_score=60&entity_type=service`).then(r=>r.ok?r.json():null),
+    ])
+      .then(([pData, sData]) => {
+        const prods = filterBreedProducts(pData?.picks || [], pet?.breed);
+        const svcs = sData?.picks || [];
+        const merged = [];
+        let pi = 0, si = 0;
+        while (pi < prods.length || si < svcs.length) {
+          if (pi < prods.length) merged.push(prods[pi++]);
+          if (pi < prods.length) merged.push(prods[pi++]);
+          if (si < svcs.length) merged.push(svcs[si++]);
+        }
+        if (merged.length) setPicks(merged.slice(0, 12));
+        setPicksLoading(false);
+      })
       .catch(()=>setPicksLoading(false));
   },[pet?.id,pet?.breed]);
   const productPicks = picks.filter(p => p.entity_type === 'product' || p.type === 'product' || (!p.entity_type && !p.type));

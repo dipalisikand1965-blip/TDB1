@@ -597,7 +597,7 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
       if (!pet?.id) { setLoading(false); return; }
       const breedParam = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : "";
       // Try claude-picks first; fall back to pillar-products sorted by mira_score
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=learn&limit=16&min_score=40${breedParam}`, {
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=learn&limit=16&min_score=40&entity_type=product${breedParam}`, {
         headers: token ? { Authorization:`Bearer ${token}` } : {}
       })
         .then(r => r.json())

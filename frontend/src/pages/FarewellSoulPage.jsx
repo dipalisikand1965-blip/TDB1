@@ -154,11 +154,21 @@ function MiraPicksSection({ pet, onOpenService }) {
   ];
   useEffect(()=>{
     if(!pet?.id){setPicksLoading(false);return;}
-    fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=farewell&limit=12&min_score=60`)
-      .then(r=>r.ok?r.json():null).then(d=>{
-        const filtered=filterBreedProducts(d?.picks||[],pet?.breed);
-        if(filtered.length)setPicks(filtered.slice(0,12));setPicksLoading(false);
-      }).catch(()=>setPicksLoading(false));
+    Promise.all([
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=farewell&limit=12&min_score=60&entity_type=product`).then(r=>r.ok?r.json():null),
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=farewell&limit=6&min_score=60&entity_type=service`).then(r=>r.ok?r.json():null),
+    ]).then(([pData, sData])=>{
+      const filtered=filterBreedProducts(pData?.picks||[],pet?.breed);
+      const svcs = sData?.picks || [];
+      const merged = [];
+      let pi = 0, si = 0;
+      while (pi < filtered.length || si < svcs.length) {
+        if (pi < filtered.length) merged.push(filtered[pi++]);
+        if (pi < filtered.length) merged.push(filtered[pi++]);
+        if (si < svcs.length) merged.push(svcs[si++]);
+      }
+      if(merged.length)setPicks(merged.slice(0,12));setPicksLoading(false);
+    }).catch(()=>setPicksLoading(false));
   },[pet?.id,pet?.breed]);
   return (
     <section style={{marginBottom:28}}>

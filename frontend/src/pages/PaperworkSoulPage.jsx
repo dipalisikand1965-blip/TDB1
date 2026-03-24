@@ -552,7 +552,7 @@ function PaperworkContentModal({ isOpen, onClose, category, pet }) {
     }
     if(category==="mira"){
       if(!pet?.id){setLoading(false);return;}
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=16&min_score=40`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=16&min_score=40&entity_type=product`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
         .then(r=>r.json()).then(d=>{
           const scored=d.picks||[];
           if(scored.length>0){setProducts(scored);setLoading(false);return;}

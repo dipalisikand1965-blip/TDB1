@@ -155,8 +155,24 @@ function MiraPicksSection({ pet, onOpenService }) {
   ];
   useEffect(()=>{
     if(!pet?.id){setPicksLoading(false);return;}
-    fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=adopt&limit=12&min_score=60`)
-      .then(r=>r.ok?r.json():null).then(d=>{if(d?.picks?.length)setPicks(d.picks.slice(0,12));setPicksLoading(false);}).catch(()=>setPicksLoading(false));
+    Promise.all([
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=adopt&limit=12&min_score=60&entity_type=product`).then(r=>r.ok?r.json():null),
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=adopt&limit=6&min_score=60&entity_type=service`).then(r=>r.ok?r.json():null),
+    ])
+      .then(([pData, sData]) => {
+        const prods = pData?.picks || [];
+        const svcs = sData?.picks || [];
+        const merged = [];
+        let pi = 0, si = 0;
+        while (pi < prods.length || si < svcs.length) {
+          if (pi < prods.length) merged.push(prods[pi++]);
+          if (pi < prods.length) merged.push(prods[pi++]);
+          if (si < svcs.length) merged.push(svcs[si++]);
+        }
+        if (merged.length) setPicks(merged.slice(0, 12));
+        setPicksLoading(false);
+      })
+      .catch(() => setPicksLoading(false));
   },[pet?.id]);
   const productPicks = picks.filter(p => p.entity_type === 'product' || p.type === 'product' || (!p.entity_type && !p.type));
   const servicePicks = picks.filter(p => p.entity_type === 'service' || p.type === 'service');
@@ -243,6 +259,11 @@ const AdoptSoulPage = () => {
 
   const petName = petData?.name || "you";
   const breed   = petData?.breed||"";
+  const openAdoptConcierge = useCallback((serviceName = 'Adoption support') => {
+    tdc.book({ service: serviceName, pillar: 'adopt', pet: petData, channel: 'adopt_pillar_service' });
+    setConciergeSvc(serviceName);
+    setConciergeOpen(true);
+  }, [petData]);
 
   if(loading) return <PillarPageLayout pillar="adopt" hideHero hideNavigation><LoadingState/></PillarPageLayout>;
 
@@ -307,7 +328,7 @@ const AdoptSoulPage = () => {
               </div>
             </div>
             <div style={{marginBottom:20}}><AdoptProfile pet={petData} token={token}/></div>
-            <MiraPicksSection pet={petData} onOpenService={(serviceName)=>{setConciergeSvc(serviceName||'Adoption support');setConciergeOpen(true);}}/>
+            <MiraPicksSection pet={petData} onOpenService={(serviceName)=>openAdoptConcierge(serviceName||'Adoption support')}/>
             {/* ✦ Soul Made™ trigger */}
             <div data-testid="adopt-soul-made-trigger" onClick={()=>setSoulMadeOpen(true)}
               style={{margin:"0 auto 24px",maxWidth:540,padding:"20px 20px 18px",background:"linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 50%, #1a0a2e 100%)",border:"1.5px solid rgba(196,77,255,0.4)",borderRadius:18,cursor:"pointer",position:"relative",overflow:"hidden",boxShadow:"0 4px 24px rgba(196,77,255,0.18)",transition:"transform 0.15s, box-shadow 0.15s"}}
@@ -326,7 +347,7 @@ const AdoptSoulPage = () => {
             <div style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,borderRadius:16,padding:"24px 28px",marginBottom:24,textAlign:"center"}}>
               <p style={{fontSize:18,fontWeight:800,color:"#fff",fontFamily:"Georgia,serif",marginBottom:8}}>Ready to start? Mira finds your perfect dog.</p>
               <p style={{fontSize:13,color:"rgba(255,255,255,0.70)",marginBottom:16}}>Breed match, rescue connections, home readiness — all in one conversation with Mira.</p>
-              <button onClick={()=>setConciergeOpen(true)} style={{background:`linear-gradient(135deg,${G.rose},${G.mid})`,color:"#fff",border:"none",borderRadius:9999,padding:"12px 28px",fontSize:15,fontWeight:700,cursor:"pointer"}}>✦ Start with Mira →</button>
+              <button onClick={()=>openAdoptConcierge('Adoption support')} style={{background:`linear-gradient(135deg,${G.rose},${G.mid})`,color:"#fff",border:"none",borderRadius:9999,padding:"12px 28px",fontSize:15,fontWeight:700,cursor:"pointer"}}>✦ Start with Mira →</button>
             </div>
           </>
         )}
@@ -351,7 +372,7 @@ const AdoptSoulPage = () => {
                   <div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:8,padding:"6px 10px",marginBottom:8}}><span style={{fontSize:10,color:G.rose}}>✦ </span><span style={{fontSize:10,color:G.mid,lineHeight:1.4}}>{svc.miraKnows}</span></div>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                     <span style={{fontSize:11,color:G.rose,fontStyle:'italic'}}>Price on WhatsApp</span>
-                    <button onClick={()=>{setConciergeSvc(svc.name);setConciergeOpen(true);}} style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Book for {petName} →</button>
+                    <button onClick={()=>openAdoptConcierge(svc.name)} style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Book for {petName} →</button>
                   </div>
                 </div>
               </div>);})}
