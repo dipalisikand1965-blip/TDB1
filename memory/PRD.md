@@ -1,262 +1,154 @@
 # Pet Life OS — Product Requirements Document
-_Last updated: 2026-03-24 · The Doggy Company™_
+_Last updated: 2026-03-24 · The Doggy Company_
 
-## Original Problem Statement
-Build a full-featured Pet Life OS with 13+ pillar pages, AI-powered product recommendations (Mira), breed-specific merchandise (Soul Made™), and a universal custom order flow across all pillars. Core rule: ALL service bookings and custom orders MUST route through `service_desk_tickets` via Universal Concierge (`attach_or_create_ticket`).
+## Product Vision
+A comprehensive Pet Life Operating System with 12 pillars covering every aspect of a dog's life — from food to travel, celebrations to end-of-life care. Every interaction is personalised via Mira AI using deep pet context (breed, allergies, soul score, health conditions). Every actionable element creates a Service Desk ticket for the concierge team.
 
----
+## Tech Stack
+- **Frontend:** React 18 + Shadcn/UI + inline styles
+- **Backend:** FastAPI (Python) — single `server.py` (24k+ lines) + modular route files
+- **Database:** MongoDB (collections: pets, users, service_desk_tickets, admin_notifications, celebration_photos, orders, etc.)
+- **AI:** OpenAI GPT-4o / Claude Sonnet via Emergent LLM Key
+- **Payments:** Razorpay
+- **Images:** Cloudinary (UGC uploads)
+- **Auth:** JWT-based custom auth
 
-## Architecture
-
-```
-/app
-backend/
-    server.py                        # Monolithic main app (~24k lines — P2: refactor needed)
-    unified_product_box.py           # Unified Product Box API (products_master)
-    nearby_places_routes.py          # /api/nearby/* + /api/nearme/search
-    app/api/mockup_routes.py         # Breed products API (flat_only, skip, search, total)
-    ai_image_service.py              # AI image generation service
-    breed_catalogue.py               # BREED_ALIASES map (spaces vs underscores)
-
-frontend/src/
-    components/
-        SoulMadeModal.jsx            # 4-step custom order modal (700px, 2-col grid)
-        ProductCard.jsx              # overrideImageUrl + artStyleLabel props, service CTA
-        CartSidebar.jsx              # Flat art illustration thumbnail + Clear Cart button
-        UnifiedCheckout.jsx          # Mira also recommends — breed filter (50+ breeds)
-        common/
-            FlatArtPickerCard.jsx    # Product card → modal with illustration picker → Add to Cart
-        admin/
-            AIImagePromptField.jsx   # Reusable AI image generation widget (all editors)
-            BreedCakeManager.jsx     # Admin: cake gallery + Flat Art tab
-            SoulProductsManager.jsx  # Admin: AI soul products + pagination + search
-            ProductBoxEditor.jsx     # Fixed product_type read order + AIImagePromptField
-            UnifiedProductBox.jsx    # Active/inactive toggle on product rows
-            BundlesManager.jsx       # Active/inactive toggle + AIImagePromptField
-            ServicesManager.jsx      # AIImagePromptField added
-        dine/DineContentModal.jsx    # Fixed tabs, Watercolour/Flat Art toggle + FlatArtPickerCard
-        go/GoContentModal.jsx        # Fixed filter, toggle + FlatArtPickerCard
-        play/PlayContentModal.jsx    # Fixed tabs/filter, toggle + FlatArtPickerCard
-        celebrate/CelebrateContentModal.jsx  # Toggle + FlatArtPickerCard
-    utils/
-        blankTemplates.js            # 24 blank product template URLs (one per product shape)
-    context/
-        CartContext.js               # CART_VERSION=2 guard — auto-wipes stale localStorage
-    hooks/
-        useConcierge.js              # Universal request() → service desk tickets
-    pages/
-        CelebratePageNew.jsx         # Shimmer skeleton while Mira picks load
-        CareSoulPage.jsx             # Shimmer skeleton while picks load
-```
-
----
-
-## DB Collections
-
-| Collection | Count | Admin Panel |
-|---|---|---|
-| `products_master` | 5,151 (incl. 20 flat art templates) | /admin → Product Box |
-| `breed_products` | 3,448 (watercolour soul + Yappy cake illustrations) | /admin → Soul Products → CRUD |
-| `services_master` | 1,025 | /admin → Service Box |
-| `bundles` | 96 | /admin → Bundles |
-| `service_desk_tickets` | Growing | /admin → Service Desk |
-
-**breed_products breakdown:**
-- Watercolour soul mockups: ~3,285 (50 breeds × ~80 product types)
-- Birthday cake illustrations (Yappy faces): 163 (50 breeds × 3–6 colour variants)
-- Flat art Cloudinary overlays: **DELETED** (clashed with watercolour style)
-
----
+## Core Architecture
+- `useConcierge.js` — Central hook for all frontend → service desk ticket creation
+- `tdc_intent.js` — Lightweight intent tracker (tdc.book, tdc.request, tdc.nearme)
+- `PillarContext.jsx` — Global pet state shared across all pillar pages
+- `MiraChatWidget.jsx` — Floating Mira AI chat with pet context injection
+- `PillarSoulProfile.jsx` — Cross-pillar soul score drawer (shared by all 12 pillars)
+- `PillarPageLayout.jsx` — Shared layout wrapper for pillar pages
 
 ## Credentials
-- User: `dipali@clubconcierge.in` / `test123`
-- Admin: `aditya` / `lola4304` at `/admin`
-- App: `https://concierge-wiring.preview.emergentagent.com`
-- MongoDB: `mongodb://localhost:27017` / DB: `pet-os-live-test_database`
+- **User:** dipali@clubconcierge.in / test123
+- **Admin:** aditya / lola4304 (at /admin)
+
+## 12 Pillars
+
+| # | Pillar | Route | Status | Audit Date |
+|---|--------|-------|--------|------------|
+| 1 | Celebrate | /celebrate | LOCKED | 27 Mar 2026 |
+| 2 | Dine | /dine | LOCKED | 27 Mar 2026 |
+| 3 | Care | /care | LOCKED | 24 Mar 2026 |
+| 4 | Go | /go | LOCKED | 24 Mar 2026 |
+| 5 | Play | /play | PENDING | — |
+| 6 | Learn | /learn | PENDING | — |
+| 7 | Adopt | /adopt | PENDING | — |
+| 8 | Farewell | /farewell | PENDING | — |
+| 9 | Emergency | /emergency | PENDING | — |
+| 10 | Paperwork | /paperwork | PENDING | — |
+| 11 | Love | — | NOT BUILT | — |
+| 12 | Services | /services | PENDING | — |
 
 ---
 
-## Flat Art System — Current State (CRITICAL FOR NEXT AGENT)
+## Locked Pillars — DO NOT TOUCH
 
-### Three-part system:
-1. **163 Yappy cake illustrations** in `breed_products` (`product_type=birthday_cake`), 50 breeds × 3–6 variants
-2. **20 flat art template products** in `products_master` (`soul_tier=flat_art`, IDs: `flat-art-flat_art_mug-template` etc.)
-3. **24 blank product templates** — URLs in `/app/frontend/src/utils/blankTemplates.js`
+### Celebrate (Locked 27 Mar 2026)
+- 11/11 backend tests passed, 100% frontend verified
+- All concierge wiring points confirmed
+- Mobile 375px audit passed
+- Celebration Wall UGC via Cloudinary
 
-### UX Flow (Watercolour / Flat Art toggle):
-1. Customer opens Soul Made in any ContentModal (Dine/Go/Play/Celebrate)
-2. Sees toggle: 🎨 Watercolour | 🐾 Flat Art
-3. **Watercolour** → standard ProductCard grid with full ProductDetailModal on click
-4. **Flat Art** → FlatArtPickerCard grid (blank template image + "Choose style →" button)
-5. Click on flat art card → FlatArtPickerModal opens (like ProductDetailModal)
-6. Picks breed illustration variant (Ginger, Fawn, Black, Brindle, Patchy)
-7. Clicks "Add to Cart — Ginger" → cart item with `customDetails.illustration_url`
-8. CartSidebar shows: illustration thumbnail + "🐾 Flat Art · Ginger · Indie · For Mojo"
+### Dine (Locked 27 Mar 2026)
+- 7/7 concierge flows verified
+- Mobile 375px clean
+- 4 concierge gaps fixed in previous session
+- Bug fix: `rawCondition.toLowerCase` crash when `health_conditions` is an array (fixed 24 Mar 2026)
 
-### Key FlatArtPickerCard bugs that were fixed:
-- Wrong product added to cart → fixed by `modalProduct` snapshot at click time
-- Stale `artStyle='flat_art'` persisting across navigation → reset at START of every fetch
-- Birthday_cake products appearing as orderable items → filtered from soul_made grid
-- Cart localStorage persisting wrong product → `CART_VERSION=2` guard auto-wipes on reload
+### Care (Locked 24 Mar 2026)
+- 13/13 backend tests passed (iteration_199.json)
+- 12/12 concierge wiring points verified
+- 9 gaps fixed: 8 service booking flows (Grooming, Vet, Boarding, Sitting, Behaviour, Senior, Nutrition, Emergency) wired via `useConcierge` + `sendToConcierge` callback
+- GuidedCarePaths `handleSubmit` replaced TODO with `useConcierge.fire()`
+- Mobile font fix: Mira Imagines card button bumped to 13px
+- Soul Made strip present in all categories
 
-### Future: Proper AI Mockups
-Currently uses blank white product templates. Goal: 350 AI-generated images (50 breeds × 7 types) showing Yappy face ON the product. When ready, update `blankTemplates.js`.
-
----
-
-## P0 — Done ✅ (This Agent Session, March 2026)
-
-- [x] ContentModal tab bugs — no duplicate "All" tab, filter checks product_type (not just sub_category)
-- [x] Watercolour/Flat Art toggle in all 4 ContentModals (Dine, Go, Play, Celebrate)
-- [x] FlatArtPickerCard — proper ProductCard-style card → modal → illustration picker → Add to Cart
-- [x] FlatArtPickerModal — proper portal modal (like ProductDetailModal) with illustration picker
-- [x] 20 flat art template products in products_master (editable in Product Box)
-- [x] 24 blank product templates generated + mapped in blankTemplates.js
-- [x] CartSidebar — illustration thumbnail + breed/variant for flat art cart items
-- [x] Clear Cart button added to CartSidebar header
-- [x] CartContext CART_VERSION=2 guard — auto-wipes stale localStorage on page load
-
-## Go Pillar — Completed & Signed Off (24 March 2026)
-- [x] artStyle bug fixed — resets to 'watercolour' at START of every ContentModal fetch
-- [x] birthday_cake products filtered from soul_made orderable grid
-- [x] Product snapshot bug fixed — modalProduct captured at click time (stable ref)
-- [x] React key stability — key={p.id || p.name || idx} on all FlatArtPickerCard grids
-- [x] Admin Soul Products gallery pagination (48/page) + search bar
-- [x] AI Image Prompt field in ALL 5 admin editors (generates image, saves to entity)
-- [x] Universal /api/admin/generate-image endpoint
-- [x] Service product cards — price hidden, "Talk to Concierge →" CTA shown
-- [x] ProductBoxEditor product_type read order fixed (reads product_type before basics.product_type)
-- [x] Admin stats Active count fixed (was 3, now 4730+)
-- [x] Active/Inactive toggle on UnifiedProductBox rows + BundlesManager cards
-- [x] Party accessories + party breed sorting (pet's breed shown first)
-- [x] No-image placeholder — paw SVG icon (replaced rope tug Unsplash)
-- [x] Mira picks shimmer skeleton on Celebrate + Care pages
-- [x] SoulMadeModal widened to 700px, 2-column grid layout
-- [x] 831 bad flat art Cloudinary overlay products deleted
-- [x] Checkout "Mira also recommends" breed filter expanded to 50+ breeds
-- [x] Checkout breed filter: empty breed shows products (not hides them)
-- [x] Content modal bottom padding fixed (pb-80) — products no longer cut off
-- [x] CloudinaryUploader added to SoulProductsManager edit modal
+### Go (Locked 24 Mar 2026)
+- 11/13 backend tests passed (iteration_200.json; 2 test-setup issues)
+- 16/16 concierge wiring points verified
+- 1 gap fixed: GuidedGoPaths `handleSend` replaced dead `/api/concierge/go-path` endpoint with `useConcierge.fire()`
+- All 8 service flows already used `bookViaConcierge`
+- Mobile font fix: MiraImagineCard button bumped to 13px
 
 ---
 
-## P1 — Next Sprint (NEXT AGENT: Start Here)
+## Cross-Pillar Fixes (24 Mar 2026)
 
-- [ ] Audit remaining pillars: Play → Learn → Adopt → Farewell → Emergency → Paperwork
-- [ ] Add "3 vets near you" to daily health WhatsApp reminders (NearMe API at scheduler time)
+### PillarSoulProfile Redesign
+- **Fix 1:** Soul builder navigation — `/pet-home` for 100% pets, `/soul-builder?pet_id=X` for incomplete
+- **Fix 2:** Trigger bar subtext — "Mira knows everything" (green) for complete, "X questions waiting" for incomplete
+- **Fix 3:** Drawer two states — questions FIRST for incomplete pets with "HELP MIRA KNOW" header; green "Mira knows everything" banner for complete pets
+- **Score colors:** Green (#16A34A) for 100% pets, pillar color for incomplete
+- **NaN guard:** `isFinite(score)` prevents "NaN%" display
+
+### Score Alignment (Backend)
+- `calculate_overall_score()` in `pet_soul_routes.py` now uses canonical `calculate_pet_soul_score` from `pet_score_logic.py`
+- All three touchpoints aligned: hero badge, drawer score, answer handler
+- Bruno's score bounce (88% → 58% → 88%) is FIXED
+
+### Pet Switcher Fix (Navbar)
+- Imported `usePillarContext` in Navbar.jsx
+- Desktop pet dropdown now calls `setCurrentPet(pet)` directly
+- Previously only set localStorage + dispatched event (unreliable)
+
+### Dine Crash Fix
+- `GuidedNutritionPaths.jsx` line 41-42: `rawCondition.toLowerCase()` crashed when `health_conditions` was an array
+- Fixed: Added `Array.isArray()` guard and `typeof === 'string'` check
+
+---
+
+## P0 — Next Sprint (Start Here)
+
+- [ ] Audit remaining pillars following `/app/memory/PILLAR_AUDIT_METHODOLOGY.md`:
+  - Play → Learn → Adopt → Farewell → Emergency → Paperwork
+- [ ] Each pillar: 8-phase methodology (Component Map → Bug Hunt → Concierge Wiring → Soul Made → Mobile 375px → Mira Context → Document → Report)
+
+## P1 — Near Term
+
+- [ ] Add "3 vets near you" to daily health WhatsApp reminders
 - [ ] Extend scheduler for Medication refill reminders
-- [ ] Mobile/iOS audit remaining pillars page-by-page
-
-> **DO NOT TOUCH THE CELEBRATE PILLAR.** It has been fully audited, tested (11/11 backend, 100% frontend), and signed off. See "Final Audit: Celebrate" section in `/app/complete-documentation.html`. Any changes to celebrate components require explicit user approval.
-
-> **DO NOT TOUCH THE DINE PILLAR.** It has been fully audited, tested (7/7 concierge flows, mobile 375px clean), and signed off. See "Final Audit: Dine" section in `/app/complete-documentation.html`. Any changes to dine components require explicit user approval.
-
-> **DO NOT TOUCH THE CARE PILLAR.** It has been fully audited, tested (13/13 backend, 100% frontend, 12/12 concierge wiring points), and signed off. See "CARE AUDIT" section in `/app/complete-documentation.html`. Any changes to care components require explicit user approval.
-
-> **DO NOT TOUCH THE GO PILLAR.** It has been fully audited, tested (11/13 backend, 100% frontend, 16/16 concierge wiring points), and signed off. See "GO AUDIT" section in `/app/complete-documentation.html`. Any changes to go components require explicit user approval.
-
-## PillarSoulProfile — Cross-Pillar Fix (24 March 2026)
-
-- [x] **Soul builder navigation**: Fixed link from `/my-pets` to `/soul-builder?pet_id=${pet.id}` for incomplete profiles
-- [x] **Score NaN guard**: Added `isFinite(score)` fallback to prevent "NaN%" display
-- [x] **Trigger bar redesign**: Now shows score + "Soul Score" label instead of "Mira's picks →"
-- [x] **Progress bar safety**: NaN-safe width calculation
-- [x] Verified on Care AND Go pages — consistent rendering
-
-- [x] **1 Concierge gap fixed**: GuidedGoPaths `handleSend` replaced dead `/api/concierge/go-path` endpoint with `useConcierge.fire()` including path selections metadata
-- [x] **MiraImagineCard font fix**: Button/reason text bumped from 11px to 13px for mobile readability
-- [x] **11/13 backend tests passed** (iteration_200.json; 2 failures are test setup issues)
-- [x] **All 16 concierge wiring points verified**: 8 service flows (bookViaConcierge), GuidedGoPaths (start + submit), GoConciergeModal, PetFriendlyStays, Mira Picks, Mira Imagines, inline modal
-- [x] **Bug Hunt**: No "none"/null text bugs — all null guards proper
-- [x] **Soul Made strip**: Present in GoCategoryStrip and GoContentModal
-- [x] **Mira context**: pet_id, pillar, breed all sent correctly
-- [x] **Documentation**: Go Audit section added to complete-documentation.html
-
-## Care Pillar — Completed & Signed Off (24 March 2026)
-
-- [x] **9 Concierge gaps fixed**: 8 service booking flows (Grooming, Vet, Boarding, Sitting, Behaviour, Senior, Nutrition, Emergency) wired via `useConcierge` + `sendToConcierge` callback in `ServiceBookingModal`
-- [x] **GuidedCarePaths submit fixed**: Replaced TODO `handleSubmit` with `useConcierge.fire()` including path metadata, selections, pet breed/allergies
-- [x] **Mobile font fix**: Mira Imagines card button/description bumped from 10-11px to 11-13px
-- [x] **13/13 backend tests passed** (iteration_199.json)
-- [x] **12/12 concierge wiring points verified**: Mira Picks, Mira Imagines, CareConciergeModal, CareNearMe, GuidedCarePaths (start + submit), WellnessProfile, all 8 service flows
-- [x] **Mobile 375px audit**: All sections render correctly, no overflow, tap targets 44px+
-- [x] **Soul Made strip**: Present in CareCategoryStrip, CareContentModal, SoulMadeCollection
-- [x] **Mira context**: selected_pet_id sent on all API calls
-- [x] **Documentation**: Care Audit section added to complete-documentation.html + Download PDF button
-- [x] **No "none" text bugs**: All null guards properly implemented, CLEAN_NONE regex active
-
-## Recently Completed (27 March 2026)
-
-- [x] Test pets cleanup — deleted TestScoring, TestScoringWeight + duplicate Coco from `pets` collection
-- [x] Cleaned 2,253 orphan records from `mira_product_scores`, 2 from `soul_score_history`, 1 from `pet_wrapped`
-- [x] Closed 2 orphaned service desk tickets linked to test pets
-- [x] Documentation updated (PRD.md + complete-documentation.html)
-- [x] **Fix 1**: Nav pillar dropdown shake removed — clean static border, no transition bounce
-- [x] **Fix 2**: Mira OS "< Pet Home" back navigation added to MiraDemoPage header
-- [x] **Fix 3**: Mojo allergy data corrected — `food_allergies: chicken`, `allergy_info` now has proper vet-confirmed data
-- [x] **Fix 4**: Category strip mobile tap targets enlarged (44px min-height, 78px min-width, 16px padding, 13px font)
-- [x] **Fix 5**: Announcement bar enabled — "India's first Pet Life OS · Built in memory of Mystique · Now in early access"
-- [x] **Fix 6**: CelebrateHero load animation changed to fade-only (removed scale bounce from SoulChip and pet avatar)
-- [x] **Fix 7**: Mira OS pill nav already has proper mobile horizontal scroll (CSS verified)
-- [x] **Fix 8**: Test pets removed from DB (TestScoring, TestScoringWeight, duplicate Coco)
-- [x] **Fix 9**: `/custom-cake` deprecated — redirects to `/celebrate` via React Router Navigate
-- [x] **P0.2 complete**: Added `favourite_treat: peanut_butter`, `birthday_quarter: q4` to Mojo's soul data
-- [x] **P0.3**: `pet_breed` now included in service desk ticket creation (mira_service_desk.py)
-- [x] **MiraAI multi-pet bug**: Global widget now always sends first pet's ID for multi-pet users
-- [x] **Soul Made™ strip redesign**: Premium dark purple gradient card with glow CTA, applied to ALL 10 pillar locations (Celebrate×2, Dine, Go, Play, Care content modals + Adopt, Farewell, Emergency, Learn, Paperwork soul pages), now visible as cross-sell in ALL categories
-- [x] **MiraChatWidget pet context fix**: Backend `/api/mira/os/stream` now reads `selected_pet_id` field + enriched pet context with vault allergies, favourite treat, personality, gender
-- [x] **Emergency page chunk error**: Fixed by frontend restart (stale webpack cache)
-- [x] **3 Concierge gaps wired**: CelebrateConcierge CTA, CelebrateServiceGrid cards, MiraBirthdayBox Build Box — all create service desk tickets via useConcierge hook
-- [x] **Celebration Wall upload**: Now uploads to Cloudinary (tdc/celebration-wall/ugc/), auto-approves, photos appear immediately
-- [x] **Mobile font fixes**: Announcement bar 13px, PET CONCIERGE® 13px, navbar bold text-sm, Footer copyright 13px, "Learn more" link 44px tap target
-- [x] **Testing agent v3**: 11/11 backend tests passed, frontend 90%→100% after font fixes
-
-## Dine Pillar — Completed & Signed Off (27 March 2026)
-
-- [x] **Bug fix**: Removed duplicate "Find Dine" tab (identical to "Dine Out" — both rendered PetFriendlySpots)
-- [x] **Bug fix**: "Mojo's none" health condition in DineHero — added null/none guard on `healthCond`
-- [x] **Bug fix**: "Mojo's none" in GuidedNutritionPaths — added null/none guard on `condition`
-- [x] **Concierge gap wired**: DineConciergeSection CTA — useConcierge book() before modal open
-- [x] **Concierge gap wired**: DineDimensions cards — useConcierge request() on dimension click
-- [x] **7/7 concierge flows verified**: All create tickets with pet_breed=Indie (TDB-2026-0692 through 0698)
-- [x] **Mobile 375px audit**: All 11 sections readable, no overflow, fonts ≥13px, tap targets ≥44px
-- [x] **Soul Made™ premium strip**: Already in DineContentModal as cross-sell in ALL categories
-
----
+- [ ] Mobile/iOS audit remaining pillars
 
 ## P2 — Backlog
 
-- [ ] Universal Concierge flow verification page-by-page (tickets reach admin + notifications)
-- [ ] Build `Love` pillar
-- [ ] Refactor `server.py` (24k lines — split into modules)
-- [ ] "My Custom Orders" tab in user profile
-- [ ] Admin notification chime when new Soul Made order arrives
-- [ ] Generate 350 proper flat art mockups (50 breeds × 7 product types) using GPT Image 1
-- [x] Test pets cleanup — deleted TestScoring, TestScoringWeight, duplicate Coco + 2,255 orphan records (March 2026)
-- [x] Duplicate pet fix — kept real Coco (pet-d2458b677a4d), deleted test duplicate (March 2026)
+- [ ] Build the `Love` pillar
+- [ ] Refactor `server.py` (24k+ lines) into modular routers
+- [ ] Add "My Custom Orders" tab in user profile
+- [ ] Replace blank templates with lifestyle product shots for Flat Art
+- [ ] Documentation page: Add Word/DOCX download button
 
 ---
 
 ## Key API Endpoints
 
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| GET | /api/mockups/breed-products | Breed products. Params: breed, pillar, product_type, flat_only, skip, search, limit. Returns total |
-| GET | /api/mockups/breed-products?breed={}&product_type=birthday_cake&limit=10 | Yappy illustrations (3–6 per breed) |
-| POST | /api/admin/generate-image | Universal AI image generator {prompt, entity_type, entity_id} |
-| PATCH | /api/admin/products/{id}/toggle-active | Toggle is_active + active + visibility.status |
-| GET | /api/product-box/stats | Product Box stats (active count correct now) |
-| POST | /api/service_desk/attach_or_create_ticket | Universal Concierge ticket |
-| GET | /api/nearme/search?query=&type= | NearMe Google Places search |
-| PUT | /api/bundles/{id} | Update bundle (incl. is_active) |
+| Endpoint | Purpose |
+|----------|---------|
+| POST /api/service_desk/attach_or_create_ticket | Universal concierge ticket creation |
+| POST /api/mira/chat | Mira AI chat |
+| POST /api/mira/os/stream | Mira OS streaming |
+| POST /api/celebration-wall/photos/ugc | UGC photo upload |
+| GET /api/pet-soul/profile/{id}/quick-questions | Soul questions + live score |
+| POST /api/pet-soul/profile/{id}/answer | Answer soul question |
+| GET /api/pets | User's pets with scores |
+| POST /api/auth/login | User authentication |
 
----
+## Key DB Collections
+
+| Collection | Purpose |
+|-----------|---------|
+| pets | Pet profiles with `doggy_soul_answers`, `vault`, `overall_score` |
+| users | User accounts |
+| service_desk_tickets | Concierge requests from UI |
+| admin_notifications | Triggers NotificationBell |
+| celebration_photos | Celebration Wall (Cloudinary URLs) |
+| orders | E-commerce orders |
+| pillar_products | Products per pillar/category |
 
 ## 3rd Party Integrations
-
-- OpenAI gpt-image-1 — AI image generation (`/api/admin/generate-image`)
-- OpenAI GPT-4o / Claude Sonnet — Emergent LLM Key (Mira AI picks)
-- Cloudinary — cloud: duoapcx1p (all mockup images)
-- Razorpay — payments
-- Gupshup — WhatsApp
-- Google Places — NearMe search
+- OpenAI GPT-4o / Claude Sonnet — Emergent LLM Key
+- Gemini — Emergent LLM Key
+- Cloudinary — User API Key (image uploads)
+- Razorpay — User API Key (payments)
