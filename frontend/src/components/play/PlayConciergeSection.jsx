@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { API_URL } from "../../utils/api";
 import PlayConciergeModal from "./PlayConciergeModal";
+import { tdc } from "../../utils/tdc_intent";
 
 const G = { deep:"#7B2D00", mid:"#7B3F00", orange:"#E76F51", light:"#FFAD9B", pale:"#FFF0EA", cream:"#FFF8F5", darkText:"#7B2D00", mutedText:"#8B4513" };
 const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
@@ -70,7 +71,7 @@ export default function PlayConciergeSection({ pet, prefetchedServices }) {
               return (
                 <div
                   key={svc.id || svc._id || i}
-                  onClick={() => setModalSvc(svc)}
+                  onClick={() => { tdc.view({ name: svc.name, pillar: "play", pet, channel: "play_concierge_service_view" }); setModalSvc(svc); }}
                   data-testid={`play-service-card-${i}`}
                   style={{ flexShrink:0, width:220, background:"#fff", borderRadius:18, overflow:"hidden", cursor:"pointer", border:"1px solid rgba(231,111,81,0.14)", transition:"transform 0.18s, box-shadow 0.18s", boxShadow:"0 2px 12px rgba(123,45,0,0.07)" }}
                   onMouseEnter={e => { e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 8px 24px rgba(123,45,0,0.14)"; }}
@@ -96,14 +97,14 @@ export default function PlayConciergeSection({ pet, prefetchedServices }) {
                   <div style={{ padding:"14px 14px 16px" }}>
                     <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:5, lineHeight:1.3 }}>{svc.name}</div>
                     {(svc.description || svc.desc) && (
-                      <div style={{ fontSize:12, color:G.mutedText, lineHeight:1.5, marginBottom:10, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>
+                      <div style={{ fontSize:13, color:G.mutedText, lineHeight:1.5, marginBottom:10, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>
                         {svc.description || svc.desc}
                       </div>
                     )}
                     {svc.duration_minutes && (
-                      <div style={{ fontSize:11, color:"#888", marginBottom:8 }}>⏱ {svc.duration_minutes} min session</div>
+                      <div style={{ fontSize:13, color:"#888", marginBottom:8 }}>⏱ {svc.duration_minutes} min session</div>
                     )}
-                    <button style={{ width:"100%", padding:"8px 0", borderRadius:10, background:G.orange, border:"none", color:"#fff", fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                    <button style={{ width:"100%", padding:"8px 0", borderRadius:10, background:G.orange, border:"none", color:"#fff", fontSize:13, fontWeight:700, cursor:"pointer" }}>
                       Book this →
                     </button>
                   </div>

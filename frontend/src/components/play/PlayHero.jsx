@@ -109,7 +109,7 @@ export default function PlayHero({ pet, soulScore }) {
           <div style={{ width:26, height:26, borderRadius:"50%", background:MIRA_ORB, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, color:"#fff", flexShrink:0, marginTop:1 }}>✦</div>
           <div style={{ textAlign:"left" }}>
             <p style={{ fontSize:13, color:"#fff", lineHeight:1.55, fontStyle:"italic", margin:0 }}>"{miraQuote}"</p>
-            <span style={{ fontSize:10, color:G.light, display:"block", marginTop:4, fontWeight:600 }}>♥ Mira knows {petName}</span>
+            <span style={{ fontSize:13, color:G.light, display:"block", marginTop:4, fontWeight:600 }}>♥ Mira knows {petName}</span>
           </div>
         </div>
       </div>
