@@ -15,7 +15,7 @@ logging.basicConfig(
 )
 log = logging.getLogger('img_gen')
 
-API_URL = "https://learn-pillar-audit.preview.emergentagent.com"
+API_URL = "https://pet-wrapped-1.preview.emergentagent.com"
 PILLARS = ["celebrate", "care", "dine", "enjoy", "fit", "learn", "emergency", "farewell", "adopt", "paperwork", "advisory", "shop", "stay", "travel", "go"]
 
 async def run():

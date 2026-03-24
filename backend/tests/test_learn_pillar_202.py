@@ -14,7 +14,7 @@ import os
 import time
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://learn-pillar-audit.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pet-wrapped-1.preview.emergentagent.com').rstrip('/')
 
 class TestLearnPillarAudit:
     """Learn Pillar Audit - Backend API Tests"""
