@@ -2551,6 +2551,15 @@ const Admin = () => {
               <button
                 id="sync-production-btn"
                 onClick={async () => {
+                  const input = window.prompt(
+                    '🔴 DANGER: This pushes Soul Made data to PRODUCTION.\n\n' +
+                    'This cannot be reversed.\n\n' +
+                    'Type SYNC to confirm:'
+                  );
+                  if (input !== 'SYNC') {
+                    alert('Cancelled. Type exactly SYNC to proceed.');
+                    return;
+                  }
                   const btn = document.getElementById('sync-production-btn');
                   const progressContainer = document.getElementById('sync-progress-container');
                   const progressBar = document.getElementById('sync-progress-bar');
@@ -3564,6 +3573,15 @@ const Admin = () => {
                 size="sm"
                 className="bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0 text-sm font-bold shadow-lg px-4 ml-2"
                 onClick={async () => {
+                  const input = window.prompt(
+                    '🔴 DANGER: This pushes Soul Made data to PRODUCTION.\n\n' +
+                    'This cannot be reversed.\n\n' +
+                    'Type SYNC to confirm:'
+                  );
+                  if (input !== 'SYNC') {
+                    alert('Cancelled. Type exactly SYNC to proceed.');
+                    return;
+                  }
                   const btn = document.activeElement;
                   const originalText = btn.innerHTML;
                   try {
