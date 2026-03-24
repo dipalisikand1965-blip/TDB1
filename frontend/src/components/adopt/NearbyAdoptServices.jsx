@@ -14,6 +14,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Card } from '../ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import { useConcierge } from '../../hooks/useConcierge';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -66,7 +67,7 @@ const SERVICE_TYPES = {
   }
 };
 
-const NearbyAdoptServices = () => {
+const NearbyAdoptServices = ({ pet }) => {
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -80,6 +81,7 @@ const NearbyAdoptServices = () => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [detectingLocation, setDetectingLocation] = useState(true);
   const searchTimeoutRef = useRef(null);
+  const { request, nearme } = useConcierge({ pet, pillar: 'adopt' });
 
   // Detect location on mount
   useEffect(() => {
@@ -301,7 +303,7 @@ const NearbyAdoptServices = () => {
               </div>
             ) : cityName ? (
               <button 
-                onClick={() => setShowLocationModal(true)}
+                onClick={() => { request('Set adoption nearby location', { channel: 'adopt_nearby_services_location' }); setShowLocationModal(true); }}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-100 text-teal-700 hover:bg-teal-200 transition-colors"
               >
                 <MapPin className="w-4 h-4" />
@@ -312,7 +314,7 @@ const NearbyAdoptServices = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => setShowLocationModal(true)}
+                onClick={() => { request('Set adoption nearby location', { channel: 'adopt_nearby_services_location' }); setShowLocationModal(true); }}
                 className="gap-2"
               >
                 <MapPin className="w-4 h-4" />
@@ -331,7 +333,7 @@ const NearbyAdoptServices = () => {
             return (
               <button
                 key={key}
-                onClick={() => fetchPlaces(key)}
+                onClick={() => { request(`Find nearby ${config.name}`, { channel: 'adopt_nearby_services_type' }); fetchPlaces(key); }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all ${
                   isActive ? config.activeColor : config.color
                 }`}
@@ -383,6 +385,7 @@ const NearbyAdoptServices = () => {
                     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(place.name + ' ' + (place.vicinity || ''))}`}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => nearme(place, { channel: 'adopt_nearby_services_directions' })}
                     className="flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs hover:bg-blue-100"
                   >
                     <Navigation className="w-3 h-3" />
@@ -399,6 +402,15 @@ const NearbyAdoptServices = () => {
                       {place.opening_hours.open_now ? 'Open Now' : 'Closed'}
                     </span>
                   )}
+
+                  <button
+                    onClick={() => nearme(place, { channel: 'adopt_nearby_services_concierge' })}
+                    className="flex items-center gap-1 px-2 py-1 bg-pink-50 text-pink-700 rounded text-xs hover:bg-pink-100"
+                    data-testid={`nearby-adopt-concierge-${idx}`}
+                  >
+                    <MapPin className="w-3 h-3" />
+                    Ask Concierge
+                  </button>
                 </div>
               </Card>
             ))}

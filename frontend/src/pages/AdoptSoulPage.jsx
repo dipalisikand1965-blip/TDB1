@@ -17,7 +17,6 @@ import PillarPageLayout from "../components/PillarPageLayout";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import ConciergeToast from "../components/common/ConciergeToast";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
-import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
 import GuidedAdoptPaths from "../components/adopt/GuidedAdoptPaths";
 import AdoptNearMe from "../components/adopt/AdoptNearMe";
 import { API_URL } from "../utils/api";
@@ -142,14 +141,13 @@ function AdoptProfile({ pet, token }) {
   );
 }
 
-function MiraPicksSection({ pet }) {
+function MiraPicksSection({ pet, onOpenService }) {
   const [picks, setPicks]               = useState([]);
   const [picksLoading, setPicksLoading] = useState(true);
   const [selPick, setSelPick]           = useState(null);
   const { token } = useAuth();
-  const petName = "your future dog"; const breed = "";
-  const { note, orderCount, topInterest } = useMiraIntelligence(pet?.id, token);
-  const subtitle = getMiraIntelligenceSubtitle(petName, note, orderCount, topInterest);
+  const petName = pet?.name || "your dog";
+  const gentleSubtitle = "Gentle, concierge-led support for discovery, readiness, and the first days home.";
   const imagines = [
     {id:"a-1",emoji:"🏠",name:"Home Readiness Kit",description:"Baby gates, socket covers, cord protectors — complete dog-proofing kit for your home."},
     {id:"a-2",emoji:"📚",name:"Breed Compatibility Guide",description:"50-breed guide — energy, size, temperament and lifestyle fit — find your perfect match."},
@@ -160,16 +158,19 @@ function MiraPicksSection({ pet }) {
     fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=adopt&limit=12&min_score=60`)
       .then(r=>r.ok?r.json():null).then(d=>{if(d?.picks?.length)setPicks(d.picks.slice(0,12));setPicksLoading(false);}).catch(()=>setPicksLoading(false));
   },[pet?.id]);
+  const productPicks = picks.filter(p => p.entity_type === 'product' || p.type === 'product' || (!p.entity_type && !p.type));
+  const servicePicks = picks.filter(p => p.entity_type === 'service' || p.type === 'service');
+  const badgeLabel = productPicks.length > 0 ? 'AI Scored' : servicePicks.length > 0 ? 'Concierge Curated' : 'Curated';
   return (
     <section style={{marginBottom:28}}>
       <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:4}}>
         <h3 style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:G.darkText,margin:0,fontFamily:"Georgia,serif"}}>Mira's Adoption Picks</h3>
-        <span style={{fontSize:11,background:`linear-gradient(135deg,${G.rose},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>{picks.length>0?"AI Scored":"Curated"}</span>
+        <span style={{fontSize:11,background:`linear-gradient(135deg,${G.rose},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>{badgeLabel}</span>
       </div>
-      <p style={{fontSize:13,color:"#888",marginBottom:16}}>{subtitle}</p>
+      <p style={{fontSize:13,color:"#888",marginBottom:16}}>{gentleSubtitle}</p>
       {!picksLoading&&picks.length===0&&<div style={{display:"flex",gap:12,overflowX:"auto",paddingBottom:8,scrollbarWidth:"none"}}>{imagines.map(item=><MiraImaginesCard key={item.id} item={item} pet={pet} token={token} pillar="adopt"/>)}</div>}
       {picksLoading&&<div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 0",color:G.mutedText}}><Loader2 size={14} style={{animation:"spin 1s linear infinite",color:G.rose}}/><span style={{fontSize:12}}>Mira is preparing adoption picks…</span></div>}
-      {!picksLoading&&picks.length>0&&(<div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}}>{picks.map((pick,i)=>{const score=pick.mira_score||0;const col=score>=80?"#16A34A":score>=70?G.rose:"#6B7280";const img=[pick.image_url,pick.image].find(u=>u&&u.startsWith("http"))||null;return<div key={i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer"}} onClick={()=>setSelPick(pick)} onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e=>e.currentTarget.style.transform=""}><div style={{width:"100%",height:130,background:G.pale,overflow:"hidden"}}>{img?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>:<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${G.deep},${G.rose})`,color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,18)}</div>}</div><div style={{padding:"10px 11px 12px"}}><div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||"—"}</div><div style={{display:"flex",alignItems:"center",gap:5}}><div style={{flex:1,height:4,background:G.pale,borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:col,borderRadius:4}}/></div><span style={{fontSize:10,fontWeight:800,color:col,minWidth:26}}>{score}</span></div></div></div>;})})</div>)}
+      {!picksLoading&&picks.length>0&&(<div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}}>{picks.map((pick,i)=>{const isService=pick.entity_type==='service'||pick.type==='service';const score=pick.mira_score||0;const col=score>=80?"#16A34A":score>=70?G.rose:"#6B7280";const img=[pick.image_url,pick.image].find(u=>u&&u.startsWith("http"))||null;return<div key={i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer"}} onClick={()=>isService?onOpenService?.(pick.name):setSelPick(pick)} onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e=>e.currentTarget.style.transform=""}><div style={{width:"100%",height:130,background:G.pale,overflow:"hidden"}}>{img?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>:<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${G.deep},${G.rose})`,color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,24)}</div>}</div><div style={{padding:"10px 11px 12px"}}><div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||"—"}</div>{isService?(<p style={{fontSize:11,color:G.mid,lineHeight:1.45,margin:'0 0 8px'}}>Compassionate concierge support for your adoption journey.</p>):(<div style={{display:"flex",alignItems:"center",gap:5,marginBottom:8}}><div style={{flex:1,height:4,background:G.pale,borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:col,borderRadius:4}}/></div><span style={{fontSize:10,fontWeight:800,color:col,minWidth:26}}>{score}</span></div>)}<button onClick={(e)=>{e.stopPropagation();if(isService){tdc.book({service:pick.name,pillar:'adopt',pet,channel:'adopt_mira_picks_service'});onOpenService?.(pick.name);}else{setSelPick(pick);}}} style={{width:'100%',background:`linear-gradient(135deg,${G.rose},${G.mid})`,color:'#fff',border:'none',borderRadius:10,padding:'8px 10px',fontSize:12,fontWeight:700,cursor:'pointer'}}>{isService?'Talk to Mira →':'View details →'}</button></div></div>;})})</div>)}
       {selPick&&<ProductDetailModal product={selPick} pillar="adopt" selectedPet={pet} onClose={()=>setSelPick(null)}/>}
     </section>
   );
@@ -306,7 +307,7 @@ const AdoptSoulPage = () => {
               </div>
             </div>
             <div style={{marginBottom:20}}><AdoptProfile pet={petData} token={token}/></div>
-            <MiraPicksSection pet={petData}/>
+            <MiraPicksSection pet={petData} onOpenService={(serviceName)=>{setConciergeSvc(serviceName||'Adoption support');setConciergeOpen(true);}}/>
             {/* ✦ Soul Made™ trigger */}
             <div data-testid="adopt-soul-made-trigger" onClick={()=>setSoulMadeOpen(true)}
               style={{margin:"0 auto 24px",maxWidth:540,padding:"20px 20px 18px",background:"linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 50%, #1a0a2e 100%)",border:"1.5px solid rgba(196,77,255,0.4)",borderRadius:18,cursor:"pointer",position:"relative",overflow:"hidden",boxShadow:"0 4px 24px rgba(196,77,255,0.18)",transition:"transform 0.15s, box-shadow 0.15s"}}
@@ -333,7 +334,7 @@ const AdoptSoulPage = () => {
         {/* Book Guidance tab */}
         {activeTab==="services" && (
           <div style={{marginTop:24}}>
-            <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:4,fontFamily:"Georgia,serif"}}>Expert adoption guidance — <span style={{color:G.rose}}>all free</span></h2>
+            <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:4,fontFamily:"Georgia,serif"}}>Expert adoption guidance — <span style={{color:G.rose}}>gentle and concierge-led</span></h2>
             <p style={{fontSize:13,color:"#888",marginBottom:20}}>Mira guides every stage of your adoption journey.</p>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(240px,100%),1fr))",gap:14}}>
               {ADOPT_SERVICES.map(svc=>{
@@ -349,8 +350,8 @@ const AdoptSoulPage = () => {
                   <div style={{fontSize:11,color:"#888",lineHeight:1.45,marginBottom:8,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{svc.desc}</div>
                   <div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:8,padding:"6px 10px",marginBottom:8}}><span style={{fontSize:10,color:G.rose}}>✦ </span><span style={{fontSize:10,color:G.mid,lineHeight:1.4}}>{svc.miraKnows}</span></div>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                    <span style={{fontSize:14,fontWeight:800,color:G.deep}}>{svc.price}</span>
-                    <button onClick={()=>{setConciergeSvc(svc.name);setConciergeOpen(true);}} style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Book →</button>
+                    <span style={{fontSize:11,color:G.rose,fontStyle:'italic'}}>Price on WhatsApp</span>
+                    <button onClick={()=>{setConciergeSvc(svc.name);setConciergeOpen(true);}} style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Book for {petName} →</button>
                   </div>
                 </div>
               </div>);})}
