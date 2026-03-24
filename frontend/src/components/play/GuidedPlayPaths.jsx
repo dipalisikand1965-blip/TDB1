@@ -123,7 +123,7 @@ export function buildPaths(pet) {
       badge:"Mira Guided", badgeBg:"#0D9488",
       accentColor:"#0D9488", accentBg:"#F0FDFA", accentBorder:"rgba(13,148,136,0.15)",
       iconBg:"#99F6E4", photoBg:"linear-gradient(135deg,#F0FDFA,#5EEAD4)",
-      desc:`Build ${petName}'s perfect walk routine — gear, frequency, and distance matched to ${petBreed || 'their breed'}.`,
+      desc:`Build ${petName}'s perfect walk routine — gear, frequency, and distance matched to ${pet?.breed || 'their breed'}.`,
       miraNote:`I know ${petName}'s energy and pace. Let me build the ideal walk setup.`,
       stepLabels:["Walk frequency","Gear check","Route preference","Special needs"],
       steps:{

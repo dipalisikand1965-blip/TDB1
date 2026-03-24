@@ -1,180 +1,322 @@
-# Agent Handover Summary — 24 March 2026
-_Session: Care + Go Pillar Audits + PillarSoulProfile Redesign + Cross-Pillar Fixes_
+# EXHAUSTIVE HANDOVER SUMMARY — Pet Life OS
+# Date: 24 March 2026
+# For: Next Agent
 
 ---
 
-## What Was Done This Session
-
-### 1. Care Pillar Audit (COMPLETE — LOCKED)
-**Files modified:**
-- `/app/frontend/src/pages/CareSoulPage.jsx`
-  - Added `useConcierge` import
-  - Modified `ServiceBookingModal` to create `sendToConcierge` callback using `useConcierge.fire()`
-  - Wired ALL 8 service booking flows (GroomingFlow, VetFlow, BoardingFlow, SittingFlow, BehaviourFlow, SeniorFlow, NutritionFlow, EmergencyFlow) — each flow's `onSend` now calls `handleSend` which invokes `sendToConcierge` with full flow data + pet breed/allergies
-  - Bumped MiraImagineCard button/description fonts from 10-11px to 11-13px
-- `/app/frontend/src/components/care/GuidedCarePaths.jsx`
-  - Added `useConcierge` import
-  - Added `const { fire } = useConcierge({ pet, pillar: 'care' })` in PathFlowModal
-  - Replaced TODO `handleSubmit` with `useConcierge.fire()` including path ID, title, pet breed, allergies, and step selections
-
-**Testing:** 13/13 backend tests passed (iteration_199.json), 100% frontend verified
-
-**Concierge Wiring Points (12 total):**
-1. Mira's Care Picks (products) → attach_or_create_ticket
-2. Mira's Care Picks (services) → attach_or_create_ticket
-3. Mira Imagines Cards → attach_or_create_ticket
-4. CareConciergeModal → bookViaConcierge()
-5. CareNearMe → tdc.nearme()
-6. GuidedCarePaths start → tdc.request()
-7. GuidedCarePaths submit → useConcierge.fire() [FIXED]
-8. WellnessProfile → tdc.request()
-9-12. 8 Service Flows → useConcierge via sendToConcierge [FIXED]
+## WHAT THIS APP IS
+Pet Life OS by The Doggy Company — a full-stack platform where every pet pillar (Celebrate, Dine, Care, Go, Play, Learn, Paperwork, Emergency, Farewell, Adopt, Shop, Services) has:
+- A hero section with pet context
+- Product browsing with breed-specific filtering
+- Guided paths (step-by-step flows) that fire concierge tickets
+- A universal `PillarSoulProfile` trigger bar + drawer (soul score, questions, breed tips)
+- Mira AI chat with full pet context
+- Service booking via concierge → admin service desk
 
 ---
 
-### 2. Go Pillar Audit (COMPLETE — LOCKED)
-**Files modified:**
-- `/app/frontend/src/components/go/GuidedGoPaths.jsx`
-  - Added `useConcierge` import
-  - Added `const { fire } = useConcierge({ pet, pillar: 'go' })` in PathFlowModal
-  - Replaced dead `/api/concierge/go-path` endpoint call with `useConcierge.fire()` including path selections, pet breed, allergies
-  - Emergency Travel Path sets `urgency: 'emergency'`
-- `/app/frontend/src/pages/GoSoulPage.jsx`
-  - Bumped MiraImagineCard button/reason fonts from 11px to 13px
-
-**Testing:** 11/13 backend tests passed (iteration_200.json), 100% frontend verified
-**All 8 service flows were ALREADY wired** with `bookViaConcierge` — no fixes needed
+## LOCKED PILLARS — DO NOT TOUCH
+These are 100% audited, tested, and signed off:
+1. **Celebrate** — locked 23 Mar 2026
+2. **Dine** — locked 23 Mar 2026
+3. **Care** — locked 24 Mar 2026 (iteration_199.json)
+4. **Go** — locked 24 Mar 2026 (iteration_200.json)
+5. **Play** — locked 24 Mar 2026 (iteration_201.json)
 
 ---
 
-### 3. PillarSoulProfile Redesign (Cross-Pillar)
-**File:** `/app/frontend/src/components/PillarSoulProfile.jsx`
+## EVERY FILE CHANGED IN THIS SESSION
 
-**Fix 1 — Soul builder navigation (line 491):**
-- Before: `navigate('/my-pets')` for all pets
-- After: `navigate(score >= 100 ? '/pet-home' : '/soul-builder?pet_id=${pet.id}')`
-- 100% pets → Pet Home dashboard
-- Incomplete pets → Soul Builder with correct pet pre-selected
+### PillarSoulProfile.jsx (Cross-Pillar — ALL 12 pillars)
+**File**: `/app/frontend/src/components/PillarSoulProfile.jsx`
+**Changes**:
+- SVG score ring REMOVED globally — replaced with clean `3px solid` CSS border (56px circle, white bg, 2px padding)
+- Border color: `isComplete ? '#16A34A' : pColor` (green for 100%, pillar color otherwise)
+- Trigger bar padding: `20px 22px`, gap: 16, title: 17px bold, breed pill: 13px
+- Drawer maxWidth: `min(680px, 95vw)`
+- No more gradient wrapper — single flat div with pillar-colored border
 
-**Fix 2 — Trigger bar subtext:**
-- Added `isComplete`, `barColor`, `scoreColor` computed variables
-- Trigger bar now shows: Score% in green (complete) or pillar color (incomplete)
-- Subtext: "Mira knows everything" for complete, "{X} questions waiting" for incomplete
+### PlaySoulPage.jsx
+**File**: `/app/frontend/src/pages/PlaySoulPage.jsx`
+**Changes**:
+- Container wrapper changed to `max-w-5xl mx-auto` + `paddingTop:16` + bg `#FFF0EA`
+- BuddyMeetup imported and rendered in "Book a Service" tab
+- `onNavigateToNearMe` prop passed to PlayContentModal (now unused — replaced by guided paths)
 
-**Fix 3 — Drawer two states:**
-- Complete pets (100%): Green progress bar + "Mira knows {name} completely" banner → What Mira Knows → Breed Tip → Mira Imagines
-- Incomplete pets (<100%): Questions FIRST with "HELP MIRA KNOW {NAME} · X QUESTIONS WAITING" → What Mira Knows → Breed Tip → Mira Imagines
-- NaN guard on score display: `isFinite(score) ? Math.round(score) : 0`
+### PlayContentModal.jsx
+**File**: `/app/frontend/src/components/play/PlayContentModal.jsx`
+**Changes**:
+- Soul Play fetch fixed: `play_bandanas` → `play_bandana` (singular) + 10 breed product types via client-side filter from `/api/mockups/breed-products?breed=indie&limit=80`
+- Soul Made strip moved INSIDE scrollable area (was overlapping products)
+- Breed filter applied to sub_category tabs (filters out other breeds' `-play`/`-shop` tabs)
+- Footer CTA rewritten per category:
+  - `outings` → opens "Park Routine" guided path (`PathFlowModal`)
+  - `playdates` → opens "Playdate Starter" guided path
+  - `walking` → opens "Walk Essentials" guided path (NEW)
+  - `fitness` → opens "Fitness Reboot" guided path
+  - `swimming` → opens "Swim Confidence" guided path
+  - `bundles` / `soul` / `miras-picks` → footer REMOVED
+  - `soul_made` → opens SoulMadeModal
+- Imports: `buildPaths`, `PathFlowModal` from GuidedPlayPaths; `BuddyMeetup`; `useConcierge`
+- State: `guidedPath` replaces `showBuddyInline`
+
+### GuidedPlayPaths.jsx
+**File**: `/app/frontend/src/components/play/GuidedPlayPaths.jsx`
+**Changes**:
+- `buildPaths` and `PathFlowModal` now exported (named exports)
+- Dead endpoint `POST /api/concierge/play-path` replaced with `useConcierge.fire()`
+- `sending` state added to prevent double-submit
+- New guided path added: "Walk Essentials" (`walk_essentials`) with 4-step flow
+- `petBreed` reference fixed to `pet?.breed`
+- Mobile fonts bumped to ≥13px
+
+### PlayConciergeSection.jsx
+**File**: `/app/frontend/src/components/play/PlayConciergeSection.jsx`
+**Changes**:
+- `tdc.view` added on service card click
+- CTA: "Book this →" → "Book for {pet.name} →"
+- Price: `Number(svc.price) > 0` guard + "From ₹" prefix
+- `duration_minutes: 0` fix: `> 0` guard (prevents React rendering `0`)
+- Mobile fonts bumped to ≥13px
+
+### PlayCategoryStrip.jsx
+**File**: `/app/frontend/src/components/play/PlayCategoryStrip.jsx`
+**Changes**:
+- Removed `maxWidth: 84, overflow: "hidden", textOverflow: "ellipsis"` — labels no longer clipped
+- Category label font: 13px
+- Button minWidth reduced to 72px for tighter fit
+
+### PlayHero.jsx
+**File**: `/app/frontend/src/components/play/PlayHero.jsx`
+**Changes**:
+- SoulChip fontSize: 11 → 13
+- Mira badge fontSize: 11 → 13
+- "Mira knows petName" fontSize: 10 → 13
+
+### PlayNearMe.jsx
+**File**: `/app/frontend/src/components/play/PlayNearMe.jsx`
+**Changes**:
+- Star rating fontSize: 11 → 13
+- Address fontSize: 12 → 13
+- Mira note fontSize: 12 → 13
+- "Plan a visit" button fontSize: 12 → 13
+- Spot address fontSize: 11 → 13
+- Spot mira note fontSize: 11 → 13
+
+### BuddyMeetup.jsx (NEW)
+**File**: `/app/frontend/src/components/play/BuddyMeetup.jsx`
+**New component**: Social playdate coordination
+- 3-step flow: meetup type → social comfort → location/notes
+- Fires `useConcierge.book()` → `attach_or_create_ticket`
+- Pet-context aware (energy, size, breed, senior detection)
+- Rendered in Play > "Book a Service" tab
+
+### DineContentModal.jsx
+**File**: `/app/frontend/src/components/dine/DineContentModal.jsx`
+**Changes**:
+- Soul Made cross-sell strip moved INSIDE scrollable area (was overlapping products)
+- Breed filter applied to sub_category tabs
+
+### CareContentModal.jsx
+**File**: `/app/frontend/src/components/care/CareContentModal.jsx`
+**Changes**:
+- Breed filter applied to sub_category tabs (2 locations)
+
+### GoContentModal.jsx
+**File**: `/app/frontend/src/components/go/GoContentModal.jsx`
+**Changes**:
+- Breed filter applied to sub_category tabs (2 locations)
+
+### GoSoulPage.jsx
+**File**: `/app/frontend/src/pages/GoSoulPage.jsx`
+**Changes**:
+- Container wrapper changed to `max-w-5xl mx-auto` + `paddingTop:16`
+- Added `color="#0D9488"` to PillarSoulProfile
+
+### CareSoulPage.jsx
+**File**: `/app/frontend/src/pages/CareSoulPage.jsx`
+**Changes**:
+- Added `paddingTop:16` wrapper around PillarSoulProfile
+
+### ShopSoulPage.jsx
+**File**: `/app/frontend/src/pages/ShopSoulPage.jsx`
+**Changes**:
+- Added `paddingTop:16` wrapper around PillarSoulProfile
+
+### ServicesSoulPage.jsx
+**File**: `/app/frontend/src/pages/ServicesSoulPage.jsx`
+**Changes**:
+- Added `paddingTop:16` wrapper around PillarSoulProfile
+
+### documentation_generator.py
+**File**: `/app/backend/documentation_generator.py`
+**Changes**:
+- Word/DOCX download button added (blue button, bottom-right)
+- Hidden in print media queries
+- Generates `.doc` file via HTML-to-Word blob download
 
 ---
 
-### 4. Score Alignment (Backend)
-**File:** `/app/backend/pet_soul_routes.py`
+## PILLAR AUDIT METHODOLOGY
+**File**: `/app/memory/PILLAR_AUDIT_METHODOLOGY.md` (301 lines)
 
-**Root Cause:** Two different scoring engines returning different numbers:
-- `pet_score_logic.py` → `calculate_pet_soul_score()` → 88% for Bruno (used by hero badge + answer handler)
-- `pet_soul_config.py` → `calculate_score_state()` → 58% for Bruno (used by quick-questions API)
+### 8 Phases Per Pillar:
+1. **Component Map** — Find all files, map page spine, list modals/drawers
+2. **Bug Hunt** — Check health_conditions array guard, null guards, dead endpoints, duplicate tabs
+3. **Concierge Wiring** — Every interactive element must fire `useConcierge`/`tdc`/`bookViaConcierge`/`attach_or_create_ticket`
+4. **Soul Made Strip** — Cross-sell must appear in ALL categories inside scrollable area
+5. **Mobile 375px** — All user-readable fonts ≥13px, no overflow, touch targets ≥44px
+6. **Mira Context** — Verify Mira knows pet on this pillar via `/api/mira/os/stream`
+7. **Document & Lock** — Update PRD.md, add DO NOT TOUCH warning
+8. **Report** — Test report, concierge wiring count, ticket verification
 
-**Fix:** Changed `calculate_overall_score()` in `pet_soul_routes.py` to use the canonical `calculate_pet_soul_score` from `pet_score_logic.py` as primary scorer, with fallback to `calculate_score_state` if unavailable.
+### Key grep commands per phase:
+```bash
+# Phase 1 — Component map
+find /app/frontend/src/components/PILLAR -name "*.jsx" | sort
+grep -n "import.*from\|<[A-Z]" /app/frontend/src/pages/PILLARSoulPage.jsx | head -40
 
-**Result:** Bruno now shows consistent 88% everywhere (hero, drawer, after answering).
+# Phase 3 — Concierge wiring check
+for f in $(find /app/frontend/src/components/PILLAR -name "*.jsx"); do
+  hits=$(grep -c "attach_or_create\|useConcierge\|tdc\.\|bookViaConcierge" "$f")
+  echo "$hits matches: $f"
+done
 
----
+# Phase 5 — Mobile font check
+grep -rn "fontSize.*[89]\b\|fontSize.*1[0-2]\b" /app/frontend/src/components/PILLAR/*.jsx
 
-### 5. Pet Switcher Fix (Navbar)
-**File:** `/app/frontend/src/components/Navbar.jsx`
-
-**Root Cause:** Desktop pet dropdown set `setPrimaryPet` (local state) + localStorage + dispatched event, but NEVER called `setCurrentPet` from `PillarContext`. So pillar pages never updated.
-
-**Fix:**
-- Added `import { usePillarContext } from '../context/PillarContext'`
-- Added `const { setCurrentPet } = usePillarContext()` in component
-- Added `setCurrentPet(pet)` in the desktop dropdown click handler
-
----
-
-### 6. Dine Crash Fix
-**File:** `/app/frontend/src/components/dine/GuidedNutritionPaths.jsx`
-
-**Root Cause:** `pet?.doggy_soul_answers?.health_conditions` returns an **array**, but line 42 calls `rawCondition.toLowerCase()` which crashes on arrays.
-
-**Fix:** Added `Array.isArray()` guard to extract first element, plus `typeof === 'string'` check before `.toLowerCase()`.
-
----
-
-### 7. Documentation
-**Files:**
-- `/app/complete-documentation.html` — Added Care Audit + Go Audit sections + Download PDF button + nav links. Copied to `/app/frontend/public/complete-documentation.html`
-- `/app/backend/documentation_generator.py` — Added floating "Download PDF" button with print-optimized `@media print` styles to auto-generated docs
-- `/app/memory/PILLAR_AUDIT_METHODOLOGY.md` — Unchanged (created previous session)
-- `/app/memory/PRD.md` — Updated with all completed work
-- `/app/memory/HANDOVER_SUMMARY.md` — This file
+# Phase 6 — Mira context test
+curl -s -X POST "$API_URL/api/mira/os/stream" \
+  -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" \
+  -d '{"message":"What do you know about Mojo?","selected_pet_id":"pet-mojo-7327ad56","session_id":"PILLAR-audit","source":"chat_widget","current_pillar":"PILLAR","history":[]}'
+```
 
 ---
 
-## What Must Be Done Next
+## REMAINING PILLARS TO AUDIT (in order)
 
-### Immediate: Audit Remaining 6 Pillars
-Follow `/app/memory/PILLAR_AUDIT_METHODOLOGY.md` exactly. 8 phases per pillar:
+### 1. Learn (`/learn`)
+- Page: `/app/frontend/src/pages/LearnSoulPage.jsx`
+- Components: `/app/frontend/src/components/learn/`
+- Container wrapper: Already has `max-w-5xl` + `paddingTop:16` ✅
+- Audit: NOT STARTED
 
-1. **Phase 1: Component Map** — List every section/modal/component
-2. **Phase 2: Bug Hunt** — Check for "none" text, null guards, duplicates
-3. **Phase 3: Concierge Wiring** — Every CTA must create a service desk ticket with pet context
-4. **Phase 4: Soul Made Strip** — Verify premium cross-sell in all categories
-5. **Phase 5: Mobile 375px** — Fonts ≥13px, tap targets ≥44px, no overflow
-6. **Phase 6: Mira Chat** — Verify pet context on pillar page
-7. **Phase 7: Document & Lock** — Update PRD.md + complete-documentation.html
-8. **Phase 8: Report** — Pass/fail summary
+### 2. Adopt (`/adopt`)
+- Page: `/app/frontend/src/pages/AdoptSoulPage.jsx`
+- Components: `/app/frontend/src/components/adopt/`
+- Container wrapper: Already has `max-w-5xl` + `paddingTop:16` ✅
+- Audit: NOT STARTED
 
-**Order:** Play → Learn → Adopt → Farewell → Emergency → Paperwork
+### 3. Farewell (`/farewell`)
+- Page: `/app/frontend/src/pages/FarewellSoulPage.jsx`
+- Components: `/app/frontend/src/components/farewell/`
+- Container wrapper: Already has `max-w-5xl` + `paddingTop:16` ✅
+- Audit: NOT STARTED
 
-### Pillar Component Counts:
-| Pillar | Components | Page File | Est. Effort |
-|--------|-----------|-----------|-------------|
-| Play | 7 | PlaySoulPage.jsx | Medium |
-| Learn | 8 + 3 pages | LearnSoulPage.jsx, LearnPage.jsx, LearnTopicPage.jsx | Large |
-| Adopt | 3 | AdoptSoulPage.jsx, AdoptPage.jsx | Small |
-| Farewell | 2 | FarewellSoulPage.jsx, FarewellPage.jsx | Small |
-| Emergency | 7 | EmergencySoulPage.jsx, EmergencyPage.jsx | Medium |
-| Paperwork | 2 | PaperworkSoulPage.jsx, PaperworkPage.jsx | Small |
+### 4. Emergency (`/emergency`)
+- Page: `/app/frontend/src/pages/EmergencySoulPage.jsx`
+- Components: `/app/frontend/src/components/emergency/`
+- Container wrapper: Already has `max-w-5xl` + `paddingTop:16` ✅
+- Audit: NOT STARTED
 
-### Common Patterns to Check (from Care/Go audit experience):
-1. **Service booking flows with `setSent(true)` and NO API call** — Most critical gap. Wire to `useConcierge.fire()` or `bookViaConcierge`
-2. **GuidedPaths `handleSubmit` with TODO comment** — Replace with `useConcierge.fire()`
-3. **Dead endpoint calls** (like Go's `/api/concierge/go-path`) — Replace with `useConcierge.fire()`
-4. **MiraImagineCard fonts at 11px** — Bump to 13px for mobile
-5. **`rawCondition.toLowerCase()` without type guard** — Check all components that read `health_conditions` (could be array)
+### 5. Paperwork (`/paperwork`)
+- Page: `/app/frontend/src/pages/PaperworkSoulPage.jsx`
+- Components: `/app/frontend/src/components/paperwork/`
+- Container wrapper: Already has `max-w-5xl` + `paddingTop:16` ✅
+- Audit: NOT STARTED
 
----
+### 6. Shop (`/shop`)
+- Page: `/app/frontend/src/pages/ShopSoulPage.jsx`
+- Container wrapper: Fixed `paddingTop:16` ✅
+- Audit: NOT STARTED
 
-## Critical Rules for Next Agent
-
-1. **DO NOT TOUCH Celebrate, Dine, Care, or Go components** — They are fully audited and locked
-2. **DO NOT modify `useConcierge.js`** — It's the canonical concierge hook used everywhere
-3. **DO NOT change the scoring logic** in `pet_score_logic.py` — It's the single source of truth
-4. **ALWAYS use `useConcierge` or `bookViaConcierge`** for new concierge wiring — never raw `fetch` to service desk
-5. **ALWAYS add `Array.isArray()` guards** when reading `doggy_soul_answers` fields — they can be arrays or strings
-6. **ALWAYS copy** `/app/complete-documentation.html` to `/app/frontend/public/complete-documentation.html` after editing
+### 7. Services (`/services`)
+- Page: `/app/frontend/src/pages/ServicesSoulPage.jsx`
+- Container wrapper: Fixed `paddingTop:16` ✅
+- Audit: NOT STARTED
 
 ---
 
-## All Files of Reference
-- `/app/memory/PILLAR_AUDIT_METHODOLOGY.md` — 8-phase audit instructions
-- `/app/memory/PRD.md` — Product requirements
-- `/app/memory/HANDOVER_SUMMARY.md` — This file
-- `/app/complete-documentation.html` — Technical audit documentation
-- `/app/frontend/src/hooks/useConcierge.js` — Central concierge hook
-- `/app/frontend/src/components/PillarSoulProfile.jsx` — Cross-pillar soul profile drawer
-- `/app/frontend/src/components/Navbar.jsx` — Pet switcher fix
-- `/app/frontend/src/context/PillarContext.jsx` — Global pet state
-- `/app/frontend/src/components/MiraChatWidget.jsx` — Mira AI chat
-- `/app/backend/pet_soul_routes.py` — Score alignment fix
-- `/app/backend/pet_score_logic.py` — Canonical scoring engine
-- `/app/backend/documentation_generator.py` — Auto-generated docs with PDF button
-- `/app/test_reports/iteration_199.json` — Care audit test results
-- `/app/test_reports/iteration_200.json` — Go audit test results
+## UNIVERSAL PATTERNS TO ENFORCE ON EVERY PILLAR
 
-## Test Reports
-- `/app/test_reports/iteration_198.json` — Previous session
-- `/app/test_reports/iteration_199.json` — Care pillar audit (13/13 pass)
-- `/app/test_reports/iteration_200.json` — Go pillar audit (11/13 pass)
+### Concierge Wiring Pattern
+```javascript
+// Every interactive user choice MUST map to one of:
+import { useConcierge } from '../../hooks/useConcierge';
+import { tdc } from '../../utils/tdc_intent';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
+
+// Option A: Hook-based (guided paths, forms)
+const { fire } = useConcierge({ pet, pillar: 'PILLAR' });
+await fire({ service: 'Name', channel: 'channel_name', urgency: 'normal', notes: '...' });
+
+// Option B: Direct booking (service cards, modals)
+bookViaConcierge({ pet, pillar: 'PILLAR', service: 'Name', channel: 'channel' });
+
+// Option C: Direct API (complex flows)
+fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+  method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+  body: JSON.stringify({ parent_id, pet_id, pillar, intent_primary, channel, initial_message })
+});
+
+// Option D: Tracking only (views, browses)
+tdc.view({ name, pillar, pet, channel });
+tdc.book({ service, pillar, pet, channel });
+```
+
+### Breed Filter Pattern (for ContentModals)
+```javascript
+// Filter sub_category tabs to only show pet's own breed
+const breedSlug = (pet?.breed||'').trim().toLowerCase().replace(/\s+/g, '_');
+const filteredTabs = uniqueTabs.filter(t => {
+  if (!/-play$|-shop$|-care$|-go$|-dine$|-food$|-travel$/.test(t)) return true;
+  return !breedSlug || t.toLowerCase().startsWith(breedSlug);
+});
+```
+
+### Score Consistency
+Always use `calculate_pet_soul_score` from `/app/backend/pet_score_logic.py` for backend score calculations.
+
+---
+
+## KEY API ENDPOINTS
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/service_desk/attach_or_create_ticket` | POST | Universal concierge ticket creation |
+| `/api/pet-soul/profile/{pet_id}/quick-questions` | GET | Get soul questions for a pet |
+| `/api/pet-soul/profile/{pet_id}/answer` | POST | Save answer + recalculate score |
+| `/api/mira/os/stream` | POST | Mira AI chat with pet context |
+| `/api/mockups/breed-products` | GET | Breed-specific product mockups |
+| `/api/admin/pillar-products` | GET | Pillar products by category |
+| `/api/products` | GET | General products by category |
+| `/api/auth/login` | POST | User login (returns access_token) |
+
+## KEY DB COLLECTIONS
+- `pets` — Contains `doggy_soul_answers`, `overall_score`, `breed`, `photo_url`
+- `service_desk_tickets` — Concierge requests (ticket_id, pillar, channel, pet_breed, intent_primary)
+- `products_master` — Products with `pillar`, `category`, `sub_category`, `image_url`
+- `breed_products` — Breed-specific products with `product_type`, `breed`, `mockup_url`
+
+## CREDENTIALS
+- User: `dipali@clubconcierge.in` / `test123`
+- Admin: `aditya` / `lola4304` (Basic Auth at `/admin`)
+- Pet Mojo ID: `pet-mojo-7327ad56` (Indie breed, 100% soul score)
+
+## TEST REPORTS
+- `/app/test_reports/iteration_199.json` — Care audit
+- `/app/test_reports/iteration_200.json` — Go audit
+- `/app/test_reports/iteration_201.json` — Play audit
+
+## KNOWN GOTCHAS
+1. Backend port 8001 can get stuck (`[Errno 98] Address in use`) — fix: `pkill -f uvicorn && sudo supervisorctl restart backend`
+2. Webpack chunk loading errors — fix: hard browser refresh
+3. `health_conditions` can be array — always guard with `Array.isArray(raw) ? raw.join(", ") : String(raw)`
+4. `duration_minutes: 0` renders as "0" in React — use `> 0` guard not truthy check
+5. MongoDB `_id` is not JSON serializable — always exclude from responses
+6. `padding` shorthand overwrites `paddingTop` — use separate properties
+
+## 3RD PARTY INTEGRATIONS
+- OpenAI GPT-4o / Claude Sonnet — uses Emergent LLM Key (Mira AI picks/scoring)
+- Cloudinary (Images) — requires User API Key
+- Razorpay (Payments) — requires User API Key

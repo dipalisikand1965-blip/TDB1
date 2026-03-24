@@ -311,17 +311,16 @@ export default function PillarSoulProfile({
         onMouseEnter={e => { e.currentTarget.style.boxShadow=`0 6px 28px ${pColor}30`; e.currentTarget.style.transform='translateY(-1px)'; }}
         onMouseLeave={e => { e.currentTarget.style.boxShadow=`0 2px 12px ${pColor}14`; e.currentTarget.style.transform='translateY(0)'; }}
       >
-        {/* Pet photo — 54px with score ring ≈ 66px total */}
-        <div style={{ position:'relative', width:54, height:54, flexShrink:0 }}>
-          <svg viewBox="0 0 54 54" style={{ position:'absolute', inset:-3, width:60, height:60, transform:'rotate(-90deg)' }}>
-            <circle cx="30" cy="30" r="27" fill="none" stroke={`${pColor}18`} strokeWidth="3"/>
-            <circle cx="30" cy="30" r="27" fill="none" stroke={scoreColor} strokeWidth="3"
-              strokeDasharray={`${((isFinite(score)?score:0)/100)*169.65} 169.65`}
-              strokeLinecap="round" style={{ transition:'stroke-dasharray 0.8s ease' }}/>
-          </svg>
-          <div style={{ width:54, height:54, borderRadius:'50%', overflow:'hidden', border:`2px solid ${isComplete ? '#16A34A' : pColor}`, background:`${pColor}12`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>
-            {pet?.photo_url ? <img src={pet.photo_url} alt={name} style={{ width:'100%', height:'100%', objectFit:'cover' }}/> : '\uD83D\uDC3E'}
-          </div>
+        {/* Pet photo — clean CSS border ring, no SVG */}
+        <div style={{
+          width:56, height:56, borderRadius:'50%',
+          border:`3px solid ${isComplete ? '#16A34A' : pColor}`,
+          overflow:'hidden', flexShrink:0, padding:2, background:'#fff',
+        }}>
+          {pet?.photo_url
+            ? <img src={pet.photo_url} alt={name} style={{ width:'100%', height:'100%', objectFit:'cover', borderRadius:'50%' }}/>
+            : <div style={{ width:'100%', height:'100%', borderRadius:'50%', background:`${pColor}20`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22 }}>{'\uD83D\uDC3E'}</div>
+          }
         </div>
         {/* Info */}
         <div style={{ flex:1, minWidth:0 }}>
