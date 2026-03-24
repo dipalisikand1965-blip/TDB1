@@ -1091,8 +1091,8 @@ export default function LandingPage() {
           ))}
           <a href="https://wa.me/919739908844?text=Hi! I'd like to know more about The Doggy Company 🐕" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>WhatsApp</a>
           <a href="https://www.instagram.com/the_doggy_bakery/" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>Instagram</a>
-          <a href="https://www.facebook.com/thedoggybakery" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>Facebook</a>
-          <a href="https://www.youtube.com/@TheDoggyBakery" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>YouTube</a>
+          <a href="https://www.facebook.com/thedoggybaker" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>Facebook</a>
+          <a href="https://www.youtube.com/channel/UCtnx2cZ0p5FGkV5l3P0Iz1g" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>YouTube</a>
         </div>
         <div style={{ fontSize: 12, color: "rgba(245,240,232,0.2)", fontFamily: "DM Sans, sans-serif" }}>
           © 2026 The Doggy Company · Mira is the Brain · Concierge® is the Hands

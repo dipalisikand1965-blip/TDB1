@@ -46,7 +46,7 @@ const Footer = () => {
             
             {/* Social Icons - Row of circles */}
             <div className="flex justify-center gap-4 mb-6">
-              <a href="https://www.facebook.com/thedoggybakery" target="_blank" rel="noopener noreferrer" 
+              <a href="https://www.facebook.com/thedoggybaker" target="_blank" rel="noopener noreferrer" 
                 className="w-10 h-10 rounded-full bg-gray-800 hover:bg-blue-600 flex items-center justify-center transition-colors">
                 <Facebook className="w-5 h-5" />
               </a>
@@ -54,7 +54,7 @@ const Footer = () => {
                 className="w-10 h-10 rounded-full bg-gray-800 hover:bg-pink-600 flex items-center justify-center transition-colors">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="https://www.youtube.com/@TheDoggyBakery" target="_blank" rel="noopener noreferrer"
+              <a href="https://www.youtube.com/channel/UCtnx2cZ0p5FGkV5l3P0Iz1g" target="_blank" rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-gray-800 hover:bg-red-600 flex items-center justify-center transition-colors">
                 <Youtube className="w-5 h-5" />
               </a>
@@ -259,13 +259,13 @@ const Footer = () => {
                 Your Pet&apos;s Life, Thoughtfully Orchestrated.
               </p>
               <div className="flex space-x-4">
-                <a href="https://www.facebook.com/thedoggybakery" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors p-1">
+                <a href="https://www.facebook.com/thedoggybaker" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors p-1">
                   <Facebook className="w-5 h-5" />
                 </a>
                 <a href="https://www.instagram.com/the_doggy_bakery/" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors p-1">
                   <Instagram className="w-5 h-5" />
                 </a>
-                <a href="https://www.youtube.com/@TheDoggyBakery" target="_blank" rel="noopener noreferrer" className="hover:text-red-400 transition-colors p-1">
+                <a href="https://www.youtube.com/channel/UCtnx2cZ0p5FGkV5l3P0Iz1g" target="_blank" rel="noopener noreferrer" className="hover:text-red-400 transition-colors p-1">
                   <Youtube className="w-5 h-5" />
                 </a>
               </div>
