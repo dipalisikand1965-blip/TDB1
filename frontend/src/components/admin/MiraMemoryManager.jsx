@@ -18,7 +18,7 @@ const MEMORY_TYPES = {
   general: { name: 'Life Context', icon: MessageCircle, color: 'purple' }
 };
 
-const MiraMemoryManager = () => {
+const MiraMemoryManager = ({ authHeaders = {} }) => {
   const [searchEmail, setSearchEmail] = useState('');
   const [memberMemories, setMemberMemories] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -37,7 +37,7 @@ const MiraMemoryManager = () => {
 
   const loadStats = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/mira/memory/stats`);
+      const response = await fetch(`${API_URL}/api/mira/memory/stats`, { headers: authHeaders });
       if (response.ok) {
         const data = await response.json();
         setStats(data);
@@ -53,7 +53,8 @@ const MiraMemoryManager = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${API_URL}/api/mira/memory/admin/member/${encodeURIComponent(searchEmail)}?include_inactive=true`
+        `${API_URL}/api/mira/memory/admin/member/${encodeURIComponent(searchEmail)}?include_inactive=true`,
+        { headers: authHeaders }
       );
       
       if (response.ok) {
@@ -73,7 +74,8 @@ const MiraMemoryManager = () => {
   const handleFlagCritical = async (memoryId) => {
     try {
       const response = await fetch(`${API_URL}/api/mira/memory/admin/${memoryId}/flag-critical`, {
-        method: 'PUT'
+        method: 'PUT',
+        headers: authHeaders
       });
       
       if (response.ok) {
@@ -88,7 +90,8 @@ const MiraMemoryManager = () => {
     try {
       const endpoint = suppress ? 'suppress' : 'unsuppress';
       const response = await fetch(`${API_URL}/api/mira/memory/admin/${memoryId}/${endpoint}`, {
-        method: 'PUT'
+        method: 'PUT',
+        headers: authHeaders
       });
       
       if (response.ok) {
@@ -105,7 +108,7 @@ const MiraMemoryManager = () => {
     try {
       const response = await fetch(`${API_URL}/api/mira/memory/admin/bulk`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           memory_ids: [memoryId],
           action: 'delete'
@@ -126,7 +129,7 @@ const MiraMemoryManager = () => {
     try {
       const response = await fetch(`${API_URL}/api/mira/memory/admin/member/${encodeURIComponent(searchEmail)}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify(newMemory)
       });
       
