@@ -394,6 +394,19 @@ async def create_order(order: dict):
     except Exception as e:
         logger.error(f"Auto-ticket creation failed for order: {e}")
     
+    # Regenerate wrapped for all pets in the order
+    try:
+        pet_ids = set()
+        for item in order.get("items", []):
+            if item.get("pet_id"):
+                pet_ids.add(item["pet_id"])
+        for pid in pet_ids:
+            from routes.wrapped.generate import generate_pet_wrapped
+            import asyncio
+            asyncio.create_task(generate_pet_wrapped(pid))
+    except Exception as e:
+        logger.warning(f"Wrapped regen on order failed: {e}")
+    
     return {
         "message": "Order created",
         "orderId": order.get("orderId"),
