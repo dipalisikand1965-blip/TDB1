@@ -1612,7 +1612,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                           {`\u2726 Make something only ${petName} has`}
                         </div>
                         <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',maxWidth:160,textAlign:'right',lineHeight:1.4}}>
-                          Upload a photo · Concierge® creates it · Price on WhatsApp
+                          Upload a photo · Concierge® creates it
                         </div>
                       </div>
                     </div>
@@ -1722,7 +1722,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                       {`\u2726 Make something only ${petName} has`}
                     </div>
                     <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',maxWidth:160,textAlign:'right',lineHeight:1.4}}>
-                      Upload a photo · Concierge® creates it · Price on WhatsApp
+                      Upload a photo · Concierge® creates it
                     </div>
                   </div>
                 </div>
