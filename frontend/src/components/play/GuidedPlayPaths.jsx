@@ -24,7 +24,7 @@ const G = {
 const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
 
 // ─── PATH DATA ──────────────────────────────────────────────────────────────
-function buildPaths(pet) {
+export function buildPaths(pet) {
   const petName  = pet?.name || "your dog";
   const energy   = (pet?.doggy_soul_answers?.energy_level || "").toLowerCase();
   const isHigh   = energy === "high" || energy === "very high";
@@ -154,7 +154,7 @@ function ModalShell({ children, onClose }) {
 }
 
 // ─── PATH FLOW MODAL ─────────────────────────────────────────────────────────
-function PathFlowModal({ path, pet, onClose }) {
+export function PathFlowModal({ path, pet, onClose }) {
   const petName      = pet?.name || "your dog";
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState({});
