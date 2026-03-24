@@ -33,7 +33,7 @@ A comprehensive Pet Life Operating System with 12 pillars covering every aspect 
 | 2 | Dine | /dine | LOCKED | 27 Mar 2026 |
 | 3 | Care | /care | LOCKED | 24 Mar 2026 |
 | 4 | Go | /go | LOCKED | 24 Mar 2026 |
-| 5 | Play | /play | PENDING | — |
+| 5 | Play | /play | LOCKED | 24 Mar 2026 |
 | 6 | Learn | /learn | PENDING | — |
 | 7 | Adopt | /adopt | PENDING | — |
 | 8 | Farewell | /farewell | PENDING | — |
@@ -73,6 +73,16 @@ A comprehensive Pet Life Operating System with 12 pillars covering every aspect 
 - All 8 service flows already used `bookViaConcierge`
 - Mobile font fix: MiraImagineCard button bumped to 13px
 
+### Play (Locked 24 Mar 2026)
+- 12/12 backend tests passed (iteration_201.json)
+- 28 concierge wiring points verified across 8 components
+- 2 gaps fixed: GuidedPlayPaths `handleSubmit` replaced dead `/api/concierge/play-path` with `useConcierge.fire()`, PlayConciergeSection card click added `tdc.view` tracking
+- 6 service booking modals (Park, Social, Adventure, Fitness, Agility, Training) all use `bookViaConcierge`
+- Soul Made cross-sell strip confirmed in ALL categories
+- Mobile 375px: all user-readable fonts bumped to ≥13px (GuidedPlayPaths, PlayCategoryStrip, PlayConciergeSection, PlayHero, PlayNearMe)
+- Mira knows Mojo on Play pillar (verified via /api/mira/os/stream)
+- Ticket verified: TDB-2026-0755 with pet_breed=Indie
+
 ---
 
 ## Cross-Pillar Fixes (24 Mar 2026)
@@ -102,8 +112,9 @@ A comprehensive Pet Life Operating System with 12 pillars covering every aspect 
 
 ## P0 — Next Sprint (Start Here)
 
+- [x] Audit Play pillar — LOCKED 24 Mar 2026
 - [ ] Audit remaining pillars following `/app/memory/PILLAR_AUDIT_METHODOLOGY.md`:
-  - Play → Learn → Adopt → Farewell → Emergency → Paperwork
+  - Learn → Adopt → Farewell → Emergency → Paperwork
 - [ ] Each pillar: 8-phase methodology (Component Map → Bug Hunt → Concierge Wiring → Soul Made → Mobile 375px → Mira Context → Document → Report)
 
 ## P1 — Near Term
