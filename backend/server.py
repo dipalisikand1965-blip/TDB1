@@ -11533,8 +11533,11 @@ async def get_admin_breed_products(
     """Get breed products for admin management (is_mockup=True by default — proper mockups only)"""
     query = {"is_mockup": True}   # Only show proper product mockups, not portrait-only
     if breed:
+        # Normalize: "shih tzu" → "shih[_ ]tzu" so it matches both "shih_tzu" and "shih tzu"
+        import re as _re
+        breed_pattern = _re.sub(r'[ _]', '[_ ]', breed)
         query["$or"] = [
-            {"breed": {"$regex": breed, "$options": "i"}},
+            {"breed": {"$regex": breed_pattern, "$options": "i"}},
             {"breed": "all"},
         ]
     if category:
