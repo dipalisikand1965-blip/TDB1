@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://concierge-wiring.preview.emergentagent.com/mira-demo**
+**https://pet-soul-audit.preview.emergentagent.com/mira-demo**
 
 ---
 

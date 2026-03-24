@@ -32,7 +32,7 @@
   "test_credentials": {
     "admin_username": "aditya",
     "admin_password": "lola4304",
-    "admin_url": "https://concierge-wiring.preview.emergentagent.com/admin"
+    "admin_url": "https://pet-soul-audit.preview.emergentagent.com/admin"
   },
   "seed_data_creation": "None - used existing data",
   "retest_needed": false,
