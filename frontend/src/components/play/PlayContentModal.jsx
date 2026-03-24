@@ -379,7 +379,15 @@ const PlayContentModal = ({ isOpen, onClose, category, pet }) => {
           return petBreed ? bt.includes(petBreed) : true;
         });
 
-        const uniqueTabs = [...new Set(filtered.map(p=>p.sub_category).filter(Boolean))];
+        // Build sub-category tabs — filter out other breed tabs (only show pet's own breed)
+        const breedSlug = petBreed ? petBreed.replace(/\s+/g, '_') : '';
+        const uniqueTabs = [...new Set(filtered.map(p=>p.sub_category).filter(Boolean))].filter(tab => {
+          // If tab contains a breed suffix like "-play", "-shop", check it belongs to this pet
+          if (/-play$|-shop$/.test(tab)) {
+            return !breedSlug || tab.toLowerCase().startsWith(breedSlug);
+          }
+          return true; // generic tabs always show
+        });
         setTabs(uniqueTabs);
         setProducts(filtered);
       }

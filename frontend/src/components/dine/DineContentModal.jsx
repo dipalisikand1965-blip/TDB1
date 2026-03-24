@@ -729,7 +729,9 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
           const sorted = sortProductsForPet(prods, allergies);
           setProducts(sorted);
           const uniqueTabs = [...new Set(prods.map(p => p.sub_category).filter(Boolean))];
-          setTabs(uniqueTabs);
+          const breedSlug = (pet?.breed||'').trim().toLowerCase().replace(/\s+/g, '_');
+          const filteredTabs = uniqueTabs.filter(t => !/-play$|-shop$|-dine$|-food$/.test(t) || !breedSlug || t.toLowerCase().startsWith(breedSlug));
+          setTabs(filteredTabs);
         }
       }
     } catch (err) {
