@@ -558,7 +558,7 @@ const MembershipManager = () => {
                           )}
                         </td>
                         <td className="px-4 py-4">
-                          <span className="text-sm">{member.pets_count || 0} pets</span>
+                          <span className="text-sm">{member.pet_count || member.pets_count || member.pets?.length || 0} pets</span>
                         </td>
                         <td className="px-4 py-4">
                           <div className="flex gap-1">
@@ -839,6 +839,32 @@ const MembershipManager = () => {
                       ? `Expires ${new Date(selectedMember.membership_expires).toLocaleDateString()}`
                       : 'No active subscription'}
                   </p>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <PawPrint className="w-4 h-4 text-purple-600" /> Pets ({selectedMember.pet_count || selectedMember.pets_count || selectedMember.pets?.length || 0})
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {(selectedMember.pets || []).map((pet, idx) => (
+                    <div key={pet.id || pet.name || idx} className="flex items-center gap-3 p-3 border rounded-lg bg-gray-50">
+                      <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden border">
+                        {pet.photo_url ? (
+                          <img src={pet.photo_url} alt={pet.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <PawPrint className="w-4 h-4 text-purple-400" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">{pet.name || 'Unnamed Pet'}</p>
+                        <p className="text-xs text-gray-500">{pet.breed || 'Breed not specified'} • {pet.species || 'pet'}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {(!selectedMember.pets || selectedMember.pets.length === 0) && (
+                    <p className="text-sm text-gray-500 italic">No pets listed.</p>
+                  )}
                 </div>
               </div>
 
