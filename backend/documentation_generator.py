@@ -230,10 +230,14 @@ def generate_complete_documentation():
         .pdf-btn {{ position: fixed; bottom: 24px; right: 24px; z-index: 999; background: linear-gradient(135deg, #7c3aed, #6b46c1); color: white; border: none; border-radius: 50px; padding: 14px 28px; font-size: 0.95rem; font-weight: 700; cursor: pointer; box-shadow: 0 6px 24px rgba(124,58,237,0.4); display: flex; align-items: center; gap: 8px; transition: transform 0.2s, box-shadow 0.2s; }}
         .pdf-btn:hover {{ transform: translateY(-2px); box-shadow: 0 8px 32px rgba(124,58,237,0.55); }}
         .pdf-btn svg {{ width: 20px; height: 20px; }}
+        .word-btn {{ position: fixed; bottom: 24px; right: 200px; z-index: 999; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; border-radius: 50px; padding: 14px 28px; font-size: 0.95rem; font-weight: 700; cursor: pointer; box-shadow: 0 6px 24px rgba(37,99,235,0.4); display: flex; align-items: center; gap: 8px; transition: transform 0.2s, box-shadow 0.2s; }}
+        .word-btn:hover {{ transform: translateY(-2px); box-shadow: 0 8px 32px rgba(37,99,235,0.55); }}
+        .word-btn svg {{ width: 20px; height: 20px; }}
         @media print {{
             body {{ background: white !important; padding: 0 !important; }}
             .container {{ box-shadow: none !important; border-radius: 0 !important; max-width: 100% !important; padding: 20px !important; }}
             .pdf-btn {{ display: none !important; }}
+            .word-btn {{ display: none !important; }}
             .toc {{ max-height: none !important; overflow: visible !important; }}
             .doc-section {{ break-inside: avoid; }}
             pre {{ white-space: pre-wrap !important; word-wrap: break-word !important; }}
@@ -247,6 +251,37 @@ def generate_complete_documentation():
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
         Download PDF
     </button>
+    <button class="word-btn" onclick="downloadAsWord()" title="Download as Word">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6"/><path d="M9 17h6"/><path d="M9 9h1"/></svg>
+        Download Word
+    </button>
+    <script>
+    function downloadAsWord() {{
+        var container = document.querySelector('.container');
+        var html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">'
+            + '<head><meta charset="utf-8"><style>'
+            + 'body {{ font-family: Calibri, Arial, sans-serif; font-size: 11pt; line-height: 1.6; color: #333; padding: 20px; }}'
+            + 'h1 {{ font-size: 22pt; color: #1a1a2e; border-bottom: 2px solid #7c3aed; padding-bottom: 8px; }}'
+            + 'h2 {{ font-size: 16pt; color: #7c3aed; margin-top: 20px; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; }}'
+            + 'h3 {{ font-size: 13pt; color: #4a1d96; }}'
+            + 'pre {{ background: #f5f5f5; padding: 10px; border: 1px solid #ddd; font-family: Consolas, monospace; font-size: 9pt; white-space: pre-wrap; word-wrap: break-word; }}'
+            + 'code {{ background: #f5f5f5; padding: 2px 4px; font-family: Consolas, monospace; font-size: 9pt; }}'
+            + 'table {{ border-collapse: collapse; width: 100%; margin: 10px 0; }}'
+            + 'th, td {{ border: 1px solid #ddd; padding: 6px 10px; text-align: left; font-size: 10pt; }}'
+            + 'th {{ background: #f0f0f0; font-weight: bold; }}'
+            + 'blockquote {{ border-left: 3px solid #7c3aed; padding-left: 12px; font-style: italic; color: #555; }}'
+            + '</style></head><body>' + container.innerHTML + '</body></html>';
+        var blob = new Blob(['\\ufeff', html], {{ type: 'application/msword' }});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'TDC_Complete_Documentation.doc';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }}
+    </script>
     <div class="container">
         <div class="header">
             <h1>The Doggy Company</h1>
