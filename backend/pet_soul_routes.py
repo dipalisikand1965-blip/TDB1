@@ -19,6 +19,30 @@ import logging
 # Setup logger
 logger = logging.getLogger(__name__)
 
+# ── Background wrapped regeneration (non-blocking) ────────────────
+async def _regenerate_wrapped_background(pet_id: str):
+    """Silently regenerate Pet Wrapped in background after soul data changes."""
+    try:
+        from routes.wrapped.generate import generate_pet_wrapped
+        await generate_pet_wrapped(pet_id)
+        logger.info(f"[WRAPPED] Background regen done for {pet_id}")
+    except Exception as e:
+        logger.warning(f"[WRAPPED] Background regen failed for {pet_id}: {e}")
+
+def _schedule_wrapped_regen(pet_id: str):
+    """Schedule wrapped regeneration that works in FastAPI context."""
+    import asyncio
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            print(f"[WRAPPED-REGEN] Scheduling background regen for {pet_id}")
+            loop.create_task(_regenerate_wrapped_background(pet_id))
+        else:
+            print(f"[WRAPPED-REGEN] Running regen synchronously for {pet_id}")
+            asyncio.run(_regenerate_wrapped_background(pet_id))
+    except Exception as e:
+        print(f"[WRAPPED-REGEN] Schedule failed: {e}")
+
 # Create routers
 pet_soul_router = APIRouter(prefix="/pet-soul", tags=["Pet Soul"])
 pet_soul_admin_router = APIRouter(prefix="/pet-soul", tags=["Pet Soul Admin"])
@@ -712,6 +736,9 @@ async def save_soul_answer_simple(request: Request):
             "folder_scores": folder_scores
         }})
         
+        # Trigger wrapped regeneration in background
+        _schedule_wrapped_regen(pet_id)
+
         return {
             "success": True,
             "message": f"Answer saved for {pet.get('name', 'pet')}",
@@ -770,6 +797,9 @@ async def save_answer(pet_id: str, answer: DoggyAnswer):
         "insights": insights
     }})
     
+    # Trigger wrapped regeneration in background
+    _schedule_wrapped_regen(pet_id)
+
     return {
         "success": True,
         "scores": {
@@ -891,6 +921,9 @@ async def save_bulk_answers(pet_id: str, answers: Dict[str, Any]):
     except Exception as e:
         logger.error(f"Auto-ticket for Pet Soul update failed: {e}")
     
+    # Trigger wrapped regeneration in background
+    _schedule_wrapped_regen(pet_id)
+
     return {
         "success": True,
         "answers_saved": len(answers),

@@ -13,6 +13,16 @@ import os
 
 logger = logging.getLogger(__name__)
 
+# ── Background wrapped regeneration ───────────────────────────
+async def _regenerate_wrapped_background(pet_id: str):
+    """Silently regenerate Pet Wrapped after vault changes."""
+    try:
+        from routes.wrapped.generate import generate_pet_wrapped
+        await generate_pet_wrapped(pet_id)
+        logger.info(f"[WRAPPED] Background regen done for {pet_id}")
+    except Exception as e:
+        logger.warning(f"[WRAPPED] Background regen failed for {pet_id}: {e}")
+
 pet_vault_router = APIRouter(prefix="/pet-vault", tags=["Pet Vault"])
 
 # Admin router for pet vault
@@ -172,6 +182,10 @@ async def add_vaccine(pet_id: str, vaccine: VaccineRecord):
             due_date=vaccine.next_due_date
         )
     
+    # Regenerate wrapped in background
+    import asyncio
+    asyncio.create_task(_regenerate_wrapped_background(pet_id))
+    
     return {"message": "Vaccine record added", "vaccine": vaccine_doc}
 
 @pet_vault_router.delete("/{pet_id}/vaccines/{vaccine_id}")
@@ -251,6 +265,10 @@ async def add_medication(pet_id: str, medication: MedicationRecord):
     
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Pet not found")
+    
+    # Regenerate wrapped in background
+    import asyncio
+    asyncio.create_task(_regenerate_wrapped_background(pet_id))
     
     return {"message": "Medication record added", "medication": med_doc}
 
@@ -333,6 +351,10 @@ async def add_vet_visit(pet_id: str, visit: VetVisit):
             item_name=f"Follow-up: {visit.reason}",
             due_date=visit.follow_up_date
         )
+    
+    # Regenerate wrapped in background
+    import asyncio
+    asyncio.create_task(_regenerate_wrapped_background(pet_id))
     
     return {"message": "Vet visit recorded", "visit": visit_doc}
 

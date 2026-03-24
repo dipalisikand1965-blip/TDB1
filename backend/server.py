@@ -14891,6 +14891,20 @@ async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dic
         })
         logger.info(f"[UNIFIED FLOW] Pet Soul milestone notification: {notification_id} for {pet_name} ({new_score}%)")
     
+    # Auto-regenerate Pet Wrapped in background
+    try:
+        import asyncio
+        from routes.wrapped.generate import generate_pet_wrapped
+        async def _regen():
+            try:
+                await generate_pet_wrapped(pet_id)
+                print(f"[WRAPPED-REGEN] Done for {pet_id}")
+            except Exception as ex:
+                print(f"[WRAPPED-REGEN] Failed for {pet_id}: {ex}")
+        asyncio.get_event_loop().create_task(_regen())
+    except Exception as e:
+        logger.warning(f"[WRAPPED] Regen schedule failed: {e}")
+    
     return {
         "message": "Answer saved",
         "question_id": question_id,
@@ -14961,6 +14975,20 @@ async def save_pet_soul_answer_alias(pet_id: str, answer_data: dict, current_use
     )
     
     logger.info(f"Soul answer saved for pet {pet_id}: {question_id} = {answer}, new score: {new_score}")
+    
+    # Auto-regenerate Pet Wrapped in background
+    try:
+        import asyncio
+        from routes.wrapped.generate import generate_pet_wrapped
+        async def _regen2():
+            try:
+                await generate_pet_wrapped(pet_id)
+                print(f"[WRAPPED-REGEN] Done for {pet_id}")
+            except Exception as ex:
+                print(f"[WRAPPED-REGEN] Failed for {pet_id}: {ex}")
+        asyncio.get_event_loop().create_task(_regen2())
+    except Exception as e:
+        logger.warning(f"[WRAPPED] Regen schedule failed: {e}")
     
     return {
         "message": "Answer saved",
