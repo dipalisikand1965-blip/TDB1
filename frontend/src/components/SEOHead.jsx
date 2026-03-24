@@ -18,7 +18,7 @@ const SEO_DATA = {
   // Homepage
   home: {
     title: "The Doggy Company | Pet Concierge® | Your Pet's Life, Thoughtfully Orchestrated",
-    description: "India's first Pet Concierge® service. Premium dog cakes, pet-friendly dining, stays, travel & 14 life pillars. Same-day delivery in Mumbai, Bangalore & Delhi. 45,000+ happy pet parents!",
+    description: "India's first Pet Concierge® service. Premium dog cakes, pet-friendly dining, stays, travel & 12 life pillars. Same-day delivery in Mumbai, Bangalore & Delhi. 45,000+ happy pet parents!",
     keywords: "pet concierge, dog cakes, pet services india, dog birthday, pet platform, the doggy company, pet life",
     image: DEFAULT_IMAGE,
   },

@@ -1604,7 +1604,7 @@ Ask me anything about him!`
               <h4 className="text-white font-medium mb-3">Pet Soul™ Technology</h4>
               <p className="text-white/60 text-sm">
                 AI that truly understands pets. Not just keywords — context, memory, urgency, and emotion. 
-                14 life pillars. Implicit intent detection. Multi-intent handling. 
+                12 life pillars. Implicit intent detection. Multi-intent handling. 
                 The most intelligent pet AI in India.
               </p>
             </motion.div>
