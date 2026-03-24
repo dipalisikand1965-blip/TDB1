@@ -182,8 +182,8 @@ const OccasionBoxBuilder = ({
 
     // ── Canonical flow: fire tdc + service desk ticket ──────────────────────
     try {
-      const { tdc } = await import('../../utils/tdc_intent');
-      const { bookViaConcierge } = await import('../../utils/MiraCardActions');
+      const { tdc } = await import('../utils/tdc_intent');
+      const { bookViaConcierge } = await import('../utils/MiraCardActions');
       const total = allItems.reduce((s, i) => s + (i.price || 0) * (i.quantity || 1), 0);
       allItems.forEach(item => tdc.cart({ product: item, pillar: 'celebrate', channel: 'occasion_box_builder', amount: item.price }));
       await bookViaConcierge({ service: `Occasion Box — ${allItems.length} items`, pillar: 'celebrate', channel: 'occasion_box_builder', amount: total });
