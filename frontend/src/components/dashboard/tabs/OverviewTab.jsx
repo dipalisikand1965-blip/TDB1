@@ -257,7 +257,7 @@ const OverviewTab = ({
         </div>
       )}
       
-      {/* ALL 14 LIFE PILLARS */}
+      {/* ALL 12 LIFE PILLARS */}
       <Card className="p-6 bg-gradient-to-r from-teal-800 via-teal-700 to-teal-800 text-white border-none shadow-xl mb-8">
         <div className="flex items-center gap-3 mb-5">
           <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
@@ -269,23 +269,19 @@ const OverviewTab = ({
           </div>
         </div>
         
-        <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 md:gap-3">
+        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 md:gap-3">
           {[
             { id: 'celebrate', name: 'Celebrate', icon: '🎂', path: '/celebrate', color: 'from-pink-400 to-rose-400' },
             { id: 'dine', name: 'Dine', icon: '🍽️', path: '/dine', color: 'from-amber-400 to-orange-400' },
-            { id: 'stay', name: 'Stay', icon: '🏨', path: '/stay', color: 'from-blue-400 to-indigo-400' },
-            { id: 'travel', name: 'Travel', icon: '✈️', path: '/travel', color: 'from-cyan-400 to-blue-400' },
+            { id: 'go', name: 'Go', icon: '✈️', path: '/go', color: 'from-cyan-400 to-blue-400' },
             { id: 'care', name: 'Care', icon: '💊', path: '/care', color: 'from-red-400 to-rose-400' },
-            { id: 'enjoy', name: 'Enjoy', icon: '🎾', path: '/enjoy', color: 'from-violet-400 to-purple-400' },
-            { id: 'fit', name: 'Fit', icon: '🏃', path: '/fit', color: 'from-green-400 to-emerald-400' },
+            { id: 'play', name: 'Play', icon: '🎾', path: '/play', color: 'from-green-400 to-emerald-400' },
             { id: 'learn', name: 'Learn', icon: '🎓', path: '/learn', color: 'from-teal-400 to-cyan-400' },
             { id: 'paperwork', name: 'Paperwork', icon: '📄', path: '/paperwork', color: 'from-slate-400 to-gray-500' },
-            { id: 'advisory', name: 'Advisory', icon: '📋', path: '/advisory', color: 'from-gray-400 to-slate-500' },
             { id: 'emergency', name: 'Emergency', icon: '🚨', path: '/emergency', color: 'from-red-500 to-rose-500' },
             { id: 'farewell', name: 'Farewell', icon: '🌈', path: '/farewell', color: 'from-rose-400 to-pink-400' },
             { id: 'adopt', name: 'Adopt', icon: '🐾', path: '/adopt', color: 'from-purple-400 to-violet-400' },
-            { id: 'insure', name: 'Insure', icon: '🛡️', path: '/advisory', color: 'from-blue-500 to-cyan-500' },
-            { id: 'community', name: 'Community', icon: '🤝', path: '/services', color: 'from-indigo-400 to-purple-400' },
+            { id: 'services', name: 'Services', icon: '🤝', path: '/services', color: 'from-indigo-400 to-purple-400' },
             { id: 'shop', name: 'Shop', icon: '🛒', path: '/shop', color: 'from-orange-400 to-amber-400' }
           ].map((pillar) => (
             <button
