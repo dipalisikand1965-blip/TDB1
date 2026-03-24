@@ -1607,11 +1607,11 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                       <div style={{fontSize:13,color:'rgba(245,240,232,0.55)',marginBottom:16}}>
                         Bandana · Portrait Frame · Party Hat · Cake Topper · Tote · and more
                       </div>
-                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                        <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#C44DFF,#9333EA)',borderRadius:30,padding:'10px 22px',fontSize:13,fontWeight:700,color:'#fff',boxShadow:'0 4px 16px rgba(196,77,255,0.4)'}}>
+                      <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:12,flexWrap:'wrap'}}>
+                        <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#C44DFF,#9333EA)',borderRadius:30,padding:'10px 22px',fontSize:13,fontWeight:700,color:'#fff',boxShadow:'0 4px 16px rgba(196,77,255,0.4)',flexShrink:0}}>
                           {`\u2726 Make something only ${petName} has`}
                         </div>
-                        <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',maxWidth:160,textAlign:'right',lineHeight:1.4}}>
+                        <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',lineHeight:1.4,flex:'1 1 180px',textAlign:'left'}}>
                           Upload a photo · Concierge® creates it
                         </div>
                       </div>
@@ -1717,11 +1717,11 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                   <div style={{fontSize:13,color:'rgba(245,240,232,0.55)',marginBottom:16}}>
                     Bandana · Portrait Frame · Party Hat · Cake Topper · Tote · and more
                   </div>
-                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                    <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#C44DFF,#9333EA)',borderRadius:30,padding:'10px 22px',fontSize:13,fontWeight:700,color:'#fff',boxShadow:'0 4px 16px rgba(196,77,255,0.4)'}}>
+                  <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:12,flexWrap:'wrap'}}>
+                    <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#C44DFF,#9333EA)',borderRadius:30,padding:'10px 22px',fontSize:13,fontWeight:700,color:'#fff',boxShadow:'0 4px 16px rgba(196,77,255,0.4)',flexShrink:0}}>
                       {`\u2726 Make something only ${petName} has`}
                     </div>
-                    <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',maxWidth:160,textAlign:'right',lineHeight:1.4}}>
+                    <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',lineHeight:1.4,flex:'1 1 180px',textAlign:'left'}}>
                       Upload a photo · Concierge® creates it
                     </div>
                   </div>
