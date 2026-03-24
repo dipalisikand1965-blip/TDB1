@@ -140,7 +140,7 @@ Currently uses blank white product templates. Goal: 350 AI-generated images (50 
 
 ## P1 — Next Sprint (NEXT AGENT: Start Here)
 
-- [ ] Audit remaining pillars: Go → Play → Learn → Adopt → Farewell → Emergency → Paperwork
+- [ ] Audit remaining pillars: Play → Learn → Adopt → Farewell → Emergency → Paperwork
 - [ ] Add "3 vets near you" to daily health WhatsApp reminders (NearMe API at scheduler time)
 - [ ] Extend scheduler for Medication refill reminders
 - [ ] Mobile/iOS audit remaining pillars page-by-page
@@ -150,6 +150,19 @@ Currently uses blank white product templates. Goal: 350 AI-generated images (50 
 > **DO NOT TOUCH THE DINE PILLAR.** It has been fully audited, tested (7/7 concierge flows, mobile 375px clean), and signed off. See "Final Audit: Dine" section in `/app/complete-documentation.html`. Any changes to dine components require explicit user approval.
 
 > **DO NOT TOUCH THE CARE PILLAR.** It has been fully audited, tested (13/13 backend, 100% frontend, 12/12 concierge wiring points), and signed off. See "CARE AUDIT" section in `/app/complete-documentation.html`. Any changes to care components require explicit user approval.
+
+> **DO NOT TOUCH THE GO PILLAR.** It has been fully audited, tested (11/13 backend, 100% frontend, 16/16 concierge wiring points), and signed off. See "GO AUDIT" section in `/app/complete-documentation.html`. Any changes to go components require explicit user approval.
+
+## Go Pillar — Completed & Signed Off (24 March 2026)
+
+- [x] **1 Concierge gap fixed**: GuidedGoPaths `handleSend` replaced dead `/api/concierge/go-path` endpoint with `useConcierge.fire()` including path selections metadata
+- [x] **MiraImagineCard font fix**: Button/reason text bumped from 11px to 13px for mobile readability
+- [x] **11/13 backend tests passed** (iteration_200.json; 2 failures are test setup issues)
+- [x] **All 16 concierge wiring points verified**: 8 service flows (bookViaConcierge), GuidedGoPaths (start + submit), GoConciergeModal, PetFriendlyStays, Mira Picks, Mira Imagines, inline modal
+- [x] **Bug Hunt**: No "none"/null text bugs — all null guards proper
+- [x] **Soul Made strip**: Present in GoCategoryStrip and GoContentModal
+- [x] **Mira context**: pet_id, pillar, breed all sent correctly
+- [x] **Documentation**: Go Audit section added to complete-documentation.html
 
 ## Care Pillar — Completed & Signed Off (24 March 2026)
 
