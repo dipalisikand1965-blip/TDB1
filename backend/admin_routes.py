@@ -22,6 +22,7 @@ from fastapi import APIRouter, HTTPException, Depends, Query, Request
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel, Field
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
+from bson import ObjectId
 import resend
 
 logger = logging.getLogger(__name__)
@@ -232,6 +233,16 @@ async def _fetch_preview_sync_json(source_url: str, path: str):
     return await asyncio.to_thread(_do_request)
 
 
+def _make_json_safe(value):
+    if isinstance(value, ObjectId):
+        return str(value)
+    if isinstance(value, dict):
+        return {k: _make_json_safe(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_make_json_safe(v) for v in value]
+    return value
+
+
 @fulfilment_router.get('/full-db-sync-export-meta')
 async def full_db_sync_export_meta(username: str = Depends(verify_admin)):
     if db is None:
@@ -252,7 +263,8 @@ async def full_db_sync_export(collection: str, username: str = Depends(verify_ad
         raise HTTPException(status_code=500, detail='Database not configured')
     if collection.startswith('system.'):
         raise HTTPException(status_code=400, detail='System collections not allowed')
-    docs = await db[collection].find({}).to_list(None)
+    raw_docs = await db[collection].find({}).to_list(None)
+    docs = [_make_json_safe(doc) for doc in raw_docs]
     return {'ok': True, 'collection': collection, 'count': len(docs), 'docs': docs}
 
 
