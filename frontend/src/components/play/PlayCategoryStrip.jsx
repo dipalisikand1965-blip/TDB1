@@ -88,7 +88,7 @@ export default function PlayCategoryStrip({ pet, openDim, onSelect, onMiraPicks 
               <span
                 className="text-center leading-tight"
                 style={{
-                  fontSize: 11, fontWeight: 500,
+                  fontSize: 13, fontWeight: 500,
                   color: isActive ? "#C44400" : isMira ? "#9B59B6" : "#555",
                   whiteSpace: "nowrap", maxWidth: 84, overflow: "hidden", textOverflow: "ellipsis",
                 }}

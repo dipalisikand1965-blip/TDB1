@@ -14,6 +14,7 @@
 import { useState } from "react";
 import { API_URL } from "../../utils/api";
 import { tdc } from "../../utils/tdc_intent";
+import { useConcierge } from "../../hooks/useConcierge";
 
 const G = {
   deep:     "#7B2D00", mid:      "#7B3F00", orange:   "#E76F51",
@@ -158,6 +159,8 @@ function PathFlowModal({ path, pet, onClose }) {
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState({});
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const { fire } = useConcierge({ pet, pillar: 'play' });
   const totalSteps   = Object.keys(path.steps).length;
   const stepKey      = `step${step}`;
   const stepData     = path.steps[stepKey];
@@ -177,16 +180,17 @@ function PathFlowModal({ path, pet, onClose }) {
   };
 
   const handleSubmit = async () => {
-    setSent(true);
-    // Fire tdc on path completion
+    if (sending) return;
+    setSending(true);
     tdc.request({ text: `Completed guided path: ${path.title}`, name: path.title, pillar: "play", pet, channel: "play_guided_paths_complete" });
-    try {
-      await fetch(`${API_URL}/api/concierge/play-path`, {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({ petId:pet?.id, pathId:path.id, selections:answers }),
-      });
-    } catch {}
+    await fire({
+      service: `${pet?.name || 'Dog'}'s ${path.title} — Guided Play Path`,
+      channel: 'play_guided_paths_complete',
+      urgency: 'normal',
+      notes: JSON.stringify(answers),
+    });
+    setSent(true);
+    setSending(false);
   };
 
   return (
@@ -206,7 +210,7 @@ function PathFlowModal({ path, pet, onClose }) {
             <div key={i} style={{ flex:1, height:3, borderRadius:3, background: i<step ? "rgba(255,255,255,0.90)" : "rgba(255,255,255,0.30)" }} />
           ))}
         </div>
-        <div style={{ fontSize:11, color:"rgba(255,255,255,0.70)", marginTop:6 }}>Step {step} of {totalSteps}</div>
+        <div style={{ fontSize:13, color:"rgba(255,255,255,0.70)", marginTop:6 }}>Step {step} of {totalSteps}</div>
       </div>
 
       {sent ? (
@@ -225,7 +229,7 @@ function PathFlowModal({ path, pet, onClose }) {
             {/* Mira note */}
             <div style={{ display:"flex", gap:8, background:path.accentBg, border:`1px solid ${path.accentBorder}`, borderRadius:10, padding:"10px 14px", marginBottom:16 }}>
               <div style={{ width:22, height:22, borderRadius:"50%", background:MIRA_ORB, display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#fff", flexShrink:0, marginTop:1 }}>✦</div>
-              <p style={{ fontSize:12, color:path.accentColor, fontStyle:"italic", margin:0, lineHeight:1.5 }}>"{path.miraNote}"</p>
+              <p style={{ fontSize:13, color:path.accentColor, fontStyle:"italic", margin:0, lineHeight:1.5 }}>"{path.miraNote}"</p>
             </div>
 
             {stepData && (
@@ -268,9 +272,10 @@ function PathFlowModal({ path, pet, onClose }) {
             ) : (
               <button
                 onClick={handleSubmit}
+                disabled={sending}
                 data-testid="play-path-submit"
-                style={{ flex:2, padding:"11px 0", borderRadius:12, border:"none", background:path.badgeBg, fontSize:13, fontWeight:700, color:"#fff", cursor:"pointer" }}>
-                Hand to Concierge →
+                style={{ flex:2, padding:"11px 0", borderRadius:12, border:"none", background:path.badgeBg, fontSize:13, fontWeight:700, color:"#fff", cursor: sending ? "not-allowed" : "pointer", opacity: sending ? 0.7 : 1 }}>
+                {sending ? "Sending…" : "Hand to Concierge →"}
               </button>
             )}
           </div>
@@ -296,7 +301,7 @@ export default function GuidedPlayPaths({ pet }) {
       <div style={{ marginBottom:20 }}>
         <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(231,111,81,0.12)", borderRadius:20, padding:"4px 12px", marginBottom:10 }}>
           <div style={{ width:18, height:18, borderRadius:"50%", background:MIRA_ORB, display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:"#fff" }}>✦</div>
-          <span style={{ fontSize:11, color:G.mid, fontWeight:700 }}>Guided by Mira</span>
+          <span style={{ fontSize:13, color:G.mid, fontWeight:700 }}>Guided by Mira</span>
         </div>
         <h2 style={{ fontSize:"clamp(1.25rem,3vw,1.625rem)", fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:6, lineHeight:1.2 }}>
           Guided Play Paths for <span style={{ color:G.orange }}>{petName}</span>
@@ -332,7 +337,7 @@ export default function GuidedPlayPaths({ pet }) {
                 </div>
               </div>
               <div style={{ fontSize:15, fontWeight:800, color:path.accentColor, marginBottom:4 }}>{path.title}</div>
-              <p style={{ fontSize:12, color:G.mutedText, lineHeight:1.5, margin:0 }}>{path.desc}</p>
+              <p style={{ fontSize:13, color:G.mutedText, lineHeight:1.5, margin:0 }}>{path.desc}</p>
             </div>
 
             {/* Step chips */}
@@ -345,7 +350,7 @@ export default function GuidedPlayPaths({ pet }) {
                 ))}
               </div>
               <button
-                style={{ width:"100%", padding:"9px 0", borderRadius:12, border:"none", background:path.badgeBg, color:"#fff", fontSize:12, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}
+                style={{ width:"100%", padding:"9px 0", borderRadius:12, border:"none", background:path.badgeBg, color:"#fff", fontSize:13, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}
                 onClick={e => { e.stopPropagation(); tdc.request({ text: `Started guided path: ${path.title}`, name: path.title, pillar: "play", pet, channel: "play_guided_paths_start" }); setActivePath(path); }}
               >
                 Start path → <span style={{ fontSize:10, background:"rgba(255,255,255,0.25)", borderRadius:20, padding:"2px 7px" }}>★ Mira</span>

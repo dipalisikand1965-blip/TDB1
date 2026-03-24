@@ -137,8 +137,8 @@ function StarRating({ rating, reviewCount }) {
   if (!rating) return null;
   return (
     <span style={{ display:"flex", alignItems:"center", gap:4 }}>
-      <span style={{ color:"#F59E0B", fontSize:11 }}>{"★".repeat(Math.floor(rating))}{"☆".repeat(5-Math.floor(rating))}</span>
-      <span style={{ color:G.mutedText, fontSize:11 }}>{rating.toFixed(1)}</span>
+      <span style={{ color:"#F59E0B", fontSize:13 }}>{"★".repeat(Math.floor(rating))}{"☆".repeat(5-Math.floor(rating))}</span>
+      <span style={{ color:G.mutedText, fontSize:13 }}>{rating.toFixed(1)}</span>
       {reviewCount && <span style={{ color:"#aaa", fontSize:10 }}>({reviewCount})</span>}
     </span>
   );
@@ -173,13 +173,13 @@ function MiraTopPick({ spot, pet, onBook }) {
           <OpenBadge openNow={spot.open_now} />
         </div>
         <div style={{ fontSize:16, fontWeight:800, color:G.darkText, marginBottom:4 }}>{spot.name}</div>
-        <div style={{ fontSize:12, color:G.mutedText, marginBottom:6 }}>📍 {spot.vicinity||spot.formatted_address}</div>
+        <div style={{ fontSize:13, color:G.mutedText, marginBottom:6 }}>📍 {spot.vicinity||spot.formatted_address}</div>
         <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:8 }}>
           <StarRating rating={spot.rating} reviewCount={spot.user_ratings_total} />
         </div>
         <FeatureChips features={spot.features} />
         {spot.mira_note && (
-          <p style={{ fontSize:12, color:G.mid, fontStyle:"italic", margin:"0 0 10px", lineHeight:1.5 }}>"{spot.mira_note}"</p>
+          <p style={{ fontSize:13, color:G.mid, fontStyle:"italic", margin:"0 0 10px", lineHeight:1.5 }}>"{spot.mira_note}"</p>
         )}
         <button onClick={() => onBook?.(spot, spot.city)}
           style={{ background:`linear-gradient(135deg,${G.orange},${G.mid})`, color:"#fff", border:"none", borderRadius:10, padding:"9px 18px", fontSize:13, fontWeight:700, cursor:"pointer" }}>
@@ -232,18 +232,18 @@ function SpotCard({ spot, pet, onBook }) {
       {/* Content */}
       <div style={{ padding:"12px 14px 16px" }}>
         <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:4, lineHeight:1.3 }}>{spot.name}</div>
-        <div style={{ fontSize:11, color:G.mutedText, marginBottom:6, lineHeight:1.4 }}>📍 {spot.vicinity||spot.formatted_address||"—"}</div>
+        <div style={{ fontSize:13, color:G.mutedText, marginBottom:6, lineHeight:1.4 }}>📍 {spot.vicinity||spot.formatted_address||"—"}</div>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
           <StarRating rating={spot.rating} reviewCount={spot.user_ratings_total} />
         </div>
         <FeatureChips features={spot.features} />
         {spot.mira_note && (
-          <div style={{ fontSize:11, color:G.mid, fontStyle:"italic", marginBottom:10, padding:"6px 10px", background:G.pale, borderRadius:8, lineHeight:1.4 }}>
+          <div style={{ fontSize:13, color:G.mid, fontStyle:"italic", marginBottom:10, padding:"6px 10px", background:G.pale, borderRadius:8, lineHeight:1.4 }}>
             ✦ {spot.mira_note}
           </div>
         )}
         <button onClick={() => onBook?.(spot, spot.city)}
-          style={{ width:"100%", background:`linear-gradient(135deg,${G.orange},${G.mid})`, color:"#fff", border:"none", borderRadius:10, padding:"9px", fontSize:12, fontWeight:700, cursor:"pointer", transition:"opacity 0.15s" }}
+          style={{ width:"100%", background:`linear-gradient(135deg,${G.orange},${G.mid})`, color:"#fff", border:"none", borderRadius:10, padding:"9px", fontSize:13, fontWeight:700, cursor:"pointer", transition:"opacity 0.15s" }}
           onMouseEnter={e=>e.currentTarget.style.opacity="0.88"}
           onMouseLeave={e=>e.currentTarget.style.opacity="1"}>
           Plan a visit →
