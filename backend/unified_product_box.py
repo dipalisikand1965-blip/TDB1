@@ -936,6 +936,27 @@ async def update_product(product_id: str, updates: Dict[str, Any], admin_user: s
         updates["updated_by"] = admin_user
         updates["version"] = existing.get("version", 1) + 1
         updates["locally_edited"] = True  # Mark as locally edited to prevent sync overwrites
+
+        # If admin edits price, lock it against future Shopify overwrites
+        manual_price = None
+        if isinstance(updates.get("price"), (int, float)):
+            manual_price = float(updates["price"])
+        elif isinstance(updates.get("pricing"), dict):
+            pricing = updates.get("pricing") or {}
+            if isinstance(pricing.get("selling_price"), (int, float)):
+                manual_price = float(pricing["selling_price"])
+            elif isinstance(pricing.get("base_price"), (int, float)):
+                manual_price = float(pricing["base_price"])
+
+        if manual_price is not None:
+            updates["price_locked"] = True
+            updates["manual_price"] = manual_price
+            updates["price_updated_by"] = admin_user
+            updates["price_updated_at"] = datetime.now(timezone.utc).isoformat()
+            updates.setdefault("pricing", {})
+            updates["pricing"]["base_price"] = manual_price
+            updates["pricing"]["selling_price"] = manual_price
+            updates["price"] = manual_price
         
         await db.products_master.update_one(
             {"id": product_id},
