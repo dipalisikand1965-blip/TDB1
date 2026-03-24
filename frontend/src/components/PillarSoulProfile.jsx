@@ -298,55 +298,52 @@ export default function PillarSoulProfile({
 
   return (
     <>
-      {/* Trigger bar — gradient border, score ring, tap-to-open */}
+      {/* Trigger bar — Dine-matched: consistent height, size across all 12 pillars */}
       <div onClick={() => setOpen(true)} data-testid={`${pillar}-profile-bar`}
         style={{
-          background:`linear-gradient(135deg, ${pColor}, ${isComplete ? '#16A34A' : pColor}90)`,
-          borderRadius:18, padding:2, cursor:'pointer',
-          marginBottom:16, transition:'all 0.2s ease',
-          boxShadow:`0 4px 20px ${pColor}30`,
+          display:'flex', alignItems:'center', gap:14, cursor:'pointer',
+          padding:'16px 20px', minHeight:88, boxSizing:'border-box',
+          borderRadius:16, background:'#fff',
+          border:`2px solid ${isComplete ? '#16A34A' : pColor}`,
+          width:'100%', marginBottom:16, transition:'all 0.2s ease',
+          boxShadow:`0 2px 12px ${pColor}14`,
         }}
-        onMouseEnter={e => { e.currentTarget.style.boxShadow=`0 6px 28px ${pColor}50`; e.currentTarget.style.transform='translateY(-1px)'; }}
-        onMouseLeave={e => { e.currentTarget.style.boxShadow=`0 4px 20px ${pColor}30`; e.currentTarget.style.transform='translateY(0)'; }}
+        onMouseEnter={e => { e.currentTarget.style.boxShadow=`0 6px 28px ${pColor}30`; e.currentTarget.style.transform='translateY(-1px)'; }}
+        onMouseLeave={e => { e.currentTarget.style.boxShadow=`0 2px 12px ${pColor}14`; e.currentTarget.style.transform='translateY(0)'; }}
       >
-        <div style={{
-          background:'#fff', borderRadius:16, padding:'14px 16px',
-          display:'flex', alignItems:'center', gap:12,
-        }}>
-          {/* Score ring around pet photo */}
-          <div style={{ position:'relative', width:48, height:48, flexShrink:0 }}>
-            <svg viewBox="0 0 48 48" style={{ position:'absolute', inset:0, width:48, height:48, transform:'rotate(-90deg)' }}>
-              <circle cx="24" cy="24" r="21" fill="none" stroke={`${pColor}18`} strokeWidth="3"/>
-              <circle cx="24" cy="24" r="21" fill="none" stroke={scoreColor} strokeWidth="3"
-                strokeDasharray={`${((isFinite(score)?score:0)/100)*131.95} 131.95`}
-                strokeLinecap="round" style={{ transition:'stroke-dasharray 0.8s ease' }}/>
-            </svg>
-            <div style={{ position:'absolute', inset:3, borderRadius:'50%', overflow:'hidden', background:`${pColor}12`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:16 }}>
-              {pet?.photo_url ? <img src={pet.photo_url} alt={name} style={{ width:'100%', height:'100%', objectFit:'cover' }}/> : '\uD83D\uDC3E'}
-            </div>
+        {/* Pet photo — 56px circle with score ring */}
+        <div style={{ position:'relative', width:56, height:56, flexShrink:0 }}>
+          <svg viewBox="0 0 56 56" style={{ position:'absolute', inset:0, width:56, height:56, transform:'rotate(-90deg)' }}>
+            <circle cx="28" cy="28" r="25" fill="none" stroke={`${pColor}18`} strokeWidth="3"/>
+            <circle cx="28" cy="28" r="25" fill="none" stroke={scoreColor} strokeWidth="3"
+              strokeDasharray={`${((isFinite(score)?score:0)/100)*157.08} 157.08`}
+              strokeLinecap="round" style={{ transition:'stroke-dasharray 0.8s ease' }}/>
+          </svg>
+          <div style={{ position:'absolute', inset:4, borderRadius:'50%', overflow:'hidden', border:`2px solid ${isComplete ? '#16A34A' : pColor}`, background:`${pColor}12`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:18 }}>
+            {pet?.photo_url ? <img src={pet.photo_url} alt={name} style={{ width:'100%', height:'100%', objectFit:'cover' }}/> : '\uD83D\uDC3E'}
           </div>
-          {/* Info */}
-          <div style={{ flex:1, minWidth:0 }}>
-            <div style={{ fontSize:14, fontWeight:700, color:'#1a1a2e', marginBottom:3 }}>{name}'s {pLabel} Profile</div>
-            <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
-              {pet?.breed && (
-                <span style={{ fontSize:13, fontWeight:600, color:pColor, background:`${pColor}10`, border:`1px solid ${pColor}25`, borderRadius:20, padding:'2px 9px' }}>
-                  {pet.breed}{pet?.doggy_soul_answers?.coat_type ? ` · ${pet.doggy_soul_answers.coat_type} coat` : ''}
-                </span>
-              )}
-            </div>
-            <div style={{ fontSize:12, color:scoreColor, fontWeight:600, marginTop:3 }}>
-              {isComplete ? 'Mira knows everything' : `${totalUnanswered || '?'} questions waiting`}
-            </div>
+        </div>
+        {/* Info */}
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ fontSize:16, fontWeight:700, color:'#1a0a2e', marginBottom:3 }}>{name}'s {pLabel} Profile</div>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
+            {pet?.breed && (
+              <span style={{ fontSize:13, fontWeight:600, color:pColor, background:`${pColor}10`, border:`1px solid ${pColor}25`, borderRadius:20, padding:'2px 9px' }}>
+                {pet.breed}{pet?.doggy_soul_answers?.coat_type ? ` · ${pet.doggy_soul_answers.coat_type} coat` : ''}
+              </span>
+            )}
           </div>
-          {/* Score + chevron */}
-          <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
-            <div style={{ textAlign:'right' }}>
-              <div style={{ fontSize:18, fontWeight:800, color:scoreColor, lineHeight:1 }}>{isFinite(score) ? Math.round(score) : 0}%</div>
-              <span style={{ fontSize:9, color:scoreColor, fontWeight:600, opacity:0.6, textTransform:'uppercase', letterSpacing:'0.05em' }}>Soul</span>
-            </div>
-            <div style={{ color:`${pColor}60`, fontSize:18, lineHeight:1 }}>&#8250;</div>
+          <div style={{ fontSize:13, color:scoreColor, fontWeight:600, marginTop:3 }}>
+            {isComplete ? 'Mira knows everything' : `${totalUnanswered || '?'} questions waiting`}
           </div>
+        </div>
+        {/* Score + chevron */}
+        <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+          <div style={{ textAlign:'right' }}>
+            <div style={{ fontSize:18, fontWeight:800, color:scoreColor, lineHeight:1 }}>{isFinite(score) ? Math.round(score) : 0}%</div>
+            <span style={{ fontSize:9, color:scoreColor, fontWeight:600, opacity:0.6, textTransform:'uppercase', letterSpacing:'0.05em' }}>Soul</span>
+          </div>
+          <div style={{ color:`${pColor}60`, fontSize:18, lineHeight:1 }}>&#8250;</div>
         </div>
       </div>
 
