@@ -305,13 +305,13 @@ export default function MobileMenu({
           onAddDog={() => go("/join")}
         />
 
-        {/* ── 13 Pillars ── */}
+        {/* ── 12 Pillars ── */}
         <div style={{ padding: "16px 16px 8px" }}>
           <div style={{
             fontSize: 10, fontWeight: 700, color: "#64748B",
             letterSpacing: "0.1em", marginBottom: 12, paddingLeft: 4,
           }}>
-            13 LIFE PILLARS
+            12 LIFE PILLARS
           </div>
           <div style={{
             display: "grid",

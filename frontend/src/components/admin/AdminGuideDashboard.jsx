@@ -332,7 +332,7 @@ const AdminGuideDashboard = () => {
     },
     {
       id: 'pillars',
-      title: '🏛️ 14 LIFE PILLARS',
+      title: '🏛️ 12 LIFE PILLARS',
       color: 'bg-gradient-to-r from-purple-500 to-pink-500',
       description: 'Service categories covering every aspect of pet life',
       items: [
