@@ -536,15 +536,15 @@ function MiraPicksSection({ pet }) {
                 <div style={{ fontSize:12, fontWeight:700, color:G.darkText, lineHeight:1.3, marginBottom:6, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>
                   {pick.name || pick.entity_name || "—"}
                 </div>
-                <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:5 }}>
+                {!isService && <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:5 }}>
                   <div style={{ flex:1, height:4, background:G.pale, borderRadius:4, overflow:"hidden" }}>
                     <div style={{ width:`${score}%`, height:"100%", background:scoreColor, borderRadius:4 }} />
                   </div>
                   <span style={{ fontSize:10, fontWeight:800, color:scoreColor, minWidth:26 }}>{score}</span>
-                </div>
-                {pick.mira_reason && <p style={{ fontSize:10, color:"#888", lineHeight:1.4, margin:0, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden", fontStyle:"italic" }}>{pick.mira_reason}</p>}
+                </div>}
+                {isService ? <p style={{ fontSize:10, color:G.deepMid, lineHeight:1.4, margin:0, fontStyle:"italic" }}>Concierge support for wellness care.</p> : pick.mira_reason && <p style={{ fontSize:10, color:"#888", lineHeight:1.4, margin:0, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden", fontStyle:"italic" }}>{pick.mira_reason}</p>}
                 <p style={{ fontSize:9, color:isService?G.deepMid:G.sage, fontWeight:700, margin:"6px 0 0", letterSpacing:"0.04em" }}>
-                  {isService?"Tap → Book via Concierge":"Tap → View & Add"}
+                  {isService?"Tap → Talk to Concierge":"Tap → View & Add"}
                 </p>
               </div>
             </div>
@@ -559,7 +559,7 @@ function MiraPicksSection({ pet }) {
           <div onClick={e => e.stopPropagation()} style={{ width:"min(420px,100%)", borderRadius:20, background:"#fff", boxShadow:"0 20px 60px rgba(0,0,0,0.3)", overflow:"hidden" }} data-testid="care-service-modal">
             <div style={{ background:`linear-gradient(135deg,${G.deep},${G.deepMid})`, padding:"20px 24px" }}>
               <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
-                <span style={{ fontSize:10, fontWeight:700, background:G.sage, color:"#fff", borderRadius:20, padding:"3px 10px" }}>SERVICE · Mira Scored {conciergeService.mira_score || "—"}</span>
+                <span style={{ fontSize:10, fontWeight:700, background:G.sage, color:"#fff", borderRadius:20, padding:"3px 10px" }}>SERVICE</span>
                 <button onClick={() => setConciergeService(null)} style={{ background:"rgba(255,255,255,0.1)", border:"none", borderRadius:20, width:28, height:28, cursor:"pointer", color:"rgba(255,255,255,0.7)", fontSize:16 }}>✕</button>
               </div>
               <p style={{ fontWeight:800, color:"#fff", fontSize:16, margin:"0 0 6px", lineHeight:1.3 }}>{conciergeService.name || conciergeService.entity_name}</p>
