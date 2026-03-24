@@ -301,11 +301,11 @@ const UnifiedInbox = ({ credentials }) => {
         </Card>
 
         {/* By Channel Stats */}
-        {Object.entries(stats.by_channel || {}).slice(0, 4).map(([channel, count]) => {
+        {Object.entries(stats.by_channel || {}).slice(0, 4).map(([channel, count], idx) => {
           const channelInfo = CHANNELS[channel] || CHANNELS.web;
           const Icon = channelInfo.icon;
           return (
-            <Card key={channel} className={`p-4 ${channelInfo.color.replace('text-', 'border-').replace('100', '200')}`}>
+            <Card key={`channel-${channel || 'unknown'}-${idx}`} className={`p-4 ${channelInfo.color.replace('text-', 'border-').replace('100', '200')}`}>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-medium opacity-80">{channelInfo.label}</p>
@@ -324,11 +324,11 @@ const UnifiedInbox = ({ credentials }) => {
           <Tag className="w-4 h-4" /> Pillar Distribution
         </h3>
         <div className="flex flex-wrap gap-2">
-          {Object.entries(stats.byPillar || {}).map(([pillar, count]) => {
+          {Object.entries(stats.byPillar || {}).map(([pillar, count], idx) => {
             const pillarInfo = PILLARS[pillar] || PILLARS.general;
             return (
               <Badge 
-                key={pillar} 
+                key={`pillar-${pillar || 'general'}-${idx}`} 
                 className={`${pillarInfo.color} text-white px-3 py-1 cursor-pointer hover:opacity-80`}
                 onClick={() => setFilters(prev => ({ ...prev, pillar }))}
               >
@@ -364,8 +364,8 @@ const UnifiedInbox = ({ credentials }) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Channels</SelectItem>
-                  {Object.entries(CHANNELS).map(([key, { label }]) => (
-                    <SelectItem key={key} value={key}>{label}</SelectItem>
+                  {Object.entries(CHANNELS).map(([key, { label }], idx) => (
+                    <SelectItem key={`channel-option-${key}-${idx}`} value={key}>{label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -376,8 +376,8 @@ const UnifiedInbox = ({ credentials }) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Pillars</SelectItem>
-                  {Object.entries(PILLARS).map(([key, { label }]) => (
-                    <SelectItem key={key} value={key}>{label}</SelectItem>
+                  {Object.entries(PILLARS).map(([key, { label }], idx) => (
+                    <SelectItem key={`pillar-option-${key}-${idx}`} value={key}>{label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -410,7 +410,7 @@ const UnifiedInbox = ({ credentials }) => {
                 <p className="text-gray-500 mt-2">No requests found</p>
               </Card>
             ) : (
-              filteredIntakes.map((intake) => {
+              filteredIntakes.map((intake, idx) => {
                 const channelInfo = CHANNELS[intake.channel] || CHANNELS.web;
                 const pillarInfo = PILLARS[intake.pillar] || PILLARS.general;
                 const ChannelIcon = channelInfo.icon;
@@ -418,7 +418,7 @@ const UnifiedInbox = ({ credentials }) => {
                 
                 return (
                   <Card 
-                    key={intake.request_id}
+                    key={intake.id || intake._id || intake.thread_id || intake.request_id || intake.ticket_id || idx}
                     className={`p-4 cursor-pointer hover:shadow-md transition-all ${
                       selectedIntake?.request_id === intake.request_id ? 'ring-2 ring-purple-500' : ''
                     }`}
@@ -552,7 +552,7 @@ const UnifiedInbox = ({ credentials }) => {
                           <strong>Items:</strong>
                           <ul className="list-disc list-inside">
                             {selectedIntake.extracted_data.items.map((item, i) => (
-                              <li key={i}>{item.name} x{item.quantity}</li>
+                              <li key={item.id || item.name || i}>{item.name} x{item.quantity}</li>
                             ))}
                           </ul>
                         </div>
@@ -578,8 +578,8 @@ const UnifiedInbox = ({ credentials }) => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.entries(PILLARS).map(([key, { label, description }]) => (
-                        <SelectItem key={key} value={key}>
+                      {Object.entries(PILLARS).map(([key, { label, description }], idx) => (
+                        <SelectItem key={`detail-pillar-${key}-${idx}`} value={key}>
                           <div className="flex items-center gap-2">
                             <span>{label}</span>
                             <span className="text-xs text-gray-400">- {description}</span>
@@ -594,9 +594,9 @@ const UnifiedInbox = ({ credentials }) => {
                 <div>
                   <h4 className="font-semibold text-sm mb-2">Update Status</h4>
                   <div className="flex gap-2 flex-wrap">
-                    {['pending', 'processing', 'completed', 'cancelled'].map((status) => (
+                    {['pending', 'processing', 'completed', 'cancelled'].map((status, idx) => (
                       <Button
-                        key={status}
+                        key={`status-${status}-${idx}`}
                         size="sm"
                         variant={selectedIntake.status === status ? 'default' : 'outline'}
                         onClick={() => updateStatus(selectedIntake.request_id, status)}

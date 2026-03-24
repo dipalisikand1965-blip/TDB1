@@ -1315,13 +1315,14 @@ const Admin = () => {
 
   const fetchMembers = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/admin/members`, {
+      const response = await fetch(`${API_URL}/api/admin/customers`, {
         headers: getAuthHeaders()
       });
       if (response.ok) {
         const data = await response.json();
-        setMembers(data.members);
-        setMemberStats(data.stats);
+        const membersData = data.customers || data.members || [];
+        setMembers(membersData);
+        setMemberStats(data.stats || { total: membersData.length });
       }
     } catch (error) {
       console.error('Failed to fetch members:', error);
