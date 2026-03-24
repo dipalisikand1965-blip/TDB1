@@ -31,8 +31,8 @@ India's first **Pet Life OS** — a comprehensive lifestyle platform for pet par
 | 8 | **Farewell** | **LOCKED** | **Mar 24, 2026** | **Current** | **Gentle tone enforced, no gamification, service flows verified** |
 | 9 | **Emergency** | **LOCKED** | **Mar 24, 2026** | **Current** | **Service flows split, emergency help CTAs verified, mobile checked** |
 | 10 | **Paperwork** *(includes Advisory)* | **LOCKED** | **Mar 24, 2026** | **Current** | **NearMe wired, Document Vault added, prices hidden, verified** |
-| 11 | Shop | PENDING | — | — | Breed-products fix applied |
-| 12 | Services | PENDING | — | — | |
+| 11 | **Shop** | **LOCKED** | **Mar 24, 2026** | **Current** | **Storefront commerce verified, product sync proven, breed/allergy tickets verified** |
+| 12 | **Services** | **LOCKED** | **Mar 24, 2026** | **Current** | **Concierge-first services flow verified, no member-price leakage in tested pass** |
 
 ## 4. Universal Concierge Wiring Rule
 **Every actionable element** (service card, product CTA, guided path completion, AI chat, NearMe venue tap) **MUST** fire:
@@ -190,6 +190,18 @@ Never allow these regressions:
 - Added pre-open concierge tracking for emergency service cards so every emergency action creates a service desk trail immediately
 - Verified Emergency concierge/service flows with breed + allergy context: `TDB-2026-0803`, `TDB-2026-0804`, `TDB-2026-0805`
 - Captured desktop and mobile screenshots for emergency help modal and service tab at 375px
+
+### 6.12 Shop Audit — Locked
+- Verified Shop as a true commerce surface: visible prices are intentional, product modals open correctly, and storefront product sync from Product Box is proven with a live visible price-change test
+- Confirmed shop concierge/service-desk ticket context with breed + allergy on `TDB-2026-0811`, `TDB-2026-0812`, and `TDB-2026-0818`
+- Fixed internal navigation in Shop where cake/hamper concierge fallbacks used `window.location.href`; now uses React navigation
+- Shop mobile pass clean in tested state: no `undefined`, bakery section visible, product modal works
+
+### 6.13 Services Audit — Locked
+- Verified Services as concierge-first: service cards open booking / concierge modal, no visible member pricing in tested pass, and service routing uses `/services/:pillar/:serviceId`
+- Confirmed services concierge/service-desk ticket context with breed + allergy on `TDB-2026-0813`, `TDB-2026-0814`, and `TDB-2026-0819`
+- Fixed internal navigation from services→shop toggle to React navigation instead of `window.location.href`
+- Services mobile pass clean in tested state: no `undefined`, grooming search works, booking modal opens for concierge handoff
 
 ## 7. Canonical Flow Audit Results (Locked Pillars)
 
