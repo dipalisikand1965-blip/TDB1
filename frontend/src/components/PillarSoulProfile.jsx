@@ -323,7 +323,10 @@ export default function PillarSoulProfile({
             )}
           </div>
         </div>
-        <span style={{ fontSize:11, color:pColor, fontWeight:700, whiteSpace:'nowrap', flexShrink:0 }}>Mira's picks →</span>
+        <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', flexShrink:0, gap:2 }}>
+          <div style={{ fontSize:16, fontWeight:700, color:pColor, lineHeight:1 }}>{isFinite(score) ? Math.round(score) : 0}%</div>
+          <span style={{ fontSize:10, color:pColor, fontWeight:600, whiteSpace:'nowrap', opacity:0.7 }}>Soul Score</span>
+        </div>
       </div>
 
       {/* Drawer overlay */}
@@ -346,7 +349,7 @@ export default function PillarSoulProfile({
                 </div>
                 <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                   <div style={{ textAlign:'right' }}>
-                    <div style={{ fontSize:20, fontWeight:700, color:pColor }}>{Math.round(score)}%</div>
+                    <div style={{ fontSize:20, fontWeight:700, color:pColor }}>{isFinite(score) ? Math.round(score) : 0}%</div>
                     <div style={{ fontSize:9, color:'rgba(245,240,232,0.3)', letterSpacing:'0.06em' }}>SOUL SCORE</div>
                   </div>
                   <button onClick={() => setOpen(false)} style={{ width:32, height:32, borderRadius:'50%', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.1)', color:'rgba(245,240,232,0.5)', cursor:'pointer', fontSize:16, display:'flex', alignItems:'center', justifyContent:'center' }}>
@@ -355,7 +358,7 @@ export default function PillarSoulProfile({
                 </div>
               </div>
               <div style={{ height:4, borderRadius:999, background:'rgba(255,255,255,0.06)', overflow:'hidden' }}>
-                <div style={{ height:'100%', borderRadius:999, background:pColor, width:`${Math.min(score,100)}%`, transition:'width 0.8s ease' }}/>
+                <div style={{ height:'100%', borderRadius:999, background:pColor, width:`${Math.min(isFinite(score)?score:0,100)}%`, transition:'width 0.8s ease' }}/>
               </div>
               {totalPts > 0 && <div style={{ marginTop:8, fontSize:11, color:pColor, fontWeight:600 }}>+{totalPts} pts added this session</div>}
             </div>
@@ -485,10 +488,10 @@ export default function PillarSoulProfile({
               ) : null}
 
               {/* Footer */}
-              <button onClick={() => { setOpen(false); navigate(`/my-pets`); }}
+              <button onClick={() => { setOpen(false); navigate(score >= 100 ? `/my-pets` : `/soul-builder?pet_id=${pet.id}`); }}
                 data-testid={`${pillar}-profile-full-link`}
                 style={{ marginTop:20, width:'100%', padding:11, borderRadius:12, border:'1px solid rgba(255,255,255,0.08)', background:'rgba(255,255,255,0.03)', color:'rgba(245,240,232,0.4)', fontSize:12, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6, transition:'all 0.15s' }}>
-                See {name}'s full profile
+                {score >= 100 ? `See ${name}'s full profile` : `Continue ${name}'s Soul Builder`}
               </button>
             </div>
           </div>
