@@ -318,3 +318,11 @@
 - Tech owner: use the engineering contact / internal support path for backend/config issues.
 - Do NOT:
   - Do not modify production credentials blindly.
+
+## Deployment Note — Current Recommended Path
+- `FULL DB SYNC → PROD` exists in admin and is protected with typed confirmation, but current preview backend cannot reach the production Mongo target directly.
+- For the immediate launch attempt, if production data is stale and there are no live founding members to preserve, the recommended path is:
+  - **Replace deployment**
+  - choose **Use new database**
+  - let Emergent carry the latest preview DB forward
+- Only use the custom `FULL DB SYNC → PROD` tool later if preview→production DB connectivity is resolved.
