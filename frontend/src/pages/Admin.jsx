@@ -877,10 +877,24 @@ const Admin = () => {
 
   const handleFullDbSyncToProd = async () => {
     try {
+      if (window.location.hostname === 'thedoggycompany.com') {
+        alert('Run FULL DB SYNC → PROD from the PREVIEW admin, not the live site.\n\nLive site compares production against production and can’t migrate preview/local work forward.');
+        return;
+      }
+
+      const parseResponseSafe = async (res) => {
+        const text = await res.text();
+        try {
+          return JSON.parse(text || '{}');
+        } catch {
+          return { detail: text || 'Unknown response' };
+        }
+      };
+
       const diffRes = await fetch(`${API_URL}/api/admin/full-db-sync-diff`, {
         headers: getAuthHeaders()
       });
-      const diffData = await diffRes.json();
+      const diffData = await parseResponseSafe(diffRes);
       if (!diffRes.ok) throw new Error(diffData.detail || 'Failed to fetch production diff');
 
       const rows = (diffData.critical || []).map(item => {
@@ -909,7 +923,7 @@ const Admin = () => {
         headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ confirmation: 'MIGRATE' })
       });
-      const syncData = await syncRes.json();
+      const syncData = await parseResponseSafe(syncRes);
       if (!syncRes.ok) throw new Error(syncData.detail || 'Full DB sync failed');
 
       const resultRows = (syncData.synced || []).map(item => `${item.collection}: preview=${item.preview}, prod=${item.production_after}, matched=${item.matched}`).join('\n');
