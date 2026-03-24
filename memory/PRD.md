@@ -1,5 +1,5 @@
 # Pet Life OS — Product Requirements Document
-_Last updated: 2026-03-27 · The Doggy Company™_
+_Last updated: 2026-03-24 · The Doggy Company™_
 
 ## Original Problem Statement
 Build a full-featured Pet Life OS with 13+ pillar pages, AI-powered product recommendations (Mira), breed-specific merchandise (Soul Made™), and a universal custom order flow across all pillars. Core rule: ALL service bookings and custom orders MUST route through `service_desk_tickets` via Universal Concierge (`attach_or_create_ticket`).
@@ -140,7 +140,7 @@ Currently uses blank white product templates. Goal: 350 AI-generated images (50 
 
 ## P1 — Next Sprint (NEXT AGENT: Start Here)
 
-- [ ] Audit remaining pillars: Care → Go → Play → Learn → Adopt → Farewell → Emergency → Paperwork
+- [ ] Audit remaining pillars: Go → Play → Learn → Adopt → Farewell → Emergency → Paperwork
 - [ ] Add "3 vets near you" to daily health WhatsApp reminders (NearMe API at scheduler time)
 - [ ] Extend scheduler for Medication refill reminders
 - [ ] Mobile/iOS audit remaining pillars page-by-page
@@ -148,6 +148,21 @@ Currently uses blank white product templates. Goal: 350 AI-generated images (50 
 > **DO NOT TOUCH THE CELEBRATE PILLAR.** It has been fully audited, tested (11/11 backend, 100% frontend), and signed off. See "Final Audit: Celebrate" section in `/app/complete-documentation.html`. Any changes to celebrate components require explicit user approval.
 
 > **DO NOT TOUCH THE DINE PILLAR.** It has been fully audited, tested (7/7 concierge flows, mobile 375px clean), and signed off. See "Final Audit: Dine" section in `/app/complete-documentation.html`. Any changes to dine components require explicit user approval.
+
+> **DO NOT TOUCH THE CARE PILLAR.** It has been fully audited, tested (13/13 backend, 100% frontend, 12/12 concierge wiring points), and signed off. See "CARE AUDIT" section in `/app/complete-documentation.html`. Any changes to care components require explicit user approval.
+
+## Care Pillar — Completed & Signed Off (24 March 2026)
+
+- [x] **9 Concierge gaps fixed**: 8 service booking flows (Grooming, Vet, Boarding, Sitting, Behaviour, Senior, Nutrition, Emergency) wired via `useConcierge` + `sendToConcierge` callback in `ServiceBookingModal`
+- [x] **GuidedCarePaths submit fixed**: Replaced TODO `handleSubmit` with `useConcierge.fire()` including path metadata, selections, pet breed/allergies
+- [x] **Mobile font fix**: Mira Imagines card button/description bumped from 10-11px to 11-13px
+- [x] **13/13 backend tests passed** (iteration_199.json)
+- [x] **12/12 concierge wiring points verified**: Mira Picks, Mira Imagines, CareConciergeModal, CareNearMe, GuidedCarePaths (start + submit), WellnessProfile, all 8 service flows
+- [x] **Mobile 375px audit**: All sections render correctly, no overflow, tap targets 44px+
+- [x] **Soul Made strip**: Present in CareCategoryStrip, CareContentModal, SoulMadeCollection
+- [x] **Mira context**: selected_pet_id sent on all API calls
+- [x] **Documentation**: Care Audit section added to complete-documentation.html + Download PDF button
+- [x] **No "none" text bugs**: All null guards properly implemented, CLEAN_NONE regex active
 
 ## Recently Completed (27 March 2026)
 
