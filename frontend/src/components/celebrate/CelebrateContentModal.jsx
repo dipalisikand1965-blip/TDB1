@@ -49,6 +49,15 @@ const getBreedDisplay = (pet) => {
   return breed.split(/[\s_-]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
 };
 
+const getCelebratePetId = (pet) => pet?.id || pet?._id;
+
+const filterCelebrateSoulMadeProducts = (items = []) => items.filter((p) => {
+  const pillar = String(p?.pillar || '').toLowerCase();
+  const text = `${p?.name || ''} ${p?.category || ''} ${p?.sub_category || ''}`.toLowerCase();
+  if (pillar && pillar !== 'celebrate') return false;
+  return !['welcome home', 'adoption', 'pet loss', 'grief', 'farewell'].some((bad) => text.includes(bad));
+});
+
 // Food emoji lookup for Mira Imagines cards
 const FOOD_EMOJIS = {
   salmon: '🐟', fish: '🐠', tuna: '🐡', chicken: '🍗', beef: '🥩',
@@ -771,7 +780,7 @@ const PetWrapTeaser = ({ pet }) => {
   const [wrapData, setWrapData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [shared, setShared] = useState(false);
-  const petId = pet?.id;
+  const petId = getCelebratePetId(pet);
 
   useEffect(() => {
     if (!petId) { setLoading(false); return; }
@@ -835,7 +844,7 @@ const PetWrapTeaser = ({ pet }) => {
         </div>
       </div>
       <div className="flex gap-2">
-        <a href={`/wrapped/${petId}`} target="_blank" rel="noreferrer"
+        <a href={`/wrapped/${petId}`} rel="noreferrer"
           className="flex-1 rounded-xl py-1.5 text-xs font-bold text-center"
           style={{
             background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)',
@@ -843,7 +852,7 @@ const PetWrapTeaser = ({ pet }) => {
             fontFamily: 'Manrope, sans-serif',
             boxShadow: '0 4px 12px rgba(196,77,255,0.35)',
           }}>
-          View Full Wrap ✦
+          Open Pet Wrapped ✦
         </a>
         <button onClick={handleShare}
           className="rounded-xl px-3 py-1.5 text-xs font-bold flex items-center gap-1"
@@ -1193,9 +1202,9 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
           const data2 = res2.ok ? await res2.json() : { products: [] };
           const data3 = res3.ok ? await res3.json() : { products: [] };
           // Filter out birthday_cake — those are illustrations, not orderable products
-          setBreedProducts((data1.products || []).filter(p => p.product_type !== 'birthday_cake' && p.product_type !== 'Birthday Cake'));
-          setFlatArtProducts(data2.products || []);
-          setYappyIllustrations(data3.products || []);
+          setBreedProducts(filterCelebrateSoulMadeProducts((data1.products || []).filter(p => p.product_type !== 'birthday_cake' && p.product_type !== 'Birthday Cake')));
+          setFlatArtProducts(filterCelebrateSoulMadeProducts(data2.products || []));
+          setYappyIllustrations(filterCelebrateSoulMadeProducts(data3.products || []));
           setArtStyle('watercolour');
         } catch { setBreedProducts([]); setFlatArtProducts([]); setYappyFaceUrl(null); }
         setLoading(false);
@@ -1522,7 +1531,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
         )}
 
         {!loading && (
-          <div className="px-4 pt-4 pb-20">
+          <div className="px-4 pt-4" style={{ paddingBottom: category !== 'soul_made' ? 96 : 24 }}>
 
             {/* ── BUNDLES layout ──────────────────────────────────────── */}
             {category === 'bundles' && (
@@ -1892,7 +1901,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
             data-testid="soul-made-cross-sell"
             onClick={() => setSoulMadeOpen(true)}
             style={{
-              margin:'8px 0 16px', padding:'20px 20px 18px',
+              margin:'8px 0 24px', padding:'20px 20px 18px',
               background:'linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 50%, #1a0a2e 100%)',
               border:'1.5px solid rgba(196,77,255,0.4)',
               borderRadius:18, cursor:'pointer', position:'relative', overflow:'hidden',
@@ -1912,12 +1921,12 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
             <div style={{fontSize:13,color:'rgba(245,240,232,0.55)',marginBottom:16}}>
               Bandana · Portrait Frame · Party Hat · Cake Topper · Tote · and more
             </div>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-              <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#C44DFF,#9333EA)',borderRadius:30,padding:'10px 22px',fontSize:13,fontWeight:700,color:'#fff',boxShadow:'0 4px 16px rgba(196,77,255,0.4)'}}>
+            <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:12,flexWrap:'wrap'}}>
+              <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#C44DFF,#9333EA)',borderRadius:30,padding:'10px 22px',fontSize:13,fontWeight:700,color:'#fff',boxShadow:'0 4px 16px rgba(196,77,255,0.4)',flexShrink:0}}>
                 {`\u2726 Make something only ${petName} has`}
               </div>
-              <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',maxWidth:160,textAlign:'right',lineHeight:1.4}}>
-                Upload a photo · Concierge® creates it · Price on WhatsApp
+              <div style={{fontSize:12,color:'rgba(245,240,232,0.35)',fontStyle:'italic',lineHeight:1.4,flex:'1 1 180px',textAlign:'left'}}>
+                Upload a photo · Concierge® creates it
               </div>
             </div>
           </div>
