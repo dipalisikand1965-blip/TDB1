@@ -137,7 +137,7 @@ def build_digest_html(stats: dict, top_tickets: list, today_str: str) -> str:
 
   <!-- CTA -->
   <div style="text-align:center;margin-bottom:24px;">
-    <a href="https://pet-soul-audit.preview.emergentagent.com/admin"
+    <a href="https://learn-pillar-audit.preview.emergentagent.com/admin"
        style="display:inline-block;background:linear-gradient(135deg,#9333EA,#EC4899);color:#fff;font-weight:700;font-size:14px;padding:14px 40px;border-radius:50px;text-decoration:none;">
       Open Admin Inbox →
     </a>

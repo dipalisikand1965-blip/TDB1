@@ -4,7 +4,7 @@ Update Care products with generated images via API
 """
 import requests
 
-API_URL = "https://pet-soul-audit.preview.emergentagent.com"
+API_URL = "https://learn-pillar-audit.preview.emergentagent.com"
 AUTH = ("aditya", "lola4304")
 
 # Generated Care images
