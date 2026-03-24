@@ -2,6 +2,9 @@
  * GuidedLearnPaths.jsx — /learn pillar
  * The Doggy Company
  *
+ * LOCKED — DO NOT TOUCH — AUDITED Mar 24, 2026
+ * Exports: buildPaths, PathFlowModal (used by LearnSoulPage content modal footer CTA)
+ *
  * 6 guided learning paths · step-by-step selection modal
  * Mirrors GuidedCarePaths.jsx exactly — indigo colour world
  *
