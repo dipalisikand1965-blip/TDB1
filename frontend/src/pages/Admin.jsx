@@ -2607,50 +2607,7 @@ const Admin = () => {
               </p>
 
               <button
-                onClick={async () => {
-                  try {
-                    const diffRes = await fetch(`${API_URL}/api/admin/full-db-sync-diff`, {
-                      headers: getAuthHeaders()
-                    });
-                    const diffData = await diffRes.json();
-                    if (!diffRes.ok) throw new Error(diffData.detail || 'Failed to fetch production diff');
-
-                    const rows = (diffData.critical || []).map(item => {
-                      const name = (item.collection || '').padEnd(18, ' ');
-                      const preview = String(item.preview || 0).padStart(7, ' ');
-                      const prod = String(item.production || 0).padStart(7, ' ');
-                      const diff = `${item.diff >= 0 ? '+' : ''}${item.diff}`.padStart(7, ' ');
-                      return `${name} ${preview} ${prod} ${diff}`;
-                    }).join('\n');
-
-                    alert(
-                      'FULL DATABASE SYNC TO PRODUCTION\n\n' +
-                      'Collection         Preview   Prod   Diff\n' +
-                      rows + '\n\n' +
-                      'Type MIGRATE in the next prompt to proceed.'
-                    );
-
-                    const input = window.prompt('🔴 FULL DATABASE SYNC TO PRODUCTION\n\nType MIGRATE to proceed:');
-                    if (input !== 'MIGRATE') {
-                      alert('Cancelled. Type exactly MIGRATE to proceed.');
-                      return;
-                    }
-
-                    const syncRes = await fetch(`${API_URL}/api/admin/full-db-sync-to-production`, {
-                      method: 'POST',
-                      headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ confirmation: 'MIGRATE' })
-                    });
-                    const syncData = await syncRes.json();
-                    if (!syncRes.ok) throw new Error(syncData.detail || 'Full DB sync failed');
-
-                    const resultRows = (syncData.synced || []).map(item => `${item.collection}: preview=${item.preview}, prod=${item.production_after}, matched=${item.matched}`).join('\n');
-                    alert(`✅ Full DB sync complete\n\n${resultRows}`);
-                  } catch (e) {
-                    console.error('Full DB sync error:', e);
-                    alert(`❌ Full DB sync failed: ${e.message}`);
-                  }
-                }}
+                onClick={handleFullDbSyncToProd}
                 className="w-full p-4 mt-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:from-red-700 hover:to-rose-700 shadow-lg"
                 data-testid="full-db-sync-prod-btn"
               >
