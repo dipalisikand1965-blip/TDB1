@@ -26,6 +26,7 @@ import jwt
 import logging
 import re
 from dotenv import load_dotenv
+from breed_normalise import normalise_breed
 
 load_dotenv()
 
@@ -684,7 +685,7 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "user_phone": member_obj.get("phone"),
         "pet_id": request.pet_id,
         "pet_name": pet_name,
-        "pet_breed": pet_doc.get("breed") if pet_doc else None,
+        "pet_breed": normalise_breed(pet_doc.get("breed")) if pet_doc else "indie",
         "pillar": request.pillar,
         "intent_primary": request.intent_primary,
         "intent_secondary": request.intent_secondary,
@@ -721,7 +722,7 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "pillar":        request.pillar,
         "pet_id":        request.pet_id,
         "pet_name":      pet_name,
-        "pet_breed":     pet_doc.get("breed") if pet_doc else None,
+        "pet_breed":     normalise_breed(pet_doc.get("breed")) if pet_doc else "indie",
         "parent_id":     request.parent_id,
         "member":        member_obj,
         "user_name":     member_obj.get("name"),
@@ -754,6 +755,23 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
     })
 
     logger.info(f"[SERVICE_DESK] Created enriched ticket: {ticket_id} — '{subject}' | briefing={'yes' if mira_briefing else 'no'}")
+    
+    # Send WhatsApp confirmation to parent on new ticket
+    parent_phone = member_obj.get("phone") or member_obj.get("whatsapp")
+    if parent_phone:
+        try:
+            import asyncio
+            from whatsapp_notifications import send_whatsapp_message
+            clean_phone = parent_phone.replace('+', '').replace('-', '').replace(' ', '')
+            if not clean_phone.startswith('91'):
+                clean_phone = '91' + clean_phone
+            asyncio.get_event_loop().create_task(send_whatsapp_message(
+                to=clean_phone,
+                message=f"Concierge received your request for {pet_name}. We'll be in touch within 24 hours. — The Doggy Company",
+                log_context=f"new_ticket_{ticket_id}"
+            ))
+        except Exception as e:
+            logger.warning(f"[SERVICE_DESK] WhatsApp send failed for {ticket_id}: {e}")
     
     return AttachOrCreateTicketResponse(
         ticket_id=ticket_id,
@@ -1845,7 +1863,7 @@ async def create_enriched_ticket(
         "parent_id":       parent_id,
         "pet_id":          str(pet_id) if pet_id else None,
         "pet_name":        pet_name,
-        "pet_breed":       pet.get("breed") if pet else None,
+        "pet_breed":       normalise_breed(pet.get("breed")) if pet else "indie",
         "pillar":          pillar,
         "intent_primary":  intent_primary,
         "channel":         channel,
