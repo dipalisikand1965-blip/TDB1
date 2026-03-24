@@ -1,0 +1,1542 @@
+{
+  "generated": "2026-03-24",
+  "version": "1.0",
+  "admin_url": "https://thedoggycompany.com/admin",
+  "sections": {
+    "admin_overview": {
+      "credentials_format": {
+        "member_login": "dipali@clubconcierge.in / test123",
+        "admin_login": "aditya / lola4304",
+        "admin_preview_url": "https://pet-wrapped-1.preview.emergentagent.com/admin"
+      },
+      "section_map": [
+        {
+          "name": "Command Center",
+          "use": "Daily concierge operations, inbox, finance, queues, notifications"
+        },
+        {
+          "name": "Members & Pets",
+          "use": "Member lookup, pet profile inspection, membership + points operations"
+        },
+        {
+          "name": "Page CMS",
+          "use": "Page-level content management for the 12 pillars and global pages"
+        },
+        {
+          "name": "Commerce",
+          "use": "Products, services, pricing, bundles, collections, orders and fulfilment"
+        },
+        {
+          "name": "Mira & AI",
+          "use": "Chats, live threads, memory, reminders, communications"
+        },
+        {
+          "name": "Marketing",
+          "use": "Campaigns, occasion boxes, proactive outreach, push"
+        },
+        {
+          "name": "Analytics",
+          "use": "MIS, reports, analytics, reviews, site status"
+        },
+        {
+          "name": "Content",
+          "use": "Blog, FAQs, About, landing pages, transformation stories"
+        },
+        {
+          "name": "Config",
+          "use": "Operational controls, tags, art libraries, guides, agents, high-risk sync tools"
+        }
+      ],
+      "who_should_use_what": [
+        {
+          "role": "Concierge / Ops",
+          "use": "Service Desk, Unified Inbox, Reminders, Orders, Members"
+        },
+        {
+          "role": "Merchandising / Catalogue",
+          "use": "Product Box, Service Box, Pricing Hub, Bundles, Soul Products"
+        },
+        {
+          "role": "Content / Brand",
+          "use": "About, FAQs, Blog, Landing Page, CMS, Celebration Wall"
+        },
+        {
+          "role": "Founder / Platform Owner",
+          "use": "VERIFY DATA, COMPARE, Site Status, carefully review sync tools"
+        }
+      ]
+    },
+    "button_safety": [
+      {
+        "name": "MASTER SYNC",
+        "safe": "\u26a0\ufe0f",
+        "pressed": "N",
+        "opens": "Y",
+        "main_visible": "Y",
+        "does": "Runs large Shopify + seed + sync pipeline across catalogue and tags.",
+        "when": "Use only for intentional broad catalogue refreshes after backup awareness."
+      },
+      {
+        "name": "VERIFY DATA",
+        "safe": "\u2705",
+        "pressed": "Y",
+        "opens": "Y",
+        "main_visible": "Y",
+        "does": "Reads collection counts and shows health/completeness summary.",
+        "when": "Use anytime for a quick health check."
+      },
+      {
+        "name": "FIX IMAGES",
+        "safe": "\u26a0\ufe0f",
+        "pressed": "Y",
+        "opens": "Y",
+        "main_visible": "Y",
+        "does": "Attempts Shopify image repair sync.",
+        "when": "Use for missing Shopify image URLs, not wrong stored creative assets."
+      },
+      {
+        "name": "FIX PROD DATA",
+        "safe": "\u26a0\ufe0f",
+        "pressed": "N",
+        "opens": "Y",
+        "main_visible": "Y",
+        "does": "Fixes service illustrations + pet string data on current server.",
+        "when": "Use only for known repair tasks."
+      },
+      {
+        "name": "CONSOLIDATE DATA",
+        "safe": "\u26a0\ufe0f",
+        "pressed": "N",
+        "opens": "Y",
+        "main_visible": "Y",
+        "does": "Migrates pillar-specific product/bundle collections into master collections.",
+        "when": "Use with backup / migration intent."
+      },
+      {
+        "name": "COMPARE",
+        "safe": "\u2705",
+        "pressed": "Y",
+        "opens": "Y",
+        "main_visible": "Y",
+        "does": "Compares preview vs production site-status counts.",
+        "when": "Use anytime to check parity."
+      },
+      {
+        "name": "AI IMAGES",
+        "safe": "\u26a0\ufe0f",
+        "pressed": "Y",
+        "opens": "Y",
+        "main_visible": "Y",
+        "does": "Runs AI image generation for selected pillar/services.",
+        "when": "Use when missing or flagged images need regeneration."
+      },
+      {
+        "name": "SYNC\u2192PROD",
+        "safe": "\u274c",
+        "pressed": "N",
+        "opens": "Y",
+        "main_visible": "Y",
+        "does": "Pushes Soul Made/mockup data to production.",
+        "when": "Only with explicit signoff; never casually."
+      }
+    ],
+    "tab_audit_results": [
+      {
+        "name": "Dashboard",
+        "status": "\u2705",
+        "group": "Command Center",
+        "what": "Overview stats and quick access to admin areas.",
+        "fixed": "Verified opens and renders widgets shell.",
+        "limitations": "Load ~3.1s; deeper widget value validation still ongoing."
+      },
+      {
+        "name": "Service Desk",
+        "status": "\u2705",
+        "group": "Command Center",
+        "what": "Primary concierge workspace for tickets and replies.",
+        "fixed": "Double-auth removed; reply payload fixed; workspace verified.",
+        "limitations": "Full operational workflow audit still continuing."
+      },
+      {
+        "name": "Unified Inbox",
+        "status": "\u26a0\ufe0f",
+        "group": "Command Center",
+        "what": "Channel intake inbox for new requests.",
+        "fixed": "Stats 404 fixed; status persistence verified; key collisions reduced.",
+        "limitations": "Duplicate-key warnings should be monitored; reply/send not fully audited."
+      },
+      {
+        "name": "Finance",
+        "status": "\u26a0\ufe0f",
+        "group": "Command Center",
+        "what": "Payments and finance dashboard.",
+        "fixed": "Opens and finance API responds.",
+        "limitations": "No live payment data yet; stats all zero until real paying members use system."
+      },
+      {
+        "name": "Pillar Queues",
+        "status": "\u26a0\ufe0f",
+        "group": "Command Center",
+        "what": "Queue overview by pillar.",
+        "fixed": "Opens without crash.",
+        "limitations": "Population/action depth still pending."
+      },
+      {
+        "name": "Notification Bell",
+        "status": "\u2705",
+        "group": "Command Center",
+        "what": "Admin notifications dropdown.",
+        "fixed": "Null category bug fixed in code and DB backfill.",
+        "limitations": "UX polish still recommended."
+      },
+      {
+        "name": "Pet Parents",
+        "status": "\u2705",
+        "group": "Members & Pets",
+        "what": "Customer/member listing and detail access.",
+        "fixed": "Fetch switched to /api/admin/customers so data renders correctly.",
+        "limitations": "Bulk/deactivate actions still to test."
+      },
+      {
+        "name": "Pet Profiles",
+        "status": "\u2705",
+        "group": "Members & Pets",
+        "what": "View pet profiles and soul data.",
+        "fixed": "Crash fixed by hardening avatar URL handling.",
+        "limitations": "Edit/delete workflows still to test."
+      },
+      {
+        "name": "Membership",
+        "status": "\u2705",
+        "group": "Members & Pets",
+        "what": "Membership operations, pet list, points, gifting.",
+        "fixed": "Dipali detail modal shows full pet list; points modal opens.",
+        "limitations": "Live tier mutation/revert test still pending."
+      },
+      {
+        "name": "Loyalty",
+        "status": "\u2705",
+        "group": "Members & Pets",
+        "what": "Loyalty points dashboard.",
+        "fixed": "Opens and shows points/liability metrics.",
+        "limitations": "Adjust/redemption deeper testing pending."
+      },
+      {
+        "name": "Engagement",
+        "status": "\u2705",
+        "group": "Members & Pets",
+        "what": "Member engagement dashboard.",
+        "fixed": "Opens cleanly.",
+        "limitations": "Deep metric validation pending."
+      },
+      {
+        "name": "Celebrations",
+        "status": "\u2705",
+        "group": "Members & Pets",
+        "what": "Celebration operations tab.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Actions not deeply tested yet."
+      },
+      {
+        "name": "Celebration Wall",
+        "status": "\u2705",
+        "group": "Members & Pets",
+        "what": "Photo wall and celebration media admin.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Create/moderation workflow not yet tested."
+      },
+      {
+        "name": "Learn CMS",
+        "status": "\u2753",
+        "group": "Page CMS",
+        "what": "Learn page content management.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/save loop pending."
+      },
+      {
+        "name": "Paperwork CMS",
+        "status": "\u2753",
+        "group": "Page CMS",
+        "what": "Paperwork page content management.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/save loop pending."
+      },
+      {
+        "name": "Care CMS",
+        "status": "\u2753",
+        "group": "Page CMS",
+        "what": "Care page CMS.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/save loop pending."
+      },
+      {
+        "name": "Fit CMS",
+        "status": "\u2753",
+        "group": "Page CMS",
+        "what": "Fit page CMS / legacy play-adjacent content.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/save loop pending."
+      },
+      {
+        "name": "Travel CMS",
+        "status": "\u2753",
+        "group": "Page CMS",
+        "what": "Travel page CMS.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/save loop pending."
+      },
+      {
+        "name": "Stay CMS",
+        "status": "\u2753",
+        "group": "Page CMS",
+        "what": "Stay page CMS.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/save loop pending."
+      },
+      {
+        "name": "Dine CMS",
+        "status": "\u2753",
+        "group": "Page CMS",
+        "what": "Dine page CMS.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/save loop pending."
+      },
+      {
+        "name": "Enjoy CMS",
+        "status": "\u2753",
+        "group": "Page CMS",
+        "what": "Enjoy legacy CMS.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/save loop pending."
+      },
+      {
+        "name": "Celebrate CMS",
+        "status": "\u2753",
+        "group": "Page CMS",
+        "what": "Celebrate page manager / CMS.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/save loop pending."
+      },
+      {
+        "name": "Emergency CMS",
+        "status": "\u2753",
+        "group": "Page CMS",
+        "what": "Emergency page CMS.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/save loop pending."
+      },
+      {
+        "name": "Advisory CMS",
+        "status": "\u2753",
+        "group": "Page CMS",
+        "what": "Advisory page CMS.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/save loop pending."
+      },
+      {
+        "name": "Farewell CMS",
+        "status": "\u2753",
+        "group": "Page CMS",
+        "what": "Farewell page CMS.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/save loop pending."
+      },
+      {
+        "name": "Adopt CMS",
+        "status": "\u2753",
+        "group": "Page CMS",
+        "what": "Adopt page CMS.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/save loop pending."
+      },
+      {
+        "name": "Shop CMS",
+        "status": "\u2753",
+        "group": "Page CMS",
+        "what": "Shop page CMS.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/save loop pending."
+      },
+      {
+        "name": "Landing Page Manager",
+        "status": "\u2705",
+        "group": "Page CMS",
+        "what": "Landing page editor.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Mutation/save loop pending."
+      },
+      {
+        "name": "Page Content Manager",
+        "status": "\u2705",
+        "group": "Page CMS",
+        "what": "Generic CMS editor.",
+        "fixed": "Opens via tab structure.",
+        "limitations": "Deep save testing pending."
+      },
+      {
+        "name": "Product Box",
+        "status": "\u2705",
+        "group": "Commerce",
+        "what": "Unified product editing.",
+        "fixed": "Price change proven to reflect on storefront; manual price lock added.",
+        "limitations": "Need ongoing caution with sync tools."
+      },
+      {
+        "name": "Service Box",
+        "status": "\u2705",
+        "group": "Commerce",
+        "what": "Service CRUD and pricing editor.",
+        "fixed": "Description change reflected on /learn services tab.",
+        "limitations": "Additional service create/delete tests pending."
+      },
+      {
+        "name": "Pricing Hub",
+        "status": "\u2705",
+        "group": "Commerce",
+        "what": "Product/service pricing, GST, commissions, shipping.",
+        "fixed": "GST save mutation tested and reverted.",
+        "limitations": "More mutation paths still to test."
+      },
+      {
+        "name": "Orders",
+        "status": "\u2705",
+        "group": "Commerce",
+        "what": "Order list / status management.",
+        "fixed": "Undefined rendering bug fixed.",
+        "limitations": "Full order lifecycle test still pending."
+      },
+      {
+        "name": "Fulfilment",
+        "status": "\u2753",
+        "group": "Commerce",
+        "what": "Delivery / fulfilment operations.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/save loop pending."
+      },
+      {
+        "name": "Soul Products",
+        "status": "\u2705",
+        "group": "Commerce",
+        "what": "Soul-made product editor.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Mutation not yet tested."
+      },
+      {
+        "name": "Topic Products",
+        "status": "\u2705",
+        "group": "Commerce",
+        "what": "Learn topic product manager.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Mutation not yet tested."
+      },
+      {
+        "name": "Breed Cakes",
+        "status": "\u2705",
+        "group": "Commerce",
+        "what": "Breed cake catalogue manager.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Mutation not yet tested."
+      },
+      {
+        "name": "Bundles",
+        "status": "\u26a0\ufe0f",
+        "group": "Commerce",
+        "what": "Bundle manager.",
+        "fixed": "11 missing images flagged with placeholders.",
+        "limitations": "AI image generation still needed for flagged bundles."
+      },
+      {
+        "name": "Collections",
+        "status": "\u2705",
+        "group": "Commerce",
+        "what": "Collections merch manager.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Mutation not yet tested."
+      },
+      {
+        "name": "Autoship",
+        "status": "\u2705",
+        "group": "Commerce",
+        "what": "Autoship config and member plans.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Workflow not yet tested."
+      },
+      {
+        "name": "Abandoned",
+        "status": "\u2705",
+        "group": "Commerce",
+        "what": "Abandoned cart operations.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Reminder send flow not yet tested."
+      },
+      {
+        "name": "Discounts",
+        "status": "\u2705",
+        "group": "Commerce",
+        "what": "Discount code management.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Create/edit flow not yet tested."
+      },
+      {
+        "name": "Mira Chats",
+        "status": "\u26a0\ufe0f",
+        "group": "Mira & AI",
+        "what": "Chatbase + legacy Mira chat monitoring.",
+        "fixed": "Opens and shows conversations.",
+        "limitations": "Mojo-specific search/filter still needs explicit test."
+      },
+      {
+        "name": "Live Threads",
+        "status": "\u2705",
+        "group": "Mira & AI",
+        "what": "Real-time live conversation threads.",
+        "fixed": "Verified with real active thread stats and Mojo visible.",
+        "limitations": "Reply/close path still to test deeply."
+      },
+      {
+        "name": "Mira Memory Manager",
+        "status": "\u2705",
+        "group": "Mira & AI",
+        "what": "Memory search, flag, suppress, delete, add.",
+        "fixed": "Admin auth headers wired; tab loads.",
+        "limitations": "Mutation buttons not yet exercised."
+      },
+      {
+        "name": "Reminders",
+        "status": "\u2705",
+        "group": "Mira & AI",
+        "what": "Automated reminder scheduler.",
+        "fixed": "Tab opens and scheduler controls visible.",
+        "limitations": "Scheduler run effect not deeply tested."
+      },
+      {
+        "name": "Kit Assembly",
+        "status": "\u2705",
+        "group": "Mira & AI",
+        "what": "Kit assembly manager.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Workflow not yet tested."
+      },
+      {
+        "name": "Communications",
+        "status": "\u2705",
+        "group": "Mira & AI",
+        "what": "Communications overview/ops.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Message actions not yet tested."
+      },
+      {
+        "name": "Campaigns",
+        "status": "\u2753",
+        "group": "Marketing",
+        "what": "Campaign management.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/action pending."
+      },
+      {
+        "name": "Occasion Boxes",
+        "status": "\u2753",
+        "group": "Marketing",
+        "what": "Occasion box management.",
+        "fixed": "Import issues earlier corrected, deep audit pending.",
+        "limitations": "Open/action pending."
+      },
+      {
+        "name": "Proactive",
+        "status": "\u2753",
+        "group": "Marketing",
+        "what": "Proactive outreach tooling.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/action pending."
+      },
+      {
+        "name": "Push",
+        "status": "\u2753",
+        "group": "Marketing",
+        "what": "Push notification campaigns.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/action pending."
+      },
+      {
+        "name": "Live MIS",
+        "status": "\u2753",
+        "group": "Analytics",
+        "what": "Live MIS dashboard.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/action pending."
+      },
+      {
+        "name": "Reports",
+        "status": "\u2705",
+        "group": "Analytics",
+        "what": "Report builder.",
+        "fixed": "Opens cleanly.",
+        "limitations": "Generate/export not fully tested."
+      },
+      {
+        "name": "Analytics",
+        "status": "\u2705",
+        "group": "Analytics",
+        "what": "Advanced analytics dashboard.",
+        "fixed": "Opens cleanly.",
+        "limitations": "Metric accuracy audit pending."
+      },
+      {
+        "name": "Reviews",
+        "status": "\u2705",
+        "group": "Analytics",
+        "what": "Reviews/moderation analytics.",
+        "fixed": "Opens cleanly.",
+        "limitations": "Mutation not tested."
+      },
+      {
+        "name": "Pawmeter",
+        "status": "\u2753",
+        "group": "Analytics",
+        "what": "Pawmeter / scoring analytics.",
+        "fixed": "Not yet deeply tested.",
+        "limitations": "Open/action pending."
+      },
+      {
+        "name": "Site Status",
+        "status": "\u2705",
+        "group": "Analytics",
+        "what": "Site health report.",
+        "fixed": "Opens and shows stats.",
+        "limitations": "Accuracy spot-check pending."
+      },
+      {
+        "name": "Blog",
+        "status": "\u2705",
+        "group": "Content",
+        "what": "Blog management.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Create/edit post still pending."
+      },
+      {
+        "name": "Transformations",
+        "status": "\u2705",
+        "group": "Content",
+        "what": "Transformation stories admin.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Create/edit still pending."
+      },
+      {
+        "name": "FAQs",
+        "status": "\u2705",
+        "group": "Content",
+        "what": "FAQ management.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Create/edit still pending."
+      },
+      {
+        "name": "About",
+        "status": "\u2705",
+        "group": "Content",
+        "what": "About page manager.",
+        "fixed": "Opens and seed default control visible.",
+        "limitations": "Mutation not yet tested."
+      },
+      {
+        "name": "Breed Tags",
+        "status": "\u2705",
+        "group": "Config",
+        "what": "Breed tags configuration.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Edit/save pending."
+      },
+      {
+        "name": "Breed Art",
+        "status": "\u2705",
+        "group": "Config",
+        "what": "Breed art library.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Edit/save pending."
+      },
+      {
+        "name": "Custom Cakes",
+        "status": "\u2705",
+        "group": "Config",
+        "what": "Custom cake config.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Mutation pending."
+      },
+      {
+        "name": "Agents",
+        "status": "\u2705",
+        "group": "Config",
+        "what": "Agent management.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Add/remove agent pending."
+      },
+      {
+        "name": "Guide & Backup",
+        "status": "\u2705",
+        "group": "Config",
+        "what": "Guide/backups tab.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Action testing pending."
+      },
+      {
+        "name": "Concierge XP",
+        "status": "\u2705",
+        "group": "Config",
+        "what": "Concierge operations config.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Mutation pending."
+      },
+      {
+        "name": "Tags",
+        "status": "\u2705",
+        "group": "Config",
+        "what": "Tag manager.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Mutation pending."
+      },
+      {
+        "name": "Streaties",
+        "status": "\u2705",
+        "group": "Config",
+        "what": "Streaties config.",
+        "fixed": "Opens in quick pass.",
+        "limitations": "Mutation pending."
+      }
+    ],
+    "critical_flows": [
+      {
+        "name": "Service Desk full flow",
+        "status": "\u2705",
+        "details": "Workspace loads, reply works, member sees reply, WhatsApp/email infrastructure validated."
+      },
+      {
+        "name": "Product Box \u2192 frontend sync",
+        "status": "\u2705",
+        "details": "Visible storefront proof completed with Celebrate hamper product pricing change."
+      },
+      {
+        "name": "Service Box \u2192 frontend sync",
+        "status": "\u2705",
+        "details": "Breed Education Session description change reflected on /learn services tab and reverted."
+      },
+      {
+        "name": "Pricing Hub + GST",
+        "status": "\u2705",
+        "details": "GST mutation tested from 5% to 18% and reverted successfully."
+      },
+      {
+        "name": "Admin reply \u2192 member sees it",
+        "status": "\u2705",
+        "details": "My Requests page patched to read messages/thread/content; reply visible to Dipali."
+      },
+      {
+        "name": "WhatsApp on every ticket",
+        "status": "\u2705",
+        "details": "Direct helper + ticket-triggered logs confirm Gupshup send in this environment."
+      },
+      {
+        "name": "Email on every ticket",
+        "status": "\u2705",
+        "details": "Direct Resend test succeeded and password reset emails logged."
+      },
+      {
+        "name": "Password reset",
+        "status": "\u2705",
+        "details": "Forgot password page, token issuance, reset, temp login, and original-password restore all verified."
+      },
+      {
+        "name": "Pet Parents rendering",
+        "status": "\u2705",
+        "details": "Admin fetch switched to /api/admin/customers and real data is visible."
+      },
+      {
+        "name": "Membership + Paw Points",
+        "status": "\u2705",
+        "details": "Dipali visible, pet list shown, points modal opens, tier UI visible."
+      }
+    ],
+    "known_issues": [
+      {
+        "status": "\u26a0\ufe0f",
+        "issue": "Finance empty",
+        "details": "Expected at this stage because payments collection is empty; dashboard will populate after first real paid orders."
+      },
+      {
+        "status": "\u26a0\ufe0f",
+        "issue": "Wrong image on 1 flagged product",
+        "details": "Bite-Resistant Tug Rope remains flagged for AI/manual replacement; FIX IMAGES does not correct wrong stored creative assets."
+      },
+      {
+        "status": "\u26a0\ufe0f",
+        "issue": "11 bundles need AI images",
+        "details": "Bundles have placeholders + needs_ai_image flags and still require proper generation."
+      },
+      {
+        "status": "\u26a0\ufe0f",
+        "issue": "Mira Chats targeted Mojo search",
+        "details": "Tab opens and conversations exist, but explicit Mojo search/filter pass remains."
+      },
+      {
+        "status": "\u26a0\ufe0f",
+        "issue": "Admin load times slightly above 3s target",
+        "details": "Dashboard / inbox / finance range around 3.1\u20133.7 seconds; acceptable for admin, but lazy-loading could improve it."
+      }
+    ],
+    "db_collections": [
+      {
+        "name": "abandoned_cart_reminders",
+        "count": 3
+      },
+      {
+        "name": "abandoned_carts",
+        "count": 5
+      },
+      {
+        "name": "admin_config",
+        "count": 1
+      },
+      {
+        "name": "admin_notifications",
+        "count": 1142
+      },
+      {
+        "name": "adopt_bundles",
+        "count": 5
+      },
+      {
+        "name": "adopt_bundles_backup_20260322",
+        "count": 5
+      },
+      {
+        "name": "adopt_shelters",
+        "count": 4
+      },
+      {
+        "name": "adoptable_pets",
+        "count": 8
+      },
+      {
+        "name": "adoption_events",
+        "count": 4
+      },
+      {
+        "name": "advisory_bundles",
+        "count": 8
+      },
+      {
+        "name": "advisory_bundles_backup_20260322",
+        "count": 8
+      },
+      {
+        "name": "advisory_partners",
+        "count": 4
+      },
+      {
+        "name": "advisory_requests",
+        "count": 24
+      },
+      {
+        "name": "agents",
+        "count": 1
+      },
+      {
+        "name": "app_settings",
+        "count": 4
+      },
+      {
+        "name": "birthday_box_orders",
+        "count": 37
+      },
+      {
+        "name": "blog_posts",
+        "count": 6
+      },
+      {
+        "name": "breed_matrix",
+        "count": 34
+      },
+      {
+        "name": "breed_products",
+        "count": 3448
+      },
+      {
+        "name": "breed_products_backup_20260322",
+        "count": 3775
+      },
+      {
+        "name": "bundles",
+        "count": 96
+      },
+      {
+        "name": "bundles_backup_20260322",
+        "count": 96
+      },
+      {
+        "name": "care_bundles",
+        "count": 27
+      },
+      {
+        "name": "care_bundles_backup_20260322",
+        "count": 27
+      },
+      {
+        "name": "care_requests",
+        "count": 17
+      },
+      {
+        "name": "celebrate_bundles",
+        "count": 6
+      },
+      {
+        "name": "celebrate_bundles_backup_20260322",
+        "count": 6
+      },
+      {
+        "name": "celebrate_partners",
+        "count": 2
+      },
+      {
+        "name": "celebrate_products",
+        "count": 3
+      },
+      {
+        "name": "celebrate_products_backup_20260322",
+        "count": 3
+      },
+      {
+        "name": "celebrate_requests",
+        "count": 21
+      },
+      {
+        "name": "celebration_photos",
+        "count": 18
+      },
+      {
+        "name": "celebration_reminders",
+        "count": 5
+      },
+      {
+        "name": "channel_intakes",
+        "count": 487
+      },
+      {
+        "name": "collections",
+        "count": 4
+      },
+      {
+        "name": "collections_backup_20260322",
+        "count": 4
+      },
+      {
+        "name": "communication_log",
+        "count": 7
+      },
+      {
+        "name": "concierge_experiences",
+        "count": 18
+      },
+      {
+        "name": "concierge_intakes",
+        "count": 72
+      },
+      {
+        "name": "concierge_messages",
+        "count": 2
+      },
+      {
+        "name": "concierge_picks_requests",
+        "count": 8
+      },
+      {
+        "name": "concierge_threads",
+        "count": 1
+      },
+      {
+        "name": "conversation_memories",
+        "count": 5
+      },
+      {
+        "name": "curated_picks_cache",
+        "count": 45
+      },
+      {
+        "name": "custom_cake_designs",
+        "count": 1
+      },
+      {
+        "name": "custom_orders",
+        "count": 5
+      },
+      {
+        "name": "dine_bundles",
+        "count": 4
+      },
+      {
+        "name": "dine_bundles_backup_20260322",
+        "count": 4
+      },
+      {
+        "name": "dine_requests",
+        "count": 20
+      },
+      {
+        "name": "dismissed_alerts",
+        "count": 6
+      },
+      {
+        "name": "emergency_bundles",
+        "count": 5
+      },
+      {
+        "name": "emergency_bundles_backup_20260322",
+        "count": 5
+      },
+      {
+        "name": "emergency_partners",
+        "count": 4
+      },
+      {
+        "name": "enhanced_collections",
+        "count": 3
+      },
+      {
+        "name": "enhanced_collections_backup_20260322",
+        "count": 3
+      },
+      {
+        "name": "enjoy_bundles",
+        "count": 5
+      },
+      {
+        "name": "enjoy_bundles_backup_20260322",
+        "count": 5
+      },
+      {
+        "name": "enjoy_experiences",
+        "count": 16
+      },
+      {
+        "name": "enjoy_requests",
+        "count": 1
+      },
+      {
+        "name": "escalation_rules",
+        "count": 6
+      },
+      {
+        "name": "events_log",
+        "count": 102
+      },
+      {
+        "name": "faqs",
+        "count": 19
+      },
+      {
+        "name": "farewell_bundles",
+        "count": 3
+      },
+      {
+        "name": "farewell_bundles_backup_20260322",
+        "count": 3
+      },
+      {
+        "name": "farewell_partners",
+        "count": 3
+      },
+      {
+        "name": "farewell_products",
+        "count": 6
+      },
+      {
+        "name": "farewell_products_backup_20260322",
+        "count": 6
+      },
+      {
+        "name": "featured_dogs",
+        "count": 5
+      },
+      {
+        "name": "fit_bundles",
+        "count": 5
+      },
+      {
+        "name": "fit_bundles_backup_20260322",
+        "count": 5
+      },
+      {
+        "name": "fit_partners",
+        "count": 4
+      },
+      {
+        "name": "fit_plans",
+        "count": 6
+      },
+      {
+        "name": "fit_products",
+        "count": 5
+      },
+      {
+        "name": "fit_products_backup_20260322",
+        "count": 5
+      },
+      {
+        "name": "guided_paths",
+        "count": 26
+      },
+      {
+        "name": "health_reminders",
+        "count": 4
+      },
+      {
+        "name": "kit_templates",
+        "count": 20
+      },
+      {
+        "name": "learn_bundles",
+        "count": 5
+      },
+      {
+        "name": "learn_bundles_backup_20260322",
+        "count": 5
+      },
+      {
+        "name": "learn_cms_content",
+        "count": 1
+      },
+      {
+        "name": "learn_content",
+        "count": 24
+      },
+      {
+        "name": "learn_events",
+        "count": 1
+      },
+      {
+        "name": "learn_guides",
+        "count": 36
+      },
+      {
+        "name": "learn_products",
+        "count": 2
+      },
+      {
+        "name": "learn_products_backup_20260322",
+        "count": 2
+      },
+      {
+        "name": "learn_programs",
+        "count": 3
+      },
+      {
+        "name": "learn_requests",
+        "count": 5
+      },
+      {
+        "name": "learn_topics",
+        "count": 12
+      },
+      {
+        "name": "learn_trainers",
+        "count": 2
+      },
+      {
+        "name": "learn_videos",
+        "count": 22
+      },
+      {
+        "name": "live_conversation_threads",
+        "count": 255
+      },
+      {
+        "name": "member_notifications",
+        "count": 486
+      },
+      {
+        "name": "member_password_resets",
+        "count": 1
+      },
+      {
+        "name": "members",
+        "count": 1
+      },
+      {
+        "name": "membership_orders",
+        "count": 8
+      },
+      {
+        "name": "memberships",
+        "count": 3
+      },
+      {
+        "name": "mira_conversations",
+        "count": 5
+      },
+      {
+        "name": "mira_imagines_cache",
+        "count": 24
+      },
+      {
+        "name": "mira_inferences",
+        "count": 1
+      },
+      {
+        "name": "mira_memories",
+        "count": 24
+      },
+      {
+        "name": "mira_product_scores",
+        "count": 21713
+      },
+      {
+        "name": "mira_sessions",
+        "count": 13
+      },
+      {
+        "name": "mira_signals",
+        "count": 4359
+      },
+      {
+        "name": "mira_tickets",
+        "count": 166
+      },
+      {
+        "name": "mira_uploads",
+        "count": 6
+      },
+      {
+        "name": "notification_logs",
+        "count": 9
+      },
+      {
+        "name": "nudge_schedules",
+        "count": 175
+      },
+      {
+        "name": "occasion_box_templates",
+        "count": 3
+      },
+      {
+        "name": "orders",
+        "count": 13
+      },
+      {
+        "name": "page_configs",
+        "count": 3
+      },
+      {
+        "name": "page_content",
+        "count": 16
+      },
+      {
+        "name": "page_selections",
+        "count": 3
+      },
+      {
+        "name": "paperwork_bundles",
+        "count": 8
+      },
+      {
+        "name": "paperwork_bundles_backup_20260322",
+        "count": 8
+      },
+      {
+        "name": "paperwork_cms_categories",
+        "count": 6
+      },
+      {
+        "name": "paperwork_cms_content",
+        "count": 1
+      },
+      {
+        "name": "paw_points_ledger",
+        "count": 14
+      },
+      {
+        "name": "payment_orders",
+        "count": 1
+      },
+      {
+        "name": "pet_friendly_stays",
+        "count": 12
+      },
+      {
+        "name": "pet_traits",
+        "count": 1
+      },
+      {
+        "name": "pet_wrapped",
+        "count": 13
+      },
+      {
+        "name": "pet_wrapped_memories",
+        "count": 2
+      },
+      {
+        "name": "pet_wrapped_welcome",
+        "count": 1
+      },
+      {
+        "name": "pets",
+        "count": 23
+      },
+      {
+        "name": "pillar_cms_content",
+        "count": 1
+      },
+      {
+        "name": "pillar_requests",
+        "count": 211
+      },
+      {
+        "name": "pricing_tiers",
+        "count": 4
+      },
+      {
+        "name": "product_bundles",
+        "count": 25
+      },
+      {
+        "name": "product_bundles_backup_20260322",
+        "count": 25
+      },
+      {
+        "name": "product_pricing",
+        "count": 1
+      },
+      {
+        "name": "product_soul_tiers",
+        "count": 101
+      },
+      {
+        "name": "product_soul_tiers_backup_20260322",
+        "count": 101
+      },
+      {
+        "name": "products",
+        "count": 1635
+      },
+      {
+        "name": "products_backup_20260322",
+        "count": 1635
+      },
+      {
+        "name": "products_master",
+        "count": 5147
+      },
+      {
+        "name": "products_master_backup_20260322",
+        "count": 5131
+      },
+      {
+        "name": "quick_win_tips",
+        "count": 10
+      },
+      {
+        "name": "rainbow_bridge_memorials",
+        "count": 1
+      },
+      {
+        "name": "restaurants",
+        "count": 12
+      },
+      {
+        "name": "service_catalog",
+        "count": 97
+      },
+      {
+        "name": "service_catalog_backup_20260322",
+        "count": 97
+      },
+      {
+        "name": "service_desk_tickets",
+        "count": 810
+      },
+      {
+        "name": "service_requests",
+        "count": 126
+      },
+      {
+        "name": "services",
+        "count": 46
+      },
+      {
+        "name": "services_backup_20260322",
+        "count": 46
+      },
+      {
+        "name": "services_master",
+        "count": 1025
+      },
+      {
+        "name": "services_master_backup_20260322",
+        "count": 1025
+      },
+      {
+        "name": "settings",
+        "count": 1
+      },
+      {
+        "name": "shipping_rules",
+        "count": 5
+      },
+      {
+        "name": "shop_requests",
+        "count": 1
+      },
+      {
+        "name": "soul_score_history",
+        "count": 7
+      },
+      {
+        "name": "stay_boarding_facilities",
+        "count": 8
+      },
+      {
+        "name": "stay_bundles",
+        "count": 8
+      },
+      {
+        "name": "stay_bundles_backup_20260322",
+        "count": 8
+      },
+      {
+        "name": "stay_properties",
+        "count": 32
+      },
+      {
+        "name": "sync_logs",
+        "count": 84
+      },
+      {
+        "name": "team_members",
+        "count": 4
+      },
+      {
+        "name": "testimonials",
+        "count": 6
+      },
+      {
+        "name": "ticket_counters",
+        "count": 1
+      },
+      {
+        "name": "ticket_templates",
+        "count": 5
+      },
+      {
+        "name": "ticket_viewers",
+        "count": 15
+      },
+      {
+        "name": "tickets",
+        "count": 218
+      },
+      {
+        "name": "topic_products",
+        "count": 12
+      },
+      {
+        "name": "topic_products_backup_20260322",
+        "count": 12
+      },
+      {
+        "name": "transformation_stories",
+        "count": 4
+      },
+      {
+        "name": "travel_bundles",
+        "count": 7
+      },
+      {
+        "name": "travel_bundles_backup_20260322",
+        "count": 7
+      },
+      {
+        "name": "travel_requests",
+        "count": 1
+      },
+      {
+        "name": "unified_inbox",
+        "count": 121
+      },
+      {
+        "name": "unified_products",
+        "count": 4558
+      },
+      {
+        "name": "unified_products_backup_20260322",
+        "count": 4558
+      },
+      {
+        "name": "user_learn_intents",
+        "count": 68
+      },
+      {
+        "name": "user_sessions",
+        "count": 8
+      },
+      {
+        "name": "user_streaks",
+        "count": 4
+      },
+      {
+        "name": "users",
+        "count": 14
+      },
+      {
+        "name": "wrapped_deliveries",
+        "count": 13
+      },
+      {
+        "name": "wrapped_shares",
+        "count": 6
+      }
+    ],
+    "emergency_procedures": [
+      {
+        "title": "If Service Desk looks locked out",
+        "steps": [
+          "Check admin session in /admin first.",
+          "Use the same admin session for /admin/service-desk.",
+          "If still blocked, re-login via /api/admin/login and refresh."
+        ],
+        "do_not_do": [
+          "Do not create a second auth system."
+        ]
+      },
+      {
+        "title": "If storefront data seems stale",
+        "steps": [
+          "Check Product Box / Service Box DB save first.",
+          "Check public API payload second.",
+          "Check storefront card rendering third (variant price vs locked/manual price)."
+        ],
+        "do_not_do": [
+          "Do not assume it is frontend cache without checking API payloads."
+        ]
+      },
+      {
+        "title": "If a sync button feels risky",
+        "steps": [
+          "Use VERIFY DATA or COMPARE first.",
+          "Read the confirmation dialog carefully.",
+          "Prefer backup/migration review before MASTER SYNC / CONSOLIDATE / FIX PROD DATA."
+        ],
+        "do_not_do": [
+          "Do not press SYNC\u2192PROD casually.",
+          "Do not run destructive seed scripts without the ALLOW_SEED guard."
+        ]
+      },
+      {
+        "title": "Who to call",
+        "steps": [
+          "Platform owner: Dipali for product signoff.",
+          "Admin operator: Aditya credentials currently unlock admin tooling.",
+          "Tech owner: use the engineering contact / internal support path for backend/config issues."
+        ],
+        "do_not_do": [
+          "Do not modify production credentials blindly."
+        ]
+      }
+    ]
+  }
+}
