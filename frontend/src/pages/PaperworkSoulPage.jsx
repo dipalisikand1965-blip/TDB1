@@ -57,7 +57,12 @@ const G = {
 const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
 
 // ─── HELPERS ───────────────────────────────────────────────
-function t(str, name) { return str ? str.replace(/{name}/g, name||"your dog") : ""; }
+function t(str, name) {
+  if (!str) return "";
+  return str
+    .replace(/\{name\}/g, name || "your dog")
+    .replace(/\{petName\}/g, name || "your dog");
+}
 function getAge(pet)   { return parseInt(pet?.doggy_soul_answers?.age_years||"0")||0; }
 function isSenior(pet) { return getAge(pet)>=7; }
 function isPuppy(pet)  { return getAge(pet)<=1; }
@@ -185,13 +190,13 @@ const DIM_ID_TO_CATEGORY = {
 
 // ─── PAPERWORK SERVICES ────────────────────────────────────
 const PAPER_SERVICES = [
-  { id:"registration",  icon:"🪪", name:"Pet Registration Guidance",  tagline:"Society + municipal registration", price:"₹500",   steps:2, dim:"identity",  accentColor:"#0D9488", desc:"Complete registration guidance for {petName} — society forms, municipal licensing, all paperwork handled.", miraKnows:"Registration protects {petName} legally and is required by most housing societies." },
-  { id:"microchipping", icon:"🔬", name:"Microchipping Assistance",    tagline:"Permanent ID for life",            price:"₹300",   steps:2, dim:"identity",  accentColor:"#1E293B", desc:"Concierge arranges microchipping and registry — permanent ID for {petName} that can never be lost.", miraKnows:"Microchipping is the single most important thing for {petName}'s safety." },
-  { id:"passport",      icon:"✈️", name:"Pet Passport Service",         tagline:"International travel ready",       price:"₹2,999", steps:3, dim:"travel",    accentColor:"#0D9488", desc:"Full pet passport service — vet coordination, health certificates, rabies titres, all documentation.", miraKnows:"International travel requires specific documents — requirements vary by country. Mira handles everything." },
-  { id:"travel_docs",   icon:"📋", name:"Travel Documentation",         tagline:"Airline + country requirements",   price:"₹1,500", steps:2, dim:"travel",    accentColor:"#334155", desc:"All travel documents for {petName} — health certificate, airline approval, import permits where needed.", miraKnows:"Airlines have strict pet document requirements. Missing one can mean {petName} can't board." },
-  { id:"insurance_rev", icon:"🛡️", name:"Pet Insurance Review",         tagline:"Free — find the right cover",      price:"Free",   steps:2, dim:"insurance", accentColor:"#0D9488", desc:"Mira compares pet insurance policies and finds the right cover for {petName}'s breed, age and health.", miraKnows:"Pet insurance is most affordable when started young. I'll find the right policy for {petName}." },
-  { id:"claim_filing",  icon:"📝", name:"Claim Filing Assistance",      tagline:"Free — we file it for you",        price:"Free",   steps:2, dim:"insurance", accentColor:"#334155", desc:"Concierge handles the entire claim process — paperwork, follow-up, and settlement tracking.", miraKnows:"Claim rejections often happen due to incorrect paperwork. I handle this for {petName}'s family." },
-  { id:"life_planning", icon:"💡", name:"Pet Life Planning",            tagline:"Free — plan {petName}'s life well", price:"Free",  steps:2, dim:"advisory",  accentColor:"#1E293B", desc:"A comprehensive life plan for {petName} — every stage from puppy to senior, all guidance in one session.", miraKnows:"Planning ahead for {petName} reduces stress and ensures nothing is missed." },
+  { id:"registration",  icon:"🪪", name:"Pet Registration Guidance",  tagline:"Society + municipal support",      price:"₹500",   steps:2, dim:"identity",  accentColor:"#0D9488", desc:"Complete registration guidance for {petName} — society forms, municipal licensing, all paperwork handled.", miraKnows:"Registration protects {petName} legally and is required by most housing societies." },
+  { id:"microchipping", icon:"🔬", name:"Microchipping Assistance",    tagline:"Permanent identity support",       price:"₹300",   steps:2, dim:"identity",  accentColor:"#1E293B", desc:"Concierge arranges microchipping and registry — permanent ID for {petName} that can never be lost.", miraKnows:"Microchipping is the single most important thing for {petName}'s safety." },
+  { id:"passport",      icon:"✈️", name:"Pet Passport Service",         tagline:"International travel prep",        price:"₹2,999", steps:3, dim:"travel",    accentColor:"#0D9488", desc:"Full pet passport service — vet coordination, health certificates, rabies titres, all documentation.", miraKnows:"International travel requires specific documents — requirements vary by country. Mira handles everything." },
+  { id:"travel_docs",   icon:"📋", name:"Travel Documentation",         tagline:"Airline + country guidance",       price:"₹1,500", steps:2, dim:"travel",    accentColor:"#334155", desc:"All travel documents for {petName} — health certificate, airline approval, import permits where needed.", miraKnows:"Airlines have strict pet document requirements. Missing one can mean {petName} can't board." },
+  { id:"insurance_rev", icon:"🛡️", name:"Pet Insurance Review",         tagline:"Find the right cover",              price:"Free",   steps:2, dim:"insurance", accentColor:"#0D9488", desc:"Mira compares pet insurance policies and finds the right cover for {petName}'s breed, age and health.", miraKnows:"Pet insurance is most affordable when started young. I'll find the right policy for {petName}." },
+  { id:"claim_filing",  icon:"📝", name:"Claim Filing Assistance",      tagline:"We file it for you",                price:"Free",   steps:2, dim:"insurance", accentColor:"#334155", desc:"Concierge handles the entire claim process — paperwork, follow-up, and settlement tracking.", miraKnows:"Claim rejections often happen due to incorrect paperwork. I handle this for {petName}'s family." },
+  { id:"life_planning", icon:"💡", name:"Pet Life Planning",            tagline:"Plan {petName}'s life well",       price:"Free",   steps:2, dim:"advisory",  accentColor:"#1E293B", desc:"A comprehensive life plan for {petName} — every stage from puppy to senior, all guidance in one session.", miraKnows:"Planning ahead for {petName} reduces stress and ensures nothing is missed." },
   { id:"puppy_prep",    icon:"🐶", name:"New Puppy Preparation",        tagline:"Everything for the first year",    price:"₹1,499", steps:3, dim:"advisory",  accentColor:"#0D9488", desc:"Complete first-year guide for {petName} — vet, food, training, grooming, socialisation, documents.", miraKnows:"The first year is the most important. I've built the complete roadmap for {petName}." },
 ];
 
@@ -291,7 +296,7 @@ function ServiceBookingModal({ service, pet, onClose }) {
             <>
               <div style={{background:G.pale,borderRadius:12,padding:"16px",marginBottom:14}}>
                 <div style={{fontSize:13,color:G.darkText,lineHeight:1.6}}>Our concierge will contact you within 2 hours to arrange {petName}'s {service.name}.</div>
-                <div style={{fontSize:12,color:G.mutedText,marginTop:8}}>Need: {choice} · Schedule: {schedule} · Price: {service.price}</div>
+                <div style={{fontSize:12,color:G.mutedText,marginTop:8}}>Need: {choice} · Schedule: {schedule} · Price on WhatsApp</div>
               </div>
               <textarea placeholder={`Any notes for Mira? (optional)`} value={notes} onChange={e=>setNotes(e.target.value)}
                 style={{width:"100%",border:`1.5px solid ${G.border}`,borderRadius:10,padding:"11px 14px",fontSize:13,color:G.darkText,outline:"none",resize:"none",minHeight:72,boxSizing:"border-box"}}/>
@@ -321,7 +326,7 @@ function MiraPicksSection({ pet, onSelectProd }) {
   const petName=pet?.name||"your dog";
   const miraImagines=[
     {emoji:"🪪",name:"ID Tag Set",desc:"Engraved + QR code",reason:"Because identity protection is first"},
-    {emoji:"🛡️",name:"Insurance Review",desc:"Free — find the right cover",reason:"Because every dog deserves cover"},
+    {emoji:"🛡️",name:"Insurance Review",desc:"Coverage comparison + guidance",reason:"Because every dog deserves cover"},
     {emoji:"📚",name:"Breed Guide Report",desc:"12-page breed-specific report",reason:"Because knowing is protecting"},
     {emoji:"✈️",name:"Travel Document Kit",desc:"Passport + health cert + checklist",reason:"Because adventure needs preparation"},
   ];
@@ -383,7 +388,7 @@ function MiraPicksSection({ pet, onSelectProd }) {
                     </div>
                   )}
                   {isService ? (
-                    <p style={{fontSize:11,color:G.mid,fontWeight:700,margin:'0 0 4px'}}>{pick.price ? `₹${pick.price}` : 'Price on request'}</p>
+                    <p style={{fontSize:11,color:G.teal,fontStyle:'italic',margin:'0 0 4px'}}>Price on WhatsApp</p>
                   ) : (
                     pick.mira_reason && !pick.mira_reason.toLowerCase().includes('celebrat') && <p style={{fontSize:10,color:"#888",lineHeight:1.4,margin:0,fontStyle:"italic"}}>{pick.mira_reason}</p>
                   )}
@@ -495,7 +500,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook, o
                     <div style={{fontSize:13,fontWeight:700,color:G.darkText,marginBottom:4,lineHeight:1.3}}>{svc.name}</div>
                     <div style={{fontSize:11,color:"#888",lineHeight:1.4,marginBottom:8,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{t(svc.desc,petName)}</div>
                     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                      <span style={{fontSize:13,fontWeight:700,color:G.deep}}>{svc.price}</span>
+                      <span style={{fontSize:11,color:'#0D9488',fontStyle:'italic'}}>Price on WhatsApp</span>
                       <button data-testid={`paperwork-service-card-${svc.id}`} style={{background:G.teal,color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Book for {petName} →</button>
                     </div>
                   </div>
@@ -945,7 +950,7 @@ const PaperworkSoulPage = () => {
                     <div style={{fontSize:13,fontWeight:700,color:G.darkText,marginBottom:4}}>{svc.name}</div>
                     <div style={{fontSize:11,color:"#888",lineHeight:1.4,marginBottom:8,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{t(svc.desc,petName)}</div>
                     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                      <span style={{fontSize:13,fontWeight:700,color:G.deep}}>{svc.price}</span>
+                      <span style={{fontSize:11,color:'#0D9488',fontStyle:'italic'}}>Price on WhatsApp</span>
                       <button data-testid={`paperwork-advisory-card-${svc.id}`} style={{background:G.teal,color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Book for {petName} →</button>
                     </div>
                   </div>
