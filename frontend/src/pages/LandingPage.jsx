@@ -172,7 +172,21 @@ export default function LandingPage() {
     { icon:"🐾", label:"Adopt",      colour:"#7B3FA0" },
     { icon:"🌷", label:"Farewell",   colour:"#334155" },
     { icon:"🤝", label:"Services",   colour:"#1D9E75" },
-    { icon:"💡", label:"Advisory",   colour:"#0F6E56" },
+  ];
+
+  const mobilePillars = [
+    { label: 'Celebrate', path: '/celebrate' },
+    { label: 'Dine', path: '/dine' },
+    { label: 'Care', path: '/care' },
+    { label: 'Go', path: '/go' },
+    { label: 'Play', path: '/play' },
+    { label: 'Learn', path: '/learn' },
+    { label: 'Paperwork', path: '/paperwork' },
+    { label: 'Adopt', path: '/adopt' },
+    { label: 'Farewell', path: '/farewell' },
+    { label: 'Emergency', path: '/emergency' },
+    { label: 'Shop', path: '/shop' },
+    { label: 'Services', path: '/services' },
   ];
 
   return (
@@ -330,6 +344,30 @@ export default function LandingPage() {
             {item.label}
           </button>
         ))}
+        <div style={{ marginTop: 18, marginBottom: 8, color: C.amber, fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif' }}>
+          Explore the 12 pillars
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+          {mobilePillars.map((item) => (
+            <button
+              key={item.label}
+              onClick={() => { setMobileMenuOpen(false); navigate(item.path); }}
+              style={{
+                border:`1px solid ${C.border}`,
+                borderRadius:16,
+                padding:'12px 10px',
+                background:'rgba(255,255,255,0.04)',
+                color:C.ivory,
+                fontSize:14,
+                fontWeight:500,
+                cursor:'pointer',
+                fontFamily:'DM Sans, sans-serif'
+              }}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
         <button onClick={() => { setMobileMenuOpen(false); handleJoin(); }} style={{
           marginTop:16, padding:"14px 28px", borderRadius:999,
           border:`1px solid ${C.amber}`, background:C.amber,
@@ -460,7 +498,7 @@ export default function LandingPage() {
           className: "tdc-stats-grid",
         }}>
           <Counter target={45000} label="Pet Families" suffix="+"/>
-          <Counter target={13} label="Life Pillars"/>
+          <Counter target={12} label="Life Pillars"/>
           <Counter target={5358} label="Curated Products"/>
           <Counter target={1000} label="Concierge Team" suffix="+"/>
         </div>
@@ -1029,19 +1067,32 @@ export default function LandingPage() {
           The Doggy Company<span style={{ color: C.amber }}>®</span>
         </div>
         <div style={{
-          display: "flex", gap: 24, flexWrap: "wrap",
+          display: "flex", gap: 24, flexWrap: "wrap", alignItems:'center'
         }}>
-          {["About", "Membership", "FAQs", "Streaties", "Contact"].map(l => (
-            <button key={l} onClick={() => navigate(`/${l.toLowerCase()}`)}
+          {[
+            {label:'About', path:'/about'},
+            {label:'Membership', path:'/membership'},
+            {label:'FAQs', path:'/faqs'},
+            {label:'Streaties', path:'/streaties'},
+            {label:'Privacy', path:'/privacy-policy'},
+            {label:'Terms', path:'/terms'},
+            {label:'Refunds', path:'/refund-policy'},
+            {label:'Shipping', path:'/shipping-policy'},
+          ].map(l => (
+            <button key={l.label} onClick={() => navigate(l.path)}
               style={{
                 background: "none", border: "none",
                 color: C.muted, fontSize: 13, cursor: "pointer",
                 fontFamily: "DM Sans, sans-serif",
               }}
             >
-              {l}
+              {l.label}
             </button>
           ))}
+          <a href="https://wa.me/919739908844?text=Hi! I'd like to know more about The Doggy Company 🐕" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>WhatsApp</a>
+          <a href="https://www.instagram.com/the_doggy_bakery/" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>Instagram</a>
+          <a href="https://www.facebook.com/thedoggybakery" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>Facebook</a>
+          <a href="https://www.youtube.com/@TheDoggyBakery" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>YouTube</a>
         </div>
         <div style={{ fontSize: 12, color: "rgba(245,240,232,0.2)", fontFamily: "DM Sans, sans-serif" }}>
           © 2026 The Doggy Company · Mira is the Brain · Concierge® is the Hands
