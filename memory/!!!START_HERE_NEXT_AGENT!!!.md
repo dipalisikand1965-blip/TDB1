@@ -82,7 +82,7 @@ All active development is on `CelebrateContentModal.jsx` and related components.
 Test User: dipali@clubconcierge.in / test123
 Admin: aditya / lola4304
 Production: https://thedoggycompany.com
-Preview: https://pet-soul-audit.preview.emergentagent.com
+Preview: https://learn-pillar-audit.preview.emergentagent.com
 Database: pet-os-live-test_database
 ```
 
@@ -104,7 +104,7 @@ New mockups AUTO-UPLOAD to Cloudinary. No manual conversion needed!
 # API CHEAT SHEET
 
 ```bash
-API_URL="https://pet-soul-audit.preview.emergentagent.com"
+API_URL="https://learn-pillar-audit.preview.emergentagent.com"
 
 # Check generation status
 curl -s "$API_URL/api/mockups/status" | python3 -m json.tool
