@@ -1367,23 +1367,28 @@ async def auto_seed_all_services():
 async def lifespan(app: FastAPI):
     """Startup and shutdown events"""
     global sync_task
+
+    async def safe_startup_step(label, coro):
+        try:
+            logger.info(label)
+            await coro
+            logger.info(f"✅ {label} complete")
+        except Exception as e:
+            logger.error(f"❌ {label} failed (continuing startup): {e}")
     
     # FORCE INITIALIZE DATABASE ON EVERY STARTUP
     # This ensures data exists after every deployment
     logger.info("=== AUTOMATIC DATABASE INITIALIZATION ===")
-    await force_initialize_database()
+    await safe_startup_step("force_initialize_database", force_initialize_database())
     
     # Load admin credentials from database
-    logger.info("Loading admin credentials from database...")
-    await load_admin_credentials_from_db()
+    await safe_startup_step("load_admin_credentials_from_db", load_admin_credentials_from_db())
     
     # Ensure default user exists for login
-    logger.info("Ensuring default user exists...")
-    await ensure_default_user_exists()
+    await safe_startup_step("ensure_default_user_exists", ensure_default_user_exists())
     
     # Seed initial products if database is empty
-    logger.info("Checking products...")
-    await seed_initial_products()
+    await safe_startup_step("seed_initial_products", seed_initial_products())
     
     # ========== MASTER SYNC ON EVERY DEPLOYMENT ==========
     # This runs automatically so Dipali never has to click Master Sync again
