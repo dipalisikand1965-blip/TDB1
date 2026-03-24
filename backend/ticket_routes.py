@@ -5,7 +5,7 @@ Handles all concierge requests across multiple channels
 
 from fastapi import APIRouter, HTTPException, Query, Form, UploadFile, File, Depends, Header, Request, Body
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
 from bson import ObjectId
@@ -181,10 +181,19 @@ class AttachmentInfo(BaseModel):
     size: Optional[int] = None
 
 class TicketReply(BaseModel):
-    message: str
+    message: Optional[str] = None
+    content: Optional[str] = None
     is_internal: bool = False
     channel: Optional[str] = None
     attachments: Optional[List[AttachmentInfo]] = []
+
+    @model_validator(mode="after")
+    def ensure_message(self):
+        if not self.message and self.content:
+            self.message = self.content
+        if not self.message:
+            raise ValueError("message or content is required")
+        return self
 
 class MemberNote(BaseModel):
     note: str

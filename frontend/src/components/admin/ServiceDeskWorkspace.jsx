@@ -173,7 +173,7 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: replyText,
+          content: replyText,
           is_internal: isInternalNote
         })
       });
