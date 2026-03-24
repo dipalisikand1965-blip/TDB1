@@ -18,7 +18,7 @@ import os
 import io
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://concierge-wiring.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pet-soul-audit.preview.emergentagent.com')
 
 # Test data
 TEST_ORDER_ID = None

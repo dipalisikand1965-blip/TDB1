@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://concierge-wiring.preview.emergentagent.com
+**Preview URL:** https://pet-soul-audit.preview.emergentagent.com
 
 ---
 
