@@ -199,7 +199,13 @@ async def _get_production_db():
     prod_url = os.environ.get('PRODUCTION_MONGO_URL')
     if not prod_url:
         raise HTTPException(status_code=400, detail='PRODUCTION_MONGO_URL not configured')
-    client = AsyncIOMotorClient(prod_url)
+    client = AsyncIOMotorClient(
+        prod_url,
+        serverSelectionTimeoutMS=30000,
+        connectTimeoutMS=30000,
+        socketTimeoutMS=60000,
+        retryWrites=True,
+    )
     prod_db = client[os.environ.get('DB_NAME')]
     return client, prod_db
 
