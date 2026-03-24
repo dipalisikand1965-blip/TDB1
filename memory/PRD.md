@@ -27,10 +27,10 @@ India's first **Pet Life OS** — a comprehensive lifestyle platform for pet par
 | 4 | Go | LOCKED | Mar 2026 | Previous | DO NOT TOUCH — teal border, CSS ring fix |
 | 5 | Play | LOCKED | Mar 2026 | Previous | DO NOT TOUCH — GuidedPlayPaths, PathFlowModal |
 | 6 | **Learn** | **LOCKED** | **Mar 24, 2026** | **Current** | Content modal CTAs, breed guide, Pet Wrapped card |
-| 7 | Adopt | PENDING | — | — | Next in audit queue |
-| 8 | Farewell | PENDING | — | — | |
-| 9 | Emergency | PENDING | — | — | |
-| 10 | **Paperwork** | **IN PROGRESS** | **Mar 24, 2026** | **Current** | **NearMe wired, Document Vault added, audit continuing** |
+| 7 | **Adopt** | **LOCKED** | **Mar 24, 2026** | **Current** | **Mira picks split, concierge verified, mobile checked** |
+| 8 | **Farewell** | **LOCKED** | **Mar 24, 2026** | **Current** | **Gentle tone enforced, no gamification, service flows verified** |
+| 9 | **Emergency** | **LOCKED** | **Mar 24, 2026** | **Current** | **Service flows split, emergency help CTAs verified, mobile checked** |
+| 10 | **Paperwork** | **LOCKED** | **Mar 24, 2026** | **Current** | **NearMe wired, Document Vault added, prices hidden, verified** |
 | 11 | Shop | PENDING | — | — | Breed-products fix applied |
 | 12 | Services | PENDING | — | — | |
 | 13 | Advisory | PENDING | — | — | |
@@ -120,7 +120,7 @@ Reference implementation patterns:
 ### 6.6 Maltese Trailing Space Fix
 - Lola's breed: `"Maltese "` → `"Maltese"` (DB trimmed)
 
-### 6.7 Paperwork Audit — Partial Progress
+### 6.7 Paperwork Audit — Locked
 - Added `DocumentVault.jsx` for Paperwork + Pet Home using soul/vault data: progress bar, 6 document cards, urgent gaps, concierge sort CTA
 - Wired Paperwork Find Help tab to render `PaperworkNearMe` instead of placeholder content
 - Fixed ProductCard breed tag formatting so `all_breeds` displays as `all breeds`
@@ -134,14 +134,27 @@ Reference implementation patterns:
 - Verified service-pick modal behaviour with screenshots on Celebrate, Adopt, Farewell, and Emergency
 - Post-fix grep now only returns comments/docs for non-`entity_type` `claude-picks` references
 
-### 6.9 Adopt Audit — In Progress
+### 6.9 Adopt Audit — Locked
 - Adjusted Adopt tone to be gentle and concierge-led in Mira picks and service guidance
 - Added concierge tracking before opening Adopt support flows (`Start with Mira`, service cards, service picks)
 - Guided Adopt Paths now create real service desk tickets via canonical guided path helper and use null-safe pet-name fallbacks
 - Verified Adopt tickets with breed + allergy context: `TDB-2026-0797`, `TDB-2026-0798`, `TDB-2026-0799`
 - Captured mobile 375px screenshots for Adopt service and rescue tabs
 
-## 7. Canonical Flow Audit Results (All 6 Locked Pillars)
+### 6.10 Farewell Audit — Locked
+- Removed gamification language from Farewell support flows: no points, no visible scores, no progression copy framed as unlocking
+- Replaced shared score-heavy profile strip with a gentle custom guidance bar and softened Mira picks subtitle to: “I'm here with you… 🌷”
+- Verified Farewell concierge/service flows with breed + allergy context: `TDB-2026-0800`, `TDB-2026-0801`, `TDB-2026-0802`
+- Added grief counsellor support to Farewell NearMe and changed support CTA language to compassionate actions (`Arrange for {petName} →`, `Reach out gently →`)
+- Captured desktop and mobile screenshots showing compassionate modal and no score-led UI in the main hero/profile area
+
+### 6.11 Emergency Audit — Locked
+- Hid visible emergency service pricing on pillar service surfaces and changed service CTAs to `Get help now →`
+- Added pre-open concierge tracking for emergency service cards so every emergency action creates a service desk trail immediately
+- Verified Emergency concierge/service flows with breed + allergy context: `TDB-2026-0803`, `TDB-2026-0804`, `TDB-2026-0805`
+- Captured desktop and mobile screenshots for emergency help modal and service tab at 375px
+
+## 7. Canonical Flow Audit Results (Locked Pillars)
 
 | Flow | Status | Detail |
 |------|--------|--------|
@@ -213,13 +226,14 @@ learn        66       8/20        18/20         learn_bundle_add
 - **Admin Portal**: /admin
 
 ## 14. Critical Rules for Next Agent
-1. **DO NOT TOUCH** Celebrate, Dine, Care, Go, Play, Learn — they are LOCKED
+1. **DO NOT TOUCH** Celebrate, Dine, Care, Go, Play, Learn, Paperwork, Adopt, Farewell, Emergency — they are LOCKED
 2. Follow `/app/memory/PILLAR_AUDIT_METHODOLOGY.md` for all audits
 3. Use `testing_agent_v3_fork` after completing each pillar audit
 4. Every interactive element MUST fire `POST /api/service_desk/attach_or_create_ticket`
 5. Backend auto-resolves `pet_breed` via `normalise_breed()` — never send raw breed from frontend
 6. **Mira picks must never mix service and product rendering.** Use separate `entity_type=product` and `entity_type=service` fetches wherever possible; otherwise branch on `entity_type` before rendering.
 7. **Service picks must open concierge/service modals, not product modals.**
+8. **Farewell pillar rule:** no gamification, no “unlock”, no urgency marketing language, and no score-led support UI.
 6. `PillarSoulProfile` uses standardised `max-w-5xl` container + CSS border (not SVG ring)
 7. Content Modals use client-side breed filtering — only show pet's own breed tab
 8. If backend port 8001 stalls, run `pkill -f uvicorn && sudo supervisorctl restart backend`

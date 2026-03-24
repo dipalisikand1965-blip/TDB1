@@ -38,11 +38,11 @@ const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
 function t(str, name) { return str ? str.replace(/{name}/g, name||"your dog") : ""; }
 
 const FAREWELL_QUESTIONS = [
-  { id:"farewell_stage", chapter:"🕊️ Stage",  pts:15, type:"single", question:"Where are you on {name}'s farewell journey?", options:["Planning ahead — not yet needed","Palliative care — quality of life focus","Recent loss — days to weeks ago","Loss was some time ago — processing","Supporting a friend through loss"] },
-  { id:"memorial_wishes",chapter:"🌷 Legacy", pts:20, type:"single", question:"What matters most to you for {name}'s legacy?", options:["A physical memorial — urn, garden, stone","A memory collection — photos, prints, journal","A meaningful ceremony or farewell","Carrying them forward — tree, art, tribute","All of these — their memory everywhere"] },
-  { id:"grief_support",  chapter:"💙 Support", pts:15, type:"single", question:"What kind of support helps you most right now?",options:["Practical guidance — what to do next","Emotional — someone to understand","Products that honour their memory","Space — I need time","Guidance for children or family"] },
-  { id:"cremation_pref", chapter:"🌿 Wishes",  pts:10, type:"single", question:"Do you have preferences for {name}'s remains?",  options:["Cremation — keep urn at home","Cremation — scatter in special place","Natural burial — biodegradable options","Living memorial — tree or garden","Haven't decided yet"] },
-  { id:"memory_keeper",  chapter:"📖 Memories",pts:15, type:"single", question:"How are you preserving {name}'s memories?",     options:["Photo album or book created","Memory box with keepsakes","Journal or written tributes","Digital — online memorial or video","Haven't started yet"] },
+  { id:"farewell_stage", chapter:"🕊️ Stage", type:"single", question:"Where are you on {name}'s farewell journey?", options:["Planning ahead — not yet needed","Palliative care — quality of life focus","Recent loss — days to weeks ago","Loss was some time ago — processing","Supporting a friend through loss"] },
+  { id:"memorial_wishes",chapter:"🌷 Legacy", type:"single", question:"What matters most to you for {name}'s legacy?", options:["A physical memorial — urn, garden, stone","A memory collection — photos, prints, journal","A meaningful ceremony or farewell","Carrying them forward — tree, art, tribute","All of these — their memory everywhere"] },
+  { id:"grief_support",  chapter:"💙 Support", type:"single", question:"What kind of support helps you most right now?",options:["Practical guidance — what to do next","Emotional — someone to understand","Products that honour their memory","Space — I need time","Guidance for children or family"] },
+  { id:"cremation_pref", chapter:"🌿 Wishes", type:"single", question:"Do you have preferences for {name}'s remains?",  options:["Cremation — keep urn at home","Cremation — scatter in special place","Natural burial — biodegradable options","Living memorial — tree or garden","Haven't decided yet"] },
+  { id:"memory_keeper",  chapter:"📖 Memories", type:"single", question:"How are you preserving {name}'s memories?",     options:["Photo album or book created","Memory box with keepsakes","Journal or written tributes","Digital — online memorial or video","Haven't started yet"] },
 ];
 
 const FAREWELL_SERVICES = [
@@ -70,15 +70,15 @@ function FarewellProfile({ pet, token }) {
   const [answers,    setAnswers]    = useState({});
   const [saved,      setSaved]      = useState({});
   const [submitting, setSubmitting] = useState({});
-  const [liveScore,  setLiveScore]  = useState(70);
   const remaining = FAREWELL_QUESTIONS.filter(q=>!saved[q.id]);
+  const answeredCount = FAREWELL_QUESTIONS.length - remaining.length;
   const toggle = (qId,val) => setAnswers(p=>({...p,[qId]:[val]}));
   const save = async (q) => {
     const ans=answers[q.id]; if(!ans?.length)return;
     setSubmitting(p=>({...p,[q.id]:true}));
     try {
       const res=await fetch(`${API_URL}/api/pet-soul/profile/${pet?.id}/answer`,{method:"POST",headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({question_id:q.id,answer:ans.map(a=>a.replace(/{name}/g,petName))})});
-      if(res.ok){const d=await res.json();if(d.scores?.overall)setLiveScore(d.scores.overall);}
+      if(res.ok){await res.json().catch(()=>null);}
       setSaved(p=>({...p,[q.id]:true}));
     } catch { setSaved(p=>({...p,[q.id]:true})); }
     finally { setSubmitting(p=>({...p,[q.id]:false})); }
@@ -103,13 +103,13 @@ function FarewellProfile({ pet, token }) {
                   <p style={{fontWeight:800,textTransform:"uppercase",letterSpacing:"0.12em",color:`${G.light}E6`,fontSize:10,marginBottom:5}}>🕊️ HONOUR {petName.toUpperCase()}'S MEMORY</p>
                   <p style={{color:"rgba(255,255,255,0.50)",fontSize:12}}>Tell Mira what matters most — she'll guide you with love and care</p>
                 </div>
-                <div style={{display:"flex",alignItems:"flex-end",gap:2}}>
-                  <span style={{fontSize:72,fontWeight:900,lineHeight:1,color:G.light}}>{liveScore}</span>
-                  <span style={{color:"rgba(255,255,255,0.40)",fontSize:18,marginBottom:8}}>%</span>
+                <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
+                  <span style={{fontSize:13,fontWeight:700,color:G.light}}>Mira is listening</span>
+                  <span style={{fontSize:11,color:"rgba(255,255,255,0.55)"}}>{answeredCount} reflections saved</span>
                 </div>
               </div>
               <div style={{height:5,borderRadius:5,background:"rgba(255,255,255,0.10)",overflow:"hidden"}}>
-                <div style={{height:"100%",width:`${liveScore}%`,borderRadius:5,background:`linear-gradient(90deg,${G.indigo},${G.light})`,transition:"width 0.9s ease-out"}}/>
+                <div style={{height:"100%",width:`${Math.max(20, (answeredCount / FAREWELL_QUESTIONS.length) * 100)}%`,borderRadius:5,background:`linear-gradient(90deg,${G.indigo},${G.light})`,transition:"width 0.9s ease-out"}}/>
               </div>
               <button onClick={()=>setDrawerOpen(false)} style={{position:"absolute",top:16,right:20,background:"rgba(255,255,255,0.10)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:20,width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,cursor:"pointer",color:"rgba(255,255,255,0.70)"}}>✕</button>
             </div>
@@ -124,10 +124,10 @@ function FarewellProfile({ pet, token }) {
                       const qAns=answers[q.id]||[],isSaved=saved[q.id],isSend=submitting[q.id],hasAns=qAns.length>0,label=q.question.replace(/{name}/g,petName);
                       if(isSaved)return<div key={q.id} style={{borderRadius:14,padding:16,background:G.pale,border:`2px solid ${G.light}60`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:6,minHeight:100}}><Check size={18} style={{color:G.indigo}}/><p style={{fontWeight:700,color:G.indigo,fontSize:13,textAlign:"center"}}>Mira will remember this ♥</p></div>;
                       return<div key={q.id} style={{borderRadius:14,padding:"14px 16px 12px",background:"#fff",border:`1.5px solid ${G.borderLight}`}}>
-                        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}><span style={{fontSize:10,fontWeight:600,color:G.mutedText}}>{q.chapter}</span><span style={{borderRadius:20,padding:"2px 8px",fontSize:9,fontWeight:700,background:G.pale,color:G.indigo}}>+{q.pts} pts</span></div>
+                        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}><span style={{fontSize:10,fontWeight:600,color:G.mutedText}}>{q.chapter}</span><span style={{borderRadius:20,padding:"2px 8px",fontSize:9,fontWeight:700,background:G.pale,color:G.indigo}}>Held with care</span></div>
                         <p style={{fontWeight:700,fontSize:13,color:G.darkText,marginBottom:10,lineHeight:1.4}}>{label}</p>
                         <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:10}}>{q.options.map(opt=>{const sel=qAns[0]===opt;return<button key={opt} onClick={e=>{e.stopPropagation();e.preventDefault();toggle(q.id,opt);}} style={{borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:sel?700:400,cursor:"pointer",background:sel?G.pale:"#F5F5F5",border:sel?`1.5px solid ${G.indigo}`:"1px solid #E0E0E0",color:sel?G.indigo:"#555",transition:"all 0.12s"}}>{opt.replace(/{name}/g,petName)}</button>;})}</div>
-                        <button onClick={e=>{e.stopPropagation();e.preventDefault();save(q);}} disabled={isSend||!hasAns} style={{width:"100%",borderRadius:10,padding:"9px",fontSize:12,fontWeight:700,color:"#fff",border:"none",cursor:!hasAns?"not-allowed":"pointer",background:!hasAns?`${G.indigo}44`:`linear-gradient(135deg,${G.indigo},${G.mid})`,opacity:isSend?0.7:1}}>{isSend?"Saving…":`Save +${q.pts} pts`}</button>
+                        <button onClick={e=>{e.stopPropagation();e.preventDefault();save(q);}} disabled={isSend||!hasAns} style={{width:"100%",borderRadius:10,padding:"9px",fontSize:12,fontWeight:700,color:"#fff",border:"none",cursor:!hasAns?"not-allowed":"pointer",background:!hasAns?`${G.indigo}44`:`linear-gradient(135deg,${G.indigo},${G.mid})`,opacity:isSend?0.7:1}}>{isSend?"Saving…":"Save gently"}</button>
                       </div>;
                     })}
                   </div>}
@@ -145,8 +145,7 @@ function MiraPicksSection({ pet, onOpenService }) {
   const [selPick, setSelPick]           = useState(null);
   const { token } = useAuth();
   const petName = pet?.name||"your dog"; const breed = (pet?.breed||"").split("(")[0].trim();
-  const { note, orderCount, topInterest } = useMiraIntelligence(pet?.id, token);
-  const subtitle = getMiraIntelligenceSubtitle(petName, note, orderCount, topInterest);
+  const subtitle = `I'm here with you. Whatever you need for ${petName}, I'll help hold every detail gently. 🌷`;
   const imagines = [
     {id:"f-1",emoji:"🐾",name:`${petName}'s Paw Print Kit`,description:`Air-dry clay + ink pad — a permanent impression of ${breed||petName}'s paw to keep always.`},
     {id:"f-2",emoji:"📖",name:breed?`${breed} Rainbow Bridge Journal`:`${petName}'s Memory Journal`,description:`A guided grief journal — ${petName}'s story in your words, kept forever.`},
@@ -174,12 +173,12 @@ function MiraPicksSection({ pet, onOpenService }) {
     <section style={{marginBottom:28}}>
       <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:4}}>
         <h3 style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:G.darkText,margin:0,fontFamily:"Georgia,serif"}}>Mira's Picks for <span style={{color:G.indigo}}>{petName}</span></h3>
-        <span style={{fontSize:11,background:`linear-gradient(135deg,${G.indigo},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>{picks.length>0?"AI Scored":"With Love"}</span>
+        <span style={{fontSize:11,background:`linear-gradient(135deg,${G.indigo},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>With Love</span>
       </div>
       <p style={{fontSize:13,color:"#888",marginBottom:16,lineHeight:1.5}}>{subtitle}</p>
       {!picksLoading&&picks.length===0&&<div style={{display:"flex",gap:12,overflowX:"auto",paddingBottom:8,scrollbarWidth:"none"}}>{imagines.map(item=><MiraImaginesCard key={item.id} item={item} pet={pet} token={token} pillar="farewell"/>)}</div>}
       {picksLoading&&<div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 0",color:G.mutedText}}><Loader2 size={14} style={{animation:"spin 1s linear infinite",color:G.indigo}}/><span style={{fontSize:12}}>Mira is preparing memorial picks for {petName}…</span></div>}
-      {!picksLoading&&picks.length>0&&(<div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}}>{picks.map((pick,i)=>{const isService=pick.entity_type==='service'||pick.type==='service';const score=pick.mira_score||0;const col=score>=80?"#16A34A":score>=70?G.indigo:"#6B7280";const img=[pick.image_url,pick.image].find(u=>u&&u.startsWith("http"))||null;return<div key={i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer"}} onClick={()=>isService?onOpenService?.(pick.name):setSelPick(pick)} onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e=>e.currentTarget.style.transform=""}><div style={{width:"100%",height:130,background:G.cream,overflow:"hidden",position:"relative"}}>{img?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>:<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${G.deep},${G.indigo})`,color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,18)}</div>}</div><div style={{padding:"10px 11px 12px"}}><div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||"—"}</div>{!isService&&<div style={{display:"flex",alignItems:"center",gap:5,marginBottom:8}}><div style={{flex:1,height:4,background:G.pale,borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:col,borderRadius:4}}/></div><span style={{fontSize:10,fontWeight:800,color:col,minWidth:26}}>{score}</span></div>}{isService&&<p style={{fontSize:11,color:G.indigo,lineHeight:1.45,margin:'0 0 8px'}}>Gentle concierge support, whenever you are ready.</p>}<button onClick={(e)=>{e.stopPropagation();isService?onOpenService?.(pick.name):setSelPick(pick);}} style={{width:'100%',background:`linear-gradient(135deg,${G.indigo},${G.mid})`,color:'#fff',border:'none',borderRadius:10,padding:'8px 10px',fontSize:12,fontWeight:700,cursor:'pointer'}}>{isService?'Reach out gently →':'View details →'}</button></div></div>;})})</div>)}
+      {!picksLoading&&picks.length>0&&(<div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}}>{picks.map((pick,i)=>{const isService=pick.entity_type==='service'||pick.type==='service';const img=[pick.image_url,pick.image].find(u=>u&&u.startsWith("http"))||null;return<div key={i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer"}} onClick={()=>isService?onOpenService?.(pick.name):setSelPick(pick)} onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e=>e.currentTarget.style.transform=""}><div style={{width:"100%",height:130,background:G.cream,overflow:"hidden",position:"relative"}}>{img?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>:<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${G.deep},${G.indigo})`,color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,18)}</div>}</div><div style={{padding:"10px 11px 12px"}}><div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||"—"}</div>{isService&&<p style={{fontSize:11,color:G.indigo,lineHeight:1.45,margin:'0 0 8px'}}>Gentle concierge support, whenever you are ready.</p>}<button onClick={(e)=>{e.stopPropagation();isService?onOpenService?.(pick.name):setSelPick(pick);}} style={{width:'100%',background:`linear-gradient(135deg,${G.indigo},${G.mid})`,color:'#fff',border:'none',borderRadius:10,padding:'8px 10px',fontSize:12,fontWeight:700,cursor:'pointer'}}>{isService?'Reach out gently →':'View details →'}</button></div></div>;})})</div>)}
       {selPick&&<ProductDetailModal product={selPick} pillar="farewell" selectedPet={pet} onClose={()=>setSelPick(null)}/>}
     </section>
   );
@@ -334,7 +333,13 @@ const FarewellSoulPage = () => {
       <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8" style={{background:G.pageBg,fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",overflowX:"hidden",boxSizing:"border-box"}}>
         {/* Soul Profile bar */}
         <div style={{ paddingTop: 16 }}>
-          <PillarSoulProfile pet={petData} token={token} pillar="farewell" />
+          <div data-testid="farewell-gentle-guidance-bar" style={{background:'#fff',border:`2px solid ${G.pale}`,borderRadius:16,padding:'16px 18px',marginBottom:8,display:'flex',alignItems:'center',justifyContent:'space-between',gap:14,boxShadow:'0 2px 12px rgba(99,102,241,0.08)'}}>
+            <div>
+              <div style={{fontSize:15,fontWeight:700,color:G.darkText,marginBottom:4}}>A gentle place for {petName}</div>
+              <div style={{fontSize:12,color:G.mutedText,lineHeight:1.6}}>I'm here with you. Whatever you need for {petName}, I'll take care of every detail. You just be with them. 🌷</div>
+            </div>
+            <div style={{fontSize:11,color:G.indigo,fontWeight:700,whiteSpace:'nowrap',flexShrink:0}}>I'm here to help →</div>
+          </div>
         </div>
         {/* Tab bar */}
         <div style={{display:"flex",background:"#fff",borderBottom:`1.5px solid ${G.borderLight}`,marginBottom:24}}>
@@ -357,7 +362,7 @@ const FarewellSoulPage = () => {
               <div style={{fontSize:13,color:"rgba(245,240,232,0.55)",marginBottom:16}}>Memorial Portrait · Paw Print Frame · Keepsake Box · Custom Urn Tag · and more</div>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                 <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"linear-gradient(135deg,#C44DFF,#9333EA)",borderRadius:30,padding:"10px 22px",fontSize:13,fontWeight:700,color:"#fff",boxShadow:"0 4px 16px rgba(196,77,255,0.4)"}}>{`\u2726 Honour ${petName}'s memory`}</div>
-                <div style={{fontSize:12,color:"rgba(245,240,232,0.35)",fontStyle:"italic",maxWidth:160,textAlign:"right",lineHeight:1.4}}>Upload a photo · Concierge® creates it · Price on WhatsApp</div>
+                <div style={{fontSize:12,color:"rgba(245,240,232,0.35)",fontStyle:"italic",maxWidth:160,textAlign:"right",lineHeight:1.4}}>Upload a photo · Concierge® creates it</div>
               </div>
             </div>
             <GuidedFarewellPaths pet={petData}/>
@@ -436,7 +441,7 @@ const FarewellSoulPage = () => {
                 const img = dbSvc.watercolor_image||dbSvc.image_url||null;
                 return(<div key={svc.id}
                   onClick={()=>{
-                    tdc.track("farewell", { service: svc.name, text: svc.name, pillar: "farewell", pet: petData, channel: "farewell_pillar", urgency: "high", amount: svc.price });
+                    tdc.request({ text: svc.name, pillar: "farewell", pet: petData, channel: "farewell_services_card" });
                     setConciergeSvc(svc.name); setConciergeOpen(true);
                   }}
                   style={{background:"#fff",borderRadius:16,border:`2px solid rgba(99,102,241,0.12)`,overflow:"hidden",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${svc.accentColor}20`;}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
@@ -450,13 +455,12 @@ const FarewellSoulPage = () => {
                   <div style={{fontSize:14,fontWeight:800,color:G.darkText,marginBottom:3}}>{svc.name}</div>
                   <div style={{fontSize:11,color:"#888",lineHeight:1.45,marginBottom:8,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{t(svc.desc,petName)}</div>
                   <div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:8,padding:"6px 10px",marginBottom:8}}><span style={{fontSize:10,color:G.indigo}}>✦ </span><span style={{fontSize:10,color:G.mid,lineHeight:1.4}}>{t(svc.miraKnows,petName)}</span></div>
-                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                    <span style={{fontSize:14,fontWeight:800,color:G.deep}}>{svc.price}</span>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"flex-end"}}>
                     <button onClick={()=>{
-                      tdc.track("farewell", { service: svc.name, text: svc.name, pillar: "farewell", pet: petData, channel: "farewell_pillar", amount: svc.price });
+                      tdc.request({ text: svc.name, pillar: "farewell", pet: petData, channel: "farewell_services_card" });
                       setConciergeSvc(svc.name);setConciergeOpen(true);
                     }}
-                    style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Reach out →</button>
+                    style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:'pointer'}}>Arrange for {petName} →</button>
                   </div>
                 </div>
               </div>);})}
