@@ -31,6 +31,7 @@ const SEARCH_TYPES = [
   { id:"funeral",     label:"Funeral Parlour",     query:"pet funeral parlour OR pet funeral home in",icon:"🕊️" },
   { id:"memorial",    label:"Memorial Garden",     query:"pet memorial garden OR pet cemetery in",  icon:"🌸" },
   { id:"palliative",  label:"Palliative Care Vet", query:"palliative care vet OR end of life vet in",icon:"💙" },
+  { id:"grief",       label:"Grief Counsellor",    query:"pet grief counsellor OR pet bereavement support in", icon:"🤍" },
   { id:"hearse",      label:"Pet Hearse",          query:"pet hearse service OR pet transport cremation in", icon:"🚐" },
 ];
 
@@ -100,8 +101,7 @@ export default function FarewellNearMe({ pet, onBook }) {
   };
 
   const handleBook = (place) => {
-    // Farewell — always high urgency
-    tdc.track("farewell_nearme", { text: place.name, pillar: "farewell", pet, channel: "farewell_nearme_card", urgency: "high" });
+    tdc.request({ text: place.name, pillar: "farewell", pet, channel: "farewell_nearme_card" });
     bookViaConcierge({
       service: place.name || "Farewell care provider",
       pillar: "farewell",
