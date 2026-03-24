@@ -395,7 +395,27 @@ async def auto_sync_products():
             new_products_found = []
             
             for sp in shopify_products:
+                existing = await db.products_master.find_one({"shopify_id": sp["id"]})
+
+                if existing and existing.get("locally_edited"):
+                    transformed = transform_shopify_product(sp)
+                    await db.products_master.update_one(
+                        {"shopify_id": sp["id"]},
+                        {"$set": {"available": transformed.get("available", True), "shopify_updated_at": transformed.get("updated_at")}}
+                    )
+                    synced += 1
+                    continue
+
                 transformed = transform_shopify_product(sp)
+                if existing and existing.get("price_locked"):
+                    manual_price = existing.get("manual_price", existing.get("price"))
+                    if manual_price is not None:
+                        transformed["price"] = manual_price
+                        transformed.setdefault("pricing", {})
+                        transformed["pricing"]["base_price"] = manual_price
+                        transformed["pricing"]["selling_price"] = manual_price
+                        transformed["price_locked"] = True
+                        transformed["manual_price"] = manual_price
                 result = await db.products_master.update_one(
                     {"shopify_id": sp["id"]},
                     {"$set": transformed},
@@ -16495,6 +16515,24 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
             
             # Check if product exists
             existing = await db.products_master.find_one({"shopify_id": sp["id"]})
+
+            if existing and existing.get("locally_edited"):
+                await db.products_master.update_one(
+                    {"shopify_id": sp["id"]},
+                    {"$set": {"available": transformed.get("available", True), "shopify_updated_at": transformed.get("updated_at")}}
+                )
+                updated += 1
+                continue
+
+            if existing and existing.get("price_locked"):
+                manual_price = existing.get("manual_price", existing.get("price"))
+                if manual_price is not None:
+                    transformed["price"] = manual_price
+                    transformed.setdefault("pricing", {})
+                    transformed["pricing"]["base_price"] = manual_price
+                    transformed["pricing"]["selling_price"] = manual_price
+                    transformed["price_locked"] = True
+                    transformed["manual_price"] = manual_price
             
             if existing:
                 # Update existing

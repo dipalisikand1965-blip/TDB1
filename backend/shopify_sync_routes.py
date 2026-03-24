@@ -46,6 +46,25 @@ def set_database(database: AsyncIOMotorDatabase):
     db = database
 
 
+def preserve_manual_price(existing: Optional[dict], transformed: dict) -> dict:
+    if not existing or not existing.get("price_locked"):
+        return transformed
+
+    manual_price = existing.get("manual_price", existing.get("price"))
+    if manual_price is None:
+        return transformed
+
+    transformed["price"] = manual_price
+    transformed.setdefault("pricing", {})
+    transformed["pricing"]["base_price"] = manual_price
+    transformed["pricing"]["selling_price"] = manual_price
+    transformed["price_locked"] = True
+    transformed["manual_price"] = manual_price
+    transformed["price_updated_by"] = existing.get("price_updated_by")
+    transformed["price_updated_at"] = existing.get("price_updated_at")
+    return transformed
+
+
 async def sync_shopify_products_startup(database):
     """Sync Shopify products on startup - called by server.py lifespan"""
     global db
@@ -59,7 +78,7 @@ async def sync_shopify_products_startup(database):
         skipped_local = 0
         for sp in shopify_products:
             existing = await db.products_master.find_one({"shopify_id": sp["id"]})
-            transformed = transform_shopify_product(sp)
+            transformed = preserve_manual_price(existing, transform_shopify_product(sp))
             
             # Skip overwriting products that were locally edited by admin
             if existing and existing.get("locally_edited"):
@@ -499,7 +518,7 @@ async def cron_sync_products(secret: str):
                 )
                 continue
             
-            transformed = transform_shopify_product(sp)
+            transformed = preserve_manual_price(existing, transform_shopify_product(sp))
             
             # IMPORTANT: Preserve hardcoded options - don't overwrite!
             if existing and existing.get("hardcoded_options") == True:
@@ -573,7 +592,7 @@ async def admin_sync_products(username: str = Depends(verify_admin)):
                 skipped_local += 1
                 continue
             
-            transformed = transform_shopify_product(sp)
+            transformed = preserve_manual_price(existing, transform_shopify_product(sp))
             
             # IMPORTANT: Preserve hardcoded options - don't overwrite!
             if existing and existing.get("hardcoded_options") == True:
