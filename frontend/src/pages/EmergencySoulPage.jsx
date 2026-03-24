@@ -259,7 +259,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, onBook, breedProducts=
         {[{id:"products",label:"📦 Products"},{id:"services",label:"🚨 Services"}].map(tab=><button key={tab.id} onClick={()=>setDimTab(tab.id)} style={{flex:1,padding:"10px 0",background:"none",border:"none",borderBottom:dimTab===tab.id?`2.5px solid ${G.crimson}`:"2.5px solid transparent",color:dimTab===tab.id?G.mid:"#888",fontSize:12,fontWeight:dimTab===tab.id?700:400,cursor:"pointer"}}>{tab.label}</button>)}
       </div>
       {dimTab==="products"&&(<div style={{padding:"12px 16px 20px"}}>{displayProducts.length===0?<div style={{textAlign:"center",padding:"28px 0",color:"#888",fontSize:13}}><div style={{fontSize:28,marginBottom:8}}>📦</div>Products for {petName} being added.</div>:<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(170px,100%),1fr))",gap:12}}>{displayProducts.map(p=><SharedProductCard key={p.id||p._id} product={p} pillar="emergency" selectedPet={pet}/>)}</div>}</div>)}
-      {dimTab==="services"&&(<div style={{padding:"12px 16px 20px"}}>{dimSvcs.length===0?<button onClick={()=>onBook?.(EMERG_SERVICES[0])} style={{width:"100%",background:`linear-gradient(135deg,${G.crimson},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"11px",fontSize:13,fontWeight:700,cursor:"pointer"}}>Get Emergency Help →</button>:<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(220px,100%),1fr))",gap:14}}>{dimSvcs.map(svc=><div key={svc.id} onClick={()=>onBook?.(svc)} style={{background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer",padding:"14px 16px"}}><div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}><span style={{fontSize:28}}>{svc.icon}</span><div><div style={{fontSize:13,fontWeight:700,color:G.darkText}}>{svc.name}</div><div style={{fontSize:11,color:G.mutedText}}>{svc.tagline}</div></div></div><div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}><span style={{fontSize:13,fontWeight:700,color:G.deep}}>{svc.price}</span><button style={{background:G.crimson,color:"#fff",border:"none",borderRadius:20,padding:"6px 14px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Book →</button></div></div>)}</div>}</div>)}
+      {dimTab==="services"&&(<div style={{padding:"12px 16px 20px"}}>{dimSvcs.length===0?<button onClick={()=>onBook?.(EMERG_SERVICES[0])} style={{width:"100%",background:`linear-gradient(135deg,${G.crimson},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"11px",fontSize:13,fontWeight:700,cursor:"pointer"}}>Get Emergency Help →</button>:<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(220px,100%),1fr))",gap:14}}>{dimSvcs.map(svc=><div key={svc.id} onClick={()=>onBook?.(svc)} style={{background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer",padding:"14px 16px"}}><div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}><span style={{fontSize:28}}>{svc.icon}</span><div><div style={{fontSize:13,fontWeight:700,color:G.darkText}}>{svc.name}</div><div style={{fontSize:11,color:G.mutedText}}>{svc.tagline}</div></div></div><div style={{display:"flex",alignItems:"center",justifyContent:"flex-end"}}><button style={{background:G.crimson,color:"#fff",border:"none",borderRadius:20,padding:"6px 14px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Get help now →</button></div></div>)}</div>}</div>)}
     </div>
   );
 }
@@ -327,6 +327,12 @@ const EmergencySoulPage = () => {
   const [toastSvc, setToastSvc]     = useState("");
   const [breedProducts, setBreedProducts] = useState([]);
   const [breedProductsLoading, setBreedProductsLoading] = useState(false);
+
+  const openEmergencyService = useCallback((serviceName = 'Emergency help') => {
+    tdc.urgent({ text: serviceName, pet: petData, channel: 'emergency_services_card' });
+    setConciergeSvc(serviceName);
+    setConciergeOpen(true);
+  }, [petData]);
 
 
   const handleBook = useCallback((svc) => {
@@ -459,7 +465,7 @@ const EmergencySoulPage = () => {
               <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:12}}>{missing.map(m=><span key={m} style={{fontSize:11,fontWeight:600,color:"#C62828",background:"#FFEBEE",border:"1px solid #EF9A9A",borderRadius:20,padding:"3px 10px"}}>⚠ {m}</span>)}</div>
               <button onClick={()=>setConciergeOpen(true)} style={{background:`linear-gradient(135deg,${G.crimson},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"9px 20px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Fix these now with Concierge →</button>
             </div>)}
-            <MiraPicksSection pet={petData} onOpenService={(serviceName)=>{const map={'Emergency Vet Discovery':'Find emergency vet','After-Hours Care Guidance':'Accident response','24/7 Emergency Helpline Subscription':'Emergency transport','24/7 Emergency Vet Hotline':'Find emergency vet'};setConciergeSvc(map[serviceName]||serviceName||'Find emergency vet');setConciergeOpen(true);}}/>
+            <MiraPicksSection pet={petData} onOpenService={(serviceName)=>{const map={'Emergency Vet Discovery':'Find emergency vet','After-Hours Care Guidance':'Accident response','24/7 Emergency Helpline Subscription':'Emergency transport','24/7 Emergency Vet Hotline':'Find emergency vet'};openEmergencyService(map[serviceName]||serviceName||'Find emergency vet');}}/>
             {/* ✦ Soul Made™ trigger — custom emergency ID tags, medical alert tags */}
             <div data-testid="emergency-soul-made-trigger" onClick={()=>setSoulMadeOpen(true)}
               style={{margin:"0 auto 24px",maxWidth:540,padding:"20px 20px 18px",background:"linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 50%, #1a0a2e 100%)",border:"1.5px solid rgba(196,77,255,0.4)",borderRadius:18,cursor:"pointer",position:"relative",overflow:"hidden",boxShadow:"0 4px 24px rgba(196,77,255,0.18)",transition:"transform 0.15s, box-shadow 0.15s"}}
@@ -471,7 +477,7 @@ const EmergencySoulPage = () => {
               <div style={{fontSize:13,color:"rgba(245,240,232,0.55)",marginBottom:16}}>ID Tag · Medical Alert Collar · Emergency Go-Bag · GPS Tag · and more</div>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                 <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"linear-gradient(135deg,#C44DFF,#9333EA)",borderRadius:30,padding:"10px 22px",fontSize:13,fontWeight:700,color:"#fff",boxShadow:"0 4px 16px rgba(196,77,255,0.4)"}}>{`\u2726 Make something only ${petName} has`}</div>
-                <div style={{fontSize:12,color:"rgba(245,240,232,0.35)",fontStyle:"italic",maxWidth:160,textAlign:"right",lineHeight:1.4}}>Upload a photo · Concierge® creates it · Price on WhatsApp</div>
+                <div style={{fontSize:12,color:"rgba(245,240,232,0.35)",fontStyle:"italic",maxWidth:160,textAlign:"right",lineHeight:1.4}}>Upload a photo · Concierge® creates it</div>
               </div>
             </div>
 
@@ -559,7 +565,7 @@ const EmergencySoulPage = () => {
         {activeTab==="services" && (
           <div style={{marginTop:24}}>
             <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:4,fontFamily:"Georgia,serif"}}>Get emergency help for <span style={{color:G.crimson}}>{petName}</span></h2>
-            <p style={{fontSize:13,color:"#888",marginBottom:20}}>All services are arranged by Concierge® — some are free, all are immediate.</p>
+            <p style={{fontSize:13,color:"#888",marginBottom:20}}>All services are arranged by Concierge® — immediate, calm, and coordinated.</p>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(240px,100%),1fr))",gap:14}}>
               {EMERG_SERVICES.map(svc=>{
                 const dbSvc=services.find(s=>s.name===svc.name||s.id===svc.id)||{};
@@ -573,9 +579,8 @@ const EmergencySoulPage = () => {
                   <div style={{fontSize:14,fontWeight:800,color:G.darkText,marginBottom:3}}>{svc.name}</div>
                   <div style={{fontSize:11,color:"#888",lineHeight:1.45,marginBottom:8,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{t(svc.desc,petName)}</div>
                   {svc.miraKnows&&<div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:8,padding:"6px 10px",marginBottom:8,display:"flex",alignItems:"flex-start",gap:5}}><span style={{fontSize:11,color:G.crimson,flexShrink:0}}>✦</span><span style={{fontSize:10,color:G.mid,lineHeight:1.4}}>{svc.miraKnows.replace(/{petName}/g,petName)}</span></div>}
-                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                    <span style={{fontSize:14,fontWeight:800,color:G.deep}}>{svc.price}</span>
-                    <button onClick={()=>{setConciergeSvc(svc.name);setConciergeOpen(true);}} style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Book →</button>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"flex-end"}}>
+                    <button onClick={()=>openEmergencyService(svc.name)} style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Get help now →</button>
                   </div>
                 </div>
               </div>);})}
