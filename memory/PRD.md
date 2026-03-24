@@ -75,6 +75,34 @@ Reference implementation patterns:
 - `AdoptSoulPage.jsx` — mixed response safely separated into product vs concierge service behavior
 - `CelebratePageNew.jsx`, `EmergencySoulPage.jsx`, `FarewellSoulPage.jsx`, `PaperworkSoulPage.jsx` — service picks routed to concierge flows
 
+### 4.2 Admin Routing Rule — DO NOT CONFUSE SERVICE VS PRODUCT
+This must stay true across frontend, backend, scoring, and admin tooling:
+
+- **Products** live in `products_master`
+- **Services** live in `services_master`
+- **Bundles** live in `bundles`
+- **Scores for all three** live in `mira_product_scores` with explicit `entity_type`
+
+Runtime behaviour:
+- If `entity_type=product` → render as a **product** → product modal / product card behaviour
+- If `entity_type=service` → render as a **service** → concierge/service modal behaviour
+- If `entity_type=bundle` → render as bundle behaviour only where explicitly supported
+
+Admin editing destinations:
+- **Products** → product editors (`ProductBoxEditor`, pillar product admin flows, soul product admin flows)
+- **Services** → service editors (`ServiceCRUDAdmin`, service-box / `services_master` admin flows)
+- **Service desk tickets are NOT the same as catalogue editing**
+
+Important distinction:
+- A **service pick** should create a **service desk ticket** for operational follow-up
+- The underlying **service definition** must still be edited in **service admin**, not product admin
+
+Never allow these regressions:
+- service entity opening a product editor flow
+- product entity opening a service support flow by default
+- admin users being unable to tell whether an item belongs to `products_master` or `services_master`
+- missing `entity_type` on saved scores in `mira_product_scores`
+
 ## 5. Breed Normalisation System
 - **Backend**: `/app/backend/breed_normalise.py`
   - `normalise_breed(raw)` → known breed or `'indie'` fallback
