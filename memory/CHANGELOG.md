@@ -2,6 +2,36 @@
 
 ---
 
+## SESSION 6 — 2026-03-26 (DineMobilePage + Universal Concierge Capture)
+
+### DineSoulPage.jsx — DineMobilePage iOS Treatment (NOT LOCKED)
+- Font upgraded: DM Sans → `-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter'`
+- All tiny fonts bumped: 10px→12px, 11px→13px, 12px→14px, 13px→14px
+- Root div: `mobile-page-container` class + `MiraEmptyRequest` import
+
+### NEW: MiraEmptyRequest Component
+- File: `/app/frontend/src/components/common/MiraEmptyRequest.jsx`
+- Universal empty-state with concierge capture for ALL pillars
+- Shows pet breed + life stage + allergy tags in empty state
+- "Tell Mira what [petName] needs →" button fires onRequest → service desk ticket
+- Success state: "Mira is on it for [petName]"
+
+### CelebrateContentModal — Wired to Concierge
+- EmptyState now shows "Tell Mira what [petName] needs" with full pet profile
+- CelebrateMobilePage passes breed, lifeStage, allergies in concierge metadata
+
+### BirthdayBoxBrowseDrawer — Fixed Product Fetching
+- Now fetches from both breed-products API AND products_master by sub_category
+- Style tab (party_accessories) now shows products from products_master
+- Empty state → MiraEmptyRequest (darkMode, purple accent)
+
+### CareMobilePage + GoMobilePage — Empty States Upgraded
+- Both: empty product state → MiraEmptyRequest with pillar accent color
+
+### Testing: 100% pass (14/14 backend + all frontend mobile pages)
+
+
+
 ## SESSION 5 — 2026-03-26 (Admin Fixes + Mobile UI Overhaul)
 
 ### BATCH 1 — Admin Critical Fixes (All tested ✅)
