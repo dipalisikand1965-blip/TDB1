@@ -233,7 +233,7 @@ function DineProfileSheet({ pet, onClose }) {
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.62)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', maxWidth: 540, maxHeight: '90vh', overflowY: 'auto', background: '#fff', borderRadius: 28, animation: 'dine-sheet 0.28s ease', boxShadow: '0 24px 80px rgba(0,0,0,0.45)' }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', maxWidth: 540, maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#fff', borderRadius: 28, animation: 'dine-sheet 0.28s ease', boxShadow: '0 24px 80px rgba(0,0,0,0.45)' }}>
         <div style={{ padding: '24px 22px 20px', background: 'linear-gradient(135deg,#1A0A00 0%, #3D0A00 55%, #521224 100%)', position: 'sticky', top: 0, zIndex: 5 }}>
           <button onClick={onClose} style={{ position: 'absolute', top: 16, right: 18, width: 38, height: 38, borderRadius: '50%', background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.72)', cursor: 'pointer', fontSize: 18 }}>✕</button>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 10 }}>
@@ -262,7 +262,7 @@ function DineProfileSheet({ pet, onClose }) {
           </div>
         </div>
 
-        <div style={{ padding: '20px 18px 24px', background: '#fff' }}>
+        <div style={{ padding: '20px 18px 24px', background: '#fff', overflowY: 'auto', WebkitOverflowScrolling: 'touch', flex: 1, minHeight: 0 }}>
           <div style={{ fontSize: 15, fontWeight: 700, color: C.brown, marginBottom: 12 }}>What Mira knows about {name}</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             {cards.map((card) => (
