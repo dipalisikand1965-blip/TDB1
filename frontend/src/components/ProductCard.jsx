@@ -446,7 +446,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
   return (
     <>
       <div 
-        className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer"
+        className="ios-card group flex flex-col cursor-pointer transition-all duration-300"
         onClick={openDetails}
         data-testid={`product-card-${product.id}`}
       >

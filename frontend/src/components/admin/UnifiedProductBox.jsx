@@ -230,6 +230,9 @@ const UnifiedProductBox = () => {
         'mira_can_suggest', 'mira_can_reference',
         // Nested metadata structures
         'basics', 'commerce', 'soul_tier', 'soul_level',
+        // Active toggle & misc fields
+        'is_active', 'ai_image_prompt', 'categories', 'inventory',
+        'mira_ai', 'mrp', 'shape', 'suitability',
       ];
       
       for (const field of allowedFields) {

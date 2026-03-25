@@ -345,17 +345,18 @@ const ServiceBookingModal = ({
   
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto sm:max-w-lg md:max-w-2xl p-4 sm:p-6">
+      <DialogContent className="ios-bottom-sheet-content sm:max-w-lg md:max-w-2xl">
+        <div className="ios-drag-handle"></div>
         {/* Header - Mobile Optimized */}
         <DialogHeader className="pb-2">
           <DialogTitle className="flex items-center gap-3">
-            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center flex-shrink-0`}>
-              <ServiceIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center flex-shrink-0 shadow-lg shadow-${service.color}-500/20`}>
+              <ServiceIcon className="w-6 h-6 text-white" />
             </div>
-            <div className="min-w-0">
-              <span className="text-lg sm:text-xl font-bold">Book {service.name}</span>
+            <div className="min-w-0 text-left">
+              <span className="ios-h3 text-gray-900">Book {service.name}</span>
               {!bookingComplete && (
-                <p className="text-xs sm:text-sm text-gray-500 font-normal">Step {step} of 4</p>
+                <p className="ios-caption mt-0.5">Step {step} of 4</p>
               )}
             </div>
           </DialogTitle>
@@ -713,12 +714,13 @@ const ServiceBookingModal = ({
         
         {/* Navigation Buttons - Mobile Optimized with Sticky Footer */}
         {!bookingComplete && (
-          <div className="flex justify-between items-center pt-3 sm:pt-4 border-t mt-4 sm:mt-6 gap-3">
+          <div className="flex justify-between items-center pt-5 border-t border-gray-100 mt-6 gap-3">
             {step > 1 ? (
               <Button 
                 variant="outline" 
                 onClick={() => setStep(s => s - 1)}
-                className="min-h-[44px] px-4 sm:px-6"
+                className="ios-btn-primary bg-white text-gray-700 border border-gray-200"
+                style={{ width: 'auto', minWidth: '100px', flex: '0 0 auto' }}
               >
                 Back
               </Button>
@@ -730,25 +732,25 @@ const ServiceBookingModal = ({
               <Button 
                 onClick={() => setStep(s => s + 1)}
                 disabled={!canProceed()}
-                className={`bg-gradient-to-r ${service.gradient} hover:opacity-90 min-h-[44px] px-4 sm:px-6 flex-1 sm:flex-none max-w-[200px]`}
+                className={`ios-btn-primary bg-gradient-to-r ${service.gradient} text-white flex-1`}
               >
-                Continue <ChevronRight className="w-4 h-4 ml-1" />
+                Continue <ChevronRight className="w-5 h-5 ml-1" />
               </Button>
             ) : (
               <Button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className={`bg-gradient-to-r ${service.gradient} hover:opacity-90 min-h-[44px] px-4 sm:px-6 flex-1 sm:flex-none`}
+                className={`ios-btn-primary bg-gradient-to-r ${service.gradient} text-white flex-1`}
                 data-testid="booking-submit"
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                     Booking...
                   </>
                 ) : (
                   <>
-                    <CheckCircle className="w-4 h-4 mr-2" />
+                    <CheckCircle className="w-5 h-5 mr-2" />
                     Confirm Booking
                   </>
                 )}
