@@ -7,7 +7,7 @@ Viewport: 375x812 (iPhone SE / standard mobile)
 import asyncio
 import os
 
-BASE_URL = "https://mira-parity-sprint.preview.emergentagent.com"
+BASE_URL = "https://pet-soul-ranking.preview.emergentagent.com"
 USER_EMAIL = "dipali@clubconcierge.in"
 USER_PASS = "test123"
 ADMIN_USER = "aditya"

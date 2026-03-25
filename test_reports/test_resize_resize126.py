@@ -6,7 +6,7 @@ Iteration 126 - Follow-up to iteration_125.
 
 import asyncio
 
-BASE_URL = "https://mira-parity-sprint.preview.emergentagent.com"
+BASE_URL = "https://pet-soul-ranking.preview.emergentagent.com"
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 

@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://mira-parity-sprint.preview.emergentagent.com
+https://pet-soul-ranking.preview.emergentagent.com
 ```
 
 ---
