@@ -6,6 +6,7 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
@@ -97,6 +98,31 @@ export default function EmergencyMobilePage() {
     setConciergeOpen(true);
   };
 
+  const handleUrgentCTA = useCallback(async () => {
+    vibe('urgent');
+    tdc.book({ service:'Emergency Vet', pillar:'emergency', pet:currentPet, urgency:'critical', channel:'emergency_urgent_cta' });
+    // Send WhatsApp immediately to concierge
+    const petName = currentPet?.name || 'Unknown Pet';
+    const breed = (currentPet?.breed || 'Unknown Breed').split('(')[0].trim();
+    const allergies = (currentPet?.allergies || []).filter(a => a && a.toLowerCase() !== 'none').join(', ') || 'None';
+    try {
+      await fetch(`${API_URL}/api/notifications/emergency-whatsapp`, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', ...(token ? { Authorization:`Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          to: '919739908844',
+          petName,
+          breed,
+          allergies,
+          message: `🚨 EMERGENCY — ${petName} (${breed}).\nParent needs immediate vet help.\nAllergies: ${allergies}.\nContact NOW.`,
+        })
+      });
+    } catch (e) { console.warn('WA send failed', e); }
+    setSelectedSvc({ icon:'🚨', name:'Emergency Vet Finder', waNotified: true });
+    setConciergeOpen(true);
+    setActiveTab('services');
+  }, [currentPet, token]);
+
   if (loading) return (
     <PillarPageLayout pillar="emergency" hideHero hideNavigation>
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
@@ -140,7 +166,7 @@ export default function EmergencyMobilePage() {
             <div style={{ fontSize:13, fontWeight:700, color:'#fff' }}>URGENT — Contact Emergency Vet Now</div>
             <div style={{ fontSize:11, color:'rgba(255,255,255,0.75)' }}>For life-threatening emergencies, call your vet directly.</div>
           </div>
-          <button onClick={() => { vibe('urgent'); tdc.urgent({ text:'Emergency vet needed NOW', pet:currentPet, channel:'emergency_urgent_cta' }); setActiveTab('services'); setConciergeOpen(true); setSelectedSvc(EMERG_SERVICES[0]); }}
+          <button onClick={() => handleUrgentCTA()}
             style={{ flexShrink:0, background:'#fff', border:'none', borderRadius:20, padding:'6px 14px', fontSize:12, fontWeight:700, color:G.crimson, cursor:'pointer' }}>
             Get Help
           </button>
@@ -279,6 +305,14 @@ export default function EmergencyMobilePage() {
               <div style={{ fontSize:28, textAlign:'center', marginBottom:12 }}>{selectedSvc.icon || '🚨'}</div>
               <div style={{ fontSize:18, fontWeight:700, color:G.darkText, textAlign:'center', marginBottom:8 }}>{selectedSvc.name}</div>
               <div style={{ fontSize:14, color:'#555', textAlign:'center', lineHeight:1.6, marginBottom:20 }}>
+                {selectedSvc?.waNotified ? (
+                  <>
+                    <div style={{ background:'#F0FDF4', border:'1px solid #86EFAC', borderRadius:10, padding:'10px 14px', marginBottom:12, fontSize:13 }}>
+                      <span style={{ color:'#16A34A', fontWeight:700 }}>✓ Concierge notified via WhatsApp</span><br/>
+                      <span style={{ color:'#15803D' }}>Our team will respond within minutes.</span>
+                    </div>
+                  </>
+                ) : null}
                 🚨 Emergency alert sent to Concierge®. Our team will respond within 2 hours.<br/>
                 <strong style={{ color:G.crimson }}>For life-threatening emergencies, call your vet directly.</strong>
               </div>

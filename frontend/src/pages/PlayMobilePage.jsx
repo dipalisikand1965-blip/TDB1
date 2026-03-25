@@ -1,6 +1,8 @@
 /**
  * PlayMobilePage.jsx — /play (mobile)
- * Colour: Red/Fun #D94F00 → #FF6B35
+ * 3-tab layout: Play & Products | Services | Find Play
+ * Products tab: dimTab (Products/Personalised) + sub-category pills
+ * Colour: Orange #E76F51
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -12,23 +14,57 @@ import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
 import PillarPageLayout from '../components/PillarPageLayout';
-import SoulMadeModal from '../components/SoulMadeModal';
 import PillarSoulProfile from '../components/PillarSoulProfile';
-import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
-import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
-import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
-import PlayContentModal from '../components/play/PlayContentModal';
-import PlayCategoryStrip from '../components/play/PlayCategoryStrip';
-import GuidedPlayPaths from '../components/play/GuidedPlayPaths';
 import PlayConciergeSection from '../components/play/PlayConciergeSection';
 import PlayNearMe from '../components/play/PlayNearMe';
 import BuddyMeetup from '../components/play/BuddyMeetup';
+import GuidedPlayPaths from '../components/play/GuidedPlayPaths';
+import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
+import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
+import MiraImaginesCard from '../components/common/MiraImaginesCard';
+import SoulMadeModal from '../components/SoulMadeModal';
+import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 
-const P = { red:'#7B2D00', redL:'#D94F00', redXL:'#FF6B35', cream:'#FFF8F5', border:'#FFD4C2', dark:'#2D0A00', taupe:'#7A4A35' };
-const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');.play{font-family:'DM Sans',-apple-system,sans-serif;background:${P.cream};color:${P.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}.play-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${P.red},${P.redL});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}.play-cta:active{transform:scale(0.97)}.no-sb{overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}.no-sb::-webkit-scrollbar{display:none}`;
+const G = {
+  orange:'#E76F51', mid:'#C25B3D', deep:'#7A2E1A', light:'#FBD8CE',
+  pale:'#FFF5F2', cream:'#FFF8F5', dark:'#1F0A04',
+  darkText:'#7A2E1A', mutedText:'#C25B3D',
+  border:'rgba(231,111,81,0.18)',
+};
+const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+.play-m{font-family:'DM Sans',-apple-system,sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+.play-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${G.mid},${G.orange});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}
+.play-cta:active{transform:scale(0.97)}
+.play-tab{flex:1;padding:12px 4px;background:none;border:none;border-bottom:2.5px solid transparent;font-size:13px;font-weight:500;color:#999;cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:inherit}
+.play-tab.active{color:${G.orange};border-bottom-color:${G.orange};font-weight:700}`;
 
-function vibe(t='light'){if(navigator?.vibrate)navigator.vibrate(t==='success'?[8,40,10]:t==='medium'?[12]:[6]);}
-function getAllergies(pet){const s=new Set();[pet?.preferences?.allergies,pet?.doggy_soul_answers?.food_allergies,pet?.allergies].forEach(v=>{if(Array.isArray(v))v.forEach(x=>{if(x&&!/^(none|no|unknown)$/i.test(String(x).trim()))s.add(String(x).trim());});else if(v&&!/^(none|no|unknown)$/i.test(String(v).trim()))s.add(String(v).trim());});return[...s];}
+function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'?[12]:[6]); }
+
+function getAllergies(pet) {
+  const raw = pet?.allergies; let arr = [];
+  if (Array.isArray(raw)) arr = raw;
+  else if (typeof raw === 'string') arr = raw.split(',').map(s => s.trim());
+  return arr.filter(a => a && !['none','no allergies','nil','n/a'].includes(a.toLowerCase()));
+}
+function applyMiraIntelligence(products, allergies) {
+  if (!allergies?.length) return products;
+  return products.filter(p => {
+    const text = `${p.name} ${p.description || ''}`.toLowerCase();
+    for (const a of allergies) { if (text.includes(a.toLowerCase()) && !text.includes('free')) return false; }
+    return true;
+  });
+}
+const KNOWN_BREEDS = ['american bully','beagle','border collie','boxer','cavalier','chihuahua','chow chow','dachshund','dalmatian','doberman','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','jack russell','labrador','lhasa apso','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
+function filterBreedProducts(products, petBreed) {
+  const pl=(petBreed||'').toLowerCase(); const pw=pl.split(/\s+/).filter(w=>w.length>2);
+  return products.filter(p=>{const n=(p.name||'').toLowerCase();for(const b of KNOWN_BREEDS){if(n.includes(b)){if(!pl)return false;if(n.includes(pl))return true;if(pw.some(w=>b.includes(w)))return true;return false;}}return true;});
+}
+
+const PLAY_IMAGINES = [
+  { id:'p-1', emoji:'🎾', name:'Play Kit for your breed', description:'Toys matched to your breed\'s prey drive, jaw strength, and energy level — not just any ball.' },
+  { id:'p-2', emoji:'🧩', name:'Enrichment Bundle', description:'Puzzle feeders, lick mats, snuffle mats — 30 minutes of mental enrichment per day.' },
+  { id:'p-3', emoji:'🏅', name:'Agility Starter Set', description:'6-piece agility set — jumps, weave poles, tunnel — for high-energy breeds to run and win.' },
+];
 
 export default function PlayMobilePage() {
   const { token } = useAuth();
@@ -37,88 +73,187 @@ export default function PlayMobilePage() {
   usePlatformTracking({ pillar:'play', pet:currentPet });
   const { request } = useConcierge({ pet:currentPet, pillar:'play' });
   const { addToCart } = useCart();
+
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('play');
+  const [dimTab, setDimTab] = useState('products');
+  const [subCat, setSubCat] = useState('All');
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [modalCategory, setModalCategory] = useState(null);
+  const [allRaw, setAllRaw] = useState([]);
 
-  useEffect(() => { if(contextPets!==undefined)setLoading(false); if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]); },[contextPets,currentPet,setCurrentPet]);
-  useEffect(() => { const h=()=>{}; window.addEventListener('soulScoreUpdated',h); return()=>window.removeEventListener('soulScoreUpdated',h); },[]);
+  useEffect(() => {
+    if (contextPets !== undefined) setLoading(false);
+    if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
+  }, [contextPets, currentPet, setCurrentPet]);
 
   useEffect(() => {
     if (!currentPet?.id) return;
     fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=200`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
-      .then(r => r.ok ? r.json() : null).then(d => { if (d?.products) setProducts(d.products); }).catch(() => {});
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.products) setAllRaw(filterBreedProducts(d.products, currentPet?.breed)); })
+      .catch(() => {});
   }, [currentPet?.id, token]);
 
   const handleAddToCart = useCallback(p => {
     addToCart({ id:p.id||p._id, name:p.name, price:p.price||0, image:p.image_url||p.images?.[0], pillar:'play', quantity:1 });
   }, [addToCart]);
 
-  useEffect(() => { if(contextPets!==undefined)setLoading(false); if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]); },[contextPets,currentPet,setCurrentPet]);
-  useEffect(() => { const h=()=>{}; window.addEventListener('soulScoreUpdated',h); return()=>window.removeEventListener('soulScoreUpdated',h); },[]);
-
-  if(loading)return<PillarPageLayout pillar="play" hideHero hideNavigation><div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontSize:36,marginBottom:12}}>🎾</div><div>Loading play picks…</div></div></div></PillarPageLayout>;
-  if(!currentPet)return<PillarPageLayout pillar="play" hideHero hideNavigation><style>{CSS}</style><div className="play"><div style={{padding:'24px 16px',textAlign:'center'}}><div style={{background:'#fff',border:`1px solid ${P.border}`,borderRadius:22,padding:'32px 20px'}}><div style={{fontSize:44,marginBottom:14}}>🎾</div><div style={{fontSize:22,fontWeight:700,marginBottom:8}}>Add your pet to unlock Play</div><button className="play-cta" style={{marginTop:16}} onClick={()=>navigate('/join')}>Add your pet →</button></div></div></div></PillarPageLayout>;
-
-  const petName=currentPet.name;
-
-  return(
+  if (loading) return (
     <PillarPageLayout pillar="play" hideHero hideNavigation>
-      <div className="play" data-testid="play-mobile">
+      <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
+        <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🎾</div><div>Loading play products…</div></div>
+      </div>
+    </PillarPageLayout>
+  );
+
+  const petName = currentPet?.name || 'your dog';
+  const allergies = getAllergies(currentPet);
+  const intelligent = applyMiraIntelligence(allRaw, allergies);
+  const subCats = ['All', ...new Set(intelligent.map(p => p.sub_category).filter(Boolean))];
+  const products = subCat === 'All' ? intelligent : intelligent.filter(p => p.sub_category === subCat);
+
+  return (
+    <PillarPageLayout pillar="play" hideHero hideNavigation>
+      <div className="play-m" data-testid="play-mobile">
         <style>{CSS}</style>
-        {soulMadeOpen&&<SoulMadeModal pet={currentPet} pillar="play" pillarColor={P.redL} pillarLabel="Play" onClose={()=>setSoulMadeOpen(false)}/>}
-        {selectedProduct&&<ProductDetailModal product={selectedProduct?.raw||selectedProduct} isOpen={!!selectedProduct} onClose={()=>setSelectedProduct(null)} petName={petName} pillarColor={P.redL}/>}
 
-        <div style={{background:`linear-gradient(160deg,${P.dark} 0%,${P.red} 50%,${P.redL} 100%)`,padding:'32px 16px 24px'}}>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
-            <div><div style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,0.5)',letterSpacing:'0.1em',marginBottom:2}}>THE DOGGY COMPANY</div><div style={{fontSize:22,fontWeight:700,color:'#fff'}}>🎾 Play</div></div>
-            {contextPets?.length>1&&(<select value={currentPet?.id} onChange={e=>{vibe();setCurrentPet(contextPets.find(p=>p.id===e.target.value));}} style={{background:'rgba(255,255,255,0.12)',border:'1px solid rgba(255,255,255,0.2)',borderRadius:999,padding:'7px 14px',color:'#fff',fontSize:13}}>{contextPets.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select>)}
+        {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="play" pillarColor={G.orange} pillarLabel="Play" onClose={() => setSoulMadeOpen(false)} />}
+        {selectedProduct && <ProductDetailModal product={selectedProduct?.raw || selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.orange} />}
+
+        {/* Hero */}
+        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'32px 16px 20px' }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+            <div>
+              <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
+              <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🎾 Play</div>
+            </div>
+            {contextPets?.length > 1 && (
+              <select value={currentPet?.id} onChange={e => { vibe(); setCurrentPet(contextPets.find(p => p.id === e.target.value)); }}
+                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:13 }}>
+                {contextPets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              </select>
+            )}
           </div>
-          <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:14}}>
-            <div style={{width:52,height:52,borderRadius:'50%',flexShrink:0,background:'rgba(255,255,255,0.15)',border:'2px solid rgba(255,255,255,0.3)',display:'flex',alignItems:'center',justifyContent:'center',overflow:'hidden'}}>{currentPet?.photo_url?<img src={currentPet.photo_url} alt={petName} style={{width:'100%',height:'100%',objectFit:'cover'}}/>:<span style={{fontSize:22}}>🐾</span>}</div>
-            <div><div style={{fontSize:20,fontWeight:700,color:'#fff'}}>Activities & Fitness</div><div style={{fontSize:15,color:'rgba(255,255,255,0.7)'}}>for {petName}</div></div>
-          </div>
+          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Play, Joy & Enrichment</div>
+          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Toys, enrichment, playgroups, dog walkers</div>
         </div>
 
-        <div style={{padding:'0 16px 8px'}}><PillarSoulProfile pet={currentPet} pillar="play" token={token}/></div>
-        <PlayCategoryStrip pet={currentPet} onSelect={(id) => setModalCategory(id)} />
-        <div style={{padding:'0 16px 16px'}}><div style={{fontSize:26,fontWeight:700,marginBottom:6}}>How does {petName} love to play?</div><div style={{fontSize:15,color:P.taupe}}>Activities, fitness and fun — matched to their energy.</div></div>
-        <div style={{margin:'0 16px 20px',background:P.dark,borderRadius:20,padding:16}}>
-          <div style={{fontSize:11,fontWeight:700,color:`rgba(255,107,53,0.9)`,letterSpacing:'0.1em',marginBottom:8}}>✦ MIRA ON {petName.toUpperCase()}'S FITNESS</div>
-          <div style={{fontSize:14,color:'rgba(255,255,255,0.75)',lineHeight:1.6,marginBottom:14,fontStyle:'italic'}}>"I know {petName}'s energy level and age. Every activity here is matched to keep them fit and happy."</div>
-          <button className="play-cta">See Mira's Play Picks →</button>
-        </div>
-        <div style={{padding:'0 16px 24px'}}><MiraImaginesBreed pet={currentPet} pillar="play" token={token}/></div>
+        {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="play" token={token} /></div>}
 
-        {products.length > 0 && (
-          <div style={{padding:'0 16px 24px'}}>
-            <div style={{fontSize:18,fontWeight:700,marginBottom:12}}>Play Products for {petName}</div>
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
-              {products.slice(0,20).map(p => <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="play" selectedPet={currentPet} onAddToCart={()=>handleAddToCart(p)} onClick={()=>{vibe();setSelectedProduct(p);}} />)}
+        {/* Tab Bar */}
+        <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100 }}>
+          {[
+            { id:'play',      label:'🎾 Play & Products' },
+            { id:'services',  label:'🐕 Services' },
+            { id:'find-play', label:'📍 Find Play' },
+          ].map(tab => (
+            <button key={tab.id} className={`play-tab${activeTab===tab.id?' active':''}`}
+              data-testid={`play-tab-${tab.id}`}
+              onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* TAB 1: Play & Products */}
+        {activeTab === 'play' && (
+          <div>
+            {/* Mira Bar */}
+            <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
+              <div style={{ fontSize:11, fontWeight:700, color:`rgba(251,216,206,0.9)`, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S JOY</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
+                "Play isn't optional — it's essential for {petName}'s mental health and happiness."
+              </div>
+              <button className="play-cta" onClick={() => { vibe('medium'); request('Play and enrichment ideas', { channel:'play_mira_cta' }); }}>
+                Build {petName}'s Play Plan →
+              </button>
+            </div>
+
+            {/* dimTab */}
+            <div style={{ display:'flex', margin:'16px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
+              {[{ id:'products', label:'🎯 All Products' }, { id:'personalised', label:'✦ Personalised' }].map(t => (
+                <button key={t.id} onClick={() => { setDimTab(t.id); setSubCat('All'); }}
+                  style={{ flex:1, padding:'9px', borderRadius:10, border:'none', fontSize:13, fontWeight:600, cursor:'pointer',
+                    background:dimTab===t.id?G.orange:G.pale, color:dimTab===t.id?'#fff':G.mutedText }}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+
+            {dimTab === 'personalised' ? (
+              <div style={{ padding:'16px 16px 24px' }}>
+                <PersonalisedBreedSection pet={currentPet} pillar="play" token={token} />
+                {PLAY_IMAGINES.map(item => <MiraImaginesCard key={item.id} item={item} pet={currentPet} token={token} pillar="play" />)}
+              </div>
+            ) : (
+              <div style={{ padding:'16px' }}>
+                {/* Sub-category pills */}
+                {subCats.length > 1 && (
+                  <div style={{ display:'flex', gap:6, overflowX:'auto', marginBottom:12, paddingBottom:4 }}>
+                    {subCats.map(cat => (
+                      <button key={cat} onClick={() => setSubCat(cat)}
+                        style={{ flexShrink:0, padding:'6px 14px', borderRadius:20, fontSize:12, fontWeight:600,
+                          border:`1.5px solid ${subCat===cat?G.orange:G.border}`,
+                          background:subCat===cat?G.orange:'#fff',
+                          color:subCat===cat?'#fff':G.darkText, cursor:'pointer' }}>
+                        {cat.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {products.length === 0 ? (
+                  <div style={{ textAlign:'center', padding:'32px 0', color:'#888' }}>
+                    <div style={{ fontSize:32, marginBottom:8 }}>🎾</div>
+                    <div>Loading play products for {petName}…</div>
+                  </div>
+                ) : (
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                    {products.slice(0, 40).map(p => (
+                      <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="play" selectedPet={currentPet}
+                        onAddToCart={() => handleAddToCart(p)}
+                        onClick={() => { vibe(); setSelectedProduct(p); }} />
+                    ))}
+                  </div>
+                )}
+
+                <div style={{ marginTop:16 }}><MiraImaginesBreed pet={currentPet} pillar="play" token={token} /></div>
+                <div style={{ marginTop:16 }}><GuidedPlayPaths pet={currentPet} /></div>
+
+                <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
+                  <div style={{ fontSize:10, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · PLAY GEAR FOR {petName.toUpperCase()}</div>
+                  <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>Custom bandanas, toys and play accessories.</div>
+                  <button className="play-cta">Explore Soul Made →</button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 2: Services */}
+        {activeTab === 'services' && (
+          <div style={{ padding:'16px' }}>
+            <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Play Services for {petName}</div>
+            <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Dog walkers, playgroups, training, hydrotherapy.</div>
+            <BuddyMeetup pet={currentPet} />
+            <div style={{ marginTop:16 }}>
+              <PlayConciergeSection pet={currentPet} />
             </div>
           </div>
         )}
 
-        <div style={{padding:'0 16px 24px'}}><PersonalisedBreedSection pet={currentPet} pillar="play" /></div>
-        <div style={{padding:'0 16px 24px'}}><GuidedPlayPaths pet={currentPet}/></div>
-        <div style={{padding:'0 16px 24px'}}><BuddyMeetup pet={currentPet}/></div>
-        <div style={{padding:'0 16px 24px'}}><PlayNearMe pet={currentPet} onBook={venue=>{tdc.request(`Book play venue for ${petName}: ${venue}`,{pillar:'play',channel:'play_nearme',pet:currentPet});}}/></div>
-        <div style={{padding:'0 16px 24px'}}><PlayConciergeSection pet={currentPet}/></div>
-        <div style={{margin:'0 16px 24px',background:P.dark,borderRadius:20,padding:18,cursor:'pointer'}} onClick={()=>setSoulMadeOpen(true)}>
-          <div style={{fontSize:10,letterSpacing:'0.14em',color:P.redXL,fontWeight:700,marginBottom:8}}>✦ SOUL MADE™ · MADE ONLY FOR {petName.toUpperCase()}</div>
-          <div style={{fontSize:20,fontWeight:700,color:'#fff',marginBottom:8}}>{petName}'s breed on play gear, bandanas & more.</div>
-          <button className="play-cta">Make something only {petName} has →</button>
-        </div>
-        <div style={{margin:'0 16px 24px',background:P.dark,borderRadius:24,padding:20}}>
-          <div style={{display:'inline-flex',background:'rgba(255,107,53,0.2)',border:'1px solid rgba(255,107,53,0.4)',borderRadius:999,padding:'5px 14px',color:P.redXL,fontSize:12,fontWeight:600,marginBottom:12}}>🎾 Play Concierge®</div>
-          <div style={{fontSize:22,fontWeight:700,color:'#fff',lineHeight:1.2,marginBottom:10,fontFamily:'Georgia,serif'}}>Want us to plan {petName}'s perfect activity day?</div>
-          <div style={{fontSize:14,color:'rgba(255,255,255,0.6)',lineHeight:1.7,marginBottom:16}}>Training sessions, swim days, agility classes — all booked by your Concierge.</div>
-          <button onClick={()=>{vibe('medium');request(`Play concierge for ${petName}`,{channel:'play_cta'});}} style={{width:'100%',minHeight:48,borderRadius:14,border:'none',background:`linear-gradient(135deg,${P.redL},${P.redXL})`,color:P.dark,fontSize:15,fontWeight:700,cursor:'pointer'}}>🎾 Plan with Concierge®</button>
-        </div>
+        {/* TAB 3: Find Play */}
+        {activeTab === 'find-play' && (
+          <div style={{ padding:'16px' }}>
+            <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Find Play Near You</div>
+            <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Dog parks, playgroups, and groomers near {petName}.</div>
+            <PlayNearMe pet={currentPet} token={token} onBook={svc => {
+              tdc.book({ service:svc, pillar:'play', pet:currentPet, channel:'play_nearme' });
+            }} />
+          </div>
+        )}
       </div>
-      {modalCategory && <PlayContentModal isOpen={true} onClose={() => setModalCategory(null)} category={modalCategory} pet={currentPet} />}
     </PillarPageLayout>
   );
 }
