@@ -118,7 +118,11 @@ These non-pillar pages need mobile audit:
 - LearnMobilePage.jsx (107 lines)
 - ShopMobilePage.jsx — ✅ DoggyBakerySection added (2026-03-25)
 - EmergencyMobilePage.jsx — ✅ Full 3-tab rewrite (2026-03-25)
-- PaperworkMobilePage.jsx (91 lines) — pending dimension pills
+- PaperworkMobilePage.jsx — ✅ Full rewrite: DocumentVault + 7 dim pills + dimTab Products/Services/Advisory (2026-03-25)
+- LearnMobilePage.jsx — ✅ Full rewrite: 7 dim pills + dimTab Products/Videos/Book + YouTube integration (2026-03-25)
+- CareMobilePage.jsx — ✅ Full rewrite: 3 top tabs + dimTab + sub-cat pills + applyMiraIntelligence + CareConciergeSection + CareNearMe (2026-03-25)
+- GoMobilePage.jsx — ✅ Full rewrite: 3 top tabs + dimTab + sub-cat pills + GoConciergeSection + PetFriendlyStays (2026-03-25)
+- PlayMobilePage.jsx — ✅ Full rewrite: 3 top tabs + dimTab + BuddyMeetup + PlayConciergeSection + PlayNearMe (2026-03-25)
 - AdoptMobilePage.jsx — ✅ Full 3-tab rewrite (2026-03-25)
 - FarewellMobilePage.jsx — ✅ Full 3-tab rewrite (2026-03-25)
 - ServicesMobilePage.jsx — ✅ 7 service group cards (2026-03-25)

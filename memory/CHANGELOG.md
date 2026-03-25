@@ -1,6 +1,28 @@
 # Changelog
 
-## 2026-03-25 — Batch 1-4: Mobile Parity Sprint
+## 2026-03-25 — Batch 5-6: Emergency WhatsApp + Care/Go/Play/Learn/Paperwork
+
+### Emergency WhatsApp Integration (REAL SAFETY FEATURE)
+- Added `POST /api/notifications/emergency-whatsapp` backend endpoint at line 17479 (before include_router)
+- Fires `send_whatsapp_message` to concierge number (919739908844) immediately
+- Also creates an urgent `service_desk_tickets` entry with urgency:'critical'
+- EmergencyMobilePage urgent CTA: taps → tdc.book(urgency:'critical') + WhatsApp alert simultaneously
+- Confirmation sheet shows green "✓ Concierge notified via WhatsApp" success banner
+
+### Batch 5 — Care/Go/Play 3-Tab + dimTab
+- **CareMobilePage**: Full rewrite — 3 tabs (Care & Products / Care Services / Find Care) + dimTab (All Products / Personalised) + sub-category pill filter from fetched products + MiraImaginesCard + SoulMadeCollection + CareConciergeSection + CareNearMe + applyMiraIntelligence with allergy filtering
+- **GoMobilePage**: Full rewrite — 3 tabs (Go & Products / Services / Stay) + dimTab (All Products / Personalised) + sub-category pills + GoConciergeSection + PetFriendlyStays + MiraImaginesCard + SoulMadeCollection
+- **PlayMobilePage**: Full rewrite — 3 tabs (Play & Products / Services / Find Play) + dimTab (All Products / Personalised) + sub-category pills + BuddyMeetup + PlayConciergeSection + PlayNearMe + MiraImaginesCard + SoulMadeCollection
+
+### Batch 6 — Learn/Paperwork Dimension Pills
+- **LearnMobilePage**: Full rewrite — 7 dimension pills (Foundations/Behaviour/Training/Tricks/Socialisation/Soul Learn/Mira's Picks) + per-dimension panel with dimTab (Products/Videos/Book). Videos fetch from YouTube API. Book tab shows service booking cards. MiraImaginesCard + SoulMadeCollection + GuidedLearnPaths.
+- **PaperworkMobilePage**: Full rewrite — DocumentVault at top + 7 dimension pills (Identity/Health/Travel/Insurance/Breeds/Advisory/Soul) + per-dimension panel with dimTab (Products/Services/Advisory). MiraImaginesCard + SoulMadeCollection + GuidedPaperworkPaths.
+
+### Bugs Fixed (by testing agent)
+- `EmergencyMobilePage.jsx`: Missing `useNavigate` import — fixed
+- `server.py`: Emergency WhatsApp endpoint placed after `include_router` — moved to line 17479 (before line 21706 where include_router is called)
+- Removed duplicate dead-code endpoint at former location (line 24156 area)
+
 
 ### Batch 1 — Non-Pillar Page Fixes
 - **Landing page**: Fixed 5 broken `className inside style={}` bugs — `tdc-stats-grid`, `tdc-isnot-grid`, `tdc-mojo-hdr`, `tdc-soul-grid`, `tdc-how-grid` now apply responsive CSS correctly
