@@ -273,9 +273,26 @@ All P0 mobile parity work is complete.
 2. **All new work goes in `*MobilePage.jsx` files only**
 3. **Import pattern** — `import SharedProductCard, { ProductDetailModal } from '../components/ProductCard'` is correct (default export aliased as SharedProductCard)
 4. **Build** — always use `GENERATE_SOURCEMAP=false NODE_OPTIONS="--max-old-space-size=4096" npm run build`
-5. **tdc.book()** is the universal service booking function — use it everywhere
-6. **Product filtering** — `filterBreedProducts` + `applyMiraFilter` (from `/hooks/useMiraFilter.js`) — ALWAYS apply both. `applyMiraFilter` uses ALLERGEN_MAP for synonym matching, generates mira_hint, sets miraPick on top product, dims goal-conflicting products
-7. **MiraPicksSection** is defined INLINE in each desktop page — it's not a separate file to import
-8. **MOBILE_WIRING_SPEC.md** is the source of truth for what's still needed
-9. **Mira's pick callout** — amber gradient banner above product grids — shows for `products[0]?.miraPick`. Always renders unless `products.length === 0`
-10. **useMiraFilter.js** — `/app/frontend/src/hooks/useMiraFilter.js` — single source of truth for all allergen/love/goal filtering logic
+5. **Mira filter** — ALWAYS run products through `applyMiraFilter(products, pet)` from `/hooks/useMiraFilter.js` before rendering product grids. SharedProductCard auto-shows `mira_hint`.
+6. **ServiceBookingModal** — in `/components/ServiceBookingModal.jsx`. Import with `guessServiceType`. 8 service types: grooming, vet, training, walking, boarding, sitting, daycare, pet_taxi.
+7. **useMiraFilter.js** — `/app/frontend/src/hooks/useMiraFilter.js` — single source of truth for all allergen/love/goal filtering. ALLERGEN_MAP has ingredient synonyms.
+8. **Admin auth** — HTTP Basic `aditya:lola4304`. Stored in `localStorage.getItem('adminAuth')`. Used by AIImagePromptField and admin fetch calls.
+9. **Archive vs inactivate** — Archive sets `visibility.status: "archived"` (hides from admin list). Inactivate sets `is_active: false` (stays in admin list, hidden from customers). Re-activate restores both.
+10. **MOBILE_WIRING_SPEC.md** is the source of truth for remaining mobile gaps
+11. **Mira's pick callout** — amber gradient banner. Always show for `products[0]?.miraPick`. Condition: `products.length > 0`.
+12. **Service products** — `product_type: "service"` or `basics.is_service: true` → no price shown, concierge_only flow, no add-to-cart button.
+13. **Preview = Production** — confirmed Session 3. Any deployment goes to live users.
+
+## 13. SESSION 3 SUMMARY (2026-03-25)
+
+### What Was Built
+- **useMiraFilter.js** — shared Mira intelligence hook with ALLERGEN_MAP (ingredient synonyms), GOAL_CONFLICTS, full ranking, mira_hint generation, miraPick flag
+- **Mira's pick callout** — amber gradient banner added to Dine (mobile+desktop), Care, Go, Play, Celebrate mobile product grids
+- **ServiceBookingModal expanded** — 8 service types including boarding, sitting, daycare, pet_taxi. `guessServiceType()` exported.
+- **ServiceBookingModal wired** — Services, Care, Go, Play, Learn mobile pages
+- **Admin fixes (10 total)**: archive/delete, toggle-active, AI image auth, service price badge, service auto-behaviour, stats fix, nav duplicate key
+
+### Test Reports
+- `/app/test_reports/iteration_205.json` — Mira filter (18/18 pass)
+- `/app/test_reports/iteration_206.json` — ServiceBookingModal (22/22 pass)
+- `/app/test_reports/iteration_207.json` — Admin backend (15/16 pass)
