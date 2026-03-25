@@ -599,7 +599,7 @@ function DineMiraPicksSheet({ pet, products = [], services = [], onClose, onConc
               <button className="dp-cta" onClick={() => onConcierge?.(svc)}>Reserve via Concierge®</button>
             </div>
           ))}
-          {products.slice(0, 4).map(p => (
+          {products.map(p => (
             <DineProductCard key={p.id} product={p} onAdd={onAdd} onTap={onTap} />
           ))}
         </div>

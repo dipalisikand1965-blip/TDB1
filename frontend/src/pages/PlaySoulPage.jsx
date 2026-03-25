@@ -302,7 +302,7 @@ function MiraPicksSection({ pet }) {
       : { emoji:"💪", bg:`linear-gradient(135deg,#4A1800,#7B2D00)`, name:`Fitness Starter Kit`, desc:`4-week fitness plan + agility starter set — Mira's programme for ${petName}`, reason:`Because fitness changes everything` },
     { emoji:"🐾", bg:`linear-gradient(135deg,${G.deep},#4A1800)`, name:`Playdate Ready Bundle`, desc:`Playdate starter pack + personalised bandana + invitation cards — ${petName}'s social starter kit`, reason:`Because ${petName} deserves dog friends` },
     { emoji:"🏊", bg:`linear-gradient(135deg,#0a1a26,#0d2a4a)`, name:`Swimming Safety Bundle`, desc:`Life jacket, microfibre towel, and ear protectors — swim safely anywhere`, reason:`Because swimming is the best workout` },
-  ].filter(Boolean).slice(0,4);
+  ].filter(Boolean);
 
   const handleServiceConcierge = async service => {
     setConciergeSending(true);
