@@ -2,18 +2,21 @@
  * EmergencyMobilePage.jsx — /emergency (mobile)
  * Colour: Crimson #4A0000 → #C0392B — urgent but calm
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
 import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
+import { API_URL } from '../utils/api';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import GuidedEmergencyPaths from '../components/emergency/GuidedEmergencyPaths';
 import EmergencyNearMe from '../components/emergency/EmergencyNearMe';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
+import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 
 const E={crimson:'#4A0000',crimsonL:'#C0392B',crimsonXL:'#E74C3C',cream:'#FFF5F5',border:'#FFD5D5',dark:'#1A0000',taupe:'#7A4A4A'};
 const CSS_E=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');.emerg{font-family:'DM Sans',-apple-system,sans-serif;background:${E.cream};color:${E.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}.emerg-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${E.crimson},${E.crimsonL});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}.emerg-cta:active{transform:scale(0.97)}.emerg-urgent{display:flex;align-items:center;justify-content:center;width:100%;min-height:56px;padding:15px 20px;border-radius:14px;border:none;background:${E.crimsonL};color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit}`;
@@ -25,14 +28,24 @@ export default function EmergencyMobilePage() {
   const{currentPet,setCurrentPet,pets:contextPets}=usePillarContext();
   usePlatformTracking({pillar:'emergency',pet:currentPet});
   const{request}=useConcierge({pet:currentPet,pillar:'emergency'});
+  const{addToCart}=useCart();
   const[loading,setLoading]=useState(true);
+  const[selectedProduct,setSelectedProduct]=useState(null);
+  const[products,setProducts]=useState([]);
   useEffect(()=>{if(contextPets!==undefined)setLoading(false);if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]);},[contextPets,currentPet,setCurrentPet]);
+  useEffect(()=>{
+    if(!currentPet?.id)return;
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=emergency&limit=200`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
+      .then(r=>r.ok?r.json():null).then(d=>{if(d?.products)setProducts(d.products);}).catch(()=>{});
+  },[currentPet?.id,token]);
+  const handleAddToCart=useCallback(p=>{addToCart({id:p.id||p._id,name:p.name,price:p.price||0,image:p.image_url||p.images?.[0],pillar:'emergency',quantity:1});},[addToCart]);
   if(loading)return<PillarPageLayout pillar="emergency" hideHero hideNavigation><div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontSize:36,marginBottom:12}}>🚨</div><div>Loading emergency info…</div></div></div></PillarPageLayout>;
   const petName=currentPet?.name||'your dog';
   const allergies=currentPet?getAllergies(currentPet):[];
   return(
     <PillarPageLayout pillar="emergency" hideHero hideNavigation>
       <div className="emerg" data-testid="emergency-mobile"><style>{CSS_E}</style>
+        {selectedProduct&&<ProductDetailModal product={selectedProduct?.raw||selectedProduct} isOpen={!!selectedProduct} onClose={()=>setSelectedProduct(null)} petName={petName} pillarColor={E.crimsonL}/>}
         <div style={{background:`linear-gradient(160deg,${E.dark} 0%,${E.crimson} 50%,${E.crimsonL} 100%)`,padding:'20px 16px 24px'}}>
           <div style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,0.5)',letterSpacing:'0.1em',marginBottom:2}}>THE DOGGY COMPANY</div>
           <div style={{fontSize:22,fontWeight:700,color:'#fff',marginBottom:12}}>🚨 Emergency</div>
@@ -63,6 +76,9 @@ export default function EmergencyMobilePage() {
         </div>
 
         {currentPet&&<div style={{padding:'0 16px 24px'}}><GuidedEmergencyPaths pet={currentPet}/></div>}
+
+        {products.length>0&&(<div style={{padding:'0 16px 24px'}}><div style={{fontSize:18,fontWeight:700,marginBottom:12}}>Emergency Kit for {petName}</div><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>{products.slice(0,20).map(p=><SharedProductCard key={p.id||p._id||p.name} product={p} pillar="emergency" selectedPet={currentPet} onAddToCart={()=>handleAddToCart(p)} onClick={()=>{vibe();setSelectedProduct(p);}} />)}</div></div>)}
+
         <div style={{padding:'0 16px 24px'}}><EmergencyNearMe pet={currentPet} onBook={vet=>{tdc.request(`Emergency vet: ${vet}`,{pillar:'emergency',channel:'emergency_nearme',pet:currentPet,urgency:'critical'});}}/></div>
         {currentPet&&<div style={{padding:'0 16px 24px'}}><MiraImaginesBreed pet={currentPet} pillar="emergency" token={token}/></div>}
 

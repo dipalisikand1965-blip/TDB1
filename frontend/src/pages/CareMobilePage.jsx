@@ -15,11 +15,12 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import SoulMadeModal from '../components/SoulMadeModal';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
-import { ProductDetailModal } from '../components/ProductCard';
+import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import CareCategoryStrip from '../components/care/CareCategoryStrip';
 import GuidedCarePaths from '../components/care/GuidedCarePaths';
 import CareConciergeSection from '../components/care/CareConciergeSection';
 import CareNearMe from '../components/care/CareNearMe';
+import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
 
 const G = {
   green:  '#2D6A4F',
@@ -111,10 +112,13 @@ export default function CareMobilePage() {
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
   usePlatformTracking({ pillar:'care', pet:currentPet });
   const { request } = useConcierge({ pet:currentPet, pillar:'care' });
+  const { addToCart } = useCart();
   const [loading, setLoading] = useState(true);
   const [intakeOpen, setIntakeOpen] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [prodLoading, setProdLoading] = useState(false);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -126,6 +130,33 @@ export default function CareMobilePage() {
     window.addEventListener('soulScoreUpdated', h);
     return () => window.removeEventListener('soulScoreUpdated', h);
   }, []);
+
+  // Fetch products for this pillar
+  useEffect(() => {
+    if (!currentPet?.id) return;
+    setProdLoading(true);
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=care&limit=200`, {
+      headers: token ? { Authorization:`Bearer ${token}` } : {}
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.products?.length) {
+          const petBreed = (currentPet.breed || '').toLowerCase();
+          const filtered = data.products.filter(p => {
+            const bTags = (p.breed_tags || []).map(b => b.toLowerCase());
+            return bTags.length === 0 || bTags.includes(petBreed);
+          });
+          setProducts(filtered);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setProdLoading(false));
+  }, [currentPet?.id, currentPet?.breed, token]);
+
+  const handleAddToCart = useCallback(product => {
+    addToCart({ id: product.id || product._id, name: product.name, price: product.price || 0, image: product.image_url || product.images?.[0], pillar: 'care', quantity: 1 });
+    tdc.view({ product: product.name, pillar: 'care', pet: currentPet, channel: 'care_mobile_add_to_cart' });
+  }, [addToCart, currentPet]);
 
   if (loading) return <PillarPageLayout pillar="care" hideHero hideNavigation><div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}><div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🌿</div><div>Loading care picks…</div></div></div></PillarPageLayout>;
 
@@ -178,7 +209,30 @@ export default function CareMobilePage() {
         </div>
 
         <CareMiraBar pet={currentPet} onOpen={() => {}} />
+
+        {/* ── Product Grid ── */}
+        {prodLoading ? (
+          <div style={{ padding:'0 16px 20px', textAlign:'center', color:G.taupe }}>Loading care products…</div>
+        ) : products.length > 0 && (
+          <div style={{ padding:'0 16px 24px' }}>
+            <div style={{ fontSize:18, fontWeight:700, marginBottom:12 }}>Care Products for {petName}</div>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+              {products.slice(0, 20).map(p => (
+                <SharedProductCard
+                  key={p.id || p._id || p.name}
+                  product={p}
+                  pillar="care"
+                  selectedPet={currentPet}
+                  onAddToCart={() => handleAddToCart(p)}
+                  onClick={() => { vibe(); setSelectedProduct(p); }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         <div style={{ padding:'0 16px 24px' }}><MiraImaginesBreed pet={currentPet} pillar="care" token={token} /></div>
+        <div style={{ padding:'0 16px 24px' }}><PersonalisedBreedSection pet={currentPet} pillar="care" /></div>
         <div style={{ padding:'0 16px 24px' }}><GuidedCarePaths pet={currentPet} /></div>
         <div style={{ padding:'0 16px 24px' }}>
           <CareNearMe pet={currentPet} onBook={venue => { tdc.request(`Book care venue for ${petName}: ${venue}`, { pillar:'care', channel:'care_nearme', pet:currentPet }); }} />

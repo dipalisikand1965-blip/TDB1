@@ -2,18 +2,22 @@
  * AdoptMobilePage.jsx — /adopt (mobile)
  * Colour: Warm brown #3D1A00 → #A0522D
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
 import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
+import { API_URL } from '../utils/api';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import GuidedAdoptPaths from '../components/adopt/GuidedAdoptPaths';
 import AdoptNearMe from '../components/adopt/AdoptNearMe';
 import SoulMadeModal from '../components/SoulMadeModal';
+import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
+import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 
 const A={brown:'#3D1A00',brownL:'#A0522D',brownXL:'#CD853F',cream:'#FFF9F5',border:'#F5DEB3',dark:'#1A0A00',taupe:'#7A5A3A'};
 const CSS_A=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');.adopt{font-family:'DM Sans',-apple-system,sans-serif;background:${A.cream};color:${A.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}.adopt-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${A.brown},${A.brownL});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}.adopt-cta:active{transform:scale(0.97)}`;
@@ -24,15 +28,25 @@ export default function AdoptMobilePage() {
   const{currentPet,setCurrentPet,pets:contextPets}=usePillarContext();
   usePlatformTracking({pillar:'adopt',pet:currentPet});
   const{request}=useConcierge({pet:currentPet,pillar:'adopt'});
+  const{addToCart}=useCart();
   const[loading,setLoading]=useState(true);
   const[soulMadeOpen,setSoulMadeOpen]=useState(false);
+  const[selectedProduct,setSelectedProduct]=useState(null);
+  const[products,setProducts]=useState([]);
   useEffect(()=>{if(contextPets!==undefined)setLoading(false);if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]);},[contextPets,currentPet,setCurrentPet]);
+  useEffect(()=>{
+    if(!currentPet?.id)return;
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=adopt&limit=200`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
+      .then(r=>r.ok?r.json():null).then(d=>{if(d?.products)setProducts(d.products);}).catch(()=>{});
+  },[currentPet?.id,token]);
+  const handleAddToCart=useCallback(p=>{addToCart({id:p.id||p._id,name:p.name,price:p.price||0,image:p.image_url||p.images?.[0],pillar:'adopt',quantity:1});},[addToCart]);
   if(loading)return<PillarPageLayout pillar="adopt" hideHero hideNavigation><div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontSize:36,marginBottom:12}}>🐾</div><div>Loading adoption paths…</div></div></div></PillarPageLayout>;
   const petName=currentPet?.name||'your dog';
   return(
     <PillarPageLayout pillar="adopt" hideHero hideNavigation>
       <div className="adopt" data-testid="adopt-mobile"><style>{CSS_A}</style>
         {soulMadeOpen&&<SoulMadeModal pet={currentPet} pillar="adopt" pillarColor={A.brownL} pillarLabel="Adopt" onClose={()=>setSoulMadeOpen(false)}/>}
+        {selectedProduct&&<ProductDetailModal product={selectedProduct?.raw||selectedProduct} isOpen={!!selectedProduct} onClose={()=>setSelectedProduct(null)} petName={petName} pillarColor={A.brownL}/>}
         <div style={{background:`linear-gradient(160deg,${A.dark} 0%,${A.brown} 50%,${A.brownL} 100%)`,padding:'20px 16px 24px'}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
             <div><div style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,0.5)',letterSpacing:'0.1em',marginBottom:2}}>THE DOGGY COMPANY</div><div style={{fontSize:22,fontWeight:700,color:'#fff'}}>🐾 Adopt</div></div>
@@ -48,6 +62,17 @@ export default function AdoptMobilePage() {
           <button className="adopt-cta">Start Adoption Journey →</button>
         </div>
         {currentPet&&<div style={{padding:'0 16px 24px'}}><GuidedAdoptPaths pet={currentPet}/></div>}
+
+        {products.length > 0 && (
+          <div style={{padding:'0 16px 24px'}}>
+            <div style={{fontSize:18,fontWeight:700,marginBottom:12}}>Adoption Essentials for {petName}</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+              {products.slice(0,20).map(p=><SharedProductCard key={p.id||p._id||p.name} product={p} pillar="adopt" selectedPet={currentPet} onAddToCart={()=>handleAddToCart(p)} onClick={()=>{vibe();setSelectedProduct(p);}} />)}
+            </div>
+          </div>
+        )}
+
+        {currentPet&&<div style={{padding:'0 16px 24px'}}><MiraImaginesBreed pet={currentPet} pillar="adopt" token={token}/></div>}
         <div style={{padding:'0 16px 24px'}}><AdoptNearMe pet={currentPet} onBook={shelter=>{tdc.request(`Adoption enquiry: ${shelter}`,{pillar:'adopt',channel:'adopt_nearme',pet:currentPet});}}/></div>
         <div style={{margin:'0 16px 24px',background:A.dark,borderRadius:24,padding:20}}>
           <div style={{display:'inline-flex',background:'rgba(205,133,63,0.2)',border:'1px solid rgba(205,133,63,0.4)',borderRadius:999,padding:'5px 14px',color:A.brownXL,fontSize:12,fontWeight:600,marginBottom:12}}>🐾 Adoption Concierge®</div>
