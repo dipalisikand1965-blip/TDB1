@@ -136,6 +136,26 @@
 - Confirmed: Bundles (BundlesManager → bundles_master → pillar page): YES
 - Confirmed: Soul products → MUST use "Add to catalog" to appear on pillar pages (separate collection)
 
+### Fix 5 — ProductBoxEditor Save — Critical Bug Fixed
+- `saveProduct` in `UnifiedProductBox.jsx` now saves ALL fields including:
+  - `pillar` (primary pillar), `approval_status` (Status in Pillar)
+  - `commerce_ops` (pricing, margin), `basics` (nested metadata)
+  - `pillars_occasions` (secondary pillars), `breed`, `life_stage`, `pet_size`
+  - `sub_category`, `allergens`, `soul_tier`
+- Previously: Status in Pillar and Secondary Pillars in Product Box were NOT persisting on save
+
+### Fix 6 — Quick Add Button on All Pillar Managers
+- Added "Quick Add" dropdown in PillarManager header (+ Add Product, + Add Service, + Add Bundle)
+- Clicking switches to the correct tab AND triggers the create modal
+- `PillarProductsTab`: accepts `createTrigger` prop, opens create modal when triggered
+- `PillarBundlesTab`: accepts `createTrigger` prop, calls openCreate()
+- `PillarServicesTab`: accepts `createTrigger` prop + new inline "Add Service" modal with name, description, price, category fields
+
+### Documentation
+- Updated `complete-documentation.html` — full exhaustive handover document
+- Updated `ROADMAP.md` — deployment-aware priority order
+- Updated `PRD.md` — session 4 reflected
+
 
 
 - Implemented `useResize` hook + `isDesktop` split pattern

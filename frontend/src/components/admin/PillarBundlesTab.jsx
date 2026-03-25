@@ -34,7 +34,7 @@ const emptyBundle = {
   active: true,
 };
 
-const PillarBundlesTab = ({ pillar, pillarName = '', accentColor = 'green' }) => {
+const PillarBundlesTab = ({ pillar, pillarName = '', accentColor = 'green', createTrigger = 0 }) => {
   const [bundles, setBundles] = useState([]);
   const [total, setTotal] = useState(0);
   const [pages, setPages] = useState(1);
@@ -69,6 +69,11 @@ const PillarBundlesTab = ({ pillar, pillarName = '', accentColor = 'green' }) =>
   }, [pillar, page, search]);
 
   useEffect(() => { fetchBundles(1, ''); }, [pillar]);
+  // Quick Add trigger from PillarManager
+  useEffect(() => {
+    if (createTrigger > 0) openCreate();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [createTrigger]);
 
   const handleSearch = () => {
     setPage(1);

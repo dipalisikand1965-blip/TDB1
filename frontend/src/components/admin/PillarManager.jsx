@@ -4,9 +4,10 @@ import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import {
   Bell, Building2, Package, Briefcase, Gift, Sparkles, Settings,
-  RefreshCw, Loader2, Clock
+  RefreshCw, Loader2, Clock, Plus, ChevronDown
 } from 'lucide-react';
 import PillarProductsTab from './PillarProductsTab';
 import PillarServicesTab from './PillarServicesTab';
@@ -50,6 +51,10 @@ export default function PillarManager({
   const [requests, setRequests]             = useState([]);
   const [loadingRequests, setLoadingRequests] = useState(false);
   const [requestSearch, setRequestSearch]   = useState('');
+  // Quick Add triggers — incrementing signals child tab to open create modal
+  const [productCreateTrigger, setProductCreateTrigger] = useState(0);
+  const [serviceCreateTrigger, setServiceCreateTrigger] = useState(0);
+  const [bundleCreateTrigger, setBundleCreateTrigger]   = useState(0);
 
   const fetchRequests = useCallback(async () => {
     setLoadingRequests(true);
@@ -79,14 +84,45 @@ export default function PillarManager({
   return (
     <div className="space-y-4 p-4">
       {/* Header */}
-      <div className="flex items-center gap-3 pb-2 border-b">
-        <span className="text-3xl">{pillarEmoji}</span>
-        <div>
-          <h2 className="text-xl font-bold text-gray-900">{pillarLabel} Manager</h2>
-          {pillarDescription && (
-            <p className="text-sm text-gray-500 mt-0.5">{pillarDescription}</p>
-          )}
+      <div className="flex items-center justify-between pb-2 border-b">
+        <div className="flex items-center gap-3">
+          <span className="text-3xl">{pillarEmoji}</span>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">{pillarLabel} Manager</h2>
+            {pillarDescription && (
+              <p className="text-sm text-gray-500 mt-0.5">{pillarDescription}</p>
+            )}
+          </div>
         </div>
+        {/* Quick Add shortcut */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white" data-testid={`${pillar}-quick-add`}>
+              <Plus className="w-4 h-4 mr-1" /> Quick Add
+              <ChevronDown className="w-3 h-3 ml-1 opacity-70" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem
+              onClick={() => { setActiveTab('products'); setProductCreateTrigger(n => n + 1); }}
+              data-testid={`${pillar}-quick-add-product`}
+            >
+              <Package className="w-4 h-4 mr-2 text-purple-600" /> + Add Product
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => { setActiveTab('services'); setServiceCreateTrigger(n => n + 1); }}
+              data-testid={`${pillar}-quick-add-service`}
+            >
+              <Briefcase className="w-4 h-4 mr-2 text-blue-600" /> + Add Service
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => { setActiveTab('bundles'); setBundleCreateTrigger(n => n + 1); }}
+              data-testid={`${pillar}-quick-add-bundle`}
+            >
+              <Gift className="w-4 h-4 mr-2 text-green-600" /> + Add Bundle
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {noteText && (
@@ -212,17 +248,17 @@ export default function PillarManager({
 
         {/* ── PRODUCTS ─────────────────────────────────────────────────── */}
         <TabsContent value="products" className="mt-4">
-          <PillarProductsTab pillar={pillar} pillarName={pillarLabel} />
+          <PillarProductsTab pillar={pillar} pillarName={pillarLabel} createTrigger={productCreateTrigger} />
         </TabsContent>
 
         {/* ── SERVICES ─────────────────────────────────────────────────── */}
         <TabsContent value="services" className="mt-4">
-          <PillarServicesTab pillar={pillar} pillarName={pillarLabel} />
+          <PillarServicesTab pillar={pillar} pillarName={pillarLabel} createTrigger={serviceCreateTrigger} />
         </TabsContent>
 
         {/* ── BUNDLES ──────────────────────────────────────────────────── */}
         <TabsContent value="bundles" className="mt-4">
-          <PillarBundlesTab pillar={pillar} pillarName={pillarLabel} />
+          <PillarBundlesTab pillar={pillar} pillarName={pillarLabel} createTrigger={bundleCreateTrigger} />
         </TabsContent>
 
         {/* ── TIPS ─────────────────────────────────────────────────────── */}
