@@ -22,6 +22,7 @@ import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
+import '../styles/mobile-design-system.css';
 
 const G = {
   purple:'#7C3AED', mid:'#5B21B6', deep:'#2E1065', light:'#DDD6FE',
@@ -29,7 +30,7 @@ const G = {
   darkText:'#2E1065', mutedText:'#7C3AED', border:'rgba(124,58,237,0.18)',
 };
 const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
-.learn-m{font-family:'DM Sans',-apple-system,sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+.learn-m{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .learn-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${G.mid},${G.purple});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}
 .learn-cta:active{transform:scale(0.97)}`;
 
@@ -78,8 +79,8 @@ function VideoCard({ video, onPlay }) {
         </div>
       </div>
       <div style={{ padding:'10px', background:'#fff' }}>
-        <div style={{ fontSize:12, fontWeight:600, color:G.darkText, lineHeight:1.4 }}>{(video.title||'').slice(0, 60)}{video.title?.length > 60 ? '…' : ''}</div>
-        {video.channel && <div style={{ fontSize:11, color:G.mutedText, marginTop:3 }}>{video.channel}</div>}
+        <div style={{ fontSize:14, fontWeight:600, color:G.darkText, lineHeight:1.4 }}>{(video.title||'').slice(0, 60)}{video.title?.length > 60 ? '…' : ''}</div>
+        {video.channel && <div style={{ fontSize:14, color:G.mutedText, marginTop:3 }}>{video.channel}</div>}
       </div>
     </div>
   );
@@ -139,7 +140,7 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook }) {
         <div style={{ width:40, height:40, borderRadius:12, background:dim.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>{dim.icon}</div>
         <div>
           <div style={{ fontSize:15, fontWeight:700, color:dim.accent }}>{dim.label}</div>
-          <div style={{ fontSize:11, color:'#666' }}>for {petName}</div>
+          <div style={{ fontSize:14, color:'#666' }}>for {petName}</div>
         </div>
       </div>
 
@@ -147,7 +148,7 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook }) {
       <div style={{ display:'flex', background:G.pale, padding:4 }}>
         {tabs.map(t => (
           <button key={t.id} onClick={() => setDimTab(t.id)}
-            style={{ flex:1, padding:'8px', borderRadius:10, border:'none', fontSize:12, fontWeight:600, cursor:'pointer',
+            style={{ flex:1, padding:'8px', borderRadius:10, border:'none', fontSize:14, fontWeight:600, cursor:'pointer',
               background:dimTab===t.id?G.purple:G.pale, color:dimTab===t.id?'#fff':G.mutedText }}>
             {t.label}
           </button>
@@ -158,7 +159,7 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook }) {
         {/* Products */}
         {dimTab === 'products' && (
           products.length === 0 ? (
-            <div style={{ textAlign:'center', padding:'20px', color:'#888', fontSize:13 }}>Loading {dim.label} products for {petName}…</div>
+            <div style={{ textAlign:'center', padding:'20px', color:'#888', fontSize:14 }}>Loading {dim.label} products for {petName}…</div>
           ) : (
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
               {products.slice(0, 10).map(p => (
@@ -173,9 +174,9 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook }) {
         {/* Videos */}
         {dimTab === 'videos' && (
           videoLoading ? (
-            <div style={{ textAlign:'center', padding:'20px', color:'#888', fontSize:13 }}>🎬 Loading {dim.label} videos…</div>
+            <div style={{ textAlign:'center', padding:'20px', color:'#888', fontSize:14 }}>🎬 Loading {dim.label} videos…</div>
           ) : videos.length === 0 ? (
-            <div style={{ textAlign:'center', padding:'20px', color:'#888', fontSize:13 }}>Videos loading or unavailable — try again.</div>
+            <div style={{ textAlign:'center', padding:'20px', color:'#888', fontSize:14 }}>Videos loading or unavailable — try again.</div>
           ) : (
             <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
               {videos.map((v, i) => <VideoCard key={v.id||i} video={v} onPlay={v => window.open(v.url, '_blank')} />)}
@@ -192,12 +193,12 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook }) {
                   <span style={{ fontSize:22 }}>{svc.icon}</span>
                   <div>
                     <div style={{ fontSize:14, fontWeight:700, color:G.darkText }}>{svc.name}</div>
-                    <div style={{ fontSize:12, color:G.mutedText }}>{svc.price}</div>
+                    <div style={{ fontSize:14, color:G.mutedText }}>{svc.price}</div>
                   </div>
                 </div>
-                <div style={{ fontSize:12, color:'#555', lineHeight:1.5, marginBottom:10 }}>{svc.desc}</div>
+                <div style={{ fontSize:14, color:'#555', lineHeight:1.5, marginBottom:10 }}>{svc.desc}</div>
                 <button onClick={() => { vibe('medium'); tdc.book({ service:svc.name, pillar:'learn', pet, channel:'learn_dim_book' }); if (onBook) onBook(svc.name); }}
-                  style={{ width:'100%', minHeight:40, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.purple})`, color:'#fff', fontSize:13, fontWeight:600, cursor:'pointer' }}>
+                  style={{ width:'100%', minHeight:40, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.purple})`, color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
                   Book via Concierge® →
                 </button>
               </div>
@@ -241,7 +242,7 @@ export default function LearnMobilePage() {
 
   return (
     <PillarPageLayout pillar="learn" hideHero hideNavigation>
-      <div className="learn-m" data-testid="learn-mobile">
+      <div className="learn-m mobile-page-container" data-testid="learn-mobile">
         <style>{CSS}</style>
 
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="learn" pillarColor={G.purple} pillarLabel="Learn" onClose={() => setSoulMadeOpen(false)} />}
@@ -251,12 +252,12 @@ export default function LearnMobilePage() {
         <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'32px 16px 20px' }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
-              <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
+              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🎓 Learn</div>
             </div>
             {contextPets?.length > 1 && (
               <select value={currentPet?.id} onChange={e => { vibe(); setCurrentPet(contextPets.find(p => p.id === e.target.value)); }}
-                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:13 }}>
+                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:14 }}>
                 {contextPets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             )}
@@ -269,7 +270,7 @@ export default function LearnMobilePage() {
 
         {/* Mira Bar */}
         <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
-          <div style={{ fontSize:11, fontWeight:700, color:`rgba(221,214,254,0.9)`, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S LEARNING</div>
+          <div style={{ fontSize:14, fontWeight:700, color:`rgba(221,214,254,0.9)`, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S LEARNING</div>
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
             "A well-trained dog is a happy dog. Choose a dimension to explore products, videos, and book sessions."
           </div>
@@ -290,7 +291,7 @@ export default function LearnMobilePage() {
                   border:`2px solid ${activeDim===dim.id?dim.accent:G.border}`,
                   background:activeDim===dim.id?dim.bg:'#fff', cursor:'pointer' }}>
                 <span style={{ fontSize:20 }}>{dim.icon}</span>
-                <span style={{ fontSize:10, fontWeight:700, color:activeDim===dim.id?dim.accent:G.darkText, textAlign:'center', lineHeight:1.2 }}>{dim.label}</span>
+                <span style={{ fontSize:14, fontWeight:700, color:activeDim===dim.id?dim.accent:G.darkText, textAlign:'center', lineHeight:1.2 }}>{dim.label}</span>
               </button>
             ))}
           </div>
@@ -329,7 +330,7 @@ export default function LearnMobilePage() {
 
         {/* SoulMade */}
         <div style={{ margin:'0 16px 24px', background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
-          <div style={{ fontSize:10, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · LEARNING TOOLS FOR {petName.toUpperCase()}</div>
+          <div style={{ fontSize:14, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · LEARNING TOOLS FOR {petName.toUpperCase()}</div>
           <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>Personalised training materials for {petName}.</div>
           <button className="learn-cta">Explore Soul Made →</button>
         </div>

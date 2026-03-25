@@ -20,7 +20,7 @@ const G = {
   cream:'#F0F2FF', border:'#C5CFF0', dark:'#060D1E', taupe:'#4A557A',
 };
 const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
-.svc{font-family:'DM Sans',-apple-system,sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+.svc{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .svc-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${G.navy},${G.navyL});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}
 .svc-cta:active{transform:scale(0.97)}`;
 
@@ -75,7 +75,7 @@ function ServiceGroupCard({ group, pet, token, onBook }) {
         </div>
         <div style={{ flex:1 }}>
           <div style={{ fontSize:16, fontWeight:700, color:G.dark, marginBottom:2 }}>{group.label}</div>
-          <div style={{ fontSize:12, color:G.taupe }}>{group.desc}</div>
+          <div style={{ fontSize:14, color:G.taupe }}>{group.desc}</div>
         </div>
         <div style={{ fontSize:20, color:G.taupe, transform:expanded?'rotate(180deg)':'rotate(0deg)', transition:'transform 0.2s', flexShrink:0 }}>
           ›
@@ -88,13 +88,13 @@ function ServiceGroupCard({ group, pet, token, onBook }) {
           {loading && (
             <div style={{ textAlign:'center', padding:'24px 0', color:'#888' }}>
               <div style={{ fontSize:24, marginBottom:8 }}>{group.icon}</div>
-              <div style={{ fontSize:13 }}>Loading {group.label} services…</div>
+              <div style={{ fontSize:14 }}>Loading {group.label} services…</div>
             </div>
           )}
 
           {!loading && services.length === 0 && fetched && (
             <div style={{ padding:'16px 0' }}>
-              <div style={{ fontSize:13, color:G.taupe, marginBottom:12, fontStyle:'italic' }}>
+              <div style={{ fontSize:14, color:G.taupe, marginBottom:12, fontStyle:'italic' }}>
                 {group.label} services available via Concierge®
               </div>
               <button onClick={() => onBook({ name:group.label, icon:group.icon, colour:group.colour })}
@@ -112,21 +112,21 @@ function ServiceGroupCard({ group, pet, token, onBook }) {
                     style={{ display:'flex', alignItems:'center', gap:12, padding:'12px', background:`${group.colour}08`, borderRadius:14, border:`1px solid ${group.colour}20` }}>
                     <div style={{ flex:1 }}>
                       <div style={{ fontSize:14, fontWeight:600, color:G.dark, marginBottom:2 }}>{svc.name}</div>
-                      {svc.description && <div style={{ fontSize:12, color:G.taupe }}>{svc.description.slice(0, 80)}{svc.description.length > 80 ? '…' : ''}</div>}
-                      {svc.price && <div style={{ fontSize:12, fontWeight:700, color:group.colour, marginTop:2 }}>
+                      {svc.description && <div style={{ fontSize:14, color:G.taupe }}>{svc.description.slice(0, 80)}{svc.description.length > 80 ? '…' : ''}</div>}
+                      {svc.price && <div style={{ fontSize:14, fontWeight:700, color:group.colour, marginTop:2 }}>
                         {typeof svc.price === 'number' ? `₹${svc.price.toLocaleString()}` : svc.price}
                       </div>}
                     </div>
                     <button onClick={() => onBook(svc)}
                       data-testid={`svc-book-${group.id}-${i}`}
-                      style={{ flexShrink:0, background:group.colour, border:'none', borderRadius:20, padding:'7px 14px', fontSize:12, fontWeight:700, color:'#fff', cursor:'pointer', whiteSpace:'nowrap' }}>
+                      style={{ flexShrink:0, background:group.colour, border:'none', borderRadius:20, padding:'7px 14px', fontSize:14, fontWeight:700, color:'#fff', cursor:'pointer', whiteSpace:'nowrap' }}>
                       Book →
                     </button>
                   </div>
                 ))}
               </div>
               <button onClick={() => onBook({ name:`${group.label} — All Services`, icon:group.icon, colour:group.colour })}
-                style={{ marginTop:12, width:'100%', minHeight:44, borderRadius:12, border:`1.5px solid ${group.colour}`, background:'#fff', fontSize:13, fontWeight:600, color:group.colour, cursor:'pointer' }}>
+                style={{ marginTop:12, width:'100%', minHeight:44, borderRadius:12, border:`1.5px solid ${group.colour}`, background:'#fff', fontSize:14, fontWeight:600, color:group.colour, cursor:'pointer' }}>
                 See all {group.label} services →
               </button>
             </div>
@@ -138,6 +138,7 @@ function ServiceGroupCard({ group, pet, token, onBook }) {
 }
 
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
+import '../styles/mobile-design-system.css';
 
 export default function ServicesMobilePage() {
   const { token } = useAuth();
@@ -172,7 +173,7 @@ export default function ServicesMobilePage() {
 
   if (!currentPet) return (
     <PillarPageLayout pillar="services" hideHero hideNavigation>
-      <div className="svc"><style>{CSS}</style>
+      <div className="svc mobile-page-container"><style>{CSS}</style>
         <div style={{ padding:'24px 16px', textAlign:'center' }}>
           <div style={{ background:'#fff', border:`1px solid ${G.border}`, borderRadius:22, padding:'32px 20px' }}>
             <div style={{ fontSize:44, marginBottom:14 }}>🤝</div>
@@ -188,19 +189,19 @@ export default function ServicesMobilePage() {
 
   return (
     <PillarPageLayout pillar="services" hideHero hideNavigation>
-      <div className="svc" data-testid="services-mobile">
+      <div className="svc mobile-page-container" data-testid="services-mobile">
         <style>{CSS}</style>
 
         {/* Hero */}
         <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.navy} 50%,${G.navyL} 100%)`, padding:'32px 16px 24px' }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
-              <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
+              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🤝 Services</div>
             </div>
             {contextPets?.length > 1 && (
               <select value={currentPet?.id} onChange={e => { vibe(); setCurrentPet(contextPets.find(p => p.id === e.target.value)); }}
-                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:13 }}>
+                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:14 }}>
                 {contextPets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             )}
@@ -222,7 +223,7 @@ export default function ServicesMobilePage() {
 
         {/* Mira Bar */}
         <div style={{ margin:'0 16px 20px', background:G.dark, borderRadius:20, padding:16 }}>
-          <div style={{ fontSize:11, fontWeight:700, color:'rgba(91,127,212,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S SERVICES</div>
+          <div style={{ fontSize:14, fontWeight:700, color:'rgba(91,127,212,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S SERVICES</div>
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
             "I know {petName}'s breed and health history. Every service here is matched to what they actually need."
           </div>
@@ -252,7 +253,7 @@ export default function ServicesMobilePage() {
 
         {/* Concierge CTA */}
         <div style={{ margin:'0 16px 24px', background:G.dark, borderRadius:24, padding:20 }}>
-          <div style={{ display:'inline-flex', background:'rgba(91,127,212,0.2)', border:'1px solid rgba(91,127,212,0.4)', borderRadius:999, padding:'5px 14px', color:G.navyXL, fontSize:12, fontWeight:600, marginBottom:12 }}>🤝 Concierge®</div>
+          <div style={{ display:'inline-flex', background:'rgba(91,127,212,0.2)', border:'1px solid rgba(91,127,212,0.4)', borderRadius:999, padding:'5px 14px', color:G.navyXL, fontSize:14, fontWeight:600, marginBottom:12 }}>🤝 Concierge®</div>
           <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.2, marginBottom:10, fontFamily:'Georgia,serif' }}>Every service arranged by your Concierge.</div>
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>Vets, groomers, trainers, nutritionists. One message and it's done.</div>
           <button onClick={() => { vibe('medium'); request(`Services for ${petName}`, { channel:'services_cta' }); }}

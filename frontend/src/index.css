@@ -13,6 +13,9 @@
 /* Import iOS Gold Standard Premium styles for Celebrate & Dine */
 @import './styles/ios-premium.css';
 
+/* Import Mobile Design System - iOS quality fonts & bottom sheets */
+@import './styles/mobile-design-system.css';
+
 /* ============================================
    GUIDED PATHS GRID RESPONSIVE
    ============================================ */

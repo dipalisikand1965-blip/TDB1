@@ -23,6 +23,9 @@ import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
+import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
+import { applyMiraFilter } from '../hooks/useMiraFilter';
+import '../styles/mobile-design-system.css';
 
 const G = {
   sage:'#40916C', deepMid:'#1B4332', mid:'#2D6A4F', light:'#74C69D',
@@ -30,13 +33,6 @@ const G = {
   dark:'#0A1F13', darkText:'#1B4332', mutedText:'#40916C',
   border:'rgba(64,145,108,0.18)',
 };
-
-import '../styles/mobile-design-system.css';
-
-function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'?[12]:[6]); }
-
-import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
-import { applyMiraFilter } from '../hooks/useMiraFilter';
 
 function getAllergies(pet) {
   const s = new Set();
@@ -58,6 +54,8 @@ function getCoatType(pet) {
   return 'medium';
 }
 function getHealthCondition(pet) { return pet?.health_condition || pet?.medical_condition || null; }
+function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'?[12]:[6]); }
+
 const KNOWN_BREEDS = ['american bully','beagle','border collie','boxer','cavalier','chihuahua','chow chow','dachshund','dalmatian','doberman','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','jack russell','labrador','lhasa apso','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
 function filterBreedProducts(products, petBreed) {
   const pl=(petBreed||'').toLowerCase(); const pw=pl.split(/\s+/).filter(w=>w.length>2);
@@ -130,7 +128,7 @@ export default function CareMobilePage() {
         <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deepMid} 55%,${G.mid} 100%)`, padding:'40px 20px 24px' }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
             <div>
-              <div style={{ fontSize:10, fontWeight:700, color:'rgba(255,255,255,0.6)', letterSpacing:'0.15em', marginBottom:4 }}>THE DOGGY COMPANY</div>
+              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.6)', letterSpacing:'0.15em', marginBottom:4 }}>THE DOGGY COMPANY</div>
               <div className="ios-h1" style={{ color:'#fff' }}>🌿 Care</div>
             </div>
             {contextPets?.length > 1 && (
@@ -167,7 +165,7 @@ export default function CareMobilePage() {
           <div>
             {/* Mira Bar */}
             <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
-              <div style={{ fontSize:11, fontWeight:700, color:`rgba(116,198,157,0.9)`, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S WELLNESS</div>
+              <div style={{ fontSize:14, fontWeight:700, color:`rgba(116,198,157,0.9)`, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S WELLNESS</div>
               <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
                 {allergies.length > 0
                   ? `"${petName} has ${allergies.join(' and ')} sensitivities. I've filtered all products to be safe."`
@@ -182,7 +180,7 @@ export default function CareMobilePage() {
             <div style={{ display:'flex', margin:'16px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
               {[{ id:'products', label:'🎯 All Products' }, { id:'personalised', label:'✦ Personalised' }].map(t => (
                 <button key={t.id} onClick={() => { setDimTab(t.id); setSubCat('All'); }}
-                  style={{ flex:1, padding:'9px', borderRadius:10, border:'none', fontSize:13, fontWeight:600, cursor:'pointer',
+                  style={{ flex:1, padding:'9px', borderRadius:10, border:'none', fontSize:14, fontWeight:600, cursor:'pointer',
                     background:dimTab===t.id?G.sage:G.pale, color:dimTab===t.id?'#fff':G.mutedText }}>
                   {t.label}
                 </button>
@@ -201,7 +199,7 @@ export default function CareMobilePage() {
                   <div style={{ display:'flex', gap:6, overflowX:'auto', marginBottom:12, paddingBottom:4 }}>
                     {subCats.map(cat => (
                       <button key={cat} onClick={() => setSubCat(cat)}
-                        style={{ flexShrink:0, padding:'6px 14px', borderRadius:20, fontSize:12, fontWeight:600,
+                        style={{ flexShrink:0, padding:'6px 14px', borderRadius:20, fontSize:14, fontWeight:600,
                           border:`1.5px solid ${subCat===cat?G.sage:G.border}`,
                           background:subCat===cat?G.sage:'#fff',
                           color:subCat===cat?'#fff':G.darkText, cursor:'pointer' }}>
@@ -213,7 +211,7 @@ export default function CareMobilePage() {
 
                 {/* Mira Intelligence stats */}
                 {allRaw.length > 0 && (
-                  <div style={{ display:'flex', gap:12, marginBottom:12, fontSize:12, color:'#888' }}>
+                  <div style={{ display:'flex', gap:12, marginBottom:12, fontSize:14, color:'#888' }}>
                     <span style={{ color:'#27AE60', fontWeight:700 }}>✓ {intelligent.length} safe for {petName}</span>
                     {allRaw.length - intelligent.length > 0 && (
                       <span style={{ color:'#E87722' }}>✗ {allRaw.length - intelligent.length} filtered (allergens)</span>
@@ -224,8 +222,8 @@ export default function CareMobilePage() {
                 {/* Mira's pick callout */}
                 {miraPick && (
                   <div style={{ background:'linear-gradient(135deg,rgba(255,140,66,0.1),rgba(196,77,255,0.06))', border:'1px solid rgba(255,140,66,0.3)', borderRadius:12, padding:'10px 14px', display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
-                    <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, color:'#fff', flexShrink:0 }}>✦</div>
-                    <div style={{ fontSize:13, color:'#3D1A00', lineHeight:1.4 }}>
+                    <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, color:'#fff', flexShrink:0 }}>✦</div>
+                    <div style={{ fontSize:14, color:'#3D1A00', lineHeight:1.4 }}>
                       <strong>Mira's pick:</strong> {miraPick.name}
                       {miraPick.mira_hint && <span style={{ color:'#888', marginLeft:5 }}>— {miraPick.mira_hint}</span>}
                     </div>
@@ -238,7 +236,7 @@ export default function CareMobilePage() {
                       <>
                         <div style={{ fontSize:32, marginBottom:8 }}>🛡️</div>
                         <div>Mira filtered everything here for {petName}&apos;s {allergies.join(' & ')} allergies.</div>
-                        <div style={{ marginTop:8, fontSize:13, color:'#27AE60', fontWeight:600 }}>Ask Concierge to source safe alternatives →</div>
+                        <div style={{ marginTop:8, fontSize:14, color:'#27AE60', fontWeight:600 }}>Ask Concierge to source safe alternatives →</div>
                       </>
                     ) : (
                       <>
@@ -259,7 +257,7 @@ export default function CareMobilePage() {
                       ))}
                     </div>
                     {/* Footer */}
-                    <div style={{ borderTop:`1px solid ${G.border}`, paddingTop:10, marginTop:4, display:'flex', alignItems:'center', justifyContent:'space-between', fontSize:12, color:'#888' }}>
+                    <div style={{ borderTop:`1px solid ${G.border}`, paddingTop:10, marginTop:4, display:'flex', alignItems:'center', justifyContent:'space-between', fontSize:14, color:'#888' }}>
                       <span>{products.length} items · filtered for {petName}{allergies.length > 0 ? ` · no ${allergies.join(', ')}` : ''}</span>
                     </div>
                   </>
@@ -273,7 +271,7 @@ export default function CareMobilePage() {
 
                 {/* SoulMade CTA */}
                 <div style={{ marginTop:16, background:G.dark, borderRadius:24, padding:24, cursor:'pointer', boxShadow: '0 12px 40px rgba(0,0,0,0.08)' }} onClick={() => setSoulMadeOpen(true)}>
-                  <div style={{ fontSize:10, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:10 }}>✦ SOUL MADE™ · MADE ONLY FOR {petName.toUpperCase()}</div>
+                  <div style={{ fontSize:14, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:10 }}>✦ SOUL MADE™ · MADE ONLY FOR {petName.toUpperCase()}</div>
                   <div className="ios-h2" style={{ color:'#fff', marginBottom:16 }}>{petName}'s breed-specific care, curated by Mira.</div>
                   <button className="ios-btn-primary" style={{ background: `linear-gradient(135deg,${G.mid},${G.sage})` }}>Explore Soul Made →</button>
                 </div>

@@ -149,3 +149,87 @@
   border: 1px solid rgba(0, 0, 0, 0.03);
   overflow: hidden;
 }
+
+/* ========== RESPONSIVE MODAL → BOTTOM SHEET ========== */
+/* On mobile, convert centered modals to iOS-native bottom sheets */
+@media (max-width: 768px) {
+  /* ProductDetailModal & ConciergeOnlyProductDetailModal */
+  .fixed.inset-0 > .bg-white.rounded-2xl,
+  .fixed.inset-0 > div > .bg-white.rounded-2xl {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: 88dvh !important;
+    border-radius: 28px 28px 0 0 !important;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+    animation: slideUp 0.38s cubic-bezier(0.32, 0.72, 0, 1) both;
+  }
+  
+  /* Add drag handle pseudo-element */
+  .fixed.inset-0 > .bg-white.rounded-2xl::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 5px;
+    background: #E5E7EB;
+    border-radius: 999px;
+    margin: 12px auto 0;
+  }
+  
+  /* Fix backdrop to properly center-bottom */
+  .fixed.inset-0.bg-black\/70 {
+    align-items: flex-end !important;
+    padding: 0 !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  
+  /* ServiceBookingModal overlay */
+  .fixed.inset-0.z-\[50000\] {
+    align-items: flex-end !important;
+  }
+
+  /* Grid layout → single column on mobile product modals */
+  .bg-white.rounded-2xl .grid.md\:grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Hide desktop-only grid columns on mobile */
+  .bg-white.rounded-2xl .relative.aspect-square.bg-gray-50 {
+    max-height: 45vw;
+    border-radius: 24px 24px 0 0;
+  }
+}
+
+/* ========== MOBILE HERO IMPROVEMENTS ========== */
+@media (max-width: 768px) {
+  /* Ensure hero text is visible and properly sized */
+  [class*="-m"] > div:first-child {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+  }
+  
+  /* Mira intelligence text bump */
+  .mobile-page-container [style*="font-size"] {
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* ========== LETTER SPACING IMPROVEMENTS ========== */
+.ios-eyebrow {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ========== INPUTS & FORM FIELDS ========== */
+@media (max-width: 768px) {
+  input, textarea, select {
+    font-size: 16px !important; /* Prevents iOS auto-zoom on focus */
+  }
+}
