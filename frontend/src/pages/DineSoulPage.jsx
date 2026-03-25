@@ -23,6 +23,7 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import SoulMadeModal from '../components/SoulMadeModal';
 import PetFriendlySpots from '../components/dine/PetFriendlySpots';
 import { API_URL } from '../utils/api';
+import DineSoulPageDesktopLegacy from './DineSoulPageDesktopLegacy';
 
 const C = {
   cream: '#FCF7F1',
@@ -433,12 +434,24 @@ function DineIntakeSheet({ pet, onClose, onSend }) {
 }
 
 export default function DineSoulPage() {
+  const [isDesktop, setIsDesktop] = useState(() => (typeof window !== 'undefined' ? window.innerWidth >= 1024 : false));
   const { token } = useAuth();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
   usePlatformTracking({ pillar: 'dine', pet: currentPet });
   const { request, book } = useConcierge({ pet: currentPet, pillar: 'dine' });
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  if (isDesktop) {
+    return <DineSoulPageDesktopLegacy />;
+  }
 
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState('eat');
