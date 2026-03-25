@@ -131,7 +131,7 @@ export default function MembershipPage() {
           display:"inline-block",
           background:"rgba(201,151,58,0.08)",
           border:`2px solid ${C.amber}`,
-          borderRadius:24,padding:"40px 48px",
+          borderRadius:24,padding:"clamp(20px,5vw,48px)",
           marginBottom:32,
         }}>
           <div style={{

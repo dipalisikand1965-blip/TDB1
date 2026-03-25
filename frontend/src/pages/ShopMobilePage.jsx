@@ -2,7 +2,7 @@
  * ShopMobilePage.jsx — /shop (mobile)
  * Colour: Gold #4A2800 → #C9973A
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { usePillarContext } from '../context/PillarContext';
@@ -19,8 +19,59 @@ import { useCart } from '../context/CartContext';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
 
 const S={gold:'#4A2800',goldL:'#C9973A',goldXL:'#E8B84B',cream:'#FFFBF5',border:'#F5E6C8',dark:'#1A0E00',taupe:'#7A6A4A'};
+const G={deep:"#3D1F00",mid:"#7B3F00",gold:"#C9973A",pale:"#FFF8E7",darkText:"#3D1F00",border:"rgba(201,151,58,0.20)"};
 const CSS=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');.shop{font-family:'DM Sans',-apple-system,sans-serif;background:${S.cream};color:${S.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}.shop-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${S.gold},${S.goldL});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}.shop-cta:active{transform:scale(0.97)}.no-sb{overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}.no-sb::-webkit-scrollbar{display:none}`;
 function vibe(t='light'){if(navigator?.vibrate)navigator.vibrate(t==='success'?[8,40,10]:t==='medium'?[12]:[6]);}
+
+const BAKERY_FILTERS=[{id:"all",label:"All"},{id:"cakes",label:"🎂 Cakes"},{id:"treats",label:"🍖 Treats"},{id:"hampers",label:"🎁 Hampers"},{id:"seasonal",label:"🎃 Seasonal"}];
+function DoggyBakerySection({pet,token}){
+  const[items,setItems]=useState([]);
+  const[loading,setLoading]=useState(true);
+  const[filter,setFilter]=useState("all");
+  useEffect(()=>{
+    fetch(`${API_URL}/api/service-box/services?pillar=shop&limit=200`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
+      .then(r=>r.ok?r.json():null).then(d=>{setItems(d?.services||[]);setLoading(false);}).catch(()=>setLoading(false));
+  },[token]);
+  const filtered=filter==="all"?items:items.filter(i=>{
+    const n=(i.name||"").toLowerCase();
+    if(filter==="cakes")return n.includes("cake")||n.includes("pupcake")||n.includes("dognut");
+    if(filter==="treats")return n.includes("treat")||n.includes("ladoo")||n.includes("cookie")||n.includes("biscuit");
+    if(filter==="hampers")return n.includes("hamper")||n.includes("box")||n.includes("gift");
+    if(filter==="seasonal")return n.includes("diwali")||n.includes("halloween")||n.includes("christmas")||n.includes("rakhi")||n.includes("festive");
+    return true;
+  });
+  return(
+    <div>
+      <div style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,borderRadius:16,padding:"20px",marginBottom:16,position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",top:-20,right:-20,fontSize:80,opacity:0.06}}>🎂</div>
+        <div style={{position:"relative",zIndex:1}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+            <div style={{width:40,height:40,borderRadius:"50%",background:"rgba(255,255,255,0.15)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}}>🎂</div>
+            <div><div style={{fontSize:17,fontWeight:800,color:"#fff",fontFamily:"Georgia,serif"}}>The Doggy Bakery</div><div style={{fontSize:11,color:"rgba(255,255,255,0.65)"}}>thedoggybakery.com · Dog-safe · Handmade</div></div>
+          </div>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+            {["🐾 Dog-safe","✦ Handmade","🚚 Same-day BLR+MUM","🌱 No xylitol"].map(tag=><span key={tag} style={{background:"rgba(255,255,255,0.15)",borderRadius:20,padding:"3px 10px",fontSize:10,fontWeight:600,color:"#fff"}}>{tag}</span>)}
+          </div>
+        </div>
+      </div>
+      <div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:10,padding:"10px 14px",marginBottom:12,display:"flex",gap:10,alignItems:"center"}}>
+        <span style={{fontSize:20}}>🐕</span>
+        <div style={{fontSize:12,color:G.darkText,lineHeight:1.5}}><strong>Streaties:</strong> 10% of every purchase feeds street animals. <a href="https://thedoggybakery.com/pages/streaties" target="_blank" rel="noopener noreferrer" style={{color:G.gold,fontWeight:600,textDecoration:"none"}}>Learn more →</a></div>
+      </div>
+      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}}>
+        {BAKERY_FILTERS.map(f=><button key={f.id} onClick={()=>setFilter(f.id)} style={{padding:"5px 14px",borderRadius:20,fontSize:11,fontWeight:600,border:`1px solid ${filter===f.id?G.gold:G.border}`,background:filter===f.id?G.gold:G.pale,color:filter===f.id?"#fff":G.mid||G.darkText,cursor:"pointer"}}>{f.label}</button>)}
+      </div>
+      {loading?<div style={{textAlign:"center",padding:"24px 0",color:"#888"}}><div style={{fontSize:28,marginBottom:8}}>🎂</div>Loading The Doggy Bakery…</div>:filtered.length===0?<div style={{textAlign:"center",padding:"24px 0",color:"#888"}}>No items found. <a href="https://thedoggybakery.com" target="_blank" rel="noopener noreferrer" style={{color:G.gold,textDecoration:"none"}}>Visit thedoggybakery.com →</a></div>:(
+        <>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            {filtered.slice(0,20).map(item=><SharedProductCard key={item.id||item._id} product={item} pillar="shop" selectedPet={pet}/>)}
+          </div>
+          <a href="https://thedoggybakery.com" target="_blank" rel="noopener noreferrer" style={{display:"block",textAlign:"center",marginTop:12,padding:"12px",borderRadius:10,background:G.pale,border:`1px solid ${G.border}`,color:G.mid||G.darkText,fontSize:13,fontWeight:600,textDecoration:"none"}}>See all {items.length} products on thedoggybakery.com →</a>
+        </>
+      )}
+    </div>
+  );
+}
 
 export default function ShopMobilePage() {
   const{token}=useAuth();const navigate=useNavigate();
@@ -91,6 +142,14 @@ export default function ShopMobilePage() {
           <div style={{fontSize:20,fontWeight:700,color:'#fff',marginBottom:8}}>{petName}&apos;s face. On bandanas, tote bags, ID tags and more.</div>
           <button className="shop-cta">Make something only {petName} has →</button>
         </div>
+
+        {/* The Doggy Bakery Section */}
+        <div style={{margin:'0 16px 24px'}}>
+          <div style={{fontSize:20,fontWeight:700,marginBottom:4,color:S.dark}}>The Doggy Bakery</div>
+          <div style={{fontSize:14,color:S.taupe,marginBottom:16}}>Dog-safe treats, cakes & hampers — handmade with love.</div>
+          <DoggyBakerySection pet={currentPet} token={token}/>
+        </div>
+
         <div style={{margin:'0 16px 24px',background:S.dark,borderRadius:24,padding:20}}>
           <div style={{display:'inline-flex',background:'rgba(232,184,75,0.2)',border:'1px solid rgba(232,184,75,0.4)',borderRadius:999,padding:'5px 14px',color:S.goldXL,fontSize:12,fontWeight:600,marginBottom:12}}>🛍️ Shop Concierge®</div>
           <div style={{fontSize:22,fontWeight:700,color:'#fff',lineHeight:1.2,marginBottom:10,fontFamily:'Georgia,serif'}}>Can&apos;t find what you need for {petName}?</div>

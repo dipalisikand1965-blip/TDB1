@@ -1154,8 +1154,8 @@ _GST applicable on final invoice_
 
         <form onSubmit={handleSubmit}>
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Left Column - Form */}
-            <div className="lg:col-span-2 space-y-6">
+            {/* Left Column - Form (appears 2nd on mobile, 1st on desktop) */}
+            <div className="lg:col-span-2 space-y-6 order-2 lg:order-1">
               
               {/* Pet Parent Details */}
               <Card className="p-6">
@@ -1838,9 +1838,9 @@ _GST applicable on final invoice_
               </Card>
             </div>
 
-            {/* Right Column - Order Summary */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-24 space-y-6">
+            {/* Right Column - Order Summary (appears 1st on mobile, 2nd on desktop) */}
+            <div className="lg:col-span-1 order-1 lg:order-2">
+              <div className="lg:sticky lg:top-24 space-y-6">
                 {/* Order Summary */}
                 <Card className="p-6">
                   <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>

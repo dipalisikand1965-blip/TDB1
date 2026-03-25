@@ -1,6 +1,26 @@
 # Changelog
 
-## 2026-03-25 — Mobile Parity Session
+## 2026-03-25 — Batch 1-4: Mobile Parity Sprint
+
+### Batch 1 — Non-Pillar Page Fixes
+- **Landing page**: Fixed 5 broken `className inside style={}` bugs — `tdc-stats-grid`, `tdc-isnot-grid`, `tdc-mojo-hdr`, `tdc-soul-grid`, `tdc-how-grid` now apply responsive CSS correctly
+- **Checkout**: Moved order summary above the form on mobile (order-1 on right col, order-2 on left col) while preserving desktop layout
+- **Membership**: Fixed pricing card padding from hardcoded `40px 48px` to `clamp(20px,5vw,48px)` for narrow screens
+- **Register**: Rewrote page to match app's dark theme (slate-950 bg, gradient form, Kouros/Mystique portrait — matches Login page aesthetic)
+
+### Batch 2 — Pillar Quick Wins
+- **CelebrateMobilePage**: Added `CelebrateServiceGrid` ("Celebrate Personally" services section) after GuidedCelebratePaths
+- **ShopMobilePage**: Added `DoggyBakerySection` inline with filter chips (Cakes/Treats/Hampers/Seasonal), Streaties badge, and product grid
+- **Dine**: Confirmed `DineCategoryStrip` already handles modal internally — pills are self-contained
+
+### Batch 3 — 3-Tab Pillars
+- **AdoptMobilePage**: Full rewrite with 3 tabs — 🐾 Find Your Dog (stage tracker + products + GuidedAdoptPaths) | 💌 Book Guidance (ADOPT_SERVICES cards + MiraImaginesCard) | 📍 Find Rescue (AdoptNearMe). Added MiraImaginesBreed, filter by breed.
+- **FarewellMobilePage**: Full rewrite with 3 tabs — 🌷 Legacy & Memorial (products with sub-tabs + GuidedFarewellPaths + MiraImaginesCard + SoulMade) | 💙 Get Support (FAREWELL_SERVICES cards) | 📍 Find Care (FarewellNearMe)
+- **EmergencyMobilePage**: Full rewrite with persistent URGENT CTA above tabs + 3 tabs — 🩺 Emergency Kit (products + dimTab Products/Services + GuidedEmergencyPaths) | 📋 Book Help (EMERG_SERVICES cards) | 📍 Find Vet (EmergencyNearMe)
+
+### Batch 4 — Services Mobile
+- **ServicesMobilePage**: Full rewrite with 7 expandable service group cards (Pamper & Groom, Health & Vet, Train & Learn, Celebrate, Fitness & Walks, Travel & Paperwork, Life Events). Each card lazy-fetches services from `/api/service-box/services?pillar=X` on expand. Every service has a "Book via Concierge®" button calling `tdc.book()`. Booking confirmation bottom sheet added.
+
 
 ### Fixes
 - Fixed `book is not defined` error on DineSoulPageDesktopLegacy.jsx (line 1289: `book()` → `tdc.book()`)
