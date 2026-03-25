@@ -423,7 +423,7 @@ const handleServiceComplete = async (ticket) => {
 | Admin URL | `/admin` |
 | Admin Username | `aditya` |
 | Admin Password | `lola4304` |
-| Preview URL | `https://pet-wrapped-1.preview.emergentagent.com` |
+| Preview URL | `https://dine-mobile-parity.preview.emergentagent.com` |
 
 ---
 
