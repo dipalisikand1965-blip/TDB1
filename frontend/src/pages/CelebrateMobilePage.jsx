@@ -243,6 +243,12 @@ export default function CelebrateMobilePage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [toastMsg, setToastMsg] = useState(null);
   const [miraPicksOpen, setMiraPicksOpen] = useState(false);
+  const [celebrateCatModal, setCelebrateCatModal] = useState(null);
+
+  const handleCategorySelect = useCallback((categoryId, categoryObj) => {
+    tdc.view({ product: categoryId, pillar: 'celebrate', pet: currentPet, channel: 'celebrate_category_strip' });
+    setCelebrateCatModal({ id: categoryId, obj: categoryObj });
+  }, [currentPet]);
   const [miraProducts, setMiraProducts] = useState([]);
 
   useEffect(() => {
@@ -341,7 +347,7 @@ export default function CelebrateMobilePage() {
         </div>
 
         {/* Category strip */}
-        <CelebrateCategoryStrip pet={currentPet} />
+        <CelebrateCategoryStrip pet={currentPet} onCategorySelect={handleCategorySelect} />
 
         {/* Section heading */}
         <div style={{ padding:'0 16px 16px' }}>
@@ -389,6 +395,16 @@ export default function CelebrateMobilePage() {
 
         {/* Concierge CTA */}
         <CelebrateConciergeCard pet={currentPet} onOpen={() => setIntakeOpen(true)} />
+
+        {/* Category content modal — same as desktop */}
+        {celebrateCatModal && (
+          <CelebrateContentModal
+            isOpen={true}
+            onClose={() => setCelebrateCatModal(null)}
+            category={celebrateCatModal.id}
+            pet={currentPet}
+          />
+        )}
 
       </div>
     </PillarPageLayout>
