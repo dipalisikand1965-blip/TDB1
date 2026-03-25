@@ -907,8 +907,8 @@ const Admin = () => {
       const diffData = await parseResponseSafe(diffRes);
       if (!diffRes.ok) throw new Error(diffData.detail || 'Failed to fetch production diff');
 
-      const rows = (diffData.critical || []).map(item => {
-        const name = (item.collection || '').padEnd(18, ' ');
+      const rows = (diffData.all_collections || diffData.critical || []).map(item => {
+        const name = (item.collection || '').padEnd(25, ' ');
         const preview = String(item.preview || 0).padStart(7, ' ');
         const prod = String(item.production || 0).padStart(7, ' ');
         const diff = `${item.diff >= 0 ? '+' : ''}${item.diff}`.padStart(7, ' ');
@@ -937,7 +937,8 @@ const Admin = () => {
       if (!syncRes.ok) throw new Error(syncData.detail || 'Full DB sync failed');
 
       const resultRows = (syncData.synced || []).map(item => `${item.collection}: preview=${item.preview}, prod=${item.production_after}, matched=${item.matched}`).join('\n');
-      alert(`✅ Full DB sync complete\n\n${resultRows}`);
+      const errorRows = (syncData.errors || []).map(item => `❌ ${item.collection}: ${item.error}`).join('\n');
+      alert(`✅ Full DB sync complete\n\n${resultRows}${errorRows ? '\n\nErrors:\n' + errorRows : ''}`);
     } catch (e) {
       console.error('Full DB sync error:', e);
       alert(`❌ Full DB sync failed: ${e.message}`);
