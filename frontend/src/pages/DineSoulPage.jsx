@@ -24,6 +24,7 @@ import SoulMadeModal from '../components/SoulMadeModal';
 import DineCategoryStrip from '../components/dine/DineCategoryStrip';
 import PetFriendlySpots from '../components/dine/PetFriendlySpots';
 import { API_URL } from '../utils/api';
+import { ProductDetailModal } from '../components/ProductCard';
 import DineSoulPageDesktopLegacy from './DineSoulPageDesktopLegacy';
 
 const C = {
@@ -72,6 +73,14 @@ const DIMENSIONS = [
   { id: 'frozen', icon: '🧊', name: 'Frozen & Fresh', sub: 'Premium ingredients', badge: 'Fresh only', bg: 'linear-gradient(135deg,#EFF8FF,#E0F0FF)', terms: ['frozen', 'fresh', 'cold', 'ice', 'yogurt'] },
   { id: 'homemade', icon: '🍳', name: 'Homemade', sub: 'Recipes for your dog', badge: 'Free recipes', bg: 'linear-gradient(135deg,#FFFDE7,#FFF9C4)', terms: ['recipe', 'guide', 'pantry', 'homemade'] },
 ];
+
+const DIM_ID_TO_CATEGORY = {
+  meals: 'Daily Meals',
+  treats: 'Treats & Rewards',
+  supplements: 'Supplements',
+  frozen: 'Frozen & Fresh',
+  homemade: 'Homemade & Recipes',
+};
 
 const getAllergies = (pet) => {
   const soul = pet?.doggy_soul_answers || {};
@@ -399,10 +408,10 @@ function DineSectionHeading({ title, helper }) {
   );
 }
 
-function DineProductCard({ product, onAdd }) {
+function DineProductCard({ product, onAdd, onView }) {
   const [added, setAdded] = useState(false);
   return (
-    <div className="dine-card" style={{ overflow: 'hidden' }} data-testid={`dine-product-${product.id || product.name}`}>
+    <div className="dine-card" style={{ overflow: 'hidden', cursor: 'pointer' }} data-testid={`dine-product-${product.id || product.name}`} onClick={() => onView?.(product)}>
       <div style={{ height: 110, background: product.bg || C.chipBg, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
         {product.imageUrl ? <img src={product.imageUrl} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: 32 }}>{product.icon || '🍖'}</span>}
         {product.tag && <div style={{ position: 'absolute', top: 8, left: 8, background: 'rgba(43,23,11,0.75)', borderRadius: 6, padding: '2px 7px', fontSize: 10, color: '#fff', fontWeight: 700 }}>{product.tag}</div>}
@@ -412,7 +421,7 @@ function DineProductCard({ product, onAdd }) {
         <div style={{ fontSize: 12, color: C.taupe, marginBottom: 10, lineHeight: 1.4 }}>{product.desc}</div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ fontSize: 15, fontWeight: 700, color: C.amber }}>{product.price}</div>
-          <button onClick={() => { vibrate('success'); setAdded(true); onAdd?.(product); }} style={{ padding: '7px 14px', borderRadius: 999, border: 'none', background: added ? '#E8F5E9' : CTA_GRAD, color: added ? '#27AE60' : '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', minHeight: 36 }}>
+          <button onClick={(e) => { e.stopPropagation(); vibrate('success'); setAdded(true); onAdd?.(product); }} style={{ padding: '7px 14px', borderRadius: 999, border: 'none', background: added ? '#E8F5E9' : CTA_GRAD, color: added ? '#27AE60' : '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', minHeight: 36 }}>
             {added ? '✓ Added' : 'Add'}
           </button>
         </div>
@@ -421,9 +430,23 @@ function DineProductCard({ product, onAdd }) {
   );
 }
 
-function DineDimensionsRail({ dims, openDim, onSelect, pet, products, onAdd }) {
+function DineDimensionsRail({ dims, openDim, onSelect, pet, apiProducts, onAdd, onView }) {
   const name = pet?.name || 'your dog';
-  const shownProducts = openDim ? filterProductsForDim(products, openDim).slice(0, 4) : [];
+  const categoryName = openDim ? DIM_ID_TO_CATEGORY[openDim] : null;
+  const rawByTab = categoryName ? (apiProducts[categoryName] || {}) : {};
+  const allRaw = Object.values(rawByTab).flat().map((p) => normaliseProductCard(p, name));
+  const tabList = ['All', ...Object.keys(rawByTab)];
+  const [activeTab, setActiveTab] = useState('All');
+
+  useEffect(() => {
+    setActiveTab('All');
+  }, [openDim]);
+
+  const filteredByTab = activeTab === 'All'
+    ? allRaw
+    : allRaw.filter((p) => p.raw?.sub_category === activeTab || p.raw?.category === activeTab || p.raw?.product_type === activeTab);
+
+  const shownProducts = openDim ? filteredByTab : [];
   return (
     <div style={{ padding: '0 16px 16px' }}>
       <div className="no-scrollbar" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 4 }}>
@@ -445,14 +468,33 @@ function DineDimensionsRail({ dims, openDim, onSelect, pet, products, onAdd }) {
               I&apos;ve filtered this for {name}&apos;s body and taste.
             </div>
           </div>
-          <div className="no-scrollbar" style={{ display: 'flex', gap: 8, overflowX: 'auto', marginBottom: 14 }}>
-            {(dims.find((d) => d.id === openDim)?.terms || []).slice(0, 4).map((tab, i) => (
-              <div key={tab} className={`dine-chip${i === 0 ? ' active' : ''}`} style={{ fontSize: 13 }}>{tab}</div>
-            ))}
-          </div>
+          {tabList.length > 1 && (
+            <div className="no-scrollbar" style={{ display: 'flex', gap: 8, overflowX: 'auto', marginBottom: 14 }}>
+              {tabList.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`dine-chip${activeTab === tab ? ' active' : ''}`}
+                  style={{ fontSize: 13 }}
+                >
+                  {tab === 'All' ? tab : tab.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {allRaw.length > 0 && (
+            <div style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:14, fontSize:11, color:'#888' }}>
+              <span style={{ color: '#27AE60', fontWeight: 700 }}>✓ {shownProducts.length} safe for {name}</span>
+              {allRaw.length !== shownProducts.length && (
+                <span style={{ color: '#E87722' }}>✗ {allRaw.length - shownProducts.length} filtered</span>
+              )}
+            </div>
+          )}
+
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             {shownProducts.map((p) => (
-              <DineProductCard key={p.id} product={p} onAdd={onAdd} />
+              <DineProductCard key={p.id} product={p} onAdd={onAdd} onView={onView} />
             ))}
           </div>
         </div>
@@ -474,7 +516,7 @@ function DineMiraBar({ pet, onOpen }) {
   );
 }
 
-function DineMiraPicksSheet({ pet, products = [], services = [], onClose, onConcierge, onAdd }) {
+function DineMiraPicksSheet({ pet, products = [], services = [], onClose, onConcierge, onAdd, onView }) {
   const name = pet?.name || 'your dog';
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 500, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'flex-end' }}>
@@ -497,7 +539,7 @@ function DineMiraPicksSheet({ pet, products = [], services = [], onClose, onConc
             </div>
           ))}
           {products.slice(0, 3).map((p) => (
-            <DineProductCard key={p.id} product={p} onAdd={onAdd} />
+            <DineProductCard key={p.id} product={p} onAdd={onAdd} onView={onView} />
           ))}
         </div>
       </div>
@@ -598,6 +640,7 @@ export default function DineSoulPage() {
   const [miraOpen, setMiraOpen] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [toast, setToast] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
   const [apiProducts, setApiProducts] = useState({});
   const [miraProducts, setMiraProducts] = useState([]);
@@ -754,9 +797,10 @@ export default function DineSoulPage() {
         <style>{CSS}</style>
 
         {profileOpen && <DineProfileSheet pet={currentPet} onClose={() => setProfileOpen(false)} onConcierge={handleImagineConcierge} />}
-        {miraOpen && <DineMiraPicksSheet pet={currentPet} products={miraProducts} services={miraServices} onClose={() => setMiraOpen(false)} onConcierge={handleConcierge} onAdd={handleAddToCart} />}
+        {miraOpen && <DineMiraPicksSheet pet={currentPet} products={miraProducts} services={miraServices} onClose={() => setMiraOpen(false)} onConcierge={handleConcierge} onAdd={handleAddToCart} onView={setSelectedProduct} />}
         {intakeOpen && <DineIntakeSheet pet={currentPet} onClose={() => setIntakeOpen(false)} onSend={handleConciergeRequest} />}
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="dine" pillarColor="#D97706" pillarLabel="Dining" onClose={() => setSoulMadeOpen(false)} />}
+        {selectedProduct && <ProductDetailModal product={selectedProduct.raw || selectedProduct} pillar="dine" selectedPet={currentPet} onClose={() => setSelectedProduct(null)} />}
 
         {toast && (
           <div style={{ position:'fixed', left:'50%', bottom:'calc(92px + env(safe-area-inset-bottom))', transform:'translateX(-50%)', zIndex:9000, background:'#1A0A00', color:'#fff', padding:'10px 16px', borderRadius:999, fontSize:13, fontWeight:600, boxShadow:'0 12px 28px rgba(0,0,0,0.24)' }}>
@@ -809,14 +853,14 @@ export default function DineSoulPage() {
         {mode === 'eat' && (
           <>
             <DineSectionHeading title={`How would ${petName} love to eat?`} helper="Food, treats, and recipes filtered to their body and taste." />
-            <DineDimensionsRail dims={DIMENSIONS} openDim={openDim} onSelect={setOpenDim} pet={currentPet} products={products} onAdd={handleAddToCart} />
+            <DineDimensionsRail dims={DIMENSIONS} openDim={openDim} onSelect={setOpenDim} pet={currentPet} apiProducts={apiProducts} onAdd={handleAddToCart} onView={setSelectedProduct} />
             <DineMiraBar pet={currentPet} onOpen={() => setMiraOpen(true)} />
             {products.length > 0 && (
               <div style={{ padding: '0 16px 24px' }}>
                 <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 14 }}>Products for {petName}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   {products.slice(0, 6).map((p) => (
-                    <DineProductCard key={p.id} product={p} onAdd={handleAddToCart} />
+                    <DineProductCard key={p.id} product={p} onAdd={handleAddToCart} onView={setSelectedProduct} />
                   ))}
                 </div>
               </div>
