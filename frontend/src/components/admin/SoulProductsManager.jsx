@@ -18,8 +18,9 @@ import {
 } from 'lucide-react';
 import CloudinaryUploader from './CloudinaryUploader';
 import AIImagePromptField from './AIImagePromptField';
+import { ALL_PILLARS, PILLAR_SUBCATEGORIES } from './ProductBoxConfig';
 
-const PILLARS = ['celebrate','play','go','care','dine','learn','farewell','emergency','paperwork','adopt','shop','advisory'];
+const PILLARS = ALL_PILLARS.map(p => p.id);
 const AUTH_HEADER = { 'Authorization': `Basic ${btoa('aditya:lola4304')}`, 'Content-Type': 'application/json' };
 
 /**
@@ -1753,7 +1754,6 @@ const SoulProductsManager = () => {
                 {label:'Breed',      field:'breed',        type:'text'},
                 {label:'Product Type',field:'product_type',type:'text'},
                 {label:'Price (₹)',  field:'price',        type:'number'},
-                {label:'Sub Category',field:'sub_category',type:'text'},
               ].map(({label,field,type}) => (
                 <div key={field}>
                   <Label className="text-xs">{label}</Label>
@@ -1763,10 +1763,23 @@ const SoulProductsManager = () => {
               ))}
               <div>
                 <Label className="text-xs">Pillar</Label>
-                <select value={editBreedProd.pillar||''} onChange={e => setEditBreedProd(p => ({...p, pillar: e.target.value}))}
+                <select value={editBreedProd.pillar||''} onChange={e => setEditBreedProd(p => ({...p, pillar: e.target.value, sub_category: ''}))}
                   className="w-full mt-1 px-3 py-2 border rounded text-sm">
                   <option value="">— none —</option>
                   {PILLARS.map(pl => <option key={pl} value={pl}>{pl}</option>)}
+                </select>
+              </div>
+              <div>
+                <Label className="text-xs">Sub-Category</Label>
+                <select value={editBreedProd.sub_category||''} onChange={e => setEditBreedProd(p => ({...p, sub_category: e.target.value}))}
+                  className="w-full mt-1 px-3 py-2 border rounded text-sm">
+                  <option value="">Select sub-category…</option>
+                  {(PILLAR_SUBCATEGORIES[editBreedProd.pillar || ''] || []).map(sc => (
+                    <option key={sc} value={sc}>{sc}</option>
+                  ))}
+                  {editBreedProd.sub_category && !(PILLAR_SUBCATEGORIES[editBreedProd.pillar || ''] || []).includes(editBreedProd.sub_category) && (
+                    <option value={editBreedProd.sub_category}>{editBreedProd.sub_category} (custom)</option>
+                  )}
                 </select>
               </div>
               <div className="flex items-center gap-2">
