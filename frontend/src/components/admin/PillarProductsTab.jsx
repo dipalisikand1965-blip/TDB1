@@ -33,7 +33,7 @@ const emptyForm = {
   category: '', sub_category: '', image_url: '', active: true
 };
 
-const PillarProductsTab = ({ pillar, pillarName = '', pillarColor = 'bg-purple-500' }) => {
+const PillarProductsTab = ({ pillar, pillarName = '', pillarColor = 'bg-purple-500', createTrigger = 0 }) => {
   const [products, setProducts] = useState([]);
   const [total, setTotal] = useState(0);
   const [pages, setPages] = useState(1);
@@ -74,6 +74,14 @@ const PillarProductsTab = ({ pillar, pillarName = '', pillarColor = 'bg-purple-5
   }, [pillar, search, filterCategory, page]);
 
   useEffect(() => { fetchProducts(page); }, [pillar]);
+  // Quick Add trigger from parent PillarManager
+  useEffect(() => {
+    if (createTrigger > 0) {
+      setForm({ ...emptyForm });
+      setEditingProduct(null);
+      setShowModal(true);
+    }
+  }, [createTrigger]);
 
   const handleSearch = () => {
     setPage(1);

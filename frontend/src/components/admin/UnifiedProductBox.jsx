@@ -201,16 +201,35 @@ const UnifiedProductBox = () => {
       // Sanitize the product data to avoid serialization issues
       const sanitizedProduct = {};
       const allowedFields = [
+        // Core fields
         'name', 'product_type', 'short_description', 'long_description', 'description',
-        'category', 'subcategory', 'tags', 'image', 'image_url', 'images', 'thumbnail', 'media', 
-        'price', 'originalPrice', 'base_price', 'pricing', 'gst_rate',
+        'category', 'subcategory', 'sub_category', 'tags', 'is_bakery_product',
+        // Media
+        'image', 'image_url', 'images', 'thumbnail', 'media',
+        // Pricing
+        'price', 'originalPrice', 'original_price', 'base_price', 'pricing', 'gst_rate',
+        // Commerce & Status
+        'approval_status', 'commerce_ops',
+        // Inventory / Availability
         'variants', 'options', 'has_variants', 'in_stock', 'visibility', 'available',
-        'primary_pillar', 'pillars', 'paw_rewards', 'pet_safety', 'mira_visibility',
-        'shopify_handle', 'sku', 'intelligent_tags', 'search_keywords',
+        // Pillar & Classification
+        'pillar', 'primary_pillar', 'pillars', 'pillars_occasions',
+        // Pet profile filters (critical for Mira)
+        'breed', 'life_stage', 'pet_size', 'allergens', 'allergies',
+        // Commerce rewards
+        'paw_rewards', 'pet_safety', 'mira_visibility',
+        // Platform
+        'shopify_handle', 'sku', 'barcode', 'brand', 'vendor',
+        // Intelligence tags
+        'intelligent_tags', 'search_keywords',
         'breed_tags', 'health_tags', 'occasion_tags', 'diet_tags', 'lifestage_tags', 'size_tags',
         'breed_metadata', 'mira_hint', 'locally_edited',
+        // Rewards
         'reward_eligible', 'reward_value', 'reward_triggers',
-        'mira_can_suggest', 'mira_can_reference'
+        // Mira toggles
+        'mira_can_suggest', 'mira_can_reference',
+        // Nested metadata structures
+        'basics', 'commerce', 'soul_tier', 'soul_level',
       ];
       
       for (const field of allowedFields) {
