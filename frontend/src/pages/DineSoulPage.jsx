@@ -451,6 +451,7 @@ export default function DineSoulPage() {
   const [miraOpen, setMiraOpen] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [products, setProducts] = useState([]);
+  const [apiProducts, setApiProducts] = useState({});
   const [miraProducts, setMiraProducts] = useState([]);
   const [miraServices, setMiraServices] = useState([]);
 
@@ -467,16 +468,42 @@ export default function DineSoulPage() {
   }, [contextPets, currentPet, setCurrentPet]);
 
   useEffect(() => {
-    if (!token || !currentPet?.id) return;
-    const breed = (currentPet.breed || '').toLowerCase();
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&breed=${encodeURIComponent(breed)}&limit=80`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then((r) => r.ok ? r.json() : null)
-      .then((data) => {
-        if (data?.products) setProducts(data.products.map((p) => normaliseProductCard(p, currentPet.name)));
+    if (!currentPet?.id) return;
+    const FOOD_CATS = ['Daily Meals', 'Treats & Rewards', 'Supplements', 'Frozen & Fresh', 'Homemade & Recipes'];
+
+    Promise.all(
+      FOOD_CATS.map((cat) =>
+        fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&limit=100&category=${encodeURIComponent(cat)}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        })
+          .then((r) => r.ok ? r.json() : null)
+          .catch(() => null)
+      )
+    )
+      .then((results) => {
+        const grouped = {};
+        results.forEach((data) => {
+          if (!data?.products?.length) return;
+          data.products.forEach((p) => {
+            const cat = p.category || '';
+            const sub = p.sub_category || '';
+            if (!grouped[cat]) grouped[cat] = {};
+            if (!grouped[cat][sub]) grouped[cat][sub] = [];
+            grouped[cat][sub].push(p);
+          });
+        });
+
+        setApiProducts(grouped);
+
+        const flat = Object.values(grouped)
+          .flatMap((subMap) => Object.values(subMap).flat())
+          .map((p) => normaliseProductCard(p, currentPet.name));
+        setProducts(flat);
       })
-      .catch(() => {});
+      .catch(() => {
+        setApiProducts({});
+        setProducts([]);
+      });
   }, [token, currentPet]);
 
   useEffect(() => {
