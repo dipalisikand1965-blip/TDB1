@@ -274,6 +274,8 @@ All P0 mobile parity work is complete.
 3. **Import pattern** — `import SharedProductCard, { ProductDetailModal } from '../components/ProductCard'` is correct (default export aliased as SharedProductCard)
 4. **Build** — always use `GENERATE_SOURCEMAP=false NODE_OPTIONS="--max-old-space-size=4096" npm run build`
 5. **tdc.book()** is the universal service booking function — use it everywhere
-6. **Product filtering** — `filterBreedProducts` + `applyMiraIntelligence` — ALWAYS apply both
+6. **Product filtering** — `filterBreedProducts` + `applyMiraFilter` (from `/hooks/useMiraFilter.js`) — ALWAYS apply both. `applyMiraFilter` uses ALLERGEN_MAP for synonym matching, generates mira_hint, sets miraPick on top product, dims goal-conflicting products
 7. **MiraPicksSection** is defined INLINE in each desktop page — it's not a separate file to import
 8. **MOBILE_WIRING_SPEC.md** is the source of truth for what's still needed
+9. **Mira's pick callout** — amber gradient banner above product grids — shows for `products[0]?.miraPick`. Always renders unless `products.length === 0`
+10. **useMiraFilter.js** — `/app/frontend/src/hooks/useMiraFilter.js` — single source of truth for all allergen/love/goal filtering logic

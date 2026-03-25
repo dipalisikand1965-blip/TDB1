@@ -42,10 +42,16 @@ function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'
 import { applyMiraFilter } from '../hooks/useMiraFilter';
 
 function getAllergies(pet) {
-  const raw = pet?.allergies; let arr = [];
-  if (Array.isArray(raw)) arr = raw;
-  else if (typeof raw === 'string') arr = raw.split(',').map(s => s.trim());
-  return arr.filter(a => a && !['none','no allergies','nil','n/a'].includes(a.toLowerCase()));
+  const s = new Set();
+  const add = v => {
+    if (Array.isArray(v)) v.forEach(x => { if (x && !['none','no allergies','nil','n/a'].includes(String(x).toLowerCase().trim())) s.add(String(x).trim()); });
+    else if (v && !['none','no allergies','nil','n/a'].includes(String(v).toLowerCase().trim())) { String(v).split(',').forEach(a => { const t = a.trim(); if (t) s.add(t); }); }
+  };
+  add(pet?.allergies);
+  add(pet?.preferences?.allergies);
+  add(pet?.doggy_soul_answers?.food_allergies);
+  add(pet?.doggy_soul_answers?.allergies);
+  return [...s];
 }
 function getCoatType(pet) {
   const b = (pet?.breed || '').toLowerCase();
@@ -218,12 +224,12 @@ export default function CareMobilePage() {
                 )}
 
                 {/* Mira's pick callout */}
-                {miraPick && miraPick.mira_hint && (
+                {miraPick && (
                   <div style={{ background:'linear-gradient(135deg,rgba(255,140,66,0.1),rgba(196,77,255,0.06))', border:'1px solid rgba(255,140,66,0.3)', borderRadius:12, padding:'10px 14px', display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
                     <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, color:'#fff', flexShrink:0 }}>✦</div>
                     <div style={{ fontSize:13, color:'#3D1A00', lineHeight:1.4 }}>
                       <strong>Mira's pick:</strong> {miraPick.name}
-                      <span style={{ color:'#888', marginLeft:5 }}>— {miraPick.mira_hint}</span>
+                      {miraPick.mira_hint && <span style={{ color:'#888', marginLeft:5 }}>— {miraPick.mira_hint}</span>}
                     </div>
                   </div>
                 )}
