@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://pillar-parity-sprint.preview.emergentagent.com
+https://mira-parity-sprint.preview.emergentagent.com
 
 ---
 

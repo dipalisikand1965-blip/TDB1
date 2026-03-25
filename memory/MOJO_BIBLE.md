@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://pillar-parity-sprint.preview.emergentagent.com
+https://mira-parity-sprint.preview.emergentagent.com
 ```
 
 ---
