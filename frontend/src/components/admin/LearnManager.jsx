@@ -16,7 +16,7 @@ import {
   GraduationCap, BookOpen, Brain, Users, Package, Building2,
   Settings, Search, Plus, Edit2, Trash2, RefreshCw, Eye, Clock,
   CheckCircle, XCircle, Star, Download, Upload, Database, Award,
-  Heart, Zap, Shield, Target, Calendar, MapPin, Briefcase
+  Heart, Zap, Shield, Target, Calendar, MapPin, Briefcase, Sparkles
 } from 'lucide-react';
 import PillarServicesTab from './PillarServicesTab';
 import PillarBundlesTab from './PillarBundlesTab';
@@ -516,13 +516,15 @@ const LearnManager = ({ getAuthHeader }) => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-6 w-full max-w-2xl">
+        <TabsList className="flex flex-wrap w-full gap-1 h-auto p-1">
           <TabsTrigger value="requests">Requests</TabsTrigger>
+          <TabsTrigger value="partners" data-testid="learn-tab-partners">Partners</TabsTrigger>
           <TabsTrigger value="programs">Programs</TabsTrigger>
           <TabsTrigger value="trainers">Trainers</TabsTrigger>
           <TabsTrigger value="products">Products</TabsTrigger>
           <TabsTrigger value="bundles">Bundles</TabsTrigger>
           <TabsTrigger value="services"><Briefcase className="w-4 h-4 mr-1" />Services</TabsTrigger>
+          <TabsTrigger value="tips" data-testid="learn-tab-tips">Tips</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
@@ -796,6 +798,15 @@ const LearnManager = ({ getAuthHeader }) => {
           </div>
         </TabsContent>
 
+        {/* Partners Tab */}
+        <TabsContent value="partners" className="mt-6">
+          <Card className="p-8 text-center" data-testid="learn-partners-panel">
+            <Building2 className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+            <p className="font-medium text-gray-600">Learn Partners</p>
+            <p className="text-sm text-gray-400 mt-1">Training academy and workshop partner management coming soon</p>
+          </Card>
+        </TabsContent>
+
         {/* Products Tab */}
         <TabsContent value="products" className="space-y-4">
           <PillarProductsTab pillar="learn" pillarName="Learn" />
@@ -814,6 +825,15 @@ const LearnManager = ({ getAuthHeader }) => {
             pillarIcon="🎓"
             pillarColor="bg-blue-500"
           />
+        </TabsContent>
+
+        {/* Tips Tab */}
+        <TabsContent value="tips" className="mt-6">
+          <Card className="p-8 text-center" data-testid="learn-tips-panel">
+            <Sparkles className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+            <p className="font-medium text-gray-600">Learn Tips</p>
+            <p className="text-sm text-gray-400 mt-1">Quick win training tips and Mira prompts coming soon</p>
+          </Card>
         </TabsContent>
 
         {/* Settings Tab - Full Settings like FitManager */}

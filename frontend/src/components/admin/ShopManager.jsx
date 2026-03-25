@@ -19,7 +19,7 @@ import {
   ShoppingBag, Package, DollarSign, Settings, RefreshCw, Upload, Download,
   Plus, Edit2, Trash2, Search, Eye, TrendingUp, Clock, MapPin, User, 
   CheckCircle, XCircle, Loader2, BarChart3, AlertTriangle, Truck,
-  FileText, Archive, ShoppingCart, Heart, Mail, Send
+  FileText, Archive, ShoppingCart, Heart, Mail, Send, Sparkles, Building2, Bell, Briefcase
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from '../../hooks/use-toast';
@@ -401,6 +401,18 @@ const ShopManager = ({ getAuthHeader }) => {
           </TabsTrigger>
           <TabsTrigger value="settings" data-testid="shop-tab-settings">
             <Settings className="w-4 h-4 mr-2" /> Settings
+          </TabsTrigger>
+          <TabsTrigger value="requests" data-testid="shop-tab-requests">
+            <Bell className="w-4 h-4 mr-2" /> Requests
+          </TabsTrigger>
+          <TabsTrigger value="partners" data-testid="shop-tab-partners">
+            <Building2 className="w-4 h-4 mr-2" /> Partners
+          </TabsTrigger>
+          <TabsTrigger value="services" data-testid="shop-tab-services">
+            <Briefcase className="w-4 h-4 mr-2" /> Services
+          </TabsTrigger>
+          <TabsTrigger value="tips" data-testid="shop-tab-tips">
+            <Sparkles className="w-4 h-4 mr-2" /> Tips
           </TabsTrigger>
         </TabsList>
 
@@ -980,6 +992,42 @@ const ShopManager = ({ getAuthHeader }) => {
                 </div>
               )}
             </div>
+          </Card>
+        </TabsContent>
+
+        {/* Requests Tab */}
+        <TabsContent value="requests" className="space-y-4">
+          <Card className="p-8 text-center" data-testid="shop-requests-panel">
+            <Bell className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+            <p className="font-medium text-gray-600">Shop Requests</p>
+            <p className="text-sm text-gray-400 mt-1">Customer service requests for the Shop pillar will appear here</p>
+          </Card>
+        </TabsContent>
+
+        {/* Partners Tab */}
+        <TabsContent value="partners" className="space-y-4">
+          <Card className="p-8 text-center" data-testid="shop-partners-panel">
+            <Building2 className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+            <p className="font-medium text-gray-600">Shop Partners</p>
+            <p className="text-sm text-gray-400 mt-1">Brand and vendor partner management coming soon</p>
+          </Card>
+        </TabsContent>
+
+        {/* Services Tab */}
+        <TabsContent value="services" className="space-y-4">
+          <Card className="p-8 text-center" data-testid="shop-services-panel">
+            <Briefcase className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+            <p className="font-medium text-gray-600">Shop Services</p>
+            <p className="text-sm text-gray-400 mt-1">Concierge shopping and delivery services coming soon</p>
+          </Card>
+        </TabsContent>
+
+        {/* Tips Tab */}
+        <TabsContent value="tips" className="space-y-4">
+          <Card className="p-8 text-center" data-testid="shop-tips-panel">
+            <Sparkles className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+            <p className="font-medium text-gray-600">Shop Tips</p>
+            <p className="text-sm text-gray-400 mt-1">Quick win tips for pet shopping coming soon</p>
           </Card>
         </TabsContent>
       </Tabs>

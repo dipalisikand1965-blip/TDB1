@@ -17,7 +17,7 @@ import { toast } from '../../hooks/use-toast';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Mail, Users,
   Plus, Edit, Trash2, Search, Filter, Eye, CheckCircle, XCircle,
-  Building2, Clock, RefreshCw, FileText, Loader2, Download, Sparkles, Briefcase, Package
+  Building2, Clock, RefreshCw, FileText, Loader2, Download, Sparkles, Briefcase, Package, Bell, Settings
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import PillarServicesTab from './PillarServicesTab';
@@ -415,16 +415,19 @@ const AdoptManager = ({ authHeaders }) => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-5 w-full max-w-2xl">
+        <TabsList className="flex flex-wrap w-full gap-1 h-auto p-1">
+          <TabsTrigger value="requests" data-testid="adopt-tab-requests"><Bell className="w-4 h-4 mr-1" /> Requests</TabsTrigger>
           <TabsTrigger value="pets"><PawPrint className="w-4 h-4 mr-1" /> Pets</TabsTrigger>
           <TabsTrigger value="applications"><FileText className="w-4 h-4 mr-1" /> Applications</TabsTrigger>
           <TabsTrigger value="foster"><Heart className="w-4 h-4 mr-1" /> Foster</TabsTrigger>
           <TabsTrigger value="events"><Calendar className="w-4 h-4 mr-1" /> Events</TabsTrigger>
-          <TabsTrigger value="shelters"><Building2 className="w-4 h-4 mr-1" /> Shelters</TabsTrigger>
+          <TabsTrigger value="shelters" data-testid="adopt-tab-partners"><Building2 className="w-4 h-4 mr-1" /> Partners</TabsTrigger>
           <TabsTrigger value="bundles"><PawPrint className="w-4 h-4 mr-1" /> Bundles</TabsTrigger>
           <TabsTrigger value="experiences"><Sparkles className="w-4 h-4 mr-1" /> Experiences</TabsTrigger>
           <TabsTrigger value="services"><Briefcase className="w-4 h-4 mr-1" /> Services</TabsTrigger>
           <TabsTrigger value="products"><Package className="w-4 h-4 mr-1" /> Products</TabsTrigger>
+          <TabsTrigger value="tips" data-testid="adopt-tab-tips"><Sparkles className="w-4 h-4 mr-1" /> Tips</TabsTrigger>
+          <TabsTrigger value="settings" data-testid="adopt-tab-settings"><Settings className="w-4 h-4 mr-1" /> Settings</TabsTrigger>
         </TabsList>
 
         {/* PETS TAB */}
@@ -688,6 +691,40 @@ const AdoptManager = ({ authHeaders }) => {
 
         <TabsContent value="products" className="space-y-4">
           <PillarProductsTab pillar="adopt" pillarName="Adopt" />
+        </TabsContent>
+
+        {/* Requests Tab */}
+        <TabsContent value="requests" className="mt-4">
+          <Card className="p-8 text-center" data-testid="adopt-requests-panel">
+            <Bell className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+            <p className="font-medium text-gray-600">Adopt Requests</p>
+            <p className="text-sm text-gray-400 mt-1">Service desk adoption requests for this pillar will appear here</p>
+          </Card>
+        </TabsContent>
+
+        {/* Tips Tab */}
+        <TabsContent value="tips" className="mt-4">
+          <Card className="p-8 text-center" data-testid="adopt-tips-panel">
+            <Sparkles className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+            <p className="font-medium text-gray-600">Adopt Tips</p>
+            <p className="text-sm text-gray-400 mt-1">Quick win tips for adoption journeys coming soon</p>
+          </Card>
+        </TabsContent>
+
+        {/* Settings Tab */}
+        <TabsContent value="settings" className="mt-4">
+          <Card className="p-6" data-testid="adopt-settings-panel">
+            <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <Settings className="w-4 h-4" /> Adopt Pillar Settings
+            </h3>
+            <div className="space-y-1 text-sm divide-y">
+              <div className="flex items-center justify-between py-3">
+                <p className="font-medium text-gray-800">Pillar ID</p>
+                <code className="bg-gray-100 px-2 py-1 rounded font-mono text-xs">adopt</code>
+              </div>
+              <p className="text-xs text-gray-400 pt-3">Advanced pillar settings are configured in the global Admin Settings.</p>
+            </div>
+          </Card>
         </TabsContent>
       </Tabs>
 

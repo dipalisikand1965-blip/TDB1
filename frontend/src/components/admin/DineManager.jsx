@@ -4,7 +4,8 @@ import {
   UtensilsCrossed, Check, AlertCircle, Phone, Globe, Instagram,
   RefreshCw, Upload, Download, FileSpreadsheet, Image as ImageIcon,
   ExternalLink, MessageSquare, Sparkles, Calendar, Users, Clock,
-  PawPrint, Heart, UserCheck, XCircle, Eye, Settings, ShoppingBag, Package, Briefcase
+  PawPrint, Heart, UserCheck, XCircle, Eye, Settings, ShoppingBag, Package, Briefcase,
+  Building2, Zap
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -744,6 +745,22 @@ const DineManager = ({ credentials }) => {
           data-testid="dine-tab-experiences"
         >
           <Sparkles className="w-4 h-4 mr-2" /> Experiences
+        </Button>
+        <Button 
+          variant={activeTab === 'partners' ? 'default' : 'ghost'}
+          onClick={() => setActiveTab('partners')}
+          className={activeTab === 'partners' ? 'bg-violet-500 hover:bg-violet-600' : ''}
+          data-testid="dine-tab-partners"
+        >
+          <Building2 className="w-4 h-4 mr-2" /> Partners
+        </Button>
+        <Button 
+          variant={activeTab === 'tips' ? 'default' : 'ghost'}
+          onClick={() => setActiveTab('tips')}
+          className={activeTab === 'tips' ? 'bg-amber-500 hover:bg-amber-600' : ''}
+          data-testid="dine-tab-tips"
+        >
+          <Zap className="w-4 h-4 mr-2" /> Tips
         </Button>
         <Button 
           variant={activeTab === 'settings' ? 'default' : 'ghost'}
@@ -2014,6 +2031,24 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
             </Button>
           </div>
         </div>
+      )}
+
+      {/* Partners Tab */}
+      {activeTab === 'partners' && (
+        <Card className="p-8 text-center mt-4" data-testid="dine-partners-panel">
+          <Building2 className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+          <p className="font-medium text-gray-600">Dine Partners</p>
+          <p className="text-sm text-gray-400 mt-1">Restaurant and food delivery partner management coming soon</p>
+        </Card>
+      )}
+
+      {/* Tips Tab */}
+      {activeTab === 'tips' && (
+        <Card className="p-8 text-center mt-4" data-testid="dine-tips-panel">
+          <Zap className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+          <p className="font-medium text-gray-600">Dine Tips</p>
+          <p className="text-sm text-gray-400 mt-1">Quick win tips for pet nutrition and dining experiences coming soon</p>
+        </Card>
       )}
     </div>
   );

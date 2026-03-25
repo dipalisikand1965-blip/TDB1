@@ -26,7 +26,7 @@ import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
 import ProductBoxEditor from './ProductBoxEditor';
 
-const ITEMS_PER_PAGE = 50;
+const ITEMS_PER_PAGE = 20;
 
 const emptyForm = {
   name: '', description: '', price: '', compare_price: '',
