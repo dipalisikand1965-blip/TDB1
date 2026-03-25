@@ -127,7 +127,7 @@ export default function GoNearMe({ currentPet, setConciergeToast }) {
       )}
 
       {!loading && results.length > 0 && (
-        <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
           {results.map((place, i) => (
             <div key={place.place_id || i}
               style={{ background:'#fff', borderRadius:16, border:`1px solid ${G.border}`, overflow:'hidden', boxShadow:'0 2px 8px rgba(26,188,156,0.08)' }}>

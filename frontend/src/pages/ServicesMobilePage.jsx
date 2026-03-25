@@ -106,25 +106,36 @@ function ServiceGroupCard({ group, pet, token, onBook }) {
 
           {!loading && services.length > 0 && (
             <div style={{ marginTop:12 }}>
-              <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-                {services.map((svc, i) => (
-                  <div key={svc.id || svc._id || i}
-                    style={{ display:'flex', alignItems:'center', gap:12, padding:'12px', background:`${group.colour}08`, borderRadius:14, border:`1px solid ${group.colour}20` }}>
-                    <div style={{ flex:1 }}>
-                      <div style={{ fontSize:14, fontWeight:600, color:G.dark, marginBottom:2 }}>{svc.name}</div>
-                      {svc.description && <div style={{ fontSize:14, color:G.taupe }}>{svc.description.slice(0, 80)}{svc.description.length > 80 ? '…' : ''}</div>}
-                      {/* POLICY: Services are NEVER priced — always via Concierge® */}
-                      <div style={{ fontSize:12, fontWeight:600, letterSpacing:'0.05em', color:`${group.colour}`, marginTop:4, opacity:0.7 }}>
-                        PRICE ON REQUEST · CONCIERGE
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+                {services.map((svc, i) => {
+                  const img = svc.watercolour_image || svc.watercolor_image || svc.image_url || svc.image || null;
+                  return (
+                    <div key={svc.id || svc._id || i}
+                      onClick={() => onBook(svc)}
+                      data-testid={`svc-card-${group.id}-${i}`}
+                      style={{ background:'#fff', borderRadius:14, border:`1px solid ${group.colour}20`, overflow:'hidden', cursor:'pointer', boxShadow:`0 2px 8px ${group.colour}10` }}>
+                      {/* Watercolour image */}
+                      <div style={{ position:'relative', width:'100%', aspectRatio:'4/3', background:`${group.colour}10`, overflow:'hidden' }}>
+                        {img
+                          ? <img src={img} alt={svc.name} style={{ width:'100%', height:'100%', objectFit:'cover' }} loading="lazy" />
+                          : <div style={{ width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:32, background:`linear-gradient(135deg,${group.colour}15,${group.colour}25)` }}>
+                              {group.icon}
+                            </div>
+                        }
+                        <div style={{ position:'absolute', bottom:0, left:0, right:0, height:40, background:`linear-gradient(transparent,rgba(255,255,255,0.95))` }} />
+                      </div>
+                      {/* Info */}
+                      <div style={{ padding:'10px 10px 12px' }}>
+                        <div style={{ fontSize:12, fontWeight:700, color:G.dark, lineHeight:1.3, marginBottom:3, display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>{svc.name}</div>
+                        <div style={{ fontSize:10, fontWeight:600, color:group.colour, letterSpacing:'0.05em', marginBottom:8 }}>PRICE ON REQUEST</div>
+                        <button onClick={e => { e.stopPropagation(); onBook(svc); }}
+                          style={{ width:'100%', padding:'7px', borderRadius:20, border:'none', background:`linear-gradient(135deg,${group.colour},${G.navyL})`, color:'#fff', fontSize:12, fontWeight:700, cursor:'pointer' }}>
+                          Book via Concierge® →
+                        </button>
                       </div>
                     </div>
-                    <button onClick={() => onBook(svc)}
-                      data-testid={`svc-book-${group.id}-${i}`}
-                      style={{ flexShrink:0, background:group.colour, border:'none', borderRadius:20, padding:'7px 14px', fontSize:14, fontWeight:700, color:'#fff', cursor:'pointer', whiteSpace:'nowrap' }}>
-                      Book →
-                    </button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               <button onClick={() => onBook({ name:`${group.label} — All Services`, icon:group.icon, colour:group.colour })}
                 style={{ marginTop:12, width:'100%', minHeight:44, borderRadius:12, border:`1.5px solid ${group.colour}`, background:'#fff', fontSize:14, fontWeight:600, color:group.colour, cursor:'pointer' }}>

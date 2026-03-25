@@ -339,7 +339,7 @@ export default function PillarSoulProfile({
             )}
           </div>
           <div style={{ fontSize:13, color:scoreColor, fontWeight:600 }}>
-            {isComplete ? 'Mira knows everything' : `${totalUnanswered || '?'} questions waiting`}
+            {isComplete ? 'Mira knows everything' : (totalUnanswered > 0 ? `${totalUnanswered} questions waiting` : 'Mira knows everything')}
           </div>
         </div>
         {/* Score + chevron */}
