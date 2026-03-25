@@ -21598,7 +21598,7 @@ async def generate_image_universal(
             "breed_product": db.breed_products,
         }
         col = collection_map.get(entity_type)
-        if col:
+        if col is not None:
             await col.update_one(
                 {"$or": [{"id": entity_id}, {"_id": entity_id}]},
                 {"$set": {

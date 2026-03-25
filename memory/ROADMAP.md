@@ -1,158 +1,120 @@
 # Roadmap — The Doggy Company Platform
-## Last Updated: 2026-03-25 (Post Session 2)
+## Last Updated: 2026-03-25 (Post Session 3)
 
 ---
 
 ## CURRENT STATUS
-
-All 12 mobile pillar pages are functionally complete. All 17 customer-facing pages are mobile-responsive. The platform is go-live ready pending the items below.
-
----
-
-## P0 — DONE ✅ (this sprint)
-
-| Item | Status |
-|---|---|
-| Responsive split — all 12 pillars | ✅ Done Session 1 |
-| Celebrate mobile — full parity | ✅ Done Session 1 |
-| Dine mobile — full v11 | ✅ Done Session 1 |
-| Landing page — 5 className bugs | ✅ Done Session 2 |
-| Register — dark theme | ✅ Done Session 2 |
-| Checkout — mobile order summary | ✅ Done Session 2 |
-| Membership — responsive padding | ✅ Done Session 2 |
-| Shop mobile — DoggyBakerySection | ✅ Done Session 2 |
-| Celebrate mobile — CelebrateServiceGrid | ✅ Done Session 2 |
-| Adopt mobile — 3-tab full rewrite | ✅ Done Session 2 |
-| Farewell mobile — 3-tab full rewrite | ✅ Done Session 2 |
-| Emergency mobile — 3-tab + WhatsApp | ✅ Done Session 2 |
-| Services mobile — 7 service groups | ✅ Done Session 2 |
-| Care mobile — 3-tab + dimTab + intelligence | ✅ Done Session 2 |
-| Go mobile — 3-tab + dimTab + Stays | ✅ Done Session 2 |
-| Play mobile — 3-tab + dimTab + BuddyMeetup | ✅ Done Session 2 |
-| Learn mobile — 7 dim pills + YouTube | ✅ Done Session 2 |
-| Paperwork mobile — 7 dim pills + DocumentVault | ✅ Done Session 2 |
-| Emergency WhatsApp safety feature | ✅ Done Session 2 |
-| Build fix (GENERATE_SOURCEMAP=false) | ✅ Done Session 2 |
+Desktop is PRODUCTION-READY. Preview = Production.
+All 12 mobile pillar pages are functionally complete with full Mira filtering.
+ServiceBookingModal wired to Services, Care, Go, Play, Learn on mobile.
+Admin backend product management fully functional.
 
 ---
 
-## P1 — High Priority (next sprint)
+## ✅ DONE (Sessions 1–3)
 
-### Mobile Parity — Remaining Gaps
+| Item | Session | Status |
+|---|---|---|
+| Responsive split — all 12 pillars | 1 | ✅ |
+| All `*MobilePage.jsx` files created | 1 | ✅ |
+| Dine mobile — full DineDimensionsRail | 1 | ✅ |
+| Landing page — 5 className bugs | 2 | ✅ |
+| Register / Checkout / Membership fixes | 2 | ✅ |
+| All 12 pillar mobile pages wired | 2 | ✅ |
+| Emergency WhatsApp alert | 2 | ✅ |
+| Mira product filter (`useMiraFilter.js`) | 3 | ✅ |
+| Mira's pick callout + footer on grids | 3 | ✅ |
+| ServiceBookingModal — 8 service types | 3 | ✅ |
+| ServiceBookingModal wired to 5 mobile pages | 3 | ✅ |
+| Admin: archive/delete works | 3 | ✅ |
+| Admin: toggle active/inactive fixed | 3 | ✅ |
+| Admin: AI image custom prompt fixed (auth) | 3 | ✅ |
+| Admin: service price badge (not ₹0) | 3 | ✅ |
+| Admin: service tab auto-behaviour | 3 | ✅ |
 
-1. **MiraPicksSection** on all 12 pillars
+---
+
+## 🔴 P0 — CRITICAL (Next Agent Must Fix First)
+
+None currently blocking production.
+
+---
+
+## 🟡 P1 — HIGH PRIORITY (Next Sprint)
+
+### Mobile Feature Parity Gaps
+
+1. **Celebrate mobile — 4 missing components** (HIGHEST IMPACT)
+   - `BirthdayCountdown` — emotional countdown to pet's birthday
+   - `SoulCelebrationPillars` — 8 glowing soul-aligned celebration type cards
+   - `CelebrationMemoryWall` — past celebration photos
+   - `MiraSoulNudge` — contextual Mira AI insight card
+   - Files: All exist in `/app/frontend/src/components/celebrate/`
+   - Effort: ~45 min total
+
+2. **Near-Me components missing from mobile pages**
+   - `LearnNearMe` → `LearnMobilePage` (component at `/components/learn/LearnNearMe.jsx`)
+   - `PaperworkNearMe` → `PaperworkMobilePage` (component exists)
+   - `GoNearMe` → `GoMobilePage` (check if component exists first)
+   - Effort: ~5 min each
+
+3. **MiraPicksSection on all 12 pillar mobile pages** (HIGHEST CONVERSION IMPACT)
    - Inline AI-curated horizontal product scroll
    - Calls: `GET /api/mira/picks?pillar=X&pet_id=Y`
-   - Appears in the Mira Bar section of every pillar
    - Effort: ~30 min per pillar (define once, copy pattern)
 
-2. **LearnNearMe** — add to LearnMobilePage
-   - Component file EXISTS at `/app/frontend/src/components/learn/LearnNearMe.jsx`
-   - Just needs to be added to the Find Trainers section
+4. **Profile Widgets for Care/Go/Play mobile**
+   - `WellnessProfile` widget → Care mobile (component exists at `/components/care/`)
+   - `TripProfile` widget → Go mobile
+   - `ActivityProfile` widget → Play mobile
+   - Effort: ~20 min each
 
-3. **PaperworkNearMe** — add to PaperworkMobilePage
-   - Component file EXISTS at `/app/frontend/src/components/paperwork/PaperworkNearMe.jsx`
-   - Needs a new "Find Near Me" section or tab in Paperwork mobile
+### Admin Backend (Next Batch — User Sends One at a Time)
 
-4. **SoulCelebrationPillars** — add to CelebrateMobilePage
-   - Component file EXISTS at `/app/frontend/src/components/celebrate/SoulCelebrationPillars.jsx`
-   - 6 celebration type cards (Birthday / Anniversary / Graduation / Gotcha Day / Festival / Soul)
-
-5. **Profile Widgets** (inline in desktop, need to port to mobile)
-   - `WellnessProfile` → Care mobile (grooming schedule, vet date, dental score)
-   - `TripProfile` → Go mobile (trip planning dashboard)
-   - `ActivityProfile` → Play mobile (exercise tracking)
-   - `AdoptProfile` → Adopt mobile (adoption readiness)
-   - `FarewellProfile` → Farewell mobile (farewell planning stage)
-   - `EmergencyProfile` → Emergency mobile (readiness score)
-
-6. **BreedCollectionSection** — Shop mobile
-   - Browse by breed — horizontal breed chips → filtered product grid
-   - Defined inline in ShopSoulPage.jsx
-
-7. **ShopBrowseSection** — Shop mobile
-   - Category browse tabs (Grooming / Dental / Nutrition / Accessories / Treats)
-   - Defined inline in ShopSoulPage.jsx
-
-### Data Quality
-
-8. **38 Wrong-Image Products**
-   - `needs_ai_image: true` in products_master
-   - Use admin panel "AI IMAGES" tab to regenerate
-   - OR deactivate: `db.products_master.updateMany({ needs_ai_image: true }, { $set: { is_active: false } })`
+5. **Admin: SoulMadeBox features not working** (User confirmed — needs investigation)
+6. **Admin: Bundles Box features not working** (User confirmed — needs investigation)
+7. **Admin: Product box remaining features** (User will specify each one)
 
 ---
 
-## P2 — Medium Priority
+## 🟠 P2 — MEDIUM PRIORITY
 
-### Database & Infrastructure
-
-9. **Production DB Migration**
-   - Current status: BLOCKED (Atlas cluster network access issue)
-   - Path A: Use platform "Use new database" deployment option
-   - Path B: Resolve Atlas cluster IP whitelist
-   - Path C: Run full DB sync tool (`POST /api/admin/full-db-sync-to-production`)
-
-10. **Admin Performance**
-    - Inbox, Finance, Dashboard tabs: >3s load time
-    - Likely cause: unindexed queries on service_desk_tickets
-    - Fix: add MongoDB indexes on `status`, `created_at`, `pillar`
-
-11. **Celebrate Service Inventory**
-    - Shadow records exist in products_master for Celebrate services
-    - Build admin tool to clean/dedupe
-
-### Product Features
-
-12. **ServiceBookingModal** — full multi-step booking on mobile
-    - Currently: ConciergeSection (functional equivalent, simpler)
-    - For full parity: port 5-step modal from CareSoulPage.jsx:1655
-    - Pillars: Care, Go, Play, Paperwork
-
-13. **CelebrationMemoryWall** — Celebrate mobile
-    - Past celebration photos & memories (read-only display)
-
-14. **MiraSoulNudge** — Celebrate mobile
-    - Contextual Mira insight card
+1. **BreedCollectionSection + ShopBrowseSection** for Shop mobile
+2. **38 products with wrong AI images** — deactivate or regenerate via admin AI IMAGES tool
+3. **Production DB migration** (blocked by Atlas network access — user side)
+4. **WhatsApp Daily Digest cron job** — morning digest of pet health reminders
+5. **Medication refill reminders** via WhatsApp
+6. **Dine "Mira explains why" expandable row** — one-tap soul profile reasoning on Dine/Care/Celebrate product cards (user approved this enhancement in Session 3)
 
 ---
 
-## P3 — Future / Backlog
+## 🟢 P3 — FUTURE / BACKLOG
 
-15. **Love Pillar** — brand new pillar build
-16. **WhatsApp Daily Digest** — cron job for daily pet updates
-17. **Medication reminders** — push notification + WhatsApp scheduler
-18. **Admin.jsx refactor** — 7000+ lines → break into route-specific components
-19. **K9 Sports section** — agility, nose work, dock diving (Play pillar)
-20. **Multi-pet household** — pet-switching performance optimization
-21. **Member dashboard mobile-first** — full redesign at 375px
-22. **AI Soul Score** — live Mira scoring displayed on Pet Home
-23. **Breed comparison tool** — for Adopt pillar
-24. **Video production** — Mira explainer videos for each pillar
-
----
-
-## SPRINT VELOCITY (reference)
-
-| Session | Work Done | Test Result |
-|---|---|---|
-| Session 1 (Mar 24) | Foundation: responsive split + 11 stubs + Celebrate/Dine full parity | N/A |
-| Session 2 (Mar 25) | Full rewrites: 10 pillars + 17 non-pillar fixes + Emergency WA | 18/18 ✅ |
+1. **Admin.jsx refactor** — 7000+ line monolith → componentise per section
+2. **Love pillar build** — full pillar from scratch
+3. **Admin tab performance** — Inbox, Finance, Dashboard >3s load time
+4. **Dark theme consistency pass** across mobile pages
+5. **Multi-pet switching performance** optimization
+6. **K9 Sports / Agility section** on Play mobile
 
 ---
 
 ## DEPLOYMENT NOTES
 
-```bash
-# Production build (always use this)
-cd /app/frontend
-GENERATE_SOURCEMAP=false NODE_OPTIONS="--max-old-space-size=4096" npm run build
+- **Build command**: `GENERATE_SOURCEMAP=false NODE_OPTIONS="--max-old-space-size=4096" npm run build`
+- **Preview = Production** (confirmed Session 3)
+- **MongoDB Atlas**: Direct connection blocked — use platform native DB or HTTPS sync tool at `/api/admin/full-db-sync-export`
+- **Admin auth**: HTTP Basic `aditya:lola4304` — stored in `localStorage.getItem('adminAuth')`
+- **Member test account**: `dipali@clubconcierge.in` / `test123`
 
-# Supervisor restart (only needed after .env changes or new deps)
-sudo supervisorctl restart frontend
-sudo supervisorctl restart backend
+---
 
-# Check logs
-tail -n 100 /var/log/supervisor/backend.err.log
-tail -n 100 /var/log/supervisor/frontend.err.log
-```
+## TECHNICAL DEBT TRACKER
+
+| Item | Severity | File |
+|---|---|---|
+| Admin.jsx 7000-line monolith | HIGH | `/app/frontend/src/pages/Admin.jsx` |
+| ProductCard.jsx 1990-line file | MEDIUM | `/app/frontend/src/components/ProductCard.jsx` |
+| applyMiraIntelligence duplicated in 3 files | LOW | DineSoulPage, DineSoulPageDesktopLegacy (now uses ALLERGEN_MAP but still local) |
+| CareSoulPage inline ServiceBookingModal | LOW | `/app/frontend/src/pages/CareSoulPage.jsx` |
+| tdc.book() + ServiceBookingModal coexist | LOW | All mobile pages |

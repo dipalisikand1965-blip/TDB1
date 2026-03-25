@@ -1619,7 +1619,7 @@ async def get_product_stats():
         },
         "mira": {
             "visible": mira_visible,
-            "suggestable": -1
+            "suggestable": await safe_count(db.products_master, {"mira_visibility.can_suggest_proactively": True, "visibility.status": {"$ne": "archived"}})
         }
     }
 
