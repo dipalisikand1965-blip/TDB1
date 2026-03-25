@@ -22,7 +22,7 @@ from typing import Tuple, List
 import uuid
 
 # Test configuration
-API_URL = "https://dine-mobile-parity.preview.emergentagent.com"
+API_URL = "https://pillar-parity-sprint.preview.emergentagent.com"
 TEST_USER = "dipali@clubconcierge.in"
 TEST_PASSWORD = "test123"
 

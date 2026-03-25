@@ -58,7 +58,7 @@ Be patient. Be thorough. Honor the Sikand legacy.
 - Admin: `aditya` / `lola4304`
 
 ## 🌐 PREVIEW URL
-https://dine-mobile-parity.preview.emergentagent.com
+https://pillar-parity-sprint.preview.emergentagent.com
 
 ---
 
