@@ -49,251 +49,133 @@ The platform's core promise: **Mira**, an AI concierge, knows your dog's soul �
 PillarSoulPage.jsx (parent)
   ├── isDesktop check → window.innerWidth >= 1024
   ├── Desktop (>= 1024px) → renders original SoulPage JSX (LOCKED — never touch)
-  └── Mobile (< 1024px) → renders *MobilePage.jsx
+  └── Mobile (< 1024px)  → renders *MobilePage.jsx component
 ```
 
-### Key Directories
-```
-/app/frontend/src/
-  pages/
-    *SoulPage.jsx        — Desktop pillar pages (LOCKED)
-    *MobilePage.jsx      — Mobile pillar pages (active development)
-  components/
-    [pillar]/            — Pillar-specific components
-    common/              — Shared components (MiraImaginesBreed, MiraImaginesCard, etc.)
-    ui/                  — Shadcn UI components
-  context/
-    PillarContext.jsx    — currentPet, pets, setSoulData
-    AuthContext.jsx      — token, user
-    CartContext.jsx      — cart state
-  utils/
-    tdc_intent.js        — tdc.book(), tdc.request(), tdc.urgent()
-    api.js               — API_URL
-/app/backend/
-  server.py              — Main FastAPI app (24k+ lines)
-  whatsapp_notifications.py — Gupshup WA integration
-  admin_routes.py        — Admin APIs
-  mira_service_desk.py   — Service desk + ticket system
-```
-
-### Key Utility: tdc_intent.js
-```js
-tdc.book({ service, pillar, pet, notes, metadata, urgency, channel })
-tdc.request(text, { pillar, channel, pet })
-tdc.urgent({ text, pet, channel }) // → critical urgency
-```
-
-### Product Fetch Pattern (all mobile pages)
-```js
-fetch(`${API_URL}/api/admin/pillar-products?pillar=X&limit=200`)
-→ filterBreedProducts(products, pet.breed)
-→ applyMiraIntelligence(filtered, allergies, coat, condition)
-→ render in SharedProductCard grid
-```
-
-### ProductCard Import (CONFIRMED CORRECT)
-```js
-import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
-// Default export is ProductCard, aliased as SharedProductCard — this IS correct
-```
-
-### Build Fix
-```bash
-GENERATE_SOURCEMAP=false NODE_OPTIONS="--max-old-space-size=4096" npm run build
-```
-
----
-
-## 5. DATABASE SCHEMA (MongoDB)
-
-| Collection | Purpose |
-|---|---|
-| `users` | Member accounts |
-| `pets` | Pet profiles (id, name, breed, allergies, soul_data, etc.) |
-| `products_master` | All products + services (12 pillars) |
-| `orders` | Order records |
-| `service_desk_tickets` | All service/concierge requests |
-| `services_master` | Service Box inventory |
-| `sessions` | Auth sessions |
-
-**Pet fields used for Mira Intelligence:**
-- `breed`, `allergies`, `coat_type`, `health_condition`
-- `soul_data`, `soul_score`, `personality`, `preferences`
-
----
-
-## 6. KEY API ENDPOINTS
-
-| Endpoint | Purpose |
-|---|---|
-| `POST /api/auth/login` | User login |
-| `GET /api/pets` | Get user's pets |
-| `GET /api/admin/pillar-products?pillar=X&limit=N` | Get products for a pillar |
-| `GET /api/service-box/services?pillar=X&limit=N` | Get services for a pillar |
-| `POST /api/service_desk/attach_or_create_ticket` | Create service ticket (tdc.book) |
-| `POST /api/notifications/emergency-whatsapp` | Send emergency WA to concierge |
-| `GET /api/test/youtube?query=X&max_results=N` | Fetch YouTube videos for Learn |
-| `POST /api/admin/full-db-sync-export` | Export DB (BSON safe) |
-| `POST /api/admin/full-db-sync-to-production` | Import to prod DB |
-
----
-
-## 7. MOBILE PILLAR STATUS — CURRENT STATE (2026-03-25)
-
-### COMPLETE ✅
-
-| Pillar | Status | Key Features on Mobile |
+### Key Files
+| File | Purpose | Status |
 |---|---|---|
-| **Dine** | ✅ 95% | Eat & Nourish / Dine Out tabs, DineCategoryStrip (pills→modal internal), GuidedNutritionPaths, DineConciergeSection, MealBoxCard, applyMiraIntelligence |
-| **Celebrate** | ✅ 98% | CelebrateCategoryStrip pills→modals, MiraBirthdayBox, BirthdayBoxBuilder (multi-step), CelebrateServiceGrid, GuidedCelebratePaths, CelebrateNearMe, PersonalisedBreedSection |
-| **Shop** | ✅ 95% | DoggyBakerySection (filter chips), PersonalisedBreedSection, SoulMadeModal, MiraPicksSection |
-| **Adopt** | ✅ 95% | 3 tabs (Find Your Dog/Book Guidance/Find Rescue), stage tracker, ADOPT_SERVICES cards, AdoptNearMe, MiraImaginesCard, MiraImaginesBreed, GuidedAdoptPaths |
-| **Farewell** | ✅ 95% | 3 tabs (Legacy & Memorial/Get Support/Find Care), product sub-tabs, FAREWELL_SERVICES cards, FarewellNearMe, MiraImaginesCard, GuidedFarewellPaths, SoulMadeModal |
-| **Emergency** | ✅ 98% | 3 tabs (Emergency Kit/Book Help/Find Vet), persistent URGENT CTA, WhatsApp alert to concierge, dimTab (Products/Services), EMERG_SERVICES, EmergencyNearMe |
-| **Services** | ✅ 95% | 7 expandable service group cards (Pamper & Groom / Health & Vet / Train & Learn / Celebrate / Fitness & Walks / Travel & Paperwork / Life Events), lazy fetch per group, booking confirmation sheet |
-| **Care** | ✅ 90% | 3 top tabs (Care & Products/Care Services/Find Care), dimTab (All Products/Personalised), sub-category pills, applyMiraIntelligence, CareConciergeSection, CareNearMe, MiraImaginesCard, SoulMadeModal |
-| **Go** | ✅ 90% | 3 top tabs (Go & Products/Services/Stay), dimTab, sub-category pills, GoConciergeSection, PetFriendlyStays, MiraImaginesCard, SoulMadeModal |
-| **Play** | ✅ 90% | 3 top tabs (Play & Products/Services/Find Play), dimTab, sub-category pills, BuddyMeetup, PlayConciergeSection, PlayNearMe, MiraImaginesCard, SoulMadeModal |
-| **Learn** | ✅ 90% | 7 dimension pills (Foundations/Behaviour/Training/Tricks/Socialisation/Soul Learn/Mira's Picks), per-dim dimTab (Products/Videos/Book), YouTube video fetch, GuidedLearnPaths, MiraImaginesCard |
-| **Paperwork** | ✅ 90% | DocumentVault at top, 7 dimension pills (Identity/Health/Travel/Insurance/Breeds/Advisory/Soul), per-dim dimTab (Products/Services/Advisory), GuidedPaperworkPaths, MiraImaginesCard, SoulMadeModal |
+| `frontend/src/pages/*SoulPage.jsx` | Desktop pillar pages | 🔒 LOCKED |
+| `frontend/src/pages/*MobilePage.jsx` | Mobile pillar pages | ✅ All 12 done |
+| `frontend/src/hooks/useMiraFilter.js` | AI product ranking | ✅ Breed/size/life-stage |
+| `frontend/src/components/admin/PillarManager.jsx` | Go+Play admin base | ✅ 7 tabs + Quick Add |
+| `frontend/src/components/admin/UnifiedProductBox.jsx` | Product CRUD | ✅ Save fix applied |
+| `frontend/src/components/admin/PillarProductsTab.jsx` | Products tab | ✅ 20/page + createTrigger |
+| `frontend/src/components/admin/PillarServicesTab.jsx` | Services tab | ✅ Add Service modal |
+| `frontend/src/components/admin/PillarBundlesTab.jsx` | Bundles tab | ✅ createTrigger prop |
+| `backend/server.py` | Main monolith | ⚠️ 24,000+ lines — NEVER modify directly |
+| `backend/unified_product_box.py` | Product routes | ✅ |
+| `backend/service_box_routes.py` | Service routes | ✅ |
+| `backend/mira_service_desk.py` | Tickets + Mira | ✅ |
 
-### NON-PILLAR PAGE STATUS (all 17 customer-facing pages)
+---
 
-| Page | Status | Notes |
+## 5. 12 PILLARS
+
+| Pillar ID | Name | Mobile | Desktop | Admin Manager | Status |
+|---|---|---|---|---|---|
+| celebrate | Celebrate | ✅ | ✅ LOCKED | CelebrateManager | ✅ |
+| dine | Dine | ✅ | ✅ LOCKED | DineManager | ✅ |
+| go | Go | ✅ | ✅ LOCKED | GoManager (PillarManager) | ✅ |
+| care | Care | ✅ | ✅ LOCKED | CareManager | ✅ |
+| play | Play | ✅ | ✅ LOCKED | PlayManager (PillarManager) | ✅ |
+| learn | Learn | ✅ | ✅ LOCKED | LearnManager | ✅ |
+| paperwork | Paperwork | ✅ | ✅ LOCKED | PaperworkManager | ✅ |
+| emergency | Emergency | ✅ | ✅ LOCKED | EmergencyManager | ✅ |
+| farewell | Farewell | ✅ | ✅ LOCKED | FarewellManager | ✅ |
+| adopt | Adopt | ✅ | ✅ LOCKED | AdoptManager | ✅ |
+| shop | Shop | ✅ | ✅ LOCKED | ShopManager | ✅ |
+| services | Services | ✅ | ✅ LOCKED | ServiceBox | ✅ |
+
+---
+
+## 6. DATABASE STATE (2026-03-25)
+
+| Collection | Count | Notes |
 |---|---|---|
-| Landing `/` | ✅ Fixed | 5 className-in-style bugs fixed → responsive grids work |
-| Login `/login` | ✅ Good | lg:hidden mobile section with portraits |
-| Register `/register` | ✅ Fixed | Rewrote with dark theme matching Login |
-| Dashboard `/dashboard` | ✅ Good | Scrollable tabs, sm: breakpoints |
-| Join `/join` | ✅ Good | Mobile-first inline styles |
-| Soul Builder `/soul-builder` | ✅ Good | Single-column layout |
-| Pet Home `/pet-home` | ✅ Good | sm: breakpoints, scrollable pills |
-| My Pets `/my-pets` | ✅ Good | sm:/md: Tailwind grid |
-| My Requests `/my-requests` | ✅ Good | overflow-x auto for tabs |
-| Checkout `/checkout` | ✅ Fixed | Order summary above form on mobile (CSS order-1/order-2) |
-| Search `/search` | ✅ Good | Responsive grid 2→4 cols |
-| About `/about` | ✅ Good | clamp() fluid typography |
-| FAQs `/faqs` | ✅ Good | Tailwind responsive |
-| Notifications `/notifications` | ✅ Good | Smart split view: list on mobile, thread on desktop |
-| Membership `/membership` | ✅ Fixed | Pricing card padding → clamp(20px,5vw,48px) |
-| Forgot/Reset Password | ✅ Good | Simple Shadcn cards |
+| products_master | 6,042 | 457 soul_made, 5,585 regular |
+| services_master | 1,021 | All 12 pillars mapped |
+| breed_products | 3,448 | Soul catalog — needs "Add to catalog" for pillar pages |
+| bundles_master | 20+ | Care and others |
+| service_desk_tickets | many | Mira service requests per pillar |
+| services (old) | 46 | Pre-migration, OLD names — import PENDING user confirmation |
+| service_catalog (old) | 97 | Pre-migration, OLD names — import PENDING user confirmation |
 
 ---
 
-## 8. REMAINING GAPS — MOBILE PILLAR PARITY
+## 7. ADMIN PANEL ARCHITECTURE (Session 4 Fixes)
 
-### Cross-Pillar Gaps (affect all/most pillars)
+### Standard 7-Tab Structure (All 12 Pillar Managers)
+1. **Requests** — Live `service_desk_tickets` filtered by pillar
+2. **Partners** — Placeholder (coming soon)
+3. **Products** — `PillarProductsTab` → 20/page pagination, createTrigger prop
+4. **Services** — `PillarServicesTab` → inline Add Service modal, createTrigger prop
+5. **Bundles** — `PillarBundlesTab` → createTrigger prop
+6. **Tips** — Placeholder (coming soon)
+7. **Settings** — Pillar metadata
 
-| Gap | Pillars Affected | Priority | Effort |
-|---|---|---|---|
-| **MiraPicksSection** (AI-curated horizontal scroll) | All 12 | P1 | Medium — inline function per page |
-| **WellnessProfile / TripProfile / ActivityProfile** | Care, Go, Play | P1 | Medium — inline widgets in desktop |
-| **AdoptProfile / FarewellProfile / EmergencyProfile** | Adopt, Farewell, Emergency | P1 | Low — compact tracker widgets |
-| **LearnProfile / LearnNearMe** | Learn | P1 | Low — component file exists |
-| **PaperworkNearMe** | Paperwork | P1 | Low — component file exists |
+### Quick Add Dropdown (PillarManager — Go + Play)
+- Purple button in manager header
+- "Quick Add" → "+ Add Product" / "+ Add Service" / "+ Add Bundle"
+- Switches tab AND triggers create modal simultaneously
 
-### Celebrate-Specific Gaps
-
-| Gap | Priority |
-|---|---|
-| **SoulCelebrationPillars** (6 celebration-type cards) | P1 |
-| **CelebrationMemoryWall** (past celebrations) | P2 |
-| **MiraSoulNudge** (contextual AI tip card) | P2 |
-
-### Shop-Specific Gaps
-
-| Gap | Priority |
-|---|---|
-| **BreedCollectionSection** (browse by breed) | P1 |
-| **ShopBrowseSection** (category browse tabs) | P1 |
-
-### Multi-Step Booking Modals
-
-| Gap | Pillars | Priority |
-|---|---|---|
-| **ServiceBookingModal** (full multi-step flow) | Care, Go, Play, Paperwork | P2 (ConciergeSection is functional equivalent) |
+### ProductBoxEditor Save Fix
+Previously missing from `allowedFields` (now fixed):
+- `pillar` — primary pillar
+- `approval_status` — Status in Pillar
+- `commerce_ops` — pricing, margin, approval  
+- `basics` — nested product metadata
+- `pillars_occasions` — secondary pillars + occasions
+- `breed`, `life_stage`, `pet_size` — Mira AI filtering
+- `sub_category`, `allergens`, `soul_tier`
 
 ---
 
-## 9. FEATURE BACKLOG
+## 8. MIRA AI
 
-### P0 — Critical (none remaining after this session)
-All P0 mobile parity work is complete.
+### useMiraFilter.js
+- **Allergy blocking**: Products with allergens matching pet's allergies are deprioritized
+- **Breed matching**: +2 miraRank for breed-tagged products
+- **Size matching**: +1 for correct size category
+- **Life-stage matching**: +1 for puppy/adult/senior
+- **Favorite foods**: Matched against ALLERGEN_MAP synonyms
 
-### P1 — High Priority
-- Add MiraPicksSection to all 12 pillar mobile pages
-- Add LearnNearMe to Learn mobile
-- Add PaperworkNearMe to Paperwork mobile
-- Add SoulCelebrationPillars to Celebrate mobile
-- Add Wellness/Trip/Activity profile widgets to Care/Go/Play
-- Add BreedCollectionSection + ShopBrowseSection to Shop mobile
-
-### P2 — Medium Priority
-- 38 products with wrong AI images → deactivate or regenerate
-- Production DB migration (blocked by Atlas network access)
-- CelebrationMemoryWall, MiraSoulNudge
-- ServiceBookingModal full multi-step flow on mobile
-- Admin.jsx refactor (~7000 lines → modular)
-- WhatsApp Daily Digest cron job
-- Love pillar build
-
-### P3 — Future / Nice-to-Have
-- Admin tab performance (Inbox, Finance, Dashboard >3s)
-- Font size audit across mobile pages
-- Dark theme consistency pass
-- Multi-pet switching performance
-- K9 Sports / Agility section on Play
+### Mira "Explains Why" (User-approved — NOT YET BUILT)
+One-tap expandable row on Dine/Care/Celebrate product cards showing full soul profile reasoning.
 
 ---
 
-## 10. IMPORTANT KNOWN ISSUES
+## 9. PENDING TASKS (Priority for next session)
 
-1. **38 wrong-image products**: `needs_ai_image: true` in DB. Use admin "AI IMAGES" tool to regenerate.
-2. **Production DB**: Direct MongoDB Atlas connection blocked. Use platform "Use new database" deploy option or HTTPS sync tool (`/api/admin/full-db-sync-export`).
-3. **Admin.jsx**: 7000+ line file. Significant tech debt. Tabs > 3s load time.
-4. **Stale Celebrate service records**: Shadow records exist in products_master.
-5. **Build memory**: Always use `GENERATE_SOURCEMAP=false NODE_OPTIONS="--max-old-space-size=4096"` for production builds.
+### P0 — Deployment Day (2026-03-26)
+1. Celebrate mobile parity: BirthdayCountdown, SoulCelebrationPillars, CelebrationMemoryWall, MiraSoulNudge
+2. Add LearnNearMe, PaperworkNearMe, GoNearMe to mobile pages
+3. Apply Fix 5 & 6 (MediaTabPanel + Active toggle) to BreedCakeManager.jsx
+4. Mira "Explains Why" expandable card on product grids
+
+### P1 — Post-deployment
+1. Services import: 143 old services → services_master (await user confirmation)
+2. Admin "Add New" for Soul Products (Breed Products + Breed Cakes with AI)
+3. Watch & Learn YouTube sections (Care + Go)
+
+### P2 — Future
+1. WhatsApp Daily Digest cron
+2. Medication refill reminders
+3. Production DB (Atlas IP whitelist)
+4. Refactor Admin.jsx (7k lines)
+5. Refactor server.py (24k lines)
+6. Build Love pillar
 
 ---
 
-## 11. EMERGENCY WHATSAPP INTEGRATION
+## 10. CRITICAL RULES (NEXT AGENT MUST READ)
 
-**Endpoint:** `POST /api/notifications/emergency-whatsapp`
-**Concierge number:** 919739908844
-**Triggered by:** Emergency mobile page URGENT button
-**Behavior:**
-1. Sends WhatsApp via Gupshup with pet name, breed, allergies, urgency
-2. Creates `service_desk_tickets` entry with `urgency: "critical"`
-3. Shows green "✓ Concierge notified via WhatsApp" in confirmation sheet
-
----
-
-## 12. HANDOVER NOTES FOR NEXT AGENT
-
-1. **Desktop pages are LOCKED** — never modify `*SoulPage.jsx` files
-2. **All new work goes in `*MobilePage.jsx` files only**
-3. **Import pattern** — `import SharedProductCard, { ProductDetailModal } from '../components/ProductCard'` is correct (default export aliased as SharedProductCard)
-4. **Build** — always use `GENERATE_SOURCEMAP=false NODE_OPTIONS="--max-old-space-size=4096" npm run build`
-5. **Mira filter** — ALWAYS run products through `applyMiraFilter(products, pet)` from `/hooks/useMiraFilter.js` before rendering product grids. SharedProductCard auto-shows `mira_hint`.
-6. **ServiceBookingModal** — in `/components/ServiceBookingModal.jsx`. Import with `guessServiceType`. 8 service types: grooming, vet, training, walking, boarding, sitting, daycare, pet_taxi.
-7. **useMiraFilter.js** — `/app/frontend/src/hooks/useMiraFilter.js` — single source of truth for all allergen/love/goal filtering. ALLERGEN_MAP has ingredient synonyms.
-8. **Admin auth** — HTTP Basic `aditya:lola4304`. Stored in `localStorage.getItem('adminAuth')`. Used by AIImagePromptField and admin fetch calls.
-9. **Archive vs inactivate** — Archive sets `visibility.status: "archived"` (hides from admin list). Inactivate sets `is_active: false` (stays in admin list, hidden from customers). Re-activate restores both.
-10. **MOBILE_WIRING_SPEC.md** is the source of truth for remaining mobile gaps
-11. **Mira's pick callout** — amber gradient banner. Always show for `products[0]?.miraPick`. Condition: `products.length > 0`.
-12. **Service products** — `product_type: "service"` or `basics.is_service: true` → no price shown, concierge_only flow, no add-to-cart button.
-13. **Preview = Production** — confirmed Session 3. Any deployment goes to live users.
-
-## 13. SESSION 3 SUMMARY (2026-03-25)
-
-### What Was Built
-- **useMiraFilter.js** — shared Mira intelligence hook with ALLERGEN_MAP (ingredient synonyms), GOAL_CONFLICTS, full ranking, mira_hint generation, miraPick flag
-- **Mira's pick callout** — amber gradient banner added to Dine (mobile+desktop), Care, Go, Play, Celebrate mobile product grids
-- **ServiceBookingModal expanded** — 8 service types including boarding, sitting, daycare, pet_taxi. `guessServiceType()` exported.
-- **ServiceBookingModal wired** — Services, Care, Go, Play, Learn mobile pages
-- **Admin fixes (10 total)**: archive/delete, toggle-active, AI image auth, service price badge, service auto-behaviour, stats fix, nav duplicate key
-
-### Test Reports
-- `/app/test_reports/iteration_205.json` — Mira filter (18/18 pass)
-- `/app/test_reports/iteration_206.json` — ServiceBookingModal (22/22 pass)
-- `/app/test_reports/iteration_207.json` — Admin backend (15/16 pass)
+1. **Desktop `*SoulPage.jsx` files are STRICTLY LOCKED** — never modify them
+2. **Never modify server.py directly** — only add new route files
+3. **PyMongo**: NEVER `if collection:` → always `if collection is not None:`
+4. **MongoDB ObjectId**: Always exclude `_id` from responses
+5. **AI Image Auth**: Pass `adminAuth` header, use `credentials: 'omit'`
+6. **Soul Products**: `breed_products` → must be "Added to catalog" to appear on pillar pages
+7. **Pillar IDs**: Use canonical lowercase IDs (celebrate, dine, go, care, play, learn, paperwork, emergency, farewell, adopt, shop, services)
+8. **Hot Reload**: Only restart supervisor for .env changes or new packages
+9. **Install packages**: Use `yarn add` for frontend, `pip install && pip freeze > requirements.txt` for backend
