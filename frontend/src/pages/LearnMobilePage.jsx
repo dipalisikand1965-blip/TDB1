@@ -12,6 +12,7 @@ import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
+import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
 import { applyMiraFilter } from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
@@ -84,7 +85,7 @@ function VideoCard({ video, onPlay }) {
   );
 }
 
-function LearnDimPanel({ dim, pet, token, addToCart, onProductClick }) {
+function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook }) {
   const { request } = useConcierge({ pet, pillar:'learn' });
   const [dimTab, setDimTab] = useState('products');
   const [products, setProducts] = useState([]);
@@ -195,7 +196,7 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick }) {
                   </div>
                 </div>
                 <div style={{ fontSize:12, color:'#555', lineHeight:1.5, marginBottom:10 }}>{svc.desc}</div>
-                <button onClick={() => { vibe('medium'); tdc.book({ service:svc.name, pillar:'learn', pet, channel:'learn_dim_book' }); request(svc.name, {}); }}
+                <button onClick={() => { vibe('medium'); tdc.book({ service:svc.name, pillar:'learn', pet, channel:'learn_dim_book' }); if (onBook) onBook(svc.name); }}
                   style={{ width:'100%', minHeight:40, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.purple})`, color:'#fff', fontSize:13, fontWeight:600, cursor:'pointer' }}>
                   Book via Concierge® →
                 </button>
@@ -220,6 +221,7 @@ export default function LearnMobilePage() {
   const [activeDim, setActiveDim] = useState(LEARN_DIMS[0].id);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'training' });
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -302,6 +304,7 @@ export default function LearnMobilePage() {
             token={token}
             addToCart={addToCart}
             onProductClick={p => { vibe(); setSelectedProduct(p); }}
+            onBook={svcName => { setSvcBooking({ isOpen: true, serviceType: guessServiceType(svcName) }); }}
           />
         </div>
 
@@ -331,6 +334,13 @@ export default function LearnMobilePage() {
           <button className="learn-cta">Explore Soul Made →</button>
         </div>
       </div>
+
+      <ServiceBookingModal
+        isOpen={svcBooking.isOpen}
+        onClose={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
+        serviceType={svcBooking.serviceType}
+        onBookingComplete={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
+      />
     </PillarPageLayout>
   );
 }

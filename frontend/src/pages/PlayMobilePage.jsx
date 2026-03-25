@@ -13,6 +13,7 @@ import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
+import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
 import { applyMiraFilter } from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
@@ -88,6 +89,7 @@ export default function PlayMobilePage() {
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [allRaw, setAllRaw] = useState([]);
+  const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'training' });
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -285,10 +287,18 @@ export default function PlayMobilePage() {
             <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Dog parks, playgroups, and groomers near {petName}.</div>
             <PlayNearMe pet={currentPet} token={token} onBook={svc => {
               tdc.book({ service:svc, pillar:'play', pet:currentPet, channel:'play_nearme' });
+              setSvcBooking({ isOpen: true, serviceType: guessServiceType(svc) });
             }} />
           </div>
         )}
       </div>
+
+      <ServiceBookingModal
+        isOpen={svcBooking.isOpen}
+        onClose={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
+        serviceType={svcBooking.serviceType}
+        onBookingComplete={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
+      />
     </PillarPageLayout>
   );
 }

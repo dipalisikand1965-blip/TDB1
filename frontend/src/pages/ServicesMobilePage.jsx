@@ -137,6 +137,8 @@ function ServiceGroupCard({ group, pet, token, onBook }) {
   );
 }
 
+import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
+
 export default function ServicesMobilePage() {
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -145,7 +147,7 @@ export default function ServicesMobilePage() {
   const { request } = useConcierge({ pet:currentPet, pillar:'services' });
 
   const [loading, setLoading] = useState(true);
-  const [conciergeOpen, setConciergeOpen] = useState(false);
+  const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'grooming' });
   const [selectedSvc, setSelectedSvc] = useState(null);
 
   useEffect(() => {
@@ -157,7 +159,7 @@ export default function ServicesMobilePage() {
     vibe('medium');
     tdc.book({ service:svc.name || svc.label, pillar:'services', pet:currentPet, channel:'services_group_card' });
     setSelectedSvc(svc);
-    setConciergeOpen(true);
+    setSvcBooking({ isOpen: true, serviceType: guessServiceType(svc) });
   }, [currentPet]);
 
   if (loading) return (
@@ -255,27 +257,18 @@ export default function ServicesMobilePage() {
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>Vets, groomers, trainers, nutritionists. One message and it's done.</div>
           <button onClick={() => { vibe('medium'); request(`Services for ${petName}`, { channel:'services_cta' }); }}
             style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:`linear-gradient(135deg,${G.navyL},${G.navyXL})`, color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer' }}>
-            🤝 Book via Concierge® →
+            Book via Concierge® →
           </button>
         </div>
       </div>
 
-      {/* Booking confirmation sheet */}
-      {conciergeOpen && selectedSvc && (
-        <div onClick={() => setConciergeOpen(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'flex-end' }}>
-          <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'24px 24px 0 0', width:'100%', padding:'24px 20px 40px' }}>
-            <div style={{ fontSize:28, textAlign:'center', marginBottom:12 }}>{selectedSvc.icon || '🤝'}</div>
-            <div style={{ fontSize:18, fontWeight:700, color:G.dark, textAlign:'center', marginBottom:8 }}>{selectedSvc.name || selectedSvc.label}</div>
-            <div style={{ fontSize:14, color:'#555', textAlign:'center', lineHeight:1.6, marginBottom:20 }}>
-              Your Concierge® will contact you within 48 hours to arrange this service for {petName}.
-            </div>
-            <button onClick={() => setConciergeOpen(false)}
-              style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:`linear-gradient(135deg,${G.navyL},${G.navyXL})`, color:'#fff', fontSize:15, fontWeight:600, cursor:'pointer' }}>
-              Got it ✓
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Service Booking Modal — full 4-step flow */}
+      <ServiceBookingModal
+        isOpen={svcBooking.isOpen}
+        onClose={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
+        serviceType={svcBooking.serviceType}
+        onBookingComplete={() => { setSvcBooking(p => ({ ...p, isOpen: false })); }}
+      />
     </PillarPageLayout>
   );
 }
