@@ -12,6 +12,7 @@ import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
+import { applyMiraFilter } from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import GuidedLearnPaths from '../components/learn/GuidedLearnPaths';
@@ -97,7 +98,7 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick }) {
       headers: token ? { Authorization:`Bearer ${token}` } : {}
     })
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.products) setProducts(filterBreedProducts(d.products, pet?.breed)); })
+      .then(d => { if (d?.products) setProducts(applyMiraFilter(filterBreedProducts(d.products, pet?.breed), pet)); })
       .catch(() => {});
   }, [dim.id, dim.dbCategory, pet?.breed, token]);
 

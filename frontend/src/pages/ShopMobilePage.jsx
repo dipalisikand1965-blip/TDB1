@@ -10,6 +10,7 @@ import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
+import { applyMiraFilter } from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import SoulMadeModal from '../components/SoulMadeModal';
 import PillarSoulProfile from '../components/PillarSoulProfile';
@@ -89,7 +90,7 @@ export default function ShopMobilePage() {
   useEffect(()=>{
     if(!currentPet?.id)return;
     fetch(`${API_URL}/api/admin/pillar-products?pillar=shop&limit=200`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
-      .then(r=>r.ok?r.json():null).then(d=>{if(d?.products)setProducts(d.products);}).catch(()=>{});
+      .then(r=>r.ok?r.json():null).then(d=>{if(d?.products)setProducts(applyMiraFilter(d.products, currentPet));}).catch(()=>{});
   },[currentPet?.id,token]);
 
   const handleAddToCart=useCallback(p=>{
