@@ -230,6 +230,10 @@ const ProductBoxEditor = ({
             newProduct.image_url = statusData.image_url;
             newProduct.image = statusData.image_url;
             newProduct.images = [statusData.image_url];
+            newProduct.thumbnail = statusData.image_url;
+            newProduct.media = newProduct.media || {};
+            newProduct.media.primary_image = statusData.image_url;
+            newProduct.media.images = [statusData.image_url];
             setProduct(newProduct);
             alert(`✅ AI image generated for "${product.name}"`);
           } else if (statusData.status === 'error') {
