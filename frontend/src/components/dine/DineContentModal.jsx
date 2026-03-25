@@ -771,62 +771,6 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
       }}
       data-testid={`dine-modal-${category}`}
     >
-      {!isDesktop && (
-        <button
-          onClick={onClose}
-          style={{
-            position: 'fixed',
-            top: 16,
-            left: 16,
-            width: 40,
-            height: 40,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: '#FFF3E0',
-            color: '#C44400',
-            border: 'none',
-            borderRadius: '50%',
-            cursor: 'pointer',
-            zIndex: 9999,
-            boxShadow: '0 6px 20px rgba(0,0,0,0.16)',
-            fontSize: 18,
-            fontWeight: 700,
-          }}
-          aria-label="Back to dine"
-          data-testid="dine-modal-back-fixed"
-        >
-          ←
-        </button>
-      )}
-
-      {!isDesktop && (
-        <button
-          onClick={onClose}
-          style={{
-            position: 'fixed',
-            top: 16,
-            right: 16,
-            width: 40,
-            height: 40,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: '#FFF3E0',
-            color: '#C44400',
-            border: 'none',
-            borderRadius: '50%',
-            cursor: 'pointer',
-            zIndex: 9999,
-            boxShadow: '0 6px 20px rgba(0,0,0,0.16)',
-          }}
-          aria-label="Close modal"
-          data-testid="dine-modal-close-fixed"
-        >
-          <X size={18} />
-        </button>
-      )}
-
       {/* Drag handle (mobile) */}
       {!isDesktop && (
         <div className="flex justify-center pt-3 flex-shrink-0">
@@ -840,7 +784,30 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
           borderBottom: '1px solid #F0E8E0',
           ...(isDesktop ? {} : { position: 'sticky', top: 0, zIndex: 40, background: '#fff' })
         }}>
-        <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', flex: 1, minWidth: 0 }}>
+          {!isDesktop && (
+            <button
+              onClick={onClose}
+              style={{
+                width: 38,
+                height: 38,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#FFF3E0',
+                color: '#C44400',
+                border: 'none',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                flexShrink: 0,
+                marginTop: 2,
+              }}
+              aria-label="Back to dine"
+              data-testid="dine-modal-back-inline"
+            >
+              ←
+            </button>
+          )}
           <div style={{
             width: 44, height: 44, borderRadius: 12, flexShrink: 0,
             background: 'linear-gradient(135deg, #FFF3E0, #FFE0B2)',
