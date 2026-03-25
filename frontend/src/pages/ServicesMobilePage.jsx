@@ -41,7 +41,7 @@ export default function ServicesMobilePage() {
     <PillarPageLayout pillar="services" hideHero hideNavigation>
       <div className="svc" data-testid="services-mobile"><style>{CSS_SV}</style>
         {selectedProduct&&<ProductDetailModal product={selectedProduct?.raw||selectedProduct} isOpen={!!selectedProduct} onClose={()=>setSelectedProduct(null)} petName={petName} pillarColor={SV.navyL}/>}
-        <div style={{background:`linear-gradient(160deg,${SV.dark} 0%,${SV.navy} 50%,${SV.navyL} 100%)`,padding:'20px 16px 24px'}}>
+        <div style={{background:`linear-gradient(160deg,${SV.dark} 0%,${SV.navy} 50%,${SV.navyL} 100%)`,padding:'32px 16px 24px'}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
             <div><div style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,0.5)',letterSpacing:'0.1em',marginBottom:2}}>THE DOGGY COMPANY</div><div style={{fontSize:22,fontWeight:700,color:'#fff'}}>🤝 Services</div></div>
             {contextPets?.length>1&&(<select value={currentPet?.id} onChange={e=>{vibe();setCurrentPet(contextPets.find(p=>p.id===e.target.value));}} style={{background:'rgba(255,255,255,0.12)',border:'1px solid rgba(255,255,255,0.2)',borderRadius:999,padding:'7px 14px',color:'#fff',fontSize:13}}>{contextPets.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select>)}

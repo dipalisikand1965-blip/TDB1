@@ -338,7 +338,7 @@ function DineProfileSheet({ pet, onClose, onConcierge }) {
       <div onClick={e => e.stopPropagation()} style={{ width:'100%', maxWidth:540, maxHeight:'90vh', overflow:'hidden', display:'flex', flexDirection:'column', background:'#fff', borderRadius:28, animation:'dp-sheet 0.28s ease', boxShadow:'0 24px 80px rgba(0,0,0,0.45)' }}>
 
         {/* Dark header */}
-        <div style={{ padding:'24px 22px 20px', background:'linear-gradient(135deg,#1A0A00 0%,#3D0A00 55%,#521224 100%)', position:'sticky', top:0, zIndex:5 }}>
+        <div style={{ padding:'32px 22px 20px', background:'linear-gradient(135deg,#1A0A00 0%,#3D0A00 55%,#521224 100%)', position:'sticky', top:0, zIndex:5 }}>
           <button onClick={onClose} style={{ position:'absolute', top:16, right:18, width:38, height:38, borderRadius:'50%', background:'rgba(255,255,255,0.10)', border:'1px solid rgba(255,255,255,0.15)', color:'rgba(255,255,255,0.72)', cursor:'pointer', fontSize:18 }}>✕</button>
           <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:12, marginBottom:10 }}>
             <div>

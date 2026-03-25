@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TDC Mobile Parity — Complete Wiring Spec</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#0a0a0f;color:#e0e0e0;line-height:1.7}
+.container{max-width:960px;margin:0 auto;padding:24px 20px}
+h1{font-size:28px;font-weight:800;color:#fff;margin-bottom:8px}
+h2{font-size:20px;font-weight:700;color:#FFD080;margin:32px 0 12px;border-bottom:1px solid #333;padding-bottom:8px}
+h3{font-size:16px;font-weight:700;color:#9B59B6;margin:20px 0 8px}
+h4{font-size:14px;font-weight:600;color:#4FC3F7;margin:14px 0 6px}
+p{margin:6px 0;font-size:14px;color:#bbb}
+.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;margin:2px 4px}
+.done{background:#1b5e20;color:#a5d6a7}.todo{background:#b71c1c;color:#ef9a9a}.partial{background:#e65100;color:#ffcc80}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+th{background:#1a1a2e;color:#FFD080;padding:10px 12px;text-align:left;font-weight:700;border-bottom:2px solid #333}
+td{padding:8px 12px;border-bottom:1px solid #222;vertical-align:top}
+tr:hover{background:#111}
+code{background:#1a1a2e;color:#4FC3F7;padding:2px 6px;border-radius:4px;font-size:12px;font-family:'Fira Code',monospace}
+pre{background:#0d0d1a;border:1px solid #222;border-radius:12px;padding:16px;overflow-x:auto;font-size:12px;color:#aaa;margin:10px 0;line-height:1.5}
+.card{background:#12121f;border:1px solid #222;border-radius:16px;padding:20px;margin:16px 0}
+.pillar-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.pillar-icon{font-size:28px}
+.pillar-name{font-size:18px;font-weight:800;color:#fff}
+.status{font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;margin-left:8px}
+.s-done{background:#1b5e20;color:#a5d6a7}.s-partial{background:#e65100;color:#ffcc80}.s-todo{background:#b71c1c;color:#ef9a9a}
+ul{margin:8px 0 8px 20px;font-size:13px}
+li{margin:3px 0}
+.highlight{background:linear-gradient(135deg,#1a0a2e,#16213e);border:1px solid #4a1b6d;border-radius:12px;padding:16px;margin:12px 0}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>The Doggy Company — Mobile Parity Spec</h1>
+<p style="color:#888;margin-bottom:24px">Complete wiring specification for all 12 pillars + customer-facing pages. Desktop is LOCKED. Only mobile views are being modified.</p>
+
+<div class="highlight">
+<h3 style="color:#FFD080;margin-top:0">Architecture Pattern</h3>
+<pre>// In every *SoulPage.jsx:
+const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 1024);
+useEffect(() => { const fn = () => setIsDesktop(window.innerWidth >= 1024);
+  window.addEventListener('resize', fn); return () => window.removeEventListener('resize', fn); }, []);
+
+if (!isDesktop) return &lt;PillarMobilePage /&gt;;
+// ... existing desktop code unchanged ...</pre>
+</div>
+
+<h2>Per-Pillar Status</h2>
+
+<!-- DINE -->
+<div class="card">
+<div class="pillar-header"><span class="pillar-icon">🍽️</span><span class="pillar-name">Dine</span><span class="status s-done">DONE</span></div>
+<p>Reference implementation. 1102 lines. DineSoulPage_v11.jsx.</p>
+<h4>What's Wired</h4>
+<ul>
+<li>✅ Eat &amp; Nourish / Dine Out top tabs</li>
+<li>✅ DineCategoryStrip (9 pills)</li>
+<li>✅ Full grouped apiProducts with sub-category filtering</li>
+<li>✅ applyMiraIntelligence</li>
+<li>✅ soulScoreUpdated event listener</li>
+<li>✅ ProductDetailModal on product tap</li>
+<li>✅ MiraImaginesBreed, GuidedNutritionPaths, MealBoxCard</li>
+<li>✅ DineConciergeSection, TummyProfile sheet</li>
+<li>✅ PetFriendlySpots (Dine Out tab)</li>
+</ul>
+<h4>TODO</h4>
+<ul>
+<li>⚠️ Category pills should open DineContentModal (like Celebrate does). Currently filters inline. Fix: import DineContentModal, add state, wire onSelect.</li>
+</ul>
+</div>
+
+<!-- CELEBRATE -->
+<div class="card">
+<div class="pillar-header"><span class="pillar-icon">🎉</span><span class="pillar-name">Celebrate</span><span class="status s-done">DONE</span></div>
+<p>471 lines. Best-wired after Dine.</p>
+<h4>What's Wired</h4>
+<ul>
+<li>✅ CelebrateCategoryStrip → CelebrateContentModal</li>
+<li>✅ Breed Cakes pill → DoggyBakeryCakeModal</li>
+<li>✅ MiraBirthdayBox → BirthdayBoxBuilder (multi-step via CustomEvent)</li>
+<li>✅ Mira Picks → bottom sheet modal (not inline)</li>
+<li>✅ BirthdayBoxBrowseDrawer</li>
+<li>✅ ConciergeIntakeModal</li>
+<li>✅ PersonalisedBreedSection</li>
+</ul>
+<h4>TODO</h4>
+<ul><li>None — complete.</li></ul>
+</div>
+
+<!-- CARE -->
+<div class="card">
+<div class="pillar-header"><span class="pillar-icon">💚</span><span class="pillar-name">Care</span><span class="status s-partial">PARTIAL</span></div>
+<p>246 lines. Has products in Mira modal, missing tabs + service flows.</p>
+<h4>What's Wired</h4>
+<ul>
+<li>✅ Hero, PillarSoulProfile, CareCategoryStrip, CareMiraBar</li>
+<li>✅ Products in Mira Picks modal</li>
+<li>✅ PersonalisedBreedSection, MiraImaginesBreed, GuidedCarePaths, CareNearMe, CareConciergeSection</li>
+</ul>
+<h4>MUST ADD</h4>
+<ul>
+<li>❌ <strong>dimTab</strong> = Products | Personalised (2 top tabs within each dimension)</li>
+<li>❌ <strong>activeTab</strong> = All | sub-category tabs within Products</li>
+<li>❌ <strong>CareCategoryStrip → CareContentModal</strong> on pill tap (needs onDimSelect wiring)</li>
+<li>❌ <strong>8 service booking flows</strong>: Grooming (5-step), Vet Visit (3-step), Boarding (4-step), Pet Sitting (3-step), Dental (2-step), Rehab (3-step), Senior Care (3-step), Emergency Vet (2-step)</li>
+<li>❌ <strong>SoulMadeCollection</strong> inline breed mockup grid</li>
+</ul>
+<h4>Desktop Code Reference</h4>
+<pre>// CareSoulPage.jsx lines 1126-1230: dimTab/activeTab/Products/Personalised tabs
+// CareSoulPage.jsx lines 2156-2270: 8 service booking flows (CareBookingModal)
+// CareSoulPage.jsx line 1229: &lt;PersonalisedBreedSection pet={pet} pillar="care" /&gt;</pre>
+</div>
+
+<!-- GO -->
+<div class="card">
+<div class="pillar-header"><span class="pillar-icon">🌊</span><span class="pillar-name">Go</span><span class="status s-partial">PARTIAL</span></div>
+<p>191 lines. Has GoContentModal wired, missing tabs + service flows.</p>
+<h4>MUST ADD</h4>
+<ul>
+<li>❌ dimTab = Products | Personalised</li>
+<li>❌ activeTab = All | sub-categories</li>
+<li>❌ 8 service booking flows (Pet Taxi, Travel Kit, Hotels, Sitter, Travel Vet, Insurance, Passport, Airlines)</li>
+<li>❌ PetFriendlyStays component (special Go feature)</li>
+</ul>
+</div>
+
+<!-- PLAY -->
+<div class="card">
+<div class="pillar-header"><span class="pillar-icon">🎾</span><span class="pillar-name">Play</span><span class="status s-partial">PARTIAL</span></div>
+<p>124 lines. Has PlayContentModal wired, missing tabs.</p>
+<h4>MUST ADD</h4>
+<ul>
+<li>❌ dimTab = Products | Personalised</li>
+<li>❌ activeTab = All | sub-categories</li>
+<li>❌ BuddyMeetup component (social meetup feature)</li>
+</ul>
+</div>
+
+<!-- LEARN -->
+<div class="card">
+<div class="pillar-header"><span class="pillar-icon">📖</span><span class="pillar-name">Learn</span><span class="status s-partial">PARTIAL</span></div>
+<p>107 lines. Basic product grid only.</p>
+<h4>MUST ADD</h4>
+<ul>
+<li>❌ 7 dimension pills (Foundations, Behaviour, Training, Tricks, Health, Safety, Breed Guide)</li>
+<li>❌ dimTab = Products | Videos | Services per dimension</li>
+<li>❌ Video fetching + rendering</li>
+<li>❌ Service cards per dimension</li>
+<li>❌ No CategoryStrip exists for Learn — uses dimension pills directly</li>
+</ul>
+</div>
+
+<!-- SHOP -->
+<div class="card">
+<div class="pillar-header"><span class="pillar-icon">🛍️</span><span class="pillar-name">Shop</span><span class="status s-done">DONE</span></div>
+<p>103 lines. No tabs on desktop either.</p>
+<h4>What's Wired</h4>
+<ul>
+<li>✅ Product grid, PersonalisedBreedSection, MiraImaginesBreed, SoulMadeModal</li>
+</ul>
+<h4>OPTIONAL</h4>
+<ul><li>⚪ SoulMadeCollection inline grid (desktop has it)</li></ul>
+</div>
+
+<!-- SERVICES -->
+<div class="card">
+<div class="pillar-header"><span class="pillar-icon">🔧</span><span class="pillar-name">Services</span><span class="status s-todo">TODO</span></div>
+<p>74 lines. Smallest mobile page — needs service groups.</p>
+<h4>Desktop Structure</h4>
+<ul>
+<li>5 service groups: Pamper &amp; Groom, Health &amp; Vet, Train &amp; Learn, Celebrate &amp; Special, Travel &amp; Paperwork</li>
+<li>Each group has sub-services with booking CTAs</li>
+<li>Each sub-service maps to a pillar (care, go, play, etc.)</li>
+</ul>
+<h4>MUST ADD</h4>
+<ul>
+<li>❌ 5 service group cards (expandable)</li>
+<li>❌ Sub-service listings with icons, descriptions, prices</li>
+<li>❌ Booking CTAs → tdc.book</li>
+</ul>
+</div>
+
+<!-- ADOPT -->
+<div class="card">
+<div class="pillar-header"><span class="pillar-icon">🐾</span><span class="pillar-name">Adopt</span><span class="status s-todo">TODO</span></div>
+<p>87 lines. Needs 3 tabs.</p>
+<h4>Desktop Tabs</h4>
+<table><tr><th>Tab</th><th>Content</th></tr>
+<tr><td>🐾 Find Your Dog</td><td>Adoption listings, breed info, adoption readiness checklist</td></tr>
+<tr><td>💌 Book Guidance</td><td>Adoption counselling services, home visits, compatibility matching</td></tr>
+<tr><td>📍 Find Rescue</td><td>Nearby rescue centers, shelters (AdoptNearMe component)</td></tr>
+</table>
+<h4>Code Reference</h4>
+<pre>// AdoptSoulPage.jsx line 244: const [activeTab, setActiveTab] = useState("adopt");
+// AdoptSoulPage.jsx line 319: tab bar JSX
+// AdoptSoulPage.jsx lines 323-404: 3 tab content sections</pre>
+</div>
+
+<!-- FAREWELL -->
+<div class="card">
+<div class="pillar-header"><span class="pillar-icon">🌷</span><span class="pillar-name">Farewell</span><span class="status s-todo">TODO</span></div>
+<p>85 lines. Needs 3 tabs.</p>
+<h4>Desktop Tabs</h4>
+<table><tr><th>Tab</th><th>Content</th></tr>
+<tr><td>🌷 Legacy &amp; Memorial</td><td>Memorial products, keepsakes, tribute creation</td></tr>
+<tr><td>💙 Get Support</td><td>Grief counselling, pet loss support services</td></tr>
+<tr><td>📍 Find Care</td><td>Cremation services, memorial parks (FarewellNearMe)</td></tr>
+</table>
+</div>
+
+<!-- EMERGENCY -->
+<div class="card">
+<div class="pillar-header"><span class="pillar-icon">🚨</span><span class="pillar-name">Emergency</span><span class="status s-todo">TODO</span></div>
+<p>95 lines. Needs 3 tabs + service dispatch.</p>
+<h4>Desktop Tabs</h4>
+<table><tr><th>Tab</th><th>Content</th></tr>
+<tr><td>🚨 Emergency Kit</td><td>Products + Services sub-tabs (dimTab). Emergency supplies + immediate dispatch services.</td></tr>
+<tr><td>📋 Book Help</td><td>Emergency service bookings — transport, vet, poison helpline</td></tr>
+<tr><td>📍 Find Vet</td><td>24-hour emergency vets nearby (EmergencyNearMe)</td></tr>
+</table>
+<h4>Special: Emergency Services</h4>
+<pre>// EMERG_SERVICES array in EmergencySoulPage.jsx (8 services):
+// Emergency Vet, Poison Helpline, Emergency Transport, After-Hours Clinic,
+// Emergency Surgery Referral, Accident Response, Seizure Protocol, Heatstroke Response</pre>
+</div>
+
+<!-- PAPERWORK -->
+<div class="card">
+<div class="pillar-header"><span class="pillar-icon">📄</span><span class="pillar-name">Paperwork</span><span class="status s-todo">TODO</span></div>
+<p>91 lines. Needs dimension pills + sub-tabs.</p>
+<h4>Desktop Structure</h4>
+<ul>
+<li>7 dimensions: Identity &amp; Safety, Health Records, Travel Documents, Insurance, Breeding, Legal, End of Life</li>
+<li>Each dimension has 3 sub-tabs: Products / Services / Advisory</li>
+<li>DocumentVault component for file storage</li>
+</ul>
+</div>
+
+<h2>Customer-Facing Pages — Mobile Audit Checklist</h2>
+<table>
+<tr><th>Page</th><th>Route</th><th>File</th><th>Mobile Status</th></tr>
+<tr><td>Landing/Home</td><td>/</td><td>LandingPage.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+<tr><td>Join/Onboard</td><td>/join</td><td>MiraMeetsYourPet.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+<tr><td>Login</td><td>/login</td><td>Login.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+<tr><td>Register</td><td>/register</td><td>Register.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+<tr><td>Forgot Password</td><td>/forgot-password</td><td>ForgotPassword.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+<tr><td>Member Dashboard</td><td>/dashboard</td><td>MemberDashboard.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+<tr><td>Checkout</td><td>/checkout</td><td>Checkout.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+<tr><td>My Pets</td><td>/my-pets</td><td>MyPets.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+<tr><td>Pet Home</td><td>/pet-home/:id</td><td>PetHomePage.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+<tr><td>My Requests</td><td>/my-requests</td><td>MyRequestsPage.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+<tr><td>Soul Builder</td><td>/soul-builder</td><td>SoulBuilder.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+<tr><td>Search</td><td>/search</td><td>SearchResults.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+<tr><td>Notifications</td><td>/notifications</td><td>NotificationsInbox.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+<tr><td>Pet Wrapped</td><td>/pet-wrapped</td><td>PetWrappedViewer.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+<tr><td>About</td><td>/about</td><td>AboutPage.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+<tr><td>FAQs</td><td>/faqs</td><td>FAQs.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+<tr><td>Policies</td><td>/policies</td><td>Policies.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
+</table>
+
+<h2>Shared Components Reference</h2>
+<table>
+<tr><th>Component</th><th>File</th><th>Used By (Desktop)</th></tr>
+<tr><td>SharedProductCard</td><td>components/ProductCard.jsx</td><td>All pillars</td></tr>
+<tr><td>ProductDetailModal</td><td>components/ProductCard.jsx (named export)</td><td>All pillars</td></tr>
+<tr><td>PillarSoulProfile</td><td>components/PillarSoulProfile.jsx</td><td>All pillars</td></tr>
+<tr><td>PillarPageLayout</td><td>components/PillarPageLayout.jsx</td><td>All pillars (wraps MiraChatWidget)</td></tr>
+<tr><td>SoulMadeModal</td><td>components/SoulMadeModal.jsx</td><td>All pillars</td></tr>
+<tr><td>SoulMadeCollection</td><td>components/SoulMadeCollection.jsx</td><td>Care, Go, Play, Learn, Paperwork</td></tr>
+<tr><td>MiraImaginesBreed</td><td>components/common/MiraImaginesBreed.jsx</td><td>All pillars</td></tr>
+<tr><td>MiraImaginesCard</td><td>components/common/MiraImaginesCard.jsx</td><td>Care, Go, Play, Learn, Celebrate</td></tr>
+<tr><td>PersonalisedBreedSection</td><td>components/common/PersonalisedBreedSection.jsx</td><td>All pillars</td></tr>
+<tr><td>CareCategoryStrip</td><td>components/care/CareCategoryStrip.jsx</td><td>Care</td></tr>
+<tr><td>CareContentModal</td><td>components/care/CareContentModal.jsx</td><td>Care</td></tr>
+<tr><td>GoCategoryStrip</td><td>components/go/GoCategoryStrip.jsx</td><td>Go</td></tr>
+<tr><td>GoContentModal</td><td>components/go/GoContentModal.jsx</td><td>Go</td></tr>
+<tr><td>PlayCategoryStrip</td><td>components/play/PlayCategoryStrip.jsx</td><td>Play</td></tr>
+<tr><td>PlayContentModal</td><td>components/play/PlayContentModal.jsx</td><td>Play</td></tr>
+<tr><td>DineCategoryStrip</td><td>components/dine/DineCategoryStrip.jsx</td><td>Dine</td></tr>
+<tr><td>DineContentModal</td><td>components/dine/DineContentModal.jsx</td><td>Dine</td></tr>
+<tr><td>CelebrateCategoryStrip</td><td>components/celebrate/CelebrateCategoryStrip.jsx</td><td>Celebrate</td></tr>
+<tr><td>CelebrateContentModal</td><td>components/celebrate/CelebrateContentModal.jsx</td><td>Celebrate</td></tr>
+<tr><td>DoggyBakeryCakeModal</td><td>components/celebrate/DoggyBakeryCakeModal.jsx</td><td>Celebrate</td></tr>
+<tr><td>MiraBirthdayBox</td><td>components/celebrate/MiraBirthdayBox.jsx</td><td>Celebrate</td></tr>
+<tr><td>BirthdayBoxBuilder</td><td>components/celebrate/BirthdayBoxBuilder.jsx</td><td>Celebrate</td></tr>
+<tr><td>BuddyMeetup</td><td>components/play/BuddyMeetup.jsx</td><td>Play</td></tr>
+<tr><td>DocumentVault</td><td>components/paperwork/DocumentVault.jsx</td><td>Paperwork</td></tr>
+</table>
+
+<h2>Implementation Priority Order</h2>
+<div class="highlight">
+<ol style="font-size:14px;padding-left:20px">
+<li><strong>Adopt, Farewell, Emergency</strong> — Simple 3-tab pattern. Copy tab bar + content from desktop. ~30 min each.</li>
+<li><strong>Care, Go, Play</strong> — dimTab + activeTab + sub-category filtering. Port from desktop. ~45 min each.</li>
+<li><strong>Dine pills fix</strong> — Wire DineContentModal on category pill tap. ~15 min.</li>
+<li><strong>Paperwork, Learn</strong> — Complex: dimension pills + 3 sub-tabs per dimension. ~60 min each.</li>
+<li><strong>Services</strong> — 5 service group cards with expand/collapse. ~45 min.</li>
+<li><strong>Font size consistency</strong> — Match Dine v11 reference across all pages. ~30 min.</li>
+<li><strong>Customer-facing pages audit</strong> — 17 pages to check at 375px. ~2-3 hours.</li>
+</ol>
+</div>
+
+<p style="text-align:center;color:#555;margin-top:40px;font-size:12px">The Doggy Company — Mobile Parity Specification v1.0 — 2026-03-25</p>
+</div>
+</body>
+</html>
