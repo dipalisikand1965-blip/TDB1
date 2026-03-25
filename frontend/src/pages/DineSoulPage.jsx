@@ -204,7 +204,7 @@ function DinePetProfileCard({ pet, onOpen }) {
   );
 }
 
-function DineProfileSheet({ pet, onClose }) {
+function DineProfileSheet({ pet, onClose, onConcierge }) {
   const name = pet?.name || 'your dog';
   const breed = pet?.breed || 'mixed breed';
   const score = Math.round(pet?.overall_score || pet?.soul_score || 0);
@@ -360,7 +360,7 @@ function DineProfileSheet({ pet, onClose }) {
                   {card.quote}
                 </div>
                 <button
-                  onClick={() => onClose()}
+                  onClick={() => onConcierge?.({ name: card.title, desc: card.desc })}
                   className="dine-cta"
                   style={{ background: '#6B3A2A', borderRadius: 10, minHeight: 44, marginTop: 'auto' }}
                 >
@@ -597,6 +597,7 @@ export default function DineSoulPage() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [miraOpen, setMiraOpen] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
+  const [toast, setToast] = useState(null);
   const [products, setProducts] = useState([]);
   const [apiProducts, setApiProducts] = useState({});
   const [miraProducts, setMiraProducts] = useState([]);
@@ -712,6 +713,16 @@ export default function DineSoulPage() {
     });
   }, [request, currentPet]);
 
+  const handleImagineConcierge = useCallback(async (card) => {
+    const name = currentPet?.name || 'your dog';
+    await request(`Dine Mira imagine request for ${name}: ${card?.name || 'Personalised dining idea'}${card?.desc ? `. ${card.desc}` : ''}`, {
+      channel: 'dine_imagines',
+      metadata: { card_title: card?.name, card_desc: card?.desc }
+    });
+    setToast(`Sent to Concierge for ${name}`);
+    setTimeout(() => setToast(null), 2200);
+  }, [request, currentPet]);
+
   if (isDesktop) {
     return <DineSoulPageDesktopLegacy />;
   }
@@ -742,10 +753,16 @@ export default function DineSoulPage() {
       <div className="dine-page" data-testid="dine-mobile-v10">
         <style>{CSS}</style>
 
-        {profileOpen && <DineProfileSheet pet={currentPet} onClose={() => setProfileOpen(false)} />}
+        {profileOpen && <DineProfileSheet pet={currentPet} onClose={() => setProfileOpen(false)} onConcierge={handleImagineConcierge} />}
         {miraOpen && <DineMiraPicksSheet pet={currentPet} products={miraProducts} services={miraServices} onClose={() => setMiraOpen(false)} onConcierge={handleConcierge} onAdd={handleAddToCart} />}
         {intakeOpen && <DineIntakeSheet pet={currentPet} onClose={() => setIntakeOpen(false)} onSend={handleConciergeRequest} />}
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="dine" pillarColor="#D97706" pillarLabel="Dining" onClose={() => setSoulMadeOpen(false)} />}
+
+        {toast && (
+          <div style={{ position:'fixed', left:'50%', bottom:'calc(92px + env(safe-area-inset-bottom))', transform:'translateX(-50%)', zIndex:9000, background:'#1A0A00', color:'#fff', padding:'10px 16px', borderRadius:999, fontSize:13, fontWeight:600, boxShadow:'0 12px 28px rgba(0,0,0,0.24)' }}>
+            {toast}
+          </div>
+        )}
 
         <div style={{ background: 'linear-gradient(160deg,#3d1200 0%,#7a2800 50%,#c44400 100%)', padding: '20px 16px 24px', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: -60, right: -40, width: 200, height: 200, background: 'radial-gradient(circle,rgba(255,140,66,0.2) 0%,transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
