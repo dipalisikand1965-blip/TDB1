@@ -802,14 +802,22 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
         <button
           onClick={onClose}
           style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            background: '#FFF3E0', color: '#C44400', border: 'none',
-            borderRadius: 20, padding: '7px 14px', fontSize: 12, fontWeight: 700,
-            cursor: 'pointer', flexShrink: 0,
+            width: 38,
+            height: 38,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: '#FFF3E0',
+            color: '#C44400',
+            border: 'none',
+            borderRadius: '50%',
+            cursor: 'pointer',
+            flexShrink: 0,
           }}
+          aria-label="Close modal"
           data-testid="dine-modal-close"
         >
-          Close <X size={13} />
+          <X size={18} />
         </button>
       </div>
 
