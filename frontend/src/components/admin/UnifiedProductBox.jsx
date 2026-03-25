@@ -1353,13 +1353,19 @@ const UnifiedProductBox = () => {
                       </td>
                       {/* Clickable Price for Quick Edit */}
                       <td className="p-3">
-                        <button
-                          onClick={() => openQuickEdit(product, 'price')}
-                          className="font-medium hover:text-purple-600 hover:bg-purple-50 px-2 py-1 rounded transition-colors"
-                          title="Click to edit price"
-                        >
-                          ₹{product.pricing?.base_price || product.price || 0}
-                        </button>
+                        {product.product_type === 'service' || product.basics?.is_service ? (
+                          <span className="text-xs font-medium text-orange-600 bg-orange-50 px-2 py-1 rounded">
+                            Service
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => openQuickEdit(product, 'price')}
+                            className="font-medium hover:text-purple-600 hover:bg-purple-50 px-2 py-1 rounded transition-colors"
+                            title="Click to edit price"
+                          >
+                            ₹{product.pricing?.base_price || product.price || 0}
+                          </button>
+                        )}
                       </td>
                       <td className="p-3 text-center">
                         {product.inventory?.track_inventory ? (
