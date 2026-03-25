@@ -116,12 +116,30 @@ These non-pillar pages need mobile audit:
 - GoMobilePage.jsx (191 lines)
 - PlayMobilePage.jsx (124 lines)
 - LearnMobilePage.jsx (107 lines)
-- ShopMobilePage.jsx (103 lines)
-- EmergencyMobilePage.jsx (95 lines)
-- PaperworkMobilePage.jsx (91 lines)
-- AdoptMobilePage.jsx (87 lines)
-- FarewellMobilePage.jsx (85 lines)
-- ServicesMobilePage.jsx (74 lines)
+- ShopMobilePage.jsx — ✅ DoggyBakerySection added (2026-03-25)
+- EmergencyMobilePage.jsx — ✅ Full 3-tab rewrite (2026-03-25)
+- PaperworkMobilePage.jsx (91 lines) — pending dimension pills
+- AdoptMobilePage.jsx — ✅ Full 3-tab rewrite (2026-03-25)
+- FarewellMobilePage.jsx — ✅ Full 3-tab rewrite (2026-03-25)
+- ServicesMobilePage.jsx — ✅ 7 service group cards (2026-03-25)
+
+## Non-Pillar Page Mobile Status (2026-03-25 Audit)
+- Landing `/`: ✅ Fixed — className bugs resolved
+- Login `/login`: ✅ Good
+- Register `/register`: ✅ Fixed — dark theme
+- Dashboard `/dashboard`: ✅ Good
+- Join `/join`: ✅ Good
+- Soul Builder `/soul-builder`: ✅ Good
+- Pet Home `/pet-home`: ✅ Good
+- My Pets `/my-pets`: ✅ Good
+- My Requests `/my-requests`: ✅ Good
+- Checkout `/checkout`: ✅ Fixed — order summary above form on mobile
+- Search `/search`: ✅ Good
+- About `/about`: ✅ Good
+- FAQs `/faqs`: ✅ Good
+- Notifications `/notifications`: ✅ Good
+- Membership `/membership`: ✅ Fixed — pricing padding responsive
+- Forgot/Reset Password: ✅ Good
 
 ### Desktop Pages (DO NOT MODIFY)
 - DineSoulPageDesktopLegacy.jsx, CareSoulPage.jsx, GoSoulPage.jsx, PlaySoulPage.jsx, LearnSoulPage.jsx, CelebratePageNew.jsx, ShopSoulPage.jsx, ServicesSoulPage.jsx, AdoptSoulPage.jsx, FarewellSoulPage.jsx, EmergencySoulPage.jsx, PaperworkSoulPage.jsx
