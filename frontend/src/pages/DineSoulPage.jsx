@@ -84,6 +84,10 @@ const getAllergies = (pet) => {
 const getFavouriteTreat = (pet) => pet?.doggy_soul_answers?.favourite_treat?.replace(/_/g, ' ') || null;
 const getDietType = (pet) => pet?.doggy_soul_answers?.diet_type?.replace(/_/g, ' ') || null;
 const getHealthCondition = (pet) => pet?.health?.medical_conditions || pet?.doggy_soul_answers?.health_conditions || null;
+const getFavoriteProtein = (pet) => pet?.doggy_soul_answers?.favorite_protein || pet?.doggy_soul_answers?.fav_protein || null;
+const getFoodDrive = (pet) => pet?.doggy_soul_answers?.food_motivation || pet?.doggy_soul_answers?.food_drive || null;
+const getSensitiveStomach = (pet) => pet?.doggy_soul_answers?.sensitive_stomach || null;
+const getGrainFree = (pet) => pet?.doggy_soul_answers?.prefers_grain_free || null;
 const vibrate = (type = 'light') => {
   if (!navigator.vibrate) return;
   if (type === 'success') navigator.vibrate([8, 40, 10]);
@@ -150,7 +154,7 @@ function DinePetProfileCard({ pet, onOpen }) {
     : treat ? `Loves ${treat}${diet ? ` · ${diet} diet` : ''}` : `Mira knows what ${name} loves and what to avoid`;
 
   return (
-    <div onClick={() => { vibrate('light'); onOpen(); }} className="dine-card" style={{ padding: 16, margin: '0 16px 20px', cursor: 'pointer', boxShadow: '0 4px 20px rgba(43,23,11,0.06)' }}>
+    <div onClick={() => { vibrate('light'); onOpen(); }} data-testid="dine-profile-card" className="dine-card" style={{ padding: 16, margin: '0 16px 20px', cursor: 'pointer', boxShadow: '0 4px 20px rgba(43,23,11,0.06)' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, flex: 1 }}>
           <div style={{ width: 56, height: 56, borderRadius: '50%', flexShrink: 0, background: `linear-gradient(135deg,${C.apricot},${C.amber})`, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
@@ -177,28 +181,70 @@ function DinePetProfileCard({ pet, onOpen }) {
 function DineProfileSheet({ pet, onClose }) {
   const name = pet?.name || 'your dog';
   const breed = pet?.breed || 'mixed breed';
+  const score = Math.round(pet?.overall_score || pet?.soul_score || 0);
   const allergies = getAllergies(pet);
-  const diet = getDietType(pet);
-  const treat = getFavouriteTreat(pet);
-  const condition = getHealthCondition(pet);
+  const diet = getDietType(pet) || 'Home-cooked';
+  const treat = getFavouriteTreat(pet) || 'Soft chews';
+  const condition = getHealthCondition(pet) || 'All healthy';
+  const faveProtein = getFavoriteProtein(pet) || 'Salmon';
+  const foodDrive = getFoodDrive(pet) || 'Very food motivated';
+  const stomach = getSensitiveStomach(pet) || 'Sometimes';
+  const grainFree = getGrainFree(pet);
+  const grainFreeLabel = grainFree === true ? 'Yes' : grainFree === false ? 'No' : (grainFree || 'Yes');
+  const loves = [getFavouriteTreat(pet), faveProtein].filter(Boolean).join(' · ') || 'Peanut butter';
+  const summary = `Mira knows ${name}'s body and taste. Everything here is filtered for safety, joy, and what they reach for first.`;
+  const cards = [
+    { label: 'Allergy', value: allergies.length ? `No ${allergies.join(' / ')}` : 'None noted', color: '#FF8C42' },
+    { label: 'Diet', value: diet, color: '#F0C060' },
+    { label: 'Fave protein', value: faveProtein, color: '#FFB36A' },
+    { label: 'Food drive', value: foodDrive, color: '#F0C060' },
+    { label: 'Treat type', value: treat, color: '#FF8C42' },
+    { label: 'Loves', value: loves, color: '#FFD680' },
+    { label: 'Stomach', value: stomach, color: '#D9B6FF' },
+    { label: 'Grain-free', value: grainFreeLabel, color: '#8EE29A' },
+  ];
 
   return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 500, display: 'flex', alignItems: 'flex-end' }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', maxHeight: '88vh', overflowY: 'auto', background: '#fff', borderRadius: '28px 28px 0 0', padding: '12px 20px calc(32px + env(safe-area-inset-bottom))', animation: 'dine-sheet 0.28s ease' }}>
-        <div style={{ width: 48, height: 5, borderRadius: 999, background: C.border, margin: '0 auto 18px' }} />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
-          <div>
-            <div style={{ fontSize: 24, fontWeight: 700 }}>{name}&apos;s Food Profile</div>
-            <div style={{ fontSize: 15, color: C.taupe }}>{breed}</div>
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.62)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', maxWidth: 540, maxHeight: '90vh', overflowY: 'auto', background: '#fff', borderRadius: 28, animation: 'dine-sheet 0.28s ease', boxShadow: '0 24px 80px rgba(0,0,0,0.45)' }}>
+        <div style={{ padding: '24px 22px 20px', background: 'linear-gradient(135deg,#1A0A00 0%, #3D0A00 55%, #521224 100%)', position: 'sticky', top: 0, zIndex: 5 }}>
+          <button onClick={onClose} style={{ position: 'absolute', top: 16, right: 18, width: 38, height: 38, borderRadius: '50%', background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.72)', cursor: 'pointer', fontSize: 18 }}>✕</button>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 10 }}>
+            <div>
+              <div style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,140,66,0.90)', fontSize: 10, marginBottom: 5 }}>
+                ✦ GROW {name.toUpperCase()}'S TUMMY PROFILE
+              </div>
+              <div style={{ color: 'rgba(255,255,255,0.50)', fontSize: 12 }}>
+                Answer quick questions · {name}'s food profile is almost there
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, paddingRight: 40 }}>
+              <span style={{ fontSize: 64, fontWeight: 900, lineHeight: 1, color: score >= 80 ? '#F0C060' : '#FF8C42', textShadow: score >= 80 ? '0 0 20px rgba(240,192,96,0.6)' : '0 0 20px rgba(255,140,66,0.6)' }}>{score}</span>
+              <span style={{ color: 'rgba(255,255,255,0.40)', fontSize: 18, marginBottom: 8 }}>%</span>
+            </div>
           </div>
-          <button onClick={onClose} style={{ width: 42, height: 42, borderRadius: '50%', background: C.chipBg, border: 'none', cursor: 'pointer' }}>✕</button>
+          <div style={{ height: 6, borderRadius: 999, background: 'rgba(255,255,255,0.10)', overflow: 'hidden', marginBottom: 16 }}>
+            <div style={{ height: '100%', width: `${score}%`, borderRadius: 999, background: 'linear-gradient(90deg, #FF2D87, #C44DFF)' }} />
+          </div>
+          <div style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 14, padding: '12px 14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+            <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#FF8C42,#C44DFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#fff', flexShrink: 0 }}>✦</div>
+            <div>
+              <div style={{ fontSize: 13, color: '#fff', fontStyle: 'italic', lineHeight: 1.55 }}>{summary}</div>
+              <div style={{ fontSize: 11, color: '#FFAAD4', marginTop: 4, fontWeight: 600 }}>♥ Mira knows {name}</div>
+            </div>
+          </div>
         </div>
-        <div className="dine-card" style={{ padding: 16 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Mira knows</div>
-          <div style={{ fontSize: 15, lineHeight: 1.7, color: C.taupe }}>Allergies: {allergies.length ? allergies.join(', ') : 'none noted'}</div>
-          <div style={{ fontSize: 15, lineHeight: 1.7, color: C.taupe }}>Favourite treat: {treat || 'still learning'}</div>
-          <div style={{ fontSize: 15, lineHeight: 1.7, color: C.taupe }}>Diet type: {diet || 'not yet captured'}</div>
-          <div style={{ fontSize: 15, lineHeight: 1.7, color: C.taupe }}>Health note: {condition || 'all healthy'}</div>
+
+        <div style={{ padding: '20px 18px 24px', background: '#fff' }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.brown, marginBottom: 12 }}>What Mira knows about {name}</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            {cards.map((card) => (
+              <div key={card.label} style={{ borderRadius: 16, padding: '14px 14px 16px', background: 'linear-gradient(135deg,#1A0620 0%, #2d0a00 100%)', border: '1px solid rgba(180,80,255,0.22)' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: card.color, marginBottom: 8 }}>{card.label}</div>
+                <div style={{ fontSize: 16, lineHeight: 1.35, color: '#fff' }}>{card.value}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
