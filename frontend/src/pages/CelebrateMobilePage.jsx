@@ -32,6 +32,7 @@ import GuidedCelebratePaths from '../components/celebrate/GuidedCelebrationPaths
 import CelebrateNearMe from '../components/celebrate/CelebrateNearMe';
 import ConciergeIntakeModal from '../components/celebrate/ConciergeIntakeModal';
 import CelebrateServiceGrid from '../components/celebrate/CelebrateServiceGrid';
+import '../styles/mobile-design-system.css';
 
 const C = {
   cream:   '#FAF7FF',
@@ -50,7 +51,7 @@ const CTAGrad = 'linear-gradient(135deg,#4A1B6D,#9B59B6)';
 
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
-  .cp { font-family:'DM Sans',-apple-system,sans-serif; background:${C.cream}; color:${C.dark}; min-height:100vh; padding-bottom:calc(96px + env(safe-area-inset-bottom)); }
+  .cp { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif; background:${C.cream}; color:${C.dark}; min-height:100vh; padding-bottom:calc(96px + env(safe-area-inset-bottom)); }
   .cp-card { background:${C.card}; border:1px solid ${C.border}; border-radius:22px; }
   .cp-cta { display:flex; align-items:center; justify-content:center; width:100%; min-height:48px; padding:13px 20px; border-radius:14px; border:none; background:${CTAGrad}; color:#fff; font-size:15px; font-weight:600; cursor:pointer; transition:transform 0.15s; font-family:inherit; }
   .cp-cta:active { transform:scale(0.97); }
@@ -121,15 +122,15 @@ function CelebratePetCard({ pet, onOpen }) {
           <div style={{ minWidth:0 }}>
             <div style={{ fontSize:17, fontWeight:700, marginBottom:4 }}>{name}&apos;s Celebrations</div>
             <div style={{ display:'inline-flex', background:C.chipBg, borderRadius:999, padding:'3px 10px', marginBottom:4 }}>
-              <span style={{ fontSize:13, color:C.chipTxt, fontWeight:500 }}>{breed}</span>
+              <span style={{ fontSize:14, color:C.chipTxt, fontWeight:500 }}>{breed}</span>
             </div>
-            <div style={{ fontSize:13, color:C.taupe }}>Birthdays, milestones & more</div>
+            <div style={{ fontSize:14, color:C.taupe }}>Birthdays, milestones & more</div>
           </div>
         </div>
         <div style={{ textAlign:'right', flexShrink:0 }}>
           <div style={{ fontSize:24, fontWeight:700, color:C.purpleL }}>{score}%</div>
-          <div style={{ fontSize:10, color:C.taupe, letterSpacing:'0.08em' }}>SOUL</div>
-          <div style={{ fontSize:11, color:C.pink, marginTop:2 }}>Tap →</div>
+          <div style={{ fontSize:14, color:C.taupe, letterSpacing:'0.08em' }}>SOUL</div>
+          <div style={{ fontSize:14, color:C.pink, marginTop:2 }}>Tap →</div>
         </div>
       </div>
     </div>
@@ -144,7 +145,7 @@ function CelebrateMiraBar({ pet, onOpen }) {
     : `I know what makes ${name} feel special. Every pick here is chosen for who they are.`;
   return (
     <div style={{ margin:'0 16px 20px', background:C.dark, borderRadius:20, padding:16 }}>
-      <div style={{ fontSize:11, fontWeight:700, color:'rgba(233,30,140,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {name.toUpperCase()}&apos;S CELEBRATIONS</div>
+      <div style={{ fontSize:14, fontWeight:700, color:'rgba(233,30,140,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {name.toUpperCase()}&apos;S CELEBRATIONS</div>
       <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>&quot;{text}&quot;</div>
       <button className="cp-cta" onClick={() => { vibe('medium'); onOpen(); }}>See Mira&apos;s Picks for {name} →</button>
     </div>
@@ -155,7 +156,7 @@ function CelebrateConciergeCard({ pet, onOpen }) {
   const name = pet?.name || 'your dog';
   return (
     <div style={{ margin:'0 16px 24px', background:C.dark, borderRadius:24, padding:20 }}>
-      <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:'rgba(201,151,58,0.2)', border:'1px solid rgba(201,151,58,0.4)', borderRadius:999, padding:'5px 14px', color:'#F0C060', fontSize:12, fontWeight:600, marginBottom:12 }}>🎉 Celebration Concierge®</div>
+      <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:'rgba(201,151,58,0.2)', border:'1px solid rgba(201,151,58,0.4)', borderRadius:999, padding:'5px 14px', color:'#F0C060', fontSize:14, fontWeight:600, marginBottom:12 }}>🎉 Celebration Concierge®</div>
       <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.2, marginBottom:10, fontFamily:'Georgia,serif' }}>Want us to plan {name}&apos;s perfect celebration?</div>
       <div style={{ fontSize:14, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>We handle the cake, the venue, the photographer, and every detail. You just show up and celebrate.</div>
       <button onClick={() => { vibe('medium'); onOpen?.(); }} style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:`linear-gradient(135deg,${C.gold},#E8B84B)`, color:C.dark, fontSize:15, fontWeight:700, cursor:'pointer' }}>
@@ -224,7 +225,7 @@ function CelebrateSoulMadeCard({ pet, onOpen }) {
       <div className="cp-card" onClick={() => { vibe('medium'); onOpen?.(); }}
         style={{ position:'relative', overflow:'hidden', padding:'20px 18px', background:'linear-gradient(135deg,#1A0A2E,#3D1260)', color:'#fff', cursor:'pointer' }}>
         <div style={{ position:'absolute', top:-30, right:-20, width:120, height:120, borderRadius:'50%', background:'radial-gradient(circle,rgba(233,30,140,0.2) 0%,transparent 70%)' }} />
-        <div style={{ fontSize:11, letterSpacing:'0.14em', color:'rgba(233,30,140,0.9)', fontWeight:700, marginBottom:10 }}>✦ SOUL MADE™ · MADE ONLY FOR {name.toUpperCase()}</div>
+        <div style={{ fontSize:14, letterSpacing:'0.14em', color:'rgba(233,30,140,0.9)', fontWeight:700, marginBottom:10 }}>✦ SOUL MADE™ · MADE ONLY FOR {name.toUpperCase()}</div>
         <div style={{ fontSize:22, fontWeight:700, lineHeight:1.2, marginBottom:8 }}>{name}&apos;s face. On cake toppers, bandanas, frames and more.</div>
         <div style={{ fontSize:14, color:'rgba(255,255,255,0.62)', lineHeight:1.6, marginBottom:14 }}>One-of-one celebration pieces made just for {name}.</div>
         <button className="cp-cta" style={{ background:CTAGrad }}>Make something only {name} has →</button>
@@ -325,7 +326,7 @@ export default function CelebrateMobilePage() {
   if (!currentPet) return (
     <PillarPageLayout pillar="celebrate" hideHero hideNavigation>
       <style>{CSS}</style>
-      <div className="cp"><CelebrateEmptyState onAddPet={() => navigate('/join')} /></div>
+      <div className="cp mobile-page-container"><CelebrateEmptyState onAddPet={() => navigate('/join')} /></div>
     </PillarPageLayout>
   );
 
@@ -333,7 +334,7 @@ export default function CelebrateMobilePage() {
 
   return (
     <PillarPageLayout pillar="celebrate" hideHero hideNavigation>
-      <div className="cp" data-testid="celebrate-mobile">
+      <div className="cp mobile-page-container" data-testid="celebrate-mobile">
         <style>{CSS}</style>
 
         {intakeOpen && <CelebrateIntakeSheet pet={currentPet} onClose={() => setIntakeOpen(false)} onSend={handleConciergeRequest} />}
@@ -341,7 +342,7 @@ export default function CelebrateMobilePage() {
         {selectedProduct && <ProductDetailModal product={selectedProduct.raw || selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={C.purpleL} />}
 
         {toastMsg && (
-          <div style={{ position:'fixed', left:'50%', bottom:'calc(92px + env(safe-area-inset-bottom))', transform:'translateX(-50%)', zIndex:9000, background:C.dark, color:'#fff', padding:'10px 16px', borderRadius:999, fontSize:13, fontWeight:600, whiteSpace:'nowrap' }}>
+          <div style={{ position:'fixed', left:'50%', bottom:'calc(92px + env(safe-area-inset-bottom))', transform:'translateX(-50%)', zIndex:9000, background:C.dark, color:'#fff', padding:'10px 16px', borderRadius:999, fontSize:14, fontWeight:600, whiteSpace:'nowrap' }}>
             {toastMsg}
           </div>
         )}
@@ -351,12 +352,12 @@ export default function CelebrateMobilePage() {
           <div style={{ position:'absolute', top:-60, right:-40, width:200, height:200, background:'radial-gradient(circle,rgba(233,30,140,0.2) 0%,transparent 70%)', borderRadius:'50%', pointerEvents:'none' }} />
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
-              <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
+              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🎉 Celebrate</div>
             </div>
             {contextPets?.length > 1 && (
               <select value={currentPet?.id} onChange={e => { vibe('light'); setCurrentPet(contextPets.find(p => p.id === e.target.value)); }}
-                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:13 }}>
+                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:14 }}>
                 {contextPets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             )}
@@ -372,7 +373,7 @@ export default function CelebrateMobilePage() {
           </div>
           <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
             {getAllergies(currentPet).map(a => (
-              <div key={a} style={{ background:'rgba(255,107,100,0.15)', border:'1px solid rgba(255,107,100,0.3)', borderRadius:999, padding:'4px 10px', fontSize:11, color:'#FFB3B0' }}>⚠️ No {a}</div>
+              <div key={a} style={{ background:'rgba(255,107,100,0.15)', border:'1px solid rgba(255,107,100,0.3)', borderRadius:999, padding:'4px 10px', fontSize:14, color:'#FFB3B0' }}>⚠️ No {a}</div>
             ))}
           </div>
         </div>
@@ -416,8 +417,8 @@ export default function CelebrateMobilePage() {
               {/* Mira's pick callout */}
               {miraProducts[0]?.miraPick && miraProducts[0]?.mira_hint && (
                 <div style={{ background:'linear-gradient(135deg,rgba(255,140,66,0.15),rgba(196,77,255,0.10))', border:'1px solid rgba(255,140,66,0.35)', borderRadius:12, padding:'10px 14px', display:'flex', alignItems:'center', gap:10, marginBottom:14 }}>
-                  <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, color:'#fff', flexShrink:0 }}>✦</div>
-                  <div style={{ fontSize:13, color:'#FFD9B0', lineHeight:1.4 }}>
+                  <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, color:'#fff', flexShrink:0 }}>✦</div>
+                  <div style={{ fontSize:14, color:'#FFD9B0', lineHeight:1.4 }}>
                     <strong style={{ color:'#FFA45B' }}>Mira's pick:</strong> {miraProducts[0].name}
                     <span style={{ color:'rgba(255,255,255,0.6)', marginLeft:5 }}>— {miraProducts[0].mira_hint}</span>
                   </div>
@@ -431,7 +432,7 @@ export default function CelebrateMobilePage() {
                 ))}
               </div>
               {/* Footer */}
-              <div style={{ borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:10, marginTop:12, fontSize:12, color:'rgba(255,255,255,0.45)', textAlign:'center' }}>
+              <div style={{ borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:10, marginTop:12, fontSize:14, color:'rgba(255,255,255,0.45)', textAlign:'center' }}>
                 {miraProducts.length} items curated for {petName}
               </div>
             </div>

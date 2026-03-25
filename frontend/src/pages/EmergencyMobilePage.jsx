@@ -22,6 +22,7 @@ import EmergencyNearMe from '../components/emergency/EmergencyNearMe';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
+import '../styles/mobile-design-system.css';
 
 const G = {
   crimson:'#DC2626', mid:'#991B1B', dark:'#1A0000', pale:'#FEF2F2',
@@ -29,10 +30,10 @@ const G = {
   border:'rgba(220,38,38,0.18)', light:'#FCA5A5',
 };
 const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
-.emerg-m{font-family:'DM Sans',-apple-system,sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+.emerg-m{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .emerg-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${G.mid},${G.crimson});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}
 .emerg-cta:active{transform:scale(0.97)}
-.emerg-tab{flex:1;padding:12px 4px;background:none;border:none;border-bottom:2.5px solid transparent;font-size:13px;font-weight:500;color:#999;cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:inherit}
+.emerg-tab{flex:1;padding:12px 4px;background:none;border:none;border-bottom:2.5px solid transparent;font-size:14px;font-weight:500;color:#999;cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:inherit}
 .emerg-tab.active{color:${G.crimson};border-bottom-color:${G.crimson};font-weight:700}`;
 
 function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='urgent'?[50,30,50,30,50]:t==='medium'?[12]:[6]); }
@@ -136,7 +137,7 @@ export default function EmergencyMobilePage() {
 
   return (
     <PillarPageLayout pillar="emergency" hideHero hideNavigation>
-      <div className="emerg-m" data-testid="emergency-mobile">
+      <div className="emerg-m mobile-page-container" data-testid="emergency-mobile">
         <style>{CSS}</style>
 
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="emergency" pillarColor={G.crimson} pillarLabel="Emergency" onClose={() => setSoulMadeOpen(false)} />}
@@ -146,12 +147,12 @@ export default function EmergencyMobilePage() {
         <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.mid} 55%,${G.crimson} 100%)`, padding:'32px 16px 20px' }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
-              <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
+              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🚨 Emergency</div>
             </div>
             {contextPets?.length > 1 && (
               <select value={currentPet?.id} onChange={e => { vibe(); setCurrentPet(contextPets.find(p => p.id === e.target.value)); }}
-                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:13 }}>
+                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:14 }}>
                 {contextPets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             )}
@@ -164,11 +165,11 @@ export default function EmergencyMobilePage() {
         <div style={{ background:G.crimson, padding:'12px 16px', display:'flex', alignItems:'center', gap:12 }}>
           <span style={{ fontSize:20 }}>🚨</span>
           <div style={{ flex:1 }}>
-            <div style={{ fontSize:13, fontWeight:700, color:'#fff' }}>URGENT — Contact Emergency Vet Now</div>
-            <div style={{ fontSize:11, color:'rgba(255,255,255,0.75)' }}>For life-threatening emergencies, call your vet directly.</div>
+            <div style={{ fontSize:14, fontWeight:700, color:'#fff' }}>URGENT — Contact Emergency Vet Now</div>
+            <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)' }}>For life-threatening emergencies, call your vet directly.</div>
           </div>
           <button onClick={() => handleUrgentCTA()}
-            style={{ flexShrink:0, background:'#fff', border:'none', borderRadius:20, padding:'6px 14px', fontSize:12, fontWeight:700, color:G.crimson, cursor:'pointer' }}>
+            style={{ flexShrink:0, background:'#fff', border:'none', borderRadius:20, padding:'6px 14px', fontSize:14, fontWeight:700, color:G.crimson, cursor:'pointer' }}>
             Get Help
           </button>
         </div>
@@ -196,7 +197,7 @@ export default function EmergencyMobilePage() {
           <div>
             {/* Mira Bar */}
             <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
-              <div style={{ fontSize:11, fontWeight:700, color:'rgba(252,165,165,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S SAFETY</div>
+              <div style={{ fontSize:14, fontWeight:700, color:'rgba(252,165,165,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S SAFETY</div>
               <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
                 "The best emergency is one you're prepared for. Let me check {petName}'s readiness."
               </div>
@@ -209,7 +210,7 @@ export default function EmergencyMobilePage() {
             <div style={{ display:'flex', margin:'16px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
               {[{ id:'products', label:'📦 Products' }, { id:'services', label:'🩺 Services' }].map(t => (
                 <button key={t.id} onClick={() => setDimTab(t.id)}
-                  style={{ flex:1, padding:'9px', borderRadius:10, border:'none', fontSize:13, fontWeight:600, cursor:'pointer',
+                  style={{ flex:1, padding:'9px', borderRadius:10, border:'none', fontSize:14, fontWeight:600, cursor:'pointer',
                     background:dimTab===t.id?G.crimson:G.pale, color:dimTab===t.id?'#fff':G.mutedText }}>
                   {t.label}
                 </button>
@@ -244,9 +245,9 @@ export default function EmergencyMobilePage() {
                       <div style={{ width:44, height:44, borderRadius:14, background:G.pale, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>{svc.icon || '🩺'}</div>
                       <div style={{ flex:1 }}>
                         <div style={{ fontSize:14, fontWeight:700, color:G.darkText }}>{svc.name}</div>
-                        <div style={{ fontSize:12, color:G.mutedText }}>{svc.tagline || svc.description || ''}</div>
+                        <div style={{ fontSize:14, color:G.mutedText }}>{svc.tagline || svc.description || ''}</div>
                       </div>
-                      <button style={{ flexShrink:0, background:G.crimson, border:'none', borderRadius:20, padding:'6px 12px', fontSize:11, fontWeight:700, color:'#fff', cursor:'pointer' }}>
+                      <button style={{ flexShrink:0, background:G.crimson, border:'none', borderRadius:20, padding:'6px 12px', fontSize:14, fontWeight:700, color:'#fff', cursor:'pointer' }}>
                         Now →
                       </button>
                     </div>
@@ -275,11 +276,11 @@ export default function EmergencyMobilePage() {
                     <div style={{ width:44, height:44, borderRadius:14, background:G.pale, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>{svc.icon || '🩺'}</div>
                     <div style={{ flex:1 }}>
                       <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:2 }}>{svc.name}</div>
-                      <div style={{ fontSize:12, color:G.mutedText }}>{svc.tagline || ''}</div>
+                      <div style={{ fontSize:14, color:G.mutedText }}>{svc.tagline || ''}</div>
                     </div>
-                    <div style={{ fontSize:13, fontWeight:700, color:G.crimson, flexShrink:0 }}>{svc.price || 'Free'}</div>
+                    <div style={{ fontSize:14, fontWeight:700, color:G.crimson, flexShrink:0 }}>{svc.price || 'Free'}</div>
                   </div>
-                  <div style={{ fontSize:13, color:'#555', lineHeight:1.6, marginBottom:12 }}>{svc.desc || svc.description || ''}</div>
+                  <div style={{ fontSize:14, color:'#555', lineHeight:1.6, marginBottom:12 }}>{svc.desc || svc.description || ''}</div>
                   <button onClick={() => handleBookService(svc)} data-testid={`emergency-svc-book-${svc.id || i}`}
                     style={{ width:'100%', minHeight:44, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.crimson})`, color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
                     Get Emergency Help →
@@ -308,7 +309,7 @@ export default function EmergencyMobilePage() {
               <div style={{ fontSize:14, color:'#555', textAlign:'center', lineHeight:1.6, marginBottom:20 }}>
                 {selectedSvc?.waNotified ? (
                   <>
-                    <div style={{ background:'#F0FDF4', border:'1px solid #86EFAC', borderRadius:10, padding:'10px 14px', marginBottom:12, fontSize:13 }}>
+                    <div style={{ background:'#F0FDF4', border:'1px solid #86EFAC', borderRadius:10, padding:'10px 14px', marginBottom:12, fontSize:14 }}>
                       <span style={{ color:'#16A34A', fontWeight:700 }}>✓ Concierge notified via WhatsApp</span><br/>
                       <span style={{ color:'#15803D' }}>Our team will respond within minutes.</span>
                     </div>

@@ -23,6 +23,7 @@ import SharedProductCard, { ProductDetailModal } from '../components/ProductCard
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
+import '../styles/mobile-design-system.css';
 
 const G = {
   deep:'#1A1A2E', mid:'#4B4B6E', indigo:'#6366F1', light:'#C7D2FE',
@@ -31,10 +32,10 @@ const G = {
   border:'rgba(99,102,241,0.18)',
 };
 const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
-.farewell-m{font-family:'DM Sans',-apple-system,sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+.farewell-m{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .farewell-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${G.mid},${G.indigo});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}
 .farewell-cta:active{transform:scale(0.97)}
-.farewell-tab{flex:1;padding:12px 4px;background:none;border:none;border-bottom:2.5px solid transparent;font-size:13px;font-weight:500;color:#999;cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:inherit}
+.farewell-tab{flex:1;padding:12px 4px;background:none;border:none;border-bottom:2.5px solid transparent;font-size:14px;font-weight:500;color:#999;cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:inherit}
 .farewell-tab.active{color:${G.indigo};border-bottom-color:${G.indigo};font-weight:700}`;
 
 function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'?[12]:[6]); }
@@ -118,7 +119,7 @@ export default function FarewellMobilePage() {
 
   return (
     <PillarPageLayout pillar="farewell" hideHero hideNavigation>
-      <div className="farewell-m" data-testid="farewell-mobile">
+      <div className="farewell-m mobile-page-container" data-testid="farewell-mobile">
         <style>{CSS}</style>
 
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="farewell" pillarColor={G.indigo} pillarLabel="Farewell" onClose={() => setSoulMadeOpen(false)} />}
@@ -128,12 +129,12 @@ export default function FarewellMobilePage() {
         <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'32px 16px 20px' }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
-              <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
+              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🌷 Farewell</div>
             </div>
             {contextPets?.length > 1 && (
               <select value={currentPet?.id} onChange={e => { vibe(); setCurrentPet(contextPets.find(p => p.id === e.target.value)); }}
-                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:13 }}>
+                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:14 }}>
                 {contextPets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             )}
@@ -165,7 +166,7 @@ export default function FarewellMobilePage() {
           <div>
             {/* Mira Reflection */}
             <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
-              <div style={{ fontSize:11, fontWeight:700, color:'rgba(199,210,254,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ A MESSAGE FROM MIRA</div>
+              <div style={{ fontSize:14, fontWeight:700, color:'rgba(199,210,254,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ A MESSAGE FROM MIRA</div>
               <div style={{ fontSize:14, color:'rgba(255,255,255,0.80)', lineHeight:1.7, fontStyle:'italic', marginBottom:14 }}>
                 "You don't have to figure this out alone. Whatever you need for {petName}, I'll help hold every detail gently. 🌷"
               </div>
@@ -178,7 +179,7 @@ export default function FarewellMobilePage() {
             <div style={{ display:'flex', gap:6, padding:'16px 16px 8px', overflowX:'auto' }}>
               {PROD_TABS.map(t => (
                 <button key={t} onClick={() => setProdTab(t)}
-                  style={{ flexShrink:0, padding:'7px 14px', borderRadius:20, fontSize:12, fontWeight:600,
+                  style={{ flexShrink:0, padding:'7px 14px', borderRadius:20, fontSize:14, fontWeight:600,
                     border:`1.5px solid ${prodTab===t?G.indigo:G.border}`,
                     background:prodTab===t?G.indigo:'#fff',
                     color:prodTab===t?'#fff':G.mutedText, cursor:'pointer' }}>
@@ -216,7 +217,7 @@ export default function FarewellMobilePage() {
 
             {/* SoulMade */}
             <div style={{ margin:'0 16px 24px', background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
-              <div style={{ fontSize:10, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · A TRIBUTE ONLY {petName.toUpperCase()} COULD INSPIRE</div>
+              <div style={{ fontSize:14, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · A TRIBUTE ONLY {petName.toUpperCase()} COULD INSPIRE</div>
               <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>{petName}'s face, immortalised in art.</div>
               <button className="farewell-cta">Create a tribute for {petName} →</button>
             </div>
@@ -228,7 +229,7 @@ export default function FarewellMobilePage() {
           <div style={{ padding:'16px 16px 24px' }}>
             <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Farewell Support Services</div>
             <div style={{ fontSize:14, color:G.mutedText, marginBottom:4 }}>Gentle, concierge-led support — whenever you are ready.</div>
-            <div style={{ fontSize:12, color:G.mutedText, fontStyle:'italic', marginBottom:20 }}>"Take your time. We're here whenever you're ready." — Mira</div>
+            <div style={{ fontSize:14, color:G.mutedText, fontStyle:'italic', marginBottom:20 }}>"Take your time. We're here whenever you're ready." — Mira</div>
             <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
               {FAREWELL_SERVICES.map(svc => (
                 <div key={svc.id} style={{ background:'#fff', borderRadius:18, border:`1.5px solid ${G.border}`, padding:'16px', overflow:'hidden' }}>
@@ -236,11 +237,11 @@ export default function FarewellMobilePage() {
                     <div style={{ width:44, height:44, borderRadius:14, background:G.pale, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>{svc.icon}</div>
                     <div style={{ flex:1 }}>
                       <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:2 }}>{svc.name}</div>
-                      <div style={{ fontSize:12, color:G.mutedText }}>{svc.tagline}</div>
+                      <div style={{ fontSize:14, color:G.mutedText }}>{svc.tagline}</div>
                     </div>
-                    <div style={{ fontSize:13, fontWeight:700, color:G.indigo, flexShrink:0 }}>{svc.price}</div>
+                    <div style={{ fontSize:14, fontWeight:700, color:G.indigo, flexShrink:0 }}>{svc.price}</div>
                   </div>
-                  <div style={{ fontSize:13, color:'#555', lineHeight:1.6, marginBottom:12 }}>{svc.desc.replace(/{name}/g, petName)}</div>
+                  <div style={{ fontSize:14, color:'#555', lineHeight:1.6, marginBottom:12 }}>{svc.desc.replace(/{name}/g, petName)}</div>
                   <button onClick={() => handleBookService(svc)} data-testid={`farewell-svc-book-${svc.id}`}
                     style={{ width:'100%', minHeight:44, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.indigo})`, color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
                     Reach out gently →

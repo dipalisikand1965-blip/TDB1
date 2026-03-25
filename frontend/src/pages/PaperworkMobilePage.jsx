@@ -23,6 +23,7 @@ import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
+import '../styles/mobile-design-system.css';
 
 const G = {
   teal:'#0D9488', mid:'#0F766E', deep:'#134E4A', light:'#99F6E4',
@@ -30,7 +31,7 @@ const G = {
   darkText:'#134E4A', mutedText:'#0D9488', border:'rgba(13,148,136,0.18)',
 };
 const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
-.pw-m{font-family:'DM Sans',-apple-system,sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+.pw-m{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .pw-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${G.mid},${G.teal});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}
 .pw-cta:active{transform:scale(0.97)}`;
 
@@ -101,14 +102,14 @@ function PwDimPanel({ dim, pet, token, addToCart, onProductClick }) {
         <div style={{ width:40, height:40, borderRadius:12, background:dim.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>{dim.icon}</div>
         <div>
           <div style={{ fontSize:15, fontWeight:700, color:dim.accent }}>{dim.label}</div>
-          <div style={{ fontSize:11, color:'#666' }}>for {petName}</div>
+          <div style={{ fontSize:14, color:'#666' }}>for {petName}</div>
         </div>
       </div>
 
       <div style={{ display:'flex', background:G.pale, padding:4 }}>
         {tabs.map(t => (
           <button key={t.id} onClick={() => setDimTab(t.id)}
-            style={{ flex:1, padding:'8px', borderRadius:10, border:'none', fontSize:11, fontWeight:600, cursor:'pointer',
+            style={{ flex:1, padding:'8px', borderRadius:10, border:'none', fontSize:14, fontWeight:600, cursor:'pointer',
               background:dimTab===t.id?G.teal:G.pale, color:dimTab===t.id?'#fff':G.mutedText }}>
             {t.label}
           </button>
@@ -118,7 +119,7 @@ function PwDimPanel({ dim, pet, token, addToCart, onProductClick }) {
       <div style={{ padding:'12px' }}>
         {dimTab === 'products' && (
           products.length === 0 ? (
-            <div style={{ textAlign:'center', padding:'20px', color:'#888', fontSize:13 }}>Loading {dim.label} products for {petName}…</div>
+            <div style={{ textAlign:'center', padding:'20px', color:'#888', fontSize:14 }}>Loading {dim.label} products for {petName}…</div>
           ) : (
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
               {products.slice(0, 10).map(p => (
@@ -141,12 +142,12 @@ function PwDimPanel({ dim, pet, token, addToCart, onProductClick }) {
                   <span style={{ fontSize:22 }}>{svc.icon}</span>
                   <div>
                     <div style={{ fontSize:14, fontWeight:700, color:G.darkText }}>{svc.name}</div>
-                    <div style={{ fontSize:12, fontWeight:700, color:G.teal }}>{svc.price}</div>
+                    <div style={{ fontSize:14, fontWeight:700, color:G.teal }}>{svc.price}</div>
                   </div>
                 </div>
-                <div style={{ fontSize:12, color:'#555', lineHeight:1.5, marginBottom:10 }}>{svc.desc}</div>
+                <div style={{ fontSize:14, color:'#555', lineHeight:1.5, marginBottom:10 }}>{svc.desc}</div>
                 <button onClick={() => { vibe('medium'); tdc.book({ service:svc.name, pillar:'paperwork', pet, channel:'paperwork_dim_service' }); }}
-                  style={{ width:'100%', minHeight:40, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.teal})`, color:'#fff', fontSize:13, fontWeight:600, cursor:'pointer' }}>
+                  style={{ width:'100%', minHeight:40, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.teal})`, color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
                   Book via Concierge® →
                 </button>
               </div>
@@ -162,12 +163,12 @@ function PwDimPanel({ dim, pet, token, addToCart, onProductClick }) {
                   <span style={{ fontSize:22 }}>{svc.icon || '💡'}</span>
                   <div>
                     <div style={{ fontSize:14, fontWeight:700, color:G.darkText }}>{svc.name}</div>
-                    <div style={{ fontSize:12, fontWeight:700, color:G.teal }}>{svc.price || 'Free'}</div>
+                    <div style={{ fontSize:14, fontWeight:700, color:G.teal }}>{svc.price || 'Free'}</div>
                   </div>
                 </div>
-                <div style={{ fontSize:12, color:'#555', lineHeight:1.5, marginBottom:10 }}>{(svc.desc || svc.description || '').replace(/\{petName\}/g, petName).replace(/\{name\}/g, petName)}</div>
+                <div style={{ fontSize:14, color:'#555', lineHeight:1.5, marginBottom:10 }}>{(svc.desc || svc.description || '').replace(/\{petName\}/g, petName).replace(/\{name\}/g, petName)}</div>
                 <button onClick={() => { vibe('medium'); tdc.book({ service:svc.name, pillar:'paperwork', pet, channel:'paperwork_advisory' }); }}
-                  style={{ width:'100%', minHeight:40, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.teal})`, color:'#fff', fontSize:13, fontWeight:600, cursor:'pointer' }}>
+                  style={{ width:'100%', minHeight:40, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.teal})`, color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
                   Book Advisory →
                 </button>
               </div>
@@ -210,7 +211,7 @@ export default function PaperworkMobilePage() {
 
   return (
     <PillarPageLayout pillar="paperwork" hideHero hideNavigation>
-      <div className="pw-m" data-testid="paperwork-mobile">
+      <div className="pw-m mobile-page-container" data-testid="paperwork-mobile">
         <style>{CSS}</style>
 
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="paperwork" pillarColor={G.teal} pillarLabel="Paperwork" onClose={() => setSoulMadeOpen(false)} />}
@@ -220,12 +221,12 @@ export default function PaperworkMobilePage() {
         <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'32px 16px 20px' }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
-              <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
+              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>📋 Paperwork</div>
             </div>
             {contextPets?.length > 1 && (
               <select value={currentPet?.id} onChange={e => { vibe(); setCurrentPet(contextPets.find(p => p.id === e.target.value)); }}
-                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:13 }}>
+                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:14 }}>
                 {contextPets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             )}
@@ -245,7 +246,7 @@ export default function PaperworkMobilePage() {
 
         {/* Mira Bar */}
         <div style={{ margin:'8px 16px 16px', background:G.dark, borderRadius:20, padding:16 }}>
-          <div style={{ fontSize:11, fontWeight:700, color:`rgba(153,246,228,0.9)`, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S DOCUMENTS</div>
+          <div style={{ fontSize:14, fontWeight:700, color:`rgba(153,246,228,0.9)`, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S DOCUMENTS</div>
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
             "Every responsible pet parent needs {petName}'s documents organised. Choose a category to start."
           </div>
@@ -301,7 +302,7 @@ export default function PaperworkMobilePage() {
 
         {/* SoulMade */}
         <div style={{ margin:'0 16px 24px', background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
-          <div style={{ fontSize:10, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · DOCUMENTS FOR {petName.toUpperCase()}</div>
+          <div style={{ fontSize:14, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · DOCUMENTS FOR {petName.toUpperCase()}</div>
           <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>Custom identity cards and soul documents for {petName}.</div>
           <button className="pw-cta">Explore Soul Made →</button>
         </div>
