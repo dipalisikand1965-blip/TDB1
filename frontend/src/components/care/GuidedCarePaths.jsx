@@ -40,6 +40,7 @@ function capitalisedList(arr) {
 // PATH DATA
 // ─────────────────────────────────────────────────────────────
 function buildPaths(pet) {
+  if (!pet) return [];
   const name      = pet.name;
   // Use both snake_case (from API) and camelCase (legacy) for coat type
   const rawCoat   = pet.coat_type || pet.coatType || pet.doggy_soul_answers?.coat_type || "";

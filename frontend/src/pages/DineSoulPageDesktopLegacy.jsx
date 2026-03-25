@@ -1181,12 +1181,12 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
           ) : (
             <>
               {/* Mira's pick callout */}
-              {miraPickProduct && miraPickProduct.mira_hint && (
+              {miraPickProduct && (
                 <div style={{background:"linear-gradient(135deg,rgba(255,140,66,0.1),rgba(196,77,255,0.06))",border:"1px solid rgba(255,140,66,0.3)",borderRadius:12,padding:"10px 14px",display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
                   <div style={{width:26,height:26,borderRadius:"50%",background:"linear-gradient(135deg,#FF8C42,#C44DFF)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"#fff",flexShrink:0}}>✦</div>
                   <div style={{fontSize:13,color:"#3D1A00",lineHeight:1.4}}>
                     <strong>Mira&apos;s pick:</strong> {miraPickProduct.name}
-                    <span style={{color:"#888",marginLeft:5}}>— {miraPickProduct.mira_hint}</span>
+                    {miraPickProduct.mira_hint && <span style={{color:"#888",marginLeft:5}}>— {miraPickProduct.mira_hint}</span>}
                   </div>
                 </div>
               )}
