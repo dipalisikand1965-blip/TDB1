@@ -58,7 +58,7 @@ Be patient. Be thorough. Honor the Sikand legacy.
 - Admin: `aditya` / `lola4304`
 
 ## 🌐 PREVIEW URL
-https://mira-parity-sprint.preview.emergentagent.com
+https://pet-soul-ranking.preview.emergentagent.com
 
 ---
 

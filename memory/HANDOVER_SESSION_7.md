@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://mira-parity-sprint.preview.emergentagent.com
+https://pet-soul-ranking.preview.emergentagent.com
 
 ---
 
