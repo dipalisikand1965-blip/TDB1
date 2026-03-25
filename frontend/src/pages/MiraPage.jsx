@@ -798,7 +798,7 @@ const MiraPage = () => {
                     <div className="mt-4 pt-3 border-t border-gray-100">
                       <p className="text-xs font-medium text-gray-500 mb-2">🛍️ Recommended Products</p>
                       <div className="grid grid-cols-2 gap-2">
-                        {message.products.slice(0, 4).map((product, idx) => (
+                        {message.products.slice(0, 12).map((product, idx) => (
                           <div 
                             key={product.id || idx}
                             className="bg-gray-50 rounded-lg p-2 cursor-pointer hover:bg-gray-100 transition-colors"

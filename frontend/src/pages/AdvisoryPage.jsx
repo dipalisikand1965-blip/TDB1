@@ -57,6 +57,52 @@ import {
 } from 'lucide-react';
 
 // 11 Intent Tiles Configuration (Concierge is overlay, not tile)
+
+// ── Mira Intelligence helpers ──
+const CLEAN_NONE = /^(none|no|n\/a|nil|nothing|na|-|not specified|unknown|___)$/i;
+function getAllergies(pet) {
+  const set = new Set();
+  const add = v => { if (typeof v === 'string') v.split(',').forEach(a => { const t = a.trim(); if (t && !CLEAN_NONE.test(t)) set.add(t.toLowerCase()); }); if (Array.isArray(v)) v.forEach(a => add(a)); };
+  add(pet?.preferences?.allergies); add(pet?.doggy_soul_answers?.food_allergies); add(pet?.allergies);
+  return [...set];
+}
+function getLoves(pet) {
+  const set = new Set();
+  const add = v => { if (typeof v === 'string') v.split(',').forEach(a => { const t = a.trim(); if (t && !CLEAN_NONE.test(t)) set.add(t.toLowerCase()); }); if (Array.isArray(v)) v.forEach(a => add(a)); };
+  add(pet?.preferences?.loved_items); add(pet?.doggy_soul_answers?.loved_items); add(pet?.loved_items);
+  return [...set];
+}
+function applyMiraIntelligence(products, allergies, loves, healthCondition, nutritionGoal, pet) {
+  const petName = pet?.name || 'your dog';
+  const allergyTerms = (allergies || []).map(a => a.toLowerCase().trim());
+  const loveTerms = (loves || []).map(l => l.toLowerCase().trim()).filter(Boolean);
+  return (products || [])
+    .filter(p => {
+      if (!allergyTerms.length) return true;
+      const text = `${p.name} ${p.description || ''}`.toLowerCase();
+      const free = (p.allergy_free || '').toLowerCase();
+      return !allergyTerms.some(a => {
+        if (free.includes(`${a}-free`) || free.includes(`${a} free`)) return false;
+        if (text.includes(`${a}-free`) || text.includes(`${a} free`)) return false;
+        const cleaned = text.replace(new RegExp(`${a}[- ]free`, 'gi'), '');
+        return cleaned.includes(a);
+      });
+    })
+    .map(p => {
+      const text = `${p.name} ${p.description || ''} ${p.sub_category || ''}`.toLowerCase();
+      const free = (p.allergy_free || '').toLowerCase();
+      const matchedLove = loveTerms.find(l => text.includes(l));
+      let mira_hint = p.mira_hint || null;
+      if (!mira_hint) {
+        if (matchedLove) mira_hint = `Matches ${petName}'s love for ${matchedLove}`;
+        else if (allergyTerms.length && allergyTerms.every(a => free.includes(`${a}-free`))) mira_hint = `Safe for ${petName}`;
+        else if (p.mira_tag) mira_hint = p.mira_tag;
+      }
+      return { ...p, mira_hint, _loved: !!matchedLove };
+    })
+    .sort((a, b) => (a._loved === b._loved ? 0 : a._loved ? -1 : 1));
+}
+
 const ADVISORY_INTENTS = [
   {
     id: 'food_nutrition',
@@ -506,7 +552,7 @@ const AdvisoryPage = () => {
       
       if (productsRes.ok) {
         const data = await productsRes.json();
-        setProducts(data.products || []);
+        setProducts(applyMiraIntelligence(data.products || [], getAllergies(activePet), getLoves(activePet), null, null, activePet));
       }
       if (bundlesRes.ok) {
         const data = await bundlesRes.json();
@@ -626,7 +672,7 @@ const AdvisoryPage = () => {
       color: 'text-yellow-600 bg-yellow-50'
     });
     
-    return advice.slice(0, 4);
+    return advice;
   };
 
   const personalizedAdvice = getPersonalizedAdvice();
