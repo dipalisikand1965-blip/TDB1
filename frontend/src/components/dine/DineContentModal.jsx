@@ -770,6 +770,33 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
       }}
       data-testid={`dine-modal-${category}`}
     >
+      {!isDesktop && (
+        <button
+          onClick={onClose}
+          style={{
+            position: 'fixed',
+            top: 16,
+            right: 16,
+            width: 40,
+            height: 40,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: '#FFF3E0',
+            color: '#C44400',
+            border: 'none',
+            borderRadius: '50%',
+            cursor: 'pointer',
+            zIndex: 9999,
+            boxShadow: '0 6px 20px rgba(0,0,0,0.16)',
+          }}
+          aria-label="Close modal"
+          data-testid="dine-modal-close-fixed"
+        >
+          <X size={18} />
+        </button>
+      )}
+
       {/* Drag handle (mobile) */}
       {!isDesktop && (
         <div className="flex justify-center pt-3 flex-shrink-0">
@@ -799,26 +826,28 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
             )}
           </div>
         </div>
-        <button
-          onClick={onClose}
-          style={{
-            width: 38,
-            height: 38,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: '#FFF3E0',
-            color: '#C44400',
-            border: 'none',
-            borderRadius: '50%',
-            cursor: 'pointer',
-            flexShrink: 0,
-          }}
-          aria-label="Close modal"
-          data-testid="dine-modal-close"
-        >
-          <X size={18} />
-        </button>
+        {isDesktop && (
+          <button
+            onClick={onClose}
+            style={{
+              width: 38,
+              height: 38,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: '#FFF3E0',
+              color: '#C44400',
+              border: 'none',
+              borderRadius: '50%',
+              cursor: 'pointer',
+              flexShrink: 0,
+            }}
+            aria-label="Close modal"
+            data-testid="dine-modal-close"
+          >
+            <X size={18} />
+          </button>
+        )}
       </div>
 
       {/* ── Mira Quote Block ─────────────────────────────────────────── */}
