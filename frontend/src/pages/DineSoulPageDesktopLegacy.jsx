@@ -1286,7 +1286,7 @@ function DiningConcierge({ pet }) {
             </div>
             <button
               onClick={() => {
-                book({ service: `${petName}'s Dine Concierge Request`, channel: 'dine_concierge_cta', urgency: 'high' });
+                tdc.book({ service: `${petName}'s Dine Concierge Request`, channel: 'dine_concierge_cta', urgency: 'high' });
                 setIntakeOpen(true);
               }}
               style={{
