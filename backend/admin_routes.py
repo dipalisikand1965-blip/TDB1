@@ -23,6 +23,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel, Field
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
 from bson import ObjectId
+from bson.json_util import dumps as bson_dumps, loads as bson_loads
 import resend
 
 logger = logging.getLogger(__name__)
@@ -228,7 +229,9 @@ async def _fetch_preview_sync_json(source_url: str, path: str):
     def _do_request():
         req = urllib.request.Request(url, headers=_admin_basic_auth_header())
         with urllib.request.urlopen(req, timeout=180) as resp:
-            return json.loads(resp.read().decode())
+            raw = resp.read().decode()
+            # Use bson_loads to reconstruct ObjectId, datetime, etc. from Extended JSON
+            return bson_loads(raw)
 
     return await asyncio.to_thread(_do_request)
 
@@ -264,8 +267,10 @@ async def full_db_sync_export(collection: str, username: str = Depends(verify_ad
     if collection.startswith('system.'):
         raise HTTPException(status_code=400, detail='System collections not allowed')
     raw_docs = await db[collection].find({}).to_list(None)
-    docs = [_make_json_safe(doc) for doc in raw_docs]
-    return {'ok': True, 'collection': collection, 'count': len(docs), 'docs': docs}
+    # Use bson_dumps to preserve ObjectId, datetime, etc. as MongoDB Extended JSON
+    from fastapi.responses import Response
+    payload = bson_dumps({'ok': True, 'collection': collection, 'count': len(raw_docs), 'docs': raw_docs})
+    return Response(content=payload, media_type='application/json')
 
 
 @fulfilment_router.get('/full-db-sync-diff')
@@ -342,36 +347,44 @@ async def full_db_sync_to_production(payload: FullDbSyncRequest, username: str =
         meta = await _fetch_preview_sync_json(payload.source_url, '/api/admin/full-db-sync-export-meta')
         source_cols = [row['collection'] for row in meta.get('collections', []) if not row['collection'].startswith('system.')]
         results = []
+        errors = []
         for col in source_cols:
-            export = await _fetch_preview_sync_json(payload.source_url, f"/api/admin/full-db-sync-export?collection={urllib.parse.quote(col)}")
-            docs = export.get('docs', [])
-            local_count = len(docs)
             try:
-                await db[col].drop()
-            except Exception:
-                pass
-            if docs:
-                batch = []
-                for doc in docs:
-                    batch.append(doc)
-                    if len(batch) >= 1000:
+                logger.info(f"[FULL-SYNC] Fetching collection: {col}")
+                export = await _fetch_preview_sync_json(payload.source_url, f"/api/admin/full-db-sync-export?collection={urllib.parse.quote(col)}")
+                docs = export.get('docs', [])
+                local_count = len(docs)
+                try:
+                    await db[col].drop()
+                except Exception:
+                    pass
+                if docs:
+                    batch = []
+                    for doc in docs:
+                        batch.append(doc)
+                        if len(batch) >= 1000:
+                            await db[col].insert_many(batch)
+                            batch = []
+                    if batch:
                         await db[col].insert_many(batch)
-                        batch = []
-                if batch:
-                    await db[col].insert_many(batch)
-            prod_count = await db[col].count_documents({})
-            results.append({
-                'collection': col,
-                'preview': local_count,
-                'production_after': prod_count,
-                'matched': local_count == prod_count,
-            })
+                prod_count = await db[col].count_documents({})
+                logger.info(f"[FULL-SYNC] {col}: preview={local_count}, prod={prod_count}, matched={local_count == prod_count}")
+                results.append({
+                    'collection': col,
+                    'preview': local_count,
+                    'production_after': prod_count,
+                    'matched': local_count == prod_count,
+                })
+            except Exception as e:
+                logger.error(f"[FULL-SYNC] Error syncing {col}: {e}")
+                errors.append({'collection': col, 'error': str(e)})
         critical = [r for r in results if r['collection'] in CRITICAL_SYNC_COLLECTIONS]
         return {
             'ok': True,
-            'synced': critical,
-            'all_results': results,
-            'message': 'Full database sync complete (preview export → production db)',
+            'synced': results,
+            'critical': critical,
+            'errors': errors,
+            'message': f'Full database sync complete. {len(results)} collections synced, {len(errors)} errors.',
             'source_url': payload.source_url,
         }
 
