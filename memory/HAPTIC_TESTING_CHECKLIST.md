@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://pet-wrapped-1.preview.emergentagent.com/mira-demo**
+**https://dine-mobile-parity.preview.emergentagent.com/mira-demo**
 
 ---
 

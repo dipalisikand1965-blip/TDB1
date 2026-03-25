@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://pet-wrapped-1.preview.emergentagent.com
+https://dine-mobile-parity.preview.emergentagent.com
 ```
 
 ---

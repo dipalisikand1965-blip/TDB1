@@ -32,7 +32,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Base URL for the backend (using frontend env variable)
-BASE_URL = "https://pet-wrapped-1.preview.emergentagent.com"
+BASE_URL = "https://dine-mobile-parity.preview.emergentagent.com"
 
 class BackendTester:
     def __init__(self):
