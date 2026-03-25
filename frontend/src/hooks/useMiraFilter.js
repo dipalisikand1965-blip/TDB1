@@ -156,7 +156,7 @@ export function applyMiraFilter(products, pet) {
       else if (isAllergySafe) rank = 2;
       if (conflictsGoal) rank = 15;
 
-      // Build mira_hint — use existing DB value if present
+      // Build mira_hint — use existing DB value if present, otherwise generate
       let mira_hint = product.mira_hint || null;
       if (!mira_hint) {
         if (matchedLove) {
@@ -167,6 +167,10 @@ export function applyMiraFilter(products, pet) {
           mira_hint = `Free from ${allergies.join(' & ')} — safe for ${petName}`;
         } else if (product.mira_tag) {
           mira_hint = product.mira_tag;
+        } else if (allergies.length > 0) {
+          mira_hint = `Allergen-safe for ${petName}`;
+        } else {
+          mira_hint = `Chosen for ${petName} by Mira`;
         }
       }
 
