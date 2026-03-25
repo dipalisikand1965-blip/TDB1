@@ -493,9 +493,8 @@ export default function LandingPage() {
         borderBottom: `1px solid ${C.border}`,
         padding: "48px clamp(20px,6vw,80px)",
       }}>
-        <div style={{
+        <div className="tdc-stats-grid" style={{
           maxWidth: 900, margin: "0 auto",
-          className: "tdc-stats-grid",
         }}>
           <Counter target={45000} label="Pet Families" suffix="+"/>
           <Counter target={12} label="Life Pillars"/>
@@ -531,9 +530,8 @@ export default function LandingPage() {
           </div>
         </FadeIn>
 
-        <div style={{
-          className: "tdc-isnot-grid",
-        }}>
+        <div className="tdc-isnot-grid" style={{}}>
+
           {[
             {
               label: "NOT THIS",
@@ -630,11 +628,10 @@ export default function LandingPage() {
               maxWidth: 700, margin: "0 auto",
             }}>
               {/* Profile header */}
-              <div style={{
+              <div className="tdc-mojo-hdr" style={{
                 background: "linear-gradient(135deg,#0F0A1E,#1A1040)",
                 padding: "24px 24px 20px",
                 borderBottom: `1px solid ${C.border}`,
-                className: "tdc-mojo-hdr",
               }}>
                 <div style={{
                   width: 64, height: 64, borderRadius: "50%",
@@ -688,9 +685,8 @@ export default function LandingPage() {
                 }}>
                   WHAT MIRA KNOWS ABOUT MOJO
                 </div>
-                <div style={{
-                  className: "tdc-soul-grid",
-                }}>
+                <div className="tdc-soul-grid" style={{}}>
+
                   {[
                     { label: "ALLERGY", value: "No chicken — ever", alert: true },
                     { label: "DIET",    value: "Grain-free meals" },
@@ -783,9 +779,8 @@ export default function LandingPage() {
           </div>
         </FadeIn>
 
-        <div style={{
-          className: "tdc-how-grid",
-        }}>
+        <div className="tdc-how-grid" style={{}}>
+
           {[
             { n:"01", icon:"🔍", title:"Understand", desc:"We learn everything about your dog — breed, personality, health, fears, loves. Your soul profile grows with every interaction." },
             { n:"02", icon:"🧭", title:"Guide",      desc:"Personalised recommendations across all 12 pillars of their life. Mira filters out what isn't right for your specific dog." },

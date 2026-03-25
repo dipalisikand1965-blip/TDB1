@@ -1,74 +1,281 @@
 /**
  * ServicesMobilePage.jsx — /services (mobile)
+ * 7 expandable service group cards — mirrors desktop SERVICE_GROUPS
+ * Each group fetches from /api/service-box/services?pillar=X lazily (on expand)
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
 import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
+import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
-import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 
-const SV={navy:'#0F1A3D',navyL:'#2E4DA6',navyXL:'#5B7FD4',cream:'#F0F2FF',border:'#C5CFF0',dark:'#060D1E',taupe:'#4A557A'};
-const CSS_SV=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');.svc{font-family:'DM Sans',-apple-system,sans-serif;background:${SV.cream};color:${SV.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}.svc-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${SV.navy},${SV.navyL});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}.svc-cta:active{transform:scale(0.97)}`;
-function vibe(t='light'){if(navigator?.vibrate)navigator.vibrate(t==='medium'?[12]:[6]);}
+const G = {
+  navy:'#0F1A3D', navyL:'#2E4DA6', navyXL:'#5B7FD4',
+  cream:'#F0F2FF', border:'#C5CFF0', dark:'#060D1E', taupe:'#4A557A',
+};
+const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+.svc{font-family:'DM Sans',-apple-system,sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+.svc-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${G.navy},${G.navyL});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}
+.svc-cta:active{transform:scale(0.97)}`;
+
+function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'?[12]:[6]); }
+
+const SERVICE_GROUPS = [
+  { id:"pamper",    label:"Pamper & Groom",       icon:"✨", colour:"#40916C", pillars:["care"],                        desc:"Grooming, spa, coat care — for every breed and comfort level" },
+  { id:"health",    label:"Health & Vet",          icon:"🏥", colour:"#DC2626", pillars:["care","emergency"],            desc:"Vet consultations, emergency support, first aid" },
+  { id:"learn",     label:"Train & Learn",         icon:"🎓", colour:"#7C3AED", pillars:["learn","play"],               desc:"Training, behaviour, enrichment, puppy foundations" },
+  { id:"celebrate", label:"Celebrate",             icon:"🎉", colour:"#9B59B6", pillars:["celebrate"],                  desc:"Birthday parties, photography, special occasions" },
+  { id:"fitness",   label:"Fitness & Walks",       icon:"🏃", colour:"#E76F51", pillars:["fit","play"],                 desc:"Dog walking, fitness plans, hydrotherapy" },
+  { id:"travel",    label:"Travel & Paperwork",    icon:"✈️", colour:"#1ABC9C", pillars:["go","travel","paperwork"],    desc:"Pet passports, microchipping, travel docs, flight coordination" },
+  { id:"life",      label:"Life Events",           icon:"🌷", colour:"#6366F1", pillars:["adopt","farewell","dine"],    desc:"Adoption support, farewell services, dining, social events" },
+];
+
+function ServiceGroupCard({ group, pet, token, onBook }) {
+  const [expanded, setExpanded] = useState(false);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [fetched, setFetched] = useState(false);
+
+  const toggle = () => {
+    vibe();
+    if (!expanded && !fetched) {
+      setLoading(true);
+      // Fetch from the first pillar in the group
+      const pillar = group.pillars[0];
+      fetch(`${API_URL}/api/service-box/services?pillar=${pillar}&limit=12&is_active=true`, {
+        headers: token ? { Authorization:`Bearer ${token}` } : {}
+      })
+        .then(r => r.ok ? r.json() : null)
+        .then(d => {
+          setServices(d?.services || []);
+          setLoading(false);
+          setFetched(true);
+        })
+        .catch(() => { setLoading(false); setFetched(true); });
+    }
+    setExpanded(e => !e);
+  };
+
+  const petName = pet?.name || 'your dog';
+
+  return (
+    <div style={{ background:'#fff', borderRadius:18, border:`1.5px solid ${G.border}`, overflow:'hidden', marginBottom:12 }}
+      data-testid={`service-group-${group.id}`}>
+      {/* Group Header */}
+      <button onClick={toggle}
+        style={{ width:'100%', display:'flex', alignItems:'center', gap:12, padding:'16px', background:'none', border:'none', cursor:'pointer', textAlign:'left' }}>
+        <div style={{ width:44, height:44, borderRadius:14, background:`${group.colour}15`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>
+          {group.icon}
+        </div>
+        <div style={{ flex:1 }}>
+          <div style={{ fontSize:16, fontWeight:700, color:G.dark, marginBottom:2 }}>{group.label}</div>
+          <div style={{ fontSize:12, color:G.taupe }}>{group.desc}</div>
+        </div>
+        <div style={{ fontSize:20, color:G.taupe, transform:expanded?'rotate(180deg)':'rotate(0deg)', transition:'transform 0.2s', flexShrink:0 }}>
+          ›
+        </div>
+      </button>
+
+      {/* Expanded Services */}
+      {expanded && (
+        <div style={{ borderTop:`1px solid ${G.border}`, padding:'0 16px 16px' }}>
+          {loading && (
+            <div style={{ textAlign:'center', padding:'24px 0', color:'#888' }}>
+              <div style={{ fontSize:24, marginBottom:8 }}>{group.icon}</div>
+              <div style={{ fontSize:13 }}>Loading {group.label} services…</div>
+            </div>
+          )}
+
+          {!loading && services.length === 0 && fetched && (
+            <div style={{ padding:'16px 0' }}>
+              <div style={{ fontSize:13, color:G.taupe, marginBottom:12, fontStyle:'italic' }}>
+                {group.label} services available via Concierge®
+              </div>
+              <button onClick={() => onBook({ name:group.label, icon:group.icon, colour:group.colour })}
+                style={{ width:'100%', minHeight:44, borderRadius:12, border:'none', background:`linear-gradient(135deg,${group.colour},${G.navyL})`, color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
+                Book {group.label} via Concierge® →
+              </button>
+            </div>
+          )}
+
+          {!loading && services.length > 0 && (
+            <div style={{ marginTop:12 }}>
+              <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                {services.map((svc, i) => (
+                  <div key={svc.id || svc._id || i}
+                    style={{ display:'flex', alignItems:'center', gap:12, padding:'12px', background:`${group.colour}08`, borderRadius:14, border:`1px solid ${group.colour}20` }}>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontSize:14, fontWeight:600, color:G.dark, marginBottom:2 }}>{svc.name}</div>
+                      {svc.description && <div style={{ fontSize:12, color:G.taupe }}>{svc.description.slice(0, 80)}{svc.description.length > 80 ? '…' : ''}</div>}
+                      {svc.price && <div style={{ fontSize:12, fontWeight:700, color:group.colour, marginTop:2 }}>
+                        {typeof svc.price === 'number' ? `₹${svc.price.toLocaleString()}` : svc.price}
+                      </div>}
+                    </div>
+                    <button onClick={() => onBook(svc)}
+                      data-testid={`svc-book-${group.id}-${i}`}
+                      style={{ flexShrink:0, background:group.colour, border:'none', borderRadius:20, padding:'7px 14px', fontSize:12, fontWeight:700, color:'#fff', cursor:'pointer', whiteSpace:'nowrap' }}>
+                      Book →
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => onBook({ name:`${group.label} — All Services`, icon:group.icon, colour:group.colour })}
+                style={{ marginTop:12, width:'100%', minHeight:44, borderRadius:12, border:`1.5px solid ${group.colour}`, background:'#fff', fontSize:13, fontWeight:600, color:group.colour, cursor:'pointer' }}>
+                See all {group.label} services →
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function ServicesMobilePage() {
-  const{token}=useAuth();const navigate=useNavigate();
-  const{currentPet,setCurrentPet,pets:contextPets}=usePillarContext();
-  usePlatformTracking({pillar:'services',pet:currentPet});
-  const{request}=useConcierge({pet:currentPet,pillar:'services'});
-  const{addToCart}=useCart();
-  const[loading,setLoading]=useState(true);
-  const[selectedProduct,setSelectedProduct]=useState(null);
-  const[products,setProducts]=useState([]);
-  useEffect(()=>{if(contextPets!==undefined)setLoading(false);if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]);},[contextPets,currentPet,setCurrentPet]);
-  useEffect(()=>{
-    if(!currentPet?.id)return;
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=services&limit=200`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
-      .then(r=>r.ok?r.json():null).then(d=>{if(d?.products)setProducts(d.products);}).catch(()=>{});
-  },[currentPet?.id,token]);
-  const handleAddToCart=useCallback(p=>{addToCart({id:p.id||p._id,name:p.name,price:p.price||0,image:p.image_url||p.images?.[0],pillar:'services',quantity:1});},[addToCart]);
-  if(loading)return<PillarPageLayout pillar="services" hideHero hideNavigation><div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontSize:36,marginBottom:12}}>🤝</div><div>Loading services…</div></div></div></PillarPageLayout>;
-  if(!currentPet)return<PillarPageLayout pillar="services" hideHero hideNavigation><style>{CSS_SV}</style><div className="svc"><div style={{padding:'24px 16px',textAlign:'center'}}><div style={{background:'#fff',border:`1px solid ${SV.border}`,borderRadius:22,padding:'32px 20px'}}><div style={{fontSize:44,marginBottom:14}}>🤝</div><div style={{fontSize:22,fontWeight:700,marginBottom:8}}>Add your pet to unlock Services</div><button className="svc-cta" style={{marginTop:16}} onClick={()=>navigate('/join')}>Add your pet →</button></div></div></div></PillarPageLayout>;
-  const petName=currentPet.name;
-  return(
+  const { token } = useAuth();
+  const navigate = useNavigate();
+  const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
+  usePlatformTracking({ pillar:'services', pet:currentPet });
+  const { request } = useConcierge({ pet:currentPet, pillar:'services' });
+
+  const [loading, setLoading] = useState(true);
+  const [conciergeOpen, setConciergeOpen] = useState(false);
+  const [selectedSvc, setSelectedSvc] = useState(null);
+
+  useEffect(() => {
+    if (contextPets !== undefined) setLoading(false);
+    if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
+  }, [contextPets, currentPet, setCurrentPet]);
+
+  const handleBook = useCallback((svc) => {
+    vibe('medium');
+    tdc.book({ service:svc.name || svc.label, pillar:'services', pet:currentPet, channel:'services_group_card' });
+    setSelectedSvc(svc);
+    setConciergeOpen(true);
+  }, [currentPet]);
+
+  if (loading) return (
     <PillarPageLayout pillar="services" hideHero hideNavigation>
-      <div className="svc" data-testid="services-mobile"><style>{CSS_SV}</style>
-        {selectedProduct&&<ProductDetailModal product={selectedProduct?.raw||selectedProduct} isOpen={!!selectedProduct} onClose={()=>setSelectedProduct(null)} petName={petName} pillarColor={SV.navyL}/>}
-        <div style={{background:`linear-gradient(160deg,${SV.dark} 0%,${SV.navy} 50%,${SV.navyL} 100%)`,padding:'32px 16px 24px'}}>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
-            <div><div style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,0.5)',letterSpacing:'0.1em',marginBottom:2}}>THE DOGGY COMPANY</div><div style={{fontSize:22,fontWeight:700,color:'#fff'}}>🤝 Services</div></div>
-            {contextPets?.length>1&&(<select value={currentPet?.id} onChange={e=>{vibe();setCurrentPet(contextPets.find(p=>p.id===e.target.value));}} style={{background:'rgba(255,255,255,0.12)',border:'1px solid rgba(255,255,255,0.2)',borderRadius:999,padding:'7px 14px',color:'#fff',fontSize:13}}>{contextPets.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select>)}
-          </div>
-          <div style={{display:'flex',alignItems:'center',gap:12}}>
-            <div style={{width:52,height:52,borderRadius:'50%',flexShrink:0,background:'rgba(255,255,255,0.15)',border:'2px solid rgba(255,255,255,0.3)',display:'flex',alignItems:'center',justifyContent:'center',overflow:'hidden'}}>{currentPet?.photo_url?<img src={currentPet.photo_url} alt={petName} style={{width:'100%',height:'100%',objectFit:'cover'}}/>:<span style={{fontSize:22}}>🐾</span>}</div>
-            <div><div style={{fontSize:20,fontWeight:700,color:'#fff'}}>Expert Services</div><div style={{fontSize:15,color:'rgba(255,255,255,0.7)'}}>for {petName} · All via Concierge®</div></div>
-          </div>
-        </div>
-        <div style={{padding:'0 16px 8px'}}><PillarSoulProfile pet={currentPet} pillar="services" token={token}/></div>
-        <div style={{padding:'0 16px 16px'}}><div style={{fontSize:26,fontWeight:700,marginBottom:6}}>Services for {petName}</div><div style={{fontSize:15,color:SV.taupe}}>1,025 services. All arranged by Concierge®. Price on WhatsApp.</div></div>
-        <div style={{margin:'0 16px 20px',background:SV.dark,borderRadius:20,padding:16}}>
-          <div style={{fontSize:11,fontWeight:700,color:'rgba(91,127,212,0.9)',letterSpacing:'0.1em',marginBottom:8}}>✦ MIRA ON {petName.toUpperCase()}'S SERVICES</div>
-          <div style={{fontSize:14,color:'rgba(255,255,255,0.75)',lineHeight:1.6,marginBottom:14,fontStyle:'italic'}}>"I know {petName}'s breed and health history. Every service here is matched to what they actually need."</div>
-          <button className="svc-cta">See Mira's Service Picks →</button>
-        </div>
-        <div style={{padding:'0 16px 24px'}}><PersonalisedBreedSection pet={currentPet} pillar="services" token={token}/></div>
+      <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
+        <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🤝</div><div>Loading services…</div></div>
+      </div>
+    </PillarPageLayout>
+  );
 
-        {products.length>0&&(<div style={{padding:'0 16px 24px'}}><div style={{fontSize:18,fontWeight:700,marginBottom:12}}>Service Products for {petName}</div><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>{products.slice(0,20).map(p=><SharedProductCard key={p.id||p._id||p.name} product={p} pillar="services" selectedPet={currentPet} onAddToCart={()=>handleAddToCart(p)} onClick={()=>{vibe();setSelectedProduct(p);}} />)}</div></div>)}
-
-        <div style={{margin:'0 16px 24px',background:SV.dark,borderRadius:24,padding:20}}>
-          <div style={{display:'inline-flex',background:'rgba(91,127,212,0.2)',border:'1px solid rgba(91,127,212,0.4)',borderRadius:999,padding:'5px 14px',color:SV.navyXL,fontSize:12,fontWeight:600,marginBottom:12}}>🤝 Concierge®</div>
-          <div style={{fontSize:22,fontWeight:700,color:'#fff',lineHeight:1.2,marginBottom:10,fontFamily:'Georgia,serif'}}>Every service is arranged by your Concierge.</div>
-          <div style={{fontSize:14,color:'rgba(255,255,255,0.6)',lineHeight:1.7,marginBottom:16}}>Vets, groomers, trainers, nutritionists. One message and it&apos;s done.</div>
-          <button onClick={()=>{vibe('medium');request(`Services for ${petName}`,{channel:'services_cta'});}} style={{width:'100%',minHeight:48,borderRadius:14,border:'none',background:`linear-gradient(135deg,${SV.navyL},${SV.navyXL})`,color:'#fff',fontSize:15,fontWeight:700,cursor:'pointer'}}>🤝 Book via Concierge® →</button>
+  if (!currentPet) return (
+    <PillarPageLayout pillar="services" hideHero hideNavigation>
+      <div className="svc"><style>{CSS}</style>
+        <div style={{ padding:'24px 16px', textAlign:'center' }}>
+          <div style={{ background:'#fff', border:`1px solid ${G.border}`, borderRadius:22, padding:'32px 20px' }}>
+            <div style={{ fontSize:44, marginBottom:14 }}>🤝</div>
+            <div style={{ fontSize:22, fontWeight:700, marginBottom:8 }}>Add your pet to unlock Services</div>
+            <button className="svc-cta" style={{ marginTop:16 }} onClick={() => navigate('/join')}>Add your pet →</button>
+          </div>
         </div>
       </div>
+    </PillarPageLayout>
+  );
+
+  const petName = currentPet.name;
+
+  return (
+    <PillarPageLayout pillar="services" hideHero hideNavigation>
+      <div className="svc" data-testid="services-mobile">
+        <style>{CSS}</style>
+
+        {/* Hero */}
+        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.navy} 50%,${G.navyL} 100%)`, padding:'32px 16px 24px' }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+            <div>
+              <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
+              <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🤝 Services</div>
+            </div>
+            {contextPets?.length > 1 && (
+              <select value={currentPet?.id} onChange={e => { vibe(); setCurrentPet(contextPets.find(p => p.id === e.target.value)); }}
+                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:13 }}>
+                {contextPets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              </select>
+            )}
+          </div>
+          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+            <div style={{ width:52, height:52, borderRadius:'50%', flexShrink:0, background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden' }}>
+              {currentPet?.photo_url ? <img src={currentPet.photo_url} alt={petName} style={{ width:'100%', height:'100%', objectFit:'cover' }} /> : <span style={{ fontSize:22 }}>🐾</span>}
+            </div>
+            <div>
+              <div style={{ fontSize:20, fontWeight:700, color:'#fff' }}>Expert Services</div>
+              <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>for {petName} · All via Concierge®</div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ padding:'0 16px 8px' }}>
+          <PillarSoulProfile pet={currentPet} pillar="services" token={token} />
+        </div>
+
+        {/* Mira Bar */}
+        <div style={{ margin:'0 16px 20px', background:G.dark, borderRadius:20, padding:16 }}>
+          <div style={{ fontSize:11, fontWeight:700, color:'rgba(91,127,212,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S SERVICES</div>
+          <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
+            "I know {petName}'s breed and health history. Every service here is matched to what they actually need."
+          </div>
+          <button className="svc-cta" onClick={() => { vibe('medium'); request(`Services for ${petName}`, { channel:'services_mira_cta' }); }}>
+            See Mira's Service Picks →
+          </button>
+        </div>
+
+        {/* Service Group Cards */}
+        <div style={{ padding:'0 16px 8px' }}>
+          <div style={{ fontSize:20, fontWeight:700, marginBottom:4 }}>Services for {petName}</div>
+          <div style={{ fontSize:14, color:G.taupe, marginBottom:16 }}>1,025 services across 7 categories. All arranged by Concierge®.</div>
+          {SERVICE_GROUPS.map(group => (
+            <ServiceGroupCard
+              key={group.id}
+              group={group}
+              pet={currentPet}
+              token={token}
+              onBook={handleBook}
+            />
+          ))}
+        </div>
+
+        <div style={{ padding:'0 16px 24px' }}>
+          <PersonalisedBreedSection pet={currentPet} pillar="services" token={token} />
+        </div>
+
+        {/* Concierge CTA */}
+        <div style={{ margin:'0 16px 24px', background:G.dark, borderRadius:24, padding:20 }}>
+          <div style={{ display:'inline-flex', background:'rgba(91,127,212,0.2)', border:'1px solid rgba(91,127,212,0.4)', borderRadius:999, padding:'5px 14px', color:G.navyXL, fontSize:12, fontWeight:600, marginBottom:12 }}>🤝 Concierge®</div>
+          <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.2, marginBottom:10, fontFamily:'Georgia,serif' }}>Every service arranged by your Concierge.</div>
+          <div style={{ fontSize:14, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>Vets, groomers, trainers, nutritionists. One message and it's done.</div>
+          <button onClick={() => { vibe('medium'); request(`Services for ${petName}`, { channel:'services_cta' }); }}
+            style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:`linear-gradient(135deg,${G.navyL},${G.navyXL})`, color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+            🤝 Book via Concierge® →
+          </button>
+        </div>
+      </div>
+
+      {/* Booking confirmation sheet */}
+      {conciergeOpen && selectedSvc && (
+        <div onClick={() => setConciergeOpen(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'flex-end' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'24px 24px 0 0', width:'100%', padding:'24px 20px 40px' }}>
+            <div style={{ fontSize:28, textAlign:'center', marginBottom:12 }}>{selectedSvc.icon || '🤝'}</div>
+            <div style={{ fontSize:18, fontWeight:700, color:G.dark, textAlign:'center', marginBottom:8 }}>{selectedSvc.name || selectedSvc.label}</div>
+            <div style={{ fontSize:14, color:'#555', textAlign:'center', lineHeight:1.6, marginBottom:20 }}>
+              Your Concierge® will contact you within 48 hours to arrange this service for {petName}.
+            </div>
+            <button onClick={() => setConciergeOpen(false)}
+              style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:`linear-gradient(135deg,${G.navyL},${G.navyXL})`, color:'#fff', fontSize:15, fontWeight:600, cursor:'pointer' }}>
+              Got it ✓
+            </button>
+          </div>
+        </div>
+      )}
     </PillarPageLayout>
   );
 }
