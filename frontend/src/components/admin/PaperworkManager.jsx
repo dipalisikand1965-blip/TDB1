@@ -14,7 +14,7 @@ import {
   FileText, Upload, Download, Search, RefreshCw, Plus, Edit, Trash2,
   Shield, Heart, Plane, Sparkles, Scale, Bell, Settings, Package,
   Loader2, CheckCircle, Clock, AlertCircle, PawPrint, Gift, Users,
-  Folder, File, Eye, Calendar, TrendingUp, Briefcase
+  Folder, File, Eye, Calendar, TrendingUp, Briefcase, Building2
 } from 'lucide-react';
 import PillarServicesTab from './PillarServicesTab';
 import PillarBundlesTab from './PillarBundlesTab';
@@ -404,12 +404,15 @@ const PaperworkManager = () => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5 bg-blue-50">
+        <TabsList className="flex flex-wrap w-full gap-1 h-auto p-1 bg-blue-50">
           <TabsTrigger value="requests" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
             <FileText className="w-4 h-4 mr-2" /> Requests
           </TabsTrigger>
           <TabsTrigger value="vault" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">
             <Shield className="w-4 h-4 mr-2" /> Document Vault
+          </TabsTrigger>
+          <TabsTrigger value="partners" data-testid="paperwork-tab-partners" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            <Building2 className="w-4 h-4 mr-2" /> Partners
           </TabsTrigger>
           <TabsTrigger value="products" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
             <Package className="w-4 h-4 mr-2" /> Products
@@ -419,6 +422,9 @@ const PaperworkManager = () => {
           </TabsTrigger>
           <TabsTrigger value="services" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
             <Briefcase className="w-4 h-4 mr-2" /> Services
+          </TabsTrigger>
+          <TabsTrigger value="tips" data-testid="paperwork-tab-tips" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            <Sparkles className="w-4 h-4 mr-2" /> Tips
           </TabsTrigger>
           <TabsTrigger value="settings" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
             <Settings className="w-4 h-4 mr-2" /> Settings
@@ -665,6 +671,24 @@ const PaperworkManager = () => {
             pillarIcon="📋"
             pillarColor="bg-blue-600"
           />
+        </TabsContent>
+
+        {/* Partners Tab */}
+        <TabsContent value="partners" className="mt-4">
+          <Card className="p-8 text-center" data-testid="paperwork-partners-panel">
+            <Building2 className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+            <p className="font-medium text-gray-600">Paperwork Partners</p>
+            <p className="text-sm text-gray-400 mt-1">Legal, insurance, and vet document partner management coming soon</p>
+          </Card>
+        </TabsContent>
+
+        {/* Tips Tab */}
+        <TabsContent value="tips" className="mt-4">
+          <Card className="p-8 text-center" data-testid="paperwork-tips-panel">
+            <Sparkles className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+            <p className="font-medium text-gray-600">Paperwork Tips</p>
+            <p className="text-sm text-gray-400 mt-1">Quick win tips for pet documentation coming soon</p>
+          </Card>
         </TabsContent>
 
         {/* Settings Tab */}

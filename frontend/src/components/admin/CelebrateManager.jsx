@@ -730,6 +730,9 @@ const CelebrateManager = ({ getAuthHeader }) => {
           <TabsTrigger value="bundles" data-testid="celebrate-tab-bundles" className="data-[state=active]:bg-pink-600 data-[state=active]:text-white">
             <Gift className="w-4 h-4 mr-2" /> Bundles
           </TabsTrigger>
+          <TabsTrigger value="tips" data-testid="celebrate-tab-tips" className="data-[state=active]:bg-pink-600 data-[state=active]:text-white">
+            <Sparkles className="w-4 h-4 mr-2" /> Tips
+          </TabsTrigger>
           <TabsTrigger value="settings" data-testid="celebrate-tab-settings" className="data-[state=active]:bg-pink-600 data-[state=active]:text-white">
             <Settings className="w-4 h-4 mr-2" /> Settings
           </TabsTrigger>
@@ -1088,6 +1091,15 @@ const CelebrateManager = ({ getAuthHeader }) => {
               </Card>
             ))}
           </div>
+        </TabsContent>
+
+        {/* TIPS TAB */}
+        <TabsContent value="tips" className="space-y-4">
+          <Card className="p-8 text-center" data-testid="celebrate-tips-panel">
+            <Sparkles className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+            <p className="font-medium text-gray-600">Celebrate Tips</p>
+            <p className="text-sm text-gray-400 mt-1">Quick win tips and Mira prompts for Celebrate pillar coming soon</p>
+          </Card>
         </TabsContent>
 
         {/* SETTINGS TAB */}

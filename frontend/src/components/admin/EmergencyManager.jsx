@@ -16,7 +16,7 @@ import {
   AlertTriangle, Plus, Edit, Trash2, Search, Filter, Download, Upload,
   Users, Package, Settings, Star, Loader2, CheckCircle, Clock,
   TrendingUp, PawPrint, Gift, Bell, Shield, RefreshCw, Siren,
-  Phone, MapPin, Ambulance, Heart, Briefcase
+  Phone, MapPin, Ambulance, Heart, Briefcase, Sparkles
 } from 'lucide-react';
 import PillarServicesTab from './PillarServicesTab';
 import PillarBundlesTab from './PillarBundlesTab';
@@ -386,7 +386,7 @@ const EmergencyManager = () => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5 bg-red-50">
+        <TabsList className="flex flex-wrap bg-red-50 gap-1 h-auto p-1">
           <TabsTrigger value="requests" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">
             <Siren className="w-4 h-4 mr-2" /> Emergencies
           </TabsTrigger>
@@ -401,6 +401,9 @@ const EmergencyManager = () => {
           </TabsTrigger>
           <TabsTrigger value="services" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">
             <Briefcase className="w-4 h-4 mr-2" /> Services
+          </TabsTrigger>
+          <TabsTrigger value="tips" data-testid="emergency-tab-tips" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">
+            <Sparkles className="w-4 h-4 mr-2" /> Tips
           </TabsTrigger>
           <TabsTrigger value="settings" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">
             <Settings className="w-4 h-4 mr-2" /> Settings
@@ -601,6 +604,15 @@ const EmergencyManager = () => {
             pillarIcon="🚨"
             pillarColor="bg-red-500"
           />
+        </TabsContent>
+
+        {/* Tips Tab */}
+        <TabsContent value="tips" className="mt-4">
+          <Card className="p-8 text-center" data-testid="emergency-tips-panel">
+            <Sparkles className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+            <p className="font-medium text-gray-600">Emergency Tips</p>
+            <p className="text-sm text-gray-400 mt-1">Quick win tips and first-response guides coming soon</p>
+          </Card>
         </TabsContent>
 
         {/* Settings Tab */}
