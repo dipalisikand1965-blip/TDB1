@@ -22,6 +22,7 @@ import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
+import LearnNearMe from '../components/learn/LearnNearMe';
 import '../styles/mobile-design-system.css';
 
 const G = {
@@ -220,6 +221,7 @@ export default function LearnMobilePage() {
 
   const [loading, setLoading] = useState(true);
   const [activeDim, setActiveDim] = useState(LEARN_DIMS[0].id);
+  const [mainTab, setMainTab] = useState('learn'); // 'learn' | 'nearme'
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'training' });

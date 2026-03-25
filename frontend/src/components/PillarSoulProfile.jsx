@@ -222,7 +222,7 @@ export default function PillarSoulProfile({
   const breedTip = getBreedTip(pillar, breed, name);
   const miraVoice = getMiraVoice(pillar, soul, name);
   const score = liveScore ?? (pet?.overall_score || 0);
-  const totalUnanswered = questions.length > 0 ? questions.filter(q => !submitted[q.question_id]).length : null;
+  const totalUnanswered = questions.length > 0 ? questions.filter(q => !submitted[q.question_id]).length : 0;
   const isComplete = score >= 100;
   const barColor = isComplete ? '#16A34A' : pColor;
   const scoreColor = isComplete ? '#16A34A' : pColor;
