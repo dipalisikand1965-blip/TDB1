@@ -21,6 +21,7 @@ import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import PillarPageLayout from '../components/PillarPageLayout';
 import SoulMadeModal from '../components/SoulMadeModal';
+import DineCategoryStrip from '../components/dine/DineCategoryStrip';
 import PetFriendlySpots from '../components/dine/PetFriendlySpots';
 import { API_URL } from '../utils/api';
 import DineSoulPageDesktopLegacy from './DineSoulPageDesktopLegacy';
@@ -63,14 +64,6 @@ const CSS = `
   .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
   @keyframes dine-sheet { from{transform:translateY(100%)} to{transform:translateY(0)} }
 `;
-
-const RAIL_ITEMS = [
-  { id: 'profile', emoji: '🥢', label: 'Food Profile' },
-  { id: 'bundles', emoji: '📦', label: 'Bundles' },
-  { id: 'soul', emoji: '✨', label: 'Soul Picks' },
-  { id: 'mira', emoji: '🪄', label: "Mira's Picks" },
-  { id: 'soulmade', emoji: '🎨', label: 'Soul Made' },
-];
 
 const DIMENSIONS = [
   { id: 'meals', icon: '🐟', name: 'Daily Meals', sub: 'Main nourishment', badge: 'Personalised', bg: 'linear-gradient(135deg,#FFF8F0,#FFF0E0)', terms: ['meal', 'wet', 'dry', 'kibble', 'raw', 'fresh', 'food'] },
@@ -207,21 +200,6 @@ function DineProfileSheet({ pet, onClose }) {
           <div style={{ fontSize: 15, lineHeight: 1.7, color: C.taupe }}>Diet type: {diet || 'not yet captured'}</div>
           <div style={{ fontSize: 15, lineHeight: 1.7, color: C.taupe }}>Health note: {condition || 'all healthy'}</div>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function DineActionRail({ active, onSelect }) {
-  return (
-    <div style={{ padding: '0 16px 20px' }}>
-      <div className="no-scrollbar" style={{ display: 'flex', gap: 10, overflowX: 'auto' }}>
-        {RAIL_ITEMS.map((item) => (
-          <button key={item.id} className={`dine-rail-item${active === item.id ? ' active' : ''}`} onClick={() => { vibrate('light'); onSelect(item.id); }}>
-            <div style={{ fontSize: 22, marginBottom: 6 }}>{item.emoji}</div>
-            <div style={{ fontSize: 12, fontWeight: 600, lineHeight: 1.3, color: active === item.id ? '#fff' : C.brown }}>{item.label}</div>
-          </button>
-        ))}
       </div>
     </div>
   );
@@ -444,7 +422,6 @@ export default function DineSoulPage() {
 
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState('eat');
-  const [railActive, setRailActive] = useState('profile');
   const [openDim, setOpenDim] = useState(null);
   const [intakeOpen, setIntakeOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -639,12 +616,7 @@ export default function DineSoulPage() {
         </div>
 
         <DinePetProfileCard pet={currentPet} onOpen={() => setProfileOpen(true)} />
-        <DineActionRail active={railActive} onSelect={(id) => {
-          setRailActive(id);
-          if (id === 'profile') setProfileOpen(true);
-          if (id === 'mira') setMiraOpen(true);
-          if (id === 'soulmade') setSoulMadeOpen(true);
-        }} />
+        <DineCategoryStrip pet={currentPet} />
         <DineSegmentedSwitch mode={mode} onChange={setMode} />
 
         {mode === 'eat' && (
