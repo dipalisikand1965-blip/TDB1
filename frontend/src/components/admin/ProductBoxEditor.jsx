@@ -19,7 +19,7 @@ import {
 import { API_URL } from '../../utils/api';
 import AIImagePromptField from './AIImagePromptField';
 import {
-  ALL_PILLARS, PRODUCT_TYPES, LIFE_STAGES, SIZE_OPTIONS, ENERGY_LEVELS,
+  ALL_PILLARS, PILLAR_SUBCATEGORIES, PRODUCT_TYPES, LIFE_STAGES, SIZE_OPTIONS, ENERGY_LEVELS,
   CHEW_STRENGTHS, PLAY_TYPES, COAT_TYPES, COMMON_AVOIDS, MATERIAL_SAFETY_FLAGS,
   OCCASIONS, USE_CASE_TAGS, QUALITY_TIERS, INVENTORY_STATUS, DELIVERY_TYPES,
   APPROVAL_STATUS, CITIES, MAIN_CATEGORIES
@@ -332,30 +332,9 @@ const ProductBoxEditor = ({
   // Fetch dynamic categories when pillar changes
   useEffect(() => {
     const currentPillar = product?.primary_pillar || product?.pillar || '';
-    if (!currentPillar || !open) {
-      setDynamicCategories([]);
-      return;
-    }
-    const fetchCategories = async () => {
-      setLoadingCategories(true);
-      try {
-        const adminAuth = localStorage.getItem('adminAuth') ||
-          (sessionStorage.getItem('admin_authenticated') === 'true' ? btoa(`${sessionStorage.getItem('admin_username') || 'aditya'}:lola4304`) : null);
-        const response = await fetch(
-          `${API_URL}/api/admin/pillar-products/sub-categories?pillar=${encodeURIComponent(currentPillar)}`,
-          { headers: adminAuth ? { 'Authorization': `Basic ${adminAuth}` } : {} }
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setDynamicCategories(data.categories || []);
-        }
-      } catch (err) {
-        console.error('Failed to fetch categories:', err);
-      } finally {
-        setLoadingCategories(false);
-      }
-    };
-    fetchCategories();
+    if (!open) { setDynamicCategories([]); return; }
+    // Load sub-categories from constant (no API needed)
+    setDynamicCategories(PILLAR_SUBCATEGORIES[currentPillar] || []);
   }, [open, product?.primary_pillar, product?.pillar]);
   
   if (!product) return null;

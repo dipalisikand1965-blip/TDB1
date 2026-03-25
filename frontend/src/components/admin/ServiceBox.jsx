@@ -23,24 +23,7 @@ import {
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
-
-// All pillars
-const ALL_PILLARS = [
-  { id: 'celebrate', name: 'Celebrate', icon: '🎂', color: 'bg-pink-500' },
-  { id: 'dine', name: 'Dine', icon: '🍽️', color: 'bg-orange-500' },
-  { id: 'stay', name: 'Stay', icon: '🏨', color: 'bg-blue-500' },
-  { id: 'travel', name: 'Travel', icon: '✈️', color: 'bg-cyan-500' },
-  { id: 'care', name: 'Care', icon: '💊', color: 'bg-green-500' },
-  { id: 'enjoy', name: 'Enjoy', icon: '🎾', color: 'bg-yellow-500' },
-  { id: 'fit', name: 'Fit', icon: '🏃', color: 'bg-indigo-500' },
-  { id: 'learn', name: 'Learn', icon: '🎓', color: 'bg-purple-500' },
-  { id: 'paperwork', name: 'Paperwork', icon: '📄', color: 'bg-gray-500' },
-  { id: 'advisory', name: 'Advisory', icon: '📋', color: 'bg-teal-500' },
-  { id: 'emergency', name: 'Emergency', icon: '🚨', color: 'bg-red-500' },
-  { id: 'farewell', name: 'Farewell', icon: '🌈', color: 'bg-violet-500' },
-  { id: 'adopt', name: 'Adopt', icon: '🐾', color: 'bg-amber-500' }
-  // 'shop' removed — shop is for products, not services
-];
+import { ALL_PILLARS, PILLAR_SUBCATEGORIES } from './ProductBoxConfig';
 
 const CITIES = ['mumbai', 'delhi', 'bangalore', 'chennai', 'hyderabad', 'pune', 'kolkata', 'jaipur'];
 const PET_SIZES = ['toy', 'small', 'medium', 'large', 'giant'];
@@ -988,6 +971,25 @@ const ServiceBox = () => {
                       rows={3}
                       data-testid="service-description-input"
                     />
+                  </div>
+
+                  <div>
+                    <Label>Sub-Category</Label>
+                    <select
+                      value={selectedService.sub_category || ''}
+                      onChange={(e) => handleInputChange('sub_category', e.target.value)}
+                      className="w-full border rounded-md px-3 py-2 bg-white"
+                      data-testid="service-subcategory-select"
+                    >
+                      <option value="">Select sub-category…</option>
+                      {(PILLAR_SUBCATEGORIES[selectedService.pillar || 'care'] || []).map(sc => (
+                        <option key={sc} value={sc}>{sc}</option>
+                      ))}
+                      {selectedService.sub_category &&
+                        !(PILLAR_SUBCATEGORIES[selectedService.pillar || 'care'] || []).includes(selectedService.sub_category) && (
+                        <option value={selectedService.sub_category}>{selectedService.sub_category} (custom)</option>
+                      )}
+                    </select>
                   </div>
                   
                   <div className="col-span-2">

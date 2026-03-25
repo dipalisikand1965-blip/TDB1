@@ -3,23 +3,37 @@
  * All options and constants for the comprehensive product management system
  */
 
-// THE 14 PILLARS
+// THE CORRECT 12 PILLARS
 export const ALL_PILLARS = [
   { id: 'celebrate', name: 'Celebrate', icon: '🎂', color: 'pink' },
-  { id: 'dine', name: 'Dine', icon: '🍽️', color: 'orange' },
-  { id: 'stay', name: 'Stay', icon: '🏨', color: 'blue' },
-  { id: 'travel', name: 'Travel', icon: '✈️', color: 'cyan' },
-  { id: 'care', name: 'Care', icon: '💊', color: 'red' },
-  { id: 'enjoy', name: 'Enjoy', icon: '🎾', color: 'green' },
-  { id: 'fit', name: 'Fit', icon: '🏃', color: 'teal' },
-  { id: 'learn', name: 'Learn', icon: '🎓', color: 'purple' },
+  { id: 'dine',      name: 'Dine',      icon: '🍽️', color: 'orange' },
+  { id: 'go',        name: 'Go',        icon: '🗺️', color: 'blue' },
+  { id: 'care',      name: 'Care',      icon: '💊', color: 'red' },
+  { id: 'play',      name: 'Play',      icon: '🎾', color: 'green' },
+  { id: 'learn',     name: 'Learn',     icon: '🎓', color: 'purple' },
   { id: 'paperwork', name: 'Paperwork', icon: '📄', color: 'gray' },
-  { id: 'advisory', name: 'Advisory', icon: '📋', color: 'indigo' },
-  { id: 'emergency', name: 'Emergency', icon: '🚨', color: 'red' },
-  { id: 'farewell', name: 'Farewell', icon: '🌈', color: 'violet' },
-  { id: 'adopt', name: 'Adopt', icon: '🐾', color: 'amber' },
-  { id: 'shop', name: 'Shop', icon: '🛒', color: 'emerald' }
+  { id: 'emergency', name: 'Emergency', icon: '🚨', color: 'rose' },
+  { id: 'farewell',  name: 'Farewell',  icon: '🌈', color: 'violet' },
+  { id: 'adopt',     name: 'Adopt',     icon: '🐾', color: 'amber' },
+  { id: 'shop',      name: 'Shop',      icon: '🛒', color: 'emerald' },
+  { id: 'services',  name: 'Services',  icon: '🔧', color: 'indigo' },
 ];
+
+// PILLAR → SUB-CATEGORIES (used in all edit modals)
+export const PILLAR_SUBCATEGORIES = {
+  celebrate: ['Cakes', 'Toys & Joy', 'Style', 'Memory', 'Wellness', 'Party Decor', 'Birthday Bundles'],
+  dine:      ['Daily Meals', 'Treats & Rewards', 'Supplements', 'Frozen & Fresh', 'Homemade & Recipes', 'Feeding Accessories', 'Meal Toppers'],
+  go:        ['Carriers', 'Travel Gear', 'Boarding', 'Safety', 'Feeding & Hydration', 'Car Accessories', 'Navigation'],
+  care:      ['Grooming', 'Vet & Health', 'Dental', 'Spa', 'Senior Care', 'Skin & Coat', 'Eye & Ear'],
+  play:      ['Training', 'Enrichment', 'Outdoor', 'Interactive', 'Fetch & Tug', 'Puzzle Toys', 'Socialising'],
+  learn:     ['Training Books', 'Online Courses', 'Workshops', 'Behaviour', 'Puppy School', 'Tricks & Skills'],
+  paperwork: ['Documents', 'Insurance', 'Microchip', 'Health Certificates', 'Vaccination Records', 'ID & Tags'],
+  emergency: ['First Aid', 'Emergency Kits', 'Poison Response', 'Crisis Care', 'Critical Meds', 'Rescue Gear'],
+  farewell:  ['Memorial', 'Cremation', 'Keepsakes', 'Rainbow Bridge', 'End-of-Life Care', 'Tribute Items'],
+  adopt:     ['Rescue Kits', 'New Pet Starter', 'Foster Care', 'Microchip & Docs', 'Socialisation', 'Rehoming'],
+  shop:      ['Accessories', 'Apparel', 'Home & Decor', 'Seasonal', 'Gifting', 'Eco & Organic', 'Luxury'],
+  services:  ['Grooming Services', 'Vet Services', 'Training Services', 'Boarding Services', 'Walking', 'Sitting & Daycare'],
+};
 
 // ALL 35 BREEDS
 export const ALL_BREEDS = [
