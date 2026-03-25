@@ -2532,8 +2532,8 @@ const Admin = () => {
                     { id: 'dine', label: 'Dine', icon: UtensilsCrossed },
                     { id: 'shop-manager', label: 'Shop', icon: ShoppingBag },
                     { id: 'care', label: 'Care', icon: Heart },
-                    { id: 'go', label: 'Go', icon: Home },
-                    { id: 'go', label: 'Go', icon: Plane },
+                    { id: 'go', label: 'Stay', icon: Home },
+                    { id: 'travel', label: 'Travel', icon: Plane },
                     { id: 'services', label: 'Services', icon: Activity },
                     { id: 'learn', label: 'Learn', icon: BookOpen },
                   ].map(tab => (
