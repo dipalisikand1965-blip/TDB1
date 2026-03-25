@@ -88,6 +88,32 @@ const getFavoriteProtein = (pet) => pet?.doggy_soul_answers?.favorite_protein ||
 const getFoodDrive = (pet) => pet?.doggy_soul_answers?.food_motivation || pet?.doggy_soul_answers?.food_drive || null;
 const getSensitiveStomach = (pet) => pet?.doggy_soul_answers?.sensitive_stomach || null;
 const getGrainFree = (pet) => pet?.doggy_soul_answers?.prefers_grain_free || null;
+
+const buildDineImagineCards = (pet) => {
+  const petName = pet?.name || 'your dog';
+  const breed = pet?.breed || 'your dog';
+  const faveProtein = getFavoriteProtein(pet) || 'Salmon';
+  return [
+    {
+      icon: '🐟',
+      title: `${petName}'s Fresh Bowl Plan`,
+      desc: `A fresh food rhythm built around ${breed} needs, portioned for energy and digestion.`,
+      quote: `“I’d start ${petName} with clean protein and a calmer bowl.”`,
+    },
+    {
+      icon: '🦴',
+      title: `${petName}'s Treat Ritual`,
+      desc: `Reward picks aligned to ${petName}'s favourite protein and safe enough for frequent use.`,
+      quote: `“For ${petName}, I’d keep rewards simple, safe and irresistible.”`,
+    },
+    {
+      icon: '🥣',
+      title: `${breed} Tummy Support`,
+      desc: `A gentle support set for stomach balance, appetite confidence and smoother meal transitions.`,
+      quote: `“I’d protect ${petName}'s tummy first, then build joy around food.”`,
+    },
+  ];
+};
 const vibrate = (type = 'light') => {
   if (!navigator.vibrate) return;
   if (type === 'success') navigator.vibrate([8, 40, 10]);
@@ -193,6 +219,7 @@ function DineProfileSheet({ pet, onClose }) {
   const grainFreeLabel = grainFree === true ? 'Yes' : grainFree === false ? 'No' : (grainFree || 'Yes');
   const loves = [getFavouriteTreat(pet), faveProtein].filter(Boolean).join(' · ') || 'Peanut butter';
   const summary = `Mira knows ${name}'s body and taste. Everything here is filtered for safety, joy, and what they reach for first.`;
+  const imagineCards = buildDineImagineCards(pet);
   const cards = [
     { label: 'Allergy', value: allergies.length ? `No ${allergies.join(' / ')}` : 'None noted', color: '#FF8C42' },
     { label: 'Diet', value: diet, color: '#F0C060' },
@@ -242,6 +269,43 @@ function DineProfileSheet({ pet, onClose }) {
               <div key={card.label} style={{ borderRadius: 16, padding: '14px 14px 16px', background: 'linear-gradient(135deg,#1A0620 0%, #2d0a00 100%)', border: '1px solid rgba(180,80,255,0.22)' }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: card.color, marginBottom: 8 }}>{card.label}</div>
                 <div style={{ fontSize: 16, lineHeight: 1.35, color: '#fff' }}>{card.value}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ margin: '16px 0', width: '100%', borderRadius: 14, background: '#2D1B69', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ width: 44, height: 44, background: '#7C3AED', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#fff', flexShrink: 0 }}>✦</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Mira is learning {name}</div>
+              <div style={{ fontSize: 13, color: '#C4B5FD', lineHeight: 1.55 }}>
+                Complete {name}&apos;s Soul Profile to get real scored picks. Mira already knows {breed} traits — your profile adds the personal layer.
+              </div>
+            </div>
+            <button
+              onClick={() => { window.location.href = `/pet/${pet?.id || pet?._id}?tab=personality`; }}
+              style={{ background: '#4C1D95', border: '1px solid #7C3AED', borderRadius: 20, padding: '10px 18px', color: '#fff', fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap', cursor: 'pointer', flexShrink: 0 }}
+            >
+              Complete Profile →
+            </button>
+          </div>
+
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.brown, marginBottom: 12 }}>Mira imagines these for {name}</div>
+          <div className="no-scrollbar" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 12 }}>
+            {imagineCards.map((card, index) => (
+              <div key={index} style={{ width: 260, minWidth: 260, minHeight: 320, borderRadius: 16, background: '#3D1F0D', padding: 20, flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 56, marginBottom: 16 }}>{card.icon}</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8, lineHeight: 1.2 }}>{card.title}</div>
+                <div style={{ fontSize: 13, color: '#C4A882', lineHeight: 1.6, marginBottom: 14 }}>{card.desc}</div>
+                <div style={{ fontSize: 13, color: '#C4A882', lineHeight: 1.6, fontStyle: 'italic', borderLeft: '2px solid #D97706', paddingLeft: 10, marginBottom: 16 }}>
+                  {card.quote}
+                </div>
+                <button
+                  onClick={() => onClose()}
+                  className="dine-cta"
+                  style={{ background: '#6B3A2A', borderRadius: 10, minHeight: 44, marginTop: 'auto' }}
+                >
+                  Ask Concierge →
+                </button>
               </div>
             ))}
           </div>
