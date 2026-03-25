@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=SF+Pro+Display:wght@400;500;600;700&display=swap');
+
+:root {
+  /* iOS Safe Areas */
+  --safe-bottom: env(safe-area-inset-bottom, 20px);
+  --safe-top: env(safe-area-inset-top, 44px);
+  
+  /* Typography System */
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+  
+  /* iOS Type Scale */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px; /* Minimum body size for iOS readability */
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --text-3xl: 34px;
+  
+  /* Shared Base Colors */
+  --color-dark-bg: #0B1628;
+  --color-gold: #D4A853;
+  --color-surface: #FFFFFF;
+  --color-surface-secondary: #F8F9FA;
+  
+  /* Shadows */
+  --shadow-ios: 0 8px 30px rgba(0, 0, 0, 0.04);
+  --shadow-ios-lg: 0 12px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* Global resets for mobile pages */
+.mobile-page-container {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  background: var(--color-surface);
+  min-height: 100vh;
+  padding-bottom: calc(96px + var(--safe-bottom));
+}
+
+.mobile-heading-serif {
+  font-family: var(--font-serif);
+  letter-spacing: -0.01em;
+}
+
+/* Typography Classes */
+.ios-h1 { font-family: var(--font-serif); font-size: var(--text-3xl); line-height: 1.2; font-weight: 600; }
+.ios-h2 { font-family: var(--font-serif); font-size: var(--text-2xl); line-height: 1.25; font-weight: 600; }
+.ios-h3 { font-family: var(--font-sans); font-size: var(--text-xl); line-height: 1.3; font-weight: 600; letter-spacing: -0.5px; }
+.ios-body { font-family: var(--font-sans); font-size: var(--text-base); line-height: 1.5; }
+.ios-caption { font-family: var(--font-sans); font-size: var(--text-sm); line-height: 1.4; color: #666; }
+
+/* Buttons */
+.ios-btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 56px; /* iOS standard touch target */
+  padding: 0 24px;
+  border-radius: 999px; /* Pill shape */
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s;
+  border: none;
+}
+.ios-btn-primary:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+/* Tab Navigation */
+.ios-tab-bar {
+  display: flex;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 8px 16px;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.ios-tab-bar::-webkit-scrollbar { display: none; }
+
+.ios-tab {
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: #666;
+  white-space: nowrap;
+  transition: all 0.2s;
+  background: transparent;
+  border: none;
+}
+.ios-tab.active {
+  background: var(--color-dark-bg);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Bottom Sheet (Modal override) */
+.ios-bottom-sheet-content {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: auto !important;
+  transform: none !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  max-height: 90dvh !important;
+  background: #fff;
+  border-radius: 32px 32px 0 0 !important;
+  padding: 24px 20px calc(24px + var(--safe-bottom)) !important;
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.1) !important;
+  animation: slideUp 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  overflow-y: auto;
+}
+.ios-bottom-sheet-overlay {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+.ios-drag-handle {
+  width: 40px;
+  height: 5px;
+  background: #E5E7EB;
+  border-radius: 999px;
+  margin: 0 auto 20px;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* Card System */
+.ios-card {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: var(--shadow-ios);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+}

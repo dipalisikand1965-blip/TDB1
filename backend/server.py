@@ -19132,6 +19132,159 @@ async def lookup_pet_by_pass_number(pet_pass_number: str):
     return {"pet": pet}
 
 
+# ==================== LEGACY DATA MIGRATIONS ====================
+
+@admin_router.post("/migrate/legacy-services")
+async def migrate_legacy_services(username: str = Depends(verify_admin)):
+    """
+    Migrate 143 legacy services from 'services' and 'service_catalog' collections
+    into 'services_master' with pillar translation.
+    Pillar map: feed→dine, groom→care, stay→go, travel→go,
+                advisory→paperwork, enjoy→play, fit→play
+    """
+    PILLAR_MAP = {
+        "feed": "dine", "groom": "care", "grooming": "care",
+        "stay": "go", "travel": "go",
+        "advisory": "paperwork", "enjoy": "play", "fit": "play",
+    }
+
+    migrated = 0
+    skipped = 0
+    errors = []
+
+    async def _migrate_from(collection_name: str):
+        nonlocal migrated, skipped
+        col = db[collection_name]
+        try:
+            count = await col.count_documents({})
+        except Exception:
+            return
+        if count == 0:
+            return
+
+        async for svc in col.find({}, {"_id": 0}):
+            try:
+                # Translate pillar
+                old_pillar = (svc.get("pillar") or svc.get("category") or "").lower().strip()
+                new_pillar = PILLAR_MAP.get(old_pillar, old_pillar) or "care"
+
+                # Build canonical service doc
+                new_svc = {
+                    "id": svc.get("id") or f"svc-{uuid.uuid4().hex[:12]}",
+                    "name": svc.get("name") or svc.get("service_name") or "Unnamed Service",
+                    "pillar": new_pillar,
+                    "category": svc.get("category") or new_pillar,
+                    "sub_category": svc.get("sub_category") or svc.get("type") or "",
+                    "description": svc.get("description") or svc.get("short_description") or "",
+                    "price": svc.get("price") or svc.get("base_price") or 0,
+                    "original_price": svc.get("original_price") or svc.get("price") or 0,
+                    "image_url": svc.get("image_url") or svc.get("image") or "",
+                    "is_active": svc.get("is_active", True),
+                    "tags": svc.get("tags") or [],
+                    "migrated_from": collection_name,
+                    "migrated_at": get_utc_timestamp(),
+                }
+
+                existing = await db.services_master.find_one({"id": new_svc["id"]}, {"_id": 0, "id": 1})
+                if existing is not None:
+                    skipped += 1
+                    continue
+
+                await db.services_master.insert_one(new_svc)
+                migrated += 1
+            except Exception as e:
+                errors.append({"id": svc.get("id", "?"), "error": str(e)})
+
+    await _migrate_from("services")
+    await _migrate_from("service_catalog")
+
+    total_after = await db.services_master.count_documents({})
+    return {
+        "success": True,
+        "migrated": migrated,
+        "skipped_duplicates": skipped,
+        "errors": errors[:20],
+        "total_in_services_master": total_after,
+    }
+
+
+@admin_router.post("/migrate/soul-products")
+async def migrate_soul_products(username: str = Depends(verify_admin)):
+    """
+    Migrate Soul Made products from 'breed_products' into 'products_master'.
+    Ensures each product has a correct pillar name.
+    """
+    PILLAR_FIXES = {
+        "food": "dine", "feed": "dine",
+        "grooming": "care", "groom": "care", "health": "care",
+        "play": "play", "enjoy": "play", "toy": "play",
+        "training": "learn", "fit": "play",
+        "travel": "go", "stay": "go",
+        "celebrate": "celebrate", "birthday": "celebrate",
+        "advisory": "paperwork",
+    }
+
+    migrated = 0
+    skipped = 0
+    errors = []
+
+    try:
+        bp_count = await db.breed_products.count_documents({})
+    except Exception:
+        bp_count = 0
+
+    if bp_count == 0:
+        return {"success": True, "migrated": 0, "message": "breed_products collection is empty — nothing to migrate"}
+
+    async for prod in db.breed_products.find({}, {"_id": 0}):
+        try:
+            old_pillar = (prod.get("pillar") or prod.get("category") or "").lower().strip()
+            new_pillar = PILLAR_FIXES.get(old_pillar, old_pillar) or "shop"
+
+            new_prod = {
+                "id": prod.get("id") or f"bp-{uuid.uuid4().hex[:12]}",
+                "name": prod.get("name") or "Unnamed Product",
+                "product_type": prod.get("product_type") or "physical",
+                "pillar": new_pillar,
+                "category": prod.get("category") or new_pillar,
+                "sub_category": prod.get("sub_category") or prod.get("type") or "",
+                "brand": prod.get("brand") or "Soul Made",
+                "description": prod.get("description") or prod.get("short_description") or "",
+                "price": prod.get("price") or prod.get("base_price") or 0,
+                "original_price": prod.get("original_price") or prod.get("price") or 0,
+                "image_url": prod.get("image_url") or prod.get("image") or "",
+                "tags": prod.get("tags") or [],
+                "breed": prod.get("breed") or prod.get("breed_tags") or [],
+                "life_stage": prod.get("life_stage") or prod.get("life_stages") or [],
+                "allergens": prod.get("allergens") or [],
+                "is_active": prod.get("is_active", True),
+                "visibility": prod.get("visibility") or {"status": "active"},
+                "approval_status": prod.get("approval_status") or "live",
+                "soul_tier": prod.get("soul_tier") or "soul_made",
+                "migrated_from": "breed_products",
+                "migrated_at": get_utc_timestamp(),
+            }
+
+            existing = await db.products_master.find_one({"id": new_prod["id"]}, {"_id": 0, "id": 1})
+            if existing is not None:
+                skipped += 1
+                continue
+
+            await db.products_master.insert_one(new_prod)
+            migrated += 1
+        except Exception as e:
+            errors.append({"id": prod.get("id", "?"), "error": str(e)})
+
+    total_after = await db.products_master.count_documents({})
+    return {
+        "success": True,
+        "migrated": migrated,
+        "skipped_duplicates": skipped,
+        "errors": errors[:20],
+        "total_in_products_master": total_after,
+    }
+
+
 # ==================== FAREWELL SERVICES ====================
 
 @api_router.post("/farewell/service-request")

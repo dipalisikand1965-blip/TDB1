@@ -30,12 +30,8 @@ const G = {
   dark:'#0A1F13', darkText:'#1B4332', mutedText:'#40916C',
   border:'rgba(64,145,108,0.18)',
 };
-const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
-.care-m{font-family:'DM Sans',-apple-system,sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
-.care-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${G.mid},${G.sage});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}
-.care-cta:active{transform:scale(0.97)}
-.care-tab{flex:1;padding:12px 4px;background:none;border:none;border-bottom:2.5px solid transparent;font-size:13px;font-weight:500;color:#999;cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:inherit}
-.care-tab.active{color:${G.sage};border-bottom-color:${G.sage};font-weight:700}`;
+
+import '../styles/mobile-design-system.css';
 
 function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'?[12]:[6]); }
 
@@ -125,40 +121,40 @@ export default function CareMobilePage() {
 
   return (
     <PillarPageLayout pillar="care" hideHero hideNavigation>
-      <div className="care-m" data-testid="care-mobile">
-        <style>{CSS}</style>
+      <div className="mobile-page-container" style={{ backgroundColor: G.cream, color: G.dark }} data-testid="care-mobile">
 
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="care" pillarColor={G.sage} pillarLabel="Care" onClose={() => setSoulMadeOpen(false)} />}
         {selectedProduct && <ProductDetailModal product={selectedProduct?.raw || selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.sage} />}
 
         {/* Hero */}
-        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deepMid} 55%,${G.mid} 100%)`, padding:'32px 16px 20px' }}>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deepMid} 55%,${G.mid} 100%)`, padding:'40px 20px 24px' }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
             <div>
-              <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
-              <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🌿 Care</div>
+              <div style={{ fontSize:10, fontWeight:700, color:'rgba(255,255,255,0.6)', letterSpacing:'0.15em', marginBottom:4 }}>THE DOGGY COMPANY</div>
+              <div className="ios-h1" style={{ color:'#fff' }}>🌿 Care</div>
             </div>
             {contextPets?.length > 1 && (
               <select value={currentPet?.id} onChange={e => { vibe(); setCurrentPet(contextPets.find(p => p.id === e.target.value)); }}
-                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:13 }}>
+                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'8px 16px', color:'#fff', fontSize:14, fontWeight: 500, outline: 'none' }}>
                 {contextPets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             )}
           </div>
-          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Care & Wellness for {petName}</div>
-          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Grooming, health, dental, coat — all personalised</div>
+          <div className="ios-h2" style={{ color:'#fff', marginBottom:6 }}>Care & Wellness for {petName}</div>
+          <div className="ios-body" style={{ color:'rgba(255,255,255,0.8)' }}>Grooming, health, dental, coat — all personalised</div>
         </div>
 
         {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="care" token={token} /></div>}
 
         {/* Tab Bar */}
-        <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100 }}>
+        <div className="ios-tab-bar" style={{ borderColor: G.border }}>
           {[
             { id:'care',      label:'🌿 Care & Products' },
             { id:'services',  label:'✂️ Care Services' },
             { id:'find-care', label:'📍 Find Care' },
           ].map(tab => (
-            <button key={tab.id} className={`care-tab${activeTab===tab.id?' active':''}`}
+            <button key={tab.id} className={`ios-tab${activeTab===tab.id?' active':''}`}
+              style={activeTab === tab.id ? { backgroundColor: G.dark, color: '#fff' } : {}}
               data-testid={`care-tab-${tab.id}`}
               onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}>
               {tab.label}
@@ -177,7 +173,7 @@ export default function CareMobilePage() {
                   ? `"${petName} has ${allergies.join(' and ')} sensitivities. I've filtered all products to be safe."`
                   : `"Let me show you what ${petName} actually needs for optimal health — not just what sells."`}
               </div>
-              <button className="care-cta" onClick={() => { vibe('medium'); request('Care recommendations', { channel:'care_mira_cta' }); }}>
+              <button className="ios-btn-primary" style={{ background: `linear-gradient(135deg,${G.mid},${G.sage})` }} onClick={() => { vibe('medium'); request('Care recommendations', { channel:'care_mira_cta' }); }}>
                 Get {petName}'s Care Plan →
               </button>
             </div>
@@ -276,10 +272,10 @@ export default function CareMobilePage() {
                 <div style={{ marginTop:16 }}><GuidedCarePaths pet={currentPet} /></div>
 
                 {/* SoulMade CTA */}
-                <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
-                  <div style={{ fontSize:10, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · MADE ONLY FOR {petName.toUpperCase()}</div>
-                  <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>{petName}'s breed-specific care, curated by Mira.</div>
-                  <button className="care-cta">Explore Soul Made →</button>
+                <div style={{ marginTop:16, background:G.dark, borderRadius:24, padding:24, cursor:'pointer', boxShadow: '0 12px 40px rgba(0,0,0,0.08)' }} onClick={() => setSoulMadeOpen(true)}>
+                  <div style={{ fontSize:10, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:10 }}>✦ SOUL MADE™ · MADE ONLY FOR {petName.toUpperCase()}</div>
+                  <div className="ios-h2" style={{ color:'#fff', marginBottom:16 }}>{petName}'s breed-specific care, curated by Mira.</div>
+                  <button className="ios-btn-primary" style={{ background: `linear-gradient(135deg,${G.mid},${G.sage})` }}>Explore Soul Made →</button>
                 </div>
               </div>
             )}
