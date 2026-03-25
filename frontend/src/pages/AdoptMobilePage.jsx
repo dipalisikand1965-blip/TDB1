@@ -21,6 +21,7 @@ import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
+import '../styles/mobile-design-system.css';
 
 const G = {
   deep:'#4A0E2E', mid:'#7B1D4E', rose:'#D4537E', light:'#F9A8C9',
@@ -29,10 +30,10 @@ const G = {
   border:'rgba(212,83,126,0.18)',
 };
 const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
-.adopt-m{font-family:'DM Sans',-apple-system,sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+.adopt-m{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .adopt-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${G.mid},${G.rose});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}
 .adopt-cta:active{transform:scale(0.97)}
-.adopt-tab{flex:1;padding:12px 4px;background:none;border:none;border-bottom:2.5px solid transparent;font-size:13px;font-weight:500;color:#999;cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:inherit}
+.adopt-tab{flex:1;padding:12px 4px;background:none;border:none;border-bottom:2.5px solid transparent;font-size:14px;font-weight:500;color:#999;cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:inherit}
 .adopt-tab.active{color:${G.rose};border-bottom-color:${G.rose};font-weight:700}`;
 
 function vibe(t='light'){if(navigator?.vibrate)navigator.vibrate(t==='medium'?[12]:[6]);}
@@ -113,7 +114,7 @@ export default function AdoptMobilePage() {
 
   return (
     <PillarPageLayout pillar="adopt" hideHero hideNavigation>
-      <div className="adopt-m" data-testid="adopt-mobile">
+      <div className="adopt-m mobile-page-container" data-testid="adopt-mobile">
         <style>{CSS}</style>
 
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="adopt" pillarColor={G.rose} pillarLabel="Adopt" onClose={() => setSoulMadeOpen(false)} />}
@@ -123,12 +124,12 @@ export default function AdoptMobilePage() {
         <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'32px 16px 20px' }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
-              <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
+              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🐾 Adopt</div>
             </div>
             {contextPets?.length > 1 && (
               <select value={currentPet?.id} onChange={e => { vibe(); setCurrentPet(contextPets.find(p => p.id === e.target.value)); }}
-                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:13 }}>
+                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:14 }}>
                 {contextPets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             )}
@@ -160,13 +161,13 @@ export default function AdoptMobilePage() {
           <div>
             {/* Stage Tracker */}
             <div style={{ padding:'16px 16px 8px' }}>
-              <div style={{ fontSize:13, fontWeight:700, color:G.darkText, marginBottom:10 }}>Where are you on the journey?</div>
+              <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:10 }}>Where are you on the journey?</div>
               <div style={{ display:'flex', gap:6, overflowX:'auto', paddingBottom:4 }}>
                 {ADOPT_STAGES.map(s => (
                   <button key={s.id} onClick={() => { vibe(); setAdoptStage(s.id); }}
                     style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:4, padding:'8px 12px', borderRadius:14, border:`2px solid ${adoptStage===s.id?G.rose:G.border}`, background:adoptStage===s.id?G.pale:'#fff', cursor:'pointer', minWidth:68 }}>
                     <span style={{ fontSize:18 }}>{s.emoji}</span>
-                    <span style={{ fontSize:10, fontWeight:700, color:adoptStage===s.id?G.rose:G.darkText }}>{s.label}</span>
+                    <span style={{ fontSize:14, fontWeight:700, color:adoptStage===s.id?G.rose:G.darkText }}>{s.label}</span>
                   </button>
                 ))}
               </div>
@@ -174,7 +175,7 @@ export default function AdoptMobilePage() {
 
             {/* Mira Bar */}
             <div style={{ margin:'0 16px 16px', background:G.dark, borderRadius:20, padding:16 }}>
-              <div style={{ fontSize:11, fontWeight:700, color:'rgba(249,168,201,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON ADOPTION</div>
+              <div style={{ fontSize:14, fontWeight:700, color:'rgba(249,168,201,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON ADOPTION</div>
               <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>"Every dog deserves a forever home. I'll help you find the right match and guide you through every step."</div>
               <button className="adopt-cta" onClick={() => { vibe('medium'); request('Start adoption journey', { channel:'adopt_mira_cta' }); }}>Start Adoption Journey →</button>
             </div>
@@ -213,11 +214,11 @@ export default function AdoptMobilePage() {
                     <div style={{ width:44, height:44, borderRadius:14, background:G.pale, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>{svc.icon}</div>
                     <div style={{ flex:1 }}>
                       <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:2 }}>{svc.name}</div>
-                      <div style={{ fontSize:12, color:G.mutedText }}>{svc.tagline}</div>
+                      <div style={{ fontSize:14, color:G.mutedText }}>{svc.tagline}</div>
                     </div>
-                    <div style={{ fontSize:13, fontWeight:700, color:G.rose, flexShrink:0 }}>{svc.price}</div>
+                    <div style={{ fontSize:14, fontWeight:700, color:G.rose, flexShrink:0 }}>{svc.price}</div>
                   </div>
-                  <div style={{ fontSize:13, color:'#555', lineHeight:1.6, marginBottom:12 }}>{svc.desc}</div>
+                  <div style={{ fontSize:14, color:'#555', lineHeight:1.6, marginBottom:12 }}>{svc.desc}</div>
                   <button onClick={() => handleBookService(svc)} data-testid={`adopt-svc-book-${svc.id}`}
                     style={{ width:'100%', minHeight:44, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.rose})`, color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
                     Book via Concierge® →
