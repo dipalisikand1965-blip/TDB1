@@ -767,9 +767,39 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
         position: 'fixed', left: 0, right: 0, bottom: 0,
         maxHeight: '93vh', borderTopLeftRadius: 24, borderTopRightRadius: 24,
         display: 'flex', flexDirection: 'column', zIndex: 56,
+        paddingTop: 56,
       }}
       data-testid={`dine-modal-${category}`}
     >
+      {!isDesktop && (
+        <button
+          onClick={onClose}
+          style={{
+            position: 'fixed',
+            top: 16,
+            left: 16,
+            width: 40,
+            height: 40,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: '#FFF3E0',
+            color: '#C44400',
+            border: 'none',
+            borderRadius: '50%',
+            cursor: 'pointer',
+            zIndex: 9999,
+            boxShadow: '0 6px 20px rgba(0,0,0,0.16)',
+            fontSize: 18,
+            fontWeight: 700,
+          }}
+          aria-label="Back to dine"
+          data-testid="dine-modal-back-fixed"
+        >
+          ←
+        </button>
+      )}
+
       {!isDesktop && (
         <button
           onClick={onClose}
@@ -806,7 +836,10 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
 
       {/* ── Header ──────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between px-5 py-4 flex-shrink-0"
-        style={{ borderBottom: '1px solid #F0E8E0' }}>
+        style={{
+          borderBottom: '1px solid #F0E8E0',
+          ...(isDesktop ? {} : { position: 'sticky', top: 0, zIndex: 40, background: '#fff' })
+        }}>
         <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
           <div style={{
             width: 44, height: 44, borderRadius: 12, flexShrink: 0,
