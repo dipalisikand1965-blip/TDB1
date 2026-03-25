@@ -25,6 +25,7 @@ import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
 import { applyMiraFilter } from '../hooks/useMiraFilter';
+import MiraEmptyRequest from '../components/common/MiraEmptyRequest';
 import '../styles/mobile-design-system.css';
 
 const G = {
@@ -231,20 +232,15 @@ export default function CareMobilePage() {
                 )}
 
                 {products.length === 0 ? (
-                  <div style={{ textAlign:'center', padding:'32px 0', color:'#888' }}>
-                    {allergies.length > 0 ? (
-                      <>
-                        <div style={{ fontSize:32, marginBottom:8 }}>🛡️</div>
-                        <div>Mira filtered everything here for {petName}&apos;s {allergies.join(' & ')} allergies.</div>
-                        <div style={{ marginTop:8, fontSize:14, color:'#27AE60', fontWeight:600 }}>Ask Concierge to source safe alternatives →</div>
-                      </>
-                    ) : (
-                      <>
-                        <div style={{ fontSize:32, marginBottom:8 }}>🌿</div>
-                        <div>Loading care products for {petName}…</div>
-                      </>
-                    )}
-                  </div>
+                  <MiraEmptyRequest
+                    pet={currentPet}
+                    pillar="care"
+                    categoryName={`Care${subCat !== 'All' ? ` — ${subCat}` : ''} Products`}
+                    accentColor={G.sage}
+                    onRequest={async (msg) => {
+                      await request(msg, { channel:'care_empty_products', metadata:{ subCat, petName } });
+                    }}
+                  />
                 ) : (
                   <>
                     <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>

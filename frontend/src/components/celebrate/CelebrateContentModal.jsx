@@ -1111,7 +1111,7 @@ export const CATEGORY_CONFIG = {
 };
 
 // ── Main Modal ──────────────────────────────────────────────────────────────
-const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
+const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequest }) => {
   const [products, setProducts] = useState([]);
   const [bundles, setBundles] = useState([]);
   const [breedProducts, setBreedProducts] = useState([]);
@@ -1551,7 +1551,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                   </div>
                 </>
               ) : (
-                <EmptyState config={config} onAskMira={() => {
+                <EmptyState config={config} pet={pet} onConciergeRequest={onConciergeRequest} categoryName={config?.title || category} onAskMira={() => {
                   window.dispatchEvent(new CustomEvent('openMiraAI', {
                     detail: { message: `Show me celebration bundle ideas for ${petName}`, context: 'celebrate' }
                   }));
@@ -1627,7 +1627,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                     )}
                   </div>
                 ) : (
-                  <EmptyState config={config} onAskMira={() => {
+                  <EmptyState config={config} pet={pet} onConciergeRequest={onConciergeRequest} categoryName={config?.title || category} onAskMira={() => {
                     window.dispatchEvent(new CustomEvent('openMiraAI', {
                       detail: { message: `What soul picks would you recommend for ${petName}?`, context: 'celebrate' }
                     }));
@@ -1793,7 +1793,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                 )}
 
                 {miraImagines.length === 0 && products.length === 0 && (
-                  <EmptyState config={config} onAskMira={() => {
+                  <EmptyState config={config} pet={pet} onConciergeRequest={onConciergeRequest} categoryName={config?.title || category} onAskMira={() => {
                     window.dispatchEvent(new CustomEvent('openMiraAI', {
                       detail: { message: `What cakes would you pick for ${petName}?`, context: 'celebrate' }
                     }));
@@ -1878,7 +1878,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
                         ))}
                       </div>
                     ) : (
-                      <EmptyState config={config} onAskMira={() => {
+                      <EmptyState config={config} pet={pet} onConciergeRequest={onConciergeRequest} categoryName={config?.title || category} onAskMira={() => {
                         window.dispatchEvent(new CustomEvent('openMiraAI', {
                           detail: { message: `Show me ${config.label} for ${petName}`, context: 'celebrate' }
                         }));
@@ -2056,19 +2056,55 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet }) => {
 };
 
 // ── Empty state ──────────────────────────────────────────────────────────────
-const EmptyState = ({ config, onAskMira }) => (
-  <div className="flex flex-col items-center justify-center py-14 text-center px-4">
-    <span className="text-5xl mb-4">{config.emoji}</span>
-    <p className="text-gray-500 text-sm mb-5 max-w-xs">{config.emptyText}</p>
-    <button
-      onClick={onAskMira}
-      className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold"
-      style={{ background: 'rgba(196,77,255,0.10)', border: '1px solid rgba(196,77,255,0.30)', color: '#7C3AED', cursor: 'pointer' }}
-    >
-      <Sparkles className="w-4 h-4" />
-      Ask Mira
-    </button>
-  </div>
-);
+const EmptyState = ({ config, onAskMira, onConciergeRequest, pet, categoryName }) => {
+  const [requested, setRequested] = React.useState(false);
+  const petName = pet?.name || 'your dog';
+  const breed = pet?.breed || '';
+
+  const handleConciergeClick = async () => {
+    if (onConciergeRequest && !requested) {
+      const msg = [
+        `${petName} needs ${categoryName || config?.title || 'celebrate products'}.`,
+        breed ? `Breed: ${breed}.` : null,
+        `Please source options for ${petName}.`,
+      ].filter(Boolean).join(' ');
+      await onConciergeRequest(msg);
+      setRequested(true);
+    }
+    // Also open Mira AI if available
+    onAskMira?.();
+  };
+
+  if (requested) {
+    return (
+      <div className="flex flex-col items-center justify-center py-14 text-center px-4">
+        <span className="text-4xl mb-3">✓</span>
+        <p className="font-bold text-green-600 mb-1">Sent to Mira!</p>
+        <p className="text-sm text-gray-500">We'll source {categoryName || 'products'} for {petName} and update you.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center py-14 text-center px-4">
+      <span className="text-5xl mb-4">{config.emoji}</span>
+      <p className="text-gray-500 text-sm mb-3 max-w-xs">{config.emptyText}</p>
+      {breed && (
+        <p className="text-xs text-purple-600 mb-4 font-medium">
+          Personalising for {petName} ({breed})
+        </p>
+      )}
+      <button
+        onClick={handleConciergeClick}
+        className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold"
+        style={{ background: 'rgba(196,77,255,0.10)', border: '1px solid rgba(196,77,255,0.30)', color: '#7C3AED', cursor: 'pointer' }}
+        data-testid={`celebrate-empty-concierge-${(categoryName || '').toLowerCase().replace(/\s+/g, '-')}`}
+      >
+        <Sparkles className="w-4 h-4" />
+        {onConciergeRequest ? `Tell Mira what ${petName} needs` : 'Ask Mira'}
+      </button>
+    </div>
+  );
+};
 
 export default CelebrateContentModal;

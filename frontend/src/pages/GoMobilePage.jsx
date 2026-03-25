@@ -15,6 +15,7 @@ import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
 import { applyMiraFilter } from '../hooks/useMiraFilter';
+import MiraEmptyRequest from '../components/common/MiraEmptyRequest';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import GoConciergeSection from '../components/go/GoConciergeSection';
@@ -226,19 +227,15 @@ export default function GoMobilePage() {
                 )}
 
                 {products.length === 0 ? (
-                  <div style={{ textAlign:'center', padding:'32px 0', color:'#888' }}>
-                    {allergies.length > 0 ? (
-                      <>
-                        <div style={{ fontSize:32, marginBottom:8 }}>🛡️</div>
-                        <div>Mira filtered everything for {petName}&apos;s allergies. Ask Concierge for alternatives.</div>
-                      </>
-                    ) : (
-                      <>
-                        <div style={{ fontSize:32, marginBottom:8 }}>✈️</div>
-                        <div>Loading travel products for {petName}…</div>
-                      </>
-                    )}
-                  </div>
+                  <MiraEmptyRequest
+                    pet={currentPet}
+                    pillar="go"
+                    categoryName={`Go${subCat !== 'All' ? ` — ${subCat}` : ''} Products`}
+                    accentColor={G.teal}
+                    onRequest={async (msg) => {
+                      await request(msg, { channel:'go_empty_products', metadata:{ subCat, petName } });
+                    }}
+                  />
                 ) : (
                   <>
                     <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>

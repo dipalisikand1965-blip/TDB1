@@ -267,7 +267,11 @@ export default function CelebrateMobilePage() {
   }, [currentPet?.name, currentPet?.id, user]);
 
   const handleOpenBrowseDrawer = useCallback(() => {
-    window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowse', { detail: {} }));
+    window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowse', { detail: {
+      pet: currentPet,
+      petName: currentPet?.name || '',
+      petBreed: currentPet?.breed || '',
+    } }));
   }, []);
 
   const handleCategorySelect = useCallback((categoryId, categoryObj) => {
@@ -479,6 +483,18 @@ export default function CelebrateMobilePage() {
             onClose={() => setCelebrateCatModal(null)}
             category={celebrateCatModal.id}
             pet={currentPet}
+            onConciergeRequest={async (msg) => {
+              await request(msg, {
+                channel: 'celebrate_empty_category',
+                metadata: {
+                  petName: currentPet?.name,
+                  breed: currentPet?.breed,
+                  lifeStage: currentPet?.life_stage,
+                  allergies: currentPet?.allergies || [],
+                  category: celebrateCatModal?.id,
+                },
+              });
+            }}
           />
         )}
 
@@ -496,7 +512,11 @@ export default function CelebrateMobilePage() {
         />
 
         {/* Birthday Box Browse Drawer — listens to openBirthdayBoxBrowse event */}
-        <BirthdayBoxBrowseDrawer />
+        <BirthdayBoxBrowseDrawer
+          onConciergeRequest={async (msg) => {
+            await request(msg, { channel: 'celebrate_browse_empty', metadata: { pet: currentPet } });
+          }}
+        />
 
       </div>
     </PillarPageLayout>
