@@ -570,7 +570,7 @@ function DineMiraBar({ pet, onOpen }) {
   return (
     <div style={{ margin:'0 16px 20px', background:C.brown, borderRadius:20, padding:16 }}>
       <div style={{ fontSize:11, fontWeight:700, color:C.apricot, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {name.toUpperCase()}&apos;S NUTRITION</div>
-      <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>&quot;{text}&quot;</div>
+      <div style={{ fontSize:14, color:'#FFCC80', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>&quot;{text}&quot;</div>
       <button className="dp-cta" onClick={() => { vibe('medium'); onOpen(); }}>See Mira&apos;s Picks for {name} →</button>
     </div>
   );

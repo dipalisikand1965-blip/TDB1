@@ -148,8 +148,22 @@ export const tdc = {
    * tdc.book — User tapped "Book via Concierge →" or any booking CTA
    * Creates a booking_intent ticket — highest normal priority
    */
-  book({ service, product_id, pillar = 'platform', pet, channel = 'pillar_page', amount }) {
-    const petName = pet?.name || 'their pet';
+  book({ service, product_id, pillar = 'platform', pet, channel = 'pillar_page', amount, notes, metadata, service_type, urgency }) {
+    const petName  = pet?.name  || pet?.pet_name  || 'their pet';
+    const petBreed = pet?.breed || pet?.pet_breed || '';
+    const petId    = pet?.id    || pet?.pet_id    || pet?._id || '';
+
+    const messageParts = [
+      `Service: ${service}`,
+      petName  ? `Pet: ${petName}`  : null,
+      petBreed ? `Breed: ${petBreed}` : null,
+      amount   ? `Amount: ₹${amount}` : null,
+      notes    ? `Notes: ${notes}`  : null,
+      service_type ? `Type: ${service_type}` : null,
+    ].filter(Boolean);
+
+    const message = messageParts.join(' · ');
+
     return fireTicket({
       intent_primary: 'booking_intent',
       channel,
@@ -157,9 +171,19 @@ export const tdc = {
       pet,
       product_id,
       amount,
-      urgency: 'high',
-      message: `${petName}'s parent wants to book: ${service || 'a service'} via ${channel}`,
-      metadata: { service, product_id, amount },
+      urgency: urgency || 'high',
+      message,
+      metadata: {
+        service,
+        service_type: service_type || service,
+        product_id,
+        amount,
+        pet_id:    petId,
+        pet_name:  petName,
+        pet_breed: petBreed,
+        notes,
+        ...(metadata || {}),
+      },
     });
   },
 
