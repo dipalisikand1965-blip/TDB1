@@ -24,6 +24,7 @@ import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 import SoulMadeModal from "../components/SoulMadeModal";
+import AdoptMobilePage from './AdoptMobilePage';
 
 const G = {
   deep:"#4A0E2E", mid:"#7B1D4E", rose:"#D4537E", light:"#F9A8C9",
@@ -228,6 +229,8 @@ function AdoptConciergeModal({ isOpen, onClose, token, preSelected }) {
 function LoadingState(){return<div style={{textAlign:"center",padding:"80px 20px"}}><div style={{fontSize:48,marginBottom:16}}>🐾</div><div style={{fontSize:16,color:G.darkText,fontWeight:600}}>Preparing your adoption journey…</div></div>;}
 
 const AdoptSoulPage = () => {
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 1024 : true);
+  useEffect(() => { const fn = () => setIsDesktop(window.innerWidth >= 1024); window.addEventListener('resize', fn); return () => window.removeEventListener('resize', fn); }, []);
   const navigate = useNavigate();
   const { token, isAuthenticated } = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
@@ -264,6 +267,9 @@ const AdoptSoulPage = () => {
     setConciergeSvc(serviceName);
     setConciergeOpen(true);
   }, [petData]);
+
+  // Mobile detection
+  if (!isDesktop) return <AdoptMobilePage />;
 
   if(loading) return <PillarPageLayout pillar="adopt" hideHero hideNavigation><LoadingState/></PillarPageLayout>;
 

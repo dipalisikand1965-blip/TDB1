@@ -48,6 +48,7 @@ import PersonalisedBreedSection from "../components/common/PersonalisedBreedSect
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import GoMobilePage from './GoMobilePage';
 
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Deep Teal + Travel Gold
@@ -1808,6 +1809,8 @@ function NoPetState({ onAddPet }) {
 // MAIN PAGE — mirrors CareSoulPage exactly
 // ─────────────────────────────────────────────────────────────
 const GoSoulPage = () => {
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 1024 : true);
+  useEffect(() => { const fn = () => setIsDesktop(window.innerWidth >= 1024); window.addEventListener('resize', fn); return () => window.removeEventListener('resize', fn); }, []);
   const navigate = useNavigate();
   const { token, isAuthenticated }                    = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
@@ -1943,6 +1946,9 @@ const GoSoulPage = () => {
   const handleAddPet = useCallback(() => {
     navigate(isAuthenticated ? "/dashboard/pets?action=add" : "/login?redirect=/go");
   }, [isAuthenticated, navigate]);
+
+  // Mobile detection
+  if (!isDesktop) return <GoMobilePage />;
 
   if (loading)  return <PillarPageLayout pillar="go" hideHero hideNavigation><LoadingState /></PillarPageLayout>;
   if (!petData) return <PillarPageLayout pillar="go" hideHero hideNavigation><NoPetState onAddPet={handleAddPet} /></PillarPageLayout>;

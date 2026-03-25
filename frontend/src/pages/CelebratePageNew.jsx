@@ -59,6 +59,7 @@ import { getApiUrl, API_URL } from '../utils/api';
 import { tdc } from '../utils/tdc_intent';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import PillarSoulProfile from '../components/PillarSoulProfile';
+import CelebrateMobilePage from './CelebrateMobilePage';
 
 const CELEBRATE_SERVICE_BLACKLIST = [
   'pet loss', 'grief', 'memorial', 'euthanasia', 'farewell', 'aftercare', 'counseling', 'counselling', 'rainbow bridge'
@@ -279,6 +280,8 @@ const MiraAskBar = ({ petName }) => {
 };
 
 const CelebratePageNew = () => {
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 1024 : true);
+  useEffect(() => { const fn = () => setIsDesktop(window.innerWidth >= 1024); window.addEventListener('resize', fn); return () => window.removeEventListener('resize', fn); }, []);
   const navigate = useNavigate();
   const { user, token, isAuthenticated } = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
@@ -451,6 +454,9 @@ const CelebratePageNew = () => {
       </PillarPageLayout>
     );
   }
+
+  // Mobile detection — serve mobile page on small screens
+  if (!isDesktop) return <CelebrateMobilePage />;
 
   // If no pet, show empty state
   if (!selectedPet) {

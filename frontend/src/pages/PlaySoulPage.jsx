@@ -44,6 +44,7 @@ import PersonalisedBreedSection from "../components/common/PersonalisedBreedSect
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import PlayMobilePage from './PlayMobilePage';
 
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Vibrant Green + Orange
@@ -1365,6 +1366,8 @@ function PlayTabBar({ active, onChange }) {
 // MAIN PAGE
 // ─────────────────────────────────────────────────────────────
 const PlaySoulPage = () => {
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 1024 : true);
+  useEffect(() => { const fn = () => setIsDesktop(window.innerWidth >= 1024); window.addEventListener('resize', fn); return () => window.removeEventListener('resize', fn); }, []);
   const navigate = useNavigate();
   const { token, isAuthenticated }                     = useAuth();
   const { currentPet, setCurrentPet, pets:contextPets } = usePillarContext();
@@ -1520,6 +1523,9 @@ const PlaySoulPage = () => {
   const handleAddPet = useCallback(() => {
     navigate(isAuthenticated?"/dashboard/pets?action=add":"/login?redirect=/play");
   }, [isAuthenticated,navigate]);
+
+  // Mobile detection
+  if (!isDesktop) return <PlayMobilePage />;
 
   if (loading)  return <PillarPageLayout pillar="play" hideHero hideNavigation><LoadingState /></PillarPageLayout>;
   if (!petData) return <PillarPageLayout pillar="play" hideHero hideNavigation><NoPetState onAddPet={handleAddPet} /></PillarPageLayout>;
