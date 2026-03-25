@@ -881,7 +881,7 @@ const Admin = () => {
       let sourceUrl = null;
       if (isLive) {
         sourceUrl = window.prompt(
-          'Enter the PREVIEW admin base URL to sync FROM.\n\nExample:\nhttps://mira-parity-sprint.preview.emergentagent.com'
+          'Enter the PREVIEW admin base URL to sync FROM.\n\nExample:\nhttps://pet-soul-ranking.preview.emergentagent.com'
         );
         if (!sourceUrl) {
           alert('Cancelled. Preview source URL is required.');

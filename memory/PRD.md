@@ -37,7 +37,7 @@ The platform's core promise: **Mira**, an AI concierge, knows your dog's soul â€
 | Build | CRACO, `GENERATE_SOURCEMAP=false NODE_OPTIONS=--max-old-space-size=4096` |
 
 **Service Ports:** Backend: 8001, Frontend: 3000 (supervisor-managed)
-**Preview URL:** `https://mira-parity-sprint.preview.emergentagent.com`
+**Preview URL:** `https://pet-soul-ranking.preview.emergentagent.com`
 
 ---
 

@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://mira-parity-sprint.preview.emergentagent.com/mira-demo**
+**https://pet-soul-ranking.preview.emergentagent.com/mira-demo**
 
 ---
 

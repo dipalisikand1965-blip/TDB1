@@ -27,7 +27,7 @@ import os
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # API Configuration
-BASE_URL = os.environ.get("TEST_API_URL", "https://mira-parity-sprint.preview.emergentagent.com")
+BASE_URL = os.environ.get("TEST_API_URL", "https://pet-soul-ranking.preview.emergentagent.com")
 TEST_EMAIL = "dipali@clubconcierge.in"
 TEST_PASSWORD = "test123"
 TEST_PET_ID = "mystique-001"
