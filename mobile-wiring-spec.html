@@ -1,309 +1,561 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TDC Mobile Parity — Complete Wiring Spec</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Doggy Company — Complete Platform Documentation 2026-03-25</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'DM Sans',system-ui,sans-serif;background:#0a0a0f;color:#e0e0e0;line-height:1.7}
-.container{max-width:960px;margin:0 auto;padding:24px 20px}
-h1{font-size:28px;font-weight:800;color:#fff;margin-bottom:8px}
-h2{font-size:20px;font-weight:700;color:#FFD080;margin:32px 0 12px;border-bottom:1px solid #333;padding-bottom:8px}
-h3{font-size:16px;font-weight:700;color:#9B59B6;margin:20px 0 8px}
-h4{font-size:14px;font-weight:600;color:#4FC3F7;margin:14px 0 6px}
-p{margin:6px 0;font-size:14px;color:#bbb}
-.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;margin:2px 4px}
-.done{background:#1b5e20;color:#a5d6a7}.todo{background:#b71c1c;color:#ef9a9a}.partial{background:#e65100;color:#ffcc80}
-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
-th{background:#1a1a2e;color:#FFD080;padding:10px 12px;text-align:left;font-weight:700;border-bottom:2px solid #333}
-td{padding:8px 12px;border-bottom:1px solid #222;vertical-align:top}
-tr:hover{background:#111}
-code{background:#1a1a2e;color:#4FC3F7;padding:2px 6px;border-radius:4px;font-size:12px;font-family:'Fira Code',monospace}
-pre{background:#0d0d1a;border:1px solid #222;border-radius:12px;padding:16px;overflow-x:auto;font-size:12px;color:#aaa;margin:10px 0;line-height:1.5}
-.card{background:#12121f;border:1px solid #222;border-radius:16px;padding:20px;margin:16px 0}
-.pillar-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.pillar-icon{font-size:28px}
-.pillar-name{font-size:18px;font-weight:800;color:#fff}
-.status{font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;margin-left:8px}
-.s-done{background:#1b5e20;color:#a5d6a7}.s-partial{background:#e65100;color:#ffcc80}.s-todo{background:#b71c1c;color:#ef9a9a}
-ul{margin:8px 0 8px 20px;font-size:13px}
-li{margin:3px 0}
-.highlight{background:linear-gradient(135deg,#1a0a2e,#16213e);border:1px solid #4a1b6d;border-radius:12px;padding:16px;margin:12px 0}
+  :root {
+    --bg: #0A0A12; --surface: #12121E; --surface2: #1A1A2E;
+    --border: rgba(255,255,255,0.08); --text: #E8E8F0; --muted: #888;
+    --pink: #EC4899; --purple: #8B5CF6; --teal: #14B8A6;
+    --green: #22C55E; --amber: #F59E0B; --red: #EF4444;
+    --blue: #3B82F6; --orange: #F97316;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; line-height: 1.6; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+  h1 { font-size: 32px; font-weight: 800; background: linear-gradient(135deg,var(--pink),var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+  h2 { font-size: 20px; font-weight: 700; color: #fff; margin: 40px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 16px; font-weight: 700; color: #fff; margin: 24px 0 10px; }
+  h4 { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin: 20px 0 8px; }
+  p { color: var(--text); margin-bottom: 10px; }
+  a { color: var(--purple); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; font-family: 'Cascadia Code','Fira Code',monospace; font-size: 12px; color: var(--teal); }
+  pre { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; overflow-x: auto; margin: 12px 0; }
+  pre code { background: none; border: none; padding: 0; color: #C8E6C9; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+  th { background: var(--surface2); color: var(--muted); font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.06em; padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: var(--surface); }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; }
+  .done { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+  .p1 { background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+  .p2 { background: rgba(249,115,22,0.15); color: var(--orange); border: 1px solid rgba(249,115,22,0.3); }
+  .p3 { background: rgba(107,114,128,0.15); color: #9CA3AF; border: 1px solid rgba(107,114,128,0.3); }
+  .critical { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin: 12px 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .stat { text-align: center; }
+  .stat .num { font-size: 36px; font-weight: 800; background: linear-gradient(135deg,var(--pink),var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat .label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+  .toc a { display: block; padding: 4px 0; color: var(--purple); font-size: 13px; }
+  .toc a:hover { color: var(--pink); }
+  .pillar-row { display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--surface); border-radius: 10px; margin-bottom: 8px; border: 1px solid var(--border); }
+  .pillar-icon { font-size: 22px; width: 40px; text-align: center; flex-shrink: 0; }
+  .progress-bar { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; flex: 1; }
+  .progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg,var(--pink),var(--purple)); }
+  .tag { display: inline-block; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 2px 8px; font-size: 11px; color: var(--muted); margin: 2px; }
+  .warn { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 10px; padding: 12px 16px; margin: 12px 0; color: var(--amber); }
+  .info { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: 10px; padding: 12px 16px; margin: 12px 0; color: #93C5FD; }
+  .success { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); border-radius: 10px; padding: 12px 16px; margin: 12px 0; color: var(--green); }
+  @media(max-width:700px) { .grid2,.grid3 { grid-template-columns: 1fr; } h1 { font-size: 24px; } }
 </style>
 </head>
 <body>
-<div class="container">
+<div class="wrap">
 
-<h1>The Doggy Company — Mobile Parity Spec</h1>
-<p style="color:#888;margin-bottom:24px">Complete wiring specification for all 12 pillars + customer-facing pages. Desktop is LOCKED. Only mobile views are being modified.</p>
+  <h1>🐾 The Doggy Company — Platform Documentation</h1>
+  <p style="color:var(--muted)">Session 2 Complete · Updated 2026-03-25 · Mobile Parity Sprint</p>
 
-<div class="highlight">
-<h3 style="color:#FFD080;margin-top:0">Architecture Pattern</h3>
-<pre>// In every *SoulPage.jsx:
-const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 1024);
-useEffect(() => { const fn = () => setIsDesktop(window.innerWidth >= 1024);
-  window.addEventListener('resize', fn); return () => window.removeEventListener('resize', fn); }, []);
+  <div class="grid3" style="margin:24px 0">
+    <div class="card stat"><div class="num">12</div><div class="label">Pillar Pages</div></div>
+    <div class="card stat"><div class="num">17</div><div class="label">Non-Pillar Pages</div></div>
+    <div class="card stat"><div class="num">18/18</div><div class="label">Tests Passing</div></div>
+  </div>
 
-if (!isDesktop) return &lt;PillarMobilePage /&gt;;
-// ... existing desktop code unchanged ...</pre>
-</div>
+  <div class="card toc">
+    <h4>Table of Contents</h4>
+    <a href="#status">1. Pillar Status Dashboard</a>
+    <a href="#gaps">2. Remaining Gaps by Pillar</a>
+    <a href="#nonpillar">3. Non-Pillar Pages Audit</a>
+    <a href="#architecture">4. Code Architecture</a>
+    <a href="#api">5. Key API Endpoints</a>
+    <a href="#patterns">6. Implementation Patterns</a>
+    <a href="#emergency-wa">7. Emergency WhatsApp Integration</a>
+    <a href="#build">8. Build & Deploy Notes</a>
+    <a href="#backlog">9. Prioritised Backlog</a>
+    <a href="#handover">10. Handover Notes for Next Agent</a>
+  </div>
 
-<h2>Per-Pillar Status</h2>
+  <!-- ═══════════════════════════════════════════ -->
+  <h2 id="status">1. Pillar Status Dashboard</h2>
 
-<!-- DINE -->
-<div class="card">
-<div class="pillar-header"><span class="pillar-icon">🍽️</span><span class="pillar-name">Dine</span><span class="status s-done">DONE</span></div>
-<p>Reference implementation. 1102 lines. DineSoulPage_v11.jsx.</p>
-<h4>What's Wired</h4>
-<ul>
-<li>✅ Eat &amp; Nourish / Dine Out top tabs</li>
-<li>✅ DineCategoryStrip (9 pills)</li>
-<li>✅ Full grouped apiProducts with sub-category filtering</li>
-<li>✅ applyMiraIntelligence</li>
-<li>✅ soulScoreUpdated event listener</li>
-<li>✅ ProductDetailModal on product tap</li>
-<li>✅ MiraImaginesBreed, GuidedNutritionPaths, MealBoxCard</li>
-<li>✅ DineConciergeSection, TummyProfile sheet</li>
-<li>✅ PetFriendlySpots (Dine Out tab)</li>
-</ul>
-<h4>TODO</h4>
-<ul>
-<li>⚠️ Category pills should open DineContentModal (like Celebrate does). Currently filters inline. Fix: import DineContentModal, add state, wire onSelect.</li>
-</ul>
-</div>
+  <div class="pillar-row">
+    <span class="pillar-icon">🍖</span>
+    <div style="flex:1"><strong>Dine</strong> <span style="color:var(--muted);font-size:12px">DineSoulPage.jsx (v11 — is the mobile)</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:95%"></div></div>
+    <span style="font-size:12px;color:var(--green);width:40px;text-align:right">95%</span>
+  </div>
+  <div class="pillar-row">
+    <span class="pillar-icon">🎉</span>
+    <div style="flex:1"><strong>Celebrate</strong> <span style="color:var(--muted);font-size:12px">CelebrateMobilePage.jsx</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:98%"></div></div>
+    <span style="font-size:12px;color:var(--green);width:40px;text-align:right">98%</span>
+  </div>
+  <div class="pillar-row">
+    <span class="pillar-icon">🛍️</span>
+    <div style="flex:1"><strong>Shop</strong> <span style="color:var(--muted);font-size:12px">ShopMobilePage.jsx</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:95%"></div></div>
+    <span style="font-size:12px;color:var(--green);width:40px;text-align:right">95%</span>
+  </div>
+  <div class="pillar-row">
+    <span class="pillar-icon">🌿</span>
+    <div style="flex:1"><strong>Care</strong> <span style="color:var(--muted);font-size:12px">CareMobilePage.jsx</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
+    <span style="font-size:12px;color:var(--amber);width:40px;text-align:right">90%</span>
+  </div>
+  <div class="pillar-row">
+    <span class="pillar-icon">✈️</span>
+    <div style="flex:1"><strong>Go</strong> <span style="color:var(--muted);font-size:12px">GoMobilePage.jsx</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
+    <span style="font-size:12px;color:var(--amber);width:40px;text-align:right">90%</span>
+  </div>
+  <div class="pillar-row">
+    <span class="pillar-icon">🎾</span>
+    <div style="flex:1"><strong>Play</strong> <span style="color:var(--muted);font-size:12px">PlayMobilePage.jsx</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
+    <span style="font-size:12px;color:var(--amber);width:40px;text-align:right">90%</span>
+  </div>
+  <div class="pillar-row">
+    <span class="pillar-icon">🎓</span>
+    <div style="flex:1"><strong>Learn</strong> <span style="color:var(--muted);font-size:12px">LearnMobilePage.jsx</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
+    <span style="font-size:12px;color:var(--amber);width:40px;text-align:right">90%</span>
+  </div>
+  <div class="pillar-row">
+    <span class="pillar-icon">🤝</span>
+    <div style="flex:1"><strong>Services</strong> <span style="color:var(--muted);font-size:12px">ServicesMobilePage.jsx</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:95%"></div></div>
+    <span style="font-size:12px;color:var(--green);width:40px;text-align:right">95%</span>
+  </div>
+  <div class="pillar-row">
+    <span class="pillar-icon">🐾</span>
+    <div style="flex:1"><strong>Adopt</strong> <span style="color:var(--muted);font-size:12px">AdoptMobilePage.jsx</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:95%"></div></div>
+    <span style="font-size:12px;color:var(--green);width:40px;text-align:right">95%</span>
+  </div>
+  <div class="pillar-row">
+    <span class="pillar-icon">🌷</span>
+    <div style="flex:1"><strong>Farewell</strong> <span style="color:var(--muted);font-size:12px">FarewellMobilePage.jsx</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:95%"></div></div>
+    <span style="font-size:12px;color:var(--green);width:40px;text-align:right">95%</span>
+  </div>
+  <div class="pillar-row">
+    <span class="pillar-icon">🚨</span>
+    <div style="flex:1"><strong>Emergency</strong> <span style="color:var(--muted);font-size:12px">EmergencyMobilePage.jsx</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:98%"></div></div>
+    <span style="font-size:12px;color:var(--green);width:40px;text-align:right">98%</span>
+  </div>
+  <div class="pillar-row">
+    <span class="pillar-icon">📋</span>
+    <div style="flex:1"><strong>Paperwork</strong> <span style="color:var(--muted);font-size:12px">PaperworkMobilePage.jsx</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
+    <span style="font-size:12px;color:var(--amber);width:40px;text-align:right">90%</span>
+  </div>
 
-<!-- CELEBRATE -->
-<div class="card">
-<div class="pillar-header"><span class="pillar-icon">🎉</span><span class="pillar-name">Celebrate</span><span class="status s-done">DONE</span></div>
-<p>471 lines. Best-wired after Dine.</p>
-<h4>What's Wired</h4>
-<ul>
-<li>✅ CelebrateCategoryStrip → CelebrateContentModal</li>
-<li>✅ Breed Cakes pill → DoggyBakeryCakeModal</li>
-<li>✅ MiraBirthdayBox → BirthdayBoxBuilder (multi-step via CustomEvent)</li>
-<li>✅ Mira Picks → bottom sheet modal (not inline)</li>
-<li>✅ BirthdayBoxBrowseDrawer</li>
-<li>✅ ConciergeIntakeModal</li>
-<li>✅ PersonalisedBreedSection</li>
-</ul>
-<h4>TODO</h4>
-<ul><li>None — complete.</li></ul>
-</div>
+  <!-- ═══════════════════════════════════════════ -->
+  <h2 id="gaps">2. Remaining Gaps by Pillar</h2>
 
-<!-- CARE -->
-<div class="card">
-<div class="pillar-header"><span class="pillar-icon">💚</span><span class="pillar-name">Care</span><span class="status s-partial">PARTIAL</span></div>
-<p>246 lines. Has products in Mira modal, missing tabs + service flows.</p>
-<h4>What's Wired</h4>
-<ul>
-<li>✅ Hero, PillarSoulProfile, CareCategoryStrip, CareMiraBar</li>
-<li>✅ Products in Mira Picks modal</li>
-<li>✅ PersonalisedBreedSection, MiraImaginesBreed, GuidedCarePaths, CareNearMe, CareConciergeSection</li>
-</ul>
-<h4>MUST ADD</h4>
-<ul>
-<li>❌ <strong>dimTab</strong> = Products | Personalised (2 top tabs within each dimension)</li>
-<li>❌ <strong>activeTab</strong> = All | sub-category tabs within Products</li>
-<li>❌ <strong>CareCategoryStrip → CareContentModal</strong> on pill tap (needs onDimSelect wiring)</li>
-<li>❌ <strong>8 service booking flows</strong>: Grooming (5-step), Vet Visit (3-step), Boarding (4-step), Pet Sitting (3-step), Dental (2-step), Rehab (3-step), Senior Care (3-step), Emergency Vet (2-step)</li>
-<li>❌ <strong>SoulMadeCollection</strong> inline breed mockup grid</li>
-</ul>
-<h4>Desktop Code Reference</h4>
-<pre>// CareSoulPage.jsx lines 1126-1230: dimTab/activeTab/Products/Personalised tabs
-// CareSoulPage.jsx lines 2156-2270: 8 service booking flows (CareBookingModal)
-// CareSoulPage.jsx line 1229: &lt;PersonalisedBreedSection pet={pet} pillar="care" /&gt;</pre>
-</div>
+  <table>
+    <thead><tr><th>Gap</th><th>Pillars Affected</th><th>Type</th><th>Priority</th><th>Effort</th></tr></thead>
+    <tbody>
+      <tr><td><strong>MiraPicksSection</strong> — AI-curated horizontal product scroll</td><td>All 12 pillars</td><td><span class="tag">inline fn</span></td><td><span class="badge p1">P1</span></td><td>~30 min × 12</td></tr>
+      <tr><td><strong>SoulCelebrationPillars</strong> — 6 celebration type cards</td><td>Celebrate</td><td><span class="tag">component file exists</span></td><td><span class="badge p1">P1</span></td><td>~10 min</td></tr>
+      <tr><td><strong>LearnNearMe</strong> — nearby trainers map</td><td>Learn</td><td><span class="tag">component file exists</span></td><td><span class="badge p1">P1</span></td><td>~5 min</td></tr>
+      <tr><td><strong>PaperworkNearMe</strong> — nearby vet/registration offices</td><td>Paperwork</td><td><span class="tag">component file exists</span></td><td><span class="badge p1">P1</span></td><td>~5 min</td></tr>
+      <tr><td><strong>GoNearMe</strong> — nearby pet-friendly locations</td><td>Go</td><td><span class="tag">component file exists</span></td><td><span class="badge p1">P1</span></td><td>~5 min</td></tr>
+      <tr><td><strong>WellnessProfile</strong> widget</td><td>Care</td><td><span class="tag">inline fn in CareSoulPage:794</span></td><td><span class="badge p1">P1</span></td><td>~30 min</td></tr>
+      <tr><td><strong>TripProfile</strong> widget</td><td>Go</td><td><span class="tag">inline fn in GoSoulPage:~850</span></td><td><span class="badge p1">P1</span></td><td>~30 min</td></tr>
+      <tr><td><strong>ActivityProfile</strong> widget</td><td>Play</td><td><span class="tag">inline fn in PlaySoulPage:~900</span></td><td><span class="badge p1">P1</span></td><td>~30 min</td></tr>
+      <tr><td><strong>AdoptProfile</strong> widget</td><td>Adopt</td><td><span class="tag">inline fn in AdoptSoulPage:~200</span></td><td><span class="badge p1">P1</span></td><td>~20 min</td></tr>
+      <tr><td><strong>FarewellProfile</strong> widget</td><td>Farewell</td><td><span class="tag">inline fn in FarewellSoulPage:~200</span></td><td><span class="badge p1">P1</span></td><td>~20 min</td></tr>
+      <tr><td><strong>EmergencyProfile</strong> widget</td><td>Emergency</td><td><span class="tag">inline fn in EmergencySoulPage:110</span></td><td><span class="badge p1">P1</span></td><td>~20 min</td></tr>
+      <tr><td><strong>BreedCollectionSection</strong></td><td>Shop</td><td><span class="tag">inline fn in ShopSoulPage:381</span></td><td><span class="badge p1">P1</span></td><td>~20 min</td></tr>
+      <tr><td><strong>ShopBrowseSection</strong></td><td>Shop</td><td><span class="tag">inline fn in ShopSoulPage:450</span></td><td><span class="badge p1">P1</span></td><td>~20 min</td></tr>
+      <tr><td><strong>CelebrationMemoryWall</strong></td><td>Celebrate</td><td><span class="tag">component file exists</span></td><td><span class="badge p2">P2</span></td><td>~15 min</td></tr>
+      <tr><td><strong>MiraSoulNudge</strong></td><td>Celebrate</td><td><span class="tag">component file exists</span></td><td><span class="badge p2">P2</span></td><td>~10 min</td></tr>
+      <tr><td><strong>ServiceBookingModal</strong> full 5-step flow</td><td>Care, Go, Play, Paperwork</td><td><span class="tag">inline fn — complex</span></td><td><span class="badge p2">P2</span></td><td>~90 min each</td></tr>
+    </tbody>
+  </table>
 
-<!-- GO -->
-<div class="card">
-<div class="pillar-header"><span class="pillar-icon">🌊</span><span class="pillar-name">Go</span><span class="status s-partial">PARTIAL</span></div>
-<p>191 lines. Has GoContentModal wired, missing tabs + service flows.</p>
-<h4>MUST ADD</h4>
-<ul>
-<li>❌ dimTab = Products | Personalised</li>
-<li>❌ activeTab = All | sub-categories</li>
-<li>❌ 8 service booking flows (Pet Taxi, Travel Kit, Hotels, Sitter, Travel Vet, Insurance, Passport, Airlines)</li>
-<li>❌ PetFriendlyStays component (special Go feature)</li>
-</ul>
-</div>
+  <!-- ═══════════════════════════════════════════ -->
+  <h2 id="nonpillar">3. Non-Pillar Pages Audit (All 17 Pages)</h2>
 
-<!-- PLAY -->
-<div class="card">
-<div class="pillar-header"><span class="pillar-icon">🎾</span><span class="pillar-name">Play</span><span class="status s-partial">PARTIAL</span></div>
-<p>124 lines. Has PlayContentModal wired, missing tabs.</p>
-<h4>MUST ADD</h4>
-<ul>
-<li>❌ dimTab = Products | Personalised</li>
-<li>❌ activeTab = All | sub-categories</li>
-<li>❌ BuddyMeetup component (social meetup feature)</li>
-</ul>
-</div>
+  <table>
+    <thead><tr><th>Page</th><th>Route</th><th>Status</th><th>Changes Made</th></tr></thead>
+    <tbody>
+      <tr><td>Landing Page</td><td>/</td><td><span class="badge done">✅ Fixed</span></td><td>Fixed 5 className-in-style bugs (tdc-stats-grid, tdc-isnot-grid, tdc-mojo-hdr, tdc-soul-grid, tdc-how-grid)</td></tr>
+      <tr><td>Login</td><td>/login</td><td><span class="badge done">✅ Good</span></td><td>Already had lg:hidden mobile section</td></tr>
+      <tr><td>Register</td><td>/register</td><td><span class="badge done">✅ Fixed</span></td><td>Full dark theme rewrite — slate-950 bg, pink→purple gradient, Kouros/Mystique portraits</td></tr>
+      <tr><td>Member Dashboard</td><td>/dashboard</td><td><span class="badge done">✅ Good</span></td><td>Scrollable tabs, sm: breakpoints already in place</td></tr>
+      <tr><td>Join (Onboarding)</td><td>/join</td><td><span class="badge done">✅ Good</span></td><td>Mobile-first inline styles</td></tr>
+      <tr><td>Soul Builder</td><td>/soul-builder</td><td><span class="badge done">✅ Good</span></td><td>Single-column layout</td></tr>
+      <tr><td>Pet Home</td><td>/pet-home</td><td><span class="badge done">✅ Good</span></td><td>sm: breakpoints, scrollable pills</td></tr>
+      <tr><td>My Pets</td><td>/my-pets</td><td><span class="badge done">✅ Good</span></td><td>sm:/md: Tailwind grid</td></tr>
+      <tr><td>My Requests</td><td>/my-requests</td><td><span class="badge done">✅ Good</span></td><td>overflow-x auto for tabs</td></tr>
+      <tr><td>Checkout</td><td>/checkout</td><td><span class="badge done">✅ Fixed</span></td><td>Order summary above form on mobile (order-1 lg:order-2)</td></tr>
+      <tr><td>Search Results</td><td>/search</td><td><span class="badge done">✅ Good</span></td><td>Responsive grid 2→4 cols</td></tr>
+      <tr><td>About</td><td>/about</td><td><span class="badge done">✅ Good</span></td><td>clamp() fluid typography</td></tr>
+      <tr><td>FAQs</td><td>/faqs</td><td><span class="badge done">✅ Good</span></td><td>Tailwind responsive</td></tr>
+      <tr><td>Notifications</td><td>/notifications</td><td><span class="badge done">✅ Good</span></td><td>List on mobile, thread panel on desktop (lg:hidden pattern)</td></tr>
+      <tr><td>Membership</td><td>/membership</td><td><span class="badge done">✅ Fixed</span></td><td>Pricing card padding → clamp(20px,5vw,48px)</td></tr>
+      <tr><td>Forgot Password</td><td>/member/forgot-password</td><td><span class="badge done">✅ Good</span></td><td>Shadcn Card, simple form</td></tr>
+      <tr><td>Reset Password</td><td>/reset-password</td><td><span class="badge done">✅ Good</span></td><td>Shadcn Card, simple form</td></tr>
+    </tbody>
+  </table>
 
-<!-- LEARN -->
-<div class="card">
-<div class="pillar-header"><span class="pillar-icon">📖</span><span class="pillar-name">Learn</span><span class="status s-partial">PARTIAL</span></div>
-<p>107 lines. Basic product grid only.</p>
-<h4>MUST ADD</h4>
-<ul>
-<li>❌ 7 dimension pills (Foundations, Behaviour, Training, Tricks, Health, Safety, Breed Guide)</li>
-<li>❌ dimTab = Products | Videos | Services per dimension</li>
-<li>❌ Video fetching + rendering</li>
-<li>❌ Service cards per dimension</li>
-<li>❌ No CategoryStrip exists for Learn — uses dimension pills directly</li>
-</ul>
-</div>
+  <!-- ═══════════════════════════════════════════ -->
+  <h2 id="architecture">4. Code Architecture</h2>
 
-<!-- SHOP -->
-<div class="card">
-<div class="pillar-header"><span class="pillar-icon">🛍️</span><span class="pillar-name">Shop</span><span class="status s-done">DONE</span></div>
-<p>103 lines. No tabs on desktop either.</p>
-<h4>What's Wired</h4>
-<ul>
-<li>✅ Product grid, PersonalisedBreedSection, MiraImaginesBreed, SoulMadeModal</li>
-</ul>
-<h4>OPTIONAL</h4>
-<ul><li>⚪ SoulMadeCollection inline grid (desktop has it)</li></ul>
-</div>
+  <div class="grid2">
+    <div class="card">
+      <h3>Responsive Split Pattern</h3>
+      <pre><code>// In every *SoulPage.jsx (LOCKED — never edit)
+const [isDesktop, setIsDesktop] = useState(
+  () => window.innerWidth >= 1024
+);
+useEffect(() => {
+  const fn = () => setIsDesktop(window.innerWidth >= 1024);
+  window.addEventListener('resize', fn);
+  return () => window.removeEventListener('resize', fn);
+}, []);
 
-<!-- SERVICES -->
-<div class="card">
-<div class="pillar-header"><span class="pillar-icon">🔧</span><span class="pillar-name">Services</span><span class="status s-todo">TODO</span></div>
-<p>74 lines. Smallest mobile page — needs service groups.</p>
-<h4>Desktop Structure</h4>
-<ul>
-<li>5 service groups: Pamper &amp; Groom, Health &amp; Vet, Train &amp; Learn, Celebrate &amp; Special, Travel &amp; Paperwork</li>
-<li>Each group has sub-services with booking CTAs</li>
-<li>Each sub-service maps to a pillar (care, go, play, etc.)</li>
-</ul>
-<h4>MUST ADD</h4>
-<ul>
-<li>❌ 5 service group cards (expandable)</li>
-<li>❌ Sub-service listings with icons, descriptions, prices</li>
-<li>❌ Booking CTAs → tdc.book</li>
-</ul>
-</div>
+if (!isDesktop) return &lt;XxxMobilePage /&gt;;
+// ... desktop JSX below</code></pre>
+    </div>
+    <div class="card">
+      <h3>Mobile Page Shell</h3>
+      <pre><code>export default function XxxMobilePage() {
+  const { token } = useAuth();
+  const { currentPet, pets: contextPets,
+          setCurrentPet } = usePillarContext();
+  const { addToCart } = useCart();
+  const { request } = useConcierge({
+    pet: currentPet, pillar: 'xxx'
+  });
 
-<!-- ADOPT -->
-<div class="card">
-<div class="pillar-header"><span class="pillar-icon">🐾</span><span class="pillar-name">Adopt</span><span class="status s-todo">TODO</span></div>
-<p>87 lines. Needs 3 tabs.</p>
-<h4>Desktop Tabs</h4>
-<table><tr><th>Tab</th><th>Content</th></tr>
-<tr><td>🐾 Find Your Dog</td><td>Adoption listings, breed info, adoption readiness checklist</td></tr>
-<tr><td>💌 Book Guidance</td><td>Adoption counselling services, home visits, compatibility matching</td></tr>
-<tr><td>📍 Find Rescue</td><td>Nearby rescue centers, shelters (AdoptNearMe component)</td></tr>
-</table>
-<h4>Code Reference</h4>
-<pre>// AdoptSoulPage.jsx line 244: const [activeTab, setActiveTab] = useState("adopt");
-// AdoptSoulPage.jsx line 319: tab bar JSX
-// AdoptSoulPage.jsx lines 323-404: 3 tab content sections</pre>
-</div>
+  // Standard state
+  const [loading, setLoading] = useState(true);
+  const [allRaw, setAllRaw] = useState([]);
+  const [activeTab, setActiveTab] = useState('xxx');
+  const [dimTab, setDimTab] = useState('products');
+}</code></pre>
+    </div>
+  </div>
 
-<!-- FAREWELL -->
-<div class="card">
-<div class="pillar-header"><span class="pillar-icon">🌷</span><span class="pillar-name">Farewell</span><span class="status s-todo">TODO</span></div>
-<p>85 lines. Needs 3 tabs.</p>
-<h4>Desktop Tabs</h4>
-<table><tr><th>Tab</th><th>Content</th></tr>
-<tr><td>🌷 Legacy &amp; Memorial</td><td>Memorial products, keepsakes, tribute creation</td></tr>
-<tr><td>💙 Get Support</td><td>Grief counselling, pet loss support services</td></tr>
-<tr><td>📍 Find Care</td><td>Cremation services, memorial parks (FarewellNearMe)</td></tr>
-</table>
-</div>
+  <h3>Key Directories</h3>
+  <table>
+    <thead><tr><th>Path</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>/app/frontend/src/pages/*SoulPage.jsx</code></td><td>Desktop pillar pages — <strong>NEVER EDIT</strong></td></tr>
+      <tr><td><code>/app/frontend/src/pages/*MobilePage.jsx</code></td><td>Mobile pillar pages — active development</td></tr>
+      <tr><td><code>/app/frontend/src/components/[pillar]/</code></td><td>Pillar-specific components</td></tr>
+      <tr><td><code>/app/frontend/src/components/common/</code></td><td>MiraImaginesBreed, MiraImaginesCard, PersonalisedBreedSection</td></tr>
+      <tr><td><code>/app/frontend/src/context/PillarContext.jsx</code></td><td>currentPet, pets, setSoulData — source of truth for pet data</td></tr>
+      <tr><td><code>/app/frontend/src/utils/tdc_intent.js</code></td><td>tdc.book(), tdc.request(), tdc.urgent()</td></tr>
+      <tr><td><code>/app/backend/server.py</code></td><td>Main FastAPI — 24k+ lines, api_router registered at line ~21706</td></tr>
+      <tr><td><code>/app/backend/whatsapp_notifications.py</code></td><td>Gupshup WhatsApp integration</td></tr>
+    </tbody>
+  </table>
 
-<!-- EMERGENCY -->
-<div class="card">
-<div class="pillar-header"><span class="pillar-icon">🚨</span><span class="pillar-name">Emergency</span><span class="status s-todo">TODO</span></div>
-<p>95 lines. Needs 3 tabs + service dispatch.</p>
-<h4>Desktop Tabs</h4>
-<table><tr><th>Tab</th><th>Content</th></tr>
-<tr><td>🚨 Emergency Kit</td><td>Products + Services sub-tabs (dimTab). Emergency supplies + immediate dispatch services.</td></tr>
-<tr><td>📋 Book Help</td><td>Emergency service bookings — transport, vet, poison helpline</td></tr>
-<tr><td>📍 Find Vet</td><td>24-hour emergency vets nearby (EmergencyNearMe)</td></tr>
-</table>
-<h4>Special: Emergency Services</h4>
-<pre>// EMERG_SERVICES array in EmergencySoulPage.jsx (8 services):
-// Emergency Vet, Poison Helpline, Emergency Transport, After-Hours Clinic,
-// Emergency Surgery Referral, Accident Response, Seizure Protocol, Heatstroke Response</pre>
-</div>
+  <div class="warn">
+    ⚠️ <strong>server.py dead zone:</strong> Any route defined AFTER <code>app.include_router(api_router)</code> at line ~21706 is unreachable. Always add new routes BEFORE that line (around line 17000-21000).
+  </div>
 
-<!-- PAPERWORK -->
-<div class="card">
-<div class="pillar-header"><span class="pillar-icon">📄</span><span class="pillar-name">Paperwork</span><span class="status s-todo">TODO</span></div>
-<p>91 lines. Needs dimension pills + sub-tabs.</p>
-<h4>Desktop Structure</h4>
-<ul>
-<li>7 dimensions: Identity &amp; Safety, Health Records, Travel Documents, Insurance, Breeding, Legal, End of Life</li>
-<li>Each dimension has 3 sub-tabs: Products / Services / Advisory</li>
-<li>DocumentVault component for file storage</li>
-</ul>
-</div>
+  <!-- ═══════════════════════════════════════════ -->
+  <h2 id="api">5. Key API Endpoints</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/api/auth/login</code></td><td>User login → access_token</td></tr>
+      <tr><td>GET</td><td><code>/api/pets</code></td><td>Get authenticated user's pets</td></tr>
+      <tr><td>GET</td><td><code>/api/admin/pillar-products?pillar=X&limit=N</code></td><td>Products for a pillar (total up to 575 per pillar)</td></tr>
+      <tr><td>GET</td><td><code>/api/service-box/services?pillar=X&limit=N</code></td><td>Services for a pillar from service-box</td></tr>
+      <tr><td>POST</td><td><code>/api/service_desk/attach_or_create_ticket</code></td><td>Create service ticket (tdc.book destination)</td></tr>
+      <tr><td>POST</td><td><code>/api/notifications/emergency-whatsapp</code></td><td>🚨 Send emergency WA to concierge (line 17479)</td></tr>
+      <tr><td>GET</td><td><code>/api/test/youtube?query=X&max_results=N</code></td><td>YouTube videos for Learn pillar</td></tr>
+      <tr><td>GET</td><td><code>/api/mira/picks?pillar=X&pet_id=Y</code></td><td>AI-curated product picks (MiraPicksSection)</td></tr>
+      <tr><td>POST</td><td><code>/api/admin/full-db-sync-export</code></td><td>Export full DB (BSON-safe with bson.json_util)</td></tr>
+      <tr><td>POST</td><td><code>/api/admin/full-db-sync-to-production</code></td><td>Import to production DB</td></tr>
+    </tbody>
+  </table>
 
-<h2>Customer-Facing Pages — Mobile Audit Checklist</h2>
-<table>
-<tr><th>Page</th><th>Route</th><th>File</th><th>Mobile Status</th></tr>
-<tr><td>Landing/Home</td><td>/</td><td>LandingPage.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-<tr><td>Join/Onboard</td><td>/join</td><td>MiraMeetsYourPet.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-<tr><td>Login</td><td>/login</td><td>Login.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-<tr><td>Register</td><td>/register</td><td>Register.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-<tr><td>Forgot Password</td><td>/forgot-password</td><td>ForgotPassword.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-<tr><td>Member Dashboard</td><td>/dashboard</td><td>MemberDashboard.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-<tr><td>Checkout</td><td>/checkout</td><td>Checkout.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-<tr><td>My Pets</td><td>/my-pets</td><td>MyPets.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-<tr><td>Pet Home</td><td>/pet-home/:id</td><td>PetHomePage.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-<tr><td>My Requests</td><td>/my-requests</td><td>MyRequestsPage.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-<tr><td>Soul Builder</td><td>/soul-builder</td><td>SoulBuilder.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-<tr><td>Search</td><td>/search</td><td>SearchResults.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-<tr><td>Notifications</td><td>/notifications</td><td>NotificationsInbox.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-<tr><td>Pet Wrapped</td><td>/pet-wrapped</td><td>PetWrappedViewer.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-<tr><td>About</td><td>/about</td><td>AboutPage.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-<tr><td>FAQs</td><td>/faqs</td><td>FAQs.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-<tr><td>Policies</td><td>/policies</td><td>Policies.jsx</td><td><span class="badge todo">AUDIT NEEDED</span></td></tr>
-</table>
+  <!-- ═══════════════════════════════════════════ -->
+  <h2 id="patterns">6. Implementation Patterns</h2>
 
-<h2>Shared Components Reference</h2>
-<table>
-<tr><th>Component</th><th>File</th><th>Used By (Desktop)</th></tr>
-<tr><td>SharedProductCard</td><td>components/ProductCard.jsx</td><td>All pillars</td></tr>
-<tr><td>ProductDetailModal</td><td>components/ProductCard.jsx (named export)</td><td>All pillars</td></tr>
-<tr><td>PillarSoulProfile</td><td>components/PillarSoulProfile.jsx</td><td>All pillars</td></tr>
-<tr><td>PillarPageLayout</td><td>components/PillarPageLayout.jsx</td><td>All pillars (wraps MiraChatWidget)</td></tr>
-<tr><td>SoulMadeModal</td><td>components/SoulMadeModal.jsx</td><td>All pillars</td></tr>
-<tr><td>SoulMadeCollection</td><td>components/SoulMadeCollection.jsx</td><td>Care, Go, Play, Learn, Paperwork</td></tr>
-<tr><td>MiraImaginesBreed</td><td>components/common/MiraImaginesBreed.jsx</td><td>All pillars</td></tr>
-<tr><td>MiraImaginesCard</td><td>components/common/MiraImaginesCard.jsx</td><td>Care, Go, Play, Learn, Celebrate</td></tr>
-<tr><td>PersonalisedBreedSection</td><td>components/common/PersonalisedBreedSection.jsx</td><td>All pillars</td></tr>
-<tr><td>CareCategoryStrip</td><td>components/care/CareCategoryStrip.jsx</td><td>Care</td></tr>
-<tr><td>CareContentModal</td><td>components/care/CareContentModal.jsx</td><td>Care</td></tr>
-<tr><td>GoCategoryStrip</td><td>components/go/GoCategoryStrip.jsx</td><td>Go</td></tr>
-<tr><td>GoContentModal</td><td>components/go/GoContentModal.jsx</td><td>Go</td></tr>
-<tr><td>PlayCategoryStrip</td><td>components/play/PlayCategoryStrip.jsx</td><td>Play</td></tr>
-<tr><td>PlayContentModal</td><td>components/play/PlayContentModal.jsx</td><td>Play</td></tr>
-<tr><td>DineCategoryStrip</td><td>components/dine/DineCategoryStrip.jsx</td><td>Dine</td></tr>
-<tr><td>DineContentModal</td><td>components/dine/DineContentModal.jsx</td><td>Dine</td></tr>
-<tr><td>CelebrateCategoryStrip</td><td>components/celebrate/CelebrateCategoryStrip.jsx</td><td>Celebrate</td></tr>
-<tr><td>CelebrateContentModal</td><td>components/celebrate/CelebrateContentModal.jsx</td><td>Celebrate</td></tr>
-<tr><td>DoggyBakeryCakeModal</td><td>components/celebrate/DoggyBakeryCakeModal.jsx</td><td>Celebrate</td></tr>
-<tr><td>MiraBirthdayBox</td><td>components/celebrate/MiraBirthdayBox.jsx</td><td>Celebrate</td></tr>
-<tr><td>BirthdayBoxBuilder</td><td>components/celebrate/BirthdayBoxBuilder.jsx</td><td>Celebrate</td></tr>
-<tr><td>BuddyMeetup</td><td>components/play/BuddyMeetup.jsx</td><td>Play</td></tr>
-<tr><td>DocumentVault</td><td>components/paperwork/DocumentVault.jsx</td><td>Paperwork</td></tr>
-</table>
+  <h3>Product Fetch + Intelligence Filter</h3>
+  <pre><code>// ALWAYS use this pattern in every mobile page
+useEffect(() => {
+  if (!currentPet?.id) return;
+  fetch(`${API_URL}/api/admin/pillar-products?pillar=care&limit=200`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {}
+  })
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      if (d?.products) {
+        const filtered = filterBreedProducts(d.products, currentPet?.breed);
+        setAllRaw(filtered);
+      }
+    })
+    .catch(() => {});
+}, [currentPet?.id, token]);
 
-<h2>Implementation Priority Order</h2>
-<div class="highlight">
-<ol style="font-size:14px;padding-left:20px">
-<li><strong>Adopt, Farewell, Emergency</strong> — Simple 3-tab pattern. Copy tab bar + content from desktop. ~30 min each.</li>
-<li><strong>Care, Go, Play</strong> — dimTab + activeTab + sub-category filtering. Port from desktop. ~45 min each.</li>
-<li><strong>Dine pills fix</strong> — Wire DineContentModal on category pill tap. ~15 min.</li>
-<li><strong>Paperwork, Learn</strong> — Complex: dimension pills + 3 sub-tabs per dimension. ~60 min each.</li>
-<li><strong>Services</strong> — 5 service group cards with expand/collapse. ~45 min.</li>
-<li><strong>Font size consistency</strong> — Match Dine v11 reference across all pages. ~30 min.</li>
-<li><strong>Customer-facing pages audit</strong> — 17 pages to check at 375px. ~2-3 hours.</li>
-</ol>
-</div>
+// Then in render:
+const allergies = getAllergies(currentPet);
+const intelligent = applyMiraIntelligence(allRaw, allergies);
+const subCats = ['All', ...new Set(intelligent.map(p => p.sub_category).filter(Boolean))];
+const products = subCat === 'All' ? intelligent : intelligent.filter(p => p.sub_category === subCat);</code></pre>
 
-<p style="text-align:center;color:#555;margin-top:40px;font-size:12px">The Doggy Company — Mobile Parity Specification v1.0 — 2026-03-25</p>
+  <h3>ProductCard Import (CONFIRMED CORRECT)</h3>
+  <pre><code>// Default export is ProductCard, aliased as SharedProductCard — this is CORRECT
+import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
+
+// Usage:
+&lt;SharedProductCard
+  product={p}
+  pillar="care"
+  selectedPet={currentPet}
+  onAddToCart={() => addToCart({ id: p.id||p._id, name: p.name, ... })}
+  onClick={() => setSelectedProduct(p)}
+/&gt;</code></pre>
+
+  <h3>Service Booking Pattern</h3>
+  <pre><code>// Every "Book" button must fire tdc.book()
+const handleBook = (svc) => {
+  vibe('medium');
+  tdc.book({
+    service: svc.name,
+    pillar: 'care',
+    pet: currentPet,
+    channel: 'care_service_card',
+    urgency: 'normal' // or 'critical' for emergency
+  });
+  setSelectedSvc(svc);
+  setConciergeOpen(true); // show confirmation sheet
+};</code></pre>
+
+  <h3>Tab Pattern</h3>
+  <pre><code>// Standard 3-tab bar pattern
+&lt;div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`,
+              position:'sticky', top:0, zIndex:100 }}&gt;
+  {[
+    { id:'care',      label:'🌿 Care &amp; Products' },
+    { id:'services',  label:'✂️ Care Services' },
+    { id:'find-care', label:'📍 Find Care' },
+  ].map(tab =&gt; (
+    &lt;button key={tab.id}
+      className={`care-tab${activeTab===tab.id?' active':''}`}
+      data-testid={`care-tab-${tab.id}`}
+      onClick={() =&gt; { vibe(); setActiveTab(tab.id); }}&gt;
+      {tab.label}
+    &lt;/button&gt;
+  ))}
+&lt;/div&gt;</code></pre>
+
+  <h3>dimTab Pattern</h3>
+  <pre><code>// Products / Personalised toggle
+&lt;div style={{ display:'flex', margin:'16px 16px 0',
+              background:G.pale, borderRadius:12, padding:4 }}&gt;
+  {[
+    { id:'products',     label:'🎯 All Products' },
+    { id:'personalised', label:'✦ Personalised' }
+  ].map(t =&gt; (
+    &lt;button key={t.id} onClick={() =&gt; setDimTab(t.id)}
+      style={{
+        flex:1, padding:'9px', borderRadius:10, border:'none',
+        fontSize:13, fontWeight:600, cursor:'pointer',
+        background: dimTab===t.id ? G.sage : G.pale,
+        color: dimTab===t.id ? '#fff' : G.mutedText
+      }}&gt;
+      {t.label}
+    &lt;/button&gt;
+  ))}
+&lt;/div&gt;</code></pre>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <h2 id="emergency-wa">7. Emergency WhatsApp Integration</h2>
+
+  <div class="success">
+    ✅ <strong>Live safety feature.</strong> When a user taps URGENT on the Emergency page, WhatsApp is sent immediately to the concierge team at +91 97399 08844.
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>Backend Endpoint</h4>
+      <pre><code>POST /api/notifications/emergency-whatsapp
+Body: {
+  "to": "919739908844",
+  "petName": "Mojo",
+  "breed": "Indie",
+  "allergies": "None",
+  "message": "🚨 EMERGENCY..."
+}
+Response: {
+  "success": true,
+  "message": "Emergency alert sent"
+}</code></pre>
+      <p style="color:var(--muted);font-size:12px;margin-top:8px">Defined at server.py line ~17479 (BEFORE include_router)</p>
+    </div>
+    <div class="card">
+      <h4>Frontend Flow</h4>
+      <ol style="padding-left:18px;color:var(--text)">
+        <li>User taps "Get Help" button</li>
+        <li><code>tdc.book({ urgency: 'critical' })</code> fires</li>
+        <li><code>POST /api/notifications/emergency-whatsapp</code> fires simultaneously</li>
+        <li>Service desk ticket created with <code>urgency: "critical"</code></li>
+        <li>Confirmation sheet shows green "✓ Concierge notified via WhatsApp" banner</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <h2 id="build">8. Build &amp; Deploy Notes</h2>
+
+  <div class="warn">
+    ⚠️ <strong>Always use this exact build command.</strong> Normal <code>npm run build</code> will OOM with the current bundle size (11 new mobile pages added).
+  </div>
+
+  <pre><code># Production build (ALWAYS use this)
+cd /app/frontend
+GENERATE_SOURCEMAP=false NODE_OPTIONS="--max-old-space-size=4096" npm run build
+
+# Dev server (auto-reloads on save — use this during development)
+# Managed by supervisor — already running, no restart needed for code changes
+
+# Restart supervisor (only after .env changes or new npm packages)
+sudo supervisorctl restart frontend
+sudo supervisorctl restart backend
+
+# Check logs
+tail -n 100 /var/log/supervisor/backend.err.log
+tail -n 100 /var/log/supervisor/frontend.err.log
+
+# Test credentials
+# User: dipali@clubconcierge.in / test123
+# Admin: aditya / lola4304 (at /admin)
+# Preview: https://pillar-parity-sprint.preview.emergentagent.com</code></pre>
+
+  <h3>Known Issues</h3>
+  <table>
+    <thead><tr><th>Issue</th><th>Status</th><th>Fix / Path</th></tr></thead>
+    <tbody>
+      <tr><td>38 products with wrong AI images</td><td><span class="badge p1">P1</span></td><td>Use admin "AI IMAGES" tab to regenerate, or: <code>db.products_master.updateMany({needs_ai_image:true},{$set:{is_active:false}})</code></td></tr>
+      <tr><td>Production DB migration</td><td><span class="badge critical">BLOCKED</span></td><td>Atlas network access issue. Use platform "Use new database" on deploy, or resolve IP whitelist.</td></tr>
+      <tr><td>Admin.jsx 7000+ lines</td><td><span class="badge p2">P2</span></td><td>Refactor into route-specific components. Admin tabs >3s load.</td></tr>
+      <tr><td>Stale Celebrate service records</td><td><span class="badge p2">P2</span></td><td>Shadow records in products_master. Build admin dedup tool.</td></tr>
+      <tr><td>Build OOM</td><td><span class="badge done">Fixed</span></td><td><code>GENERATE_SOURCEMAP=false NODE_OPTIONS=--max-old-space-size=4096</code></td></tr>
+    </tbody>
+  </table>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <h2 id="backlog">9. Prioritised Backlog</h2>
+
+  <h3>P1 — Next Sprint (high impact, relatively quick)</h3>
+  <table>
+    <thead><tr><th>#</th><th>Item</th><th>Effort</th><th>Impact</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Add LearnNearMe to LearnMobilePage (component file exists)</td><td>5 min</td><td>Medium</td></tr>
+      <tr><td>2</td><td>Add PaperworkNearMe to PaperworkMobilePage (component file exists)</td><td>5 min</td><td>Medium</td></tr>
+      <tr><td>3</td><td>Add GoNearMe to GoMobilePage Stay tab (component file exists)</td><td>5 min</td><td>Medium</td></tr>
+      <tr><td>4</td><td>Add SoulCelebrationPillars to CelebrateMobilePage (component file exists)</td><td>10 min</td><td>High</td></tr>
+      <tr><td>5</td><td>Add MiraPicksSection to all 12 pillars (AI picks row)</td><td>30 min × 12</td><td>Very High</td></tr>
+      <tr><td>6</td><td>WellnessProfile (Care) + TripProfile (Go) + ActivityProfile (Play)</td><td>30 min each</td><td>High</td></tr>
+      <tr><td>7</td><td>AdoptProfile + FarewellProfile + EmergencyProfile</td><td>20 min each</td><td>Medium</td></tr>
+      <tr><td>8</td><td>BreedCollectionSection + ShopBrowseSection (Shop mobile)</td><td>45 min total</td><td>High</td></tr>
+      <tr><td>9</td><td>Deactivate / regenerate 38 wrong-image products</td><td>30 min</td><td>High</td></tr>
+    </tbody>
+  </table>
+
+  <h3>P2 — Medium Priority</h3>
+  <table>
+    <thead><tr><th>#</th><th>Item</th></tr></thead>
+    <tbody>
+      <tr><td>10</td><td>Production DB migration (resolve Atlas network access)</td></tr>
+      <tr><td>11</td><td>Admin.jsx refactor (7000 lines → route modules)</td></tr>
+      <tr><td>12</td><td>ServiceBookingModal full multi-step flow on mobile (Care/Go/Play/Paperwork)</td></tr>
+      <tr><td>13</td><td>CelebrationMemoryWall + MiraSoulNudge (Celebrate)</td></tr>
+      <tr><td>14</td><td>Admin tab performance (add MongoDB indexes on tickets)</td></tr>
+      <tr><td>15</td><td>Celebrate stale service records dedup admin tool</td></tr>
+    </tbody>
+  </table>
+
+  <h3>P3 — Future</h3>
+  <table>
+    <thead><tr><th>#</th><th>Item</th></tr></thead>
+    <tbody>
+      <tr><td>16</td><td>Love pillar — brand new pillar build</td></tr>
+      <tr><td>17</td><td>WhatsApp Daily Digest cron (daily pet summary to members)</td></tr>
+      <tr><td>18</td><td>Medication reminder scheduler (push + WhatsApp)</td></tr>
+      <tr><td>19</td><td>Member dashboard mobile-first redesign</td></tr>
+      <tr><td>20</td><td>AI Soul Score live display on Pet Home</td></tr>
+      <tr><td>21</td><td>Breed comparison tool (Adopt pillar)</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <h2 id="handover">10. Handover Notes for Next Agent</h2>
+
+  <div class="info">
+    📋 <strong>Read all 4 memory files FIRST:</strong>
+    <code>/app/memory/PRD.md</code> · <code>/app/memory/CHANGELOG.md</code> · <code>/app/memory/ROADMAP.md</code> · <code>/app/memory/MOBILE_WIRING_SPEC.md</code>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>🔒 NEVER TOUCH</h4>
+      <ul style="padding-left:18px;color:var(--text)">
+        <li>Any <code>*SoulPage.jsx</code> desktop page</li>
+        <li><code>PillarContext.jsx</code> — pet context</li>
+        <li><code>AuthContext.jsx</code> — auth</li>
+        <li><code>tdc_intent.js</code> — booking utility</li>
+        <li><code>.env</code> files — credentials</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>✅ ALWAYS DO</h4>
+      <ul style="padding-left:18px;color:var(--text)">
+        <li>All work in <code>*MobilePage.jsx</code> files</li>
+        <li>Use <code>tdc.book()</code> for every service CTA</li>
+        <li>Apply <code>filterBreedProducts</code> + <code>applyMiraIntelligence</code></li>
+        <li>Add <code>data-testid</code> to every interactive element</li>
+        <li>Build with <code>GENERATE_SOURCEMAP=false</code></li>
+        <li>New backend routes BEFORE <code>include_router</code> at line 21706</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Critical Import Pattern</h3>
+  <pre><code>// This IS correct — ProductCard default export aliased as SharedProductCard
+import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
+
+// tdc.book — universal service booking
+import { tdc } from '../utils/tdc_intent';
+tdc.book({ service: 'Grooming', pillar: 'care', pet: currentPet, channel: 'care_service_card' });
+
+// API URL
+import { API_URL } from '../utils/api';
+// = process.env.REACT_APP_BACKEND_URL</code></pre>
+
+  <h3>Session Summary</h3>
+  <table>
+    <thead><tr><th>Session</th><th>Date</th><th>Work</th><th>Test Result</th></tr></thead>
+    <tbody>
+      <tr><td>Session 1</td><td>2026-03-24</td><td>Responsive split + 11 mobile stubs + Celebrate/Dine full parity + system fixes</td><td>N/A</td></tr>
+      <tr><td>Session 2</td><td>2026-03-25</td><td>Complete rewrites of 10 pillars + 17 non-pillar fixes + Emergency WhatsApp + build fix</td><td><strong>18/18 ✅</strong></td></tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:40px;padding:24px;background:var(--surface2);border-radius:14px;text-align:center;border:1px solid var(--border)">
+    <div style="font-size:28px;margin-bottom:8px">🐾🌷💜</div>
+    <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:4px">Built for Kouros &amp; Mystique</div>
+    <div style="color:var(--muted);font-size:13px">"They taught us that to know a pet is to know a soul."</div>
+    <div style="margin-top:16px;font-size:12px;color:var(--muted)">The Doggy Company · Pet Concierge® · thedoggycompany.in</div>
+    <div style="margin-top:8px;font-size:11px;color:var(--muted)">Documentation generated 2026-03-25 · 18/18 tests passing · 12 pillars mobile-ready</div>
+  </div>
+
 </div>
 </body>
 </html>
