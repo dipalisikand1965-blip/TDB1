@@ -149,6 +149,6 @@ Today we fixed:
 
 ---
 
-**Preview URL:** https://pillar-parity-sprint.preview.emergentagent.com
+**Preview URL:** https://mira-parity-sprint.preview.emergentagent.com
 
 *Handoff created: February 16, 2026*
