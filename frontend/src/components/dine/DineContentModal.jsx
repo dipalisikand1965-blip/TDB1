@@ -877,7 +877,7 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
       )}
 
       {/* ── Sub-category tabs ────────────────────────────────────────── */}
-      {tabs.length > 1 && (
+      {false && tabs.length > 1 && (
         <div className="flex-shrink-0 flex gap-2 overflow-x-auto px-4 py-3"
           style={{
             scrollbarWidth: 'none',
@@ -919,13 +919,55 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
 
       {/* ── Product Grid ─────────────────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto" style={{ paddingBottom: 80 }}>
+        {tabs.length > 1 && !loading && (
+          <div
+            className="flex gap-2 overflow-x-auto px-4 py-3"
+            style={{
+              scrollbarWidth: 'none',
+              position: 'sticky',
+              top: 0,
+              zIndex: 100,
+              background: '#fff',
+              boxShadow: '0 1px 0 #F0E8E0',
+            }}
+          >
+            <button
+              onClick={() => setActiveTab('all')}
+              style={{
+                flexShrink: 0, borderRadius: 20, padding: '6px 16px', fontSize: 12.5, fontWeight: 700,
+                border: activeTab === 'all' ? 'none' : '1.5px solid #FFCC99',
+                background: activeTab === 'all' ? 'linear-gradient(135deg, #FF8C42, #C44400)' : '#FFF3E0',
+                color: activeTab === 'all' ? '#fff' : '#C44400', cursor: 'pointer',
+              }}
+              data-testid="dine-tab-all"
+            >
+              All
+            </button>
+            {tabs.map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                style={{
+                  flexShrink: 0, borderRadius: 20, padding: '6px 16px', fontSize: 12.5, fontWeight: 700,
+                  border: activeTab === tab ? 'none' : '1.5px solid #FFCC99',
+                  background: activeTab === tab ? 'linear-gradient(135deg, #FF8C42, #C44400)' : '#FFF3E0',
+                  color: activeTab === tab ? '#fff' : '#C44400', cursor: 'pointer',
+                }}
+                data-testid={`dine-tab-${tab.toLowerCase().replace(/\s+/g, '-')}`}
+              >
+                {fmtTab(tab)}
+              </button>
+            ))}
+          </div>
+        )}
+
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <Loader2 className="w-7 h-7 animate-spin" style={{ color: '#FF8C42' }} />
             <span className="ml-3 text-gray-500 text-sm">Filtering for {petName}...</span>
           </div>
         ) : (
-          <div className="px-4 pb-6" style={{ paddingTop: tabs.length > 1 ? 20 : 16 }}>
+          <div className="px-4 pb-6" style={{ paddingTop: tabs.length > 1 ? 24 : 16 }}>
 
             {/* Art style toggle — soul_made only */}
             {category === 'soul_made' && (filteredProducts.length > 0) && yappyIllustrations.length > 0 && (
