@@ -75,8 +75,15 @@ export default function GoConciergeSection({ pet }) {
 
   if (!services.length) return null;
 
-  const travelServices = services.filter(s => s.category === "travel" || s.sub_pillar === "travel");
-  const stayServices = services.filter(s => s.category === "stay" || s.sub_pillar === "stay");
+  // Services may have pillar='go' without specific category/sub_pillar tags
+  // Fallback: show all go services if category-specific filters return empty
+  const travelServices = services.filter(s => s.category === "travel" || s.sub_pillar === "travel" || (s.pillar === "go" && !s.category?.includes("stay")));
+  const stayServices = services.filter(s => s.category === "stay" || s.sub_pillar === "stay" || s.pillar_name === "Stay");
+  
+  // If both empty, show first 10 services as generic go services
+  const allGoServices = (travelServices.length === 0 && stayServices.length === 0)
+    ? services.slice(0, 10)
+    : null;
 
   const SectionBlock = ({ title, subtitle, icon, services: svcs, accentGradient }) => (
     <div style={{ marginBottom:40 }}>
@@ -126,6 +133,17 @@ export default function GoConciergeSection({ pet }) {
             subtitle={`Boarding, daycare, and pet sitting arranged around ${petName}'s personality.`}
             icon="🏡"
             services={stayServices}
+            accentGradient={`linear-gradient(135deg,${G.pale},${G.light})`}
+          />
+        )}
+        
+        {/* Fallback: show all go services if no category tags found */}
+        {allGoServices && allGoServices.length > 0 && (
+          <SectionBlock
+            title="Go Services for Your Pet"
+            subtitle={`All travel, boarding, and go-related services available for ${petName}.`}
+            icon="✈️"
+            services={allGoServices}
             accentGradient={`linear-gradient(135deg,${G.pale},${G.light})`}
           />
         )}

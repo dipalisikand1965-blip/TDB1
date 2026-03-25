@@ -2,6 +2,65 @@
 
 ---
 
+## SESSION 5 — 2026-03-26 (Admin Fixes + Mobile UI Overhaul)
+
+### BATCH 1 — Admin Critical Fixes (All tested ✅)
+
+**Fix 1: ProductBoxEditor/UnifiedProductBox — Save Whitelist**
+- Added 8 missing fields to `allowedFields`: `is_active`, `ai_image_prompt`, `categories`, `inventory`, `mira_ai`, `mrp`, `shape`, `suitability`
+- Previously, these fields were silently dropped on every Save — now fully persisted
+- File: `/app/frontend/src/components/admin/UnifiedProductBox.jsx`
+
+**Fix 2: Import 143 Legacy Services → services_master**
+- New endpoint: `POST /api/admin/migrate/legacy-services` (HTTP Basic Auth)
+- Migrates `services` + `service_catalog` collections with pillar translation map: feed→dine, groom→care, stay→go, travel→go, advisory→paperwork, enjoy→play, fit→play
+- Result: services_master grew from 1021 → 1067 docs (46 new services imported)
+- File: `/app/backend/server.py`
+
+**Fix 3: Import 2991 Soul Products → products_master**
+- New endpoint: `POST /api/admin/migrate/soul-products` (HTTP Basic Auth)
+- Migrates `breed_products` collection with pillar normalization (food→dine, grooming→care, etc.)
+- Result: products_master grew from 6042 → 7519 docs (1477 new products imported)
+- File: `/app/backend/server.py`
+
+**Fix 4: AI Image URL Auto-Populate in ProductBoxEditor**
+- `handleGenerateAIImage` in `ProductBoxEditor.jsx` now sets `media.primary_image` and `media.images` when AI generation completes
+- Previously only `image`, `image_url`, `images` were set (legacy fields); now full `media` object is updated
+- File: `/app/frontend/src/components/admin/ProductBoxEditor.jsx`
+
+### BATCH 2 — Mobile UI Overhaul (iOS Quality Design System)
+
+**New: `/app/frontend/src/styles/mobile-design-system.css`**
+- Typography: Cormorant Garamond (serif headings) + -apple-system/-apple-system (body)
+- Type scale: 12px minimum (xs), 14px (sm), 16px (base), 22px (xl), 34px (h1)
+- iOS utility classes: `.ios-h1`, `.ios-h2`, `.ios-h3`, `.ios-body`, `.ios-btn-primary`, `.ios-tab-bar`, `.ios-tab`, `.ios-card`
+- Bottom sheet system: `.ios-bottom-sheet-content`, `.ios-drag-handle`, `slideUp` animation
+- Mobile page container: `.mobile-page-container` with system fonts, safe-area padding, anti-aliasing
+- Imported globally in `index.css`
+
+**Font Size Upgrades (All 11 mobile pages)**
+- Bumped: 10px→12px, 11px→13px, 12px→14px, 13px→14px across all CSS strings
+- Font family: `'DM Sans'` → `-apple-system, BlinkMacSystemFont, 'SF Pro Display'`
+- Files: All `*MobilePage.jsx` files
+
+**iOS Bottom Sheet Modals**
+- `ProductDetailModal` → `items-end sm:items-center`, `borderRadius: 28px 28px 0 0`, `slideUp` animation, drag handle pill
+- `ConciergeOnlyProductDetailModal` → same treatment
+- `ServiceBookingModal` → already has `ios-bottom-sheet-content` + `ios-drag-handle` (confirmed working)
+- File: `/app/frontend/src/components/ProductCard.jsx`
+
+**Go Page Fixes**
+- `GoMobilePage.jsx` → tab bar migrated from custom `go-tab` CSS class to `ios-tab-bar` system
+- `GoConciergeSection.jsx` → fixed services loading: now shows all go services when category-specific filters return empty
+- Files: `/app/frontend/src/pages/GoMobilePage.jsx`, `/app/frontend/src/components/go/GoConciergeSection.jsx`
+
+**Bug Fix: CareMobilePage vibe() function missing**
+- `vibe()` haptic feedback function was missing from `CareMobilePage.jsx` (present in all other mobile pages)
+- Caused runtime `ReferenceError` when clicking Care Services tab
+- Fixed by testing agent (added at line 57)
+
+---
+
 ## SESSION 3 — 2026-03-25 (Mira Filtering + Service Booking Modal + Admin Backend Fixes)
 
 ### BATCH 1 — Mira Product Intelligence Filter (All tested ✅)
