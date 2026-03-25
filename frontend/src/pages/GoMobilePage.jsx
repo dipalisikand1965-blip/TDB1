@@ -152,14 +152,14 @@ export default function GoMobilePage() {
 
         {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="go" token={token} /></div>}
 
-        {/* Tab Bar */}
-        <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100 }}>
+        {/* Tab Bar - iOS style */}
+        <div className="ios-tab-bar" style={{ borderColor: G.border }}>
           {[
             { id:'go',       label:'✈️ Go & Products' },
             { id:'services', label:'🛎️ Services' },
             { id:'stay',     label:'🏨 Stay' },
           ].map(tab => (
-            <button key={tab.id} className={`go-tab${activeTab===tab.id?' active':''}`}
+            <button key={tab.id} className={`ios-tab${activeTab===tab.id?' active':''}`}
               data-testid={`go-tab-${tab.id}`}
               onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}>
               {tab.label}
