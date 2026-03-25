@@ -101,11 +101,20 @@ function ConditionalFloatingButton() {
 function ConditionalMobileNav() {
   const { pathname } = useLocation();
   // Don't show on admin, login, register, or demo pages
-  const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password', '/demo'];
+  const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password', '/demo', '/dine'];
   if (hiddenPaths.some(path => pathname.startsWith(path))) {
     return null;
   }
   return <MobileNavBar />;
+}
+
+function ConditionalFooter() {
+  const { pathname } = useLocation();
+  const isMobile = typeof window !== 'undefined' ? window.innerWidth < 1024 : false;
+  if (isMobile && pathname.startsWith('/dine')) {
+    return null;
+  }
+  return <Footer />;
 }
 
 // Redirect component for deprecated pet-soul-journey route
@@ -668,7 +677,7 @@ function MainLayout() {
         <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
-      <Footer />
+      <ConditionalFooter />
       <CartSidebar />
       <MiraAI />
       {/* Pulse removed - voice capabilities now inside MiraAI */}
