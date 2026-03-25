@@ -37,6 +37,7 @@ import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import PaperworkMobilePage from './PaperworkMobilePage';
 
 // ─── COLOUR SYSTEM ─────────────────────────────────────────
 const G = {
@@ -631,6 +632,8 @@ function SoulChip({ icon, label, value, children }){
 
 // ─── MAIN PAGE ─────────────────────────────────────────────
 const PaperworkSoulPage = () => {
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 1024 : true);
+  useEffect(() => { const fn = () => setIsDesktop(window.innerWidth >= 1024); window.addEventListener('resize', fn); return () => window.removeEventListener('resize', fn); }, []);
   const navigate = useNavigate();
   const {token,isAuthenticated}                       = useAuth();
   const {currentPet,setCurrentPet,pets:contextPets}  = usePillarContext();
@@ -710,6 +713,9 @@ const PaperworkSoulPage = () => {
   },[currentPet]);
 
   const handleAddPet=useCallback(()=>navigate(isAuthenticated?"/dashboard/pets?action=add":"/login?redirect=/paperwork"),[isAuthenticated,navigate]);
+
+  // Mobile detection
+  if (!isDesktop) return <PaperworkMobilePage />;
 
   if(loading)  return<PillarPageLayout pillar="paperwork" hideHero hideNavigation><LoadingState/></PillarPageLayout>;
   if(!petData) return<PillarPageLayout pillar="paperwork" hideHero hideNavigation><NoPetState onAddPet={handleAddPet}/></PillarPageLayout>;

@@ -44,6 +44,7 @@ import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 import SoulMadeModal from "../components/SoulMadeModal";
 import { useConcierge } from "../hooks/useConcierge";
+import CareMobilePage from './CareMobilePage';
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Sage Green
 // ─────────────────────────────────────────────────────────────
@@ -2127,6 +2128,8 @@ function SoulChip({ children }) {
 // MAIN PAGE
 // ─────────────────────────────────────────────────────────────
 export default function CareSoulPage() {
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 1024 : true);
+  useEffect(() => { const fn = () => setIsDesktop(window.innerWidth >= 1024); window.addEventListener('resize', fn); return () => window.removeEventListener('resize', fn); }, []);
   const navigate = useNavigate();
   const { token, isAuthenticated } = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
@@ -2263,6 +2266,9 @@ export default function CareSoulPage() {
   const handleAddPet = useCallback(() => {
     navigate(isAuthenticated ? "/dashboard/pets?action=add" : "/login?redirect=/care");
   }, [isAuthenticated, navigate]);
+
+  // Mobile detection — serve mobile page on small screens
+  if (!isDesktop) return <CareMobilePage />;
 
   if (loading) return <PillarPageLayout pillar="care" hideHero hideNavigation><LoadingState /></PillarPageLayout>;
   if (!petData) return <PillarPageLayout pillar="care" hideHero hideNavigation><NoPetState onAddPet={handleAddPet} /></PillarPageLayout>;

@@ -26,6 +26,7 @@ import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 import SoulMadeModal from "../components/SoulMadeModal";
+import FarewellMobilePage from './FarewellMobilePage';
 
 const G = {
   deep:"#1A1A2E", mid:"#4B4B6E", indigo:"#6366F1", light:"#C7D2FE",
@@ -231,6 +232,8 @@ function FarewellConciergeModal({ isOpen, onClose, petName, petId, token, preSel
 function LoadingState(){return<div style={{textAlign:"center",padding:"80px 20px"}}><div style={{width:48,height:48,borderRadius:"50%",background:MIRA_ORB,margin:"0 auto 16px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,color:"#fff"}}>✦</div><div style={{fontSize:16,color:G.darkText,fontWeight:600}}>Preparing your farewell space…</div></div>;}
 
 const FarewellSoulPage = () => {
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 1024 : true);
+  useEffect(() => { const fn = () => setIsDesktop(window.innerWidth >= 1024); window.addEventListener('resize', fn); return () => window.removeEventListener('resize', fn); }, []);
   const navigate = useNavigate();
   const { token, isAuthenticated } = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
@@ -289,6 +292,9 @@ const FarewellSoulPage = () => {
 
   const petName = petData?.name || "your dog";
   const breed   = petData?.breed||"";
+
+  // Mobile detection
+  if (!isDesktop) return <FarewellMobilePage />;
 
   if(loading) return <PillarPageLayout pillar="farewell" hideHero hideNavigation><LoadingState/></PillarPageLayout>;
 

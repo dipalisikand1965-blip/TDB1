@@ -46,6 +46,7 @@ import { MiraPicksSkeleton, ProductGridSkeleton } from "../components/common/Pro
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import LearnMobilePage from './LearnMobilePage';
 
 // ─── SOUL CHIP (hero chips — same as CareHero) ───────────────
 function SoulChip({ icon, label, value }) {
@@ -1924,6 +1925,8 @@ function NoPetState({onAddPet}){return(<div style={{textAlign:"center",padding:"
 
 // ─── MAIN PAGE ────────────────────────────────────────────────
 const LearnSoulPage = () => {
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 1024 : true);
+  useEffect(() => { const fn = () => setIsDesktop(window.innerWidth >= 1024); window.addEventListener('resize', fn); return () => window.removeEventListener('resize', fn); }, []);
   const navigate = useNavigate();
   const {token,isAuthenticated}                       = useAuth();
   const {currentPet,setCurrentPet,pets:contextPets}  = usePillarContext();
@@ -1980,6 +1983,9 @@ const LearnSoulPage = () => {
   usePlatformTracking({ pillar: "learn", pet: currentPet });
 
   const handleAddPet=useCallback(()=>navigate(isAuthenticated?"/dashboard/pets?action=add":"/login?redirect=/learn"),[isAuthenticated,navigate]);
+
+  // Mobile detection
+  if (!isDesktop) return <LearnMobilePage />;
 
   if(loading)  return<PillarPageLayout pillar="learn" hideHero hideNavigation><LoadingState/></PillarPageLayout>;
   if(!petData) return<PillarPageLayout pillar="learn" hideHero hideNavigation><NoPetState onAddPet={handleAddPet}/></PillarPageLayout>;

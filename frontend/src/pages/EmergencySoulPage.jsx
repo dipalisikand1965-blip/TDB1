@@ -29,6 +29,7 @@ import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
+import EmergencyMobilePage from './EmergencyMobilePage';
 
 const G = {
   deep:"#7F1D1D", mid:"#991B1B", crimson:"#DC2626", light:"#FCA5A5",
@@ -303,6 +304,8 @@ function NoPetState({onAddPet}){return<div style={{textAlign:"center",padding:"8
 
 // ── MAIN PAGE ─────────────────────────────────────────────────
 const EmergencySoulPage = () => {
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 1024 : true);
+  useEffect(() => { const fn = () => setIsDesktop(window.innerWidth >= 1024); window.addEventListener('resize', fn); return () => window.removeEventListener('resize', fn); }, []);
   const navigate = useNavigate();
   const { token, isAuthenticated } = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
@@ -373,6 +376,9 @@ const EmergencySoulPage = () => {
   },[currentPet?.breed]);
 
   const handleAddPet = useCallback(()=>navigate(isAuthenticated?"/dashboard/pets?action=add":"/login?redirect=/emergency"),[isAuthenticated,navigate]);
+
+  // Mobile detection
+  if (!isDesktop) return <EmergencyMobilePage />;
 
   if(loading)   return <PillarPageLayout pillar="emergency" hideHero hideNavigation><LoadingState/></PillarPageLayout>;
   if(!petData)  return <PillarPageLayout pillar="emergency" hideHero hideNavigation><NoPetState onAddPet={handleAddPet}/></PillarPageLayout>;

@@ -34,6 +34,7 @@ import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeModal from "../components/SoulMadeModal";
+import ShopMobilePage from './ShopMobilePage';
 
 // ── Colour system — warm gold, The Doggy Bakery amber ─────────
 const G = {
@@ -690,6 +691,8 @@ function NoPetState({ onAddPet }) {
 
 // ── Main page ─────────────────────────────────────────────────
 const ShopSoulPage = () => {
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 1024 : true);
+  useEffect(() => { const fn = () => setIsDesktop(window.innerWidth >= 1024); window.addEventListener('resize', fn); return () => window.removeEventListener('resize', fn); }, []);
   const navigate   = useNavigate();
   const { token, isAuthenticated }                        = useAuth();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
@@ -720,6 +723,9 @@ const ShopSoulPage = () => {
   const handleAddPet = useCallback(() => {
     navigate(isAuthenticated ? "/dashboard/pets?action=add" : "/login?redirect=/shop");
   }, [isAuthenticated, navigate]);
+
+  // Mobile detection
+  if (!isDesktop) return <ShopMobilePage />;
 
   if (loading)  return <PillarPageLayout pillar="shop" hideHero hideNavigation><LoadingState/></PillarPageLayout>;
   if (!petData) return <PillarPageLayout pillar="shop" hideHero hideNavigation><NoPetState onAddPet={handleAddPet}/></PillarPageLayout>;
