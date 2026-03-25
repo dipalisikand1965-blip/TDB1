@@ -1400,12 +1400,16 @@ const DineSoulPage = () => {
   const [dineOutVenue, setDineOutVenue] = useState(null);
   const [dineOutCity, setDineOutCity] = useState(null);
 
-  // Fetch Dine products from SSOT — only food categories to avoid breed merchandise
+  // Fetch Dine products from SSOT — re-run when current pet changes so categories stay pet-first / breed-aware
   useEffect(() => {
+    if (!petData?.id) return;
     const FOOD_CATS = ['Daily Meals', 'Treats & Rewards', 'Supplements', 'Frozen & Fresh', 'Homemade & Recipes'];
+    const breedParam = petData?.breed ? `&breed=${encodeURIComponent(petData.breed)}` : '';
     Promise.all(
       FOOD_CATS.map(cat =>
-        fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&limit=100&category=${encodeURIComponent(cat)}`)
+        fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&limit=100&category=${encodeURIComponent(cat)}${breedParam}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        })
           .then(r => r.ok ? r.json() : null)
           .catch(() => null)
       )
@@ -1423,7 +1427,7 @@ const DineSoulPage = () => {
       });
       setApiProducts(grouped);
     }).catch(e => console.error("[DineSoulPage] products fetch error:", e));
-  }, []);
+  }, [petData?.id, petData?.breed, token]);
 
   useEffect(() => {
     if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
