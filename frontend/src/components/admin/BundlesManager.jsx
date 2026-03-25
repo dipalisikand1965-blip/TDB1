@@ -31,6 +31,7 @@ import {
   Search, ChevronLeft, ChevronRight, Download
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
+import MediaTabPanel from './MediaTabPanel';
 import { ALL_PILLARS, PILLAR_SUBCATEGORIES } from './ProductBoxConfig';
 
 const PILLARS = ALL_PILLARS;
@@ -264,6 +265,7 @@ const BundlesManager = () => {
       description: '',
       pillar: selectedPillar !== 'all' ? selectedPillar : 'celebrate',
       sub_category: '',
+      is_active: true,
       items: '',
       original_price: '',
       bundle_price: '',
@@ -281,6 +283,7 @@ const BundlesManager = () => {
       description: bundle.description,
       pillar: bundle.pillar,
       sub_category: bundle.sub_category || '',
+      is_active: bundle.is_active !== false,
       items: bundle.items?.join(', ') || '',
       original_price: bundle.original_price?.toString() || '',
       bundle_price: bundle.bundle_price?.toString() || '',
@@ -865,32 +868,34 @@ const BundlesManager = () => {
               {!editingBundle?.id && <p className="text-xs text-gray-400 mt-1">Save bundle first to enable image upload/generation</p>}
             </div>
 
-            {/* AI Image Prompt */}
-            <AIImagePromptField
+            {/* ── Media (Fix 5) — replace old inline image + AIImagePromptField ── */}
+            <MediaTabPanel
+              imageUrl={formData.image_url || ''}
+              onImageChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
               entityType="bundle"
-              entityId={editingBundle?.id}
-              currentPrompt={formData.ai_image_prompt || ''}
-              onPromptChange={val => setFormData(prev => ({ ...prev, ai_image_prompt: val }))}
-              onImageGenerated={(url, prompt) => setFormData(prev => ({ ...prev, image_url: url, ai_image_prompt: prompt }))}
+              entityId={editingBundle?.id || ''}
+              entityName={formData.name || ''}
             />
+
           </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowModal(false)}>
-              Cancel
+
+          <DialogFooter className="gap-2">
+            {/* Fix 6 — Activate/Deactivate toggle */}
+            <Button
+              type="button"
+              variant="outline"
+              className={formData.is_active !== false
+                ? "border-red-400 text-red-600 hover:bg-red-50"
+                : "border-green-500 text-green-700 hover:bg-green-50"}
+              onClick={() => setFormData(prev => ({ ...prev, is_active: !prev.is_active }))}
+              data-testid="bundle-activate-toggle-btn"
+            >
+              {formData.is_active !== false ? 'Deactivate' : 'Activate'}
             </Button>
+            <Button variant="outline" onClick={() => setShowModal(false)}>Cancel</Button>
             <Button onClick={handleSave} disabled={saving}>
-              {saving ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  {editingBundle ? 'Update Bundle' : 'Create Bundle'}
-                </>
-              )}
+              {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving…</>
+                      : <><Save className="w-4 h-4 mr-2" /> {editingBundle ? 'Update Bundle' : 'Create Bundle'}</>}
             </Button>
           </DialogFooter>
         </DialogContent>
