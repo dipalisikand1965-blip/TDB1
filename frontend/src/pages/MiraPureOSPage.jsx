@@ -28,13 +28,13 @@ const PILLARS = [
   { id: 'celebrate', label: 'Celebrate', icon: Gift, color: 'from-pink-500 to-rose-500', emoji: '🎂' },
   { id: 'dine', label: 'Dine', icon: Utensils, color: 'from-orange-500 to-amber-500', emoji: '🍖' },
   { id: 'care', label: 'Care', icon: Heart, color: 'from-red-500 to-pink-500', emoji: '💝' },
-  { id: 'travel', label: 'Travel', icon: Plane, color: 'from-blue-500 to-cyan-500', emoji: '✈️' },
-  { id: 'stay', label: 'Stay', icon: Hotel, color: 'from-purple-500 to-violet-500', emoji: '🏨' },
-  { id: 'enjoy', label: 'Enjoy', icon: Coffee, color: 'from-emerald-500 to-teal-500', emoji: '🎾' },
-  { id: 'fit', label: 'Fit', icon: Dumbbell, color: 'from-lime-500 to-green-500', emoji: '🏃' },
+  { id: 'go', label: 'Go', icon: Plane, color: 'from-teal-500 to-cyan-500', emoji: '✈️' },
+  { id: 'play', label: 'Play', icon: Coffee, color: 'from-orange-500 to-amber-500', emoji: '🎾' },
   { id: 'learn', label: 'Learn', icon: GraduationCap, color: 'from-indigo-500 to-blue-500', emoji: '📚' },
-  { id: 'advisory', label: 'Advisory', icon: HelpCircle, color: 'from-yellow-500 to-orange-500', emoji: '💡' },
-  { id: 'services', label: 'Services', icon: Briefcase, color: 'from-slate-500 to-gray-500', emoji: '🔧' },
+  { id: 'paperwork', label: 'Paperwork', icon: HelpCircle, color: 'from-yellow-500 to-orange-500', emoji: '📋' },
+  { id: 'shop', label: 'Shop', icon: Briefcase, color: 'from-emerald-500 to-teal-500', emoji: '🛒' },
+  { id: 'emergency', label: 'Emergency', icon: Dumbbell, color: 'from-red-600 to-rose-600', emoji: '🚨' },
+  { id: 'farewell', label: 'Farewell', icon: Hotel, color: 'from-purple-500 to-violet-500', emoji: '🌈' },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════

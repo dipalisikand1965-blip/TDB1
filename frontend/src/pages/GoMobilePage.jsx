@@ -19,6 +19,7 @@ import MiraEmptyRequest from '../components/common/MiraEmptyRequest';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import GoConciergeSection from '../components/go/GoConciergeSection';
+import GoNearMe from '../components/go/GoNearMe';
 import PetFriendlyStays from '../components/go/PetFriendlyStays';
 import GuidedGoPaths from '../components/go/GuidedGoPaths';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
@@ -159,6 +160,7 @@ export default function GoMobilePage() {
             { id:'go',       label:'✈️ Go & Products' },
             { id:'services', label:'🛎️ Services' },
             { id:'stay',     label:'🏨 Stay' },
+            { id:'nearme',   label:'📍 Find Near Me' },
           ].map(tab => (
             <button key={tab.id} className={`ios-tab${activeTab===tab.id?' active':''}`}
               data-testid={`go-tab-${tab.id}`}
@@ -285,6 +287,11 @@ export default function GoMobilePage() {
               setSvcBooking({ isOpen: true, serviceType: guessServiceType(stay) || 'boarding' });
             }} />
           </div>
+        )}
+
+        {/* TAB 4: Near Me */}
+        {activeTab === 'nearme' && (
+          <GoNearMe currentPet={currentPet} />
         )}
       </div>
 
