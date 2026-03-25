@@ -42,9 +42,11 @@ import DineConciergeSection from '../components/dine/DineConciergeSection';
 import GuidedNutritionPaths from '../components/dine/GuidedNutritionPaths';
 import MealBoxCard from '../components/dine/MealBoxCard';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
+import MiraEmptyRequest from '../components/common/MiraEmptyRequest';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import DineSoulPageDesktopLegacy from './DineSoulPageDesktopLegacy';
+import '../styles/mobile-design-system.css';
 
 // ── Design tokens ──────────────────────────────────────────────
 const C = {
@@ -70,14 +72,14 @@ const DarkGrad = 'linear-gradient(135deg,#1A0A00,#2D1A00)';
 // ── CSS ────────────────────────────────────────────────────────
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
-  .dp { font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  .dp { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;
         background:${C.cream}; color:${C.brown}; min-height:100vh;
         padding-bottom:calc(96px + env(safe-area-inset-bottom)); }
   .dp-card { background:${C.card}; border:1px solid ${C.border}; border-radius:22px; }
   .dp-cta  { display:flex; align-items:center; justify-content:center; width:100%;
               min-height:48px; padding:13px 20px; border-radius:14px; border:none;
               background:${CTAGrad}; color:#fff; font-size:15px; font-weight:600;
-              font-family:'DM Sans',sans-serif; cursor:pointer; transition:transform 0.15s; }
+              font-family:-apple-system,BlinkMacSystemFont,sans-serif; cursor:pointer; transition:transform 0.15s; }
   .dp-cta:active { transform:scale(0.97); }
   .dp-chip { display:inline-flex; align-items:center; padding:7px 16px; border-radius:999px;
               background:${C.chipBg}; color:${C.chipTxt}; font-size:14px; font-weight:500;
@@ -85,7 +87,7 @@ const CSS = `
   .dp-chip.on { background:${C.amber}; color:#fff; }
   .dp-seg { flex:1; padding:12px; text-align:center; font-size:15px; font-weight:600;
              cursor:pointer; border-radius:11px; transition:all 0.2s;
-             font-family:'DM Sans',sans-serif; border:none; }
+             font-family:-apple-system,BlinkMacSystemFont,sans-serif; border:none; }
   .dp-seg.on  { background:${C.card}; color:${C.brown}; box-shadow:0 2px 8px rgba(43,23,11,0.08); }
   .dp-seg.off { background:transparent; color:${C.taupe}; }
   .no-sb { overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none; }
@@ -308,15 +310,15 @@ function DinePetProfileCard({ pet, onOpen }) {
           <div style={{ minWidth:0 }}>
             <div style={{ fontSize:17, fontWeight:700, marginBottom:4, lineHeight:1.2 }}>{name}&apos;s Food Profile</div>
             <div style={{ display:'inline-flex', alignItems:'center', background:C.chipBg, borderRadius:999, padding:'3px 10px', marginBottom:5 }}>
-              <span style={{ fontSize:13, fontWeight:500, color:C.chipTxt }}>{breed}</span>
+              <span style={{ fontSize:14, fontWeight:500, color:C.chipTxt }}>{breed}</span>
             </div>
-            <div style={{ fontSize:13, color:C.taupe, lineHeight:1.4 }}>{insight}</div>
+            <div style={{ fontSize:14, color:C.taupe, lineHeight:1.4 }}>{insight}</div>
           </div>
         </div>
         <div style={{ textAlign:'right', flexShrink:0 }}>
           <div style={{ fontSize:26, fontWeight:700, color:C.amber, lineHeight:1 }}>{score}%</div>
-          <div style={{ fontSize:11, color:C.taupe, letterSpacing:'0.08em' }}>SOUL</div>
-          <div style={{ fontSize:11, color:C.orange, marginTop:2 }}>Tap →</div>
+          <div style={{ fontSize:14, color:C.taupe, letterSpacing:'0.08em' }}>SOUL</div>
+          <div style={{ fontSize:14, color:C.orange, marginTop:2 }}>Tap →</div>
         </div>
       </div>
     </div>
@@ -353,10 +355,10 @@ function DineProfileSheet({ pet, onClose, onConcierge }) {
           <button onClick={onClose} style={{ position:'absolute', top:16, right:18, width:38, height:38, borderRadius:'50%', background:'rgba(255,255,255,0.10)', border:'1px solid rgba(255,255,255,0.15)', color:'rgba(255,255,255,0.72)', cursor:'pointer', fontSize:18 }}>✕</button>
           <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:12, marginBottom:10 }}>
             <div>
-              <div style={{ fontWeight:800, textTransform:'uppercase', letterSpacing:'0.12em', color:'rgba(255,140,66,0.90)', fontSize:10, marginBottom:5 }}>
+              <div style={{ fontWeight:800, textTransform:'uppercase', letterSpacing:'0.12em', color:'rgba(255,140,66,0.90)', fontSize:14, marginBottom:5 }}>
                 ✦ GROW {name.toUpperCase()}&apos;S TUMMY PROFILE
               </div>
-              <div style={{ color:'rgba(255,255,255,0.50)', fontSize:12 }}>Answer quick questions · {name}&apos;s food profile is almost there</div>
+              <div style={{ color:'rgba(255,255,255,0.50)', fontSize:14 }}>Answer quick questions · {name}&apos;s food profile is almost there</div>
             </div>
             <div style={{ display:'flex', alignItems:'flex-end', gap:2, paddingRight:40 }}>
               <span style={{ fontSize:64, fontWeight:900, lineHeight:1, color:score >= 80 ? '#F0C060' : '#FF8C42' }}>{score}</span>
@@ -367,10 +369,10 @@ function DineProfileSheet({ pet, onClose, onConcierge }) {
             <div style={{ height:'100%', width:`${score}%`, borderRadius:999, background:'linear-gradient(90deg,#FF2D87,#C44DFF)' }} />
           </div>
           <div style={{ background:'rgba(255,255,255,0.08)', border:'1px solid rgba(255,255,255,0.12)', borderRadius:14, padding:'12px 14px', display:'flex', gap:10, alignItems:'flex-start' }}>
-            <div style={{ width:28, height:28, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, color:'#fff', flexShrink:0 }}>✦</div>
+            <div style={{ width:28, height:28, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, color:'#fff', flexShrink:0 }}>✦</div>
             <div>
-              <div style={{ fontSize:13, color:'#fff', fontStyle:'italic', lineHeight:1.55 }}>{summary}</div>
-              <div style={{ fontSize:11, color:'#FFAAD4', marginTop:4, fontWeight:600 }}>♥ Mira knows {name}</div>
+              <div style={{ fontSize:14, color:'#fff', fontStyle:'italic', lineHeight:1.55 }}>{summary}</div>
+              <div style={{ fontSize:14, color:'#FFAAD4', marginTop:4, fontWeight:600 }}>♥ Mira knows {name}</div>
             </div>
           </div>
         </div>
@@ -381,7 +383,7 @@ function DineProfileSheet({ pet, onClose, onConcierge }) {
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:20 }}>
             {cards.map(card => (
               <div key={card.label} style={{ borderRadius:16, padding:'14px 14px 16px', background:'linear-gradient(135deg,#1A0620 0%,#2d0a00 100%)', border:'1px solid rgba(180,80,255,0.22)' }}>
-                <div style={{ fontSize:11, fontWeight:700, color:card.color, marginBottom:8 }}>{card.label}</div>
+                <div style={{ fontSize:14, fontWeight:700, color:card.color, marginBottom:8 }}>{card.label}</div>
                 <div style={{ fontSize:15, lineHeight:1.35, color:'#fff' }}>{card.value}</div>
               </div>
             ))}
@@ -392,9 +394,9 @@ function DineProfileSheet({ pet, onClose, onConcierge }) {
             <div style={{ width:44, height:44, background:'#7C3AED', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, color:'#fff', flexShrink:0 }}>✦</div>
             <div style={{ flex:1, minWidth:0 }}>
               <div style={{ fontSize:15, fontWeight:700, color:'#fff', marginBottom:2 }}>Mira is learning {name}</div>
-              <div style={{ fontSize:13, color:'#C4B5FD', lineHeight:1.4 }}>Complete {name}&apos;s Soul Profile to get real scored picks.</div>
+              <div style={{ fontSize:14, color:'#C4B5FD', lineHeight:1.4 }}>Complete {name}&apos;s Soul Profile to get real scored picks.</div>
             </div>
-            <button onClick={() => { window.location.href = `/pet/${pet?.id || pet?._id}?tab=personality`; }} style={{ background:'#4C1D95', border:'1px solid #7C3AED', borderRadius:20, padding:'10px 16px', color:'#fff', fontSize:13, fontWeight:700, whiteSpace:'nowrap', cursor:'pointer', flexShrink:0 }}>
+            <button onClick={() => { window.location.href = `/pet/${pet?.id || pet?._id}?tab=personality`; }} style={{ background:'#4C1D95', border:'1px solid #7C3AED', borderRadius:20, padding:'10px 16px', color:'#fff', fontSize:14, fontWeight:700, whiteSpace:'nowrap', cursor:'pointer', flexShrink:0 }}>
               Complete →
             </button>
           </div>
@@ -447,17 +449,17 @@ function DineProductCard({ product, onAdd, onTap }) {
           ? <img src={product.imageUrl} alt={product.name} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
           : <span style={{ fontSize:32 }}>🍖</span>}
         {product.miraPick && <div style={{ position:'absolute', top:8, left:8, background:'linear-gradient(135deg,#FF8C42,#C44DFF)', borderRadius:6, padding:'2px 7px', fontSize:9, color:'#fff', fontWeight:700 }}>✦ Mira&apos;s pick</div>}
-        {!product.miraPick && product.tag && <div style={{ position:'absolute', top:8, left:8, background:'rgba(43,23,11,0.75)', borderRadius:6, padding:'2px 7px', fontSize:10, color:'#fff', fontWeight:700 }}>{product.tag}</div>}
-        {product.mira_hint && <div style={{ position:'absolute', bottom:0, left:0, right:0, background:'linear-gradient(transparent,rgba(43,23,11,0.7))', padding:'4px 8px', fontSize:10, color:'#FFD080' }}>✦ {product.mira_hint}</div>}
+        {!product.miraPick && product.tag && <div style={{ position:'absolute', top:8, left:8, background:'rgba(43,23,11,0.75)', borderRadius:6, padding:'2px 7px', fontSize:14, color:'#fff', fontWeight:700 }}>{product.tag}</div>}
+        {product.mira_hint && <div style={{ position:'absolute', bottom:0, left:0, right:0, background:'linear-gradient(transparent,rgba(43,23,11,0.7))', padding:'4px 8px', fontSize:14, color:'#FFD080' }}>✦ {product.mira_hint}</div>}
       </div>
       <div style={{ padding:'10px 12px 14px' }}>
         <div style={{ fontSize:14, fontWeight:600, marginBottom:3, lineHeight:1.3 }}>{product.name}</div>
-        <div style={{ fontSize:12, color:C.taupe, marginBottom:10, lineHeight:1.4 }}>{product.desc}</div>
+        <div style={{ fontSize:14, color:C.taupe, marginBottom:10, lineHeight:1.4 }}>{product.desc}</div>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
           <div style={{ fontSize:15, fontWeight:700, color:C.amber }}>{product.price}</div>
           <button
             onClick={e => { e.stopPropagation(); vibe('success'); setAdded(true); onAdd?.(product); }}
-            style={{ padding:'7px 14px', borderRadius:999, border:'none', background:added ? '#E8F5E9' : CTAGrad, color:added ? '#27AE60' : '#fff', fontSize:12, fontWeight:700, cursor:'pointer', minHeight:36 }}
+            style={{ padding:'7px 14px', borderRadius:999, border:'none', background:added ? '#E8F5E9' : CTAGrad, color:added ? '#27AE60' : '#fff', fontSize:14, fontWeight:700, cursor:'pointer', minHeight:36 }}
           >
             {added ? '✓ Added' : 'Add'}
           </button>
@@ -513,8 +515,8 @@ function DineDimensionsRail({ dims, openDim, onSelect, pet, apiProducts, onAdd, 
           >
             <div style={{ fontSize:28, marginBottom:8 }}>{dim.icon}</div>
             <div style={{ fontSize:15, fontWeight:700, marginBottom:3 }}>{dim.name}</div>
-            <div style={{ fontSize:13, color:C.taupe, lineHeight:1.4, marginBottom:10 }}>{dim.sub}</div>
-            <div style={{ display:'inline-flex', background:'rgba(0,0,0,0.07)', borderRadius:999, padding:'4px 10px', fontSize:11, fontWeight:600 }}>{dim.badge}</div>
+            <div style={{ fontSize:14, color:C.taupe, lineHeight:1.4, marginBottom:10 }}>{dim.sub}</div>
+            <div style={{ display:'inline-flex', background:'rgba(0,0,0,0.07)', borderRadius:999, padding:'4px 10px', fontSize:14, fontWeight:600 }}>{dim.badge}</div>
           </div>
         ))}
       </div>
@@ -526,7 +528,7 @@ function DineDimensionsRail({ dims, openDim, onSelect, pet, apiProducts, onAdd, 
           {/* Mira bar */}
           <div style={{ display:'flex', gap:8, alignItems:'flex-start', background:C.chipBg, borderRadius:12, padding:'10px 12px', marginBottom:14 }}>
             <span style={{ fontSize:14 }}>✦</span>
-            <div style={{ fontSize:13, fontStyle:'italic', color:C.miraAcc, lineHeight:1.5 }}>
+            <div style={{ fontSize:14, fontStyle:'italic', color:C.miraAcc, lineHeight:1.5 }}>
               I&apos;ve filtered this for {name}&apos;s body and taste.
               {allergies.length > 0 && ` No ${allergies.slice(0,2).join(' or ')}.`}
               {loves.length > 0 && ` ${loves[0].charAt(0).toUpperCase() + loves[0].slice(1)} picks are first.`}
@@ -539,7 +541,7 @@ function DineDimensionsRail({ dims, openDim, onSelect, pet, apiProducts, onAdd, 
               <button
                 key={tab}
                 className={`dp-chip${activeTab === tab ? ' on' : ''}`}
-                style={{ fontSize:13 }}
+                style={{ fontSize:14 }}
                 onClick={() => { vibe('light'); setActiveTab(tab); }}
               >
                 {tab}
@@ -554,7 +556,7 @@ function DineDimensionsRail({ dims, openDim, onSelect, pet, apiProducts, onAdd, 
               {allergies.length > 0 ? (
                 <>
                   <div style={{ fontSize:14, color:C.taupe }}>Mira filtered everything here for {name}&apos;s {allergies.slice(0,2).join(' & ')} allergies.</div>
-                  <div style={{ marginTop:8, fontSize:13, color:'#27AE60', fontWeight:600 }}>Ask Concierge to source safe alternatives →</div>
+                  <div style={{ marginTop:8, fontSize:14, color:'#27AE60', fontWeight:600 }}>Ask Concierge to source safe alternatives →</div>
                 </>
               ) : (
                 <div style={{ fontSize:14, color:C.taupe }}>
@@ -562,7 +564,7 @@ function DineDimensionsRail({ dims, openDim, onSelect, pet, apiProducts, onAdd, 
                 </div>
               )}
               {activeTab !== 'All' && normalised.length === 0 && !allergies.length && (
-                <button onClick={() => setActiveTab('All')} style={{ marginTop:12, padding:'8px 16px', borderRadius:999, background:C.chipBg, color:C.chipTxt, border:'none', cursor:'pointer', fontSize:13, fontWeight:600 }}>
+                <button onClick={() => setActiveTab('All')} style={{ marginTop:12, padding:'8px 16px', borderRadius:999, background:C.chipBg, color:C.chipTxt, border:'none', cursor:'pointer', fontSize:14, fontWeight:600 }}>
                   Show all →
                 </button>
               )}
@@ -572,8 +574,8 @@ function DineDimensionsRail({ dims, openDim, onSelect, pet, apiProducts, onAdd, 
               {/* Mira's pick callout */}
               {normalised[0]?.miraPick && (
                 <div style={{ background:'linear-gradient(135deg,rgba(255,140,66,0.1),rgba(196,77,255,0.06))', border:'1px solid rgba(255,140,66,0.3)', borderRadius:12, padding:'10px 14px', display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
-                  <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, color:'#fff', flexShrink:0 }}>✦</div>
-                  <div style={{ fontSize:13, color:'#3D1A00', lineHeight:1.4 }}>
+                  <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, color:'#fff', flexShrink:0 }}>✦</div>
+                  <div style={{ fontSize:14, color:'#3D1A00', lineHeight:1.4 }}>
                     <strong>Mira&apos;s pick:</strong> {normalised[0].name}
                     {normalised[0].mira_hint && <span style={{ color:'#888', marginLeft:5 }}>— {normalised[0].mira_hint}</span>}
                   </div>
@@ -585,7 +587,7 @@ function DineDimensionsRail({ dims, openDim, onSelect, pet, apiProducts, onAdd, 
                 ))}
               </div>
               {/* Footer */}
-              <div style={{ borderTop:`1px solid ${C.chipBg}`, paddingTop:10, marginTop:10, fontSize:12, color:C.taupe, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+              <div style={{ borderTop:`1px solid ${C.chipBg}`, paddingTop:10, marginTop:10, fontSize:14, color:C.taupe, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                 <span>{normalised.length} items · filtered for {name}{allergies.length > 0 ? ` · no ${allergies.slice(0,2).join(', ')}` : ''}</span>
                 {rawProducts.length > normalised.length && (
                   <span style={{ color:C.orange, fontWeight:600 }}>{rawProducts.length - normalised.length} filtered</span>
@@ -612,7 +614,7 @@ function DineMiraBar({ pet, onOpen }) {
 
   return (
     <div style={{ margin:'0 16px 20px', background:C.brown, borderRadius:20, padding:16 }}>
-      <div style={{ fontSize:11, fontWeight:700, color:C.apricot, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {name.toUpperCase()}&apos;S NUTRITION</div>
+      <div style={{ fontSize:14, fontWeight:700, color:C.apricot, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {name.toUpperCase()}&apos;S NUTRITION</div>
       <div style={{ fontSize:14, color:'#FFCC80', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>&quot;{text}&quot;</div>
       <button className="dp-cta" onClick={() => { vibe('medium'); onOpen(); }}>See Mira&apos;s Picks for {name} →</button>
     </div>
@@ -636,7 +638,7 @@ function DineMiraPicksSheet({ pet, products = [], services = [], onClose, onConc
         <div style={{ display:'grid', gap:12 }}>
           {services.slice(0, 2).map((svc, i) => (
             <div key={i} style={{ borderRadius:20, background:DarkGrad, padding:'18px 16px' }}>
-              <div style={{ fontSize:11, letterSpacing:'0.08em', color:C.apricot, marginBottom:8 }}>MIRA SERVICE PICK</div>
+              <div style={{ fontSize:14, letterSpacing:'0.08em', color:C.apricot, marginBottom:8 }}>MIRA SERVICE PICK</div>
               <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:6 }}>{svc.name}</div>
               <div style={{ fontSize:14, color:'rgba(255,255,255,0.6)', lineHeight:1.6, marginBottom:14 }}>{svc.desc}</div>
               <button className="dp-cta" onClick={() => onConcierge?.(svc)}>Reserve via Concierge®</button>
@@ -662,7 +664,7 @@ function DineSoulMadeInlineCard({ pet, onOpen }) {
         style={{ position:'relative', overflow:'hidden', padding:'20px 18px', background:'linear-gradient(135deg,#1A0A00,#381207)', color:'#fff', cursor:'pointer' }}
       >
         <div style={{ position:'absolute', top:-30, right:-20, width:120, height:120, borderRadius:'50%', background:'radial-gradient(circle,rgba(255,179,106,0.18) 0%,transparent 70%)' }} />
-        <div style={{ fontSize:11, letterSpacing:'0.14em', color:C.apricot, fontWeight:700, marginBottom:10 }}>✦ SOUL MADE™ · MADE ONLY FOR {name.toUpperCase()}</div>
+        <div style={{ fontSize:14, letterSpacing:'0.14em', color:C.apricot, fontWeight:700, marginBottom:10 }}>✦ SOUL MADE™ · MADE ONLY FOR {name.toUpperCase()}</div>
         <div style={{ fontSize:22, fontWeight:700, lineHeight:1.2, marginBottom:8 }}>{name}&apos;s face. On bowls, aprons, placemats and more.</div>
         <div style={{ fontSize:14, color:'rgba(255,255,255,0.62)', lineHeight:1.6, marginBottom:14 }}>One-of-one dining pieces, designed around your dog.</div>
         <button className="dp-cta" style={{ background:'linear-gradient(135deg,#FF8C42,#C44400)' }}>Make something only {name} has →</button>
@@ -676,7 +678,7 @@ function DineConciergeCard({ pet, onOpen }) {
   const name = pet?.name || 'your dog';
   return (
     <div style={{ margin:'0 16px 24px', background:C.brown, borderRadius:24, padding:20 }}>
-      <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:'rgba(201,151,58,0.2)', border:'1px solid rgba(201,151,58,0.4)', borderRadius:999, padding:'5px 14px', color:'#F0C060', fontSize:12, fontWeight:600, marginBottom:12 }}>👑 Dining Concierge®</div>
+      <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:'rgba(201,151,58,0.2)', border:'1px solid rgba(201,151,58,0.4)', borderRadius:999, padding:'5px 14px', color:'#F0C060', fontSize:14, fontWeight:600, marginBottom:12 }}>👑 Dining Concierge®</div>
       <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.2, marginBottom:10, fontFamily:'Georgia,serif' }}>Want us to plan the whole outing for {name}?</div>
       <div style={{ fontSize:14, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>We find the right venue, check food safety, make the reservation, and have a safe meal waiting.</div>
       <button onClick={() => { vibe('medium'); onOpen?.(); }} style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:'linear-gradient(135deg,#C9973A,#F0C060)', color:C.brown, fontSize:15, fontWeight:700, cursor:'pointer' }}>
@@ -919,7 +921,7 @@ function DineMobilePage() {
 
   return (
     <PillarPageLayout pillar="dine" hideHero hideNavigation>
-      <div className="dp" data-testid="dine-mobile-v11">
+      <div className="dp mobile-page-container" data-testid="dine-mobile-v11">
         <style>{CSS}</style>
 
         {/* Modals & Sheets */}
@@ -973,7 +975,7 @@ function DineMobilePage() {
 
         {/* Toast */}
         {toastMsg && (
-          <div style={{ position:'fixed', left:'50%', bottom:'calc(92px + env(safe-area-inset-bottom))', transform:'translateX(-50%)', zIndex:9000, background:C.dark, color:'#fff', padding:'10px 16px', borderRadius:999, fontSize:13, fontWeight:600, boxShadow:'0 12px 28px rgba(0,0,0,0.24)', whiteSpace:'nowrap' }}>
+          <div style={{ position:'fixed', left:'50%', bottom:'calc(92px + env(safe-area-inset-bottom))', transform:'translateX(-50%)', zIndex:9000, background:C.dark, color:'#fff', padding:'10px 16px', borderRadius:999, fontSize:14, fontWeight:600, boxShadow:'0 12px 28px rgba(0,0,0,0.24)', whiteSpace:'nowrap' }}>
             {toastMsg}
           </div>
         )}
@@ -983,14 +985,14 @@ function DineMobilePage() {
           <div style={{ position:'absolute', top:-60, right:-40, width:200, height:200, background:'radial-gradient(circle,rgba(255,140,66,0.2) 0%,transparent 70%)', borderRadius:'50%', pointerEvents:'none' }} />
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
-              <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
+              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🍽️ Dine</div>
             </div>
             {contextPets?.length > 1 && (
               <select
                 value={currentPet?.id}
                 onChange={e => { vibe('light'); setCurrentPet(contextPets.find(p => p.id === e.target.value)); }}
-                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:13 }}
+                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:14 }}
               >
                 {contextPets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
@@ -1009,10 +1011,10 @@ function DineMobilePage() {
 
           <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
             {getAllergies(currentPet).map(a => (
-              <div key={a} style={{ display:'inline-flex', alignItems:'center', background:'rgba(255,107,100,0.15)', border:'1px solid rgba(255,107,100,0.3)', borderRadius:999, padding:'5px 12px', fontSize:13, color:'#FFB3B0', fontWeight:500 }}>⚠️ No {a}</div>
+              <div key={a} style={{ display:'inline-flex', alignItems:'center', background:'rgba(255,107,100,0.15)', border:'1px solid rgba(255,107,100,0.3)', borderRadius:999, padding:'5px 12px', fontSize:14, color:'#FFB3B0', fontWeight:500 }}>⚠️ No {a}</div>
             ))}
             {getFavourite(currentPet) && (
-              <div style={{ display:'inline-flex', alignItems:'center', background:'rgba(255,208,128,0.12)', border:'1px solid rgba(255,208,128,0.3)', borderRadius:999, padding:'5px 12px', fontSize:13, color:'#FFD080', fontWeight:500 }}>💚 Loves {getFavourite(currentPet)}</div>
+              <div style={{ display:'inline-flex', alignItems:'center', background:'rgba(255,208,128,0.12)', border:'1px solid rgba(255,208,128,0.3)', borderRadius:999, padding:'5px 12px', fontSize:14, color:'#FFD080', fontWeight:500 }}>💚 Loves {getFavourite(currentPet)}</div>
             )}
           </div>
         </div>
@@ -1058,7 +1060,7 @@ function DineMobilePage() {
             </div>
 
             {/* ── All products (intelligence sorted) ── */}
-            {flatProducts.length > 0 && (
+            {flatProducts.length > 0 ? (
               <div style={{ padding:'0 16px 24px' }}>
                 <div style={{ fontSize:18, fontWeight:700, marginBottom:14 }}>
                   {getAllergies(currentPet).length > 0
@@ -1078,6 +1080,19 @@ function DineMobilePage() {
                     return <DineProductCard key={card.id} product={card} onAdd={handleAddToCart} onTap={() => setSelectedProduct(p)} />;
                   })}
                 </div>
+              </div>
+            ) : (
+              <div style={{ padding:'0 16px 24px' }}>
+                <MiraEmptyRequest
+                  pet={currentPet}
+                  pillar="dine"
+                  categoryName="Food & Nutrition"
+                  accentColor="#D97706"
+                  onRequest={async (msg) => {
+                    await request(msg, { channel:'dine_empty_products', metadata:{ petName } });
+                    showToast(`Sent to Mira for ${petName}`);
+                  }}
+                />
               </div>
             )}
 
