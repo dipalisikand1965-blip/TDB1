@@ -335,9 +335,6 @@ export default function CelebrateMobilePage() {
           </div>
         </div>
 
-        {/* Pet profile card */}
-        <CelebratePetCard pet={currentPet} onOpen={() => setProfileOpen(true)} />
-
         {/* Soul profile questions */}
         <div style={{ padding:'0 16px 8px' }}>
           <PillarSoulProfile pet={currentPet} pillar="celebrate" token={token} />
