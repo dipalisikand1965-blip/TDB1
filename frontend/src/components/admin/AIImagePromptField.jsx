@@ -35,9 +35,10 @@ export default function AIImagePromptField({ entityType, entityId, currentPrompt
     setError(null);
     setResult(null);
     try {
+      const adminAuth = (() => { try { return 'Basic ' + localStorage.getItem('adminAuth'); } catch { return ''; } })();
       const res = await fetch(`${API_URL}/api/admin/generate-image`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': adminAuth },
         body: JSON.stringify({ prompt: prompt.trim(), entity_type: entityType, entity_id: entityId }),
       });
       if (!res.ok) {

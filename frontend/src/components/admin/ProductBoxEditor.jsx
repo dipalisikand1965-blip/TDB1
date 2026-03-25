@@ -568,10 +568,32 @@ const ProductBoxEditor = ({
               <label className="flex items-center gap-2">
                 <Switch 
                   checked={getValue('basics.is_service', false)}
-                  onCheckedChange={(v) => updateField('basics.is_service', v)}
+                  onCheckedChange={(v) => {
+                    updateField('basics.is_service', v);
+                    updateField('product_type', v ? 'service' : 'physical');
+                    if (v) {
+                      // Auto-behaviour when marking as service:
+                      // 1. Zero out price (services have no listed price)
+                      updateField('price', 0);
+                      updateField('pricing.base_price', 0);
+                      updateField('pricing.selling_price', 0);
+                      // 2. Mark as concierge-only (hides add-to-cart, shows "Talk to Concierge")
+                      updateField('basics.concierge_only', true);
+                      // 3. Track inventory = false (services are unlimited)
+                      updateField('inventory.track_inventory', false);
+                    }
+                  }}
                 />
-                <span className="text-sm">🛠️ Is Service</span>
+                <span className="text-sm">🛠️ Is Service <span className="text-xs text-orange-600 ml-1">(hides price, shows Concierge flow)</span></span>
               </label>
+              {getValue('basics.is_service', false) && (
+                <div className="ml-6 mt-2 p-3 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-700 space-y-1">
+                  <div className="font-semibold">Service mode active:</div>
+                  <div>• Price hidden from customers (shows &quot;Price on Request&quot;)</div>
+                  <div>• Add-to-cart replaced with &quot;Talk to Concierge&quot;</div>
+                  <div>• Use AI Image tab below to generate a watercolour illustration</div>
+                </div>
+              )}
               <label className="flex items-center gap-2">
                 <Switch 
                   checked={getValue('basics.is_bundle', false)}

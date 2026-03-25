@@ -658,6 +658,9 @@ async def get_all_products(
         ]})
     if status:
         and_conditions.append({"visibility.status": status})
+    else:
+        # Default: exclude archived products from admin list
+        and_conditions.append({"visibility.status": {"$ne": "archived"}})
     if reward_eligible is not None:
         and_conditions.append({"paw_rewards.is_reward_eligible": reward_eligible})
     if shipping:
@@ -998,6 +1001,8 @@ async def delete_product(product_id: str):
         {"id": product_id},
         {"$set": {
             "visibility.status": "archived",
+            "is_active": False,
+            "active": False,
             "updated_at": datetime.now(timezone.utc).isoformat()
         }}
     )

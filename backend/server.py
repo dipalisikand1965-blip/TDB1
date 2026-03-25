@@ -11773,7 +11773,9 @@ async def seed_new_product_type(request: dict):
 
 @api_router.patch("/admin/products/{product_id}/toggle-active")
 async def toggle_product_active(product_id: str):
-    """Toggle is_active status for a product in products_master"""
+    """Toggle is_active status for a product in products_master.
+    NOTE: This only changes is_active flag — does NOT change visibility.status.
+    Use DELETE /api/product-box/products/{id} to archive (hide from admin list)."""
     product = await db.products_master.find_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]}
     )
@@ -11781,14 +11783,19 @@ async def toggle_product_active(product_id: str):
         raise HTTPException(status_code=404, detail="Product not found")
     
     new_status = not product.get("is_active", True)
+    # When re-activating, also restore visibility.status (un-archive if needed)
+    # When deactivating, only change is_active — do NOT archive (archive is a separate action)
+    update_fields = {
+        "is_active": new_status,
+        "active": new_status,
+        "updated_at": get_utc_timestamp()
+    }
+    if new_status:
+        update_fields["visibility.status"] = "active"
+    
     await db.products_master.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
-        {"$set": {
-            "is_active": new_status,
-            "active": new_status,
-            "visibility.status": "active" if new_status else "archived",
-            "updated_at": get_utc_timestamp()
-        }}
+        {"$set": update_fields}
     )
     
     return {"success": True, "is_active": new_status}
