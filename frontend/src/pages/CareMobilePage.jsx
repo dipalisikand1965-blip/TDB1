@@ -1,8 +1,10 @@
 /**
  * CareMobilePage.jsx — /care (mobile)
- * Colour: Sage green #2D6A4F → #40916C
+ * 3-tab layout: Care & Products | Care Services | Find Care
+ * Products tab: dimTab (Products/Personalised) + sub-category pills
+ * Colour: Sage Green #40916C
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -12,99 +14,64 @@ import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
 import PillarPageLayout from '../components/PillarPageLayout';
-import SoulMadeModal from '../components/SoulMadeModal';
 import PillarSoulProfile from '../components/PillarSoulProfile';
-import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
-import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
-import CareCategoryStrip from '../components/care/CareCategoryStrip';
-import GuidedCarePaths from '../components/care/GuidedCarePaths';
 import CareConciergeSection from '../components/care/CareConciergeSection';
 import CareNearMe from '../components/care/CareNearMe';
+import GuidedCarePaths from '../components/care/GuidedCarePaths';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
+import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
+import MiraImaginesCard from '../components/common/MiraImaginesCard';
+import SoulMadeModal from '../components/SoulMadeModal';
+import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 
 const G = {
-  green:  '#2D6A4F',
-  greenL: '#40916C',
-  greenXL:'#74C69D',
-  cream:  '#F0FFF4',
-  border: '#C8E6C9',
-  dark:   '#0D2B1A',
-  taupe:  '#5C7A6A',
+  sage:'#40916C', deepMid:'#1B4332', mid:'#2D6A4F', light:'#74C69D',
+  pale:'#D8F3DC', cream:'#F0FDF4', greenBg:'#F0FDF4', greenBorder:'rgba(64,145,108,0.2)',
+  dark:'#0A1F13', darkText:'#1B4332', mutedText:'#40916C',
+  border:'rgba(64,145,108,0.18)',
 };
+const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+.care-m{font-family:'DM Sans',-apple-system,sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+.care-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${G.mid},${G.sage});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}
+.care-cta:active{transform:scale(0.97)}
+.care-tab{flex:1;padding:12px 4px;background:none;border:none;border-bottom:2.5px solid transparent;font-size:13px;font-weight:500;color:#999;cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:inherit}
+.care-tab.active{color:${G.sage};border-bottom-color:${G.sage};font-weight:700}`;
 
-const CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
-  .care { font-family:'DM Sans',-apple-system,sans-serif; background:${G.cream}; color:${G.dark}; min-height:100vh; padding-bottom:calc(96px + env(safe-area-inset-bottom)); }
-  .care-card { background:#fff; border:1px solid ${G.border}; border-radius:22px; }
-  .care-cta { display:flex; align-items:center; justify-content:center; width:100%; min-height:48px; padding:13px 20px; border-radius:14px; border:none; background:linear-gradient(135deg,${G.green},${G.greenL}); color:#fff; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; transition:transform 0.15s; }
-  .care-cta:active { transform:scale(0.97); }
-  .no-sb { overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none; }
-  .no-sb::-webkit-scrollbar { display:none; }
-  @keyframes care-up { from{transform:translateY(100%)} to{transform:translateY(0)} }
-`;
+function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'?[12]:[6]); }
 
-function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='success'?[8,40,10]:t==='medium'?[12]:[6]); }
 function getAllergies(pet) {
-  const s=new Set();
-  const add=v=>{if(Array.isArray(v))v.forEach(x=>{if(x&&!/^(none|no|unknown)$/i.test(String(x).trim()))s.add(String(x).trim());});else if(v&&!/^(none|no|unknown)$/i.test(String(v).trim()))s.add(String(v).trim());};
-  add(pet?.preferences?.allergies);add(pet?.doggy_soul_answers?.food_allergies);add(pet?.allergies);
-  return [...s];
+  const raw = pet?.allergies; let arr = [];
+  if (Array.isArray(raw)) arr = raw;
+  else if (typeof raw === 'string') arr = raw.split(',').map(s => s.trim());
+  return arr.filter(a => a && !['none','no allergies','nil','n/a'].includes(a.toLowerCase()));
+}
+function getCoatType(pet) {
+  const b = (pet?.breed || '').toLowerCase();
+  if (/poodle|schnauzer|bichon|maltese|shih|yorkshire/.test(b)) return 'curly';
+  if (/golden|husky|border|chow|samoyed/.test(b)) return 'long';
+  if (/boxer|bulldog|lab|pointer|weimaraner|dalmatian/.test(b)) return 'short';
+  return 'medium';
+}
+function getHealthCondition(pet) { return pet?.health_condition || pet?.medical_condition || null; }
+function applyMiraIntelligence(products, allergies, coat, condition, pet) {
+  if (!allergies?.length && !coat && !condition) return products;
+  return products.filter(p => {
+    const text = `${p.name} ${p.description || ''} ${p.ingredients || ''}`.toLowerCase();
+    if (allergies?.length) { for (const a of allergies) { if (text.includes(a.toLowerCase()) && !text.includes('free')) return false; } }
+    return true;
+  });
+}
+const KNOWN_BREEDS = ['american bully','beagle','border collie','boxer','cavalier','chihuahua','chow chow','dachshund','dalmatian','doberman','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','jack russell','labrador','lhasa apso','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
+function filterBreedProducts(products, petBreed) {
+  const pl=(petBreed||'').toLowerCase(); const pw=pl.split(/\s+/).filter(w=>w.length>2);
+  return products.filter(p=>{const n=(p.name||'').toLowerCase();for(const b of KNOWN_BREEDS){if(n.includes(b)){if(!pl)return false;if(n.includes(pl))return true;if(pw.some(w=>b.includes(w)))return true;return false;}}return true;});
 }
 
-function CarePetCard({ pet, onOpen }) {
-  const name = pet?.name||'your dog', breed=pet?.breed||'mixed', score=Math.round(pet?.overall_score||pet?.soul_score||0);
-  const allergies = getAllergies(pet);
-  return (
-    <div onClick={() => { vibe(); onOpen(); }} className="care-card"
-      style={{ padding:16, margin:'0 16px 20px', cursor:'pointer', boxShadow:'0 4px 20px rgba(45,106,79,0.08)' }}>
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:12 }}>
-        <div style={{ display:'flex', alignItems:'center', gap:12, flex:1, minWidth:0 }}>
-          <div style={{ width:52, height:52, borderRadius:'50%', flexShrink:0, background:`linear-gradient(135deg,${G.greenXL},${G.greenL})`, display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden' }}>
-            {pet?.photo_url?<img src={pet.photo_url} alt={name} style={{ width:'100%',height:'100%',objectFit:'cover' }}/>:<span style={{ fontSize:22 }}>🐾</span>}
-          </div>
-          <div style={{ minWidth:0 }}>
-            <div style={{ fontSize:17, fontWeight:700, marginBottom:4 }}>{name}&apos;s Care Profile</div>
-            <div style={{ background:'#E8F5E9', borderRadius:999, padding:'3px 10px', display:'inline-block', marginBottom:4 }}>
-              <span style={{ fontSize:13, color:G.green, fontWeight:500 }}>{breed}</span>
-            </div>
-            <div style={{ fontSize:13, color:G.taupe }}>{allergies.length?`No ${allergies.join(', ')}`:'Health, grooming & wellness'}</div>
-          </div>
-        </div>
-        <div style={{ textAlign:'right', flexShrink:0 }}>
-          <div style={{ fontSize:24, fontWeight:700, color:G.greenL }}>{score}%</div>
-          <div style={{ fontSize:10, color:G.taupe, letterSpacing:'0.08em' }}>SOUL</div>
-          <div style={{ fontSize:11, color:G.green, marginTop:2 }}>Tap →</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CareMiraBar({ pet, onOpen }) {
-  const name=pet?.name||'your dog', allergies=getAllergies(pet);
-  const text=allergies.length>0?`I know ${name}&apos;s health profile. Everything here is safe for them.`:`I&apos;ve curated ${name}&apos;s care picks based on their breed, age, and health history.`;
-  return (
-    <div style={{ margin:'0 16px 20px', background:G.dark, borderRadius:20, padding:16 }}>
-      <div style={{ fontSize:11, fontWeight:700, color:'rgba(116,198,157,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {name.toUpperCase()}&apos;S HEALTH</div>
-      <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>&quot;{text}&quot;</div>
-      <button className="care-cta" onClick={() => { vibe('medium'); onOpen(); }}>See Mira&apos;s Care Picks →</button>
-    </div>
-  );
-}
-
-function CareConciergeCard({ pet, onOpen }) {
-  const name=pet?.name||'your dog';
-  return (
-    <div style={{ margin:'0 16px 24px', background:G.dark, borderRadius:24, padding:20 }}>
-      <div style={{ display:'inline-flex', background:'rgba(116,198,157,0.2)', border:'1px solid rgba(116,198,157,0.4)', borderRadius:999, padding:'5px 14px', color:G.greenXL, fontSize:12, fontWeight:600, marginBottom:12 }}>🌿 Care Concierge®</div>
-      <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.2, marginBottom:10, fontFamily:'Georgia,serif' }}>Want us to handle {name}&apos;s entire care schedule?</div>
-      <div style={{ fontSize:14, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>Vet bookings, grooming appointments, medication reminders — all coordinated for you.</div>
-      <button onClick={() => { vibe('medium'); onOpen?.(); }} style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:`linear-gradient(135deg,${G.greenL},${G.greenXL})`, color:G.dark, fontSize:15, fontWeight:700, cursor:'pointer' }}>
-        🌿 Talk to Care Concierge®
-      </button>
-    </div>
-  );
-}
+const CARE_IMAGINES = [
+  { id:'c-1', emoji:'🧴', name:'Grooming Essentials Kit', description:'Breed-appropriate shampoo, conditioner, and grooming tools — curated for your dog.' },
+  { id:'c-2', emoji:'🦷', name:'Dental Care Bundle', description:'Enzymatic toothpaste, finger brush, and dental chews — complete dental health at home.' },
+  { id:'c-3', emoji:'💊', name:'Supplement Stack', description:'Vet-recommended supplements — joint support, coat health, and immunity — for your breed.' },
+];
 
 export default function CareMobilePage() {
   const { token } = useAuth();
@@ -113,13 +80,14 @@ export default function CareMobilePage() {
   usePlatformTracking({ pillar:'care', pet:currentPet });
   const { request } = useConcierge({ pet:currentPet, pillar:'care' });
   const { addToCart } = useCart();
+
   const [loading, setLoading] = useState(true);
-  const [intakeOpen, setIntakeOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('care');
+  const [dimTab, setDimTab] = useState('products');
+  const [subCat, setSubCat] = useState('All');
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [prodLoading, setProdLoading] = useState(false);
-  const [miraPicksOpen, setMiraPicksOpen] = useState(false);
+  const [allRaw, setAllRaw] = useState([]);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -127,53 +95,43 @@ export default function CareMobilePage() {
   }, [contextPets, currentPet, setCurrentPet]);
 
   useEffect(() => {
-    const h = () => {};
-    window.addEventListener('soulScoreUpdated', h);
-    return () => window.removeEventListener('soulScoreUpdated', h);
-  }, []);
-
-  // Fetch products for this pillar
-  useEffect(() => {
     if (!currentPet?.id) return;
-    setProdLoading(true);
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=care&limit=200`, {
-      headers: token ? { Authorization:`Bearer ${token}` } : {}
-    })
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=care&limit=200`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
       .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (data?.products?.length) {
-          const petBreed = (currentPet.breed || '').toLowerCase();
-          const filtered = data.products.filter(p => {
-            const bTags = (p.breed_tags || []).map(b => b.toLowerCase());
-            return bTags.length === 0 || bTags.includes(petBreed);
-          });
-          setProducts(filtered);
-        }
-      })
-      .catch(() => {})
-      .finally(() => setProdLoading(false));
-  }, [currentPet?.id, currentPet?.breed, token]);
+      .then(d => { if (d?.products) setAllRaw(filterBreedProducts(d.products, currentPet?.breed)); })
+      .catch(() => {});
+  }, [currentPet?.id, token]);
 
-  const handleAddToCart = useCallback(product => {
-    addToCart({ id: product.id || product._id, name: product.name, price: product.price || 0, image: product.image_url || product.images?.[0], pillar: 'care', quantity: 1 });
-    tdc.view({ product: product.name, pillar: 'care', pet: currentPet, channel: 'care_mobile_add_to_cart' });
-  }, [addToCart, currentPet]);
+  const handleAddToCart = useCallback(p => {
+    addToCart({ id:p.id||p._id, name:p.name, price:p.price||0, image:p.image_url||p.images?.[0], pillar:'care', quantity:1 });
+  }, [addToCart]);
 
-  if (loading) return <PillarPageLayout pillar="care" hideHero hideNavigation><div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}><div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🌿</div><div>Loading care picks…</div></div></div></PillarPageLayout>;
+  if (loading) return (
+    <PillarPageLayout pillar="care" hideHero hideNavigation>
+      <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
+        <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🌿</div><div>Loading care products…</div></div>
+      </div>
+    </PillarPageLayout>
+  );
 
-  if (!currentPet) return <PillarPageLayout pillar="care" hideHero hideNavigation><style>{CSS}</style><div className="care"><div style={{ padding:'24px 16px', textAlign:'center' }}><div className="care-card" style={{ padding:'32px 20px' }}><div style={{ fontSize:44, marginBottom:14 }}>🌿</div><div style={{ fontSize:22, fontWeight:700, marginBottom:8 }}>Add your pet to unlock Care</div><button className="care-cta" style={{ marginTop:16 }} onClick={() => navigate('/join')}>Add your pet →</button></div></div></div></PillarPageLayout>;
-
-  const petName = currentPet.name;
+  const petName = currentPet?.name || 'your dog';
+  const allergies = getAllergies(currentPet);
+  const coat = getCoatType(currentPet);
+  const condition = getHealthCondition(currentPet);
+  const intelligent = applyMiraIntelligence(allRaw, allergies, coat, condition, currentPet);
+  const subCats = ['All', ...new Set(intelligent.map(p => p.sub_category).filter(Boolean))];
+  const products = subCat === 'All' ? intelligent : intelligent.filter(p => p.sub_category === subCat);
 
   return (
     <PillarPageLayout pillar="care" hideHero hideNavigation>
-      <div className="care" data-testid="care-mobile">
+      <div className="care-m" data-testid="care-mobile">
         <style>{CSS}</style>
-        {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="care" pillarColor={G.greenL} pillarLabel="Care" onClose={() => setSoulMadeOpen(false)} />}
-        {selectedProduct && <ProductDetailModal product={selectedProduct?.raw||selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.greenL} />}
 
-        {/* HERO */}
-        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.green} 50%,${G.greenL} 100%)`, padding:'32px 16px 24px', position:'relative', overflow:'hidden' }}>
+        {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="care" pillarColor={G.sage} pillarLabel="Care" onClose={() => setSoulMadeOpen(false)} />}
+        {selectedProduct && <ProductDetailModal product={selectedProduct?.raw || selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.sage} />}
+
+        {/* Hero */}
+        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deepMid} 55%,${G.mid} 100%)`, padding:'32px 16px 20px' }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
               <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
@@ -186,60 +144,135 @@ export default function CareMobilePage() {
               </select>
             )}
           </div>
-          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:14 }}>
-            <div style={{ width:52, height:52, borderRadius:'50%', flexShrink:0, background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden' }}>
-              {currentPet?.photo_url?<img src={currentPet.photo_url} alt={petName} style={{ width:'100%',height:'100%',objectFit:'cover' }}/>:<span style={{ fontSize:22 }}>🐾</span>}
-            </div>
-            <div>
-              <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.1 }}>Health & Wellness</div>
-              <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)', marginTop:2 }}>for {petName}</div>
-            </div>
-          </div>
-          <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
-            {getAllergies(currentPet).map(a => <div key={a} style={{ background:'rgba(255,107,100,0.15)', border:'1px solid rgba(255,107,100,0.3)', borderRadius:999, padding:'4px 10px', fontSize:11, color:'#FFB3B0' }}>⚠️ No {a}</div>)}
-          </div>
+          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Care & Wellness for {petName}</div>
+          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Grooming, health, dental, coat — all personalised</div>
         </div>
 
-        <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="care" token={token} /></div>
-        <CareCategoryStrip pet={currentPet} />
+        {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="care" token={token} /></div>}
 
-        <div style={{ padding:'0 16px 16px' }}>
-          <div style={{ fontSize:26, fontWeight:700, marginBottom:6 }}>How can we care for {petName}?</div>
-          <div style={{ fontSize:15, color:G.taupe }}>Vets, grooming, health and wellness — all coordinated.</div>
+        {/* Tab Bar */}
+        <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100 }}>
+          {[
+            { id:'care',      label:'🌿 Care & Products' },
+            { id:'services',  label:'✂️ Care Services' },
+            { id:'find-care', label:'📍 Find Care' },
+          ].map(tab => (
+            <button key={tab.id} className={`care-tab${activeTab===tab.id?' active':''}`}
+              data-testid={`care-tab-${tab.id}`}
+              onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}>
+              {tab.label}
+            </button>
+          ))}
         </div>
 
-        <CareMiraBar pet={currentPet} onOpen={() => setMiraPicksOpen(true)} />
-
-        {/* ── Mira Picks Modal (opens from Mira bar) ── */}
-        {miraPicksOpen && products.length > 0 && (
-          <div style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.7)', display:'flex', alignItems:'flex-end' }} onClick={() => setMiraPicksOpen(false)}>
-            <div style={{ background:'#0a1a12', borderRadius:'24px 24px 0 0', width:'100%', maxHeight:'85vh', overflow:'auto', padding:'24px 16px 40px' }} onClick={e => e.stopPropagation()}>
-              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
-                <div style={{ fontSize:18, fontWeight:700, color:'#fff' }}>Care Products for {petName}</div>
-                <button onClick={() => setMiraPicksOpen(false)} style={{ background:'none', border:'none', color:'rgba(255,255,255,0.6)', fontSize:24, cursor:'pointer' }}>✕</button>
+        {/* TAB 1: Care & Products */}
+        {activeTab === 'care' && (
+          <div>
+            {/* Mira Bar */}
+            <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
+              <div style={{ fontSize:11, fontWeight:700, color:`rgba(116,198,157,0.9)`, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S WELLNESS</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
+                {allergies.length > 0
+                  ? `"${petName} has ${allergies.join(' and ')} sensitivities. I've filtered all products to be safe."`
+                  : `"Let me show you what ${petName} actually needs for optimal health — not just what sells."`}
               </div>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                {products.slice(0, 20).map(p => (
-                  <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="care" selectedPet={currentPet} onAddToCart={() => handleAddToCart(p)} onClick={() => { vibe(); setSelectedProduct(p); setMiraPicksOpen(false); }} />
-                ))}
-              </div>
+              <button className="care-cta" onClick={() => { vibe('medium'); request('Care recommendations', { channel:'care_mira_cta' }); }}>
+                Get {petName}'s Care Plan →
+              </button>
             </div>
+
+            {/* dimTab: Products / Personalised */}
+            <div style={{ display:'flex', margin:'16px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
+              {[{ id:'products', label:'🎯 All Products' }, { id:'personalised', label:'✦ Personalised' }].map(t => (
+                <button key={t.id} onClick={() => { setDimTab(t.id); setSubCat('All'); }}
+                  style={{ flex:1, padding:'9px', borderRadius:10, border:'none', fontSize:13, fontWeight:600, cursor:'pointer',
+                    background:dimTab===t.id?G.sage:G.pale, color:dimTab===t.id?'#fff':G.mutedText }}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+
+            {dimTab === 'personalised' ? (
+              <div style={{ padding:'16px 16px 24px' }}>
+                <PersonalisedBreedSection pet={currentPet} pillar="care" token={token} />
+                {CARE_IMAGINES.map(item => <MiraImaginesCard key={item.id} item={item} pet={currentPet} token={token} pillar="care" />)}
+              </div>
+            ) : (
+              <div style={{ padding:'16px' }}>
+                {/* Sub-category pills */}
+                {subCats.length > 1 && (
+                  <div style={{ display:'flex', gap:6, overflowX:'auto', marginBottom:12, paddingBottom:4 }}>
+                    {subCats.map(cat => (
+                      <button key={cat} onClick={() => setSubCat(cat)}
+                        style={{ flexShrink:0, padding:'6px 14px', borderRadius:20, fontSize:12, fontWeight:600,
+                          border:`1.5px solid ${subCat===cat?G.sage:G.border}`,
+                          background:subCat===cat?G.sage:'#fff',
+                          color:subCat===cat?'#fff':G.darkText, cursor:'pointer' }}>
+                        {cat.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Mira Intelligence stats */}
+                {allRaw.length > 0 && (
+                  <div style={{ display:'flex', gap:12, marginBottom:12, fontSize:12, color:'#888' }}>
+                    <span style={{ color:'#27AE60', fontWeight:700 }}>✓ {intelligent.length} safe for {petName}</span>
+                    {allRaw.length - intelligent.length > 0 && (
+                      <span style={{ color:'#E87722' }}>✗ {allRaw.length - intelligent.length} filtered</span>
+                    )}
+                  </div>
+                )}
+
+                {products.length === 0 ? (
+                  <div style={{ textAlign:'center', padding:'32px 0', color:'#888' }}>
+                    <div style={{ fontSize:32, marginBottom:8 }}>🌿</div>
+                    <div>Loading care products for {petName}…</div>
+                  </div>
+                ) : (
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                    {products.slice(0, 40).map(p => (
+                      <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="care" selectedPet={currentPet}
+                        onAddToCart={() => handleAddToCart(p)}
+                        onClick={() => { vibe(); setSelectedProduct(p); }} />
+                    ))}
+                  </div>
+                )}
+
+                {/* Mira Imagines */}
+                {currentPet && <div style={{ marginTop:16 }}><MiraImaginesBreed pet={currentPet} pillar="care" token={token} /></div>}
+
+                {/* Guided Paths */}
+                <div style={{ marginTop:16 }}><GuidedCarePaths pet={currentPet} /></div>
+
+                {/* SoulMade CTA */}
+                <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
+                  <div style={{ fontSize:10, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · MADE ONLY FOR {petName.toUpperCase()}</div>
+                  <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>{petName}'s breed-specific care, curated by Mira.</div>
+                  <button className="care-cta">Explore Soul Made →</button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
-        <div style={{ padding:'0 16px 24px' }}><MiraImaginesBreed pet={currentPet} pillar="care" token={token} /></div>
-        <div style={{ padding:'0 16px 24px' }}><PersonalisedBreedSection pet={currentPet} pillar="care" /></div>
-        <div style={{ padding:'0 16px 24px' }}><GuidedCarePaths pet={currentPet} /></div>
-        <div style={{ padding:'0 16px 24px' }}>
-          <CareNearMe pet={currentPet} onBook={venue => { tdc.request(`Book care venue for ${petName}: ${venue}`, { pillar:'care', channel:'care_nearme', pet:currentPet }); }} />
-        </div>
-        <div style={{ padding:'0 16px 24px' }}><CareConciergeSection pet={currentPet} /></div>
-        <div style={{ margin:'0 16px 24px', background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
-          <div style={{ fontSize:10, letterSpacing:'0.14em', color:G.greenXL, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · MADE ONLY FOR {petName.toUpperCase()}</div>
-          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:8 }}>{petName}&apos;s breed on care accessories, ID tags & more.</div>
-          <button className="care-cta">Make something only {petName} has →</button>
-        </div>
-        <CareConciergeCard pet={currentPet} onOpen={() => setIntakeOpen(true)} />
+        {/* TAB 2: Care Services */}
+        {activeTab === 'services' && (
+          <div style={{ padding:'16px' }}>
+            <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Care Services for {petName}</div>
+            <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Grooming, vet, dental, boarding — all arranged by Concierge®.</div>
+            <CareConciergeSection pet={currentPet} />
+          </div>
+        )}
+
+        {/* TAB 3: Find Care */}
+        {activeTab === 'find-care' && (
+          <div style={{ padding:'16px' }}>
+            <CareNearMe pet={currentPet} token={token} onBook={svc => {
+              tdc.book({ service:svc, pillar:'care', pet:currentPet, channel:'care_nearme' });
+            }} />
+          </div>
+        )}
       </div>
     </PillarPageLayout>
   );
