@@ -442,17 +442,6 @@ export default function DineSoulPage() {
   usePlatformTracking({ pillar: 'dine', pet: currentPet });
   const { request, book } = useConcierge({ pet: currentPet, pillar: 'dine' });
 
-  useEffect(() => {
-    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  if (isDesktop) {
-    return <DineSoulPageDesktopLegacy />;
-  }
-
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState('eat');
   const [railActive, setRailActive] = useState('profile');
@@ -464,6 +453,13 @@ export default function DineSoulPage() {
   const [products, setProducts] = useState([]);
   const [miraProducts, setMiraProducts] = useState([]);
   const [miraServices, setMiraServices] = useState([]);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -541,6 +537,10 @@ export default function DineSoulPage() {
       metadata: { occasion, notes }
     });
   }, [request, currentPet]);
+
+  if (isDesktop) {
+    return <DineSoulPageDesktopLegacy />;
+  }
 
   if (loading) {
     return (
