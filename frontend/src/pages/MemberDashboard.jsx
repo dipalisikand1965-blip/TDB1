@@ -1552,15 +1552,7 @@ const MemberDashboard = () => {
         </Tabs>
       </div>
       
-      {/* Floating "Ask Mira" Button - Always visible for quick access */}
-      <button
-        onClick={() => navigate('/mira')}
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full shadow-lg shadow-purple-500/40 hover:shadow-purple-500/60 hover:scale-105 transition-all group"
-        data-testid="floating-ask-mira-btn"
-      >
-        <Sparkles className="w-5 h-5 group-hover:animate-pulse" />
-        <span className="font-semibold">Ask Mira</span>
-      </button>
+      {/* Floating "Ask Mira" Button removed — the global MiraAI glass orb (App.js) handles this universally */}
     </div>
   );
 };

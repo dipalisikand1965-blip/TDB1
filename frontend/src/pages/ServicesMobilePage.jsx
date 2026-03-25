@@ -113,9 +113,10 @@ function ServiceGroupCard({ group, pet, token, onBook }) {
                     <div style={{ flex:1 }}>
                       <div style={{ fontSize:14, fontWeight:600, color:G.dark, marginBottom:2 }}>{svc.name}</div>
                       {svc.description && <div style={{ fontSize:14, color:G.taupe }}>{svc.description.slice(0, 80)}{svc.description.length > 80 ? '…' : ''}</div>}
-                      {svc.price && <div style={{ fontSize:14, fontWeight:700, color:group.colour, marginTop:2 }}>
-                        {typeof svc.price === 'number' ? `₹${svc.price.toLocaleString()}` : svc.price}
-                      </div>}
+                      {/* POLICY: Services are NEVER priced — always via Concierge */}
+                      <div style={{ fontSize:12, fontWeight:600, letterSpacing:'0.05em', color:`${group.colour}`, marginTop:4, opacity:0.7 }}>
+                        PRICE ON REQUEST · CONCIERGE
+                      </div>
                     </div>
                     <button onClick={() => onBook(svc)}
                       data-testid={`svc-book-${group.id}-${i}`}
