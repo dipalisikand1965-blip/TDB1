@@ -1,0 +1,65 @@
+{
+  "summary": "Tested all 10 admin backend fixes: archive/delete product, toggle active/inactive, AI image auth, service badge, ProductBoxEditor service toggle, ServiceBox PUT, BundlesManager. Backend: 15/16 passed (1 skipped). Frontend: all flows verified via Playwright.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "GET /api/product-box/stats",
+        "issue": "mira.suggestable hardcoded to -1 in unified_product_box.py line 1622 instead of querying DB for mira_visibility.can_suggest_proactively:true",
+        "priority": "LOW"
+      },
+      {
+        "endpoint": "TestArchiveThenRestore",
+        "issue": "Test SKIPPED because get_test_product_id() searches by text but product.id field is not included in $or search query. Manually verified archive→toggle-active restore flow works correctly (GO-STY-005 restored)."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Admin sidebar — Pillars section",
+        "issues": [
+          "Two nav items both have id='go' in Admin.jsx lines 2535-2536, causing React 'duplicate key go' console warning. One should be id='go' (Home icon / Stay) and the other id='travel' (Plane icon / Travel). Tab routing exists for both 'go' and 'travel' in render section."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_admin_backend_fixes_207.py",
+    "/app/test_reports/pytest/admin_fixes_207.xml"
+  ],
+  "action_items": [
+    "Fix Admin.jsx line 2536: change id from 'go' to 'travel' for the Plane-icon tab to remove duplicate key warning",
+    "Fix unified_product_box.py line 1622: replace hardcoded -1 with actual count query for mira_visibility.can_suggest_proactively:true",
+    "Optional: add 'id' field to product search $or query so GO-STY product IDs can be found by text search"
+  ],
+  "critical_code_review_comments": [
+    "Admin.jsx lines 2535-2536: Duplicate nav tab id='go' — both Go (Home icon) and Go (Plane icon) use same id. Should be 'go' and 'travel' respectively. This causes React key uniqueness warning and means the 'travel' tab can never be independently activated from the sidebar.",
+    "unified_product_box.py line 1622: 'suggestable': -1 is hardcoded. The -1 is actually the fallback from safe_count() timeout/error handler (line 1594 returns -1 on exception). The stat should be computed from DB."
+  ],
+  "verified_fixes": [
+    "✅ Archive product DELETE /api/product-box/products/{id}: sets visibility.status=archived, excluded from default GET list",
+    "✅ Toggle inactive PATCH /api/admin/products/{id}/toggle-active: is_active flips but visibility.status unchanged — product stays in list",
+    "✅ Toggle active (re-enable): is_active=true restored, visibility.status set to 'active'",
+    "✅ Archive then toggle-active: restored product reappears in default list (manually verified with GO-STY-005)",
+    "✅ AI generate-image POST /api/admin/generate-image with Basic auth: returns non-401 (200)",
+    "✅ UnifiedProductBox loads without crash, product list shows items",
+    "✅ Service products show 'Service' badge in price column (not ₹0) when product_type='service'",
+    "✅ ProductBoxEditor Media tab has AI Image Prompt field and Generate button",
+    "✅ ServiceBox PUT /api/service-box/services/{id} with pillar field returns 200",
+    "✅ BundlesManager GET /api/bundles returns 200 with bundles"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_admin_backend_fixes_207.py"
+  ],
+  "success_rate": {
+    "backend": "94% (15/16 passed, 1 skipped — not a failure)",
+    "frontend": "100%"
+  },
+  "seed_data_creation": "Archived GO-STY-005 during archive test, then restored via toggle-active. Also created TEST_Admin_Grooming_Check service and deleted it during ServiceBox test.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "All 5 original admin bugs confirmed fixed. Two minor issues remain: (1) Admin nav has duplicate id='go' buttons — fix Admin.jsx line 2536 to id='travel'. (2) Stats endpoint shows suggestable=-1 (hardcoded). Archive→toggle-active restore verified manually. GO-STY-005 is active. Service badge confirmed working. AI auth confirmed working."
+}
