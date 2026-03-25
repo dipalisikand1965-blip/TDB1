@@ -7,6 +7,9 @@ import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
+import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog';
 import { 
   Briefcase, Search, Plus, Edit, Trash2, RefreshCw, 
   Loader2, Eye, EyeOff, DollarSign, Clock, Check,
@@ -15,14 +18,17 @@ import {
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
 
-const PillarServicesTab = ({ pillar, pillarName, pillarIcon, pillarColor = 'bg-purple-500' }) => {
+const PillarServicesTab = ({ pillar, pillarName, pillarIcon, pillarColor = 'bg-purple-500', createTrigger = 0 }) => {
   const [services, setServices] = useState([]);
   const [allServices, setAllServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showOnlyActive, setShowOnlyActive] = useState(false);
-  const [showInactive, setShowInactive] = useState(true); // show inactive by default
+  const [showInactive, setShowInactive] = useState(true);
   const [togglingId, setTogglingId] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [newService, setNewService] = useState({ name: '', description: '', base_price: '', category: '' });
 
   // Toggle active/inactive for a service
   const toggleServiceActive = async (service) => {
@@ -79,6 +85,40 @@ const PillarServicesTab = ({ pillar, pillarName, pillarIcon, pillarColor = 'bg-p
   useEffect(() => {
     fetchServices();
   }, [fetchServices]);
+
+  // Quick Add trigger
+  useEffect(() => {
+    if (createTrigger > 0) {
+      setNewService({ name: '', description: '', base_price: '', category: '' });
+      setShowCreateModal(true);
+    }
+  }, [createTrigger]);
+
+  const createService = async () => {
+    if (!newService.name) return toast({ title: 'Name required', variant: 'destructive' });
+    setCreating(true);
+    try {
+      const res = await fetch(`${API_URL}/api/service-box/services`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...newService,
+          pillar,
+          base_price: parseFloat(newService.base_price) || 0,
+          is_active: true,
+        }),
+      });
+      if (res.ok) {
+        toast({ title: 'Service created', description: `${newService.name} added to ${pillarName}` });
+        setShowCreateModal(false);
+        fetchServices();
+      } else {
+        const err = await res.json();
+        toast({ title: 'Error', description: err.detail || 'Failed to create', variant: 'destructive' });
+      }
+    } catch { toast({ title: 'Network error', variant: 'destructive' }); }
+    setCreating(false);
+  };
   
   // Filter services by search term
   const filteredServices = services.filter(service => {
@@ -259,10 +299,15 @@ const PillarServicesTab = ({ pillar, pillarName, pillarIcon, pillarColor = 'bg-p
             {filteredServices.length} services found
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={fetchServices}>
-          <RefreshCw className="w-4 h-4 mr-1" />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button size="sm" onClick={() => { setNewService({ name: '', description: '', base_price: '', category: '' }); setShowCreateModal(true); }} className="bg-blue-600 hover:bg-blue-700 text-white" data-testid="add-service-btn">
+            <Plus className="w-4 h-4 mr-1" /> Add Service
+          </Button>
+          <Button variant="outline" size="sm" onClick={fetchServices}>
+            <RefreshCw className="w-4 h-4 mr-1" />
+            Refresh
+          </Button>
+        </div>
       </div>
       
       {/* Filters */}
@@ -317,6 +362,67 @@ const PillarServicesTab = ({ pillar, pillarName, pillarIcon, pillarColor = 'bg-p
           </p>
         </Card>
       )}
+
+      {/* Quick Add Service Modal */}
+      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Briefcase className="w-5 h-5 text-blue-600" />
+              Add New {pillarName} Service
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label>Service Name *</Label>
+              <Input
+                placeholder={`e.g. ${pillarName} Consultation`}
+                value={newService.name}
+                onChange={e => setNewService(s => ({ ...s, name: e.target.value }))}
+                data-testid="new-service-name"
+              />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea
+                placeholder="Brief description of this service..."
+                value={newService.description}
+                onChange={e => setNewService(s => ({ ...s, description: e.target.value }))}
+                rows={2}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Base Price (₹)</Label>
+                <Input
+                  type="number"
+                  placeholder="0"
+                  value={newService.base_price}
+                  onChange={e => setNewService(s => ({ ...s, base_price: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label>Category</Label>
+                <Input
+                  placeholder="e.g. Grooming"
+                  value={newService.category}
+                  onChange={e => setNewService(s => ({ ...s, category: e.target.value }))}
+                />
+              </div>
+            </div>
+            <div className="bg-gray-50 rounded p-2 text-xs text-gray-500">
+              Pillar: <code className="font-mono">{pillar}</code> (auto-assigned)
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateModal(false)}>Cancel</Button>
+            <Button onClick={createService} disabled={creating} className="bg-blue-600 hover:bg-blue-700">
+              {creating ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
+              Create Service
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
