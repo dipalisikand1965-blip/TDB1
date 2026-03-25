@@ -17,6 +17,7 @@ import PillarSoulProfile from '../components/PillarSoulProfile';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
+import PlayContentModal from '../components/play/PlayContentModal';
 import PlayCategoryStrip from '../components/play/PlayCategoryStrip';
 import GuidedPlayPaths from '../components/play/GuidedPlayPaths';
 import PlayConciergeSection from '../components/play/PlayConciergeSection';
@@ -40,6 +41,7 @@ export default function PlayMobilePage() {
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
+  const [modalCategory, setModalCategory] = useState(null);
 
   useEffect(() => { if(contextPets!==undefined)setLoading(false); if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]); },[contextPets,currentPet,setCurrentPet]);
   useEffect(() => { const h=()=>{}; window.addEventListener('soulScoreUpdated',h); return()=>window.removeEventListener('soulScoreUpdated',h); },[]);
@@ -69,7 +71,7 @@ export default function PlayMobilePage() {
         {soulMadeOpen&&<SoulMadeModal pet={currentPet} pillar="play" pillarColor={P.redL} pillarLabel="Play" onClose={()=>setSoulMadeOpen(false)}/>}
         {selectedProduct&&<ProductDetailModal product={selectedProduct?.raw||selectedProduct} isOpen={!!selectedProduct} onClose={()=>setSelectedProduct(null)} petName={petName} pillarColor={P.redL}/>}
 
-        <div style={{background:`linear-gradient(160deg,${P.dark} 0%,${P.red} 50%,${P.redL} 100%)`,padding:'20px 16px 24px'}}>
+        <div style={{background:`linear-gradient(160deg,${P.dark} 0%,${P.red} 50%,${P.redL} 100%)`,padding:'32px 16px 24px'}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
             <div><div style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,0.5)',letterSpacing:'0.1em',marginBottom:2}}>THE DOGGY COMPANY</div><div style={{fontSize:22,fontWeight:700,color:'#fff'}}>🎾 Play</div></div>
             {contextPets?.length>1&&(<select value={currentPet?.id} onChange={e=>{vibe();setCurrentPet(contextPets.find(p=>p.id===e.target.value));}} style={{background:'rgba(255,255,255,0.12)',border:'1px solid rgba(255,255,255,0.2)',borderRadius:999,padding:'7px 14px',color:'#fff',fontSize:13}}>{contextPets.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select>)}
@@ -81,7 +83,7 @@ export default function PlayMobilePage() {
         </div>
 
         <div style={{padding:'0 16px 8px'}}><PillarSoulProfile pet={currentPet} pillar="play" token={token}/></div>
-        <PlayCategoryStrip pet={currentPet}/>
+        <PlayCategoryStrip pet={currentPet} onSelect={(id) => setModalCategory(id)} />
         <div style={{padding:'0 16px 16px'}}><div style={{fontSize:26,fontWeight:700,marginBottom:6}}>How does {petName} love to play?</div><div style={{fontSize:15,color:P.taupe}}>Activities, fitness and fun — matched to their energy.</div></div>
         <div style={{margin:'0 16px 20px',background:P.dark,borderRadius:20,padding:16}}>
           <div style={{fontSize:11,fontWeight:700,color:`rgba(255,107,53,0.9)`,letterSpacing:'0.1em',marginBottom:8}}>✦ MIRA ON {petName.toUpperCase()}'S FITNESS</div>
@@ -116,6 +118,7 @@ export default function PlayMobilePage() {
           <button onClick={()=>{vibe('medium');request(`Play concierge for ${petName}`,{channel:'play_cta'});}} style={{width:'100%',minHeight:48,borderRadius:14,border:'none',background:`linear-gradient(135deg,${P.redL},${P.redXL})`,color:P.dark,fontSize:15,fontWeight:700,cursor:'pointer'}}>🎾 Plan with Concierge®</button>
         </div>
       </div>
+      {modalCategory && <PlayContentModal isOpen={true} onClose={() => setModalCategory(null)} category={modalCategory} pet={currentPet} />}
     </PillarPageLayout>
   );
 }

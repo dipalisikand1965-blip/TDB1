@@ -100,8 +100,8 @@ function ConditionalFloatingButton() {
 // ConditionalMobileNav - Show mobile nav bar only on appropriate pages
 function ConditionalMobileNav() {
   const { pathname } = useLocation();
-  // Don't show on admin, login, register, or demo pages
-  const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password', '/demo', '/dine'];
+  // Don't show on admin, login, register, demo, or pillar pages (mobile pillar pages have their own nav)
+  const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password', '/demo', '/dine', '/care', '/celebrate', '/go', '/play', '/learn', '/shop', '/services', '/adopt', '/farewell', '/emergency', '/paperwork', '/stay', '/travel', '/fit', '/enjoy', '/advisory'];
   if (hiddenPaths.some(path => pathname.startsWith(path))) {
     return null;
   }
@@ -111,7 +111,8 @@ function ConditionalMobileNav() {
 function ConditionalFooter() {
   const { pathname } = useLocation();
   const isMobile = typeof window !== 'undefined' ? window.innerWidth < 1024 : false;
-  if (isMobile && pathname.startsWith('/dine')) {
+  const pillarPaths = ['/dine', '/care', '/celebrate', '/go', '/play', '/learn', '/shop', '/services', '/adopt', '/farewell', '/emergency', '/paperwork', '/stay', '/travel', '/fit', '/enjoy', '/advisory'];
+  if (isMobile && pillarPaths.some(path => pathname.startsWith(path))) {
     return null;
   }
   return <Footer />;

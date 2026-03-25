@@ -97,44 +97,56 @@ export default function PersonalisedBreedSection({
 
   if (loading) {
     return (
-      <div style={{ padding:"32px 0", textAlign:"center" }}>
-        <div style={{ width:28, height:28, border:`3px solid ${C.pale}`, borderTop:`3px solid ${C.orange}`, borderRadius:"50%", margin:"0 auto 12px", animation:"spin 0.8s linear infinite" }} />
-        <div style={{ fontSize:12, color:"#888" }}>Finding personalised picks for {petName}…</div>
-        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      <div style={{ padding:"24px 0", textAlign:"center" }}>
+        <div style={{
+          background:'linear-gradient(135deg,#1a1a2e 0%,#16213e 100%)',
+          borderRadius:20, padding:'28px 20px',
+        }}>
+          <div style={{ width:28, height:28, border:'3px solid rgba(255,255,255,0.1)', borderTop:'3px solid rgba(233,30,140,0.8)', borderRadius:"50%", margin:"0 auto 12px", animation:"spin 0.8s linear infinite" }} />
+          <div style={{ fontSize:12, color:"rgba(255,255,255,0.5)" }}>Finding personalised picks for {petName}…</div>
+          <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+        </div>
       </div>
     );
   }
 
   if (!products.length) {
     return (
-      <div style={{ padding:"32px 24px", textAlign:"center" }}>
-        <div style={{ fontSize:28, marginBottom:10 }}>🌟</div>
-        <div style={{ fontSize:14, fontWeight:700, color:C.deep, marginBottom:6 }}>Soul Products for {breed}s</div>
-        <div style={{ fontSize:12, color:"#888", lineHeight:1.6, maxWidth:300, margin:"0 auto" }}>
-          We're curating breed-specific products for {petName}. Check back soon — Mira is working on it.
-        </div>
-        {/* ── Soul Made™ Trigger — available even before products are curated ── */}
-        <div
-          data-testid="soul-made-trigger"
-          onClick={() => setSoulMadeOpen(true)}
-          style={{
-            margin:'20px auto 0', padding:'14px 16px', maxWidth:340,
-            background:`${C.orange}08`, border:`1px solid ${C.orange}20`,
-            borderRadius:14, display:'flex', alignItems:'center',
-            justifyContent:'space-between', cursor:'pointer', textAlign:'left',
-          }}
-        >
-          <div>
-            <div style={{ fontSize:13, fontWeight:700, color:C.orange, marginBottom:3 }}>
-              {pillar === 'farewell'
-                ? `✦ In memory of ${petName} — create something meaningful`
-                : '✦ Soul Made™ — Make it personal'}
-            </div>
-            <div style={{ fontSize:12, color:'#888', lineHeight:1.4 }}>
-              Upload {petName}'s photo · Concierge® creates it · Price on WhatsApp
-            </div>
+      <div style={{ padding:"0", textAlign:"center" }}>
+        <div style={{
+          background:'linear-gradient(135deg,#1a1a2e 0%,#16213e 100%)',
+          borderRadius:20, padding:'24px 20px', position:'relative', overflow:'hidden'
+        }}>
+          <div style={{ position:'absolute', top:-20, right:-10, width:100, height:100, borderRadius:'50%', background:'radial-gradient(circle,rgba(233,30,140,0.15) 0%,transparent 70%)' }} />
+          <div style={{ fontSize:10, letterSpacing:'0.14em', color:'rgba(233,30,140,0.9)', fontWeight:700, marginBottom:10 }}>✦ PERSONALISED FOR {breed?.toUpperCase()}S</div>
+          <div style={{ fontSize:18, fontWeight:700, color:'#fff', lineHeight:1.3, marginBottom:8 }}>
+            We're curating breed-specific products for {petName}.
           </div>
-          <div style={{ fontSize:20, color:`${C.orange}60`, flexShrink:0, marginLeft:8 }}>›</div>
+          <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', lineHeight:1.6, marginBottom:16 }}>
+            Mira is working on {breed}-matched picks. Check back soon.
+          </div>
+          <div
+            data-testid="soul-made-trigger"
+            onClick={() => setSoulMadeOpen(true)}
+            style={{
+              padding:'14px 18px', background:'rgba(255,255,255,0.08)',
+              border:'1px solid rgba(255,255,255,0.12)', borderRadius:14,
+              display:'flex', alignItems:'center', justifyContent:'space-between',
+              cursor:'pointer', textAlign:'left', transition:'all 0.2s',
+            }}
+          >
+            <div>
+              <div style={{ fontSize:13, fontWeight:700, color:'#fff', marginBottom:3 }}>
+                {pillar === 'farewell'
+                  ? `✦ In memory of ${petName} — create something meaningful`
+                  : '✦ Soul Made™ — Make it personal'}
+              </div>
+              <div style={{ fontSize:12, color:'rgba(255,255,255,0.5)', lineHeight:1.4 }}>
+                Upload {petName}'s photo · Concierge® creates it · Price on WhatsApp
+              </div>
+            </div>
+            <div style={{ fontSize:20, color:'rgba(255,255,255,0.4)', flexShrink:0, marginLeft:8 }}>›</div>
+          </div>
         </div>
         {soulMadeOpen && (
           <SoulMadeModal

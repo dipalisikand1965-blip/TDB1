@@ -14,6 +14,7 @@ import { ProductDetailModal } from '../components/ProductCard';
 import SharedProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
+import GoContentModal from '../components/go/GoContentModal';
 import GoCategoryStrip from '../components/go/GoCategoryStrip';
 import GuidedGoPaths from '../components/go/GuidedGoPaths';
 import GoConciergeSection from '../components/go/GoConciergeSection';
@@ -83,6 +84,7 @@ export default function GoMobilePage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [mode, setMode] = useState('go');
   const [products, setProducts] = useState([]);
+  const [modalCategory, setModalCategory] = useState(null);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -117,7 +119,7 @@ export default function GoMobilePage() {
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="go" pillarColor={G.tealL} pillarLabel="Go" onClose={() => setSoulMadeOpen(false)} />}
         {selectedProduct && <ProductDetailModal product={selectedProduct?.raw||selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.tealL} />}
 
-        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.teal} 50%,${G.tealL} 100%)`, padding:'20px 16px 24px' }}>
+        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.teal} 50%,${G.tealL} 100%)`, padding:'32px 16px 24px' }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
               <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
@@ -141,9 +143,8 @@ export default function GoMobilePage() {
           </div>
         </div>
 
-        <GoPetCard pet={currentPet} />
         <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="go" token={token} /></div>
-        <GoCategoryStrip pet={currentPet} />
+        <GoCategoryStrip pet={currentPet} onSelect={(id) => setModalCategory(id)} />
 
         <div style={{ margin:'0 16px 24px', background:G.dark, borderRadius:20, padding:16 }}>
           <div style={{ fontSize:11, fontWeight:700, color:'rgba(72,180,216,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S ADVENTURES</div>
@@ -184,6 +185,7 @@ export default function GoMobilePage() {
           </button>
         </div>
       </div>
+      {modalCategory && <GoContentModal isOpen={true} onClose={() => setModalCategory(null)} category={modalCategory} pet={currentPet} />}
     </PillarPageLayout>
   );
 }
