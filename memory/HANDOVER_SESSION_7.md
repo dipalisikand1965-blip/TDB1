@@ -139,7 +139,7 @@ Member gets notification
 ---
 
 ## PREVIEW URL
-https://dine-mobile-parity.preview.emergentagent.com
+https://pillar-parity-sprint.preview.emergentagent.com
 
 ---
 

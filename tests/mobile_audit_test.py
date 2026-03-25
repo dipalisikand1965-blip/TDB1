@@ -7,7 +7,7 @@ Viewport: 375x812 (iPhone SE / standard mobile)
 import asyncio
 import os
 
-BASE_URL = "https://dine-mobile-parity.preview.emergentagent.com"
+BASE_URL = "https://pillar-parity-sprint.preview.emergentagent.com"
 USER_EMAIL = "dipali@clubconcierge.in"
 USER_PASS = "test123"
 ADMIN_USER = "aditya"

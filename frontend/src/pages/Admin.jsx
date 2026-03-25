@@ -881,7 +881,7 @@ const Admin = () => {
       let sourceUrl = null;
       if (isLive) {
         sourceUrl = window.prompt(
-          'Enter the PREVIEW admin base URL to sync FROM.\n\nExample:\nhttps://dine-mobile-parity.preview.emergentagent.com'
+          'Enter the PREVIEW admin base URL to sync FROM.\n\nExample:\nhttps://pillar-parity-sprint.preview.emergentagent.com'
         );
         if (!sourceUrl) {
           alert('Cancelled. Preview source URL is required.');

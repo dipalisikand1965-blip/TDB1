@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dine-mobile-parity.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pillar-parity-sprint.preview.emergentagent.com')
 
 class TestKitDetection:
     """Test kit detection prioritizes current message over history"""

@@ -1792,7 +1792,7 @@ Basic Auth Password: lola4304
 
 ## Preview URL
 ```
-https://dine-mobile-parity.preview.emergentagent.com
+https://pillar-parity-sprint.preview.emergentagent.com
 ```
 
 ---
