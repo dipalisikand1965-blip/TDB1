@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import ProductBoxEditor from './ProductBoxEditor';
+import { API_URL } from '../../utils/api';
+import { toast } from '../../hooks/use-toast';
 
 // ─── PillarManager.jsx ────────────────────────────────────────────────────────
 // Path: /app/frontend/src/components/admin/PillarManager.jsx
@@ -42,7 +45,38 @@ export default function PillarManager({
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 20;
 
+  // Full editor state
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [showEditor, setShowEditor] = useState(false);
+  const [saving, setSaving] = useState(false);
+
   const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+
+  const saveProduct = async () => {
+    if (!editingProduct) return;
+    setSaving(true);
+    try {
+      const productId = editingProduct.id || editingProduct.shopify_id || editingProduct._id;
+      const res = await fetch(`${API_URL}/api/admin/pillar-products/${productId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...editingProduct, pillar: editingProduct.pillar || pillar })
+      });
+      if (res.ok) {
+        toast({ title: 'Product updated!' });
+        setShowEditor(false);
+        setEditingProduct(null);
+        fetchItems();
+      } else {
+        const err = await res.json().catch(() => ({}));
+        toast({ title: 'Error', description: err.detail || 'Save failed', variant: 'destructive' });
+      }
+    } catch (e) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
@@ -229,9 +263,19 @@ export default function PillarManager({
                   <td style={s.td}><span style={s.activeBadge(active)}>{active ? 'Active' : 'Inactive'}</span></td>
                   {tab !== 'bundles' && (
                     <td style={s.td}>
-                      <button style={s.toggleBtn(active)} onClick={() => toggleActive(item)}>
-                        {active ? 'Deactivate' : 'Activate'}
-                      </button>
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        {tab === 'products' && (
+                          <button
+                            style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid #7c3aed', background: 'white', color: '#7c3aed', fontSize: '11px', cursor: 'pointer', fontWeight: 600 }}
+                            onClick={() => { setEditingProduct({ ...item, pillar: item.pillar || pillar }); setShowEditor(true); }}
+                          >
+                            Edit
+                          </button>
+                        )}
+                        <button style={s.toggleBtn(active)} onClick={() => toggleActive(item)}>
+                          {active ? 'Deactivate' : 'Activate'}
+                        </button>
+                      </div>
                     </td>
                   )}
                 </tr>
@@ -252,6 +296,17 @@ export default function PillarManager({
           <button style={s.pageBtn(false)} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>›</button>
         </div>
       )}
+
+      {/* Full Product Box Editor */}
+      <ProductBoxEditor
+        product={editingProduct}
+        setProduct={setEditingProduct}
+        open={showEditor}
+        onClose={() => { setShowEditor(false); setEditingProduct(null); }}
+        onSave={saveProduct}
+        saving={saving}
+        onGenerateMiraHint={null}
+      />
     </div>
   );
 }
