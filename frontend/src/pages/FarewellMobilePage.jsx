@@ -47,7 +47,7 @@ export default function FarewellMobilePage() {
       <div className="farewell" data-testid="farewell-mobile"><style>{CSS_F}</style>
         {soulMadeOpen&&<SoulMadeModal pet={currentPet} pillar="farewell" pillarColor={F.indigoL} pillarLabel="Farewell" onClose={()=>setSoulMadeOpen(false)}/>}
         {selectedProduct&&<ProductDetailModal product={selectedProduct?.raw||selectedProduct} isOpen={!!selectedProduct} onClose={()=>setSelectedProduct(null)} petName={petName} pillarColor={F.indigoL}/>}
-        <div style={{background:`linear-gradient(160deg,${F.dark} 0%,${F.indigo} 50%,${F.indigoL} 100%)`,padding:'20px 16px 24px'}}>
+        <div style={{background:`linear-gradient(160deg,${F.dark} 0%,${F.indigo} 50%,${F.indigoL} 100%)`,padding:'32px 16px 24px'}}>
           <div style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,0.5)',letterSpacing:'0.1em',marginBottom:2}}>THE DOGGY COMPANY</div>
           <div style={{fontSize:22,fontWeight:700,color:'#fff',marginBottom:12}}>🌷 Farewell</div>
           <div style={{fontSize:20,fontWeight:700,color:'#fff',marginBottom:4}}>End-of-Life & Grief Support</div>

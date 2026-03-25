@@ -47,7 +47,7 @@ export default function AdoptMobilePage() {
       <div className="adopt" data-testid="adopt-mobile"><style>{CSS_A}</style>
         {soulMadeOpen&&<SoulMadeModal pet={currentPet} pillar="adopt" pillarColor={A.brownL} pillarLabel="Adopt" onClose={()=>setSoulMadeOpen(false)}/>}
         {selectedProduct&&<ProductDetailModal product={selectedProduct?.raw||selectedProduct} isOpen={!!selectedProduct} onClose={()=>setSelectedProduct(null)} petName={petName} pillarColor={A.brownL}/>}
-        <div style={{background:`linear-gradient(160deg,${A.dark} 0%,${A.brown} 50%,${A.brownL} 100%)`,padding:'20px 16px 24px'}}>
+        <div style={{background:`linear-gradient(160deg,${A.dark} 0%,${A.brown} 50%,${A.brownL} 100%)`,padding:'32px 16px 24px'}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
             <div><div style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,0.5)',letterSpacing:'0.1em',marginBottom:2}}>THE DOGGY COMPANY</div><div style={{fontSize:22,fontWeight:700,color:'#fff'}}>🐾 Adopt</div></div>
           </div>

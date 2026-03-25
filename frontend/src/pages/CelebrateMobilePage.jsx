@@ -233,7 +233,7 @@ function CelebrateSoulMadeCard({ pet, onOpen }) {
 }
 
 export default function CelebrateMobilePage() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
@@ -249,6 +249,24 @@ export default function CelebrateMobilePage() {
   const [miraPicksOpen, setMiraPicksOpen] = useState(false);
   const [celebrateCatModal, setCelebrateCatModal] = useState(null);
   const [cakeModalOpen, setCakeModalOpen] = useState(false);
+
+  // Handle build box from Mira's curated box — open BirthdayBoxBuilder modal
+  const handleBuildBox = useCallback((boxPreview) => {
+    window.dispatchEvent(new CustomEvent('openOccasionBoxBuilder', {
+      detail: {
+        preset: boxPreview,
+        petName: currentPet?.name,
+        petId: currentPet?.id,
+        userEmail: user?.email || '',
+        userName: user?.name || user?.full_name || '',
+        occasion: 'birthday'
+      }
+    }));
+  }, [currentPet?.name, currentPet?.id, user]);
+
+  const handleOpenBrowseDrawer = useCallback(() => {
+    window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowse', { detail: {} }));
+  }, []);
 
   const handleCategorySelect = useCallback((categoryId, categoryObj) => {
     tdc.view({ product: categoryId, pillar: 'celebrate', pet: currentPet, channel: 'celebrate_category_strip' });
@@ -320,7 +338,7 @@ export default function CelebrateMobilePage() {
         )}
 
         {/* HERO */}
-        <div style={{ background:'linear-gradient(160deg,#1A0A2E 0%,#4A1B6D 50%,#9B59B6 100%)', padding:'20px 16px 24px', position:'relative', overflow:'hidden' }}>
+        <div style={{ background:'linear-gradient(160deg,#1A0A2E 0%,#4A1B6D 50%,#9B59B6 100%)', padding:'32px 16px 24px', position:'relative', overflow:'hidden' }}>
           <div style={{ position:'absolute', top:-60, right:-40, width:200, height:200, background:'radial-gradient(circle,rgba(233,30,140,0.2) 0%,transparent 70%)', borderRadius:'50%', pointerEvents:'none' }} />
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
@@ -372,20 +390,25 @@ export default function CelebrateMobilePage() {
           <div style={{ padding:'0 16px 16px' }}>
             <MiraBirthdayBox
               pet={currentPet}
-              token={token}
-              onClick={() => setCakeModalOpen(true)}
+              onBuildBox={handleBuildBox}
+              onBrowseProducts={handleOpenBrowseDrawer}
             />
           </div>
         )}
 
-        {/* ── Product Grid ── */}
-        {miraProducts.length > 0 && (
-          <div style={{ padding:'0 16px 24px' }}>
-            <div style={{ fontSize:18, fontWeight:700, marginBottom:12 }}>Celebrate Picks for {petName}</div>
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-              {miraProducts.map(p => (
-                <SharedProductCard key={p.id||p.name} product={p.raw||p} pillar="celebrate" selectedPet={currentPet} onAddToCart={() => { addToCart({ id:p.id, name:p.name, price:p.raw?.price||0, image:p.imageUrl, pillar:'celebrate', quantity:1 }); showToast(`${p.name} added`); }} onClick={() => { vibe(); setSelectedProduct(p); }} />
-              ))}
+        {/* ── Mira Picks Modal (opens from Mira bar) ── */}
+        {miraPicksOpen && miraProducts.length > 0 && (
+          <div style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.7)', display:'flex', alignItems:'flex-end' }} onClick={() => setMiraPicksOpen(false)}>
+            <div style={{ background:'#1a1028', borderRadius:'24px 24px 0 0', width:'100%', maxHeight:'85vh', overflow:'auto', padding:'24px 16px 40px' }} onClick={e => e.stopPropagation()}>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
+                <div style={{ fontSize:18, fontWeight:700, color:'#fff' }}>Celebrate Picks for {petName}</div>
+                <button onClick={() => setMiraPicksOpen(false)} style={{ background:'none', border:'none', color:'rgba(255,255,255,0.6)', fontSize:24, cursor:'pointer' }}>✕</button>
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                {miraProducts.map(p => (
+                  <SharedProductCard key={p.id||p.name} product={p.raw||p} pillar="celebrate" selectedPet={currentPet} onAddToCart={() => { addToCart({ id:p.id, name:p.name, price:p.raw?.price||0, image:p.imageUrl, pillar:'celebrate', quantity:1 }); showToast(`${p.name} added`); }} onClick={() => { vibe(); setSelectedProduct(p); setMiraPicksOpen(false); }} />
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -434,7 +457,12 @@ export default function CelebrateMobilePage() {
           />
         )}
 
-        {/* Birthday Box Browse Drawer */}
+        {/* Birthday Box Builder — listens to openOccasionBoxBuilder event */}
+        <BirthdayBoxBuilder
+          onOpenBrowseDrawer={() => handleOpenBrowseDrawer()}
+        />
+
+        {/* Birthday Box Browse Drawer — listens to openBirthdayBoxBrowse event */}
         <BirthdayBoxBrowseDrawer />
 
       </div>

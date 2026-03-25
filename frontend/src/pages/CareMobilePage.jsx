@@ -119,6 +119,7 @@ export default function CareMobilePage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
   const [prodLoading, setProdLoading] = useState(false);
+  const [miraPicksOpen, setMiraPicksOpen] = useState(false);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -172,7 +173,7 @@ export default function CareMobilePage() {
         {selectedProduct && <ProductDetailModal product={selectedProduct?.raw||selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.greenL} />}
 
         {/* HERO */}
-        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.green} 50%,${G.greenL} 100%)`, padding:'20px 16px 24px', position:'relative', overflow:'hidden' }}>
+        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.green} 50%,${G.greenL} 100%)`, padding:'32px 16px 24px', position:'relative', overflow:'hidden' }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
               <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
@@ -199,7 +200,6 @@ export default function CareMobilePage() {
           </div>
         </div>
 
-        <CarePetCard pet={currentPet} onOpen={() => {}} />
         <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="care" token={token} /></div>
         <CareCategoryStrip pet={currentPet} />
 
@@ -208,25 +208,21 @@ export default function CareMobilePage() {
           <div style={{ fontSize:15, color:G.taupe }}>Vets, grooming, health and wellness — all coordinated.</div>
         </div>
 
-        <CareMiraBar pet={currentPet} onOpen={() => {}} />
+        <CareMiraBar pet={currentPet} onOpen={() => setMiraPicksOpen(true)} />
 
-        {/* ── Product Grid ── */}
-        {prodLoading ? (
-          <div style={{ padding:'0 16px 20px', textAlign:'center', color:G.taupe }}>Loading care products…</div>
-        ) : products.length > 0 && (
-          <div style={{ padding:'0 16px 24px' }}>
-            <div style={{ fontSize:18, fontWeight:700, marginBottom:12 }}>Care Products for {petName}</div>
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-              {products.slice(0, 20).map(p => (
-                <SharedProductCard
-                  key={p.id || p._id || p.name}
-                  product={p}
-                  pillar="care"
-                  selectedPet={currentPet}
-                  onAddToCart={() => handleAddToCart(p)}
-                  onClick={() => { vibe(); setSelectedProduct(p); }}
-                />
-              ))}
+        {/* ── Mira Picks Modal (opens from Mira bar) ── */}
+        {miraPicksOpen && products.length > 0 && (
+          <div style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.7)', display:'flex', alignItems:'flex-end' }} onClick={() => setMiraPicksOpen(false)}>
+            <div style={{ background:'#0a1a12', borderRadius:'24px 24px 0 0', width:'100%', maxHeight:'85vh', overflow:'auto', padding:'24px 16px 40px' }} onClick={e => e.stopPropagation()}>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
+                <div style={{ fontSize:18, fontWeight:700, color:'#fff' }}>Care Products for {petName}</div>
+                <button onClick={() => setMiraPicksOpen(false)} style={{ background:'none', border:'none', color:'rgba(255,255,255,0.6)', fontSize:24, cursor:'pointer' }}>✕</button>
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                {products.slice(0, 20).map(p => (
+                  <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="care" selectedPet={currentPet} onAddToCart={() => handleAddToCart(p)} onClick={() => { vibe(); setSelectedProduct(p); setMiraPicksOpen(false); }} />
+                ))}
+              </div>
             </div>
           </div>
         )}

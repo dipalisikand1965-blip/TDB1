@@ -46,7 +46,7 @@ export default function EmergencyMobilePage() {
     <PillarPageLayout pillar="emergency" hideHero hideNavigation>
       <div className="emerg" data-testid="emergency-mobile"><style>{CSS_E}</style>
         {selectedProduct&&<ProductDetailModal product={selectedProduct?.raw||selectedProduct} isOpen={!!selectedProduct} onClose={()=>setSelectedProduct(null)} petName={petName} pillarColor={E.crimsonL}/>}
-        <div style={{background:`linear-gradient(160deg,${E.dark} 0%,${E.crimson} 50%,${E.crimsonL} 100%)`,padding:'20px 16px 24px'}}>
+        <div style={{background:`linear-gradient(160deg,${E.dark} 0%,${E.crimson} 50%,${E.crimsonL} 100%)`,padding:'32px 16px 24px'}}>
           <div style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,0.5)',letterSpacing:'0.1em',marginBottom:2}}>THE DOGGY COMPANY</div>
           <div style={{fontSize:22,fontWeight:700,color:'#fff',marginBottom:12}}>🚨 Emergency</div>
           {currentPet&&<div>
