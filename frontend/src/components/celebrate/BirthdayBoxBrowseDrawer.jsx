@@ -20,6 +20,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useResizeMobile } from '../../hooks/useResizeMobile';
 import ProductBoxEditor from '../admin/ProductBoxEditor';
+import MiraEmptyRequest from '../common/MiraEmptyRequest';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
@@ -124,7 +125,7 @@ const SoulCard = ({ product, isMiraPick, isCurrentSwap, onSelect, onEdit }) => {
 /* ─────────────────────────────────────────────────────────────────
    TAB CONTENT — 2-col grid with admin-style soul product cards
    ───────────────────────────────────────────────────────────────── */
-const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, onEditProduct }) => {
+const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, pet, onEditProduct, onConciergeRequest }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -162,7 +163,31 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, onEdi
           }
         }
 
-        if (!cancelled) setProducts(allProducts);
+        // Also fetch from products_master filtered by tab categories
+        // This ensures we show the right sub_category products
+        const masterProducts = [];
+        for (const cat of tab.categories) {
+          try {
+            const r = await fetch(`${API_BASE}/api/admin/pillar-products?pillar=celebrate&sub_category=${encodeURIComponent(cat)}&limit=20`);
+            if (r.ok) {
+              const d = await r.json();
+              masterProducts.push(...(d.products || []));
+            }
+          } catch { /* skip */ }
+        }
+
+        // Merge: prefer category-specific master products, then breed products
+        const merged = [...masterProducts, ...allProducts];
+        // Deduplicate by id
+        const seen = new Set();
+        const deduped = merged.filter(p => {
+          const pid = p.id || p._id;
+          if (seen.has(pid)) return false;
+          seen.add(pid);
+          return true;
+        });
+
+        if (!cancelled) setProducts(deduped);
       } catch {
         if (!cancelled) setProducts([]);
       } finally {
@@ -237,11 +262,14 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, onEdi
           ))}
         </div>
       ) : filteredProducts.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-3xl mb-2">🔍</p>
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.55)' }}>No products found.</p>
-          <p className="text-xs mt-1" style={{ color: 'rgba(196,77,255,0.70)' }}>Ask Concierge to find something.</p>
-        </div>
+        <MiraEmptyRequest
+          pet={pet}
+          pillar="celebrate"
+          categoryName={tab.label}
+          accentColor="#9B59B6"
+          darkMode={true}
+          onRequest={onConciergeRequest}
+        />
       ) : (
         <div className="grid grid-cols-2 gap-3">
           {filteredProducts.map((product, i) => {
@@ -356,11 +384,12 @@ const BottomBar = ({ swapCount, petName, onBuild }) => {
 /* ─────────────────────────────────────────────────────────────────
    MAIN COMPONENT
    ───────────────────────────────────────────────────────────────── */
-const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
+const BirthdayBoxBrowseDrawer = ({ onOpenBuilder, onConciergeRequest }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [boxPreview, setBoxPreview] = useState(null);
   const [petName, setPetName] = useState('');
   const [petBreed, setPetBreed] = useState('');
+  const [pet, setPet] = useState(null);
   const [activeTab, setActiveTab] = useState('cakes');
   const [swaps, setSwaps] = useState({}); // { tabId: { slotNumber, originalItem, newProduct } }
   const [editingProduct, setEditingProduct] = useState(null);
@@ -372,10 +401,11 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
   // Listen for open event
   useEffect(() => {
     const handleOpen = (e) => {
-      const { boxPreview: preview, petName: name, petBreed: breed } = e.detail || {};
+      const { boxPreview: preview, petName: name, petBreed: breed, pet: petObj } = e.detail || {};
       setBoxPreview(preview);
       setPetName(name || 'your pet');
       setPetBreed(breed || '');
+      setPet(petObj || null);
       setActiveTab('cakes');
       setSwaps({});
       setIsOpen(true);
@@ -618,7 +648,9 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder }) => {
                         onSwap={handleSwap}
                         allergies={allergies}
                         petBreed={petBreed}
+                        pet={pet}
                         onEditProduct={handleEditProduct}
+                        onConciergeRequest={onConciergeRequest}
                       />
                     </motion.div>
                   ) : null
