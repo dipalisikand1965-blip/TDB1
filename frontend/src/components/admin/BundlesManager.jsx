@@ -31,25 +31,12 @@ import {
   Search, ChevronLeft, ChevronRight, Download
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
+import { ALL_PILLARS, PILLAR_SUBCATEGORIES } from './ProductBoxConfig';
+
+const PILLARS = ALL_PILLARS;
 import { toast } from '../../hooks/use-toast';
 import CloudinaryUploader from './CloudinaryUploader';
 import AIImagePromptField from './AIImagePromptField';
-
-const PILLARS = [
-  { id: 'celebrate', name: 'Celebrate', icon: '🎂' },
-  { id: 'dine', name: 'Dine', icon: '🍽️' },
-  { id: 'travel', name: 'Travel', icon: '✈️' },
-  { id: 'stay', name: 'Stay', icon: '🏠' },
-  { id: 'care', name: 'Care', icon: '🛁' },
-  { id: 'fit', name: 'Fit', icon: '💪' },
-  { id: 'enjoy', name: 'Enjoy', icon: '🎾' },
-  { id: 'learn', name: 'Learn', icon: '📚' },
-  { id: 'farewell', name: 'Farewell', icon: '🌈' },
-  { id: 'emergency', name: 'Emergency', icon: '🚨' },
-  { id: 'adopt', name: 'Adopt', icon: '🐕' },
-  { id: 'advisory', name: 'Advisory', icon: '💡' },
-  { id: 'paperwork', name: 'Paperwork', icon: '📋' }
-];
 
 const BUNDLE_ICONS = ['📦', '🎁', '🎂', '🍽️', '✈️', '🏠', '🛁', '💪', '🎾', '📚', '🌈', '🚨', '🐕', '💡', '📋', '🚗', '🦴', '🚶', '⭐'];
 
@@ -276,6 +263,7 @@ const BundlesManager = () => {
       name: '',
       description: '',
       pillar: selectedPillar !== 'all' ? selectedPillar : 'celebrate',
+      sub_category: '',
       items: '',
       original_price: '',
       bundle_price: '',
@@ -292,6 +280,7 @@ const BundlesManager = () => {
       name: bundle.name,
       description: bundle.description,
       pillar: bundle.pillar,
+      sub_category: bundle.sub_category || '',
       items: bundle.items?.join(', ') || '',
       original_price: bundle.original_price?.toString() || '',
       bundle_price: bundle.bundle_price?.toString() || '',
@@ -319,6 +308,7 @@ const BundlesManager = () => {
         name: formData.name,
         description: formData.description,
         pillar: formData.pillar,
+        sub_category: formData.sub_category || '',
         items: formData.items.split(',').map(item => item.trim()).filter(Boolean),
         original_price: parseFloat(formData.original_price),
         bundle_price: parseFloat(formData.bundle_price),
@@ -715,13 +705,13 @@ const BundlesManager = () => {
               />
             </div>
             
-            {/* Pillar & Icon */}
+            {/* Pillar, Sub-Category & Icon */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium">Pillar *</label>
                 <Select 
                   value={formData.pillar} 
-                  onValueChange={(v) => setFormData({...formData, pillar: v})}
+                  onValueChange={(v) => setFormData({...formData, pillar: v, sub_category: ''})}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -736,23 +726,41 @@ const BundlesManager = () => {
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium">Icon</label>
-                <Select 
-                  value={formData.icon} 
-                  onValueChange={(v) => setFormData({...formData, icon: v})}
+                <label className="text-sm font-medium">Sub-Category</label>
+                <Select
+                  value={formData.sub_category || ''}
+                  onValueChange={(v) => setFormData({...formData, sub_category: v})}
                 >
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Select…" />
                   </SelectTrigger>
                   <SelectContent>
-                    {BUNDLE_ICONS.map(icon => (
-                      <SelectItem key={icon} value={icon}>
-                        {icon}
-                      </SelectItem>
+                    {(PILLAR_SUBCATEGORIES[formData.pillar] || []).map(sc => (
+                      <SelectItem key={sc} value={sc}>{sc}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            {/* Icon */}
+            <div>
+              <label className="text-sm font-medium">Icon</label>
+              <Select 
+                value={formData.icon} 
+                onValueChange={(v) => setFormData({...formData, icon: v})}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {BUNDLE_ICONS.map(icon => (
+                    <SelectItem key={icon} value={icon}>
+                      {icon}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             
             {/* Items */}
