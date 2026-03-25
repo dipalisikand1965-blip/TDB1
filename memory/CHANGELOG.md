@@ -117,7 +117,26 @@
 
 ---
 
-## SESSION 1 — 2026-03-18 (Responsive Split + All Pillars)
+## SESSION 3 — 2026-03-25 (Admin Pillar Managers Consistency Sprint)
+
+### Fix 1 — JSX Error Fixed
+- Removed extra `</div>` from `SoulProductsManager.jsx` line 1806 (was causing compile error)
+
+### Fix 2 — All 12 Pillar Managers Now Consistent (7 standard tabs each)
+- Rewrote `PillarManager.jsx` with all 7 Shadcn Tabs: Requests (live from service_desk API), Partners, Products, Services, Bundles, Tips, Settings
+- Added missing tabs to: CelebrateManager (Tips), DineManager (Partners+Tips), LearnManager (Partners+Tips), EmergencyManager (Tips), FarewellManager (Tips), AdoptManager (Requests+Partners+Tips+Settings), PaperworkManager (Partners+Tips), ShopManager (Requests+Partners+Services+Tips)
+- GoManager and PlayManager automatically benefit from PillarManager rewrite
+
+### Fix 3 — Pagination 20/page
+- Changed ITEMS_PER_PAGE from 50 to 20 in `PillarProductsTab.jsx`
+
+### Fix 4 — Creation → Immediate Appearance
+- Confirmed: Products (Product Box → products_master → pillar page): YES
+- Confirmed: Services (Service Box → services_master → pillar page): YES
+- Confirmed: Bundles (BundlesManager → bundles_master → pillar page): YES
+- Confirmed: Soul products → MUST use "Add to catalog" to appear on pillar pages (separate collection)
+
+
 
 - Implemented `useResize` hook + `isDesktop` split pattern
 - Created all 11 `*MobilePage.jsx` files

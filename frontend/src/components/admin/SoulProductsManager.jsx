@@ -1803,7 +1803,6 @@ const SoulProductsManager = () => {
                   />
                 </div>
             </div>
-            </div>
           )}
           <DialogFooter className="gap-2">
             {/* Fix 6 — Activate / Deactivate */}

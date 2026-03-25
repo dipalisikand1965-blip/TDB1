@@ -389,6 +389,9 @@ const FarewellManager = ({ getAuthHeader }) => {
           <TabsTrigger value="services" data-testid="farewell-tab-services">
             <Briefcase className="w-4 h-4 mr-2" /> Services
           </TabsTrigger>
+          <TabsTrigger value="tips" data-testid="farewell-tab-tips">
+            <Sparkles className="w-4 h-4 mr-2" /> Tips
+          </TabsTrigger>
           <TabsTrigger value="settings" data-testid="farewell-tab-settings">
             <Settings className="w-4 h-4 mr-2" /> Settings
           </TabsTrigger>
@@ -693,6 +696,15 @@ const FarewellManager = ({ getAuthHeader }) => {
             pillarIcon="🌈"
             pillarColor="bg-purple-500"
           />
+        </TabsContent>
+
+        {/* Tips Tab */}
+        <TabsContent value="tips" className="space-y-4">
+          <Card className="p-8 text-center" data-testid="farewell-tips-panel">
+            <Sparkles className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+            <p className="font-medium text-gray-600">Farewell Tips</p>
+            <p className="text-sm text-gray-400 mt-1">Quick win tips and grief support guides for Farewell pillar coming soon</p>
+          </Card>
         </TabsContent>
 
         {/* Settings Tab */}
