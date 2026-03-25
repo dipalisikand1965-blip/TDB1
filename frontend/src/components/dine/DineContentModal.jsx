@@ -879,7 +879,14 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
       {/* ── Sub-category tabs ────────────────────────────────────────── */}
       {tabs.length > 1 && (
         <div className="flex-shrink-0 flex gap-2 overflow-x-auto px-4 py-3"
-          style={{ scrollbarWidth: 'none' }}>
+          style={{
+            scrollbarWidth: 'none',
+            position: 'sticky',
+            top: 0,
+            zIndex: 100,
+            background: '#fff',
+            boxShadow: '0 1px 0 #F0E8E0',
+          }}>
           <button
             onClick={() => setActiveTab('all')}
             style={{
@@ -918,7 +925,7 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
             <span className="ml-3 text-gray-500 text-sm">Filtering for {petName}...</span>
           </div>
         ) : (
-          <div className="px-4 pb-6" style={{ paddingTop: tabs.length > 1 ? 4 : 16 }}>
+          <div className="px-4 pb-6" style={{ paddingTop: tabs.length > 1 ? 20 : 16 }}>
 
             {/* Art style toggle — soul_made only */}
             {category === 'soul_made' && (filteredProducts.length > 0) && yappyIllustrations.length > 0 && (
