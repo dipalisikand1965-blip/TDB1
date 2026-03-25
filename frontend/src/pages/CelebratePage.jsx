@@ -59,6 +59,51 @@ import { PillarDailyTip, PillarHelpBuckets, PillarGuidedPaths } from '../compone
 // Lazy load Soul Explainer for footer link
 const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
 
+// ── Mira Intelligence helpers ──
+const CLEAN_NONE = /^(none|no|n\/a|nil|nothing|na|-|not specified|unknown|___)$/i;
+function getAllergies(pet) {
+  const set = new Set();
+  const add = v => { if (typeof v === 'string') v.split(',').forEach(a => { const t = a.trim(); if (t && !CLEAN_NONE.test(t)) set.add(t.toLowerCase()); }); if (Array.isArray(v)) v.forEach(a => add(a)); };
+  add(pet?.preferences?.allergies); add(pet?.doggy_soul_answers?.food_allergies); add(pet?.allergies);
+  return [...set];
+}
+function getLoves(pet) {
+  const set = new Set();
+  const add = v => { if (typeof v === 'string') v.split(',').forEach(a => { const t = a.trim(); if (t && !CLEAN_NONE.test(t)) set.add(t.toLowerCase()); }); if (Array.isArray(v)) v.forEach(a => add(a)); };
+  add(pet?.preferences?.loved_items); add(pet?.doggy_soul_answers?.loved_items); add(pet?.loved_items);
+  return [...set];
+}
+function applyMiraIntelligence(products, allergies, loves, healthCondition, nutritionGoal, pet) {
+  const petName = pet?.name || 'your dog';
+  const allergyTerms = (allergies || []).map(a => a.toLowerCase().trim());
+  const loveTerms = (loves || []).map(l => l.toLowerCase().trim()).filter(Boolean);
+  return (products || [])
+    .filter(p => {
+      if (!allergyTerms.length) return true;
+      const text = `${p.name} ${p.description || ''}`.toLowerCase();
+      const free = (p.allergy_free || '').toLowerCase();
+      return !allergyTerms.some(a => {
+        if (free.includes(`${a}-free`) || free.includes(`${a} free`)) return false;
+        if (text.includes(`${a}-free`) || text.includes(`${a} free`)) return false;
+        const cleaned = text.replace(new RegExp(`${a}[- ]free`, 'gi'), '');
+        return cleaned.includes(a);
+      });
+    })
+    .map(p => {
+      const text = `${p.name} ${p.description || ''} ${p.sub_category || ''}`.toLowerCase();
+      const free = (p.allergy_free || '').toLowerCase();
+      const matchedLove = loveTerms.find(l => text.includes(l));
+      let mira_hint = p.mira_hint || null;
+      if (!mira_hint) {
+        if (matchedLove) mira_hint = `Matches ${petName}'s love for ${matchedLove}`;
+        else if (allergyTerms.length && allergyTerms.every(a => free.includes(`${a}-free`))) mira_hint = `Free from ${allergyTerms.join(' & ')} — safe for ${petName}`;
+        else if (p.mira_tag) mira_hint = p.mira_tag;
+      }
+      return { ...p, mira_hint, _loved: !!matchedLove };
+    })
+    .sort((a, b) => (a._loved === b._loved ? 0 : a._loved ? -1 : 1));
+}
+
 // Product categories for Celebrate pillar - Expanded with Cat, Rescue, Desi options
 const celebrateCategories = [
   { id: 'cakes', name: 'Birthday Cakes', icon: Cake, path: '/celebrate/cakes', color: 'bg-pink-100 text-pink-600' },
@@ -311,7 +356,7 @@ const CelebratePage = () => {
           
           // Add concierge picks (personalized items) - full data
           if (data.pillars?.celebrate?.concierge_picks) {
-            celebratePicks.push(...data.pillars.celebrate.concierge_picks.slice(0, 4).map(p => ({
+            celebratePicks.push(...data.pillars.celebrate.concierge_picks.map(p => ({
               icon: iconToEmoji[p.icon] || p.icon || '✨',
               name: p.name,
               description: p.description || p.why_it_fits || ''
@@ -636,8 +681,11 @@ const CelebratePage = () => {
         // Update total after filtering
         total = products.length;
         
+        // Apply Mira Intelligence filtering
+        const intelligent = applyMiraIntelligence(products, getAllergies(activePet), getLoves(activePet), null, null, activePet);
+        
         // Apply pagination after filtering
-        const paginatedProducts = products.slice(skip, skip + PRODUCTS_PER_PAGE);
+        const paginatedProducts = intelligent.slice(skip, skip + PRODUCTS_PER_PAGE);
         
         if (append && page > 1) {
           setFeaturedProducts(prev => [...prev, ...paginatedProducts]);
@@ -878,7 +926,7 @@ const CelebratePage = () => {
       {/* SECTION 3: CURATED BUNDLES - Birthday Pawty, Gotcha Day */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <div className="max-w-6xl mx-auto px-4 mb-8">
-        <CuratedBundles pillar="celebrate" showTitle={true} /> */}
+        <CuratedBundles pillar="celebrate" showTitle={true} />
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
@@ -888,12 +936,12 @@ const CelebratePage = () => {
       {activePet && token && (
         <div className="max-w-6xl mx-auto px-4 py-8 section-fade-in" data-testid="soul-made-section">
           <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-white rounded-3xl p-6 sm:p-8 border border-purple-100">
-            {/* {/* <SoulMadeCollection
+            {/* <SoulMadeCollection
               key={`soul-made-${activePet?.id || 'guest'}`}
               pillar="celebrate"
               maxItems={8}
               showTitle={true}
-            /> */} */}
+            /> */}
           </div>
         </div>
       )}

@@ -495,7 +495,7 @@ function ServiceCard({ service, groupColour, pet, onBook }) {
 // ── Service Group ─────────────────────────────────────────────
 function ServiceGroup({ group, services, pet, onBook }) {
   const [expanded, setExpanded] = useState(false);
-  const show = expanded ? services : services.slice(0, 4);
+  const show = expanded ? services : services.slice(0, 6);
 
   if (!services.length) return null;
 

@@ -177,7 +177,7 @@ const CollectionPage = () => {
               </div>
             ) : section.layout === 'featured' ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {section.items?.slice(0, 4).map((item, idx) => (
+                {section.items?.map((item, idx) => (
                   <div key={idx} className={idx === 0 ? 'md:col-span-2 md:row-span-2' : ''}>
                     <ProductCard 
                       item={item} 
