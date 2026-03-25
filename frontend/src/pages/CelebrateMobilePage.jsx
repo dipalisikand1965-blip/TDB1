@@ -30,6 +30,7 @@ import BirthdayBoxBrowseDrawer from '../components/celebrate/BirthdayBoxBrowseDr
 import GuidedCelebratePaths from '../components/celebrate/GuidedCelebrationPaths';
 import CelebrateNearMe from '../components/celebrate/CelebrateNearMe';
 import ConciergeIntakeModal from '../components/celebrate/ConciergeIntakeModal';
+import CelebrateServiceGrid from '../components/celebrate/CelebrateServiceGrid';
 
 const C = {
   cream:   '#FAF7FF',
@@ -423,6 +424,13 @@ export default function CelebrateMobilePage() {
         {/* Guided paths */}
         <div style={{ padding:'0 16px 24px' }}>
           <GuidedCelebratePaths pet={currentPet} />
+        </div>
+
+        {/* Celebrate Personally — Service Grid */}
+        <div style={{ padding:'0 16px 24px' }}>
+          <div style={{ fontSize:20, fontWeight:700, marginBottom:4 }}>Celebrate Personally</div>
+          <div style={{ fontSize:14, color:C.taupe, marginBottom:16 }}>Real services, arranged by Concierge®</div>
+          <CelebrateServiceGrid pet={currentPet} />
         </div>
 
         {/* NearMe */}
