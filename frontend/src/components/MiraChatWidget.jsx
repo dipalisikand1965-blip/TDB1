@@ -1400,12 +1400,13 @@ const MiraChatWidget = ({
   // HIDE on mobile since MobileNavBar has its own Mira FAB
   // P2 fix: Reduced size from md to sm to make it less visually overpowering
   if (!isOpen) {
+    const showMobileOrbOnDine = isMobile && pillar === 'dine';
     return (
-      <div className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999] flex-col items-end gap-3 hidden md:flex ${className}`}>
+      <div className={`${showMobileOrbOnDine ? 'flex' : 'hidden md:flex'} fixed ${showMobileOrbOnDine ? 'bottom-6 left-1/2 -translate-x-1/2' : 'bottom-4 right-4 sm:bottom-6 sm:right-6'} z-[9999] flex-col items-end gap-3 ${className}`}>
         <MiraOrb 
           state={getOrbState()}
           pillar={pillar}
-          size="sm"
+          size={showMobileOrbOnDine ? 'md' : 'sm'}
           showLabel={true}
           onClick={() => setIsOpen(true)}
         />
