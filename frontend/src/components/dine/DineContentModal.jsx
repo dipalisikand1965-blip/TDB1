@@ -766,15 +766,16 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
       } : {
         position: 'fixed', left: 0, right: 0, bottom: 0,
         maxHeight: '93vh', borderTopLeftRadius: 24, borderTopRightRadius: 24,
-        display: 'flex', flexDirection: 'column', zIndex: 56,
-        paddingTop: 56,
+        overflowY: 'auto', zIndex: 56,
       }}
       data-testid={`dine-modal-${category}`}
     >
-      {/* Drag handle (mobile) */}
+      {/* ── Drag handle (mobile) ── */}
       {!isDesktop && (
-        <div className="flex justify-center pt-3 flex-shrink-0">
-          <div className="rounded-full bg-gray-200" style={{ width: 40, height: 4 }} />
+        <div style={{ position: 'sticky', top: 0, zIndex: 50, background: '#fff', paddingTop: 12, paddingBottom: 2 }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 2 }}>
+            <div style={{ width: 40, height: 4, borderRadius: 999, background: '#E0D8D0' }} />
+          </div>
         </div>
       )}
 
@@ -782,7 +783,10 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
       <div className="flex items-start justify-between px-5 py-4 flex-shrink-0"
         style={{
           borderBottom: '1px solid #F0E8E0',
-          ...(isDesktop ? {} : { position: 'sticky', top: 0, zIndex: 40, background: '#fff' })
+          position: isDesktop ? 'static' : 'sticky',
+          top: isDesktop ? 'auto' : 18,
+          zIndex: 40,
+          background: '#fff',
         }}>
         <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', flex: 1, minWidth: 0 }}>
           {!isDesktop && (
@@ -918,7 +922,8 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
       )}
 
       {/* ── Product Grid ─────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto" style={{ paddingBottom: 80 }}>
+      <div style={{ paddingBottom: 80 }}
+        className={isDesktop ? 'flex-1 overflow-y-auto' : ''}>
         {tabs.length > 1 && !loading && (
           <div
             className="flex gap-2 overflow-x-auto px-4 py-3"

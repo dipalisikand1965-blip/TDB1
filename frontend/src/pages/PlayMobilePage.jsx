@@ -119,7 +119,13 @@ export default function PlayMobilePage() {
 
   const petName = currentPet?.name || 'your dog';
   const allergies = getAllergies(currentPet);
-  const intelligent = applyMiraFilter(allRaw, currentPet);
+  // Safety wrapper - never crash the page
+  let intelligent = [];
+  try {
+    intelligent = applyMiraFilter(allRaw, currentPet) || [];
+  } catch (e) {
+    intelligent = allRaw || [];
+  }
   const subCats = ['All', ...new Set(intelligent.map(p => p.sub_category).filter(Boolean))];
   const products = subCat === 'All' ? intelligent : intelligent.filter(p => p.sub_category === subCat);
   const miraPick = products.find(p => p.miraPick) || products[0] || null;
