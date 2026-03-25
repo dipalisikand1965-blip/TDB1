@@ -39,6 +39,7 @@ const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@
 
 function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'?[12]:[6]); }
 
+import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
 import { applyMiraFilter } from '../hooks/useMiraFilter';
 
 function getAllergies(pet) {
@@ -88,6 +89,7 @@ export default function CareMobilePage() {
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [allRaw, setAllRaw] = useState([]);
+  const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'grooming' });
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -298,10 +300,19 @@ export default function CareMobilePage() {
           <div style={{ padding:'16px' }}>
             <CareNearMe pet={currentPet} token={token} onBook={svc => {
               tdc.book({ service:svc, pillar:'care', pet:currentPet, channel:'care_nearme' });
+              setSvcBooking({ isOpen: true, serviceType: guessServiceType(svc) });
             }} />
           </div>
         )}
       </div>
+
+      {/* Service Booking Modal — full 4-step flow */}
+      <ServiceBookingModal
+        isOpen={svcBooking.isOpen}
+        onClose={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
+        serviceType={svcBooking.serviceType}
+        onBookingComplete={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
+      />
     </PillarPageLayout>
   );
 }

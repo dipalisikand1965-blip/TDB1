@@ -77,6 +77,58 @@ const SERVICE_TYPES = {
       { id: 'group-walk', name: 'Group Walk', duration: '45 mins', price: '₹150 - ₹300/walk' },
       { id: 'monthly-package', name: 'Monthly Package (20 walks)', duration: 'Flexible', price: '₹3,500 - ₹6,000' }
     ]
+  },
+  boarding: {
+    name: 'Boarding & Stays',
+    icon: Home,
+    color: 'amber',
+    gradient: 'from-amber-500 to-orange-600',
+    pillar: 'go',
+    subServices: [
+      { id: 'hotel-boarding', name: 'Pet Hotel', duration: 'Per night', price: '₹1,000 - ₹2,500/night' },
+      { id: 'home-boarding', name: 'Home Boarding', duration: 'Per night', price: '₹800 - ₹1,800/night' },
+      { id: 'resort-stay', name: 'Pet Resort', duration: 'Per night', price: '₹2,500 - ₹5,000/night' },
+      { id: 'long-stay', name: 'Long Stay (7+ nights)', duration: '7+ nights', price: '₹5,000 - ₹15,000/week' }
+    ]
+  },
+  sitting: {
+    name: 'Pet Sitting',
+    icon: Heart,
+    color: 'rose',
+    gradient: 'from-rose-500 to-pink-600',
+    pillar: 'go',
+    subServices: [
+      { id: 'in-home-sitting', name: 'In-Home Sitting', duration: 'Per visit', price: '₹500 - ₹1,000/visit' },
+      { id: 'overnight-sitting', name: 'Overnight Sitting', duration: 'Overnight', price: '₹1,500 - ₹2,500/night' },
+      { id: 'drop-in', name: 'Drop-In Visit', duration: '30 mins', price: '₹300 - ₹500/visit' },
+      { id: 'housesitting', name: 'Housesitting', duration: 'Per day', price: '₹1,000 - ₹2,000/day' }
+    ]
+  },
+  daycare: {
+    name: 'Day Care',
+    icon: Dog,
+    color: 'teal',
+    gradient: 'from-teal-500 to-cyan-600',
+    pillar: 'play',
+    subServices: [
+      { id: 'full-day', name: 'Full Day Care', duration: '9am - 6pm', price: '₹600 - ₹1,200/day' },
+      { id: 'half-day', name: 'Half Day Care', duration: '4 hours', price: '₹400 - ₹700/day' },
+      { id: 'weekly-daycare', name: 'Weekly Package', duration: '5 days', price: '₹2,500 - ₹5,000/week' },
+      { id: 'socialization', name: 'Socialisation Day', duration: '3 hours', price: '₹500 - ₹900/session' }
+    ]
+  },
+  pet_taxi: {
+    name: 'Pet Taxi',
+    icon: MapPin,
+    color: 'orange',
+    gradient: 'from-orange-500 to-amber-600',
+    pillar: 'go',
+    subServices: [
+      { id: 'vet-transfer', name: 'Vet Transfer', duration: 'As needed', price: '₹300 - ₹600/trip' },
+      { id: 'airport-transfer', name: 'Airport Transfer', duration: 'As needed', price: '₹1,000 - ₹2,500/trip' },
+      { id: 'grooming-transfer', name: 'Groomer Drop & Pick', duration: 'As needed', price: '₹400 - ₹800/trip' },
+      { id: 'outstation', name: 'Outstation Trip', duration: 'Per day', price: '₹2,000 - ₹5,000/day' }
+    ]
   }
 };
 
@@ -85,6 +137,20 @@ const TIME_SLOTS = [
   '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
   '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM'
 ];
+
+// Utility: infer serviceType from a service name string or object
+export function guessServiceType(svcNameOrObj) {
+  const name = (typeof svcNameOrObj === 'string' ? svcNameOrObj : (svcNameOrObj?.name || svcNameOrObj?.label || svcNameOrObj?.title || '')).toLowerCase();
+  if (/groom|bath|spa|nail|trim|coat|shampoo/.test(name)) return 'grooming';
+  if (/vet|doctor|vaccin|check.?up|consult|health|deworming|tick|flea/.test(name)) return 'vet';
+  if (/train|obedien|behav|puppy class|agility|command/.test(name)) return 'training';
+  if (/walk|stroll|exercise|run/.test(name)) return 'walking';
+  if (/board|kennel|hotel|resort|stay|overnight/.test(name)) return 'boarding';
+  if (/sit|house.?sit|in.?home|drop.?in/.test(name)) return 'sitting';
+  if (/day.?care|creche|daycare|day care/.test(name)) return 'daycare';
+  if (/taxi|transport|drive|drop|pick.?up/.test(name)) return 'pet_taxi';
+  return 'grooming'; // safe fallback
+}
 
 const ServiceBookingModal = ({ 
   isOpen, 
@@ -191,7 +257,7 @@ const ServiceBookingModal = ({
   // Submit booking
   const handleSubmit = async () => {
     // ── tdc.book — canonical intent ticket ──
-    tdc.book({ service: service?.name || 'a service', pillar: "services", pet, channel: "service_booking_modal" });
+    tdc.book({ service: service?.name || 'a service', pillar: "services", pet: formData.petName || null, channel: "service_booking_modal" });
 
     setIsSubmitting(true);
     try {
