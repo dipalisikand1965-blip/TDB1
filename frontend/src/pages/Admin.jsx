@@ -2530,12 +2530,16 @@ const Admin = () => {
                   {[
                     { id: 'celebrate', label: 'Celebrate', icon: PartyPopper },
                     { id: 'dine', label: 'Dine', icon: UtensilsCrossed },
-                    { id: 'shop-manager', label: 'Shop', icon: ShoppingBag },
+                    { id: 'go', label: 'Go', icon: MapPin },
                     { id: 'care', label: 'Care', icon: Heart },
-                    { id: 'go', label: 'Stay', icon: Home },
-                    { id: 'travel', label: 'Travel', icon: Plane },
-                    { id: 'services', label: 'Services', icon: Activity },
+                    { id: 'play', label: 'Play', icon: Zap },
                     { id: 'learn', label: 'Learn', icon: BookOpen },
+                    { id: 'paperwork', label: 'Paperwork', icon: FileText },
+                    { id: 'emergency', label: 'Emergency', icon: AlertTriangle },
+                    { id: 'farewell', label: 'Farewell', icon: Heart },
+                    { id: 'adopt', label: 'Adopt', icon: PawPrint },
+                    { id: 'shop-manager', label: 'Shop', icon: ShoppingBag },
+                    { id: 'services', label: 'Services', icon: Activity },
                   ].map(tab => (
                     <button
                       key={tab.id}
@@ -3176,17 +3180,14 @@ const Admin = () => {
           <div className="flex gap-2 flex-wrap items-center mb-4">
             <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-amber-100 rounded">📄 Page CMS</span>
             {[
+              { id: 'celebrate-cms', label: 'Celebrate', icon: PartyPopper },
+              { id: 'dine-cms', label: 'Dine', icon: Utensils },
+              { id: 'go-cms', label: 'Go', icon: MapPin },
+              { id: 'care-cms', label: 'Care', icon: Heart },
+              { id: 'play-cms', label: 'Play', icon: Zap },
               { id: 'learn-cms', label: 'Learn', icon: GraduationCap },
               { id: 'paperwork-cms', label: 'Paperwork', icon: FileText },
-              { id: 'care-cms', label: 'Care', icon: Heart },
-              { id: 'fit-cms', label: 'Fit', icon: Dumbbell },
-              { id: 'travel-cms', label: 'Travel', icon: Plane },
-              { id: 'stay-cms', label: 'Stay', icon: Home },
-              { id: 'dine-cms', label: 'Dine', icon: Utensils },
-              { id: 'enjoy-cms', label: 'Enjoy', icon: Sparkles },
-              { id: 'celebrate-cms', label: 'Celebrate', icon: PartyPopper },
               { id: 'emergency-cms', label: 'Emergency', icon: AlertTriangle },
-              { id: 'advisory-cms', label: 'Advisory', icon: BookOpen },
               { id: 'farewell-cms', label: 'Farewell', icon: Heart },
               { id: 'adopt-cms', label: 'Adopt', icon: PawPrint },
               { id: 'shop-cms', label: 'Shop', icon: ShoppingBag },
@@ -3243,18 +3244,13 @@ const Admin = () => {
             {[
               { id: 'products', emoji: '🎂', label: 'Celebrate' },
               { id: 'dine', emoji: '🍽️', label: 'Dine' },
-              { id: 'stay', emoji: '🏨', label: 'Stay' },
-              { id: 'travel', emoji: '✈️', label: 'Travel' },
+              { id: 'go', emoji: '🗺️', label: 'Go' },
               { id: 'care', emoji: '💊', label: 'Care' },
-              { id: 'enjoy', emoji: '🎾', label: 'Enjoy' },
-              { id: 'fit', emoji: '🏃', label: 'Fit' },
+              { id: 'play', emoji: '🎾', label: 'Play' },
               { id: 'learn', emoji: '🎓', label: 'Learn' },
               { id: 'paperwork', emoji: '📄', label: 'Paperwork' },
-              { id: 'advisory', emoji: '📋', label: 'Advisory' },
               { id: 'emergency', emoji: '🚨', label: 'Emergency' },
               { id: 'farewell', emoji: '🌈', label: 'Farewell' },
-              { id: 'rainbow-bridge', emoji: '💜', label: 'Memorial Wall' },
-              { id: 'pet-wrapped', emoji: '🎁', label: 'Pet Wrapped' },
               { id: 'adopt', emoji: '🐾', label: 'Adopt' },
               { id: 'shop', emoji: '🛒', label: 'Shop' },
               { id: 'service-box', emoji: '🔧', label: 'Services' },
@@ -4087,16 +4083,13 @@ const Admin = () => {
           <PaperworkPageCMS />
         )}
 
-        {/* Universal Pillar CMS Tabs - All 12 remaining pillars */}
+        {/* Universal Pillar CMS Tabs - All 12 pillars */}
         {activeTab === 'care-cms' && <PillarPageCMS pillar="care" />}
-        {activeTab === 'fit-cms' && <PillarPageCMS pillar="fit" />}
-        {activeTab === 'travel-cms' && <PillarPageCMS pillar="travel" />}
-        {activeTab === 'stay-cms' && <PillarPageCMS pillar="stay" />}
+        {activeTab === 'go-cms' && <PillarPageCMS pillar="go" />}
+        {activeTab === 'play-cms' && <PillarPageCMS pillar="play" />}
         {activeTab === 'dine-cms' && <PillarPageCMS pillar="dine" />}
-        {activeTab === 'enjoy-cms' && <PillarPageCMS pillar="enjoy" />}
         {activeTab === 'celebrate-cms' && <PillarPageCMS pillar="celebrate" />}
         {activeTab === 'emergency-cms' && <PillarPageCMS pillar="emergency" />}
-        {activeTab === 'advisory-cms' && <PillarPageCMS pillar="advisory" />}
         {activeTab === 'farewell-cms' && <PillarPageCMS pillar="farewell" />}
         {activeTab === 'adopt-cms' && <PillarPageCMS pillar="adopt" />}
         {activeTab === 'shop-cms' && <PillarPageCMS pillar="shop" />}

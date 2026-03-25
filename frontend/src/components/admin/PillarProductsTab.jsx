@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
+import ProductBoxEditor from './ProductBoxEditor';
 
 const ITEMS_PER_PAGE = 50;
 
@@ -42,6 +43,7 @@ const PillarProductsTab = ({ pillar, pillarName = '', pillarColor = 'bg-purple-5
   const [search, setSearch] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
@@ -90,18 +92,35 @@ const PillarProductsTab = ({ pillar, pillarName = '', pillarColor = 'bg-purple-5
   };
 
   const openEdit = (product) => {
-    setEditingProduct(product);
-    setForm({
-      name: product.name || '',
-      description: product.description || '',
-      price: product.price?.toString() || '',
-      compare_price: product.compare_price?.toString() || '',
-      category: product.category || '',
-      sub_category: product.sub_category || '',
-      image_url: product.image_url || '',
-      active: product.active !== false
-    });
-    setShowModal(true);
+    setEditingProduct({ ...product, pillar: product.pillar || pillar });
+    setShowEditor(true);
+  };
+
+  // Save via full Product Box editor — PUT to pillar-products endpoint
+  const savePillarProduct = async () => {
+    if (!editingProduct) return;
+    setSaving(true);
+    try {
+      const productId = editingProduct.id || editingProduct.shopify_id;
+      const res = await fetch(`${API_URL}/api/admin/pillar-products/${productId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...editingProduct, pillar: editingProduct.pillar || pillar })
+      });
+      if (res.ok) {
+        toast({ title: 'Product updated!' });
+        setShowEditor(false);
+        setEditingProduct(null);
+        fetchProducts(page);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        toast({ title: 'Error', description: err.detail || 'Save failed', variant: 'destructive' });
+      }
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleSave = async () => {
@@ -314,11 +333,22 @@ const PillarProductsTab = ({ pillar, pillarName = '', pillarColor = 'bg-purple-5
         </div>
       )}
 
-      {/* Create / Edit Modal */}
+      {/* Full Product Box Editor — opens when Edit is clicked on any product card */}
+      <ProductBoxEditor
+        product={editingProduct}
+        setProduct={setEditingProduct}
+        open={showEditor}
+        onClose={() => { setShowEditor(false); setEditingProduct(null); }}
+        onSave={savePillarProduct}
+        saving={saving}
+        onGenerateMiraHint={null}
+      />
+
+      {/* Create Modal — simple form for adding new products */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingProduct ? 'Edit Product' : `Add ${pillarName || pillar} Product`}</DialogTitle>
+            <DialogTitle>{`Add ${pillarName || pillar} Product`}</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
