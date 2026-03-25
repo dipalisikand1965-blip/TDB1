@@ -1,0 +1,110 @@
+{
+  "summary": "Batch 5-6 Mobile Parity Sprint testing at 375px viewport. Tested Emergency WhatsApp integration, Care/Go/Play 3-tab+dimTab pages, and Learn/Paperwork dimension pills pages. Fixed 2 critical bugs: (1) EmergencyMobilePage.jsx missing useNavigate import; (2) emergency-whatsapp endpoint not registered due to route definition after app.include_router(api_router). All 18 features verified passing after fixes.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "POST /api/notifications/emergency-whatsapp",
+        "issue": "Endpoint at line 24156 in server.py was defined AFTER app.include_router(api_router) at line 21706. FastAPI copies routes at call time — routes added after include_router are NOT registered. FIXED: moved endpoint definition to before line 21706 (near other notification routes ~line 17475).",
+        "priority": "CRITICAL (Fixed)"
+      }
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "EmergencyMobilePage",
+        "issue": "Missing `import { useNavigate } from 'react-router-dom'` — useNavigate used at line 55 but not imported, would cause ReferenceError. FIXED: added import.",
+        "selector": "[data-testid='emergency-mobile']",
+        "priority": "CRITICAL (Fixed)"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "features_verified": {
+    "emergency_mobile_375px": {
+      "emergency_mobile_element": "PASS",
+      "get_help_urgent_cta": "PASS — 'Get Help' button visible above tabs in crimson bar",
+      "3_tabs": "PASS — Emergency Kit, Book Help, Find Vet",
+      "dim_tab": "PASS — 📦 Products / 🩺 Services toggle in Emergency Kit",
+      "whatsapp_api": "PASS — POST /api/notifications/emergency-whatsapp returns {success:true, message:'Emergency alert sent to Concierge®'}",
+      "confirmation_sheet": "PASS — '✓ Concierge notified via WhatsApp' green box shown after tapping Get Help"
+    },
+    "care_mobile_375px": {
+      "care_mobile_element": "PASS",
+      "3_tabs": "PASS — 🌿 Care & Products, ✂️ Care Services, 📍 Find Care",
+      "dim_tab": "PASS — 🎯 All Products / ✦ Personalised toggle",
+      "personalised_section": "PASS — PersonalisedBreedSection renders in Personalised dimTab",
+      "sub_category_pills": "PASS — All, Breed Collection, Grooming, Foundation... pills visible with products loaded (104 safe for Mojo)",
+      "product_grid": "PASS — 2-column grid with product cards",
+      "care_concierge_section": "PASS — Care Services tab shows 'Care Services for Mojo', 'Care, Personally'"
+    },
+    "go_mobile_375px": {
+      "go_mobile_element": "PASS",
+      "3_tabs": "PASS — ✈️ Go & Products, 🛎️ Services, 🏨 Stay",
+      "dim_tab": "PASS — 🎯 All Products / ✦ Personalised toggle",
+      "pet_friendly_stays": "PASS — Stay tab shows PetFriendlyStays with search, Near me, Popular destinations"
+    },
+    "play_mobile_375px": {
+      "play_mobile_element": "PASS",
+      "3_tabs": "PASS — 🎾 Play & Products, 🐕 Services, 📍 Find Play",
+      "dim_tab": "PASS — 🎯 All Products / ✦ Personalised toggle",
+      "buddy_meetup": "PASS — Services tab shows BuddyMeetup 'Find Mojo a play buddy'",
+      "play_concierge": "PASS — PlayConciergeSection visible in Services tab"
+    },
+    "learn_mobile_375px": {
+      "learn_mobile_element": "PASS",
+      "7_dimension_pills": "PASS — foundations, behaviour, training, tricks, social, soul, mira all present",
+      "dim_pill_click": "PASS — clicking Behaviour pill activates it and shows Behaviour panel",
+      "dim_tab_products_videos_book": "PASS — 📦 Products, 🎬 Videos, 📚 Book tabs inside dimension panel"
+    },
+    "paperwork_mobile_375px": {
+      "paperwork_mobile_element": "PASS",
+      "7_dimension_pills": "PASS — identity, health, travel, insurance, breeds, advisory, soul all present",
+      "document_vault": "PASS — 'Mojo's Document Vault' shows at top of page (17% complete, 1 of 6)",
+      "dim_tab_products_services_advisory": "PASS — 📦 Products, 🛎️ Services, 💡 Advisory tabs inside dimension panel"
+    }
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_batch5_6_mobile.py",
+    "/app/test_reports/pytest/batch5_6_pytest_results.xml"
+  ],
+  "action_items": [
+    "IMPORTANT: Review server.py for other @api_router routes defined AFTER app.include_router(api_router) at line 21706 — these are dead code and not registered. Lines 22940-21706 range has many @api_router decorators that may be dead code (e.g., @api_router.post('/admin/cleanup-product-images') at line 23864 returns 404). The duplicate emergency-whatsapp endpoint at line 24156 (original position) can be removed as the working copy is now at line ~17476.",
+    "Remove duplicate emergency-whatsapp endpoint definition at line 24156 of server.py (now dead code since working copy is before include_router)",
+    "NOTE: WhatsApp actual delivery depends on Gupshup credentials — endpoint returns success:true regardless but actual delivery is integration-dependent"
+  ],
+  "critical_code_review_comments": [
+    "CRITICAL ARCHITECTURAL BUG: server.py has ~2500+ lines of @api_router decorated routes defined AFTER app.include_router(api_router) at line 21706. In FastAPI 0.110.1, include_router copies routes at call time — any @api_router routes defined after this call are NOT registered in the app. This means routes like /admin/cleanup-product-images (line 23864), /admin/renewals/expiring (line 23598) etc. are dead code. Some appear to be duplicates of routes in separate router modules (analytics_routes.py, birthday_box_routes.py, membership_routes.py) which is why they seem to work — the working versions are in separate included routers.",
+    "EmergencyMobilePage.jsx was missing `import { useNavigate } from 'react-router-dom'` — used useNavigate at line 55 without importing it. Fixed in this iteration.",
+    "server.py bottom of file (line 24220) has incomplete function `build_birthday_box` ending with `all_allergies` on a standalone line — this is a NameError at runtime if that function is called."
+  ],
+  "updated_files": [
+    "/app/frontend/src/pages/EmergencyMobilePage.jsx",
+    "/app/backend/server.py",
+    "/app/backend/tests/test_batch5_6_mobile.py"
+  ],
+  "success_rate": {
+    "backend": "100% (13/13 tests pass)",
+    "frontend": "100% (18/18 features verified)"
+  },
+  "test_credentials": "dipali@clubconcierge.in / test123",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Batches 5-6 fully tested and verified at 375px. Both bugs fixed: (1) useNavigate import in EmergencyMobilePage.jsx; (2) emergency-whatsapp endpoint moved before include_router in server.py. All 18 features pass. Key architectural note: server.py routes defined after include_router(api_router) at line 21706 are dead code — the emergency-whatsapp endpoint was moved to ~line 17476. The original dead-code position at line 24156 still exists and can be removed. Test credentials: dipali@clubconcierge.in / test123. Routes to test: /emergency, /care, /go, /play, /learn, /paperwork — all serve mobile views at 375px.",
+  "rca_of_issues": {
+    "emergency_whatsapp_404": {
+      "issue": "POST /api/notifications/emergency-whatsapp returned 404",
+      "root_cause": "In FastAPI 0.110.1, app.include_router(router) copies routes from the router at call time (static snapshot). The emergency-whatsapp endpoint was decorated with @api_router.post() at line 24156, which is AFTER app.include_router(api_router) at line 21706. Python executes module code top-to-bottom, so when include_router ran, the emergency-whatsapp route hadn't been defined yet. The decorator at line 24156 added the route to api_router but NOT to the main app.",
+      "fix": "Moved the endpoint definition from line 24156 to ~line 17476 (before line 21706). The route now appears in OpenAPI spec and returns 200.",
+      "reproduction": "Call POST /api/notifications/emergency-whatsapp → was returning 404 Not Found"
+    },
+    "missing_useNavigate": {
+      "issue": "EmergencyMobilePage.jsx would crash with ReferenceError: useNavigate is not defined",
+      "root_cause": "Line 55 uses `const navigate = useNavigate()` but useNavigate was not imported from 'react-router-dom'. Other mobile pages (CareMobilePage, GoMobilePage, etc.) all import it correctly.",
+      "fix": "Added `import { useNavigate } from 'react-router-dom'` on line 8 of EmergencyMobilePage.jsx"
+    }
+  }
+}

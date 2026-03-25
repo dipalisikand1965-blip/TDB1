@@ -17474,6 +17474,61 @@ async def get_member_unread_count(current_user: dict = Depends(get_current_user)
         return {"unread_count": 0, "error": str(e)}
 
 
+# ==================== EMERGENCY WHATSAPP NOTIFICATION ====================
+
+@api_router.post("/notifications/emergency-whatsapp")
+async def send_emergency_whatsapp(payload: dict, current_user: dict = Depends(get_current_user_optional)):
+    """
+    Send an emergency WhatsApp alert to the Concierge team.
+    Called from EmergencyMobilePage when user taps the URGENT button.
+    """
+    try:
+        from whatsapp_notifications import send_whatsapp_message
+        to = payload.get("to", "919739908844")
+        message = payload.get("message", "")
+        pet_name = payload.get("petName", "Unknown Pet")
+        breed = payload.get("breed", "Unknown Breed")
+        user_name = payload.get("userName", "Member")
+        allergies = payload.get("allergies", "None")
+
+        if not message:
+            message = (
+                f"🚨 EMERGENCY — {pet_name} ({breed}).\n"
+                f"Parent: {user_name}.\n"
+                f"Allergies: {allergies}.\n"
+                f"Needs immediate vet help. Contact NOW."
+            )
+
+        result = await send_whatsapp_message(to, message, log_context="emergency")
+        logger.info(f"[EMERGENCY-WA] Sent to {to} for {pet_name}: {result}")
+
+        # Also create an urgent ticket in service desk
+        try:
+            ticket_payload = {
+                "pillar": "emergency",
+                "service": "Emergency Help",
+                "pet_name": pet_name,
+                "breed": breed,
+                "notes": message,
+                "urgency": "critical",
+                "source": "emergency_mobile_urgent_cta"
+            }
+            if current_user:
+                ticket_payload["user_id"] = current_user.get("id") or current_user.get("user_id")
+            await db.service_desk_tickets.insert_one({
+                **ticket_payload,
+                "status": "urgent",
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "_id_omitted": True
+            })
+        except Exception as te:
+            logger.warning(f"[EMERGENCY-WA] Ticket creation failed: {te}")
+
+        return {"success": result.get("success", False), "message": "Emergency alert sent to Concierge®"}
+    except Exception as e:
+        logger.error(f"[EMERGENCY-WA] Failed: {e}")
+        return {"success": False, "message": str(e)}
+
 
 # ==================== MEMBER NOTIFICATIONS API ====================
 
@@ -24151,6 +24206,60 @@ async def get_birthday_box_full(pet_id: str):
                 slot["price"], slot["image"] = product.get("price", 0), product.get("image_url") or product.get("image")
     
     return {**preview, "allSlots": all_slots, "totalPrice": sum(slot.get("price", 0) for slot in all_slots), "currency": "INR"}
+
+
+@api_router.post("/notifications/emergency-whatsapp")
+async def send_emergency_whatsapp(payload: dict, current_user: dict = Depends(get_current_user_optional)):
+    """
+    Send an emergency WhatsApp alert to the Concierge team.
+    Called from EmergencyMobilePage when user taps the URGENT button.
+    """
+    try:
+        from whatsapp_notifications import send_whatsapp_message
+        to = payload.get("to", "919739908844")
+        message = payload.get("message", "")
+        pet_name = payload.get("petName", "Unknown Pet")
+        breed = payload.get("breed", "Unknown Breed")
+        user_name = payload.get("userName", "Member")
+        allergies = payload.get("allergies", "None")
+
+        if not message:
+            message = (
+                f"🚨 EMERGENCY — {pet_name} ({breed}).\n"
+                f"Parent: {user_name}.\n"
+                f"Allergies: {allergies}.\n"
+                f"Needs immediate vet help. Contact NOW."
+            )
+
+        result = await send_whatsapp_message(to, message, log_context="emergency")
+        logger.info(f"[EMERGENCY-WA] Sent to {to} for {pet_name}: {result}")
+
+        # Also create an urgent ticket in service desk
+        try:
+            ticket_payload = {
+                "pillar": "emergency",
+                "service": "Emergency Help",
+                "pet_name": pet_name,
+                "breed": breed,
+                "notes": message,
+                "urgency": "critical",
+                "source": "emergency_mobile_urgent_cta"
+            }
+            if current_user:
+                ticket_payload["user_id"] = current_user.get("id") or current_user.get("user_id")
+            await db.service_desk_tickets.insert_one({
+                **ticket_payload,
+                "status": "urgent",
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "_id_omitted": True
+            })
+        except Exception as te:
+            logger.warning(f"[EMERGENCY-WA] Ticket creation failed: {te}")
+
+        return {"success": result.get("success", False), "message": "Emergency alert sent to Concierge®"}
+    except Exception as e:
+        logger.error(f"[EMERGENCY-WA] Failed: {e}")
+        return {"success": False, "message": str(e)}
 
 
 @api_router.post("/birthday-box/{pet_id}/build")
