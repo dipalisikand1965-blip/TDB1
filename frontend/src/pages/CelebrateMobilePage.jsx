@@ -23,6 +23,10 @@ import SharedProductCard, { ProductDetailModal } from '../components/ProductCard
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
 import CelebrateCategoryStrip from '../components/celebrate/CelebrateCategoryStrip';
 import CelebrateContentModal from '../components/celebrate/CelebrateContentModal';
+import DoggyBakeryCakeModal from '../components/celebrate/DoggyBakeryCakeModal';
+import MiraBirthdayBox from '../components/celebrate/MiraBirthdayBox';
+import BirthdayBoxBuilder from '../components/celebrate/BirthdayBoxBuilder';
+import BirthdayBoxBrowseDrawer from '../components/celebrate/BirthdayBoxBrowseDrawer';
 import GuidedCelebratePaths from '../components/celebrate/GuidedCelebrationPaths';
 import CelebrateNearMe from '../components/celebrate/CelebrateNearMe';
 import ConciergeIntakeModal from '../components/celebrate/ConciergeIntakeModal';
@@ -244,9 +248,14 @@ export default function CelebrateMobilePage() {
   const [toastMsg, setToastMsg] = useState(null);
   const [miraPicksOpen, setMiraPicksOpen] = useState(false);
   const [celebrateCatModal, setCelebrateCatModal] = useState(null);
+  const [cakeModalOpen, setCakeModalOpen] = useState(false);
 
   const handleCategorySelect = useCallback((categoryId, categoryObj) => {
     tdc.view({ product: categoryId, pillar: 'celebrate', pet: currentPet, channel: 'celebrate_category_strip' });
+    if (categoryId === 'breed-cakes') {
+      setCakeModalOpen(true);
+      return;
+    }
     setCelebrateCatModal({ id: categoryId, obj: categoryObj });
   }, [currentPet]);
   const [miraProducts, setMiraProducts] = useState([]);
@@ -358,6 +367,17 @@ export default function CelebrateMobilePage() {
         {/* Mira bar */}
         <CelebrateMiraBar pet={currentPet} onOpen={() => setMiraPicksOpen(true)} />
 
+        {/* Mira's Birthday Box */}
+        {currentPet && (
+          <div style={{ padding:'0 16px 16px' }}>
+            <MiraBirthdayBox
+              pet={currentPet}
+              token={token}
+              onClick={() => setCakeModalOpen(true)}
+            />
+          </div>
+        )}
+
         {/* ── Product Grid ── */}
         {miraProducts.length > 0 && (
           <div style={{ padding:'0 16px 24px' }}>
@@ -405,6 +425,17 @@ export default function CelebrateMobilePage() {
             pet={currentPet}
           />
         )}
+
+        {/* Breed Cake builder modal */}
+        {cakeModalOpen && (
+          <DoggyBakeryCakeModal
+            pet={currentPet}
+            onClose={() => setCakeModalOpen(false)}
+          />
+        )}
+
+        {/* Birthday Box Browse Drawer */}
+        <BirthdayBoxBrowseDrawer />
 
       </div>
     </PillarPageLayout>
