@@ -3376,7 +3376,7 @@ const Admin = () => {
               { id: 'admin-guide', label: '📚 Guide & Backup', icon: BookOpen },
               { id: 'agents', label: 'Agents', icon: Users },
               { id: 'members', label: 'Customers', icon: Users },
-              { id: 'concierge-experiences', label: 'Concierge XP', icon: Sparkles },
+              { id: 'concierge-experiences', label: 'Concierge® XP', icon: Sparkles },
               { id: 'product-tags', label: 'Tags', icon: Tag },
               { id: 'breed-tags', label: 'Breed Tags', icon: PawPrint },
               { id: 'breed-library', label: 'Breed Art', icon: Image },
@@ -4104,7 +4104,7 @@ const Admin = () => {
           <EnjoyExperiencesAdmin getAuthHeader={getAuthHeaders} />
         )}
 
-        {/* Concierge Experiences Admin Tab */}
+        {/* Concierge® Experiences Admin Tab */}
         {activeTab === 'concierge-experiences' && (
           <ConciergeExperiencesAdmin />
         )}

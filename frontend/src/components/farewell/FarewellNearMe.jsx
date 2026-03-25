@@ -273,7 +273,7 @@ export default function FarewellNearMe({ pet, onBook }) {
                     <button onClick={() => { setSelectedPlace(place); handleBook(place); }}
                       style={{ flex: 2, background: `linear-gradient(135deg,${G.indigo},${G.mid})`, color: "#fff",
                         border: "none", borderRadius: 10, padding: "8px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-                      ✦ Arrange via Concierge
+                      ✦ Arrange via Concierge®
                     </button>
                   </div>
                 </div>

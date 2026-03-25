@@ -4,7 +4,7 @@
  * Mira's curated picks for Fresh Meals - 4 cards personalized to the pet
  * 
  * PRINCIPLES:
- * 1. Concierge-first: Cards create tickets, not cart items
+ * 1. Concierge®-first: Cards create tickets, not cart items
  * 2. Allergy-aware: Respects pet's avoid list
  * 3. Persona-based: Scoring based on pet traits
  * 4. Intent capture: Opens FlowModal or creates ticket directly
@@ -72,7 +72,7 @@ const CuratedCard = ({ card, pet, onCardClick, isLoading }) => {
               {card.name}
             </h4>
             <p className="text-xs text-gray-500 mt-0.5">
-              {card.type === 'concierge_product' ? 'Curated Plan' : 'Concierge Service'}
+              {card.type === 'concierge_product' ? 'Curated Plan' : 'Concierge® Service'}
             </p>
           </div>
         </div>

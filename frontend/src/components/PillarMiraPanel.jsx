@@ -25,7 +25,7 @@ import { useCart } from '../context/CartContext';
 import { getSoulBasedReason } from '../utils/petSoulInference';
 import { toast } from '../hooks/use-toast';
 
-// Pillar-specific Concierge Picks - These are bespoke, not cart items
+// Pillar-specific Concierge® Picks - These are bespoke, not cart items
 // These match CONCIERGE_SUGGESTIONS from the backend
 const PILLAR_CONCIERGE_PICKS = {
   celebrate: [
@@ -131,7 +131,7 @@ const PILLAR_CONFIG = {
 };
 
 /**
- * Concierge Pick Card - For bespoke concierge creations (no cart, goes to ticket)
+ * Concierge® Pick Card - For bespoke concierge creations (no cart, goes to ticket)
  */
 const ConciergePickCard = ({ pick, pet, pillar, onRequest }) => {
   const [isRequesting, setIsRequesting] = useState(false);
@@ -198,7 +198,7 @@ const ConciergePickCard = ({ pick, pet, pillar, onRequest }) => {
         </button>
         
         <p className="text-[10px] text-gray-400 text-center mt-2">
-          Concierge creates • Response within 2 hours
+          Concierge® creates • Response within 2 hours
         </p>
       </div>
     </div>
@@ -433,7 +433,7 @@ const PillarMiraPanel = ({
           
           {/* Content */}
           <div className="flex-1 overflow-y-auto">
-            {/* Picks Tab - Now shows Concierge Picks (bespoke, creates tickets) */}
+            {/* Picks Tab - Now shows Concierge® Picks (bespoke, creates tickets) */}
             {activeTab === 'picks' && (
               <div className="p-4 space-y-3">
                 <p className="text-sm text-gray-600 mb-4">

@@ -192,7 +192,7 @@ const MiraCareImaginesCard = ({ item, pet, apiUrl, token }) => {
       <div style={{ padding: '0 12px 12px' }}>
         {state === 'sent' ? (
           <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#34D399' }}>
-            <Check size={12} style={{ display: 'inline', marginRight: 4 }} /> Sent to Concierge!
+            <Check size={12} style={{ display: 'inline', marginRight: 4 }} /> Sent to Concierge®!
           </div>
         ) : (
           <button
@@ -208,7 +208,7 @@ const MiraCareImaginesCard = ({ item, pet, apiUrl, token }) => {
             data-testid={`care-imagine-btn-${item.id}`}
           >
             <Send size={11} />
-            {state === 'sending' ? 'Sending…' : 'Tap — Concierge →'}
+            {state === 'sending' ? 'Sending…' : 'Tap — Concierge® →'}
           </button>
         )}
       </div>

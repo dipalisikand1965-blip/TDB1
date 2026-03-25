@@ -95,7 +95,7 @@ const PicksVault = ({
     setIsRefreshing(false);
   }, [refreshCount, maxRefreshes, isRefreshing, onRefresh, displayedPicks]);
 
-  // Send to Concierge with haptic - individual item
+  // Send to Concierge® with haptic - individual item
   const handleSendItemToConcierge = useCallback(async (item) => {
     haptic.success();
     
@@ -114,7 +114,7 @@ const PicksVault = ({
         });
       }
     } catch (error) {
-      console.error('Failed to send item to Concierge:', error);
+      console.error('Failed to send item to Concierge®:', error);
       // Revert sent status on error
       setSentItems(prev => {
         const newSet = new Set(prev);
@@ -124,7 +124,7 @@ const PicksVault = ({
     }
   }, [displayedPicks, pet, pillar, context, onSendToConcierge]);
 
-  // Send to Concierge with haptic - all selected items
+  // Send to Concierge® with haptic - all selected items
   const handleSendToConcierge = useCallback(async () => {
     haptic.success();
     setIsSending(true);
@@ -145,7 +145,7 @@ const PicksVault = ({
       }
       setShowConfirmation(true);
     } catch (error) {
-      console.error('Failed to send to Concierge:', error);
+      console.error('Failed to send to Concierge®:', error);
     } finally {
       setIsSending(false);
     }
@@ -281,7 +281,7 @@ const PicksVault = ({
               <div className="pv-pick-actions">
                 {!isSent ? (
                   <>
-                    {/* Send to Concierge - Individual */}
+                    {/* Send to Concierge® - Individual */}
                     <button
                       className="pv-send-item-btn"
                       onClick={() => handleSendItemToConcierge(product)}

@@ -355,7 +355,7 @@ const ConversationalEntry = ({
               className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl text-center"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Concierge Bell with Paw */}
+              {/* Concierge® Bell with Paw */}
               <div className="relative w-24 h-24 mx-auto mb-6">
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full animate-pulse opacity-20" />
                 <div className="absolute inset-2 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center">

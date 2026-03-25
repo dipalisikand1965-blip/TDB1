@@ -6,7 +6,7 @@
  * Mira KNOWS what the pet needs - she doesn't ask.
  * Each recommendation opens a FLOW MODAL for detailed intake.
  * 
- * Philosophy: "Mira is the soul, Concierge is the hands, System is the capillary"
+ * Philosophy: "Mira is the soul, Concierge® is the hands, System is the capillary"
  * 
  * UPDATED: Now opens FlowModal for grooming and vet visits instead of direct ticket creation
  */

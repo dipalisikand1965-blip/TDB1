@@ -4,7 +4,7 @@
  *
  * ╔══════════════════════════════════════════════════════════════╗
  * ║  LOCKED — DO NOT TOUCH — AUDITED Mar 24, 2026              ║
- * ║  8-phase audit complete. Concierge wiring verified.         ║
+ * ║  8-phase audit complete. Concierge® wiring verified.         ║
  * ║  Content modal footer CTAs, breed guide, Pet Wrapped card.  ║
  * ║  Testing: iteration_202.json — 13/13 passed.               ║
  * ╚══════════════════════════════════════════════════════════════╝
@@ -1362,12 +1362,12 @@ function MiraLearnImagineCard({ item, pet, token }) {
       </div>
       <div style={{ padding:"0 12px 12px" }}>
         {state === "sent"
-          ? <div style={{ fontSize:11, fontWeight:700, color:G.light }}>✓ Sent to Concierge!</div>
+          ? <div style={{ fontSize:11, fontWeight:700, color:G.light }}>✓ Sent to Concierge®!</div>
           : <button onClick={send} disabled={state==="sending"}
               style={{ width:"100%", background:`linear-gradient(135deg,${G.violet},${G.mid})`,
                 color:"#fff", border:"none", borderRadius:10, padding:"9px",
                 fontSize:11, fontWeight:700, cursor:"pointer", opacity:state==="sending"?0.7:1 }}>
-              {state==="sending" ? "Sending…" : "Tap — Concierge →"}
+              {state==="sending" ? "Sending…" : "Tap — Concierge® →"}
             </button>}
       </div>
     </div>
@@ -1422,7 +1422,7 @@ function MiraPicksSection({ pet }) {
           : `Long line, treat pouch, whistle, and recall training guide — the freedom to run safely.` },
       { id:"learn-imagine-8", isImagined:true, emoji:"📋",
         name:`Private Training Session for ${petName}`,
-        description:`Mira imagines a 1-on-1 session built around ${breedLabel||petName}'s exact level and learning style. Book via Concierge.` },
+        description:`Mira imagines a 1-on-1 session built around ${breedLabel||petName}'s exact level and learning style. Book via Concierge®.` },
     ];
   })();
 
@@ -1513,7 +1513,7 @@ function MiraPicksSection({ pet }) {
                     <span style={{fontSize:10,fontWeight:800,color:scoreColor,minWidth:26}}>{score}</span>
                   </div>
                   {pick.mira_reason&&<p style={{fontSize:10,color:"#888",lineHeight:1.4,margin:0,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden",fontStyle:"italic"}}>{pick.mira_reason}</p>}
-                  <p style={{fontSize:9,color:isService?G.mid:G.violet,fontWeight:700,margin:"6px 0 0"}}>{isService?"Tap → Book via Concierge":"Tap → View & Add"}</p>
+                  <p style={{fontSize:9,color:isService?G.mid:G.violet,fontWeight:700,margin:"6px 0 0"}}>{isService?"Tap → Book via Concierge®":"Tap → View & Add"}</p>
                 </div>
               </div>
             );
@@ -1589,7 +1589,7 @@ function LearnConciergeModal({ isOpen, onClose, serviceType, petName, petId, tok
               {name}'s learning plan is in good hands.
             </h3>
             <p style={{ fontSize:14, color:'#666', lineHeight:1.6, marginBottom:24 }}>
-              Your Concierge has everything they need.<br/>Expect a message within 48 hours. ✦
+              Your Concierge® has everything they need.<br/>Expect a message within 48 hours. ✦
             </p>
             <button onClick={handleClose}
               style={{ background:`linear-gradient(135deg,${G.violet},${G.mid})`,
@@ -1611,7 +1611,7 @@ function LearnConciergeModal({ isOpen, onClose, serviceType, petName, petId, tok
               borderRadius:9999, padding:'4px 14px', marginBottom:20 }}>
               <span style={{ fontSize:11, color:G.violet }}>★</span>
               <span style={{ fontSize:11, fontWeight:600, color:G.violet, letterSpacing:'0.06em', textTransform:'uppercase' }}>
-                {name}'s Learn Concierge
+                {name}'s Learn Concierge®
               </span>
             </div>
 
@@ -1621,7 +1621,7 @@ function LearnConciergeModal({ isOpen, onClose, serviceType, petName, petId, tok
               What should <span style={{ color:G.violet }}>{name}</span>'s learning experience feel like?
             </h2>
             <p style={{ fontSize:14, color:'#888', lineHeight:1.6, marginBottom:24 }}>
-              Three questions. Then your Concierge takes over.
+              Three questions. Then your Concierge® takes over.
             </p>
 
             {/* Q1: What are we planning? */}
@@ -1673,7 +1673,7 @@ function LearnConciergeModal({ isOpen, onClose, serviceType, petName, petId, tok
                 color: !selected?'#999':'#fff', border:'none', borderRadius:12, padding:'14px',
                 fontSize:15, fontWeight:800, cursor:!selected?'not-allowed':'pointer',
                 display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
-              {submitting ? 'Sending…' : `✦ Send to ${name}'s Concierge`}
+              {submitting ? 'Sending…' : `✦ Send to ${name}'s Concierge®`}
             </button>
           </>
         )}

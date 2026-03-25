@@ -154,7 +154,7 @@ export default function GoConciergeSection({ pet }) {
             style={{ background:`linear-gradient(135deg,${G.teal},${G.deepMid})`, color:"#fff", border:"none", borderRadius:12, padding:"13px 28px", fontSize:14, fontWeight:700, cursor:"pointer" }}
             data-testid="go-personally-cta"
             onClick={() => setModalSvc(services[0])}>
-            Talk to your Go Concierge →
+            Talk to your Go Concierge® →
           </button>
           <p style={{ fontSize:12, color:"#888", marginTop:8 }}>48h response promise · Emergency: within 5 minutes</p>
         </div>

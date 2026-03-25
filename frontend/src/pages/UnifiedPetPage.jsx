@@ -39,7 +39,7 @@ const LIFE_PILLARS = [
   { id: 'learn',      name: 'Learn',      icon: '📚', path: '/learn',      color: 'from-indigo-400 to-purple-400',   description: 'Training & education' },
   { id: 'shop',       name: 'Shop',       icon: '🛍️', path: '/shop',       color: 'from-violet-400 to-purple-400',   description: 'Products & essentials' },
   { id: 'celebrate',  name: 'Celebrate',  icon: '🎂', path: '/celebrate',  color: 'from-pink-400 to-rose-400',       description: 'Birthdays & special occasions' },
-  { id: 'services',   name: 'Services',   icon: '🔧', path: '/services',   color: 'from-slate-400 to-gray-500',      description: 'Concierge & specialist services' },
+  { id: 'services',   name: 'Services',   icon: '🔧', path: '/services',   color: 'from-slate-400 to-gray-500',      description: 'Concierge® & specialist services' },
   { id: 'paperwork',  name: 'Paperwork',  icon: '📋', path: '/paperwork',  color: 'from-teal-400 to-cyan-400',       description: 'Documents & registrations' },
   { id: 'emergency',  name: 'Emergency',  icon: '🚨', path: '/emergency',  color: 'from-red-500 to-rose-500',        description: '24/7 emergency services' },
   { id: 'farewell',   name: 'Farewell',   icon: '🌷', path: '/farewell',   color: 'from-purple-400 to-indigo-400',   description: 'End-of-life & memorial care' },

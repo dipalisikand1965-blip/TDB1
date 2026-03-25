@@ -7,7 +7,7 @@
  * Features:
  * - Full-page on mobile (100vh), side-drawer on desktop
  * - Pet switcher with curated indicator
- * - Concierge icon (hands) that lights up
+ * - Concierge® icon (hands) that lights up
  * - Unified Service Flow integration
  * - Swipe to dismiss on mobile
  */
@@ -133,12 +133,12 @@ const PILLAR_SERVICES = {
     { icon: '📋', title: 'Adoption Paperwork', description: 'Navigate adoption process' }
   ],
   general: [
-    { icon: '✨', title: 'Concierge Request', description: 'Any request - we make it happen' },
+    { icon: '✨', title: 'Concierge® Request', description: 'Any request - we make it happen' },
     { icon: '💬', title: 'Ask Mira', description: 'Get personalized recommendations' }
   ]
 };
 
-// Concierge state machine
+// Concierge® state machine
 const CONCIERGE_STATES = {
   idle: 'idle',
   active: 'active',
@@ -261,7 +261,7 @@ const PetAvatar = ({ pet, isActive, onClick, hasCuratedPicks }) => (
   </button>
 );
 
-// Concierge Indicator Component
+// Concierge® Indicator Component
 const ConciergeIndicator = ({ state, count = 0, onClick }) => {
   const stateStyles = {
     idle: 'text-gray-400 opacity-60',
@@ -285,7 +285,7 @@ const ConciergeIndicator = ({ state, count = 0, onClick }) => {
   );
 };
 
-// Mira's Pick Card (Concierge-ready)
+// Mira's Pick Card (Concierge®-ready)
 const MiraPickCard = ({ pick, petName, onSelect, isSelected }) => (
   <div 
     onClick={() => onSelect(pick)}
@@ -679,7 +679,7 @@ const MiraOSModal = ({
     }
   };
   
-  // Send to Concierge - triggers unified flow
+  // Send to Concierge® - triggers unified flow
   const sendToConcierge = async () => {
     if (selectedPicks.size === 0) return;
     
@@ -731,7 +731,7 @@ const MiraOSModal = ({
         setActiveTab('chat');
       }
     } catch (error) {
-      console.error('Concierge request error:', error);
+      console.error('Concierge® request error:', error);
       toast.error('Could not send request');
       setConciergeState(CONCIERGE_STATES.active);
     }
@@ -1045,7 +1045,7 @@ const MiraOSModal = ({
                   <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
                     <MessageSquare className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-2">Concierge<sup className="text-xs">®</sup></h3>
+                  <h3 className="font-bold text-gray-900 mb-2">Concierge®<sup className="text-xs">®</sup></h3>
                   <p className="text-sm text-gray-500">
                     {selectedPet 
                       ? `I already know ${selectedPet.name}. How can I help?` 
@@ -1144,7 +1144,7 @@ const MiraOSModal = ({
             </div>
           )}
           
-          {/* Services Tab - Pillar-Specific Concierge Services */}
+          {/* Services Tab - Pillar-Specific Concierge® Services */}
           {activeTab === 'services' && (
             <div className="p-4 space-y-4">
               <div className="flex items-center gap-2 mb-4">
@@ -1262,7 +1262,7 @@ const MiraOSModal = ({
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-              placeholder={selectedPet ? `Ask about ${selectedPet.name}...` : "Ask your Concierge..."}
+              placeholder={selectedPet ? `Ask about ${selectedPet.name}...` : "Ask your Concierge®..."}
               className="flex-1 px-4 py-3 border rounded-full text-base focus:outline-none focus:ring-2 focus:ring-purple-500"
               disabled={isSending}
               data-testid="mira-os-chat-input"

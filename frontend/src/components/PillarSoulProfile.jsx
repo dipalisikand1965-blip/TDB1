@@ -203,7 +203,7 @@ export default function PillarSoulProfile({
   const pLabel = pillarLabel || cfg.l;
   const pEmoji = pillarEmoji || cfg.e;
 
-  // ── Concierge — every interaction creates a ticket ──
+  // ── Concierge® — every interaction creates a ticket ──
   const { fire: concierge } = useConcierge({ pet, pillar });
 
   const [open, setOpen] = useState(false);
@@ -251,7 +251,7 @@ export default function PillarSoulProfile({
   useEffect(() => {
     if (open) {
       loadQuestions();
-      // ACTION 1: Concierge ticket — profile viewed
+      // ACTION 1: Concierge® ticket — profile viewed
       concierge({ type: 'request', name: `${pLabel} Profile viewed`, silent: true, metadata: { action: 'profile_viewed', pillar, score: Math.round(score) } });
     }
     else { setQuestions([]); setAnswers({}); setSubmitted({}); setTotalPts(0); }
@@ -287,7 +287,7 @@ export default function PillarSoulProfile({
         if (data.scores?.overall !== undefined) {
           setLiveScore(prev => prev === null ? data.scores.overall : Math.max(prev, data.scores.overall));
         }
-        // ACTION 2: Concierge ticket — soul question answered
+        // ACTION 2: Concierge® ticket — soul question answered
         concierge({
           type: 'request',
           name: `Soul answer: ${q.question_text || q.question_id}`,

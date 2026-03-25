@@ -416,7 +416,7 @@ This caused requests to appear successful but never show up in Admin Panel.`
         {
           title: 'How to Verify',
           content: `1. Go to any pillar page (Fit, Care, Travel, etc.)
-2. Click "Ask Concierge" on any experience card
+2. Click "Ask Concierge®" on any experience card
 3. Submit the form
 4. Check Admin Panel → Notifications → Your request should appear at TOP
 5. Check Service Desk → Your ticket should appear
@@ -571,7 +571,7 @@ curl -X POST https://YOUR_DOMAIN/api/admin/universal-seed
           content: `• **After every deployment** to ensure data exists
 • When products are missing from pillar pages
 • When Product Box shows empty stats
-• When services aren't showing in Concierge Pickers
+• When services aren't showing in Concierge® Pickers
 • After database reset/refresh`
         }
       ]
@@ -1561,7 +1561,7 @@ POST /api/admin/seed-production-data
         },
         {
           title: 'Categories',
-          content: `• Concierge & Mira AI
+          content: `• Concierge® & Mira AI
 • Membership & Club
 • Celebrate
 • Dine
@@ -1682,7 +1682,7 @@ DELETE /api/admin/faqs/{id}     # Delete FAQ
     },
     'mira-rules': {
       title: 'Mira LLM Rules',
-      subtitle: 'AI Concierge Configuration & Behavior Guidelines',
+      subtitle: 'AI Concierge® Configuration & Behavior Guidelines',
       badge: '🆕 Critical Config',
       files: {
         frontend: '/app/frontend/src/components/MiraAI.jsx',

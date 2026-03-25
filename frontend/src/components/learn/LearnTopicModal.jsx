@@ -7,7 +7,7 @@
  * - Overview topics: Clickable → Expands with Mira tips
  * - Products: Real products from catalogue → "Continue to Shop"
  * - Services: Navigate to /services if available, or trigger service desk flow
- * - "Send to Concierge": Uses Universal Service Command (Service Desk → Admin → Inbox)
+ * - "Send to Concierge®": Uses Universal Service Command (Service Desk → Admin → Inbox)
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -234,7 +234,7 @@ const TOPIC_CONFIG = {
     ],
     productKeywords: ['carrier', 'car seat', 'travel bowl', 'travel kit', 'portable'],
     services: [
-      { name: 'Travel Concierge', pillar: 'travel', hasService: true },
+      { name: 'Travel Concierge®', pillar: 'travel', hasService: true },
       { name: 'Pet-Friendly Hotel Booking', pillar: 'travel', hasService: true }
     ]
   },
@@ -487,7 +487,7 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
     }
   };
   
-  // Handle "Send to Concierge" button - creates service desk ticket
+  // Handle "Send to Concierge®" button - creates service desk ticket
   const handleSendToConcierge = async () => {
     // ── tdc.book ──
     tdc.book({ service: topic?.title || "learning session", pillar: "learn", channel: "learn_topic_modal" });
@@ -794,7 +794,7 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
                       <div>
                         <span className="font-medium text-gray-900 text-sm">{service.name}</span>
                         {!service.hasService && (
-                          <Badge variant="outline" className="ml-2 text-xs">Ask Concierge</Badge>
+                          <Badge variant="outline" className="ml-2 text-xs">Ask Concierge®</Badge>
                         )}
                       </div>
                     </div>
@@ -806,7 +806,7 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
           </div>
         </Tabs>
         
-        {/* Footer - Send to Concierge (Universal Service Command flow) */}
+        {/* Footer - Send to Concierge® (Universal Service Command flow) */}
         <div className="border-t p-4 bg-gradient-to-br from-teal-50 to-blue-50">
           <Button 
             onClick={handleSendToConcierge}
@@ -819,7 +819,7 @@ const LearnTopicModal = ({ isOpen, onClose, topicSlug }) => {
             ) : (
               <MessageCircle className="w-5 h-5" />
             )}
-            Send to Concierge for More Details
+            Send to Concierge® for More Details
           </Button>
           <p className="text-xs text-gray-500 text-center mt-2">
             Our team will reach out within 2 hours

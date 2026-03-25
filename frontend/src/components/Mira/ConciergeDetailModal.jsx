@@ -98,10 +98,10 @@ const ConciergeDetailModal = ({
             />
             <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent" />
             
-            {/* Concierge Pick badge */}
+            {/* Concierge® Pick badge */}
             <div className="absolute top-4 left-4">
               <span className="px-3 py-1.5 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-semibold rounded-full shadow-lg">
-                {service.seasonal ? '☆ Seasonal' : 'Concierge Pick'}
+                {service.seasonal ? '☆ Seasonal' : 'Concierge® Pick'}
               </span>
             </div>
             

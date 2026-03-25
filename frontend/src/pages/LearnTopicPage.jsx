@@ -7,7 +7,7 @@
  * - Videos
  * - Product suggestions
  * - Services
- * - Concierge help
+ * - Concierge® help
  */
 
 import React, { useState, useEffect } from 'react';
@@ -389,7 +389,7 @@ const LearnTopicPage = () => {
         </div>
       </section>
       
-      {/* Concierge Help */}
+      {/* Concierge® Help */}
       <section className="py-10 px-4 bg-gradient-to-br from-teal-50 to-blue-50">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center justify-center gap-2">
@@ -406,7 +406,7 @@ const LearnTopicPage = () => {
             }}
           >
             <MessageCircle className="w-4 h-4" />
-            Ask Concierge
+            Ask Concierge®
           </Button>
         </div>
       </section>

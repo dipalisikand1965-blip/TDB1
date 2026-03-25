@@ -12,7 +12,7 @@
  *   1. User types any city → "dog trainers in Mumbai"
  *   2. OR taps "Near me" → geolocation → nearbySearch
  *   3. Results → cards with photo, rating, open/closed, speciality badge
- *   4. "Book via Concierge" → onBook(provider, city) → service desk ticket
+ *   4. "Book via Concierge®" → onBook(provider, city) → service desk ticket
  *
  * BACKEND ENDPOINT (same as CareNearMe):
  *   GET /api/places/care-providers
@@ -218,7 +218,7 @@ function TrainerCard({ provider, pet, onBook, onOpenModal }) {
             style={{ flex:1, background:`linear-gradient(135deg,${G.violet},${G.mid})`,
                      color:"#fff", border:"none", borderRadius:20, padding:"7px 14px",
                      fontSize:11, fontWeight:700, cursor:"pointer" }}>
-            Book via Concierge →
+            Book via Concierge® →
           </button>
         </div>
       </div>
@@ -251,7 +251,7 @@ function MiraTopPick({ provider, pet, onBook }) {
         style={{ background:G.light, color:G.deep, border:"none",
                  borderRadius:20, padding:"10px 20px", fontSize:12,
                  fontWeight:700, cursor:"pointer", flexShrink:0, whiteSpace:"nowrap" }}>
-        Book via Concierge →
+        Book via Concierge® →
       </button>
     </div>
   );
@@ -495,12 +495,12 @@ export default function LearnNearMe({ pet, dimId="training", onBook }) {
             ))}
           </div>
 
-          {/* Ask Concierge fallback */}
+          {/* Ask Concierge® fallback */}
           <button onClick={()=>onBook?.(null, displayCity||"your area")}
             style={{ width:"100%", marginTop:16, padding:"12px", borderRadius:10,
                      background:G.pale, border:`1px solid rgba(124,58,237,0.25)`,
                      color:G.violet, fontSize:13, fontWeight:600, cursor:"pointer" }}>
-            Ask Concierge for more options →
+            Ask Concierge® for more options →
           </button>
         </>
       )}
@@ -514,7 +514,7 @@ export default function LearnNearMe({ pet, dimId="training", onBook }) {
             style={{ marginTop:14, padding:"9px 20px", borderRadius:20,
                      background:G.pale, border:`1px solid ${G.violet}`,
                      color:G.violet, fontSize:12, fontWeight:600, cursor:"pointer" }}>
-            Ask Concierge to research this area →
+            Ask Concierge® to research this area →
           </button>
         </div>
       )}

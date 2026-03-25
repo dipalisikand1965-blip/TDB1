@@ -1,10 +1,10 @@
 /**
- * PlacesWithConcierge - Shows Google Places results with Concierge handoff option
+ * PlacesWithConcierge - Shows Google Places results with Concierge® handoff option
  * ================================================================================
  * This is NOT a chatbot dump - it's a curated recommendation with:
  * - Beautiful place cards (clickable for details)
- * - Concierge button if user isn't satisfied
- * - Styled like the Send to Concierge modal
+ * - Concierge® button if user isn't satisfied
+ * - Styled like the Send to Concierge® modal
  */
 
 import React, { useState } from 'react';
@@ -114,7 +114,7 @@ const PlaceCard = ({ place, isSelected, onSelect, onViewDetails }) => {
 };
 
 /**
- * Main Component - Places with Concierge Handoff
+ * Main Component - Places with Concierge® Handoff
  */
 const PlacesWithConcierge = ({ 
   places = [], 
@@ -236,7 +236,7 @@ const PlacesWithConcierge = ({
         ))}
       </div>
       
-      {/* Concierge Section */}
+      {/* Concierge® Section */}
       {!showConciergeForm ? (
         <div style={{
           background: 'rgba(236, 72, 153, 0.1)',
@@ -250,7 +250,7 @@ const PlacesWithConcierge = ({
             marginBottom: '12px',
             lineHeight: '1.5'
           }}>
-            Not quite what you're looking for? Our Pet Concierge team can curate personalized recommendations just for {petName}.
+            Not quite what you're looking for? Our Pet Concierge® team can curate personalized recommendations just for {petName}.
           </div>
           <button
             onClick={() => setShowConciergeForm(true)}
@@ -277,7 +277,7 @@ const PlacesWithConcierge = ({
           </button>
         </div>
       ) : (
-        /* Concierge Form */
+        /* Concierge® Form */
         <div style={{
           background: 'rgba(30, 20, 50, 0.8)',
           borderRadius: '12px',

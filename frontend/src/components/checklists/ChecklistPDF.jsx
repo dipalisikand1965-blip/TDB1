@@ -292,7 +292,7 @@ export const ChecklistPDF = ({ checklist, personalization, pillar }) => {
         <View style={styles.header}>
           <View style={styles.logo}>
             <Text style={styles.logoText}>THE DOGGY COMPANY</Text>
-            <Text style={styles.logoSubtext}>Pet Concierge</Text>
+            <Text style={styles.logoSubtext}>Pet Concierge®</Text>
           </View>
         </View>
 

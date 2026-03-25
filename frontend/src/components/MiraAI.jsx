@@ -411,7 +411,7 @@ const MiraAI = () => {
     // "Mira" → "Meera" (phonetic)
     cleanText = cleanText.replace(/\bMira\b/gi, 'Meera');
     
-    // "Concierge" → phonetic spelling for correct French pronunciation
+    // "Concierge®" → phonetic spelling for correct French pronunciation
     // Using "con-see-erzh" which TTS engines handle better
     cleanText = cleanText
       .replace(/Pet Concierge®?/gi, 'Pet con-see-erzh')
@@ -1093,7 +1093,7 @@ const MiraAI = () => {
         serviceTicketId: data.service_desk_ticket_id,
         conciergeAction: data.concierge_action,
         kitAssembly: data.kit_assembly || null, // Kit assembly info
-        handoff: data.handoff || null, // Concierge handoff info
+        handoff: data.handoff || null, // Concierge® handoff info
         showQuickBookForm: data.concierge_action?.show_quick_book_form || false,
         serviceType: data.concierge_action?.service_type || data.concierge_action?.action_type || null
       };
@@ -1459,7 +1459,7 @@ const MiraAI = () => {
                               }`}
                               onClick={() => !product.concierge_sourced && (window.location.href = `/product/${product.id || product._id}`)}
                             >
-                              {/* Product Image / Concierge Bell / Service Icon */}
+                              {/* Product Image / Concierge® Bell / Service Icon */}
                               {product.concierge_sourced ? (
                                 <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center flex-shrink-0">
                                   <span className="text-2xl">🔔</span>
@@ -1683,7 +1683,7 @@ const MiraAI = () => {
                         </div>
                       )}
                       
-                      {/* Concierge Handoff Notice */}
+                      {/* Concierge® Handoff Notice */}
                       {message.handoff?.needed && (
                         <div className="mt-3 p-3 bg-amber-50 rounded-xl border border-amber-200">
                           <p className="text-xs font-bold text-amber-700 flex items-center gap-1">

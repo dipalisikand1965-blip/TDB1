@@ -7,7 +7,7 @@
  * 3. Let Mira Recommend
  * 
  * Each card opens GroomingFlowModal with preselected mode.
- * No prices, no direct booking - all goes to Concierge.
+ * No prices, no direct booking - all goes to Concierge®.
  */
 
 import React from 'react';
@@ -121,7 +121,7 @@ const GroomingEntryCards = ({
           })}
         </div>
 
-        {/* Concierge Note */}
+        {/* Concierge® Note */}
         <p className="text-center text-xs text-gray-500 mt-6">
           All grooming requests are handled by our Concierge® team
         </p>

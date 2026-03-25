@@ -17,7 +17,7 @@ export { default as SoulPillarExpanded } from './SoulPillarExpanded';
 // Mira's Pick
 export { default as MiraCuratedBox } from './MiraCuratedBox';
 
-// Concierge
+// Concierge®
 export { default as CelebrateConcierge } from './CelebrateConcierge';
 export { default as CelebrateServiceGrid } from './CelebrateServiceGrid';
 export { default as CelebrateServiceCard } from './CelebrateServiceCard';

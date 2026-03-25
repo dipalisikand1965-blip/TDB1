@@ -2,7 +2,7 @@
  * ChatStatusIndicators.jsx
  * ========================
  * Non-clickable status indicators for the chat view.
- * Shows C° (Concierge status) and PICKS (curated items) as passive indicators.
+ * Shows C° (Concierge® status) and PICKS (curated items) as passive indicators.
  * 
  * SPEC:
  * - NOT clickable, no tap target, no hover state
@@ -47,7 +47,7 @@ const ChatStatusIndicators = ({
         userSelect: 'none'
       }}
     >
-      {/* C° Indicator - Concierge status */}
+      {/* C° Indicator - Concierge® status */}
       {(conciergeCount > 0 || hasConciergeNew) && (
         <div 
           className="status-indicator concierge-indicator"

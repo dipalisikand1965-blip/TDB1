@@ -82,7 +82,7 @@ const FloatingContactButton = ({ user, isLoggedIn }) => {
   const openEmail = () => {
     const subject = encodeURIComponent('Support Request - The Doggy Company');
     const body = encodeURIComponent(
-      `Hi Concierge Team,\n\nI need assistance with:\n\n[Please describe your request]\n\nBest regards,\n${user?.name || 'Member'}\n${user?.email || ''}`
+      `Hi Concierge® Team,\n\nI need assistance with:\n\n[Please describe your request]\n\nBest regards,\n${user?.name || 'Member'}\n${user?.email || ''}`
     );
     window.open(`mailto:${BUSINESS_EMAIL}?subject=${subject}&body=${body}`, '_blank');
     setIsOpen(false);
@@ -263,7 +263,7 @@ const FloatingContactButton = ({ user, isLoggedIn }) => {
           </div>
         )}
 
-        {/* Main FAB Button - Subtle Concierge button (secondary to Mira) */}
+        {/* Main FAB Button - Subtle Concierge® button (secondary to Mira) */}
         <button
           onClick={() => {
             setIsOpen(!isOpen);
@@ -282,7 +282,7 @@ const FloatingContactButton = ({ user, isLoggedIn }) => {
           {isOpen ? (
             <X className="w-5 h-5 text-white" />
           ) : (
-            /* Concierge icon - subtle style */
+            /* Concierge® icon - subtle style */
             <span className="text-purple-600 font-semibold text-sm">C<sup className="text-[6px]">®</sup></span>
           )}
         </button>

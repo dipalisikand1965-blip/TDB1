@@ -273,7 +273,7 @@ const GroomingFlowModal = ({
     }
   };
   
-  // Submit to Concierge
+  // Submit to Concierge®
   const handleSubmit = async () => {
     // ── tdc.book — canonical intent ticket ──
     tdc.book({ service: service?.name || service?.type || 'a service', pillar: "care", pet, channel: "grooming_flow_modal" });

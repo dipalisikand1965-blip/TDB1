@@ -211,7 +211,7 @@ const TicketFullPageModal = ({
   const getSenderInfo = (msg) => {
     const isAgent = msg.sender === 'admin' || msg.sender === 'agent' || msg.sender === 'concierge';
     const name = isAgent 
-      ? (msg.sender_name || 'Concierge')
+      ? (msg.sender_name || 'Concierge®')
       : (msg.sender_name || ticket.member?.name || petProfile?.name || 'Customer');
     return { isAgent, name };
   };

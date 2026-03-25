@@ -306,7 +306,7 @@ const MyTickets = () => {
                       >
                         <div className="flex items-center gap-2 mb-2">
                           <Badge variant="outline" className="text-xs">
-                            {comm.type === 'member_reply' ? 'You' : 'Concierge Team'}
+                            {comm.type === 'member_reply' ? 'You' : 'Concierge® Team'}
                           </Badge>
                           <span className="text-xs text-gray-400">
                             {new Date(comm.at || comm.sent_at).toLocaleString()}

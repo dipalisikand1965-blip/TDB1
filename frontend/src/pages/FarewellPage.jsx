@@ -735,7 +735,7 @@ const FarewellPage = () => {
                     }}
                   >
                     <MessageCircle className="w-4 h-4 mr-1" />
-                    Talk to Concierge
+                    Talk to Concierge®
                   </Button>
                 </Card>
               );

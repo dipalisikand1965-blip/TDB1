@@ -5,7 +5,7 @@
  * 
  * CONCIERGE DNA:
  * - Pet First, Always (soul traits → breed → name fallback)
- * - Products from catalogue + Concierge curated services
+ * - Products from catalogue + Concierge® curated services
  * - Soul intelligence visible where decisions are made
  * 
  * What drives refresh:
@@ -387,7 +387,7 @@ const ConciergePickCard = ({ pick, pet, pillar, onRequestConcierge }) => {
       <div className="px-4 pt-4">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-medium rounded-full">
           <Sparkles className="w-3 h-3" />
-          Concierge Curated
+          Concierge® Curated
         </span>
       </div>
       
@@ -664,7 +664,7 @@ const PillarPicksSection = ({
         </div>
       )}
       
-      {/* Concierge Services */}
+      {/* Concierge® Services */}
       {effectivePicks.concierge.length > 0 && (
         <div>
           <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">

@@ -1,6 +1,6 @@
 /**
  * BirthdayBoxBuilder.jsx
- * Multi-step Birthday Box builder modal — Concierge fulfilment flow.
+ * Multi-step Birthday Box builder modal — Concierge® fulfilment flow.
  *
  * Listens for custom event: openOccasionBoxBuilder
  * Detail: { preset, petName, petId, userEmail, userName }
@@ -8,7 +8,7 @@
  * Steps:
  *  1. Review all 6 revealed slots
  *  2. Health / Allergy confirmation (only if pet has allergies)
- *  3. Concierge Handoff screen — NOT an order confirmation
+ *  3. Concierge® Handoff screen — NOT an order confirmation
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -129,7 +129,7 @@ const StepReview = ({ boxData, petName, onNext, onOpenBrowse }) => {
         style={{ background: 'linear-gradient(135deg, #FF2D87, #C44DFF)', fontSize: '15px', boxShadow: '0 4px 20px rgba(196,77,255,0.35)' }}
         data-testid="builder-next-btn">
         <Gift className="w-5 h-5" />
-        {boxData?.hasAllergies ? 'Review Health & Safety' : `Send to Concierge`}
+        {boxData?.hasAllergies ? 'Review Health & Safety' : `Send to Concierge®`}
         <ChevronRight className="w-4 h-4" />
       </button>
     </div>
@@ -180,7 +180,7 @@ const StepAllergyCheck = ({ boxData, petName, onBack, onConfirm, isOrdering }) =
       <div className="rounded-xl px-4 py-3 mb-4"
         style={{ background: 'rgba(196,77,255,0.10)', border: '1px solid rgba(196,77,255,0.22)' }}>
         <p className="text-sm" style={{ color: 'rgba(255,255,255,0.80)' }}>
-          Every item in {petName}'s box has been checked against their allergy profile. Please confirm you've reviewed this before sending to Concierge.
+          Every item in {petName}'s box has been checked against their allergy profile. Please confirm you've reviewed this before sending to Concierge®.
         </p>
       </div>
 
@@ -219,7 +219,7 @@ const StepAllergyCheck = ({ boxData, petName, onBack, onConfirm, isOrdering }) =
           }}
           data-testid="builder-confirm-order-btn">
           {isOrdering ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-          {isOrdering ? 'Sending...' : 'Confirm & Send to Concierge'}
+          {isOrdering ? 'Sending...' : 'Confirm & Send to Concierge®'}
         </button>
       </div>
     </div>
@@ -264,9 +264,9 @@ const StepConciergeHandoff = ({ petName, ticketId, boxData, onClose }) => {
 
   // Also fire toast (works when browser renders it above modal)
   useEffect(() => {
-    toast.success(`Sent to Concierge!`, {
+    toast.success(`Sent to Concierge®!`, {
       duration: 8000,
-      description: `${petName}'s Birthday Box confirmed — your Concierge will be in touch within 24 hours.`,
+      description: `${petName}'s Birthday Box confirmed — your Concierge® will be in touch within 24 hours.`,
     });
   }, []);
 
@@ -293,7 +293,7 @@ const StepConciergeHandoff = ({ petName, ticketId, boxData, onClose }) => {
           <Check className="w-4 h-4" style={{ color: '#86efac' }} />
         </div>
         <div>
-          <p className="text-sm font-bold" style={{ color: '#86efac' }}>Sent to Concierge</p>
+          <p className="text-sm font-bold" style={{ color: '#86efac' }}>Sent to Concierge®</p>
           <p className="text-xs" style={{ color: 'rgba(134,239,172,0.75)' }}>
             We'll be in touch within 24 hours
           </p>
@@ -316,7 +316,7 @@ const StepConciergeHandoff = ({ petName, ticketId, boxData, onClose }) => {
           {petName}'s Birthday Box is confirmed.
         </h3>
         <p className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>
-          Your Concierge has everything they need to build it.
+          Your Concierge® has everything they need to build it.
         </p>
       </div>
 
@@ -344,7 +344,7 @@ const StepConciergeHandoff = ({ petName, ticketId, boxData, onClose }) => {
           </p>
           <div className="space-y-3">
             {[
-              { icon: <Clock className="w-3.5 h-3.5" />, text: `Your Concierge will contact you within 24 hours` },
+              { icon: <Clock className="w-3.5 h-3.5" />, text: `Your Concierge® will contact you within 24 hours` },
               { icon: <Star className="w-3.5 h-3.5" />, text: `Confirm ${petName}'s name on the bandana` },
               { icon: <Gift className="w-3.5 h-3.5" />, text: `Confirm the cake message` },
               { icon: <Phone className="w-3.5 h-3.5" />, text: `Delivery address and date` },
@@ -454,8 +454,8 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
         toast.error(data.message || 'Something went wrong. Please try again.');
       }
     } catch (err) {
-      console.error('[BirthdayBoxBuilder] Concierge handoff error:', err);
-      toast.error('Failed to send to Concierge. Please try again.');
+      console.error('[BirthdayBoxBuilder] Concierge® handoff error:', err);
+      toast.error('Failed to send to Concierge®. Please try again.');
     } finally {
       setIsOrdering(false);
     }
@@ -475,7 +475,7 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
   const stepTitle = {
     1: `The ${petName} Birthday Box`,
     2: 'Health & Allergy Check',
-    3: 'Sent to Concierge',
+    3: 'Sent to Concierge®',
   }[step] || '';
 
   if (!isOpen) return null;

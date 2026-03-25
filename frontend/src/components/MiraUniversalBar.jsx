@@ -299,14 +299,14 @@ const MiraUniversalBar = ({
                 <>
                   <p className="mira-response-text">{miraResponse?.message}</p>
                   
-                  {/* Concierge Card */}
+                  {/* Concierge® Card */}
                   {miraResponse?.execution_type === 'CONCIERGE' && (
                     <div className="mira-concierge-card">
                       <div className="mira-concierge-icon">
                         <MessageCircle className="w-5 h-5" />
                       </div>
                       <div className="mira-concierge-info">
-                        <strong>This needs your Pet Concierge</strong>
+                        <strong>This needs your Pet Concierge®</strong>
                         <p>This request involves planning, coordination, or personalized service that our concierge team handles best.</p>
                       </div>
                       <button 
@@ -327,7 +327,7 @@ const MiraUniversalBar = ({
                                   phone: ''
                                 },
                                 details: {
-                                  message: `[WhatsApp Intent] User clicked Connect with Concierge from Universal Search Bar. Query: "${searchQuery}"`,
+                                  message: `[WhatsApp Intent] User clicked Connect with Concierge® from Universal Search Bar. Query: "${searchQuery}"`,
                                   pet_name: currentPet.name,
                                   channel: 'whatsapp',
                                   source_component: 'MiraUniversalBar'
@@ -344,7 +344,7 @@ const MiraUniversalBar = ({
                         className="mira-concierge-btn"
                         style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)', border: 'none', cursor: 'pointer', color: 'white', padding: '8px 16px', borderRadius: '20px', fontWeight: '600' }}
                       >
-                        Connect with Concierge
+                        Connect with Concierge®
                       </button>
                     </div>
                   )}

@@ -162,7 +162,7 @@ export default function MiraImaginesCard({ item, pet, token, pillar = "learn" })
       <div style={{ padding: "0 12px 12px" }}>
         {state === "sent" ? (
           <div style={{ fontSize: 11, fontWeight: 700, color: style.accent }}>
-            ✓ Sent to Concierge!
+            ✓ Sent to Concierge®!
           </div>
         ) : (
           <button
@@ -181,7 +181,7 @@ export default function MiraImaginesCard({ item, pet, token, pillar = "learn" })
               opacity: state === "sending" ? 0.7 : 1,
             }}
           >
-            {state === "sending" ? "Sending…" : "Tap — Concierge →"}
+            {state === "sending" ? "Sending…" : "Tap — Concierge® →"}
           </button>
         )}
       </div>

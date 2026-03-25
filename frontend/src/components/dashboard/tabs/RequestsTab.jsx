@@ -282,7 +282,7 @@ const RequestsTab = ({
                     }`}
                   >
                     {msg.sender !== 'you' && (
-                      <p className="text-xs text-purple-400 font-medium mb-1">Concierge</p>
+                      <p className="text-xs text-purple-400 font-medium mb-1">Concierge®</p>
                     )}
                     {/* Render HTML content safely for concierge messages, plain text for user messages */}
                     {msg.sender === 'you' ? (

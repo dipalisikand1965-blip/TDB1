@@ -18,7 +18,7 @@ const OS_TABS = [
   { id: 'picks', label: 'Picks', icon: Sparkles, color: 'from-pink-500 to-rose-500' },
   { id: 'services', label: 'Services', icon: Briefcase, color: 'from-blue-500 to-cyan-500' },
   { id: 'learn', label: 'Learn', icon: GraduationCap, color: 'from-indigo-500 to-purple-500' },
-  { id: 'concierge', label: 'Concierge', icon: MessageCircle, color: 'from-emerald-500 to-teal-500' },
+  { id: 'concierge', label: 'Concierge®', icon: MessageCircle, color: 'from-emerald-500 to-teal-500' },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -57,7 +57,7 @@ const getQuickReplies = (activePillar, petName, lastResponse, actions) => {
       return [
         { text: 'Show more options', icon: Sparkles },
         { text: 'Create one for me', icon: Gift },
-        { text: 'Talk to Concierge', icon: MessageCircle },
+        { text: 'Talk to Concierge®', icon: MessageCircle },
       ];
     }
   }
@@ -159,12 +159,12 @@ const getPillarPicks = (pillar, petName, allergies = []) => {
   
   const allPicks = {
     celebrate: [
-      { id: 'c1', name: 'Custom Photo Mug', desc: 'Start your day with your best friend\'s face', price: 'Concierge creates', icon: '☕', type: 'concierge' },
-      { id: 'c2', name: 'Photo Coaster Set', desc: 'Protect surfaces with pet love', price: 'Concierge creates', icon: '🥤', type: 'concierge' },
-      { id: 'c3', name: 'Custom Name Bandana', desc: 'Stylish bandana with embroidered name', price: 'Concierge creates', icon: '🎀', type: 'concierge' },
-      { id: 'c4', name: 'AI Pet Portrait', desc: 'Artistic portrait generated from photos', price: 'Concierge creates', icon: '🖼️', type: 'concierge' },
+      { id: 'c1', name: 'Custom Photo Mug', desc: 'Start your day with your best friend\'s face', price: 'Concierge® creates', icon: '☕', type: 'concierge' },
+      { id: 'c2', name: 'Photo Coaster Set', desc: 'Protect surfaces with pet love', price: 'Concierge® creates', icon: '🥤', type: 'concierge' },
+      { id: 'c3', name: 'Custom Name Bandana', desc: 'Stylish bandana with embroidered name', price: 'Concierge® creates', icon: '🎀', type: 'concierge' },
+      { id: 'c4', name: 'AI Pet Portrait', desc: 'Artistic portrait generated from photos', price: 'Concierge® creates', icon: '🖼️', type: 'concierge' },
       { id: 'c5', name: 'Birthday Party Setup', desc: 'Complete pawty package with decorations', price: 'Price on request', icon: '🎉', type: 'service' },
-      { id: 'c6', name: 'Custom Lookalike Plush', desc: 'A plush toy that looks like your pet', price: 'Concierge creates', icon: '🧸', type: 'concierge' },
+      { id: 'c6', name: 'Custom Lookalike Plush', desc: 'A plush toy that looks like your pet', price: 'Concierge® creates', icon: '🧸', type: 'concierge' },
     ],
     dine: [
       { id: 'd1', name: 'Premium Wet Food', desc: isChickenFree ? 'Chicken-free recipe' : 'High protein formula', price: '₹450/pack', icon: '🥫', type: 'product' },
@@ -184,7 +184,7 @@ const getPillarPicks = (pillar, petName, allergies = []) => {
       { id: 't1', name: 'Pet-Friendly Hotels', desc: 'Curated accommodations', price: 'Price on request', icon: '🏨', type: 'service' },
       { id: 't2', name: 'Travel Kit', desc: 'Everything for the journey', price: '₹2,200', icon: '🧳', type: 'product' },
       { id: 't3', name: 'Pet Taxi', desc: 'Safe pet transport', price: 'Price on request', icon: '🚗', type: 'service' },
-      { id: 't4', name: 'Travel Documents', desc: 'Health certificates & more', price: 'Concierge handles', icon: '📄', type: 'concierge' },
+      { id: 't4', name: 'Travel Documents', desc: 'Health certificates & more', price: 'Concierge® handles', icon: '📄', type: 'concierge' },
     ],
     stay: [
       { id: 's1', name: 'Premium Boarding', desc: 'Luxury pet hotel stay', price: 'Price on request', icon: '🏨', type: 'service' },
@@ -198,7 +198,7 @@ const getPillarPicks = (pillar, petName, allergies = []) => {
     ],
     fit: [
       { id: 'f1', name: 'Fitness Assessment', desc: 'Check your pet\'s fitness level', price: 'Price on request', icon: '💪', type: 'service' },
-      { id: 'f2', name: 'Exercise Plan', desc: 'Custom workout routine', price: 'Concierge creates', icon: '📋', type: 'concierge' },
+      { id: 'f2', name: 'Exercise Plan', desc: 'Custom workout routine', price: 'Concierge® creates', icon: '📋', type: 'concierge' },
       { id: 'f3', name: 'Swimming Session', desc: 'Low-impact exercise', price: 'Price on request', icon: '🏊', type: 'service' },
     ],
     learn: [
@@ -214,7 +214,7 @@ const getPillarPicks = (pillar, petName, allergies = []) => {
     services: [
       { id: 'sv1', name: 'All Services', desc: 'Browse all available services', price: 'Varies', icon: '🔧', type: 'service' },
       { id: 'sv2', name: 'My Requests', desc: 'Track your service requests', price: '-', icon: '📋', type: 'info' },
-      { id: 'sv3', name: 'Concierge Chat', desc: 'Talk to our team', price: 'Free', icon: '💬', type: 'service' },
+      { id: 'sv3', name: 'Concierge® Chat', desc: 'Talk to our team', price: 'Free', icon: '💬', type: 'service' },
     ],
   };
   
@@ -397,7 +397,7 @@ const PicksModal = ({ pet, pillar, picks, isOpen, onClose, onPickClick }) => {
                   className="w-full py-2 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-xs font-medium rounded-lg transition-all"
                   data-testid={`pick-${pick.id}-btn`}
                 >
-                  {pick.type === 'concierge' ? 'Have Concierge create' : `Get for ${pet?.name}`}
+                  {pick.type === 'concierge' ? 'Have Concierge® create' : `Get for ${pet?.name}`}
                 </button>
               </div>
             ))}
@@ -588,7 +588,7 @@ const ConciergeModal = ({ pet, isOpen, onClose, onStartChat }) => {
         <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xl border-b border-white/10 px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <MessageCircle className="w-5 h-5 text-emerald-400" />
-            <h2 className="text-lg font-semibold text-white">Concierge</h2>
+            <h2 className="text-lg font-semibold text-white">Concierge®</h2>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-full" data-testid="concierge-close-btn">
             <X className="w-5 h-5 text-slate-400" />
@@ -601,7 +601,7 @@ const ConciergeModal = ({ pet, isOpen, onClose, onStartChat }) => {
             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mx-auto mb-4">
               <MessageCircle className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">Human Concierge</h3>
+            <h3 className="text-lg font-semibold text-white mb-2">Human Concierge®</h3>
             <p className="text-sm text-slate-400 mb-6">
               Our team is here to help with anything Mira can't handle automatically.
               We'll arrange, source, and coordinate for {pet?.name}.
@@ -612,7 +612,7 @@ const ConciergeModal = ({ pet, isOpen, onClose, onStartChat }) => {
                 onClick={() => onStartChat('I need help with something for ' + pet?.name)}
                 className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium rounded-xl"
               >
-                Start Concierge Chat
+                Start Concierge® Chat
               </button>
               <div className="flex gap-3">
                 <button className="flex-1 py-3 bg-slate-800 text-slate-300 rounded-xl text-sm flex items-center justify-center gap-2">
@@ -793,7 +793,7 @@ const MiraPureOSPage = () => {
   const handlePickClick = async (pick) => {
     setShowPicksModal(false);
     const msg = pick.type === 'concierge' 
-      ? `I'd like Concierge to create ${pick.name} for ${activePet?.name}`
+      ? `I'd like Concierge® to create ${pick.name} for ${activePet?.name}`
       : `I'd like to get ${pick.name} for ${activePet?.name}`;
     sendMessage(msg);
   };
@@ -1000,7 +1000,7 @@ const MiraPureOSPage = () => {
                     onClick={() => handlePickClick(pick)}
                     className="w-full py-2 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-xs font-medium rounded-lg transition-all"
                   >
-                    {pick.type === 'concierge' ? 'Have Concierge create' : `Get for ${activePet?.name}`}
+                    {pick.type === 'concierge' ? 'Have Concierge® create' : `Get for ${activePet?.name}`}
                   </button>
                 </div>
               ))}
@@ -1016,7 +1016,7 @@ const MiraPureOSPage = () => {
               <ChevronRight className="w-4 h-4" />
             </button>
             
-            {/* Concierge Section */}
+            {/* Concierge® Section */}
             <div className="mt-8">
               <div className="flex items-center gap-2 mb-3">
                 <MessageCircle className="w-4 h-4 text-emerald-400" />

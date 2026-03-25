@@ -75,7 +75,7 @@ const TipCardVault = ({
     setRequestFormal(prev => !prev);
   }, []);
 
-  // Send to Concierge
+  // Send to Concierge®
   const handleSendToConcierge = useCallback(async () => {
     haptic.success();
     setIsSending(true);

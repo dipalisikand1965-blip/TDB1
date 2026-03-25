@@ -1446,7 +1446,7 @@ const PaperworkPage = () => {
         )}
       </div>
       
-      {/* Concierge Button */}
+      {/* Concierge® Button */}
       <ConciergeButton 
         pillar="paperwork" 
         position="bottom-right"

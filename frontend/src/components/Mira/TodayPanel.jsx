@@ -744,7 +744,7 @@ const TodayPanel = ({
     }
   };
   
-  // Handler for Learn nudge secondary action (Ask Mira → Concierge)
+  // Handler for Learn nudge secondary action (Ask Mira → Concierge®)
   const handleLearnNudgeSecondary = (nudge) => {
     if (onOpenConcierge && nudge.secondary_cta?.context) {
       onOpenConcierge(nudge.secondary_cta.context);

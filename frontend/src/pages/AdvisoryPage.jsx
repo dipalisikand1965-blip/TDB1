@@ -5,14 +5,14 @@
  * "Help me decide what's right for my dog"
  * 
  * Structure follows Emergency page pattern:
- * - 11 Intent Tiles (Concierge is overlay, not tile)
+ * - 11 Intent Tiles (Concierge® is overlay, not tile)
  * - Ask Advisory AI hero
  * - My Dog Advisory personalized section
  * - Guided Paths
  * - Curated Bundles
  * - Soul-Created Products
  * - Near Me Services
- * - Concierge overlay throughout
+ * - Concierge® overlay throughout
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -56,7 +56,7 @@ import {
   Search, HelpCircle, Lightbulb, Target, Package, ThermometerSun
 } from 'lucide-react';
 
-// 11 Intent Tiles Configuration (Concierge is overlay, not tile)
+// 11 Intent Tiles Configuration (Concierge® is overlay, not tile)
 
 // ── Mira Intelligence helpers ──
 const CLEAN_NONE = /^(none|no|n\/a|nil|nothing|na|-|not specified|unknown|___)$/i;
@@ -692,7 +692,7 @@ const AdvisoryPage = () => {
     recovery_care: { name: 'Recovery & Care', icon: Shield }
   };
 
-  // Concierge Modal Component - EXACTLY LIKE LEARN PAGE "Request Training" Modal
+  // Concierge® Modal Component - EXACTLY LIKE LEARN PAGE "Request Training" Modal
   const ConciergeModal = () => (
     <Dialog open={showConciergeModal} onOpenChange={setShowConciergeModal}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -1294,7 +1294,7 @@ const AdvisoryPage = () => {
                         ))}
                       </div>
                       
-                      {/* Action Buttons - Shop & Concierge */}
+                      {/* Action Buttons - Shop & Concierge® */}
                       <div className="flex gap-2 mt-4">
                         <Button
                           onClick={() => {
@@ -1536,10 +1536,10 @@ const AdvisoryPage = () => {
         </div>
       </section>
 
-      {/* Concierge Modal */}
+      {/* Concierge® Modal */}
       <ConciergeModal />
       
-      {/* Floating Concierge Button */}
+      {/* Floating Concierge® Button */}
       <ConciergeButton 
         pillar="advisory"
         petName={activePet?.name}

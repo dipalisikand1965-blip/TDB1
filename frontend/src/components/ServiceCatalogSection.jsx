@@ -75,7 +75,7 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
   const [showCrossSell, setShowCrossSell] = useState(false);
   const [bookedService, setBookedService] = useState(null);
   
-  // Concierge form state
+  // Concierge® form state
   const [conciergeNotes, setConciergeNotes] = useState('');
   const [guestPetName, setGuestPetName] = useState('');
   const [guestPetBreed, setGuestPetBreed] = useState('');
@@ -371,10 +371,10 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
                 </div>
                 )}
                 
-                {/* CTA - Simplified on mobile, Concierge CTA for emergency */}
+                {/* CTA - Simplified on mobile, Concierge® CTA for emergency */}
                 <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t flex items-center justify-between">
                   <span className="text-[10px] sm:text-xs text-gray-400">
-                    {pillar === 'emergency' ? 'Talk to Concierge' : service.is_bookable ? 'Tap to book' : 'Learn more'}
+                    {pillar === 'emergency' ? 'Talk to Concierge®' : service.is_bookable ? 'Tap to book' : 'Learn more'}
                   </span>
                   <ChevronRight className="w-4 h-4 text-rose-500 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -597,7 +597,7 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
         </DialogContent>
       </Dialog>
 
-      {/* Concierge Contact Modal - Full request form for hidePrice mode */}
+      {/* Concierge® Contact Modal - Full request form for hidePrice mode */}
       <Dialog open={showConciergeModal} onOpenChange={setShowConciergeModal}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader className="mb-4">
@@ -706,7 +706,7 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
                 />
               </div>
               
-              {/* How Concierge Helps */}
+              {/* How Concierge® Helps */}
               <div className="bg-gray-50 p-4 rounded-xl space-y-2">
                 <p className="text-sm text-gray-700 font-medium">Our Concierge® will:</p>
                 <ul className="space-y-1.5 text-sm text-gray-600">

@@ -192,11 +192,11 @@ const DIM_ID_TO_CATEGORY = {
 // ─── PAPERWORK SERVICES ────────────────────────────────────
 const PAPER_SERVICES = [
   { id:"registration",  icon:"🪪", name:"Pet Registration Guidance",  tagline:"Society + municipal support",      price:"₹500",   steps:2, dim:"identity",  accentColor:"#0D9488", desc:"Complete registration guidance for {petName} — society forms, municipal licensing, all paperwork handled.", miraKnows:"Registration protects {petName} legally and is required by most housing societies." },
-  { id:"microchipping", icon:"🔬", name:"Microchipping Assistance",    tagline:"Permanent identity support",       price:"₹300",   steps:2, dim:"identity",  accentColor:"#1E293B", desc:"Concierge arranges microchipping and registry — permanent ID for {petName} that can never be lost.", miraKnows:"Microchipping is the single most important thing for {petName}'s safety." },
+  { id:"microchipping", icon:"🔬", name:"Microchipping Assistance",    tagline:"Permanent identity support",       price:"₹300",   steps:2, dim:"identity",  accentColor:"#1E293B", desc:"Concierge® arranges microchipping and registry — permanent ID for {petName} that can never be lost.", miraKnows:"Microchipping is the single most important thing for {petName}'s safety." },
   { id:"passport",      icon:"✈️", name:"Pet Passport Service",         tagline:"International travel prep",        price:"₹2,999", steps:3, dim:"travel",    accentColor:"#0D9488", desc:"Full pet passport service — vet coordination, health certificates, rabies titres, all documentation.", miraKnows:"International travel requires specific documents — requirements vary by country. Mira handles everything." },
   { id:"travel_docs",   icon:"📋", name:"Travel Documentation",         tagline:"Airline + country guidance",       price:"₹1,500", steps:2, dim:"travel",    accentColor:"#334155", desc:"All travel documents for {petName} — health certificate, airline approval, import permits where needed.", miraKnows:"Airlines have strict pet document requirements. Missing one can mean {petName} can't board." },
   { id:"insurance_rev", icon:"🛡️", name:"Pet Insurance Review",         tagline:"Find the right cover",              price:"Free",   steps:2, dim:"insurance", accentColor:"#0D9488", desc:"Mira compares pet insurance policies and finds the right cover for {petName}'s breed, age and health.", miraKnows:"Pet insurance is most affordable when started young. I'll find the right policy for {petName}." },
-  { id:"claim_filing",  icon:"📝", name:"Claim Filing Assistance",      tagline:"We file it for you",                price:"Free",   steps:2, dim:"insurance", accentColor:"#334155", desc:"Concierge handles the entire claim process — paperwork, follow-up, and settlement tracking.", miraKnows:"Claim rejections often happen due to incorrect paperwork. I handle this for {petName}'s family." },
+  { id:"claim_filing",  icon:"📝", name:"Claim Filing Assistance",      tagline:"We file it for you",                price:"Free",   steps:2, dim:"insurance", accentColor:"#334155", desc:"Concierge® handles the entire claim process — paperwork, follow-up, and settlement tracking.", miraKnows:"Claim rejections often happen due to incorrect paperwork. I handle this for {petName}'s family." },
   { id:"life_planning", icon:"💡", name:"Pet Life Planning",            tagline:"Plan {petName}'s life well",       price:"Free",   steps:2, dim:"advisory",  accentColor:"#1E293B", desc:"A comprehensive life plan for {petName} — every stage from puppy to senior, all guidance in one session.", miraKnows:"Planning ahead for {petName} reduces stress and ensures nothing is missed." },
   { id:"puppy_prep",    icon:"🐶", name:"New Puppy Preparation",        tagline:"Everything for the first year",    price:"₹1,499", steps:3, dim:"advisory",  accentColor:"#0D9488", desc:"Complete first-year guide for {petName} — vet, food, training, grooming, socialisation, documents.", miraKnows:"The first year is the most important. I've built the complete roadmap for {petName}." },
 ];
@@ -484,7 +484,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook, o
         <div style={{padding:"12px 16px 20px"}}>
           {dimSvcs.length===0 ? (
             <div style={{textAlign:"center",padding:"24px 0",color:"#888",fontSize:13}}>
-              <button onClick={()=>onBook?.(PAPER_SERVICES[0])} style={{background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"10px 24px",fontSize:13,fontWeight:700,cursor:"pointer"}}>Ask Concierge →</button>
+              <button onClick={()=>onBook?.(PAPER_SERVICES[0])} style={{background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"10px 24px",fontSize:13,fontWeight:700,cursor:"pointer"}}>Ask Concierge® →</button>
             </div>
           ) : (
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(220px,100%),1fr))",gap:14}}>
@@ -967,7 +967,7 @@ const PaperworkSoulPage = () => {
             <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:6,fontFamily:"Georgia,serif"}}>
               Find nearby paperwork help for <span style={{color:G.teal}}>{petName}</span>
             </h2>
-            <p style={{fontSize:13,color:"#888",marginBottom:20}}>Vets, microchipping clinics, legal support and document guidance — all wired to Concierge.</p>
+            <p style={{fontSize:13,color:"#888",marginBottom:20}}>Vets, microchipping clinics, legal support and document guidance — all wired to Concierge®.</p>
             <PaperworkNearMe pet={petData} onBook={handleBook} />
           </div>
         )}

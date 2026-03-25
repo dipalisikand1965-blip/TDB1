@@ -182,7 +182,7 @@ const ProactiveAlertCard = ({ alert, onAskMira, onBookNow, onDismiss }) => {
               <span>Ask Mira</span>
             </button>
             
-            {/* Book Now / Send to Concierge button */}
+            {/* Book Now / Send to Concierge® button */}
             <button
               onClick={(e) => {
                 e.stopPropagation();

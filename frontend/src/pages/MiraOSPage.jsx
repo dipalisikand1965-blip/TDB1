@@ -227,7 +227,7 @@ const SafetyOverrideBanner = memo(({ safetyOverride, petName }) => {
 SafetyOverrideBanner.displayName = 'SafetyOverrideBanner';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// CONCIERGE BLOCK - For Concierge Tab
+// CONCIERGE BLOCK - For Concierge® Tab
 // ═══════════════════════════════════════════════════════════════════════════════
 const ConciergeBlock = memo(({ conciergeData, petName, onConnect }) => {
   if (!conciergeData) return null;
@@ -542,7 +542,7 @@ const MiraOSPage = () => {
     vetDetails: null
   });
   
-  // Concierge & Safety states (from chat responses)
+  // Concierge® & Safety states (from chat responses)
   const [conciergeData, setConciergeData] = useState(null);
   const [safetyOverride, setSafetyOverride] = useState(null);
   
@@ -785,7 +785,7 @@ const MiraOSPage = () => {
         setTabBadges(prev => ({ ...prev, picks: prev.picks + newPicks.length }));
       }
       
-      // Update concierge data → Concierge Tab
+      // Update concierge data → Concierge® Tab
       if (data.concierge) {
         setConciergeData(data.concierge);
         setTabBadges(prev => ({ ...prev, concierge: 1 }));
@@ -1301,7 +1301,7 @@ const MiraOSPage = () => {
                 </div>
               )}
               
-              {/* Inline Concierge Chip */}
+              {/* Inline Concierge® Chip */}
               {conciergeData && (
                 <div 
                   className="inline-concierge-chip bg-pink-500/10 border border-pink-500/30 rounded-xl p-3 mt-4 cursor-pointer hover:bg-pink-500/20 transition"
@@ -1540,7 +1540,7 @@ const MiraOSPage = () => {
             Pet Concierge®
           </h2>
           
-          {/* Active Concierge Block (from chat) */}
+          {/* Active Concierge® Block (from chat) */}
           {conciergeData && (
             <ConciergeBlock 
               conciergeData={conciergeData}
@@ -1549,7 +1549,7 @@ const MiraOSPage = () => {
             />
           )}
           
-          {/* Main Concierge CTA */}
+          {/* Main Concierge® CTA */}
           <div className="concierge-main bg-gradient-to-br from-pink-500/20 to-purple-500/20 border border-pink-500/30 rounded-xl p-6 text-center">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center">
               <Users size={32} className="text-white" />
@@ -1567,7 +1567,7 @@ const MiraOSPage = () => {
             </button>
           </div>
           
-          {/* What Concierge Can Help With */}
+          {/* What Concierge® Can Help With */}
           <div className="concierge-services">
             <h3 className="text-sm font-medium text-gray-400 mb-2">Concierge® can help with:</h3>
             <div className="space-y-2">
@@ -1685,7 +1685,7 @@ const MiraOSPage = () => {
         </Suspense>
       )}
       
-      {/* Concierge Panel */}
+      {/* Concierge® Panel */}
       {showConciergePanel && (
         <Suspense fallback={<LazyFallback />}>
           <ConciergePanel
@@ -1825,7 +1825,7 @@ const MiraOSPage = () => {
         token={token}
       />
       
-      {/* Concierge Confirmation Banner */}
+      {/* Concierge® Confirmation Banner */}
       <ConciergeConfirmation
         confirmation={conciergeConfirmation}
         onDismiss={() => setConciergeConfirmation(null)}

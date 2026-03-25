@@ -1641,7 +1641,7 @@ const MiraChatWidget = ({
                                 )}
                               </div>
                               
-                              {/* CTA Button - Send to Concierge for reservation */}
+                              {/* CTA Button - Send to Concierge® for reservation */}
                               <button
                                 onClick={async () => {
                                   try {
@@ -1787,7 +1787,7 @@ const MiraChatWidget = ({
                       </div>
                     )}
                     
-                    {/* Concierge Handoff Notice */}
+                    {/* Concierge® Handoff Notice */}
                     {msg.handoff?.needed && (
                       <div className="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
                         <p className="text-xs font-bold text-amber-700 flex items-center gap-1">
@@ -1842,7 +1842,7 @@ const MiraChatWidget = ({
                       <p style={{ fontSize: 11, color: '#C9973A', marginBottom: 6, fontWeight: 600 }}>
                         ✦ Mira thought of this for {selectedPet?.name || 'your pet'}
                       </p>
-                      {/* Concierge recommendations (max 2) */}
+                      {/* Concierge® recommendations (max 2) */}
                       {(() => {
                         const miraRecs = parseMiraRecommendations(
                           typeof msg.content === 'string' ? msg.content : '',
@@ -1859,7 +1859,7 @@ const MiraChatWidget = ({
                                 setMessages(prev => [...prev, {
                                   id: `confirm-${Date.now()}`,
                                   role: 'assistant',
-                                  content: `✅ Got it! Request #${data.request_id || 'created'} sent to our Concierge team.`,
+                                  content: `✅ Got it! Request #${data.request_id || 'created'} sent to our Concierge® team.`,
                                 }]);
                               }}
                             />
@@ -2061,7 +2061,7 @@ const MiraChatWidget = ({
         />
       )}
       
-      {/* Pet Picks Panel - Pillar-specific picks with Send to Concierge flow */}
+      {/* Pet Picks Panel - Pillar-specific picks with Send to Concierge® flow */}
       {showPicksPanel && selectedPet && (
         <PersonalizedPicksPanel
           isOpen={showPicksPanel}
@@ -2149,12 +2149,12 @@ const MiraChatWidget = ({
             const confirmMsg = {
               id: `picks-confirm-${Date.now()}`,
               role: 'assistant',
-              content: `✅ Perfect! I've sent ${data.count} pick${data.count > 1 ? 's' : ''} for ${data.petName} to your Concierge. They'll review and reach out with next steps. You can track this in your inbox. 💜`,
+              content: `✅ Perfect! I've sent ${data.count} pick${data.count > 1 ? 's' : ''} for ${data.petName} to your Concierge®. They'll review and reach out with next steps. You can track this in your inbox. 💜`,
               timestamp: new Date().toISOString()
             };
             setMessages(prev => [...prev, confirmMsg]);
             setShowPicksPanel(false);
-            toast.success('Sent to Concierge!', {
+            toast.success('Sent to Concierge®!', {
               description: `${data.count} pick${data.count > 1 ? 's' : ''} for ${data.petName}`
             });
           }}

@@ -561,7 +561,7 @@ const FreshMealsTab = ({ activePet, token, userEmail }) => {
           petHasAllergies={petHasAllergies}
         />
         
-        {/* 3 Canonical Concierge Cards */}
+        {/* 3 Canonical Concierge® Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {cardOrder.map(card => (
             <ConciergeProductCard

@@ -247,7 +247,7 @@ const FeastMenuCard = ({ pet }) => {
                   color: isSent ? '#166534' : '#7C3AED',
                 }}
               >
-                {isSent ? '✓ Sent to Concierge' : isLoading ? '...' : 'Request via Concierge'}
+                {isSent ? '✓ Sent to Concierge®' : isLoading ? '...' : 'Request via Concierge®'}
               </button>
             </div>
           );
@@ -296,8 +296,8 @@ const PawtyPlannerCard = ({ pet }) => {
     },
     {
       num: 4, icon: '👑',
-      text: `Let Concierge handle the rest — One call, everything arranged`,
-      action: '👑 Full Concierge',
+      text: `Let Concierge® handle the rest — One call, everything arranged`,
+      action: '👑 Full Concierge®',
       requestType: 'full_concierge_pawty',
       label: `Full concierge birthday pawty planning for ${petName}`,
       message: `Please handle ${petName}'s full birthday pawty — venue, invites, pawty kit, and day-of coordination for ${petName}, ${friend1} and ${friend2} in ${city}.`,
@@ -511,7 +511,7 @@ const MemoryInvitationCard = ({ pet }) => {
                   color: isSent ? '#86EFAC' : '#FFF',
                 }}
               >
-                {isSent ? '✓ Sent to Concierge' : isLoading ? '...' : `Book via Concierge 👑`}
+                {isSent ? '✓ Sent to Concierge®' : isLoading ? '...' : `Book via Concierge® 👑`}
               </button>
             </div>
           );
@@ -519,7 +519,7 @@ const MemoryInvitationCard = ({ pet }) => {
       </div>
 
       <p style={{ fontSize: 10, color: 'rgba(196,77,255,0.70)', marginTop: 12, textAlign: 'center', fontStyle: 'italic' }}>
-        ✦ Concierge will contact you within 24 hours to confirm details
+        ✦ Concierge® will contact you within 24 hours to confirm details
       </p>
     </div>
   );
@@ -593,7 +593,7 @@ const SoulProductCard = ({ product, petName, isFirst, isConcierge, onAddToCart, 
         )}
         <div className="flex items-center justify-between gap-1.5 mt-1">
           <span className="font-bold" style={{ fontSize: 15, color: isService ? '#C9973A' : '#1A0030' }}>
-            {isService ? 'Concierge' : `₹${typeof price === 'number' ? price.toLocaleString('en-IN') : price}`}
+            {isService ? 'Concierge®' : `₹${typeof price === 'number' ? price.toLocaleString('en-IN') : price}`}
           </span>
           <button onClick={handleQuickAdd}
             className="rounded-full text-white flex items-center gap-1 flex-shrink-0"
@@ -645,7 +645,7 @@ const SoulPillarExpanded = ({ pillar, pet, onClose, onItemAdd }) => {
         const currentCategory = tabs[activeTab]?.category || 'cakes';
         const isConcierge = tabs[activeTab]?.concierge;
         if (isConcierge) {
-          // Concierge tabs show services, not products
+          // Concierge® tabs show services, not products
           setProducts([]);
           setLoading(false);
           return;

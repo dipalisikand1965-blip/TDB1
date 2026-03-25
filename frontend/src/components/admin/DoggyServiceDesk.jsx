@@ -357,7 +357,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [notificationPermission, setNotificationPermission] = useState('default');
   
-  // Concierge Hours Settings
+  // Concierge® Hours Settings
   const [conciergeHours, setConciergeHours] = useState({
     start: 9,
     end: 21,
@@ -871,7 +871,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       if (res.ok) {
         const data = await res.json();
         if (data.current_status) setConciergeStatus(data.current_status);
-        toast({ title: 'Success', description: 'Concierge hours updated successfully' });
+        toast({ title: 'Success', description: 'Concierge® hours updated successfully' });
       } else {
         toast({ title: 'Error', description: 'Failed to update concierge hours', variant: 'destructive' });
       }
@@ -2781,7 +2781,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                     onClick={() => setSettingsTab('concierge-hours')}
                     className={`w-full text-left px-3 py-2 rounded-lg text-sm ${settingsTab === 'concierge-hours' ? 'bg-emerald-100 text-emerald-700' : 'text-gray-600 hover:bg-gray-100'}`}
                   >
-                    🕐 Concierge Hours
+                    🕐 Concierge® Hours
                   </button>
                 </nav>
                 <button onClick={() => setShowSettingsModal(false)} className="mt-auto px-3 py-2 text-sm text-gray-500 hover:text-gray-700">
@@ -3138,7 +3138,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                   </div>
                 )}
                 
-                {/* Concierge Hours Tab */}
+                {/* Concierge® Hours Tab */}
                 {settingsTab === 'concierge-hours' && (
                   <div className="space-y-6">
                     {/* Current Status Banner */}
@@ -3414,7 +3414,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                   <label className="flex items-center justify-between cursor-pointer">
                     <div>
                       <span className="font-medium text-gray-800">Closed for the day</span>
-                      <p className="text-sm text-gray-500">Concierge will be offline all day</p>
+                      <p className="text-sm text-gray-500">Concierge® will be offline all day</p>
                     </div>
                     <div className="relative">
                       <input

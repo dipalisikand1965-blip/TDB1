@@ -100,7 +100,7 @@ const MiraImaginesCard = ({ item, pet, token }) => {
       </div>
       <div style={{ padding:'0 12px 14px' }}>
         {sent ? (
-          <div style={{ textAlign:'center', fontSize:11, fontWeight:700, color:'#32C878' }}><Check size={12} style={{ display:'inline', marginRight:4 }} /> Sent to Concierge!</div>
+          <div style={{ textAlign:'center', fontSize:11, fontWeight:700, color:'#32C878' }}><Check size={12} style={{ display:'inline', marginRight:4 }} /> Sent to Concierge®!</div>
         ) : (
           <button onClick={handleSource} disabled={sending} style={{ width:'100%', background:'linear-gradient(135deg,#FF8C42,#C44400)', color:'#fff', border:'none', borderRadius:10, padding:'9px', fontSize:11, fontWeight:700, cursor:'pointer', opacity: sending ? 0.7 : 1 }}>
             {sending ? 'Sending…' : 'Request a Quote →'}
@@ -186,7 +186,7 @@ const BundleCard = ({ bundle, petName, pet, token }) => {
           )}
         </div>
         {sent
-          ? <div style={{ textAlign:'center', fontSize:12, fontWeight:700, color:'#C44400', padding:'8px 0' }}>✓ Request sent to Concierge!</div>
+          ? <div style={{ textAlign:'center', fontSize:12, fontWeight:700, color:'#C44400', padding:'8px 0' }}>✓ Request sent to Concierge®!</div>
           : <button onClick={handleGet} disabled={sending} style={{ width:'100%', background:'linear-gradient(135deg,#E76F51,#C44400)', color:'#fff', border:'none', borderRadius:10, padding:'9px 0', fontSize:12, fontWeight:700, cursor: sending ? 'wait' : 'pointer', opacity: sending ? 0.7 : 1 }}>
               {sending ? 'Sending…' : `Get ${petName ? `for ${petName}` : 'this bundle'} →`}
             </button>

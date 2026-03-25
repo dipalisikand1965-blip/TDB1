@@ -123,7 +123,7 @@ export const RotatingSocialProof = ({ petName, breedName, className = '' }) => {
   const messages = [
     { icon: Heart, text: 'Made with love for your pet', color: 'text-pink-600 bg-pink-50' },
     { icon: Heart, text: breedName ? `Perfect for ${breedName}s` : 'Great for all breeds', color: 'text-purple-600 bg-purple-50' },
-    { icon: CheckCircle, text: 'Concierge-managed quality', color: 'text-green-600 bg-green-50' },
+    { icon: CheckCircle, text: 'Concierge®-managed quality', color: 'text-green-600 bg-green-50' },
     { icon: Sparkles, text: 'Curated just for you', color: 'text-amber-600 bg-amber-50' },
   ];
 

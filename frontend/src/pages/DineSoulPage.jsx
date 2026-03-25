@@ -556,7 +556,7 @@ function DineDimensionsRail({ dims, openDim, onSelect, pet, apiProducts, onAdd, 
               {allergies.length > 0 ? (
                 <>
                   <div style={{ fontSize:14, color:C.taupe }}>Mira filtered everything here for {name}&apos;s {allergies.slice(0,2).join(' & ')} allergies.</div>
-                  <div style={{ marginTop:8, fontSize:14, color:'#27AE60', fontWeight:600 }}>Ask Concierge to source safe alternatives →</div>
+                  <div style={{ marginTop:8, fontSize:14, color:'#27AE60', fontWeight:600 }}>Ask Concierge® to source safe alternatives →</div>
                 </>
               ) : (
                 <div style={{ fontSize:14, color:C.taupe }}>
@@ -673,7 +673,7 @@ function DineSoulMadeInlineCard({ pet, onOpen }) {
   );
 }
 
-// ── Concierge Card ─────────────────────────────────────────────
+// ── Concierge® Card ─────────────────────────────────────────────
 function DineConciergeCard({ pet, onOpen }) {
   const name = pet?.name || 'your dog';
   return (
@@ -682,7 +682,7 @@ function DineConciergeCard({ pet, onOpen }) {
       <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.2, marginBottom:10, fontFamily:'Georgia,serif' }}>Want us to plan the whole outing for {name}?</div>
       <div style={{ fontSize:14, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>We find the right venue, check food safety, make the reservation, and have a safe meal waiting.</div>
       <button onClick={() => { vibe('medium'); onOpen?.(); }} style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:'linear-gradient(135deg,#C9973A,#F0C060)', color:C.brown, fontSize:15, fontWeight:700, cursor:'pointer' }}>
-        👑 Talk to your Concierge
+        👑 Talk to your Concierge®
       </button>
     </div>
   );
@@ -711,7 +711,7 @@ function DineIntakeSheet({ pet, onClose, onSend, prefillVenue }) {
         {sent ? (
           <div style={{ textAlign:'center', padding:'24px 0' }}>
             <div style={{ fontSize:44, marginBottom:12 }}>👑</div>
-            <div style={{ fontSize:22, fontWeight:700, marginBottom:10 }}>Sent to {name}&apos;s Concierge.</div>
+            <div style={{ fontSize:22, fontWeight:700, marginBottom:10 }}>Sent to {name}&apos;s Concierge®.</div>
             <div style={{ fontSize:15, color:C.taupe, lineHeight:1.7, marginBottom:24 }}>We&apos;ll reach out within 48 hours.</div>
             <button className="dp-cta" onClick={onClose}>Done</button>
           </div>
@@ -862,7 +862,7 @@ function DineMobilePage() {
         setMiraServices((d?.picks || []).map(s => ({
           id: s.id || s._id,
           name: s.name,
-          desc: s.mira_reason || s.description || 'Concierge dining help',
+          desc: s.mira_reason || s.description || 'Concierge® dining help',
           raw: s,
         })));
       })
@@ -931,7 +931,7 @@ function DineMobilePage() {
             onClose={() => setProfileOpen(false)}
             onConcierge={async card => {
               await request(`Dine imagine request for ${petName}: ${card?.name}`, { channel:'dine_imagines' });
-              showToast(`Sent to Concierge for ${petName}`);
+              showToast(`Sent to Concierge® for ${petName}`);
             }}
           />
         )}
@@ -1125,14 +1125,14 @@ function DineMobilePage() {
               title={`Where would ${petName} love to eat?`}
               helper="Pet-friendly restaurants and cafés near you."
             />
-            {/* Book Dine Concierge CTA */}
+            {/* Book Dine Concierge® CTA */}
             <div style={{ padding:'0 16px 20px' }}>
               <button
                 className="dp-cta"
                 onClick={() => { vibe('medium'); setIntakeOpen(true); }}
                 style={{ background:DarkGrad, fontSize:15 }}
               >
-                ✦ Book Dine Concierge →
+                ✦ Book Dine Concierge® →
               </button>
             </div>
             <div style={{ padding:'0 16px 24px' }}>
@@ -1151,7 +1151,7 @@ function DineMobilePage() {
           </>
         )}
 
-        {/* ── Concierge CTA ── */}
+        {/* ── Concierge® CTA ── */}
         <DineConciergeCard pet={currentPet} onOpen={() => setIntakeOpen(true)} />
 
       </div>

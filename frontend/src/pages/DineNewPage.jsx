@@ -1,7 +1,7 @@
 /**
  * DineNewPage.jsx - Experimental Dine Pillar
  * 
- * Architecture: Catalogue (Self-Serve) + Concierge (Ticket-Based)
+ * Architecture: Catalogue (Self-Serve) + Concierge® (Ticket-Based)
  * One Spine: All non-self-serve actions create tickets tagged with "dine"
  */
 
@@ -196,7 +196,7 @@ const ProductCard = ({ product, onClick, onAddToCart }) => {
   );
 };
 
-// Concierge Section - Services that create tickets
+// Concierge® Section - Services that create tickets
 const ConciergeSection = ({ title, subtitle, services, onServiceRequest, pet }) => {
   return (
     <div className="mb-8">
@@ -224,7 +224,7 @@ const ConciergeSection = ({ title, subtitle, services, onServiceRequest, pet }) 
   );
 };
 
-// Concierge Service Card
+// Concierge® Service Card
 const ConciergeCard = ({ service, pet, onRequest }) => {
   return (
     <Card className="p-4 border border-purple-100 bg-gradient-to-br from-purple-50/50 to-pink-50/50 hover:shadow-md transition-all">
@@ -381,7 +381,7 @@ const DineNewPage = () => {
     { id: 'bowls', name: 'Bowls & Feeders', emoji: '🍽️' },
   ];
 
-  // Concierge Services - These create tickets
+  // Concierge® Services - These create tickets
   const conciergeServices = [
     {
       id: 'meal-plan',
@@ -645,7 +645,7 @@ const DineNewPage = () => {
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="w-4 h-4 text-purple-500" />
-              <span className="text-xs font-bold text-purple-600 uppercase tracking-wider">Concierge Arranges</span>
+              <span className="text-xs font-bold text-purple-600 uppercase tracking-wider">Concierge® Arranges</span>
               <span className="text-xs text-gray-400">• We handle it for you</span>
             </div>
           </div>

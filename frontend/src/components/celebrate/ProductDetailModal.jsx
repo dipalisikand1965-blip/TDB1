@@ -2,7 +2,7 @@
  * ProductDetailModal.jsx
  * Full product modal for pillar Shop tabs
  * - Shows product details, variants, quantity
- * - Add to Cart or Send to Concierge (for service items)
+ * - Add to Cart or Send to Concierge® (for service items)
  * - "Customise This" button triggers CustomOrderFlow
  */
 
@@ -14,7 +14,7 @@ import { useResizeMobile } from '../../hooks/useResizeMobile';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
-/* ── Send to Concierge helper ─────────────────────────────────────────────── */
+/* ── Send to Concierge® helper ─────────────────────────────────────────────── */
 const sendToConcierge = async ({ requestType, label, message, petName }) => {
   try {
     const resp = await fetch(`${API_BASE}/api/concierge/pillar-request`, {
@@ -123,7 +123,7 @@ const ProductDetailModal = ({
       // Show toast
       window.dispatchEvent(new CustomEvent('showToast', {
         detail: { 
-          message: `Sent to Concierge! Ticket: ${result.ticketId}`,
+          message: `Sent to Concierge®! Ticket: ${result.ticketId}`,
           type: 'success'
         }
       }));
@@ -262,7 +262,7 @@ const ProductDetailModal = ({
               {isService ? (
                 <div className="flex items-center gap-2">
                   <span className="font-bold" style={{ fontSize: 18, color: '#C9973A' }}>
-                    Concierge Service
+                    Concierge® Service
                   </span>
                   <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium">
                     Custom Quote
@@ -338,9 +338,9 @@ const ProductDetailModal = ({
               }}
             >
               {isSentToConcierge ? (
-                <><Check className="w-5 h-5" /> Sent to Concierge!</>
+                <><Check className="w-5 h-5" /> Sent to Concierge®!</>
               ) : isAdding ? 'Sending...' : (
-                <><Star className="w-5 h-5" /> Request via Concierge</>
+                <><Star className="w-5 h-5" /> Request via Concierge®</>
               )}
             </button>
           ) : (
@@ -376,7 +376,7 @@ const ProductDetailModal = ({
         </div>
       </div>
 
-      {/* Universal Concierge Modal for Custom Orders */}
+      {/* Universal Concierge® Modal for Custom Orders */}
       {showConciergeModal && (
         <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.50)",
                       zIndex:1100, display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}
@@ -399,7 +399,7 @@ const ProductDetailModal = ({
                   {petName}'s custom order is in good hands.
                 </h3>
                 <p style={{ fontSize:14, color:"#666", lineHeight:1.6, marginBottom:24 }}>
-                  Your Concierge has everything they need to create your personalised <strong>{product.name}</strong>. Expect a message within 48 hours with pricing and next steps.
+                  Your Concierge® has everything they need to create your personalised <strong>{product.name}</strong>. Expect a message within 48 hours with pricing and next steps.
                 </p>
                 <button onClick={() => { setShowConciergeModal(false); setConciergeSent(false); setConciergeNotes(''); setConciergeSpecialText(''); }}
                   style={{ marginTop:8, background:"linear-gradient(135deg,#C9973A,#F0C060)",
@@ -423,7 +423,7 @@ const ProductDetailModal = ({
                   fontSize:12, fontWeight:600, color:"#F0C060", marginBottom:16
                 }}>
                   <span style={{ color:"#C9973A" }}>★</span>
-                  {petName}'s Concierge
+                  {petName}'s Concierge®
                 </div>
 
                 <h2 style={{ fontSize:"1.25rem", fontFamily:"Georgia,serif", fontWeight:800,
@@ -431,7 +431,7 @@ const ProductDetailModal = ({
                   Customise {product.name} for {petName}
                 </h2>
                 <p style={{ fontSize:13, color:"#888", marginBottom:10, lineHeight:1.5 }}>
-                  Three questions. Then your Concierge takes over.
+                  Three questions. Then your Concierge® takes over.
                 </p>
 
                 <div style={{ background:"#F8F7F4", borderRadius:10, padding:"10px 14px",
@@ -473,7 +473,7 @@ const ProductDetailModal = ({
 
                 <div style={{ padding:"10px 14px", borderRadius:10, background:"#FFFBEB",
                               border:"1px solid #FEF3C7", marginBottom:20, fontSize:12, color:"#92400E", lineHeight:1.5 }}>
-                  Our Concierge will reach out to collect {petName}'s photo and share pricing. No charges until you confirm.
+                  Our Concierge® will reach out to collect {petName}'s photo and share pricing. No charges until you confirm.
                 </div>
 
                 <button onClick={async () => {
@@ -515,11 +515,11 @@ const ProductDetailModal = ({
                            fontSize:15, fontWeight:800, cursor: conciergeSending ? "not-allowed" : "pointer",
                            opacity: conciergeSending ? 0.7 : 1 }}
                   data-testid="custom-concierge-submit">
-                  {conciergeSending ? "Sending..." : "Send to my Concierge →"}
+                  {conciergeSending ? "Sending..." : "Send to my Concierge® →"}
                 </button>
 
                 <p style={{ fontSize:11, color:"#aaa", textAlign:"center", marginTop:12, lineHeight:1.5 }}>
-                  We already have your contact details. Your Concierge will reach out — you don't need to chase.
+                  We already have your contact details. Your Concierge® will reach out — you don't need to chase.
                 </p>
               </>
             )}

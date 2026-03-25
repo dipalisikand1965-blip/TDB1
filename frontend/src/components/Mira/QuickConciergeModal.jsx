@@ -1,18 +1,18 @@
 /**
  * QuickConciergeModal.jsx
  * ========================
- * Quick confirmation modal for sending Mira's suggestions to Concierge.
+ * Quick confirmation modal for sending Mira's suggestions to Concierge®.
  * 
  * FLOW:
  * 1. Mira suggests something actionable (recipe, service, product)
  * 2. C° button glows golden
  * 3. User clicks C°
  * 4. This modal appears with suggestion context
- * 5. User clicks "Send to Concierge"
+ * 5. User clicks "Send to Concierge®"
  * 6. Creates ticket via UNIFIED SERVICE FLOW
  * 7. Real concierge sees it in Service Desk
  * 
- * SSOT Reference: /app/memory/SSOT.md - "Quick Send to Concierge" feature
+ * SSOT Reference: /app/memory/SSOT.md - "Quick Send to Concierge®" feature
  */
 
 import React, { useState } from 'react';
@@ -70,7 +70,7 @@ const QuickConciergeModal = ({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send to Concierge');
+        throw new Error('Failed to send to Concierge®');
       }
 
       const data = await response.json();
@@ -89,7 +89,7 @@ const QuickConciergeModal = ({
 
     } catch (err) {
       console.error('Error sending to concierge:', err);
-      setError('Could not send to Concierge. Please try again.');
+      setError('Could not send to Concierge®. Please try again.');
     } finally {
       setSending(false);
     }
@@ -130,7 +130,7 @@ const QuickConciergeModal = ({
               <Users size={20} className="text-gray-900" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-white">Send to Concierge?</h3>
+              <h3 className="text-lg font-semibold text-white">Send to Concierge®?</h3>
               <p className="text-xs text-amber-400/80">Our team will assist you</p>
             </div>
           </div>
@@ -160,7 +160,7 @@ const QuickConciergeModal = ({
 
           {/* Description */}
           <p className="text-white/50 text-xs mb-5 text-center">
-            Our Concierge team will help you find products, arrange delivery, or answer any questions.
+            Our Concierge® team will help you find products, arrange delivery, or answer any questions.
           </p>
 
           {/* Error message */}
@@ -203,7 +203,7 @@ const QuickConciergeModal = ({
               ) : (
                 <>
                   <Send size={16} />
-                  Send to Concierge
+                  Send to Concierge®
                 </>
               )}
             </button>

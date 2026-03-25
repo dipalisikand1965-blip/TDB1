@@ -117,7 +117,7 @@ const OCCASION_BOXES = [
   { id: 'party', name: 'Party', emoji: '🎉', color: 'bg-blue-50 border-blue-200 text-blue-700' },
 ];
 
-// Concierge experiences
+// Concierge® experiences
 const CONCIERGE_EXPERIENCES = [
   { id: 'birthday-bash', title: 'Ultimate Birthday Bash', icon: '🎉', gradient: 'from-pink-500 to-rose-500', badge: 'Signature' },
   { id: 'gotcha-day', title: 'Gotcha Day Special', icon: '💜', gradient: 'from-purple-500 to-violet-500' },
@@ -590,7 +590,7 @@ const ConciergeSection = ({ onPlanParty }) => {
     <div className="py-8">
       <div className="text-center mb-6">
         <Badge className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1 mb-2">
-          <Crown className="w-3 h-3 mr-1 inline" /> Elevated Concierge
+          <Crown className="w-3 h-3 mr-1 inline" /> Elevated Concierge®
         </Badge>
         <h2 className="text-xl font-bold text-gray-900">Celebrations, Perfected</h2>
         <p className="text-sm text-gray-600 mt-1">Our concierge handles every detail</p>
@@ -617,7 +617,7 @@ const ConciergeSection = ({ onPlanParty }) => {
       
       {/* How it works */}
       <div className="mt-6 bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl p-4">
-        <h4 className="font-semibold text-gray-900 text-sm mb-3">How Concierge Works</h4>
+        <h4 className="font-semibold text-gray-900 text-sm mb-3">How Concierge® Works</h4>
         <div className="grid grid-cols-4 gap-2 text-center">
           {[
             { step: 1, icon: '💬', label: 'Tell Us' },
@@ -1202,7 +1202,7 @@ const CelebrateNewPage = () => {
             Ready for the Pawfect Celebration?
           </h2>
           <p className="text-pink-100 mb-6 text-sm sm:text-base">
-            Let our Concierge create an unforgettable experience!
+            Let our Concierge® create an unforgettable experience!
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-3">
             <Button 

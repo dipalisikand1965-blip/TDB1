@@ -2,7 +2,7 @@
  * LiveConversationThreads - Real-time Conversation Monitoring Dashboard
  * 
  * This component displays all active conversations with Mira in real-time.
- * The Concierge/Admin can:
+ * The Concierge®/Admin can:
  * - See all active conversations with preview
  * - Click to expand full thread
  * - Jump in and respond as human
@@ -123,7 +123,7 @@ const LiveConversationThreads = ({ getAuthHeaders }) => {
           headers: getAuthHeaders(),
           body: JSON.stringify({
             message: replyMessage,
-            agent_name: 'Concierge',
+            agent_name: 'Concierge®',
             notify_user: true
           })
         }
@@ -204,7 +204,7 @@ const LiveConversationThreads = ({ getAuthHeaders }) => {
       case 'active':
         return <Badge className="bg-green-500">Active</Badge>;
       case 'with_concierge':
-        return <Badge className="bg-purple-500">With Concierge</Badge>;
+        return <Badge className="bg-purple-500">With Concierge®</Badge>;
       case 'pending_concierge':
         return <Badge className="bg-yellow-500">Pending</Badge>;
       case 'closed':
@@ -459,7 +459,7 @@ const LiveConversationThreads = ({ getAuthHeaders }) => {
                   <Textarea
                     value={replyMessage}
                     onChange={(e) => setReplyMessage(e.target.value)}
-                    placeholder="Type your reply as Concierge..."
+                    placeholder="Type your reply as Concierge®..."
                     className="flex-1 min-h-[60px]"
                     data-testid="concierge-reply-input"
                     onKeyDown={(e) => {

@@ -10,7 +10,7 @@
  *   1. User types any city → "dog parks in Bangalore"
  *   2. OR taps "Near me" → geolocation → nearbySearch
  *   3. Results → cards with photo, rating, open/closed, features
- *   4. "Plan via Concierge" → PlayConciergeModal pre-filled with venue + city
+ *   4. "Plan via Concierge®" → PlayConciergeModal pre-filled with venue + city
  *
  * BACKEND ENDPOINT:
  *   GET /api/places/play-spots
@@ -320,7 +320,7 @@ export default function PlayNearMe({ pet, onBook }) {
       setResultLabel(data.location_name || query || "your area");
     } catch (err) {
       console.error("[PlayNearMe]", err);
-      setError("Couldn't load results. Try a different city or let Concierge help.");
+      setError("Couldn't load results. Try a different city or let Concierge® help.");
     } finally {
       setLoading(false);
     }
@@ -504,7 +504,7 @@ export default function PlayNearMe({ pet, onBook }) {
           </div>
           <div style={{ fontSize:14, color:G.mutedText, marginBottom:24, lineHeight:1.7 }}>
             Search any city — parks, beaches, dog cafes and agility centres.<br/>
-            Anywhere in the world. Our Concierge plans the visit.
+            Anywhere in the world. Our Concierge® plans the visit.
           </div>
           <div style={{ display:"flex", flexWrap:"wrap", gap:8, justifyContent:"center" }}>
             {["Bangalore 🇮🇳","Mumbai 🇮🇳","Goa 🇮🇳","London 🇬🇧","Bali 🇮🇩","Sydney 🇦🇺"].map(c=>(
@@ -537,7 +537,7 @@ export default function PlayNearMe({ pet, onBook }) {
           <div style={{ fontSize:13, color:G.mutedText, marginBottom:16 }}>{error}</div>
           <div style={{ display:"flex", gap:10, justifyContent:"center", flexWrap:"wrap" }}>
             <button onClick={()=>doFetch(activeQuery==="near_me"?null:activeQuery,activeQuery==="near_me"?userCoords:null,activeType)} style={{ background:G.orange,color:G.deep,border:"none",borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Try again</button>
-            <button onClick={()=>{ tdc.nearme({ query: "venue", pillar:"play", pet }); bookViaConcierge({ service: "venue", pillar:"play", pet, channel:"play_nearme" }); onBook?.(null, activeQuery==="near_me"?"your area":activeQuery)}}   style={{ background:G.pale,color:G.mid,border:`1px solid ${G.light}`,borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Ask Concierge</button>
+            <button onClick={()=>{ tdc.nearme({ query: "venue", pillar:"play", pet }); bookViaConcierge({ service: "venue", pillar:"play", pet, channel:"play_nearme" }); onBook?.(null, activeQuery==="near_me"?"your area":activeQuery)}}   style={{ background:G.pale,color:G.mid,border:`1px solid ${G.light}`,borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Ask Concierge®</button>
           </div>
         </div>
       )}
@@ -550,11 +550,11 @@ export default function PlayNearMe({ pet, onBook }) {
             No {PLAY_TYPES.find(t=>t.id===activeType)?.label.toLowerCase()||"spots"} found in {activeQuery==="near_me"?"your area":activeQuery}
           </div>
           <div style={{ fontSize:13, color:G.mutedText, marginBottom:20, lineHeight:1.6 }}>
-            Google doesn't have full coverage here — but our Concierge researches personal recommendations too.
+            Google doesn't have full coverage here — but our Concierge® researches personal recommendations too.
           </div>
           <div style={{ display:"flex", gap:10, justifyContent:"center", flexWrap:"wrap" }}>
             <button onClick={()=>setActiveType("all")} style={{ background:G.orange,color:G.deep,border:"none",borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Try all types</button>
-            <button onClick={()=>{ tdc.nearme({ query: "venue", pillar:"play", pet }); bookViaConcierge({ service: "venue", pillar:"play", pet, channel:"play_nearme" }); onBook?.(null, activeQuery==="near_me"?"your area":activeQuery)}}   style={{ background:G.pale,color:G.mid,border:`1px solid ${G.light}`,borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Ask Concierge</button>
+            <button onClick={()=>{ tdc.nearme({ query: "venue", pillar:"play", pet }); bookViaConcierge({ service: "venue", pillar:"play", pet, channel:"play_nearme" }); onBook?.(null, activeQuery==="near_me"?"your area":activeQuery)}}   style={{ background:G.pale,color:G.mid,border:`1px solid ${G.light}`,borderRadius:20,padding:"8px 18px",fontSize:12,fontWeight:700,cursor:"pointer" }}>Ask Concierge®</button>
           </div>
         </div>
       )}
@@ -590,7 +590,7 @@ export default function PlayNearMe({ pet, onBook }) {
         </>
       )}
 
-      {/* Concierge CTA */}
+      {/* Concierge® CTA */}
       {(spots.length > 0 || error) && (
         <div style={{ background:`linear-gradient(135deg,${G.deep},${G.mid})`, borderRadius:16, padding:"20px 24px", display:"flex", alignItems:"center", justifyContent:"space-between", gap:16, flexWrap:"wrap", marginTop:8 }}>
           <div>
@@ -598,12 +598,12 @@ export default function PlayNearMe({ pet, onBook }) {
               Want Mira to plan {petName}'s visit?
             </div>
             <div style={{ fontSize:12, color:"rgba(255,255,255,0.60)", lineHeight:1.6 }}>
-              Our Concierge researches the best route, checks opening times, packs the right kit, and coordinates the whole outing — you just show up.
+              Our Concierge® researches the best route, checks opening times, packs the right kit, and coordinates the whole outing — you just show up.
             </div>
           </div>
           <button onClick={() => onBook?.(null, displayCity)}
             style={{ flexShrink:0, background:`linear-gradient(135deg,${G.orange},${G.light})`, color:G.deep, border:"none", borderRadius:12, padding:"11px 22px", fontSize:13, fontWeight:800, cursor:"pointer", whiteSpace:"nowrap" }}>
-            Plan via Concierge →
+            Plan via Concierge® →
           </button>
         </div>
       )}

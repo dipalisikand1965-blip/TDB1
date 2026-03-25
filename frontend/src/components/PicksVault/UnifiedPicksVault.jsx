@@ -12,7 +12,7 @@
  * - Full haptic feedback on all interactions
  * - Category/Pillar picker for filtering
  * - Individual item selection with checkboxes
- * - No prices shown for Concierge Suggestion cards
+ * - No prices shown for Concierge® Suggestion cards
  * - iOS safe area support
  * - Swipe-to-close gesture
  * - Pull to refresh
@@ -31,7 +31,7 @@ import {
   ShoppingBag, Calendar, TrendingUp, RefreshCw, Star, Clock,
   AlertCircle, Check, Info, Flame, Package, Filter, CheckSquare, Square,
   ShoppingCart, ThumbsDown, Share2, MoreHorizontal, ChevronDown, HelpCircle,
-  // Icons for Concierge Cards
+  // Icons for Concierge® Cards
   Cake, Utensils, PartyPopper, Camera, Scissors, Cookie, Salad, 
   Stethoscope, Hotel, Moon, Home, UserCheck, PhoneCall, Plane, MapPin,
   Car, Route, HeartPulse, Smile, Droplets, Footprints, Puzzle, CloudRain,
@@ -377,7 +377,7 @@ const ConciergeConfirmationModal = ({
                   </div>
                 )}
                 
-                {/* Concierge Items */}
+                {/* Concierge® Items */}
                 {conciergePicks.length > 0 && (
                   <div className="mb-4">
                     <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
@@ -899,7 +899,7 @@ const ConciergeArrangeCard = ({ arrange, pet, onCreateTicket, token, user }) => 
         <div className="flex-1 min-w-0">
           {/* Badge */}
           <span className="inline-block px-2 py-0.5 bg-pink-500/30 text-pink-300 text-xs rounded-full mb-2">
-            {arrange.label || 'Concierge Pick'}
+            {arrange.label || 'Concierge® Pick'}
           </span>
           
           {/* Title - Updated copy */}
@@ -1787,7 +1787,7 @@ const UnifiedPicksVault = ({
                         )}
                       </div>
                       
-                      {/* Concierge Arrange Cards */}
+                      {/* Concierge® Arrange Cards */}
                       <div className="space-y-3">
                         {conciergeCards.map((arrange, i) => (
                           <ConciergeArrangeCard
@@ -1953,7 +1953,7 @@ const UnifiedPicksVault = ({
                     </div>
                   ) : personalizedPicks ? (
                     <div className="space-y-4">
-                      {/* Personalization Header - Mira's brain, Concierge's hands */}
+                      {/* Personalization Header - Mira's brain, Concierge®'s hands */}
                       <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
                         <div className="flex items-start gap-3">
                           <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
@@ -2049,7 +2049,7 @@ const UnifiedPicksVault = ({
                         }} 
                       />
                       
-                      {/* Pillar sections - Catalogue + Concierge */}
+                      {/* Pillar sections - Catalogue + Concierge® */}
                       {Object.entries(personalizedPicks.pillars || {})
                         .filter(([pillarId]) => selectedPillar === 'all' || pillarId === selectedPillar)
                         .map(([pillarId, data]) => {
@@ -2093,7 +2093,7 @@ const UnifiedPicksVault = ({
                                 </div>
                               )}
                               
-                              {/* Concierge Services - Beautiful Cards */}
+                              {/* Concierge® Services - Beautiful Cards */}
                               {conciergePicks.length > 0 && (
                                 <div>
                                   <p className="text-xs text-purple-600 mb-2 flex items-center gap-1 font-medium">
@@ -2181,7 +2181,7 @@ const UnifiedPicksVault = ({
         </motion.div>
       </motion.div>
       
-      {/* Concierge Confirmation Modal */}
+      {/* Concierge® Confirmation Modal */}
       <ConciergeConfirmationModal
         isOpen={showConfirmation}
         onClose={() => setShowConfirmation(false)}

@@ -409,7 +409,7 @@ const NearbyAdoptServices = ({ pet }) => {
                     data-testid={`nearby-adopt-concierge-${idx}`}
                   >
                     <MapPin className="w-3 h-3" />
-                    Ask Concierge
+                    Ask Concierge®
                   </button>
                 </div>
               </Card>
