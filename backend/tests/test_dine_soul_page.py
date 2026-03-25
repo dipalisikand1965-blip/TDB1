@@ -12,7 +12,7 @@ import jwt
 import os
 from datetime import datetime, timezone, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pillar-parity-sprint.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-parity-sprint.preview.emergentagent.com').rstrip('/')
 
 # Test pets from the live DB
 PET_WITH_FOOD_DATA = "pet-mojo-7327ad56"       # Mojo: allergies=chicken, loves=Salmon/PeanutButter
