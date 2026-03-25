@@ -15,6 +15,7 @@ import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
+import { applyMiraFilter } from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import SoulMadeModal from '../components/SoulMadeModal';
 import PillarSoulProfile from '../components/PillarSoulProfile';
@@ -45,8 +46,7 @@ const C = {
   taupe:   '#7A6890',
   dark:    '#1A0A2E',
 };
-
-const CTAGrad = 'linear-gradient(135deg,#9B59B6,#E91E8C)';
+const CTAGrad = 'linear-gradient(135deg,#4A1B6D,#9B59B6)';
 
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
@@ -295,13 +295,21 @@ export default function CelebrateMobilePage() {
     fetch(`${API_URL}/api/mira/claude-picks/${currentPet.id}?pillar=celebrate&limit=6&min_score=60&entity_type=product`,
       { headers:{ Authorization:`Bearer ${token}` } })
       .then(r => r.ok ? r.json() : null)
-      .then(d => setMiraProducts((d?.picks || []).map(p => ({
-        id: p.id || p._id, name: p.name,
-        desc: p.mira_reason || p.description || 'For the celebration',
-        price: p.price ? `₹${p.price}` : 'Price on request',
-        imageUrl: p.image_url || p.cloudinary_url,
-        raw: p,
-      }))))
+      .then(d => {
+        const rawPicks = d?.picks || [];
+        const filtered = applyMiraFilter(rawPicks, currentPet);
+        setMiraProducts(filtered.map(p => ({
+          id: p.id || p._id, name: p.name,
+          desc: p.mira_hint || p.mira_reason || p.description || 'For the celebration',
+          price: p.price ? `₹${p.price}` : 'Price on request',
+          imageUrl: p.image_url || p.cloudinary_url,
+          mira_hint: p.mira_hint,
+          miraPick: p.miraPick,
+          _dimmed: p._dimmed,
+          _loved: p._loved,
+          raw: p,
+        })));
+      })
       .catch(() => {});
   }, [token, currentPet]);
 
@@ -405,10 +413,26 @@ export default function CelebrateMobilePage() {
                 <div style={{ fontSize:18, fontWeight:700, color:'#fff' }}>Celebrate Picks for {petName}</div>
                 <button onClick={() => setMiraPicksOpen(false)} style={{ background:'none', border:'none', color:'rgba(255,255,255,0.6)', fontSize:24, cursor:'pointer' }}>✕</button>
               </div>
+              {/* Mira's pick callout */}
+              {miraProducts[0]?.miraPick && miraProducts[0]?.mira_hint && (
+                <div style={{ background:'linear-gradient(135deg,rgba(255,140,66,0.15),rgba(196,77,255,0.10))', border:'1px solid rgba(255,140,66,0.35)', borderRadius:12, padding:'10px 14px', display:'flex', alignItems:'center', gap:10, marginBottom:14 }}>
+                  <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, color:'#fff', flexShrink:0 }}>✦</div>
+                  <div style={{ fontSize:13, color:'#FFD9B0', lineHeight:1.4 }}>
+                    <strong style={{ color:'#FFA45B' }}>Mira's pick:</strong> {miraProducts[0].name}
+                    <span style={{ color:'rgba(255,255,255,0.6)', marginLeft:5 }}>— {miraProducts[0].mira_hint}</span>
+                  </div>
+                </div>
+              )}
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
                 {miraProducts.map(p => (
-                  <SharedProductCard key={p.id||p.name} product={p.raw||p} pillar="celebrate" selectedPet={currentPet} onAddToCart={() => { addToCart({ id:p.id, name:p.name, price:p.raw?.price||0, image:p.imageUrl, pillar:'celebrate', quantity:1 }); showToast(`${p.name} added`); }} onClick={() => { vibe(); setSelectedProduct(p); setMiraPicksOpen(false); }} />
+                  <div key={p.id||p.name} style={{ opacity: p._dimmed ? 0.55 : 1 }}>
+                    <SharedProductCard product={p.raw||p} pillar="celebrate" selectedPet={currentPet} onAddToCart={() => { addToCart({ id:p.id, name:p.name, price:p.raw?.price||0, image:p.imageUrl, pillar:'celebrate', quantity:1 }); showToast(`${p.name} added`); }} onClick={() => { vibe(); setSelectedProduct(p); setMiraPicksOpen(false); }} />
+                  </div>
                 ))}
+              </div>
+              {/* Footer */}
+              <div style={{ borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:10, marginTop:12, fontSize:12, color:'rgba(255,255,255,0.45)', textAlign:'center' }}>
+                {miraProducts.length} items curated for {petName}
               </div>
             </div>
           </div>

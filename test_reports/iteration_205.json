@@ -1,0 +1,70 @@
+{
+  "summary": "Tested Mira product filtering implementation across all pillars (Dine, Celebrate, Care, Go, Play, Adopt). Found and FIXED critical CTAGrad crash on /celebrate. Found additional critical bug in CareSoulPage (GuidedCarePaths null pet). Mira filtering, callout banner, and allergen filtering work correctly on Dine (mobile + desktop). Care/Go/Play pages load but Mira's pick callout doesn't show due to products lacking mira_tag in DB. SharedProductCard 'Why Mira suggests this' section confirmed working.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "CelebrateMobilePage.jsx",
+        "issue": "ReferenceError: CTAGrad is not defined — caused /celebrate page to crash with ErrorBoundary (white screen 'Something went wrong'). FIXED by adding const CTAGrad = 'linear-gradient(135deg,#4A1B6D,#9B59B6)' after the C color object.",
+        "selector": "[data-testid='celebrate-mobile']",
+        "priority": "CRITICAL — FIXED"
+      },
+      {
+        "component": "CareSoulPage.jsx / GuidedCarePaths",
+        "issue": "TypeError: Cannot read properties of null (reading 'name') in buildPaths(). Crashes /care page when pet context is null at render time. Shows 'Oops! Something went wrong' error boundary. Intermittent — sometimes CareMobilePage loads fine, sometimes this crash appears.",
+        "selector": "ErrorBoundary",
+        "priority": "CRITICAL — NOT FIXED (pre-existing bug, reported to main agent)"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Care/Go/Play Mira's pick callout banner",
+        "issue": "Mira's pick callout banner (amber gradient box above product grid) does NOT appear on care/go/play pages. Code correctly conditions on miraPick.mira_hint being truthy, but care/go/play products in DB don't have mira_tag, allergy_free, or food-match attributes set. Result: mira_hint = null for all products, callout never shows.",
+        "affected_selectors": ["[data-testid='care-mobile']", "[data-testid='go-mobile']", "[data-testid='play-mobile']"]
+      },
+      {
+        "flow": "Care/Go/Play allergen info in footer/Mira bar",
+        "issue": "Local getAllergies() function in care/go/play pages only checks pet.allergies field. If chicken allergy is in pet.doggy_soul_answers.food_allergies (not in pet.allergies), the Mira bar says 'Let me show you what [name] actually needs...' instead of 'has chicken sensitivities'. Footer shows 'N items · filtered for Mojo' without '· no chicken'. applyMiraFilter still correctly filters (uses extractAllergies which checks all fields).",
+        "affected_selectors": [".care-m", ".go-m", ".play-m"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/test_reports/iteration_205.json"],
+  "action_items": [
+    "CRITICAL: Fix GuidedCarePaths null pet crash in CareSoulPage.jsx — buildPaths() called with null pet. Add null guard: if (!pet) return []; at start of buildPaths().",
+    "DATA: Add mira_tag to care/go/play products in MongoDB via /api/admin/pillar-products to enable Mira's pick callout banner. Without mira_tag, mira_hint is null and the callout never shows.",
+    "MINOR: Update getAllergies() function in CareMobilePage.jsx, GoMobilePage.jsx, PlayMobilePage.jsx to also check pet.doggy_soul_answers.food_allergies (like extractAllergies in useMiraFilter.js does). This will make the Mira bar and footer show allergen context."
+  ],
+  "critical_code_review_comments": [
+    "CelebrateMobilePage.jsx line 54: CTAGrad used in CSS template literal without being defined — causes module-level ReferenceError crashing the page. FIXED.",
+    "CareSoulPage.jsx GuidedCarePaths: buildPaths() not guarding against null pet parameter — causes TypeError crash. Needs null check at top of function.",
+    "DineDimensionsRail (DineSoulPage.jsx line 491): passes non-lowercased loves to applyMiraIntelligence. However, since pet data stores loves in lowercase ('salmon' not 'Salmon'), this works in practice but is fragile.",
+    "Local getAllergies() functions in care/go/play pages are less comprehensive than extractAllergies() in useMiraFilter.js — different pet field coverage leads to inconsistent UI."
+  ],
+  "updated_files": ["/app/frontend/src/pages/CelebrateMobilePage.jsx"],
+  "success_rate": {
+    "backend": "N/A (frontend-only test)",
+    "frontend": "70% (Dine mobile/desktop PASS, Celebrate after fix PASS, Care/Go/Play load but callout missing, Care has GuidedCarePaths crash)"
+  },
+  "test_credentials": "dipali@clubconcierge.in / test123, pet: Mojo (Indie, chicken allergy, loves salmon)",
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "main_agent_can_self_test": false,
+  "context_for_next_testing_agent": "CTAGrad fix applied to CelebrateMobilePage.jsx. Critical GuidedCarePaths crash in CareSoulPage.jsx still needs fix (null guard). Mira's pick callout works on Dine (mobile+desktop) and Celebrate (via modal). Care/Go/Play callout needs mira_tag in DB. Desktop DimExpanded confirmed: 13 products loaded, 1 filtered for chicken allergen, 2 match Mojo's loves (salmon), callout shows 'Mira's pick: Salmon & Sweet Potato Morning Bowl — Mojo loves Salmon'. data-testid for dine mobile is 'dine-mobile-v11' not 'dine-mobile'.",
+  "rca_of_issues": {
+    "CTAGrad_crash": {
+      "root_cause": "CelebrateMobilePage.jsx uses CTAGrad in module-level CSS template literal (line 54) and JSX (line 230) but never defines it. Module-level evaluation fails with ReferenceError before component can render.",
+      "fix_applied": "Added const CTAGrad = 'linear-gradient(135deg,#4A1B6D,#9B59B6)'; after the C color object at line 49.",
+      "status": "FIXED"
+    },
+    "GuidedCarePaths_crash": {
+      "root_cause": "buildPaths() in CareSoulPage.jsx calls pet.name without null guard. If pet is null during initial render (pet context not yet loaded), TypeError: Cannot read properties of null (reading 'name') is thrown.",
+      "reproduction": "Navigate to /care at 390px after navigating other pages in same session.",
+      "fix_needed": "Add null guard: if (!pet) return []; at the start of buildPaths function."
+    }
+  }
+}

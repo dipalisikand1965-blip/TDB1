@@ -13,6 +13,7 @@ import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
+import { applyMiraFilter } from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import PlayConciergeSection from '../components/play/PlayConciergeSection';
@@ -109,9 +110,10 @@ export default function PlayMobilePage() {
 
   const petName = currentPet?.name || 'your dog';
   const allergies = getAllergies(currentPet);
-  const intelligent = applyMiraIntelligence(allRaw, allergies);
+  const intelligent = applyMiraFilter(allRaw, currentPet);
   const subCats = ['All', ...new Set(intelligent.map(p => p.sub_category).filter(Boolean))];
   const products = subCat === 'All' ? intelligent : intelligent.filter(p => p.sub_category === subCat);
+  const miraPick = products.find(p => p.miraPick) || products[0] || null;
 
   return (
     <PillarPageLayout pillar="play" hideHero hideNavigation>
@@ -203,19 +205,46 @@ export default function PlayMobilePage() {
                   </div>
                 )}
 
+                {/* Mira's pick callout */}
+                {miraPick && miraPick.mira_hint && (
+                  <div style={{ background:'linear-gradient(135deg,rgba(255,140,66,0.1),rgba(196,77,255,0.06))', border:'1px solid rgba(255,140,66,0.3)', borderRadius:12, padding:'10px 14px', display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
+                    <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, color:'#fff', flexShrink:0 }}>✦</div>
+                    <div style={{ fontSize:13, color:'#3D1A00', lineHeight:1.4 }}>
+                      <strong>Mira's pick:</strong> {miraPick.name}
+                      <span style={{ color:'#888', marginLeft:5 }}>— {miraPick.mira_hint}</span>
+                    </div>
+                  </div>
+                )}
+
                 {products.length === 0 ? (
                   <div style={{ textAlign:'center', padding:'32px 0', color:'#888' }}>
-                    <div style={{ fontSize:32, marginBottom:8 }}>🎾</div>
-                    <div>Loading play products for {petName}…</div>
+                    {allergies.length > 0 ? (
+                      <>
+                        <div style={{ fontSize:32, marginBottom:8 }}>🛡️</div>
+                        <div>Mira filtered everything for {petName}&apos;s allergies. Ask Concierge for alternatives.</div>
+                      </>
+                    ) : (
+                      <>
+                        <div style={{ fontSize:32, marginBottom:8 }}>🎾</div>
+                        <div>Loading play products for {petName}…</div>
+                      </>
+                    )}
                   </div>
                 ) : (
-                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                    {products.slice(0, 40).map(p => (
-                      <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="play" selectedPet={currentPet}
-                        onAddToCart={() => handleAddToCart(p)}
-                        onClick={() => { vibe(); setSelectedProduct(p); }} />
-                    ))}
-                  </div>
+                  <>
+                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                      {products.slice(0, 40).map(p => (
+                        <div key={p.id||p._id||p.name} style={{ opacity: p._dimmed ? 0.55 : 1 }}>
+                          <SharedProductCard product={p} pillar="play" selectedPet={currentPet}
+                            onAddToCart={() => handleAddToCart(p)}
+                            onClick={() => { vibe(); setSelectedProduct(p); }} />
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ borderTop:`1px solid ${G.border}`, paddingTop:10, marginTop:4, fontSize:12, color:'#888' }}>
+                      {products.length} items · filtered for {petName}{allergies.length > 0 ? ` · no ${allergies.join(', ')}` : ''}
+                    </div>
+                  </>
                 )}
 
                 <div style={{ marginTop:16 }}><MiraImaginesBreed pet={currentPet} pillar="play" token={token} /></div>
