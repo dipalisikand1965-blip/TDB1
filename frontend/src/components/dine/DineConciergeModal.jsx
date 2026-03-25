@@ -61,7 +61,7 @@ const DineConciergeModal = ({ isOpen, onClose, serviceType, petName, petId }) =>
       date: notSureDate ? null : (diningDate || null),
       onSuccess: () => {
         setSubmitted(true);
-        toast.success(`Sent to ${displayName}'s Concierge`, { description: "We will reach out within 48 hours." });
+        toast.success(`Sent to ${displayName}'s Concierge®`, { description: "We will reach out within 48 hours." });
       },
     });
     setSubmitting(false);
@@ -122,7 +122,7 @@ const DineConciergeModal = ({ isOpen, onClose, serviceType, petName, petId }) =>
                 {displayName}'s dining plan is in good hands.
               </h3>
               <p style={{ fontSize: 14, color: '#666', lineHeight: 1.6, marginBottom: 24 }}>
-                Your Concierge has everything they need.<br />
+                Your Concierge® has everything they need.<br />
                 Expect a message within 48 hours. ♥
               </p>
               <button
@@ -161,7 +161,7 @@ const DineConciergeModal = ({ isOpen, onClose, serviceType, petName, petId }) =>
               }}>
                 <span style={{ fontSize: 11, color: '#C9973A' }}>★</span>
                 <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(201,151,58,0.90)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                  {displayName}'s Dining Concierge
+                  {displayName}'s Dining Concierge®
                 </span>
               </div>
 
@@ -174,7 +174,7 @@ const DineConciergeModal = ({ isOpen, onClose, serviceType, petName, petId }) =>
                 <span style={{ color: '#C9973A' }}>{displayName}</span>?
               </h2>
               <p style={{ fontSize: 14, color: '#888', lineHeight: 1.6, marginBottom: 24 }}>
-                Three questions. Then your Concierge takes over.
+                Three questions. Then your Concierge® takes over.
               </p>
 
               {/* Q1: Occasion */}
@@ -266,11 +266,11 @@ const DineConciergeModal = ({ isOpen, onClose, serviceType, petName, petId }) =>
                 }}
                 data-testid="dine-modal-submit-btn"
               >
-                {submitting ? 'Sending…' : `Send to ${displayName}'s Concierge →`}
+                {submitting ? 'Sending…' : `Send to ${displayName}'s Concierge® →`}
               </button>
               <p style={{ fontSize: 12, color: '#888', textAlign: 'center', lineHeight: 1.6 }}>
                 We already have your contact details.<br />
-                Your Concierge will reach out — you don't need to chase.
+                Your Concierge® will reach out — you don't need to chase.
               </p>
             </>
           )}

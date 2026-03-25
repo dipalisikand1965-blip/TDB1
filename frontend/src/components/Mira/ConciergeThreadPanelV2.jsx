@@ -65,7 +65,7 @@ const MessageStatusIndicator = ({ status, timestamp }) => {
 
 /**
  * Connection Status Indicator
- * Uses Concierge Hours API status (is_live) instead of WebSocket adminOnline
+ * Uses Concierge® Hours API status (is_live) instead of WebSocket adminOnline
  * Gracefully degrades when real-time WebSocket isn't available
  */
 const ConnectionIndicator = ({ status, isLive, statusText, reconnectAttempts = 0 }) => {
@@ -76,7 +76,7 @@ const ConnectionIndicator = ({ status, isLive, statusText, reconnectAttempts = 0
       return { color: 'bg-amber-400', pulse: true, text: 'Connecting...' };
     }
     
-    // For disconnected or after max reconnect attempts, show based on Concierge hours
+    // For disconnected or after max reconnect attempts, show based on Concierge® hours
     // The polling fallback still works, so we show the service status instead
     if (isLive) {
       return { color: 'bg-green-400', pulse: true, text: statusText || 'Live now' };
@@ -379,7 +379,7 @@ const ConciergeThreadPanelV2 = ({
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   
-  // Concierge Hours status (from backend API)
+  // Concierge® Hours status (from backend API)
   const [conciergeStatus, setConciergeStatus] = useState({ is_live: true, status_text: 'Live now' });
   
   // Refs
@@ -525,7 +525,7 @@ const ConciergeThreadPanelV2 = ({
     }
   }, [isOpen, threadId, initialThread, initialMessages.length, fetchThread]);
   
-  // Fetch Concierge Hours status when panel opens
+  // Fetch Concierge® Hours status when panel opens
   useEffect(() => {
     if (isOpen) {
       fetch('/api/os/concierge/status')

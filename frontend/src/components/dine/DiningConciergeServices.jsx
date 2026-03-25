@@ -99,7 +99,7 @@ const DiningConciergeCTA = ({ petName }) => (
   >
     <div>
       <p style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF', marginBottom: 6 }}>
-        Dine Concierge
+        Dine Concierge®
       </p>
       <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.70)', lineHeight: 1.5 }}>
         Everything from finding the right food to finding the right restaurant — Mira and the concierge team handle it. You just show up with {petName}.
@@ -127,7 +127,7 @@ const DiningConciergeServices = ({ pet }) => {
   return (
     <div data-testid="dining-concierge-services">
       <div style={{ marginBottom: 16 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 800, color: '#1A0A00', marginBottom: 2 }}>Dining Concierge</h2>
+        <h2 style={{ fontSize: 18, fontWeight: 800, color: '#1A0A00', marginBottom: 2 }}>Dining Concierge®</h2>
         <p style={{ fontSize: 13, color: '#888' }}>The human layer behind Mira — for when you need more</p>
       </div>
 

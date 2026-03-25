@@ -1,6 +1,6 @@
 /**
  * ConciergeToast.jsx
- * Slides up from the bottom when user taps "Book via Concierge"
+ * Slides up from the bottom when user taps "Book via Concierge®"
  * on any Google Places card (Stays, Spots, PlayNearMe, CareNearMe).
  *
  * Usage:
@@ -70,7 +70,7 @@ export default function ConciergeToast({ toast, onClose }) {
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1A1A", marginBottom: 2 }}>
-          Sent to Concierge!
+          Sent to Concierge®!
         </div>
         <div style={{ fontSize: 12, color: "#555", lineHeight: 1.4, marginBottom: toast.ticketId ? 4 : 0 }}>
           {toast.name

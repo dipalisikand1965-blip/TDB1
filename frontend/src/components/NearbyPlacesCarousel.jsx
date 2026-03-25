@@ -185,7 +185,7 @@ const NearbyPlacesCarousel = ({
                 className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm h-9"
                 data-testid={`reserve-btn-${index}`}
               >
-                Reserve via Concierge
+                Reserve via Concierge®
                 <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
             </div>

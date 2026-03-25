@@ -7,10 +7,10 @@
  * Features:
  * - Dark theme matching the site design
  * - Pillar-wise navigation (Celebrate, Dine, Care, etc.)
- * - Catalogue products + Concierge services per pillar
+ * - Catalogue products + Concierge® services per pillar
  * - Expandable cards for details
  * - Mini-cart with selection summary
- * - "Send to My Concierge" flow
+ * - "Send to My Concierge®" flow
  * - Full haptic feedback on mobile
  */
 
@@ -202,7 +202,7 @@ const ExpandablePickCard = ({
           {/* Badge row */}
           <div className="flex items-center justify-between mb-3">
             <span className="px-3 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-medium rounded-full">
-              {pick.seasonal ? '☆ Seasonal' : 'Concierge Pick'}
+              {pick.seasonal ? '☆ Seasonal' : 'Concierge® Pick'}
             </span>
             <button 
               onClick={handleToggle}
@@ -659,7 +659,7 @@ const MiniCart = ({
           className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-semibold py-4 px-4 rounded-full flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform"
         >
           <Send className="w-4 h-4" />
-          Send to My Concierge
+          Send to My Concierge®
         </button>
       </div>
     </motion.div>
@@ -788,7 +788,7 @@ const PersonalizedPicksPanel = ({
   // NEW: Engine picks props (B6)
   enginePicks = [],        // Pre-computed picks from picks engine
   enginePillar = null,     // Auto-detected pillar from classification
-  conciergeDecision = null, // Concierge prominence decision
+  conciergeDecision = null, // Concierge® prominence decision
   safetyOverride = null,   // Emergency/caution state
   lastUpdated = null,      // For "Updated just now"
   // NEW: Mira's conversation suggestions (🎂, 🎈, etc.)
@@ -1722,7 +1722,7 @@ const PersonalizedPicksPanel = ({
                 {/* ═══════════════════════════════════════════════════════════════════ */}
                 {/* INTENT-DRIVEN SHELF - "{Pet} needs this for {Intent}"              */}
                 {/* Dynamic cards from MIRA brain based on chat intent                  */}
-                {/* Concierge-sourced (no price) - "Concierge will arrange"            */}
+                {/* Concierge®-sourced (no price) - "Concierge® will arrange"            */}
                 {/* ONLY show when NO specific pillar is selected (general/all view)   */}
                 {/* ═══════════════════════════════════════════════════════════════════ */}
                 {(!activePillar || activePillar === 'all' || activePillar === 'general') && 
@@ -1760,7 +1760,7 @@ const PersonalizedPicksPanel = ({
                               </div>
                               <h4 className="text-xs font-medium text-white mb-1">{pick.name}</h4>
                               <p className="text-[10px] text-cyan-300/80 line-clamp-2">{pick.description || pick.reason}</p>
-                              <p className="text-[10px] text-gray-500 mt-2 italic">{pick.price_display || 'Concierge sources'}</p>
+                              <p className="text-[10px] text-gray-500 mt-2 italic">{pick.price_display || 'Concierge® sources'}</p>
                               {isSelected(pick) && (
                                 <div className="absolute top-2 right-2">
                                   <CheckCircle className="w-4 h-4 text-cyan-400" />
@@ -1820,7 +1820,7 @@ const PersonalizedPicksPanel = ({
                 {/* ═══════════════════════════════════════════════════════════════════ */}
                 {/* PERSONALIZED SHELF - "✨ Personalized for {Pet}"                    */}
                 {/* ALWAYS shown proactively - unique items with pet's photo           */}
-                {/* Concierge creates these (mugs, coasters, blankets, etc.)           */}
+                {/* Concierge® creates these (mugs, coasters, blankets, etc.)           */}
                 {/* These are CELEBRATE items - show on general view OR celebrate tab  */}
                 {/* ═══════════════════════════════════════════════════════════════════ */}
                 {(!activePillar || activePillar === 'all' || activePillar === 'general' || activePillar === 'celebrate') && 
@@ -1855,7 +1855,7 @@ const PersonalizedPicksPanel = ({
                           </div>
                           <h4 className="text-xs font-medium text-white text-center mb-1">{product.name}</h4>
                           <p className="text-[10px] text-pink-300/80 text-center line-clamp-2">{product.description}</p>
-                          <p className="text-[10px] text-gray-500 text-center mt-2 italic">{product.price_display || 'Concierge creates'}</p>
+                          <p className="text-[10px] text-gray-500 text-center mt-2 italic">{product.price_display || 'Concierge® creates'}</p>
                           {/* Primary CTA - Flow to Chat */}
                           <button
                             onClick={(e) => {
@@ -1981,7 +1981,7 @@ const PersonalizedPicksPanel = ({
                               <h4 className="font-medium text-white text-sm">{suggestion.title?.replace(/^[\p{Emoji}]\s*/u, '') || 'Suggestion'}</h4>
                               {isSentToConcierge(suggestion) ? (
                                 <span className="text-xs text-green-400 flex items-center gap-1">
-                                  <CheckCircle className="w-3 h-3" /> Sent to Concierge
+                                  <CheckCircle className="w-3 h-3" /> Sent to Concierge®
                                 </span>
                               ) : (
                                 <>
@@ -2146,7 +2146,7 @@ const PersonalizedPicksPanel = ({
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
                                   <span className="px-2 py-0.5 bg-pink-500/30 text-pink-300 text-xs rounded-full">
-                                    Concierge Pick
+                                    Concierge® Pick
                                   </span>
                                   {/* Task Status Badge */}
                                   {getTaskStatus(pick) && (
@@ -2234,18 +2234,18 @@ const PersonalizedPicksPanel = ({
             
             {/* ═══════════════════════════════════════════════════════════════ */}
             {/* CONCIERGE FALLBACK - When no catalogue picks, ALWAYS show      */}
-            {/* "Your Concierge Can Arrange This" cards. NEVER show empty.     */}
-            {/* Per MOJO Bible: Fallback rule requires Concierge Arranges      */}
+            {/* "Your Concierge® Can Arrange This" cards. NEVER show empty.     */}
+            {/* Per MOJO Bible: Fallback rule requires Concierge® Arranges      */}
             {/* ═══════════════════════════════════════════════════════════════ */}
             {!loading && cataloguePicks.length === 0 && conciergePicks.length === 0 && activePillar !== 'services' && (
               <div className="space-y-6">
-                {/* Concierge Arranges Fallback Section */}
+                {/* Concierge® Arranges Fallback Section */}
                 <div className="text-center mb-6">
                   <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
                     <Sparkles className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-lg font-semibold text-white mb-2">
-                    Your Concierge Can Arrange This
+                    Your Concierge® Can Arrange This
                   </h3>
                   <p className="text-sm text-gray-400 max-w-md mx-auto">
                     We don't have catalogue items for {PILLARS.find(p => p.id === activePillar)?.name?.toLowerCase() || 'this'} yet, 
@@ -2253,7 +2253,7 @@ const PersonalizedPicksPanel = ({
                   </p>
                 </div>
                 
-                {/* Dynamic Concierge Cards based on pillar */}
+                {/* Dynamic Concierge® Cards based on pillar */}
                 <div className="grid grid-cols-1 gap-3">
                   {/* Generate 3 fallback concierge cards based on active pillar */}
                   {[
@@ -2269,7 +2269,7 @@ const PersonalizedPicksPanel = ({
                     },
                     {
                       name: 'Something Else in Mind?',
-                      description: `Your Concierge can source anything for ${pet?.name}. Just describe what you need.`,
+                      description: `Your Concierge® can source anything for ${pet?.name}. Just describe what you need.`,
                       cta: 'Tell Us'
                     }
                   ].map((fallbackPick, index) => (
@@ -2408,7 +2408,7 @@ const PersonalizedPicksPanel = ({
             document.body
           )}
           
-          {/* Concierge Detail Modal - Matching design */}
+          {/* Concierge® Detail Modal - Matching design */}
           {selectedConcierge && createPortal(
             <ConciergeDetailModal 
               service={selectedConcierge} 

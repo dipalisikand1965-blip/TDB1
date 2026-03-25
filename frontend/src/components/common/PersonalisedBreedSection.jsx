@@ -197,7 +197,7 @@ export default function PersonalisedBreedSection({
                 {p.mira_hint && <div style={{ fontSize:10, color:C.orange, lineHeight:1.4, marginBottom:6 }}>{p.mira_hint}</div>}
                 <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
                   <span style={{ fontSize:effectiveHidePrice ? 11 : 13, fontWeight:800, color:effectiveHidePrice ? '#888' : C.deep }}>
-                    {effectiveHidePrice ? 'Pricing shared by Concierge' : `₹${p.price?.toLocaleString?.() ?? p.price}`}
+                    {effectiveHidePrice ? 'Pricing shared by Concierge®' : `₹${p.price?.toLocaleString?.() ?? p.price}`}
                   </span>
                   <button
                     onClick={e => {
@@ -209,7 +209,7 @@ export default function PersonalisedBreedSection({
                     data-testid={`personalised-product-action-${p.id}`}
                     style={{ background:C.orange, color:"#fff", border:"none", borderRadius:8, padding:"4px 10px", fontSize:10, fontWeight:700, cursor:"pointer" }}
                   >
-                    {isConciergeMode ? 'Ask Concierge →' : 'Add →'}
+                    {isConciergeMode ? 'Ask Concierge® →' : 'Add →'}
                   </button>
                 </div>
               </div>

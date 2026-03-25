@@ -1214,7 +1214,7 @@ const DineManager = ({ credentials }) => {
             </div>
           </div>
 
-          {/* Concierge Recommendation */}
+          {/* Concierge® Recommendation */}
           <div className="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
             <h4 className="text-sm font-semibold text-purple-700 mb-3 flex items-center gap-2">
               <Sparkles className="w-4 h-4" /> Your Concierge® Recommends

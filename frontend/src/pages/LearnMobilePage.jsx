@@ -258,10 +258,17 @@ export default function LearnMobilePage() {
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🎓 Learn</div>
             </div>
             {contextPets?.length > 1 && (
-              <select value={currentPet?.id} onChange={e => { vibe(); setCurrentPet(contextPets.find(p => p.id === e.target.value)); }}
-                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:14 }}>
-                {contextPets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
+              <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+                {contextPets.map(p => (
+                  <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
+                    style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
+                      border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
+                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
+                      color:'#fff', cursor:'pointer', transition:'all 0.15s' }}>
+                    {p.name}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
           <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Learn & Train with {petName}</div>
@@ -270,6 +277,27 @@ export default function LearnMobilePage() {
 
         {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="learn" token={token} /></div>}
 
+        {/* Main Tab Bar: Learn | Near Me */}
+        <div style={{ display:'flex', margin:'8px 16px 0', background:'#F3F0FF', borderRadius:12, padding:4 }}>
+          {[{id:'learn',label:'📚 Learn'},{id:'nearme',label:'📍 Near Me'}].map(t => (
+            <button key={t.id} onClick={() => { vibe(); setMainTab(t.id); }}
+              data-testid={`learn-tab-${t.id}`}
+              style={{ flex:1, padding:'9px 0', borderRadius:9, fontSize:13, fontWeight:700, border:'none', cursor:'pointer',
+                background: mainTab===t.id ? G.purple : 'transparent',
+                color: mainTab===t.id ? '#fff' : G.darkText, transition:'all 0.15s' }}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Near Me content */}
+        {mainTab === 'nearme' && (
+          <div style={{ padding:'16px 16px 8px' }}>
+            <LearnNearMe pet={currentPet} />
+          </div>
+        )}
+
+        {mainTab === 'learn' && <>
         {/* Mira Bar */}
         <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
           <div style={{ fontSize:14, fontWeight:700, color:`rgba(221,214,254,0.9)`, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S LEARNING</div>
@@ -336,6 +364,7 @@ export default function LearnMobilePage() {
           <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>Personalised training materials for {petName}.</div>
           <button className="learn-cta">Explore Soul Made →</button>
         </div>
+        </>}
       </div>
 
       <ServiceBookingModal

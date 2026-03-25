@@ -263,7 +263,7 @@ const EmergencySituationGuides = ({ onFindClinic, onContactConcierge }) => {
                     </Button>
                     <Button onClick={onContactConcierge} variant="outline">
                       <Phone className="w-4 h-4 mr-2" />
-                      Contact Concierge
+                      Contact Concierge®
                     </Button>
                     {guide.products.length > 0 && (
                       <Button variant="ghost" className="text-gray-600">

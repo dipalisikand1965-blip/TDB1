@@ -5,7 +5,7 @@
  * Shown when Mira has no scored products for a dog's breed yet.
  * Instead of showing nothing or generic products, Mira imagines
  * what this breed needs — based on known breed traits — and routes
- * to Concierge to source them.
+ * to Concierge® to source them.
  *
  * USAGE — drop into any *SoulPage.jsx MiraPicksSection:
  *
@@ -25,7 +25,7 @@
  * PROPS:
  *   pet         — pet object (name, breed, doggy_soul_answers, overall_score)
  *   pillar      — current pillar string ("care","dine","shop","celebrate" etc.)
- *   onConcierge — fn(imagineCard) called when parent taps "Ask Concierge"
+ *   onConcierge — fn(imagineCard) called when parent taps "Ask Concierge®"
  *   colour      — optional pillar accent colour (defaults to Mira purple)
  *
  * HOW IT WORKS:
@@ -33,7 +33,7 @@
  *   2. If breed unknown, falls back to soul answers (energy, coat, allergies)
  *   3. Generates 3 contextual imagine cards per pillar
  *   4. Triggers Cloudinary watercolour generation in background
- *   5. Each card → Concierge ticket when tapped
+ *   5. Each card → Concierge® ticket when tapped
  *   6. Also triggers POST /api/mira/score-for-pet to queue scoring
  *      so next visit has real picks
  *
@@ -124,7 +124,7 @@ function generateImagineCards(petName, breed, traits, pillar) {
         name: `${petName}'s Monthly Wellness Box`,
         desc: `Supplements, grooming essentials and seasonal care — curated for ${breedLabel}s monthly`,
         reason: `A subscription box built around ${petName}'s breed needs. Mira would curate this every month.`,
-        cta: "Ask Concierge →",
+        cta: "Ask Concierge® →",
       },
     ],
     dine: [
@@ -154,7 +154,7 @@ function generateImagineCards(petName, breed, traits, pillar) {
         name: `${petName}'s Treat Collection`,
         desc: `Dog-safe treats curated for ${breedLabel} size, chew strength and any known sensitivities`,
         reason: `The Doggy Bakery can make ${petName}-specific treats. Mira would select the right ones.`,
-        cta: "Ask Concierge →",
+        cta: "Ask Concierge® →",
       },
     ],
     shop: [
@@ -198,7 +198,7 @@ function generateImagineCards(petName, breed, traits, pillar) {
         name: `${petName}'s Birthday Photoshoot`,
         desc: `A professional pet photographer who knows how to capture ${breedLabel}s at their best`,
         reason: `${personality.charAt(0).toUpperCase() + personality.slice(1)} — that personality deserves to be captured forever.`,
-        cta: "Book via Concierge →",
+        cta: "Book via Concierge® →",
       },
       {
         icon: "🎁",
@@ -218,7 +218,7 @@ function generateImagineCards(petName, breed, traits, pillar) {
           ? `High-energy ${breedLabel}s thrive with structured training — 8-week programme for ${petName}`
           : `Positive reinforcement training tailored to ${breedLabel} temperament and learning style`,
         reason: `${breedLabel}s respond best to ${energy === "very-high" ? "structured, mentally stimulating" : "gentle, consistent"} training. Mira would match ${petName} to the right trainer.`,
-        cta: "Book via Concierge →",
+        cta: "Book via Concierge® →",
       },
       {
         icon: "🧠",
@@ -246,7 +246,7 @@ function generateImagineCards(petName, breed, traits, pillar) {
           ? `${breedLabel}s need serious activity — personalised plan: walks, runs and mental exercise`
           : `Gentle fitness plan for ${petName} — walks, play sessions and age-appropriate activity`,
         reason: `${breedLabel}s are ${energy}-energy dogs. Mira would build ${petName}'s plan around that.`,
-        cta: "Book via Concierge →",
+        cta: "Book via Concierge® →",
       },
       {
         icon: "🎾",
@@ -276,7 +276,7 @@ function generateImagineCards(petName, breed, traits, pillar) {
         name: `${petName}'s Memory Portrait`,
         desc: `A watercolour portrait of ${petName} — painted from your favourite photo`,
         reason: `The most personal tribute Mira can imagine. A piece of ${petName} that stays with you.`,
-        cta: "Commission via Concierge →",
+        cta: "Commission via Concierge® →",
       },
       {
         icon: "🌱",
@@ -290,9 +290,9 @@ function generateImagineCards(petName, breed, traits, pillar) {
         icon: "📖",
         bg: "linear-gradient(135deg,#2D1B4E,#1A1A2E)",
         name: `${petName}'s Memory Book`,
-        desc: `A printed photo book of ${petName}'s life — designed and printed by Concierge`,
+        desc: `A printed photo book of ${petName}'s life — designed and printed by Concierge®`,
         reason: `Every moment with ${petName} deserves to be kept. Mira imagines every page.`,
-        cta: "Create via Concierge →",
+        cta: "Create via Concierge® →",
       },
     ],
     go: [
@@ -308,9 +308,9 @@ function generateImagineCards(petName, breed, traits, pillar) {
         icon: "🌍",
         bg: "linear-gradient(135deg,#1A5C8A,#0D9488)",
         name: `Pet-Friendly Stay for ${petName}`,
-        desc: `Concierge finds verified pet-friendly hotels and stays — near parks, with proper amenities`,
+        desc: `Concierge® finds verified pet-friendly hotels and stays — near parks, with proper amenities`,
         reason: `Not all hotels welcome dogs. Mira would shortlist the right ones for a ${breedLabel} like ${petName}.`,
-        cta: "Book via Concierge →",
+        cta: "Book via Concierge® →",
       },
       {
         icon: "✈️",
@@ -318,7 +318,7 @@ function generateImagineCards(petName, breed, traits, pillar) {
         name: `${petName}'s Flight Prep Pack`,
         desc: `Calming supplements, airline-compliant carrier, health certificate template and vet letter guide`,
         reason: `Flying with a ${breedLabel} has specific requirements. Mira imagines a stress-free journey for ${petName}.`,
-        cta: "Ask Concierge →",
+        cta: "Ask Concierge® →",
       },
     ],
     emergency: [
@@ -344,7 +344,7 @@ function generateImagineCards(petName, breed, traits, pillar) {
         name: `${petName}'s Medical Alert Tag`,
         desc: `Engraved tag with ${petName}'s allergies, vet number and owner contact — visible in any emergency`,
         reason: `If ${petName} is ever found alone, this tag could save their life.`,
-        cta: "Order via Concierge →",
+        cta: "Order via Concierge® →",
       },
     ],
     play: [
@@ -362,7 +362,7 @@ function generateImagineCards(petName, breed, traits, pillar) {
         name: `${petName}'s Activity Plan`,
         desc: `Weekly exercise plan for ${breedLabel}s — socialisation, training games, outdoor activities`,
         reason: `${energy === "very-high" || energy === "high" ? "High-energy" : "Moderate-energy"} breeds need structured play. Mira builds the plan.`,
-        cta: "Book via Concierge →",
+        cta: "Book via Concierge® →",
       },
       {
         icon: "🧸",
@@ -380,7 +380,7 @@ function generateImagineCards(petName, breed, traits, pillar) {
         name: `${petName}'s Document Folder`,
         desc: `Printed, laminated and organised: vaccination records, microchip cert, breed registration`,
         reason: `Having all of ${petName}'s documents ready saves time at every vet visit and travel check.`,
-        cta: "Organise via Concierge →",
+        cta: "Organise via Concierge® →",
       },
       {
         icon: "🪪",
@@ -388,7 +388,7 @@ function generateImagineCards(petName, breed, traits, pillar) {
         name: `${petName}'s Pet Passport`,
         desc: `Full EU/India pet travel document pack — health certificate, microchip cert, vet sign-off`,
         reason: `Mira imagines ${petName} ready to travel anywhere in the world.`,
-        cta: "Prepare via Concierge →",
+        cta: "Prepare via Concierge® →",
       },
       {
         icon: "🔖",
@@ -396,7 +396,7 @@ function generateImagineCards(petName, breed, traits, pillar) {
         name: `${breedLabel} Insurance Comparison`,
         desc: `Breed-specific insurance review — Mira finds the best cover for ${petName}'s known health risks`,
         reason: `${breedLabel}s have specific health tendencies. The right insurance matters.`,
-        cta: "Compare via Concierge →",
+        cta: "Compare via Concierge® →",
       },
     ],
     adopt: [
@@ -422,7 +422,7 @@ function generateImagineCards(petName, breed, traits, pillar) {
         name: `First Vet Visit Pack`,
         desc: `Vaccine schedule, deworming plan, microchip referral and puppy health checklist for ${petName}`,
         reason: `Starting ${petName}'s health journey right. Mira prepares everything the vet needs.`,
-        cta: "Book via Concierge →",
+        cta: "Book via Concierge® →",
       },
     ],
   };
@@ -435,15 +435,15 @@ function generateImagineCards(petName, breed, traits, pillar) {
       name: `${breedLabel} Essentials`,
       desc: `Products matched to ${petName}'s breed size, coat type and energy level`,
       reason: `Mira doesn't have scored picks for ${breedLabel}s yet — but she knows what this breed needs.`,
-      cta: "Ask Concierge →",
+      cta: "Ask Concierge® →",
     },
     {
       icon: "🐾",
       bg: `linear-gradient(135deg,#2D1B69,#4A2C8F)`,
       name: `${petName}'s Personalised Kit`,
-      desc: `A curated collection built specifically for ${petName} — sourced by Concierge`,
-      reason: `Concierge will source exactly the right products for ${petName}'s breed and profile.`,
-      cta: "Ask Concierge →",
+      desc: `A curated collection built specifically for ${petName} — sourced by Concierge®`,
+      reason: `Concierge® will source exactly the right products for ${petName}'s breed and profile.`,
+      cta: "Ask Concierge® →",
     },
     {
       icon: "💜",
@@ -574,7 +574,7 @@ function ImagineCard({ card, petName, index, onConcierge, colour, pet, pillar, t
             opacity: sending ? 0.7 : 1,
           }}
         >
-          {sent ? "✓ Sent to Concierge!" : sending ? "Sending…" : card.cta}
+          {sent ? "✓ Sent to Concierge®!" : sending ? "Sending…" : card.cta}
         </button>
       </div>
     </div>

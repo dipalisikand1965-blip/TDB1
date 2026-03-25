@@ -2523,7 +2523,7 @@ const SoulBuilder = () => {
               </div>
               <div className="flex items-center gap-2 text-white/70 text-sm">
                 <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
-                <span>Concierge will already know what matters</span>
+                <span>Concierge® will already know what matters</span>
               </div>
             </div>
           </div>

@@ -8,7 +8,7 @@
  * - Grid layout with pillar sections
  * - Horizontal scroll within each pillar
  * - Pet switcher at top
- * - Catalogue vs Concierge Suggestion distinction
+ * - Catalogue vs Concierge® Suggestion distinction
  * - "Why this pick?" enhanced tooltips
  * - Full haptic feedback
  * - iOS safe area support
@@ -92,7 +92,7 @@ const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
             {isConcierge ? (
               <div className="text-center p-2">
                 <Sparkles className="w-8 h-8 mx-auto text-purple-400 mb-1" />
-                <span className="text-xs text-purple-600">Concierge Pick</span>
+                <span className="text-xs text-purple-600">Concierge® Pick</span>
               </div>
             ) : (
               <ShoppingBag className="w-8 h-8 text-gray-300" />
@@ -180,7 +180,7 @@ const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
           {pick.name}
         </h4>
         
-        {/* Concierge items show "Handpicked for [Pet]" */}
+        {/* Concierge® items show "Handpicked for [Pet]" */}
         {isConcierge ? (
           <>
             <p className="text-xs text-purple-600 font-medium">Handpicked for {petName}</p>

@@ -1,7 +1,7 @@
 /**
- * ConciergePanel - Quick Access Concierge Help
+ * ConciergePanel - Quick Access Concierge® Help
  * =============================================
- * Shows quick contact options for the Concierge team
+ * Shows quick contact options for the Concierge® team
  * 
  * LEARN Integration:
  * - When opened via "Ask Mira" from LEARN, displays pre-filled context
@@ -116,7 +116,7 @@ const ConciergePanel = ({
       <div className="mp-concierge-panel-header">
         <span>
           <span className="panel-c">C</span>
-          <span className="panel-degree">°</span> Concierge Help
+          <span className="panel-degree">°</span> Concierge® Help
         </span>
         <button onClick={onClose} data-testid="concierge-close">
           <X size={16} />

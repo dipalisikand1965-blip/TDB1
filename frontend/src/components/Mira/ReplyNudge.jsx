@@ -105,7 +105,7 @@ const ReplyNudge = ({
               Looks like you're adding details to your request.
             </p>
             <p className="text-amber-100 text-xs mt-1">
-              Reply in Services so Concierge sees it in the thread.
+              Reply in Services so Concierge® sees it in the thread.
             </p>
             
             {/* Action buttons */}

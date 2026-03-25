@@ -499,7 +499,7 @@ export default function LandingPage() {
           <Counter target={45000} label="Pet Families" suffix="+"/>
           <Counter target={12} label="Life Pillars"/>
           <Counter target={5358} label="Curated Products"/>
-          <Counter target={1000} label="Concierge Team" suffix="+"/>
+          <Counter target={1000} label="Concierge® Team" suffix="+"/>
         </div>
       </section>
 

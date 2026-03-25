@@ -423,7 +423,7 @@ const MiraMessageHeader = ({
           C° CONCIERGE INDICATOR - Status indicator per Bible Section 2
           - OFF: Dim/muted (no activity)
           - ON: Lit (threads exist)
-          - PULSE: Animated green glow (unread replies - Concierge responded!)
+          - PULSE: Animated green glow (unread replies - Concierge® responded!)
           - GLOW: Animated golden glow (Mira has actionable suggestion - CTA!)
           - Click: Navigate to CONCIERGE tab or open Quick Send modal if glowing
       ═══════════════════════════════════════════════════════════════════════ */}
@@ -512,7 +512,7 @@ const ProductsGrid = ({ msg, pet, hapticFeedback, onShowPicks }) => {
 };
 
 /**
- * NearbyPlaces - Displays nearby pet-friendly places with Concierge option
+ * NearbyPlaces - Displays nearby pet-friendly places with Concierge® option
  * Uses the new PlacesWithConcierge component for better UX
  */
 const NearbyPlaces = ({ msg, pet, onSendToConcierge }) => {
@@ -1017,7 +1017,7 @@ const ExperienceCards = ({ msg, pet, onOpenServiceRequest }) => {
 };
 
 /**
- * DynamicConciergeRequest - REMOVED: Concierge access now only via top bar
+ * DynamicConciergeRequest - REMOVED: Concierge® access now only via top bar
  * Users tap the C° icon in header or the CONCIERGE® tab in navigation
  */
 const DynamicConciergeRequest = ({ msg, pet }) => {
@@ -1105,7 +1105,7 @@ const MiraMessageBody = ({
         </div>
       )}
       
-      {/* REMOVED: InlineConciergeCard - Users tap C° icon in header to reach Concierge */}
+      {/* REMOVED: InlineConciergeCard - Users tap C° icon in header to reach Concierge® */}
       
       {/* REMOVED: ProductsGrid - Picks now only in top bar PICKS panel */}
       
@@ -1146,7 +1146,7 @@ const MiraMessageBody = ({
       {/* Experience Cards */}
       <ExperienceCards msg={msg} pet={pet} onOpenServiceRequest={onOpenServiceRequest} />
       
-      {/* Dynamic Concierge Request */}
+      {/* Dynamic Concierge® Request */}
       <DynamicConciergeRequest msg={msg} pet={pet} />
       
       {/* ═══════════════════════════════════════════════════════════════════════════

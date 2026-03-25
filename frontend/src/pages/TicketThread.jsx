@@ -96,7 +96,7 @@ const MessageBubble = ({ message, isUser, showTimestamp, isHighlighted = false, 
         {!isUser && (
           <div className="flex items-center gap-1.5 mb-1">
             <Sparkles className={`w-3.5 h-3.5 ${lightMode ? 'text-[#C96D9E]' : 'text-amber-400'}`} />
-            <span className={`text-xs font-medium ${lightMode ? 'text-[#C96D9E]' : 'text-amber-400'}`}>Concierge</span>
+            <span className={`text-xs font-medium ${lightMode ? 'text-[#C96D9E]' : 'text-amber-400'}`}>Concierge®</span>
           </div>
         )}
         <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content || message.text || message.message}</p>

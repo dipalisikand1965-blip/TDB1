@@ -2,7 +2,7 @@
  * CelebrateConcierge.jsx
  * 
  * CTA card for the Celebrate Concierge® section.
- * Copy per Celebrate_Concierge_MASTER.docx (all copy is final).
+ * Copy per Celebrate_Concierge®_MASTER.docx (all copy is final).
  * CTA button opens ConciergeIntakeModal with no pre-selected service.
  * 
  * Background: solid #0E0620 (dark). NOT a gradient.
@@ -52,7 +52,7 @@ const CelebrateConcierge = ({ pet, onAddToCart }) => {
           }}>
             <span style={{ fontSize: 11, color: '#C9973A' }}>★</span>
             <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(201,151,58,0.90)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-              Mojo's Concierge
+              Mojo's Concierge®
             </span>
           </div>
 

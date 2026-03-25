@@ -163,7 +163,7 @@ const CelebratePage = () => {
   // Pillar Mira Panel state
   const [isPillarPanelOpen, setIsPillarPanelOpen] = useState(false);
   
-  // Dynamic picks for the Concierge Card preview
+  // Dynamic picks for the Concierge® Card preview
   const [dynamicPicks, setDynamicPicks] = useState([]);
   
   // Shape definitions for auto-detection - covers all celebrate products
@@ -311,7 +311,7 @@ const CelebratePage = () => {
     fetchCMSConfig(); // Load CMS config
   }, []);
   
-  // Fetch dynamic picks for the Concierge Card preview
+  // Fetch dynamic picks for the Concierge® Card preview
   useEffect(() => {
     const fetchDynamicPicks = async () => {
       if (!activePet?.name || !token) return;
@@ -498,7 +498,7 @@ const CelebratePage = () => {
     fetchSoulData();
   }, [token, activePet?.id]);
   
-  // Concierge request form state
+  // Concierge® request form state
   const [conciergeForm, setConciergeForm] = useState({
     name: '',
     phone: '',
@@ -597,7 +597,7 @@ const CelebratePage = () => {
         toast.error('Failed to submit request', { description: data.detail || 'Please try again' });
       }
     } catch (error) {
-      console.error('Concierge request error:', error);
+      console.error('Concierge® request error:', error);
       toast.error('Network error', { description: 'Please check your connection and try again' });
     } finally {
       setConciergeSubmitting(false);
@@ -1058,7 +1058,7 @@ const CelebratePage = () => {
           </p>
         </div>
 
-        {/* Elevated Concierge Experiences - Bento Grid with Featured First Card */}
+        {/* Elevated Concierge® Experiences - Bento Grid with Featured First Card */}
         <div className="bento-grid">
           {/* Featured Card - Full Width on Mobile */}
           <div className="bento-featured haptic-card section-fade-in stagger-1" data-testid="experience-birthday-bash">
@@ -1451,7 +1451,7 @@ const CelebratePage = () => {
         onAddToCart={handleAddToCart}
       />
       
-      {/* Ask Concierge Modal - Celebration Request Form */}
+      {/* Ask Concierge® Modal - Celebration Request Form */}
       {showConciergeModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowConciergeModal(false)}>
           <Card className="w-full max-w-lg bg-white rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>

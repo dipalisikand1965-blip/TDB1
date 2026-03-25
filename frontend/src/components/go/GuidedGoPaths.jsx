@@ -145,7 +145,7 @@ function buildPaths(pet) {
       photoBg: `linear-gradient(135deg,${G.pale},${G.light})`,
       desc: `Quick weekend trip with ${petName} — destination, stay, packing list, and Mira handles the details.`,
       miraNote: `A weekend getaway should be simple. Tell me where and when — Mira does the rest.`,
-      stepLabels: ["Destination & dates", "Pet-friendly stay discovery", "Packing list for "+petName, "Concierge confirmation"],
+      stepLabels: ["Destination & dates", "Pet-friendly stay discovery", "Packing list for "+petName, "Concierge® confirmation"],
       steps: {
         step1: { q:"Where are you going?", type:"single", opts:["Nearby hills","Beach destination","Another city","Countryside / farm stay"] },
         step2: { q:"Where will "+petName+" stay?", type:"single", opts:["Pet-friendly hotel","Boarding near destination","Sitter at home (I'll travel without them)","Not sure — help me decide"] },
@@ -270,9 +270,9 @@ function PathFlowModal({ path, pet, onClose }) {
     <ModalShell path={path} onClose={onClose}>
       <div style={{ padding:"40px 32px", textAlign:"center", flex:1 }}>
         <div style={{ width:72, height:72, borderRadius:"50%", background:`linear-gradient(135deg,${path.accentColor},${G.teal})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:32, margin:"0 auto 20px" }}>{path.icon}</div>
-        <div style={{ fontSize:22, fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:8 }}>{path.title.replace(" Path","")} sent to your Concierge.</div>
+        <div style={{ fontSize:22, fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:8 }}>{path.title.replace(" Path","")} sent to your Concierge®.</div>
         <div style={{ fontSize:14, color:G.mutedText, lineHeight:1.7, marginBottom:24 }}>
-          Everything is in good hands.<br/>Your Concierge will reach out within 48 hours.<br/>
+          Everything is in good hands.<br/>Your Concierge® will reach out within 48 hours.<br/>
           {path.id === "emergency_travel" && <><br/><span style={{ color:"#C62828", fontWeight:700 }}>We will call you within 5 minutes.</span></>}
         </div>
         <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:G.pale, border:`1px solid ${G.teal}40`, borderRadius:20, padding:"6px 16px", fontSize:13, color:G.teal, fontWeight:600, marginBottom:20 }}>📥 Added to your Inbox</div>
@@ -319,7 +319,7 @@ function PathFlowModal({ path, pet, onClose }) {
             ) : null}
           </>
         ) : (
-          <div style={{ textAlign:"center", padding:"20px 0", color:G.mutedText, fontSize:14 }}>Ready to send to your Concierge.</div>
+          <div style={{ textAlign:"center", padding:"20px 0", color:G.mutedText, fontSize:14 }}>Ready to send to your Concierge®.</div>
         )}
       </div>
 

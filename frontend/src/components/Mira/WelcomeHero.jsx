@@ -280,7 +280,7 @@ const WelcomeHero = ({
                 handleQuickReply(message);
               }}
               onBookNow={(request, alert) => {
-                // "Book Now" - Send as service request to Concierge
+                // "Book Now" - Send as service request to Concierge®
                 const conciergeMessage = `Please help me book: ${request.title}. Details: ${request.details}`;
                 handleQuickReply(conciergeMessage);
               }}

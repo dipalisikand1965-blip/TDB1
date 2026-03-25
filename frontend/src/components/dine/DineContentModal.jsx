@@ -112,7 +112,7 @@ const MiraImaginesCard = ({ item, pet, apiUrl, token }) => {
       <div style={{ padding: '0 12px 14px' }}>
         {state === 'sent' ? (
           <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#32C878' }}>
-            <Check size={12} style={{ display: 'inline', marginRight: 4 }} /> Sent to Concierge!
+            <Check size={12} style={{ display: 'inline', marginRight: 4 }} /> Sent to Concierge®!
           </div>
         ) : (
           <button
@@ -134,7 +134,7 @@ function resolveEntityImage(entity) {
   return candidates.find(url => url && url.startsWith('http')) || null;
 }
 
-// ── ServiceCard — real service from services_master with Send to Concierge ────
+// ── ServiceCard — real service from services_master with Send to Concierge® ────
 const ServiceCard = ({ service, pet, apiUrl, token }) => {
   const [state, setState] = useState('idle'); // idle | sending | sent
   const petName = pet?.name || 'your dog';
@@ -166,7 +166,7 @@ const ServiceCard = ({ service, pet, apiUrl, token }) => {
           },
         }),
       });
-      toast.success('Sent to Concierge!', { description: `We'll reach out about "${service.name || service.entity_name}" within 48 hours.` });
+      toast.success('Sent to Concierge®!', { description: `We'll reach out about "${service.name || service.entity_name}" within 48 hours.` });
       setState('sent');
     } catch (err) {
       console.error('[ServiceCard] concierge error:', err);
@@ -209,7 +209,7 @@ const ServiceCard = ({ service, pet, apiUrl, token }) => {
       <div style={{ padding: '0 12px 12px' }}>
         {state === 'sent' ? (
           <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#34D399' }}>
-            <Check size={12} style={{ display: 'inline', marginRight: 4 }} /> Sent to Concierge!
+            <Check size={12} style={{ display: 'inline', marginRight: 4 }} /> Sent to Concierge®!
           </div>
         ) : (
           <button
@@ -219,7 +219,7 @@ const ServiceCard = ({ service, pet, apiUrl, token }) => {
             style={{ width: '100%', background: 'linear-gradient(135deg, #6366F1, #4F46E5)', color: '#fff', border: 'none', borderRadius: 10, padding: '9px', fontSize: 11, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, opacity: state === 'sending' ? 0.7 : 1 }}
           >
             <Send size={11} />
-            {state === 'sending' ? 'Sending…' : 'Send to Concierge →'}
+            {state === 'sending' ? 'Sending…' : 'Send to Concierge® →'}
           </button>
         )}
       </div>

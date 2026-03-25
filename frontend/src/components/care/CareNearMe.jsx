@@ -243,13 +243,13 @@ export default function CareNearMe({ currentPet, setConciergeToast }) {
                 flexShrink: 0, marginLeft: 12,
               }}
             >
-              Book via Concierge →
+              Book via Concierge® →
             </button>
           </div>
         </div>
       ))}
 
-      {/* Concierge Modal */}
+      {/* Concierge® Modal */}
       {selectedPlace && (
         <NearMeConciergeModal
           place={selectedPlace}

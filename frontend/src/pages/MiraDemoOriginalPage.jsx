@@ -8,7 +8,7 @@
  * - Universal search that routes to Mira
  * - Intent understanding display
  * - Instant execution for simple queries
- * - Concierge handoff for complex queries
+ * - Concierge® handoff for complex queries
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -22,7 +22,7 @@ import { API_URL } from '../utils/api';
 
 // Thin Dock Items
 const DOCK_ITEMS = [
-  { id: 'concierge', label: 'Concierge', icon: MessageCircle, color: 'from-purple-500 to-pink-500' },
+  { id: 'concierge', label: 'Concierge®', icon: MessageCircle, color: 'from-purple-500 to-pink-500' },
   { id: 'orders', label: 'Orders', icon: Package, color: 'from-blue-500 to-cyan-500' },
   { id: 'plan', label: 'Plan', icon: Calendar, color: 'from-amber-500 to-orange-500' },
   { id: 'help', label: 'Help', icon: AlertCircle, color: 'from-red-500 to-rose-500' },
@@ -376,7 +376,7 @@ const MiraDemoOriginalPage = () => {
                         </div>
                         <div>
                           <p className="text-white font-medium">Mira</p>
-                          <p className="text-white/50 text-xs">Pet Concierge AI</p>
+                          <p className="text-white/50 text-xs">Pet Concierge® AI</p>
                         </div>
                         
                         {/* Intent & Execution Badges */}
@@ -390,7 +390,7 @@ const MiraDemoOriginalPage = () => {
                             <span className={`px-2 py-1 rounded-full text-xs font-medium border ${
                               getExecutionColor(msg.data.execution_type)
                             }`}>
-                              {msg.data.execution_type === 'INSTANT' ? '⚡ Instant' : '👤 Concierge'}
+                              {msg.data.execution_type === 'INSTANT' ? '⚡ Instant' : '👤 Concierge®'}
                             </span>
                           </div>
                         )}
@@ -431,16 +431,16 @@ const MiraDemoOriginalPage = () => {
                         </div>
                       )}
                       
-                      {/* Concierge Handoff */}
+                      {/* Concierge® Handoff */}
                       {msg.data?.execution_type === 'CONCIERGE' && msg.data?.response?.concierge_reason && (
                         <div className="bg-amber-500/20 border border-amber-400/30 rounded-xl px-4 py-3">
                           <p className="text-amber-200 text-sm">
                             <MessageCircle className="w-4 h-4 inline mr-2" />
-                            <strong>Connecting to Concierge:</strong> {msg.data.response.concierge_reason}
+                            <strong>Connecting to Concierge®:</strong> {msg.data.response.concierge_reason}
                           </p>
                           <button className="mt-3 px-4 py-2 bg-amber-500 text-white rounded-lg text-sm font-medium
                             hover:bg-amber-600 transition-all">
-                            Chat with Concierge
+                            Chat with Concierge®
                           </button>
                         </div>
                       )}

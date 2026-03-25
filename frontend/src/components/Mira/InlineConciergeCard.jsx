@@ -1,5 +1,5 @@
 /**
- * InlineConciergeCard - Concierge Help Card that appears in conversation
+ * InlineConciergeCard - Concierge® Help Card that appears in conversation
  * ======================================================================
  * When user or Mira mentions connecting to concierge, this card appears
  * inline in the chat with WhatsApp, Chat, and Email options.

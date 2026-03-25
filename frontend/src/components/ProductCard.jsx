@@ -553,11 +553,11 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
 
           {isConciergeOnly ? (
             <p className="text-sm font-semibold text-teal-700" style={{ letterSpacing: '-0.01em' }}>
-              Pricing shared by Concierge
+              Pricing shared by Concierge®
             </p>
           ) : isServiceProduct ? (
             <p className="text-sm font-semibold text-orange-600" style={{ letterSpacing: '-0.01em' }}>
-              Price on Request · Concierge
+              Price on Request · Concierge®
             </p>
           ) : minPrice > 0 ? (
             <p className="text-sm sm:text-base font-bold text-gray-900">
@@ -569,13 +569,13 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
             </p>
           )}
           
-          {/* CTA — opens modal; modal handles Concierge for services */}
+          {/* CTA — opens modal; modal handles Concierge® for services */}
           <button
             onClick={(e) => { e.stopPropagation(); openDetails(); }}
             className={`w-full mt-2 py-2 text-xs font-semibold rounded-lg transition-colors ${isServiceProduct || isConciergeOnly ? 'bg-orange-100 hover:bg-orange-200 text-orange-700' : 'bg-purple-100 hover:bg-purple-200 text-purple-700'}`}
             data-testid={`view-product-${product.id}`}
           >
-            {isServiceProduct || isConciergeOnly ? 'Talk to Concierge →' : 'View Details'}
+            {isServiceProduct || isConciergeOnly ? 'Talk to Concierge® →' : 'View Details'}
           </button>
         </div>
       </div>
@@ -650,7 +650,7 @@ const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', select
           <div className="p-6 flex flex-col">
             <div className="inline-flex items-center gap-2 self-start rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 mb-4">
               <MessageSquare className="w-3.5 h-3.5" />
-              Concierge-first paperwork pick
+              Concierge®-first paperwork pick
             </div>
 
             <h2 className="text-2xl font-bold text-slate-900 mb-2 pr-8">
@@ -658,7 +658,7 @@ const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', select
                 ? (product.name||"").split(" · ").slice(1).join(" · ")
                 : (product.name||"")}
             </h2>
-            <p className="text-sm text-slate-500 mb-4">Curated for {petName}. Pricing is shared by Concierge after review.</p>
+            <p className="text-sm text-slate-500 mb-4">Curated for {petName}. Pricing is shared by Concierge® after review.</p>
 
             {product.mira_hint && (
               <div className="rounded-xl border border-teal-100 bg-teal-50 p-4 mb-4">
@@ -676,7 +676,7 @@ const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', select
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 mb-6">
               <p className="text-xs uppercase tracking-[0.14em] text-slate-500 font-semibold mb-2">What happens next</p>
               <ul className="space-y-2 text-sm text-slate-700">
-                <li>• Concierge receives the request with {petName}'s pet context.</li>
+                <li>• Concierge® receives the request with {petName}'s pet context.</li>
                 <li>• Pricing and fit are shared after document needs are reviewed.</li>
                 <li>• The request appears in Admin Service Desk for follow-up.</li>
               </ul>
@@ -684,12 +684,12 @@ const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', select
 
             <div className="mt-auto flex items-center justify-between gap-4 border-t pt-4">
               <div>
-                <p className="text-xs text-slate-500">Concierge handling</p>
+                <p className="text-xs text-slate-500">Concierge® handling</p>
                 <p className="text-base font-semibold text-teal-700">Pricing shared on WhatsApp</p>
               </div>
               {sent ? (
                 <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm font-semibold" data-testid="paperwork-product-modal-sent-state">
-                  <Check className="w-4 h-4" /> Sent to Concierge!
+                  <Check className="w-4 h-4" /> Sent to Concierge®!
                 </div>
               ) : (
                 <Button
@@ -701,7 +701,7 @@ const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', select
                   {sending ? (
                     <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...</>
                   ) : (
-                    <><MessageSquare className="w-4 h-4 mr-2" /> Talk to Concierge</>
+                    <><MessageSquare className="w-4 h-4 mr-2" /> Talk to Concierge®</>
                   )}
                 </Button>
               )}
@@ -823,7 +823,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
       setServiceSending(false);
       setServiceSent(true);
       toast({
-        title: 'Sent to Concierge!',
+        title: 'Sent to Concierge®!',
         description: (
           <span>
             {product.name} request received.{' '}
@@ -1754,7 +1754,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
               <div>
                 <p className="text-xs text-gray-500">{isService ? 'Service' : 'Total Price'}</p>
                 {isService ? (
-                  <p className="text-base font-semibold text-purple-600">Concierge Request</p>
+                  <p className="text-base font-semibold text-purple-600">Concierge® Request</p>
                 ) : (
                   <p className="text-2xl font-bold text-gray-900">₹{currentPrice}</p>
                 )}
@@ -1762,7 +1762,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
               {isService ? (
                 serviceSent ? (
                   <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm font-semibold">
-                    <Check className="w-4 h-4" /> Sent to Concierge!
+                    <Check className="w-4 h-4" /> Sent to Concierge®!
                   </div>
                 ) : (
                   <Button

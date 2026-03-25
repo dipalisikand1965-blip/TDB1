@@ -111,8 +111,8 @@ function buildPaths(pet) {
       step4: {
         title: `${name}'s Grooming Plan`,
         summaryFields: ["Grooming mode", "Frequency", "Home care products", "Next step"],
-        cta: "✂️ Hand to Concierge",
-        conciergeNote: "Your Concierge will find the right groomer for your area, confirm availability, and book the first appointment.",
+        cta: "✂️ Hand to Concierge®",
+        conciergeNote: "Your Concierge® will find the right groomer for your area, confirm availability, and book the first appointment.",
       },
     },
 
@@ -157,9 +157,9 @@ function buildPaths(pet) {
         title: "Professional dental care",
         desc: `Most dogs need a professional dental cleaning annually. Mira will coordinate this for ${name}.`,
         type: "select_one",
-        miraPick: "Annual professional cleaning — Concierge arranges",
+        miraPick: "Annual professional cleaning — Concierge® arranges",
         options: [
-          { icon:"🏥", name:"Annual professional cleaning", desc:"Concierge finds and books a trusted vet", mira:true },
+          { icon:"🏥", name:"Annual professional cleaning", desc:"Concierge® finds and books a trusted vet", mira:true },
           { icon:"🔍", name:"Dental assessment first", desc:"Vet check to understand the current state", mira: dental === "Needs attention" || dental === "Not sure — never checked" },
           { icon:"🏠", name:"At-home assessment kit", desc:"Dental health check guide from Mira", mira:false },
           { icon:"📋", name:"Vet referral for dental issues", desc:"Specialist coordination for complex problems", mira: dental === "Has dental issues — vet involvement needed" },
@@ -169,8 +169,8 @@ function buildPaths(pet) {
       step4: {
         title: `${name}'s Dental Health Plan`,
         summaryFields: ["Current dental state", "Daily routine", "Professional care", "Next step"],
-        cta: "🦷 Hand to Concierge",
-        conciergeNote: "Your Concierge will source the right dental products and coordinate the professional cleaning appointment.",
+        cta: "🦷 Hand to Concierge®",
+        conciergeNote: "Your Concierge® will source the right dental products and coordinate the professional cleaning appointment.",
       },
     },
 
@@ -233,8 +233,8 @@ function buildPaths(pet) {
       step4: {
         title: `${name}'s Senior Care Plan`,
         summaryFields: ["Senior priorities", "Comfort setup", "Supplement protocol", "Next step"],
-        cta: "🌸 Hand to Concierge",
-        conciergeNote: "Your Concierge will source senior care products, coordinate with your vet, and set up a regular wellbeing check.",
+        cta: "🌸 Hand to Concierge®",
+        conciergeNote: "Your Concierge® will source senior care products, coordinate with your vet, and set up a regular wellbeing check.",
       },
     },
 
@@ -298,8 +298,8 @@ function buildPaths(pet) {
       step4: {
         title: `${name}'s Recovery Plan`,
         summaryFields: ["Surgery type", "Recovery setup", "Nutrition & supplements", "Next step"],
-        cta: "💜 Hand to Concierge",
-        conciergeNote: "Your Concierge will coordinate with your vet for the recovery protocol, source supplies, and schedule follow-up check-ins.",
+        cta: "💜 Hand to Concierge®",
+        conciergeNote: "Your Concierge® will coordinate with your vet for the recovery protocol, source supplies, and schedule follow-up check-ins.",
       },
     },
 
@@ -363,8 +363,8 @@ function buildPaths(pet) {
       step4: {
         title: `${name}'s Calm Plan`,
         summaryFields: ["Known triggers", "Calming approach", "Products & tools", "Next step"],
-        cta: "🧡 Hand to Concierge",
-        conciergeNote: "Your Concierge will source calming products and, if needed, connect you with a certified animal behaviourist.",
+        cta: "🧡 Hand to Concierge®",
+        conciergeNote: "Your Concierge® will source calming products and, if needed, connect you with a certified animal behaviourist.",
       },
     },
 
@@ -427,8 +427,8 @@ function buildPaths(pet) {
       step4: {
         title: `${name}'s Wellness Calendar`,
         summaryFields: ["Vaccination status", "Annual checks", "Monthly routine", "Next step"],
-        cta: "🌿 Hand to Concierge",
-        conciergeNote: "Your Concierge will set up reminders, book the first vet visit, and coordinate ongoing preventive care.",
+        cta: "🌿 Hand to Concierge®",
+        conciergeNote: "Your Concierge® will set up reminders, book the first vet visit, and coordinate ongoing preventive care.",
       },
     },
   ];
@@ -546,8 +546,8 @@ function PathFlowModal({ path, pet, onClose }) {
       <ModalShell onClose={onClose} noPadding>
         <div style={{ background:`linear-gradient(135deg,#0A1F12,#152A1E)`, borderRadius:20, padding:"48px 40px", textAlign:"center", minHeight:320, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
           <div style={{ width:64, height:64, borderRadius:"50%", background:`linear-gradient(135deg,${path.accentColor},#74C69D)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, marginBottom:20 }}>♥</div>
-          <div style={{ fontSize:22, fontWeight:800, color:"#FFFFFF", fontFamily:"Georgia,serif", marginBottom:10 }}>{path.title.replace(" Path","")} sent to your Concierge.</div>
-          <div style={{ fontSize:14, color:"rgba(255,255,255,0.55)", marginBottom:28, lineHeight:1.6 }}>Everything is in good hands.<br/>Your Concierge will reach out within 48 hours. ♥</div>
+          <div style={{ fontSize:22, fontWeight:800, color:"#FFFFFF", fontFamily:"Georgia,serif", marginBottom:10 }}>{path.title.replace(" Path","")} sent to your Concierge®.</div>
+          <div style={{ fontSize:14, color:"rgba(255,255,255,0.55)", marginBottom:28, lineHeight:1.6 }}>Everything is in good hands.<br/>Your Concierge® will reach out within 48 hours. ♥</div>
           <button onClick={onClose} style={{ background:"rgba(255,255,255,0.12)", border:"1px solid rgba(255,255,255,0.20)", color:"#fff", borderRadius:20, padding:"10px 24px", fontSize:13, fontWeight:600, cursor:"pointer" }}>Start again</button>
         </div>
       </ModalShell>
@@ -560,7 +560,7 @@ function PathFlowModal({ path, pet, onClose }) {
       [path.step4.summaryFields[0]]: selections.step1.join(", ") || "Not specified",
       [path.step4.summaryFields[1]]: selections.step2 || "Not selected",
       [path.step4.summaryFields[2]]: selections.step3.join(", ") || "Not selected",
-      [path.step4.summaryFields[3]]: "Concierge will contact within 48h",
+      [path.step4.summaryFields[3]]: "Concierge® will contact within 48h",
     };
     return (
       <ModalShell onClose={onClose}>

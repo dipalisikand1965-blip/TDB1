@@ -2132,7 +2132,7 @@ const BookingModal = ({ booking, onClose, onUpdateStatus, getBookingStatusColor 
           )}
 
           <div>
-            <Label>Concierge Notes</Label>
+            <Label>Concierge® Notes</Label>
             <Textarea 
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

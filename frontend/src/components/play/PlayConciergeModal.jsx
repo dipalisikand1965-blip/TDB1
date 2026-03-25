@@ -58,8 +58,8 @@ export default function PlayConciergeModal({ pet, service, token, onClose }) {
         {sent ? (
           <div style={{ padding:"48px 36px", textAlign:"center" }}>
             <div style={{ width:72, height:72, borderRadius:"50%", background:`linear-gradient(135deg,${G.orange},${G.light})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:32, margin:"0 auto 20px" }}>🌳</div>
-            <div style={{ fontSize:22, fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:8 }}>Sent to {petName}'s Play Concierge.</div>
-            <div style={{ fontSize:14, color:G.mutedText, lineHeight:1.7, marginBottom:28 }}>Everything is in good hands.<br/>Your Concierge will reach out within 48 hours. ♥</div>
+            <div style={{ fontSize:22, fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:8 }}>Sent to {petName}'s Play Concierge®.</div>
+            <div style={{ fontSize:14, color:G.mutedText, lineHeight:1.7, marginBottom:28 }}>Everything is in good hands.<br/>Your Concierge® will reach out within 48 hours. ♥</div>
             <button onClick={onClose} style={{ background:"#F5F5F5", border:"none", borderRadius:20, padding:"10px 28px", fontSize:13, fontWeight:600, color:"#555", cursor:"pointer" }}>Close</button>
           </div>
         ) : (
@@ -68,12 +68,12 @@ export default function PlayConciergeModal({ pet, service, token, onClose }) {
               <button onClick={onClose} style={{ background:"none", border:"none", fontSize:20, color:"#BBB", cursor:"pointer" }}>✕</button>
             </div>
             <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:G.pale, border:`1px solid rgba(231,111,81,0.30)`, borderRadius:20, padding:"4px 12px", color:G.mid, fontSize:12, fontWeight:600, marginBottom:16 }}>
-              🌳 {petName}'s Play Concierge
+              🌳 {petName}'s Play Concierge®
             </div>
             <div style={{ fontSize:22, fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif", lineHeight:1.2, marginBottom:6 }}>
               What does <span style={{ color:G.orange }}>{petName}</span> want to do?
             </div>
-            <div style={{ fontSize:14, color:G.mutedText, marginBottom:26 }}>Three questions. Then your Concierge takes over.</div>
+            <div style={{ fontSize:14, color:G.mutedText, marginBottom:26 }}>Three questions. Then your Concierge® takes over.</div>
 
             <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:12 }}>What are we planning?</div>
             <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:24 }}>
@@ -124,10 +124,10 @@ export default function PlayConciergeModal({ pet, service, token, onClose }) {
                 opacity: sending ? 0.7 : 1,
                 transition: "all 0.2s",
               }}>
-              {sending ? "Sending…" : canSend ? "Send to my Play Concierge →" : "Select an activity above to continue →"}
+              {sending ? "Sending…" : canSend ? "Send to my Play Concierge® →" : "Select an activity above to continue →"}
             </button>
             <div style={{ fontSize:12, color:"#888", textAlign:"center" }}>
-              We already have your contact details. Your Concierge will reach out — you don't need to chase.
+              We already have your contact details. Your Concierge® will reach out — you don't need to chase.
             </div>
           </div>
         )}

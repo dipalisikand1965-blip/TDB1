@@ -43,11 +43,11 @@ const B = {
 // ── Vendor types — BAKERY is handled separately ────────────────
 const VENDOR_TYPES = [
   { id:"all",          label:"All Vendors",        icon:"🎉", term:"pet friendly services" },
-  { id:"photographer", label:"Pet Photographers",  icon:"📸", term:"pet photographer dog photography",     note:"Many photographers work through Instagram — Concierge can find them too." },
+  { id:"photographer", label:"Pet Photographers",  icon:"📸", term:"pet photographer dog photography",     note:"Many photographers work through Instagram — Concierge® can find them too." },
   { id:"venue",        label:"Dog-Friendly Venues", icon:"🏡", term:"dog friendly venue restaurant cafe" },
   { id:"bakery",       label:"The Doggy Bakery",   icon:"🎂", term:null, isTDB:true },  // ← handled separately
   { id:"groomer",      label:"Birthday Groomers",  icon:"✨", term:"dog grooming salon birthday pamper" },
-  { id:"planner",      label:"Party Planners",     icon:"🎊", term:"dog party planner pet event",          note:"Most party planners operate via Instagram. Concierge handles this best." },
+  { id:"planner",      label:"Party Planners",     icon:"🎊", term:"dog party planner pet event",          note:"Most party planners operate via Instagram. Concierge® handles this best." },
   { id:"boutique",     label:"Pet Boutiques",      icon:"🛍️", term:"pet boutique dog accessories costume" },
   { id:"park",         label:"Dog Parks",          icon:"🌳", term:"dog park dog beach pet friendly park" },
 ];
@@ -118,7 +118,7 @@ function VendorCard({ vendor, pet, onBook, onOpenModal }) {
           {vendor.phone&&<a href={`tel:${vendor.phone}`} style={{fontSize:11,color:G.mid,fontWeight:600,textDecoration:"none",background:G.pale,borderRadius:20,padding:"5px 12px"}}>📞 Call</a>}
           <button onClick={()=>{ tdc.nearme({ query: vendor.name||"venue", pillar:"celebrate", pet }); onOpenModal?.(vendor); }}
             style={{flex:1,background:`linear-gradient(135deg,${G.purple},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 14px",fontSize:11,fontWeight:700,cursor:"pointer"}}>
-            Book via Concierge →
+            Book via Concierge® →
           </button>
         </div>
       </div>
@@ -137,7 +137,7 @@ function MiraTopPick({ vendor, pet, onOpenModal }) {
       </div>
       <button onClick={()=>{ tdc.nearme({ query: vendor.name||"venue", pillar:"celebrate", pet }); onOpenModal?.(vendor); }}
         style={{background:G.light,color:G.deep,border:"none",borderRadius:20,padding:"10px 20px",fontSize:12,fontWeight:700,cursor:"pointer",flexShrink:0,whiteSpace:"nowrap"}}>
-        Book via Concierge →
+        Book via Concierge® →
       </button>
     </div>
   );
@@ -448,7 +448,7 @@ export default function CelebrateNearMe({ pet, onBook }) {
               </div>
               <button onClick={()=>{ tdc.nearme({ query: displayCity||"your area", pillar:"celebrate", pet }); bookViaConcierge({ service: `Celebration venue in ${displayCity||"your area"}`, pillar:"celebrate", pet, channel:"celebrate_nearme_city" }); }}
                 style={{width:"100%",marginTop:16,padding:"12px",borderRadius:10,background:G.pale,border:`1px solid rgba(155,89,182,0.25)`,color:G.purple,fontSize:13,fontWeight:600,cursor:"pointer"}}>
-                Ask Concierge for more options →
+                Ask Concierge® for more options →
               </button>
             </>
           )}
@@ -459,12 +459,12 @@ export default function CelebrateNearMe({ pet, onBook }) {
               No {activeTypeObj.label.toLowerCase()} found in {displayCity||activeQuery}.<br/>
               <div style={{fontSize:12,color:G.mutedText,margin:"8px 0 14px",lineHeight:1.5}}>
                 {activeTypeObj.id==="planner"||activeTypeObj.id==="photographer"
-                  ?"Many work through Instagram rather than Google — Concierge can find them."
-                  :"Concierge can source options in any city."}
+                  ?"Many work through Instagram rather than Google — Concierge® can find them."
+                  :"Concierge® can source options in any city."}
               </div>
               <button onClick={()=>{ tdc.nearme({ query: displayCity||activeQuery, pillar:"celebrate", pet }); bookViaConcierge({ service: `Celebration venue in ${displayCity||activeQuery}`, pillar:"celebrate", pet, channel:"celebrate_nearme_search" }); }}
                 style={{padding:"9px 20px",borderRadius:20,background:G.pale,border:`1px solid ${G.purple}`,color:G.purple,fontSize:12,fontWeight:600,cursor:"pointer"}}>
-                Ask Concierge to find options →
+                Ask Concierge® to find options →
               </button>
             </div>
           )}

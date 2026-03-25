@@ -129,7 +129,7 @@ const CartSidebar = () => {
     setIsCartOpen, 
     autoshipSummary,
     addToCart,
-    // Concierge requests
+    // Concierge® requests
     conciergeRequests,
     removeConciergeRequest,
     submitConciergeRequests
@@ -169,7 +169,7 @@ const CartSidebar = () => {
       const result = await submitConciergeRequests();
       if (result.success) {
         toast({
-          title: "✨ Concierge Requests Submitted!",
+          title: "✨ Concierge® Requests Submitted!",
           description: "Your Pet Concierge® will contact you within 2 hours.",
         });
       } else {
@@ -312,7 +312,7 @@ const CartSidebar = () => {
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                       <MessageCircle className="w-3 h-3 text-white" />
                     </div>
-                    <h4 className="font-semibold text-gray-900">Concierge Requests</h4>
+                    <h4 className="font-semibold text-gray-900">Concierge® Requests</h4>
                   </div>
                   
                   <AnimatePresence>
@@ -610,14 +610,14 @@ const CartSidebar = () => {
               </div>
             )}
             
-            {/* Concierge Note */}
+            {/* Concierge® Note */}
             {hasConcierge && (
               <div className="px-4 pb-3">
                 <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg p-3 border border-amber-200">
                   <div className="flex items-center gap-2 mb-1">
                     <Sparkles className="w-4 h-4 text-amber-600" />
                     <span className="text-sm font-semibold text-amber-800">
-                      {conciergeCount} Concierge Request{conciergeCount !== 1 ? 's' : ''}
+                      {conciergeCount} Concierge® Request{conciergeCount !== 1 ? 's' : ''}
                     </span>
                   </div>
                   <p className="text-xs text-amber-700">
@@ -641,7 +641,7 @@ const CartSidebar = () => {
                 </Button>
               )}
               
-              {/* Concierge Submit */}
+              {/* Concierge® Submit */}
               {hasConcierge && (
                 <Button
                   onClick={handleSubmitConciergeRequests}
@@ -656,7 +656,7 @@ const CartSidebar = () => {
                   ) : (
                     <>
                       <MessageCircle className="w-5 h-5 mr-2" />
-                      Submit Concierge Request{conciergeCount !== 1 ? 's' : ''}
+                      Submit Concierge® Request{conciergeCount !== 1 ? 's' : ''}
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </>
                   )}

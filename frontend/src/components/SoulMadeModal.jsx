@@ -180,7 +180,7 @@ export default function SoulMadeModal({
     return null;
   }, [photo, token]);
 
-  // ── Send to Concierge ─────────────────────────────────────────────────
+  // ── Send to Concierge® ─────────────────────────────────────────────────
   const handleSend = async () => {
     if (!selected) return;
     setSending(true);

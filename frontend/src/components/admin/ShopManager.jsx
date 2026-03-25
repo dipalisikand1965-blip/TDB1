@@ -1018,7 +1018,7 @@ const ShopManager = ({ getAuthHeader }) => {
           <Card className="p-8 text-center" data-testid="shop-services-panel">
             <Briefcase className="w-10 h-10 mx-auto mb-3 text-gray-300" />
             <p className="font-medium text-gray-600">Shop Services</p>
-            <p className="text-sm text-gray-400 mt-1">Concierge shopping and delivery services coming soon</p>
+            <p className="text-sm text-gray-400 mt-1">Concierge® shopping and delivery services coming soon</p>
           </Card>
         </TabsContent>
 

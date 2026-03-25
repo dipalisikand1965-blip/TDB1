@@ -5,7 +5,7 @@
  * Shows personalized box items based on pet's breed, allergies, and name.
  * All selections flow through Universal Service Command (ticket creation).
  * 
- * "Mira is the soul, the Concierge controls the experience"
+ * "Mira is the soul, the Concierge® controls the experience"
  */
 
 import React, { useState, useEffect } from 'react';
@@ -298,7 +298,7 @@ const MiraBirthdayBoxCard = ({
           </Button>
           
           <p className="text-xs text-center text-gray-500 mt-2">
-            Concierge will curate & deliver the perfect celebration
+            Concierge® will curate & deliver the perfect celebration
           </p>
         </div>
       </Card>

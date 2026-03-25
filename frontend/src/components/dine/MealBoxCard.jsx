@@ -576,7 +576,7 @@ export default function MealBoxCard() {
                     style={{ background: 'linear-gradient(135deg,#C44DFF,#FF8C42)', color: '#fff' }}
                     data-testid="meal-box-confirm-btn">
                     {submitting ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
-                    {submitting ? 'Confirming…' : "Confirm & Send to Concierge"}
+                    {submitting ? 'Confirming…' : "Confirm & Send to Concierge®"}
                   </button>
                 </div>
               </motion.div>
@@ -603,7 +603,7 @@ export default function MealBoxCard() {
 
                   <div className="space-y-2 text-left mb-5">
                     {[
-                      { icon: Clock, text: 'Concierge review within 24 hours' },
+                      { icon: Clock, text: 'Concierge® review within 24 hours' },
                       { icon: Package, text: `${deliveryFreq.charAt(0).toUpperCase() + deliveryFreq.slice(1)} delivery scheduled` },
                       { icon: ShieldCheck, text: 'Allergy & health check completed' },
                     ].map(({ icon: Icon, text }, i) => (

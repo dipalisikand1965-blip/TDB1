@@ -397,7 +397,7 @@ const ContactPanel = ({ order }) => {
   const orderId = order?.ticket_id || order?.id || '';
 
   const waMessage = encodeURIComponent(
-    `Hi ${ownerName}! This is The Doggy Company Concierge. I'm confirming ${petName}'s Birthday Box (Order ${orderId}). Can we arrange delivery? When would work best for you?`
+    `Hi ${ownerName}! This is The Doggy Company Concierge®. I'm confirming ${petName}'s Birthday Box (Order ${orderId}). Can we arrange delivery? When would work best for you?`
   );
   const phone = order?.user_phone;
   const email = order?.user_email;
@@ -432,7 +432,7 @@ const ContactPanel = ({ order }) => {
         {/* Email */}
         {email && (
           <a
-            href={`mailto:${email}?subject=Your%20Birthday%20Box%20Order%20%E2%80%94%20${petName}&body=Hi%20${ownerName}%2C%0A%0AThis%20is%20The%20Doggy%20Company%20Concierge.%20I%27m%20reaching%20out%20about%20${petName}%27s%20Birthday%20Box%20(Order%20${orderId}).%0A%0AKind%20regards%2C%0AThe%20Doggy%20Company%20Concierge`}
+            href={`mailto:${email}?subject=Your%20Birthday%20Box%20Order%20%E2%80%94%20${petName}&body=Hi%20${ownerName}%2C%0A%0AThis%20is%20The%20Doggy%20Company%20Concierge®.%20I%27m%20reaching%20out%20about%20${petName}%27s%20Birthday%20Box%20(Order%20${orderId}).%0A%0AKind%20regards%2C%0AThe%20Doggy%20Company%20Concierge®`}
             data-testid="email-contact-btn"
             className="flex items-center gap-3 w-full rounded-xl px-4 py-2.5 text-sm font-medium transition-all hover:bg-blue-50"
             style={{ background: '#EFF6FF', color: '#2563EB', textDecoration: 'none', border: '1px solid #DBEAFE' }}

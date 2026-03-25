@@ -71,7 +71,7 @@ function SpotCard({ spot, onReserve }) {
           )}
           <button onClick={() => onReserve && onReserve(spot)} data-testid="reserve-concierge-btn"
             style={{ flex: 1, background: "linear-gradient(135deg,#FF8C42,#C44DFF)", color: "#fff", border: "none", borderRadius: 8, padding: "7px 10px", fontSize: 11, fontWeight: 600, cursor: "pointer" }}>
-            Reserve via Concierge
+            Reserve via Concierge®
           </button>
         </div>
       </div>
@@ -263,10 +263,10 @@ export default function PetFriendlySpots({ pet, onReserve }) {
         <div style={{ textAlign: "center", padding: "32px 16px", background: "#FFF8F0", borderRadius: 14 }}>
           <div style={{ fontSize: 32, marginBottom: 8 }}>🐾</div>
           <p style={{ fontWeight: 700, color: "#1A0A00", marginBottom: 4 }}>No spots found in {activeCity} yet.</p>
-          <p style={{ color: "#888", fontSize: 12, marginBottom: 12 }}>Our Concierge can still find the right place for {petName}.</p>
+          <p style={{ color: "#888", fontSize: 12, marginBottom: 12 }}>Our Concierge® can still find the right place for {petName}.</p>
           <button onClick={() => onReserve && onReserve(null, activeCity)}
             style={{ background: "linear-gradient(135deg,#FF8C42,#C44400)", color: "#fff", border: "none", borderRadius: 20, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
-            Ask Concierge to find a spot
+            Ask Concierge® to find a spot
           </button>
         </div>
       ) : (
@@ -278,11 +278,11 @@ export default function PetFriendlySpots({ pet, onReserve }) {
       {!isHomeCity && !loading && spots.length > 0 && (
         <div style={{ marginTop: 16, background: "#FFF3E0", border: "1px solid #FFCC99", borderRadius: 12, padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
           <p style={{ margin: 0, fontSize: 12, color: "#7A3800" }}>
-            Planning a trip to <strong>{activeCity}</strong> with {petName}? Your Concierge can plan the whole dining experience.
+            Planning a trip to <strong>{activeCity}</strong> with {petName}? Your Concierge® can plan the whole dining experience.
           </p>
           <button onClick={() => onReserve && onReserve(null, activeCity)}
             style={{ background: "linear-gradient(135deg,#FF8C42,#C44400)", color: "#fff", border: "none", borderRadius: 20, padding: "7px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>
-            Plan {activeCity} with Concierge →
+            Plan {activeCity} with Concierge® →
           </button>
         </div>
       )}

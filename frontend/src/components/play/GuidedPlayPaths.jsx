@@ -292,7 +292,7 @@ export function PathFlowModal({ path, pet, onClose }) {
                 disabled={sending}
                 data-testid="play-path-submit"
                 style={{ flex:2, padding:"11px 0", borderRadius:12, border:"none", background:path.badgeBg, fontSize:13, fontWeight:700, color:"#fff", cursor: sending ? "not-allowed" : "pointer", opacity: sending ? 0.7 : 1 }}>
-                {sending ? "Sending…" : "Hand to Concierge →"}
+                {sending ? "Sending…" : "Hand to Concierge® →"}
               </button>
             )}
           </div>

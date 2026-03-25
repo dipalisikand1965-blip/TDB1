@@ -1,7 +1,7 @@
 /**
  * ConciergeHomePanel - CONCIERGE OS Layer Home Screen
  * =====================================================
- * The main Concierge tab showing:
+ * The main Concierge® tab showing:
  * - Pet selector dropdown
  * - Live/offline status indicator
  * - "Tell Mira what you need" input
@@ -544,7 +544,7 @@ const ConciergeHomePanel = ({
             <div className="flex items-center gap-1">
               <span className="text-lg font-semibold text-white">C</span>
               <span className="text-purple-400 text-sm">°</span>
-              <span className="text-lg font-semibold text-white ml-1">Concierge</span>
+              <span className="text-lg font-semibold text-white ml-1">Concierge®</span>
             </div>
           </div>
           
@@ -735,7 +735,7 @@ const ConciergeHomePanel = ({
           )}
         </div>
         
-        {/* Footer - Concierge Status Message */}
+        {/* Footer - Concierge® Status Message */}
         {homeData?.status && !homeData.status.is_live && (
           <div className="px-4 py-3 border-t border-white/10 bg-amber-500/10">
             <p className="text-xs text-amber-400 text-center">

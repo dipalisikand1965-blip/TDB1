@@ -393,7 +393,7 @@ const BreedSmartRecommendations = ({
                     {getBreedWhy(item.name, traits)}
                   </p>
 
-                  {/* Concierge badge */}
+                  {/* Concierge® badge */}
                   <p className="text-white/40 text-[10px] text-center uppercase tracking-wider mb-2">
                     Concierge® helps
                   </p>

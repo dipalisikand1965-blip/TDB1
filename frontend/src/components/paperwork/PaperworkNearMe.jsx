@@ -80,7 +80,7 @@ function ProviderCard({ provider, pet, onSelectPlace }) {
           <button onClick={()=>{ tdc.nearme({ query: `${provider.name} ${type.label}`, pillar:"paperwork", pet, channel:"paperwork_nearme_provider" }); onSelectPlace?.(provider); }}
             data-testid={`paperwork-nearme-arrange-${provider.place_id || provider.name?.replace?.(/\s+/g, '-').toLowerCase?.() || 'provider'}`}
             style={{flex:1,background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 14px",fontSize:11,fontWeight:700,cursor:"pointer"}}>
-            Arrange via Concierge →
+            Arrange via Concierge® →
           </button>
         </div>
       </div>
@@ -101,7 +101,7 @@ function MiraTopPick({ provider, pet, onSelectPlace }) {
       <button onClick={()=>{ tdc.nearme({ query: provider.name || "venue", pillar:"paperwork", pet, channel:"paperwork_nearme_top_pick" }); onSelectPlace?.(provider); }}
         data-testid="paperwork-nearme-top-pick-button"
         style={{background:G.light,color:G.deep,border:"none",borderRadius:20,padding:"10px 20px",fontSize:12,fontWeight:700,cursor:"pointer",flexShrink:0,whiteSpace:"nowrap"}}>
-        Arrange via Concierge →
+        Arrange via Concierge® →
       </button>
     </div>
   );
@@ -256,7 +256,7 @@ export default function PaperworkNearMe({ pet, onBook }) {
           <button onClick={()=>requestConciergeHelp(displayCity||"your area")}
             data-testid="paperwork-nearme-more-options-button"
             style={{width:"100%",marginTop:16,padding:"12px",borderRadius:10,background:G.pale,border:`1px solid rgba(13,148,136,0.25)`,color:G.teal,fontSize:13,fontWeight:600,cursor:"pointer"}}>
-            Ask Concierge for more options →
+            Ask Concierge® for more options →
           </button>
         </>
       )}
@@ -266,7 +266,7 @@ export default function PaperworkNearMe({ pet, onBook }) {
           <div style={{fontSize:32,marginBottom:12}}>🔍</div>
           No results in {displayCity||activeQuery}.<br/>
           <button onClick={()=>requestConciergeHelp(displayCity||activeQuery)} data-testid="paperwork-nearme-empty-state-button" style={{marginTop:14,padding:"9px 20px",borderRadius:20,background:G.pale,border:`1px solid ${G.teal}`,color:G.teal,fontSize:12,fontWeight:600,cursor:"pointer"}}>
-            Ask Concierge to find options →
+            Ask Concierge® to find options →
           </button>
         </div>
       )}

@@ -434,7 +434,7 @@ const MiraSearchPanel = ({
             </div>
           )}
           
-          {/* Concierge Handoff (for CONCIERGE execution) */}
+          {/* Concierge® Handoff (for CONCIERGE execution) */}
           {miraResponse.execution_type === 'CONCIERGE' && (
             <div className="p-4">
               <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg p-4 border border-amber-200">
@@ -444,7 +444,7 @@ const MiraSearchPanel = ({
                   </div>
                   <div className="flex-1">
                     <h4 className="font-semibold text-gray-900 text-sm">
-                      This needs your Pet Concierge
+                      This needs your Pet Concierge®
                     </h4>
                     <p className="text-xs text-gray-600 mt-1">
                       {miraResponse.response?.concierge_preview || 
@@ -455,7 +455,7 @@ const MiraSearchPanel = ({
                       className="mt-3 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-semibold rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all"
                       data-testid="mira-concierge-btn"
                     >
-                      Connect with Concierge
+                      Connect with Concierge®
                     </button>
                   </div>
                 </div>

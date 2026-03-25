@@ -46,7 +46,7 @@ const COMMAND_PATTERNS = [
   {
     patterns: ['sick', 'vomiting', 'diarrhea', 'not eating', 'pain', 'bleeding', 'seizure', 'breathing', 'emergency', 'hurt', 'injured', 'collapsed', 'lethargic', 'fever', 'shaking', 'trembling', 'swelling', 'limping', 'paralysis', 'unconscious', 'choking', 'poisoned', 'toxic', 'ate chocolate', 'ate grapes', 'ate onion', 'bloated', 'stomach twisted'],
     intent: 'health_escalation',
-    response: (petName) => `I can hear you're worried about ${petName}, and that's completely understandable. I can't assess this medically, but our Care Concierge can help you right now. Let me connect you.`,
+    response: (petName) => `I can hear you're worried about ${petName}, and that's completely understandable. I can't assess this medically, but our Care Concierge® can help you right now. Let me connect you.`,
     action: 'navigate',
     path: '/care?urgent=true',
     escalation: true
@@ -54,7 +54,7 @@ const COMMAND_PATTERNS = [
   {
     patterns: ['medication', 'medicine', 'dose', 'dosage', 'tablet', 'treatment', 'antibiotic', 'steroid', 'pain killer', 'deworming', 'flea treatment', 'tick medicine'],
     intent: 'medication_escalation',
-    response: (petName) => `For any medication questions about ${petName}, it's safest to speak with a vet or our Care Concierge. I want to make sure you get accurate guidance.`,
+    response: (petName) => `For any medication questions about ${petName}, it's safest to speak with a vet or our Care Concierge®. I want to make sure you get accurate guidance.`,
     action: 'navigate',
     path: '/care',
     escalation: true
@@ -179,7 +179,7 @@ const COMMAND_PATTERNS = [
   {
     patterns: ['vet', 'veterinarian', 'doctor', 'clinic', 'hospital', 'checkup', 'check up', 'health check'],
     intent: 'find_vet',
-    response: (petName) => `Looking for a vet for ${petName}? Our Care Concierge can connect you with trusted veterinarians.`,
+    response: (petName) => `Looking for a vet for ${petName}? Our Care Concierge® can connect you with trusted veterinarians.`,
     action: 'navigate',
     path: '/care'
   },
@@ -193,7 +193,7 @@ const COMMAND_PATTERNS = [
   {
     patterns: ['allergy', 'allergic', 'skin problem', 'rash', 'hot spot', 'red skin'],
     intent: 'allergy_help',
-    response: (petName) => `Skin issues can have many causes. For ${petName}'s comfort, it's best to consult with our Care Concierge or a vet.`,
+    response: (petName) => `Skin issues can have many causes. For ${petName}'s comfort, it's best to consult with our Care Concierge® or a vet.`,
     action: 'navigate',
     path: '/care'
   },
@@ -207,7 +207,7 @@ const COMMAND_PATTERNS = [
   {
     patterns: ['spay', 'neuter', 'sterilize', 'castrate', 'fix'],
     intent: 'sterilization',
-    response: (petName) => `Thinking about spaying/neutering ${petName}? Our Care Concierge can guide you through the process and connect you with trusted vets.`,
+    response: (petName) => `Thinking about spaying/neutering ${petName}? Our Care Concierge® can guide you through the process and connect you with trusted vets.`,
     action: 'navigate',
     path: '/care'
   },
@@ -296,7 +296,7 @@ const COMMAND_PATTERNS = [
   {
     patterns: ['flight', 'flying', 'airplane', 'airline', 'air travel'],
     intent: 'air_travel',
-    response: (petName) => `Flying with ${petName}? Our Travel Concierge can help with all the requirements and documentation.`,
+    response: (petName) => `Flying with ${petName}? Our Travel Concierge® can help with all the requirements and documentation.`,
     action: 'navigate',
     path: '/go?type=air'
   },
@@ -536,7 +536,7 @@ const COMMAND_PATTERNS = [
   {
     patterns: ['lost', 'missing', 'runaway', 'escaped', 'find my dog', 'lost dog'],
     intent: 'lost_pet',
-    response: (petName) => `Oh no, I'm so sorry to hear that. Let me connect you with our Care Concierge immediately to help.`,
+    response: (petName) => `Oh no, I'm so sorry to hear that. Let me connect you with our Care Concierge® immediately to help.`,
     action: 'navigate',
     path: '/care?urgent=true'
   },

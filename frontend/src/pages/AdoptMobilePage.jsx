@@ -51,7 +51,7 @@ const ADOPT_SERVICES = [
   { id:"home_assessment", icon:"🏠", name:"Home Readiness Assessment",    tagline:"Before they arrive",          price:"Free",  desc:"Mira's team checks your home for safety, space and setup — gives you a readiness plan." },
   { id:"rescue_network",  icon:"🐾", name:"Rescue Partner Network",       tagline:"Matched, not random",         price:"Free",  desc:"Mira connects you with verified rescue partners and specific dogs matching your lifestyle." },
   { id:"post_adopt",      icon:"❤️", name:"Post-Adoption Support",        tagline:"First 30 days matter most",   price:"Free",  desc:"Behaviour guidance, settling-in support, and vet coordination through the first month." },
-  { id:"adopt_paperwork", icon:"📋", name:"Adoption Paperwork Guidance",  tagline:"No confusion, no gaps",       price:"Free",  desc:"All adoption forms, microchipping, registration and vet records — Concierge handles it." },
+  { id:"adopt_paperwork", icon:"📋", name:"Adoption Paperwork Guidance",  tagline:"No confusion, no gaps",       price:"Free",  desc:"All adoption forms, microchipping, registration and vet records — Concierge® handles it." },
   { id:"multi_pet",       icon:"🐕", name:"Multi-Pet Integration",        tagline:"First introductions matter",  price:"₹999", desc:"Expert guidance on introducing a new dog to existing pets — step-by-step, safe, stress-free." },
 ];
 
@@ -128,10 +128,17 @@ export default function AdoptMobilePage() {
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🐾 Adopt</div>
             </div>
             {contextPets?.length > 1 && (
-              <select value={currentPet?.id} onChange={e => { vibe(); setCurrentPet(contextPets.find(p => p.id === e.target.value)); }}
-                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:14 }}>
-                {contextPets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
+              <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+                {contextPets.map(p => (
+                  <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
+                    style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
+                      border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
+                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
+                      color:'#fff', cursor:'pointer', transition:'all 0.15s' }}>
+                    {p.name}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
           <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Find & Welcome a Dog</div>
@@ -206,7 +213,7 @@ export default function AdoptMobilePage() {
         {activeTab === 'services' && (
           <div style={{ padding:'16px 16px 24px' }}>
             <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Adoption Guidance Services</div>
-            <div style={{ fontSize:14, color:G.mutedText, marginBottom:20 }}>Concierge-led support for every stage of your journey.</div>
+            <div style={{ fontSize:14, color:G.mutedText, marginBottom:20 }}>Concierge®-led support for every stage of your journey.</div>
             <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
               {ADOPT_SERVICES.map(svc => (
                 <div key={svc.id} style={{ background:'#fff', borderRadius:18, border:`1.5px solid ${G.border}`, padding:'16px', overflow:'hidden' }}>
@@ -249,7 +256,7 @@ export default function AdoptMobilePage() {
           </div>
         )}
 
-        {/* Concierge Confirmation Toast */}
+        {/* Concierge® Confirmation Toast */}
         {conciergeOpen && selectedSvc && (
           <div onClick={() => setConciergeOpen(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'flex-end' }}>
             <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'24px 24px 0 0', width:'100%', padding:'24px 20px 40px' }}>

@@ -1040,7 +1040,7 @@ const FulfilmentManager = ({ authHeaders, pillar = 'celebrate' }) => {
                 onChange={e => setDraftForm({...draftForm, special_instructions: e.target.value})}
               />
               <Textarea
-                placeholder="Concierge Notes (internal only)"
+                placeholder="Concierge® Notes (internal only)"
                 value={draftForm.concierge_notes}
                 onChange={e => setDraftForm({...draftForm, concierge_notes: e.target.value})}
               />

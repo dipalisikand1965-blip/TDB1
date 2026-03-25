@@ -657,7 +657,7 @@ const MiraPage = () => {
                 </div>
                 <div className="hidden sm:block">
                   <h1 className="text-lg md:text-xl font-bold text-gray-900">Ask Mira</h1>
-                  <p className="text-xs md:text-sm text-gray-500">Your Personal Pet Concierge</p>
+                  <p className="text-xs md:text-sm text-gray-500">Your Personal Pet Concierge®</p>
                 </div>
                 <span className="sm:hidden text-lg font-bold text-gray-900">Mira</span>
               </div>

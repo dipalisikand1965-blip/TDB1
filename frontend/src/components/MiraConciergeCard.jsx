@@ -4,10 +4,10 @@
  * MIRA OS DOCTRINE:
  * - Mira doesn't search catalogs - Mira RECOMMENDS
  * - These cards show Mira's actual suggestions, not product matches
- * - User selects → Goes to Concierge for fulfillment
- * - No inventory check needed - Concierge sources it
+ * - User selects → Goes to Concierge® for fulfillment
+ * - No inventory check needed - Concierge® sources it
  * 
- * "Mira recommends, Concierge delivers"
+ * "Mira recommends, Concierge® delivers"
  */
 
 import React, { useState } from 'react';
@@ -122,7 +122,7 @@ const typeConfig = {
   product: { emoji: '✨', color: 'from-purple-500 to-pink-500', bg: 'bg-purple-50' },
 };
 
-// Single Concierge Card Component
+// Single Concierge® Card Component
 const ConciergeCard = ({ 
   recommendation, 
   petName,
@@ -172,7 +172,7 @@ const ConciergeCard = ({
           {recommendation.whyRight}
         </div>
         
-        {/* Concierge action (only show when selected) */}
+        {/* Concierge® action (only show when selected) */}
         {isSelected && (
           <button
             onClick={(e) => {
@@ -182,7 +182,7 @@ const ConciergeCard = ({
             className={`mt-3 w-full py-2.5 rounded-lg bg-gradient-to-r ${config.color} text-white text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all`}
           >
             <Sparkles className="w-4 h-4" />
-            Request via Concierge
+            Request via Concierge®
             <ChevronRight className="w-4 h-4" />
           </button>
         )}
@@ -191,7 +191,7 @@ const ConciergeCard = ({
   );
 };
 
-// Main Concierge Cards Container
+// Main Concierge® Cards Container
 const MiraConciergeCards = ({ 
   recommendations = [], 
   petName = 'your pet',
@@ -250,7 +250,7 @@ const MiraConciergeCards = ({
         throw new Error('Failed to create request');
       }
     } catch (error) {
-      console.error('Concierge request error:', error);
+      console.error('Concierge® request error:', error);
       toast.error('Could not send request', {
         description: 'Please try again'
       });
@@ -299,7 +299,7 @@ const MiraConciergeCards = ({
         throw new Error('Failed to create bundle request');
       }
     } catch (error) {
-      console.error('Concierge bundle request error:', error);
+      console.error('Concierge® bundle request error:', error);
       toast.error('Could not send request', {
         description: 'Please try again'
       });
@@ -367,7 +367,7 @@ const MiraConciergeCards = ({
         </span>
         <span className="flex items-center gap-1">
           <Clock className="w-3 h-3" />
-          Concierge sourced
+          Concierge® sourced
         </span>
       </div>
     </div>

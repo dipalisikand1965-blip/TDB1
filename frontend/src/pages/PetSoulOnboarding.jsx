@@ -146,7 +146,7 @@ const CHAPTERS = [
         key:   "social_with_strangers",
         pts:   10,
         text:  "How does {name} react to new people?",
-        mira:  "\"So I know whether Concierge\u00AE should call ahead before a visit.\"",
+        mira:  "\"So I know whether Concierge®\u00AE should call ahead before a visit.\"",
         type:  "choice",
         options: [
           { label: "Friendly immediately", value: "friendly",  emoji: "\u{1F604}" },
@@ -219,7 +219,7 @@ const CHAPTERS = [
         key:   "active_time",
         pts:   10,
         text:  "When is {name} most active?",
-        mira:  "\"I schedule reminders and Concierge\u00AE check-ins around your dog's natural rhythm.\"",
+        mira:  "\"I schedule reminders and Concierge®\u00AE check-ins around your dog's natural rhythm.\"",
         type:  "choice",
         options: [
           { label: "Early morning",   value: "early_morning", emoji: "\u{1F305}" },
@@ -297,7 +297,7 @@ const CHAPTERS = [
         key:   "car_comfort",
         pts:   5,
         text:  "How is {name} in the car?",
-        mira:  "\"Essential for travel recommendations \u2014 and Concierge\u00AE transport bookings.\"",
+        mira:  "\"Essential for travel recommendations \u2014 and Concierge®\u00AE transport bookings.\"",
         type:  "choice",
         options: [
           { label: "Loves it",         value: "loves",    emoji: "\u{1F697}" },
@@ -358,7 +358,7 @@ const CHAPTERS = [
         key:   "favourite_toy",
         pts:   5,
         text:  "What's {name}'s favourite type of toy?",
-        mira:  "\"For Play recommendations \u2014 and surprise gifts from Concierge\u00AE.\"",
+        mira:  "\"For Play recommendations \u2014 and surprise gifts from Concierge®\u00AE.\"",
         type:  "choice",
         options: [
           { label: "Squeaky toys",   value: "squeaky",    emoji: "\u{1F423}" },
@@ -430,7 +430,7 @@ const CHAPTERS = [
         key:   "transport_preference",
         pts:   5,
         text:  "How does {name} usually travel?",
-        mira:  "\"So I recommend the right carriers, calming aids, and Concierge\u00AE transport options.\"",
+        mira:  "\"So I recommend the right carriers, calming aids, and Concierge®\u00AE transport options.\"",
         type:  "choice",
         options: [
           { label: "Car",       value: "car",       emoji: "\u{1F697}" },
@@ -478,7 +478,7 @@ const CHAPTERS = [
         key:   "favourite_treat",
         pts:   10,
         text:  "What does {name} go absolutely crazy for?",
-        mira:  "\"This is for birthday cakes, rewards, and surprise gifts from Concierge\u00AE.\"",
+        mira:  "\"This is for birthday cakes, rewards, and surprise gifts from Concierge®\u00AE.\"",
         type:  "choice",
         options: [
           { label: "Peanut butter",        value: "peanut_butter", emoji: "\u{1F95C}" },
@@ -551,7 +551,7 @@ const CHAPTERS = [
         key:   "training_method",
         pts:   10,
         text:  "What training method works best for {name}?",
-        mira:  "\"Every trainer Concierge\u00AE recommends will use your preferred method.\"",
+        mira:  "\"Every trainer Concierge®\u00AE recommends will use your preferred method.\"",
         type:  "choice",
         options: [
           { label: "Positive reinforcement", value: "positive",  emoji: "\u{1F31F}" },
@@ -603,7 +603,7 @@ const CHAPTERS = [
         key:   "vet_comfort",
         pts:   5,
         text:  "How is {name} at the vet?",
-        mira:  "\"Vet-anxious dogs need special handling. I'll make sure every vet Concierge\u00AE recommends knows.\"",
+        mira:  "\"Vet-anxious dogs need special handling. I'll make sure every vet Concierge®\u00AE recommends knows.\"",
         type:  "choice",
         options: [
           { label: "Calm and cooperative", value: "calm",    emoji: "\u{1F60C}" },
@@ -651,7 +651,7 @@ const CHAPTERS = [
         key:   "insurance",
         pts:   5,
         text:  "Does {name} have pet insurance?",
-        mira:  "\"If not, I can connect you with Concierge\u00AE to explore options.\"",
+        mira:  "\"If not, I can connect you with Concierge®\u00AE to explore options.\"",
         type:  "choice",
         options: [
           { label: "Yes",              value: "yes",     emoji: "\u2713" },

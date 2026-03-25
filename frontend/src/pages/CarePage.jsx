@@ -1039,7 +1039,7 @@ const CarePage = () => {
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
-          10. MIRA CURATED LAYER - Unified Concierge Recommendations
+          10. MIRA CURATED LAYER - Unified Concierge® Recommendations
           ═══════════════════════════════════════════════════════════════════════════════ */}
       <MiraCuratedLayer
         pillar="care"
@@ -1057,7 +1057,7 @@ const CarePage = () => {
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
-          HOW IT WORKS - Explains the Mira + Concierge model
+          HOW IT WORKS - Explains the Mira + Concierge® model
           ═══════════════════════════════════════════════════════════════════════════════ */}
       <div className="py-16 bg-gradient-to-b from-white to-slate-50">
         <div className="max-w-6xl mx-auto px-4">
@@ -1876,7 +1876,7 @@ const CarePage = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <MessageCircle className="w-5 h-5 text-pink-500" />
-              Ask Our Concierge
+              Ask Our Concierge®
             </DialogTitle>
           </DialogHeader>
           

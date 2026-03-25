@@ -129,7 +129,7 @@ const ConciergeIntakeModal = ({ isOpen, onClose, serviceType, petName, petId }) 
                 {displayName}'s celebration is in good hands.
               </h3>
               <p style={{ fontSize: 14, color: '#666', lineHeight: 1.6, marginBottom: 24 }}>
-                Your Concierge has everything they need. Expect a message within 48 hours. ♥
+                Your Concierge® has everything they need. Expect a message within 48 hours. ♥
               </p>
               <p style={{ fontSize: 12, color: 'rgba(201,151,58,0.80)', fontWeight: 600 }}>
                 48h response promise
@@ -184,7 +184,7 @@ const ConciergeIntakeModal = ({ isOpen, onClose, serviceType, petName, petId }) 
                 marginBottom: 16
               }}>
                 <span style={{ color: '#C9973A' }}>★</span>
-                {displayName}'s Concierge
+                {displayName}'s Concierge®
               </div>
 
               {/* Title */}
@@ -201,7 +201,7 @@ const ConciergeIntakeModal = ({ isOpen, onClose, serviceType, petName, petId }) 
 
               {/* Subtitle */}
               <p style={{ fontSize: 13, color: '#888', marginBottom: 24, lineHeight: 1.5 }}>
-                Three questions. Then your Concierge takes over.
+                Three questions. Then your Concierge® takes over.
               </p>
 
               {/* Q1: What are we celebrating? */}
@@ -333,12 +333,12 @@ const ConciergeIntakeModal = ({ isOpen, onClose, serviceType, petName, petId }) 
                 }}
                 data-testid="intake-submit-btn"
               >
-                {submitting ? 'Sending...' : 'Send to my Concierge →'}
+                {submitting ? 'Sending...' : 'Send to my Concierge® →'}
               </button>
 
               {/* Privacy note */}
               <p style={{ fontSize: 11, color: '#aaa', textAlign: 'center', marginTop: 12, lineHeight: 1.5 }}>
-                We already have your contact details. Your Concierge will reach out — you don't need to chase.
+                We already have your contact details. Your Concierge® will reach out — you don't need to chase.
               </p>
             </>
           )}

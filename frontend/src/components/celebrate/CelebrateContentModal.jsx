@@ -419,7 +419,7 @@ const MiraImaginesCard = ({ flavor, pet }) => {
         })
       });
     } catch (err) {
-      console.error('[MiraImaginesCard] Concierge ticket error:', err);
+      console.error('[MiraImaginesCard] Concierge® ticket error:', err);
     } finally {
       setSending(false);
       setRequested(true);
@@ -478,7 +478,7 @@ const MiraImaginesCard = ({ flavor, pet }) => {
               color: isOnboarding ? '#64C8FF' : '#32C878'
             }}>
             <Check className="w-3.5 h-3.5" />
-            {isOnboarding ? 'Opening soul questions...' : 'Sent to Concierge!'}
+            {isOnboarding ? 'Opening soul questions...' : 'Sent to Concierge®!'}
           </div>
         ) : (
           <button

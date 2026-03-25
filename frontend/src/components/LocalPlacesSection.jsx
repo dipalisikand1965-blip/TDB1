@@ -356,7 +356,7 @@ const LocalPlacesSection = ({
         </div>
       )}
 
-      {/* Concierge CTA */}
+      {/* Concierge® CTA */}
       {!compact && currentPlaces.length > 0 && (
         <div className="text-center mt-6">
           <p className="text-xs text-gray-500">

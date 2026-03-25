@@ -2,11 +2,11 @@
  * ConciergeIntakeModal.jsx
  * The Doggy Company — /dine page
  *
- * The Dining Concierge intake modal.
+ * The Dining Concierge® intake modal.
  * Opens from:
- *   1. "Talk to your Concierge" CTA button (brown box)
+ *   1. "Talk to your Concierge®" CTA button (brown box)
  *   2. "Tap to book →" on each service card
- *   3. "Reserve via Concierge" on pet-friendly spot cards
+ *   3. "Reserve via Concierge®" on pet-friendly spot cards
  *
  * HOW TO USE:
  *   import ConciergeIntakeModal from "../components/dine/ConciergeIntakeModal";
@@ -72,7 +72,7 @@ export default function ConciergeIntakeModal({
       date: notSureDate ? null : date,
       onSuccess: () => {
         setSent(true);
-        toast.success(`Sent to your Concierge`, { description: "We'll reach out within 48 hours." });
+        toast.success(`Sent to your Concierge®`, { description: "We'll reach out within 48 hours." });
       },
     });
     setSending(false);
@@ -96,11 +96,11 @@ export default function ConciergeIntakeModal({
               fontSize: 21, fontWeight: 800, color: "#1A0A00",
               fontFamily: "Georgia,serif", marginBottom: 8,
             }}>
-              Sent to {pet?.name}'s Concierge.
+              Sent to {pet?.name}'s Concierge®.
             </div>
             <div style={{ fontSize: 14, color: "#888", lineHeight: 1.7, marginBottom: 28 }}>
               Everything is in good hands.<br />
-              Your Concierge will reach out within 48 hours. ♥<br /><br />
+              Your Concierge® will reach out within 48 hours. ♥<br /><br />
               We already have your contact details —<br />
               you don't need to chase.
             </div>
@@ -143,7 +143,7 @@ export default function ConciergeIntakeModal({
           color: "#C9973A", fontSize: 12, fontWeight: 600,
           marginBottom: 16,
         }}>
-          ★ {pet?.name}'s Concierge
+          ★ {pet?.name}'s Concierge®
         </div>
 
         {/* Title */}
@@ -156,7 +156,7 @@ export default function ConciergeIntakeModal({
           dining experience feel like?
         </div>
         <div style={{ fontSize: 14, color: "#888", marginBottom: 26 }}>
-          Three questions. Then your Concierge takes over.
+          Three questions. Then your Concierge® takes over.
         </div>
 
         {/* Q1: Occasion */}
@@ -257,11 +257,11 @@ export default function ConciergeIntakeModal({
             opacity: sending ? 0.75 : 1,
           }}
         >
-          {sending ? "Sending…" : "Send to my Concierge →"}
+          {sending ? "Sending…" : "Send to my Concierge® →"}
         </button>
         <div style={{ fontSize: 12, color: "#888", textAlign: "center", lineHeight: 1.6 }}>
           We already have your contact details.<br />
-          Your Concierge will reach out — you don't need to chase.
+          Your Concierge® will reach out — you don't need to chase.
         </div>
       </Modal>
     </Backdrop>

@@ -102,7 +102,7 @@ const CareConciergeSection = ({ pet }) => {
               }}
               data-testid="care-personally-cta"
             >
-              Talk to your Care Concierge →
+              Talk to your Care Concierge® →
             </button>
             <p style={{ fontSize: 12, color: '#888', marginTop: 8 }}>
               48h response promise · Emergency care: within 5 minutes

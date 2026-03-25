@@ -543,7 +543,7 @@ function MiraTummyImaginesCard({ card, pet, token }) {
         })
       });
     } catch (err) {
-      console.error('[MiraTummyImaginesCard] Concierge ticket error:', err);
+      console.error('[MiraTummyImaginesCard] Concierge® ticket error:', err);
     } finally {
       setSending(false);
       setRequested(true);
@@ -584,7 +584,7 @@ function MiraTummyImaginesCard({ card, pet, token }) {
             background: 'rgba(50,200,120,0.20)', border: '1px solid rgba(50,200,120,0.40)',
             color: '#32C878', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
           }}>
-            <Check size={13} /> Sent to Concierge!
+            <Check size={13} /> Sent to Concierge®!
           </div>
         ) : (
           <button
@@ -1002,10 +1002,10 @@ function MiraPicksSection({ pet }) {
                     {pick.mira_reason}
                   </p>
                 )}
-                {isService && <p style={{ fontSize: 10, color: '#6366F1', lineHeight: 1.4, margin: 0, fontStyle: 'italic' }}>Concierge support for meals and guidance.</p>}
+                {isService && <p style={{ fontSize: 10, color: '#6366F1', lineHeight: 1.4, margin: 0, fontStyle: 'italic' }}>Concierge® support for meals and guidance.</p>}
                 {/* Tap hint */}
                 <p style={{ fontSize: 9, color: isService ? '#6366F1' : '#FF8C42', fontWeight: 700, margin: '6px 0 0', letterSpacing: '0.04em' }}>
-                  {isService ? 'Tap → Talk to Concierge' : 'Tap → View & Add'}
+                  {isService ? 'Tap → Talk to Concierge®' : 'Tap → View & Add'}
                 </p>
               </div>
             </div>
@@ -1023,7 +1023,7 @@ function MiraPicksSection({ pet }) {
         />
       )}
 
-      {/* Service Concierge Modal */}
+      {/* Service Concierge® Modal */}
       {conciergeService && (
         <div
           onClick={() => !conciergeSending && setConciergeService(null)}
@@ -1057,7 +1057,7 @@ function MiraPicksSection({ pet }) {
               {conciergeSent ? (
                 <div style={{ textAlign: 'center', padding: '12px', borderRadius: 12, background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.3)' }}>
                   <Check size={20} style={{ color: '#22C55E', margin: '0 auto 6px' }} />
-                  <p style={{ fontWeight: 700, color: '#22C55E', margin: 0, fontSize: 14 }}>Sent to Concierge!</p>
+                  <p style={{ fontWeight: 700, color: '#22C55E', margin: 0, fontSize: 14 }}>Sent to Concierge®!</p>
                 </div>
               ) : (
                 <button
@@ -1066,7 +1066,7 @@ function MiraPicksSection({ pet }) {
                   data-testid="service-modal-concierge-btn"
                   style={{ width: '100%', background: 'linear-gradient(135deg, #6366F1, #4F46E5)', color: '#fff', border: 'none', borderRadius: 12, padding: '13px', fontSize: 14, fontWeight: 700, cursor: conciergeSending ? 'wait' : 'pointer', opacity: conciergeSending ? 0.7 : 1 }}
                 >
-                  {conciergeSending ? 'Sending…' : `Send to Concierge for ${petName} →`}
+                  {conciergeSending ? 'Sending…' : `Send to Concierge® for ${petName} →`}
                 </button>
               )}
             </div>
@@ -1217,7 +1217,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
 }
 
 // ─── Guided Nutrition Paths ───────────────────────────────────────────────────
-// ─── Dining Concierge ─────────────────────────────────────────────────────────
+// ─── Dining Concierge® ─────────────────────────────────────────────────────────
 function DiningConcierge({ pet }) {
   const petName = pet?.name || "your pet";
   const [intakeOpen, setIntakeOpen] = useState(false);
@@ -1257,7 +1257,7 @@ function DiningConcierge({ pet }) {
           }}>
             <span style={{ fontSize: 11, color: '#C9973A' }}>★</span>
             <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(201,151,58,0.90)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-              {petName}'s Concierge
+              {petName}'s Concierge®
             </span>
           </div>
 
@@ -1311,7 +1311,7 @@ function DiningConcierge({ pet }) {
             </div>
             <button
               onClick={() => {
-                tdc.book({ service: `${petName}'s Dine Concierge Request`, channel: 'dine_concierge_cta', urgency: 'high' });
+                tdc.book({ service: `${petName}'s Dine Concierge® Request`, channel: 'dine_concierge_cta', urgency: 'high' });
                 setIntakeOpen(true);
               }}
               style={{
@@ -1586,7 +1586,7 @@ const DineSoulPage = () => {
           <div style={{display:"flex",justifyContent:"flex-end",padding:"12px 0 0"}}>
             <button onClick={()=>setDineConciergeOpen(true)}
               style={{background:"linear-gradient(135deg,#FF8C42,#C44400)",color:"#fff",border:"none",borderRadius:20,padding:"9px 20px",fontSize:12,fontWeight:700,cursor:"pointer"}}>
-              ✦ Book Dine Concierge →
+              ✦ Book Dine Concierge® →
             </button>
           </div>
           <PetFriendlySpots
@@ -1602,7 +1602,7 @@ const DineSoulPage = () => {
 
         {/* Find Dine — REMOVED: duplicate of Dine Out (both render PetFriendlySpots) */}
 
-        {/* Dine Concierge Modal */}
+        {/* Dine Concierge® Modal */}
         {dineConciergeOpen && (
           <div onClick={()=>setDineConciergeOpen(false)}
             style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.50)",zIndex:10006,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
@@ -1611,12 +1611,12 @@ const DineSoulPage = () => {
               <button onClick={()=>setDineConciergeOpen(false)}
                 style={{position:"absolute",top:16,right:16,background:"none",border:"none",cursor:"pointer",color:"#999",fontSize:18}}>✕</button>
               <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(255,140,66,0.10)",border:"1px solid rgba(255,140,66,0.30)",borderRadius:9999,padding:"4px 14px",marginBottom:20}}>
-                <span style={{fontSize:11,fontWeight:600,color:"#C44400",letterSpacing:"0.06em",textTransform:"uppercase"}}>★ {petData?.name||"your dog"}'s Dine Concierge</span>
+                <span style={{fontSize:11,fontWeight:600,color:"#C44400",letterSpacing:"0.06em",textTransform:"uppercase"}}>★ {petData?.name||"your dog"}'s Dine Concierge®</span>
               </div>
               <h2 style={{fontSize:22,fontWeight:800,color:"#3d1200",fontFamily:"Georgia,serif",lineHeight:1.2,marginBottom:8}}>
                 What should <span style={{color:"#FF8C42"}}>{petData?.name||"your dog"}</span>'s dining experience be?
               </h2>
-              <p style={{fontSize:14,color:"#888",marginBottom:24}}>Three questions. Then your Concierge takes over.</p>
+              <p style={{fontSize:14,color:"#888",marginBottom:24}}>Three questions. Then your Concierge® takes over.</p>
               <p style={{fontSize:13,fontWeight:700,color:"#3d1200",marginBottom:12}}>What are we planning?</p>
               <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:24}}>
                 {["Home delivery","Pet-friendly restaurant","Special diet plan","Allergy-free meal","Birthday cake","Treat box","Nutrition consult","Just exploring"].map(opt=>(
@@ -1629,13 +1629,13 @@ const DineSoulPage = () => {
               </div>
               <button onClick={()=>setDineConciergeOpen(false)}
                 style={{width:"100%",background:"linear-gradient(135deg,#FF8C42,#C44400)",color:"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:15,fontWeight:800,cursor:"pointer"}}>
-                ✦ Send to {petData?.name||"your dog"}'s Concierge
+                ✦ Send to {petData?.name||"your dog"}'s Concierge®
               </button>
             </div>
           </div>
         )}
 
-        {/* Dining Out Concierge Modal */}
+        {/* Dining Out Concierge® Modal */}
         {dineOutIntakeOpen && (
           <ConciergeIntakeModal
             pet={petData}

@@ -34,7 +34,7 @@ const MessageBubble = ({ message, isUser }) => {
         {!isUser && (
           <div className="flex items-center gap-1.5 mb-1">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span className="text-xs font-medium text-amber-400">Concierge</span>
+            <span className="text-xs font-medium text-amber-400">Concierge®</span>
           </div>
         )}
         <p className="text-sm whitespace-pre-wrap">{message.content}</p>

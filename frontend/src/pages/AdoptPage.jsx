@@ -5,7 +5,7 @@
  * NOT a store page. This is a GUIDANCE HUB combining:
  * - Guidance & Checklists
  * - Products organized by need
- * - Services & Concierge help
+ * - Services & Concierge® help
  * - Breed/Age/Size logic
  */
 
@@ -56,7 +56,7 @@ const INTENT_TILES = [
   { id: 'first-time', label: "First-time dog parent", icon: User, color: 'from-purple-500 to-violet-500', bg: 'bg-purple-50' },
   { id: 'rescue', label: "Bringing home a rescue", icon: Home, color: 'from-indigo-500 to-blue-500', bg: 'bg-indigo-50' },
   { id: 'essentials', label: "Help me choose essentials", icon: ShoppingBag, color: 'from-teal-500 to-cyan-500', bg: 'bg-teal-50' },
-  { id: 'concierge', label: "Talk to Concierge", icon: MessageCircle, color: 'from-rose-500 to-pink-500', bg: 'bg-rose-50' }
+  { id: 'concierge', label: "Talk to Concierge®", icon: MessageCircle, color: 'from-rose-500 to-pink-500', bg: 'bg-rose-50' }
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -502,7 +502,7 @@ const AdoptPage = () => {
   const handleConciergeHelp = (help) => {
     setConciergeHelp(help);
     toast({
-      title: `Concierge Request: ${help.title}`,
+      title: `Concierge® Request: ${help.title}`,
       description: 'Our team will reach out shortly to assist you.',
     });
   };
@@ -1128,7 +1128,7 @@ const AdoptPage = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <MessageCircle className="w-5 h-5 text-green-600" />
-              Talk to Our Adoption Concierge
+              Talk to Our Adoption Concierge®
             </DialogTitle>
             <DialogDescription>
               Tell us what you need help with and we'll connect you with the right expert.

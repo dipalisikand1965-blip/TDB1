@@ -560,20 +560,20 @@ const ProductBoxEditor = ({
                       updateField('price', 0);
                       updateField('pricing.base_price', 0);
                       updateField('pricing.selling_price', 0);
-                      // 2. Mark as concierge-only (hides add-to-cart, shows "Talk to Concierge")
+                      // 2. Mark as concierge-only (hides add-to-cart, shows "Talk to Concierge®")
                       updateField('basics.concierge_only', true);
                       // 3. Track inventory = false (services are unlimited)
                       updateField('inventory.track_inventory', false);
                     }
                   }}
                 />
-                <span className="text-sm">🛠️ Is Service <span className="text-xs text-orange-600 ml-1">(hides price, shows Concierge flow)</span></span>
+                <span className="text-sm">🛠️ Is Service <span className="text-xs text-orange-600 ml-1">(hides price, shows Concierge® flow)</span></span>
               </label>
               {getValue('basics.is_service', false) && (
                 <div className="ml-6 mt-2 p-3 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-700 space-y-1">
                   <div className="font-semibold">Service mode active:</div>
                   <div>• Price hidden from customers (shows &quot;Price on Request&quot;)</div>
-                  <div>• Add-to-cart replaced with &quot;Talk to Concierge&quot;</div>
+                  <div>• Add-to-cart replaced with &quot;Talk to Concierge®&quot;</div>
                   <div>• Use AI Image tab below to generate a watercolour illustration</div>
                 </div>
               )}
@@ -1758,7 +1758,7 @@ const ProductBoxEditor = ({
                       checked={getValue('mira_ai.mira.requires_concierge', false)}
                       onCheckedChange={(v) => updateField('mira_ai.mira.requires_concierge', v)}
                     />
-                    <span className="text-sm">🛎️ Requires Concierge</span>
+                    <span className="text-sm">🛎️ Requires Concierge®</span>
                   </label>
                 </div>
                 
