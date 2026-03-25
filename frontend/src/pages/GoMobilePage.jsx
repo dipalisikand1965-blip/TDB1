@@ -13,6 +13,7 @@ import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
+import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
 import { applyMiraFilter } from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
@@ -88,6 +89,7 @@ export default function GoMobilePage() {
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [allRaw, setAllRaw] = useState([]);
+  const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'boarding' });
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -282,10 +284,18 @@ export default function GoMobilePage() {
             <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Hotels, resorts, and homestays that welcome {petName}.</div>
             <PetFriendlyStays pet={currentPet} token={token} onBook={stay => {
               tdc.book({ service:`Stay: ${stay}`, pillar:'go', pet:currentPet, channel:'go_stays' });
+              setSvcBooking({ isOpen: true, serviceType: guessServiceType(stay) || 'boarding' });
             }} />
           </div>
         )}
       </div>
+
+      <ServiceBookingModal
+        isOpen={svcBooking.isOpen}
+        onClose={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
+        serviceType={svcBooking.serviceType}
+        onBookingComplete={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
+      />
     </PillarPageLayout>
   );
 }

@@ -1,0 +1,130 @@
+{
+  "summary": "Testing ServiceBookingModal 4-step flow on all 5 mobile pages at 390px. Fixed 2 critical bugs: (1) LearnDimPanel setSvcBooking scope error, (2) ServiceBookingModal pet undefined in handleSubmit. Verified /services, /care, /go, /play, /learn all load without crash. ServiceBookingModal works correctly on /services (all 4 steps), /go (boarding type), /learn (training type). Two issues remain unfixed: CareNearMe doesn't call onBook (uses NearMeConciergeModal internally), and PlayNearMe onBook results in 'grooming' fallback type instead of 'training'.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "LearnDimPanel (LearnMobilePage.jsx)",
+        "issue": "setSvcBooking was not in scope inside LearnDimPanel — ReferenceError when clicking 'Book via Concierge®' in any dimension's Book tab. FIXED by adding onBook prop to LearnDimPanel and passing setSvcBooking logic from LearnMobilePage.",
+        "selector": "[data-testid='learn-mobile']",
+        "priority": "CRITICAL — FIXED"
+      },
+      {
+        "component": "ServiceBookingModal.jsx handleSubmit",
+        "issue": "`pet` variable used in tdc.book() at line 260 was undefined — not a prop or local variable. Would cause ReferenceError during booking submit. FIXED: changed to formData.petName || null.",
+        "selector": "[data-testid='booking-submit']",
+        "priority": "CRITICAL — FIXED"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "CareMobilePage /care → Find Care tab → NearMe service button → ServiceBookingModal",
+        "issue": "CareNearMe.jsx component signature is `function CareNearMe({ currentPet, setConciergeToast })` — it does NOT accept an `onBook` prop. CareMobilePage passes `pet=currentPet, token, onBook` but CareNearMe ignores all three. Its 'Book via Concierge →' buttons call setSelectedPlace(place) → NearMeConciergeModal (a different modal). ServiceBookingModal is NEVER opened from CareNearMe. Additionally, the prop name mismatch (pet vs currentPet) means pet info is undefined in CareNearMe.",
+        "affected_selectors": ["[data-testid='care-tab-find-care']"],
+        "priority": "HIGH"
+      },
+      {
+        "flow": "PlayMobilePage /play → Find Play tab → activity booking button → ServiceBookingModal",
+        "issue": "When PlayNearMe calls onBook(spot, city), the spot object (e.g. 'Sanjay Gandhi National Park', 'Cubbon Park') is passed to guessServiceType(). Park/beach/trail names don't match any regex pattern, so guessServiceType() falls back to 'grooming'. Modal opens as 'Book Grooming' instead of 'Book Training' or 'Book Dog Walking'. Expected: 'training' or 'walking' type. Fix: In PlayMobilePage onBook handler, add fallback: `const svcType = guessServiceType(svc); setSvcBooking({ isOpen: true, serviceType: ['training','walking','daycare'].includes(svcType) ? svcType : 'training' });`",
+        "affected_selectors": ["[data-testid='play-tab-find-play']"],
+        "priority": "MEDIUM"
+      }
+    ],
+    "design_issues": []
+  },
+  "features_verified": {
+    "services_390px": {
+      "page_loads": "PASS — no crash, data-testid='services-mobile' present",
+      "service_booking_modal_opens": "PASS — clicking any svc-book button opens ServiceBookingModal",
+      "step1_sub_services": "PASS — 4 grooming sub-services shown (Full Grooming, Bath & Brush, Nail Trim, Spa)",
+      "step2_pet_details": "PASS — pet name, phone, customer name inputs present, pet selector chips shown",
+      "step3_schedule": "PASS — date picker, time selector, 6 quick-tap time buttons, address textarea",
+      "step4_review": "PASS — Review Booking card with Service/Pet/Location/Date/Time/Address + Confirm button"
+    },
+    "care_390px": {
+      "page_loads": "PASS — no crash, data-testid='care-mobile' present",
+      "3_tabs": "PASS — Care & Products, Care Services, Find Care tabs clickable",
+      "find_care_nearme": "FAIL — CareNearMe uses NearMeConciergeModal, not ServiceBookingModal. onBook prop never called.",
+      "guidedcarepaths_crash": "PASS (resolved) — /care no longer shows 'Something went wrong' crash"
+    },
+    "go_390px": {
+      "page_loads": "PASS — no crash, data-testid='go-mobile' present",
+      "stay_tab": "PASS — PetFriendlyStays loads with search UI",
+      "modal_boarding_type": "PASS — ServiceBookingModal opens with 'boarding' type from Stay tab (hotel/resort names match 'hotel|resort' in guessServiceType)"
+    },
+    "play_390px": {
+      "page_loads": "PASS — no crash, data-testid='play-mobile' present",
+      "find_play_tab": "PASS — PlayNearMe loads with search + results",
+      "modal_opens": "PASS — ServiceBookingModal opens when tapping 'Plan a visit' button",
+      "modal_type": "FAIL — Modal opens as 'Book Grooming' (fallback) instead of 'Book Training' or 'Book Walking'"
+    },
+    "learn_390px": {
+      "page_loads": "PASS — no crash, data-testid='learn-mobile' present",
+      "7_dimension_pills": "PASS — all 7 pills found (foundations, behaviour, training, tricks, social, soul, mira)",
+      "dim_panel_book_tab": "PASS — clicking 📚 Book tab shows services list",
+      "modal_training_type": "PASS — ServiceBookingModal opens as 'Book Training' type (after FIXED onBook prop)"
+    },
+    "service_booking_modal_types": {
+      "boarding_sub_services": "PASS — Pet Hotel, Home Boarding, Pet Resort, Long Stay (from code review)",
+      "sitting_sub_services": "PASS — In-Home Sitting, Overnight Sitting, Drop-In Visit, Housesitting (from code review)",
+      "daycare_sub_services": "PASS — Full Day Care, Half Day Care, Weekly Package, Socialisation Day (from code review)",
+      "pet_taxi_sub_services": "PASS — Vet Transfer, Airport Transfer, Groomer Drop & Pick, Outstation Trip (from code review)"
+    },
+    "guess_service_type": {
+      "Grooming": "PASS → 'grooming'",
+      "Vet_Consultation": "PASS → 'vet'",
+      "Boarding": "PASS → 'boarding'",
+      "Pet_Hotel": "PASS → 'boarding' (via 'hotel' match)",
+      "Daycare": "PASS → 'daycare'",
+      "Dog_Walking": "PASS → 'walking'",
+      "Training": "PASS → 'training'",
+      "Pet_Sitting": "PASS → 'sitting'",
+      "Pet_Taxi": "PASS → 'pet_taxi'"
+    }
+  },
+  "test_report_links": ["/app/test_reports/iteration_206.json"],
+  "action_items": [
+    "HIGH: Fix CareNearMe.jsx — update component signature from `function CareNearMe({ currentPet, setConciergeToast })` to `function CareNearMe({ pet, token, onBook, setConciergeToast })` and use `pet` instead of `currentPet` throughout. Then update the 'Book via Concierge →' button (line 237-248) to call `onBook?.(place.name || searchType)` instead of `setSelectedPlace(place)`. This will trigger ServiceBookingModal from CareMobilePage.",
+    "MEDIUM: Fix PlayMobilePage.jsx — in onBook handler for PlayNearMe, prevent 'grooming' fallback. Change: `setSvcBooking({ isOpen: true, serviceType: guessServiceType(svc) })` to `const svcType = guessServiceType(svc); setSvcBooking({ isOpen: true, serviceType: ['training','walking','daycare'].includes(svcType) ? svcType : 'training' });`",
+    "LOW: GoMobilePage.jsx — guessServiceType(stay) || 'boarding' pattern works in practice (hotel/resort names match 'hotel|resort' regex) but could fail for unusual hotel names. Consider hardcoding 'boarding' for PetFriendlyStays onBook since these are always boarding-type bookings."
+  ],
+  "critical_code_review_comments": [
+    "LearnDimPanel (LearnMobilePage.jsx line 199): setSvcBooking was called inside LearnDimPanel without being passed as prop — ReferenceError at runtime. FIXED: added onBook prop to component signature and pass from LearnMobilePage.",
+    "ServiceBookingModal.jsx line 260: `pet` variable in tdc.book() call was undefined (not in scope). FIXED: replaced with `formData.petName || null`.",
+    "CareNearMe.jsx: Component declares `function CareNearMe({ currentPet, setConciergeToast })` but CareMobilePage passes `pet=currentPet, token, onBook`. All three props are ignored. The prop name mismatch (pet vs currentPet) causes petName to show as 'your dog' instead of Mojo. The 'Book via Concierge →' opens NearMeConciergeModal NOT ServiceBookingModal.",
+    "PlayMobilePage.jsx: onBook handler for PlayNearMe should default to 'training' type for play spots (parks, beaches, trails) since guessServiceType returns 'grooming' fallback for location names."
+  ],
+  "updated_files": [
+    "/app/frontend/src/pages/LearnMobilePage.jsx",
+    "/app/frontend/src/components/ServiceBookingModal.jsx"
+  ],
+  "success_rate": {
+    "backend": "N/A (frontend-only test)",
+    "frontend": "72% (13/18 test requirements passing — 2 bugs fixed, 2 integration issues remaining)"
+  },
+  "test_credentials": "dipali@clubconcierge.in / test123 — Mojo (Indie, chicken allergy)",
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "main_agent_can_self_test": false,
+  "context_for_next_testing_agent": "ServiceBookingModal 4-step flow works on /services, /go (boarding), /learn (training after fix). Two issues: (1) CareNearMe.jsx Find Care tab doesn't call onBook — uses NearMeConciergeModal instead of ServiceBookingModal. Fix: update CareNearMe signature from {currentPet} to {pet} and call onBook in its Book buttons. (2) PlayNearMe Find Play tab — modal opens as 'grooming' (fallback) not 'training'. Fix: add fallback in PlayMobilePage onBook handler. Fixed: LearnDimPanel setSvcBooking scope (now passes onBook prop) and ServiceBookingModal pet undefined. Data-testids verified: services-mobile, care-mobile, go-mobile, play-mobile, learn-mobile.",
+  "rca_of_issues": {
+    "LearnDimPanel_setSvcBooking": {
+      "root_cause": "LearnDimPanel is a sub-component defined before LearnMobilePage in the same file. svcBooking state is defined in LearnMobilePage (parent) at line 224. LearnDimPanel (child) doesn't receive setSvcBooking as a prop — it's not in its destructured props `{ dim, pet, token, addToCart, onProductClick }`. When 'Book via Concierge®' is clicked at line 199, `setSvcBooking` is not in the closure, causing ReferenceError.",
+      "fix_applied": "Added `onBook` prop to LearnDimPanel signature. Changed `setSvcBooking({...})` call to `if (onBook) onBook(svc.name)`. Passed `onBook={svcName => setSvcBooking({isOpen:true, serviceType: guessServiceType(svcName)})}` from LearnMobilePage to LearnDimPanel.",
+      "status": "FIXED"
+    },
+    "CareNearMe_onBook_mismatch": {
+      "root_cause": "CareNearMe.jsx was built independently with its own NearMeConciergeModal flow. When the main agent wired ServiceBookingModal into CareMobilePage, it passed `onBook` prop to CareNearMe, but CareNearMe's signature `{ currentPet, setConciergeToast }` doesn't accept `onBook`. The component continues to use its internal setSelectedPlace→NearMeConciergeModal flow. CareMobilePage's ServiceBookingModal is never triggered from Find Care tab.",
+      "fix_needed": "Update CareNearMe.jsx to accept `{ pet, token, onBook, setConciergeToast }` and call `onBook?.(searchType)` (e.g. 'grooming', 'vet', 'walking') when Book button clicked. Use `pet` instead of `currentPet` throughout.",
+      "status": "NOT FIXED — requires main agent"
+    },
+    "PlayNearMe_grooming_fallback": {
+      "root_cause": "guessServiceType() regex patterns cover named services (grooming, vet, training, walking, boarding, etc.) but NOT location names (dog parks, beaches, trails). When PlayNearMe calls onBook(spot) where spot.name is 'Sanjay Gandhi National Park', none of the regex patterns match → returns 'grooming' (safe fallback). PlayMobilePage doesn't override this with play-appropriate fallback.",
+      "fix_needed": "In PlayMobilePage.jsx line ~289: `setSvcBooking({ isOpen: true, serviceType: guessServiceType(svc) })` → change to: `const t = guessServiceType(svc); setSvcBooking({ isOpen: true, serviceType: ['training','walking','daycare'].includes(t) ? t : 'training' });`",
+      "status": "NOT FIXED — requires main agent"
+    }
+  }
+}
