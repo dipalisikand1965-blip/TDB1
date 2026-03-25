@@ -2,18 +2,21 @@
  * PlayMobilePage.jsx — /play (mobile)
  * Colour: Red/Fun #D94F00 → #FF6B35
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
 import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
+import { API_URL } from '../utils/api';
 import PillarPageLayout from '../components/PillarPageLayout';
 import SoulMadeModal from '../components/SoulMadeModal';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
-import { ProductDetailModal } from '../components/ProductCard';
+import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
+import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
 import PlayCategoryStrip from '../components/play/PlayCategoryStrip';
 import GuidedPlayPaths from '../components/play/GuidedPlayPaths';
 import PlayConciergeSection from '../components/play/PlayConciergeSection';
@@ -32,9 +35,24 @@ export default function PlayMobilePage() {
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
   usePlatformTracking({ pillar:'play', pet:currentPet });
   const { request } = useConcierge({ pet:currentPet, pillar:'play' });
+  const { addToCart } = useCart();
   const [loading, setLoading] = useState(true);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => { if(contextPets!==undefined)setLoading(false); if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]); },[contextPets,currentPet,setCurrentPet]);
+  useEffect(() => { const h=()=>{}; window.addEventListener('soulScoreUpdated',h); return()=>window.removeEventListener('soulScoreUpdated',h); },[]);
+
+  useEffect(() => {
+    if (!currentPet?.id) return;
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=200`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
+      .then(r => r.ok ? r.json() : null).then(d => { if (d?.products) setProducts(d.products); }).catch(() => {});
+  }, [currentPet?.id, token]);
+
+  const handleAddToCart = useCallback(p => {
+    addToCart({ id:p.id||p._id, name:p.name, price:p.price||0, image:p.image_url||p.images?.[0], pillar:'play', quantity:1 });
+  }, [addToCart]);
 
   useEffect(() => { if(contextPets!==undefined)setLoading(false); if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]); },[contextPets,currentPet,setCurrentPet]);
   useEffect(() => { const h=()=>{}; window.addEventListener('soulScoreUpdated',h); return()=>window.removeEventListener('soulScoreUpdated',h); },[]);
@@ -71,6 +89,17 @@ export default function PlayMobilePage() {
           <button className="play-cta">See Mira's Play Picks →</button>
         </div>
         <div style={{padding:'0 16px 24px'}}><MiraImaginesBreed pet={currentPet} pillar="play" token={token}/></div>
+
+        {products.length > 0 && (
+          <div style={{padding:'0 16px 24px'}}>
+            <div style={{fontSize:18,fontWeight:700,marginBottom:12}}>Play Products for {petName}</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+              {products.slice(0,20).map(p => <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="play" selectedPet={currentPet} onAddToCart={()=>handleAddToCart(p)} onClick={()=>{vibe();setSelectedProduct(p);}} />)}
+            </div>
+          </div>
+        )}
+
+        <div style={{padding:'0 16px 24px'}}><PersonalisedBreedSection pet={currentPet} pillar="play" /></div>
         <div style={{padding:'0 16px 24px'}}><GuidedPlayPaths pet={currentPet}/></div>
         <div style={{padding:'0 16px 24px'}}><BuddyMeetup pet={currentPet}/></div>
         <div style={{padding:'0 16px 24px'}}><PlayNearMe pet={currentPet} onBook={venue=>{tdc.request(`Book play venue for ${petName}: ${venue}`,{pillar:'play',channel:'play_nearme',pet:currentPet});}}/></div>

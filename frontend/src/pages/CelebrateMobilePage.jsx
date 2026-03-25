@@ -19,7 +19,8 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import SoulMadeModal from '../components/SoulMadeModal';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
-import { ProductDetailModal } from '../components/ProductCard';
+import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
+import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
 import CelebrateCategoryStrip from '../components/celebrate/CelebrateCategoryStrip';
 import CelebrateContentModal from '../components/celebrate/CelebrateContentModal';
 import GuidedCelebratePaths from '../components/celebrate/GuidedCelebrationPaths';
@@ -354,10 +355,24 @@ export default function CelebrateMobilePage() {
         {/* Mira bar */}
         <CelebrateMiraBar pet={currentPet} onOpen={() => setMiraPicksOpen(true)} />
 
+        {/* ── Product Grid ── */}
+        {miraProducts.length > 0 && (
+          <div style={{ padding:'0 16px 24px' }}>
+            <div style={{ fontSize:18, fontWeight:700, marginBottom:12 }}>Celebrate Picks for {petName}</div>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+              {miraProducts.map(p => (
+                <SharedProductCard key={p.id||p.name} product={p.raw||p} pillar="celebrate" selectedPet={currentPet} onAddToCart={() => { addToCart({ id:p.id, name:p.name, price:p.raw?.price||0, image:p.imageUrl, pillar:'celebrate', quantity:1 }); showToast(`${p.name} added`); }} onClick={() => { vibe(); setSelectedProduct(p); }} />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* MiraImaginesBreed */}
         <div style={{ padding:'0 16px 24px' }}>
           <MiraImaginesBreed pet={currentPet} pillar="celebrate" token={token} />
         </div>
+
+        <div style={{ padding:'0 16px 24px' }}><PersonalisedBreedSection pet={currentPet} pillar="celebrate" /></div>
 
         {/* Guided paths */}
         <div style={{ padding:'0 16px 24px' }}>
