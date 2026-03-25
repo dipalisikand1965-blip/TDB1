@@ -1,15 +1,18 @@
 /**
  * ServicesMobilePage.jsx — /services (mobile)
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
 import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
+import { API_URL } from '../utils/api';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
+import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 
 const SV={navy:'#0F1A3D',navyL:'#2E4DA6',navyXL:'#5B7FD4',cream:'#F0F2FF',border:'#C5CFF0',dark:'#060D1E',taupe:'#4A557A'};
 const CSS_SV=`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');.svc{font-family:'DM Sans',-apple-system,sans-serif;background:${SV.cream};color:${SV.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}.svc-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${SV.navy},${SV.navyL});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}.svc-cta:active{transform:scale(0.97)}`;
@@ -20,14 +23,24 @@ export default function ServicesMobilePage() {
   const{currentPet,setCurrentPet,pets:contextPets}=usePillarContext();
   usePlatformTracking({pillar:'services',pet:currentPet});
   const{request}=useConcierge({pet:currentPet,pillar:'services'});
+  const{addToCart}=useCart();
   const[loading,setLoading]=useState(true);
+  const[selectedProduct,setSelectedProduct]=useState(null);
+  const[products,setProducts]=useState([]);
   useEffect(()=>{if(contextPets!==undefined)setLoading(false);if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]);},[contextPets,currentPet,setCurrentPet]);
+  useEffect(()=>{
+    if(!currentPet?.id)return;
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=services&limit=200`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
+      .then(r=>r.ok?r.json():null).then(d=>{if(d?.products)setProducts(d.products);}).catch(()=>{});
+  },[currentPet?.id,token]);
+  const handleAddToCart=useCallback(p=>{addToCart({id:p.id||p._id,name:p.name,price:p.price||0,image:p.image_url||p.images?.[0],pillar:'services',quantity:1});},[addToCart]);
   if(loading)return<PillarPageLayout pillar="services" hideHero hideNavigation><div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontSize:36,marginBottom:12}}>🤝</div><div>Loading services…</div></div></div></PillarPageLayout>;
   if(!currentPet)return<PillarPageLayout pillar="services" hideHero hideNavigation><style>{CSS_SV}</style><div className="svc"><div style={{padding:'24px 16px',textAlign:'center'}}><div style={{background:'#fff',border:`1px solid ${SV.border}`,borderRadius:22,padding:'32px 20px'}}><div style={{fontSize:44,marginBottom:14}}>🤝</div><div style={{fontSize:22,fontWeight:700,marginBottom:8}}>Add your pet to unlock Services</div><button className="svc-cta" style={{marginTop:16}} onClick={()=>navigate('/join')}>Add your pet →</button></div></div></div></PillarPageLayout>;
   const petName=currentPet.name;
   return(
     <PillarPageLayout pillar="services" hideHero hideNavigation>
       <div className="svc" data-testid="services-mobile"><style>{CSS_SV}</style>
+        {selectedProduct&&<ProductDetailModal product={selectedProduct?.raw||selectedProduct} isOpen={!!selectedProduct} onClose={()=>setSelectedProduct(null)} petName={petName} pillarColor={SV.navyL}/>}
         <div style={{background:`linear-gradient(160deg,${SV.dark} 0%,${SV.navy} 50%,${SV.navyL} 100%)`,padding:'20px 16px 24px'}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
             <div><div style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,0.5)',letterSpacing:'0.1em',marginBottom:2}}>THE DOGGY COMPANY</div><div style={{fontSize:22,fontWeight:700,color:'#fff'}}>🤝 Services</div></div>
@@ -46,6 +59,9 @@ export default function ServicesMobilePage() {
           <button className="svc-cta">See Mira's Service Picks →</button>
         </div>
         <div style={{padding:'0 16px 24px'}}><PersonalisedBreedSection pet={currentPet} pillar="services" token={token}/></div>
+
+        {products.length>0&&(<div style={{padding:'0 16px 24px'}}><div style={{fontSize:18,fontWeight:700,marginBottom:12}}>Service Products for {petName}</div><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>{products.slice(0,20).map(p=><SharedProductCard key={p.id||p._id||p.name} product={p} pillar="services" selectedPet={currentPet} onAddToCart={()=>handleAddToCart(p)} onClick={()=>{vibe();setSelectedProduct(p);}} />)}</div></div>)}
+
         <div style={{margin:'0 16px 24px',background:SV.dark,borderRadius:24,padding:20}}>
           <div style={{display:'inline-flex',background:'rgba(91,127,212,0.2)',border:'1px solid rgba(91,127,212,0.4)',borderRadius:999,padding:'5px 14px',color:SV.navyXL,fontSize:12,fontWeight:600,marginBottom:12}}>🤝 Concierge®</div>
           <div style={{fontSize:22,fontWeight:700,color:'#fff',lineHeight:1.2,marginBottom:10,fontFamily:'Georgia,serif'}}>Every service is arranged by your Concierge.</div>

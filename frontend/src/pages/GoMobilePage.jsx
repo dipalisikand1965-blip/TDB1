@@ -11,6 +11,9 @@ import SoulMadeModal from '../components/SoulMadeModal';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import { ProductDetailModal } from '../components/ProductCard';
+import SharedProductCard from '../components/ProductCard';
+import { useCart } from '../context/CartContext';
+import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
 import GoCategoryStrip from '../components/go/GoCategoryStrip';
 import GuidedGoPaths from '../components/go/GuidedGoPaths';
 import GoConciergeSection from '../components/go/GoConciergeSection';
@@ -74,10 +77,28 @@ export default function GoMobilePage() {
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
   usePlatformTracking({ pillar:'go', pet:currentPet });
   const { request } = useConcierge({ pet:currentPet, pillar:'go' });
+  const { addToCart } = useCart();
   const [loading, setLoading] = useState(true);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [mode, setMode] = useState('go');
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    if (contextPets !== undefined) setLoading(false);
+    if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
+  }, [contextPets, currentPet, setCurrentPet]);
+
+  useEffect(() => {
+    if (!currentPet?.id) return;
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=go&limit=200`, {
+      headers: token ? { Authorization:`Bearer ${token}` } : {}
+    }).then(r => r.ok ? r.json() : null).then(d => { if (d?.products) setProducts(d.products); }).catch(() => {});
+  }, [currentPet?.id, token]);
+
+  const handleAddToCart = useCallback(p => {
+    addToCart({ id:p.id||p._id, name:p.name, price:p.price||0, image:p.image_url||p.images?.[0], pillar:'go', quantity:1 });
+  }, [addToCart]);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -131,6 +152,19 @@ export default function GoMobilePage() {
         </div>
 
         <div style={{ padding:'0 16px 24px' }}><MiraImaginesBreed pet={currentPet} pillar="go" token={token} /></div>
+
+        {products.length > 0 && (
+          <div style={{ padding:'0 16px 24px' }}>
+            <div style={{ fontSize:18, fontWeight:700, marginBottom:12 }}>Go Products for {petName}</div>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+              {products.slice(0, 20).map(p => (
+                <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="go" selectedPet={currentPet} onAddToCart={() => handleAddToCart(p)} onClick={() => { vibe(); setSelectedProduct(p); }} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div style={{ padding:'0 16px 24px' }}><PersonalisedBreedSection pet={currentPet} pillar="go" /></div>
         <div style={{ padding:'0 16px 24px' }}><GuidedGoPaths pet={currentPet} /></div>
         <div style={{ padding:'0 16px 24px' }}>
           <PetFriendlyStays pet={currentPet} onBook={stay => { tdc.request(`Book stay for ${petName}: ${stay}`, { pillar:'go', channel:'go_stays', pet:currentPet }); }} />

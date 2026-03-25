@@ -14,7 +14,8 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import SoulMadeModal from '../components/SoulMadeModal';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
-import { ProductDetailModal } from '../components/ProductCard';
+import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
+import { useCart } from '../context/CartContext';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
 
 const S={gold:'#4A2800',goldL:'#C9973A',goldXL:'#E8B84B',cream:'#FFFBF5',border:'#F5E6C8',dark:'#1A0E00',taupe:'#7A6A4A'};
@@ -26,11 +27,23 @@ export default function ShopMobilePage() {
   const{currentPet,setCurrentPet,pets:contextPets}=usePillarContext();
   usePlatformTracking({pillar:'shop',pet:currentPet});
   const{request}=useConcierge({pet:currentPet,pillar:'shop'});
+  const{addToCart}=useCart();
   const[loading,setLoading]=useState(true);
   const[soulMadeOpen,setSoulMadeOpen]=useState(false);
   const[selectedProduct,setSelectedProduct]=useState(null);
+  const[products,setProducts]=useState([]);
 
   useEffect(()=>{if(contextPets!==undefined)setLoading(false);if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]);},[contextPets,currentPet,setCurrentPet]);
+
+  useEffect(()=>{
+    if(!currentPet?.id)return;
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=shop&limit=200`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
+      .then(r=>r.ok?r.json():null).then(d=>{if(d?.products)setProducts(d.products);}).catch(()=>{});
+  },[currentPet?.id,token]);
+
+  const handleAddToCart=useCallback(p=>{
+    addToCart({id:p.id||p._id,name:p.name,price:p.price||0,image:p.image_url||p.images?.[0],pillar:'shop',quantity:1});
+  },[addToCart]);
 
   if(loading)return<PillarPageLayout pillar="shop" hideHero hideNavigation><div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontSize:36,marginBottom:12}}>🛍️</div><div>Loading your shop…</div></div></div></PillarPageLayout>;
   if(!currentPet)return<PillarPageLayout pillar="shop" hideHero hideNavigation><style>{CSS}</style><div className="shop"><div style={{padding:'24px 16px',textAlign:'center'}}><div style={{background:'#fff',border:`1px solid ${S.border}`,borderRadius:22,padding:'32px 20px'}}><div style={{fontSize:44,marginBottom:14}}>🛍️</div><div style={{fontSize:22,fontWeight:700,marginBottom:8}}>Add your pet to unlock Shop</div><button className="shop-cta" style={{marginTop:16}} onClick={()=>navigate('/join')}>Add your pet →</button></div></div></div></PillarPageLayout>;
@@ -62,6 +75,16 @@ export default function ShopMobilePage() {
           <button className="shop-cta">See Mira's Shop Picks →</button>
         </div>
         <div style={{padding:'0 16px 24px'}}><MiraImaginesBreed pet={currentPet} pillar="shop" token={token}/></div>
+
+        {products.length > 0 && (
+          <div style={{padding:'0 16px 24px'}}>
+            <div style={{fontSize:18,fontWeight:700,marginBottom:12}}>Shop Products for {petName}</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+              {products.slice(0,20).map(p=><SharedProductCard key={p.id||p._id||p.name} product={p} pillar="shop" selectedPet={currentPet} onAddToCart={()=>handleAddToCart(p)} onClick={()=>{vibe();setSelectedProduct(p);}} />)}
+            </div>
+          </div>
+        )}
+
         <div style={{padding:'0 16px 24px'}}><PersonalisedBreedSection pet={currentPet} pillar="shop" token={token}/></div>
         <div style={{margin:'0 16px 24px',background:S.dark,borderRadius:20,padding:18,cursor:'pointer'}} onClick={()=>setSoulMadeOpen(true)}>
           <div style={{fontSize:10,letterSpacing:'0.14em',color:S.goldXL,fontWeight:700,marginBottom:8}}>✦ SOUL MADE™ · MADE ONLY FOR {petName.toUpperCase()}</div>
